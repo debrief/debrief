@@ -74,7 +74,7 @@ abstract public class WorldAccelerationPropertyEditor extends
   /**
    * store the new value (in minutes)
    */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     // reset value
     _myVal = null;
@@ -112,21 +112,21 @@ abstract public class WorldAccelerationPropertyEditor extends
     try
     {
       // get the distance
-      double duration = getAcceleration();
+      final double duration = getAcceleration();
 
       // get the units scale factor
-      int units = getUnits();
+      final int units = getUnits();
 
       // scale the distance to our output units (minutes)
       val = new WorldAcceleration(duration, units);
 
 
     }
-    catch (NumberFormatException e)
+    catch (final NumberFormatException e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
-    catch (java.text.ParseException pe)
+    catch (final java.text.ParseException pe)
     {
       MWC.Utilities.Errors.Trace.trace(pe);
     }
@@ -179,7 +179,7 @@ abstract public class WorldAccelerationPropertyEditor extends
    *
    * @param num the number of columns to show in the text field
    */
-  public void setColumns(int num)
+  public void setColumns(final int num)
   {
     _numColumns = num;
   }

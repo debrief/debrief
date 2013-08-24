@@ -37,14 +37,14 @@ public class Attribute implements IAttribute
 	/** daddies little helper
 	 * 
 	 */
-	private AttributeHelper _myHelper;
+	private final AttributeHelper _myHelper;
 
 	/**
 	 * constructor for an instance
 	 * 
 	 * @param name
 	 */
-	public Attribute(String name, String units, boolean isSignificant)
+	public Attribute(final String name, final String units, final boolean isSignificant)
 	{
 		_isSignificant = isSignificant;
 		
@@ -60,7 +60,7 @@ public class Attribute implements IAttribute
 
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener)
+	public void addPropertyChangeListener(final PropertyChangeListener listener)
 	{
 		_pSupport.addPropertyChangeListener(listener);
 	}
@@ -70,12 +70,12 @@ public class Attribute implements IAttribute
 		return _name;
 	}
 
-	public Vector<DataDoublet> getHistoricValues(Object index)
+	public Vector<DataDoublet> getHistoricValues(final Object index)
 	{
 		return _myHelper.getValuesFor(index);
 	}
 
-	public void removePropertyChangeListener(PropertyChangeListener listener)
+	public void removePropertyChangeListener(final PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(listener);
 	}
@@ -85,12 +85,12 @@ public class Attribute implements IAttribute
 	 * @param time
 	 * @param newValue
 	 */
-	public void fireUpdate(Object index, long time, Object newValue)
+	public void fireUpdate(final Object index, final long time, final Object newValue)
 	{
 		_myHelper.newData(index, time, newValue);
 	}
 
-	public DataDoublet getCurrent(Object index)
+	public DataDoublet getCurrent(final Object index)
 	{
 		return _myHelper.getCurrent(index);
 	}
@@ -105,7 +105,7 @@ public class Attribute implements IAttribute
 	 * @param index
 	 * @return
 	 */
-	public String toString(Object index)
+	public String toString(final Object index)
 	{
 		return getName() + ":" + getCurrent(index).getValue();
 	}
@@ -121,7 +121,7 @@ public class Attribute implements IAttribute
     /** the property listeners for this object
      * 
      */
-    private PropertyChangeSupport _pSupport;
+    private final PropertyChangeSupport _pSupport;
 
 		/** the collection of data items
 		 * 
@@ -132,7 +132,7 @@ public class Attribute implements IAttribute
      * 
      * @param pSupport
      */
-		public AttributeHelper(PropertyChangeSupport pSupport)
+		public AttributeHelper(final PropertyChangeSupport pSupport)
 		{
 			_pSupport = pSupport;
 		}
@@ -142,21 +142,21 @@ public class Attribute implements IAttribute
 		 * @param time
 		 * @param value
 		 */
-		public void newData(Object index, long time, Object value)
+		public void newData(final Object index, final long time, final Object value)
 		{		
-			DataDoublet newD = new DataDoublet(time, value);
-			DataDoublet oldD = getCurrent(index);
+			final DataDoublet newD = new DataDoublet(time, value);
+			final DataDoublet oldD = getCurrent(index);
 
 			// store the new value
 			getValuesFor(index).add(newD);
 			
 			// and tell the chaps
-			PropertyChangeEvent pe = new PropertyChangeEvent(index, VALUE, oldD, newD);
+			final PropertyChangeEvent pe = new PropertyChangeEvent(index, VALUE, oldD, newD);
 			_pSupport.firePropertyChange(pe);
 			
 		}
 		
-		public Vector<DataDoublet> getValuesFor(Object index)
+		public Vector<DataDoublet> getValuesFor(final Object index)
 		{
 			if(_indexedData == null)
 				_indexedData = new HashMap<Object, Vector<DataDoublet>>();
@@ -176,7 +176,7 @@ public class Attribute implements IAttribute
 		 * 
 		 * @return
 		 */
-		public DataDoublet getCurrent(Object index)
+		public DataDoublet getCurrent(final Object index)
 		{
 			DataDoublet res = null;
 			if(getValuesFor(index).size() > 0)

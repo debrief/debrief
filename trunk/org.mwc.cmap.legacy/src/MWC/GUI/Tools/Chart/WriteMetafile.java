@@ -35,14 +35,14 @@ public class WriteMetafile extends PlainTool
 	 * @param theData
 	 *          the data we are plotting
 	 */
-	public WriteMetafile(ToolParent theParent, PlainChart theChart, Layers theData)
+	public WriteMetafile(final ToolParent theParent, final PlainChart theChart, final Layers theData)
 	{
 		super(theParent, "Write MF", "images/write_wmf.gif");
 		// remember the chart we are acting upon
 		_theChart = theChart;
 	}
 
-	public WriteMetafile(ToolParent theParent, PlainChart theChart, boolean writeToFile)
+	public WriteMetafile(final ToolParent theParent, final PlainChart theChart, final boolean writeToFile)
 	{
 		this(theParent, theChart, null);
 		_writeToFile = writeToFile;
@@ -108,14 +108,14 @@ public class WriteMetafile extends PlainTool
 			mf.endDraw(null);
 
 		}
-		catch (java.lang.NoClassDefFoundError e)
+		catch (final java.lang.NoClassDefFoundError e)
 		{
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Write Operation",
 					"Sorry, Microsoft classes not enabled on this installation");
 			MWC.Utilities.Errors.Trace.trace(e,
 					"Sorry, Microsoft classes not enabled on this installation");
 		}
-		catch (java.lang.Exception e)
+		catch (final java.lang.Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -127,9 +127,9 @@ public class WriteMetafile extends PlainTool
 	/**
 	 * @param mf
 	 */
-	protected void paintToMetafile(MetafileCanvas mf)
+	protected void paintToMetafile(final MetafileCanvas mf)
 	{
-		MWC.GUI.Canvas.Swing.SwingCanvas sc = (MWC.GUI.Canvas.Swing.SwingCanvas) _theChart
+		final MWC.GUI.Canvas.Swing.SwingCanvas sc = (MWC.GUI.Canvas.Swing.SwingCanvas) _theChart
 				.getCanvas();
 		sc.paintIt(mf);
 	}
@@ -151,13 +151,13 @@ public class WriteMetafile extends PlainTool
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
 
-		MetafileCanvas mf = new MetafileCanvas("c:\\");
+		final MetafileCanvas mf = new MetafileCanvas("c:\\");
 
 		// copy the projection
-		MWC.Algorithms.Projections.FlatProjection fp = new MWC.Algorithms.Projections.FlatProjection();
+		final MWC.Algorithms.Projections.FlatProjection fp = new MWC.Algorithms.Projections.FlatProjection();
 		fp.setDataArea(new MWC.GenericData.WorldArea(new MWC.GenericData.WorldLocation(0, 0,
 				0), new MWC.GenericData.WorldLocation(1, 1, 1)));
 		fp.setScreenArea(new java.awt.Dimension(400, 400));
@@ -184,20 +184,20 @@ public class WriteMetafile extends PlainTool
 		mf.drawLine(56, 50, 200, 270);
 		mf.drawText("gere we go", 100, 200);
 
-		java.awt.Font newF = new java.awt.Font("Courier", java.awt.Font.BOLD, 12);
+		final java.awt.Font newF = new java.awt.Font("Courier", java.awt.Font.BOLD, 12);
 
 		mf.setColor(java.awt.Color.blue);
 		mf.drawText(newF, "and us three", 200, 100);
 		mf.setColor(java.awt.Color.blue);
 		mf.fillRect(80, 100, 40, 40);
 
-		String theStr = MWC.Utilities.TextFormatting.DebriefFormatLocation
+		final String theStr = MWC.Utilities.TextFormatting.DebriefFormatLocation
 				.toString(new WorldLocation(2.1, 2.2, 2.3));
 		mf.drawText(theStr, 40, 20);
 
 		System.out.println("=============== our text");
-		String val = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLat(2.1, false);
-		String val2 = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLong(2.1,
+		final String val = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLat(2.1, false);
+		final String val2 = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLong(2.1,
 				false);
 		mf.drawText(val, 40, 40);
 		mf.drawText(val2, 40, 60);
@@ -205,14 +205,14 @@ public class WriteMetafile extends PlainTool
 		char[] str = val.toCharArray();
 		for (int i = 0; i < str.length; i++)
 		{
-			char c = str[i];
+			final char c = str[i];
 			System.out.println(i + ":" + c);
 		}
 
 		str = val2.toCharArray();
 		for (int i = 0; i < str.length; i++)
 		{
-			char c = str[i];
+			final char c = str[i];
 			System.out.println(i + ":" + c);
 		}
 

@@ -35,14 +35,14 @@ abstract public class VPFCoastlineHandler extends MWCXMLReader  implements Plott
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
@@ -50,7 +50,7 @@ abstract public class VPFCoastlineHandler extends MWCXMLReader  implements Plott
 
   }
 
-  public void setParent(MWC.GUI.ToolParent parent)
+  public void setParent(final MWC.GUI.ToolParent parent)
   {
      _myParent = parent;
   }
@@ -66,7 +66,7 @@ abstract public class VPFCoastlineHandler extends MWCXMLReader  implements Plott
     if(path == null)
       path = MWC.GUI.Tools.Palette.CreateVPFCoast.COAST_PATH_DEFAULT;
 
-    MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer rcl = MWC.GUI.VPF.LibraryLayer.createReferenceLayer(path);
+    final MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer rcl = MWC.GUI.VPF.LibraryLayer.createReferenceLayer(path);
 
 //    MWC.GUI.Chart.Painters.CoastPainter csp = new MWC.GUI.Chart.Painters.CoastPainter();
     rcl.setColor(_theColor);
@@ -82,11 +82,11 @@ abstract public class VPFCoastlineHandler extends MWCXMLReader  implements Plott
   abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
 
-  public void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
-    MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer cl = (MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer) plottable;
-    Element coast = doc.createElement(_myType);
+    final MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer cl = (MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer) plottable;
+    final Element coast = doc.createElement(_myType);
 
     // do the visibility
     coast.setAttribute("Visible", writeThis(cl.getVisible()));

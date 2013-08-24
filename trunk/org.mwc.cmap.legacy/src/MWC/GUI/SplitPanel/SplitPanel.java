@@ -85,7 +85,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
     super.setLayout(layout);
   }
 
-  public void setGap(int gap) {
+  public void setGap(final int gap) {
     layout.setGap(gap);
   }
   public int getGap() {
@@ -96,7 +96,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
    *   default is Black
    *
    */
-  public void setDividerColor(Color color) {
+  public void setDividerColor(final Color color) {
     paneLayoutDivider.setBackground(color);
   }
 
@@ -108,7 +108,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
    * No-op if LayoutManager is not a PaneLayout
    * otherwise sets the LayoutManager to the supplied PaneLayout
    */
-  public void setLayout(LayoutManager mgr) {
+  public void setLayout(final LayoutManager mgr) {
     if (mgr instanceof PaneLayout) {
       layout = (PaneLayout) mgr;
       super.setLayout(mgr);
@@ -122,11 +122,11 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
    *  disable all the panels components until mouse is released (so it is easy to follow the divider)
    * Mouse Listener Interface method
    */
-  public void mousePressed(MouseEvent e) {
+  public void mousePressed(final MouseEvent e) {
     if (e.getComponent() != this)
       return;
-    int mouseX = e.getX();
-    int mouseY = e.getY();
+    final int mouseX = e.getX();
+    final int mouseY = e.getY();
     dividerRect = layout.getDividerRect(mouseX, mouseY);
     if (dividerRect != null) {
       dividerBounds = layout.getDividerBounds();
@@ -139,7 +139,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
         xDelta = mouseX - dividerRect.x;
       }
       isSizing = true;
-      Component[] all = getComponents();
+      final Component[] all = getComponents();
       enabledComponents = new Component[all.length];
       for (int i=0;i< all.length;i++) {
         if (all[i].isEnabled())  {
@@ -161,7 +161,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
    * hide the divider
    * (Internal) Mouse Listener Interface method
    */
-  public void mouseReleased( MouseEvent e) {
+  public void mouseReleased( final MouseEvent e) {
     paneLayoutDivider.setVisible(false);
     if (isSizing) {
       isSizing = false;
@@ -179,13 +179,13 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
   /**
    * (Internal) Mouse Listener Interface method  - no-op
    */
-  public void mouseClicked(MouseEvent e) {
+  public void mouseClicked(final MouseEvent e) {
   }
 
   /**
    * (Internal) Mouse Listener Interface method  - restore cursor shape
    */
-  public void mouseExited(MouseEvent e) {
+  public void mouseExited(final MouseEvent e) {
     //System.err.println("mouseExited");
     if (cursor != null )
       setCursor(cursor);   //restore cursor state
@@ -194,7 +194,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
   /**
    * (Internal) Mouse  Listener Interface method  - remember cursor shape
    */
-  public void mouseEntered(MouseEvent e) {
+  public void mouseEntered(final MouseEvent e) {
     //System.err.println("mouseEntered");
     cursor = getCursor();   //remember cursor state
   }
@@ -203,10 +203,10 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
    * (Internal) Change the cursor when the mouse is over a divider
    * Mouse Motion Listener Interface method
    */
-  public void mouseMoved(MouseEvent e) {
+  public void mouseMoved(final MouseEvent e) {
     if (e.getComponent() != this)
       return;
-    Rectangle rect = layout.getDividerRect(e.getX(), e.getY());
+    final Rectangle rect = layout.getDividerRect(e.getX(), e.getY());
     if (rect != null) {
       if (rect.width > rect.height)
         setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
@@ -221,7 +221,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
    * (Internal) Mouse Motion Listener Interface method  -
    *  move the selection bar to track the mouse
    */
-  public void mouseDragged(MouseEvent e) {
+  public void mouseDragged(final MouseEvent e) {
     if (isSizing) {
       int xD = dividerRect.x;
       int yD = dividerRect.y;
@@ -249,7 +249,7 @@ public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionL
   }
 
   public Dimension getPreferredSize() {
-    Dimension ps = super.getPreferredSize();
+    final Dimension ps = super.getPreferredSize();
     if (ps.width == 10)
       ps.width = 100;
     if (ps.height == 10)

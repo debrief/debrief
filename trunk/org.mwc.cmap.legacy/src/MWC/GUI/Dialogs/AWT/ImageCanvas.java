@@ -14,18 +14,18 @@ public class ImageCanvas extends Component {
 
 	public ImageCanvas() {
 	}
-    public ImageCanvas(Image image) {
+    public ImageCanvas(final Image image) {
 		setImage(image);
     }
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
 		if(image != null) {
         	g.drawImage(image, 0, 0, this);
 		}
     }
-    public void update(Graphics g) {
+    public void update(final Graphics g) {
         paint(g);
     }
-	public void setImage(Image image) {
+	public void setImage(final Image image) {
         Util.waitForImage(this, image);
 		this.image = image;
 

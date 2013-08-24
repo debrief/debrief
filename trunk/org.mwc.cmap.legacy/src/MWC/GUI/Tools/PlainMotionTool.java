@@ -90,10 +90,10 @@ abstract public class PlainMotionTool extends
   // constructor
   //////////////////////////////////////////////////
   
-  public PlainMotionTool(PlainChart theChart,
-                         ToolParent theParent,
-                         String theLabel,
-                         String theImage){ 
+  public PlainMotionTool(final PlainChart theChart,
+                         final ToolParent theParent,
+                         final String theLabel,
+                         final String theImage){ 
     
     super(theParent, theLabel, theImage);
     
@@ -118,7 +118,7 @@ abstract public class PlainMotionTool extends
   }                        
   
   
-  public void doExecute(Action theAction){
+  public void doExecute(final Action theAction){
     // start busy
     setBusy(true);
     

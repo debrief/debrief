@@ -16,7 +16,7 @@ public class OnlyShowVisibleAction extends Action {
 
 	private final ImageDescriptor showAllImage;
 
-	public OnlyShowVisibleAction(GridEditorTable tableUI) {
+	public OnlyShowVisibleAction(final GridEditorTable tableUI) {
 		super(ACTION_TEXT, AS_PUSH_BUTTON);
 		myTableUI = tableUI;
 		showVisImage = CorePlugin.getImageDescriptor("icons/checked.gif");
@@ -28,13 +28,13 @@ public class OnlyShowVisibleAction extends Action {
 
 	@Override
 	public void run() {
-		boolean showVis = myTableUI.isOnlyShowVisible();
+		final boolean showVis = myTableUI.isOnlyShowVisible();
 		myTableUI.setOnlyShowVisible(!showVis);
 		refreshWithTableUI();
 	}
 
 	public void refreshWithTableUI() {
-		boolean isVis = myTableUI.isOnlyShowVisible();
+		final boolean isVis = myTableUI.isOnlyShowVisible();
 		setChecked(isVis);
 		setImageDescriptor(isVis ? showVisImage : showAllImage);
 	}

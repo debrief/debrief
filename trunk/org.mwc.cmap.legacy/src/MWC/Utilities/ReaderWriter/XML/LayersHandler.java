@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 public class LayersHandler extends MWCXMLReader
 {
 
-  public LayersHandler(MWC.GUI.Layers theLayers)
+  public LayersHandler(final MWC.GUI.Layers theLayers)
   {
     // inform our parent what type of class we are
     super("layers");
@@ -22,20 +22,20 @@ public class LayersHandler extends MWCXMLReader
     addHandler(new LayerHandler(theLayers));
   }
   
-	public static void exportThis(MWC.GUI.Layers data, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportThis(final MWC.GUI.Layers data, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     // create ourselves
-    Element layers = doc.createElement("layers");
+    final Element layers = doc.createElement("layers");
 
     if(data == null)
       return;
 
     //
-    int len = data.size();
+    final int len = data.size();
 
     for(int i=0;i<len;i++)
     {
-      MWC.GUI.Layer ly = data.elementAt(i);
+      final MWC.GUI.Layer ly = data.elementAt(i);
 
       // find out which sort of layer this is
       if(ly instanceof MWC.GUI.BaseLayer)

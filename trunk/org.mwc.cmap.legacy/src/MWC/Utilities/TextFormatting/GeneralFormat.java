@@ -83,21 +83,21 @@ public class GeneralFormat
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  public static String formatBearing(double val){
+  public static String formatBearing(final double val){
     // format bearing to give a 3 figure leading part, followed
     // by a 2 digit decimal
     return _bearingFormat.format(val) + "degs";
   }
 
-  public static String formatRange(double val){
+  public static String formatRange(final double val){
     return _rangeFormat.format(val) + "yds";
   }
 
-  public static String formatOneDecimalPlace(double val){
+  public static String formatOneDecimalPlace(final double val){
     return _oneDPFormat.format(val);
   }
 
-  public static String formatStatus(double courseDegs, double speedKts, double depthMetres)
+  public static String formatStatus(final double courseDegs, final double speedKts, final double depthMetres)
   {
     String res = "n/a";
 

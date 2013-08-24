@@ -69,8 +69,8 @@ public class EditableWrapper implements IPropertySource
 	 * @param plottable
 	 * @param theLayers
 	 */
-	public EditableWrapper(Editable plottable, EditableWrapper parent,
-			Layers theLayers)
+	public EditableWrapper(final Editable plottable, final EditableWrapper parent,
+			final Layers theLayers)
 	{
 		_editable = plottable;
 		_theLayers = theLayers;
@@ -83,7 +83,7 @@ public class EditableWrapper implements IPropertySource
 	 * @param plottable
 	 * @param theLayers
 	 */
-	public EditableWrapper(Editable plottable, Layers theLayers)
+	public EditableWrapper(final Editable plottable, final Layers theLayers)
 	{
 		_editable = plottable;
 		_theLayers = theLayers;
@@ -96,7 +96,7 @@ public class EditableWrapper implements IPropertySource
 	 * @param plottable
 	 * @param theLayers
 	 */
-	public EditableWrapper(Editable plottable)
+	public EditableWrapper(final Editable plottable)
 	{
 		_editable = plottable;
 		_theLayers = null;
@@ -114,7 +114,7 @@ public class EditableWrapper implements IPropertySource
 		if (parent == null)
 		{
 			// get the parent then
-			Editable parentE = getEditable();
+			final Editable parentE = getEditable();
 
 			// right, is it an editable?
 			if (parentE instanceof Layer)
@@ -148,13 +148,13 @@ public class EditableWrapper implements IPropertySource
 		return _editable;
 	}
 
-	public boolean equals(Object arg0)
+	public boolean equals(final Object arg0)
 	{
 		Editable targetEditable = null;
 		boolean res = false;
 		if (arg0 instanceof EditableWrapper)
 		{
-			EditableWrapper pw = (EditableWrapper) arg0;
+			final EditableWrapper pw = (EditableWrapper) arg0;
 			targetEditable = pw.getEditable();
 		}
 
@@ -195,13 +195,13 @@ public class EditableWrapper implements IPropertySource
 
 		if (_myDescriptors == null)
 		{
-			Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
-			IPropertyDescriptor[] res = new IPropertyDescriptor[]
+			final Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
+			final IPropertyDescriptor[] res = new IPropertyDescriptor[]
 			{ null };
-			Editable.EditorType editor = _editable.getInfo();
+			final Editable.EditorType editor = _editable.getInfo();
 			if (editor != null)
 			{
-				PropertyDescriptor[] properties = editor.getPropertyDescriptors();
+				final PropertyDescriptor[] properties = editor.getPropertyDescriptors();
 				// _myDescriptors = new IPropertyDescriptor[properties.length];
 
 				if (properties != null)
@@ -218,7 +218,7 @@ public class EditableWrapper implements IPropertySource
 						else
 						{
 							// ok, wrap it, and add it to our list.
-							IPropertyDescriptor newProp = new DebriefProperty(thisProp,
+							final IPropertyDescriptor newProp = new DebriefProperty(thisProp,
 									(Editable) editor.getData(), null);
 							list.add(newProp);
 						}
@@ -226,23 +226,23 @@ public class EditableWrapper implements IPropertySource
 				}
 
 				// hmm, are there any "supplemental" editors?
-				BeanInfo[] others = editor.getAdditionalBeanInfo();
+				final BeanInfo[] others = editor.getAdditionalBeanInfo();
 				if (others != null)
 				{
 					// adding more editors
 					for (int i = 0; i < others.length; i++)
 					{
-						BeanInfo bn = others[i];
+						final BeanInfo bn = others[i];
 						if (bn instanceof MWC.GUI.Editable.EditorType)
 						{
-							Editable.EditorType et = (Editable.EditorType) bn;
-							Editable obj = (Editable) et.getData();
-							PropertyDescriptor[] pds = et.getPropertyDescriptors();
+							final Editable.EditorType et = (Editable.EditorType) bn;
+							final Editable obj = (Editable) et.getData();
+							final PropertyDescriptor[] pds = et.getPropertyDescriptors();
 							if (pds != null)
 							{
 								for (int j = 0; j < pds.length; j++)
 								{
-									PropertyDescriptor pd = pds[j];
+									final PropertyDescriptor pd = pds[j];
 
 									// is this an 'expert' property which
 									// should not appear in here as an additional?
@@ -253,7 +253,7 @@ public class EditableWrapper implements IPropertySource
 									else
 									{
 										// ok, add this editor
-										IPropertyDescriptor newProp = new DebriefProperty(pd, obj,
+										final IPropertyDescriptor newProp = new DebriefProperty(pd, obj,
 												null);
 
 										list.add(newProp);
@@ -293,24 +293,24 @@ public class EditableWrapper implements IPropertySource
 		_myGridDescriptors = null;
 		if (_myGridDescriptors == null)
 		{
-			Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
-			IPropertyDescriptor[] res = new IPropertyDescriptor[]
+			final Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
+			final IPropertyDescriptor[] res = new IPropertyDescriptor[]
 			{ null };
 			if (_editable != null)
 			{
 				// is it griddable
 				if (_editable instanceof GriddableSeriesMarker)
 				{
-					GriddableSeriesMarker series = (GriddableSeriesMarker) _editable;
-					Editable.EditorType editor = _editable.getInfo();
-					Editable sample = series.getSampleGriddable();
+					final GriddableSeriesMarker series = (GriddableSeriesMarker) _editable;
+					final Editable.EditorType editor = _editable.getInfo();
+					final Editable sample = series.getSampleGriddable();
 					// just check we managed to get some sample data
 					if (sample == null)
 						return _myGridDescriptors;
 
-					Griddable grid = (Griddable) sample.getInfo();
+					final Griddable grid = (Griddable) sample.getInfo();
 
-					PropertyDescriptor[] properties = grid
+					final PropertyDescriptor[] properties = grid
 							.getGriddablePropertyDescriptors();
 
 					if (properties != null)
@@ -327,7 +327,7 @@ public class EditableWrapper implements IPropertySource
 							else
 							{
 								// ok, wrap it, and add it to our list.
-								IPropertyDescriptor newProp = new DebriefProperty(thisProp,
+								final IPropertyDescriptor newProp = new DebriefProperty(thisProp,
 										(Editable) sample, null);
 								list.add(newProp);
 							}
@@ -335,14 +335,14 @@ public class EditableWrapper implements IPropertySource
 					}
 					else
 					{
-						NonBeanPropertyDescriptor[] nonBean = grid
+						final NonBeanPropertyDescriptor[] nonBean = grid
 								.getNonBeanGriddableDescriptors();
 						if (nonBean != null)
 						{
 							for (int i = 0; i < nonBean.length; i++)
 							{
-								NonBeanPropertyDescriptor nb = nonBean[i];
-								IPropertyDescriptor newP = new DebriefNonBeanProperty(nb, null);
+								final NonBeanPropertyDescriptor nb = nonBean[i];
+								final IPropertyDescriptor newP = new DebriefNonBeanProperty(nb, null);
 								list.add(newP);
 							}
 						}
@@ -351,23 +351,23 @@ public class EditableWrapper implements IPropertySource
 					// hmm, are there any "supplemental" editors?
 					if (editor != null)
 					{
-						BeanInfo[] others = editor.getAdditionalBeanInfo();
+						final BeanInfo[] others = editor.getAdditionalBeanInfo();
 						if (others != null)
 						{
 							// adding more editors
 							for (int i = 0; i < others.length; i++)
 							{
-								BeanInfo bn = others[i];
+								final BeanInfo bn = others[i];
 								if (bn instanceof MWC.GUI.Editable.EditorType)
 								{
-									Editable.EditorType et = (Editable.EditorType) bn;
-									Editable obj = (Editable) et.getData();
-									PropertyDescriptor[] pds = et.getPropertyDescriptors();
+									final Editable.EditorType et = (Editable.EditorType) bn;
+									final Editable obj = (Editable) et.getData();
+									final PropertyDescriptor[] pds = et.getPropertyDescriptors();
 									if (pds != null)
 									{
 										for (int j = 0; j < pds.length; j++)
 										{
-											PropertyDescriptor pd = pds[j];
+											final PropertyDescriptor pd = pds[j];
 
 											// is this an 'expert' property which
 											// should not appear in here as an additional?
@@ -378,7 +378,7 @@ public class EditableWrapper implements IPropertySource
 											else
 											{
 												// ok, add this editor
-												IPropertyDescriptor newProp = new DebriefProperty(pd,
+												final IPropertyDescriptor newProp = new DebriefProperty(pd,
 														obj, null);
 
 												list.add(newProp);
@@ -410,7 +410,7 @@ public class EditableWrapper implements IPropertySource
 	 *          the string to look for
 	 * @return the matching property descriptor
 	 */
-	final private DebriefProperty getDescriptorFor(String id)
+	final private DebriefProperty getDescriptorFor(final String id)
 	{
 
 		DebriefProperty res = null;
@@ -418,7 +418,7 @@ public class EditableWrapper implements IPropertySource
 		// pass through our descriptors to find the matching one
 		for (int i = 0; i < _myDescriptors.length; i++)
 		{
-			IPropertyDescriptor thisDescriptor = _myDescriptors[i];
+			final IPropertyDescriptor thisDescriptor = _myDescriptors[i];
 			if (thisDescriptor.getDisplayName().equals(id))
 			{
 				res = (DebriefProperty) thisDescriptor;
@@ -435,15 +435,15 @@ public class EditableWrapper implements IPropertySource
 	 * org.eclipse.ui.views.properties.IPropertySource#getPropertyValue(java.lang
 	 * .Object)
 	 */
-	final public Object getPropertyValue(Object id)
+	final public Object getPropertyValue(final Object id)
 	{
 		Object res = null;
 
 		// convert the id back to a string
-		String thisName = (String) id;
+		final String thisName = (String) id;
 
 		// ok. now find the matching descriptor
-		DebriefProperty thisProp = getDescriptorFor(thisName);
+		final DebriefProperty thisProp = getDescriptorFor(thisName);
 
 		// get the value, if it worked
 		res = thisProp.getValue();
@@ -452,12 +452,12 @@ public class EditableWrapper implements IPropertySource
 		return res;
 	}
 
-	final public boolean isPropertySet(Object id)
+	final public boolean isPropertySet(final Object id)
 	{
 		return true;
 	}
 
-	final public void resetPropertyValue(Object id)
+	final public void resetPropertyValue(final Object id)
 	{
 		// TODO Auto-generated method stub
 
@@ -470,20 +470,20 @@ public class EditableWrapper implements IPropertySource
 	 * org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang
 	 * .Object, java.lang.Object)
 	 */
-	final public void setPropertyValue(Object id, Object value)
+	final public void setPropertyValue(final Object id, final Object value)
 	{
 
 		// convert the id back to a string
-		String thisName = (String) id;
+		final String thisName = (String) id;
 
 		// ok. now find the matching descriptor
-		DebriefProperty thisProp = getDescriptorFor(thisName);
+		final DebriefProperty thisProp = getDescriptorFor(thisName);
 
 		// and find the existing value
-		Object oldVal = thisProp.getValue();
+		final Object oldVal = thisProp.getValue();
 
 		// ok, create the action
-		PropertyChangeAction pca = new PropertyChangeAction(oldVal, value,
+		final PropertyChangeAction pca = new PropertyChangeAction(oldVal, value,
 				thisProp, getEditable().getName(), getLayers(), getTopLevelLayer());
 
 		// and sort it out with the history
@@ -501,17 +501,17 @@ public class EditableWrapper implements IPropertySource
 	}
 
 	@SuppressWarnings("rawtypes")
-	final protected static Class getPropertyClass(PropertyDescriptor thisProp)
+	final protected static Class getPropertyClass(final PropertyDescriptor thisProp)
 	{
 
 		Class res = null;
 		try
 		{
 			// find out the type of the editor
-			Method m = thisProp.getReadMethod();
+			final Method m = thisProp.getReadMethod();
 			res = m.getReturnType();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -543,7 +543,7 @@ public class EditableWrapper implements IPropertySource
 		 * the parent plottable for this item - the layer that we fire an update for
 		 * after a change
 		 */
-		private Layer _topLevelLayer;
+		private final Layer _topLevelLayer;
 
 		/**
 		 * setup the change details
@@ -561,9 +561,9 @@ public class EditableWrapper implements IPropertySource
 		 * @param wholeLayers
 		 *          the layers object we inform about the change
 		 */
-		public PropertyChangeAction(Object oldValue, Object newValue,
-				DebriefProperty subject, String name, Layers wholeLayers,
-				Layer topLevelLayer)
+		public PropertyChangeAction(final Object oldValue, final Object newValue,
+				final DebriefProperty subject, final String name, final Layers wholeLayers,
+				final Layer topLevelLayer)
 		{
 			super(name + " " + subject.getDisplayName());
 
@@ -576,7 +576,7 @@ public class EditableWrapper implements IPropertySource
 			_topLevelLayer = topLevelLayer;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// get the value, if it worked
@@ -594,12 +594,12 @@ public class EditableWrapper implements IPropertySource
 			if (_wholeLayers != null)
 			{
 				// right, we can fire a change if we like. have a look
-				Annotation[] ann = _property.getAnnotationsForSetter();
+				final Annotation[] ann = _property.getAnnotationsForSetter();
 				if ((ann != null) && (ann.length > 0))
 				{
 					for (int i = 0; i < ann.length; i++)
 					{
-						Annotation thisA = ann[i];
+						final Annotation thisA = ann[i];
 						if (thisA.annotationType().equals(FireExtended.class))
 						{
 							_wholeLayers.fireExtended(null, _topLevelLayer);
@@ -619,13 +619,13 @@ public class EditableWrapper implements IPropertySource
 			return Status.OK_STATUS;
 		}
 
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			return execute(monitor, info);
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// get the value, if it worked
@@ -636,12 +636,12 @@ public class EditableWrapper implements IPropertySource
 					_property.getDisplayName(), _newValue, _oldValue);
 
 			// right, we can fire a change if we like. have a look
-			Annotation[] ann = _property.getAnnotationsForSetter();
+			final Annotation[] ann = _property.getAnnotationsForSetter();
 			if ((ann != null) && (ann.length > 0))
 			{
 				for (int i = 0; i < ann.length; i++)
 				{
-					Annotation thisA = ann[i];
+					final Annotation thisA = ann[i];
 					if (thisA.annotationType().equals(FireExtended.class))
 					{
 						_wholeLayers.fireExtended(null, _topLevelLayer);
@@ -666,17 +666,17 @@ public class EditableWrapper implements IPropertySource
 	{
 		private final int _myIndex;
 
-		public OrderedEditableWrapper(Editable plottable, EditableWrapper parent,
-				Layers theLayers, int myIndex)
+		public OrderedEditableWrapper(final Editable plottable, final EditableWrapper parent,
+				final Layers theLayers, final int myIndex)
 		{
 			super(plottable, parent, theLayers);
 			_myIndex = myIndex;
 		}
 
-		public int compareTo(OrderedEditableWrapper o)
+		public int compareTo(final OrderedEditableWrapper o)
 		{
-			OrderedEditableWrapper other = (OrderedEditableWrapper) o;
-			int hisIndex = other._myIndex;
+			final OrderedEditableWrapper other = (OrderedEditableWrapper) o;
+			final int hisIndex = other._myIndex;
 			int res;
 
 			if (_myIndex < hisIndex)

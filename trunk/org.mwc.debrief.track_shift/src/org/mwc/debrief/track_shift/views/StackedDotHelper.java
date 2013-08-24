@@ -66,8 +66,8 @@ public final class StackedDotHelper
 	// MEMBER METHODS
 	// ////////////////////////////////////////////////
 
-	public TreeSet<Doublet> getDoublets(boolean onlyVis, boolean needBearing,
-			boolean needFrequency)
+	public TreeSet<Doublet> getDoublets(final boolean onlyVis, final boolean needBearing,
+			final boolean needFrequency)
 	{
 		return getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
 				needFrequency);
@@ -78,28 +78,28 @@ public final class StackedDotHelper
 	 * 
 	 */
 	public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
-			final TrackWrapper targetTrack, boolean onlyVis, boolean needBearing,
-			boolean needFrequency)
+			final TrackWrapper targetTrack, final boolean onlyVis, final boolean needBearing,
+			final boolean needFrequency)
 	{
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
 		// friendly fix-wrapper to save us repeatedly creating it
-		FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
+		final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
 				0.0, 0.0));
 
 		// loop through our sensor data
-		Enumeration<Editable> sensors = sensorHost.getSensors().elements();
+		final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
 		if (sensors != null)
 		{
 			while (sensors.hasMoreElements())
 			{
-				SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
+				final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
 				if (!onlyVis || (onlyVis && wrapper.getVisible()))
 				{
-					Enumeration<Editable> cuts = wrapper.elements();
+					final Enumeration<Editable> cuts = wrapper.elements();
 					while (cuts.hasMoreElements())
 					{
-						SensorContactWrapper scw = (SensorContactWrapper) cuts
+						final SensorContactWrapper scw = (SensorContactWrapper) cuts
 								.nextElement();
 						if (!onlyVis || (onlyVis && scw.getVisible()))
 						{
@@ -125,20 +125,20 @@ public final class StackedDotHelper
 								// right, get the track segment and fix nearest to
 								// this
 								// DTG
-								Enumeration<Editable> trkData = targetTrack.elements();
-								Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
+								final Enumeration<Editable> trkData = targetTrack.elements();
+								final Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
 
 								while (trkData.hasMoreElements())
 								{
 
-									Editable thisI = trkData.nextElement();
+									final Editable thisI = trkData.nextElement();
 									if (thisI instanceof SegmentList)
 									{
-										SegmentList thisList = (SegmentList) thisI;
-										Enumeration<Editable> theElements = thisList.elements();
+										final SegmentList thisList = (SegmentList) thisI;
+										final Enumeration<Editable> theElements = thisList.elements();
 										while (theElements.hasMoreElements())
 										{
-											TrackSegment ts = (TrackSegment) theElements
+											final TrackSegment ts = (TrackSegment) theElements
 													.nextElement();
 											_theSegments.add(ts);
 										}
@@ -146,19 +146,19 @@ public final class StackedDotHelper
 									}
 									if (thisI instanceof TrackSegment)
 									{
-										TrackSegment ts = (TrackSegment) thisI;
+										final TrackSegment ts = (TrackSegment) thisI;
 										_theSegments.add(ts);
 									}
 								}
 
 								if (_theSegments.size() > 0)
 								{
-									Iterator<TrackSegment> iter = _theSegments.iterator();
+									final Iterator<TrackSegment> iter = _theSegments.iterator();
 									while (iter.hasNext())
 									{
-										TrackSegment ts = iter.next();
+										final TrackSegment ts = iter.next();
 
-										TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(
+										final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(
 												ts.startDTG(), ts.endDTG());
 										if (validPeriod.contains(scw.getDTG()))
 										{
@@ -169,7 +169,7 @@ public final class StackedDotHelper
 											index.getFix().setTime(scw.getDTG());
 
 											// and find any matching items
-											SortedSet<Editable> items = ts.tailSet(index);
+											final SortedSet<Editable> items = ts.tailSet(index);
 											targetFix = (FixWrapper) items.first();
 										}
 
@@ -177,10 +177,10 @@ public final class StackedDotHelper
 								}
 							}
 
-							Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
 							if ((matches != null) && (matches.length > 0))
 							{
-								FixWrapper hostFix = (FixWrapper) matches[0];
+								final FixWrapper hostFix = (FixWrapper) matches[0];
 
 								final Doublet thisDub = new Doublet(scw, targetFix,
 										targetParent, hostFix);
@@ -228,10 +228,10 @@ public final class StackedDotHelper
 	 * @param currentOffset
 	 *          how far the current track has been dragged
 	 */
-	public void updateBearingData(XYPlot dotPlot, XYPlot linePlot,
-			TrackDataProvider tracks, boolean onlyVis, boolean showCourse,
-			boolean flipAxes, Composite holder, ErrorLogger logger,
-			boolean updateDoublets)
+	public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot,
+			final TrackDataProvider tracks, final boolean onlyVis, final boolean showCourse,
+			final boolean flipAxes, final Composite holder, final ErrorLogger logger,
+			final boolean updateDoublets)
 	{
 		// do we even have a primary track
 		if (_primaryTrack == null)
@@ -272,7 +272,7 @@ public final class StackedDotHelper
 		final TimeSeries osCourseValues = new TimeSeries("Course");
 
 		// ok, run through the points on the primary track
-		Iterator<Doublet> iter = _primaryDoublets.iterator();
+		final Iterator<Doublet> iter = _primaryDoublets.iterator();
 		while (iter.hasNext())
 		{
 			final Doublet thisD = iter.next();
@@ -370,14 +370,14 @@ public final class StackedDotHelper
 			return;
 		}
 
-		Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(startDTG,
+		final Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(startDTG,
 				endDTG);
 
 		// loop through th items
-		for (Iterator<Editable> iterator = hostFixes.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = hostFixes.iterator(); iterator.hasNext();)
 		{
-			Editable editable = (Editable) iterator.next();
-			FixWrapper fw = (FixWrapper) editable;
+			final Editable editable = (Editable) iterator.next();
+			final FixWrapper fw = (FixWrapper) editable;
 			final FixedMillisecond thisMilli = new FixedMillisecond(fw
 					.getDateTimeGroup().getDate().getTime());
 			double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
@@ -423,9 +423,9 @@ public final class StackedDotHelper
 	 * @param onlyVis
 	 * @param holder
 	 */
-	void initialise(TrackDataProvider tracks, boolean showError, boolean onlyVis,
-			Composite holder, ErrorLogger logger, String dataType, boolean needBrg,
-			boolean needFreq)
+	void initialise(final TrackDataProvider tracks, final boolean showError, final boolean onlyVis,
+			final Composite holder, final ErrorLogger logger, final String dataType, final boolean needBrg,
+			final boolean needFreq)
 	{
 
 		// have we been created?
@@ -523,8 +523,8 @@ public final class StackedDotHelper
 	 * go through the tracks, finding the relevant position on the other track.
 	 * 
 	 */
-	private void updateDoublets(boolean onlyVis, boolean needBearing,
-			boolean needFreq)
+	private void updateDoublets(final boolean onlyVis, final boolean needBearing,
+			final boolean needFreq)
 	{
 		// ok - we're now there
 		// so, do we have primary and secondary tracks?
@@ -548,9 +548,9 @@ public final class StackedDotHelper
 	 * @param currentOffset
 	 *          how far the current track has been dragged
 	 */
-	public void updateFrequencyData(XYPlot dotPlot, XYPlot linePlot,
-			TrackDataProvider tracks, boolean onlyVis, Composite holder,
-			ErrorLogger logger, boolean updateDoublets)
+	public void updateFrequencyData(final XYPlot dotPlot, final XYPlot linePlot,
+			final TrackDataProvider tracks, final boolean onlyVis, final Composite holder,
+			final ErrorLogger logger, final boolean updateDoublets)
 	{
 
 		// do we have anything?
@@ -589,7 +589,7 @@ public final class StackedDotHelper
 		final TimeSeries baseValues = new TimeSeries("Base");
 
 		// ok, run through the points on the primary track
-		Iterator<Doublet> iter = _primaryDoublets.iterator();
+		final Iterator<Doublet> iter = _primaryDoublets.iterator();
 		while (iter.hasNext())
 		{
 			final Doublet thisD = iter.next();

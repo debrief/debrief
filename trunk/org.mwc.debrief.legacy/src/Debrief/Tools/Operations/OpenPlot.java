@@ -20,9 +20,9 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
   // constructor
   ////////////////////////////////////////////////////////////
 
-  public OpenPlot(ToolParent theParent,
-                  java.awt.Image theImage,
-                  Application theApplication){
+  public OpenPlot(final ToolParent theParent,
+                  final java.awt.Image theImage,
+                  final Application theApplication){
     super(theParent, "Open Plot", "*.dpl", "Debrief Plot Files (*.dpl)");
 
     // store local data
@@ -30,7 +30,7 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
     // see if we have an old directory to retrieve
     if(_lastDirectory.equals(""))
     {
-      String val = getParent().getProperty("DPL_Directory");
+      final String val = getParent().getProperty("DPL_Directory");
       if(val != null)
         _lastDirectory = val;
     }
@@ -43,7 +43,7 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public final Action doOpen(String filename)
+  public final Action doOpen(final String filename)
   {
     Action res = null;
 
@@ -70,8 +70,8 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
     /** constructor - produced AFTER we have read in the data, but
      * before we have added it to the Application
      */
-    public OpenPlotAction(String theFileName,
-                        Application theApplication){
+    public OpenPlotAction(final String theFileName,
+                        final Application theApplication){
       _theApplication = theApplication;
       _theFileName = theFileName;
     }
@@ -102,11 +102,11 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
 
         // create new object input stream
         is = new FileInputStream(_theFileName);
-        InputStream bi = new BufferedInputStream(is);
-        ObjectInputStream ois = new ObjectInputStream(bi);
+        final InputStream bi = new BufferedInputStream(is);
+        final ObjectInputStream ois = new ObjectInputStream(bi);
 
         // read in the session
-        Session st = (Session)ois.readObject();
+        final Session st = (Session)ois.readObject();
         
         ois.close();
 
@@ -123,15 +123,15 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
         Debrief.GUI.Frames.Application.addToMru (_theFileName);
 
       }
-      catch(java.io.InvalidClassException e){
+      catch(final java.io.InvalidClassException e){
         // do nothing;
         MWC.GUI.Dialogs.DialogFactory.showMessage("Open Plot",
                                                   "Incompatible File Versions:  " + e.getMessage());
       }
-      catch(ClassNotFoundException e){
+      catch(final ClassNotFoundException e){
         MWC.Utilities.Errors.Trace.trace(e);
       }
-      catch(IOException e){
+      catch(final IOException e){
         // do nothing;
         MWC.Utilities.Errors.Trace.trace(e);
       }
@@ -142,7 +142,7 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
         	if(is != null)
             is.close();
         }
-        catch(java.io.IOException ex)
+        catch(final java.io.IOException ex)
         {
         MWC.Utilities.Errors.Trace.trace(ex, "Closing REPLAY file");
         }

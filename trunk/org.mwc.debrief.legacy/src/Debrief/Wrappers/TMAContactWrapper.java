@@ -234,7 +234,7 @@ public final class TMAContactWrapper extends
 			final double depthMetres, final Color color, final String label,
 			final EllipseShape theEllipse, final String theSymbol)
 	{
-		WorldLocation emptyLocation = null;
+		final WorldLocation emptyLocation = null;
 
 		_originalLocation = location;
 
@@ -296,8 +296,8 @@ public final class TMAContactWrapper extends
 	public TMAContactWrapper(final String solutionName, final String trackName,
 			final HiResDate DTG, final double rangeYds, final double bearingDegs,
 			final double courseDegs, final double speedKts, final double depthMetres,
-			final Color color, final String label, EllipseShape theEllipse,
-			String theSymbol)
+			final Color color, final String label, final EllipseShape theEllipse,
+			final String theSymbol)
 	{
 		this(solutionName, trackName, DTG, null, rangeYds, bearingDegs, courseDegs,
 				speedKts, depthMetres, color, label, theEllipse, theSymbol);
@@ -317,7 +317,7 @@ public final class TMAContactWrapper extends
 	public TMAContactWrapper(final String sensorName, final String trackName,
 			final HiResDate DTG, final WorldLocation location,
 			final double courseDegs, final double speedKts, final double depthMetres,
-			final Color color, final String label, EllipseShape theEllipse,
+			final Color color, final String label, final EllipseShape theEllipse,
 			final String theSymbol)
 	{
 		this(sensorName, trackName, DTG, location, 0d, 0d, courseDegs, speedKts,
@@ -356,7 +356,7 @@ public final class TMAContactWrapper extends
 				// check we have an offset
 				if (_targetRange != null)
 				{
-					WorldVector targetPosVector = new WorldVector(_targetBrgRads,
+					final WorldVector targetPosVector = new WorldVector(_targetBrgRads,
 							_targetRange, null);
 					// yes, add it to the origin
 					origin = wa.getLocation().add(targetPosVector);
@@ -484,7 +484,7 @@ public final class TMAContactWrapper extends
 	 * 
 	 * @param track
 	 */
-	public WorldLocation locateEllipseCentre(WatchableList track)
+	public WorldLocation locateEllipseCentre(final WatchableList track)
 	{
 		// do we need an origin
 		final WorldLocation centre = getCentre(track);
@@ -521,7 +521,7 @@ public final class TMAContactWrapper extends
 			return;
 		}
 
-		TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
+		final TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
 				track.getStartDTG(), track.getEndDTG());
 		if (!parentPeriod.contains(this.getTime()))
 		{
@@ -529,7 +529,7 @@ public final class TMAContactWrapper extends
 			return;
 		}
 
-		WorldLocation centre = locateEllipseCentre(track);
+		final WorldLocation centre = locateEllipseCentre(track);
 
 		// ok, we have the centre - convert it to a point
 		final Point centrePt = new Point(dest.toScreen(centre));
@@ -539,7 +539,7 @@ public final class TMAContactWrapper extends
 		final Point farEnd = dest.toScreen(theFarEnd);
 
 		// retrieve (& store) our color
-		Color myColor = getColor();
+		final Color myColor = getColor();
 
 		// set the colour
 		dest.setColor(myColor);
@@ -592,7 +592,7 @@ public final class TMAContactWrapper extends
 		if (getVectorVisible())
 		{
 			// ok, what's the stretch factor?
-			double _vectorStretch = 4;
+			final double _vectorStretch = 4;
 
 			// and now plot the vector
 			final double crse = getCourse();
@@ -770,7 +770,7 @@ public final class TMAContactWrapper extends
 	 * 
 	 * @param b
 	 */
-	public void setVectorVisible(boolean b)
+	public void setVectorVisible(final boolean b)
 	{
 		_showVector = b;
 	}
@@ -917,7 +917,7 @@ public final class TMAContactWrapper extends
 
 	public final String getMultiLineName()
 	{
-		int dataAvailable = (int) _theEllipse.getMaxima().getValueIn(
+		final int dataAvailable = (int) _theEllipse.getMaxima().getValueIn(
 				WorldDistance.YARDS)
 				+ (int) _theEllipse.getMinima().getValueIn(WorldDistance.YARDS);
 
@@ -925,10 +925,10 @@ public final class TMAContactWrapper extends
 
 		if (dataAvailable > 0)
 		{
-			String maxStr = ""
+			final String maxStr = ""
 					+ (int) _theEllipse.getMaxima().getValueIn(WorldDistance.YARDS)
 					+ "yds";
-			String minStr = ""
+			final String minStr = ""
 					+ (int) _theEllipse.getMinima().getValueIn(WorldDistance.YARDS)
 					+ "yds";
 			maxMinStr = "Max:" + maxStr + " Min:" + minStr;
@@ -938,7 +938,7 @@ public final class TMAContactWrapper extends
 			maxMinStr = "Ellipse not set";
 		}
 
-		String res = "<u>TMA Solution: "
+		final String res = "<u>TMA Solution: "
 				+ DebriefFormatDateTime.toStringHiRes(_DTG)
 				+ "</u>\n"
 				+ GeneralFormat.formatStatus(_targetCourseDegs, _targetSpeedKts,
@@ -1003,7 +1003,7 @@ public final class TMAContactWrapper extends
 		return _originalLocation;
 	}
 
-	public void setOrigin(WorldLocation loc)
+	public void setOrigin(final WorldLocation loc)
 	{
 		_originalLocation = loc;
 	}
@@ -1013,7 +1013,7 @@ public final class TMAContactWrapper extends
 		return _targetRange;
 	}
 
-	public void setRange(WorldDistance val)
+	public void setRange(final WorldDistance val)
 	{
 		_targetRange = val;
 	}
@@ -1028,12 +1028,12 @@ public final class TMAContactWrapper extends
 		return MWC.Algorithms.Conversions.Rads2Degs(getBearingRads());
 	}
 
-	public void setBearing(double val)
+	public void setBearing(final double val)
 	{
 		setBearingRads(MWC.Algorithms.Conversions.Degs2Rads(val));
 	}
 
-	public void setBearingRads(double valRads)
+	public void setBearingRads(final double valRads)
 	{
 		_targetBrgRads = valRads;
 	}
@@ -1053,7 +1053,7 @@ public final class TMAContactWrapper extends
 		return _theEllipse.getMaxima();
 	}
 
-	public void setMaxima(WorldDistance val)
+	public void setMaxima(final WorldDistance val)
 	{
 		_theEllipse.setMaxima(val);
 	}
@@ -1063,7 +1063,7 @@ public final class TMAContactWrapper extends
 		return _theEllipse.getMinima();
 	}
 
-	public void setMinima(WorldDistance val)
+	public void setMinima(final WorldDistance val)
 	{
 		_theEllipse.setMinima(val);
 	}
@@ -1073,7 +1073,7 @@ public final class TMAContactWrapper extends
 		return _theEllipse.getOrientation();
 	}
 
-	public void setOrientation(double val)
+	public void setOrientation(final double val)
 	{
 		_theEllipse.setOrientation(val);
 	}
@@ -1082,7 +1082,7 @@ public final class TMAContactWrapper extends
 	 * @param courseDegs
 	 *          the _targetCourseDegs to set
 	 */
-	public void setTargetCourse(double courseDegs)
+	public void setTargetCourse(final double courseDegs)
 	{
 		_targetCourseDegs = courseDegs;
 	}
@@ -1099,7 +1099,7 @@ public final class TMAContactWrapper extends
 	 * @param speedKts
 	 *          the _targetSpeedKts to set
 	 */
-	public void setTargetSpeed(WorldSpeed speedKts)
+	public void setTargetSpeed(final WorldSpeed speedKts)
 	{
 		_targetSpeedKts = speedKts.getValueIn(WorldSpeed.Kts);
 	}
@@ -1114,7 +1114,7 @@ public final class TMAContactWrapper extends
 		return _targetDepth;
 	}
 
-	public final void setDepth(double val)
+	public final void setDepth(final double val)
 	{
 		_targetDepth = val;
 	}
@@ -1155,7 +1155,7 @@ public final class TMAContactWrapper extends
 		return _originalLocation;
 	}
 
-	public void buildSetOrigin(WorldLocation origin)
+	public void buildSetOrigin(final WorldLocation origin)
 	{
 		// store the origin as an indication of whether this is an absolute or
 		// relative ellipse
@@ -1165,16 +1165,16 @@ public final class TMAContactWrapper extends
 		_theEllipse.setCentre(origin);
 	}
 
-	public void buildSetTargetState(double courseDegs, double speedKts,
-			double depth)
+	public void buildSetTargetState(final double courseDegs, final double speedKts,
+			final double depth)
 	{
 		_targetCourseDegs = courseDegs;
 		_targetSpeedKts = speedKts;
 		_targetDepth = depth;
 	}
 
-	public void buildSetEllipse(double orientationDegs, WorldDistance maxima,
-			WorldDistance minima)
+	public void buildSetEllipse(final double orientationDegs, final WorldDistance maxima,
+			final WorldDistance minima)
 	{
 		_theEllipse.setOrientation(orientationDegs);
 		_theEllipse.setMaxima(maxima);
@@ -1213,7 +1213,7 @@ public final class TMAContactWrapper extends
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("Label", "the label for this data item", EditorType.FORMAT),
 						prop("Visible", "whether this solution is visible",
@@ -1248,7 +1248,7 @@ public final class TMAContactWrapper extends
 						prop("Depth", "the depth of the solution", SOLUTION) };
 
 				// see if we need to add rng/brg or origin data
-				TMAContactWrapper tc = (TMAContactWrapper) getData();
+				final TMAContactWrapper tc = (TMAContactWrapper) getData();
 				final PropertyDescriptor[] res1;
 				if (tc.getOrigin() == null)
 				{
@@ -1266,14 +1266,14 @@ public final class TMAContactWrapper extends
 					res1 = res2;
 				}
 
-				PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
+				final PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
 						+ res1.length];
 				System.arraycopy(res, 0, res3, 0, res.length);
 				System.arraycopy(res1, 0, res3, res.length, res1.length);
 
 				return res3;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1315,8 +1315,8 @@ public final class TMAContactWrapper extends
 		{
 			// setup our object to be tested using an absolute location
 			final WorldLocation origin = new WorldLocation(2, 2, 0);
-			HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
-			EllipseShape theEllipse = new EllipseShape(origin, 45, new WorldDistance(
+			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
+			final EllipseShape theEllipse = new EllipseShape(origin, 45, new WorldDistance(
 					10, WorldDistance.DEGS), new WorldDistance(5, WorldDistance.DEGS));
 			theEllipse.setName("test ellipse");
 			final TMAContactWrapper ed_abs = new TMAContactWrapper("blank sensor",
@@ -1379,7 +1379,7 @@ public final class TMAContactWrapper extends
 
 		public final void testMyParams()
 		{
-			HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
+			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
 
 			// setup our object to be tested using an absolute location
 			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
@@ -1397,11 +1397,11 @@ public final class TMAContactWrapper extends
 		{
 			// setup our object to be tested using an absolute location
 			final WorldLocation origin = new WorldLocation(2, 2, 0);
-			EllipseShape es = new EllipseShape(null, 0, new WorldDistance(
+			final EllipseShape es = new EllipseShape(null, 0, new WorldDistance(
 					MWC.Algorithms.Conversions.Yds2Degs(100), WorldDistance.DEGS),
 					new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(50),
 							WorldDistance.DEGS));
-			HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
+			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
 			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
 					"blank track", theDTG, origin, 5d, 6d, 1d, Color.red, "my label", es,
 					"some symbol");
@@ -1411,15 +1411,15 @@ public final class TMAContactWrapper extends
 			 */
 
 			// ok, now test that we find the distance from the origin
-			double dist = MWC.Algorithms.Conversions.Degs2Yds(ed.rangeFrom(origin));
+			final double dist = MWC.Algorithms.Conversions.Degs2Yds(ed.rangeFrom(origin));
 			assertEquals("find nearest from origin", dist, 0d, 0.001);
 
 		}
 
 	}
 
-	public void buildSetVector(double theBearingDegs, WorldDistance theRange,
-			double theDepth)
+	public void buildSetVector(final double theBearingDegs, final WorldDistance theRange,
+			final double theDepth)
 	{
 		_targetBrgRads = MWC.Algorithms.Conversions.Degs2Rads(theBearingDegs);
 		_targetRange = theRange;

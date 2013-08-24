@@ -20,11 +20,11 @@ public class SetDescriptorValueOperation extends AbstractGridEditorOperation {
 
 	private final Object myNewValue;
 
-	public SetDescriptorValueOperation(OperationEnvironment environment, Object newValue) {
+	public SetDescriptorValueOperation(final OperationEnvironment environment, final Object newValue) {
 		this(environment, newValue, true);
 	}
 
-	public SetDescriptorValueOperation(OperationEnvironment environment, Object newValue, boolean fireRefresh) {
+	public SetDescriptorValueOperation(final OperationEnvironment environment, final Object newValue, final boolean fireRefresh) {
 		super(formatLabel(environment.getDescriptor()), environment);
 		myNewValue = adjustValue(environment, newValue);
 		myFireRefresh = fireRefresh;
@@ -42,15 +42,15 @@ public class SetDescriptorValueOperation extends AbstractGridEditorOperation {
 	}
 
 	@Override
-	protected EnvironmentState doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		TimeStampedDataItem subject = getOperationEnvironment().getSubject();
+	protected EnvironmentState doExecute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+		final TimeStampedDataItem subject = getOperationEnvironment().getSubject();
 		BeanUtil.setItemValue(subject, getOperationEnvironment().getDescriptor(), myNewValue);
-		EnvironmentState resultState = new ElementHasValueState(subject, getOperationEnvironment().getDescriptor());
+		final EnvironmentState resultState = new ElementHasValueState(subject, getOperationEnvironment().getDescriptor());
 		if (myFireRefresh) {
 			
 			
-			String setterName = BeanUtil.getSetterName(getOperationEnvironment().getDescriptor());
-			Method setter = BeanUtil.getSetter(subject, getOperationEnvironment().getDescriptor(), setterName);
+			final String setterName = BeanUtil.getSetterName(getOperationEnvironment().getDescriptor());
+			final Method setter = BeanUtil.getSetter(subject, getOperationEnvironment().getDescriptor(), setterName);
 
 			if (setter.isAnnotationPresent(FireReformatted.class))
 			{
@@ -63,9 +63,9 @@ public class SetDescriptorValueOperation extends AbstractGridEditorOperation {
 	}
 
 	@Override
-	protected void doUndo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		TimeStampedDataItem subject = getOperationEnvironment().getSubject();
-		Object oldValue = getStateBeforeFirstRun().getValue();
+	protected void doUndo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+		final TimeStampedDataItem subject = getOperationEnvironment().getSubject();
+		final Object oldValue = getStateBeforeFirstRun().getValue();
 		BeanUtil.setItemValue(subject, getOperationEnvironment().getDescriptor(), oldValue);
 		if (myFireRefresh) {
 			getOperationEnvironment().getSeries().fireModified(subject);
@@ -83,20 +83,20 @@ public class SetDescriptorValueOperation extends AbstractGridEditorOperation {
 
 		private final TimeStampedDataItem myItem;
 
-		public ElementHasValueState(OperationEnvironment context) {
+		public ElementHasValueState(final OperationEnvironment context) {
 			this(context.getSubject(), context.getDescriptor());
 		}
 
-		public ElementHasValueState(TimeStampedDataItem item, GriddableItemDescriptor descriptor) {
+		public ElementHasValueState(final TimeStampedDataItem item, final GriddableItemDescriptor descriptor) {
 			myItem = item;
 			myValue = BeanUtil.getItemValue(item, descriptor);
 		}
 
-		public boolean isCompatible(OperationEnvironment environment) {
+		public boolean isCompatible(final OperationEnvironment environment) {
 			return safeEquals(myValue, BeanUtil.getItemValue(environment.getSubject(), environment.getDescriptor()));
 		}
 
-		private boolean safeEquals(Object o1, Object o2) {
+		private boolean safeEquals(final Object o1, final Object o2) {
 			return o1 == null ? o2 == null : o1.equals(o2);
 		}
 
@@ -110,16 +110,16 @@ public class SetDescriptorValueOperation extends AbstractGridEditorOperation {
 
 	}
 
-	private static String formatLabel(GriddableItemDescriptor descriptor) {
+	private static String formatLabel(final GriddableItemDescriptor descriptor) {
 		return NLS.bind("Setting {0} value", descriptor == null ? "" : descriptor.getTitle());
 	}
 
-	private static Object adjustValue(OperationEnvironment environment, Object newValue) {
+	private static Object adjustValue(final OperationEnvironment environment, final Object newValue) {
 		if (ValueInUnits.class.isAssignableFrom(environment.getDescriptor().getType()) && newValue instanceof Number) {
-			ValueInUnits currentValue = BeanUtil.getItemValue(environment.getSubject(), environment.getDescriptor(), ValueInUnits.class);
+			final ValueInUnits currentValue = BeanUtil.getItemValue(environment.getSubject(), environment.getDescriptor(), ValueInUnits.class);
 			if (currentValue != null) {
-				ValueInUnits copy = currentValue.makeCopy();
-				UnitsSet.Unit chartUnit = copy.getUnitsSet().getMainUnit();
+				final ValueInUnits copy = currentValue.makeCopy();
+				final UnitsSet.Unit chartUnit = copy.getUnitsSet().getMainUnit();
 				copy.setValues(((Number) newValue).doubleValue(), chartUnit);
 				return copy;
 			}

@@ -20,15 +20,15 @@ public class NewContactWizard extends Wizard
 	private static final String PAGE_TITLE = "New sensor cut";
 	// SelectOffsetPage selectOffsetPage;
 	// EnterSolutionPage enterSolutionPage;
-	private HiResDate _tNow;
+	private final HiResDate _tNow;
 	final private TrackWrapper _track;
 	final private SensorWrapper _sensor;
 	private EnterDTGPage datePage;
 	private RangeBearingPage rngBearingPage;
 	private SelectColorPage colorPage;
 
-	public NewContactWizard(HiResDate tNow, TrackWrapper track,
-			SensorWrapper sensor)
+	public NewContactWizard(final HiResDate tNow, final TrackWrapper track,
+			final SensorWrapper sensor)
 	{
 		_tNow = tNow;
 		_track = track;
@@ -41,9 +41,9 @@ public class NewContactWizard extends Wizard
 		final String helpContext = "org.mwc.debrief.help.NewSensorContact";
 
 		// ok, provide an intro
-		String introMessage = "This wizard will lead you through creating a new cut\n"
+		final String introMessage = "This wizard will lead you through creating a new cut\n"
 				+ "for the selected sensor.";
-		MessageWizardPage introPage = new MessageWizardPage("introMessage",
+		final MessageWizardPage introPage = new MessageWizardPage("introMessage",
 				PAGE_TITLE, "Introduction", introMessage, imagePath);
 		addPage(introPage);
 
@@ -72,9 +72,9 @@ public class NewContactWizard extends Wizard
 				imagePath, helpContext);
 		addPage(colorPage);
 
-		String message = "The sensor cut will now be added to the specified sensor, \n"
+		final String message = "The sensor cut will now be added to the specified sensor, \n"
 				+ " you " + "can customise the cut further in the Properties window";
-		MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
+		final MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
 				PAGE_TITLE, "Steps complete", message, imagePath);
 		addPage(messagePage);
 
@@ -86,7 +86,7 @@ public class NewContactWizard extends Wizard
 	}
 
 	@Override
-	public IWizardPage getPage(String name)
+	public IWizardPage getPage(final String name)
 	{
 		return super.getPage(name);
 	}
@@ -108,10 +108,10 @@ public class NewContactWizard extends Wizard
 	 */
 	public SensorContactWrapper getContact()
 	{
-		SensorContactWrapper tw = new SensorContactWrapper();
+		final SensorContactWrapper tw = new SensorContactWrapper();
 
-		double brgDegs = rngBearingPage.getBearingDegs();
-		WorldDistance rng = rngBearingPage.getRange();
+		final double brgDegs = rngBearingPage.getBearingDegs();
+		final WorldDistance rng = rngBearingPage.getRange();
 
 		tw.setBearing(brgDegs);
 		if (rng != null)
@@ -127,7 +127,7 @@ public class NewContactWizard extends Wizard
 		tw.setSensor(_sensor);
 		tw.setDTG(datePage.getDate());
 		tw.setColor(colorPage.getColor());
-		String label = MWC.Utilities.TextFormatting.FormatRNDateTime.toString(_tNow
+		final String label = MWC.Utilities.TextFormatting.FormatRNDateTime.toString(_tNow
 				.getDate().getTime());
 		tw.setLabel(label);
 		return tw;

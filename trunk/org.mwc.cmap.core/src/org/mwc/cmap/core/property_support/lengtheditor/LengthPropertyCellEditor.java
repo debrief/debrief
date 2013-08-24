@@ -26,28 +26,28 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 
 	private Composite wrapperComposite;
 
-	public LengthPropertyCellEditor(Composite parent) {
+	public LengthPropertyCellEditor(final Composite parent) {
 		this(parent, SWT.BORDER);
 	}
 
-	public LengthPropertyCellEditor(Composite parent, int style) {
+	public LengthPropertyCellEditor(final Composite parent, final int style) {
 		super(parent, style);
 	}
 
 	@Override
-	protected void doSetValue(Object value) {
+	protected void doSetValue(final Object value) {
 		super.doSetValue(value);
 		populateComboBoxItems();
 	}
 
 	@Override
-	protected Control createControl(Composite parent) {
+	protected Control createControl(final Composite parent) {
 		wrapperComposite = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().spacing(0, 0).numColumns(2).equalWidth(true).applyTo(wrapperComposite);
 		wrapperComposite.setBackground(parent.getBackground());
 		wrapperComposite.setFont(parent.getFont());
 
-		Control textControl = super.createControl(wrapperComposite);
+		final Control textControl = super.createControl(wrapperComposite);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(textControl);
 		fixTextControl();
 
@@ -57,25 +57,25 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 
 		comboBox.addKeyListener(new KeyAdapter() {
 
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(final KeyEvent e) {
 				keyReleaseOccured(e);
 			}
 		});
 
 		comboBox.addSelectionListener(new SelectionAdapter() {
 
-			public void widgetDefaultSelected(SelectionEvent event) {
+			public void widgetDefaultSelected(final SelectionEvent event) {
 			}
 
-			public void widgetSelected(SelectionEvent event) {
-				int selection = comboBox.getSelectionIndex();
+			public void widgetSelected(final SelectionEvent event) {
+				final int selection = comboBox.getSelectionIndex();
 				text.setText(LengthsRegistry.getRegistry().getLengths().get(selection).toString());
 			}
 		});
 
-		TraverseListener traverseListener = new TraverseListener() {
+		final TraverseListener traverseListener = new TraverseListener() {
 
-			public void keyTraversed(TraverseEvent e) {
+			public void keyTraversed(final TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
 					e.doit = false;
 				}
@@ -86,7 +86,7 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 		new MultiControlFocusHandler(text, comboBox) {
 
 			@Override
-			protected void focusReallyLost(FocusEvent e) {
+			protected void focusReallyLost(final FocusEvent e) {
 				LengthPropertyCellEditor.this.focusLost();
 			}
 		};
@@ -115,7 +115,7 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 	}
 
 	@Override
-	protected void valueChanged(boolean oldValidState, boolean newValidState) {
+	protected void valueChanged(final boolean oldValidState, final boolean newValidState) {
 		super.valueChanged(oldValidState, newValidState);
 		initComboValue();
 	}
@@ -125,13 +125,13 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 			return;
 		}
 		try {
-			int i = findValue();
+			final int i = findValue();
 			if (i == -1) {
 				setSelectMessageToCombo();
 			} else if (comboBox.getSelectionIndex() != i) {
 				comboBox.select(i);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			setSelectMessageToCombo();
 		}
 	}
@@ -157,10 +157,10 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 		{
 			val = val.replace("m"," ");
 		}
-		Double value = new Double(val);
-		List<Double> list = LengthsRegistry.getRegistry().getLengths();
+		final Double value = new Double(val);
+		final List<Double> list = LengthsRegistry.getRegistry().getLengths();
 		for (int i = 0; i < list.size(); i++) {
-			Double cur = list.get(i);
+			final Double cur = list.get(i);
 			if (Math.abs(cur - value) < delta) {
 				return i;
 			}
@@ -169,16 +169,16 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 	}
 
 	private void populateComboBoxItems() {
-		LengthsRegistry registry = LengthsRegistry.getRegistry();
-		int itemsCount = registry.getItemsCount();
+		final LengthsRegistry registry = LengthsRegistry.getRegistry();
+		final int itemsCount = registry.getItemsCount();
 		comboBox.removeAll();
 		if (itemsCount == 0) {
 			setNotLoadedMessageToCombo();
 			return;
 		}
 		for (int i = 0; i < itemsCount; i++) {
-			Double value = registry.getLengths().get(i);
-			String s = registry.getNames().get(i) + "(" + value + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+			final Double value = registry.getLengths().get(i);
+			final String s = registry.getNames().get(i) + "(" + value + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 			comboBox.add(s);
 		}
 	}

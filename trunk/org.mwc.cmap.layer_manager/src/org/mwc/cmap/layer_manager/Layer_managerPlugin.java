@@ -31,7 +31,7 @@ public class Layer_managerPlugin extends AbstractUIPlugin
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception
+	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
 		// tell the right-click object that we're ready & able to generate plots at will
@@ -40,7 +40,7 @@ public class Layer_managerPlugin extends AbstractUIPlugin
 			// also fire up the xy-plotter item
 			RightClickSupport.addRightClickGenerator(new org.mwc.cmap.xyplot.XYPlotGeneratorButtons());
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			System.out.println("still can't find xy-plot");
 		}
@@ -50,7 +50,7 @@ public class Layer_managerPlugin extends AbstractUIPlugin
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception
+	public void stop(final BundleContext context) throws Exception
 	{
 		super.stop(context);
 		plugin = null;
@@ -69,14 +69,14 @@ public class Layer_managerPlugin extends AbstractUIPlugin
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
 	 */
-	public static String getResourceString(String key)
+	public static String getResourceString(final String key)
 	{
-		ResourceBundle bundle = Layer_managerPlugin.getDefault().getResourceBundle();
+		final ResourceBundle bundle = Layer_managerPlugin.getDefault().getResourceBundle();
 		try
 		{
 			return (bundle != null) ? bundle.getString(key) : key;
 		}
-		catch (MissingResourceException e)
+		catch (final MissingResourceException e)
 		{
 			return key;
 		}
@@ -93,7 +93,7 @@ public class Layer_managerPlugin extends AbstractUIPlugin
 				resourceBundle = ResourceBundle
 						.getBundle("org.mwc.cmap.layer_manager.Layer_managerPluginResources");
 		}
-		catch (MissingResourceException x)
+		catch (final MissingResourceException x)
 		{
 			resourceBundle = null;
 		}
@@ -108,7 +108,7 @@ public class Layer_managerPlugin extends AbstractUIPlugin
 	 *          the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path)
+	public static ImageDescriptor getImageDescriptor(final String path)
 	{
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.layer_manager", path);
 	}

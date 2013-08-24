@@ -21,7 +21,7 @@ public class VectorShape extends LineShape
 	private EditorType _myEditorLocal;
 	private double _bearingDegs = 45;
 
-	public VectorShape(WorldLocation start, double bearing, WorldDistance distance)
+	public VectorShape(final WorldLocation start, final double bearing, final WorldDistance distance)
 	{
 		super(start, new WorldLocation(0d, 0d, 0d), "Vector");
 		_bearingDegs = bearing;
@@ -34,14 +34,14 @@ public class VectorShape extends LineShape
 		return _bearingDegs;
 	}
 
-	public void setBearing(Double _bearing)
+	public void setBearing(final Double _bearing)
 	{
 		this._bearingDegs = _bearing;
 		calculateEnd();
 	}
 
 	@Override
-	public void shift(WorldLocation feature, WorldVector vector)
+	public void shift(final WorldLocation feature, final WorldVector vector)
 	{
 		// ok, has the start point been dragged?
 		if (feature.equals(_start))
@@ -59,7 +59,7 @@ public class VectorShape extends LineShape
 			feature.addToMe(vector);
 
 			// sort out the new vector back to the start
-			WorldVector newV = feature.subtract(_start);
+			final WorldVector newV = feature.subtract(_start);
 
 			// and store the components
 			_bearingDegs = Conversions.Rads2Degs(newV.getBearing());
@@ -71,7 +71,7 @@ public class VectorShape extends LineShape
 
 	private void calculateEnd()
 	{
-		WorldVector _bearingVector = new WorldVector(
+		final WorldVector _bearingVector = new WorldVector(
 				MWC.Algorithms.Conversions.Degs2Rads(_bearingDegs), _distance,
 				new WorldDistance(0, 0));
 		_end = _start.add(_bearingVector);
@@ -84,28 +84,28 @@ public class VectorShape extends LineShape
 		return _distance;
 	}
 
-	public void setDistance(WorldDistance _distance)
+	public void setDistance(final WorldDistance _distance)
 	{
 		this._distance = _distance;
 		calculateEnd();
 	}
 
 	@Override
-	public void setLine_Start(WorldLocation loc)
+	public void setLine_Start(final WorldLocation loc)
 	{
 		super.setLine_Start(loc);
 		calculateEnd();
 	}
 
 	@Override
-	public void setLineEnd(WorldLocation loc)
+	public void setLineEnd(final WorldLocation loc)
 	{
 		// note: we make the line end an editable property so that users can switch
 		// between relative (vector) & absolute values
 		super.setLineEnd(loc);
 
 		// ok, sort out the offset
-		WorldVector vec = super._end.subtract(super._start);
+		final WorldVector vec = super._end.subtract(super._start);
 		_bearingDegs = Conversions.Rads2Degs(vec.getBearing());
 		_distance = new WorldDistance(vec.getRange(), WorldDistance.DEGS);
 		calculateEnd();
@@ -123,7 +123,7 @@ public class VectorShape extends LineShape
 	public class VectorInfo extends Editable.EditorType
 	{
 
-		public VectorInfo(LineShape data, String theName)
+		public VectorInfo(final LineShape data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -132,7 +132,7 @@ public class VectorShape extends LineShape
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("Line_Start", "the start of the line", SPATIAL),
 						prop("Bearing", "the bearing for the vector", SPATIAL),
@@ -144,7 +144,7 @@ public class VectorShape extends LineShape
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}

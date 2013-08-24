@@ -77,24 +77,24 @@ abstract public class Rubberband implements MouseListener, MouseMotionListener, 
 	public Rubberband() {
 	}
   
-	public Rubberband(Component c) {
+	public Rubberband(final Component c) {
 		setComponent(c);
 	}
   
-	public void setActive(boolean b) {
+	public void setActive(final boolean b) {
 		active = b;
 	}
   
   
   
-	public void setComponent(Component c) { 
+	public void setComponent(final Component c) { 
 		component = c; 
 
 		component.addMouseListener(this);
 		component.addMouseMotionListener(this);
 	}
   
-  public void removeFromComponent(Component c){
+  public void removeFromComponent(final Component c){
     c.removeMouseListener(this);
     c.removeMouseMotionListener(this);
   }
@@ -105,7 +105,7 @@ abstract public class Rubberband implements MouseListener, MouseMotionListener, 
 	public Point   getLast     () { return lastPt;      }
 	public Point   getEnd      () { return endPt;       }
 
-	public void anchor(Point p) {
+	public void anchor(final Point p) {
     firstStretch = true;
     anchorPt.x = p.x;
     anchorPt.y = p.y;
@@ -114,13 +114,13 @@ abstract public class Rubberband implements MouseListener, MouseMotionListener, 
     stretchedPt.y = lastPt.y = anchorPt.y;
   }
   
-  public void stretch(Point p) {
+  public void stretch(final Point p) {
     lastPt.x      = stretchedPt.x;
     lastPt.y      = stretchedPt.y;
     stretchedPt.x = p.x;
     stretchedPt.y = p.y;
 
-    Graphics g = component.getGraphics();
+    final Graphics g = component.getGraphics();
     if(g != null) {
 	    try {
         setMyColor(g, Color.white);
@@ -138,11 +138,11 @@ abstract public class Rubberband implements MouseListener, MouseMotionListener, 
     }
   }
     
-  public void end(Point p) {
+  public void end(final Point p) {
     lastPt.x = endPt.x = p.x;
     lastPt.y = endPt.y = p.y;
 
-    Graphics g = component.getGraphics();
+    final Graphics g = component.getGraphics();
     if(g != null) {
 		  try {
         setMyColor(g, Color.white);
@@ -154,7 +154,7 @@ abstract public class Rubberband implements MouseListener, MouseMotionListener, 
     }
   }
     
-  protected void setMyColor(Graphics g, Color col){
+  protected void setMyColor(final Graphics g, final Color col){
     if(col != null){
       g.setXORMode(col);
     }
@@ -180,41 +180,41 @@ abstract public class Rubberband implements MouseListener, MouseMotionListener, 
                 Math.abs(lastPt.y - anchorPt.y));
   }
 
-  public void mouseClicked(MouseEvent p1)
+  public void mouseClicked(final MouseEvent p1)
   {
 	  if(isActive())
 					end(p1.getPoint());
   }
 
-  public void mousePressed(MouseEvent p1)
+  public void mousePressed(final MouseEvent p1)
   {
 		if(isActive())
 			anchor(p1.getPoint());
   }
 
-  public void mouseReleased(MouseEvent p1)
+  public void mouseReleased(final MouseEvent p1)
   {
 		if(isActive())
 			end(p1.getPoint());
   }
 
-  public void mouseEntered(MouseEvent p1)
+  public void mouseEntered(final MouseEvent p1)
   {
     // do nothing
   }
 
-  public void mouseExited(MouseEvent p1)
+  public void mouseExited(final MouseEvent p1)
   {
     // do nothing
   }
 
-  public void mouseDragged(MouseEvent p1)
+  public void mouseDragged(final MouseEvent p1)
   {
 		if(isActive())
 			stretch(p1.getPoint());
   }
 
-  public void mouseMoved(MouseEvent p1)
+  public void mouseMoved(final MouseEvent p1)
   {
      // do nothing
   }

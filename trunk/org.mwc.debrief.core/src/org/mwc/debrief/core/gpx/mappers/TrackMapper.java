@@ -54,29 +54,29 @@ public class TrackMapper implements DebriefJaxbContextAware
 	/**
 	 * @category gpx11
 	 */
-	public List<TrackWrapper> fromGpx(GpxType gpx)
+	public List<TrackWrapper> fromGpx(final GpxType gpx)
 	{
-		List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
+		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
 
-		for (TrkType gpxTrack : gpx.getTrk())
+		for (final TrkType gpxTrack : gpx.getTrk())
 		{
-			TrackWrapper track = new TrackWrapper();
+			final TrackWrapper track = new TrackWrapper();
 
 			mapGpxTrack(gpxTrack, track);
 
-			for (TrksegType gpxSegment : gpxTrack.getTrkseg())
+			for (final TrksegType gpxSegment : gpxTrack.getTrkseg())
 			{
-				TrackSegment segment = segmentMapper.fromGpx(gpxSegment);
+				final TrackSegment segment = segmentMapper.fromGpx(gpxSegment);
 				track.add(segment);
 
 				// keep track of the previous fix, in case we wish to calculate course
 				// and speed
 				FixWrapper previousFix = null;
 
-				for (WptType waypointType : gpxSegment.getTrkpt())
+				for (final WptType waypointType : gpxSegment.getTrkpt())
 				{
 					fixMapper.setJaxbContext(debriefContext);
-					FixWrapper fix = fixMapper.fromGpx(waypointType, previousFix);
+					final FixWrapper fix = fixMapper.fromGpx(waypointType, previousFix);
 					segment.add(fix);
 
 					previousFix = fix;
@@ -90,29 +90,29 @@ public class TrackMapper implements DebriefJaxbContextAware
 	/**
 	 * @category gpx10
 	 */
-	public List<TrackWrapper> fromGpx10(Gpx gpx)
+	public List<TrackWrapper> fromGpx10(final Gpx gpx)
 	{
-		List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
+		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
 
-		for (Gpx.Trk gpxTrack : gpx.getTrk())
+		for (final Gpx.Trk gpxTrack : gpx.getTrk())
 		{
-			TrackWrapper track = new TrackWrapper();
+			final TrackWrapper track = new TrackWrapper();
 
 			mapGpx10Track(gpxTrack, track);
 
-			for (Gpx.Trk.Trkseg gpxSegment : gpxTrack.getTrkseg())
+			for (final Gpx.Trk.Trkseg gpxSegment : gpxTrack.getTrkseg())
 			{
-				TrackSegment segment = segmentMapper.fromGpx10(gpxSegment);
+				final TrackSegment segment = segmentMapper.fromGpx10(gpxSegment);
 				track.add(segment);
 
 				// keep track of the previous fix, in case we wish to calculate course
 				// and speed
 				FixWrapper previousFix = null;
 
-				for (Gpx.Trk.Trkseg.Trkpt waypointType : gpxSegment.getTrkpt())
+				for (final Gpx.Trk.Trkseg.Trkpt waypointType : gpxSegment.getTrkpt())
 				{
 					fixMapper.setJaxbContext(debriefContext);
-					FixWrapper fix = fixMapper.fromGpx10(waypointType, previousFix);
+					final FixWrapper fix = fixMapper.fromGpx10(waypointType, previousFix);
 					segment.add(fix);
 
 					previousFix = fix;
@@ -126,27 +126,27 @@ public class TrackMapper implements DebriefJaxbContextAware
 	/**
 	 * @category gpx11
 	 */
-	private void mapGpxTrack(TrkType gpxTrack, TrackWrapper track)
+	private void mapGpxTrack(final TrkType gpxTrack, final TrackWrapper track)
 	{
 		track.setName(gpxTrack.getName());
 
 		try
 		{
-			ExtensionsType extensions = gpxTrack.getExtensions();
+			final ExtensionsType extensions = gpxTrack.getExtensions();
 			if (extensions != null)
 			{
-				List<Object> any = extensions.getAny();
+				final List<Object> any = extensions.getAny();
 
-				Unmarshaller unmarshaller = debriefContext.createUnmarshaller();
-				Object object = unmarshaller.unmarshal((Node) any.get(0));
-				TrackExtensionType trackExtension = (TrackExtensionType) JAXBIntrospector.getValue(object);
+				final Unmarshaller unmarshaller = debriefContext.createUnmarshaller();
+				final Object object = unmarshaller.unmarshal((Node) any.get(0));
+				final TrackExtensionType trackExtension = (TrackExtensionType) JAXBIntrospector.getValue(object);
 
 				track.setNameAtStart(trackExtension.isNameAtStart());
 				track.setLineThickness(trackExtension.getLineThickness().intValue());
 				track.setInterpolatePoints(trackExtension.isInterpolatePoints());
 				track.setLinkPositions(trackExtension.isLinkPositions());
 				track.setLineStyle(trackExtension.getLineStyle().intValue());
-				LocationPropertyEditor nameLocationConverter = new LocationPropertyEditor();
+				final LocationPropertyEditor nameLocationConverter = new LocationPropertyEditor();
 				nameLocationConverter.setAsText(trackExtension.getNameLocation());
 				track.setNameLocation(((Integer) nameLocationConverter.getValue()).intValue());
 				track.getSensors().setVisible(trackExtension.isSensorsVisible());
@@ -159,7 +159,7 @@ public class TrackMapper implements DebriefJaxbContextAware
 				track.setSymbolType(trackExtension.getSymbol());
 			}
 		}
-		catch (JAXBException e)
+		catch (final JAXBException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", e);
 		}
@@ -168,24 +168,24 @@ public class TrackMapper implements DebriefJaxbContextAware
 	/**
 	 * @category gpx10
 	 */
-	private void mapGpx10Track(Trk gpxTrack, TrackWrapper track)
+	private void mapGpx10Track(final Trk gpxTrack, final TrackWrapper track)
 	{
 		track.setName(gpxTrack.getName());
 		// Ignore handling of debrief extensions as they are not required for now
 	}
 
-	public List<Trk> toGpx10(List<TrackWrapper> tracks)
+	public List<Trk> toGpx10(final List<TrackWrapper> tracks)
 	{
-		List<Trk> gpxTracks = new ArrayList<Trk>(tracks.size());
-		for (TrackWrapper track : tracks)
+		final List<Trk> gpxTracks = new ArrayList<Trk>(tracks.size());
+		for (final TrackWrapper track : tracks)
 		{
-			Trk gpxTrack = GPX_1_0_OBJ_FACTORY.createGpxTrk();
+			final Trk gpxTrack = GPX_1_0_OBJ_FACTORY.createGpxTrk();
 			gpxTrack.setName(track.getName());
 
-			Enumeration<Editable> segs = track.getSegments().elements();
+			final Enumeration<Editable> segs = track.getSegments().elements();
 			while (segs.hasMoreElements())
 			{
-				Editable nextElement = segs.nextElement();
+				final Editable nextElement = segs.nextElement();
 
 				if (nextElement instanceof TrackSegment)
 				{
@@ -204,10 +204,10 @@ public class TrackMapper implements DebriefJaxbContextAware
 	/**
 	 * @category gpx10
 	 */
-	private void exportSegment(Trk gpxTrack, Editable nextElement)
+	private void exportSegment(final Trk gpxTrack, final Editable nextElement)
 	{
-		TrackSegment seg = (TrackSegment) nextElement;
-		Trkseg gpxSeg = GPX_1_0_OBJ_FACTORY.createGpxTrkTrkseg();
+		final TrackSegment seg = (TrackSegment) nextElement;
+		final Trkseg gpxSeg = GPX_1_0_OBJ_FACTORY.createGpxTrkTrkseg();
 		gpxTrack.getTrkseg().add(gpxSeg);
 		exportFixes(seg, gpxSeg);
 	}
@@ -215,18 +215,18 @@ public class TrackMapper implements DebriefJaxbContextAware
 	/**
 	 * @category gpx10
 	 */
-	private void exportFixes(TrackSegment seg, Trkseg gpxSeg)
+	private void exportFixes(final TrackSegment seg, final Trkseg gpxSeg)
 	{
-		Collection<Editable> pts = seg.getData();
-		for (Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
+		final Collection<Editable> pts = seg.getData();
+		for (final Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
 		{
-			FixWrapper fix = (FixWrapper) iterator.next();
+			final FixWrapper fix = (FixWrapper) iterator.next();
 			gpxSeg.getTrkpt().add(fixMapper.toGpx10(fix));
 		}
 	}
 
 	@Override
-	public void setJaxbContext(JAXBContext ctx)
+	public void setJaxbContext(final JAXBContext ctx)
 	{
 		debriefContext = ctx;
 	}

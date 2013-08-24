@@ -46,15 +46,15 @@ public class TifLoader extends IPlotLoader.BaseLoader
 			{
 
 				// hmm, is there anything in the file?
-				int numAvailable = inputStream.available();
+				final int numAvailable = inputStream.available();
 				if (numAvailable > 0)
 				{
 
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IProgressService ps = wb.getProgressService();
+					final IWorkbench wb = PlatformUI.getWorkbench();
+					final IProgressService ps = wb.getProgressService();
 					ps.busyCursorWhile(new IRunnableWithProgress()
 					{
-						public void run(IProgressMonitor pm)
+						public void run(final IProgressMonitor pm)
 						{
 							// right, better suspend the LayerManager extended updates from
 							// firing
@@ -69,7 +69,7 @@ public class TifLoader extends IPlotLoader.BaseLoader
 								if(fileName.endsWith(".tif"))
 								{
 									// ok - get loading going
-									ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE, fileName, fileName);
+									final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE, fileName, fileName);
 									theLayers.addThisLayer(dl);
 								}
 								
@@ -82,7 +82,7 @@ public class TifLoader extends IPlotLoader.BaseLoader
 								DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
 							}
-							catch (RuntimeException e)
+							catch (final RuntimeException e)
 							{
 								DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
 										+ fileName, e);
@@ -103,17 +103,17 @@ public class TifLoader extends IPlotLoader.BaseLoader
 				}
 
 			}
-			catch (InvocationTargetException e)
+			catch (final InvocationTargetException e)
 			{
 				DebriefPlugin.logError(Status.ERROR, "Problem loading tif:"
 						+ fileName, e);
 			}
-			catch (InterruptedException e)
+			catch (final InterruptedException e)
 			{
 				DebriefPlugin.logError(Status.ERROR, "Problem loading tif:"
 						+ fileName, e);
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				DebriefPlugin.logError(Status.ERROR, "Problem loading tif:"
 						+ fileName, e);

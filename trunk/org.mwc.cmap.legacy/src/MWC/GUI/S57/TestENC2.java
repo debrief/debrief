@@ -51,7 +51,7 @@ public class TestENC2
 
 	protected String pszFilename = null;
 
-	public TestENC2(String filename, boolean fspt_repeating)
+	public TestENC2(final String filename, final boolean fspt_repeating)
 	{
 		pszFilename = filename;
 		bFSPTHack = fspt_repeating;
@@ -70,7 +70,7 @@ public class TestENC2
 
 			if (bFSPTHack)
 			{
-				DDFFieldDefinition poFSPT = oModule.findFieldDefn("FSPT");
+				final DDFFieldDefinition poFSPT = oModule.findFieldDefn("FSPT");
 
 				if (poFSPT == null)
 					Debug.error("View8211: unable to find FSPT field to set repeating flag.");
@@ -95,17 +95,17 @@ public class TestENC2
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
-				Iterator<DDFField> it = poRecord.iterator();
+				final Iterator<DDFField> it = poRecord.iterator();
 				while (it.hasNext())
 				{
-					DDFField field = (DDFField) it.next();
+					final DDFField field = (DDFField) it.next();
 					viewRecordField(field);
 				}
 
 			}
 
 		}
-		catch (IOException ioe)
+		catch (final IOException ioe)
 		{
 			Debug.error(ioe.getMessage());
 			ioe.printStackTrace();
@@ -118,9 +118,9 @@ public class TestENC2
 	 * @param poField
 	 * @param poFieldDefn
 	 */
-	private void extractPositionField(DDFField poField, DDFFieldDefinition poFieldDefn)
+	private void extractPositionField(final DDFField poField, final DDFFieldDefinition poFieldDefn)
 	{
-		Vector<WorldLocation> thePositions = new Vector<WorldLocation>(0, 1);
+		final Vector<WorldLocation> thePositions = new Vector<WorldLocation>(0, 1);
 
 		// Get pointer to this fields raw data. We will move through
 		// it consuming data as we report subfield values.
@@ -134,7 +134,7 @@ public class TestENC2
 		/* -------------------------------------------------------- */
 		for (int iRepeat = 0; iRepeat < poField.getRepeatCount(); iRepeat++)
 		{
-			WorldLocation myVal = new WorldLocation(0, 0, 0);
+			final WorldLocation myVal = new WorldLocation(0, 0, 0);
 
 			/* -------------------------------------------------------- */
 			/* Loop over all the subfields of this field, advancing */
@@ -142,10 +142,10 @@ public class TestENC2
 			/* -------------------------------------------------------- */
 			for (int iSF = 0; iSF < poFieldDefn.getSubfieldCount(); iSF++)
 			{
-				DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
-				int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
+				final DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
+				final int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
 				nBytesRemaining -= nBytesConsumed;
-				byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
+				final byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
 				System.arraycopy(pachFieldData, nBytesConsumed, tempData, 0, tempData.length);
 				pachFieldData = tempData;
 			}
@@ -159,9 +159,9 @@ public class TestENC2
 	/**
 	 * Dump the contents of a field instance in a record.
 	 */
-	protected void viewRecordField(DDFField poField)
+	protected void viewRecordField(final DDFField poField)
 	{
-		DDFFieldDefinition poFieldDefn = poField.getFieldDefn();
+		final DDFFieldDefinition poFieldDefn = poField.getFieldDefn();
 
 		// Report general information about the field.
 		doo(" Field " + poFieldDefn.getName() + ": "
@@ -197,10 +197,10 @@ public class TestENC2
 				/* -------------------------------------------------------- */
 				for (int iSF = 0; iSF < poFieldDefn.getSubfieldCount(); iSF++)
 				{
-					DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
-					int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
+					final DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
+					final int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
 					nBytesRemaining -= nBytesConsumed;
-					byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
+					final byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
 					System.arraycopy(pachFieldData, nBytesConsumed, tempData, 0, tempData.length);
 					pachFieldData = tempData;
 				}
@@ -208,13 +208,13 @@ public class TestENC2
 		}
 	}
 
-	protected int viewSubfield(DDFSubfieldDefinition poSFDefn, byte[] pachFieldData,
-			int nBytesRemaining)
+	protected int viewSubfield(final DDFSubfieldDefinition poSFDefn, final byte[] pachFieldData,
+			final int nBytesRemaining)
 	{
 
-		MutableInt nBytesConsumed = new MutableInt();
+		final MutableInt nBytesConsumed = new MutableInt();
 
-		DDFDataType ddfdt = poSFDefn.getType();
+		final DDFDataType ddfdt = poSFDefn.getType();
 
 		if (ddfdt == DDFDataType.DDFInt)
 		{
@@ -243,7 +243,7 @@ public class TestENC2
 				if (_rcnm == 8218)
 					_rcnm = 130;
 
-				int _rcid = str.charAt(1) + str.charAt(2) * 256 + str.charAt(3) * 256 * 256
+				final int _rcid = str.charAt(1) + str.charAt(2) * 256 + str.charAt(3) * 256 * 256
 						+ str.charAt(4) * 256 * 256 * 256;
 				
 				str += " nm:" + _rcnm + " id:" + _rcid;
@@ -293,7 +293,7 @@ public class TestENC2
 		{
 			_so.close();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -302,7 +302,7 @@ public class TestENC2
 
 	private static FileWriter _so = null;
 
-	private static void doo(String val)
+	private static void doo(final String val)
 	{
 		try
 		{
@@ -310,7 +310,7 @@ public class TestENC2
 				_so = new FileWriter("e:\\dev\\s57\\s57_listing3.txt");
 			_so.write(val  +System.getProperty("line.separator") );
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}

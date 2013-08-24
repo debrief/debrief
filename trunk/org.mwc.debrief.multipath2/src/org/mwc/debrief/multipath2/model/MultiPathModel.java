@@ -34,7 +34,7 @@ public class MultiPathModel
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public CalculationException(String msg)
+		public CalculationException(final String msg)
 		{
 			super(msg);
 		}
@@ -48,7 +48,7 @@ public class MultiPathModel
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public DataFormatException(String msg)
+		public DataFormatException(final String msg)
 		{
 			super(msg);
 		}
@@ -72,21 +72,21 @@ public class MultiPathModel
 	 * @param deltas
 	 * @return a time series of measured time delays
 	 */
-	public TimeSeries getMeasuredProfileFor(TimeDeltas deltas)
+	public TimeSeries getMeasuredProfileFor(final TimeDeltas deltas)
 	{
-		TimeSeries res = new TimeSeries("Measured delay");
+		final TimeSeries res = new TimeSeries("Measured delay");
 
 		if (deltas != null)
 		{
 			// ok, loop through the times
-			Iterator<Observation> iter = deltas.iterator();
+			final Iterator<Observation> iter = deltas.iterator();
 			while (iter.hasNext())
 			{
-				Observation thisO = iter.next();
+				final Observation thisO = iter.next();
 
 				// what's this time?
-				HiResDate tNow = thisO.getDate();
-				double delay = thisO.getInterval();
+				final HiResDate tNow = thisO.getDate();
+				final double delay = thisO.getInterval();
 
 				// and add it
 				res.add(new FixedMillisecond(tNow.getDate().getTime()), delay);
@@ -98,15 +98,15 @@ public class MultiPathModel
 
 	public static class MiracleFunction implements MinimisationFunction
 	{
-		private WatchableList _primary;
-		private WatchableList _secondary;
-		private SVP _svp;
-		private TimeDeltas _times;
-		private MultiPathModel _model;
-		private TimeSeries _measuredTimes;
+		private final WatchableList _primary;
+		private final WatchableList _secondary;
+		private final SVP _svp;
+		private final TimeDeltas _times;
+		private final MultiPathModel _model;
+		private final TimeSeries _measuredTimes;
 
-		public MiracleFunction(WatchableList primary, WatchableList secondary,
-				SVP svp, TimeDeltas times)
+		public MiracleFunction(final WatchableList primary, final WatchableList secondary,
+				final SVP svp, final TimeDeltas times)
 		{
 			_primary = primary;
 			_secondary = secondary;
@@ -119,14 +119,14 @@ public class MultiPathModel
 		}
 
 		@Override
-		public double function(double[] param)
+		public double function(final double[] param)
 		{
 			// ok, sort out the calculated times
-			TimeSeries calcTimes = _model.getCalculatedProfileFor(_primary,
+			final TimeSeries calcTimes = _model.getCalculatedProfileFor(_primary,
 					_secondary, _svp, _times, param[0]);
 
-			int lenA = _measuredTimes.getItemCount();
-			int lenB = calcTimes.getItemCount();
+			final int lenA = _measuredTimes.getItemCount();
+			final int lenB = calcTimes.getItemCount();
 
 			if (lenA != lenB)
 			{
@@ -138,9 +138,9 @@ public class MultiPathModel
 
 			for (int i = 0; i < lenA; i++)
 			{
-				double valA = _measuredTimes.getDataItem(i).getValue().doubleValue();
-				double valB = calcTimes.getDataItem(i).getValue().doubleValue();
-				double thisError = Math.pow(valB - valA, 2);
+				final double valA = _measuredTimes.getDataItem(i).getValue().doubleValue();
+				final double valB = calcTimes.getDataItem(i).getValue().doubleValue();
+				final double thisError = Math.pow(valB - valA, 2);
 				runningError += thisError;
 			}
 
@@ -155,15 +155,15 @@ public class MultiPathModel
 
 	public static class RangedMiracleFunction implements MinimisationFunction
 	{
-		private SVP _svp;
-		private TimeDeltas _times;
-		private MultiPathModel _model;
-		private TimeSeries _measuredTimes;
-		private RangeValues _ranges;
-		private double _ownDepth;
+		private final SVP _svp;
+		private final TimeDeltas _times;
+		private final MultiPathModel _model;
+		private final TimeSeries _measuredTimes;
+		private final RangeValues _ranges;
+		private final double _ownDepth;
 
-		public RangedMiracleFunction(RangeValues ranges, SVP svp, TimeDeltas times,
-				double ownDepth)
+		public RangedMiracleFunction(final RangeValues ranges, final SVP svp, final TimeDeltas times,
+				final double ownDepth)
 		{
 			_ownDepth = ownDepth;
 			_ranges = ranges;
@@ -176,14 +176,14 @@ public class MultiPathModel
 		}
 
 		@Override
-		public double function(double[] param)
+		public double function(final double[] param)
 		{
 			// ok, sort out the calculated times
-			TimeSeries calcTimes = _model.getCalculatedProfileFor(_ranges, _svp,
+			final TimeSeries calcTimes = _model.getCalculatedProfileFor(_ranges, _svp,
 					_times, param[0], _ownDepth);
 
-			int lenA = _measuredTimes.getItemCount();
-			int lenB = calcTimes.getItemCount();
+			final int lenA = _measuredTimes.getItemCount();
+			final int lenB = calcTimes.getItemCount();
 
 			if (lenA != lenB)
 			{
@@ -195,11 +195,11 @@ public class MultiPathModel
 
 			for (int i = 0; i < lenA; i++)
 			{
-				TimeSeriesDataItem measObs = _measuredTimes.getDataItem(i);
-				TimeSeriesDataItem calcObs = calcTimes.getDataItem(i);
-				double valA = measObs.getValue().doubleValue();
-				double valB = calcObs.getValue().doubleValue();
-				double thisError = Math.pow(valB - valA, 2);
+				final TimeSeriesDataItem measObs = _measuredTimes.getDataItem(i);
+				final TimeSeriesDataItem calcObs = calcTimes.getDataItem(i);
+				final double valA = measObs.getValue().doubleValue();
+				final double valB = calcObs.getValue().doubleValue();
+				final double thisError = Math.pow(valB - valA, 2);
 				runningError += thisError;
 			}
 
@@ -227,49 +227,49 @@ public class MultiPathModel
 	 *          target depth to experiment with
 	 * @return a time series of calculated time delays
 	 */
-	public TimeSeries getCalculatedProfileFor(WatchableList primary,
-			WatchableList secondary, SVP svp, TimeDeltas deltas, double targetDepth)
+	public TimeSeries getCalculatedProfileFor(final WatchableList primary,
+			final WatchableList secondary, final SVP svp, final TimeDeltas deltas, final double targetDepth)
 	{
 		Boolean oldPrimaryInterp = null;
 		Boolean oldSecondaryInterp = null;
 
-		TimeSeries res = new TimeSeries("Calculated delay");
+		final TimeSeries res = new TimeSeries("Calculated delay");
 
 		if (primary instanceof TrackWrapper)
 		{
-			TrackWrapper trk = (TrackWrapper) primary;
+			final TrackWrapper trk = (TrackWrapper) primary;
 			oldPrimaryInterp = trk.getInterpolatePoints();
 			trk.setInterpolatePoints(true);
 		}
 		if (secondary instanceof TrackWrapper)
 		{
-			TrackWrapper trk = (TrackWrapper) secondary;
+			final TrackWrapper trk = (TrackWrapper) secondary;
 			oldSecondaryInterp = trk.getInterpolatePoints();
 			trk.setInterpolatePoints(true);
 		}
 
 		// ok, loop through the times
-		Iterator<Observation> iter = deltas.iterator();
+		final Iterator<Observation> iter = deltas.iterator();
 		while (iter.hasNext())
 		{
-			Observation thisO = iter.next();
+			final Observation thisO = iter.next();
 
 			// what's this time?
-			HiResDate tNow = thisO.getDate();
-			long timeVal = tNow.getDate().getTime();
+			final HiResDate tNow = thisO.getDate();
+			final long timeVal = tNow.getDate().getTime();
 
 			// find the locations
-			Watchable[] priLocs = primary.getNearestTo(tNow);
-			Watchable[] secLocs = secondary.getNearestTo(tNow);
+			final Watchable[] priLocs = primary.getNearestTo(tNow);
+			final Watchable[] secLocs = secondary.getNearestTo(tNow);
 
 			// do we have data
 			if ((priLocs.length > 0) && (secLocs.length > 0))
 			{
-				WorldLocation priLoc = priLocs[0].getLocation();
-				WorldLocation secLoc = secLocs[0].getLocation();
+				final WorldLocation priLoc = priLocs[0].getLocation();
+				final WorldLocation secLoc = secLocs[0].getLocation();
 
 				// create a key for this range separation calculation
-				String thisKey = "" + priLoc.getLat() + priLoc.getLong()
+				final String thisKey = "" + priLoc.getLat() + priLoc.getLong()
 						+ secLoc.getLat() + secLoc.getLong();
 
 				// do we have this key
@@ -282,9 +282,9 @@ public class MultiPathModel
 					// and store it
 					_rangeCache.put(thisKey, sep);
 				}
-				double sepM = MWC.Algorithms.Conversions.Degs2m(sep.getRange());
+				final double sepM = MWC.Algorithms.Conversions.Degs2m(sep.getRange());
 
-				double time_delay = calculateDelayFor(svp, targetDepth,
+				final double time_delay = calculateDelayFor(svp, targetDepth,
 						priLoc.getDepth(), sepM);
 
 				res.add(new FixedMillisecond(timeVal), time_delay);
@@ -294,48 +294,48 @@ public class MultiPathModel
 		// restore the interpolation settings
 		if (oldPrimaryInterp != null)
 		{
-			TrackWrapper trk = (TrackWrapper) primary;
+			final TrackWrapper trk = (TrackWrapper) primary;
 			trk.setInterpolatePoints(oldPrimaryInterp.booleanValue());
 		}
 		if (oldSecondaryInterp != null)
 		{
-			TrackWrapper trk = (TrackWrapper) secondary;
+			final TrackWrapper trk = (TrackWrapper) secondary;
 			trk.setInterpolatePoints(oldSecondaryInterp.booleanValue());
 		}
 
 		return res;
 	}
 
-	private double calculateDelayFor(SVP svp, double targetDepth,
-			double hostDepth, double sepM)
+	private double calculateDelayFor(final SVP svp, final double targetDepth,
+			final double hostDepth, final double sepM)
 	{
-		double zR = hostDepth;
-		double zS = targetDepth;
+		final double zR = hostDepth;
+		final double zS = targetDepth;
 
 		// now sort out the sound speeds
-		double cD = svp.getMeanSpeedBetween(zS, zR);
-		double cS = svp.getMeanSpeedBetween(0, zS);
-		double cR = svp.getMeanSpeedBetween(0, zR);
+		final double cD = svp.getMeanSpeedBetween(zS, zR);
+		final double cS = svp.getMeanSpeedBetween(0, zS);
+		final double cR = svp.getMeanSpeedBetween(0, zR);
 
 		// do the actual calculation
-		double time_delay = calculateDelay(sepM, zR, zS, cD, cS, cR);
+		final double time_delay = calculateDelay(sepM, zR, zS, cD, cS, cR);
 		return time_delay;
 	}
 
-	private double calculateDelay(double sepM, double zR, double zS, double cD,
-			double cS, double cR)
+	private double calculateDelay(final double sepM, final double zR, final double zS, final double cD,
+			final double cS, final double cR)
 	{
-		double hD = sepM;
-		double lDirect = Math.sqrt(hD * hD + Math.pow(zS - zR, 2));
+		final double hD = sepM;
+		final double lDirect = Math.sqrt(hD * hD + Math.pow(zS - zR, 2));
 
-		double lsHoriz = (hD * zS) / (zS + zR);
-		double lS = Math.sqrt(lsHoriz * lsHoriz + zS * zS);
-		double lR = Math.sqrt(Math.pow(hD - lsHoriz, 2) + zR * zR);
+		final double lsHoriz = (hD * zS) / (zS + zR);
+		final double lS = Math.sqrt(lsHoriz * lsHoriz + zS * zS);
+		final double lR = Math.sqrt(Math.pow(hD - lsHoriz, 2) + zR * zR);
 
-		double timeSurface = lS / cS;
-		double timeReceiver = lR / cR;
-		double timeDirect = lDirect / cD;
-		double time_delay = (timeSurface + timeReceiver) - timeDirect;
+		final double timeSurface = lS / cS;
+		final double timeReceiver = lR / cR;
+		final double timeDirect = lDirect / cD;
+		final double time_delay = (timeSurface + timeReceiver) - timeDirect;
 		return time_delay;
 	}
 
@@ -346,37 +346,37 @@ public class MultiPathModel
 	{
 		public void testNonMatchTimes()
 		{
-			WorldLocation loc = new WorldLocation(2, 2, 30);
-			LabelWrapper primary = new LabelWrapper("Sensor", loc, Color.red);
+			final WorldLocation loc = new WorldLocation(2, 2, 30);
+			final LabelWrapper primary = new LabelWrapper("Sensor", loc, Color.red);
 
-			TrackWrapper secondary = new TrackWrapper();
+			final TrackWrapper secondary = new TrackWrapper();
 
-			TimeDeltas deltas = getDeltas();
+			final TimeDeltas deltas = getDeltas();
 
-			HiResDate start = deltas.getStartTime();
-			HiResDate end = deltas.getEndTime();
-			long interval = 10000;
+			final HiResDate start = deltas.getStartTime();
+			final HiResDate end = deltas.getEndTime();
+			final long interval = 10000;
 
 			WorldLocation startLoc = loc.add(new WorldVector(Math.PI, 0.02, 0));
 
 			for (long thisT = start.getDate().getTime() + 92000; thisT <= end
 					.getDate().getTime() + interval; thisT += interval)
 			{
-				HiResDate thisD = new HiResDate(thisT);
-				WorldLocation newLoc = new WorldLocation(startLoc.add(new WorldVector(
+				final HiResDate thisD = new HiResDate(thisT);
+				final WorldLocation newLoc = new WorldLocation(startLoc.add(new WorldVector(
 						Math.PI * 1.5, 0.005, 0)));
-				Fix newF = new Fix(thisD, newLoc, 0, 0);
-				FixWrapper newFw = new FixWrapper(newF);
+				final Fix newF = new Fix(thisD, newLoc, 0, 0);
+				final FixWrapper newFw = new FixWrapper(newF);
 				secondary.addFix(newFw);
 
 				startLoc = newLoc;
 			}
 
-			SVP svp = getSVP();
+			final SVP svp = getSVP();
 
 			// ok, go for the calc
-			MultiPathModel model = new MultiPathModel();
-			TimeSeries calc = model.getCalculatedProfileFor(primary, secondary, svp,
+			final MultiPathModel model = new MultiPathModel();
+			final TimeSeries calc = model.getCalculatedProfileFor(primary, secondary, svp,
 					deltas, 44);
 
 			assertNotNull("got some results", calc);
@@ -386,37 +386,37 @@ public class MultiPathModel
 
 		public void testMe()
 		{
-			WorldLocation loc = new WorldLocation(2, 2, 30);
-			LabelWrapper primary = new LabelWrapper("Sensor", loc, Color.red);
+			final WorldLocation loc = new WorldLocation(2, 2, 30);
+			final LabelWrapper primary = new LabelWrapper("Sensor", loc, Color.red);
 
-			TrackWrapper secondary = new TrackWrapper();
+			final TrackWrapper secondary = new TrackWrapper();
 
-			TimeDeltas deltas = getDeltas();
+			final TimeDeltas deltas = getDeltas();
 
-			HiResDate start = deltas.getStartTime();
-			HiResDate end = deltas.getEndTime();
-			long interval = 10000;
+			final HiResDate start = deltas.getStartTime();
+			final HiResDate end = deltas.getEndTime();
+			final long interval = 10000;
 
 			WorldLocation startLoc = loc.add(new WorldVector(Math.PI, 0.02, 0));
 
 			for (long thisT = start.getDate().getTime(); thisT <= end.getDate()
 					.getTime() + interval; thisT += interval)
 			{
-				HiResDate thisD = new HiResDate(thisT);
-				WorldLocation newLoc = new WorldLocation(startLoc.add(new WorldVector(
+				final HiResDate thisD = new HiResDate(thisT);
+				final WorldLocation newLoc = new WorldLocation(startLoc.add(new WorldVector(
 						Math.PI * 1.5, 0.005, 0)));
-				Fix newF = new Fix(thisD, newLoc, 0, 0);
-				FixWrapper newFw = new FixWrapper(newF);
+				final Fix newF = new Fix(thisD, newLoc, 0, 0);
+				final FixWrapper newFw = new FixWrapper(newF);
 				secondary.addFix(newFw);
 
 				startLoc = newLoc;
 			}
 
-			SVP svp = getSVP();
+			final SVP svp = getSVP();
 
 			// ok, go for the calc
-			MultiPathModel model = new MultiPathModel();
-			TimeSeries calc = model.getCalculatedProfileFor(primary, secondary, svp,
+			final MultiPathModel model = new MultiPathModel();
+			final TimeSeries calc = model.getCalculatedProfileFor(primary, secondary, svp,
 					deltas, 44);
 
 			assertNotNull("got some results", calc);
@@ -426,17 +426,17 @@ public class MultiPathModel
 		public static class MyFunc implements MinimisationFunction
 		{
 
-			public MyFunc(WatchableList primary, WatchableList secondary, SVP svp,
-					TimeDeltas times)
+			public MyFunc(final WatchableList primary, final WatchableList secondary, final SVP svp,
+					final TimeDeltas times)
 			{
 
 			}
 
 			@Override
-			public double function(double[] param)
+			public double function(final double[] param)
 			{
 				// now the error function
-				double res = Math.abs(100d - param[0]);
+				final double res = Math.abs(100d - param[0]);
 
 				// done
 				System.out.println("returned " + res + " from:" + param[0]);
@@ -457,17 +457,17 @@ public class MultiPathModel
 				svp.load(SVP.SVP_Test.SVP_FILE);
 				times.load(TimeDeltas.IntervalTest.TEST_TIMES_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				e.printStackTrace();
 				fail();
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				e.printStackTrace();
 				fail();
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				e.printStackTrace();
 				fail();
@@ -476,23 +476,23 @@ public class MultiPathModel
 			// ok, what else do we need?
 
 			// Create instance of Minimisation
-			Minimisation min = new Minimisation();
+			final Minimisation min = new Minimisation();
 
 			// Create instace of class holding function to be minimised
-			WatchableList primary = null;
-			WatchableList secondary = null;
-			MinimisationFunction funct = new MyFunc(primary, secondary, svp, times);
+			final WatchableList primary = null;
+			final WatchableList secondary = null;
+			final MinimisationFunction funct = new MyFunc(primary, secondary, svp, times);
 
 			// initial estimates
-			double[] start =
+			final double[] start =
 			{ 30 };
 
 			// initial step sizes
-			double[] step =
+			final double[] step =
 			{ 5 };
 
 			// convergence tolerance
-			double ftol = 1e-2;
+			final double ftol = 1e-2;
 
 			// specify the maximum depth
 			double maxDepth = svp.getMaxDepth();
@@ -531,15 +531,15 @@ public class MultiPathModel
 		public void testCalc()
 		{
 			// ok, go for the calc
-			MultiPathModel model = new MultiPathModel();
+			final MultiPathModel model = new MultiPathModel();
 
 			double sepM = 2549.11;
-			double zR = 30;
-			double zS = 50;
-			double cD = 1500.760;
-			double cS = 1501.628;
-			double cR = 1502.207;
-			double delay = model.calculateDelay(sepM, zR, zS, cD, cS, cR);
+			final double zR = 30;
+			final double zS = 50;
+			final double cD = 1500.760;
+			final double cS = 1501.628;
+			final double cR = 1502.207;
+			final double delay = model.calculateDelay(sepM, zR, zS, cD, cS, cR);
 
 			assertEquals("wrong calc", -0.00044, delay, 0.001);
 
@@ -550,23 +550,23 @@ public class MultiPathModel
 
 		public void testCalc2()
 		{
-			SVP svp = getSVP2();
+			final SVP svp = getSVP2();
 
-			MultiPathModel model = new MultiPathModel();
+			final MultiPathModel model = new MultiPathModel();
 
 			for (int i = 1140; i < 1348; i++)
 			{
 
-				double zS = 1340;
-				double zR = i;
+				final double zS = 1340;
+				final double zR = i;
 
 				// now sort out the sound speeds
-				double cD = svp.getMeanSpeedBetween(zS, zR);
-				double cS = svp.getMeanSpeedBetween(0, zS);
-				double cR = svp.getMeanSpeedBetween(0, zR);
+				final double cD = svp.getMeanSpeedBetween(zS, zR);
+				final double cS = svp.getMeanSpeedBetween(0, zS);
+				final double cR = svp.getMeanSpeedBetween(0, zR);
 
 				// do the actual calculation
-				double time_delay = model.calculateDelay(1200, zR, zS, cD, cS, cR);
+				final double time_delay = model.calculateDelay(1200, zR, zS, cD, cS, cR);
 
 				System.out.println("cd:" + (int) cD + " cs:" + (int) cS + " cr:"
 						+ (int) cR + " delay at " + i + " is:" + time_delay);
@@ -577,22 +577,22 @@ public class MultiPathModel
 
 		private SVP getSVP()
 		{
-			SVP svp = new SVP();
+			final SVP svp = new SVP();
 			try
 			{
 				svp.load(SVP.SVP_Test.SVP_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				e.printStackTrace();
 				fail("number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				e.printStackTrace();
 				fail("file read problem");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -603,22 +603,22 @@ public class MultiPathModel
 
 		private SVP getSVP2()
 		{
-			SVP svp = new SVP();
+			final SVP svp = new SVP();
 			try
 			{
 				svp.load(SVP.SVP_Test.SVP_FILE2);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				e.printStackTrace();
 				fail("number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				e.printStackTrace();
 				fail("file read problem");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -629,22 +629,22 @@ public class MultiPathModel
 
 		private static TimeDeltas getDeltas()
 		{
-			TimeDeltas deltas = new TimeDeltas();
+			final TimeDeltas deltas = new TimeDeltas();
 			try
 			{
 				deltas.load(TimeDeltas.IntervalTest.TEST_TIMES_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				e.printStackTrace();
 				fail("number format problem");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				e.printStackTrace();
 				fail("file read problem");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				e.printStackTrace();
 				fail("bad data problem");
@@ -662,32 +662,32 @@ public class MultiPathModel
 	 * @param val
 	 * @return
 	 */
-	public TimeSeries getCalculatedProfileFor(RangeValues ranges, SVP svp,
-			TimeDeltas times, double targetDepth, double hostDepth)
+	public TimeSeries getCalculatedProfileFor(final RangeValues ranges, final SVP svp,
+			final TimeDeltas times, final double targetDepth, final double hostDepth)
 	{
-		TimeSeries res = new TimeSeries("Calculated delay (TEST)");
+		final TimeSeries res = new TimeSeries("Calculated delay (TEST)");
 
 		if (times != null)
 		{
 			// ok, loop through the times
-			Iterator<Observation> iter = times.iterator();
+			final Iterator<Observation> iter = times.iterator();
 			while (iter.hasNext())
 			{
-				Observation thisO = iter.next();
+				final Observation thisO = iter.next();
 
 				// what's this time?
-				HiResDate tNow = thisO.getDate();
-				long timeMillis = tNow.getDate().getTime();
+				final HiResDate tNow = thisO.getDate();
+				final long timeMillis = tNow.getDate().getTime();
 
 				// do we have a range at this time?
 				if (ranges.hasValueAt(timeMillis))
 				{
 
 					// what's the range separation at this time
-					double sepM = ranges.valueAt(timeMillis);
+					final double sepM = ranges.valueAt(timeMillis);
 
 					// and the delay
-					double time_delay = calculateDelayFor(svp, targetDepth, hostDepth,
+					final double time_delay = calculateDelayFor(svp, targetDepth, hostDepth,
 							sepM);
 
 					res.add(new FixedMillisecond(timeMillis), time_delay);

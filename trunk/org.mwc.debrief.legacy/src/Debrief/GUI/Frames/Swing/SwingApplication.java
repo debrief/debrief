@@ -312,7 +312,7 @@ public final class SwingApplication extends Application
       // load the coastline data in the background
       new MWC.GUI.Chart.Painters.CoastPainter(this);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
     }
 
@@ -351,7 +351,7 @@ public final class SwingApplication extends Application
     // we have to go through the panels in the main bit,
     // and return the one which is visible
 //    for (int i = 0; i < len; i++)
-      for (int i = 0; i < len;)
+      for (final int i = 0; i < len;)
     {
       final Component cp = lst[i];
       final JInternalFrame jf = (JInternalFrame) cp;
@@ -388,7 +388,7 @@ public final class SwingApplication extends Application
     boolean foundIt = false;
     for (int i = 0; i < theDesktop.getComponentCount(); i++)
     {
-      Component comp = theDesktop.getComponent(i);
+      final Component comp = theDesktop.getComponent(i);
       if (comp == aws.getPanel())
       {
         foundIt = true;
@@ -405,7 +405,7 @@ public final class SwingApplication extends Application
       {
         aws.getPanel().setMaximum(true);
       }
-      catch (java.beans.PropertyVetoException e)
+      catch (final java.beans.PropertyVetoException e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }

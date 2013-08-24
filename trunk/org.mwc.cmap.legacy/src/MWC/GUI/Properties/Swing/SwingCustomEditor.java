@@ -88,10 +88,10 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  final public void setObject(Object data,
-                        PlainChart theChart,
-                        ToolParent theParent,
-                        PropertiesPanel thePanel)
+  final public void setObject(final Object data,
+                        final PlainChart theChart,
+                        final ToolParent theParent,
+                        final PropertiesPanel thePanel)
   {
     _theChart = theChart;
     _thePanel = thePanel;
@@ -135,7 +135,7 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
   /** add the indicated property event
    *
    */
-  final public void addPropertyChangeListener(PropertyChangeListener listener)
+  final public void addPropertyChangeListener(final PropertyChangeListener listener)
   {
     _pSupport.addPropertyChangeListener(listener);
   }
@@ -143,7 +143,7 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
   /** remove the indicated property listener
    *
    */
-  final public void removePropertyChangeListener(PropertyChangeListener listener)
+  final public void removePropertyChangeListener(final PropertyChangeListener listener)
   {
     if(_pSupport != null)
       _pSupport.removePropertyChangeListener(listener);
@@ -152,7 +152,7 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
   /** fire the indicated event
    *
    */
-  final protected void fireModified(String name, Object oldVal, Object newVal)
+  final protected void fireModified(final String name, final Object oldVal, final Object newVal)
   {
     _pSupport.firePropertyChange(name, oldVal, newVal);
   }

@@ -20,38 +20,38 @@ public class GeoCalculatorAdapter extends FlatEarth implements EarthModel
  	 * CoordinateReferenceSystem - specify this to configure your GeodeticCalculator to work with a specific Ellipsoid
 	 */
 	public static final String CRS_TYPE = "EPSG:4326";
-	private GeodeticCalculator _geoCalc;
+	private final GeodeticCalculator _geoCalc;
 	
 	public GeoCalculatorAdapter() 
 	{
 		this(CRS_TYPE);
 	}
 	
-	public GeoCalculatorAdapter(String crsType) {
+	public GeoCalculatorAdapter(final String crsType) {
 		CoordinateReferenceSystem crs = null;
 		try {
 			crs = CRS.decode(crsType);
-		} catch (NoSuchAuthorityCodeException e) {
+		} catch (final NoSuchAuthorityCodeException e) {
 			GtActivator.logError(Status.ERROR, "Could not initialize CRS" + crsType, e);
-		} catch (FactoryException e) {
+		} catch (final FactoryException e) {
 			GtActivator.logError(Status.ERROR, "Could not initialize CRS" + crsType, e);
 		}
 		_geoCalc = new GeodeticCalculator(crs);
 	}
 	
-	private void setLocations(WorldLocation from, WorldLocation to) {
+	private void setLocations(final WorldLocation from, final WorldLocation to) {
 		_geoCalc.setStartingGeographicPoint(from.getLong(), from.getLat());
 		_geoCalc.setDestinationGeographicPoint(to.getLong(), to.getLat());
 	}
 		
 	@Override
-	public double rangeBetween(WorldLocation from, WorldLocation to) {
+	public double rangeBetween(final WorldLocation from, final WorldLocation to) {
 		this.setLocations(from, to);
 		return Math.toDegrees(_geoCalc.getAzimuth());
 	}
 
 	@Override
-	public double bearingBetween(WorldLocation from, WorldLocation to) {
+	public double bearingBetween(final WorldLocation from, final WorldLocation to) {
 		this.setLocations(from, to);
 		return Math.toRadians(_geoCalc.getAzimuth());
 	}

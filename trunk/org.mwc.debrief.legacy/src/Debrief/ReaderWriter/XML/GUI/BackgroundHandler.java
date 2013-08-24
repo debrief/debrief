@@ -29,7 +29,7 @@ abstract public class BackgroundHandler extends MWC.Utilities.ReaderWriter.XML.M
 
     addHandler(new ColourHandler()
     {
-      public void setColour(Color res)
+      public void setColour(final Color res)
       {
         _theColor = res;
       }
@@ -48,10 +48,10 @@ abstract public class BackgroundHandler extends MWC.Utilities.ReaderWriter.XML.M
   abstract public void setBackgroundColor(Color theColor);
 
 
-  public static void exportThis(Color color, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportThis(final Color color, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     // create the element to put it in
-    org.w3c.dom.Element tote = doc.createElement(MY_TYPE);
+    final org.w3c.dom.Element tote = doc.createElement(MY_TYPE);
     ColourHandler.exportColour(color, tote, doc);
 
     //////////////////////////////

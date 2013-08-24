@@ -99,7 +99,7 @@ public final class AWTStepControl extends StepControl implements java.awt.event.
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public AWTStepControl(final PropertiesPanel theEditor, ToolParent theParent)
+  public AWTStepControl(final PropertiesPanel theEditor, final ToolParent theParent)
   {
     super(theParent);
 

@@ -11,33 +11,33 @@ public class WorkDialog extends GJTDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	private ButtonPanel buttonPanel;
-	public WorkDialog(Frame        frame,
-					  DialogClient client,
-	                  String       title) {
+	public WorkDialog(final Frame        frame,
+					  final DialogClient client,
+	                  final String       title) {
 		this(frame, client, title, 
 		     null, Orientation.CENTER, false);
 	}
-	public WorkDialog(Frame        frame,
-					  DialogClient client,
-	                  String       title,
-					  boolean      modal) {
+	public WorkDialog(final Frame        frame,
+					  final DialogClient client,
+	                  final String       title,
+					  final boolean      modal) {
 		this(frame, client, title, 
 		     null, Orientation.CENTER, modal);
 	}
-	public WorkDialog(Frame        frame,
-					  DialogClient client,
-	                  String       title,
-					  Orientation  buttonOrientation,
-					  boolean      modal) {
+	public WorkDialog(final Frame        frame,
+					  final DialogClient client,
+	                  final String       title,
+					  final Orientation  buttonOrientation,
+					  final boolean      modal) {
 		this(frame, client, title, 
 		     null, buttonOrientation, modal);
 	}
-	public WorkDialog(Frame        frame,
-					  DialogClient client,
-	                  String       title,
-					  Panel        workPanel,
-					  Orientation  buttonOrientation,
-					  boolean      modal) {
+	public WorkDialog(final Frame        frame,
+					  final DialogClient client,
+	                  final String       title,
+					  final Panel        workPanel,
+					  final Orientation  buttonOrientation,
+					  final boolean      modal) {
 		super(frame, title, client, modal);
 		setLayout(new BorderLayout(0,2));
 
@@ -47,7 +47,7 @@ public class WorkDialog extends GJTDialog {
 		add("South", buttonPanel = 
 					 new ButtonPanel(buttonOrientation));
 	}
-	public void setWorkPanel(Panel workPanel) {
+	public void setWorkPanel(final Panel workPanel) {
 		if(workPanel != null)
 			remove(workPanel);
 
@@ -56,10 +56,10 @@ public class WorkDialog extends GJTDialog {
 		if(isShowing()) 
 			validate();
 	}
-	public Button addButton(String string) {
+	public Button addButton(final String string) {
 		return buttonPanel.add(string);
 	}
-	public void addButton(Button button) {
+	public void addButton(final Button button) {
 		buttonPanel.add(button);
 	}
 }

@@ -94,12 +94,12 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
   /////////////////////////////////////////////////////////
   /** convenience constructor, calls normal one
    */
-  public SwingToggleButton(Tool theTool)
+  public SwingToggleButton(final Tool theTool)
   {
     this(theTool.getLabel(), theTool);
   }
 
-  public SwingToggleButton(String theLabel, Tool theTool)
+  public SwingToggleButton(final String theLabel, final Tool theTool)
   {
     super(theLabel);
     formatMe(theTool);
@@ -108,7 +108,7 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
 
   /** constructor for if we don't have an image (don't show label)
    */
-  public SwingToggleButton(Tool theTool, ImageIcon icon)
+  public SwingToggleButton(final Tool theTool, final ImageIcon icon)
   {
     super(icon);
     formatMe(theTool);
@@ -116,7 +116,7 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
   }
 
 
-  private void formatMe(Tool theTool)
+  private void formatMe(final Tool theTool)
   {
     _theTool = theTool;
     this.addActionListener(this);
@@ -130,23 +130,23 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
 
     this.addMouseListener(new MouseAdapter()
     {
-      public void mouseEntered(MouseEvent e)
+      public void mouseEntered(final MouseEvent e)
       {
         setBorderPainted(true);
       }
 
-      public void mouseExited(MouseEvent e)
+      public void mouseExited(final MouseEvent e)
       {
         setBorderPainted(false);
       }
     });
 
     // try to handle the icon not being found
-    Icon ic = this.getIcon();
+    final Icon ic = this.getIcon();
     if (ic != null)
     {
       // check if icon available
-      ImageIcon ii = (ImageIcon) ic;
+      final ImageIcon ii = (ImageIcon) ic;
       if (ii.getImageLoadStatus() == java.awt.MediaTracker.ERRORED)
       {
         this.setIcon(null);
@@ -155,7 +155,7 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
       else
       {
         // try to set the other icon, if we can
-        String iName = theTool.getImage();
+        final String iName = theTool.getImage();
         if (iName != null)
         {
           // try to extend the filename
@@ -173,7 +173,7 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
 
   /** callback function for a button being pressed
    */
-  public void actionPerformed(java.awt.event.ActionEvent e)
+  public void actionPerformed(final java.awt.event.ActionEvent e)
   {
     /** check that we have a tool declared
      */

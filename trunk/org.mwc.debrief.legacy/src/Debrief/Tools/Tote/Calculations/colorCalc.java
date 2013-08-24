@@ -91,15 +91,15 @@ public final class colorCalc extends plainCalc
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
+  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
   {
     // get the colour
-    java.awt.Color theCol = primary.getColor();
+    final java.awt.Color theCol = primary.getColor();
     return theCol.getRGB();
   }
 
 
-  public final String update(Watchable primary, Watchable secondary, HiResDate time)
+  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
   {
 		// check we have data
 		if(primary == null)
@@ -112,7 +112,7 @@ public final class colorCalc extends plainCalc
     }
 
     // get the colour
-    java.awt.Color theCol = primary.getColor();
+    final java.awt.Color theCol = primary.getColor();
 
     colEditor.setValue(theCol);
 

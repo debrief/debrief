@@ -30,7 +30,7 @@ public class WindowsClipboard implements CanvasType
 
 	public native void drawPolyline(int[] xPoints, int[] yPoints, int nPoints);
 
-	final public void drawPolyline(int[] points)
+	final public void drawPolyline(final int[] points)
 	{
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
@@ -81,14 +81,14 @@ public class WindowsClipboard implements CanvasType
 	{
 	}
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
-		WindowsClipboard wc = new WindowsClipboard();
+		final WindowsClipboard wc = new WindowsClipboard();
 		wc.startDraw(null);
 		wc.drawLine(100, 200, 12, 9);
 		wc.setColor(Color.orange);
 		wc.drawLine(100, 200, 400, 300);
-		java.util.Date gt = new java.util.Date();
+		final java.util.Date gt = new java.util.Date();
 		wc.drawText(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 9),
 				gt.toString(), 30, 40);
 		wc.fillRect(50, 50, 10, 20);
@@ -102,25 +102,25 @@ public class WindowsClipboard implements CanvasType
 	{
 	}
 
-	public void drawOval(int x, int y, int width, int height)
+	public void drawOval(final int x, final int y, final int width, final int height)
 	{
 	}
 
-	public void fillOval(int x, int y, int width, int height)
+	public void fillOval(final int x, final int y, final int width, final int height)
 	{
 	}
 
-	public void drawText(String str, int x, int y)
+	public void drawText(final String str, final int x, final int y)
 	{
 		drawText(x, y, str, (str.length()) + 1);
 	}
 
-	public void setColor(java.awt.Color theCol)
+	public void setColor(final java.awt.Color theCol)
 	{
 		setColor(theCol.getRed(), theCol.getGreen(), theCol.getBlue());
 	}
 
-	public void drawText(java.awt.Font theFont, String theStr, int x, int y)
+	public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y)
 	{
 
 		// resend the font data, if we have to
@@ -133,23 +133,23 @@ public class WindowsClipboard implements CanvasType
 		drawText(x, y, theStr, (theStr.length()));
 	}
 
-	public void setFont(java.awt.Font theFont)
+	public void setFont(final java.awt.Font theFont)
 	{
 		_lastFont = theFont;
 		// get the details of the font
-		int ht = theFont.getSize();
+		final int ht = theFont.getSize();
 
 		//
-		String name = theFont.getFamily();
+		final String name = theFont.getFamily();
 		setFont(ht, name, name.length());
 	}
 
-	public int getStringHeight(java.awt.Font theFont)
+	public int getStringHeight(final java.awt.Font theFont)
 	{
 		return 5;
 	}
 
-	public int getStringWidth(java.awt.Font theFont, String theString)
+	public int getStringWidth(final java.awt.Font theFont, final String theString)
 	{
 		return 5;
 	}
@@ -168,19 +168,19 @@ public class WindowsClipboard implements CanvasType
 		return _myProjection;
 	}
 
-	public void setProjection(PlainProjection val)
+	public void setProjection(final PlainProjection val)
 	{
 		_myProjection = val;
-		java.awt.Dimension dim = val.getScreenArea();
+		final java.awt.Dimension dim = val.getScreenArea();
 		setDataArea(dim.width, dim.height);
 	}
 
-	public java.awt.Point toScreen(WorldLocation val)
+	public java.awt.Point toScreen(final WorldLocation val)
 	{
 		return _myProjection.toScreen(val);
 	}
 
-	public WorldLocation toWorld(java.awt.Point val)
+	public WorldLocation toWorld(final java.awt.Point val)
 	{
 		return _myProjection.toWorld(val);
 	}
@@ -200,7 +200,7 @@ public class WindowsClipboard implements CanvasType
 		return null;
 	}
 
-	public void setBackgroundColor(java.awt.Color theColor)
+	public void setBackgroundColor(final java.awt.Color theColor)
 	{
 	}
 
@@ -209,11 +209,11 @@ public class WindowsClipboard implements CanvasType
 		return null;
 	}
 
-	public void addPainter(CanvasType.PaintListener listener)
+	public void addPainter(final CanvasType.PaintListener listener)
 	{
 	}
 
-	public void removePainter(CanvasType.PaintListener listener)
+	public void removePainter(final CanvasType.PaintListener listener)
 	{
 	}
 
@@ -224,18 +224,18 @@ public class WindowsClipboard implements CanvasType
 		return null;
 	}
 
-	public void setTooltipHandler(CanvasType.TooltipHandler handler)
+	public void setTooltipHandler(final CanvasType.TooltipHandler handler)
 	{
 	}
 
-	public void startDraw(Object val)
+	public void startDraw(final Object val)
 	{
 		//
 		startDraw(val, 0, 0);
 	}
 
 	@Override
-	public void drawText(String str, int x, int y, float rotate)
+	public void drawText(final String str, final int x, final int y, final float rotate)
 	{
 		// TODO Auto-generated method stub
 

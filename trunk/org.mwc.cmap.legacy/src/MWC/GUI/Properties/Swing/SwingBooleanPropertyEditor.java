@@ -93,25 +93,25 @@ public class SwingBooleanPropertyEditor extends
     _theBox.setName("boolean");
     _theBox.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
      {   _myVal = _theBox.isSelected();     }    
     });
     resetData();
     return _theBox;
   }
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Boolean)
     {
-      Boolean val = (Boolean)p1;
+      final Boolean val = (Boolean)p1;
       _myVal = val.booleanValue();
     }
     else
       return;
   }
 
-  public void setAsText(String text) throws IllegalArgumentException
+  public void setAsText(final String text) throws IllegalArgumentException
   {
     if(text.equals("Yes"))
       _myVal = true;

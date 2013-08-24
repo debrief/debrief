@@ -23,7 +23,7 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 
 		addHandler(new PrimarySecondaryHandler("primary")
 		{
-			public void setTrack(String name)
+			public void setTrack(final String name)
 			{
 				setPrimarySecondary(true, name);
 			}
@@ -31,7 +31,7 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 
 		addHandler(new PrimarySecondaryHandler("secondary")
 		{
-			public void setTrack(String name)
+			public void setTrack(final String name)
 			{
 				setPrimarySecondary(false, name);
 			}
@@ -81,20 +81,20 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 	// return res;
 	// }
 
-	public static void exportTote(TrackDataProvider tracks, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
+	public static void exportTote(final TrackDataProvider tracks, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc)
 	{
 		// create the element to put it in
-		org.w3c.dom.Element tote = doc.createElement("tote");
+		final org.w3c.dom.Element tote = doc.createElement("tote");
 
 		// now output the parts of the tote
 		// find the primary
-		MWC.GenericData.WatchableList primary = tracks.getPrimaryTrack();
-		WatchableList[] secondaries = tracks.getSecondaryTracks();
+		final MWC.GenericData.WatchableList primary = tracks.getPrimaryTrack();
+		final WatchableList[] secondaries = tracks.getSecondaryTracks();
 
 		if (primary != null)
 		{
-			org.w3c.dom.Element pri = doc.createElement("primary");
+			final org.w3c.dom.Element pri = doc.createElement("primary");
 			pri.setAttribute("Name", primary.getName());
 			tote.appendChild(pri);
 		}
@@ -105,10 +105,10 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 			{
 				for (int i = 0; i < secondaries.length; i++)
 				{
-					WatchableList thisSec = secondaries[i];
+					final WatchableList thisSec = secondaries[i];
 					if (thisSec != null)
 					{
-						org.w3c.dom.Element sec = doc.createElement("secondary");
+						final org.w3c.dom.Element sec = doc.createElement("secondary");
 						sec.setAttribute("Name", thisSec.getName());
 						tote.appendChild(sec);
 					}

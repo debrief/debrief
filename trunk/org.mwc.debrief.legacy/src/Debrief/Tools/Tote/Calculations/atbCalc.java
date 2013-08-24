@@ -12,14 +12,14 @@ public class atbCalc extends relBearingCalc {
 	}
 
 	@Override
-	public double calculate(Watchable primary, Watchable secondary,
-			HiResDate thisTime) {
+	public double calculate(final Watchable primary, final Watchable secondary,
+			final HiResDate thisTime) {
 		// switch the items around
 		return super.calculate(secondary, primary, thisTime);
 	}
 
 	@Override
-	public String update(Watchable primary, Watchable secondary, HiResDate time) {
+	public String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		// switch the items around
 		return super.update( primary,secondary, time);
 	}

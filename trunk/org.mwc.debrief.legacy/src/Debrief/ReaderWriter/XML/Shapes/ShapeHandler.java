@@ -50,7 +50,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   private static final String LINE_STYLE = "LineStyle";
   private static final String LINE_THICKNESS = "LineThickness";
 
-  public ShapeHandler(String type)
+  public ShapeHandler(final String type)
   {
     // inform our parent what type of class we are
     super(type);
@@ -58,7 +58,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addHandler(new ColourHandler(FONT_COLOUR)
     {
-      public void setColour(java.awt.Color res)
+      public void setColour(final java.awt.Color res)
       {
         _fontCol = res;
       }
@@ -66,7 +66,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color res)
+      public void setColour(final java.awt.Color res)
       {
         _col = res;
       }
@@ -74,7 +74,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addHandler(new TimeRangeHandler()
     {
-      public void setTimeRange(HiResDate start, HiResDate end)
+      public void setTimeRange(final HiResDate start, final HiResDate end)
       {
         _startDTG = start;
         _endDTG = end;
@@ -83,7 +83,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addHandler(new FontHandler()
     {
-      public void setFont(java.awt.Font font)
+      public void setFont(final java.awt.Font font)
       {
         _font = font;
       }
@@ -92,7 +92,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addAttributeHandler(new HandleAttribute(LABEL_TEXT)
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _label = fromXML(value);
       }
@@ -101,7 +101,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addAttributeHandler(new HandleAttribute(LABEL_LOCATION)
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         lp.setAsText(val);
         _theLocation = (Integer) lp.getValue();
@@ -110,7 +110,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addAttributeHandler(new HandleIntegerAttribute(LINE_STYLE)
     {
-      public void setValue(String name, int value)
+      public void setValue(final String name, final int value)
       {
         _lineStyle = new Integer(value);
       }
@@ -118,7 +118,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
     {
-      public void setValue(String name, int value)
+      public void setValue(final String name, final int value)
       {
         _lineThickness = new Integer(value);
       }
@@ -127,7 +127,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addAttributeHandler(new HandleBooleanAttribute(SHAPE_VISIBLE)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
@@ -135,7 +135,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addAttributeHandler(new HandleBooleanAttribute(LABEL_VISIBLE)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _labelVisible = value;
       }
@@ -147,16 +147,16 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   
   protected ShapeWrapper getWrapper()
   {
-    MWC.GUI.Shapes.PlainShape shape = getShape();
+    final MWC.GUI.Shapes.PlainShape shape = getShape();
     shape.setColor(_col);
-    Debrief.Wrappers.ShapeWrapper sw = new Debrief.Wrappers.ShapeWrapper(_myType, shape, _col, null);
+    final Debrief.Wrappers.ShapeWrapper sw = new Debrief.Wrappers.ShapeWrapper(_myType, shape, _col, null);
     return sw; 	
   }
 
   public void elementClosed()
   {
 
-  	ShapeWrapper sw = getWrapper();
+  	final ShapeWrapper sw = getWrapper();
   	
     if (_label != null)
     {
@@ -214,11 +214,11 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
   abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
-  void exportThisPlottable(MWC.GUI.Plottable plottable,
-                           org.w3c.dom.Element theShape,
-                           org.w3c.dom.Document doc)
+  void exportThisPlottable(final MWC.GUI.Plottable plottable,
+                           final org.w3c.dom.Element theShape,
+                           final org.w3c.dom.Document doc)
   {
-    Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+    final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
 
     // put the parameters into the parent
     theShape.setAttribute(LABEL_TEXT, toXML(sw.getLabel()));
@@ -246,7 +246,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     theShape.setAttribute(LINE_THICKNESS, writeThis(sw.getLineThickness()));
 
     // and the font
-    java.awt.Font theFont = sw.getFont();
+    final java.awt.Font theFont = sw.getFont();
     if (sw != null)
     {
       FontHandler.exportFont(theFont, theShape, doc);

@@ -21,7 +21,7 @@ public class CachedTickDateAxis extends DateAxis
 	 * 
 	 * @param string
 	 */
-	public CachedTickDateAxis(String string)
+	public CachedTickDateAxis(final String string)
 	{
 		super(string);
 	}
@@ -39,8 +39,8 @@ public class CachedTickDateAxis extends DateAxis
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected List refreshTicksVertical(Graphics2D g2, Rectangle2D dataArea,
-			RectangleEdge edge)
+	protected List refreshTicksVertical(final Graphics2D g2, final Rectangle2D dataArea,
+			final RectangleEdge edge)
 	{
 		if(_myTicks == null)
 			_myTicks =  super.refreshTicksVertical(g2, dataArea, edge);

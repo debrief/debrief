@@ -59,7 +59,7 @@ public class DiagonalLocationPropertyEditor extends PropertyEditorSupport
 
   public String[] getTags()
   {
-    String tags[] = {"Top Left",
+    final String tags[] = {"Top Left",
                      "Top Right",
                      "Bottom Left",
                      "Bottom Right"};
@@ -73,7 +73,7 @@ public class DiagonalLocationPropertyEditor extends PropertyEditorSupport
 
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Integer)
     {
@@ -81,12 +81,12 @@ public class DiagonalLocationPropertyEditor extends PropertyEditorSupport
     }
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     if(val.equals("Top Left")||val.equals("TopLeft"))
       _myDiagonalLocation = new Integer(TOP_LEFT);

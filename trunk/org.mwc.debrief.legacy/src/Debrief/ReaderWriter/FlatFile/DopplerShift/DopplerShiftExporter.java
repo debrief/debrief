@@ -48,7 +48,7 @@ public class DopplerShiftExporter
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public ExportException(String message)
+		public ExportException(final String message)
 		{
 			super(message);
 		}
@@ -74,9 +74,9 @@ public class DopplerShiftExporter
 
 		String res2 = null;
 
-		boolean onlyVis = true;
-		TrackWrapper sensorHost = (TrackWrapper) primaryTrack;
-		TrackWrapper targetTrack = (TrackWrapper) secondaryTracks[0];
+		final boolean onlyVis = true;
+		final TrackWrapper sensorHost = (TrackWrapper) primaryTrack;
+		final TrackWrapper targetTrack = (TrackWrapper) secondaryTracks[0];
 
 		// store the frequency doublets
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
@@ -85,23 +85,23 @@ public class DopplerShiftExporter
 		double baseFreq = -1;
 
 		// friendly fix-wrapper to save us repeatedly creating it
-		FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
+		final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
 				0.0, 0.0));
 
 		// loop through our sensor data
-		Enumeration<Editable> sensors = sensorHost.getSensors().elements();
+		final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
 		if (sensors != null)
 		{
 			System.out.println("-------------------");
 			while (sensors.hasMoreElements())
 			{
-				SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
+				final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
 				if (!onlyVis || (onlyVis && wrapper.getVisible()))
 				{
-					Enumeration<Editable> cuts = wrapper.elements();
+					final Enumeration<Editable> cuts = wrapper.elements();
 					while (cuts.hasMoreElements())
 					{
-						SensorContactWrapper scw = (SensorContactWrapper) cuts
+						final SensorContactWrapper scw = (SensorContactWrapper) cuts
 								.nextElement();
 						if (!onlyVis || (onlyVis && scw.getVisible()))
 						{
@@ -113,25 +113,25 @@ public class DopplerShiftExporter
 								// right, get the track segment and fix nearest to
 								// this
 								// DTG
-								Enumeration<Editable> trkData = targetTrack.elements();
-								Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
+								final Enumeration<Editable> trkData = targetTrack.elements();
+								final Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
 
 								while (trkData.hasMoreElements())
 								{
 
-									Editable thisI = trkData.nextElement();
+									final Editable thisI = trkData.nextElement();
 									if (thisI instanceof SegmentList)
 									{
-										SegmentList thisList = (SegmentList) thisI;
-										Enumeration<Editable> theElements = thisList.elements();
+										final SegmentList thisList = (SegmentList) thisI;
+										final Enumeration<Editable> theElements = thisList.elements();
 										while (theElements.hasMoreElements())
 										{
 
-											TrackSegment ts = (TrackSegment) theElements
+											final TrackSegment ts = (TrackSegment) theElements
 													.nextElement();
 											
 											// check it's in our period
-											BaseTimePeriod bp = new BaseTimePeriod(ts.startDTG(), ts.endDTG());
+											final BaseTimePeriod bp = new BaseTimePeriod(ts.startDTG(), ts.endDTG());
 											if(bp.overlaps(period))
 												_theSegments.add(ts);
 										}
@@ -139,10 +139,10 @@ public class DopplerShiftExporter
 									}
 									if (thisI instanceof TrackSegment)
 									{
-										TrackSegment ts = (TrackSegment) thisI;
+										final TrackSegment ts = (TrackSegment) thisI;
 										
 										// check it's in our period
-										BaseTimePeriod bp = new BaseTimePeriod(ts.startDTG(), ts.endDTG());
+										final BaseTimePeriod bp = new BaseTimePeriod(ts.startDTG(), ts.endDTG());
 										if(bp.overlaps(period))
 											_theSegments.add(ts);
 									}
@@ -154,12 +154,12 @@ public class DopplerShiftExporter
 								}
 								else
 								{
-									Iterator<TrackSegment> iter = _theSegments.iterator();
+									final Iterator<TrackSegment> iter = _theSegments.iterator();
 									while (iter.hasNext())
 									{
-										TrackSegment ts = iter.next();
+										final TrackSegment ts = iter.next();
 
-										TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(
+										final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(
 												ts.startDTG(), ts.endDTG());
 										if (validPeriod.contains(scw.getDTG()))
 										{
@@ -170,15 +170,15 @@ public class DopplerShiftExporter
 											index.getFix().setTime(scw.getDTG());
 
 											// and find any matching items
-											SortedSet<Editable> items = ts.tailSet(index);
+											final SortedSet<Editable> items = ts.tailSet(index);
 											targetFix = (FixWrapper) items.first();
 
 											// do we have base freq?
 											if (targetParent instanceof CoreTMASegment)
 											{
-												CoreTMASegment tmaSeg = (CoreTMASegment) targetParent;
+												final CoreTMASegment tmaSeg = (CoreTMASegment) targetParent;
 
-												double thisFreq = tmaSeg.getBaseFrequency();
+												final double thisFreq = tmaSeg.getBaseFrequency();
 
 												if (baseFreq == -1)
 												{
@@ -197,7 +197,7 @@ public class DopplerShiftExporter
 								}
 							}
 
-							Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
 							if ((matches != null) && (matches.length > 0))
 							{
 
@@ -205,7 +205,7 @@ public class DopplerShiftExporter
 								// FixWrapper hostFix = (FixWrapper) matches[0];
 
 								// put the sensor location into the
-								FixWrapper hostFix = sensorHost.getBacktraceTo(scw.getDTG(), wrapper.getSensorOffset(),wrapper.getWormInHole());
+								final FixWrapper hostFix = sensorHost.getBacktraceTo(scw.getDTG(), wrapper.getSensorOffset(),wrapper.getWormInHole());
 								
 								
 								final Doublet thisDub = new Doublet(scw, targetFix,
@@ -255,7 +255,7 @@ public class DopplerShiftExporter
 		res2 += "\n";
 
 		// now the cuts
-		Iterator<Doublet> iter = res.iterator();
+		final Iterator<Doublet> iter = res.iterator();
 		while (iter.hasNext())
 		{
 			res2 += exportThis(iter.next());
@@ -265,7 +265,7 @@ public class DopplerShiftExporter
 		return res2;
 	}
 
-	private String exportThis(Doublet doublet)
+	private String exportThis(final Doublet doublet)
 	{
 		String res = formatThis(doublet.getDTG().getDate());
 		res += ",";
@@ -282,9 +282,9 @@ public class DopplerShiftExporter
 	 *          the date to format
 	 * @return the formatted date
 	 */
-	static protected String formatThis(Date val)
+	static protected String formatThis(final Date val)
 	{
-		DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
+		final DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return df.format(val);
 	}

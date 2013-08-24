@@ -17,16 +17,16 @@ import MWC.GUI.Layers;
 public class ImportGPX
 {
 
-	public static void doImport(Layers theLayers, InputStream inputStream,
-			String fileName)
+	public static void doImport(final Layers theLayers, final InputStream inputStream,
+			final String fileName)
 	{
-		GpxHelper helper = new JaxbGpxHelper();
+		final GpxHelper helper = new JaxbGpxHelper();
 		helper.unmarshall(inputStream, theLayers);
 	}
 	
-	public static void doExport(Layers theLayers, File outputFile)
+	public static void doExport(final Layers theLayers, final File outputFile)
 	{
-		GpxHelper helper = new JaxbGpxHelper();
+		final GpxHelper helper = new JaxbGpxHelper();
 		helper.marshall(theLayers, outputFile);
 	}
 

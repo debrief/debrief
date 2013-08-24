@@ -163,7 +163,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception
+	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
 
@@ -171,7 +171,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		// issues,
 		// if we don't try to get an image reader right at the start of the app,
 		// we can't get a TIFF loader later on.
-		Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
+		final Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
 		if (!iter2.hasNext())
 		{
 			logError(Status.ERROR,
@@ -222,7 +222,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception
+	public void stop(final BundleContext context) throws Exception
 	{
 		super.stop(context);
 		plugin = null;
@@ -249,28 +249,28 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
 	 */
-	public static String getResourceString(String key)
+	public static String getResourceString(final String key)
 	{
-		ResourceBundle bundle = CorePlugin.getDefault().getResourceBundle();
+		final ResourceBundle bundle = CorePlugin.getDefault().getResourceBundle();
 		try
 		{
 			return (bundle != null) ? bundle.getString(key) : key;
 		}
-		catch (MissingResourceException e)
+		catch (final MissingResourceException e)
 		{
 			return key;
 		}
 	}
 
-	public static void writeToClipboard(String txt)
+	public static void writeToClipboard(final String txt)
 	{
 
 		// create the clipboard buffer
-		java.awt.datatransfer.Clipboard clip = java.awt.Toolkit.getDefaultToolkit()
+		final java.awt.datatransfer.Clipboard clip = java.awt.Toolkit.getDefaultToolkit()
 				.getSystemClipboard();
 
 		// put the string in a holder
-		StringSelection sel = new java.awt.datatransfer.StringSelection(txt);
+		final StringSelection sel = new java.awt.datatransfer.StringSelection(txt);
 
 		// and put it on the clipboard
 		clip.setContents(sel, null);
@@ -318,7 +318,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 				resourceBundle = ResourceBundle
 						.getBundle("org.mwc.cmap.core.CorePluginResources");
 		}
-		catch (MissingResourceException x)
+		catch (final MissingResourceException x)
 		{
 			resourceBundle = null;
 		}
@@ -332,11 +332,11 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	public static void editThisInProperties(
 			final Vector<ISelectionChangedListener> selectionListeners,
 			final StructuredSelection asSelection,
-			final ISelectionProvider selectionProvider, IWorkbenchPart parentPart)
+			final ISelectionProvider selectionProvider, final IWorkbenchPart parentPart)
 	{
 		// hey, better make sure the properties window is open
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		final IWorkbenchPage page = win.getActivePage();
 
 		// get ready for the start/end times
@@ -359,7 +359,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 					{
 						Thread.sleep(100);
 					}
-					catch (InterruptedException e)
+					catch (final InterruptedException e)
 					{
 						CorePlugin.logError(Status.ERROR, "Property edit interruption", e);
 					}
@@ -367,12 +367,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 					// now update the selection
 					if (selectionListeners != null)
 					{
-						SelectionChangedEvent sEvent = new SelectionChangedEvent(
+						final SelectionChangedEvent sEvent = new SelectionChangedEvent(
 								selectionProvider, asSelection);
-						for (Iterator<ISelectionChangedListener> stepper = selectionListeners
+						for (final Iterator<ISelectionChangedListener> stepper = selectionListeners
 								.iterator(); stepper.hasNext();)
 						{
-							ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+							final ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
 									.next();
 							if (thisL != null)
 							{
@@ -384,7 +384,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 					page.showView(IPageLayout.ID_PROP_SHEET, null,
 							IWorkbenchPage.VIEW_VISIBLE);
 				}
-				catch (PartInitException e)
+				catch (final PartInitException e)
 				{
 					logError(Status.ERROR,
 							"Failed to open properties view when showing timer properties", e);
@@ -399,7 +399,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * @param txt
 	 * @return
 	 */
-	public static WorldLocation fromClipboard(String txt)
+	public static WorldLocation fromClipboard(final String txt)
 	{
 		WorldLocation res = null;
 
@@ -407,15 +407,15 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		{
 
 			// get rid of the title
-			String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(),
+			final String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(),
 					txt.length());
-			StringTokenizer st = new StringTokenizer(dataPart);
-			String latP = st.nextToken(",");
-			String longP = st.nextToken(",");
-			String depthP = st.nextToken();
-			Double _lat = new Double(latP);
-			Double _long = new Double(longP);
-			Double _depth = new Double(depthP);
+			final StringTokenizer st = new StringTokenizer(dataPart);
+			final String latP = st.nextToken(",");
+			final String longP = st.nextToken(",");
+			final String depthP = st.nextToken();
+			final Double _lat = new Double(latP);
+			final Double _long = new Double(longP);
+			final Double _depth = new Double(depthP);
 			res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(),
 					_depth.doubleValue());
 		}
@@ -423,27 +423,27 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		{
 			// see what else we can sort out
 			// get a stream from the string
-			StringTokenizer st = new StringTokenizer(txt.trim());
+			final StringTokenizer st = new StringTokenizer(txt.trim());
 
-			int numTokens = st.countTokens();
+			final int numTokens = st.countTokens();
 
 			if (numTokens == 2)
 			{
 				try
 				{
 
-					String firstItem = st.nextToken(" \t");
-					String secondItem = st.nextToken();
+					final String firstItem = st.nextToken(" \t");
+					final String secondItem = st.nextToken();
 
 					if (firstItem != null && secondItem != null)
 					{
 						// hey, go for it
-						double latVal = Double.parseDouble(firstItem);
-						double longVal = Double.parseDouble(secondItem);
+						final double latVal = Double.parseDouble(firstItem);
+						final double longVal = Double.parseDouble(secondItem);
 						res = new WorldLocation(latVal, longVal, 0d);
 					}
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"whilst trying to get (lat,long) location off clipboard", e);
@@ -451,17 +451,17 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			}
 			else if (txt.contains("\t")) { //tab delimiter indicates the presence of a property name
 				//Example : Location	 05�17'37.76"N 030�49'45.33"E
-				String subString = txt.substring(txt.indexOf("\t")).trim();
-				StringTokenizer latLong=new StringTokenizer(subString);
+				final String subString = txt.substring(txt.indexOf("\t")).trim();
+				final StringTokenizer latLong=new StringTokenizer(subString);
 				if(latLong.countTokens() == 2) {
-					String latString = latLong.nextToken();
-					String longString = latLong.nextToken();
+					final String latString = latLong.nextToken();
+					final String longString = latLong.nextToken();
 					try {
 						//For some reason it is now represented as a " rather than \u2032"
-						Sexagesimal latVal = SexagesimalSupport._DD_MM_SS_SSS.parse(latString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), false);
-						Sexagesimal longVal = SexagesimalSupport._DD_MM_SS_SSS.parse(longString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), true);
+						final Sexagesimal latVal = SexagesimalSupport._DD_MM_SS_SSS.parse(latString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), false);
+						final Sexagesimal longVal = SexagesimalSupport._DD_MM_SS_SSS.parse(longString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), true);
 						res = new WorldLocation(latVal.getCombinedDegrees(), longVal.getCombinedDegrees(), 0d);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						// TODO Auto-generated catch block
 						CorePlugin.logError(Status.ERROR,
 								"whilst trying to get (lat,long) location off clipboard", e);
@@ -477,18 +477,18 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			{
 				try
 				{
-					Double latDegs = Double.parseDouble(st.nextToken());
-					Double latMin = Double.parseDouble(st.nextToken());
-					Double latSec = Double.parseDouble(st.nextToken());
-					char latHem = st.nextToken().charAt(0);
-					Double longDegs = Double.parseDouble(st.nextToken());
-					Double longMin = Double.parseDouble(st.nextToken());
-					Double longSec = Double.parseDouble(st.nextToken());
-					char longHem = st.nextToken().charAt(0);
+					final Double latDegs = Double.parseDouble(st.nextToken());
+					final Double latMin = Double.parseDouble(st.nextToken());
+					final Double latSec = Double.parseDouble(st.nextToken());
+					final char latHem = st.nextToken().charAt(0);
+					final Double longDegs = Double.parseDouble(st.nextToken());
+					final Double longMin = Double.parseDouble(st.nextToken());
+					final Double longSec = Double.parseDouble(st.nextToken());
+					final char longHem = st.nextToken().charAt(0);
 					res = new WorldLocation(latDegs, latMin, latSec, latHem, longDegs,
 							longMin, longSec, longHem, 0);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin
 							.logError(
@@ -501,16 +501,16 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			{
 				try
 				{
-					Double latDegs = Double.parseDouble(st.nextToken());
-					Double latMin = Double.parseDouble(st.nextToken());
-					char latHem = st.nextToken().charAt(0);
-					Double longDegs = Double.parseDouble(st.nextToken());
-					Double longMin = Double.parseDouble(st.nextToken());
-					char longHem = st.nextToken().charAt(0);
+					final Double latDegs = Double.parseDouble(st.nextToken());
+					final Double latMin = Double.parseDouble(st.nextToken());
+					final char latHem = st.nextToken().charAt(0);
+					final Double longDegs = Double.parseDouble(st.nextToken());
+					final Double longMin = Double.parseDouble(st.nextToken());
+					final char longHem = st.nextToken().charAt(0);
 					res = new WorldLocation(latDegs, latMin, 0, latHem, longDegs,
 							longMin, 0, longHem, 0);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin
 							.logError(
@@ -531,9 +531,9 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * @param loc
 	 * @return
 	 */
-	public static String toClipboard(WorldLocation loc)
+	public static String toClipboard(final WorldLocation loc)
 	{
-		String res = LOCATION_STRING_IDENTIFIER + loc.getLat() + ","
+		final String res = LOCATION_STRING_IDENTIFIER + loc.getLat() + ","
 				+ loc.getLong() + "," + loc.getDepth();
 		return res;
 	}
@@ -546,7 +546,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 *          the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path)
+	public static ImageDescriptor getImageDescriptor(final String path)
 	{
 		return AbstractUIPlugin
 				.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
@@ -563,12 +563,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logError(int severity, String message, Throwable exception)
+	public static void logError(final int severity, final String message, final Throwable exception)
 	{
-		CorePlugin singleton = getDefault();
+		final CorePlugin singleton = getDefault();
 		if (singleton != null)
 		{
-			Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK,
+			final Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK,
 					message, exception);
 			singleton.getLog().log(stat);
 		}
@@ -583,7 +583,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		return plugin._imageRegistry;
 	}
 
-	public static Image getImageFromRegistry(ImageDescriptor name)
+	public static Image getImageFromRegistry(final ImageDescriptor name)
 	{
 		Image res = null;
 
@@ -606,7 +606,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		return res;
 	}
 
-	public static Image getImageFromRegistry(String name)
+	public static Image getImageFromRegistry(final String name)
 	{
 		Image res = null;
 
@@ -621,7 +621,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 		if (res == null)
 		{
-			ImageDescriptor desc = getImageDescriptor("icons/" + name);
+			final ImageDescriptor desc = getImageDescriptor("icons/" + name);
 			getRegistry().put(name, desc);
 			res = getRegistry().get(name);
 		}
@@ -654,7 +654,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * @param theAction
 	 *          the action to run...
 	 */
-	public static void run(IUndoableOperation theAction)
+	public static void run(final IUndoableOperation theAction)
 	{
 		// check the action arrived...
 		if (theAction != null)
@@ -666,7 +666,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 				getHistory().execute(theAction, null, null);
 
 			}
-			catch (ExecutionException e)
+			catch (final ExecutionException e)
 			{
 				logError(Status.ERROR, "Whilst adding new action to history buffer", e);
 			}
@@ -680,23 +680,23 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	
 	public static IWorkbenchPage getActivePage()
 	{
-		IWorkbenchWindow activeWindow = getActiveWindow();
+		final IWorkbenchWindow activeWindow = getActiveWindow();
 		if (activeWindow == null)
 			return null;
 		return activeWindow.getActivePage();
 	}
 
-	public static IViewPart openView(String viewName)
+	public static IViewPart openView(final String viewName)
 	{
 		IViewPart res = null;
 		try
 		{
-			IWorkbenchPage page = getActivePage();
+			final IWorkbenchPage page = getActivePage();
 			// right, open the view.
 			if (page != null)
 				res = page.showView(viewName);
 		}
-		catch (PartInitException e)
+		catch (final PartInitException e)
 		{
 			logError(Status.ERROR, "Failed to open " + viewName + "view", e);
 		}
@@ -704,9 +704,9 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	}
 
 	
-	public static IViewPart findView(String viewId)
+	public static IViewPart findView(final String viewId)
 	{
-		IWorkbenchPage page = getActivePage();
+		final IWorkbenchPage page = getActivePage();
 		if (page !=null)
 			return page.findView(viewId);
 		return null;
@@ -714,7 +714,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	
 	public static boolean isActivePart(final IWorkbenchPart part)
 	{ 
-		IWorkbenchPage activePage = getActivePage();
+		final IWorkbenchPage activePage = getActivePage();
 		if (activePage == null)
 			return false;
 		// obtain active page from WorkbenchWindow
@@ -737,7 +737,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		if (description == null)
 			description = "Help";
 
-		Action res = new Action(description, Action.AS_PUSH_BUTTON)
+		final Action res = new Action(description, Action.AS_PUSH_BUTTON)
 		{
 			public void run()
 			{
@@ -763,19 +763,19 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, context);
 	}
 
-	public static IViewPart openSecondaryView(String viewName,
-			String secondaryId, int state)
+	public static IViewPart openSecondaryView(final String viewName,
+			final String secondaryId, final int state)
 	{
 		IViewPart res = null;
 		try
 		{
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
+			final IWorkbench wb = PlatformUI.getWorkbench();
+			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			final IWorkbenchPage page = win.getActivePage();
 			// right, open the view.
 			res = page.showView(viewName, secondaryId, state);
 		}
-		catch (PartInitException e)
+		catch (final PartInitException e)
 		{
 			logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
 		}
@@ -784,16 +784,16 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 	public SexagesimalFormat getLocationFormat()
 	{
-		IPreferenceStore preferenceStore = getPreferenceStore();
-		boolean noSeconds = preferenceStore
+		final IPreferenceStore preferenceStore = getPreferenceStore();
+		final boolean noSeconds = preferenceStore
 				.getBoolean(PREF_BASE60_FORMAT_NO_SECONDS);
 		return noSeconds ? SexagesimalSupport._DD_MM_MMM
 				: SexagesimalSupport._DD_MM_SS_SSS;
 	}
 
 	@Override
-	public void lostOwnership(java.awt.datatransfer.Clipboard arg0,
-			Transferable arg1)
+	public void lostOwnership(final java.awt.datatransfer.Clipboard arg0,
+			final Transferable arg1)
 	{
 		// don't worry, just ignore it
 	}
@@ -855,12 +855,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * Throws an error if there is more than one extensions of this kind.
 	 * @param registry
 	 */
-	private void evaluateEarthModelProviderExtension(IExtensionRegistry registry) throws CoreException {
-		IConfigurationElement[] config =
+	private void evaluateEarthModelProviderExtension(final IExtensionRegistry registry) throws CoreException {
+		final IConfigurationElement[] config =
 				registry.getConfigurationElementsFor(EARTH_MODEL_PROVIDER);
 		int extension_count = 0;
 		Object extension = null;
-		for (IConfigurationElement e : config) {
+		for (final IConfigurationElement e : config) {
 				final Object o =
 						e.createExecutableExtension("class");
 				if (o instanceof IEarthModelProvider) {
@@ -875,16 +875,16 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	}
 	
 	private void executeExtension(final Object o) {
-		ISafeRunnable runnable = new ISafeRunnable() {
+		final ISafeRunnable runnable = new ISafeRunnable() {
 			@Override
-			public void handleException(Throwable e) {
+			public void handleException(final Throwable e) {
 				CorePlugin.logError(Status.ERROR, "Exception in providing Earth model", e);
 			}
 
 			@Override
 			public void run() throws Exception {
 			//Setting GeodeticCalculator Adapter as the default Earth model
-	    	EarthModel model = ((IEarthModelProvider) o).getEarthModel(); 
+	    	final EarthModel model = ((IEarthModelProvider) o).getEarthModel(); 
 	  		MWC.GenericData.WorldLocation.setModel(model);  
 	      }
 	    };

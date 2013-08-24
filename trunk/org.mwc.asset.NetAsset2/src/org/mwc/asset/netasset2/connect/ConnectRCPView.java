@@ -26,16 +26,16 @@ public class ConnectRCPView extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
-		StringProvider stringProvider = new StringProvider()
+		final StringProvider stringProvider = new StringProvider()
 		{
 
 			@Override
-			public String getString(String title, String message)
+			public String getString(final String title, final String message)
 			{
 				String res = null;
-				InputDialog dialog = new InputDialog(Display.getDefault()
+				final InputDialog dialog = new InputDialog(Display.getDefault()
 						.getActiveShell(), title, message, _lastIPAddress, null); // new
 																																			// input
 																																			// dialog
@@ -51,7 +51,7 @@ public class ConnectRCPView extends ViewPart
 	}
 
 	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
 		// do the parent bit
 		super.init(site, memento);
@@ -59,14 +59,14 @@ public class ConnectRCPView extends ViewPart
 		if (memento != null)
 		{
 			// now restore my state
-			String lastA = memento.getString(LAST_IP);
+			final String lastA = memento.getString(LAST_IP);
 			if (lastA != null)
 				_lastIPAddress = lastA;
 		}
 	}
 
 	@Override
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		super.saveState(memento);
 
@@ -75,7 +75,7 @@ public class ConnectRCPView extends ViewPart
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 

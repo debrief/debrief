@@ -167,7 +167,7 @@ public class ToteView extends ViewPart
 	 * This is a callback that will allow us to create the _tableViewer and
 	 * initialize it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		// _tempStatus = new Label(parent, SWT.NONE);
 		// _tempStatus.setText("pending");
@@ -196,10 +196,10 @@ public class ToteView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						TrackManager provider = (TrackManager) part;
+						final TrackManager provider = (TrackManager) part;
 
 						// is this different to our current one?
 						if (provider != _trackData)
@@ -210,8 +210,8 @@ public class ToteView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						if (part == _trackData)
 						{
@@ -224,8 +224,8 @@ public class ToteView extends ViewPart
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// just check we're not already looking at it
 						if (part != _myTemporalDataset)
@@ -244,10 +244,10 @@ public class ToteView extends ViewPart
 							{
 								_temporalListener = new PropertyChangeListener()
 								{
-									public void propertyChange(PropertyChangeEvent event)
+									public void propertyChange(final PropertyChangeEvent event)
 									{
 										// ok, use the new time
-										HiResDate newDTG = (HiResDate) event.getNewValue();
+										final HiResDate newDTG = (HiResDate) event.getNewValue();
 										timeUpdated(newDTG);
 									}
 								};
@@ -264,8 +264,8 @@ public class ToteView extends ViewPart
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// was it our one?
 						if (_myTemporalDataset == part)
@@ -300,34 +300,34 @@ public class ToteView extends ViewPart
 		// // return;
 		// }
 
-		Table tbl = _tableViewer.getTable();
+		final Table tbl = _tableViewer.getTable();
 		tbl.setEnabled(true);
 
 		// ok, remove all of the columns
-		TableColumn[] cols = tbl.getColumns();
+		final TableColumn[] cols = tbl.getColumns();
 		for (int i = 0; i < cols.length; i++)
 		{
-			TableColumn column = cols[i];
+			final TableColumn column = cols[i];
 			column.dispose();
 		}
 
-		TableLayout layout = new TableLayout();
+		final TableLayout layout = new TableLayout();
 		tbl.setLayout(layout);
 
 		// first put in the labels
 		layout.addColumnData(new ColumnWeightData(5, true));
-		TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
+		final TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
 		tc0.setText("Calculation");
 
 		if (_trackData != null)
 		{
 			// first sort out the primary track column
-			WatchableList priTrack = _trackData.getPrimaryTrack();
+			final WatchableList priTrack = _trackData.getPrimaryTrack();
 			// if (priTrack != null)
 			// {
 
 			layout.addColumnData(new ColumnWeightData(10, true));
-			TableColumn pri = new TableColumn(tbl, SWT.NONE);
+			final TableColumn pri = new TableColumn(tbl, SWT.NONE);
 
 			if (priTrack != null)
 				pri.setText(priTrack.getName());
@@ -335,17 +335,17 @@ public class ToteView extends ViewPart
 				pri.setText("n/a");
 
 			// and now the secondary track columns
-			WatchableList[] secTracks = _trackData.getSecondaryTracks();
+			final WatchableList[] secTracks = _trackData.getSecondaryTracks();
 
 			if (secTracks != null)
 			{
 				for (int i = 0; i < secTracks.length; i++)
 				{
-					WatchableList secTrack = secTracks[i];
+					final WatchableList secTrack = secTracks[i];
 					if (secTrack != null)
 					{
 						layout.addColumnData(new ColumnWeightData(10, true));
-						TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+						final TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
 						thisSec.setText(secTrack.getName());
 					}
 				}
@@ -357,7 +357,7 @@ public class ToteView extends ViewPart
 		{
 			// and the units column
 			layout.addColumnData(new ColumnWeightData(5, true));
-			TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+			final TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
 			thisSec.setText("Units");
 		}
 	}
@@ -366,21 +366,21 @@ public class ToteView extends ViewPart
 	 * @param parent
 	 *          what we have to fit into
 	 */
-	private static Table createTableWithColumns(Composite parent)
+	private static Table createTableWithColumns(final Composite parent)
 	{
-		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL
+		final Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.FULL_SELECTION);
 
 		table.setLinesVisible(true);
 
-		TableLayout layout = new TableLayout();
+		final TableLayout layout = new TableLayout();
 		table.setLayout(layout);
 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
 		layout.addColumnData(new ColumnWeightData(5, 40, true));
-		TableColumn tc0 = new TableColumn(table, SWT.NONE);
+		final TableColumn tc0 = new TableColumn(table, SWT.NONE);
 		tc0.setText("Calculation");
 		tc0.setAlignment(SWT.LEFT);
 		tc0.setResizable(true);
@@ -394,7 +394,7 @@ public class ToteView extends ViewPart
 	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite,
 	 * org.eclipse.ui.IMemento)
 	 */
-	public void init(IViewSite site, IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
 		// let the parent do its bits
 		super.init(site, memento);
@@ -410,7 +410,7 @@ public class ToteView extends ViewPart
 		// are we showing the units column?
 		if (memento != null)
 		{
-			String unitsVal = memento.getString(SHOW_UNITS);
+			final String unitsVal = memento.getString(SHOW_UNITS);
 			if (unitsVal != null)
 			{
 				_showUnits
@@ -421,10 +421,10 @@ public class ToteView extends ViewPart
 		// ok - declare and load the supplemental plugins which can load datafiles
 		initialiseCalcLoaders();
 
-		toteCalculation[] calcs = _loader.findCalculations();
+		final toteCalculation[] calcs = _loader.findCalculations();
 		for (int i = 0; i < calcs.length; i++)
 		{
-			toteCalculation thisCalc = calcs[i];
+			final toteCalculation thisCalc = calcs[i];
 			_myCalculations.add(thisCalc);
 		}
 	}
@@ -434,12 +434,12 @@ public class ToteView extends ViewPart
 	 * 
 	 * @param memento
 	 */
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		// let our parent go for it first
 		super.saveState(memento);
 
-		String unitsVal = Boolean.toString(_showUnits.isChecked());
+		final String unitsVal = Boolean.toString(_showUnits.isChecked());
 		memento.putString(SHOW_UNITS, unitsVal);
 	}
 
@@ -457,10 +457,10 @@ public class ToteView extends ViewPart
 			 * org.eclipse.jface.action.Action#runWithEvent(org.eclipse.swt.widgets
 			 * .Event)
 			 */
-			public void runWithEvent(Event event)
+			public void runWithEvent(final Event event)
 			{
 				// cool. sorted.
-				int index = findSelectedColumn(event.x, event.y, _tableViewer
+				final int index = findSelectedColumn(event.x, event.y, _tableViewer
 						.getTable());
 				if (index != -1)
 				{
@@ -507,7 +507,7 @@ public class ToteView extends ViewPart
 	 *          - as we scan through the layers, only put TrackWrappers onto the
 	 *          tote
 	 */
-	protected void autoGenerate(boolean onlyAssignTracks)
+	protected void autoGenerate(final boolean onlyAssignTracks)
 	{
 		if (_trackData != null)
 			_trackData.autoAssign(onlyAssignTracks);
@@ -537,21 +537,21 @@ public class ToteView extends ViewPart
 
 	private void hookContextMenu()
 	{
-		Table theTable = _tableViewer.getTable();
+		final Table theTable = _tableViewer.getTable();
 		theTable.addMouseListener(new MouseAdapter()
 		{
-			public void mouseUp(MouseEvent e)
+			public void mouseUp(final MouseEvent e)
 			{
 				// so, right-click>
 				if (e.button == 3)
 				{
 					// cool. sorted.
-					int index = findSelectedColumn(e.x, e.y, _tableViewer.getTable());
+					final int index = findSelectedColumn(e.x, e.y, _tableViewer.getTable());
 					if (index != -1)
 					{
-						MenuManager mmgr = new MenuManager();
+						final MenuManager mmgr = new MenuManager();
 						fillContextMenu(mmgr, index);
-						Menu thisM = mmgr.createContextMenu(_tableViewer.getTable());
+						final Menu thisM = mmgr.createContextMenu(_tableViewer.getTable());
 						thisM.setVisible(true);
 					}
 
@@ -582,12 +582,12 @@ public class ToteView extends ViewPart
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		// manager.add(new Separator());
 		manager.add(_autoGenerate);
@@ -600,7 +600,7 @@ public class ToteView extends ViewPart
 
 	}
 
-	void fillContextMenu(IMenuManager manager, final int index)
+	void fillContextMenu(final IMenuManager manager, final int index)
 	{
 		// -------------------------------------------------------
 		// Toggle filter action
@@ -613,7 +613,7 @@ public class ToteView extends ViewPart
 			 * org.eclipse.jface.action.Action#runWithEvent(org.eclipse.swt.widgets
 			 * .Event)
 			 */
-			public void runWithEvent(Event event)
+			public void runWithEvent(final Event event)
 			{
 				// ok, is this the primary?
 				if (index == 1)
@@ -624,7 +624,7 @@ public class ToteView extends ViewPart
 				else
 				{
 					// ok, inform the removal of the secondary
-					WatchableList thisSec = _trackData.getSecondaryTracks()[index - 2];
+					final WatchableList thisSec = _trackData.getSecondaryTracks()[index - 2];
 					_trackData.removeSecondary(thisSec);
 				}
 			}
@@ -638,7 +638,7 @@ public class ToteView extends ViewPart
 		manager.add(_removeTrackAction);
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		// manager.add(action1);
 		// manager.add(action2);
@@ -661,7 +661,7 @@ public class ToteView extends ViewPart
 	 * @param part
 	 * @param parentPart
 	 */
-	void storeDetails(TrackManager part, IWorkbenchPart parentPart)
+	void storeDetails(final TrackManager part, final IWorkbenchPart parentPart)
 	{
 		// hmm - are we already looking at this one?
 		if (part != _trackData)
@@ -679,8 +679,8 @@ public class ToteView extends ViewPart
 			// lastly listen out for any future changes
 			part.addTrackDataListener(new TrackDataListener()
 			{
-				public void tracksUpdated(WatchableList primary,
-						WatchableList[] secondaries)
+				public void tracksUpdated(final WatchableList primary,
+						final WatchableList[] secondaries)
 				{
 					// ok - now update the content of our table
 					redoTableAfterTrackChanges();
@@ -703,7 +703,7 @@ public class ToteView extends ViewPart
 		// and fire the update
 		_tableViewer.getTable().layout(true);
 
-		Color greyCol = Display.getCurrent().getSystemColor(
+		final Color greyCol = Display.getCurrent().getSystemColor(
 				SWT.COLOR_WIDGET_BACKGROUND);
 		_tableViewer.getTable().setBackground(greyCol);
 
@@ -716,23 +716,23 @@ public class ToteView extends ViewPart
 		}
 
 		// lastly color-code the columns
-		TableItem[] items = _tableViewer.getTable().getItems();
+		final TableItem[] items = _tableViewer.getTable().getItems();
 		Color thisCol = null;
 
-		WatchableList[] secs = _trackData.getSecondaryTracks();
+		final WatchableList[] secs = _trackData.getSecondaryTracks();
 		if (secs != null)
 		{
 			for (int i = 0; i < secs.length; i++)
 			{
-				WatchableList thisSec = secs[i];
+				final WatchableList thisSec = secs[i];
 				if (thisSec != null)
 				{
 					thisCol = ColorHelper.getColor(thisSec.getColor());
 					for (int j = 0; j < items.length; j++)
 					{
-						TableItem thisRow = items[j];
+						final TableItem thisRow = items[j];
 						thisRow.setForeground(2 + i, thisCol);
-						Color whiteCol = ColorHelper.getColor(new java.awt.Color(255, 255,
+						final Color whiteCol = ColorHelper.getColor(new java.awt.Color(255, 255,
 								255));
 						thisRow.setBackground(2 + i, whiteCol);
 					}
@@ -740,15 +740,15 @@ public class ToteView extends ViewPart
 			}
 		}
 
-		WatchableList pri = _trackData.getPrimaryTrack();
+		final WatchableList pri = _trackData.getPrimaryTrack();
 		if (pri != null)
 		{
 			thisCol = ColorHelper.getColor(pri.getColor());
 			for (int j = 0; j < items.length; j++)
 			{
-				TableItem thisRow = items[j];
+				final TableItem thisRow = items[j];
 				thisRow.setForeground(1, thisCol);
-				Color lightCol = ColorHelper
+				final Color lightCol = ColorHelper
 						.getColor(new java.awt.Color(240, 240, 245));
 				thisRow.setBackground(1, lightCol);
 			}
@@ -808,11 +808,11 @@ public class ToteView extends ViewPart
 		{
 
 			public toteCalculation createInstance(
-					IConfigurationElement configElement, String label)
+					final IConfigurationElement configElement, String label)
 			{
 				// get the attributes
 				label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
-				String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
+				final String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
 
 				// create the instance
 				toteCalculation res = null;
@@ -835,7 +835,7 @@ public class ToteView extends ViewPart
 		{
 		}
 
-		public Object[] getElements(Object inputElement)
+		public Object[] getElements(final Object inputElement)
 		{
 			return _myCalculations.toArray();
 		}
@@ -844,7 +844,7 @@ public class ToteView extends ViewPart
 		{
 		}
 
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput)
 		{
 		}
 	}
@@ -884,14 +884,14 @@ public class ToteView extends ViewPart
 		 * @param coreFont
 		 *          the font to base ourselves upon
 		 */
-		public ToteLabelProvider(Font coreFont)
+		public ToteLabelProvider(final Font coreFont)
 		{
 			// ok, just take a copy for the sec font
 			_secondaryFont = coreFont;
 
 			// but now generate a changed font for the primary
-			FontData[] fontData = _secondaryFont.getFontData();
-			FontData theOnly = fontData[0];
+			final FontData[] fontData = _secondaryFont.getFontData();
+			final FontData theOnly = fontData[0];
 			_primaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly
 					.getHeight(), theOnly.getStyle() | SWT.BOLD);
 			_interpolatedSecondaryFont = new Font(Display.getCurrent(), theOnly
@@ -907,17 +907,17 @@ public class ToteView extends ViewPart
 		 * 
 		 * @param theDTG
 		 */
-		public void setDTG(HiResDate theDTG)
+		public void setDTG(final HiResDate theDTG)
 		{
 			_theDTG = theDTG;
 		}
 
-		public Image getColumnImage(Object element, int columnIndex)
+		public Image getColumnImage(final Object element, final int columnIndex)
 		{
 			return null;
 		}
 
-		public Font getFont(Object element, int columnIndex)
+		public Font getFont(final Object element, final int columnIndex)
 		{
 			final Font res;
 
@@ -929,8 +929,8 @@ public class ToteView extends ViewPart
 			{
 				if (_trackData != null)
 				{
-					WatchableList _thePrimary = _trackData.getPrimaryTrack();
-					WatchableList[] secLists = _trackData.getSecondaryTracks();
+					final WatchableList _thePrimary = _trackData.getPrimaryTrack();
+					final WatchableList[] secLists = _trackData.getSecondaryTracks();
 
 					// get the data for the right col
 					if (columnIndex == 0)
@@ -948,7 +948,7 @@ public class ToteView extends ViewPart
 							// in order going across the page
 
 							// get the primary ready,
-							Watchable[] list = _thePrimary.getNearestTo(_theDTG);
+							final Watchable[] list = _thePrimary.getNearestTo(_theDTG);
 							Watchable pw = null;
 							if (list.length > 0)
 								pw = list[0];
@@ -963,10 +963,10 @@ public class ToteView extends ViewPart
 							if (columnIndex - 2 < secLists.length)
 							{
 								// prepare the list of secondary watchables
-								WatchableList wList = secLists[columnIndex - 2];
+								final WatchableList wList = secLists[columnIndex - 2];
 								if (wList != null)
 								{
-									Watchable[] list = wList.getNearestTo(_theDTG);
+									final Watchable[] list = wList.getNearestTo(_theDTG);
 
 									Watchable nearest = null;
 									if (list.length > 0)
@@ -1000,10 +1000,10 @@ public class ToteView extends ViewPart
 			return res;
 		}
 
-		public String getColumnText(Object element, int columnIndex)
+		public String getColumnText(final Object element, final int columnIndex)
 		{
 			String res = null;
-			toteCalculation tc = (toteCalculation) element;
+			final toteCalculation tc = (toteCalculation) element;
 
 			// right, is this the title column?
 			if (columnIndex == 0)
@@ -1015,7 +1015,7 @@ public class ToteView extends ViewPart
 				if (_showUnits.isChecked())
 				{
 					// hmm, could it be the units column?
-					int numCols = _tableViewer.getTable().getColumnCount();
+					final int numCols = _tableViewer.getTable().getColumnCount();
 					if (columnIndex == numCols - 1)
 					{
 						res = tc.getUnits();
@@ -1028,8 +1028,8 @@ public class ToteView extends ViewPart
 			{
 				if (_trackData != null)
 				{
-					WatchableList _thePrimary = _trackData.getPrimaryTrack();
-					WatchableList[] secLists = _trackData.getSecondaryTracks();
+					final WatchableList _thePrimary = _trackData.getPrimaryTrack();
+					final WatchableList[] secLists = _trackData.getSecondaryTracks();
 
 					// check that we've got a primary
 					if (_thePrimary != null)
@@ -1039,7 +1039,7 @@ public class ToteView extends ViewPart
 						// in order going across the page
 
 						// get the primary ready,
-						Watchable[] nearestPrimaries = _thePrimary.getNearestTo(_theDTG);
+						final Watchable[] nearestPrimaries = _thePrimary.getNearestTo(_theDTG);
 						Watchable primaryFix = null;
 						Watchable[] nearestSecondaries = null;
 						Watchable secondaryFix = null;
@@ -1121,7 +1121,7 @@ public class ToteView extends ViewPart
 			return res;
 		}
 
-		public void addListener(ILabelProviderListener listener)
+		public void addListener(final ILabelProviderListener listener)
 		{
 		}
 
@@ -1129,25 +1129,25 @@ public class ToteView extends ViewPart
 		{
 		}
 
-		public boolean isLabelProperty(Object element, String property)
+		public boolean isLabelProperty(final Object element, final String property)
 		{
 			return true;
 		}
 
-		public void removeListener(ILabelProviderListener listener)
+		public void removeListener(final ILabelProviderListener listener)
 		{
 		}
 
 	}
 
-	int findSelectedColumn(int x, int y, Table table)
+	int findSelectedColumn(final int x, final int y, final Table table)
 	{
 		int index = -1;
-		TableItem[] selectedCols = table.getSelection();
+		final TableItem[] selectedCols = table.getSelection();
 		if (selectedCols != null)
 		{
-			TableItem selection = selectedCols[0];
-			TableColumn[] tc = table.getColumns();
+			final TableItem selection = selectedCols[0];
+			final TableColumn[] tc = table.getColumns();
 
 			// sort out how many c
 			int numCols = tc.length;
@@ -1156,7 +1156,7 @@ public class ToteView extends ViewPart
 
 			for (int i = 1; i < numCols; i++)
 			{
-				Rectangle bounds = selection.getBounds(i);
+				final Rectangle bounds = selection.getBounds(i);
 				if (bounds.contains(x, bounds.y))
 				{
 					index = i;

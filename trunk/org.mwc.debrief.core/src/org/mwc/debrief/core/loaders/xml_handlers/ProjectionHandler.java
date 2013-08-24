@@ -40,7 +40,7 @@ abstract class ProjectionHandler extends
 		addHandler(new LocationHandler("tl")
 		{
 			@Override
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_tl = res;
 			}
@@ -48,7 +48,7 @@ abstract class ProjectionHandler extends
 		addHandler(new LocationHandler("br")
 		{
 			@Override
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_br = res;
 			}
@@ -57,7 +57,7 @@ abstract class ProjectionHandler extends
 		addAttributeHandler(new HandleAttribute("Type")
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_type = val;
 			}
@@ -65,13 +65,13 @@ abstract class ProjectionHandler extends
 		addAttributeHandler(new HandleAttribute("Border")
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				try
 				{
 					_border = readThisDouble(val);
 				}
-				catch (java.text.ParseException pe)
+				catch (final java.text.ParseException pe)
 				{
 					MWC.Utilities.Errors.Trace.trace(pe,
 							"Failed reading in border size for projection:" + val);
@@ -81,7 +81,7 @@ abstract class ProjectionHandler extends
 		addAttributeHandler(new HandleBooleanAttribute(RELATIVE_MODE)
 		{
 			@Override
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_primaryOriented = value;
 			}
@@ -89,7 +89,7 @@ abstract class ProjectionHandler extends
 		addAttributeHandler(new HandleBooleanAttribute(PRIMARY_ORIENTED)
 		{
 			@Override
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_primaryOriented = value;
 			}
@@ -97,7 +97,7 @@ abstract class ProjectionHandler extends
 		addAttributeHandler(new HandleBooleanAttribute(PRIMARY_CENTRED)
 		{
 			@Override
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_primaryCentred = value;
 			}
@@ -106,8 +106,8 @@ abstract class ProjectionHandler extends
 	}
 
 	public static void exportProjection(
-			MWC.Algorithms.PlainProjection projection, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
+			final MWC.Algorithms.PlainProjection projection, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc)
 	{
 
 		/*
@@ -115,7 +115,7 @@ abstract class ProjectionHandler extends
 		 * border CDATA "1.0" relative (TRUE|FALSE) "FALSE" >
 		 */
 
-		Element proj = doc.createElement("projection");
+		final Element proj = doc.createElement("projection");
 
 		// first the attributes for the projection
 		proj.setAttribute("Type", "Flat");
@@ -126,7 +126,7 @@ abstract class ProjectionHandler extends
 				writeThis(projection.getPrimaryOriented()));
 
 		// and now the corners
-		WorldArea dataArea = projection.getDataArea();
+		final WorldArea dataArea = projection.getDataArea();
 		LocationHandler.exportLocation(dataArea.getTopLeft(), "tl", proj, doc);
 		LocationHandler.exportLocation(dataArea.getBottomRight(), "br", proj, doc);
 

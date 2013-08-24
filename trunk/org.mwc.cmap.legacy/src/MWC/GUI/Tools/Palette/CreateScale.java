@@ -40,16 +40,16 @@ import MWC.GUI.Chart.Painters.ScalePainter;
 
 public class CreateScale extends PlainCreate
 {
-	public CreateScale(MWC.GUI.ToolParent theParent,
-										MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
-										MWC.GUI.Layers theData,
-										MWC.GUI.PlainChart theChart)
+	public CreateScale(final MWC.GUI.ToolParent theParent,
+										final MWC.GUI.Properties.PropertiesPanel thePanel,
+										final MWC.GUI.Layer theLayer,
+										final MWC.GUI.Layers theData,
+										final MWC.GUI.PlainChart theChart)
 	{
 		super(theParent, thePanel, theLayer, theData, theChart, "Scale", "images/scale.gif");
 	}
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
 	{
 		return new ScalePainter();
 	}

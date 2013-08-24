@@ -27,7 +27,7 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	public java.awt.Dimension getBounds()
 	{
 		// sort out the size of the symbol at the current scale factor
-		java.awt.Dimension res = new java.awt.Dimension(
+		final java.awt.Dimension res = new java.awt.Dimension(
 				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
 		return res;
 	}
@@ -39,7 +39,7 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	 *          parameter for paint
 	 * 
 	 */
-	public void paint(CanvasType dest, WorldLocation centre)
+	public void paint(final CanvasType dest, final WorldLocation centre)
 	{
 		paint(dest, centre, 90.0 / 180 * Math.PI);
 	}
@@ -68,35 +68,35 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	 * @param direction
 	 *          direction in Radians
 	 */
-	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
 	{
 		// set the colour
 		dest.setColor(getColor());
 
 		// get the origin in screen coordinates
-		Point centre = dest.toScreen(theLocation);
+		final Point centre = dest.toScreen(theLocation);
 
-		AffineTransform thisRotation = AffineTransform.getRotateInstance(
+		final AffineTransform thisRotation = AffineTransform.getRotateInstance(
 				direction, 0, 0);
-		AffineTransform thisTranslate = AffineTransform.getTranslateInstance(
+		final AffineTransform thisTranslate = AffineTransform.getTranslateInstance(
 				centre.x, centre.y);
-		AffineTransform thisScale = AffineTransform.getScaleInstance(getScaleVal(), getScaleVal());
+		final AffineTransform thisScale = AffineTransform.getScaleInstance(getScaleVal(), getScaleVal());
 
 		// find the lines that make up the shape
-		Vector<double[][]> hullLines = getMyCoords();
+		final Vector<double[][]> hullLines = getMyCoords();
 
 		// now for our reusable data objects
-		Point2D raw = new Point2D.Double();
-		Point2D postTurn = new Point2D.Double();
-		Point2D postScale  = new Point2D.Double();
-		Point2D postTranslate = new Point2D.Double();
+		final Point2D raw = new Point2D.Double();
+		final Point2D postTurn = new Point2D.Double();
+		final Point2D postScale  = new Point2D.Double();
+		final Point2D postTranslate = new Point2D.Double();
 
 		// start looping through the lines - to paint them
-		Iterator<double[][]> iter = hullLines.iterator();
+		final Iterator<double[][]> iter = hullLines.iterator();
 		while (iter.hasNext())
 		{
 			Point2D lastPoint = null;
-			double[][] thisLine = iter.next();
+			final double[][] thisLine = iter.next();
 			// now loop through the points
 			for (int i = 0; i < thisLine.length; i++)
 			{

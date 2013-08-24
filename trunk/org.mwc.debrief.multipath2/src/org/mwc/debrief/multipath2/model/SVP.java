@@ -37,24 +37,24 @@ public class SVP
 	 * @throws IOException
 	 *           if the file can't be found
 	 */
-	public void load(String path) throws NumberFormatException, IOException,
+	public void load(final String path) throws NumberFormatException, IOException,
 			DataFormatException
 	{
 		// ok, clear the cache - we're getting a new profile
 		_cache = new HashMap<Double, Double>();
 
-		Vector<Double> values = new Vector<Double>();
+		final Vector<Double> values = new Vector<Double>();
 
-		BufferedReader bufRdr = new BufferedReader(new FileReader(path));
+		final BufferedReader bufRdr = new BufferedReader(new FileReader(path));
 		String line = null;
 
 		// read each line of text file
 		while ((line = bufRdr.readLine()) != null)
 		{
-			StringTokenizer st = new StringTokenizer(line, ",");
+			final StringTokenizer st = new StringTokenizer(line, ",");
 			while (st.hasMoreTokens())
 			{
-				String thisE = st.nextToken();
+				final String thisE = st.nextToken();
 				if (thisE.length() > 0)
 					values.add(Double.valueOf(thisE));
 			}
@@ -66,7 +66,7 @@ public class SVP
 		if (values.size() > 0)
 		{
 			// just check the values are of the correct order
-			double sampleVal = values.elementAt(1);
+			final double sampleVal = values.elementAt(1);
 			if (sampleVal < 500)
 				throw new MultiPathModel.DataFormatException(
 						"Doesn't look like sound speed data");
@@ -83,7 +83,7 @@ public class SVP
 
 			// SPECIAL CASE: if the first depth is under 5 metres, extrapolate a
 			// point at zero metres
-			double minDepth = _depths[0];
+			final double minDepth = _depths[0];
 			if (minDepth > 0)
 			{
 				// aah, none-zero. do we have one nearby
@@ -92,11 +92,11 @@ public class SVP
 					// do we have enough to extrapolate?
 					if (_depths.length >= 2)
 					{
-						double zeroSpd = extrapolateZero(_depths[0], _speeds[0],
+						final double zeroSpd = extrapolateZero(_depths[0], _speeds[0],
 								_depths[1], _speeds[1]);
 
-						double[] tmpDepths = new double[_depths.length + 1];
-						double[] tmpSpeeds = new double[_depths.length + 1];
+						final double[] tmpDepths = new double[_depths.length + 1];
+						final double[] tmpSpeeds = new double[_depths.length + 1];
 
 						// now shove the arrays along
 						System.arraycopy(_depths, 0, tmpDepths, 1, _depths.length);
@@ -115,13 +115,13 @@ public class SVP
 		}
 	}
 
-	private static double extrapolateZero(double depthOne, double speedOne,
-			double depthTwo, double speedTwo)
+	private static double extrapolateZero(final double depthOne, final double speedOne,
+			final double depthTwo, final double speedTwo)
 	{
-		double spdDelta = speedTwo - speedOne;
-		double depthDelta = depthTwo - depthOne;
-		double gradient = spdDelta / depthDelta;
-		double zeroSpeed = speedOne - (depthOne * gradient);
+		final double spdDelta = speedTwo - speedOne;
+		final double depthDelta = depthTwo - depthOne;
+		final double gradient = spdDelta / depthDelta;
+		final double zeroSpeed = speedOne - (depthOne * gradient);
 
 		return zeroSpeed;
 	}
@@ -144,12 +144,12 @@ public class SVP
 	 *          second depth
 	 * @return
 	 */
-	public double getMeanSpeedBetween(double depthOne, double depthTwo)
+	public double getMeanSpeedBetween(final double depthOne, final double depthTwo)
 	{
 
 		Double res = null;
 
-		Double thisKey = depthOne * 1000 + depthTwo;
+		final Double thisKey = depthOne * 1000 + depthTwo;
 		
 //		String thisKey = "" + depthOne + "-" + depthTwo;
 
@@ -163,7 +163,7 @@ public class SVP
 		else
 		{
 			// get the data ready
-			LinearInterpolation interp = new LinearInterpolation(_depths, _speeds);
+			final LinearInterpolation interp = new LinearInterpolation(_depths, _speeds);
 			
 			// special case - equal depths
 			if(depthOne == depthTwo)
@@ -172,19 +172,19 @@ public class SVP
 			{
 
 			// don't have our sound speed, better calculate it.
-			double shallowDepth = Math.min(depthOne, depthTwo);
-			double deepDepth = Math.max(depthOne, depthTwo);
+			final double shallowDepth = Math.min(depthOne, depthTwo);
+			final double deepDepth = Math.max(depthOne, depthTwo);
 
 
 			// ok, first find the point before the shallow depth
-			int before = pointBefore(shallowDepth);
+			final int before = pointBefore(shallowDepth);
 
 			// did we find one?
 			if (before == -1)
 				throw new MultiPathModel.CalculationException(SHALLOW_FAIL+ " (" + deepDepth + "m)");
 
 			// now find the point after the deep depth
-			int after = pointAfter(deepDepth);
+			final int after = pointAfter(deepDepth);
 
 			if (after == -1)
 				throw new MultiPathModel.CalculationException (DEEP_FAIL + " (" + deepDepth + "m)");
@@ -196,8 +196,8 @@ public class SVP
 			// sort out the gaps
 			for (int i = before; i <= after; i++)
 			{
-				double thisDepth = _depths[i];
-				double thisSpeed = _speeds[i];
+				final double thisDepth = _depths[i];
+				final double thisSpeed = _speeds[i];
 
 				// have we passed our first loop?
 				if (lastDepth != -1)
@@ -216,9 +216,9 @@ public class SVP
 						{
 							travelInThisSeg = thisDepth - shallowDepth;
 						}
-						double lowerSpeed = interp.interpolate(shallowDepth);
-						double upperSpeed = thisSpeed;
-						double meanSpeed = (lowerSpeed + upperSpeed) / 2;
+						final double lowerSpeed = interp.interpolate(shallowDepth);
+						final double upperSpeed = thisSpeed;
+						final double meanSpeed = (lowerSpeed + upperSpeed) / 2;
 						runningMean = meanSpeed * travelInThisSeg;
 					}
 					else
@@ -227,17 +227,17 @@ public class SVP
 						if (thisDepth < deepDepth)
 						{
 							// yes, consume the whole of this section
-							double travelInThisSeg = thisDepth - lastDepth;
-							double meanSpeed = (thisSpeed + lastSpeed) / 2;
+							final double travelInThisSeg = thisDepth - lastDepth;
+							final double meanSpeed = (thisSpeed + lastSpeed) / 2;
 							runningMean += meanSpeed * travelInThisSeg;
 						}
 						else
 						{
 							// we must be in the last leg, just consume the portion we need
-							double travelInThisSeg = deepDepth - lastDepth;
-							double lowerSpeed = lastSpeed;
-							double upperSpeed = interp.interpolate(deepDepth);
-							double meanSpeed = (lowerSpeed + upperSpeed) / 2;
+							final double travelInThisSeg = deepDepth - lastDepth;
+							final double lowerSpeed = lastSpeed;
+							final double upperSpeed = interp.interpolate(deepDepth);
+							final double meanSpeed = (lowerSpeed + upperSpeed) / 2;
 							runningMean += meanSpeed * travelInThisSeg;
 						}
 					}
@@ -265,13 +265,13 @@ public class SVP
 	 * @param depth
 	 * @return
 	 */
-	private int pointBefore(double depth)
+	private int pointBefore(final double depth)
 	{
 		int res = -1;
-		int len = _depths.length;
+		final int len = _depths.length;
 		for (int i = 0; i < len; i++)
 		{
-			double thisD = _depths[i];
+			final double thisD = _depths[i];
 			if (thisD > depth)
 			{
 				// ok, passed our data value
@@ -289,13 +289,13 @@ public class SVP
 	 * @param depth
 	 * @return
 	 */
-	private int pointAfter(double depth)
+	private int pointAfter(final double depth)
 	{
 		int res = -1;
-		int len = _depths.length;
+		final int len = _depths.length;
 		for (int i = 0; i < len; i++)
 		{
-			double thisD = _depths[i];
+			final double thisD = _depths[i];
 			if (thisD >= depth)
 			{
 				res = i;
@@ -317,7 +317,7 @@ public class SVP
 
 		public void testMean()
 		{
-			SVP svp = new SVP();
+			final SVP svp = new SVP();
 
 			assertEquals("not got data", null, svp._depths);
 
@@ -325,15 +325,15 @@ public class SVP
 			{
 				svp.load(SVP_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				fail("unable to read lines");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}
@@ -356,7 +356,7 @@ public class SVP
 
 		public void testMean2()
 		{
-			SVP svp = new SVP();
+			final SVP svp = new SVP();
 
 			assertEquals("not got data", null, svp._depths);
 
@@ -364,15 +364,15 @@ public class SVP
 			{
 				svp.load(SVP_FILE2);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				fail("unable to read lines");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}
@@ -380,7 +380,7 @@ public class SVP
 			double mean;
 
 			// now for a calc that spans a SVP step
-			int surface = 0;
+			final int surface = 0;
 			int transmitter = 50;
 			int receiver = 30;
 			mean = svp.getMeanSpeedBetween(surface, transmitter);
@@ -412,7 +412,7 @@ public class SVP
 
 		public void testMissingData()
 		{
-			SVP svp = new SVP();
+			final SVP svp = new SVP();
 
 			assertEquals("not got data", null, svp._depths);
 
@@ -420,15 +420,15 @@ public class SVP
 			{
 				svp.load(SVP_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				fail("unable to read lines");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}
@@ -441,7 +441,7 @@ public class SVP
 				svp.getMeanSpeedBetween(0, 22);
 				fail("should not have found index");
 			}
-			catch (CalculationException e)
+			catch (final CalculationException e)
 			{
 				assertTrue("wrong message provided", e.getMessage().startsWith(SHALLOW_FAIL));
 			}
@@ -451,7 +451,7 @@ public class SVP
 				svp.getMeanSpeedBetween(33, 222);
 				fail("should not have found index");
 			}
-			catch (RuntimeException e)
+			catch (final RuntimeException e)
 			{
 				assertTrue("wrong message provided", e.getMessage().startsWith(DEEP_FAIL));
 			}
@@ -470,7 +470,7 @@ public class SVP
 			assertEquals("wrong extrapolated value", 8d, res);
 
 			// now try loading it
-			SVP svp = new SVP();
+			final SVP svp = new SVP();
 
 			assertEquals("not got data", null, svp._depths);
 
@@ -478,15 +478,15 @@ public class SVP
 			{
 				svp.load(SVP_FILE_NO_ZERO);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				fail("unable to read lines");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}
@@ -501,7 +501,7 @@ public class SVP
 
 		public void testIndex()
 		{
-			SVP svp = new SVP();
+			final SVP svp = new SVP();
 
 			assertEquals("not got data", null, svp._depths);
 
@@ -509,15 +509,15 @@ public class SVP
 			{
 				svp.load(SVP_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				fail("unable to read lines");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}

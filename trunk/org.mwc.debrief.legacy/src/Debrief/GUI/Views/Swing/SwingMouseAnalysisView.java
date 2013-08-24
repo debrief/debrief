@@ -31,8 +31,8 @@ public final class SwingMouseAnalysisView extends SwingAnalysisView
   /**************************************************************
    * constructor
    **************************************************************/
-  public SwingMouseAnalysisView(ToolParent theParent,
-               SwingSession theSession)
+  public SwingMouseAnalysisView(final ToolParent theParent,
+               final SwingSession theSession)
   {
     super(theParent, theSession);
   }
@@ -43,7 +43,7 @@ public final class SwingMouseAnalysisView extends SwingAnalysisView
 
 
 
-  protected final void initForm(Session theSession)
+  protected final void initForm(final Session theSession)
   {
     // do the parent first
     super.initForm(theSession);
@@ -58,7 +58,7 @@ public final class SwingMouseAnalysisView extends SwingAnalysisView
       setupMouseWheel();
 
     }
-    catch (java.lang.NoClassDefFoundError e)
+    catch (final java.lang.NoClassDefFoundError e)
     {
       System.out.println("MOUSE SUPPORT NOT AVAILABLE");
     }
@@ -74,7 +74,7 @@ public final class SwingMouseAnalysisView extends SwingAnalysisView
       {
         closeMouseWheel();
       }
-      catch (java.lang.NoClassDefFoundError e)
+      catch (final java.lang.NoClassDefFoundError e)
       {
         System.out.println("Mouse support not available");
       }

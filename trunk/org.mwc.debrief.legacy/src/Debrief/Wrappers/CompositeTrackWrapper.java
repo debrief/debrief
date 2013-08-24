@@ -95,7 +95,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						expertProp("Origin", "where this track starts", FORMAT),
 						expertProp("StartDate", "the time this track starts", FORMAT),
@@ -147,7 +147,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	 */
 	private String _lastLabelFormat = DateFormatPropertyEditor.TIME_FORMAT;
 
-	public CompositeTrackWrapper(HiResDate startDate, final WorldLocation centre)
+	public CompositeTrackWrapper(final HiResDate startDate, final WorldLocation centre)
 	{
 		super();
 
@@ -173,20 +173,20 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
-		Enumeration<Editable> numer = getSegments().elements();
+		final Enumeration<Editable> numer = getSegments().elements();
 		while (numer.hasMoreElements())
 		{
 			final PlanningSegment thisSeg = (PlanningSegment) numer.nextElement();
 			if (thisSeg.getVisible())
 			{
 				// produce a location for the end
-				FixWrapper endFix = (FixWrapper) thisSeg.last();
+				final FixWrapper endFix = (FixWrapper) thisSeg.last();
 				if (endFix != null)
 				{
 
@@ -199,7 +199,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 						private static final long serialVersionUID = 1L;
 
 						@Override
-						public void addToMe(WorldVector delta)
+						public void addToMe(final WorldVector delta)
 						{
 							super.addToMe(delta);
 
@@ -210,7 +210,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 							newBearing = MWC.Algorithms.Conversions.Rads2Degs(newBearing);
 
 							// limit the bearing to the nearest 5 deg marker
-							int m = ((int) newBearing / 10);
+							final int m = ((int) newBearing / 10);
 							newBearing = m * 10d;
 
 							// trim it to being positive
@@ -230,7 +230,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	}
 
 	@Override
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		this.getOrigin().addToMe(vector);
 		recalculate();
@@ -242,7 +242,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	}
 
 	@FireExtended
-	public void setStartDate(HiResDate startDate)
+	public void setStartDate(final HiResDate startDate)
 	{
 		this._startDate = startDate;
 		recalculate();
@@ -253,7 +253,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		return _origin;
 	}
 
-	public void setOrigin(WorldLocation origin)
+	public void setOrigin(final WorldLocation origin)
 	{
 		this._origin = origin;
 		recalculate();
@@ -291,8 +291,8 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	}
 
 	@Override
-	protected void paintThisFix(CanvasType dest, WorldLocation lastLocation,
-			FixWrapper fw)
+	protected void paintThisFix(final CanvasType dest, final WorldLocation lastLocation,
+			final FixWrapper fw)
 	{
 		// set the label format to ]my label format
 		if(_lastLabelFormat != null)
@@ -350,9 +350,9 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	public void appendReverse()
 	{
 		// ok, get the legs
-		SegmentList list = super.getSegments();
-		ArrayList<PlanningSegment> holder = new ArrayList<PlanningSegment>();
-		Enumeration<Editable> iterator = list.elements();
+		final SegmentList list = super.getSegments();
+		final ArrayList<PlanningSegment> holder = new ArrayList<PlanningSegment>();
+		final Enumeration<Editable> iterator = list.elements();
 		while (iterator.hasMoreElements())
 		{
 			// put this element at the start
@@ -360,14 +360,14 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		}
 
 		// now run the legs back in reverse
-		Iterator<PlanningSegment> iter2 = holder.iterator();
+		final Iterator<PlanningSegment> iter2 = holder.iterator();
 		while (iter2.hasNext())
 		{
-			PlanningSegment pl = iter2.next();
+			final PlanningSegment pl = iter2.next();
 
 			try
 			{
-				PlanningSegment pl2 = (PlanningSegment) pl.clone();
+				final PlanningSegment pl2 = (PlanningSegment) pl.clone();
 
 				// now reverse it
 				double newCourse = pl2.getCourse() + 180d;
@@ -381,7 +381,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 				// ok, now add it
 				this.add(pl2);
 			}
-			catch (CloneNotSupportedException e)
+			catch (final CloneNotSupportedException e)
 			{
 				e.printStackTrace();
 			}
@@ -393,7 +393,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	}
 
 	@Override
-	public void add(Editable point)
+	public void add(final Editable point)
 	{
 		if (point instanceof PlanningSegment)
 		{
@@ -411,7 +411,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 			}
 
 			// take a copy of the name, to stop it getting manmgled
-			String name = point.getName();
+			final String name = point.getName();
 
 			super.add(point);
 
@@ -429,13 +429,13 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	}
 
 	@Override
-	public void addFix(FixWrapper theFix)
+	public void addFix(final FixWrapper theFix)
 	{
 		throw new RuntimeException("can't add a fix to this composite track");
 	}
 
 	@Override
-	public void append(Layer other)
+	public void append(final Layer other)
 	{
 		throw new RuntimeException(
 				"can't add another layer to this composite track");
@@ -443,16 +443,16 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 	public void recalculate()
 	{
-		Enumeration<Editable> numer = getSegments().elements();
+		final Enumeration<Editable> numer = getSegments().elements();
 		WorldLocation thisOrigin = getOrigin();
 		HiResDate thisDate = getStartDate();
 		while (numer.hasMoreElements())
 		{
-			Editable editable = (Editable) numer.nextElement();
-			PlanningSegment seg = (PlanningSegment) editable;
+			final Editable editable = (Editable) numer.nextElement();
+			final PlanningSegment seg = (PlanningSegment) editable;
 
 			PlanningCalc theCalc = null;
-			int model = seg.getCalculation();
+			final int model = seg.getCalculation();
 			switch (model)
 			{
 			case PlanningLegCalcModelPropertyEditor.RANGE_SPEED:
@@ -470,7 +470,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 			if (seg instanceof ClosingSegment)
 			{
 				// what's the range and bearing back to the origin
-				WorldVector offset = getOrigin().subtract(thisOrigin);
+				final WorldVector offset = getOrigin().subtract(thisOrigin);
 
 				// and store it.
 				seg.setSpeedSilent(new WorldSpeed(12, WorldSpeed.Kts));
@@ -495,8 +495,8 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		}
 
 		// ok, sort out the symbol & label freq
-		HiResDate symFreq = this.getSymbolFrequency();
-		HiResDate labelFreq = this.getLabelFrequency();
+		final HiResDate symFreq = this.getSymbolFrequency();
+		final HiResDate labelFreq = this.getLabelFrequency();
 
 		this.setSymbolFrequency(new HiResDate(0));
 		this.setLabelFrequency(new HiResDate(0));
@@ -509,22 +509,22 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 	private abstract static class PlanningCalc
 	{
-		void construct(PlanningSegment seg, WorldLocation origin, HiResDate date)
+		void construct(final PlanningSegment seg, WorldLocation origin, final HiResDate date)
 		{
 			// check we have some data
 			if (date == null || origin == null)
 				return;
 
-			double timeTravelledMillis = getSecsTravelled(seg) * 1000;
+			final double timeTravelledMillis = getSecsTravelled(seg) * 1000;
 
 			// ditch the existing items
 			seg.removeAllElements();
 
 			// ok build for this segment
-			double courseDegs = seg.getCourse();
-			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
+			final double courseDegs = seg.getCourse();
+			final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
 
-			long timeMillis = date.getDate().getTime();
+			final long timeMillis = date.getDate().getTime();
 			final long timeStepMillis;
 			final long ONE_MIN = 60 * 1000;
 			final long ONE_HOUR = 60 * ONE_MIN;
@@ -541,25 +541,25 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 				timeStepMillis = ONE_HOUR;
 
 			// now work out how far he will have travelled in a time step
-			double distPerMinute = getMinuteDelta(seg);
-			double distPerStep = distPerMinute * (timeStepMillis / ONE_MIN);
-			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
+			final double distPerMinute = getMinuteDelta(seg);
+			final double distPerStep = distPerMinute * (timeStepMillis / ONE_MIN);
+			final WorldVector vec = new WorldVector(courseRads, new WorldDistance(
 					distPerStep, WorldDistance.METRES), null);
 			
 			
 			for (long tNow = timeMillis; tNow <= timeMillis + timeTravelledMillis; tNow += timeStepMillis)
 			{
-				HiResDate thisDtg = new HiResDate(tNow);
+				final HiResDate thisDtg = new HiResDate(tNow);
 
 				// ok, do this fix
-				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
+				final Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
 						.getValueIn(WorldSpeed.ft_sec) / 3);
 
 				// override the depth
 				thisF.getLocation().setDepth(
 						seg.getDepth().getValueIn(WorldDistance.METRES));
 
-				FixWrapper fw = new FixWrapper(thisF);
+				final FixWrapper fw = new FixWrapper(thisF);
 
 				fw.setColor(seg.getColor());
 
@@ -583,18 +583,18 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	{
 
 		@Override
-		double getMinuteDelta(PlanningSegment seg)
+		double getMinuteDelta(final PlanningSegment seg)
 		{
 			// find out how far it travels
-			double distPerMinute = seg.getSpeed().getValueIn(WorldSpeed.M_sec) * 60d;
+			final double distPerMinute = seg.getSpeed().getValueIn(WorldSpeed.M_sec) * 60d;
 			return distPerMinute;
 		}
 
 		@Override
-		protected double getSecsTravelled(PlanningSegment seg)
+		protected double getSecsTravelled(final PlanningSegment seg)
 		{
 			// how long does it take to travel this distance?
-			double secsTaken = seg.getDistance().getValueIn(WorldDistance.METRES)
+			final double secsTaken = seg.getDistance().getValueIn(WorldDistance.METRES)
 					/ seg.getSpeed().getValueIn(WorldSpeed.M_sec);
 
 			// sort out the leg length
@@ -608,18 +608,18 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	{
 
 		@Override
-		double getMinuteDelta(PlanningSegment seg)
+		double getMinuteDelta(final PlanningSegment seg)
 		{
 			// home long to travel along it (secs)
-			double travelSecs = seg.getDuration().getValueIn(Duration.SECONDS);
-			double metresPerSec = seg.getDistance().getValueIn(WorldDistance.METRES)
+			final double travelSecs = seg.getDuration().getValueIn(Duration.SECONDS);
+			final double metresPerSec = seg.getDistance().getValueIn(WorldDistance.METRES)
 					/ travelSecs;
 
-			double metresPerMin = metresPerSec * 60d;
+			final double metresPerMin = metresPerSec * 60d;
 
 			// update the speed, so it makes sense in the fix
-			WorldSpeed speedMtrs = new WorldSpeed(metresPerSec, WorldSpeed.M_sec);
-			WorldSpeed speedKTs = new WorldSpeed(
+			final WorldSpeed speedMtrs = new WorldSpeed(metresPerSec, WorldSpeed.M_sec);
+			final WorldSpeed speedKTs = new WorldSpeed(
 					speedMtrs.getValueIn(WorldSpeed.Kts), WorldSpeed.Kts);
 			seg.setSpeedSilent(speedKTs);
 
@@ -627,7 +627,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		}
 
 		@Override
-		protected double getSecsTravelled(PlanningSegment seg)
+		protected double getSecsTravelled(final PlanningSegment seg)
 		{
 			return seg.getDuration().getValueIn(Duration.SECONDS);
 		}
@@ -637,20 +637,20 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	{
 
 		@Override
-		protected double getSecsTravelled(PlanningSegment seg)
+		protected double getSecsTravelled(final PlanningSegment seg)
 		{
 			return seg.getDuration().getValueIn(Duration.SECONDS);
 		}
 
 		@Override
-		double getMinuteDelta(PlanningSegment seg)
+		double getMinuteDelta(final PlanningSegment seg)
 		{
 			// how far will we travel in time?
-			double metresPerSec = seg.getSpeed().getValueIn(WorldSpeed.M_sec);
-			double metresPerMin = metresPerSec * 60d;
+			final double metresPerSec = seg.getSpeed().getValueIn(WorldSpeed.M_sec);
+			final double metresPerMin = metresPerSec * 60d;
 
-			double distanceM = metresPerSec * getSecsTravelled(seg);
-			WorldDistance wd = new WorldDistance(distanceM, WorldDistance.METRES);
+			final double distanceM = metresPerSec * getSecsTravelled(seg);
+			final WorldDistance wd = new WorldDistance(distanceM, WorldDistance.METRES);
 			seg.setDistanceSilent(new WorldDistance(wd.getValueIn(WorldDistance.NM),
 					WorldDistance.NM));
 
@@ -664,7 +664,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	 * 
 	 * @param triggerNewLeg
 	 */
-	public static void setNewLegHelper(GiveMeALeg triggerNewLeg)
+	public static void setNewLegHelper(final GiveMeALeg triggerNewLeg)
 	{
 		_triggerNewLeg = triggerNewLeg;
 	}
@@ -674,7 +674,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	 * 
 	 * @param toolParent
 	 */
-	public static void initialise(ToolParent toolParent)
+	public static void initialise(final ToolParent toolParent)
 	{
 		_toolParent = toolParent;
 	}
@@ -702,19 +702,19 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	@Override
 	public Editable getSampleGriddable()
 	{
-		String name = "new leg";
-		double courseDegs = 45d;
-		WorldSpeed worldSpeed = new WorldSpeed(10, WorldSpeed.Kts);
-		WorldDistance worldDistance = new WorldDistance(5, WorldDistance.MINUTES);
+		final String name = "new leg";
+		final double courseDegs = 45d;
+		final WorldSpeed worldSpeed = new WorldSpeed(10, WorldSpeed.Kts);
+		final WorldDistance worldDistance = new WorldDistance(5, WorldDistance.MINUTES);
 		return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance,
 				Color.RED);
 	}
 
 	@Override
-	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	public TimeStampedDataItem makeCopy(final TimeStampedDataItem item)
 	{
 		// make a copy
-		PlanningSegment newSeg = new PlanningSegment((PlanningSegment) item);
+		final PlanningSegment newSeg = new PlanningSegment((PlanningSegment) item);
 		return newSeg;
 	}
 
@@ -731,20 +731,20 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	}
 
 	@Override
-	public void doSave(String message)
+	public void doSave(final String message)
 	{
 	}
 
 	@Override
-	public void setLayers(Layers parent)
+	public void setLayers(final Layers parent)
 	{
 		// ok, we've been pasted. just double check that our children know who is
 		// the boss
-		Enumeration<Editable> numer = getSegments().elements();
+		final Enumeration<Editable> numer = getSegments().elements();
 		while (numer.hasMoreElements())
 		{
-			Editable editable = (Editable) numer.nextElement();
-			PlanningSegment seg = (PlanningSegment) editable;
+			final Editable editable = (Editable) numer.nextElement();
+			final PlanningSegment seg = (PlanningSegment) editable;
 			seg.setWrapper(this);
 		}
 	}

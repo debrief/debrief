@@ -73,18 +73,18 @@ public class LiveStream implements PushBufferStream, Runnable {
     long delta = 0;
 
     //////////////////////////////////////
-    public LiveStream(MediaLocator locator)
+    public LiveStream(final MediaLocator locator)
     {
       try
       {
           parseLocator(locator);
-      } catch (Exception e) {
+      } catch (final Exception e) {
           System.err.println(e);
       }
       size = new Dimension(width, height);
       try {
           robot = new Robot();
-      } catch (AWTException awe) {
+      } catch (final AWTException awe) {
           throw new RuntimeException("");
       }
     	maxDataLength = size.width * size.height * 3;
@@ -106,7 +106,7 @@ public class LiveStream implements PushBufferStream, Runnable {
       thread = new Thread(this, "Screen Grabber");
     }
 
-    protected void parseLocator(MediaLocator locator) {
+    protected void parseLocator(final MediaLocator locator) {
       String rem = locator.getRemainder();
       // Strip off starting slashes
       while (rem.startsWith("/") && rem.length() > 1)
@@ -114,15 +114,15 @@ public class LiveStream implements PushBufferStream, Runnable {
           rem = rem.substring(1);
       }
 
-      StringTokenizer st = new StringTokenizer(rem, "/");
+      final StringTokenizer st = new StringTokenizer(rem, "/");
       if (st.hasMoreTokens()) {
         // Parse the position
-        String position = st.nextToken();
-        StringTokenizer nums = new StringTokenizer(position, ",");
-        String stX = nums.nextToken();
-        String stY = nums.nextToken();
-        String stW = nums.nextToken();
-        String stH = nums.nextToken();
+        final String position = st.nextToken();
+        final StringTokenizer nums = new StringTokenizer(position, ",");
+        final String stX = nums.nextToken();
+        final String stY = nums.nextToken();
+        final String stW = nums.nextToken();
+        final String stH = nums.nextToken();
         x = Integer.parseInt(stX);
         y = Integer.parseInt(stY);
         width = Integer.parseInt(stW);
@@ -139,7 +139,7 @@ public class LiveStream implements PushBufferStream, Runnable {
 	    }
 	    if (st.hasMoreTokens()) {
         // Parse the frame rate
-        String stFPS = st.nextToken();
+        final String stFPS = st.nextToken();
         frameRate = (Double.valueOf(stFPS)).floatValue();
 	    }
     }
@@ -169,7 +169,7 @@ public class LiveStream implements PushBufferStream, Runnable {
     	return _myFormat;
     }
 
-    public void read(Buffer buffer) throws IOException {
+    public void read(final Buffer buffer) throws IOException {
 	    synchronized (this) {
 	      Object outdata = buffer.getData();
 
@@ -182,7 +182,7 @@ public class LiveStream implements PushBufferStream, Runnable {
   	    }
         buffer.setFormat( _myFormat );
 
-        long tNow = System.currentTimeMillis();
+        final long tNow = System.currentTimeMillis();
 
         if(nextDue == 0)
         {
@@ -195,7 +195,7 @@ public class LiveStream implements PushBufferStream, Runnable {
         else
         {
           // see if we need a pause
-          long wait = nextDue - tNow;
+          final long wait = nextDue - tNow;
 
           // is this +ve?
           if(wait > 0)
@@ -204,7 +204,7 @@ public class LiveStream implements PushBufferStream, Runnable {
             {
               Thread.sleep(wait);
             }
-            catch(Exception e)
+            catch(final Exception e)
             {
               e.printStackTrace();
             }
@@ -225,7 +225,7 @@ public class LiveStream implements PushBufferStream, Runnable {
         else
         {
           // work out how long has elapsed
-          long diff = tNow - firstTime;
+          final long diff = tNow - firstTime;
 
           // store the time stamp
           buffer.setTimeStamp((diff) * 1000000 );
@@ -235,7 +235,7 @@ public class LiveStream implements PushBufferStream, Runnable {
         nextDue += delta;
 
         // get the image
-        BufferedImage bi = robot.createScreenCapture(new Rectangle(x, y, width, height));
+        final BufferedImage bi = robot.createScreenCapture(new Rectangle(x, y, width, height));
 
         // convert to RGB
         bi.getRGB(0, 0, width, height,(int[])outdata, 0, width);
@@ -249,14 +249,14 @@ public class LiveStream implements PushBufferStream, Runnable {
     	}
     }
 
-    public void setTransferHandler(BufferTransferHandler transferHandler) {
+    public void setTransferHandler(final BufferTransferHandler transferHandler) {
 	synchronized (this) {
 	    this.transferHandler = transferHandler;
 	    notifyAll();
 	}
     }
 
-    void start(boolean started1) {
+    void start(final boolean started1) {
 	synchronized ( this ) {
 	    this.started = started1;
 	    if (started1 && !thread.isAlive()) {
@@ -283,7 +283,7 @@ public class LiveStream implements PushBufferStream, Runnable {
             {
 			        wait(1000);
 		        }
-            catch (InterruptedException ie)
+            catch (final InterruptedException ie)
             {
 		        }
 		      } // while
@@ -296,7 +296,7 @@ public class LiveStream implements PushBufferStream, Runnable {
           {
 		        Thread.sleep( 10 );
 		      }
-          catch (InterruptedException ise)
+          catch (final InterruptedException ise)
           {
 		      }
 	      }
@@ -310,17 +310,17 @@ public class LiveStream implements PushBufferStream, Runnable {
     }
 
     @SuppressWarnings("rawtypes")
-		public Object getControl(String controlType) {
+		public Object getControl(final String controlType) {
        try {
-          Class  cls = Class.forName(controlType);
-          Object cs[] = getControls();
+          final Class  cls = Class.forName(controlType);
+          final Object cs[] = getControls();
           for (int i = 0; i < cs.length; i++) {
              if (cls.isInstance(cs[i]))
                 return cs[i];
           }
           return null;
 
-       } catch (Exception e) {   // no such controlType or such control
+       } catch (final Exception e) {   // no such controlType or such control
          return null;
        }
     }

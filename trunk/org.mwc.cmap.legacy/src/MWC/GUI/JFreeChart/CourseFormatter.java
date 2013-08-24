@@ -20,7 +20,7 @@ public final class CourseFormatter implements formattingOperation, Serializable
 
 	public final void format(final XYPlot thePlot)
 	{
-		NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
+		final NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
 		theAxis.setRange(0, 360);
 		
 		// create some tick units suitable for degrees
@@ -31,10 +31,10 @@ public final class CourseFormatter implements formattingOperation, Serializable
 	
 	public final static TickUnits getDegreeTickUnits()
 	{
-		TickUnits units = new TickUnits();
-		DecimalFormat fmt = new DecimalFormat("0");
-		DecimalFormat fmt2 = new DecimalFormat("0.0");
-		DecimalFormat fmt3 = new DecimalFormat("0.00");
+		final TickUnits units = new TickUnits();
+		final DecimalFormat fmt = new DecimalFormat("0");
+		final DecimalFormat fmt2 = new DecimalFormat("0.0");
+		final DecimalFormat fmt3 = new DecimalFormat("0.00");
 		
 		units.add(new NumberTickUnit(0.05d,fmt3));
 		units.add(new NumberTickUnit(0.1d, fmt2));

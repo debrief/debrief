@@ -17,36 +17,36 @@ public class BooleanHelper extends EditorHelper
 		super(Boolean.class);
 	}
 
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
-		CellEditor res = new CheckboxCellEditor(parent);
+		final CellEditor res = new CheckboxCellEditor(parent);
 		return res; 
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	public boolean editsThis(Class target)
+	public boolean editsThis(final Class target)
 	{
 		return ((target == Boolean.class) || (target == boolean.class));
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		return value;
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		return value;
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
 				String res = null;
-				Boolean val = (Boolean) element;
+				final Boolean val = (Boolean) element;
 				String name = null;
 				if(val.booleanValue())
 				{
@@ -61,7 +61,7 @@ public class BooleanHelper extends EditorHelper
 //				return null;
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 //				
@@ -86,13 +86,13 @@ public class BooleanHelper extends EditorHelper
 	
 
 	@Override
-	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
+	public Control getEditorControlFor(final Composite parent, final IDebriefProperty property)
 	{
 		final Button myCheckbox = new Button(parent, SWT.CHECK);
 		myCheckbox.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
-				Boolean val = new Boolean(myCheckbox.getSelection());
+				final Boolean val = new Boolean(myCheckbox.getSelection());
 				property.setValue(val);
 			}});
 		return myCheckbox;

@@ -76,7 +76,7 @@ public class RightClickSupport
 	 *          the generator to add...
 	 */
 	public static void addRightClickGenerator(
-			RightClickContextItemGenerator generator)
+			final RightClickContextItemGenerator generator)
 	{
 		if (_additionalRightClickItems == null)
 			_additionalRightClickItems = new Vector<RightClickContextItemGenerator>(
@@ -99,9 +99,9 @@ public class RightClickSupport
 	 *          the overall layers object
 	 * @param hideClipboardOperations
 	 */
-	static public void getDropdownListFor(IMenuManager manager,
-			Editable[] editables, Layer[] topLevelLayers, Layer[] parentLayers,
-			final Layers theLayers, boolean hideClipboardOperations)
+	static public void getDropdownListFor(final IMenuManager manager,
+			final Editable[] editables, final Layer[] topLevelLayers, final Layer[] parentLayers,
+			final Layers theLayers, final boolean hideClipboardOperations)
 	{
 
 		// sort out the top level layer, if we have one
@@ -115,12 +115,12 @@ public class RightClickSupport
 		{
 			// first the parameters
 			MenuManager subMenu = null;
-			PropertyDescriptor[] commonProps = getCommonPropertiesFor(editables);
+			final PropertyDescriptor[] commonProps = getCommonPropertiesFor(editables);
 			if (commonProps != null)
 			{
 				for (int i = 0; i < commonProps.length; i++)
 				{
-					PropertyDescriptor thisP = commonProps[i];
+					final PropertyDescriptor thisP = commonProps[i];
 
 					// start off with the booleans
 					if (supportsBooleanEditor(thisP))
@@ -145,7 +145,7 @@ public class RightClickSupport
 
 			// hmm, have a go at methods for this item
 			// ok, try the methods
-			MethodDescriptor[] meths = getCommonMethodsFor(editables);
+			final MethodDescriptor[] meths = getCommonMethodsFor(editables);
 			if (meths != null)
 			{
 				for (int i = 0; i < meths.length; i++)
@@ -162,7 +162,7 @@ public class RightClickSupport
 					else
 					{
 						// create button for this method
-						Action doThisAction = new SubjectMethod(thisMethD.getDisplayName(),
+						final Action doThisAction = new SubjectMethod(thisMethD.getDisplayName(),
 								editables, thisMethD.getMethod(), myTopLayer, theLayers);
 
 						// ok - add to the list.
@@ -172,7 +172,7 @@ public class RightClickSupport
 			}
 
 			// hmm, now do the same for the undoable methods
-			MWC.GUI.Tools.SubjectAction[] actions = getUndoableActionsFor(editables);
+			final MWC.GUI.Tools.SubjectAction[] actions = getUndoableActionsFor(editables);
 			if (actions != null)
 			{
 				for (int i = 0; i < actions.length; i++)
@@ -180,7 +180,7 @@ public class RightClickSupport
 					final MWC.GUI.Tools.SubjectAction thisMethD = actions[i];
 
 					// create button for this method
-					IAction doThisAction = generateUndoableActionFor(thisMethD,
+					final IAction doThisAction = generateUndoableActionFor(thisMethD,
 							editables, theLayers, theTopLayer);
 
 					// ok - add to the list.
@@ -190,7 +190,7 @@ public class RightClickSupport
 
 		}
 
-		Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
+		final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
 
 		// see if we're still looking at the parent element (we only show
 		// clipboard
@@ -224,17 +224,17 @@ public class RightClickSupport
 		// hmm, do we have any right-click generators?
 		if (_additionalRightClickItems != null)
 		{
-			for (Iterator<RightClickContextItemGenerator> thisItem = _additionalRightClickItems
+			for (final Iterator<RightClickContextItemGenerator> thisItem = _additionalRightClickItems
 					.iterator(); thisItem.hasNext();)
 			{
-				RightClickContextItemGenerator thisGen = (RightClickContextItemGenerator) thisItem
+				final RightClickContextItemGenerator thisGen = (RightClickContextItemGenerator) thisItem
 						.next();
 
 				try
 				{
 					thisGen.generate(manager, theLayers, topLevelLayers, editables);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					// and log the error
 					CorePlugin.logError(Status.ERROR,
@@ -250,17 +250,17 @@ public class RightClickSupport
 	 */
 	private static void loadLoaderExtensions()
 	{
-		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
+		final IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
 				PLUGIN_ID, EXTENSION_POINT_ID);
 
-		IExtension[] extensions = point.getExtensions();
+		final IExtension[] extensions = point.getExtensions();
 		for (int i = 0; i < extensions.length; i++)
 		{
-			IExtension iExtension = extensions[i];
-			IConfigurationElement[] confE = iExtension.getConfigurationElements();
+			final IExtension iExtension = extensions[i];
+			final IConfigurationElement[] confE = iExtension.getConfigurationElements();
 			for (int j = 0; j < confE.length; j++)
 			{
-				IConfigurationElement iConfigurationElement = confE[j];
+				final IConfigurationElement iConfigurationElement = confE[j];
 				RightClickContextItemGenerator newInstance;
 				try
 				{
@@ -268,7 +268,7 @@ public class RightClickSupport
 							.createExecutableExtension("class");
 					addRightClickGenerator(newInstance);
 				}
-				catch (CoreException e)
+				catch (final CoreException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Trouble whilst loading right-click handler extensions", e);
@@ -278,17 +278,17 @@ public class RightClickSupport
 	}
 
 	/** have a look at the supplied editors, find which properties are common */
-	protected static MethodDescriptor[] getCommonMethodsFor(Editable[] editables)
+	protected static MethodDescriptor[] getCommonMethodsFor(final Editable[] editables)
 	{
 		MethodDescriptor[] res = null;
-		MethodDescriptor[] demo = new MethodDescriptor[]
+		final MethodDescriptor[] demo = new MethodDescriptor[]
 		{};
 
 		// right, get the first set of properties
 		if (editables.length > 0)
 		{
-			Editable first = editables[0];
-			EditorType firstInfo = first.getInfo();
+			final Editable first = editables[0];
+			final EditorType firstInfo = first.getInfo();
 			if (firstInfo != null)
 			{
 				res = firstInfo.getMethodDescriptors();
@@ -302,15 +302,15 @@ public class RightClickSupport
 						// pass through the others, finding the common ground
 						for (int cnt = 1; cnt < editables.length; cnt++)
 						{
-							Editable thisE = editables[cnt];
+							final Editable thisE = editables[cnt];
 
 							// get its props
-							EditorType thisEditor = thisE.getInfo();
+							final EditorType thisEditor = thisE.getInfo();
 
 							// do we have an editor?
 							if (thisEditor != null)
 							{
-								MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
+								final MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
 
 								// find the common ones
 								res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
@@ -326,17 +326,17 @@ public class RightClickSupport
 
 	/** have a look at the supplied editors, find which properties are common */
 	protected static MWC.GUI.Tools.SubjectAction[] getUndoableActionsFor(
-			Editable[] editables)
+			final Editable[] editables)
 	{
 		MWC.GUI.Tools.SubjectAction[] res = null;
-		MWC.GUI.Tools.SubjectAction[] demo = new MWC.GUI.Tools.SubjectAction[]
+		final MWC.GUI.Tools.SubjectAction[] demo = new MWC.GUI.Tools.SubjectAction[]
 		{};
 
 		// right, get the first set of properties
 		if (editables.length > 0)
 		{
-			Editable first = editables[0];
-			EditorType firstInfo = first.getInfo();
+			final Editable first = editables[0];
+			final EditorType firstInfo = first.getInfo();
 			if (firstInfo != null)
 			{
 				res = firstInfo.getUndoableActions();
@@ -350,15 +350,15 @@ public class RightClickSupport
 						// pass through the others, finding the common ground
 						for (int cnt = 1; cnt < editables.length; cnt++)
 						{
-							Editable thisE = editables[cnt];
+							final Editable thisE = editables[cnt];
 
 							// get its props
-							EditorType thisEditor = thisE.getInfo();
+							final EditorType thisEditor = thisE.getInfo();
 
 							// do we have an editor?
 							if (thisEditor != null)
 							{
-								MWC.GUI.Tools.SubjectAction[] newSet = thisEditor
+								final MWC.GUI.Tools.SubjectAction[] newSet = thisEditor
 										.getUndoableActions();
 
 								// find the common ones
@@ -374,17 +374,17 @@ public class RightClickSupport
 	}
 
 	private static MWC.GUI.Tools.SubjectAction[] getIntersectionFor(
-			MWC.GUI.Tools.SubjectAction[] a, MWC.GUI.Tools.SubjectAction[] b,
-			MWC.GUI.Tools.SubjectAction[] demo)
+			final MWC.GUI.Tools.SubjectAction[] a, final MWC.GUI.Tools.SubjectAction[] b,
+			final MWC.GUI.Tools.SubjectAction[] demo)
 	{
-		Vector<MWC.GUI.Tools.SubjectAction> res = new Vector<MWC.GUI.Tools.SubjectAction>();
+		final Vector<MWC.GUI.Tools.SubjectAction> res = new Vector<MWC.GUI.Tools.SubjectAction>();
 
 		for (int cnta = 0; cnta < a.length; cnta++)
 		{
-			MWC.GUI.Tools.SubjectAction thisP = a[cnta];
+			final MWC.GUI.Tools.SubjectAction thisP = a[cnta];
 			for (int cntb = 0; cntb < b.length; cntb++)
 			{
-				MWC.GUI.Tools.SubjectAction thatP = b[cntb];
+				final MWC.GUI.Tools.SubjectAction thatP = b[cntb];
 				if (thisP.toString().equals(thatP.toString()))
 				{
 					res.add(thisP);
@@ -396,16 +396,16 @@ public class RightClickSupport
 
 	/** have a look at the supplied editors, find which properties are common */
 	protected static PropertyDescriptor[] getCommonPropertiesFor(
-			Editable[] editables)
+			final Editable[] editables)
 	{
 		PropertyDescriptor[] res = null;
-		PropertyDescriptor[] demo = new PropertyDescriptor[]
+		final PropertyDescriptor[] demo = new PropertyDescriptor[]
 		{};
 		// right, get the first set of properties
 		if (editables.length > 0)
 		{
-			Editable first = editables[0];
-			EditorType firstInfo = first.getInfo();
+			final Editable first = editables[0];
+			final EditorType firstInfo = first.getInfo();
 			if (firstInfo != null)
 			{
 				res = firstInfo.getPropertyDescriptors();
@@ -419,15 +419,15 @@ public class RightClickSupport
 						// pass through the others, finding the common ground
 						for (int cnt = 1; cnt < editables.length; cnt++)
 						{
-							Editable thisE = editables[cnt];
+							final Editable thisE = editables[cnt];
 
 							// get its props
-							EditorType thisEditor = thisE.getInfo();
+							final EditorType thisEditor = thisE.getInfo();
 
 							// do we have an editor?
 							if (thisEditor != null)
 							{
-								PropertyDescriptor[] newSet = thisEditor
+								final PropertyDescriptor[] newSet = thisEditor
 										.getPropertyDescriptors();
 
 								// find the common ones
@@ -452,19 +452,19 @@ public class RightClickSupport
 	 *          second array
 	 * @return the common elements
 	 */
-	protected static MethodDescriptor[] getIntersectionFor(MethodDescriptor[] a,
-			MethodDescriptor[] b, MethodDescriptor[] demo)
+	protected static MethodDescriptor[] getIntersectionFor(final MethodDescriptor[] a,
+			final MethodDescriptor[] b, final MethodDescriptor[] demo)
 	{
-		Vector<MethodDescriptor> res = new Vector<MethodDescriptor>();
+		final Vector<MethodDescriptor> res = new Vector<MethodDescriptor>();
 
 		for (int cnta = 0; cnta < a.length; cnta++)
 		{
-			MethodDescriptor thisP = a[cnta];
+			final MethodDescriptor thisP = a[cnta];
 			if (b != null)
 			{
 				for (int cntb = 0; cntb < b.length; cntb++)
 				{
-					MethodDescriptor thatP = b[cntb];
+					final MethodDescriptor thatP = b[cntb];
 					if (thisP.getDisplayName().equals(thatP.getDisplayName()))
 					{
 						res.add(thisP);
@@ -485,16 +485,16 @@ public class RightClickSupport
 	 * @return the common elements
 	 */
 	protected static PropertyDescriptor[] getIntersectionFor(
-			PropertyDescriptor[] a, PropertyDescriptor[] b, PropertyDescriptor[] demo)
+			final PropertyDescriptor[] a, final PropertyDescriptor[] b, final PropertyDescriptor[] demo)
 	{
-		Vector<PropertyDescriptor> res = new Vector<PropertyDescriptor>();
+		final Vector<PropertyDescriptor> res = new Vector<PropertyDescriptor>();
 
 		for (int cnta = 0; cnta < a.length; cnta++)
 		{
-			PropertyDescriptor thisP = a[cnta];
+			final PropertyDescriptor thisP = a[cnta];
 			for (int cntb = 0; cntb < b.length; cntb++)
 			{
-				PropertyDescriptor thatP = b[cntb];
+				final PropertyDescriptor thatP = b[cntb];
 				if (thisP.equals(thatP))
 				{
 					res.add(thisP);
@@ -512,13 +512,13 @@ public class RightClickSupport
 	 */
 	private static class SubjectMethod extends Action
 	{
-		private Editable[] _subjects;
+		private final Editable[] _subjects;
 
-		private Method _method;
+		private final Method _method;
 
-		private Layer _topLayer;
+		private final Layer _topLayer;
 
-		private Layers _theLayers;
+		private final Layers _theLayers;
 
 		/**
 		 * @param title
@@ -532,8 +532,8 @@ public class RightClickSupport
 		 * @param theLayers
 		 *          the host for the target layer
 		 */
-		public SubjectMethod(String title, Editable[] subject, Method method,
-				Layer topLayer, Layers theLayers)
+		public SubjectMethod(final String title, final Editable[] subject, final Method method,
+				final Layer topLayer, final Layers theLayers)
 		{
 			super(title);
 			_subjects = subject;
@@ -546,23 +546,23 @@ public class RightClickSupport
 		{
 			for (int cnt = 0; cnt < _subjects.length; cnt++)
 			{
-				Editable thisSubject = _subjects[cnt];
+				final Editable thisSubject = _subjects[cnt];
 				try
 				{
 					_method.invoke(thisSubject, new Object[0]);
 
 				}
-				catch (IllegalArgumentException e)
+				catch (final IllegalArgumentException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"whilst firing method from right-click", e);
 				}
-				catch (IllegalAccessException e)
+				catch (final IllegalAccessException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"whilst firing method from right-click", e);
 				}
-				catch (InvocationTargetException e)
+				catch (final InvocationTargetException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"whilst firing method from right-click", e);
@@ -596,13 +596,13 @@ public class RightClickSupport
 	 * @return yes/no
 	 */
 	@SuppressWarnings("rawtypes")
-	static private boolean supportsBooleanEditor(PropertyDescriptor thisP)
+	static private boolean supportsBooleanEditor(final PropertyDescriptor thisP)
 	{
 		final boolean res;
 
 		// get the prop type
-		Class thisType = thisP.getPropertyType();
-		Class boolClass = Boolean.class;
+		final Class thisType = thisP.getPropertyType();
+		final Class boolClass = Boolean.class;
 
 		// is it boolean?
 		if ((thisType == boolClass) || (thisType.equals(boolean.class)))
@@ -624,16 +624,16 @@ public class RightClickSupport
 	 * @return yes/no
 	 */
 	@SuppressWarnings("rawtypes")
-	static private boolean supportsListEditor(PropertyDescriptor thisP)
+	static private boolean supportsListEditor(final PropertyDescriptor thisP)
 	{
 		boolean res = false;
 
 		// find out the type of the editor
-		Method m = thisP.getReadMethod();
-		Class cl = m.getReturnType();
+		final Method m = thisP.getReadMethod();
+		final Class cl = m.getReturnType();
 
 		// is there a custom editor for this type?
-		Class c = thisP.getPropertyEditorClass();
+		final Class c = thisP.getPropertyEditorClass();
 
 		PropertyEditor pe = null;
 		// try to create an editor for this class
@@ -642,7 +642,7 @@ public class RightClickSupport
 			if (c != null)
 				pe = (PropertyEditor) c.newInstance();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -658,7 +658,7 @@ public class RightClickSupport
 		if (pe != null)
 		{
 			// retrieve the tags
-			String[] tags = pe.getTags();
+			final String[] tags = pe.getTags();
 
 			// are there any tags for this class?
 			if (tags != null)
@@ -685,26 +685,26 @@ public class RightClickSupport
 					(Object[]) null);
 			currentVal = valNow.booleanValue();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Failed to retrieve old value for:"
 					+ editables[0].getName(), e);
 		}
 
-		IAction changeThis = new Action(thisP.getDisplayName(),
+		final IAction changeThis = new Action(thisP.getDisplayName(),
 				IAction.AS_CHECK_BOX)
 		{
 			public void run()
 			{
 				try
 				{
-					ListPropertyAction la = new ListPropertyAction(
+					final ListPropertyAction la = new ListPropertyAction(
 							thisP.getDisplayName(), editables, getter, setter, new Boolean(
 									isChecked()), theLayers, topLevelLayer);
 
 					CorePlugin.run(la);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin.logError(IStatus.INFO,
 							"While executing boolean editor for:" + thisP, e);
@@ -737,19 +737,19 @@ public class RightClickSupport
 			final Layers theLayers, final Layer topLevelLayer)
 	{
 
-		IAction changeThis = new Action(theAction.toString(),
+		final IAction changeThis = new Action(theAction.toString(),
 				IAction.AS_PUSH_BUTTON)
 		{
 			public void run()
 			{
 				try
 				{
-					AbstractOperation la = new UndoableAction(theAction.toString(),
+					final AbstractOperation la = new UndoableAction(theAction.toString(),
 							editables, theAction, theLayers, topLevelLayer);
 
 					CorePlugin.run(la);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin.logError(
 							IStatus.INFO,
@@ -762,18 +762,18 @@ public class RightClickSupport
 	}
 
 	@SuppressWarnings("rawtypes")
-	static private MenuManager generateListEditorFor(IMenuManager manager,
+	static private MenuManager generateListEditorFor(final IMenuManager manager,
 			MenuManager subMenu, final PropertyDescriptor thisP,
 			final Editable[] editables, final Layers theLayers,
 			final Layer topLevelLayer)
 	{
 
 		// find out the type of the editor
-		Method m = thisP.getReadMethod();
-		Class cl = m.getReturnType();
+		final Method m = thisP.getReadMethod();
+		final Class cl = m.getReturnType();
 
 		// is there a custom editor for this type?
-		Class c = thisP.getPropertyEditorClass();
+		final Class c = thisP.getPropertyEditorClass();
 
 		PropertyEditor pe = null;
 		// try to create an editor for this class
@@ -782,7 +782,7 @@ public class RightClickSupport
 			if (c != null)
 				pe = (PropertyEditor) c.newInstance();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -795,13 +795,13 @@ public class RightClickSupport
 		}
 
 		// retrieve the tags
-		String[] tags = pe.getTags();
+		final String[] tags = pe.getTags();
 
 		// are there any tags for this class?
 		if (tags != null)
 		{
 			// create a drop-down list
-			MenuManager thisChoice = new MenuManager(thisP.getDisplayName());
+			final MenuManager thisChoice = new MenuManager(thisP.getDisplayName());
 
 			// sort out the setter details
 			final Method getter = thisP.getReadMethod();
@@ -812,14 +812,14 @@ public class RightClickSupport
 			{
 				val = getter.invoke(editables[0], (Object[]) null);
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				MWC.Utilities.Errors.Trace.trace(e);
 			}
 			pe.setValue(val);
 
 			// convert the current value to text
-			String currentValue = pe.getAsText();
+			final String currentValue = pe.getAsText();
 
 			// and now a drop-down item for each options
 			for (int j = 0; j < tags.length; j++)
@@ -842,10 +842,10 @@ public class RightClickSupport
 							// one that's checked)
 							if (isChecked())
 							{
-								Method setter = thisP.getWriteMethod();
+								final Method setter = thisP.getWriteMethod();
 
 								// ok, place the change in the action
-								ListPropertyAction la = new ListPropertyAction(
+								final ListPropertyAction la = new ListPropertyAction(
 										thisP.getDisplayName(), editables, getter, setter,
 										thisValue, theLayers, topLevelLayer);
 
@@ -853,7 +853,7 @@ public class RightClickSupport
 								CorePlugin.run(la);
 							}
 						}
-						catch (Exception e)
+						catch (final Exception e)
 						{
 							CorePlugin.logError(IStatus.INFO,
 									"While executing select editor for:" + thisP, e);
@@ -940,7 +940,7 @@ public class RightClickSupport
 			{
 				_oldValue = getter.invoke(editable[0], (Object[]) null);
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				CorePlugin.logError(Status.ERROR, "Failed to retrieve old value for:"
 						+ "Multiple items starting with:" + _subjects[0].getName(), e);
@@ -950,18 +950,18 @@ public class RightClickSupport
 			super.addContext(CorePlugin.CMAP_CONTEXT);
 		}
 
-		private IStatus doIt(Object theValue)
+		private IStatus doIt(final Object theValue)
 		{
 			IStatus res = Status.OK_STATUS;
 			for (int cnt = 0; cnt < _subjects.length; cnt++)
 			{
-				Editable thisSubject = _subjects[cnt];
+				final Editable thisSubject = _subjects[cnt];
 				try
 				{
 					_setter.invoke(thisSubject, new Object[]
 					{ theValue });
 				}
-				catch (InvocationTargetException e)
+				catch (final InvocationTargetException e)
 				{
 					CorePlugin
 							.logError(Status.ERROR,
@@ -970,13 +970,13 @@ public class RightClickSupport
 									e.getTargetException());
 					res = null;
 				}
-				catch (IllegalArgumentException e)
+				catch (final IllegalArgumentException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
 							+ thisSubject.getName(), e);
 					res = null;
 				}
-				catch (IllegalAccessException e)
+				catch (final IllegalAccessException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Illegal access problem for:"
 							+ thisSubject.getName(), e);
@@ -993,19 +993,19 @@ public class RightClickSupport
 
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			return doIt(_newValue);
 		}
 
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			return doIt(_newValue);
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			return doIt(_oldValue);
@@ -1060,19 +1060,19 @@ public class RightClickSupport
 			super.addContext(CorePlugin.CMAP_CONTEXT);
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			IStatus res = Status.OK_STATUS;
 			for (int cnt = 0; cnt < _subjects.length; cnt++)
 			{
-				Editable thisSubject = _subjects[cnt];
+				final Editable thisSubject = _subjects[cnt];
 				try
 				{
 					_action.execute(thisSubject);
 
 				}
-				catch (IllegalArgumentException e)
+				catch (final IllegalArgumentException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
 							+ thisSubject.getName(), e);
@@ -1085,18 +1085,18 @@ public class RightClickSupport
 			return res;
 		}
 
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			IStatus res = Status.OK_STATUS;
 			for (int cnt = 0; cnt < _subjects.length; cnt++)
 			{
-				Editable thisSubject = _subjects[cnt];
+				final Editable thisSubject = _subjects[cnt];
 				try
 				{
 					_action.execute(thisSubject);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
 							+ thisSubject.getName(), e);
@@ -1110,18 +1110,18 @@ public class RightClickSupport
 			return res;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			IStatus res = Status.OK_STATUS;
 			for (int cnt = 0; cnt < _subjects.length; cnt++)
 			{
-				Editable thisSubject = _subjects[cnt];
+				final Editable thisSubject = _subjects[cnt];
 				try
 				{
 					_action.undo(thisSubject);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
 							+ thisSubject.getName(), e);
@@ -1157,24 +1157,24 @@ public class RightClickSupport
 		{
 			try
 			{
-				PropertyDescriptor[] demo = new PropertyDescriptor[]
+				final PropertyDescriptor[] demo = new PropertyDescriptor[]
 				{};
-				PropertyDescriptor[] pa = new PropertyDescriptor[]
+				final PropertyDescriptor[] pa = new PropertyDescriptor[]
 				{ new PropertyDescriptor("Color", FixWrapper.class),
 						new PropertyDescriptor("Font", FixWrapper.class),
 						new PropertyDescriptor("Label", FixWrapper.class),
 						new PropertyDescriptor("LabelShowing", FixWrapper.class),
 						new PropertyDescriptor("Visible", FixWrapper.class) };
-				PropertyDescriptor[] pb = new PropertyDescriptor[]
+				final PropertyDescriptor[] pb = new PropertyDescriptor[]
 				{ new PropertyDescriptor("Color", FixWrapper.class),
 						new PropertyDescriptor("Font", FixWrapper.class),
 						new PropertyDescriptor("Label", FixWrapper.class),
 						new PropertyDescriptor("LabelShowing", FixWrapper.class),
 						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
-				PropertyDescriptor[] pc = new PropertyDescriptor[]
+				final PropertyDescriptor[] pc = new PropertyDescriptor[]
 				{ new PropertyDescriptor("LabelShowing", FixWrapper.class),
 						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
-				PropertyDescriptor[] pd = new PropertyDescriptor[]
+				final PropertyDescriptor[] pd = new PropertyDescriptor[]
 				{};
 
 				PropertyDescriptor[] res = (PropertyDescriptor[]) getIntersectionFor(
@@ -1191,7 +1191,7 @@ public class RightClickSupport
 				assertNotNull("failed to find intersection", res);
 				assertEquals("Failed to find correct num", 0, res.length);
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Whilst doing tests", e);
 				assertTrue("threw some error", false);
@@ -1200,20 +1200,20 @@ public class RightClickSupport
 
 		public final void testPropMgt()
 		{
-			Editable itemOne = new FixWrapper(new Fix(new HiResDate(122333),
+			final Editable itemOne = new FixWrapper(new Fix(new HiResDate(122333),
 					new WorldLocation(1, 2, 3), 12, 14));
-			Editable itemTwo = new FixWrapper(new Fix(new HiResDate(122334),
+			final Editable itemTwo = new FixWrapper(new Fix(new HiResDate(122334),
 					new WorldLocation(1, 2, 5), 13, 12));
-			Editable itemThree = new SensorWrapper("alpha");
-			Editable[] lst = new Editable[]
+			final Editable itemThree = new SensorWrapper("alpha");
+			final Editable[] lst = new Editable[]
 			{ itemOne, itemTwo };
-			Editable[] lst2 = new Editable[]
+			final Editable[] lst2 = new Editable[]
 			{ itemOne, itemThree };
-			Editable[] lst3 = new Editable[]
+			final Editable[] lst3 = new Editable[]
 			{ itemThree, itemOne, itemThree };
-			Editable[] lst4 = new Editable[]
+			final Editable[] lst4 = new Editable[]
 			{ itemThree, itemThree };
-			Editable[] lst5 = new Editable[]
+			final Editable[] lst5 = new Editable[]
 			{ itemOne };
 			assertEquals("no data", 2, lst.length);
 			PropertyDescriptor[] props = RightClickSupport

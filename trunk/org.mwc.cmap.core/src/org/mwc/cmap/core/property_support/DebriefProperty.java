@@ -36,8 +36,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 
 	static Control _theControl;
 
-	public DebriefProperty(PropertyDescriptor prop, Editable subject,
-			Control theControl)
+	public DebriefProperty(final PropertyDescriptor prop, final Editable subject,
+			final Control theControl)
 	{
 		_thisProp = prop;
 		_subject = subject;
@@ -50,12 +50,12 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 
 	@SuppressWarnings(
 	{ "rawtypes" })
-	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
+	private EditorHelper findHelperFor(final PropertyDescriptor prop, final Editable subject)
 	{
 		EditorHelper res = null;
 
 		// is there an explicit editor specified?
-		Class specificEditor = prop.getPropertyEditorClass();
+		final Class specificEditor = prop.getPropertyEditorClass();
 
 		// did we find one?
 		if (specificEditor != null)
@@ -65,7 +65,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			{
 				theEditor = specificEditor.newInstance();
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				CorePlugin.logError(Status.ERROR, "whilst finding helper", e);
 			}
@@ -91,11 +91,11 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		{
 
 			// ok, find the type of object we're working with
-			Class rawClass = EditableWrapper.getPropertyClass(_thisProp);
+			final Class rawClass = EditableWrapper.getPropertyClass(_thisProp);
 
-			for (Iterator iter = _myHelperList.iterator(); iter.hasNext();)
+			for (final Iterator iter = _myHelperList.iterator(); iter.hasNext();)
 			{
-				EditorHelper thisHelper = (EditorHelper) iter.next();
+				final EditorHelper thisHelper = (EditorHelper) iter.next();
 				if (thisHelper.editsThis(rawClass))
 				{
 					res = thisHelper;
@@ -106,7 +106,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			if (res == null)
 			{
 				// ok, log the error
-				String msg = "editor not found for:"
+				final String msg = "editor not found for:"
 						+ EditableWrapper.getPropertyClass(prop) + "("
 						+ prop.getDisplayName() + ")";
 				System.out.println(msg);
@@ -116,15 +116,15 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return res;
 	}
 
-	public static void addSupplementalHelpers(Vector<EditorHelper> newHelpers)
+	public static void addSupplementalHelpers(final Vector<EditorHelper> newHelpers)
 	{
 		// make sure our starter list is created
 		initialiseHelpers();
 
 		// now add the new ones
-		for (Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();)
+		for (final Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();)
 		{
-			EditorHelper thisHelper = (EditorHelper) iter.next();
+			final EditorHelper thisHelper = (EditorHelper) iter.next();
 			_myHelperList.add(thisHelper);
 		}
 	}
@@ -140,7 +140,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 					.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
 			_myHelperList.add(new EditorHelper(String.class)
 			{
-				public CellEditor getCellEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(final Composite parent)
 				{
 					return new TextCellEditor(parent, SWT.MULTI | SWT.V_SCROLL);
 				}
@@ -148,26 +148,26 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			_myHelperList.add(new EditorHelper(Long.class)
 			{
 
-				public CellEditor getCellEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(final Composite parent)
 				{
 					return new TextCellEditor(parent);
 				}
 
-				public Object translateToSWT(Object value)
+				public Object translateToSWT(final Object value)
 				{
 					String res = " ";
-					Long val = (Long) value;
+					final Long val = (Long) value;
 					if (val != null)
 					{
-						int thisInt = val.intValue();
+						final int thisInt = val.intValue();
 						res = "" + thisInt;
 					}
 					return res;
 				}
 
-				public Object translateFromSWT(Object value)
+				public Object translateFromSWT(final Object value)
 				{
-					String val = (String) value;
+					final String val = (String) value;
 					Long res = null;
 					res = new Long(val);
 					return res;
@@ -177,26 +177,26 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			_myHelperList.add(new EditorHelper(Integer.class)
 			{
 
-				public CellEditor getCellEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(final Composite parent)
 				{
 					return new TextCellEditor(parent);
 				}
 
-				public Object translateToSWT(Object value)
+				public Object translateToSWT(final Object value)
 				{
 					String res = " ";
-					Integer val = (Integer) value;
+					final Integer val = (Integer) value;
 					if (val != null)
 					{
-						int thisInt = val.intValue();
+						final int thisInt = val.intValue();
 						res = "" + thisInt;
 					}
 					return res;
 				}
 
-				public Object translateFromSWT(Object value)
+				public Object translateFromSWT(final Object value)
 				{
-					String val = (String) value;
+					final String val = (String) value;
 					Integer res = null;
 					res = new Integer(val);
 					return res;
@@ -220,7 +220,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		}
 	}
 
-	public CellEditor createPropertyEditor(Composite parent)
+	public CellEditor createPropertyEditor(final Composite parent)
 	{
 		CellEditor res = null;
 		if (_myHelper != null)
@@ -230,7 +230,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return res;
 	}
 
-	public Control createEditor(Composite parent)
+	public Control createEditor(final Composite parent)
 	{
 		Control res = null;
 		if (_myHelper != null)
@@ -245,7 +245,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		String res = null;
 		if (_thisProp instanceof Editable.CategorisedPropertyDescriptor)
 		{
-			Editable.CategorisedPropertyDescriptor desc = (CategorisedPropertyDescriptor) _thisProp;
+			final Editable.CategorisedPropertyDescriptor desc = (CategorisedPropertyDescriptor) _thisProp;
 			res = desc.getCategory();
 		}
 		return res;
@@ -291,7 +291,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return _myHelper;
 	}
 
-	public boolean isCompatibleWith(IPropertyDescriptor anotherProperty)
+	public boolean isCompatibleWith(final IPropertyDescriptor anotherProperty)
 	{
 		// the name properties aren't compatible.
 		boolean res = true;
@@ -311,7 +311,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		try
 		{
 			// find out the type of the editor
-			Method m = _thisProp.getReadMethod();
+			final Method m = _thisProp.getReadMethod();
 
 			if (m == null)
 			{
@@ -322,7 +322,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 				res = m.invoke(_subject, (Object[]) null);
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -348,7 +348,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 	public Annotation[] getAnnotationsForSetter()
 	{
 		// find out the type of the editor
-		Method write = _thisProp.getWriteMethod();
+		final Method write = _thisProp.getWriteMethod();
 		return write.getAnnotations();
 	}
 
@@ -365,23 +365,23 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		}
 
 		// find out the type of the editor
-		Method write = _thisProp.getWriteMethod();
+		final Method write = _thisProp.getWriteMethod();
 		try
 		{
 			write.invoke(_subject, new Object[]
 			{ value });
 		}
-		catch (IllegalArgumentException e)
+		catch (final IllegalArgumentException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
 					+ value, e);
 		}
-		catch (IllegalAccessException e)
+		catch (final IllegalAccessException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
 					+ value, e);
 		}
-		catch (InvocationTargetException e)
+		catch (final InvocationTargetException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
 					+ value, e);

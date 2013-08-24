@@ -66,7 +66,7 @@ public class CommsTest extends TestCase
 	{
 		Component comp = null;
 		// fire up the server
-		HostServer server = new HostServer()
+		final HostServer server = new HostServer()
 		{
 
 			@Override
@@ -81,7 +81,7 @@ public class CommsTest extends TestCase
 			comp = HostServer.go(server);
 			assertNotNull("component returned", comp);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			fail("exception thrown from server go");
 			e.printStackTrace();
@@ -94,7 +94,7 @@ public class CommsTest extends TestCase
 		{
 			HostServer.finish(comp);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			fail("error thrown in finish method");
 			e.printStackTrace();
@@ -111,18 +111,18 @@ public class CommsTest extends TestCase
 
 
 		@Override
-		public void setScenarioStatus(int scenarioId, String newState)
+		public void setScenarioStatus(final int scenarioId, final String newState)
 		{
 			_scenarioState = newState;
 			super.setScenarioStatus(scenarioId, newState);
 		}
 
-		public ScenarioType getScenario(int scenarioId)
+		public ScenarioType getScenario(final int scenarioId)
 		{
 			return _myScenario;
 		}
 
-		public TestHost(ScenarioType scenario)
+		public TestHost(final ScenarioType scenario)
 		{
 			_myScenario = scenario;
 			_myScenario.addScenarioSteppedListener(getSteppedListFor(434));
@@ -130,7 +130,7 @@ public class CommsTest extends TestCase
 		}
 
 		@Override
-		public DemandedStatus getDemandedStatus(int scenario, int participant)
+		public DemandedStatus getDemandedStatus(final int scenario, final int participant)
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -138,14 +138,14 @@ public class CommsTest extends TestCase
 
 		public Vector<Scenario> getScenarios()
 		{
-			Vector<Scenario> res = new Vector<Scenario>(0, 1);
+			final Vector<Scenario> res = new Vector<Scenario>(0, 1);
 			res.add(new Scenario(_myScenario.getName(), 434));
 			return res;
 		}
 
 		@Override
-		public void setDemandedStatus(int scenario, int participant,
-				DemandedStatus demState)
+		public void setDemandedStatus(final int scenario, final int participant,
+				final DemandedStatus demState)
 		{
 			_demStat = demState;
 		}
@@ -169,33 +169,33 @@ public class CommsTest extends TestCase
 		final ASSETGuest _guest = new ASSETGuest()
 		{
 
-			public void newParticipantState(int scenarioId, int participantId,
-					Status newState)
+			public void newParticipantState(final int scenarioId, final int participantId,
+					final Status newState)
 			{
 				_pState = newState;
 			}
 
-			public void newScenarioEvent(long time, String eventName,
-					String description)
+			public void newScenarioEvent(final long time, final String eventName,
+					final String description)
 			{
 				_time = time;
 				_msg = description;
 			}
 
-			public void newParticipantDecision(int scenarioId, int participantId,
-					DecidedEvent event)
+			public void newParticipantDecision(final int scenarioId, final int participantId,
+					final DecidedEvent event)
 			{
 				_dEvent = event;
 			}
 
-			public void newParticipantDetection(int scenarioId, int participantId,
-					DetectionEvent event)
+			public void newParticipantDetection(final int scenarioId, final int participantId,
+					final DetectionEvent event)
 			{
 				_detEvent = event;
 			}
 		};
 		// fire up the server
-		GuestServer guest = new GuestServer()
+		final GuestServer guest = new GuestServer()
 		{
 
 			@Override
@@ -210,7 +210,7 @@ public class CommsTest extends TestCase
 			guestComp = GuestServer.go(guest);
 			assertNotNull("component returned", guestComp);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			fail("exception thrown from client go");
 			e.printStackTrace();
@@ -218,10 +218,10 @@ public class CommsTest extends TestCase
 
 		assertTrue("comp started", guestComp.isStarted());
 
-		ClientResource cr = new ClientResource("http://localhost:8081/v1/scenario/"
+		final ClientResource cr = new ClientResource("http://localhost:8081/v1/scenario/"
 				+ 434 + "/event");
-		ScenarioEventResource ssr = cr.wrap(ScenarioEventResource.class);
-		ScenarioEvent event = new ScenarioEvent("type", "descr", 12, 1200);
+		final ScenarioEventResource ssr = cr.wrap(ScenarioEventResource.class);
+		final ScenarioEvent event = new ScenarioEvent("type", "descr", 12, 1200);
 		ssr.accept(event);
 
 		// kill the guest, so we can do other tests
@@ -237,7 +237,7 @@ public class CommsTest extends TestCase
 
 		Component hostComp = null;
 		// fire up the server
-		HostServer server = new HostServer()
+		final HostServer server = new HostServer()
 		{
 
 			@Override
@@ -252,7 +252,7 @@ public class CommsTest extends TestCase
 			hostComp = HostServer.go(server);
 			assertNotNull("component returned", hostComp);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			fail("exception thrown from server go");
 			e.printStackTrace();
@@ -264,12 +264,12 @@ public class CommsTest extends TestCase
 		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario");
 
 		// does it have a scenario?
-		ScenariosResource scenR = cr.wrap(ScenariosResource.class);
-		List<Scenario> sList = scenR.retrieve();
+		final ScenariosResource scenR = cr.wrap(ScenariosResource.class);
+		final List<Scenario> sList = scenR.retrieve();
 		assertEquals("right num of scenarios", 1, sList.size());
 
 		// start listening to the first one
-		int id = sList.get(0).getId();
+		final int id = sList.get(0).getId();
 		assertEquals("correct id", 434, id);
 
 		assertNotNull("no listeners yet", _host.getSteppedListFor(434));
@@ -295,7 +295,7 @@ public class CommsTest extends TestCase
 		assertNull("state empty", _scenarioState);
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/state");
-		ScenarioStateResource sss = cr.wrap(ScenarioStateResource.class);
+		final ScenarioStateResource sss = cr.wrap(ScenarioStateResource.class);
 		sss.store(ScenarioStateResource.START);
 		assertNotNull("state not empty", _scenarioState);
 		assertEquals("correct new state",ScenarioStateResource.START, _scenarioState);
@@ -308,34 +308,34 @@ public class CommsTest extends TestCase
 		final ASSETGuest _guest = new ASSETGuest()
 		{
 
-			public void newParticipantState(int scenarioId, int participantId,
-					Status newState)
+			public void newParticipantState(final int scenarioId, final int participantId,
+					final Status newState)
 			{
 				_pState = newState;
 			}
 
-			public void newScenarioEvent(long time, String eventName,
-					String description)
+			public void newScenarioEvent(final long time, final String eventName,
+					final String description)
 			{
 				_time = time;
 				_msg = description;
 				_name = eventName;
 			}
 
-			public void newParticipantDecision(int scenarioId, int participantId,
-					DecidedEvent event)
+			public void newParticipantDecision(final int scenarioId, final int participantId,
+					final DecidedEvent event)
 			{
 				_dEvent = event;
 			}
 
-			public void newParticipantDetection(int scenarioId, int participantId,
-					 DetectionEvent event)
+			public void newParticipantDetection(final int scenarioId, final int participantId,
+					 final DetectionEvent event)
 			{
 				_detEvent = event;
 			}
 		};
 		// fire up the server
-		GuestServer guest = new GuestServer()
+		final GuestServer guest = new GuestServer()
 		{
 
 			@Override
@@ -350,7 +350,7 @@ public class CommsTest extends TestCase
 			guestComp = GuestServer.go(guest);
 			assertNotNull("component returned", guestComp);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 			fail("exception thrown from server go");
@@ -388,12 +388,12 @@ public class CommsTest extends TestCase
 		// mess with some participants
 		// ////////////////////////////////
 		_msg = null;
-		Status newStat1 = new Status(12, 333);
+		final Status newStat1 = new Status(12, 333);
 		newStat1.setLocation(new WorldLocation(2, 3, 4));
 		newStat1.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-		Category newCat2 = new Category(Category.Force.RED,
+		final Category newCat2 = new Category(Category.Force.RED,
 				Category.Environment.SURFACE, Category.Type.FRIGATE);
-		Surface surf2 = new Surface(222, newStat1, null, "big surf");
+		final Surface surf2 = new Surface(222, newStat1, null, "big surf");
 		surf2.setCategory(newCat2);
 		surf2.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
 		scen.addParticipant(222, surf2);
@@ -417,13 +417,13 @@ public class CommsTest extends TestCase
 		// ////////////////////////////////
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/participant");
-		ParticipantsResource pr = cr.wrap(ParticipantsResource.class);
-		List<Participant> partList = pr.retrieve();
+		final ParticipantsResource pr = cr.wrap(ParticipantsResource.class);
+		final List<Participant> partList = pr.retrieve();
 
 		// hmm, how did we get on?
 		assertNotNull("got list", partList);
 		assertEquals("list right size", 1, partList.size());
-		Participant partOne = partList.get(0);
+		final Participant partOne = partList.get(0);
 		assertEquals("right name", "big surf", partOne.getName());
 		assertEquals("right id", 222, partOne.getId(), 0);
 		assertEquals("right category", newCat2, partOne.getCategory());
@@ -464,14 +464,14 @@ public class CommsTest extends TestCase
 		// ////////////////////////////////
 		// see what happens about decisions
 		// ////////////////////////////////
-		DecisionType decide = new ASSET.Models.Decision.UserControl(45,
+		final DecisionType decide = new ASSET.Models.Decision.UserControl(45,
 				new WorldSpeed(12, WorldSpeed.Kts), new WorldDistance(0,
 						WorldDistance.METRES)){
 							private static final long serialVersionUID = 1L;
-							public DemandedStatus decide(Status status,
-									MovementCharacteristics chars, DemandedStatus demStatus,
-									DetectionList detections, ScenarioActivityMonitor monitor,
-									long time)
+							public DemandedStatus decide(final Status status,
+									final MovementCharacteristics chars, final DemandedStatus demStatus,
+									final DetectionList detections, final ScenarioActivityMonitor monitor,
+									final long time)
 							{
 								this.setLastActivity("TESTS");
 								return new SimpleDemandedStatus(time, status);
@@ -514,13 +514,13 @@ public class CommsTest extends TestCase
 		assertNull("dem stat empty", _demStat);
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/participant/222/demState");
-		DemandedStatusResource des = cr.wrap(DemandedStatusResource.class);
-		SimpleDemandedStatus newDemStat = new SimpleDemandedStatus(12,333);
+		final DemandedStatusResource des = cr.wrap(DemandedStatusResource.class);
+		final SimpleDemandedStatus newDemStat = new SimpleDemandedStatus(12,333);
 		newDemStat.setCourse(145);
 		newDemStat.setSpeed(54);
 		des.store(newDemStat );
 		assertNotNull("dem stat populated", _demStat);
-		SimpleDemandedStatus sds = (SimpleDemandedStatus) _demStat;
+		final SimpleDemandedStatus sds = (SimpleDemandedStatus) _demStat;
 		assertEquals("correct course", 145, sds.getCourse(), 0.5);
 		assertEquals("correct speed", 54, sds.getSpeed(), 0.5);
 		
@@ -528,24 +528,24 @@ public class CommsTest extends TestCase
 		// ////////////////////////////////
 		// go on, stick in another participant (look at detections)
 		// ////////////////////////////////
-		Status newStat = new Status(12, 333);
+		final Status newStat = new Status(12, 333);
 		newStat.setLocation(new WorldLocation(2, 3, 4));
 		newStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-		Category newCat = new Category(Category.Force.BLUE,
+		final Category newCat = new Category(Category.Force.BLUE,
 				Category.Environment.SURFACE, Category.Type.FRIGATE);
-		Surface surf = new Surface(111, newStat, null, "big surf2");
+		final Surface surf = new Surface(111, newStat, null, "big surf2");
 		surf.setCategory(newCat);
 		surf.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
 		scen.addParticipant(111, surf);
-		SensorType mySensor = new PlainCookieSensor(54, new WorldDistance(12000,
+		final SensorType mySensor = new PlainCookieSensor(54, new WorldDistance(12000,
 				WorldDistance.DEGS));
 		surf.addSensor(mySensor);
 		
 		
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/participant/" + 111 + "/sensor");
-		SensorsResource sr = cr.wrap(SensorsResource.class);
-		List<Sensor> sensorList = sr.retrieve();
+		final SensorsResource sr = cr.wrap(SensorsResource.class);
+		final List<Sensor> sensorList = sr.retrieve();
 
 		assertEquals("found sensors", 1, sensorList.size());
 		assertEquals("correct sensor",54,(int) sensorList.get(0).getId());
@@ -584,7 +584,7 @@ public class CommsTest extends TestCase
 		GuestServer.finish(guestComp);
 		_msg = null;
 
-		long oldTime = _time;
+		final long oldTime = _time;
 		
 		scen.step();
 

@@ -25,14 +25,14 @@ abstract public class PropertyHandler extends MWCXMLReader
 
     super.addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String val){
+      public void setValue(final String name, final String val){
         _name = val;
       }
     });
 
     super.addAttributeHandler(new HandleAttribute("Value")
     {
-      public void setValue(String name, String val){
+      public void setValue(final String name, final String val){
         _value = val;
       }
     });

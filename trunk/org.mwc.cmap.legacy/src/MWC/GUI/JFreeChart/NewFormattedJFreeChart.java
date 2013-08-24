@@ -90,8 +90,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 *          a flag indicating whether or not a legend should be created for
 	 *          the chart.
 	 */
-	public NewFormattedJFreeChart(String title, Font titleFont, Plot plot,
-			boolean createLegend)
+	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot,
+			final boolean createLegend)
 	{
 		super(title, titleFont, plot, createLegend);
 		
@@ -122,8 +122,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 * @param stepper
 	 *          the provider of the time offset
 	 */
-	public NewFormattedJFreeChart(String title, Font titleFont, Plot plot,
-			boolean createLegend, StepperListener.StepperController stepper)
+	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot,
+			final boolean createLegend, final StepperListener.StepperController stepper)
 	{
 
 		this(title, titleFont, plot, createLegend);
@@ -151,17 +151,17 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 * @param dataLineWidth
 	 *          width in pixels
 	 */
-	public void setDataLineWidth(int dataLineWidth)
+	public void setDataLineWidth(final int dataLineWidth)
 	{
 		this._dataLineWidth = dataLineWidth;
 
 		// and update the data
-		XYPlot thePlot = (XYPlot) getPlot();
-		Stroke[] theStrokes = new Stroke[]
+		final XYPlot thePlot = (XYPlot) getPlot();
+		final Stroke[] theStrokes = new Stroke[]
 		{ new BasicStroke(_dataLineWidth) };
 		for (int i = 0; i < theStrokes.length; i++)
 		{
-			Stroke stroke = theStrokes[i];
+			final Stroke stroke = theStrokes[i];
 			thePlot.getRenderer().setSeriesStroke(i, stroke);
 		}
 	}
@@ -173,9 +173,9 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 *          the series (zero-based index).
 	 * @return the Stroke used to draw any shapes for a series.
 	 */
-	public Stroke getSeriesStroke(int index)
+	public Stroke getSeriesStroke(final int index)
 	{
-		XYPlot plot = (XYPlot) getPlot();
+		final XYPlot plot = (XYPlot) getPlot();
 		Stroke res = plot.getRenderer().getSeriesStroke(index);
 
 		res = new BasicStroke(_dataLineWidth);
@@ -193,7 +193,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		return this.getTitle().getText();
 	}
 
-	public void setTitleText(String text)
+	public void setTitleText(final String text)
 	{
 		this.getTitle().setText(text);
 	}
@@ -204,7 +204,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 * @param title
 	 *          the new title to use
 	 */
-	public void setTitleFont(Font titleFont)
+	public void setTitleFont(final Font titleFont)
 	{
 		this.getTitle().setFont(titleFont);
 	}
@@ -225,7 +225,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		return this.getXYPlot().getRangeAxis().getTickLabelFont();
 	}
 
-	public void setTickFont(Font tickFont)
+	public void setTickFont(final Font tickFont)
 	{
 		this.getXYPlot().getRangeAxis().setTickLabelFont(tickFont);
 		this.getXYPlot().getDomainAxis().setTickLabelFont(tickFont);
@@ -236,13 +236,13 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		return this.getXYPlot().getRangeAxis().getLabelFont();
 	}
 
-	public void setAxisFont(Font axisFont)
+	public void setAxisFont(final Font axisFont)
 	{
 		this.getXYPlot().getRangeAxis().setLabelFont(axisFont);
 		this.getXYPlot().getDomainAxis().setLabelFont(axisFont);
 	}
 
-	public void setFixedDuration(Duration dur)
+	public void setFixedDuration(final Duration dur)
 	{
 		_fixedDuration = dur;
 		
@@ -262,12 +262,12 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		return _fixedDuration;
 	}
 	
-	public void setDisplayFixedDuration(boolean val)
+	public void setDisplayFixedDuration(final boolean val)
 	{
-		XYPlot xp = this.getXYPlot();
+		final XYPlot xp = this.getXYPlot();
 		if(xp instanceof StepperXYPlot)
 		{
-	    StepperXYPlot	stp = (StepperXYPlot) xp;
+	    final StepperXYPlot	stp = (StepperXYPlot) xp;
 	    if(val)
 	    stp.setFixedDuration(_fixedDuration);
 	    else
@@ -280,10 +280,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	public boolean getDisplayFixedDuration()
 	{
 		boolean res = false;
-		XYPlot xp = this.getXYPlot();
+		final XYPlot xp = this.getXYPlot();
 		if(xp instanceof StepperXYPlot)
 		{
-	    StepperXYPlot	stp = (StepperXYPlot) xp;
+	    final StepperXYPlot	stp = (StepperXYPlot) xp;
 	    res = (stp.getFixedDuration() != null);
 		}
 		
@@ -302,14 +302,14 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
 	public boolean isShowSymbols()
 	{
-		DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
+		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
 				.getRenderer();
 		return sx.getBaseShapesVisible();
 	}
 
-	public void setShowSymbols(boolean showSymbols)
+	public void setShowSymbols(final boolean showSymbols)
 	{
-		DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
+		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
 				.getRenderer();
 		sx.setBaseShapesVisible(showSymbols);
 
@@ -321,7 +321,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		return getXYPlot().getRangeAxis().getLabel();
 	}
 
-	public void setY_AxisTitle(String yTitle)
+	public void setY_AxisTitle(final String yTitle)
 	{
 		this.getXYPlot().getRangeAxis().setLabel(yTitle);
 	}
@@ -331,7 +331,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		return getXYPlot().getDomainAxis().getLabel();
 	}
 
-	public void setX_AxisTitle(String xTitle)
+	public void setX_AxisTitle(final String xTitle)
 	{
 		this.getXYPlot().getDomainAxis().setLabel(xTitle);
 	}
@@ -341,9 +341,9 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		return _theDateTick;
 	}
 
-	public void setDateTickUnits(DateAxisEditor.MWCDateTickUnitWrapper theDateTick)
+	public void setDateTickUnits(final DateAxisEditor.MWCDateTickUnitWrapper theDateTick)
 	{
-		ValueAxis hd = this.getXYPlot().getDomainAxis();
+		final ValueAxis hd = this.getXYPlot().getDomainAxis();
 
 		// store the current tick
 		_theDateTick = theDateTick;
@@ -358,8 +358,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 			hd.setAutoTickUnitSelection(false);
 
 			// get the date axis
-			ValueAxis va = this.getXYPlot().getDomainAxis();
-			DateAxis da = (DateAxis) va;
+			final ValueAxis va = this.getXYPlot().getDomainAxis();
+			final DateAxis da = (DateAxis) va;
 
 			// and set the tick
 			da.setTickUnit(_theDateTick.getUnit());
@@ -428,7 +428,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 * 
 	 * @param val
 	 */
-	public void setRelativeTimes(boolean val)
+	public void setRelativeTimes(final boolean val)
 	{
 		if (_provider != null)
 		{
@@ -436,8 +436,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 			_provider.setApplied(val);
 
 			// get the date axis
-			ValueAxis va = this.getXYPlot().getDomainAxis();
-			RelativeDateAxis da = (RelativeDateAxis) va;
+			final ValueAxis va = this.getXYPlot().getDomainAxis();
+			final RelativeDateAxis da = (RelativeDateAxis) va;
 
 			// do rescale
 			da.configure();
@@ -472,7 +472,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		/**
 		 * the time controller
 		 */
-		private StepperListener.StepperController _stepper;
+		private final StepperListener.StepperController _stepper;
 
 		// ////////////////////////////////////////////////
 		// constructor
@@ -484,7 +484,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		 * @param stepper
 		 */
 		public SwitchableTimeOffsetProvider(
-				StepperListener.StepperController stepper)
+				final StepperListener.StepperController stepper)
 		{
 			this._stepper = stepper;
 		}
@@ -504,7 +504,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		 * 
 		 * @param applied
 		 */
-		public void setApplied(boolean applied)
+		public void setApplied(final boolean applied)
 		{
 			_applied = applied;
 		}
@@ -516,7 +516,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		 *          the actual time value
 		 * @return the processed time value
 		 */
-		public long offsetTimeFor(long val)
+		public long offsetTimeFor(final long val)
 		{
 			long res = val;
 
@@ -524,7 +524,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 			{
 				if (_stepper != null)
 				{
-					HiResDate dt = _stepper.getTimeZero();
+					final HiResDate dt = _stepper.getTimeZero();
 					if (dt != null)
 						res -= dt.getMicros();
 				}
@@ -547,7 +547,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		 * @param data
 		 *          track being edited
 		 */
-		public PlotInfo(NewFormattedJFreeChart data)
+		public PlotInfo(final NewFormattedJFreeChart data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -556,7 +556,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 
 						 longProp("DataLineWidth", "the width to draw the data lines",
@@ -582,7 +582,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 				};
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}

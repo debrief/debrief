@@ -22,25 +22,25 @@ public class ArrayLengthHelper extends EditorHelper
 		super(ArrayLength.class);
 	}
 
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
-		CellEditor res = new LengthPropertyCellEditor(parent);
+		final CellEditor res = new LengthPropertyCellEditor(parent);
 		return res; 
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	public boolean editsThis(Class target)
+	public boolean editsThis(final Class target)
 	{
 		return (target == ArrayLength.class);
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
-		ArrayLength len = (ArrayLength) value;
+		final ArrayLength len = (ArrayLength) value;
 		return len.getValueIn(WorldDistance.METRES) + " m";
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		String theStr = (String) value;
 		if(theStr.contains("m"))
@@ -48,21 +48,21 @@ public class ArrayLengthHelper extends EditorHelper
 			theStr = theStr.replace('m', ' ');
 		}
 			
-		ArrayLength newVal = new ArrayLength(Double.parseDouble(theStr)); 
+		final ArrayLength newVal = new ArrayLength(Double.parseDouble(theStr)); 
 		return newVal;
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				String res = (String) element;
+				final String res = (String) element;
 				return res;
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}

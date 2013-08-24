@@ -48,12 +48,12 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		IVTime
 {
 
-	private XYPlot _thePlot;
-	private JFreeChart _thePlotArea;
-	private ChartPanel _chartInPanel;
+	private final XYPlot _thePlot;
+	private final JFreeChart _thePlotArea;
+	private final ChartPanel _chartInPanel;
 	private TimeSeriesCollection dataList;
 	private Integer _visibleTimePeriod = new Integer(5 * 60);
-	private RelativeDateAxis _dateAxis;
+	private final RelativeDateAxis _dateAxis;
 	private long _timeNow = -1;
 
 	/**
@@ -62,12 +62,12 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	 * @param parent
 	 * @param style
 	 */
-	public VSensor(Composite parent, int style)
+	public VSensor(final Composite parent, final int style)
 	{
 		super(parent, style);
 		setLayout(new BorderLayout(0, 0));
 
-		ToolBar toolBar = new ToolBar(this, SWT.FLAT | SWT.RIGHT);
+		final ToolBar toolBar = new ToolBar(this, SWT.FLAT | SWT.RIGHT);
 		toolBar.setLayoutData(BorderLayout.NORTH);
 
 		// ToolItem testBtn = new ToolItem(toolBar, SWT.NONE);
@@ -82,9 +82,9 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		// }
 		// });
 
-		ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
+		final ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
 		tltmDropdownItem.setText("Visible period");
-		DropdownSelectionListener drops = new DropdownSelectionListener(
+		final DropdownSelectionListener drops = new DropdownSelectionListener(
 				tltmDropdownItem);
 		drops.add("5 Mins", 5 * 60);
 		drops.add("15 Mins", 15 * 60);
@@ -92,13 +92,13 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		drops.add("All data", 0);
 		tltmDropdownItem.addSelectionListener(drops);
 
-		Composite sashForm = new Composite(this, SWT.EMBEDDED);
+		final Composite sashForm = new Composite(this, SWT.EMBEDDED);
 
 		// now we need a Swing object to put our chart into
-		Frame _plotControl = SWT_AWT.new_Frame(sashForm);
+		final Frame _plotControl = SWT_AWT.new_Frame(sashForm);
 
 		// the y axis is common to hi & lo res. Format it here
-		NumberAxis yAxis = new NumberAxis("Degs");
+		final NumberAxis yAxis = new NumberAxis("Degs");
 	//	yAxis.setRange(0, 360);
 		yAxis.setAutoRange(true);
 		yAxis.setTickUnit(new NumberTickUnit(45));
@@ -109,7 +109,7 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 				.createStandardDateTickUnitsAsTickUnits());
 		_dateAxis.setAutoRange(true);
 
-		XYItemRenderer theRenderer = new XYShapeRenderer();
+		final XYItemRenderer theRenderer = new XYShapeRenderer();
 
 		_thePlot = new XYPlot(null, _dateAxis, yAxis, theRenderer);
 		_thePlot.setOrientation(PlotOrientation.HORIZONTAL);
@@ -142,26 +142,26 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 
 	class DropdownSelectionListener extends SelectionAdapter
 	{
-		private ToolItem dropdown;
+		private final ToolItem dropdown;
 
-		private Menu menu;
+		private final Menu menu;
 
-		public DropdownSelectionListener(ToolItem dropdown)
+		public DropdownSelectionListener(final ToolItem dropdown)
 		{
 			this.dropdown = dropdown;
 			menu = new Menu(dropdown.getParent().getShell());
 		}
 
-		public void add(String item, final int secs)
+		public void add(final String item, final int secs)
 		{
-			MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+			final MenuItem menuItem = new MenuItem(menu, SWT.NONE);
 			menuItem.setText(item);
 			menuItem.setData(secs);
 			menuItem.addSelectionListener(new SelectionAdapter()
 			{
-				public void widgetSelected(SelectionEvent event)
+				public void widgetSelected(final SelectionEvent event)
 				{
-					MenuItem selected = (MenuItem) event.widget;
+					final MenuItem selected = (MenuItem) event.widget;
 					dropdown.setText(selected.getText());
 					dropdown.setData(selected.getData());
 					setTimePeriod((Integer) dropdown.getData());
@@ -169,13 +169,13 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 			});
 		}
 
-		public void widgetSelected(SelectionEvent event)
+		public void widgetSelected(final SelectionEvent event)
 		{
 			if (event.detail == SWT.ARROW)
 			{
-				ToolItem item = (ToolItem) event.widget;
-				Rectangle rect = item.getBounds();
-				Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
+				final ToolItem item = (ToolItem) event.widget;
+				final Rectangle rect = item.getBounds();
+				final Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
 				menu.setLocation(pt.x, pt.y + rect.height);
 				menu.setVisible(true);
 			}
@@ -187,7 +187,7 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	}
 
 	// specify time period displayed
-	protected void setTimePeriod(Integer secs)
+	protected void setTimePeriod(final Integer secs)
 	{
 		_visibleTimePeriod = secs;
 
@@ -199,8 +199,8 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 			}
 			else
 			{
-				long startTime = _timeNow - (secs * 1000);
-				Range newR = new Range(startTime, _timeNow);
+				final long startTime = _timeNow - (secs * 1000);
+				final Range newR = new Range(startTime, _timeNow);
 				_dateAxis.setRange(newR, true, true);
 			}
 
@@ -211,19 +211,19 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 
 	protected void doTest()
 	{
-		DetectionList dets = new DetectionList();
+		final DetectionList dets = new DetectionList();
 
 		lastTime += (int) (1 + Math.random() * 21) * 5d * 1000;
 
 		newTime(lastTime);
 
-		int numE = (int) (Math.random() * 5d);
+		final int numE = (int) (Math.random() * 5d);
 		for (int i = 0; i < numE; i++)
 		{
-			float thisBrg = (float) (Math.random() * 360d);
-			SensorType st = new OpticSensor(i);
+			final float thisBrg = (float) (Math.random() * 360d);
+			final SensorType st = new OpticSensor(i);
 			final int partId = 100 + i;
-			NetworkParticipant np = new NetworkParticipant()
+			final NetworkParticipant np = new NetworkParticipant()
 			{
 
 				@Override
@@ -257,7 +257,7 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 				}
 			};
 
-			DetectionEvent de = new DetectionEvent(lastTime, 12, null, st, null,
+			final DetectionEvent de = new DetectionEvent(lastTime, 12, null, st, null,
 					null, thisBrg, null, null, null, null, null, np);
 			dets.add(de);
 		}
@@ -276,17 +276,17 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	{
 		if (detections.size() > 0)
 		{
-			Iterator<DetectionEvent> iter = detections.iterator();
+			final Iterator<DetectionEvent> iter = detections.iterator();
 			while (iter.hasNext())
 			{
-				DetectionEvent thisD = iter.next();
+				final DetectionEvent thisD = iter.next();
 				processThis(thisD);
 			}
 		}
 
 	}
 
-	private void processThis(DetectionEvent thisD)
+	private void processThis(final DetectionEvent thisD)
 	{
 		// keep track of if we need to add the time series to the plot
 		boolean addDataset = false;
@@ -314,14 +314,14 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		float bearing = thisD.getBearing();
 		if (bearing < 0)
 			bearing += 360;
-		long newTime = thisD.getTime();
-		FixedMillisecond time = new FixedMillisecond(newTime);
+		final long newTime = thisD.getTime();
+		final FixedMillisecond time = new FixedMillisecond(newTime);
 
 		try
 		{
 			thisSeries.add(time, bearing);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			System.err.println("BUGGER");
 		}
@@ -335,12 +335,12 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	}
 
 	@Override
-	public void restart(ScenarioType scenario)
+	public void restart(final ScenarioType scenario)
 	{
 	}
 
 	@Override
-	public void newTime(long newTime)
+	public void newTime(final long newTime)
 	{
 		_timeNow = newTime;
 		// check we're showing the correct period

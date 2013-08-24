@@ -34,7 +34,7 @@ public class MutableInt {
      * 
      * @param newval our value
      */
-    public MutableInt(int newval) {
+    public MutableInt(final int newval) {
         value = newval;
     }
 

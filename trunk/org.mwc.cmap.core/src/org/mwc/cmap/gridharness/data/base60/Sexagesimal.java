@@ -11,7 +11,7 @@ public class Sexagesimal {
 	
 	private final int myHemi;
 
-	public Sexagesimal(int degrees, double minutes, double seconds, int hemi) {
+	public Sexagesimal(final int degrees, final double minutes, final double seconds, final int hemi) {
 		myDegrees = degrees;
 		myMinutes = minutes;
 		mySeconds = seconds;
@@ -39,7 +39,7 @@ public class Sexagesimal {
 		return SexagesimalSupport.combineToDegrees(getDegrees(), getMinutes(), getSeconds(), getHemi());
 	}
 
-	public String format(SexagesimalFormat format, boolean forLongitudeNotLatitude) {
+	public String format(final SexagesimalFormat format, final boolean forLongitudeNotLatitude) {
 		return format.format(this, forLongitudeNotLatitude);
 	}
 }

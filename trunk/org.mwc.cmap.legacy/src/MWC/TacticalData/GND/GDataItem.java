@@ -73,7 +73,7 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 					_myInfoPropertyDescriptors = new PropertyDescriptor[]
 					{ prop("Visible", "whether the whole fix is visible", VISIBILITY) };
 				}
-				catch (IntrospectionException ee)
+				catch (final IntrospectionException ee)
 				{
 					ee.printStackTrace();
 				}
@@ -97,9 +97,9 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 			final GDataItem gt = (GDataItem) this.getData();
 			if (_myGridProps == null)
 			{
-				Set<String> keys = gt._myData.keySet();
-				Iterator<String> iter = keys.iterator();
-				ArrayList<NonBeanPropertyDescriptor> list = new ArrayList<NonBeanPropertyDescriptor>();
+				final Set<String> keys = gt._myData.keySet();
+				final Iterator<String> iter = keys.iterator();
+				final ArrayList<NonBeanPropertyDescriptor> list = new ArrayList<NonBeanPropertyDescriptor>();
 				while (iter.hasNext())
 				{
 					String field = (String) iter.next();
@@ -117,7 +117,7 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 					
 					final String theField = field;
 					
-					NonBeanPropertyDescriptor newItem = new NonBeanPropertyDescriptor()
+					final NonBeanPropertyDescriptor newItem = new NonBeanPropertyDescriptor()
 					{
 
 						@Override
@@ -158,11 +158,11 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 
 	}
 
-	private HashMap<String, Object> _myData;
-	private String _name;
-	private Setter _setter;
+	private final HashMap<String, Object> _myData;
+	private final String _name;
+	private final Setter _setter;
 
-	public GDataItem(String name, HashMap<String, Object> fields, Setter setter)
+	public GDataItem(final String name, final HashMap<String, Object> fields, final Setter setter)
 	{
 		_myData = fields;
 		_name = name;
@@ -188,11 +188,11 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 	}
 
 	@Override
-	public int compareTo(Plottable o)
+	public int compareTo(final Plottable o)
 	{
 		if (o instanceof GDataItem)
 		{
-			GDataItem other = (GDataItem) o;
+			final GDataItem other = (GDataItem) o;
 			return this.getTime().compareTo(other.getTime());
 		}
 		else
@@ -204,14 +204,14 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 		HiResDate res = null;
 		if (_myData.get("time") != null)
 		{
-			Date date = (Date) _myData.get("time");
+			final Date date = (Date) _myData.get("time");
 			res = new HiResDate(date);
 		}
 		return res;
 	}
 
 	@Override
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 	}
 
@@ -228,12 +228,12 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 	}
 
 	@Override
-	public void setVisible(boolean val)
+	public void setVisible(final boolean val)
 	{
 	}
 
 	@Override
-	public double rangeFrom(WorldLocation other)
+	public double rangeFrom(final WorldLocation other)
 	{
 		return Plottable.INVALID_RANGE;
 	}
@@ -245,19 +245,19 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 	}
 
 	@Override
-	public void setDTG(HiResDate date)
+	public void setDTG(final HiResDate date)
 	{
 		// TODO: somehow, handle this!
 	}
 
-	public Object getValue(String fieldName)
+	public Object getValue(final String fieldName)
 	{
 		final Object res;
 		// special case, is it hte lcoation?
 		if(fieldName.equals(LOCATION))
 		{
-			WorldLocation loc = new WorldLocation((Double)_myData.get(GDataset.LAT),(Double) _myData.get(GDataset.LON), 0d);
-			Double elevation = (Double) _myData.get(GDataset.ELEVATION);
+			final WorldLocation loc = new WorldLocation((Double)_myData.get(GDataset.LAT),(Double) _myData.get(GDataset.LON), 0d);
+			final Double elevation = (Double) _myData.get(GDataset.ELEVATION);
 			if(elevation != null)
 				loc.setDepth(-elevation.doubleValue());
 			
@@ -270,7 +270,7 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 	}
 
 	@Override
-	public void setValue(String fieldName, Object newVal)
+	public void setValue(final String fieldName, final Object newVal)
 	{
 		_myData.put(fieldName, newVal);
 		_setter.setValue(fieldName, newVal);
@@ -283,7 +283,7 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 	 */
 	public TimeStampedDataItem makeCopy()
 	{
-		HashMap<String, Object> res =new HashMap<String,Object>(_myData);
+		final HashMap<String, Object> res =new HashMap<String,Object>(_myData);
 		return new GDataItem(_name, res, _setter);
 	}
 

@@ -326,11 +326,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public PlainPropertyEditor(MWC.GUI.Editable.EditorType theInfo,
-                             PlainChart theChart,
-                             PropertiesPanel thePanel,
-                             MWC.GUI.ToolParent toolParent,
-                             Layer parentLayer)
+  public PlainPropertyEditor(final MWC.GUI.Editable.EditorType theInfo,
+                             final PlainChart theChart,
+                             final PropertiesPanel thePanel,
+                             final MWC.GUI.ToolParent toolParent,
+                             final Layer parentLayer)
   {
 
     // store the editor
@@ -398,7 +398,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       // ok, create the report listener for this item
       _reportListener = new PropertyChangeListener()
       {
-        public void propertyChange(PropertyChangeEvent evt)
+        public void propertyChange(final PropertyChangeEvent evt)
         {
           fireNewReport((String) evt.getNewValue());
         }
@@ -413,7 +413,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     {
       for (int i = 0; i < _otherEditors.length; i++)
       {
-        Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
+        final Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
         et.addPropertyChangeListener(this);
       }
     }
@@ -455,11 +455,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     else
     {
       // update the editors in turn
-      Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+      final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
       while (enumer.hasMoreElements())
       {
-        PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
-        PropertyDescriptor pd = pei.theDescriptor;
+        final PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
+        final PropertyDescriptor pd = pei.theDescriptor;
         update(pd, pei.theData);
       }
 
@@ -470,7 +470,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         /* we now have a list of properties to be
         * changed (and their old values) in our vector
         * we now have to do them */
-        PropertyChangeAction act = new PropertyChangeAction(_theModifications, _theData);
+        final PropertyChangeAction act = new PropertyChangeAction(_theModifications, _theData);
 
         // check if the list actually contains any modifications
 
@@ -478,7 +478,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         act.execute();
 
         // and put it on the undo buffer
-        MWC.GUI.Undo.UndoBuffer buff = getBuffer();
+        final MWC.GUI.Undo.UndoBuffer buff = getBuffer();
         if (buff != null)
           buff.add(act);
 
@@ -507,18 +507,18 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     return _theName;
   }
 
-  private void update(PropertyDescriptor pd, Object data)
+  private void update(final PropertyDescriptor pd, final Object data)
   {
-    PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(pd);
-    PropertyEditor pe = pei.theEditor;
+    final PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(pd);
+    final PropertyEditor pe = pei.theEditor;
 
     if (pe == null)
     {
       return;
     }
 
-    Object newVal = pe.getValue();
-    Object oldVal = pei.getCurrentVal();
+    final Object newVal = pe.getValue();
+    final Object oldVal = pei.getCurrentVal();
 
     // find out if the value for this parameter is different to the
     // current one for this object - or if there isn't a current value
@@ -526,7 +526,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     {
 
       // find out the type of the editor
-      Method write = pd.getWriteMethod();
+      final Method write = pd.getWriteMethod();
 
       // and store all of this data, ready to apply it
       _theModifications.addElement(new PropertyChangeItem(data,
@@ -550,10 +550,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       {
 
         // introspection here we come
-        int cnt = _theProperties.length;
+        final int cnt = _theProperties.length;
         for (int i = 0; i < cnt; i++)
         {
-          PropertyDescriptor p = _theProperties[i];
+          final PropertyDescriptor p = _theProperties[i];
           addEditor(p, _theData, _theInfo);
         }
       }
@@ -565,17 +565,17 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       // adding more editors
       for (int i = 0; i < _otherEditors.length; i++)
       {
-        BeanInfo bn = _otherEditors[i];
+        final BeanInfo bn = _otherEditors[i];
         if (bn instanceof MWC.GUI.Editable.EditorType)
         {
-          Editable.EditorType et = (Editable.EditorType) bn;
-          Object obj = et.getData();
-          PropertyDescriptor[] pds = et.getPropertyDescriptors();
+          final Editable.EditorType et = (Editable.EditorType) bn;
+          final Object obj = et.getData();
+          final PropertyDescriptor[] pds = et.getPropertyDescriptors();
           if (pds != null)
           {
             for (int j = 0; j < pds.length; j++)
             {
-              PropertyDescriptor pd = pds[j];
+              final PropertyDescriptor pd = pds[j];
 
               // is this an 'expert' property which
               // should not appear in here as an additional?
@@ -602,7 +602,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
    * @param editor
    * @return
    */
-  public PropertyEditor addEditor(PropertyDescriptor p, Object data, Editable.EditorType editor)
+  public PropertyEditor addEditor(final PropertyDescriptor p, final Object data, final Editable.EditorType editor)
   {
     PropertyEditor res = null;
 
@@ -613,7 +613,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
       if (res != null)
       {
-        Object val = getValueFor(data, p);
+        final Object val = getValueFor(data, p);
         res.setValue(val);
         _theEditors.put(p, new PropertyEditorItem(p, res, data, res, editor));
       }
@@ -632,16 +632,16 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
    * @param p the property to get an editor  for
    * @return a GUI editor component (or null)
    */
-  public static PropertyEditor findEditor(PropertyDescriptor p)
+  public static PropertyEditor findEditor(final PropertyDescriptor p)
   {
     PropertyEditor res = null;
 
     // find out the type of the editor
-    Method m = p.getReadMethod();
-    Class<?> cl = m.getReturnType();
+    final Method m = p.getReadMethod();
+    final Class<?> cl = m.getReturnType();
 
     // is there a custom editor for this type?
-    Class<?> c = p.getPropertyEditorClass();
+    final Class<?> c = p.getPropertyEditorClass();
 
     if (c == null)
     {
@@ -653,7 +653,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       {
         res = (PropertyEditor) c.newInstance();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
@@ -661,19 +661,19 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     return res;
   }
 
-  protected static Object getValueFor(Object data,
-                                      PropertyDescriptor p)
+  protected static Object getValueFor(final Object data,
+                                      final PropertyDescriptor p)
   {
     Object res = null;
 
     try
     {
       // find out the type of the editor
-      Method m = p.getReadMethod();
+      final Method m = p.getReadMethod();
 
       res = m.invoke(data,(Object[]) null);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       System.err.println("Plain property editor: problem calling read method");
       MWC.Utilities.Errors.Trace.trace(e);
@@ -686,15 +686,15 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
   public void doRefresh()
   {
-    Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+    final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
     while (enumer.hasMoreElements())
     {
-      PropertyEditorItem pi = (PropertyEditorItem) enumer.nextElement();
-      Component c = pi.theEditorGUI;
-      PropertyEditor pe = pi.theEditor;
+      final PropertyEditorItem pi = (PropertyEditorItem) enumer.nextElement();
+      final Component c = pi.theEditorGUI;
+      final PropertyEditor pe = pi.theEditor;
 
       // now get the new value
-      Object current = getValueFor(pi.theData, pi.theDescriptor);
+      final Object current = getValueFor(pi.theData, pi.theDescriptor);
 
       if (current != null)
       {
@@ -714,13 +714,13 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     boolean _someChanged = false;
 
     // update the editors in turn
-    Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+    final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
     while (enumer.hasMoreElements())
     {
-      PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
-      PropertyDescriptor pd = pei.theDescriptor;
+      final PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
+      final PropertyDescriptor pd = pei.theDescriptor;
 
-      Object res = pei.theEditor.getValue();
+      final Object res = pei.theEditor.getValue();
 
       // find out if the value for this parameter is different to the
       // original one (has it been modified?)
@@ -729,20 +729,20 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         _someChanged = true;
 
         // get the "writer" method
-        Method write = pd.getWriteMethod();
+        final Method write = pd.getWriteMethod();
 
         try
         {
-          Object[] params = {pei.originalValue};
+          final Object[] params = {pei.originalValue};
           write.invoke(pei.theData, params);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           MWC.Utilities.Errors.Trace.trace(e);
         }
 
         // so reset the value of this property editor
-        PropertyEditor pe = pei.theEditor;
+        final PropertyEditor pe = pei.theEditor;
         pe.setValue(pei.originalValue);
         updateThis(pei.theEditorGUI, pe);
       }
@@ -756,7 +756,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
   protected void addUs()
   {
-    hasPropertyListeners l = (hasPropertyListeners) _theData;
+    final hasPropertyListeners l = (hasPropertyListeners) _theData;
     l.addPropertyChangeListener(this);
   }
 
@@ -775,19 +775,19 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     {
       for (int i = 0; i < _otherEditors.length; i++)
       {
-        Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
+        final Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
         et.removePropertyChangeListener(this);
       }
     }
 
     // pass through and see if any editors need closing
-    Iterator<PropertyEditorItem> it = _theEditors.values().iterator();
+    final Iterator<PropertyEditorItem> it = _theEditors.values().iterator();
     while (it.hasNext())
     {
-      PropertyEditorItem pei = (PropertyEditorItem) it.next();
+      final PropertyEditorItem pei = (PropertyEditorItem) it.next();
       if (pei.theEditor instanceof EditorUsesChart)
       {
-        EditorUsesChart ec = (EditorUsesChart) pei.theEditor;
+        final EditorUsesChart ec = (EditorUsesChart) pei.theEditor;
         ec.doClose();
       }
     }
@@ -807,11 +807,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     public Object originalValue;
     transient public Editable.EditorType theEditableInfo;
 
-    public PropertyEditorItem(PropertyDescriptor propVal,
-                              PropertyEditor theEditorVal,
-                              Object data,
-                              Object theOriginalValue,
-                              Editable.EditorType editableInfo)
+    public PropertyEditorItem(final PropertyDescriptor propVal,
+                              final PropertyEditor theEditorVal,
+                              final Object data,
+                              final Object theOriginalValue,
+                              final Editable.EditorType editableInfo)
     {
       theDescriptor = propVal;
       theEditor = theEditorVal;
@@ -822,7 +822,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
     public Object getCurrentVal()
     {
-      Object res = getValueFor(theData, theDescriptor);
+      final Object res = getValueFor(theData, theDescriptor);
       return res;
     }
   }
@@ -841,12 +841,12 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     transient public Editable.EditorType editorInfo;
     public String propertyName;
 
-    public PropertyChangeItem(Object theData,
-                              Method theSetter,
-                              Object theNewValue,
-                              Object theOldValue,
-                              Editable.EditorType theEditorInfo,
-                              String thePropertyName)
+    public PropertyChangeItem(final Object theData,
+                              final Method theSetter,
+                              final Object theNewValue,
+                              final Object theOldValue,
+                              final Editable.EditorType theEditorInfo,
+                              final String thePropertyName)
     {
       data = theData;
       setter = theSetter;
@@ -874,7 +874,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
      */
     protected Object _theData1;
 
-    public PropertyChangeAction(Vector<PropertyChangeItem> theModifications, Object theData)
+    public PropertyChangeAction(final Vector<PropertyChangeItem> theModifications, final Object theData)
     {
       // take a copy of the vector, not the vector itself
       _theMods = copyVector(theModifications);
@@ -896,15 +896,15 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       return _theMods.size();
     }
 
-    protected Vector<PropertyChangeItem> copyVector(Vector<PropertyChangeItem> other)
+    protected Vector<PropertyChangeItem> copyVector(final Vector<PropertyChangeItem> other)
     {
-      Vector<PropertyChangeItem> vector = new Vector<PropertyChangeItem>(other.size(), 1);
-			Vector<PropertyChangeItem> res = vector;
-      Enumeration<PropertyChangeItem> enumer = other.elements();
+      final Vector<PropertyChangeItem> vector = new Vector<PropertyChangeItem>(other.size(), 1);
+			final Vector<PropertyChangeItem> res = vector;
+      final Enumeration<PropertyChangeItem> enumer = other.elements();
       while (enumer.hasMoreElements())
       {
-        PropertyChangeItem oldP = (PropertyChangeItem) enumer.nextElement();
-        PropertyChangeItem newP =
+        final PropertyChangeItem oldP = (PropertyChangeItem) enumer.nextElement();
+        final PropertyChangeItem newP =
           new PropertyChangeItem(oldP.data,
             oldP.setter,
             oldP.newValue,
@@ -935,10 +935,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     {
       // go through the vector and reset to the old values
       // go through the vector and make the changes
-      Enumeration<PropertyChangeItem> enumer = _theMods.elements();
+      final Enumeration<PropertyChangeItem> enumer = _theMods.elements();
       while (enumer.hasMoreElements())
       {
-        PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
+        final PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
         doThis(it.setter,
           it.data,
           it.oldValue);
@@ -954,10 +954,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     public void execute()
     {
       // go through the vector and make the changes
-      Enumeration<PropertyChangeItem> enumer = _theMods.elements();
+      final Enumeration<PropertyChangeItem> enumer = _theMods.elements();
       while (enumer.hasMoreElements())
       {
-        PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
+        final PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
         doThis(it.setter,
           it.data,
           it.newValue);
@@ -975,13 +975,13 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     /**
      * utility function to perform the 'setting' for us
      */
-    protected void doThis(Method setter,
-                          Object data,
-                          Object val)
+    protected void doThis(final Method setter,
+                          final Object data,
+                          final Object val)
     {
 
 
-      Object args[] = {val};
+      final Object args[] = {val};
 
       Class<?> p1 = null;
 
@@ -992,7 +992,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
           return;
 
         // see if the setter is expecting a double
-        Class<?>[] params = setter.getParameterTypes();
+        final Class<?>[] params = setter.getParameterTypes();
         // get the first parameter
         p1 = params[0];
 
@@ -1003,14 +1003,14 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
           // a string?
           if (val.getClass().equals(String.class))
           {
-            Double d = Double.valueOf((String) val);
-            Object args2[] = {d};
+            final Double d = Double.valueOf((String) val);
+            final Object args2[] = {d};
             setter.invoke(data, args2);
           }
           else if (val.getClass().equals(Double.class))
           {
-            Double d = (Double) val;
-            Object args2[] = {d};
+            final Double d = (Double) val;
+            final Object args2[] = {d};
             setter.invoke(data, args2);
           }
 
@@ -1018,24 +1018,24 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         else
           setter.invoke(data, args);
       }
-      catch (java.lang.NumberFormatException e)
+      catch (final java.lang.NumberFormatException e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
-      catch (java.lang.reflect.InvocationTargetException ie)
+      catch (final java.lang.reflect.InvocationTargetException ie)
       {
-        String tmpStr = null;
+        final String tmpStr = null;
         if(p1 != null)
         	p1.toString();
-				String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val + " expecting type:" + tmpStr;
+				final String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val + " expecting type:" + tmpStr;
         MWC.Utilities.Errors.Trace.trace(ie, msg);
       }
-      catch (java.lang.IllegalArgumentException ell)
+      catch (final java.lang.IllegalArgumentException ell)
       {
-        String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val;
+        final String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val;
         MWC.Utilities.Errors.Trace.trace(ell, msg);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
@@ -1083,7 +1083,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     public void setParent(ToolParent theParent);
   }
 
-  public void propertyChange(PropertyChangeEvent pce)
+  public void propertyChange(final PropertyChangeEvent pce)
   {
     // check that the change didn't come from us
     if (pce.getSource() != this)

@@ -55,7 +55,7 @@ public class MoveDirection extends PlainTool {
   /////////////////////////////////////////////////////////  
   
   /** keep a reference to the chart which we are acting upon*/
-  private PlainChart _theChart;  
+  private final PlainChart _theChart;  
   
 	/** the directions we are allowed to move in
 	 */
@@ -85,11 +85,11 @@ public class MoveDirection extends PlainTool {
    * @param theApp the parent application, so we can set cursors
    * @param theChart the chart we are to resize
    */
-  public MoveDirection(ToolParent theParent, 
-											 PlainChart theChart,
-											 int theDirection,
-											 String theLabel,
-											 String theImage){      
+  public MoveDirection(final ToolParent theParent, 
+											 final PlainChart theChart,
+											 final int theDirection,
+											 final String theLabel,
+											 final String theImage){      
     super(theParent, theLabel, theImage);
 		
     // remember the chart we are acting upon
@@ -108,7 +108,7 @@ public class MoveDirection extends PlainTool {
   public Action getData()
   {
     // get the current data area
-    WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
+    final WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
 
 		// working variable for the vector
 		double direction = 0;
@@ -149,16 +149,16 @@ public class MoveDirection extends PlainTool {
 		direction = MWC.Algorithms.Conversions.Degs2Rads(direction);
 		
 		// produce the vector
-		WorldVector theVector = new WorldVector(direction,
+		final WorldVector theVector = new WorldVector(direction,
 																						distance,
 																						0);
 		// convert direction to radians
 		direction = MWC.Algorithms.Conversions.Degs2Rads(direction);
 		
 		// produce the new area
-		WorldLocation tl = oldArea.getTopLeft().add(theVector);
-		WorldLocation br = oldArea.getBottomRight().add(theVector);		
-		WorldArea newArea = new WorldArea(tl, br);
+		final WorldLocation tl = oldArea.getTopLeft().add(theVector);
+		final WorldLocation br = oldArea.getBottomRight().add(theVector);		
+		final WorldArea newArea = new WorldArea(tl, br);
 	  
 		// produce the action
 		return new MoveDirectionAction(_theChart,
@@ -171,13 +171,13 @@ public class MoveDirection extends PlainTool {
   ////////////////////////////////////////////////////////////////////
   // store action information
   protected class MoveDirectionAction implements Action{
-    private PlainChart _theChart1;  
-    private WorldArea _oldArea;
-		private WorldArea _newArea;
+    private final PlainChart _theChart1;  
+    private final WorldArea _oldArea;
+		private final WorldArea _newArea;
     
-    public MoveDirectionAction(PlainChart theChart,
-															 WorldArea oldArea,
-															 WorldArea newArea){
+    public MoveDirectionAction(final PlainChart theChart,
+															 final WorldArea oldArea,
+															 final WorldArea newArea){
       _theChart1 = theChart;
       _oldArea = oldArea;
 			_newArea = newArea;

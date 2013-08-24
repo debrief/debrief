@@ -21,12 +21,12 @@ public class InsertEllipse extends CoreInsertShape
 	 *          the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		// generate the shape
-		double maxDegs = Conversions.m2Degs(4000);
-		double minDegs = Conversions.m2Degs(1000);
-		PlainShape res = new EllipseShape(centre, 45, new WorldDistance(maxDegs,
+		final double maxDegs = Conversions.m2Degs(4000);
+		final double minDegs = Conversions.m2Degs(1000);
+		final PlainShape res = new EllipseShape(centre, 45, new WorldDistance(maxDegs,
 				WorldDistance.DEGS), new WorldDistance(minDegs, WorldDistance.DEGS));
 		return res;
 	}

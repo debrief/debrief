@@ -44,7 +44,7 @@ public class LocalGridPainter extends GridPainter
 	// member methods
 	// ////////////////////////////////////////////////
 
-	public void paint(CanvasType g)
+	public void paint(final CanvasType g)
 	{
 		super.paint(g); // To change body of overridden methods use File | Settings
 										// | File Templates.
@@ -54,7 +54,7 @@ public class LocalGridPainter extends GridPainter
 			// do we plot the origin?
 			if (getPlotOrigin())
 			{
-				Point originPoint = g.toScreen(getOrigin());
+				final Point originPoint = g.toScreen(getOrigin());
 				g.setColor(Color.white);
 				g.fillRect(originPoint.x - 1, originPoint.y - 1, 3, 3);
 				// done.
@@ -74,8 +74,8 @@ public class LocalGridPainter extends GridPainter
 	 *          the grid separation requested
 	 * @return an area providing the coverage requested
 	 */
-	protected WorldArea getOuterBounds(CanvasType g, Dimension screenArea,
-			double deltaDegs)
+	protected WorldArea getOuterBounds(final CanvasType g, final Dimension screenArea,
+			final double deltaDegs)
 	{
 		double minLat, maxLat, minLong, maxLong;
 
@@ -84,8 +84,8 @@ public class LocalGridPainter extends GridPainter
 		// stopping when we have gone outside the screen area.
 
 		// create data coordinates from the current corners of the screen
-		WorldLocation topLeft = new WorldLocation(g.toWorld(new Point(0, 0)));
-		WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
+		final WorldLocation topLeft = new WorldLocation(g.toWorld(new Point(0, 0)));
+		final WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
 				screenArea.height));
 
 		double workingVal;
@@ -127,7 +127,7 @@ public class LocalGridPainter extends GridPainter
 		maxLong = workingVal;
 
 		workingVal = _myOrigin.getLong();
-		WorldVector longOffset = new WorldVector(MWC.Algorithms.Conversions
+		final WorldVector longOffset = new WorldVector(MWC.Algorithms.Conversions
 				.Degs2Rads(270), deltaDegs, 0);
 
 		while (workingVal >= topLeft.getLong())
@@ -139,9 +139,9 @@ public class LocalGridPainter extends GridPainter
 			else
 			{
 				// aah, special processing here.
-				WorldLocation loc = new WorldLocation(getOrigin().getLat(), workingVal,
+				final WorldLocation loc = new WorldLocation(getOrigin().getLat(), workingVal,
 						0);
-				WorldLocation newPos = loc.add(longOffset);
+				final WorldLocation newPos = loc.add(longOffset);
 				workingVal = newPos.getLong();
 			}
 		}
@@ -153,7 +153,7 @@ public class LocalGridPainter extends GridPainter
 		// collate results
 		// ////////////////////////////////////////////////
 
-		WorldArea bounds = new WorldArea(new WorldLocation(maxLat, minLong, 0),
+		final WorldArea bounds = new WorldArea(new WorldLocation(maxLat, minLong, 0),
 				new WorldLocation(minLat, maxLong, 0));
 		return bounds;
 	}
@@ -176,7 +176,7 @@ public class LocalGridPainter extends GridPainter
 	 * @param bounds
 	 * @return
 	 */
-	protected WorldLocation getGridLabelOrigin(WorldArea bounds)
+	protected WorldLocation getGridLabelOrigin(final WorldArea bounds)
 	{
 		return _myOrigin;
 	}
@@ -196,7 +196,7 @@ public class LocalGridPainter extends GridPainter
 	 * 
 	 * @param origin
 	 */
-	public void setOrigin(WorldLocation origin)
+	public void setOrigin(final WorldLocation origin)
 	{
 		this._myOrigin = origin;
 	}
@@ -217,7 +217,7 @@ public class LocalGridPainter extends GridPainter
 	 * @param plotOrigin
 	 *          yes/no
 	 */
-	public void setPlotOrigin(boolean plotOrigin)
+	public void setPlotOrigin(final boolean plotOrigin)
 	{
 		this._plotOrigin = plotOrigin;
 	}
@@ -262,7 +262,7 @@ public class LocalGridPainter extends GridPainter
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public LocalGridPainterInfo(LocalGridPainter data)
+		public LocalGridPainterInfo(final LocalGridPainter data)
 		{
 			super(data);
 		}
@@ -272,15 +272,15 @@ public class LocalGridPainter extends GridPainter
 			try
 			{
 				// get the parent attributes
-				PropertyDescriptor[] parentAttributes = super.getPropertyDescriptors();
+				final PropertyDescriptor[] parentAttributes = super.getPropertyDescriptors();
 
 				// get my attributes
-				PropertyDescriptor[] myAttributes =
+				final PropertyDescriptor[] myAttributes =
 				{ prop("Origin", "the origin (bottom left corner) of the grid"),
 						prop("PlotOrigin", "whether to plot the origin of the grid") };
 
 				// ok, now try to combine the two
-				PropertyDescriptor[] res = new PropertyDescriptor[parentAttributes.length
+				final PropertyDescriptor[] res = new PropertyDescriptor[parentAttributes.length
 						+ myAttributes.length];
 
 				// copy the arrays into it
@@ -290,7 +290,7 @@ public class LocalGridPainter extends GridPainter
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -304,7 +304,7 @@ public class LocalGridPainter extends GridPainter
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public LocalGridPainterTest(String val)
+		public LocalGridPainterTest(final String val)
 		{
 			super(val);
 		}

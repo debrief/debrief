@@ -351,7 +351,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 				return myRes;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -432,10 +432,10 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 		MWC.Utilities.ReaderWriter.ImportManager
 				.exportThis(";;Layer: " + getName());
 
-		Editable pl = this;
+		final Editable pl = this;
 		if (pl instanceof Exportable)
 		{
-			Exportable e = (Exportable) pl;
+			final Exportable e = (Exportable) pl;
 			e.exportThis();
 		}
 	}
@@ -448,20 +448,20 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 	}
 
 	@Override
-	public void append(Layer other)
+	public void append(final Layer other)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setName(String val)
+	public void setName(final String val)
 	{
 		getPoly().setName(val);
 	}
 
 	@Override
-	public void setLabel(String val)
+	public void setLabel(final String val)
 	{
 		setName(val);
 		super.setLabel(val);
@@ -475,7 +475,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 
 	@Override
 	@FireExtended
-	public void add(Editable point)
+	public void add(final Editable point)
 	{
 		if (point instanceof PolygonNode)
 		{
@@ -485,7 +485,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 
 	@Override
 	@FireExtended
-	public void removeElement(Editable point)
+	public void removeElement(final Editable point)
 	{
 		if (point instanceof PolygonNode)
 		{
@@ -496,8 +496,8 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 	@Override
 	public Enumeration<Editable> elements()
 	{
-		Vector<PolygonNode> nodes = getPoly().getPoints();
-		Vector<Editable> editables = new Vector<Editable>();
+		final Vector<PolygonNode> nodes = getPoly().getPoints();
+		final Vector<Editable> editables = new Vector<Editable>();
 		editables.addAll(nodes);
 		return editables.elements();
 	}

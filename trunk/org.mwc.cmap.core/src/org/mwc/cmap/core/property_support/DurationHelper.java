@@ -34,7 +34,7 @@ public class DurationHelper extends EditorHelper
 		public int getUnitsValue()
 		{
 	    // so, what are the preferred units?
-	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+	    final int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
 	    return theUnits;
 		}
 
@@ -44,9 +44,9 @@ public class DurationHelper extends EditorHelper
 		public double getDoubleValue()
 		{
 	    // so, what are the preferred units?
-	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+	    final int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
 
-	    double theValue = _myVal.getValueIn(theUnits);				
+	    final double theValue = _myVal.getValueIn(theUnits);				
 			return theValue;
 		}
 
@@ -63,7 +63,7 @@ public class DurationHelper extends EditorHelper
 		 * @param units the units for the value
 		 * @return an object representing the new data value
 		 */
-		public Object createResultsObject(double dist, int units)
+		public Object createResultsObject(final double dist, final int units)
 		{
 			return new Duration(dist, units);
 		}
@@ -72,7 +72,7 @@ public class DurationHelper extends EditorHelper
 		 * 
 		 * @param value
 		 */
-		public void storeMe(Object value)
+		public void storeMe(final Object value)
 		{
 			_myVal = (Duration) value;
 		}		
@@ -86,7 +86,7 @@ public class DurationHelper extends EditorHelper
 	public static class TimeIntervalEditor extends ComboBoxCellEditor
 	{
 	
-		public TimeIntervalEditor(Composite parent)
+		public TimeIntervalEditor(final Composite parent)
 		{
 			super(parent, TimeIntervalPropertyEditor.getTagList());
 		}
@@ -96,26 +96,26 @@ public class DurationHelper extends EditorHelper
 		 */
 		protected Object doGetValue()
 		{
-			Integer index = (Integer) super.doGetValue();
-			int res = TimeIntervalPropertyEditor.getValueList()[index.intValue()];
+			final Integer index = (Integer) super.doGetValue();
+			final int res = TimeIntervalPropertyEditor.getValueList()[index.intValue()];
 			return new Duration(res, Duration.MILLISECONDS);
 		}
 
 		/**
 		 * @param value
 		 */
-		protected void doSetValue(Object value)
+		protected void doSetValue(final Object value)
 		{
 			// ok - received duration, declare it
-			Duration dur = (Duration) value;
-			int millis = (int) dur.getValueIn(Duration.MILLISECONDS);
+			final Duration dur = (Duration) value;
+			final int millis = (int) dur.getValueIn(Duration.MILLISECONDS);
 			
 			
-	    int[] list = TimeIntervalPropertyEditor.getValueList();
+	    final int[] list = TimeIntervalPropertyEditor.getValueList();
 	    int res = 0;
 	    for (int i = 0; i < list.length; i++)
 	    {
-	      double v = list[i];
+	      final double v = list[i];
 	      if (v == millis)
 	      {
 	        res = i;
@@ -138,7 +138,7 @@ public class DurationHelper extends EditorHelper
 	 */
 	public static class DurationCellEditor extends ValueWithUnitsCellEditor2
 	{
-		public DurationCellEditor(Composite parent)
+		public DurationCellEditor(final Composite parent)
 		{
 			super(parent, "Duration", "Units", new DurationModel());
 		}
@@ -158,21 +158,21 @@ public class DurationHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new DurationCellEditor(parent);
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
 				return element.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -183,7 +183,7 @@ public class DurationHelper extends EditorHelper
 	
 
 	@Override
-	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
+	public Control getEditorControlFor(final Composite parent, final IDebriefProperty property)
 	{
 		return new ValueWithUnitsControl(parent, "Duration", "Units", new DurationModel(), property);
 	

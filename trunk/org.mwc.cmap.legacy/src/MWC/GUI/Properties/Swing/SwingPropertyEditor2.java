@@ -372,9 +372,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 * @param theChart
 	 *          the chart we will send updates to
 	 */
-	public SwingPropertyEditor2(MWC.GUI.Editable.EditorType info,
-			SwingPropertiesPanel parent, MWC.GUI.PlainChart theChart,
-			MWC.GUI.ToolParent toolParent, Layer parentLayer)
+	public SwingPropertyEditor2(final MWC.GUI.Editable.EditorType info,
+			final SwingPropertiesPanel parent, final MWC.GUI.PlainChart theChart,
+			final MWC.GUI.ToolParent toolParent, final Layer parentLayer)
 	{
 		super(info, theChart, parent, toolParent, parentLayer);
 
@@ -452,7 +452,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 * @param thePanel
 	 *          our parent properties panel
 	 */
-	protected void initForm(PropertiesPanel thePanel)
+	protected void initForm(final PropertiesPanel thePanel)
 	{
 
 		// go through the editors, creating them
@@ -488,13 +488,13 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		{
 			try
 			{
-				Object op = super._theCustomEditor.newInstance();
+				final Object op = super._theCustomEditor.newInstance();
 
 				// let our support class produce the item
 				ourCustomEditorInstance = createCustomEditor(op, thePanel,
 						ourCustomEditorInstance);
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				MWC.Utilities.Errors.Trace.trace(e);
 			}
@@ -511,14 +511,14 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			_table.setModel(_tableSorter);
 
 			// insert a handler to allow user to select which column to sort by
-			JTableHeader hdr = _table.getTableHeader();
+			final JTableHeader hdr = _table.getTableHeader();
 			hdr.addMouseListener(new MouseAdapter()
 			{
-				public void mouseClicked(MouseEvent e)
+				public void mouseClicked(final MouseEvent e)
 				{
-					TableColumnModel tcm = _table.getColumnModel();
-					int vc = tcm.getColumnIndexAtX(e.getX());
-					int mc = _table.convertColumnIndexToModel(vc);
+					final TableColumnModel tcm = _table.getColumnModel();
+					final int vc = tcm.getColumnIndexAtX(e.getX());
+					final int mc = _table.convertColumnIndexToModel(vc);
 					_tableSorter.sort(mc);
 				}
 			});
@@ -529,28 +529,28 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 			// put the table in a scroll pane, so it can scroll
 			// if necessary
-			JScrollPane jsp = new JScrollPane(_table);
+			final JScrollPane jsp = new JScrollPane(_table);
 			_main.add("Center", jsp);
 
-			javax.swing.table.TableColumn lbls = _table.getColumn("Name");
+			final javax.swing.table.TableColumn lbls = _table.getColumn("Name");
 			lbls.setCellRenderer(new myLabelRenderer());
 
-			javax.swing.table.TableColumn data = _table.getColumn("Data");
+			final javax.swing.table.TableColumn data = _table.getColumn("Data");
 			data.setCellRenderer(new dataCellRenderer());
 			data.setCellEditor(new dataCellEditor());
 
 			// now do the column width for the name column
-			int nameWid = lbls.getMinWidth();
+			final int nameWid = lbls.getMinWidth();
 			lbls.setPreferredWidth(nameWid);
 			_table.sizeColumnsToFit(-1);
 
 			// show all of the editor entities
-			Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+			final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
 			while (enumer.hasMoreElements())
 			{
-				PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
-				PropertyDescriptor p = pei.theDescriptor;
-				PropertyEditor pe = pei.theEditor;
+				final PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
+				final PropertyDescriptor p = pei.theDescriptor;
+				final PropertyEditor pe = pei.theEditor;
 				if (pe != null)
 				{
 					showThis(p, pe);
@@ -561,9 +561,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			int maxHt = 0;
 			for (int i = 0; i < _table.getRowCount(); i++)
 			{
-				Component c = data.getCellRenderer().getTableCellRendererComponent(_table,
+				final Component c = data.getCellRenderer().getTableCellRendererComponent(_table,
 						_table.getValueAt(i, 1), false, false, i, 1);
-				int h = c.getMinimumSize().height;
+				final int h = c.getMinimumSize().height;
 
 				/**
 				 * note that setRowHeight in initForm is jdk1.3 specific!
@@ -582,9 +582,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		}
 
 		// create the button holder
-		JPanel buttonHolder = new JPanel();
+		final JPanel buttonHolder = new JPanel();
 		buttonHolder.setLayout(new GridLayout(1, 0));
-		JPanel bottomPanel = new JPanel();
+		final JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new BorderLayout());
 		bottomPanel.add("South", buttonHolder);
 		_main.add("South", bottomPanel);
@@ -603,7 +603,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		buttonHolder.add(_close);
 		_close.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				close();
 			}
@@ -625,7 +625,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		buttonHolder.add(_apply);
 		_apply.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				apply();
 			}
@@ -634,7 +634,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		buttonHolder.add(_reset);
 		_reset.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				reset();
 			}
@@ -654,7 +654,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 *          any custom editor specified by the data object
 	 * @return a panel containing our editor
 	 */
-	private Object createCustomEditor(Object op, PropertiesPanel thePanel,
+	private Object createCustomEditor(final Object op, final PropertiesPanel thePanel,
 			Object ourCustomEditorInstance)
 	{
 		SwingCustomEditor p = null;
@@ -675,7 +675,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			if (op instanceof MWC.GUI.Properties.AWT.AWTCustomEditor)
 			{
 				System.err.println("found AWT Editor");
-				MWC.GUI.Properties.AWT.AWTCustomEditor ap = (MWC.GUI.Properties.AWT.AWTCustomEditor) op;
+				final MWC.GUI.Properties.AWT.AWTCustomEditor ap = (MWC.GUI.Properties.AWT.AWTCustomEditor) op;
 				jp = new JPanel();
 				jp.setLayout(new BorderLayout());
 				jp.add("Center", ap);
@@ -689,25 +689,25 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		// see if this custom editor wants to know about the chart
 		if (ourCustomEditorInstance instanceof PlainPropertyEditor.EditorUsesChart)
 		{
-			PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) ourCustomEditorInstance;
+			final PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) ourCustomEditorInstance;
 			eu.setChart(super._theChart);
 		}
 		// see if this custom editor wants to know about the property panel
 		if (ourCustomEditorInstance instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
 		{
-			PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) ourCustomEditorInstance;
+			final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) ourCustomEditorInstance;
 			eu.setPanel(super._thePanel);
 		}
 		// see if this custom editor wants to know about the tool parnet
 		if (ourCustomEditorInstance instanceof PlainPropertyEditor.EditorUsesToolParent)
 		{
-			PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) ourCustomEditorInstance;
+			final PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) ourCustomEditorInstance;
 			eu.setParent(super._toolParent);
 		}
 		return ourCustomEditorInstance;
 	}
 
-	public void setNames(String apply, String close, String reset)
+	public void setNames(final String apply, final String close, final String reset)
 	{
 		if (apply != null)
 			_apply.setText(apply);
@@ -731,7 +731,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 * sort out what kind of GUI component to edit this, then stick it into our
 	 * panel
 	 */
-	private void showThis(PropertyDescriptor p, PropertyEditor pe)
+	private void showThis(final PropertyDescriptor p, final PropertyEditor pe)
 	{
 		Component theComp = null;
 
@@ -744,7 +744,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		{
 
 			// see if there is a list of values
-			String[] tags = pe.getTags();
+			final String[] tags = pe.getTags();
 			if (tags != null)
 			{
 				// create a choice item
@@ -780,7 +780,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	/**
 	 * make a panel to edit this item inside
 	 */
-	private Component makePanel(PropertyDescriptor p, PropertyEditor pe)
+	private Component makePanel(final PropertyDescriptor p, final PropertyEditor pe)
 	{
 		Component cp = null;
 		if (pe.isPaintable())
@@ -798,19 +798,19 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			// see if this custom editor wants to know about the chart
 			if (pe instanceof PlainPropertyEditor.EditorUsesChart)
 			{
-				PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) pe;
+				final PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) pe;
 				eu.setChart(super._theChart);
 			}
 			// see if this custom editor wants to know about the property panel
 			if (pe instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
 			{
-				PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) pe;
+				final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) pe;
 				eu.setPanel(super._thePanel);
 			}
 			// see if this custom editor wants to know about the tool parnet
 			if (pe instanceof PlainPropertyEditor.EditorUsesToolParent)
 			{
-				PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) pe;
+				final PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) pe;
 				eu.setParent(super._toolParent);
 			}
 
@@ -827,18 +827,18 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		_main.add("Center", new JLabel("This object has no editable properties"));
 	}
 
-	public static TickableComboBox createChoiceEditor(PropertyEditor pe, String[] tags)
+	public static TickableComboBox createChoiceEditor(final PropertyEditor pe, final String[] tags)
 	{
-		TickableComboBox cl = new TickableComboBox();
+		final TickableComboBox cl = new TickableComboBox();
 
-		int num = tags.length;
+		final int num = tags.length;
 
 		// and set the initial value
-		String sel = pe.getAsText();
+		final String sel = pe.getAsText();
 
 		for (int i = 0; i < num; i++)
 		{
-			String st = tags[i];
+			final String st = tags[i];
 			cl.addItem(st);
 
 			if (st.equals(sel))
@@ -853,9 +853,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	/**
 	 * create a drop down list to edit this item
 	 */
-	private Component makeChoice(PropertyDescriptor p, PropertyEditor pe, String[] tags)
+	private Component makeChoice(final PropertyDescriptor p, final PropertyEditor pe, final String[] tags)
 	{
-		TickableComboBox cl = createChoiceEditor(pe, tags);
+		final TickableComboBox cl = createChoiceEditor(pe, tags);
 
 		// handler for new selection
 		cl.addItemListener(new SetThisItem(pe));
@@ -871,17 +871,17 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	{
 		PropertyEditor _myEditor;
 
-		public SetThisItem(PropertyEditor editor)
+		public SetThisItem(final PropertyEditor editor)
 		{
 			_myEditor = editor;
 		}
 
-		public void itemStateChanged(ItemEvent e)
+		public void itemStateChanged(final ItemEvent e)
 		{
 			// see if we are being told about a new selection
 			if (e.getStateChange() == ItemEvent.SELECTED)
 			{
-				Object val = e.getItem();
+				final Object val = e.getItem();
 				if (val instanceof String)
 					_myEditor.setAsText((String) e.getItem());
 				else
@@ -893,14 +893,14 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	/**
 	 * make a text box editor to edit this parameter
 	 */
-	private Component makeBox(PropertyDescriptor p, PropertyEditor pe)
+	private Component makeBox(final PropertyDescriptor p, final PropertyEditor pe)
 	{
-		String res = pe.getAsText();
+		final String res = pe.getAsText();
 
-		JTextArea tf = new JTextArea(res);
+		final JTextArea tf = new JTextArea(res);
 		tf.setRows(3);
 
-		JScrollPane scroller = new JScrollPane(tf);
+		final JScrollPane scroller = new JScrollPane(tf);
 		scroller.setMinimumSize(new Dimension(30, 36));
 
 		/**
@@ -926,27 +926,27 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	{
 		PropertyEditor _myEditor;
 
-		public HandleTextChange(PropertyEditor editor)
+		public HandleTextChange(final PropertyEditor editor)
 		{
 			_myEditor = editor;
 		}
 
-		public void actionPerformed(java.awt.event.ActionEvent t)
+		public void actionPerformed(final java.awt.event.ActionEvent t)
 		{
-			JTextField td = (JTextField) t.getSource();
+			final JTextField td = (JTextField) t.getSource();
 			docChanged(_myEditor, td);
 		}
 
-		public void focusLost(java.awt.event.FocusEvent f)
+		public void focusLost(final java.awt.event.FocusEvent f)
 		{
-			JTextComponent td = (JTextComponent) f.getSource();
+			final JTextComponent td = (JTextComponent) f.getSource();
 			docChanged(_myEditor, td);
 		}
 
 		/**
 		 * private handler to look after changes to the text box
 		 */
-		private void docChanged(PropertyEditor pt, JTextComponent text)
+		private void docChanged(final PropertyEditor pt, final JTextComponent text)
 		{
 			_myEditor.setValue(text.getText());
 		}
@@ -955,15 +955,15 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	/**
 	 * stick the panel into the interface
 	 */
-	private void addPanel(String lbl, Component c, String details, PropertyDescriptor p)
+	private void addPanel(final String lbl, final Component c, final String details, final PropertyDescriptor p)
 	{
 
 		// take a copy of the component, so that we can edit
 		// it later
-		PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(p);
+		final PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(p);
 		pei.theEditorGUI = c;
 
-		Vector<Object> v = new Vector<Object>();
+		final Vector<Object> v = new Vector<Object>();
 		v.addElement(p);
 		v.addElement(c);
 
@@ -982,7 +982,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 	}
 
-	protected void addButton(JButton btn)
+	protected void addButton(final JButton btn)
 	{
 		_methodsPanel.add(btn);
 	}
@@ -1093,13 +1093,13 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 	}
 
-	public void keyTyped(KeyEvent p1)
+	public void keyTyped(final KeyEvent p1)
 	{
-		int mods = p1.getModifiers();
+		final int mods = p1.getModifiers();
 		if ((mods & KeyEvent.ALT_MASK) != 0)
 		{
 			// so an alt-key has been pressed
-			char k = p1.getKeyChar();
+			final char k = p1.getKeyChar();
 			if (k == 'a')
 			{
 				apply();
@@ -1107,11 +1107,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		}
 	}
 
-	public void keyPressed(KeyEvent p1)
+	public void keyPressed(final KeyEvent p1)
 	{
 	}
 
-	public void keyReleased(KeyEvent p1)
+	public void keyReleased(final KeyEvent p1)
 	{
 	}
 
@@ -1120,24 +1120,24 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		return _theParent.getBuffer();
 	}
 
-	protected void updateThis(Component c, PropertyEditor pe)
+	protected void updateThis(final Component c, final PropertyEditor pe)
 	{
 		// update the gui
 		if (c instanceof JTextField)
 		{
-			JTextField t = (JTextField) c;
+			final JTextField t = (JTextField) c;
 			t.setText(pe.getAsText());
 			t.invalidate();
 		}
 		if (c instanceof JCheckBox)
 		{
-			JCheckBox t = (JCheckBox) c;
-			Boolean val = (Boolean) pe.getValue();
+			final JCheckBox t = (JCheckBox) c;
+			final Boolean val = (Boolean) pe.getValue();
 			t.setSelected(val.booleanValue());
 		}
 		if (c instanceof JComboBox)
 		{
-			JComboBox t = (JComboBox) c;
+			final JComboBox t = (JComboBox) c;
 			// optimistically try for the text value first
 			Object current = pe.getAsText();
 
@@ -1159,7 +1159,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 * @param report
 	 *          the text to show
 	 */
-	protected void fireNewReport(String report)
+	protected void fireNewReport(final String report)
 	{
 		_reportWindow.setText(report);
 	}
@@ -1171,11 +1171,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		{
 			for (int i = 0; i < _theMethods.length; i++)
 			{
-				MethodDescriptor md = _theMethods[i];
+				final MethodDescriptor md = _theMethods[i];
 				if (_methodsPanel != null)
 				{
 
-					JButton btn = new JButton(md.getName());
+					final JButton btn = new JButton(md.getName());
 					btn.addActionListener(new DoActionPerformed(md));
 					addButton(btn);
 				}
@@ -1197,15 +1197,15 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	private class DoActionPerformed implements java.awt.event.ActionListener
 	{
 
-		private MethodDescriptor _myMethod;
+		private final MethodDescriptor _myMethod;
 
-		public DoActionPerformed(MethodDescriptor method)
+		public DoActionPerformed(final MethodDescriptor method)
 		{
 			_myMethod = method;
 		}
 
 		@SuppressWarnings("synthetic-access")
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(final ActionEvent e)
 		{
 			try
 			{
@@ -1218,7 +1218,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				if (_theChart != null)
 					_theChart.update();
 			}
-			catch (Exception b)
+			catch (final Exception b)
 			{
 				MWC.Utilities.Errors.Trace.trace(b, "Assigning data value in editor");
 			}
@@ -1240,7 +1240,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 		protected JLabel _myLabel;
 
-		public paintLabel(PropertyEditor pe)
+		public paintLabel(final PropertyEditor pe)
 		{
 			_myEditor = pe;
 			_myLabel = new JLabel("  ")
@@ -1250,9 +1250,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				 */
 				private static final long serialVersionUID = 1L;
 
-				public void paint(Graphics p1)
+				public void paint(final Graphics p1)
 				{
-					Rectangle area = _myLabel.getBounds();
+					final Rectangle area = _myLabel.getBounds();
 
 					// and now the updated font editor
 					p1.setColor(SystemColor.controlText);
@@ -1260,12 +1260,12 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				}
 			};
 
-			JButton edit = new JButton("Edit");
+			final JButton edit = new JButton("Edit");
 
 			setLayout(new BorderLayout());
 			edit.addActionListener(new ActionListener()
 			{
-				public void actionPerformed(ActionEvent e)
+				public void actionPerformed(final ActionEvent e)
 				{
 					doClick();
 				}
@@ -1281,8 +1281,8 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		public void doClick()
 		{
 			// show the panel itself
-			JFrame tmp = new JFrame();
-			Dialog fr = new SwingEditFrame(tmp, _myEditor);
+			final JFrame tmp = new JFrame();
+			final Dialog fr = new SwingEditFrame(tmp, _myEditor);
 			fr.setModal(true);
 			fr.setVisible(true);
 			tmp.dispose();
@@ -1296,13 +1296,13 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	protected class myLabelRenderer implements TableCellRenderer
 	{
 
-		public Component getTableCellRendererComponent(JTable p1, Object p2, boolean p3,
-				boolean p4, int p5, int p6)
+		public Component getTableCellRendererComponent(final JTable p1, final Object p2, final boolean p3,
+				final boolean p4, final int p5, final int p6)
 		{
-			PropertyDescriptor pd = (PropertyDescriptor) p2;
-			JLabel res = new JLabel(pd.getName());
+			final PropertyDescriptor pd = (PropertyDescriptor) p2;
+			final JLabel res = new JLabel(pd.getName());
 			res.setPreferredSize(res.getMinimumSize());
-			String myStr = pd.getShortDescription();
+			final String myStr = pd.getShortDescription();
 			res.setToolTipText(myStr);
 			return res;
 		}
@@ -1314,10 +1314,10 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	protected class dataCellRenderer implements TableCellRenderer
 	{
 
-		public Component getTableCellRendererComponent(JTable p1, Object p2,
-				boolean isSelected, boolean hasFocus, int p5, int p6)
+		public Component getTableCellRendererComponent(final JTable p1, final Object p2,
+				final boolean isSelected, final boolean hasFocus, final int p5, final int p6)
 		{
-			Component res = (Component) _theEditorList.get(p2);
+			final Component res = (Component) _theEditorList.get(p2);
 			res.setEnabled(true);
 			return res;
 		}
@@ -1329,13 +1329,13 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	protected class dataCellEditor implements TableCellEditor
 	{
 
-		public Component getTableCellEditorComponent(JTable p1, Object p2, boolean p3,
-				int p4, int p5)
+		public Component getTableCellEditorComponent(final JTable p1, final Object p2, final boolean p3,
+				final int p4, final int p5)
 		{
 			return (Component) _theEditorList.get(p2);
 		}
 
-		public void addCellEditorListener(CellEditorListener p1)
+		public void addCellEditorListener(final CellEditorListener p1)
 		{
 		}
 
@@ -1348,16 +1348,16 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			return null;
 		}
 
-		public boolean isCellEditable(EventObject p1)
+		public boolean isCellEditable(final EventObject p1)
 		{
 			return true;
 		}
 
-		public void removeCellEditorListener(CellEditorListener p1)
+		public void removeCellEditorListener(final CellEditorListener p1)
 		{
 		}
 
-		public boolean shouldSelectCell(EventObject p1)
+		public boolean shouldSelectCell(final EventObject p1)
 		{
 			return true;
 		}
@@ -1375,18 +1375,18 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	{
 		protected Component _myC;
 
-		public myTableEditor(Component c)
+		public myTableEditor(final Component c)
 		{
 			_myC = c;
 		}
 
-		public Component getTableCellEditorComponent(JTable p1, Object p2, boolean p3,
-				int p4, int p5)
+		public Component getTableCellEditorComponent(final JTable p1, final Object p2, final boolean p3,
+				final int p4, final int p5)
 		{
 			return _myC;
 		}
 
-		public void addCellEditorListener(CellEditorListener p1)
+		public void addCellEditorListener(final CellEditorListener p1)
 		{
 			// do nothing
 		}
@@ -1401,17 +1401,17 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			return null;
 		}
 
-		public boolean isCellEditable(EventObject p1)
+		public boolean isCellEditable(final EventObject p1)
 		{
 			return true;
 		}
 
-		public void removeCellEditorListener(CellEditorListener p1)
+		public void removeCellEditorListener(final CellEditorListener p1)
 		{
 			// do nothing
 		}
 
-		public boolean shouldSelectCell(EventObject p1)
+		public boolean shouldSelectCell(final EventObject p1)
 		{
 			return false;
 		}
@@ -1440,7 +1440,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		/**
 		 * event handler so that we are informed when the user sets a new value
 		 */
-		public void actionPerformed(java.awt.event.ActionEvent event)
+		public void actionPerformed(final java.awt.event.ActionEvent event)
 		{
 		}
 
@@ -1448,7 +1448,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		 * over-ride this method so that we can update our index of the current
 		 * value
 		 */
-		public void setSelectedItem(Object oj)
+		public void setSelectedItem(final Object oj)
 		{
 			super.setSelectedItem(oj);
 		}
@@ -1456,7 +1456,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		/**
 		 * accessor method to determine if this index is the current value
 		 */
-		public boolean isCurrentValue(int index)
+		public boolean isCurrentValue(final int index)
 		{
 			return (this.getSelectedIndex() == index);
 		}
@@ -1479,14 +1479,14 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			 * red border, to show the currently selected item
 			 */
 
-			private javax.swing.border.Border redBorder = BorderFactory.createLineBorder(
+			private final javax.swing.border.Border redBorder = BorderFactory.createLineBorder(
 					Color.red, 1);
 
-			private javax.swing.border.Border emptyBorder = BorderFactory.createEmptyBorder(1,
+			private final javax.swing.border.Border emptyBorder = BorderFactory.createEmptyBorder(1,
 					1, 1, 1);
 
-			public Component getListCellRendererComponent(JList list, Object value, int index,
-					boolean isSelected, boolean cellHasFocus)
+			public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+					final boolean isSelected, final boolean cellHasFocus)
 			{
 				// set the text
 				setText(value.toString());
@@ -1541,7 +1541,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		/**
 		 * constructor, receives the object being edited (of course)
 		 */
-		public MyTable(Object object_being_edited)
+		public MyTable(final Object object_being_edited)
 		{
 			super();
 			_subject = object_being_edited;

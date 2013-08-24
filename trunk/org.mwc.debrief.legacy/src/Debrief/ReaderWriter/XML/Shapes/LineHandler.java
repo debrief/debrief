@@ -32,27 +32,27 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
 
 
     addHandler(new LocationHandler("tl"){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _start = res;
       }
     });
     addHandler(new LocationHandler("br"){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _end = res;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(ARROW_AT_END)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _arrowAtEnd = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(SHOW_AUTO_CALC)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _showAutoCalc = value;
       }
@@ -62,7 +62,7 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
 
   public final MWC.GUI.Shapes.PlainShape getShape()
   {
-    MWC.GUI.Shapes.LineShape ls = new MWC.GUI.Shapes.LineShape(_start, _end);
+    final MWC.GUI.Shapes.LineShape ls = new MWC.GUI.Shapes.LineShape(_start, _end);
     ls.setArrowAtEnd(_arrowAtEnd);
     ls.setShowAutoCalc(_showAutoCalc);
     return ls;
@@ -78,22 +78,22 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
     _showAutoCalc = false;
   }
 
-  public final void exportThisPlottable(MWC.GUI.Plottable plottable,org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public final void exportThisPlottable(final MWC.GUI.Plottable plottable,final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     // output the shape related stuff first
-    org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+    final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
     super.exportThisPlottable(plottable, ePlottable, doc);
 
     // now our circle related stuff
 
     // get the circle
-    Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper)plottable;
-    MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+    final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper)plottable;
+    final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
     if(ps instanceof MWC.GUI.Shapes.LineShape)
     {
       // export the attributes
-      MWC.GUI.Shapes.LineShape cs = (MWC.GUI.Shapes.LineShape)ps;
+      final MWC.GUI.Shapes.LineShape cs = (MWC.GUI.Shapes.LineShape)ps;
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLine_Start(), "tl", ePlottable, doc);
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLineEnd(), "br", ePlottable, doc);
       ePlottable.setAttribute(ARROW_AT_END, writeThis(cs.getArrowAtEnd()));

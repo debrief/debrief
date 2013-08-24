@@ -89,12 +89,12 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	 * @param parent
 	 * @param style
 	 */
-	public VPlot(Composite parent, int style)
+	public VPlot(final Composite parent, final int style)
 	{
 		super(parent, style);
 		setLayout(new BorderLayout(0, 0));
 
-		ToolBar toolBar = new ToolBar(this, SWT.PUSH);
+		final ToolBar toolBar = new ToolBar(this, SWT.PUSH);
 		toolBar.setLayoutData(BorderLayout.NORTH);
 
 		_snailPainter = new SnailHighlighter(null);
@@ -114,12 +114,12 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void chartFireSelectionChanged(ISelection sel)
+			public void chartFireSelectionChanged(final ISelection sel)
 			{
 			}
 
 			@Override
-			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
+			protected void paintThisLayer(final Layer thisLayer, final CanvasType dest)
 			{
 				if (tNow != null)
 					_myPainter.paintThisLayer(thisLayer, dest, tNow);
@@ -154,24 +154,24 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 
 		// specify a snail painter
 
-		ToolItem btnZoomOut = new ToolItem(toolBar, SWT.NONE);
+		final ToolItem btnZoomOut = new ToolItem(toolBar, SWT.NONE);
 		btnZoomOut.setText("Zoom out");
 		btnZoomOut.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/zoomout.gif")));
 		btnZoomOut.setToolTipText("Zoom out");
 		btnZoomOut.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				zoomOut();
 			}
 		});
 
-		ToolItem btnFitToWin = new ToolItem(toolBar, SWT.NONE);
+		final ToolItem btnFitToWin = new ToolItem(toolBar, SWT.NONE);
 		btnFitToWin.setToolTipText("Fit to window");
 		btnFitToWin.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/fit_to_win.gif")));
 		btnFitToWin.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				fitToWin();
 			}
@@ -184,7 +184,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		{
 
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				_myChart.getCanvas().getProjection()
 						.setRelativeMode(followTrack.getSelection(), false);
@@ -196,21 +196,21 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		followTrack.setSelection(true);
 		new ToolItem(toolBar, SWT.SEPARATOR); // Signals end of group
 		
-		ToolItem snail = new ToolItem(toolBar, SWT.RADIO);
+		final ToolItem snail = new ToolItem(toolBar, SWT.RADIO);
 		snail.setText("Snail");
 		snail.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/snail.gif")));
 		snail.setSelection(true);
 		snail.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				_myPainter = _snailPainter;
 				_myChart.update();
 			}});
-		ToolItem plain = new ToolItem(toolBar, SWT.RADIO);
+		final ToolItem plain = new ToolItem(toolBar, SWT.RADIO);
 		plain.setText("Plain");
 		plain.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/normal.gif")));
 		plain.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				_myPainter = _plainPainter;
 				_myChart.update();
@@ -219,11 +219,11 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		
 	}
 
-	private void insertBackData(Layers layers)
+	private void insertBackData(final Layers layers)
 	{
-		BaseLayer base = new BaseLayer();
+		final BaseLayer base = new BaseLayer();
 		base.setName("General");
-		GridPainter gp = new GridPainter();
+		final GridPainter gp = new GridPainter();
 		gp.setName("Grid");
 		gp.setColor(new Color(30,30,30));
 		gp.setDelta(new WorldDistance(1, WorldDistance.NM));
@@ -272,7 +272,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	}
 
 	@Override
-	public void newTime(long newTime)
+	public void newTime(final long newTime)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
@@ -299,20 +299,20 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 				// remember the status as most recent
 				_recentStatus = status;
 
-				Fix theFix = new Fix();
+				final Fix theFix = new Fix();
 				tNow = new HiResDate(status.getTime());
 				theFix.setTime(tNow);
 				theFix.setLocation(status.getLocation());
 				theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(status
 						.getCourse()));
 				theFix.setSpeed(status.getSpeed().getValueIn(WorldSpeed.ft_sec / 3));
-				FixWrapper fw = new FixWrapper(theFix);
+				final FixWrapper fw = new FixWrapper(theFix);
 				myTrack.addFix(fw);
 				
 				// hmm, should we plot a minute marker?
-				Date dt = tNow.getDate();
-				int mins = dt.getMinutes();
-				int secs = dt.getSeconds();
+				final Date dt = tNow.getDate();
+				final int mins = dt.getMinutes();
+				final int secs = dt.getSeconds();
 				
 				// hmm, should we plot a 10 minute marker?
 				if(mins % 10 == 0)
@@ -335,13 +335,13 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	}
 
 	// find hte sensor
-	private SensorWrapper getSensor(String name)
+	private SensorWrapper getSensor(final String name)
 	{
-		Enumeration<Editable> iter = myTrack.getSensors().elements();
+		final Enumeration<Editable> iter = myTrack.getSensors().elements();
 		SensorWrapper res = null;
 		while (iter.hasMoreElements())
 		{
-			SensorWrapper sensor = (SensorWrapper) iter.nextElement();
+			final SensorWrapper sensor = (SensorWrapper) iter.nextElement();
 			if (sensor.getName().equals(name))
 			{
 				res = sensor;
@@ -362,27 +362,27 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	}
 
 	@Override
-	public void newDetections(DetectionList detections)
+	public void newDetections(final DetectionList detections)
 	{
-		Iterator<DetectionEvent> iter = detections.iterator();
+		final Iterator<DetectionEvent> iter = detections.iterator();
 		while (iter.hasNext())
 		{
-			DetectionEvent det = iter.next();
-			String name = "Sensor_" + det.getSensor();
-			SensorWrapper sw = getSensor(name);
-			SensorContactWrapper scw = new SensorContactWrapper();
+			final DetectionEvent det = iter.next();
+			final String name = "Sensor_" + det.getSensor();
+			final SensorWrapper sw = getSensor(name);
+			final SensorContactWrapper scw = new SensorContactWrapper();
 
 			// sort out the time
-			HiResDate dtg = new HiResDate(det.getTime());
+			final HiResDate dtg = new HiResDate(det.getTime());
 			scw.setDTG(dtg);
 
 			// do we have bearing?
-			Float brg = det.getBearing();
+			final Float brg = det.getBearing();
 			if (brg != null)
 				scw.setBearing(brg);
 
 			// do we have range?
-			WorldDistance rng = det.getRange();
+			final WorldDistance rng = det.getRange();
 			if (rng != null)
 			{
 				scw.setRange(rng);
@@ -395,7 +395,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	}
 
 	@Override
-	public void restart(ScenarioType scenario)
+	public void restart(final ScenarioType scenario)
 	{
 		// TODO Auto-generated method stub
 

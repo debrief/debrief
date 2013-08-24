@@ -26,8 +26,8 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
   ///////////////////////////////////
   // constructor
   //////////////////////////////////
-  public RightClickCutCopyAdaptor(Clipboard clipboard,
-                                  UndoBuffer theBuffer)
+  public RightClickCutCopyAdaptor(final Clipboard clipboard,
+                                  final UndoBuffer theBuffer)
   {
     _clipboard = clipboard;
     _theBuffer = theBuffer;
@@ -46,14 +46,14 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
   ///////////////////////////////////
   // nested classes
   //////////////////////////////////
-  public void createMenu(javax.swing.JPopupMenu menu,
-                         Editable data,
-                         java.awt.Point thePoint,
-                         CanvasType theCanvas,
-                         MWC.GUI.Properties.PropertiesPanel thePanel,
-                         Layer theParent,
-                         Layers theLayers,
-                         Layer updateLayer)
+  public void createMenu(final javax.swing.JPopupMenu menu,
+                         final Editable data,
+                         final java.awt.Point thePoint,
+                         final CanvasType theCanvas,
+                         final MWC.GUI.Properties.PropertiesPanel thePanel,
+                         final Layer theParent,
+                         final Layers theLayers,
+                         final Layer updateLayer)
   {
     CutItem cutter = null;
     CopyItem copier = null;
@@ -139,12 +139,12 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
     protected Layers _theLayers;
     protected Layer _updateLayer;
 
-    public CutItem(Editable data,
-                   Clipboard clipboard,
-                   Layer theParent,
-                   CanvasType theCanvas,
-                   Layers theLayers,
-                   Layer updateLayer)
+    public CutItem(final Editable data,
+                   final Clipboard clipboard,
+                   final Layer theParent,
+                   final CanvasType theCanvas,
+                   final Layers theLayers,
+                   final Layer updateLayer)
     {
       // remember parameters
       _data = data;
@@ -200,7 +200,7 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
       storeOld();
 
       // copy in the new data
-      PlottableSelection ps = new PlottableSelection(_data, false);
+      final PlottableSelection ps = new PlottableSelection(_data, false);
       _myClipboard.setContents(ps, this);
 
       // is the parent the data object itself?
@@ -246,13 +246,13 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
       _myClipboard.setContents(_oldData, this);
     }
 
-    public void actionPerformed(ActionEvent p1)
+    public void actionPerformed(final ActionEvent p1)
     {
       // do it
       execute();
     }
 
-    public void lostOwnership(Clipboard p1, Transferable p2)
+    public void lostOwnership(final Clipboard p1, final Transferable p2)
     {
       // don't bother
     }
@@ -269,12 +269,12 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public CopyItem(Editable data,
-                    Clipboard clipboard,
-                    Layer theParent,
-                    CanvasType theCanvas,
-                    Layers theLayers,
-                    Layer updateLayer)
+		public CopyItem(final Editable data,
+                    final Clipboard clipboard,
+                    final Layer theParent,
+                    final CanvasType theCanvas,
+                    final Layers theLayers,
+                    final Layer updateLayer)
     {
       super(data, clipboard, theParent, theCanvas, theLayers, updateLayer);
 
@@ -306,7 +306,7 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
       // operations can be performed
 
       // put a wrapper around the item
-      PlottableSelection ps = new PlottableSelection(_data, true);
+      final PlottableSelection ps = new PlottableSelection(_data, true);
       _myClipboard.setContents(ps, this);
     }
   }
@@ -322,12 +322,12 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public CutLayer(Editable data,
-                    Clipboard clipboard,
-                    Layer theParent,
-                    CanvasType theCanvas,
-                    Layers theLayers,
-                    Layer updateLayer)
+		public CutLayer(final Editable data,
+                    final Clipboard clipboard,
+                    final Layer theParent,
+                    final CanvasType theCanvas,
+                    final Layers theLayers,
+                    final Layer updateLayer)
     {
       super(data, clipboard, theParent, theCanvas, theLayers, updateLayer);
     }
@@ -354,7 +354,7 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
       _oldData = _myClipboard.getContents(this);
 
       // copy in the new data
-      PlottableSelection ps = new PlottableSelection(_data, false);
+      final PlottableSelection ps = new PlottableSelection(_data, false);
       _myClipboard.setContents(ps, this);
 
       // remove the new data from it's parent

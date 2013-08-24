@@ -91,7 +91,7 @@ public class WorldDistance implements Serializable
    * @param value the distance in the supplied units
    * @param units the units used for this distance
    */
-  public WorldDistance(double value, int units)
+  public WorldDistance(final double value, final int units)
   {
     _myDistance = value;
     _myUnits = units;
@@ -100,14 +100,14 @@ public class WorldDistance implements Serializable
   /**
    * copy constructor
    */
-  public WorldDistance(WorldDistance other)
+  public WorldDistance(final WorldDistance other)
   {
     _myDistance = other._myDistance;
     _myUnits = other._myUnits;
   }
 
 
-  public WorldDistance( WorldVector separation)
+  public WorldDistance( final WorldVector separation)
   {
   	 this(separation.getRange(), WorldDistance.DEGS);
   }
@@ -128,7 +128,7 @@ public int hashCode() {
 }
 
 @Override
-public boolean equals(Object obj) {
+public boolean equals(final Object obj) {
 	if (this == obj)
 		return true;
 	if (obj == null)
@@ -168,13 +168,13 @@ public boolean equals(Object obj) {
   /**
    * perform a units conversion
    */
-  static public double convert(int from, int to, double val)
+  static public double convert(final int from, final int to, final double val)
   {
     // get this scale value
     double scaleVal = _scaleVals[from];
 
     // convert to mins
-    double tmpVal = val / scaleVal;
+    final double tmpVal = val / scaleVal;
 
     // get the new scale val
     scaleVal = _scaleVals[to];
@@ -186,7 +186,7 @@ public boolean equals(Object obj) {
   /**
    * get the string representing this set of units
    */
-  static public String getLabelFor(int units)
+  static public String getLabelFor(final int units)
   {
     return UnitLabels[units];
   }
@@ -194,12 +194,12 @@ public boolean equals(Object obj) {
   /**
    * get the index for this type of unit
    */
-  static public int getUnitIndexFor(String units)
+  static public int getUnitIndexFor(final String units)
   {
     int res = 0;
     for (int i = 0; i < UnitLabels.length; i++)
     {
-      String unitLabel = UnitLabels[i];
+      final String unitLabel = UnitLabels[i];
       if (units.equals(unitLabel))
       {
         res = i;
@@ -212,7 +212,7 @@ public boolean equals(Object obj) {
   /**
    * get this actual distance, in selected units
    */
-  public double getValueIn(int units)
+  public double getValueIn(final int units)
   {
     double res;
     if (units == _myUnits)
@@ -228,7 +228,7 @@ public boolean equals(Object obj) {
    */
   public String toString()
   {
-    String res = _myDistance + " " + getLabelFor(_myUnits);
+    final String res = _myDistance + " " + getLabelFor(_myUnits);
 
     return res;
   }
@@ -237,12 +237,12 @@ public boolean equals(Object obj) {
   // comparison methods
   ////////////////////////////////////////////////////////////
 
-  public boolean lessThan(WorldDistance other)
+  public boolean lessThan(final WorldDistance other)
   {
     return this.getValueIn(METRES) < other.getValueIn(METRES);
   }
 
-  public boolean greaterThan(WorldDistance other)
+  public boolean greaterThan(final WorldDistance other)
   {
     return this.getValueIn(METRES) > other.getValueIn(METRES);
   }
@@ -254,34 +254,34 @@ public boolean equals(Object obj) {
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public DistWithUnitsTest(String val)
+    public DistWithUnitsTest(final String val)
     {
       super(val);
     }
 
     public final void testWorldDistanceUnits()
     {
-      WorldDistance w1 = new WorldDistance(1, WorldDistance.NM);
+      final WorldDistance w1 = new WorldDistance(1, WorldDistance.NM);
       assertEquals("Minutes correct", w1.getValueIn(WorldDistance.NM), 1d, 0.000001);
 
-      WorldDistance w2 = new WorldDistance(1852 * 2, WorldDistance.METRES);
+      final WorldDistance w2 = new WorldDistance(1852 * 2, WorldDistance.METRES);
       assertEquals("Metres correct", w2.getValueIn(WorldDistance.NM), 2d, 0.000001);
 
-      WorldDistance w3 = new WorldDistance(5, WorldDistance.DEGS);
+      final WorldDistance w3 = new WorldDistance(5, WorldDistance.DEGS);
       assertEquals("Degrees correct", w3.getValueIn(WorldDistance.NM), 300d, 0.000001);
 
-      WorldDistance w4 = new WorldDistance(1.852 / 22, WorldDistance.KM);
+      final WorldDistance w4 = new WorldDistance(1.852 / 22, WorldDistance.KM);
       assertEquals("Km correct", w4.getValueIn(WorldDistance.NM), 1 / 22d, 0.000001);
 
       assertEquals("Back to Metres correct", w2.getValueIn(WorldDistance.METRES), 1852 * 2d, 0.000001);
 
-      WorldDistance w5 = new WorldDistance(w4);
+      final WorldDistance w5 = new WorldDistance(w4);
       assertEquals("Copy constructor", w5.getValueIn(WorldDistance.NM), 1 / 22d, 0.000001);
 
       assertEquals("retrieve metres label", WorldDistance.getLabelFor(WorldDistance.METRES), "m");
       assertEquals("retrieve degs label", WorldDistance.getLabelFor(WorldDistance.DEGS), "degs");
 
-      WorldDistance w6 = new WorldDistance(2000, WorldDistance.YARDS);
+      final WorldDistance w6 = new WorldDistance(2000, WorldDistance.YARDS);
       assertEquals("Kyds correct", w6.getValueIn(WorldDistance.KYDS), 2d, 0.000001);
 
       
@@ -289,8 +289,8 @@ public boolean equals(Object obj) {
 
     public final void testEquals()
     {
-    	WorldDistance da = new WorldDistance(60, WorldDistance.MINUTES);
-    	WorldDistance db = new WorldDistance(1, WorldDistance.DEGS);
+    	final WorldDistance da = new WorldDistance(60, WorldDistance.MINUTES);
+    	final WorldDistance db = new WorldDistance(1, WorldDistance.DEGS);
     	Assert.assertEquals("distances should be equal", da, db);
     }
     
@@ -319,18 +319,18 @@ public boolean equals(Object obj) {
 		 */
 		private static final long serialVersionUID = 1L;
 		
-		public ArrayLength(double metres)
+		public ArrayLength(final double metres)
 		{
 			super(new WorldDistance(metres, METRES));
 		}
 		
-		public ArrayLength(WorldDistance dist)
+		public ArrayLength(final WorldDistance dist)
 		{
 			super(dist);
 		}
 	}
 
-	public void setValues(double range, int degs2)
+	public void setValues(final double range, final int degs2)
 	{
 		_myDistance = range;
 		_myUnits = degs2;

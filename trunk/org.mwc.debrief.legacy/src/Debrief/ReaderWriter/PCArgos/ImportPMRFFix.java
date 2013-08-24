@@ -74,10 +74,10 @@ final class ImportPMRFFix implements PlainLineImporter
 
 	/** initialise our parameters
 	 */
-	public final void setParameters(WorldLocation origin,
-														long DTG,
-														Hashtable<String, Fix> lastPoints,
-														long freq)
+	public final void setParameters(final WorldLocation origin,
+														final long DTG,
+														final Hashtable<String, Fix> lastPoints,
+														final long freq)
 	{
 		_origin = origin;
 		_dtg = DTG;
@@ -88,7 +88,7 @@ final class ImportPMRFFix implements PlainLineImporter
 	
   /**
    */
-	public final Object readThisLine(String theLine)
+	public final Object readThisLine(final String theLine)
 	{
 
     // declare local variables
@@ -97,10 +97,10 @@ final class ImportPMRFFix implements PlainLineImporter
 		double y;
 		double z;
 
-		StringTokenizer st = new StringTokenizer(theLine);
+		final StringTokenizer st = new StringTokenizer(theLine);
 		
 		// find out which type of line this is.
-		int fields = st.countTokens();
+		final int fields = st.countTokens();
 		
 		if(fields == 13)
 		{
@@ -111,7 +111,7 @@ final class ImportPMRFFix implements PlainLineImporter
 			// extract the DTG info
 			st.nextToken(); // the 2
 			st.nextToken();  // the 0
-			String seconds = st.nextToken(); // the elapsed seconds
+			final String seconds = st.nextToken(); // the elapsed seconds
 			
 			// extract secs from this
 			long elapsed = Long.valueOf(seconds).longValue();
@@ -147,17 +147,17 @@ final class ImportPMRFFix implements PlainLineImporter
 		}				
 		
 		// get the track name
-		String trk = st.nextToken();
+		final String trk = st.nextToken();
 
 		///////////////////////////////////////////////////
 		// find out if we are interested in this data point
 		///////////////////////////////////////////////////
 		// what is the last dtg for this track?
-		Fix fx = (Fix)_lastPoints.get(trk);
+		final Fix fx = (Fix)_lastPoints.get(trk);
 		if(fx != null)
 		{
 			// get the time
-			long lastDTG = fx.getTime().getMicros() / 1000;
+			final long lastDTG = fx.getTime().getMicros() / 1000;
 				
 			// are we too soon?
 			if(_lastDTG < lastDTG + _freq)
@@ -176,10 +176,10 @@ final class ImportPMRFFix implements PlainLineImporter
 		// back on the rest of the track
 		//////////////////////////////////////////////
 		
-		String theX = st.nextToken();
-		String theY = st.nextToken();
+		final String theX = st.nextToken();
+		final String theY = st.nextToken();
 		st.nextToken();
-		String theZ = st.nextToken();
+		final String theZ = st.nextToken();
 
 		x = Double.valueOf(theX).doubleValue();
 		y = Double.valueOf(theY).doubleValue();
@@ -190,16 +190,16 @@ final class ImportPMRFFix implements PlainLineImporter
 
 		
 		// calc the bearing
-		double brg = Math.atan2(x,y); //@@ IM experimenting!!
-		double rng = Math.sqrt(x*x + y*y);
-		WorldVector offset = new WorldVector(brg, MWC.Algorithms.Conversions.Yds2Degs(rng), z);
+		final double brg = Math.atan2(x,y); //@@ IM experimenting!!
+		final double rng = Math.sqrt(x*x + y*y);
+		final WorldVector offset = new WorldVector(brg, MWC.Algorithms.Conversions.Yds2Degs(rng), z);
 		theLoc = _origin.add(offset);
 	
     // create the fix ready to store it
-    HiResDate dtg = new HiResDate(_lastDTG, 0);
-    Fix res = new Fix(dtg, theLoc, 0.0, 0.0);
+    final HiResDate dtg = new HiResDate(_lastDTG, 0);
+    final Fix res = new Fix(dtg, theLoc, 0.0, 0.0);
 		
-    ReplayFix rf = new ReplayFix();
+    final ReplayFix rf = new ReplayFix();
     rf.theFix = res;
     rf.theTrackName = trk;
     rf.theSymbology = "@@";
@@ -215,7 +215,7 @@ final class ImportPMRFFix implements PlainLineImporter
 	 * @return the shape in String form
 	 * @param theWrapper the Shape we are exporting
 	 */	
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
 		return null;
 	}
@@ -224,7 +224,7 @@ final class ImportPMRFFix implements PlainLineImporter
 	 * @param val the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		return false;
 	}

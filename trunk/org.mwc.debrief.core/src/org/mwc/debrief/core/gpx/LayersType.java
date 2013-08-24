@@ -62,7 +62,7 @@ public class LayersType {
      *     {@link LayerType }
      *     
      */
-    public void setLayer(LayerType value) {
+    public void setLayer(final LayerType value) {
         this.layer = value;
     }
 

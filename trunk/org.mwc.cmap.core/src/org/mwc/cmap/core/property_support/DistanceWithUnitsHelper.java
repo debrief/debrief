@@ -55,7 +55,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		 * @param units the units for the value
 		 * @return an object representing the new data value
 		 */
-		public Object createResultsObject(double dist, int units)
+		public Object createResultsObject(final double dist, final int units)
 		{
 			return new WorldDistance(dist, units);
 		}
@@ -64,7 +64,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		 * 
 		 * @param value
 		 */
-		public void storeMe(Object value)
+		public void storeMe(final Object value)
 		{
 			_myVal = (WorldDistance) value;
 		}
@@ -103,7 +103,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 	{
 		if(value != null)
 		{
-			WorldDistance dist = (WorldDistance) value;
+			final WorldDistance dist = (WorldDistance) value;
 			if(dist.getValue() == 0)
 				value = null;
 		}
@@ -117,22 +117,22 @@ public class DistanceWithUnitsHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new ValueWithUnitsCellEditor2(parent, "Distance", "Units", new DistanceModel());
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				WorldDistance val = (WorldDistance) element;
+				final WorldDistance val = (WorldDistance) element;
 				return val.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -143,7 +143,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 	
 
 	@Override
-	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
+	public Control getEditorControlFor(final Composite parent, final IDebriefProperty property)
 	{
 		return new ValueWithUnitsControl(parent, "Distance", "Units", new DistanceModel(), property);
 	}	

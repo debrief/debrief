@@ -57,9 +57,9 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
   ///////////////////////////////////
   // constructor
   //////////////////////////////////
-  public SwingImportRangeData(Layers theData,
-                              String lastDirectory,
-                              PropertiesPanel thePanel)
+  public SwingImportRangeData(final Layers theData,
+                              final String lastDirectory,
+                              final PropertiesPanel thePanel)
   {
     super(theData, lastDirectory, thePanel);
 
@@ -127,13 +127,13 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     ButtonPanel.add (closeBtn);
     thisPanel.add (ButtonPanel, java.awt.BorderLayout.SOUTH);
     closeBtn.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doClose();
       }
       });
     importBtn.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doImport();
       }
@@ -155,7 +155,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     selectFileBtn.setHorizontalTextPosition (javax.swing.SwingConstants.CENTER);
     selectFileBtn.setText ("...");
     selectFileBtn.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doEditFilename();
       }
@@ -179,7 +179,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     selectOriginBtn.setHorizontalTextPosition (javax.swing.SwingConstants.CENTER);
     selectOriginBtn.setText ("...");
     selectOriginBtn.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         editOrigin();
       }
@@ -195,7 +195,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     jLabel9.setText ("DTG (yyyy/mm/dd):");
     _theDate.setText("2001/01/30");
     _theDate.addFocusListener(new FocusAdapter(){
-      public void focusLost(FocusEvent e)
+      public void focusLost(final FocusEvent e)
       {
         checkDTG();
       }
@@ -204,7 +204,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     DTGPanel.add (_theDate);
     PropertiesList.add (DTGPanel);
 
-    JPanel jp = new JPanel();
+    final JPanel jp = new JPanel();
     jp.setLayout(new FlowLayout());
     jp.add(PropertiesList);
 
@@ -213,7 +213,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
 
   void editOrigin()
   {
-      WorldLocation val = MWC.GUI.Properties.Swing.SwingWorldLocationEditorFrame.doEdit(_theOrigin);
+      final WorldLocation val = MWC.GUI.Properties.Swing.SwingWorldLocationEditorFrame.doEdit(_theOrigin);
       if(val != null)
       {
         ImportRangeDataPanel._theOrigin = val;
@@ -224,7 +224,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
   void doEditFilename()
   {
     // create the file open dialog
-    JFileChooser jf = new JFileChooser();
+    final JFileChooser jf = new JFileChooser();
 
     // cancel multiple selections
     jf.setMultiSelectionEnabled(false);
@@ -251,13 +251,13 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     }
 
     // open the dialog
-    int state = jf.showOpenDialog(null);
+    final int state = jf.showOpenDialog(null);
 
     // do we have a valid file?
     if(state == JFileChooser.APPROVE_OPTION)
     {
       // retrieve the filename
-      File theFile = jf.getSelectedFile();
+      final File theFile = jf.getSelectedFile();
       _theFilename = theFile.getPath();
 
       // retrieve the directory name
@@ -298,7 +298,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     try{
       _theDTG = _dateF.parse(_theDate.getText()).getTime();
     }
-    catch(ParseException e)
+    catch(final ParseException e)
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Date Format Error", "Sorry, date incorrectly formatted (2001/1/21)");
     }
@@ -368,7 +368,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
         this.addItem(stringTags[i]);
       }
       this.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e)
+        public void actionPerformed(final ActionEvent e)
         {
           newSelection();
         }
@@ -378,12 +378,12 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     final void newSelection()
     {
       // update the local copy
-      String val = (String)this.getSelectedItem();
+      final String val = (String)this.getSelectedItem();
 
       // find out what value this string is
       for(int i=0;i<stringTags.length;i++)
       {
-        String thisS = stringTags[i];
+        final String thisS = stringTags[i];
         if(thisS.equals(val))
         {
           _myFreq = freqs[i];
@@ -396,14 +396,14 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
       return _myFreq;
     }
 
-    public final void setValue(long val)
+    public final void setValue(final long val)
     {
       for(int i=0;i<freqs.length;i++)
       {
-        long thisS = freqs[i];
+        final long thisS = freqs[i];
         if(thisS == val)
         {
-          String thisFreq = stringTags[i];
+          final String thisFreq = stringTags[i];
           setSelectedItem(thisFreq);
         }
       }

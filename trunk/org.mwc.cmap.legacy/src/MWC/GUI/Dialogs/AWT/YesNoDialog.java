@@ -14,21 +14,21 @@ public class YesNoDialog extends WorkDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	Button      yesButton;
-	private Button      noButton;
+	private final Button      noButton;
 	boolean     answer      = false;
 	private YesNoPanel  yesNoPanel;
 
-	public YesNoDialog(Frame  frame, DialogClient client, 
-						String title, String question,
-						Image  image) {
+	public YesNoDialog(final Frame  frame, final DialogClient client, 
+						final String title, final String question,
+						final Image  image) {
 		this(frame, client, title, question, image, false);
 	}
-	public YesNoDialog(Frame  frame, DialogClient client, 
-						String title, String       question,
-						Image  image, boolean      modal) {
+	public YesNoDialog(final Frame  frame, final DialogClient client, 
+						final String title, final String       question,
+						final Image  image, final boolean      modal) {
 		super(frame, client, title, modal);
 
-		ButtonListener buttonListener = new ButtonListener();
+		final ButtonListener buttonListener = new ButtonListener();
 
 		yesButton = addButton("Yes");
 		noButton  = addButton("No");
@@ -47,23 +47,23 @@ public class YesNoDialog extends WorkDialog {
 		super.doLayout(); 
 	}
   
-	public void setYesButtonLabel(String label) {
+	public void setYesButtonLabel(final String label) {
 		yesButton.setLabel(label);
 	}
-	public void setNoButtonLabel(String label) {
+	public void setNoButtonLabel(final String label) {
 		noButton.setLabel(label);
 	}
 	public boolean answeredYes() {
 		return answer;
 	}
-	public void setMessage(String question) {
+	public void setMessage(final String question) {
 		yesNoPanel.setMessage(question);
 	}
-	public void setImage(Image image) {
+	public void setImage(final Image image) {
 		yesNoPanel.setImage(image);
 	}
 	class ButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
+		public void actionPerformed(final ActionEvent event) {
 			if(event.getSource() == yesButton) 	answer = true;
 			else								answer = false;
 
@@ -77,14 +77,14 @@ class YesNoPanel extends Postcard {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Label label;
-	public YesNoPanel(String question) {
+	public YesNoPanel(final String question) {
 		this(null, question);
 	}
-	public YesNoPanel(Image image, String question) {
+	public YesNoPanel(final Image image, final String question) {
 		super(image, new Panel());
 		getPanel().add(label = new Label(question,Label.CENTER));
 	}
-	public void setMessage(String question) {
+	public void setMessage(final String question) {
 		label.setText(question);
 	}
 }

@@ -84,9 +84,9 @@ public final class CircleBuilder extends PatternBuilderType
   //////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////
-  public CircleBuilder(WorldLocation centre,
-                        MWC.GUI.Properties.PropertiesPanel thePanel,
-                        MWC.GUI.Layers theData)
+  public CircleBuilder(final WorldLocation centre,
+                        final MWC.GUI.Properties.PropertiesPanel thePanel,
+                        final MWC.GUI.Layers theData)
   {
     super(centre, thePanel, theData);
 
@@ -109,11 +109,11 @@ public final class CircleBuilder extends PatternBuilderType
   /** this method is called by the 'Create' function, and it fills in the
    *  buoys into the correct pattern
    */
-  protected final void addBuoys(Debrief.Wrappers.BuoyPatternWrapper pattern)
+  protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern)
   {
-    WorldLocation centre = getKingpin();
-    double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
-    double radius_degs = MWC.Algorithms.Conversions.Nm2Degs(_radius);
+    final WorldLocation centre = getKingpin();
+    final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+    final double radius_degs = MWC.Algorithms.Conversions.Nm2Degs(_radius);
 
     // find out the angle between each buoy
     double theta = 360.0 / (double)(getNumberOfBuoys().intValue());
@@ -135,11 +135,11 @@ public final class CircleBuilder extends PatternBuilderType
     {
 
       // create the location for this buoy, starting with the correct orientation
-      WorldVector thisStep = new MWC.GenericData.WorldVector(currentAngle, radius_degs, 0.0);
-      WorldLocation thisLoc = centre.add(thisStep);
+      final WorldVector thisStep = new MWC.GenericData.WorldVector(currentAngle, radius_degs, 0.0);
+      final WorldLocation thisLoc = centre.add(thisStep);
 
       // create the new symbol
-      Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("C" + (i + 1),
+      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("C" + (i + 1),
                                                   thisLoc,
                                                   java.awt.Color.red);
 
@@ -159,7 +159,7 @@ public final class CircleBuilder extends PatternBuilderType
     return _orientation;
   }
 
-  public final void setPatternOrientation(double val)
+  public final void setPatternOrientation(final double val)
   {
     _orientation = val;
   }
@@ -169,7 +169,7 @@ public final class CircleBuilder extends PatternBuilderType
     return new WorldDistance(_radius, WorldDistance.NM);
   }
 
-  public final void setPatternRadius(WorldDistance val)
+  public final void setPatternRadius(final WorldDistance val)
   {
     _radius = val.getValueIn(WorldDistance.NM);
   }
@@ -179,7 +179,7 @@ public final class CircleBuilder extends PatternBuilderType
     return _clockwise;
   }
 
-  public final void setPatternClockwise(boolean val)
+  public final void setPatternClockwise(final boolean val)
   {
     _clockwise = val;
   }
@@ -208,8 +208,8 @@ public final class CircleBuilder extends PatternBuilderType
   public final class CircleInfo extends MWC.GUI.Editable.EditorType
   {
 
-    public CircleInfo(CircleBuilder data,
-                   String theName)
+    public CircleInfo(final CircleBuilder data,
+                   final String theName)
     {
       super(data, theName, "Circle:");
     }
@@ -230,7 +230,7 @@ public final class CircleBuilder extends PatternBuilderType
     {
       try
       {
-        PropertyDescriptor[] myRes=
+        final PropertyDescriptor[] myRes=
         {
           prop("SymbolType", "the type of symbol plotted for this label"),
           prop("SymbolSize", "the scale of the symbol"),
@@ -252,7 +252,7 @@ public final class CircleBuilder extends PatternBuilderType
 
         return myRes;
 
-      }catch(IntrospectionException e)
+      }catch(final IntrospectionException e)
       {
         // find out which property fell over
         MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Circle Builder");
@@ -268,7 +268,7 @@ public final class CircleBuilder extends PatternBuilderType
   static public final class testMe extends junit.framework.TestCase
   {
     static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(String val)
+    public testMe(final String val)
     {
       super(val);
     }

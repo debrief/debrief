@@ -15,7 +15,7 @@ abstract public class RubberbandPanel extends Container {
 
 	abstract public void rubberbandEnded(Rubberband rb);
 
-    public void setRubberband(Rubberband rb) {
+    public void setRubberband(final Rubberband rb) {
 		if(rubberband != null) {
 			rubberband.setActive(false);
 		}
@@ -29,7 +29,7 @@ abstract public class RubberbandPanel extends Container {
 	public Rubberband getRubberband() {
 		return rubberband;
 	}
-	public void processMouseEvent(MouseEvent event) {
+	public void processMouseEvent(final MouseEvent event) {
 		super.processMouseEvent(event);  // fire to listeners
 
 		if(rubberband != null && 

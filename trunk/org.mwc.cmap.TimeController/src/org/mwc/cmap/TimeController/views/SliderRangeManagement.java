@@ -25,22 +25,22 @@ abstract class SliderRangeManagement
 
 		static class MySlider extends SliderRangeManagement
 		{
-			public void setEnabled(boolean val)
+			public void setEnabled(final boolean val)
 			{
 				_isEnabled = val;
 			}
 
-			public void setMaxVal(int max)
+			public void setMaxVal(final int max)
 			{
 				_maxVal = max;
 			}
 
-			public void setMinVal(int min)
+			public void setMinVal(final int min)
 			{
 				_minVal = min;
 			}
 
-			public void setTickSize(int small, int large, int drag)
+			public void setTickSize(final int small, final int large, final int drag)
 			{
 				_small = small;
 				_large = large;
@@ -63,7 +63,7 @@ abstract class SliderRangeManagement
 			// check we're initialised
 			assertEquals("not initialised", _small, -1);
 
-			MySlider slider = new MySlider();
+			final MySlider slider = new MySlider();
 			HiResDate minR = new HiResDate(new Date(0));
 			HiResDate maxR = new HiResDate(new Date(500));
 			slider.resetRange(minR, maxR);
@@ -78,7 +78,7 @@ abstract class SliderRangeManagement
 			// try a couple of conversions
       int sVal = slider.toSliderUnits(new HiResDate(new Date(250)));
       assertEquals("correct slider value", 250000, sVal);
-      long sMicros = slider.fromSliderUnits(250000, 1).getMicros();
+      final long sMicros = slider.fromSliderUnits(250000, 1).getMicros();
       assertEquals("correct slider value", 250000, sMicros);
            
 
@@ -96,8 +96,8 @@ abstract class SliderRangeManagement
 			// try a couple of conversions
       sVal = slider.toSliderUnits(new HiResDate(new Date(2009, 1, 1, 12, 0, 30)));
       assertEquals("correct slider value", 30, sVal);
-      HiResDate dt = slider.fromSliderUnits(250000, 1);
-      String dtStr = MWC.Utilities.TextFormatting.FormatRNDateTime.toMediumString(dt.getDate().getTime());
+      final HiResDate dt = slider.fromSliderUnits(250000, 1);
+      final String dtStr = MWC.Utilities.TextFormatting.FormatRNDateTime.toMediumString(dt.getDate().getTime());
       System.out.println(dtStr);
       assertEquals("correct slider value", 250000, sMicros);
 
@@ -138,7 +138,7 @@ abstract class SliderRangeManagement
 
 	public abstract void setEnabled(boolean val);
 
-	public void resetRange(HiResDate min, HiResDate max)
+	public void resetRange(final HiResDate min, final HiResDate max)
 	{
 		if ((min != null) && (max != null))
 		{
@@ -146,7 +146,7 @@ abstract class SliderRangeManagement
 			_startTime = min;
 
 			// yes - initialise the ranges
-			long range = max.getMicros() - min.getMicros();
+			final long range = max.getMicros() - min.getMicros();
 
 			int maxVal = 100;
 
@@ -164,8 +164,8 @@ abstract class SliderRangeManagement
 				}
 				else
 				{
-					long rangeMillis = range / 1000;
-					long rangeSecs = rangeMillis / 1000;
+					final long rangeMillis = range / 1000;
+					final long rangeSecs = rangeMillis / 1000;
 					if (rangeSecs < Integer.MAX_VALUE)
 					{
 						// ok, we're going to run in second resolution
@@ -177,7 +177,7 @@ abstract class SliderRangeManagement
 					else
 					{
 						// let's run in minute resolution
-						long rangeMins = rangeSecs / 60;
+						final long rangeMins = rangeSecs / 60;
 						if (rangeMins < Integer.MAX_VALUE)
 						{
 							// ok, we're going to run in minute resolution
@@ -197,7 +197,7 @@ abstract class SliderRangeManagement
 				// ok. just sort out the step size when the user clicks on the slider
 				int smallTick= 5;
 				int largeTick = 5;
-				int dragSize = 0;
+				final int dragSize = 0;
 
 				if(_timeScalar == MICRO_STEP)
 				{
@@ -232,7 +232,7 @@ abstract class SliderRangeManagement
 		}
 	}
 
-	public int toSliderUnits(HiResDate now)
+	public int toSliderUnits(final HiResDate now)
 	{
 		int res = -1;
 
@@ -250,7 +250,7 @@ abstract class SliderRangeManagement
 
 	}
 
-	public HiResDate fromSliderUnits(int value, long sliderResolution)
+	public HiResDate fromSliderUnits(final int value, long sliderResolution)
 	{
 		long newValue = value;
 
@@ -261,7 +261,7 @@ abstract class SliderRangeManagement
 		newValue *= _timeScalar;
 
 		// re-apply the offset
-		long newDate = _startTime.getMicros() + newValue;
+		final long newDate = _startTime.getMicros() + newValue;
 
 		// and trim the resulting value
 //		newDate = (newDate / sliderResolution) * sliderResolution;

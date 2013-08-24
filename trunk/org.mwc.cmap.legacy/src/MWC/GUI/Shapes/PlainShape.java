@@ -165,7 +165,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * property change support for this shape, this allows us to store a list of
 	 * objects which are intererested in modification to this
 	 */
-	private PropertyChangeSupport _pSupport;
+	private final PropertyChangeSupport _pSupport;
 
 	private boolean _isVisible;
 
@@ -210,14 +210,14 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * @param theLineWidth
 	 * @param myType
 	 */
-	protected PlainShape(int theLineStyle, int theLineWidth, String myType)
+	protected PlainShape(final int theLineStyle, final int theLineWidth, final String myType)
 	{
 		_lineStyle = theLineStyle;
 		_foreColor = DEFAULT_COLOR; // set the colour to the default one for our
 																// colour editor
 		_lineWidth = theLineWidth;
 
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 		sb.append("Shape");
 		sb.append(System.currentTimeMillis());
 
@@ -274,7 +274,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * @param isFilled
 	 *          yes/no
 	 */
-	public void setFilled(boolean isFilled)
+	public void setFilled(final boolean isFilled)
 	{
 		this._isFilled = isFilled;
 	}
@@ -294,7 +294,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * @param val
 	 *          String representing name of shape
 	 */
-	final public void setName(String val)
+	final public void setName(final String val)
 	{
 		_myName = val;
 	}
@@ -322,7 +322,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		return _lineStyle;
 	}
 
-	public void setLineStyle(int lineStyle)
+	public void setLineStyle(final int lineStyle)
 	{
 		_lineStyle = lineStyle;
 	}
@@ -332,7 +332,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		return _lineWidth;
 	}
 
-	public void setLineWidth(int lineWidth)
+	public void setLineWidth(final int lineWidth)
 	{
 		_lineWidth = lineWidth;
 	}
@@ -342,7 +342,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		return _foreColor;
 	}
 
-	public void setColor(Color Color)
+	public void setColor(final Color Color)
 	{
 		_foreColor = Color;
 	}
@@ -356,7 +356,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		return _isVisible;
 	}
 
-	public void setVisible(boolean val)
+	public void setVisible(final boolean val)
 	{
 		_isVisible = val;
 	}
@@ -364,18 +364,18 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	// ////////////////////////////////////////////////////
 	// property change support
 	// ///////////////////////////////////////////////////
-	public void addPropertyListener(PropertyChangeListener list)
+	public void addPropertyListener(final PropertyChangeListener list)
 	{
 		_pSupport.addPropertyChangeListener(list);
 	}
 
-	public void removePropertyListener(PropertyChangeListener list)
+	public void removePropertyListener(final PropertyChangeListener list)
 	{
 		_pSupport.removePropertyChangeListener(list);
 	}
 
-	protected void firePropertyChange(String name, Object oldValue,
-			Object newValue)
+	protected void firePropertyChange(final String name, final Object oldValue,
+			final Object newValue)
 	{
 		if (_pSupport != null)
 			_pSupport.firePropertyChange(name, oldValue, newValue);
@@ -384,42 +384,42 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	// ////////////////////////////////////////////////////
 	// label/anchor support
 	// ///////////////////////////////////////////////////
-	public WorldLocation getAnchor(int location)
+	public WorldLocation getAnchor(final int location)
 	{
 		WorldLocation loc = null;
 
-		WorldArea wa = getBounds();
+		final WorldArea wa = getBounds();
 
 		// did we find our bounds?
 		if (wa != null)
 		{
-			WorldLocation centre = wa.getCentre();
+			final WorldLocation centre = wa.getCentre();
 			switch (location)
 			{
 			case MWC.GUI.Properties.LocationPropertyEditor.TOP:
 			{
-				WorldLocation res = new WorldLocation(wa.getTopLeft().getLat(),
+				final WorldLocation res = new WorldLocation(wa.getTopLeft().getLat(),
 						centre.getLong(), 0);
 				loc = res;
 				break;
 			}
 			case MWC.GUI.Properties.LocationPropertyEditor.BOTTOM:
 			{
-				WorldLocation res = new WorldLocation(wa.getBottomRight().getLat(),
+				final WorldLocation res = new WorldLocation(wa.getBottomRight().getLat(),
 						centre.getLong(), 0);
 				loc = res;
 				break;
 			}
 			case MWC.GUI.Properties.LocationPropertyEditor.LEFT:
 			{
-				WorldLocation res = new WorldLocation(centre.getLat(), wa.getTopLeft()
+				final WorldLocation res = new WorldLocation(centre.getLat(), wa.getTopLeft()
 						.getLong(), 0);
 				loc = res;
 				break;
 			}
 			case MWC.GUI.Properties.LocationPropertyEditor.RIGHT:
 			{
-				WorldLocation res = new WorldLocation(centre.getLat(), wa
+				final WorldLocation res = new WorldLocation(centre.getLat(), wa
 						.getBottomRight().getLong(), 0);
 				loc = res;
 				break;
@@ -442,13 +442,13 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * @param currentNearest
 	 * @param parentLayer
 	 */
-	public final void findNearestHotSpotIn(Point cursorPos,
-			WorldLocation cursorLoc, LocationConstruct currentNearest,
-			Layer parentLayer, Layers theLayers)
+	public final void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
+			final Layer parentLayer, final Layers theLayers)
 	{
 
 		// initialise thisDist, since we're going to be over-writing it
-		WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
+		final WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
 				WorldDistance.DEGS);
 
 		// is this our first item?
@@ -464,19 +464,19 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * @param shape
 	 * @param parentLayer
 	 */
-	protected static void checkThisOne(WorldLocation thisLocation,
-			WorldLocation cursorLoc, ComponentConstruct currentNearest,
-			HasDraggableComponents shape, Layer parentLayer)
+	protected static void checkThisOne(final WorldLocation thisLocation,
+			final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
+			final HasDraggableComponents shape, final Layer parentLayer)
 	{
 		// now for the BL
-		WorldDistance blRange = new WorldDistance(
+		final WorldDistance blRange = new WorldDistance(
 				thisLocation.rangeFrom(cursorLoc), WorldDistance.DEGS);
 
 		// try range
 		currentNearest.checkMe(shape, blRange, null, parentLayer, thisLocation);
 	}
 
-	public void setFont(Font theFont)
+	public void setFont(final Font theFont)
 	{
 		_myFont = theFont;
 	}

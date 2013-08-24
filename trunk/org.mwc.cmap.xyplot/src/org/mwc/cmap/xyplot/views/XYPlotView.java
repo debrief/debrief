@@ -275,8 +275,8 @@ public class XYPlotView extends ViewPart
 	 *          - an object capable of applying formatting to the plot
 	 * @param thePlotId
 	 */
-	public void showPlot(String title, AbstractSeriesDataset dataset,
-			String units, formattingOperation theFormatter, String thePlotId)
+	public void showPlot(final String title, final AbstractSeriesDataset dataset,
+			final String units, final formattingOperation theFormatter, final String thePlotId)
 	{
 
 		_listenForDataChanges.setEnabled(false);
@@ -303,11 +303,11 @@ public class XYPlotView extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 
 		// right, we need an SWT.EMBEDDED object to act as a holder
-		Composite holder = new Composite(parent, SWT.EMBEDDED);
+		final Composite holder = new Composite(parent, SWT.EMBEDDED);
 		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
 				| GridData.FILL_HORIZONTAL));
 
@@ -321,7 +321,7 @@ public class XYPlotView extends ViewPart
 		contributeToActionBars();
 
 		// put in the plot-copy support
-		IActionBars actionBars = getViewSite().getActionBars();
+		final IActionBars actionBars = getViewSite().getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
 				_exportToClipboard);
 
@@ -340,19 +340,19 @@ public class XYPlotView extends ViewPart
 		{
 
 			@Override
-			public void dataModified(Layers theData, Layer changedLayer)
+			public void dataModified(final Layers theData, final Layer changedLayer)
 			{
 				regenerateData();
 			}
 
 			@Override
-			public void dataExtended(Layers theData)
+			public void dataExtended(final Layers theData)
 			{
 				regenerateData();
 			}
 
 			@Override
-			public void dataReformatted(Layers theData, Layer changedLayer)
+			public void dataReformatted(final Layers theData, final Layer changedLayer)
 			{
 			}
 		};
@@ -374,17 +374,17 @@ public class XYPlotView extends ViewPart
 			_myId = _myMemento.getString(PLOT_ID);
 
 			// get our special streaming library ready
-			XStream xs = new XStream(new DomDriver());
+			final XStream xs = new XStream(new DomDriver());
 
 			// formatter first
-			String theFormatterStr = _myMemento.getString(FORMATTER);
+			final String theFormatterStr = _myMemento.getString(FORMATTER);
 
 			// hey, do we have a formatter?
 			if (theFormatterStr != null)
 				_theFormatter = (formattingOperation) xs.fromXML(theFormatterStr);
 
 			// and the data
-			String dataStr = _myMemento.getString(DATA);
+			final String dataStr = _myMemento.getString(DATA);
 
 			// hmm, is there anything in it?
 			if (dataStr == null)
@@ -396,14 +396,14 @@ public class XYPlotView extends ViewPart
 			showPlot(_myTitle, _dataset, _myUnits, _theFormatter, _myId);
 
 			// sort out the fixed duration bits - now we've got our plot
-			String theDur = _myMemento.getString(FIXED_DURATION);
+			final String theDur = _myMemento.getString(FIXED_DURATION);
 			Duration someDur = null;
 			if (theDur != null)
 			{
-				long dur = Long.parseLong(theDur);
+				final long dur = Long.parseLong(theDur);
 				someDur = new Duration(dur, Duration.MILLISECONDS);
 			}
-			Boolean doFixed = _myMemento.getBoolean(DISPLAY_FIXED_DURATION);
+			final Boolean doFixed = _myMemento.getBoolean(DISPLAY_FIXED_DURATION);
 			if (doFixed != null)
 			{
 				this._thePlotArea.setFixedDuration(someDur);
@@ -445,25 +445,25 @@ public class XYPlotView extends ViewPart
 				_thePlotArea.setShowSymbols(((Boolean) xs.fromXML(str)).booleanValue());
 
 			// and the axis orientation
-			String doWaterTxt = _myMemento.getString(DO_WATERFALL);
+			final String doWaterTxt = _myMemento.getString(DO_WATERFALL);
 			if (doWaterTxt != null)
 			{
 				_switchAxes.setChecked(Boolean.parseBoolean(doWaterTxt));
 				_switchAxes.run();
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Failed to read in saved XY Plot data",
 					e);
 		}
 	}
 
-	private void fillThePlot(final String title, String units,
-			formattingOperation theFormatter, AbstractSeriesDataset dataset)
+	private void fillThePlot(final String title, final String units,
+			final formattingOperation theFormatter, final AbstractSeriesDataset dataset)
 	{
 
-		StepControl _theStepper = null;
+		final StepControl _theStepper = null;
 
 		// the working variables we rely on later
 		_thePlotArea = null;
@@ -472,7 +472,7 @@ public class XYPlotView extends ViewPart
 		XYToolTipGenerator tooltipGenerator = null;
 
 		// the y axis is common to hi & lo res. Format it here
-		NumberAxis yAxis = new NumberAxis(units);
+		final NumberAxis yAxis = new NumberAxis(units);
 
 		// hmm, see if we are in hi-res mode. If we are, don't use a formatted
 		// y-axis, just use the plain long microseconds
@@ -483,7 +483,7 @@ public class XYPlotView extends ViewPart
 			// final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
 
 			// ok, simple enough for us...
-			NumberAxis nAxis = new NumberAxis("time (secs.micros)")
+			final NumberAxis nAxis = new NumberAxis("time (secs.micros)")
 			{
 				/**
 				 * 
@@ -518,7 +518,7 @@ public class XYPlotView extends ViewPart
 		}
 
 		// create the special stepper plot
-		ColourStandardXYItemRenderer theRenderer = new ColourStandardXYItemRenderer(
+		final ColourStandardXYItemRenderer theRenderer = new ColourStandardXYItemRenderer(
 				tooltipGenerator, null, null);
 		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis,
 				_theStepper, theRenderer);
@@ -529,16 +529,16 @@ public class XYPlotView extends ViewPart
 		if (dataset instanceof TimeSeriesCollection)
 		{
 			Color seriesCol = null;
-			TimeSeriesCollection tsc = (TimeSeriesCollection) dataset;
+			final TimeSeriesCollection tsc = (TimeSeriesCollection) dataset;
 			for (int i = 0; i < dataset.getSeriesCount(); i++)
 			{
-				TimeSeries ts = tsc.getSeries(i);
+				final TimeSeries ts = tsc.getSeries(i);
 				if (ts.getItemCount() > 0)
 				{
-					TimeSeriesDataItem dataItem = ts.getDataItem(0);
+					final TimeSeriesDataItem dataItem = ts.getDataItem(0);
 					if (dataItem instanceof ColouredDataItem)
 					{
-						ColouredDataItem cd = (ColouredDataItem) dataItem;
+						final ColouredDataItem cd = (ColouredDataItem) dataItem;
 						seriesCol = cd.getColor();
 						_thePlot.getRenderer().setSeriesPaint(i, seriesCol);
 					}
@@ -591,25 +591,25 @@ public class XYPlotView extends ViewPart
 
 		_thePlotArea.addProgressListener(new ChartProgressListener()
 		{
-			public void chartProgress(ChartProgressEvent cpe)
+			public void chartProgress(final ChartProgressEvent cpe)
 			{
 				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
 					return;
 
 				// double-check our label is still in the right place
-				double xVal = _thePlot.getRangeAxis().getUpperBound();
-				double yVal = _thePlot.getDomainAxis().getLowerBound();
+				final double xVal = _thePlot.getRangeAxis().getUpperBound();
+				final double yVal = _thePlot.getDomainAxis().getLowerBound();
 				annot.setX(yVal);
 				annot.setY(xVal);
 
 				// and write the text
-				String numA = MWC.Utilities.TextFormatting.GeneralFormat
+				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(_thePlot.getRangeCrosshairValue());
-				Date newDate = new Date((long) _thePlot.getDomainCrosshairValue());
+				final Date newDate = new Date((long) _thePlot.getDomainCrosshairValue());
 				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
-				String dateVal = _df.format(newDate);
-				String theMessage = " [" + dateVal + "," + numA + "]";
+				final String dateVal = _df.format(newDate);
+				final String theMessage = " [" + dateVal + "," + numA + "]";
 				annot.setText(theMessage);
 
 				// aah, now we have to add and then remove the annotation in order
@@ -634,9 +634,9 @@ public class XYPlotView extends ViewPart
 			return;
 
 		// get the document being edited
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		final IWorkbenchPage page = win.getActivePage();
 		IEditorPart editor = null;
 
 		// the page might not yet be open...
@@ -647,18 +647,18 @@ public class XYPlotView extends ViewPart
 			if (editor == null)
 			{
 				// see if there are any editors at all open
-				IEditorReference[] theEditors = page.getEditorReferences();
+				final IEditorReference[] theEditors = page.getEditorReferences();
 				for (int i = 0; i < theEditors.length; i++)
 				{
-					IEditorReference thisE = theEditors[i];
+					final IEditorReference thisE = theEditors[i];
 					editor = thisE.getEditor(false);
 
 					// right, see if it has a time manager
-					TimeProvider tp = (TimeProvider) editor
+					final TimeProvider tp = (TimeProvider) editor
 							.getAdapter(TimeProvider.class);
 					if (tp != null)
 					{
-						String hisId = tp.getId();
+						final String hisId = tp.getId();
 						if (hisId == _myId)
 							break;
 					}
@@ -684,10 +684,10 @@ public class XYPlotView extends ViewPart
 			// create our listener
 			_timeListener = new PropertyChangeListener()
 			{
-				public void propertyChange(PropertyChangeEvent evt)
+				public void propertyChange(final PropertyChangeEvent evt)
 				{
 					// ok - fire the time change to the chart
-					HiResDate newDTG = (HiResDate) evt.getNewValue();
+					final HiResDate newDTG = (HiResDate) evt.getNewValue();
 
 					// right tell the plot it's new time
 					_thePlot.newTime(null, newDTG, null);
@@ -725,32 +725,32 @@ public class XYPlotView extends ViewPart
 		doWMF(mf);
 
 		// try to get the filename
-		String fName = MetafileCanvasGraphics2d.getLastFileName();
+		final String fName = MetafileCanvasGraphics2d.getLastFileName();
 
 		// get the dimensions of the last plot operation
-		Dimension dim = MetafileCanvasGraphics2d.getLastScreenSize();
+		final Dimension dim = MetafileCanvasGraphics2d.getLastScreenSize();
 
 		// try to copy the wmf to the clipboard
 		try
 		{
 			// create the clipboard
-			ClipboardCopy cc = new ClipboardCopy();
+			final ClipboardCopy cc = new ClipboardCopy();
 
 			cc.copyWithPixelSize(fName, dim.width, dim.height, false);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e, "Whilst writing WMF to clipboard");
 		}
 
 	}
 
-	private final void doWMF(MetafileCanvasGraphics2d mf)
+	private final void doWMF(final MetafileCanvasGraphics2d mf)
 	{
 
 		// get the old background colour
-		Paint oldColor = _thePlot.getBackgroundPaint();
-		Paint oldAreaColor = _thePlotArea.getBackgroundPaint();
+		final Paint oldColor = _thePlot.getBackgroundPaint();
+		final Paint oldAreaColor = _thePlotArea.getBackgroundPaint();
 
 		// set the background to clear
 		_thePlotArea.setBackgroundPaint(Color.white);
@@ -765,7 +765,7 @@ public class XYPlotView extends ViewPart
 		mf.startDraw(null);
 
 		// sort out the background colour
-		Dimension dim = _plotControl.getSize();
+		final Dimension dim = _plotControl.getSize();
 		mf.setBackgroundColor(java.awt.Color.white);
 		mf.setColor(mf.getBackgroundColor());
 		mf.fillRect(0, 0, dim.width, dim.height);
@@ -775,7 +775,7 @@ public class XYPlotView extends ViewPart
 			// ask the canvas to paint the image
 			_chartInPanel.paintWMFComponent(mf);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Problem writing WMF", e);
 		}
@@ -791,11 +791,11 @@ public class XYPlotView extends ViewPart
 
 	private void hookContextMenu()
 	{
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		final MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener()
 		{
-			public void menuAboutToShow(IMenuManager manager)
+			public void menuAboutToShow(final IMenuManager manager)
 			{
 				XYPlotView.this.fillContextMenu(manager);
 			}
@@ -807,12 +807,12 @@ public class XYPlotView extends ViewPart
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(_fitToWindow);
 		manager.add(_switchAxes);
@@ -823,7 +823,7 @@ public class XYPlotView extends ViewPart
 		manager.add(_editMyProperties);
 	}
 
-	void fillContextMenu(IMenuManager manager)
+	void fillContextMenu(final IMenuManager manager)
 	{
 		manager.add(_fitToWindow);
 		manager.add(_exportToWMF);
@@ -831,7 +831,7 @@ public class XYPlotView extends ViewPart
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(_fitToWindow);
 		manager.add(_switchAxes);
@@ -881,7 +881,7 @@ public class XYPlotView extends ViewPart
 						_thePlot.setOrientation(PlotOrientation.VERTICAL);
 
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					MWC.Utilities.Errors.Trace.trace(e,
 							"whilst performing resize after loading new plot");
@@ -903,7 +903,7 @@ public class XYPlotView extends ViewPart
 					// may aswell trigger a redraw
 					_chartInPanel.invalidate();
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					MWC.Utilities.Errors.Trace.trace(e,
 							"whilst performing resize after loading new plot");
@@ -923,7 +923,7 @@ public class XYPlotView extends ViewPart
 				{
 					_thePlot.zoom(0.0);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					MWC.Utilities.Errors.Trace.trace(e,
 							"whilst performing resize after loading new plot");
@@ -964,10 +964,10 @@ public class XYPlotView extends ViewPart
 
 	protected void doListenStatusUpdate()
 	{
-		boolean doListen = _listenForDataChanges.isChecked();
+		final boolean doListen = _listenForDataChanges.isChecked();
 		if (_provider != null)
 		{
-			Layers layers = _provider.getLayers();
+			final Layers layers = _provider.getLayers();
 			if (layers != null)
 			{
 				if (doListen)
@@ -999,7 +999,7 @@ public class XYPlotView extends ViewPart
 	{
 		if (_provider != null)
 		{
-			Layers layers = _provider.getLayers();
+			final Layers layers = _provider.getLayers();
 			if (layers != null)
 			{
 				layers.removeDataExtendedListener(_modifiedListener);
@@ -1013,7 +1013,7 @@ public class XYPlotView extends ViewPart
 	{
 		if (_provider != null)
 		{
-			AbstractSeriesDataset ds = _provider.getDataset();
+			final AbstractSeriesDataset ds = _provider.getDataset();
 			if (ds != null)
 			{
 				// store the dataset
@@ -1054,8 +1054,8 @@ public class XYPlotView extends ViewPart
 		// do we have any data?
 		if (_thePlotArea != null)
 		{
-			EditableWrapper wrappedEditable = new EditableWrapper(_thePlotArea);
-			StructuredSelection _propsAsSelection = new StructuredSelection(
+			final EditableWrapper wrappedEditable = new EditableWrapper(_thePlotArea);
+			final StructuredSelection _propsAsSelection = new StructuredSelection(
 					wrappedEditable);
 
 			_selectionHelper.fireNewSelection(_propsAsSelection);
@@ -1073,7 +1073,7 @@ public class XYPlotView extends ViewPart
 	 * @param memento
 	 * @throws PartInitException
 	 */
-	public void init(IViewSite site, IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
 		// let our parent go for it first
 		super.init(site, memento);
@@ -1091,7 +1091,7 @@ public class XYPlotView extends ViewPart
 	 * 
 	 * @param memento
 	 */
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		// check we have some data
 		if (_thePlotArea == null)
@@ -1113,7 +1113,7 @@ public class XYPlotView extends ViewPart
 		// store whether the axes are switched
 		memento.putString(DO_WATERFALL, Boolean.toString(_switchAxes.isChecked()));
 
-		XStream xs = new XStream(new DomDriver());
+		final XStream xs = new XStream(new DomDriver());
 		String str;
 
 		// String str = xs.toXML(_theFormatter);
@@ -1148,7 +1148,7 @@ public class XYPlotView extends ViewPart
 
 	}
 
-	private void storeFont(IMemento memento, String entryHeader, Font theFont)
+	private void storeFont(final IMemento memento, final String entryHeader, final Font theFont)
 	{
 		// write elements
 		memento.putInteger(entryHeader + "_SIZE", theFont.getSize());
@@ -1156,13 +1156,13 @@ public class XYPlotView extends ViewPart
 		memento.putInteger(entryHeader + "_STYLE", theFont.getStyle());
 	}
 
-	private Font getFont(IMemento memento, String entryHeader)
+	private Font getFont(final IMemento memento, final String entryHeader)
 	{
 
 		Font res = null;
-		String family = memento.getString(entryHeader + "_FAMILY");
-		Integer size = memento.getInteger(entryHeader + "_SIZE");
-		Integer style = memento.getInteger(entryHeader + "_STYLE");
+		final String family = memento.getString(entryHeader + "_FAMILY");
+		final Integer size = memento.getInteger(entryHeader + "_SIZE");
+		final Integer style = memento.getInteger(entryHeader + "_STYLE");
 		if (family != null)
 			res = new Font(family, style, size);
 		return res;
@@ -1176,7 +1176,7 @@ public class XYPlotView extends ViewPart
 		{
 		}
 
-		public StringHolder(String theString)
+		public StringHolder(final String theString)
 		{
 			_myString = theString;
 		}
@@ -1186,14 +1186,14 @@ public class XYPlotView extends ViewPart
 			return _myString;
 		}
 
-		public void set_myString(String string)
+		public void set_myString(final String string)
 		{
 			_myString = string;
 		}
 	}
 
-	public void showPlot(String theTitle, DatasetProvider prov, String units2,
-			formattingOperation theFormatter, String thePlotId)
+	public void showPlot(final String theTitle, final DatasetProvider prov, final String units2,
+			final formattingOperation theFormatter, final String thePlotId)
 
 	{
 		// right, store the incoming data, so we can save it when/if
@@ -1209,7 +1209,7 @@ public class XYPlotView extends ViewPart
 		_provider = prov;
 		if (_provider != null)
 		{
-			AbstractSeriesDataset ds = _provider.getDataset();
+			final AbstractSeriesDataset ds = _provider.getDataset();
 			if (ds != null)
 			{
 				// store the dataset

@@ -53,7 +53,7 @@ abstract public class PlanningSegmentHandler extends
 		this(PLANNING_SEGMENT);
 	}
 
-	public PlanningSegmentHandler(String segType)
+	public PlanningSegmentHandler(final String segType)
 	{
 		// inform our parent what type of class we are
 		super(segType);
@@ -61,7 +61,7 @@ abstract public class PlanningSegmentHandler extends
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_visible = val;
 			}
@@ -69,18 +69,18 @@ abstract public class PlanningSegmentHandler extends
 		addAttributeHandler(new HandleAttribute(LINE_STYLE)
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
-				LineStylePropertyEditor lp = new LineStylePropertyEditor();
+				final LineStylePropertyEditor lp = new LineStylePropertyEditor();
 				lp.setAsText(val);
-				Integer iVal = (Integer) lp.getValue();
+				final Integer iVal = (Integer) lp.getValue();
 				_lineStyle = iVal.intValue();
 			}
 		});
 		addAttributeHandler(new HandleAttribute(NAME)
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_name = val;
 			}
@@ -89,7 +89,7 @@ abstract public class PlanningSegmentHandler extends
 		addHandler(new DurationHandler()
 		{
 			@Override
-			public void setDuration(Duration res)
+			public void setDuration(final Duration res)
 			{
 				_duration = res;
 			}
@@ -97,7 +97,7 @@ abstract public class PlanningSegmentHandler extends
 		addHandler(new WorldDistanceHandler()
 		{
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_length = res;
 			}
@@ -105,7 +105,7 @@ abstract public class PlanningSegmentHandler extends
 		addHandler(new ColourHandler()
 		{
 			@Override
-			public void setColour(Color res)
+			public void setColour(final Color res)
 			{
 				_color = res;
 			}
@@ -113,7 +113,7 @@ abstract public class PlanningSegmentHandler extends
 		addHandler(new WorldSpeedHandler()
 		{
 			@Override
-			public void setSpeed(WorldSpeed res)
+			public void setSpeed(final WorldSpeed res)
 			{
 				_speed = res;
 			}
@@ -121,7 +121,7 @@ abstract public class PlanningSegmentHandler extends
 		addAttributeHandler(new HandleDoubleAttribute(COURSE)
 		{
 			@Override
-			public void setValue(String name, double value)
+			public void setValue(final String name, final double value)
 			{
 				_course = value;
 			}
@@ -130,11 +130,11 @@ abstract public class PlanningSegmentHandler extends
 		{
 
 			@Override
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
-				PlanningLegCalcModelPropertyEditor ed = new PlanningLegCalcModelPropertyEditor();
+				final PlanningLegCalcModelPropertyEditor ed = new PlanningLegCalcModelPropertyEditor();
 				ed.setAsText(value);
-				Integer val = (Integer) ed.getValue();
+				final Integer val = (Integer) ed.getValue();
 				_calcModel = val.intValue();
 			}
 		});
@@ -143,7 +143,7 @@ abstract public class PlanningSegmentHandler extends
 
 	protected PlanningSegment createTrack()
 	{
-		PlanningSegment res = new PlanningSegment(_name, _course, _speed, _length,
+		final PlanningSegment res = new PlanningSegment(_name, _course, _speed, _length,
 				_color);
 		res.setDuration(_duration);
 		res.setCalculation(_calcModel);
@@ -161,20 +161,20 @@ abstract public class PlanningSegmentHandler extends
 		segment = null;
 	}
 
-	public static Element exportThisSegment(org.w3c.dom.Document doc,
-			Element trk, PlanningSegment seg)
+	public static Element exportThisSegment(final org.w3c.dom.Document doc,
+			final Element trk, final PlanningSegment seg)
 	{
 		return exportThisSegment(doc, trk, seg, PLANNING_SEGMENT);
 	}
 
-	public static Element exportThisSegment(org.w3c.dom.Document doc,
-			Element trk, PlanningSegment seg, String segName)
+	public static Element exportThisSegment(final org.w3c.dom.Document doc,
+			final Element trk, final PlanningSegment seg, final String segName)
 	{
-		PlanningSegment ps = (PlanningSegment) seg;
+		final PlanningSegment ps = (PlanningSegment) seg;
 		final Element segE = doc.createElement(segName);
 		trk.appendChild(segE);
 
-		LineStylePropertyEditor ls = new LineStylePropertyEditor();
+		final LineStylePropertyEditor ls = new LineStylePropertyEditor();
 		ls.setValue(seg.getLineStyle());
 
 		// sort out the attributes
@@ -182,7 +182,7 @@ abstract public class PlanningSegmentHandler extends
 		segE.setAttribute(NAME, seg.getName());
 		segE.setAttribute(LINE_STYLE, ls.getAsText());
 
-		PlanningLegCalcModelPropertyEditor ed = new PlanningLegCalcModelPropertyEditor();
+		final PlanningLegCalcModelPropertyEditor ed = new PlanningLegCalcModelPropertyEditor();
 		ed.setValue(new Integer(ps.getCalculation()));
 		segE.setAttribute(CALC_MODEL, ed.getAsText());
 
@@ -198,8 +198,8 @@ abstract public class PlanningSegmentHandler extends
 
 	abstract public void addSegment(TrackSegment segment);
 
-	public static Element exportThisClosingSegment(Document doc, Element trk,
-			PlanningSegment segment)
+	public static Element exportThisClosingSegment(final Document doc, final Element trk,
+			final PlanningSegment segment)
 	{
 		return exportThisSegment(doc, trk, segment, CLOSING_SEGMENT);
 	}

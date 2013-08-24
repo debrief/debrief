@@ -50,14 +50,14 @@ public class CoreDragOperation
 	 * 
 	 * @param dest
 	 */
-	final public void paint(CanvasType dest)
+	final public void paint(final CanvasType dest)
 	{
 		_segment.paint(dest);
 	}
 
 
-	final public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theLayers)
+	final public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theLayers)
 	{
 		// we don't support this when dragging tracks
 	}
@@ -80,7 +80,7 @@ public class CoreDragOperation
 		
 		if(_segment instanceof CoreTMASegment)
 		{
-			CoreTMASegment tma = (CoreTMASegment) _segment;
+			final CoreTMASegment tma = (CoreTMASegment) _segment;
 			res = tma.getDragTextMessage();
 		}
 		
@@ -96,9 +96,9 @@ public class CoreDragOperation
 	 */
 	private static boolean showInProperties()
 	{
-		String dontShowDragStr = CorePlugin.getToolParent().getProperty(
+		final String dontShowDragStr = CorePlugin.getToolParent().getProperty(
 				PrefsPage.PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS);
-		boolean dontShowDrag = Boolean.parseBoolean(dontShowDragStr);
+		final boolean dontShowDrag = Boolean.parseBoolean(dontShowDragStr);
 		return !dontShowDrag;
 	}
 
@@ -116,25 +116,25 @@ public class CoreDragOperation
 			return;
 
 		// get the current properties page
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		final IWorkbenchPage page = win.getActivePage();
-		IViewPart view = page.findView(IPageLayout.ID_PROP_SHEET);
+		final IViewPart view = page.findView(IPageLayout.ID_PROP_SHEET);
 
 		// do we have a properties view open?
 		if (view != null)
 		{
-			PropertySheet ps = (PropertySheet) view;
-			PropertySheetPage thisPage = (PropertySheetPage) ps.getCurrentPage();
+			final PropertySheet ps = (PropertySheet) view;
+			final PropertySheetPage thisPage = (PropertySheetPage) ps.getCurrentPage();
 
 			// and have we found a properties page?
 			if (thisPage != null && !thisPage.getControl().isDisposed())
 			{
 				// wrap the plottable
-				EditableWrapper parentP = new EditableWrapper(parent, null, theLayers);
-				EditableWrapper wrapped = new EditableWrapper(subject, parentP,
+				final EditableWrapper parentP = new EditableWrapper(parent, null, theLayers);
+				final EditableWrapper wrapped = new EditableWrapper(subject, parentP,
 						theLayers);
-				ISelection selected = new StructuredSelection(wrapped);
+				final ISelection selected = new StructuredSelection(wrapped);
 
 				// tell the properties page to show what we're dragging
 				thisPage

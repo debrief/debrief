@@ -25,11 +25,11 @@ abstract class AbstractColumn implements Column {
 
 	protected abstract KTableCellRenderer createRenderer();
 
-	public AbstractColumn(int index, String columnName, IPreferenceStore store) {
+	public AbstractColumn(final int index, final String columnName, final IPreferenceStore store) {
 		this(index, columnName, 100, store);
 	}
 
-	public AbstractColumn(int index, String columnName, int initialWidth, IPreferenceStore store) {
+	public AbstractColumn(final int index, final String columnName, final int initialWidth, final IPreferenceStore store) {
 		myIndex = index;
 		myColumnName = columnName;
 		myInitialWidth = initialWidth;
@@ -38,11 +38,11 @@ abstract class AbstractColumn implements Column {
 		myIsVisible = myStore != null && !myStore.getBoolean(getIsHiddenPreferenceName());
 	}
 	
-	public void addVisibilityListener(VisibilityListener visibilityListener) {
+	public void addVisibilityListener(final VisibilityListener visibilityListener) {
 		myVisibilityListeners.add(visibilityListener);
 	}
 	
-	public void setFilter(ColumnFilter filter){
+	public void setFilter(final ColumnFilter filter){
 		myFilter = filter;
 	}
 	
@@ -79,15 +79,15 @@ abstract class AbstractColumn implements Column {
 		return myIsVisible;
 	}
 
-	public void setVisible(boolean isVisible) {
-		boolean oldValue = myIsVisible;
+	public void setVisible(final boolean isVisible) {
+		final boolean oldValue = myIsVisible;
 		myIsVisible = isVisible;
 		if (myStore != null) {
 			myStore.setValue(getIsHiddenPreferenceName(), !isVisible);
 		}
 		
 		if (myIsVisible != oldValue){
-			for (Column.VisibilityListener next : myVisibilityListeners){
+			for (final Column.VisibilityListener next : myVisibilityListeners){
 				next.columnVisibilityChanged(this, myIsVisible);	
 			}
 		}

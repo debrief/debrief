@@ -73,7 +73,7 @@ public class CircleSymbol extends PlainSymbol
    */
   public java.awt.Dimension getBounds()
   {
-    int sWid = (int)(wid * getScaleVal());
+    final int sWid = (int)(wid * getScaleVal());
     return new java.awt.Dimension(2 * sWid, 2 * sWid);
   }
 
@@ -93,19 +93,19 @@ public class CircleSymbol extends PlainSymbol
    * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
    */
   public Vector<Vector<Point2D>> getCoordinates() {
-  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
+  	final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
 
     // now the circle
-    Vector<Point2D> circle = new Vector<Point2D>(0,1);
+    final Vector<Point2D> circle = new Vector<Point2D>(0,1);
 
     // work our way around the circle, adding the pts
-    int NUM_SEGMENTS = 30;
+    final int NUM_SEGMENTS = 30;
     for (int i=0; i<=NUM_SEGMENTS; i++)
     {
       // produce the current bearing
-      double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
+      final double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
 
-      Point2D newP = new Point2D.Double(Math.sin(this_brg) * wid/2, Math.cos(this_brg) * wid/2);
+      final Point2D newP = new Point2D.Double(Math.sin(this_brg) * wid/2, Math.cos(this_brg) * wid/2);
 
       circle.add(newP);
     }
@@ -125,7 +125,7 @@ public class CircleSymbol extends PlainSymbol
     // return the metafile
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
@@ -137,16 +137,16 @@ public class CircleSymbol extends PlainSymbol
    * @param dest parameter for paint
    * @param theLocation the place where we paint it
    */
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
     // calculate the scaled width
-    int sWid = (int)(wid * getScaleVal());
+    final int sWid = (int)(wid * getScaleVal());
 
     // draw our square at the set radius around the centre
     if(getFillSymbol())

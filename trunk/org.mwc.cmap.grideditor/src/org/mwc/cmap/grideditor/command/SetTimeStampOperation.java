@@ -13,11 +13,11 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 
 	private final HiResDate myNewTimeStamp;
 
-	public SetTimeStampOperation(OperationEnvironment environment, HiResDate newTimeStamp) {
+	public SetTimeStampOperation(final OperationEnvironment environment, final HiResDate newTimeStamp) {
 		this(environment, newTimeStamp, true);
 	}
 
-	public SetTimeStampOperation(OperationEnvironment environment, HiResDate newTimeStamp, boolean fireRefresh) {
+	public SetTimeStampOperation(final OperationEnvironment environment, final HiResDate newTimeStamp, final boolean fireRefresh) {
 		super("Setting TimeStamp", environment);
 		myNewTimeStamp = newTimeStamp;
 		myFireRefresh = fireRefresh;
@@ -32,10 +32,10 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 	}
 
 	@Override
-	protected EnvironmentState doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		TimeStampedDataItem subject = getOperationEnvironment().getSubject();
+	protected EnvironmentState doExecute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+		final TimeStampedDataItem subject = getOperationEnvironment().getSubject();
 		subject.setDTG(myNewTimeStamp);
-		EnvironmentState resultState = new ElementHasTimeStampState(subject);
+		final EnvironmentState resultState = new ElementHasTimeStampState(subject);
 		if (myFireRefresh) {
 			getOperationEnvironment().getSeries().fireModified(subject);
 		}
@@ -43,9 +43,9 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 	}
 
 	@Override
-	protected void doUndo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		TimeStampedDataItem subject = getOperationEnvironment().getSubject();
-		HiResDate oldTimeStamp = getStateBeforeFirstRun().getTimeStamp();
+	protected void doUndo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+		final TimeStampedDataItem subject = getOperationEnvironment().getSubject();
+		final HiResDate oldTimeStamp = getStateBeforeFirstRun().getTimeStamp();
 		subject.setDTG(oldTimeStamp);
 		if (myFireRefresh) {
 			getOperationEnvironment().getSeries().fireModified(subject);
@@ -63,12 +63,12 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 
 		private final TimeStampedDataItem myItem;
 
-		public ElementHasTimeStampState(TimeStampedDataItem item) {
+		public ElementHasTimeStampState(final TimeStampedDataItem item) {
 			myItem = item;
 			myTimeStamp = item.getDTG();
 		}
 
-		public boolean isCompatible(OperationEnvironment environment) {
+		public boolean isCompatible(final OperationEnvironment environment) {
 			return myTimeStamp.equals(environment.getSubject().getDTG());
 		}
 

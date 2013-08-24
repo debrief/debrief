@@ -35,7 +35,7 @@ public class ExternallyManagedLayerHandler extends MWCXMLReader
 	 */
 	static MWC.GUI.Chart.Painters.ETOPOPainter.KeyLocationPropertyEditor lp = new MWC.GUI.Chart.Painters.ETOPOPainter.KeyLocationPropertyEditor();
 
-	public ExternallyManagedLayerHandler(Layers theLayers)
+	public ExternallyManagedLayerHandler(final Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(MY_TYPE);
@@ -44,28 +44,28 @@ public class ExternallyManagedLayerHandler extends MWCXMLReader
 
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_isVisible = value;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(LAYER_NAME)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_layerName = value;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(LAYER_PATH)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_fileName = value;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(DATA_TYPE)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_dataType = value;
 			}
@@ -75,7 +75,7 @@ public class ExternallyManagedLayerHandler extends MWCXMLReader
 
 	public void elementClosed()
 	{
-		ExternallyManagedDataLayer res = new ExternallyManagedDataLayer(_dataType, _layerName, _fileName);
+		final ExternallyManagedDataLayer res = new ExternallyManagedDataLayer(_dataType, _layerName, _fileName);
 		res.setVisible(_isVisible);
 		_theLayers.addThisLayer(res);
 		
@@ -85,12 +85,12 @@ public class ExternallyManagedLayerHandler extends MWCXMLReader
 		_isVisible = true;
 	}
 
-	public static void exportThisPlottable(MWC.GUI.Plottable plottable,
-			Element parent, Document doc)
+	public static void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final Element parent, final Document doc)
 	{
 
-		ExternallyManagedDataLayer csp = (ExternallyManagedDataLayer) plottable;
-		Element etopo = doc.createElement(MY_TYPE);
+		final ExternallyManagedDataLayer csp = (ExternallyManagedDataLayer) plottable;
+		final Element etopo = doc.createElement(MY_TYPE);
 
 		// do the visibility
 		etopo.setAttribute(VISIBLE, writeThis(csp.getVisible()));

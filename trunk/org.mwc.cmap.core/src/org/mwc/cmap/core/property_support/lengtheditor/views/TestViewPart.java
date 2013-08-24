@@ -29,26 +29,26 @@ public class TestViewPart extends ViewPart
 	private PropertySource myPS;
 
 	@Override
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		myLabel = new Label(parent, SWT.NONE);
 		myLabel.setText(myValue.toString());
 	}
 
 	@Override
-	public void init(IViewSite site) throws PartInitException
+	public void init(final IViewSite site) throws PartInitException
 	{
 		super.init(site);
 		getViewSite().setSelectionProvider(new ISelectionProvider()
 		{
 
-			public void setSelection(ISelection selection)
+			public void setSelection(final ISelection selection)
 			{
 				// nothing
 			}
 
 			public void removeSelectionChangedListener(
-					ISelectionChangedListener listener)
+					final ISelectionChangedListener listener)
 			{
 				// nothing
 			}
@@ -58,7 +58,7 @@ public class TestViewPart extends ViewPart
 				return new StructuredSelection(getPropertySource());
 			}
 
-			public void addSelectionChangedListener(ISelectionChangedListener listener)
+			public void addSelectionChangedListener(final ISelectionChangedListener listener)
 			{
 				// nothing
 			}
@@ -101,7 +101,7 @@ public class TestViewPart extends ViewPart
 			return DESCRIPTORS;
 		}
 
-		public Object getPropertyValue(Object id)
+		public Object getPropertyValue(final Object id)
 		{
 			if (PROPERTY_ID.equals(id))
 			{
@@ -110,17 +110,17 @@ public class TestViewPart extends ViewPart
 			return null;
 		}
 
-		public boolean isPropertySet(Object id)
+		public boolean isPropertySet(final Object id)
 		{
 			return false;
 		}
 
-		public void resetPropertyValue(Object id)
+		public void resetPropertyValue(final Object id)
 		{
 			setNewValue(new ArrayLength(0));
 		}
 
-		public void setPropertyValue(Object id, Object value)
+		public void setPropertyValue(final Object id, final Object value)
 		{
 			if (PROPERTY_ID.equals(id))
 			{
@@ -128,13 +128,13 @@ public class TestViewPart extends ViewPart
 				{
 					if (value instanceof String)
 					{
-						double thisD = Double.parseDouble((String) value);
+						final double thisD = Double.parseDouble((String) value);
 						setNewValue(new ArrayLength(thisD));
 					}
 					else if (value instanceof ArrayLength)
 						setNewValue((ArrayLength) value);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					// nothing
 				}
@@ -143,7 +143,7 @@ public class TestViewPart extends ViewPart
 		}
 	}
 
-	public void setNewValue(ArrayLength d)
+	public void setNewValue(final ArrayLength d)
 	{
 		myValue = d;
 		myLabel.setText(myValue.toString());

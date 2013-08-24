@@ -27,14 +27,15 @@ class YesNoDialogLauncher extends Panel
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Applet         applet;
+	private final Applet         applet;
 	private YesNoDialog    yesNoDialog;
-	private int            cupCnt = 0, coffeeLimit = 3;
-	private Checkbox       modal = new Checkbox("modal");
+	private int            cupCnt = 0;
+	private final int coffeeLimit = 3;
+	private final Checkbox       modal = new Checkbox("modal");
 
 	private Button yesNoDialogButton;
 
-	public YesNoDialogLauncher(Applet applet) {
+	public YesNoDialogLauncher(final Applet applet) {
 		this.applet = applet;
 
 		add(modal);
@@ -43,7 +44,7 @@ class YesNoDialogLauncher extends Panel
 
 		yesNoDialogButton.addActionListener(this);
 	}
-	public void actionPerformed(ActionEvent event) {
+	public void actionPerformed(final ActionEvent event) {
 		String question = "How about a cup of Java?"; 
 		Image image = applet.getImage(applet.getCodeBase(),
 									"gifs/question.gif");
@@ -80,7 +81,7 @@ class YesNoDialogLauncher extends Panel
 		}
 		yesNoDialog.setVisible(true);
 	}
-	public void dialogDismissed(Dialog d) {
+	public void dialogDismissed(final Dialog d) {
 		if(yesNoDialog.answeredYes()) {
 			++cupCnt;
 
@@ -96,7 +97,7 @@ class YesNoDialogLauncher extends Panel
 				applet.showStatus("Me too");
 		}
 	}
-	public void dialogCancelled(Dialog d) {
+	public void dialogCancelled(final Dialog d) {
 		applet.showStatus("Yes No Dialog Cancelled");
 	}
 }

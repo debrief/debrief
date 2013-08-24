@@ -89,7 +89,7 @@ public class PlanningLegCalcModelPropertyEditor extends PropertyEditorSupport
 
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Integer)
     {
@@ -97,16 +97,16 @@ public class PlanningLegCalcModelPropertyEditor extends PropertyEditorSupport
     }
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     for(int i=0;i<getTags().length;i++)
     {
-      String thisStr = getTags()[i];
+      final String thisStr = getTags()[i];
       if(thisStr.equals(val))
         _myCalcModel = new Integer(i);
     }
@@ -115,7 +115,7 @@ public class PlanningLegCalcModelPropertyEditor extends PropertyEditorSupport
   public String getAsText()
   {
     String res = null;
-    int index = _myCalcModel.intValue();
+    final int index = _myCalcModel.intValue();
     res = getTags()[index];
     return res;
   }

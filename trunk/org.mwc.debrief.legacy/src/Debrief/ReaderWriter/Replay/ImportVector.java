@@ -17,9 +17,9 @@ final class ImportVector implements PlainLineImporter
   
   /** read in this string and return a Label
    */
-  public final Object readThisLine(String theLine){
+  public final Object readThisLine(final String theLine){
 	// get a stream from the string
-	    StringTokenizer st = new StringTokenizer(theLine);
+	    final StringTokenizer st = new StringTokenizer(theLine);
 	    
 	    // declare local variables
 	    WorldLocation start;
@@ -34,9 +34,9 @@ final class ImportVector implements PlainLineImporter
 	    // now the start location
 		start = ImportLine.extractStart(st);
 
-	    String range = st.nextToken();
-	    WorldDistance distance = new WorldDistance(new Double(range), WorldDistance.YARDS);
-	    String bearingString = st.nextToken();
+	    final String range = st.nextToken();
+	    final WorldDistance distance = new WorldDistance(new Double(range), WorldDistance.YARDS);
+	    final String bearingString = st.nextToken();
 			
 		String theText="";
 	    // see if there are any more tokens waiting,
@@ -49,14 +49,14 @@ final class ImportVector implements PlainLineImporter
 	    
 			
 	    // create the Vector object
-	    VectorShape sp = new VectorShape(start, new Double(bearingString), distance);
+	    final VectorShape sp = new VectorShape(start, new Double(bearingString), distance);
 	    sp.setColor(ImportReplay.replayColorFor(theSymbology));
 	    
-		WorldArea tmp = new WorldArea(start, sp.getLineEnd());
+		final WorldArea tmp = new WorldArea(start, sp.getLineEnd());
 		tmp.normalise();
 			
 	    // and put it into a shape
-	    ShapeWrapper sw = new ShapeWrapper(theText, 
+	    final ShapeWrapper sw = new ShapeWrapper(theText, 
 	                                       sp, 
 	                                       ImportReplay.replayColorFor(theSymbology),
 																				 null);
@@ -74,11 +74,11 @@ final class ImportVector implements PlainLineImporter
 	 * @return the shape in String form
 	 * @param shape the Shape we are exporting
 	 */	
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
-		ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 		
-		VectorShape vector = (VectorShape) theShape.getShape();
+		final VectorShape vector = (VectorShape) theShape.getShape();
 		
 		// result value
 		String line;
@@ -97,14 +97,14 @@ final class ImportVector implements PlainLineImporter
 	 * @param val the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 		
 		if(val instanceof ShapeWrapper)
 		{
-			ShapeWrapper sw = (ShapeWrapper) val;
-			PlainShape ps = sw.getShape();
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
 			res = (ps instanceof VectorShape);
 		}
 		

@@ -38,17 +38,17 @@ public class GridEditorView extends ViewPart
 	private RedoActionHandler myRedoAction;
 
 	@Override
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
-		GridEditorActionContext actionContext = new GridEditorActionContext(
+		final GridEditorActionContext actionContext = new GridEditorActionContext(
 				myUndoSupport);
 		myActions = new GridEditorActionGroup(this, actionContext);
 		myUI = new GridEditorUI(parent, myActions);
-		ISelectionService selectionService = getSite().getWorkbenchWindow()
+		final ISelectionService selectionService = getSite().getWorkbenchWindow()
 				.getSelectionService();
 		handleWorkspaceSelectionChanged(selectionService.getSelection());
 
-		IActionBars actionBars = getViewSite().getActionBars();
+		final IActionBars actionBars = getViewSite().getActionBars();
 		myActions.fillActionBars(actionBars);
 		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
 		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
@@ -62,7 +62,7 @@ public class GridEditorView extends ViewPart
 		super.dispose();
 	}
 
-	private GriddableWrapper extractGriddableSeries(ISelection selection)
+	private GriddableWrapper extractGriddableSeries(final ISelection selection)
 	{
 		GriddableWrapper res = null;
 
@@ -70,12 +70,12 @@ public class GridEditorView extends ViewPart
 		{
 			return null;
 		}
-		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+		final IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 		if (structuredSelection.isEmpty())
 		{
 			return null;
 		}
-		Object firstElement = structuredSelection.getFirstElement();
+		final Object firstElement = structuredSelection.getFirstElement();
 
 		// right, see if this is a series object already. if it is, we've got
 		// our
@@ -83,8 +83,8 @@ public class GridEditorView extends ViewPart
 		// if it's a candidate for editing and collate a series of elements
 		if (firstElement instanceof EditableWrapper)
 		{
-			EditableWrapper wrapped = (EditableWrapper) firstElement;
-			Object value = wrapped.getEditableValue();
+			final EditableWrapper wrapped = (EditableWrapper) firstElement;
+			final Object value = wrapped.getEditableValue();
 			if (wrapped != null)
 			{
 				if ((value instanceof GriddableSeriesMarker)
@@ -99,12 +99,12 @@ public class GridEditorView extends ViewPart
 			// see if it can be adapted
 			if (firstElement instanceof IAdaptable)
 			{
-				IAdaptable is = (IAdaptable) firstElement;
-				EditableWrapper wrapped = (EditableWrapper) is
+				final IAdaptable is = (IAdaptable) firstElement;
+				final EditableWrapper wrapped = (EditableWrapper) is
 						.getAdapter(EditableWrapper.class);
 				if (wrapped != null)
 				{
-					Object value = wrapped.getEditableValue();
+					final Object value = wrapped.getEditableValue();
 
 					if ((value instanceof GriddableSeriesMarker)
 							&& !(value instanceof Editable.DoNoInspectChildren))
@@ -125,7 +125,7 @@ public class GridEditorView extends ViewPart
 			mySelectionListener = new ISelectionListener()
 			{
 
-				public void selectionChanged(IWorkbenchPart part, ISelection selection)
+				public void selectionChanged(final IWorkbenchPart part, final ISelection selection)
 				{
 					if (part == GridEditorView.this)
 					{
@@ -145,7 +145,7 @@ public class GridEditorView extends ViewPart
 		return myUI;
 	}
 
-	private void handleWorkspaceSelectionChanged(ISelection actualSelection)
+	private void handleWorkspaceSelectionChanged(final ISelection actualSelection)
 	{
 		if (myUI.isDisposed())
 		{
@@ -156,7 +156,7 @@ public class GridEditorView extends ViewPart
 		if (!myUI.getTable().isTrackingSelection())
 			return;
 
-		GriddableWrapper input = extractGriddableSeries(actualSelection);
+		final GriddableWrapper input = extractGriddableSeries(actualSelection);
 
 		if (input == null)
 		{
@@ -167,7 +167,7 @@ public class GridEditorView extends ViewPart
 		{
 
 			// yes, but what are we currently looking at?
-			GriddableWrapper existingInput = (GriddableWrapper) myUI.getTable()
+			final GriddableWrapper existingInput = (GriddableWrapper) myUI.getTable()
 					.getTableViewer().getInput();
 
 			// see if we're currently looking at something
@@ -190,10 +190,10 @@ public class GridEditorView extends ViewPart
 	}
 
 	@Override
-	public void init(IViewSite site) throws PartInitException
+	public void init(final IViewSite site) throws PartInitException
 	{
 		super.init(site);
-		ISelectionService selectionService = site.getWorkbenchWindow()
+		final ISelectionService selectionService = site.getWorkbenchWindow()
 				.getSelectionService();
 		selectionService.addSelectionListener(getSelectionListener());
 
@@ -228,7 +228,7 @@ public class GridEditorView extends ViewPart
 				myUndoSupport.getUndoContext());
 		myRedoAction = new RedoActionHandler(this.getSite(),
 				myUndoSupport.getUndoContext());
-		IActionBars actionBars = getViewSite().getActionBars();
+		final IActionBars actionBars = getViewSite().getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
 		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
 		actionBars.updateActionBars();

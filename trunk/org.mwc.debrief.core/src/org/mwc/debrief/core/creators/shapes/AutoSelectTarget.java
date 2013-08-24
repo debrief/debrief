@@ -21,7 +21,7 @@ public class AutoSelectTarget implements IWorkbenchWindowActionDelegate
 		return _ticked;
 	}
 	
-	public static void setAutoSelectTarget(boolean yes)
+	public static void setAutoSelectTarget(final boolean yes)
 	{
 		_ticked = yes;
 	}
@@ -36,14 +36,14 @@ public class AutoSelectTarget implements IWorkbenchWindowActionDelegate
 	/**
 	 * @param window
 	 */
-	public void init(IWorkbenchWindow window)
+	public void init(final IWorkbenchWindow window)
 	{
 	}
 
 	/**
 	 * @param action
 	 */
-	public void run(IAction action)
+	public void run(final IAction action)
 	{
 		_ticked = !_ticked;
 		System.out.println("state is now:" + _ticked);
@@ -53,7 +53,7 @@ public class AutoSelectTarget implements IWorkbenchWindowActionDelegate
 	 * @param action
 	 * @param selection
 	 */
-	public void selectionChanged(IAction action, ISelection selection)
+	public void selectionChanged(final IAction action, final ISelection selection)
 	{
 	}
 

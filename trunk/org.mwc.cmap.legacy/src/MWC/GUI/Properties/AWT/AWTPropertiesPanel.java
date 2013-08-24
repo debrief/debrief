@@ -113,9 +113,9 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public AWTPropertiesPanel(PlainChart theChart,
-                            UndoBuffer theUndoBuffer,
-                            MWC.GUI.ToolParent theToolParent){
+  public AWTPropertiesPanel(final PlainChart theChart,
+                            final UndoBuffer theUndoBuffer,
+                            final MWC.GUI.ToolParent theToolParent){
     super();
     _myChart = theChart;
     _theBuffer = theUndoBuffer;
@@ -127,12 +127,12 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
   ////////////////////////////////////////////////////////////
 
 
-  public void remove(Object theObject)
+  public void remove(final Object theObject)
   {
     // ignore it!
   }
 
-  public void removeMe(Panel thePage){
+  public void removeMe(final Panel thePage){
     // find the index of the panel
     super.removeTabPanel(super.getCurrentPanelNdx());
   }
@@ -140,41 +140,41 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
 
   /** put the specified panel to the top of the stack
    */
-  public void show(java.awt.Panel thePanel){
-    int idx = super.getPanelTabIndex(thePanel);
+  public void show(final java.awt.Panel thePanel){
+    final int idx = super.getPanelTabIndex(thePanel);
     try{
     super.setCurrentPanelNdx(idx);
-    }catch(Exception e){
+    }catch(final Exception e){
       // we don't really expect anything to happen here.
       MWC.Utilities.Errors.Trace.trace(e);
     }
   }
 
-  public void addConstructor(Editable.EditorType theInfo, Layer parentLayer){
-    AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
+  public void addConstructor(final Editable.EditorType theInfo, final Layer parentLayer){
+    final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
                                                  this,
                                                  _myChart,
                                                  _theToolParent,
                                                  parentLayer);
     ap.setNames("Build", null, null);
-    int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
+    final int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
     try{
       setCurrentTab(index);
-    }catch(Exception e){
+    }catch(final Exception e){
       // don't bother, we don't expect there to be a problem
       MWC.Utilities.Errors.Trace.trace(e);
     }
   }
 
-  public void addEditor(Editable.EditorType theInfo, Layer parentLayer){
-    AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
+  public void addEditor(final Editable.EditorType theInfo, final Layer parentLayer){
+    final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
                                                  this,
                                                  _myChart,
                                                  _theToolParent, parentLayer);
-    int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
+    final int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
     try{
       setCurrentTab(index);
-    }catch(Exception e){
+    }catch(final Exception e){
       // don't bother, we don't expect there to be a problem
       MWC.Utilities.Errors.Trace.trace(e);
     }

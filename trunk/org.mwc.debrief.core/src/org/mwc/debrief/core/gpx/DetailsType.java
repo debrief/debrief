@@ -58,7 +58,7 @@ public class DetailsType {
      *     {@link String }
      *     
      */
-    public void setText(String value) {
+    public void setText(final String value) {
         this.text = value;
     }
 

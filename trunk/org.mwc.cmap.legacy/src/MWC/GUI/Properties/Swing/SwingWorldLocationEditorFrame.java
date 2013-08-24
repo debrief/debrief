@@ -33,15 +33,15 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   // member variables
   //////////////////////////////////////////////////////////////
 
-  private WorldLocation _initial;
+  private final WorldLocation _initial;
   private WorldLocation _result;
 
 
   /** the formatting objects
    *
    */
-  private java.text.DecimalFormat _MinDf = new DecimalFormat("0.#####");
-  private java.text.DecimalFormat _SecDf = new DecimalFormat("0.####");
+  private final java.text.DecimalFormat _MinDf = new DecimalFormat("0.#####");
+  private final java.text.DecimalFormat _SecDf = new DecimalFormat("0.####");
 
 
 
@@ -104,7 +104,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
 
     /** Creates new form SwingWorldLocationEditorFrame */
-    public SwingWorldLocationEditorFrame(WorldLocation initial, java.awt.Frame parent) {
+    public SwingWorldLocationEditorFrame(final WorldLocation initial, final java.awt.Frame parent) {
       super(parent, true);
         initComponents ();
         pack ();
@@ -114,22 +114,22 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
         // put the buttons into Groups
         //
-        ButtonGroup DM_NS = new ButtonGroup();
+        final ButtonGroup DM_NS = new ButtonGroup();
         DM_NS.add(DM_NorthBtn);
         DM_NorthBtn.setSelected(true);
         DM_NS.add(DM_SouthBtn);
 
-        ButtonGroup DM_EW = new ButtonGroup();
+        final ButtonGroup DM_EW = new ButtonGroup();
         DM_EW.add(DM_EastBtn);
         DM_EastBtn.setSelected(true);
         DM_EW.add(DM_WestBtn);
 
-        ButtonGroup DMS_NS = new ButtonGroup();
+        final ButtonGroup DMS_NS = new ButtonGroup();
         DMS_NS.add(DMS_NorthBtn);
         DMS_NorthBtn.setSelected(true);
         DMS_NS.add(DMS_SouthBtn);
 
-        ButtonGroup DMS_EW = new ButtonGroup();
+        final ButtonGroup DMS_EW = new ButtonGroup();
         DMS_EW.add(DMS_EastBtn);
         DMS_EastBtn.setSelected(true);
         DMS_EW.add(DMS_WestBtn);
@@ -143,12 +143,12 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   // member functions
   //////////////////////////////////////////////////////////////
 
-	static public WorldLocation doEdit(WorldLocation val)
+	static public WorldLocation doEdit(final WorldLocation val)
 	{
-		JFrame parent = new JFrame("scrap");
+		final JFrame parent = new JFrame("scrap");
     // work with a copy of the original value
 		WorldLocation res = new WorldLocation(val);
-		SwingWorldLocationEditorFrame aw = new SwingWorldLocationEditorFrame(res, parent);
+		final SwingWorldLocationEditorFrame aw = new SwingWorldLocationEditorFrame(res, parent);
 		aw.setVisible(true);
 		res = new WorldLocation(aw.getResult());
     aw.dispose();
@@ -211,7 +211,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   DMS_WestBtn = new javax.swing.JRadioButton ();
   addWindowListener (new java.awt.event.WindowAdapter ()
 {
-  public void windowClosing (java.awt.event.WindowEvent evt)
+  public void windowClosing (final java.awt.event.WindowEvent evt)
 {
   exitForm (evt);
   }
@@ -223,7 +223,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   ///////////////////////////////////////////////////////
   // create and insert a panel to hold the depth data
   //////////////////////////////////////////////////////
-  javax.swing.JPanel depthPanel = new javax.swing.JPanel();
+  final javax.swing.JPanel depthPanel = new javax.swing.JPanel();
   depthPanel.setLayout(new java.awt.GridLayout(1,2));
   depthLabel = new javax.swing.JLabel("Depth (m)");
   depthValue = new FocusText();
@@ -241,7 +241,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   AcceptBtn.setText ("Accept");
     AcceptBtn.addActionListener (new java.awt.event.ActionListener ()
   {
-    public void actionPerformed (java.awt.event.ActionEvent evt)
+    public void actionPerformed (final java.awt.event.ActionEvent evt)
   {
     AcceptBtnActionPerformed (evt);
     }
@@ -253,7 +253,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   CancelBtn.setText ("Cancel");
     CancelBtn.addActionListener (new java.awt.event.ActionListener ()
   {
-    public void actionPerformed (java.awt.event.ActionEvent evt)
+    public void actionPerformed (final java.awt.event.ActionEvent evt)
   {
     CancelBtnActionPerformed (evt);
     }
@@ -440,7 +440,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
   }//GEN-END:initComponents
 
-  void CancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelBtnActionPerformed
+  void CancelBtnActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelBtnActionPerformed
 // Add your handling code here:
     // reset the results
     _result = _initial;
@@ -448,7 +448,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
     exitForm(null);
   }//GEN-LAST:event_CancelBtnActionPerformed
 
-  void AcceptBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AcceptBtnActionPerformed
+  void AcceptBtnActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AcceptBtnActionPerformed
 
     // Add your handling code here:
 
@@ -518,7 +518,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
       }
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Edit World Location", "Sorry, an invalid value has been entered");
     }
@@ -531,7 +531,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   }//GEN-LAST:event_AcceptBtnActionPerformed
 
     /** Exit the Application */
-    void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+    void exitForm(final java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         setVisible(false);
     }//GEN-LAST:event_exitForm
 
@@ -550,9 +550,9 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 		// initialise the results parameter
 		_result = _initial;
 
-		MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _lat
+		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _lat
 			= new BriefFormatLocation.brokenDown(_result.getLat(), true);
-		MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _long
+		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _long
 			= new BriefFormatLocation.brokenDown(_result.getLong(), false);
 
     // start with the depth, since it doesn't depend on which
@@ -605,13 +605,13 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
       super();
       super.addFocusListener(this);
     }
-    public void focusGained(FocusEvent e)
+    public void focusGained(final FocusEvent e)
     {
       // select all of the text
       this.setSelectionStart(0);
       this.setSelectionEnd(this.getText().length());
     }
-    public void focusLost(FocusEvent e)
+    public void focusLost(final FocusEvent e)
     {
     }
 
@@ -619,10 +619,10 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
 
 
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
     System.out.println("Test started");
-    WorldLocation res = doEdit(new WorldLocation(12, 13, 14.3456, 'N', 14, 15, 11.345, 'W',12));
+    final WorldLocation res = doEdit(new WorldLocation(12, 13, 14.3456, 'N', 14, 15, 11.345, 'W',12));
     System.out.println("Res is " + res);
     System.exit(0);
   }

@@ -78,7 +78,7 @@ public class Mercator3 extends PlainProjection
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  public void setEllipse(Ellipse val)
+  public void setEllipse(final Ellipse val)
   {
     // store it
     _myEllipse = val;
@@ -106,9 +106,9 @@ public class Mercator3 extends PlainProjection
     _t1 = _a * Math.sin(_1_over_60);
   }
 
-  protected double length(double val)
+  protected double length(final double val)
   {
-    double lat = Conversions.Degs2Rads(val);
+    final double lat = Conversions.Degs2Rads(val);
 
     double res;
     res = _a * (_A0 * lat -
@@ -118,10 +118,10 @@ public class Mercator3 extends PlainProjection
     return res;
   }
 
-  protected double mParts(double val)
+  protected double mParts(final double val)
   {
 
-    double lat = Conversions.Degs2Rads(val);
+    final double lat = Conversions.Degs2Rads(val);
 
     double res;
 
@@ -134,15 +134,15 @@ public class Mercator3 extends PlainProjection
     return res;
   }
 
-  protected double lg(double val1,
-                      double val2)
+  protected double lg(final double val1,
+                      final double val2)
   {
-    double lat1 = Conversions.Degs2Rads(val1);
-    double lat2 = Conversions.Degs2Rads(val2);
+    final double lat1 = Conversions.Degs2Rads(val1);
+    final double lat2 = Conversions.Degs2Rads(val2);
 
     double res;
 
-    double t2 = 1 - (_e2 / 4) * (1 + 3 * Math.cos(lat1 + lat2));
+    final double t2 = 1 - (_e2 / 4) * (1 + 3 * Math.cos(lat1 + lat2));
 
     res = _t1 * t2;
 
@@ -165,13 +165,13 @@ public class Mercator3 extends PlainProjection
   }
 
 
-  public java.awt.Point toScreen(WorldLocation val)
+  public java.awt.Point toScreen(final WorldLocation val)
   {
 
-    double _easting = 0;
-    double _northing = 0;
+    final double _easting = 0;
+    final double _northing = 0;
 
-        double d1 = val.getLong();
+        final double d1 = val.getLong();
 
         double d2 = val.getLat();
 
@@ -185,13 +185,13 @@ public class Mercator3 extends PlainProjection
 					/* null body */ 
 				}
 
-        double d3 = (d2 - _centralMeridian) * 0.01745329251994 * _er;
+        final double d3 = (d2 - _centralMeridian) * 0.01745329251994 * _er;
 
-        double d4 = d1 * 0.01745329251994;
+        final double d4 = d1 * 0.01745329251994;
 
-        double d5 = Math.pow((1.0 - _e * Math.sin(d4)) / (1.0 + _e * Math.sin(d4)), _e / 2);
+        final double d5 = Math.pow((1.0 - _e * Math.sin(d4)) / (1.0 + _e * Math.sin(d4)), _e / 2);
 
-        double d6 = Math.log(Math.tan((45.0 + 0.5 * d1) * 0.01745329251994) * d5) * _er;
+        final double d6 = Math.log(Math.tan((45.0 + 0.5 * d1) * 0.01745329251994) * d5) * _er;
 
         return new java.awt.Point((int)(d3 + _easting), (int)(d6 + _northing));
 
@@ -216,7 +216,7 @@ public class Mercator3 extends PlainProjection
     return res;*/
   }
 
-  public WorldLocation toWorld(java.awt.Point val)
+  public WorldLocation toWorld(final java.awt.Point val)
   {
 
         int i;
@@ -225,21 +225,21 @@ public class Mercator3 extends PlainProjection
 
         double d10;
 
-        double d1 = val.x - 0;
+        final double d1 = val.x - 0;
 
-        double d2 = val.y - 0;
+        final double d2 = val.y - 0;
 
         double d3 = 0.0;
 
-        double d4 = d1 / _er / 0.01745329251994 + _centralMeridian;
+        final double d4 = d1 / _er / 0.01745329251994 + _centralMeridian;
 
-        double d5 = Math.exp(-d2 / _er);
+        final double d5 = Math.exp(-d2 / _er);
 
         double d6 = 90.0 - 2.0 * Math.atan(d5) / 0.01745329251994;
 
         double d7 = 1.0;
 
-        double d8 = 0.00001;
+        final double d8 = 0.00001;
 
         for (i = 0; d7 > d8 && i < 100; i++)
 
@@ -323,21 +323,21 @@ public class Mercator3 extends PlainProjection
     return res; */
   }
 
-  public void setScreenArea(java.awt.Dimension theArea)
+  public void setScreenArea(final java.awt.Dimension theArea)
   {
     super.setScreenArea(theArea);
 
     rescale();
   }
 
-  public void setDataArea(WorldArea theArea)
+  public void setDataArea(final WorldArea theArea)
   {
     super.setDataArea(theArea);
 
     rescale();
   }
 
-  public void zoom(double value)
+  public void zoom(final double value)
   {
     if(value != 0.0)
     {
@@ -351,17 +351,17 @@ public class Mercator3 extends PlainProjection
 
   protected void rescale()
   {
-    WorldArea wa = super.getDataArea();
-    Dimension sz = super.getScreenArea();
+    final WorldArea wa = super.getDataArea();
+    final Dimension sz = super.getScreenArea();
 
     if((wa == null) ||
        (sz == null))
       return;
 
     // find the x scale factor
-    double dx = getScreenArea().width / (getDataArea().getWidth() );//* _dataBorder);
+    final double dx = getScreenArea().width / (getDataArea().getWidth() );//* _dataBorder);
     // find the y scale factor
-    double dy =  getScreenArea().height / (getDataArea().getHeight());// * _dataBorder);
+    final double dy =  getScreenArea().height / (getDataArea().getHeight());// * _dataBorder);
 
     // find the maximum of these
     _scaleVal = Math.min(dx, dy);

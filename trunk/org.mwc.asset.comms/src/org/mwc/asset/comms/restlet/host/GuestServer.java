@@ -18,9 +18,9 @@ abstract public class GuestServer extends Application implements GuestProvider
 	abstract public ASSETGuest getGuest();
 
 
-	public static Component go(Restlet host) throws Exception
+	public static Component go(final Restlet host) throws Exception
 	{
-		Component component = new Component();
+		final Component component = new Component();
 		component.getClients().add(Protocol.FILE);
 		component.getServers().add(Protocol.HTTP, 8081);
 		component.getDefaultHost().attach(host);
@@ -29,7 +29,7 @@ abstract public class GuestServer extends Application implements GuestProvider
 		return component;
 	}
 
-	public static void finish(Component component) throws Exception
+	public static void finish(final Component component) throws Exception
 	{
 		component.stop();
 	}
@@ -40,26 +40,26 @@ abstract public class GuestServer extends Application implements GuestProvider
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception
+	public static void main(final String[] args) throws Exception
 	{
-		Restlet guestS = new GuestServer()
+		final Restlet guestS = new GuestServer()
 		{
 
 			ASSETGuest host = new ASSETGuest(){
-				public void newParticipantDecision(int scenarioId, int participantId,
-						DecidedEvent event)
+				public void newParticipantDecision(final int scenarioId, final int participantId,
+						final DecidedEvent event)
 				{
 				}
-				public void newParticipantDetection(int scenarioId, int participantId,
-						DetectionEvent event)
+				public void newParticipantDetection(final int scenarioId, final int participantId,
+						final DetectionEvent event)
 				{
 				}
-				public void newParticipantState(int scenarioId, int participantId,
-						Status newState)
+				public void newParticipantState(final int scenarioId, final int participantId,
+						final Status newState)
 				{
 				}
-				public void newScenarioEvent(long time, String eventName,
-						String description)
+				public void newScenarioEvent(final long time, final String eventName,
+						final String description)
 				{
 				}};
 
@@ -76,7 +76,7 @@ abstract public class GuestServer extends Application implements GuestProvider
 	@Override
 	public Restlet createInboundRoot()
 	{
-		Router router = new Router(getContext());
+		final Router router = new Router(getContext());
 		getConnectorService().getClientProtocols().add(Protocol.FILE);
 		router.attach("/v1/scenario/{scenario}/event",
 				ScenarioEventHandler.class);

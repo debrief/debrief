@@ -64,7 +64,7 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 	 */
 	private Date[] _times;
 
-	private URL _source;
+	private final URL _source;
 
 	private String _platform;
 	
@@ -78,14 +78,14 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 	 * 
 	 * @param node
 	 */
-	public GDataset(URL source)
+	public GDataset(final URL source)
 	{
 		_source = source;
 		_datasets = new HashMap<String, double[]>();
 		_pSupport = new PropertyChangeSupport(this);
 	}
 
-	public GDataset(JsonNode theDoc, URL source)
+	public GDataset(final JsonNode theDoc, final URL source)
 	{
 		this(source);
 		_myNode = theDoc;
@@ -96,20 +96,20 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 
 		if (_myNode == null)
 		{
-			ObjectMapper mapper = new ObjectMapper();
+			final ObjectMapper mapper = new ObjectMapper();
 			try
 			{
 				_myNode = mapper.readValue(_source, JsonNode.class);
 			}
-			catch (JsonParseException e)
+			catch (final JsonParseException e)
 			{
 				e.printStackTrace();
 			}
-			catch (JsonMappingException e)
+			catch (final JsonMappingException e)
 			{
 				e.printStackTrace();
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				e.printStackTrace();
 			}
@@ -120,10 +120,10 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 	@Override
 	public String getName()
 	{
-		JsonNode node = getNode();
+		final JsonNode node = getNode();
 		if (_name == null)
 		{
-			JsonNode metadata = node.get(METADATA);
+			final JsonNode metadata = node.get(METADATA);
 			_name = metadata.get(NAME).getTextValue();
 			if ((_name == null) || (_name.length() == 0))
 				_name = metadata.get(PLATFORM).getTextValue();
@@ -138,20 +138,20 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 		if (_times == null)
 		{
 			// have a look at the types
-			ArrayList<String> types = getDataTypes();
+			final ArrayList<String> types = getDataTypes();
 			if (types.contains(TIME))
 			{
-				JsonNode node = getNode();
+				final JsonNode node = getNode();
 				if (node != null)
 				{
-					JsonNode data = node.get(TIME);
+					final JsonNode data = node.get(TIME);
 					if (data != null)
 					{
-						int len = data.size();
+						final int len = data.size();
 						_times = new Date[len];
 						for (int i = 0; i < len; i++)
 						{
-							String thisVal = data.get(i).asText();
+							final String thisVal = data.get(i).asText();
 							_times[i] = ISODateTimeFormat.dateTimeNoMillis()
 									.parseDateTime(thisVal).toDate();
 						}
@@ -167,8 +167,8 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 		int len = 0;
 		if (getDataTypes().size() > 0)
 		{
-			String type1 = getDataTypes().get(0);
-			double[] list = getDataset(type1);
+			final String type1 = getDataTypes().get(0);
+			final double[] list = getDataset(type1);
 			len = list.length;
 		}
 
@@ -176,7 +176,7 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 	}
 
 	@Override
-	public double[] getDataset(String name)
+	public double[] getDataset(final String name)
 	{
 		double[] res = null;
 
@@ -184,17 +184,17 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 
 		if (res == null)
 		{
-			JsonNode node = getNode();
+			final JsonNode node = getNode();
 			if (node != null)
 			{
 				// have a look at the types
-				ArrayList<String> types = getDataTypes();
+				final ArrayList<String> types = getDataTypes();
 				if (types.contains(name))
 				{
-					JsonNode data = node.get(name);
+					final JsonNode data = node.get(name);
 					if (data != null)
 					{
-						int len = data.size();
+						final int len = data.size();
 						res = new double[len];
 						for (int i = 0; i < len; i++)
 						{
@@ -212,11 +212,11 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 	public ArrayList<String> getDataTypes()
 	{
 		ArrayList<String> nodes = null;
-		JsonNode node = getNode();
+		final JsonNode node = getNode();
 		if (node != null)
 		{
-			JsonNode metadata = node.get(METADATA);
-			JsonNode types = metadata.get(DATA_TYPE);
+			final JsonNode metadata = node.get(METADATA);
+			final JsonNode types = metadata.get(DATA_TYPE);
 
 			nodes = new ArrayList<String>();
 			for (int i = 0; i < types.size(); i++)
@@ -229,50 +229,50 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 
 	public String getPlatform()
 	{
-		JsonNode node = getNode();
+		final JsonNode node = getNode();
 		if (_platform == null)
 		{
-			JsonNode metadata = node.get(METADATA);
-			JsonNode platNode = metadata.get(PLATFORM);
+			final JsonNode metadata = node.get(METADATA);
+			final JsonNode platNode = metadata.get(PLATFORM);
 			_platform = platNode.getTextValue();
 		}
 		return _platform;
 	}
 
 	@Override
-	public void addPropertyChangeListener(String property,
-			PropertyChangeListener listener)
+	public void addPropertyChangeListener(final String property,
+			final PropertyChangeListener listener)
 	{
 		_pSupport.addPropertyChangeListener(property, listener);
 	}
 
 	@Override
-	public void addPropertyChangeListener(PropertyChangeListener listener)
+	public void addPropertyChangeListener(final PropertyChangeListener listener)
 	{
 		_pSupport.addPropertyChangeListener(listener);
 	}
 
 	@Override
-	public void removePropertyChangeListener(PropertyChangeListener listener)
+	public void removePropertyChangeListener(final PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(listener);
 	}
 
 	@Override
-	public void removePropertyChangeListener(String property,
-			PropertyChangeListener listener)
+	public void removePropertyChangeListener(final String property,
+			final PropertyChangeListener listener)
 	{
 	 _pSupport.removePropertyChangeListener(property, listener);
 	}
 
 	@Override
-	public void firePropertyChange(String propertyChanged, Object oldValue,
-			Object newValue)
+	public void firePropertyChange(final String propertyChanged, final Object oldValue,
+			final Object newValue)
 	{
 		_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
 	}
 
-	public void doSave(String message)
+	public void doSave(final String message)
 	{
 		// ok, build up the URL
 		

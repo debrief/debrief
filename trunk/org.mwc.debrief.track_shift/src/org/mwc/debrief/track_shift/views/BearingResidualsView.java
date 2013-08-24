@@ -63,7 +63,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 	}
 
 	@Override
-	protected void fillLocalToolBar(IToolBarManager toolBarManager)
+	protected void fillLocalToolBar(final IToolBarManager toolBarManager)
 	{
 		toolBarManager.add(showCourse);
 		toolBarManager.add(flipCourse);
@@ -71,7 +71,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 
 	}
 
-	protected void fillLocalPullDown(IMenuManager manager)
+	protected void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(flipCourse);
 		super.fillLocalPullDown(manager);
@@ -87,7 +87,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 		return "Bearing";
 	}
 
-	protected void updateData(boolean updateDoublets)
+	protected void updateData(final boolean updateDoublets)
 	{
 		// update the current datasets
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
@@ -97,7 +97,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 		// hide the line for the course dataset (if we're showing the course)
 		if (_showLinePlot.isChecked())
 		{
-			DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
+			final DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
 					.getRenderer();
 			if (showCourse.isChecked())
 			{
@@ -125,21 +125,21 @@ public class BearingResidualsView extends BaseStackedDotsView
 	}
 
 	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
 		super.init(site, memento);
 
 		if (memento != null)
 		{
 
-			Boolean doCourse = memento.getBoolean(SHOW_COURSE);
+			final Boolean doCourse = memento.getBoolean(SHOW_COURSE);
 			if (doCourse != null)
 				showCourse.setChecked(doCourse.booleanValue());
 		}
 	}
 
 	@Override
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		super.saveState(memento);
 

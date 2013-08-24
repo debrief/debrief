@@ -237,12 +237,12 @@ public class ScalePainter implements Plottable, Serializable
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public double convertThis(double degs)
+			public double convertThis(final double degs)
       {
         return MWC.Algorithms.Conversions.Degs2Km(degs);
       }
 
-      public String writeThis(double myUnits)
+      public String writeThis(final double myUnits)
       {
         return "" + (int) myUnits;
       }
@@ -255,12 +255,12 @@ public class ScalePainter implements Plottable, Serializable
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public double convertThis(double degs)
+			public double convertThis(final double degs)
       {
         return MWC.Algorithms.Conversions.Degs2m(degs);
       }
 
-      public String writeThis(double myUnits)
+      public String writeThis(final double myUnits)
       {
         return "" + (int) myUnits;
       }
@@ -274,12 +274,12 @@ public class ScalePainter implements Plottable, Serializable
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public double convertThis(double degs)
+			public double convertThis(final double degs)
       {
         return MWC.Algorithms.Conversions.Degs2Nm(degs);
       }
 
-      public String writeThis(double myUnits)
+      public String writeThis(final double myUnits)
       {
         return "" + (int) myUnits;
       }
@@ -292,12 +292,12 @@ public class ScalePainter implements Plottable, Serializable
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public double convertThis(double degs)
+			public double convertThis(final double degs)
       {
         return MWC.Algorithms.Conversions.Degs2Yds(degs);
       }
 
-      public String writeThis(double myUnits)
+      public String writeThis(final double myUnits)
       {
         return "" + (int) myUnits;
       }
@@ -310,12 +310,12 @@ public class ScalePainter implements Plottable, Serializable
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public double convertThis(double degs)
+			public double convertThis(final double degs)
       {
         return MWC.Algorithms.Conversions.Degs2Yds(degs) / 1000;
       }
 
-      public String writeThis(double myUnits)
+      public String writeThis(final double myUnits)
       {
         return "" + (int) myUnits;
       }
@@ -331,7 +331,7 @@ public class ScalePainter implements Plottable, Serializable
   private void initialiseLimits()
   {
     // create the array of limits values in a tmp parameter
-    Label_Limit[] tmp = {
+    final Label_Limit[] tmp = {
       new Label_Limit(7, 1),
       new Label_Limit(20, 5),
       new Label_Limit(70, 10),
@@ -361,7 +361,7 @@ public class ScalePainter implements Plottable, Serializable
    *
    * @param val yes/no visibility
    */
-  public void setVisible(boolean val)
+  public void setVisible(final boolean val)
   {
     _isOn = val;
   }
@@ -381,7 +381,7 @@ public class ScalePainter implements Plottable, Serializable
    *
    * @param val the colour
    */
-  public void setColor(Color val)
+  public void setColor(final Color val)
   {
     _myColor = val;
   }
@@ -401,7 +401,7 @@ public class ScalePainter implements Plottable, Serializable
    *
    * @param loc one of the enumerated types listed earlier
    */
-  public void setLocation(Integer loc)
+  public void setLocation(final Integer loc)
   {
     _location = loc.intValue();
   }
@@ -421,7 +421,7 @@ public class ScalePainter implements Plottable, Serializable
    *
    * @param g the destination
    */
-  public void paint(CanvasType g)
+  public void paint(final CanvasType g)
   {
 
     // check we are visible
@@ -429,19 +429,19 @@ public class ScalePainter implements Plottable, Serializable
       return;
 
     // what is the screen width in logical coordinate?
-    MWC.Algorithms.PlainProjection proj = g.getProjection();
+    final MWC.Algorithms.PlainProjection proj = g.getProjection();
 
     // find the screen width
-    java.awt.Dimension screen_size = proj.getScreenArea().getSize();
-    long screen_width = screen_size.width;
+    final java.awt.Dimension screen_size = proj.getScreenArea().getSize();
+    final long screen_width = screen_size.width;
 
     // generate screen points in the middle on the left & right-hand sides
-    Point left = new Point(0, (int) screen_size.getHeight() / 2);
-    Point right = new Point((int) screen_width, (int) screen_size.getHeight() / 2);
+    final Point left = new Point(0, (int) screen_size.getHeight() / 2);
+    final Point right = new Point((int) screen_width, (int) screen_size.getHeight() / 2);
 
     // and now world locations to represent them
-    WorldLocation leftLoc = new WorldLocation(proj.toWorld(left));
-    WorldLocation rightLoc = proj.toWorld(right);
+    final WorldLocation leftLoc = new WorldLocation(proj.toWorld(left));
+    final WorldLocation rightLoc = proj.toWorld(right);
 
     // and get the distance between them
     double data_width = rightLoc.rangeFrom(leftLoc);
@@ -450,7 +450,7 @@ public class ScalePainter implements Plottable, Serializable
     data_width = _DisplayUnits.convertThis(data_width);
 
     // make a guess at the scale
-    double scale = data_width / screen_width;
+    final double scale = data_width / screen_width;
 
     // clip the screen width so that the scale bar doesn't go across the
     // whole screen, and so that we can offset it a bit.
@@ -464,7 +464,7 @@ public class ScalePainter implements Plottable, Serializable
     }
 
     // find the current text height
-    int txtHt = g.getStringHeight(_myFont);
+    final int txtHt = g.getStringHeight(_myFont);
 
     // we now have to determine the labels to use on the axis
 
@@ -522,7 +522,7 @@ public class ScalePainter implements Plottable, Serializable
 
 
     // find the width of the scale in screen units
-    int scale_width = (int) (_scaleMax / scale);
+    final int scale_width = (int) (_scaleMax / scale);
 
     // determine the start / end points according to the scale location
     // variable
@@ -548,8 +548,8 @@ public class ScalePainter implements Plottable, Serializable
     }
 
     // create the figures to step along the line
-    int num_ticks = (int) ((_scaleMax - first) / _scaleStep);
-    int tick_step = (int) (_scaleStep / scale);
+    final int num_ticks = (int) ((_scaleMax - first) / _scaleStep);
+    final int tick_step = (int) (_scaleStep / scale);
 
     // set our drawing flags
     boolean fill_this = true;
@@ -559,11 +559,11 @@ public class ScalePainter implements Plottable, Serializable
     g.setColor(this.getColor());
 
     // first draw in 10 ticks in the first section of the scale
-    double tmp_tick_step = tick_step / 10.0;
+    final double tmp_tick_step = tick_step / 10.0;
     for (int j = 0; j < 10; j++)
     {
       // put in the tick at this point
-      int this_dist = TL.x + (int) (j * tmp_tick_step);
+      final int this_dist = TL.x + (int) (j * tmp_tick_step);
 
       // check if we are 1/2 way along the strip. If so the we'll draw in a
       // higher tick
@@ -585,10 +585,10 @@ public class ScalePainter implements Plottable, Serializable
       	str += "s";
 
       // find the text size for this label
-      int wid = g.getStringWidth(_myFont, str);
+      final int wid = g.getStringWidth(_myFont, str);
 
       // put in the tick at this point
-      int this_dist = TL.x + i * tick_step;
+      final int this_dist = TL.x + i * tick_step;
       g.drawLine(this_dist, BR.y, this_dist, TL.y - (int) (txtHt * 0.5));
 
       if (first_point)
@@ -638,7 +638,7 @@ public class ScalePainter implements Plottable, Serializable
    * @param other the other point
    * @return INVALID_RANGE since this is value can't be calculated
    */
-  public double rangeFrom(MWC.GenericData.WorldLocation other)
+  public double rangeFrom(final MWC.GenericData.WorldLocation other)
   {
     // doesn't return a sensible distance;
     return INVALID_RANGE;
@@ -679,7 +679,7 @@ public class ScalePainter implements Plottable, Serializable
    *
    * @param val the max value
    */
-  public void setScaleMax(Long val)
+  public void setScaleMax(final Long val)
   {
     _scaleMax = val.longValue();
   }
@@ -699,7 +699,7 @@ public class ScalePainter implements Plottable, Serializable
    *
    * @param val the step size
    */
-  public void setScaleStep(Long val)
+  public void setScaleStep(final Long val)
   {
     _scaleStep = val.longValue();
   }
@@ -719,7 +719,7 @@ public class ScalePainter implements Plottable, Serializable
    *
    * @param val the new mode for auto
    */
-  public void setAutoMode(boolean val)
+  public void setAutoMode(final boolean val)
   {
     _autoScale = val;
   }
@@ -729,7 +729,7 @@ public class ScalePainter implements Plottable, Serializable
     return _DisplayUnits.getUnits();
   }
 
-  public void setDisplayUnits(String DisplayUnits)
+  public void setDisplayUnits(final String DisplayUnits)
   {
   	// generate the units, if we have to
   	setupUnits();
@@ -778,14 +778,14 @@ public class ScalePainter implements Plottable, Serializable
 	/**
      * the label we use for our inits
      */
-    private String _myUnits;
+    private final String _myUnits;
 
     /**
      * constructor
      *
      * @param myUnits
      */
-    public UnitsConverter(String myUnits)
+    public UnitsConverter(final String myUnits)
     {
       this._myUnits = myUnits;
     }
@@ -810,7 +810,7 @@ public class ScalePainter implements Plottable, Serializable
     // give it some old version id
     static final long serialVersionUID = 1L;
     
-    public ScalePainterInfo(ScalePainter data)
+    public ScalePainterInfo(final ScalePainter data)
     {
       super(data, data.getName(), "");
     }
@@ -819,7 +819,7 @@ public class ScalePainter implements Plottable, Serializable
     {
       try
       {
-        PropertyDescriptor[] res = {
+        final PropertyDescriptor[] res = {
           prop("Color", "the Color to draw the Scale", FORMAT),
           prop("Visible", "whether this Scale is visible", VISIBILITY),
           prop("ScaleMax", "the maximum value of the scale in yards", FORMAT),
@@ -834,7 +834,7 @@ public class ScalePainter implements Plottable, Serializable
 
         return res;
       }
-      catch (IntrospectionException e)
+      catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
@@ -854,7 +854,7 @@ public class ScalePainter implements Plottable, Serializable
 		long upper_limit;
     long increment;
 
-    Label_Limit(long limit, long inc)
+    Label_Limit(final long limit, final long inc)
     {
       upper_limit = limit;
       increment = inc;
@@ -868,7 +868,7 @@ public class ScalePainter implements Plottable, Serializable
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public ScalePainterTest(String val)
+    public ScalePainterTest(final String val)
     {
       super(val);
     }
@@ -881,9 +881,9 @@ public class ScalePainter implements Plottable, Serializable
     }
   }
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
-		Plottable other = (Plottable) arg0;
+		final Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());
 	}
 

@@ -160,7 +160,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
   /**
    * the name of the session we read from, for when the toolbar floats
    */
-  private MyMetalToolBarUI.ToolbarOwner _owner;
+  private final MyMetalToolBarUI.ToolbarOwner _owner;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -171,10 +171,10 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    * @param theChart      the chart we are editing
    * @param theUndoBuffer buffer to store the undo commands
    */
-  public SwingPropertiesPanel(PlainChart theChart,
-                              UndoBuffer theUndoBuffer,
-                              MWC.GUI.ToolParent theToolParent,
-                              MyMetalToolBarUI.ToolbarOwner owner)
+  public SwingPropertiesPanel(final PlainChart theChart,
+                              final UndoBuffer theUndoBuffer,
+                              final MWC.GUI.ToolParent theToolParent,
+                              final MyMetalToolBarUI.ToolbarOwner owner)
   {
     super();
     _myChart = theChart;
@@ -202,9 +202,9 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
     super.closeMe();
   }
 
-  public void remove(Object thisItem)
+  public void remove(final Object thisItem)
   {
-    java.awt.Component comp = _myPanels.get(thisItem);
+    final java.awt.Component comp = _myPanels.get(thisItem);
     remove(comp);
   }
 
@@ -215,17 +215,17 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    *
    * @param thePage the page to be removed
    */
-  public void remove(java.awt.Component thePage)
+  public void remove(final java.awt.Component thePage)
   {
     // remove this panel
     super.remove(thePage);
 
     // also remove it from our list
-    java.util.Enumeration<Object> enumer = _myPanels.keys();
+    final java.util.Enumeration<Object> enumer = _myPanels.keys();
     while (enumer.hasMoreElements())
     {
-      Object oj = enumer.nextElement();
-      JPanel jp = _myPanels.get(oj);
+      final Object oj = enumer.nextElement();
+      final JPanel jp = _myPanels.get(oj);
 
       if (jp.equals(thePage))
       {
@@ -246,10 +246,10 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    *
    * @param thePanel the panel to put to the top
    */
-  public void show(JPanel thePanel)
+  public void show(final JPanel thePanel)
   {
     // do we hold this?
-    int index = super.indexOfComponent(thePanel);
+    final int index = super.indexOfComponent(thePanel);
 
     if (index == -1)
     {
@@ -266,14 +266,14 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    *
    * @param theInfo the EditableInfo for this object
    */
-  public void addConstructor(Editable.EditorType theInfo, Layer parentLayer)
+  public void addConstructor(final Editable.EditorType theInfo, final Layer parentLayer)
   {
     // see if we already have this editor open
 
     JPanel thePanel = _myPanels.get(theInfo.getData());
     if (thePanel == null)
     {
-      SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
+      final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
                                                          this,
                                                          _myChart,
                                                          _theToolParent,
@@ -303,14 +303,14 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    *
    * @param theInfo the EditableInfo for this object
    */
-  public void addEditor(Editable.EditorType theInfo, Layer parentLayer)
+  public void addEditor(final Editable.EditorType theInfo, final Layer parentLayer)
   {
     // see if we already have this editor open
 
     JPanel thePanel = _myPanels.get(theInfo.getData());
     if (thePanel == null)
     {
-      SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
+      final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
                                                          this,
                                                          _myChart,
                                                          _theToolParent,
@@ -319,7 +319,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
       thePanel = (JPanel) ap.getPanel();
       thePanel.setName(theInfo.getDisplayName());
 
-      JPanel destination = addThisInToolbar(thePanel);
+      final JPanel destination = addThisInToolbar(thePanel);
 
       // also remember this object
       _myPanels.put(theInfo.getData(), destination);
@@ -342,16 +342,16 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    * method to add the indicated panel inside a floatable toolbar, and adding the initial
    * component itself to our list of panels (so that they can be deleted)
    */
-  public JPanel addThisPanel(java.awt.Component thePanel)
+  public JPanel addThisPanel(final java.awt.Component thePanel)
   {
-    JPanel inserted = addThisInToolbar(thePanel);
+    final JPanel inserted = addThisInToolbar(thePanel);
     _myPanels.put(thePanel, inserted);
     return inserted;
   }
 
-  protected JPanel addThisInToolbar(java.awt.Component thePanel)
+  protected JPanel addThisInToolbar(final java.awt.Component thePanel)
   {
-    JToolBar jt = new JToolBar();
+    final JToolBar jt = new JToolBar();
     jt.setUI(new MWC.GUI.Tools.Swing.MyMetalToolBarUI(_owner));
     jt.setLayout(new java.awt.GridLayout(1, 0));
     jt.setFloatable(true);
@@ -359,7 +359,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
     jt.setName(thePanel.getName());
 
     // create a panel to contain the toolbar
-    JPanel theHolder = new JPanel();
+    final JPanel theHolder = new JPanel();
     theHolder.setLayout(new java.awt.BorderLayout());
     theHolder.add("Center", jt);
 
@@ -404,17 +404,17 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
   /**
    * a property has changed - if it's the name, then change the name of that panel
    */
-  public void propertyChange(PropertyChangeEvent evt)
+  public void propertyChange(final PropertyChangeEvent evt)
   {
     if (evt.getPropertyName().equals("Name"))
     {
-      PlainPropertyEditor.PropertyChangeAction pa = (PlainPropertyEditor.PropertyChangeAction) evt.getSource();
-      Object source = pa.getData();
-      JPanel panel = _myPanels.get(source);
-      String newName = (String) evt.getNewValue();
+      final PlainPropertyEditor.PropertyChangeAction pa = (PlainPropertyEditor.PropertyChangeAction) evt.getSource();
+      final Object source = pa.getData();
+      final JPanel panel = _myPanels.get(source);
+      final String newName = (String) evt.getNewValue();
       panel.setName(newName);
 
-      int index = this.indexOfComponent(panel);
+      final int index = this.indexOfComponent(panel);
       if (index != -1)
       {
         this.setTitleAt(index, newName);
@@ -466,7 +466,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
     /**
      * let somebody listen to us
      */
-    public void addClosingListener(SwingPropertiesPanel.ClosingEventListener listener)
+    public void addClosingListener(final SwingPropertiesPanel.ClosingEventListener listener)
     {
       if (_closeListeners == null)
         _closeListeners = new Vector<ClosingEventListener>(1, 1);
@@ -477,7 +477,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
     /**
      * let somebody stop listening to us
      */
-    public void removeClosingListener(SwingPropertiesPanel.ClosingEventListener listener)
+    public void removeClosingListener(final SwingPropertiesPanel.ClosingEventListener listener)
     {
       _closeListeners.remove(listener);
     }
@@ -491,10 +491,10 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
       // if we have any other closing listeners, tell them we are closing
       if (_closeListeners != null)
       {
-        Iterator<ClosingEventListener> it = _closeListeners.iterator();
+        final Iterator<ClosingEventListener> it = _closeListeners.iterator();
         while (it.hasNext())
         {
-          SwingPropertiesPanel.ClosingEventListener listener = it.next();
+          final SwingPropertiesPanel.ClosingEventListener listener = it.next();
           listener.isClosing();
         }
 

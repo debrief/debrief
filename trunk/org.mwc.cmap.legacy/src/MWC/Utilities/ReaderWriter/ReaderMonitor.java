@@ -41,14 +41,14 @@ import javax.swing.ProgressMonitor;
 
 public class ReaderMonitor extends BufferedReader
 {
-  private int _length;
+  private final int _length;
   private float _counter;
   private int _progress;
   ProgressMonitor _pm;
   private JFrame _tmpFrame;
-  private Thread _myThread;
+  private final Thread _myThread;
 
-  public ReaderMonitor(Reader r, int length, String fileName)
+  public ReaderMonitor(final Reader r, final int length, final String fileName)
   {
     super(r);
    _length = length;
@@ -61,14 +61,14 @@ public class ReaderMonitor extends BufferedReader
   protected class showMonitor extends Thread
   {
     String _name;
-    public showMonitor(String name)
+    public showMonitor(final String name)
     {
       super();
       _name = name;
     }
     public void run()
     {
-      java.io.File fl = new java.io.File(_name);
+      final java.io.File fl = new java.io.File(_name);
       _pm = new ProgressMonitor(null, "Reading file:" + fl.getName(), "blank", 0, 99);
       _pm.setMillisToPopup(200);
     }
@@ -81,7 +81,7 @@ public class ReaderMonitor extends BufferedReader
           throws IOException
   {
     _counter++;
-    float prog = (_counter / _length * 100);
+    final float prog = (_counter / _length * 100);
     _progress = (int) prog;
 
 

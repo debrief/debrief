@@ -35,7 +35,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 	 * Auto-generated main method to display this
 	 * org.eclipse.swt.widgets.Composite inside a new Shell.
 	 */
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
 		showGUI();
 	}
@@ -46,10 +46,10 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 	 */
 	public static void showGUI()
 	{
-		Display display = Display.getDefault();
-		Shell shell = new Shell(display);
-		UISkeleton inst = new UISkeleton(shell, SWT.NULL);
-		Point size = inst.getSize();
+		final Display display = Display.getDefault();
+		final Shell shell = new Shell(display);
+		final UISkeleton inst = new UISkeleton(shell, SWT.NULL);
+		final Point size = inst.getSize();
 		shell.setLayout(new FillLayout());
 		shell.layout();
 		if (size.x == 0 && size.y == 0)
@@ -59,7 +59,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 		}
 		else
 		{
-			Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
+			final Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
 			shell.setSize(shellBounds.width, shellBounds.height);
 		}
 		shell.open();
@@ -85,7 +85,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 
 	private Composite multiRunBtnHolder;
 
-	public UISkeleton(org.eclipse.swt.widgets.Composite parent, int style)
+	public UISkeleton(final org.eclipse.swt.widgets.Composite parent, final int style)
 	{
 		super(parent, style);
 		initGUI();
@@ -96,7 +96,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 		return this;
 	}
 
-	public void setControl(String text)
+	public void setControl(final String text)
 	{
 		controlVal.setText(text);
 	}
@@ -106,7 +106,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 		return multiTableHolder;
 	}
 
-	public void setScenario(String text)
+	public void setScenario(final String text)
 	{
 		scenarioVal.setText(text);
 	}
@@ -115,15 +115,15 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 	{
 		try
 		{
-			FormLayout thisLayout = new FormLayout();
+			final FormLayout thisLayout = new FormLayout();
 			this.setLayout(thisLayout);
 			this.setSize(217, 163);
 			{
 				filenameHolder = new Composite(this, SWT.NONE);
-				GridLayout filenameHolderLayout = new GridLayout();
+				final GridLayout filenameHolderLayout = new GridLayout();
 				filenameHolderLayout.numColumns = 3;
 				filenameHolderLayout.makeColumnsEqualWidth = true;
-				FormData filenameHolderLData = new FormData();
+				final FormData filenameHolderLData = new FormData();
 				filenameHolderLData.width = 214;
 				filenameHolderLData.height = 47;
 				filenameHolderLData.left = new FormAttachment(16, 1000, 0);
@@ -133,7 +133,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 				filenameHolder.setLayout(filenameHolderLayout);
 				{
 					scenarioLbl = new Label(filenameHolder, SWT.NONE);
-					GridData scenarioLblLData = new GridData();
+					final GridData scenarioLblLData = new GridData();
 					scenarioLblLData.horizontalAlignment = GridData.FILL;
 					scenarioLbl.setLayoutData(scenarioLblLData);
 					scenarioLbl.setText("Scenario");
@@ -141,7 +141,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					scenarioVal = new Label(filenameHolder, SWT.NONE);
-					GridData scenarioValLData = new GridData();
+					final GridData scenarioValLData = new GridData();
 					scenarioValLData.horizontalSpan = 2;
 					scenarioValLData.horizontalAlignment = GridData.FILL;
 					scenarioValLData.grabExcessHorizontalSpace = true;
@@ -150,7 +150,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					controlLabel = new Label(filenameHolder, SWT.NONE);
-					GridData label1LData = new GridData();
+					final GridData label1LData = new GridData();
 					label1LData.horizontalAlignment = GridData.FILL;
 					controlLabel.setLayoutData(label1LData);
 					controlLabel.setText("Control file");
@@ -158,7 +158,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					controlVal = new Label(filenameHolder, SWT.NONE);
-					GridData label2LData = new GridData();
+					final GridData label2LData = new GridData();
 					label2LData.horizontalSpan = 2;
 					label2LData.grabExcessHorizontalSpace = true;
 					label2LData.horizontalAlignment = GridData.FILL;
@@ -173,16 +173,16 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 					multipleTab.setText("Multiple Scenarios");
 					{
 						composite2 = new Composite(scenarioTabs, SWT.NONE);
-						GridLayout composite2Layout = new GridLayout();
+						final GridLayout composite2Layout = new GridLayout();
 						composite2Layout.makeColumnsEqualWidth = true;
 						composite2.setLayout(composite2Layout);
 						multipleTab.setControl(composite2);
 						{
 							multiRunBtnHolder = new Composite(composite2, SWT.NONE);
-							RowLayout multiRunBtnHolderLayout = new RowLayout(
+							final RowLayout multiRunBtnHolderLayout = new RowLayout(
 									org.eclipse.swt.SWT.HORIZONTAL);
 							multiRunBtnHolderLayout.fill = true;
-							GridData multiRunBtnHolderLData = new GridData();
+							final GridData multiRunBtnHolderLData = new GridData();
 							multiRunBtnHolderLData.grabExcessHorizontalSpace = true;
 							multiRunBtnHolder.setLayoutData(multiRunBtnHolderLData);
 							multiRunBtnHolder.setLayout(multiRunBtnHolderLayout);
@@ -199,13 +199,13 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 
 						{
 							multiTableHolder = new Composite(composite2, SWT.NONE);
-							GridLayout multiTableHolderLayout = new GridLayout();
+							final GridLayout multiTableHolderLayout = new GridLayout();
 							multiTableHolderLayout.makeColumnsEqualWidth = true;
 							multiTableHolder.setLayout(multiTableHolderLayout);
 						}
 					}
 				}
-				FormData scenarioTabsLData = new FormData();
+				final FormData scenarioTabsLData = new FormData();
 				scenarioTabsLData.width = 204;
 				scenarioTabsLData.left = new FormAttachment(10, 1000, 0);
 				scenarioTabsLData.right = new FormAttachment(990, 1000, 0);
@@ -217,28 +217,28 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 			}
 			this.layout();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 
-	public void addGenerateListener(SelectionListener listener)
+	public void addGenerateListener(final SelectionListener listener)
 	{
 		doGenerateButton.addSelectionListener(listener);
 	}
 
-	public void addRunAllListener(SelectionListener listener)
+	public void addRunAllListener(final SelectionListener listener)
 	{
 		runBtn.addSelectionListener(listener);
 	}
 
-	public void setRunAllEnabled(boolean b)
+	public void setRunAllEnabled(final boolean b)
 	{
 		runBtn.setEnabled(b);
 	}
 
-	public void setGenerateEnabled(boolean b)
+	public void setGenerateEnabled(final boolean b)
 	{
 		doGenerateButton.setEnabled(b);
 	}

@@ -147,18 +147,18 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	{
 		final IProgressMonitor monitor;
 
-		public WrappedProgressMonitor(IProgressMonitor val)
+		public WrappedProgressMonitor(final IProgressMonitor val)
 		{
 			monitor = val;
 
 		}
 
-		public void beginTask(String name, int totalWork)
+		public void beginTask(final String name, final int totalWork)
 		{
 			monitor.beginTask(name, totalWork);
 		}
 
-		public void worked(int work)
+		public void worked(final int work)
 		{
 			monitor.worked(work);
 		}
@@ -220,14 +220,14 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			@Override
 			public Vector<ScenarioType> getScenarios()
 			{
-				Vector<ScenarioType> res = new Vector<ScenarioType>();
+				final Vector<ScenarioType> res = new Vector<ScenarioType>();
 				// ok, collate the list
-				Vector<InstanceWrapper> sims = _myPresenter.getModel().getScenarios();
-				Iterator<InstanceWrapper> iter = sims.iterator();
+				final Vector<InstanceWrapper> sims = _myPresenter.getModel().getScenarios();
+				final Iterator<InstanceWrapper> iter = sims.iterator();
 				while (iter.hasNext())
 				{
-					InstanceWrapper inst = iter.next();
-					ScenarioType scen = inst.getScenario();
+					final InstanceWrapper inst = iter.next();
+					final ScenarioType scen = inst.getScenario();
 					res.add(scen);
 				}
 				return res;
@@ -239,9 +239,9 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	{
 		// just check we're alive - just in case we've been called before
 		// the init is complete
-		IWorkbenchPartSite site = getSite();
-		IWorkbenchWindow window = site.getWorkbenchWindow();
-		IWorkbenchPage page = window.getActivePage();
+		final IWorkbenchPartSite site = getSite();
+		final IWorkbenchWindow window = site.getWorkbenchWindow();
+		final IWorkbenchPage page = window.getActivePage();
 
 		if (page != null)
 		{
@@ -249,12 +249,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	public void addFileDropListener(FilesDroppedListener listener)
+	public void addFileDropListener(final FilesDroppedListener listener)
 	{
 		_filesDroppedListener = listener;
 	}
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	public void addSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
 			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
@@ -264,7 +264,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			_selectionListeners.add(listener);
 	}
 
-	public void addStoppedListener(PropertyChangeListener listener)
+	public void addStoppedListener(final PropertyChangeListener listener)
 	{
 		if (_scenStopSupport == null)
 			_scenStopSupport = new PropertyChangeSupport(listener);
@@ -290,17 +290,17 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	/**
 	 * sort out the file-drop target
 	 */
-	private void configureFileDropSupport(Control _pusher)
+	private void configureFileDropSupport(final Control _pusher)
 	{
-		int dropOperation = DND.DROP_COPY;
-		Transfer[] dropTypes =
+		final int dropOperation = DND.DROP_COPY;
+		final Transfer[] dropTypes =
 		{ FileTransfer.getInstance() };
 
-		DropTarget target = new DropTarget(_pusher, dropOperation);
+		final DropTarget target = new DropTarget(_pusher, dropOperation);
 		target.setTransfer(dropTypes);
 		target.addDropListener(new DropTargetListener()
 		{
-			public void dragEnter(DropTargetEvent event)
+			public void dragEnter(final DropTargetEvent event)
 			{
 				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
 				{
@@ -311,19 +311,19 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 				}
 			}
 
-			public void dragLeave(DropTargetEvent event)
+			public void dragLeave(final DropTargetEvent event)
 			{
 			}
 
-			public void dragOperationChanged(DropTargetEvent event)
+			public void dragOperationChanged(final DropTargetEvent event)
 			{
 			}
 
-			public void dragOver(DropTargetEvent event)
+			public void dragOver(final DropTargetEvent event)
 			{
 			}
 
-			public void drop(DropTargetEvent event)
+			public void drop(final DropTargetEvent event)
 			{
 				String[] fileNames = null;
 				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
@@ -337,7 +337,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 				}
 			}
 
-			public void dropAccept(DropTargetEvent event)
+			public void dropAccept(final DropTargetEvent event)
 			{
 			}
 
@@ -347,7 +347,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
@@ -356,7 +356,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	 * it.
 	 */
 	@Override
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		// and declare our context sensitive help
 		CorePlugin.declareContextHelp(parent,
@@ -395,9 +395,9 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
-		Action viewInPlotter = new Action()
+		final Action viewInPlotter = new Action()
 		{
 			@Override
 			public void run()
@@ -410,7 +410,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		viewInPlotter.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/overview.gif"));
 
-		Action actionReloadDatafiles = new Action()
+		final Action actionReloadDatafiles = new Action()
 		{
 			@Override
 			public void run()
@@ -420,10 +420,10 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		};
 		actionReloadDatafiles.setText("Reload");
 		actionReloadDatafiles.setToolTipText("Reload data files");
-		ImageDescriptor desc = CorePlugin.getImageDescriptor("icons/repaint.gif");
+		final ImageDescriptor desc = CorePlugin.getImageDescriptor("icons/repaint.gif");
 		actionReloadDatafiles.setImageDescriptor(desc);
 
-		Action doNetwork = new Action("Broadcast", SWT.TOGGLE)
+		final Action doNetwork = new Action("Broadcast", SWT.TOGGLE)
 		{
 			@Override
 			public void run()
@@ -447,7 +447,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	}
 
-	protected void doNetwork(boolean checked)
+	protected void doNetwork(final boolean checked)
 	{
 		System.err.println("network to:" + checked);
 		try
@@ -463,7 +463,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			else
 				_netServer.stop();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			ASSETPlugin.logThisError(Status.ERROR, "Failed to initialise comms", e);
 		}
@@ -471,7 +471,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 
@@ -508,7 +508,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	private IProject getAProject()
 	{
 		IProject res = null;
-		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
+		final IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 				.getProjects();
 		if (projects != null)
 		{
@@ -523,11 +523,11 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		File res = null;
 
 		// prepend the target directory with the root of the current project
-		IProject someProject = getAProject();
+		final IProject someProject = getAProject();
 		if (someProject != null)
 		{
 			// get the file-system path to this folder
-			IPath filePath = someProject.getLocation();
+			final IPath filePath = someProject.getLocation();
 
 			// ok, now stick the output folder in this parent
 			tgtDir = new File(filePath.toOSString() + File.separator
@@ -551,33 +551,33 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	 * org.eclipse.ui.IMemento)
 	 */
 	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
 		// let the parent do its bits
 		super.init(site, memento);
 
-		Vector<String> pendingFilenames = new Vector<String>();
+		final Vector<String> pendingFilenames = new Vector<String>();
 
 		// are we showing the units column?
 		if (memento != null)
 		{
-			String scenFile = memento.getString(SCENARIO_FILE_INDEX);
+			final String scenFile = memento.getString(SCENARIO_FILE_INDEX);
 			if (scenFile != null)
 			{
 				pendingFilenames.add(scenFile);
 			}
-			String contFile = memento.getString(CONTROL_FILE_INDEX);
+			final String contFile = memento.getString(CONTROL_FILE_INDEX);
 			if (contFile != null)
 			{
 				pendingFilenames.add(contFile);
 			}
 
 			// also, see if we have an auto-step size property
-			String stepSizeStr = memento.getString("StepInterval");
+			final String stepSizeStr = memento.getString("StepInterval");
 			if (stepSizeStr != null)
 			{
 				// and store it.
-				Double duration = Double.valueOf(stepSizeStr);
+				final Double duration = Double.valueOf(stepSizeStr);
 				_myPendingStepSize = new Duration(duration, Duration.MILLISECONDS);
 			}
 
@@ -597,8 +597,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	protected void openPlotter()
 	{
-		IWorkbenchPage page = this.getViewSite().getPage();
-		IEditorInput ie = new IEditorInput()
+		final IWorkbenchPage page = this.getViewSite().getPage();
+		final IEditorInput ie = new IEditorInput()
 		{
 			public boolean exists()
 			{
@@ -606,7 +606,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			}
 
 			@SuppressWarnings("rawtypes")
-			public Object getAdapter(Class adapter)
+			public Object getAdapter(final Class adapter)
 			{
 				return null;
 			}
@@ -639,7 +639,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			// now fire ourselves as active
 			activate();
 		}
-		catch (PartInitException e)
+		catch (final PartInitException e)
 		{
 			ASSETPlugin.logThisError(IStatus.ERROR, "trouble opening ScenarioPlotter", e);
 			e.printStackTrace();
@@ -649,12 +649,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	public void refreshWorkspace()
 	{
 		// it's stopped running, refresh the workspace
-		IProject theProj = getAProject();
+		final IProject theProj = getAProject();
 		try
 		{
 			theProj.refreshLocal(2, null);
 		}
-		catch (CoreException e)
+		catch (final CoreException e)
 		{
 			ASSETPlugin.logThisError(IStatus.ERROR,
 					"Had trouble refreshing project folder", e);
@@ -662,12 +662,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
 	}
 
-	public void removeStoppedListener(PropertyChangeListener listener)
+	public void removeStoppedListener(final PropertyChangeListener listener)
 	{
 		if (_scenStopSupport != null)
 			_scenStopSupport.removePropertyChangeListener(listener);
@@ -675,20 +675,20 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	public void runThisJob(final JobWithProgress theJob)
 	{
-		Job swtJob = new Job("Prepare multiple scenarios")
+		final Job swtJob = new Job("Prepare multiple scenarios")
 		{
 			@Override
-			protected IStatus run(IProgressMonitor monitor)
+			protected IStatus run(final IProgressMonitor monitor)
 			{
 				try
 				{
 					// provide a wrapped progress monitpr
-					ASSETProgressMonitor pMon = new WrappedProgressMonitor(monitor);
+					final ASSETProgressMonitor pMon = new WrappedProgressMonitor(monitor);
 
 					// and run the job
 					theJob.run(pMon);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin
 							.logError(IStatus.ERROR, "Failed in scenario generation", e);
@@ -701,7 +701,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		swtJob.addJobChangeListener(new JobChangeAdapter()
 		{
 			@Override
-			public void done(IJobChangeEvent event)
+			public void done(final IJobChangeEvent event)
 			{
 				if (event.getResult().isOK())
 					System.out.println("Job completed successfully");
@@ -719,13 +719,13 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	 * @param memento
 	 */
 	@Override
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		// let our parent go for it first
 		super.saveState(memento);
 
-		String _scenarioFileName = _myPresenter.getScenarioName();
-		String _controlFileName = _myPresenter.getControlName();
+		final String _scenarioFileName = _myPresenter.getScenarioName();
+		final String _controlFileName = _myPresenter.getControlName();
 
 		if (_scenarioFileName != null)
 			memento.putString(SCENARIO_FILE_INDEX, _scenarioFileName);
@@ -734,10 +734,10 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 		if (_myTimeControlProps != null)
 		{
-			Duration stepSize = _myTimeControlProps.getAutoInterval();
+			final Duration stepSize = _myTimeControlProps.getAutoInterval();
 			if (stepSize != null)
 			{
-				String stepSizeStr = "" + stepSize.getValueIn(Duration.MILLISECONDS);
+				final String stepSizeStr = "" + stepSize.getValueIn(Duration.MILLISECONDS);
 				memento.putString("StepInterval", stepSizeStr);
 			}
 		}
@@ -807,7 +807,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		});
 	}
 
-	public void setSelection(ISelection selection)
+	public void setSelection(final ISelection selection)
 	{
 		_currentSelection = selection;
 
@@ -825,7 +825,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 					@Override
 					public void run()
 					{
-						for (ISelectionChangedListener thisL : _selectionListeners)
+						for (final ISelectionChangedListener thisL : _selectionListeners)
 						{
 							thisL.selectionChanged(event);
 						}
@@ -845,8 +845,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		_simTable.selectFirstRow();
 
 		// and mark it as selection
-		EditableWrapper first = _simTable.getFirstRow();
-		IStructuredSelection sl = new StructuredSelection(new EditableWrapper[]
+		final EditableWrapper first = _simTable.getFirstRow();
+		final IStructuredSelection sl = new StructuredSelection(new EditableWrapper[]
 		{ first });
 		System.err.println("sel:" + first);
 		setSelection(sl);

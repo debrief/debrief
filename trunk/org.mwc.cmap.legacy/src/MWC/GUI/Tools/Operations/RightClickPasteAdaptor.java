@@ -30,7 +30,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
   ///////////////////////////////////
   // constructor
   //////////////////////////////////
-  public RightClickPasteAdaptor(Clipboard clipboard)
+  public RightClickPasteAdaptor(final Clipboard clipboard)
   {
     _clipboard = clipboard;
   }
@@ -49,19 +49,19 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
   ///////////////////////////////////
   // nested classes
   //////////////////////////////////
-  public void createMenu(javax.swing.JPopupMenu menu,
-                         Editable destination,
-                         java.awt.Point thePoint,
-                         CanvasType theCanvas,
-                         MWC.GUI.Properties.PropertiesPanel thePanel,
-                         Layer theParent,
-                         Layers theLayers, Layer updateLayer)
+  public void createMenu(final javax.swing.JPopupMenu menu,
+                         final Editable destination,
+                         final java.awt.Point thePoint,
+                         final CanvasType theCanvas,
+                         final MWC.GUI.Properties.PropertiesPanel thePanel,
+                         final Layer theParent,
+                         final Layers theLayers, final Layer updateLayer)
   {
     // is the plottable a layer
     if ((destination instanceof MWC.GUI.Layer) || (destination == null))
     {
 
-      Transferable tr = _clipboard.getContents(this);
+      final Transferable tr = _clipboard.getContents(this);
       // see if there is currently a plottable on the clipboard
       if (tr != null)
       {
@@ -73,21 +73,21 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
           {
 
             // extract the plottable
-            Plottable theData = (Plottable) tr.getTransferData(PlottableSelection.PlottableFlavor);
+            final Plottable theData = (Plottable) tr.getTransferData(PlottableSelection.PlottableFlavor);
 
             PasteItem paster = null;
 
             if (tr instanceof PlottableSelection)
             {
-              PlottableSelection ps = (PlottableSelection) tr;
+              final PlottableSelection ps = (PlottableSelection) tr;
 
-              boolean isCopy = ps.isACopy();
+              final boolean isCopy = ps.isACopy();
 
               // see if it is a layer or not
               if (theData instanceof MWC.GUI.Layer)
               {
 
-                MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
+                final MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
 
                 // create the menu items
                 paster = new PasteLayer(clipLayer,
@@ -126,7 +126,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
               System.err.println("WRONG TYPE OF PLOTTABLE");
             }
           }
-          catch (Exception e)
+          catch (final Exception e)
           {
             MWC.Utilities.Errors.Trace.trace(e);
           }
@@ -150,12 +150,12 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
     Layers _theLayers;
     boolean _isACopy;
 
-    public PasteItem(Plottable data,
-                     Clipboard clipboard,
-                     Layer theDestination,
-                     CanvasType theCanvas,
-                     Layers theLayers,
-                     boolean isACopy)
+    public PasteItem(final Plottable data,
+                     final Clipboard clipboard,
+                     final Layer theDestination,
+                     final CanvasType theCanvas,
+                     final Layers theLayers,
+                     final boolean isACopy)
     {
       // formatting
       super.setText("Paste " + data.getName());
@@ -216,13 +216,13 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
       _theCanvas.updateMe();
     }
 
-    public void actionPerformed(ActionEvent p1)
+    public void actionPerformed(final ActionEvent p1)
     {
       // do it
       execute();
     }
 
-    public void lostOwnership(Clipboard p1, Transferable p2)
+    public void lostOwnership(final Clipboard p1, final Transferable p2)
     {
       // don't bother
     }
@@ -231,29 +231,29 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
   //////////////////////////////////////////////
   //	clone items, using "Serializable" interface
   /////////////////////////////////////////////////
-  static public Plottable cloneThis(Plottable item)
+  static public Plottable cloneThis(final Plottable item)
   {
     Plottable res = null;
     try
     {
-      java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
-      java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
+      final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
+      final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
       oos.writeObject(item);
       // get closure
       oos.close();
       bas.close();
 
       // now get the item
-      byte[] bt = bas.toByteArray();
+      final byte[] bt = bas.toByteArray();
 
       // and read it back in as a new item
-      java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
+      final java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
 
       // create the reader
-      java.io.ObjectInputStream iis = new ObjectInputStream(bis);
+      final java.io.ObjectInputStream iis = new ObjectInputStream(bis);
 
       // and read it in
-      Object oj = iis.readObject();
+      final Object oj = iis.readObject();
 
       // get more closure
       bis.close();
@@ -264,7 +264,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
         res = (Plottable) oj;
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -280,12 +280,12 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public PasteLayer(Layer data,
-                      Clipboard clipboard,
-                      Layer theDestination,
-                      CanvasType theCanvas,
-                      Layers theLayers,
-                      boolean isACopy)
+		public PasteLayer(final Layer data,
+                      final Clipboard clipboard,
+                      final Layer theDestination,
+                      final CanvasType theCanvas,
+                      final Layers theLayers,
+                      final boolean isACopy)
     {
       super(data, clipboard, theDestination, theCanvas, theLayers, isACopy);
     }
@@ -331,13 +331,13 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
         else
         {
           // adjust the name
-          Layer newLayer = (Layer) _data;
+          final Layer newLayer = (Layer) _data;
 
-          String theName = newLayer.getName();
+          final String theName = newLayer.getName();
 
           // does the layer end in a digit?
-          char id = theName.charAt(theName.length() - 1);
-          String idStr = new String("" + id);
+          final char id = theName.charAt(theName.length() - 1);
+          final String idStr = new String("" + id);
           int val = 1;
 
           String newName = null;
@@ -352,7 +352,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
               newName = theName.substring(0, theName.length() - 2) + " " + val;
             }
           }
-          catch (java.lang.NumberFormatException f)
+          catch (final java.lang.NumberFormatException f)
           {
             newName = theName + " " + val;
             while (_theLayers.findLayer(newName) != null)

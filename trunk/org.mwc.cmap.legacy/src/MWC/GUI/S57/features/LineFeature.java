@@ -18,7 +18,7 @@ public class LineFeature extends S57Feature
 			0, 1);
 	final public static Double DEFAULT_SCALE = 1000000d;
 
-	public LineFeature(String name, Double minScale, Color defaultColor)
+	public LineFeature(final String name, final Double minScale, final Color defaultColor)
 	{
 		super(name, minScale);
 		_myColor = defaultColor;
@@ -29,7 +29,7 @@ public class LineFeature extends S57Feature
 	 * 
 	 * @param pts
 	 */
-	public void addLine(Vector<WorldLocation> pts)
+	public void addLine(final Vector<WorldLocation> pts)
 	{
 		_lines.add(pts);
 	}
@@ -39,18 +39,18 @@ public class LineFeature extends S57Feature
 		return new LineFeatureInfo(this, getName());
 	}
 
-	public void doPaint(CanvasType dest)
+	public void doPaint(final CanvasType dest)
 	{
 		dest.setColor(_myColor);
-		for (Iterator<Vector<WorldLocation>> iterator = _lines.iterator(); iterator
+		for (final Iterator<Vector<WorldLocation>> iterator = _lines.iterator(); iterator
 				.hasNext();)
 		{
-			Vector<WorldLocation> thisLine = (Vector<WorldLocation>) iterator.next();
+			final Vector<WorldLocation> thisLine = (Vector<WorldLocation>) iterator.next();
 			Point last = null;
 			Point startPt = null;
-			for (Iterator<WorldLocation> iter = thisLine.iterator(); iter.hasNext();)
+			for (final Iterator<WorldLocation> iter = thisLine.iterator(); iter.hasNext();)
 			{
-				WorldLocation loc = (WorldLocation) iter.next();
+				final WorldLocation loc = (WorldLocation) iter.next();
 
 				// if(ctr > 46)
 				// {
@@ -58,7 +58,7 @@ public class LineFeature extends S57Feature
 				// loc.getLong());
 				// }
 
-				Point pt = new Point(dest.toScreen(loc));
+				final Point pt = new Point(dest.toScreen(loc));
 				if (startPt == null)
 					startPt = new Point(pt);
 				if (last != null)
@@ -94,7 +94,7 @@ public class LineFeature extends S57Feature
 	 * @param color
 	 *          the _myColor to set
 	 */
-	public final void setColor(Color color)
+	public final void setColor(final Color color)
 	{
 		_myColor = color;
 	}
@@ -102,7 +102,7 @@ public class LineFeature extends S57Feature
 	public class LineFeatureInfo extends Editable.EditorType
 	{
 
-		public LineFeatureInfo(LineFeature data, String theName)
+		public LineFeatureInfo(final LineFeature data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -111,11 +111,11 @@ public class LineFeature extends S57Feature
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("Color", "the color to plot this feature", SPATIAL) };
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}

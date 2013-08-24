@@ -99,7 +99,7 @@ public class FitToWin extends PlainTool {
   /////////////////////////////////////////////////////////  
   
   /** keep a reference to the chart which we are acting upon*/
-  private PlainChart _theChart;  
+  private final PlainChart _theChart;  
   
   /////////////////////////////////////////////////////////
   // constructor
@@ -110,8 +110,8 @@ public class FitToWin extends PlainTool {
    * @param theParent the parent application, so we can set cursors
    * @param theChart the chart we are to resize
    */
-  public FitToWin(ToolParent theParent, 
-                  PlainChart theChart){      
+  public FitToWin(final ToolParent theParent, 
+                  final PlainChart theChart){      
     super(theParent, "fit to win","images/fit_to_win.gif");
     // remember the chart we are acting upon
     _theChart = theChart;
@@ -123,7 +123,7 @@ public class FitToWin extends PlainTool {
   public Action getData()
   {
     // get the current data area
-    WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
+    final WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
     return new FitToWinAction(_theChart, oldArea);
   }
 
@@ -131,11 +131,11 @@ public class FitToWin extends PlainTool {
   ////////////////////////////////////////////////////////////////////
   // store action information
   public static class FitToWinAction implements Action{
-    private PlainChart _theChart;  
-    private WorldArea _oldArea;
+    private final PlainChart _theChart;  
+    private final WorldArea _oldArea;
     
-    public FitToWinAction(PlainChart theChart,
-                          WorldArea oldArea){
+    public FitToWinAction(final PlainChart theChart,
+                          final WorldArea oldArea){
       _theChart = theChart;
       _oldArea = oldArea;
     }

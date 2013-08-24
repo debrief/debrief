@@ -88,7 +88,7 @@ public class EditCanvasPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator i
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-	public EditCanvasPopupMenuAdaptor(CanvasType theCanvas)
+	public EditCanvasPopupMenuAdaptor(final CanvasType theCanvas)
 	{
 		if(theCanvas instanceof Editable)
 		{
@@ -102,11 +102,11 @@ public class EditCanvasPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator i
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public void createMenu(javax.swing.JPopupMenu menu,
-                         java.awt.Point thePoint,
-                         MWC.GUI.CanvasType theCanvas,
-                         PropertiesPanel thePanel,
-                         Layers theData)
+  public void createMenu(final javax.swing.JPopupMenu menu,
+                         final java.awt.Point thePoint,
+                         final MWC.GUI.CanvasType theCanvas,
+                         final PropertiesPanel thePanel,
+                         final Layers theData)
   {
 		// see if our canvas is editable
 		if(_theCanvasEditor != null)
@@ -115,7 +115,7 @@ public class EditCanvasPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator i
 
 			if(et != null)
 			{
-			  javax.swing.JMenuItem mi = new javax.swing.JMenuItem("Edit Appearance");
+			  final javax.swing.JMenuItem mi = new javax.swing.JMenuItem("Edit Appearance");
         mi.addActionListener(new RightClickEdit.EditThisActionListener(thePanel, et, null));
 			  menu.add(mi);
 

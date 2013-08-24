@@ -91,7 +91,7 @@ public class LocationType {
      *     {@link LocationType.ShortLocation }
      *     
      */
-    public void setShortLocation(LocationType.ShortLocation value) {
+    public void setShortLocation(final LocationType.ShortLocation value) {
         this.shortLocation = value;
     }
 
@@ -115,7 +115,7 @@ public class LocationType {
      *     {@link LocationType.LongLocation }
      *     
      */
-    public void setLongLocation(LocationType.LongLocation value) {
+    public void setLongLocation(final LocationType.LongLocation value) {
         this.longLocation = value;
     }
 
@@ -188,7 +188,7 @@ public class LocationType {
          *     {@link BigInteger }
          *     
          */
-        public void setLatDeg(BigInteger value) {
+        public void setLatDeg(final BigInteger value) {
             this.latDeg = value;
         }
 
@@ -204,7 +204,7 @@ public class LocationType {
          * Sets the value of the latMin property.
          * 
          */
-        public void setLatMin(double value) {
+        public void setLatMin(final double value) {
             this.latMin = value;
         }
 
@@ -220,7 +220,7 @@ public class LocationType {
          * Sets the value of the latSec property.
          * 
          */
-        public void setLatSec(double value) {
+        public void setLatSec(final double value) {
             this.latSec = value;
         }
 
@@ -236,7 +236,7 @@ public class LocationType {
          * Sets the value of the latHem property.
          * 
          */
-        public void setLatHem(double value) {
+        public void setLatHem(final double value) {
             this.latHem = value;
         }
 
@@ -260,7 +260,7 @@ public class LocationType {
          *     {@link BigInteger }
          *     
          */
-        public void setLongDeg(BigInteger value) {
+        public void setLongDeg(final BigInteger value) {
             this.longDeg = value;
         }
 
@@ -276,7 +276,7 @@ public class LocationType {
          * Sets the value of the longMin property.
          * 
          */
-        public void setLongMin(double value) {
+        public void setLongMin(final double value) {
             this.longMin = value;
         }
 
@@ -292,7 +292,7 @@ public class LocationType {
          * Sets the value of the longSec property.
          * 
          */
-        public void setLongSec(double value) {
+        public void setLongSec(final double value) {
             this.longSec = value;
         }
 
@@ -308,7 +308,7 @@ public class LocationType {
          * Sets the value of the longHem property.
          * 
          */
-        public void setLongHem(double value) {
+        public void setLongHem(final double value) {
             this.longHem = value;
         }
 
@@ -324,7 +324,7 @@ public class LocationType {
          * Sets the value of the depth property.
          * 
          */
-        public void setDepth(double value) {
+        public void setDepth(final double value) {
             this.depth = value;
         }
 
@@ -373,7 +373,7 @@ public class LocationType {
          * Sets the value of the depth property.
          * 
          */
-        public void setDepth(double value) {
+        public void setDepth(final double value) {
             this.depth = value;
         }
 
@@ -389,7 +389,7 @@ public class LocationType {
          * Sets the value of the lat property.
          * 
          */
-        public void setLat(double value) {
+        public void setLat(final double value) {
             this.lat = value;
         }
 
@@ -405,7 +405,7 @@ public class LocationType {
          * Sets the value of the long property.
          * 
          */
-        public void setLong(double value) {
+        public void setLong(final double value) {
             this._long = value;
         }
 

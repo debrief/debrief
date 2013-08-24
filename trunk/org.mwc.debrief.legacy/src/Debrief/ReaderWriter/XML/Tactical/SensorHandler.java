@@ -33,7 +33,7 @@ abstract public class SensorHandler extends
 
 		addHandler(new ColourHandler()
 		{
-			public void setColour(java.awt.Color res)
+			public void setColour(final java.awt.Color res)
 			{
 				_mySensor.setColor(res);
 			}
@@ -41,40 +41,40 @@ abstract public class SensorHandler extends
 
 		addHandler(new SensorContactHandler()
 		{
-			public void addContact(MWC.GUI.Plottable contact)
+			public void addContact(final MWC.GUI.Plottable contact)
 			{
 				addThisContact(contact);
 
 				// and set the sensor for that contact
-				SensorContactWrapper sc = (SensorContactWrapper) contact;
+				final SensorContactWrapper sc = (SensorContactWrapper) contact;
 				sc.setSensor(_mySensor);
 
 			}
 		});
 		addAttributeHandler(new HandleAttribute("Name")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_mySensor.setName(fromXML(val));
 			}
 		});
 		addAttributeHandler(new HandleAttribute("TrackName")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_mySensor.setTrackName(val);
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute("Visible")
 		{
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_mySensor.setVisible(val);
 			}
 		});
 		addAttributeHandler(new HandleIntegerAttribute("LineThickness")
 		{
-			public void setValue(String name, int val)
+			public void setValue(final String name, final int val)
 			{
 				_mySensor.setLineThickness(val);
 			}
@@ -82,7 +82,7 @@ abstract public class SensorHandler extends
 
 		addHandler(new WorldDistanceHandler(OFFSET)
 		{
-			public void setWorldDistance(WorldDistance value)
+			public void setWorldDistance(final WorldDistance value)
 			{
 				// just check it contains a credible value
 				if (value.getValue() != 0)
@@ -94,7 +94,7 @@ abstract public class SensorHandler extends
 		{
 
 			@Override
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_mySensor.setWormInHole(value);
 			}
@@ -103,7 +103,7 @@ abstract public class SensorHandler extends
 	}
 
 	// this is one of ours, so get on with it!
-	protected final void handleOurselves(String name, Attributes attributes)
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
 		_mySensor = new Debrief.Wrappers.SensorWrapper("");
 
@@ -111,7 +111,7 @@ abstract public class SensorHandler extends
 
 	}
 
-	void addThisContact(MWC.GUI.Plottable val)
+	void addThisContact(final MWC.GUI.Plottable val)
 	{
 		// store in our list
 		_mySensor.add(val);
@@ -127,8 +127,8 @@ abstract public class SensorHandler extends
 
 	abstract public void addSensor(Debrief.Wrappers.SensorWrapper data);
 
-	public static void exportSensor(Debrief.Wrappers.SensorWrapper sensor,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportSensor(final Debrief.Wrappers.SensorWrapper sensor,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
 		/*
@@ -138,7 +138,7 @@ abstract public class SensorHandler extends
 		 * NameAtStart (TRUE|FALSE) "TRUE" NameLocation
 		 * (Top|Left|Bottom|Centre|Right) "Right" Symbol CDATA "SQUARE" >
 		 */
-		Element trk = doc.createElement("sensor");
+		final Element trk = doc.createElement("sensor");
 		trk.setAttribute("Name", toXML(sensor.getName()));
 		trk.setAttribute("Visible", writeThis(sensor.getVisible()));
 		trk.setAttribute("TrackName", sensor.getTrackName());
@@ -146,7 +146,7 @@ abstract public class SensorHandler extends
 		ColourHandler.exportColour(sensor.getColor(), trk, doc);
 
 		// do we have an offset?
-		WorldDistance theOFfset = sensor.getSensorOffset();
+		final WorldDistance theOFfset = sensor.getSensorOffset();
 		if (theOFfset != null)
 		{
 			// check it has a legitimate value
@@ -156,20 +156,20 @@ abstract public class SensorHandler extends
 		}
 
 		// and the worm in the hole indicator?
-		Boolean wormy = sensor.getWormInHole();
+		final Boolean wormy = sensor.getWormInHole();
 		if (wormy != null)
 		{
 			trk.setAttribute(WORM_IN_HOLE, writeThis(wormy));
 		}
 
 		// now the points
-		java.util.Enumeration<Editable> iter = sensor.elements();
+		final java.util.Enumeration<Editable> iter = sensor.elements();
 		while (iter.hasMoreElements())
 		{
-			MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
+			final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
 			if (pl instanceof Debrief.Wrappers.SensorContactWrapper)
 			{
-				Debrief.Wrappers.SensorContactWrapper fw = (Debrief.Wrappers.SensorContactWrapper) pl;
+				final Debrief.Wrappers.SensorContactWrapper fw = (Debrief.Wrappers.SensorContactWrapper) pl;
 				SensorContactHandler.exportFix(fw, trk, doc);
 			}
 

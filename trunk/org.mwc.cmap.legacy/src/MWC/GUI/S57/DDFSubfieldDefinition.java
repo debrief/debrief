@@ -108,7 +108,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 	/**
 	 * Set the name of the subfield.
 	 */
-	public void setName(String pszNewName)
+	public void setName(final String pszNewName)
 	{
 		pszName = pszNewName.trim();
 	}
@@ -122,7 +122,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 	 * <LI>'B' bitstrings that aren't a multiple of eight.
 	 * </UL>
 	 */
-	public boolean setFormat(String pszFormat)
+	public boolean setFormat(final String pszFormat)
 	{
 		pszFormatString = pszFormat;
 
@@ -187,7 +187,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 				{
 				}
 
-				String numberString = pszFormatString.substring(2, numEndIndex);
+				final String numberString = pszFormatString.substring(2, numEndIndex);
 				nFormatWidth = Integer.valueOf(numberString).intValue();
 
 				if (nFormatWidth % 8 != 0)
@@ -265,7 +265,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 	 */
 	public String toString()
 	{
-		StringBuffer buf = new StringBuffer("    DDFSubfieldDefn:\n");
+		final StringBuffer buf = new StringBuffer("    DDFSubfieldDefn:\n");
 		buf.append("        Label = " + pszName + "\n");
 		buf.append("        FormatString = " + pszFormatString + "\n");
 		return buf.toString();
@@ -296,8 +296,8 @@ public class DDFSubfieldDefinition implements DDFConstants
 	 * @return The number of bytes at pachSourceData which are actual data for
 	 *         this record (not including unit, or field terminator).
 	 */
-	public int getDataLength(byte[] pachSourceData, int nMaxBytes,
-			MutableInt pnConsumedBytes)
+	public int getDataLength(final byte[] pachSourceData, final int nMaxBytes,
+			final MutableInt pnConsumedBytes)
 	{
 		if (!bIsVariable)
 		{
@@ -405,8 +405,8 @@ public class DDFSubfieldDefinition implements DDFConstants
 	 *         the next ExtractStringData() call on this DDFSubfieldDefn(). It
 	 *         should not be freed by the application.
 	 */
-	String extractStringData(byte[] pachSourceData, int nMaxBytes,
-			MutableInt pnConsumedBytes)
+	String extractStringData(final byte[] pachSourceData, final int nMaxBytes,
+			final MutableInt pnConsumedBytes)
 	{
 		int oldConsumed = 0;
 		if (pnConsumedBytes != null)
@@ -414,20 +414,20 @@ public class DDFSubfieldDefinition implements DDFConstants
 			oldConsumed = pnConsumedBytes.value;
 		}
 
-		int nLength = getDataLength(pachSourceData, nMaxBytes, pnConsumedBytes);
+		final int nLength = getDataLength(pachSourceData, nMaxBytes, pnConsumedBytes);
 
-		char[] str = new char[nLength];
+		final char[] str = new char[nLength];
 		for (int i = 0; i < nLength; i++)
 		{
 			int thisI = pachSourceData[i];
 			if (thisI < 0)
 				thisI += 256;
-			char thisC = (char) thisI;
+			final char thisC = (char) thisI;
 			str[i] = thisC;
 		}
 
 		// String ns = new String(pachSourceData, 0, nLength);
-		String ns = new String(str);
+		final String ns = new String(str);
 
 		if (Debug.debugging("iso8211detail"))
 		{
@@ -465,8 +465,8 @@ public class DDFSubfieldDefinition implements DDFConstants
 	 * 
 	 * @return The subfield's numeric value (or zero if it isn't numeric).
 	 */
-	public double extractFloatData(byte[] pachSourceData, int nMaxBytes,
-			MutableInt pnConsumedBytes)
+	public double extractFloatData(final byte[] pachSourceData, final int nMaxBytes,
+			final MutableInt pnConsumedBytes)
 	{
 
 		switch (pszFormatString.charAt(0))
@@ -476,7 +476,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 		case 'R':
 		case 'S':
 		case 'C':
-			String dataString = extractStringData(pachSourceData, nMaxBytes,
+			final String dataString = extractStringData(pachSourceData, nMaxBytes,
 					pnConsumedBytes);
 
 			if (dataString.equals(""))
@@ -488,7 +488,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 			{
 				return Double.parseDouble(dataString);
 			}
-			catch (NumberFormatException nfe)
+			catch (final NumberFormatException nfe)
 			{
 				if (Debug.debugging("iso8211"))
 				{
@@ -501,7 +501,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 
 		case 'B':
 		case 'b':
-			byte[] abyData = new byte[8];
+			final byte[] abyData = new byte[8];
 
 			if (pnConsumedBytes != null)
 			{
@@ -609,8 +609,8 @@ public class DDFSubfieldDefinition implements DDFConstants
 	 * 
 	 * @return The subfield's numeric value (or zero if it isn't numeric).
 	 */
-	public int extractIntData(byte[] pachSourceData, int nMaxBytes,
-			MutableInt pnConsumedBytes)
+	public int extractIntData(final byte[] pachSourceData, final int nMaxBytes,
+			final MutableInt pnConsumedBytes)
 	{
 
 		switch (pszFormatString.charAt(0))
@@ -620,7 +620,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 		case 'R':
 		case 'S':
 		case 'C':
-			String dataString = extractStringData(pachSourceData, nMaxBytes,
+			final String dataString = extractStringData(pachSourceData, nMaxBytes,
 					pnConsumedBytes);
 			if (dataString.equals(""))
 			{
@@ -631,7 +631,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 			{
 				return Double.valueOf(dataString).intValue();
 			}
-			catch (NumberFormatException nfe)
+			catch (final NumberFormatException nfe)
 			{
 				if (Debug.debugging("iso8211"))
 				{
@@ -644,7 +644,7 @@ public class DDFSubfieldDefinition implements DDFConstants
 
 		case 'B':
 		case 'b':
-			byte[] abyData = new byte[4];
+			final byte[] abyData = new byte[4];
 			if (nFormatWidth > nMaxBytes)
 			{
 				Debug
@@ -727,9 +727,9 @@ public class DDFSubfieldDefinition implements DDFConstants
 	 * @param nMaxBytes
 	 *          Maximum number of bytes available in pachData.
 	 */
-	public String dumpData(byte[] pachData, int nMaxBytes)
+	public String dumpData(final byte[] pachData, final int nMaxBytes)
 	{
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 		if (eType == DDFDataType.DDFFloat)
 		{
 			sb.append("      Subfield " + pszName + "="

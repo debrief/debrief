@@ -31,7 +31,7 @@ import MWC.Utilities.ReaderWriter.XML.Features.TOPOHandler;
 
 public final class DebriefLayersHandler extends MWCXMLReader
 {
-	public DebriefLayersHandler(MWC.GUI.Layers theLayers)
+	public DebriefLayersHandler(final MWC.GUI.Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super("layers");
@@ -48,43 +48,43 @@ public final class DebriefLayersHandler extends MWCXMLReader
 
 	}
 
-	public static void exportThis(Debrief.GUI.Frames.Session session,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportThis(final Debrief.GUI.Frames.Session session,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// fill it out
-		MWC.GUI.Layers data = session.getData();
+		final MWC.GUI.Layers data = session.getData();
 
-		ArrayList<LayerHandlerExtension> emptyList = new ArrayList<LayerHandlerExtension>();
+		final ArrayList<LayerHandlerExtension> emptyList = new ArrayList<LayerHandlerExtension>();
 
 		exportThis(data, parent, doc, emptyList);
 
 	}
 
-	public static void exportThis(Layers data, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc, List<LayerHandlerExtension> extraLoaders)
+	public static void exportThis(final Layers data, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc, final List<LayerHandlerExtension> extraLoaders)
 	{
 
 		if (data == null)
 			return;
 
 		// create ourselves
-		Element layers = doc.createElement("layers");
+		final Element layers = doc.createElement("layers");
 
 		//
-		int len = data.size();
+		final int len = data.size();
 
 		for (int i = 0; i < len; i++)
 		{
-			MWC.GUI.Layer ly = data.elementAt(i);
+			final MWC.GUI.Layer ly = data.elementAt(i);
 
 			// ok, see if we have a special processor
 			boolean handled = false;
 			if (extraLoaders != null && extraLoaders.size() > 0)
 			{
 				// ok, do a run through
-				for (Iterator<LayerHandlerExtension> iterator = extraLoaders.iterator(); iterator.hasNext();)
+				for (final Iterator<LayerHandlerExtension> iterator = extraLoaders.iterator(); iterator.hasNext();)
 				{
-					LayerHandlerExtension thisE = (LayerHandlerExtension) iterator.next();
+					final LayerHandlerExtension thisE = (LayerHandlerExtension) iterator.next();
 					
 					// is it suitable for this layer?
 					if (thisE.canExportThis(ly))

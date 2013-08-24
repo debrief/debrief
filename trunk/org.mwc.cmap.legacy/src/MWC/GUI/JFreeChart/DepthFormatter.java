@@ -18,7 +18,7 @@ public class DepthFormatter implements formattingOperation, Serializable
 
 	public void format(final XYPlot thePlot)
 	{
-		NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
+		final NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
 		theAxis.setInverted(true);
 	}
 

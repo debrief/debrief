@@ -115,7 +115,7 @@ public class SwingToolbar extends JToolBar implements Toolbar {
   /////////////////////////////////////////////////////////
   // constructor
   /////////////////////////////////////////////////////////
-	public SwingToolbar(int theDirection, String name, MyMetalToolBarUI.ToolbarOwner  owner)
+	public SwingToolbar(final int theDirection, final String name, final MyMetalToolBarUI.ToolbarOwner  owner)
 	{
 
     // override the UI, with our special one which keeps the toolbar on top, yet it
@@ -160,29 +160,29 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 	}
 
 
-  public void addTool(Tool theTool)
+  public void addTool(final Tool theTool)
 	{
 		addTool(theTool,null,(char)0);
 	}
 
-  public void addTool(Tool theTool,
-											java.awt.MenuShortcut theShortcut,
-											char theMnemonic){
+  public void addTool(final Tool theTool,
+											final java.awt.MenuShortcut theShortcut,
+											final char theMnemonic){
     // cast the tool back to the correct type
 
 		// see if the tool has an image assigned
-		String val = theTool.getImage();
+		final String val = theTool.getImage();
 		SwingToolbarButton theBtn = null;
 		if(val != null)
 		{
 			// first try to get the URL of the image
-			java.lang.ClassLoader loader = getClass().getClassLoader();
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
       if(loader != null)
       {
-        java.net.URL imLoc = loader.getResource(val);
+        final java.net.URL imLoc = loader.getResource(val);
         if(imLoc != null)
         {
-          ImageIcon im = new ImageIcon(imLoc);
+          final ImageIcon im = new ImageIcon(imLoc);
           theBtn = new SwingToolbarButton(theTool, im);
         }
       }
@@ -213,8 +213,8 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 
   }
 
-	public void addToggleTool(String group,
-														Tool theTool)
+	public void addToggleTool(final String group,
+														final Tool theTool)
 	{
 		// see if there is a group for this string
 		javax.swing.ButtonGroup theGroup = (ButtonGroup) _theGroups.get(group);
@@ -229,13 +229,13 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 		SwingToggleButton theBtn = null;
 
 		// see if there is an image for this tool
-		String theImage = theTool.getImage();
+		final String theImage = theTool.getImage();
 		if(theImage != null)
 		{
-			java.lang.ClassLoader loader = getClass().getClassLoader();
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
 			if(loader != null)
 			{
-				java.net.URL imURL = loader.getResource(theImage);
+				final java.net.URL imURL = loader.getResource(theImage);
 				if(imURL != null)
 					theBtn = new SwingToggleButton(theTool, new ImageIcon(imURL));
 			}
@@ -262,10 +262,10 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 	}
 
 
-	public void addToggleTool(String group,
-														Tool theTool,
-														java.awt.MenuShortcut theShortcut,
-														char theMnemonic)
+	public void addToggleTool(final String group,
+														final Tool theTool,
+														final java.awt.MenuShortcut theShortcut,
+														final char theMnemonic)
 	{
 		// see if there is a group for this string
 		javax.swing.ButtonGroup theGroup = (ButtonGroup) _theGroups.get(group);
@@ -280,14 +280,14 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 		SwingToggleButton theBtn = null;
 
 		// see if there is an image for this tool
-		String theImage = theTool.getImage();
+		final String theImage = theTool.getImage();
 
 		if(theImage != null)
 		{
-			java.lang.ClassLoader loader = getClass().getClassLoader();
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
 			if(loader != null)
 			{
-				java.net.URL imURL = loader.getResource(theImage);
+				final java.net.URL imURL = loader.getResource(theImage);
 				if(imURL != null)
 					theBtn = new SwingToggleButton(theTool, new ImageIcon(imURL));
 			}
@@ -327,12 +327,12 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 	protected class Listener implements ActionListener
 	{
 		protected Tool myTool;
-		public Listener(Tool theTool)
+		public Listener(final Tool theTool)
 		{
 			myTool = theTool;
 		}
 
-		public void actionPerformed(ActionEvent p1)
+		public void actionPerformed(final ActionEvent p1)
 		{
 			myTool.execute();
 		}

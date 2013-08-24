@@ -73,7 +73,7 @@ public class MultiPathView extends ViewPart implements
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		_ui = new MultiPathUI(parent, SWT.EMBEDDED);
 
@@ -91,29 +91,29 @@ public class MultiPathView extends ViewPart implements
 		CorePlugin.declareContextHelp(parent, HELP_CONTEXT);
 	}
 
-	private void createPlot(Composite ui)
+	private void createPlot(final Composite ui)
 	{ // create a date-formatting axis
 		final DateAxis dateAxis = new RelativeDateAxis();
 		dateAxis.setStandardTickUnits(DateAxisEditor
 				.createStandardDateTickUnitsAsTickUnits());
 
-		NumberAxis valAxis = new NumberAxis("Delay (Secs)");
-		DefaultXYItemRenderer theRenderer = new DefaultXYItemRenderer();
+		final NumberAxis valAxis = new NumberAxis("Delay (Secs)");
+		final DefaultXYItemRenderer theRenderer = new DefaultXYItemRenderer();
 		theRenderer.setBaseShapesVisible(false);
 
 		_thePlot = new XYPlot(null, dateAxis, valAxis, theRenderer);
-		JFreeChart _plotArea = new JFreeChart(_thePlot);
-		ChartPanel _chartPanel = new ChartPanel(_plotArea);
+		final JFreeChart _plotArea = new JFreeChart(_thePlot);
+		final ChartPanel _chartPanel = new ChartPanel(_plotArea);
 
 		// now we need a Swing object to put our chart into
-		Frame _plotControl = SWT_AWT.new_Frame(ui);
+		final Frame _plotControl = SWT_AWT.new_Frame(ui);
 
 		_plotControl.add(_chartPanel, BorderLayout.CENTER);
 
 	}
 
 	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
 		super.init(site, memento);
 
@@ -123,7 +123,7 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	@Override
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		super.saveState(memento);
 
@@ -137,18 +137,18 @@ public class MultiPathView extends ViewPart implements
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		// and the help link
 		manager.add(_helpAction);
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		// and the help link
 		manager.add(_helpAction);
@@ -168,7 +168,7 @@ public class MultiPathView extends ViewPart implements
 
 	}
 
-	private void showMessage(String message)
+	private void showMessage(final String message)
 	{
 
 		MessageDialog.openInformation(this.getSite().getShell(),
@@ -185,26 +185,26 @@ public class MultiPathView extends ViewPart implements
 
 
 	@Override
-	public void addRangesListener(FileHandler handler)
+	public void addRangesListener(final FileHandler handler)
 	{
 		configureFileDropSupport(_ui.getRangeHolder(), handler);
 	}
 
 	
 	@Override
-	public void addSVPListener(FileHandler handler)
+	public void addSVPListener(final FileHandler handler)
 	{
 		configureFileDropSupport(_ui.getSVPHolder(), handler);
 	}
 
 	@Override
-	public void addMagicListener(SelectionListener listener)
+	public void addMagicListener(final SelectionListener listener)
 	{
 		_ui.addMagicHandler(listener);
 	}
 	
 	@Override
-	public void addTimeDeltaListener(FileHandler handler)
+	public void addTimeDeltaListener(final FileHandler handler)
 	{
 		configureFileDropSupport(_ui.getIntervalHolder(), handler);
 	}
@@ -217,13 +217,13 @@ public class MultiPathView extends ViewPart implements
 		{
 
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				handler.newValue(slider.getSelection());
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 				handler.newValue(slider.getSelection());
 			}
@@ -236,8 +236,8 @@ public class MultiPathView extends ViewPart implements
 		TrackDataProvider res = null;
 
 		// ok, grab the current editor
-		IEditorPart editor = this.getSite().getPage().getActiveEditor();
-		Object provider = editor.getAdapter(TrackDataProvider.class);
+		final IEditorPart editor = this.getSite().getPage().getActiveEditor();
+		final Object provider = editor.getAdapter(TrackDataProvider.class);
 		if (provider != null)
 		{
 			res = (TrackDataProvider) provider;
@@ -247,16 +247,16 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	@Override
-	public void showError(String string)
+	public void showError(final String string)
 	{
 		showMessage(string);
 	}
 
 	@Override
-	public void display(TimeSeries measured, TimeSeries calculated)
+	public void display(final TimeSeries measured, final TimeSeries calculated)
 	{
 		// collate the data
-		TimeSeriesCollection coll = new TimeSeriesCollection();
+		final TimeSeriesCollection coll = new TimeSeriesCollection();
 		coll.addSeries(measured);
 		coll.addSeries(calculated);
 
@@ -265,7 +265,7 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	@Override
-	public void setEnabled(boolean b)
+	public void setEnabled(final boolean b)
 	{
 		_ui.setEnabled(b);
 
@@ -276,18 +276,18 @@ public class MultiPathView extends ViewPart implements
 	/**d
 	 * sort out the file-drop target
 	 */
-	private void configureFileDropSupport(Control _pusher,
+	private void configureFileDropSupport(final Control _pusher,
 			final FileHandler handler)
 	{
-		int dropOperation = DND.DROP_COPY;
-		Transfer[] dropTypes =
+		final int dropOperation = DND.DROP_COPY;
+		final Transfer[] dropTypes =
 		{ FileTransfer.getInstance() };
 
-		DropTarget target = new DropTarget(_pusher, dropOperation);
+		final DropTarget target = new DropTarget(_pusher, dropOperation);
 		target.setTransfer(dropTypes);
 		target.addDropListener(new DropTargetListener()
 		{
-			public void dragEnter(DropTargetEvent event)
+			public void dragEnter(final DropTargetEvent event)
 			{
 				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
 				{
@@ -298,19 +298,19 @@ public class MultiPathView extends ViewPart implements
 				}
 			}
 
-			public void dragLeave(DropTargetEvent event)
+			public void dragLeave(final DropTargetEvent event)
 			{
 			}
 
-			public void dragOperationChanged(DropTargetEvent event)
+			public void dragOperationChanged(final DropTargetEvent event)
 			{
 			}
 
-			public void dragOver(DropTargetEvent event)
+			public void dragOver(final DropTargetEvent event)
 			{
 			}
 
-			public void drop(DropTargetEvent event)
+			public void drop(final DropTargetEvent event)
 			{
 				String[] fileNames = null;
 				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
@@ -325,7 +325,7 @@ public class MultiPathView extends ViewPart implements
 				}
 			}
 
-			public void dropAccept(DropTargetEvent event)
+			public void dropAccept(final DropTargetEvent event)
 			{
 			}
 
@@ -334,31 +334,31 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	@Override
-	public void setSVPName(String fName)
+	public void setSVPName(final String fName)
 	{
 		_ui.setSVPName(fName);
 	}
 
 	@Override
-	public void setIntervalName(String fName)
+	public void setIntervalName(final String fName)
 	{
 		_ui.setIntervalName(fName);
 	}
 
 	@Override
-	public void setSliderText(String text)
+	public void setSliderText(final String text)
 	{
 		_ui.setSliderValText(text);
 	}
 
 	@Override
-	public void setSliderVal(int value)
+	public void setSliderVal(final int value)
 	{
 		_ui.getSlider().setSelection(value);
 	}
 
 	@Override
-	public void setSliderMax(int maxDepth)
+	public void setSliderMax(final int maxDepth)
 	{
 		_ui.getSlider().setMaximum(maxDepth);
 	}

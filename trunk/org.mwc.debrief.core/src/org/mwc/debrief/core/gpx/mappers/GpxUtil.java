@@ -16,13 +16,13 @@ public final class GpxUtil
 	public static final ColourHandler COLOUR_HANDLER = new ColourHandler()
 	{
 		@Override
-		public void setColour(Color res)
+		public void setColour(final Color res)
 		{// empty implementation. we are just interested in the instance of this
 			// class
 		}
 	};
 
-	public static final Color resolveColor(ColourType colourType)
+	public static final Color resolveColor(final ColourType colourType)
 	{
 		Color resolvedColor = COLOUR_HANDLER.resolveColor(colourType.getValue());
 		if (resolvedColor == null)
@@ -46,12 +46,12 @@ public final class GpxUtil
 		return resolvedColor;
 	}
 
-	public static final Font resolveFont(FontType fontType)
+	public static final Font resolveFont(final FontType fontType)
 	{
 		if (fontType != null)
 		{
-			boolean isBold = fontType.isBold();
-			boolean isItalic = fontType.isItalic();
+			final boolean isBold = fontType.isBold();
+			final boolean isItalic = fontType.isItalic();
 			int style = Font.PLAIN;
 			if (isBold && isItalic)
 			{
@@ -71,16 +71,16 @@ public final class GpxUtil
 		return null;
 	}
 
-	public static final Integer resolveLabelLocation(LabelLocationType llt)
+	public static final Integer resolveLabelLocation(final LabelLocationType llt)
 	{
-		LocationPropertyEditor locationConverter = new LocationPropertyEditor();
+		final LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 		locationConverter.setAsText(llt.value());
 		return (Integer) locationConverter.getValue();
 	}
 
-	public static final Double resolveSymbolScale(String scale)
+	public static final Double resolveSymbolScale(final String scale)
 	{
-		SymbolScalePropertyEditor scaleConverter = new SymbolScalePropertyEditor();
+		final SymbolScalePropertyEditor scaleConverter = new SymbolScalePropertyEditor();
 		scaleConverter.setAsText(scale);
 		return (Double) scaleConverter.getValue();
 	}

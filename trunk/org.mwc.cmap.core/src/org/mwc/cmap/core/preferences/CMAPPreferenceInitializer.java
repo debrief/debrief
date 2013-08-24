@@ -22,7 +22,7 @@ public class CMAPPreferenceInitializer extends
 	 */
 	public void initializeDefaultPreferences()
 	{
-		IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+		final IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.REL_BEARING_FORMAT, relBearingCalc.UK_REL_BEARING_FORMAT);
 		store.setDefault(PreferenceConstants.RNG_UNITS, MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS);
 		store.setDefault(PreferenceConstants.IMPORT_MODE, ImportReplay.ASK_THE_AUDIENCE);

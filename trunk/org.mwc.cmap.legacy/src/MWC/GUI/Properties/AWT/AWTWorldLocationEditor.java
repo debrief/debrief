@@ -44,7 +44,7 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-	public AWTWorldLocationEditor(WorldLocation val, Frame parent)
+	public AWTWorldLocationEditor(final WorldLocation val, final Frame parent)
 	{
 		super(parent, true);
 				
@@ -65,11 +65,11 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-	static public WorldLocation doEdit(WorldLocation val)
+	static public WorldLocation doEdit(final WorldLocation val)
 	{
-		Frame parent = new Frame("scrap");
+		final Frame parent = new Frame("scrap");
 		WorldLocation res = new WorldLocation(val);
-		AWTWorldLocationEditor aw = new AWTWorldLocationEditor(res, parent);
+		final AWTWorldLocationEditor aw = new AWTWorldLocationEditor(res, parent);
 		aw.setVisible(true);
 		res = aw.getResult();
 		parent.dispose(); 
@@ -91,9 +91,9 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		// initialise the results parameter
 		_result = _initial;
 		
-		MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _lat
+		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _lat
 			= new BriefFormatLocation.brokenDown(_result.getLat(), true);
-		MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _long
+		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _long
 			= new BriefFormatLocation.brokenDown(_result.getLong(), false);
 
 		
@@ -120,12 +120,12 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 	protected void initGUI()
 	{
 		// create the holders
-		Panel btnHolder = new Panel();
-		Panel dataHolder = new Panel();
-		Panel latHolder = new Panel();
-		Panel latBtnHolder = new Panel();
-		Panel longHolder = new Panel();
-		Panel longBtnHolder = new Panel();
+		final Panel btnHolder = new Panel();
+		final Panel dataHolder = new Panel();
+		final Panel latHolder = new Panel();
+		final Panel latBtnHolder = new Panel();
+		final Panel longHolder = new Panel();
+		final Panel longBtnHolder = new Panel();
 		
 		// create the ok/cancel buttons
 		_okBtn = new Button("OK");
@@ -137,19 +137,19 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		
 		// handle the window closing
 		this.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e)
+			public void windowClosing(final WindowEvent e)
 			{
 				doWindowClosing(e);
 			}			
 			});
 		
 		// latitude group
-		CheckboxGroup latGrp = new CheckboxGroup();		
+		final CheckboxGroup latGrp = new CheckboxGroup();		
 		_latDegs = new TextField("  ");
 		_latMins = new TextField("  ");
 		_northBtn = new Checkbox("North", latGrp, true);
 		_southBtn = new Checkbox("South", latGrp, false);
-		GridLayout gl1 = new GridLayout(0, 2);
+		final GridLayout gl1 = new GridLayout(0, 2);
 		latHolder.setLayout(gl1);
 		latHolder.add(new Label("Lat"));
 		latHolder.add(new Label(" "));
@@ -163,12 +163,12 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		latHolder.add(latBtnHolder);
 		
 		// longitude group
-		CheckboxGroup longGrp = new CheckboxGroup();		
+		final CheckboxGroup longGrp = new CheckboxGroup();		
 		_longDegs = new TextField("  ");
 		_longMins = new TextField("  ");
 		_eastBtn = new Checkbox("East", longGrp, true);
 		_westBtn = new Checkbox("West", longGrp, false);
-		GridLayout gl2 = new GridLayout(0, 2);
+		final GridLayout gl2 = new GridLayout(0, 2);
 		longHolder.setLayout(gl2);
 		longHolder.add(new Label("long"));
 		longHolder.add(new Label(" "));
@@ -181,7 +181,7 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		longBtnHolder.add(_westBtn);
 		longHolder.add(longBtnHolder);															
 
-		GridLayout gl3 = new GridLayout(0, 2);
+		final GridLayout gl3 = new GridLayout(0, 2);
 		dataHolder.setLayout(gl3);
 		dataHolder.add(latHolder);
 		dataHolder.add(longHolder);
@@ -194,7 +194,7 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 	
 
 
-	public void actionPerformed(ActionEvent p1)
+	public void actionPerformed(final ActionEvent p1)
 	{
 		// see what value it was
 		if(p1.getSource() == _cancelBtn)
@@ -225,7 +225,7 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 	
 	
 	// also handle the window being closed
-	public void doWindowClosing(WindowEvent e)
+	public void doWindowClosing(final WindowEvent e)
 	{
 		// process the cancel event
 		initData();

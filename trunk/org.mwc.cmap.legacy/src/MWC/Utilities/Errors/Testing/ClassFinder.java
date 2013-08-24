@@ -18,11 +18,11 @@ public class ClassFinder {
     }
 
     private void findAndStoreTestClasses (final File currentDirectory) throws IOException {
-        String files[] = currentDirectory.list();
+        final String files[] = currentDirectory.list();
         for(int i = 0;i < files.length;i++) {
-            File file = new File(currentDirectory, files[i]);
-            String fileBase = file.getName ();
-            int idx = fileBase.indexOf(".class");
+            final File file = new File(currentDirectory, files[i]);
+            final String fileBase = file.getName ();
+            final int idx = fileBase.indexOf(".class");
             final int CLASS_EXTENSION_LENGTH = 6;
             if(idx != -1 && (fileBase.length() - idx) == CLASS_EXTENSION_LENGTH) {
 //                jcf.io.ClassFileInputStream inputStream = new jcf.io.ClassFileInputStream(new FileInputStream (file));

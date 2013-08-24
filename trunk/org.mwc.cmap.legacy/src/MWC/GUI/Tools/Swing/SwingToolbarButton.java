@@ -109,13 +109,13 @@ public class SwingToolbarButton extends JButton implements ActionListener
   /////////////////////////////////////////////////////////
   /** convenience constructor, calls normal one
    */
-  public SwingToolbarButton(Tool theTool){
+  public SwingToolbarButton(final Tool theTool){
     this(theTool.getLabel(), theTool);
   }
 
 	/** constructor for if we don't have an image (don't show label)
 	 */
-	public SwingToolbarButton(Tool theTool, ImageIcon icon)
+	public SwingToolbarButton(final Tool theTool, final ImageIcon icon)
 	{
  	  super(icon);
 		formatMe(theTool);
@@ -127,13 +127,13 @@ public class SwingToolbarButton extends JButton implements ActionListener
     return getMinimumSize();
   }
 
-  public SwingToolbarButton(String theLabel, Tool theTool){
+  public SwingToolbarButton(final String theLabel, final Tool theTool){
     super(theLabel);
 		formatMe(theTool);
     setPreferredSize(getMinimumSize());
   }
 
-	private void formatMe(Tool theTool)
+	private void formatMe(final Tool theTool)
 	{
     _theTool = theTool;
     this.addActionListener(this);
@@ -142,22 +142,22 @@ public class SwingToolbarButton extends JButton implements ActionListener
 		this.setBorderPainted(false);
 		this.setRolloverEnabled(true);
 		this.addMouseListener(new MouseAdapter(){
-			public void mouseEntered(MouseEvent e)
+			public void mouseEntered(final MouseEvent e)
 			{
 				setBorderPainted(true);
 			}
-			public void mouseExited(MouseEvent e)
+			public void mouseExited(final MouseEvent e)
 			{
 				setBorderPainted(false);
 			}
 			});
 
 		// try to handle the icon not being found
-		Icon ic = this.getIcon();
+		final Icon ic = this.getIcon();
 		if(ic != null)
 		{
 			// check if icon available
-			ImageIcon ii = (ImageIcon)ic;
+			final ImageIcon ii = (ImageIcon)ic;
 			if(ii.getImageLoadStatus() == java.awt.MediaTracker.ERRORED)
 			{
 				this.setIcon(null);
@@ -173,7 +173,7 @@ public class SwingToolbarButton extends JButton implements ActionListener
 
   /** callback function for a button being pressed
    */
-	public void actionPerformed(java.awt.event.ActionEvent e)
+	public void actionPerformed(final java.awt.event.ActionEvent e)
 	{
 		if(!_running)
 		{
@@ -186,7 +186,7 @@ public class SwingToolbarButton extends JButton implements ActionListener
 			{
 				_theTool.execute();
 			}
-			catch(Throwable ex)
+			catch(final Throwable ex)
 			{
                 MWC.Utilities.Errors.Trace.trace(ex, "Problem with button press: " + this.getText());
 			}

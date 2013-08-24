@@ -29,7 +29,7 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 	 */
 	protected transient Layer _myLayer;
 
-	public GeoToolsLayer(String dataType, String layerName, String fileName)
+	public GeoToolsLayer(final String dataType, final String layerName, final String fileName)
 	{
 		super(dataType, layerName, fileName);
 	}
@@ -46,7 +46,7 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 	}
 
 	@Override
-	public void setVisible(boolean visible)
+	public void setVisible(final boolean visible)
 	{
 		super.setVisible(visible);
 
@@ -78,7 +78,7 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 	 * 
 	 * @param map
 	 */
-	public void setMap(MapContent map)
+	public void setMap(final MapContent map)
 	{
 		clearMap();
 
@@ -86,7 +86,7 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 		_myMap = map;
 
 		// read ourselves in
-		File openFile = new File(super.getFilename());
+		final File openFile = new File(super.getFilename());
 		if (openFile != null && openFile.exists())
 		{
 			_myLayer = loadLayer(openFile);

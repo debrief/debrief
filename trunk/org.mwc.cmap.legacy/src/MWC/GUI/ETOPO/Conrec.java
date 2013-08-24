@@ -47,10 +47,10 @@ package MWC.GUI.ETOPO;
  */
 abstract public class Conrec {
 
-    private double  []  h   =  new double [5];
-    private int     []  sh  =  new int    [5];
-    private double  []  xh  =  new double [5];
-    private double  []  yh  =  new double [5];
+    private final double  []  h   =  new double [5];
+    private final int     []  sh  =  new int    [5];
+    private final double  []  xh  =  new double [5];
+    private final double  []  yh  =  new double [5];
 
     // Object that knows how to draw the contour
   //  private Render render = null;
@@ -104,11 +104,11 @@ abstract public class Conrec {
      * @param gridInterval - the interval to use between contour calculations
      *
      */
-    public void contour(double [][] da,
-                        int ilb, int iub, int jlb, int jub,
-                        double [] xa, double [] ya,
-                        int nc, double [] z,
-                        int gridInterval) {
+    public void contour(final double [][] da,
+                        final int ilb, final int iub, final int jlb, final int jub,
+                        final double [] xa, final double [] ya,
+                        final int nc, final double [] z,
+                        final int gridInterval) {
         int         m1;
         int         m2;
         int         m3;
@@ -123,13 +123,13 @@ abstract public class Conrec {
 
         // The indexing of im and jm should be noted as it has to start from zero
         // unlike the fortran counter part
-        int     [] im   = {0,gridInterval,gridInterval,0};
-        int     [] jm   = {0,0,gridInterval,gridInterval};
+        final int     [] im   = {0,gridInterval,gridInterval,0};
+        final int     [] jm   = {0,0,gridInterval,gridInterval};
 
         // Note that castab is arranged differently from the FORTRAN code because
         // Fortran and C/C++ arrays are transposed of each other, in this case
         // it is more tricky as castab is in 3 dimension
-        int [][][] castab=
+        final int [][][] castab=
         {
             {
                 {0,0,8},{0,2,5},{7,6,9}
@@ -286,11 +286,11 @@ abstract public class Conrec {
         }
     }
 
-    private double xsect(int p1, int p2){
+    private double xsect(final int p1, final int p2){
         return    (h[p2]*xh[p1]-h[p1]*xh[p2])/(h[p2]-h[p1]);
     }
 
-    private double ysect(int p1, int p2){
+    private double ysect(final int p1, final int p2){
         return (h[p2]*yh[p1]-h[p1]*yh[p2])/(h[p2]-h[p1]);
     }
 

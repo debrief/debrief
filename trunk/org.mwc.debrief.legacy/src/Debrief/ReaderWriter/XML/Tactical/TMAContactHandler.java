@@ -69,7 +69,7 @@ abstract public class TMAContactHandler extends
 
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color theVal)
+      public void setColour(final java.awt.Color theVal)
       {
         _thisSolution.setColor(theVal);
       }
@@ -77,7 +77,7 @@ abstract public class TMAContactHandler extends
 
     addHandler(new LocationHandler("centre")
     {
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _theOrigin = res;
       }
@@ -86,7 +86,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleAttribute("Dtg")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
           _thisSolution.setDTG(DebriefFormatDateTime.parseThis(value));
       }
@@ -94,7 +94,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleDoubleAttribute("Bearing")
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _theBearingDegs = value;
       }
@@ -102,7 +102,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _thisSolution.setVisible(value);
       }
@@ -110,7 +110,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleAttribute("Label")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _thisSolution.setLabel(fromXML(value));
       }
@@ -118,7 +118,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleAttribute("Symbol")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _thisSolution.setSymbol(value);
       }
@@ -126,7 +126,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleBooleanAttribute("LabelShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _thisSolution.setLabelVisible(value);
       }
@@ -134,14 +134,14 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleBooleanAttribute("LineShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _thisSolution.setLineVisible(value);
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("EllipseShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _thisSolution.setEllipseVisible(value);
       }
@@ -149,7 +149,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleBooleanAttribute("SymbolShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _thisSolution.setSymbolVisible(value);
       }
@@ -158,10 +158,10 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleAttribute("LabelLocation")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         lp.setAsText(val);
-        Integer res = (Integer) lp.getValue();
+        final Integer res = (Integer) lp.getValue();
         if (res != null)
           _thisSolution.setLabelLocation(res);
       }
@@ -169,7 +169,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleDoubleAttribute("Course")
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _course = value;
       }
@@ -177,7 +177,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleDoubleAttribute("Speed")
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _speed = value;
       }
@@ -185,14 +185,14 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleDoubleAttribute("Depth")
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _depth = value;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute("Orientation")
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _orientationDegs = value;
       }
@@ -200,7 +200,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleDoubleAttribute(MAXIMA)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _maxima = new WorldDistance(value, WorldDistance.YARDS);
       }
@@ -208,7 +208,7 @@ abstract public class TMAContactHandler extends
 
     addAttributeHandler(new HandleDoubleAttribute(MINIMA)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _minima = new WorldDistance(value, WorldDistance.YARDS);
       }
@@ -216,7 +216,7 @@ abstract public class TMAContactHandler extends
     
     addAttributeHandler(new HandleDoubleAttribute(RANGE)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _theRange = new WorldDistance(value, WorldDistance.YARDS);
       }
@@ -224,25 +224,25 @@ abstract public class TMAContactHandler extends
 
     addHandler(new WorldDistanceHandler(RANGE){
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_theRange = res;
 			}});
     addHandler(new WorldDistanceHandler(MAXIMA){
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_maxima = res;
 			}});
     addHandler(new WorldDistanceHandler(MINIMA){
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_minima = res;
 			}});
   }
 
-	public final void handleOurselves(String name, Attributes atts)
+	public final void handleOurselves(final String name, final Attributes atts)
 	{
 		// create the new items
 		_thisSolution = new Debrief.Wrappers.TMAContactWrapper();
@@ -270,7 +270,7 @@ abstract public class TMAContactHandler extends
 		else
 		{
 			// aah, it's relative - build up the vector
-			double theDepth = 0;
+			final double theDepth = 0;
 			_thisSolution.buildSetVector(_theBearingDegs, _theRange, theDepth);
 
 			// and reset the position
@@ -296,8 +296,8 @@ abstract public class TMAContactHandler extends
 
 	abstract public void addSolution(MWC.GUI.Plottable plottable);
 
-	public static void exportSolution(Debrief.Wrappers.TMAContactWrapper contact,
-			Element parent, Document doc)
+	public static void exportSolution(final Debrief.Wrappers.TMAContactWrapper contact,
+			final Element parent, final Document doc)
 	{
 		/*
 		 * 
@@ -310,17 +310,17 @@ abstract public class TMAContactHandler extends
 		 * CDATA #REQUIRED Orientation CDATA #REQUIRED Maxima CDATA #REQUIRED Minima
 		 * CDATA #REQUIRED >
 		 */
-		Element eFix = doc.createElement(MY_NAME);
+		final Element eFix = doc.createElement(MY_NAME);
 
 		// note, we are accessing the "actual" colour for this fix, we are not using
 		// the
 		// normal getColor method which may return the track colour
-		java.awt.Color fCol = contact.getActualColor();
+		final java.awt.Color fCol = contact.getActualColor();
 		if (fCol != null)
 			ColourHandler.exportColour(fCol, eFix, doc);
 
 		// are we absolute or relative?
-		WorldLocation origin = contact.buildGetOrigin();
+		final WorldLocation origin = contact.buildGetOrigin();
 		if (origin != null)
 		{
 			// so, absolute - output it
@@ -344,7 +344,7 @@ abstract public class TMAContactHandler extends
 		eFix.setAttribute("Label", toXML(contact.getLabel()));
 		eFix.setAttribute("LabelShowing", writeThis(contact.getLabelVisible()));
 
-		Boolean lineVis = contact.getRawLineVisible();
+		final Boolean lineVis = contact.getRawLineVisible();
 		// is this the same as the parent?
 		if (lineVis != null)
 		{
@@ -357,7 +357,7 @@ abstract public class TMAContactHandler extends
 
 		// where is the label?
 		lp.setValue(contact.getLabelLocation());
-		String val = lp.getAsText();
+		final String val = lp.getAsText();
 		if (val != null)
 			eFix.setAttribute("LabelLocation", lp.getAsText());
 		else
@@ -369,9 +369,9 @@ abstract public class TMAContactHandler extends
 		eFix.setAttribute("Depth", writeThis(contact.getDepth()));
 
 		// and ellipse shape
-		EllipseShape ellipse = contact.buildGetEllipse();
-		double maxima = ellipse.getMaxima().getValueIn(WorldDistance.YARDS);
-		double minima = ellipse.getMinima().getValueIn(WorldDistance.YARDS);
+		final EllipseShape ellipse = contact.buildGetEllipse();
+		final double maxima = ellipse.getMaxima().getValueIn(WorldDistance.YARDS);
+		final double minima = ellipse.getMinima().getValueIn(WorldDistance.YARDS);
 
 		// did we find ellipse data?
 		if ((maxima > 0.0001d) && (minima > 0.0001d))
@@ -401,36 +401,36 @@ abstract public class TMAContactHandler extends
 
 		public final void testRead()
 		{
-			DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
-			Layers res = new Layers();
-			String fName = "src/test_tma_read_write.xml";
+			final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
+			final Layers res = new Layers();
+			final String fName = "src/test_tma_read_write.xml";
 
-			java.io.File fileTest = new File(fName);
+			final java.io.File fileTest = new File(fName);
 			assertTrue("Test file not found:" + fName, fileTest.exists());
 
 			try
 			{
-				java.io.FileInputStream fis = new java.io.FileInputStream(fName);
+				final java.io.FileInputStream fis = new java.io.FileInputStream(fName);
 				reader.importThis(fName, fis, res);
 
 				// right, now check it contains our data
-				Layer layer = res.findLayer("TOMATO");
+				final Layer layer = res.findLayer("TOMATO");
 				assertNotNull("found tomato track");
 
-				TrackWrapper tw = (TrackWrapper) layer;
-				Enumeration<Editable> solutions = tw.getSolutions().elements();
+				final TrackWrapper tw = (TrackWrapper) layer;
+				final Enumeration<Editable> solutions = tw.getSolutions().elements();
 				assertNotNull("found solutions", solutions);
 
 				// find our solution track
 				while (solutions.hasMoreElements())
 				{
-					TMAWrapper wrapper = (TMAWrapper) solutions.nextElement();
+					final TMAWrapper wrapper = (TMAWrapper) solutions.nextElement();
 					assertEquals("found our solution", "TRACK_060", wrapper.getName());
 
-					Enumeration<Editable> contacts = wrapper.elements();
+					final Enumeration<Editable> contacts = wrapper.elements();
 					while (contacts.hasMoreElements())
 					{
-						TMAContactWrapper contactWrapper = (TMAContactWrapper) contacts
+						final TMAContactWrapper contactWrapper = (TMAContactWrapper) contacts
 								.nextElement();
 						assertEquals("found first contact", "Trial label", contactWrapper
 								.getLabel());
@@ -456,7 +456,7 @@ abstract public class TMAContactHandler extends
 								0d);
 						assertEquals("correct line depth", 100, contactWrapper.getDepth(),
 								0d);
-						EllipseShape es = contactWrapper.buildGetEllipse();
+						final EllipseShape es = contactWrapper.buildGetEllipse();
 						assertEquals("correct orientation", 45, es.getOrientation(), 0d);
 						assertEquals("correct maxima", 4000, es.getMaxima().getValueIn(
 								WorldDistance.YARDS), 0.00001d);
@@ -466,7 +466,7 @@ abstract public class TMAContactHandler extends
 
 				}
 			}
-			catch (FileNotFoundException e)
+			catch (final FileNotFoundException e)
 			{
 				e.printStackTrace(); // To change body of catch statement use Options |
 															// File Templates.
@@ -474,9 +474,9 @@ abstract public class TMAContactHandler extends
 		}
 	}
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
-		testIt ti = new testIt("scrap");
+		final testIt ti = new testIt("scrap");
 		ti.testRead();
 	}
 

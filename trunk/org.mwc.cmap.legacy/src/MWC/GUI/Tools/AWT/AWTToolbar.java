@@ -94,7 +94,7 @@ public class AWTToolbar extends Panel implements Toolbar
   /////////////////////////////////////////////////////////
   // constructor
   /////////////////////////////////////////////////////////
-  public AWTToolbar(int theDirection){
+  public AWTToolbar(final int theDirection){
     // set the layout manager, & align the buttons
     
     if(theDirection == HORIZONTAL)
@@ -121,24 +121,24 @@ public class AWTToolbar extends Panel implements Toolbar
 	
 	
 	
-	public void addTool(Tool theTool)
+	public void addTool(final Tool theTool)
 	{
     // cast the tool back to the correct type
-    AWTToolbarButton theBtn = new AWTToolbarButton(theTool);
+    final AWTToolbarButton theBtn = new AWTToolbarButton(theTool);
     this.add(theBtn);
     this.doLayout();
  //   this.getParent().doLayout();
 	}
 	
-  public void addTool(Tool theTool,
-											java.awt.MenuShortcut theShortcut,
-											char theMnemonic)
+  public void addTool(final Tool theTool,
+											final java.awt.MenuShortcut theShortcut,
+											final char theMnemonic)
 	{
 		addTool(theTool);
   }
 
-	public void addToggleTool(String group, 
-														Tool theTool)
+	public void addToggleTool(final String group, 
+														final Tool theTool)
 	{
 		// hmm, we can't really do this, since AWT doesn't have toggle buttons
 		addTool(theTool);
@@ -146,10 +146,10 @@ public class AWTToolbar extends Panel implements Toolbar
 	
 	/** create a toggling control, which is part of the named group
 	 */
-	public void addToggleTool(String group, 
-														Tool theTool,
-														java.awt.MenuShortcut theShortcut,
-														char theMnemonic)
+	public void addToggleTool(final String group, 
+														final Tool theTool,
+														final java.awt.MenuShortcut theShortcut,
+														final char theMnemonic)
 	{
 		// hmm, we can't really do this, since AWT doesn't have toggle buttons
 		addTool(theTool, theShortcut, theMnemonic);

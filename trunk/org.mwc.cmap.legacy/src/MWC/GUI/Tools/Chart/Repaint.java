@@ -72,7 +72,7 @@ import MWC.GUI.Tools.PlainTool;
 public class Repaint extends PlainTool 
 {
 
-  private PlainChart _theChart;
+  private final PlainChart _theChart;
   
   /** produce the Command item - not necessary, since this is not
    *  undoable
@@ -81,8 +81,8 @@ public class Repaint extends PlainTool
     return null;
   }
 
-  public Repaint(ToolParent theParent,
-                 PlainChart theChart)
+  public Repaint(final ToolParent theParent,
+                 final PlainChart theChart)
   {
     super(theParent, "Redraw", "images/repaint.gif");
     _theChart = theChart;

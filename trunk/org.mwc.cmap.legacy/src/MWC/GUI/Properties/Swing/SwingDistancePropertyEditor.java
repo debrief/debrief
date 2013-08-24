@@ -136,16 +136,16 @@ public class SwingDistancePropertyEditor extends
   {
     _theHolder = new JPanel();
 
-    java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
+    final java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
     bl1.setVgap(0);
     bl1.setHgap(0);
-    java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
+    final java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
     bl2.setVgap(0);
     bl2.setHgap(0);
 
-    JPanel lPanel = new JPanel();
+    final JPanel lPanel = new JPanel();
     lPanel.setLayout(bl1);
-    JPanel rPanel = new JPanel();
+    final JPanel rPanel = new JPanel();
     rPanel.setLayout(bl2);
 
 		_theHolder.setLayout(new BorderLayout());
@@ -168,7 +168,7 @@ public class SwingDistancePropertyEditor extends
    */
   protected double getDistance() throws java.text.ParseException
   {
-    double val = _formatter1.parse(_theDistance.getText()).doubleValue();
+    final double val = _formatter1.parse(_theDistance.getText()).doubleValue();
     return val;
   }
 
@@ -181,7 +181,7 @@ public class SwingDistancePropertyEditor extends
 
   /** set the date text in string form
    */
-  protected void setDistance(double val)
+  protected void setDistance(final double val)
   {
     if(_theHolder != null)
     {
@@ -191,7 +191,7 @@ public class SwingDistancePropertyEditor extends
 
   /** set the time text in string form
    */
-  protected void setUnits(int val)
+  protected void setUnits(final int val)
   {
 		if(_theHolder != null)
 		{
@@ -217,12 +217,12 @@ public class SwingDistancePropertyEditor extends
   /**
    * Invoked when a component gains the keyboard focus.
    */
-  public void focusGained(FocusEvent e)
+  public void focusGained(final FocusEvent e)
   {
-    java.awt.Component c = e.getComponent();
+    final java.awt.Component c = e.getComponent();
     if(c instanceof JTextField)
     {
-      JTextField jt = (JTextField)c;
+      final JTextField jt = (JTextField)c;
       jt.setSelectionStart(0);
       jt.setSelectionEnd(jt.getText().length());
     }
@@ -231,22 +231,22 @@ public class SwingDistancePropertyEditor extends
   /**
    * Invoked when a component loses the keyboard focus.
    */
-  public void focusLost(FocusEvent e)
+  public void focusLost(final FocusEvent e)
   {
   }
 
   /** the combo box label has been changed
    *
    */
-  public void actionPerformed(ActionEvent e)
+  public void actionPerformed(final ActionEvent e)
   {
     // what are the new units?
-    int newUnits = this._theUnits.getSelectedIndex();
+    final int newUnits = this._theUnits.getSelectedIndex();
 
     try
     {
       // convert to a new distance
-      double newDist = WorldDistance.convert(_oldUnits, newUnits, getDistance());
+      final double newDist = WorldDistance.convert(_oldUnits, newUnits, getDistance());
 
       // and remember the units
       _oldUnits = newUnits;
@@ -254,7 +254,7 @@ public class SwingDistancePropertyEditor extends
       // and put the correct data in the distance
       setDistance(newDist);
     }
-    catch(java.text.ParseException te)
+    catch(final java.text.ParseException te)
     {
       MWC.Utilities.Errors.Trace.trace(te);
     }

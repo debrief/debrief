@@ -136,7 +136,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** constructor, just pass the path name to the base class
    *
    */
-  public ETOPOWrapper(String pathToETOPODir, Layers parentLayers, Layer ourLayer)
+  public ETOPOWrapper(final String pathToETOPODir, final Layers parentLayers, final Layer ourLayer)
   {
     super(pathToETOPODir);
 
@@ -165,7 +165,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** setter for whether to show land
    *
    */
-  public void setShowLand(boolean val)
+  public void setShowLand(final boolean val)
   {
     _showLand = val;
   }
@@ -197,7 +197,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
 
     // start the depth data loading
     try{
-      long current = System.currentTimeMillis();
+      final long current = System.currentTimeMillis();
       loadBuffer();
       _isLoaded = true;
       System.out.println("loading complete after:" + (System.currentTimeMillis() - current)/1000 + " secs");
@@ -208,7 +208,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
 
       _parentLayers.fireModified(_ourLayer);
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e, "Failed loading ETOPO depth data");
     }
@@ -227,7 +227,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** set the current key location
    *
    */
-  public void setKeyLocation(Integer val)
+  public void setKeyLocation(final Integer val)
   {
     _keyLocation = val;
   }
@@ -235,7 +235,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** current colour of the scale
    * @param val the colour
    */
-    public void setColor(Color val)
+    public void setColor(final Color val)
     {
       _myColor = val;
     }
@@ -253,13 +253,13 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
     return _myThickness;
   }
 
-  public void setThickness(int thickness)
+  public void setThickness(final int thickness)
   {
     this._myThickness = thickness;
   }
 
   /* returns a color based on slope and elevation */
-  public static int getColor(short elevation, double lowerLimit, double upperLimit, boolean showLand)
+  public static int getColor(final short elevation, final double lowerLimit, final double upperLimit, final boolean showLand)
   {
     int res = 0;
 
@@ -275,9 +275,9 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
       if(val > upperLimit)
         val = upperLimit;
 
-      double proportion = val / upperLimit;
+      final double proportion = val / upperLimit;
 
-      double color_val = proportion * 125;
+      final double color_val = proportion * 125;
 
       // limit the colour val to the minimum value
       int green_tone = 255 - (int)color_val;
@@ -299,9 +299,9 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
       if(val < lowerLimit)
         val = lowerLimit;
 
-      double proportion = val / lowerLimit;
+      final double proportion = val / lowerLimit;
 
-      double color_val = proportion * BLUE_MULTIPLIER;
+      final double color_val = proportion * BLUE_MULTIPLIER;
 
       // limit the colour val to the minimum value
       int blue_tone = 255 - (int)color_val;
@@ -309,7 +309,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
       // just check we've got a valid colour
       blue_tone = Math.min(250, blue_tone);
 
-      int green =  (int)GREEN_BASE_VALUE + (int)(blue_tone * GREEN_MULTIPLIER);
+      final int green =  (int)GREEN_BASE_VALUE + (int)(blue_tone * GREEN_MULTIPLIER);
 
       res = SpatialRasterPainter.getRGB(RED_COMPONENT, green, blue_tone);
 
@@ -321,7 +321,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** paint method - produce an image for this location, and paint to the canvas
    *
    */
-  public void doPaint(CanvasType dest)
+  public void doPaint(final CanvasType dest)
   {
     // see if we have our data
     if((super.dataBuffer == null))
@@ -331,7 +331,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
         if (dataBuffer == null)
         {
           // start loading data, in a new thread
-          Thread runner = new Thread(this);
+          final Thread runner = new Thread(this);
           runner.start();
         }
       }
@@ -343,12 +343,12 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
     }
 
     // set our width
-    float oldThickness = dest.getLineWidth();
+    final float oldThickness = dest.getLineWidth();
     dest.setLineWidth(_myThickness);
 
     // compute our deltas
-    int width = (int)dest.getProjection().getScreenArea().getWidth();
-    int height = (int)dest.getProjection().getScreenArea().getHeight();
+    final int width = (int)dest.getProjection().getScreenArea().getWidth();
+    final int height = (int)dest.getProjection().getScreenArea().getHeight();
 
     // create int array to hold colors
     if((_myImageBuffer == null) || (_myImageBuffer.length != width * height))
@@ -371,14 +371,14 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
         _workingPoint.setLocation(x, y);
         _workingLocation = dest.getProjection().toWorld(_workingPoint);
 
-        short thisDepth = (short)getDepthAt(_workingLocation);
+        final short thisDepth = (short)getDepthAt(_workingLocation);
 
         // keep track of the maximum depth
         min_height = Math.min(thisDepth, min_height);
         max_height = Math.max(thisDepth, max_height);
 
         // find out the index of where we are going to put this data
-        int idx = y*width + x;
+        final int idx = y*width + x;
 
         // put this elevation into our array
         _myImageBuffer[idx] = thisDepth;
@@ -394,8 +394,8 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
 
     // create the raster
     //  ret = new OMRaster(0,0,width,height,colors);
-    MemoryImageSource mis = new MemoryImageSource(width, height, _myImageBuffer, 0, width);
-    Image im = Toolkit.getDefaultToolkit().createImage(mis);
+    final MemoryImageSource mis = new MemoryImageSource(width, height, _myImageBuffer, 0, width);
+    final Image im = Toolkit.getDefaultToolkit().createImage(mis);
 
     // ok, actually draw the image
     dest.drawImage(im, 0, 0, width, height, this);
@@ -411,20 +411,20 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** method to extract the depth at a particular coordinate
    *
    */
-  public double getDepthAt(WorldLocation location)
+  public double getDepthAt(final WorldLocation location)
   {
     double res = 0;
 
     // get point values
-    double lat = location.getLat();
+    final double lat = location.getLat();
     double lon = location.getLong();
 
     // check
     if (lon<0.) lon += 360.;
 
     // find indicies
-    int lat_idx = (int)((90.0 - lat)*_scy);
-    int lon_idx = (int)(lon*_scx);
+    final int lat_idx = (int)((90.0 - lat)*_scy);
+    final int lon_idx = (int)(lon*_scx);
 
     // check we don't go off the plot
     if((lat_idx < 0) || (lat_idx > bufferHeight) || (lon_idx < 0) || (lon_idx > bufferWidth))
@@ -438,7 +438,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
     {
 
       // offset
-      int ofs = lon_idx+lat_idx*bufferWidth;
+      final int ofs = lon_idx+lat_idx*bufferWidth;
 
       // WORKAROUND, to handle the missing zero longitude data
       // just do our hack to handle the missing elevation at long == 0
@@ -451,7 +451,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
       {
         // hey, we've got no depth for this longitude. take the average
         // of the depths either side
-        short sum = (short) (dataBuffer[ofs - 1] + dataBuffer[ofs + 1]);
+        final short sum = (short) (dataBuffer[ofs - 1] + dataBuffer[ofs + 1]);
         res = (short)(sum / 2);
       }
     }
@@ -463,11 +463,11 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** method to draw in the key
    *
    */
-  protected void drawKey(CanvasType dest, double min_height, double max_height, Integer keyLocation)
+  protected void drawKey(final CanvasType dest, final double min_height, double max_height, final Integer keyLocation)
   {
 
     // how big is the screen?
-    Dimension screen_size = dest.getProjection().getScreenArea();
+    final Dimension screen_size = dest.getProjection().getScreenArea();
 
     // are we showing land?
     if(!_showLand)
@@ -483,8 +483,8 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
     final float LEN = 0.9f;
 
     // how high is a piece of text at this scale?
-    int txtHt = dest.getStringHeight(_myFont) + 5;
-    int txtWid = dest.getStringWidth(_myFont, " " + (int)Math.max(min_height * -1, max_height));
+    final int txtHt = dest.getStringHeight(_myFont) + 5;
+    final int txtWid = dest.getStringWidth(_myFont, " " + (int)Math.max(min_height * -1, max_height));
 
     // sort out where the key is going to go
     // determine the start / end points according to the scale location
@@ -544,16 +544,16 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
       return;
 
     // sort out how many shade steps we are going to produce (it depends on how big the text string is)
-    int depth_step = (int)((max_height - min_height)/ num_labels);
+    final int depth_step = (int)((max_height - min_height)/ num_labels);
 
     // get ready to step through the colours
     Color thisColor = new Color(0,0,0);
-    Point thisPoint = new Point(TL);
+    final Point thisPoint = new Point(TL);
 
     for(int i=0;i<num_labels;i++)
     {
 
-      short thisDepth =  (short)(max_height-(i * depth_step));
+      final short thisDepth =  (short)(max_height-(i * depth_step));
 
       // produce this new colour
       thisColor = new Color(getColor(thisDepth, min_height, max_height, _showLand));
@@ -569,9 +569,9 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
       // insert the depth value
       dest.setColor(_myColor);
 
-      String thisLabel = "" + Math.abs(thisDepth);
+      final String thisLabel = "" + Math.abs(thisDepth);
 
-      int thisTxtWid = dest.getStringWidth(_myFont,thisLabel);
+      final int thisTxtWid = dest.getStringWidth(_myFont,thisLabel);
 
       dest.drawText(thisLabel, (int)(thisPoint.x + rectSize.getWidth() - thisTxtWid - 1), thisPoint.y + txtHt - 2);
 

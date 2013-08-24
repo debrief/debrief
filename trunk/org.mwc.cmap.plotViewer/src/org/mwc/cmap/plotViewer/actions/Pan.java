@@ -72,9 +72,9 @@ public class Pan extends CoreDragAction
 		private PlainProjection _theProjection;
 
 		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
-				final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
+				final int JITTER, final Layers theLayers, final SWTCanvas theCanvas)
 		{
-			WorldLocation theLocation = theCanvas.getProjection().toWorld(
+			final WorldLocation theLocation = theCanvas.getProjection().toWorld(
 					new java.awt.Point(pt.x, pt.y));
 
 			// just do a check that we have our start point (it may have been cleared
@@ -83,10 +83,10 @@ public class Pan extends CoreDragAction
 			{
 
 				// sort out the vector to apply to the corners
-				WorldVector wv = _lastLocation.subtract(theLocation);
+				final WorldVector wv = _lastLocation.subtract(theLocation);
 
 				// apply this vector to the corners
-				WorldArea newArea = new WorldArea(_lastArea.getTopLeft().add(wv),
+				final WorldArea newArea = new WorldArea(_lastArea.getTopLeft().add(wv),
 						_lastArea.getBottomRight().add(wv));
 
 				// ok, set the new area
@@ -102,7 +102,7 @@ public class Pan extends CoreDragAction
 				_lastLocation = new WorldLocation(theLocation);
 		}
 
-		public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
+		public void doMouseUp(final org.eclipse.swt.graphics.Point point, final int keyState)
 		{
 
 			// and ditch our old one
@@ -110,18 +110,18 @@ public class Pan extends CoreDragAction
 			_newCursor = null;
 
 			// cool, sorted. create an action, so we can put it into the undo buffer.
-			Action theAction = new PanAction(_theProjection, _originalArea, _lastArea);
+			final Action theAction = new PanAction(_theProjection, _originalArea, _lastArea);
 
 			// and wrap it
-			DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
+			final DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
 					_theLayers, null);
 
 			// and add it to the clipboard
 			CorePlugin.run(daw);
 		}
 
-		public void mouseDown(org.eclipse.swt.graphics.Point point,
-				SWTCanvas canvas, PlainChart theChart)
+		public void mouseDown(final org.eclipse.swt.graphics.Point point,
+				final SWTCanvas canvas, final PlainChart theChart)
 		{
 			_theProjection = theChart.getCanvas().getProjection();
 			_theLayers = theChart.getLayers();

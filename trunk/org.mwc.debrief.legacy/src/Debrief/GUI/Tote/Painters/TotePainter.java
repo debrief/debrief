@@ -534,7 +534,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 		// over-ride the line thickness to ensure it's only 1 pixel wide
 		if (dest instanceof Graphics2D) {
-			Graphics2D g2 = (Graphics2D) dest;
+			final Graphics2D g2 = (Graphics2D) dest;
 			g2.setStroke(new BasicStroke(MARKER_THICKNESS));
 		}
 
@@ -723,7 +723,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 				// prop("Size", "size to paint highlight (pixels"),
 				};
 				return res;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				MWC.Utilities.Errors.Trace.trace(e);
 				return super.getPropertyDescriptors();
 			}

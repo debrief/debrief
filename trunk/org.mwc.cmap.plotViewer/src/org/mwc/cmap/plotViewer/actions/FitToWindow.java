@@ -19,13 +19,13 @@ public class FitToWindow extends CoreEditorAction
 {
 	protected void execute()
 	{
-		PlainChart theChart = getChart();
+		final PlainChart theChart = getChart();
 
-		WorldArea oldArea = new WorldArea(theChart.getCanvas().getProjection().getVisibleDataArea());
-		Action theAction = 	new MWC.GUI.Tools.Chart.FitToWin.FitToWinAction(theChart, oldArea);
+		final WorldArea oldArea = new WorldArea(theChart.getCanvas().getProjection().getVisibleDataArea());
+		final Action theAction = 	new MWC.GUI.Tools.Chart.FitToWin.FitToWinAction(theChart, oldArea);
 		
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers(), null);
+		final DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers(), null);
 		
 		// and add it to the clipboard
 		CorePlugin.run(daw);

@@ -33,30 +33,30 @@ public class RotateDragMode extends DragMode
 		this("Rotate", "Vary course, maintain speed of TMA solution");
 	}
 
-	public RotateDragMode(String title, String toolTip)
+	public RotateDragMode(final String title, final String toolTip)
 	{
 		super(title, toolTip);
 	}
 
-	protected TrackSegment findNearest(TrackWrapper track, WorldLocation loc)
+	protected TrackSegment findNearest(final TrackWrapper track, final WorldLocation loc)
 	{
 		double res = -1;
 		TrackSegment nearest = null;
-		Enumeration<Editable> items = track.elements();
+		final Enumeration<Editable> items = track.elements();
 		while (items.hasMoreElements())
 		{
-			Editable editable = (Editable) items.nextElement();
+			final Editable editable = (Editable) items.nextElement();
 			if (editable instanceof SegmentList)
 			{
-				SegmentList segList = (SegmentList) editable;
-				Collection<Editable> segments = segList.getData();
-				for (Iterator<Editable> iterator = segments.iterator(); iterator
+				final SegmentList segList = (SegmentList) editable;
+				final Collection<Editable> segments = segList.getData();
+				for (final Iterator<Editable> iterator = segments.iterator(); iterator
 						.hasNext();)
 				{
-					TrackSegment thisSeg = (TrackSegment) iterator.next();
+					final TrackSegment thisSeg = (TrackSegment) iterator.next();
 					if (thisSeg.getVisible())
 					{
-						double thisRes = thisSeg.rangeFrom(loc);
+						final double thisRes = thisSeg.rangeFrom(loc);
 						if (nearest == null)
 						{
 							nearest = thisSeg;
@@ -76,10 +76,10 @@ public class RotateDragMode extends DragMode
 			}
 			else if (editable instanceof TrackSegment)
 			{
-				TrackSegment thisSeg = (TrackSegment) editable;
+				final TrackSegment thisSeg = (TrackSegment) editable;
 				if (thisSeg.getVisible())
 				{
-					double thisRes = thisSeg.rangeFrom(loc);
+					final double thisRes = thisSeg.rangeFrom(loc);
 					if (nearest == null)
 					{
 						nearest = thisSeg;
@@ -102,9 +102,9 @@ public class RotateDragMode extends DragMode
 	}
 
 	@Override
-	public void findNearest(Layer thisLayer, final WorldLocation cursorLoc,
-			Point cursorPos, LocationConstruct currentNearest, Layer parentLayer,
-			Layers theLayers)
+	public void findNearest(final Layer thisLayer, final WorldLocation cursorLoc,
+			final Point cursorPos, final LocationConstruct currentNearest, final Layer parentLayer,
+			final Layers theLayers)
 	{
 		/**
 		 * we need to get the following hit points, both ends (to support rotate),
@@ -112,7 +112,7 @@ public class RotateDragMode extends DragMode
 		 */
 		if (thisLayer instanceof TrackWrapper)
 		{
-			TrackWrapper track = (TrackWrapper) thisLayer;
+			final TrackWrapper track = (TrackWrapper) thisLayer;
 
 			// find the nearest segment
 			final TrackSegment seg = findNearest(track, cursorLoc);
@@ -122,19 +122,19 @@ public class RotateDragMode extends DragMode
 			{
 				final FixWrapper first = (FixWrapper) seg.first();
 				final FixWrapper last = (FixWrapper) seg.last();
-				WorldLocation firstLoc = first.getFixLocation();
-				WorldLocation lastLoc = last.getFixLocation();
-				WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
-				WorldLocation centreLoc = lineBounds.getCentre();
+				final WorldLocation firstLoc = first.getFixLocation();
+				final WorldLocation lastLoc = last.getFixLocation();
+				final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
+				final WorldLocation centreLoc = lineBounds.getCentre();
 
-				WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
-				WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
-				WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
+				final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
+				final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
+				final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-				DraggableItem centreEnd = getCentreOperation(seg, track, theLayers);
-				DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last, track,
+				final DraggableItem centreEnd = getCentreOperation(seg, track, theLayers);
+				final DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last, track,
 						theLayers);
-				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
+				final DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
 						theLayers);
 
 				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
@@ -150,7 +150,7 @@ public class RotateDragMode extends DragMode
 	 * @param seg
 	 * @return
 	 */
-	protected boolean isAcceptable(TrackSegment seg)
+	protected boolean isAcceptable(final TrackSegment seg)
 	{
 		return true;
 	}
@@ -169,7 +169,7 @@ public class RotateDragMode extends DragMode
 	 */
 	protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
 			final TrackSegment seg, final FixWrapper subject,
-			TrackWrapper parentTrack, Layers theLayers)
+			final TrackWrapper parentTrack, final Layers theLayers)
 	{
 		return new RotateOperation(cursorLoc, subject.getFixLocation(), seg,
 				parentTrack, theLayers);
@@ -187,12 +187,12 @@ public class RotateDragMode extends DragMode
 	 * @return an operation we can use to do this
 	 */
 	protected DraggableItem getCentreOperation(final TrackSegment seg,
-			TrackWrapper parent, Layers theLayers)
+			final TrackWrapper parent, final Layers theLayers)
 	{
 		return new TranslateOperation(seg);
 	}
 
-	private WorldDistance calcDist(WorldLocation myLoc, WorldLocation cursorLoc)
+	private WorldDistance calcDist(final WorldLocation myLoc, final WorldLocation cursorLoc)
 	{
 		return new WorldDistance(myLoc.subtract(cursorLoc).getRange(),
 				WorldDistance.DEGS);
@@ -218,8 +218,8 @@ public static class RotateOperation extends CoreDragOperation implements Draggab
 		protected Layers _layers;
 		protected Cursor _hotspotCursor;
 
-		public RotateOperation(WorldLocation cursorLoc, WorldLocation origin,
-				TrackSegment segment, TrackWrapper parentTrack, Layers theLayers)
+		public RotateOperation(final WorldLocation cursorLoc, final WorldLocation origin,
+				final TrackSegment segment, final TrackWrapper parentTrack, final Layers theLayers)
 		{
 			super(segment, "end point");
 			workingLoc = cursorLoc;
@@ -229,16 +229,16 @@ public static class RotateOperation extends CoreDragOperation implements Draggab
 			_layers = theLayers;
 		}
 
-		public void shift(WorldVector vector)
+		public void shift(final WorldVector vector)
 		{
 			// find out where the cursor currently is
 			workingLoc.addToMe(vector);
 
 			// what's the bearing from the origin
-			WorldVector thisVector = workingLoc.subtract(_origin);
+			final WorldVector thisVector = workingLoc.subtract(_origin);
 
 			// work out the vector (bearing) from the start
-			double brg = originalBearing - thisVector.getBearing();
+			final double brg = originalBearing - thisVector.getBearing();
 
 			// undo the previous turn
 			if (lastRotate != null)

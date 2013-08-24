@@ -141,7 +141,7 @@ public final class WorldVector implements Serializable, Cloneable
    * 
    * @param other world vector to copy
    */
-  public WorldVector(WorldVector other)
+  public WorldVector(final WorldVector other)
   {
   	this(other.getBearing(), other.getRange(), other.getDepth());
   }

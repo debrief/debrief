@@ -59,7 +59,7 @@ final public class WorldAcceleration
    * @param value the distance in the supplied units
    * @param units the units used for this distance
    */
-  public WorldAcceleration(double value, int units)
+  public WorldAcceleration(final double value, final int units)
   {
     _myAccel = value;
     _myUnits = units;
@@ -68,7 +68,7 @@ final public class WorldAcceleration
   /**
    * copy constructor
    */
-  public WorldAcceleration(WorldAcceleration other)
+  public WorldAcceleration(final WorldAcceleration other)
   {
     _myAccel = other._myAccel;
     _myUnits = other._myUnits;
@@ -82,13 +82,13 @@ final public class WorldAcceleration
   /**
    * perform a units conversion
    */
-  static public double convert(int from, int to, double val)
+  static public double convert(final int from, final int to, final double val)
   {
     // get this scale value
     double scaleVal = _scaleVals[from];
 
     // convert to mins
-    double tmpVal = val / scaleVal;
+    final double tmpVal = val / scaleVal;
 
     // get the new scale val
     scaleVal = _scaleVals[to];
@@ -100,7 +100,7 @@ final public class WorldAcceleration
   /**
    * get the string representing this set of units
    */
-  static public String getLabelFor(int units)
+  static public String getLabelFor(final int units)
   {
     return UnitLabels[units];
   }
@@ -108,12 +108,12 @@ final public class WorldAcceleration
   /**
    * get the index for this type of unit
    */
-  static public int getUnitIndexFor(String units)
+  static public int getUnitIndexFor(final String units)
   {
     int res = 0;
     for (int i = 0; i < UnitLabels.length; i++)
     {
-      String unitLabel = UnitLabels[i];
+      final String unitLabel = UnitLabels[i];
       if (units.equals(unitLabel))
       {
         res = i;
@@ -126,7 +126,7 @@ final public class WorldAcceleration
   /**
    * get this actual distance, expressed in minutes
    */
-  public double getValueIn(int units)
+  public double getValueIn(final int units)
   {
     return convert(_myUnits, units, _myAccel);
   }
@@ -159,7 +159,7 @@ final public class WorldAcceleration
    */
   public String toString()
   {
-    String res = _myAccel + " " + getUnitsLabel();
+    final String res = _myAccel + " " + getUnitsLabel();
     return res;
   }
 
@@ -170,17 +170,17 @@ final public class WorldAcceleration
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public AccelTest(String val)
+    public AccelTest(final String val)
     {
       super(val);
     }
 
     public final void testWorldDistanceUnits()
     {
-      WorldAcceleration w1 = new WorldAcceleration(1, WorldAcceleration.M_sec_sec);
+      final WorldAcceleration w1 = new WorldAcceleration(1, WorldAcceleration.M_sec_sec);
       assertEquals("m sec correct", w1.getValueIn(WorldAcceleration.M_sec_sec), 1d, 0.000001);
 
-      WorldAcceleration w2 = new WorldAcceleration(1, WorldAcceleration.Kts_sec);
+      final WorldAcceleration w2 = new WorldAcceleration(1, WorldAcceleration.Kts_sec);
       assertEquals("correct value stored", 1, w2._myAccel, 0.001);
       assertEquals("correct units stored", WorldAcceleration.Kts_sec, w2._myUnits, 0.001);
       assertEquals("m/sec correct", w2.getValueIn(WorldAcceleration.M_sec_sec), 0.5144444, 0.000001);

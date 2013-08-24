@@ -111,16 +111,16 @@ public class SwingWorldSpeedPropertyEditor extends
   {
     _theHolder = new JPanel();
 
-    BorderLayout bl1 = new BorderLayout();
+    final BorderLayout bl1 = new BorderLayout();
     bl1.setVgap(0);
     bl1.setHgap(0);
-    BorderLayout bl2 = new BorderLayout();
+    final BorderLayout bl2 = new BorderLayout();
     bl2.setVgap(0);
     bl2.setHgap(0);
 
-    JPanel lPanel = new JPanel();
+    final JPanel lPanel = new JPanel();
     lPanel.setLayout(bl1);
-    JPanel rPanel = new JPanel();
+    final JPanel rPanel = new JPanel();
     rPanel.setLayout(bl2);
 
     _theHolder.setLayout(new BorderLayout());
@@ -153,7 +153,7 @@ public class SwingWorldSpeedPropertyEditor extends
    */
   protected double getSpeed() throws java.text.ParseException
   {
-    double val = _formatter1.parse(_theSpeed.getText()).doubleValue();
+    final double val = _formatter1.parse(_theSpeed.getText()).doubleValue();
     return val;
   }
 
@@ -168,7 +168,7 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * set the date text in string form
    */
-  protected void setSpeed(double val)
+  protected void setSpeed(final double val)
   {
     if (_theHolder != null)
     {
@@ -179,7 +179,7 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * set the time text in string form
    */
-  protected void setUnits(int val)
+  protected void setUnits(final int val)
   {
     if (_theHolder != null)
     {
@@ -205,12 +205,12 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * Invoked when a component gains the keyboard focus.
    */
-  public void focusGained(FocusEvent e)
+  public void focusGained(final FocusEvent e)
   {
-    Component c = e.getComponent();
+    final Component c = e.getComponent();
     if (c instanceof JTextField)
     {
-      JTextField jt = (JTextField) c;
+      final JTextField jt = (JTextField) c;
       jt.setSelectionStart(0);
       jt.setSelectionEnd(jt.getText().length());
     }
@@ -219,12 +219,12 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * Invoked when a component loses the keyboard focus.
    */
-  public void focusLost(FocusEvent e)
+  public void focusLost(final FocusEvent e)
   {
-    Component c = e.getComponent();
+    final Component c = e.getComponent();
     if (c instanceof JTextField)
     {
-      JTextField jt = (JTextField) c;
+      final JTextField jt = (JTextField) c;
       jt.setSelectionStart(0);
       jt.setSelectionEnd(jt.getText().length());
       _pSupport.firePropertyChange("Text", null, jt.getText());
@@ -234,16 +234,16 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * the combo box label has been changed
    */
-  public void actionPerformed(ActionEvent e)
+  public void actionPerformed(final ActionEvent e)
   {
     // what are the new units?
-    int newUnits = this._theUnits.getSelectedIndex();
+    final int newUnits = this._theUnits.getSelectedIndex();
 
     try
     {
 
       // convert to a new distance
-      double newDist = WorldSpeed.convert(_oldUnits, newUnits, getSpeed());
+      final double newDist = WorldSpeed.convert(_oldUnits, newUnits, getSpeed());
 
       // and remember the units
       _oldUnits = newUnits;
@@ -251,7 +251,7 @@ public class SwingWorldSpeedPropertyEditor extends
       // and put the correct data in the distance
       setSpeed(newDist);
     }
-    catch (java.text.ParseException pe)
+    catch (final java.text.ParseException pe)
     {
       MWC.Utilities.Errors.Trace.trace(pe, "Whilst trying to read Speed value");
     }
@@ -263,12 +263,12 @@ public class SwingWorldSpeedPropertyEditor extends
   ////////////////////////////////////////////////////
   // property change support
   ////////////////////////////////////////////////////
-  public void addPropertyChangeListener(java.beans.PropertyChangeListener listener)
+  public void addPropertyChangeListener(final java.beans.PropertyChangeListener listener)
   {
     _pSupport.addPropertyChangeListener(listener);
   }
 
-  public void removePropertyChangeListener(java.beans.PropertyChangeListener listener)
+  public void removePropertyChangeListener(final java.beans.PropertyChangeListener listener)
   {
     _pSupport.removePropertyChangeListener(listener);
   }

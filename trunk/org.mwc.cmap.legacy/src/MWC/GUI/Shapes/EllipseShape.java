@@ -201,10 +201,10 @@ public class EllipseShape extends PlainShape implements Editable
    * @param theMinima the length of the minima of the ellipse (in degs)
    * @param theOrient the orientation of the ellipse (in degs)
    */
-  public EllipseShape(WorldLocation theCentre,
-                      double theOrient,
-                      WorldDistance theMaxima,
-                      WorldDistance theMinima)
+  public EllipseShape(final WorldLocation theCentre,
+                      final double theOrient,
+                      final WorldDistance theMaxima,
+                      final WorldDistance theMinima)
   {
     super(0, 1, "Ellipse");
 
@@ -226,7 +226,7 @@ public class EllipseShape extends PlainShape implements Editable
 
 
 
-  public void paint(CanvasType dest)
+  public void paint(final CanvasType dest)
   {
     // are we visible?
     if (!getVisible())
@@ -236,22 +236,22 @@ public class EllipseShape extends PlainShape implements Editable
     if (this.getColor() != null)
     {
       // create a transparent colour
-      Color newcol = getColor();
+      final Color newcol = getColor();
 
       dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(), TRANSPARENCY_SHADE));
     }
 
     // create a polygon to represent the ellipse (so that we can fill or draw it)
-    int len = _theDataPoints.size();
-    int[] xPoints = new int[len];
-    int[] yPoints = new int[len];
+    final int len = _theDataPoints.size();
+    final int[] xPoints = new int[len];
+    final int[] yPoints = new int[len];
 
     // work through the list to create the list of screen coordinates
     for (int i = 0; i < _theDataPoints.size(); i++)
     {
-      WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
+      final WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
 
-      Point p2 = dest.toScreen(location);
+      final Point p2 = dest.toScreen(location);
 
       xPoints[i] = p2.x;
       yPoints[i] = p2.y;
@@ -270,36 +270,36 @@ public class EllipseShape extends PlainShape implements Editable
   private Vector<WorldLocation> calcDataPoints()
   {
     // get ready to store the list
-    Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+    final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
     // produce the orientation in radians
-    double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);
+    final double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);
 
     for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
     {
       // produce the current bearing
-      double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
+      final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
 
 
       // first produce a standard ellipse of the correct size
-      double x1 = Math.sin(this_brg) * _theMaxima.getValueIn(WorldDistance.DEGS);
+      final double x1 = Math.sin(this_brg) * _theMaxima.getValueIn(WorldDistance.DEGS);
       double y1 = Math.cos(this_brg) * _theMinima.getValueIn(WorldDistance.DEGS);
 
       // now produce the range out to the edge of the ellipse at
       // this point
-      double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
+      final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
 
       // to prevent div/0 error in atan, make y1 small if zero
       if (y1 == 0)
         y1 = 0.0000001;
 
       // and the new bearing to the correct point on the ellipse
-      double tr = Math.atan2(y1, x1) + orient;
+      final double tr = Math.atan2(y1, x1) + orient;
 
       // use our "add" function to add a vector, rather than the
       // x-y components as we did, so that the ellipse stays correctly
       // shaped as it travels further from the equator.
-      WorldLocation wl = _theCentre.add(new WorldVector(tr, r, 0));
+      final WorldLocation wl = _theCentre.add(new WorldVector(tr, r, 0));
 
       res.add(wl);
     }
@@ -321,7 +321,7 @@ public class EllipseShape extends PlainShape implements Editable
     // create our area
     _theArea = new WorldArea(_theCentre, _theCentre);
 
-    double dist = Math.max(_theMaxima.getValueIn(WorldDistance.DEGS), _theMinima.getValueIn(WorldDistance.DEGS));
+    final double dist = Math.max(_theMaxima.getValueIn(WorldDistance.DEGS), _theMinima.getValueIn(WorldDistance.DEGS));
 
     // create & extend to top left
     WorldLocation other = _theCentre.add(new WorldVector(0, dist, 0));
@@ -347,7 +347,7 @@ public class EllipseShape extends PlainShape implements Editable
    * We always measure the range from the centre of the ellipse, but only from the edge if the
    * edge itself is visible.
    */
-  public double rangeFrom(WorldLocation point)
+  public double rangeFrom(final WorldLocation point)
   {
 
     double res = -1;
@@ -366,36 +366,36 @@ public class EllipseShape extends PlainShape implements Editable
          * lower fidelity
          */
         // number of line segments to compare against
-        int NUM_SEGMENTS_TEST = 50;
+        final int NUM_SEGMENTS_TEST = 50;
 
         // produce the orientation in radians
-        double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);
+        final double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);
 
         for (int i = 0; i <= NUM_SEGMENTS_TEST; i++)
         {
           // produce the current bearing
-          double this_brg = (360.0 / NUM_SEGMENTS_TEST * i) / 180.0 * Math.PI;
+          final double this_brg = (360.0 / NUM_SEGMENTS_TEST * i) / 180.0 * Math.PI;
 
           // first produce a standard ellipse of the correct size
-          double x1 = Math.sin(this_brg) * _theMaxima.getValueIn(WorldDistance.DEGS);
+          final double x1 = Math.sin(this_brg) * _theMaxima.getValueIn(WorldDistance.DEGS);
           double y1 = Math.cos(this_brg) * _theMinima.getValueIn(WorldDistance.DEGS);
 
           // now produce the range out to the edge of the ellipse at
           // this point
-          double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
+          final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
 
           // to prevent div/0 error in atan, make y1 small if zero
           if (y1 == 0)
             y1 = 0.0000001;
 
           // and the new bearing to the correct point on the ellipse
-          double tr = Math.atan2(y1, x1) + orient;
+          final double tr = Math.atan2(y1, x1) + orient;
 
           // use our "add" function to add a vector, rather than the
           // x-y components as we did, so that the ellipse stays correctly
           // shaped as it travels further from the equator.
-          WorldLocation wl = _theCentre.add(new WorldVector(tr, r, 0));
-          double res2 = wl.rangeFrom(point);
+          final WorldLocation wl = _theCentre.add(new WorldVector(tr, r, 0));
+          final double res2 = wl.rangeFrom(point);
 
           res = Math.min(res, res2);
         }
@@ -408,10 +408,10 @@ public class EllipseShape extends PlainShape implements Editable
   /**
    * set the centre location of the Ellipse
    */
-  public void setCentre(WorldLocation centre)
+  public void setCentre(final WorldLocation centre)
   {
     // get an old location
-    WorldLocation oldLocation = _theCentre;
+    final WorldLocation oldLocation = _theCentre;
 
     // make the change
     _theCentre = centre;
@@ -468,7 +468,7 @@ public class EllipseShape extends PlainShape implements Editable
   /**
    * @param val the minima of the ellipse
    */
-  public void setMinima(WorldDistance val)
+  public void setMinima(final WorldDistance val)
   {
     // check we received data
     if (val == null)
@@ -488,7 +488,7 @@ public class EllipseShape extends PlainShape implements Editable
   /**
    * @param val the maxima of the ellipse
    */
-  public void setMaxima(WorldDistance val)
+  public void setMaxima(final WorldDistance val)
   {
     // check we received data
     if (val == null)
@@ -508,7 +508,7 @@ public class EllipseShape extends PlainShape implements Editable
   /**
    * @param degs the orientation of the ellipse (in degs)
    */
-  public void setOrientation(double degs)
+  public void setOrientation(final double degs)
   {
     _theOrientation = degs;
 
@@ -546,7 +546,7 @@ public class EllipseShape extends PlainShape implements Editable
   //////////////////////////////////////////
   // convenience functions which pass calls back to parent
   //////////////////////////////////////////
-  public void setEllipseColor(Color val)
+  public void setEllipseColor(final Color val)
   {
     super.setColor(val);
   }
@@ -562,8 +562,8 @@ public class EllipseShape extends PlainShape implements Editable
   public class EllipseInfo extends Editable.EditorType
   {
 
-    public EllipseInfo(EllipseShape data,
-                       String theName)
+    public EllipseInfo(final EllipseShape data,
+                       final String theName)
     {
       super(data, theName, "");
     }
@@ -572,7 +572,7 @@ public class EllipseShape extends PlainShape implements Editable
     {
       try
       {
-        PropertyDescriptor[] res = {
+        final PropertyDescriptor[] res = {
           prop("Maxima", "the Ellipse maxima"),
           prop("Minima", "the Ellipse minima"),
           prop("Orientation", "the Ellipse orientation (degrees)"),
@@ -583,17 +583,17 @@ public class EllipseShape extends PlainShape implements Editable
         return res;
 
       }
-      catch (IntrospectionException e)
+      catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
     }
   }
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
-		WorldLocation oldCentre = getCentre();
-		WorldLocation newCentre = oldCentre.add(vector);
+		final WorldLocation oldCentre = getCentre();
+		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
 	}
 
@@ -605,7 +605,7 @@ public class EllipseShape extends PlainShape implements Editable
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public EllipseTest(String val)
+    public EllipseTest(final String val)
     {
       super(val);
     }

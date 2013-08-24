@@ -23,9 +23,9 @@ public class DeleteRowAction extends AbstractSingleItemAction {
 	}
 
 	@Override
-	protected IUndoableOperation createUndoableOperation(IUndoContext undoContext, GriddableSeries series, TimeStampedDataItem subject) {
-		OperationEnvironment environment = new OperationEnvironment(undoContext, series, subject);
-		DeleteItemOperation delete = new DeleteItemOperation(environment);
+	protected IUndoableOperation createUndoableOperation(final IUndoContext undoContext, final GriddableSeries series, final TimeStampedDataItem subject) {
+		final OperationEnvironment environment = new OperationEnvironment(undoContext, series, subject);
+		final DeleteItemOperation delete = new DeleteItemOperation(environment);
 		return delete;
 	}
 }

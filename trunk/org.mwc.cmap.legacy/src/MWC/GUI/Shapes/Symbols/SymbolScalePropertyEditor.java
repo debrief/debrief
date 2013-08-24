@@ -53,13 +53,13 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
 
   protected Double _mySize;
 
-  private String stringTags[] =
+  private final String stringTags[] =
   {
                      "Small",
                      "Medium",
                      "Large"};
 
-  private double sizes[] =
+  private final double sizes[] =
   {
     SMALL,
     MEDIUM,
@@ -79,7 +79,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
 
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Double)
     {
@@ -87,7 +87,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
     }
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
 
@@ -117,7 +117,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
 
     for(int i=0;i<stringTags.length;i++)
     {
-      String thisS = stringTags[i];
+      final String thisS = stringTags[i];
       if(thisS.equals(val))
       {
         _mySize = new Double(sizes[i]);
@@ -129,10 +129,10 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
   public String getAsText()
   {
     String res = null;
-    double current = _mySize.doubleValue();
+    final double current = _mySize.doubleValue();
     for(int i=0;i<sizes.length;i++)
     {
-      double v = sizes[i];
+      final double v = sizes[i];
       if(v == current)
       {
         res = stringTags[i];

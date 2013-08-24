@@ -45,7 +45,7 @@ public class PolygonShape extends PlainShape implements Editable,
 		public class PolygonNodeInfo extends Editable.EditorType
 		{
 
-			public PolygonNodeInfo(PolygonNode data, String theName)
+			public PolygonNodeInfo(final PolygonNode data, final String theName)
 			{
 				super(data, theName, "");
 			}
@@ -59,12 +59,12 @@ public class PolygonShape extends PlainShape implements Editable,
 			{
 				try
 				{
-					PropertyDescriptor[] res =
+					final PropertyDescriptor[] res =
 					{ prop("Location", "the location of this node"), };
 					return res;
 
 				}
-				catch (IntrospectionException e)
+				catch (final IntrospectionException e)
 				{
 					return super.getPropertyDescriptors();
 				}
@@ -76,7 +76,7 @@ public class PolygonShape extends PlainShape implements Editable,
 		private transient EditorType _myEditor;
 		private transient PolygonShape _myParent;
 
-		public PolygonNode(String name, WorldLocation location, PolygonShape parent)
+		public PolygonNode(final String name, final WorldLocation location, final PolygonShape parent)
 		{
 			_myName = name;
 			_myLocation = location;
@@ -112,7 +112,7 @@ public class PolygonShape extends PlainShape implements Editable,
 			return _myLocation;
 		}
 
-		public void setLocation(WorldLocation loc)
+		public void setLocation(final WorldLocation loc)
 		{
 			_myLocation = loc;
 		}
@@ -133,13 +133,13 @@ public class PolygonShape extends PlainShape implements Editable,
 		}
 
 		@Override
-		public int compareTo(Plottable o)
+		public int compareTo(final Plottable o)
 		{
 			return this.toString().compareTo(o.toString());
 		}
 
 		@Override
-		public void paint(CanvasType dest)
+		public void paint(final CanvasType dest)
 		{
 			// ingore
 			System.err.println("a polygon node should not be painting itself!");
@@ -158,13 +158,13 @@ public class PolygonShape extends PlainShape implements Editable,
 		}
 
 		@Override
-		public void setVisible(boolean val)
+		public void setVisible(final boolean val)
 		{
 			// ignore
 		}
 
 		@Override
-		public double rangeFrom(WorldLocation other)
+		public double rangeFrom(final WorldLocation other)
 		{
 			return _myLocation.rangeFrom(other);
 		}
@@ -221,7 +221,7 @@ public class PolygonShape extends PlainShape implements Editable,
 	 * @param vector
 	 *          the WorldLocation marking the centre of the polygon
 	 */
-	public PolygonShape(Vector<PolygonNode> vector)
+	public PolygonShape(final Vector<PolygonNode> vector)
 	{
 		super(0, 1, "Polygon");
 
@@ -236,7 +236,7 @@ public class PolygonShape extends PlainShape implements Editable,
 	// member functions
 	// ////////////////////////////////////////////////
 
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// are we visible?
 		if (!getVisible())
@@ -245,7 +245,7 @@ public class PolygonShape extends PlainShape implements Editable,
 		if (this.getColor() != null)
 		{
 			// create a transparent colour
-			Color newcol = getColor();
+			final Color newcol = getColor();
 
 			dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol
 					.getBlue(), TRANSPARENCY_SHADE));
@@ -258,21 +258,21 @@ public class PolygonShape extends PlainShape implements Editable,
 		if (_nodes.size() > 0)
 		{
 			// create our point lists
-			int[] xP = new int[_nodes.size()];
-			int[] yP = new int[_nodes.size()];
+			final int[] xP = new int[_nodes.size()];
+			final int[] yP = new int[_nodes.size()];
 
 			// ok, step through the area
-			Iterator<PolygonNode> points = _nodes.iterator();
+			final Iterator<PolygonNode> points = _nodes.iterator();
 
 			int counter = 0;
 
 			while (points.hasNext())
 			{
-				PolygonNode node = points.next();
-				WorldLocation next = node.getLocation();
+				final PolygonNode node = points.next();
+				final WorldLocation next = node.getLocation();
 
 				// convert to screen
-				Point thisP = dest.toScreen(next);
+				final Point thisP = dest.toScreen(next);
 
 				// remember the coords
 				xP[counter] = thisP.x;
@@ -284,7 +284,7 @@ public class PolygonShape extends PlainShape implements Editable,
 				if (_showLabels)
 				{
 					// and show this label
-					int yPos = thisP.y + 5;
+					final int yPos = thisP.y + 5;
 					dest.drawText(node.getName(), thisP.x + 5, yPos);
 				}
 			}
@@ -318,7 +318,7 @@ public class PolygonShape extends PlainShape implements Editable,
 		return _showLabels;
 	}
 
-	public void setShowNodeLabels(boolean showLabels)
+	public void setShowNodeLabels(final boolean showLabels)
 	{
 		_showLabels = showLabels;
 	}
@@ -343,10 +343,10 @@ public class PolygonShape extends PlainShape implements Editable,
 			_theArea = null;
 
 			// ok, step through the area
-			Iterator<PolygonNode> points = _nodes.iterator();
+			final Iterator<PolygonNode> points = _nodes.iterator();
 			while (points.hasNext())
 			{
-				WorldLocation next = points.next().getLocation();
+				final WorldLocation next = points.next().getLocation();
 				// is this our first point?
 				if (_theArea == null)
 					// yes, initialise the area
@@ -374,19 +374,19 @@ public class PolygonShape extends PlainShape implements Editable,
 	 * get the range from the indicated world location - making this abstract
 	 * allows for individual shapes to have 'hit-spots' in various locations.
 	 */
-	public double rangeFrom(WorldLocation point)
+	public double rangeFrom(final WorldLocation point)
 	{
 		double res = -1;
 
 		if (_nodes.size() > 0)
 		{
 			// ok, step through the area
-			Iterator<PolygonNode> points = _nodes.iterator();
+			final Iterator<PolygonNode> points = _nodes.iterator();
 			while (points.hasNext())
 			{
-				WorldLocation next = (WorldLocation) points.next().getLocation();
+				final WorldLocation next = (WorldLocation) points.next().getLocation();
 
-				double thisD = next.rangeFrom(point);
+				final double thisD = next.rangeFrom(point);
 
 				// is this our first point?
 				if (res == -1)
@@ -418,7 +418,7 @@ public class PolygonShape extends PlainShape implements Editable,
 
 	}
 
-	public void setPolygonColor(Color val)
+	public void setPolygonColor(final Color val)
 	{
 		super.setColor(val);
 	}
@@ -455,7 +455,7 @@ public class PolygonShape extends PlainShape implements Editable,
 	public class PolygonInfo extends Editable.EditorType
 	{
 
-		public PolygonInfo(PolygonShape data, String theName)
+		public PolygonInfo(final PolygonShape data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -481,29 +481,29 @@ public class PolygonShape extends PlainShape implements Editable,
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("Filled", "whether to fill the polygon", FORMAT),
 						prop("ShowNodeLabels", "whether to label the nodes", FORMAT),
 						prop("Closed", "whether to close the polygon (ignored if filled)", FORMAT) };
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
 		}
 	}
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 
 		// ok, cycle through the points, moving each one
-		Iterator<PolygonNode> pts = _nodes.iterator();
+		final Iterator<PolygonNode> pts = _nodes.iterator();
 		while (pts.hasNext())
 		{
-			WorldLocation pt = (WorldLocation) pts.next().getLocation();
-			WorldLocation newLoc = pt.add(vector);
+			final WorldLocation pt = (WorldLocation) pts.next().getLocation();
+			final WorldLocation newLoc = pt.add(vector);
 			pt.setLat(newLoc.getLat());
 			pt.setLong(newLoc.getLong());
 			pt.setDepth(newLoc.getDepth());
@@ -532,7 +532,7 @@ public class PolygonShape extends PlainShape implements Editable,
 		}
 	}
 
-	public void shift(WorldLocation feature, WorldVector vector)
+	public void shift(final WorldLocation feature, final WorldVector vector)
 	{
 		// ok, just shift it...
 		feature.addToMe(vector);
@@ -543,14 +543,14 @@ public class PolygonShape extends PlainShape implements Editable,
 
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer)
 	{
 		// ok - pass through our corners
-		Iterator<PolygonNode> myPts = _nodes.iterator();
+		final Iterator<PolygonNode> myPts = _nodes.iterator();
 		while (myPts.hasNext())
 		{
-			WorldLocation thisLoc = (WorldLocation) myPts.next().getLocation();
+			final WorldLocation thisLoc = (WorldLocation) myPts.next().getLocation();
 			// right, see if the cursor is at the centre (that's the easy component)
 			checkThisOne(thisLoc, cursorLoc, currentNearest, this, parentLayer);
 		}
@@ -562,13 +562,13 @@ public class PolygonShape extends PlainShape implements Editable,
 		return _closePolygon;
 	}
 
-	public void setClosed(boolean polygon)
+	public void setClosed(final boolean polygon)
 	{
 		_closePolygon = polygon;
 	}
 
 	@Override
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
 		// TODO Auto-generated method stub
 		return 0;
@@ -583,24 +583,24 @@ public class PolygonShape extends PlainShape implements Editable,
 
 	public void addNode()
 	{
-		WorldLocation theLoc = getBounds().getCentreAtSurface();
+		final WorldLocation theLoc = getBounds().getCentreAtSurface();
 
 		final String theName;
 		if (_nodes.size() == 0)
 			theName = "1";
 		else
 		{
-			String lastName = _nodes.lastElement().getName();
-			int nameCtr = Integer.parseInt(lastName);
+			final String lastName = _nodes.lastElement().getName();
+			final int nameCtr = Integer.parseInt(lastName);
 			theName = "" + (nameCtr + 1);
 		}
 
-		PolygonNode newNode = new PolygonNode(theName, theLoc, this);
+		final PolygonNode newNode = new PolygonNode(theName, theLoc, this);
 		_nodes.add(newNode);
 	}
 
 	@Override
-	public void append(Layer other)
+	public void append(final Layer other)
 	{
 		// TODO Auto-generated method stub
 
@@ -620,7 +620,7 @@ public class PolygonShape extends PlainShape implements Editable,
 
 	@Override
 	@FireExtended
-	public void add(Editable point)
+	public void add(final Editable point)
 	{
 		if (point instanceof PolygonNode)
 		{
@@ -631,12 +631,12 @@ public class PolygonShape extends PlainShape implements Editable,
 
 	@Override
 	@FireExtended
-	public void removeElement(Editable point)
+	public void removeElement(final Editable point)
 	{
 		if (point instanceof PolygonNode)
 		{
 			_nodes.remove(point);
-			PolygonNode node = (PolygonNode) point;
+			final PolygonNode node = (PolygonNode) point;
 			node.close();
 		}
 		else
@@ -650,7 +650,7 @@ public class PolygonShape extends PlainShape implements Editable,
 	public Enumeration<Editable> elements()
 	{
 		// create suitable wrapper
-		Vector<Editable> vec = new Vector<Editable>();
+		final Vector<Editable> vec = new Vector<Editable>();
 
 		// insert our nodes
 		vec.addAll(_nodes);

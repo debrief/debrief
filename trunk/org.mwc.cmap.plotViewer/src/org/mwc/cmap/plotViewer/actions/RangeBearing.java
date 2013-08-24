@@ -59,12 +59,12 @@ final public class RangeBearing extends CoreDragAction
 		SWTCanvas _myCanvas;
 
 		@SuppressWarnings("deprecation")
-		final public void doMouseDrag(Point pt, int JITTER, Layers theLayers,
-				SWTCanvas theCanvas)
+		final public void doMouseDrag(final Point pt, final int JITTER, final Layers theLayers,
+				final SWTCanvas theCanvas)
 		{
 			if (_startPoint != null)
 			{
-				GC gc = new GC(_myCanvas.getCanvas());
+				final GC gc = new GC(_myCanvas.getCanvas());
 
 				// This is the same as a !XOR
 				gc.setXORMode(true);
@@ -74,8 +74,8 @@ final public class RangeBearing extends CoreDragAction
 				if (_lastRect != null)
 					plotUpdate(gc);
 
-				int dx = pt.x - _startPoint.x;
-				int dy = pt.y - _startPoint.y;
+				final int dx = pt.x - _startPoint.x;
+				final int dy = pt.y - _startPoint.y;
 
 				// Draw selection rectangle
 				_lastRect = new Rectangle(_startPoint.x, _startPoint.y, dx, dy);
@@ -85,7 +85,7 @@ final public class RangeBearing extends CoreDragAction
 					// update the range/bearing text
 					plotUpdate(gc);
 				} 
-				catch(Exception e)
+				catch(final Exception e)
 				{	
 					e.printStackTrace();
 				}
@@ -99,9 +99,9 @@ final public class RangeBearing extends CoreDragAction
 		}
 
 		@SuppressWarnings("deprecation")
-		final public void doMouseUp(Point point, int keyState)
+		final public void doMouseUp(final Point point, final int keyState)
 		{
-			GC gc = new GC(_myCanvas.getCanvas());
+			final GC gc = new GC(_myCanvas.getCanvas());
 
 			// This is the same as a !XOR
 			gc.setXORMode(true);
@@ -117,7 +117,7 @@ final public class RangeBearing extends CoreDragAction
 					{
 						plotUpdate(gc);
 					} 
-					catch(Exception e)
+					catch(final Exception e)
 					{	
 						e.printStackTrace();
 					}
@@ -130,8 +130,8 @@ final public class RangeBearing extends CoreDragAction
 			_startLocation = null;
 		}
 
-		final public void mouseDown(Point point, SWTCanvas canvas,
-				PlainChart theChart)
+		final public void mouseDown(final Point point, final SWTCanvas canvas,
+				final PlainChart theChart)
 		{
 			_startPoint = point;
 			_myCanvas = canvas;
@@ -139,10 +139,10 @@ final public class RangeBearing extends CoreDragAction
 					new java.awt.Point(point.x, point.y)));
 		}
 
-		final private void plotUpdate(GC dest)
+		final private void plotUpdate(final GC dest)
 		{
 
-			java.awt.Point endPoint = new java.awt.Point(_lastRect.x
+			final java.awt.Point endPoint = new java.awt.Point(_lastRect.x
 					+ _lastRect.width, _lastRect.y + _lastRect.height);
 
 			dest.setForeground(new Color(Display.getDefault(), 111, 111, 111));
@@ -151,27 +151,27 @@ final public class RangeBearing extends CoreDragAction
 					_lastRect.y + _lastRect.height);
 
 			// also put in a text-label
-			WorldLocation endLocation = _myCanvas.getProjection().toWorld(endPoint);
-			WorldVector sep = endLocation.subtract(_startLocation);
+			final WorldLocation endLocation = _myCanvas.getProjection().toWorld(endPoint);
+			final WorldVector sep = endLocation.subtract(_startLocation);
 
-			String myUnits = CorePlugin.getToolParent().getProperty(
+			final String myUnits = CorePlugin.getToolParent().getProperty(
 					MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
 
-			double rng = Conversions.convertRange(sep.getRange(), myUnits);
+			final double rng = Conversions.convertRange(sep.getRange(), myUnits);
 			double brg = sep.getBearing();
 			brg = brg * 180 / Math.PI;
 			if (brg < 0)
 				brg += 360;
-			DecimalFormat df = new DecimalFormat("0.00");
-			String numComponent = df.format(rng);
+			final DecimalFormat df = new DecimalFormat("0.00");
+			final String numComponent = df.format(rng);
 			final String txt = "[" + numComponent + myUnits + " " + (int) brg + "\u00b0"  + "]";
 
 			// decide the mid-point
-			java.awt.Point loc = new java.awt.Point(
+			final java.awt.Point loc = new java.awt.Point(
 					_lastRect.x + _lastRect.width / 2, _lastRect.y + _lastRect.height / 2);
 
 			// find out how big the text is
-			FontMetrics fm = dest.getFontMetrics();
+			final FontMetrics fm = dest.getFontMetrics();
 
 			loc.translate(0, fm.getHeight() / 2);
 			loc.translate(-txt.length() / 2 * fm.getAverageCharWidth(), 0);

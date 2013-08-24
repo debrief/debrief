@@ -31,7 +31,7 @@ import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 public class LayerHandler extends MWCXMLReader implements PlottableExporter
 {
 
-	private MWC.GUI.Layers _theLayers;
+	private final MWC.GUI.Layers _theLayers;
 
 	protected MWC.GUI.BaseLayer _myLayer;
 
@@ -42,12 +42,12 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 	 * 
 	 * @param theLayers
 	 */
-	public LayerHandler(MWC.GUI.Layers theLayers)
+	public LayerHandler(final MWC.GUI.Layers theLayers)
 	{
 		this(theLayers, "layer");
 	}
 
-	public LayerHandler(MWC.GUI.Layers theLayers, String layerName)
+	public LayerHandler(final MWC.GUI.Layers theLayers, final String layerName)
 	{
 		// inform our parent what type of class we are
 		super(layerName);
@@ -57,7 +57,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addHandler(new CoastlineHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -65,7 +65,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addHandler(new ChartBoundsHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -73,7 +73,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addHandler(new VPFCoastlineHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -81,7 +81,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addHandler(new VPFDatabaseHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -89,7 +89,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addHandler(new ScaleHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -97,21 +97,21 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addHandler(new LocalGridHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
 		});
 		addHandler(new GridHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
 		});
 		addHandler(new Grid4WHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -119,7 +119,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addAttributeHandler(new HandleAttribute("Name")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_myLayer.setName(val);
 			}
@@ -127,7 +127,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addAttributeHandler(new HandleBooleanAttribute("Visible")
 		{
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myLayer.setVisible(val);
 			}
@@ -135,7 +135,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		addAttributeHandler(new HandleIntegerAttribute("LineThickness")
 		{
-			public void setValue(String name, int val)
+			public void setValue(final String name, final int val)
 			{
 				_myLayer.setLineThickness(val);
 			}
@@ -144,7 +144,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 	}
 
 	// this is one of ours, so get on with it!
-	protected void handleOurselves(String name, Attributes attributes)
+	protected void handleOurselves(final String name, final Attributes attributes)
 	{
 		// we are starting a new layer, so create it!
 		_myLayer = getLayer();
@@ -157,14 +157,14 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		return new MWC.GUI.BaseLayer();
 	}
 
-	public void addThis(MWC.GUI.Plottable plottable)
+	public void addThis(final MWC.GUI.Plottable plottable)
 	{
 		_myLayer.add(plottable);
 		
 		// is this an item that wants to know about the layers object?
 		if (plottable instanceof NeedsToKnowAboutLayers)
 		{
-			NeedsToKnowAboutLayers theL = (NeedsToKnowAboutLayers) plottable;
+			final NeedsToKnowAboutLayers theL = (NeedsToKnowAboutLayers) plottable;
 			theL.setLayers(_theLayers);
 		}
 
@@ -181,7 +181,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		// now, we may well have already had a layer of this name - particularly
 		// the "Chart Features" one.
 		// if this has happened, we need to update it's visibility with our one
-		Layer theLayer = _theLayers.findLayer(_myLayer.getName());
+		final Layer theLayer = _theLayers.findLayer(_myLayer.getName());
 		theLayer.setVisible(_myLayer.getVisible());
 
 		_myLayer = null;
@@ -195,51 +195,51 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 			_myExporters = new java.util.Hashtable<Class<?>, PlottableExporter>();
 			_myExporters.put(MWC.GUI.Chart.Painters.CoastPainter.class, new CoastlineHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Chart.Painters.LocalGridPainter.class,
 					new LocalGridHandler()
 					{
-						public void addPlottable(MWC.GUI.Plottable plottable)
+						public void addPlottable(final MWC.GUI.Plottable plottable)
 						{
 						}
 					});
 			_myExporters.put(MWC.GUI.Chart.Painters.GridPainter.class, new GridHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Chart.Painters.Grid4WPainter.class, new Grid4WHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Chart.Painters.ScalePainter.class, new ScaleHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer.class,
 					new VPFCoastlineHandler()
 					{
-						public void addPlottable(MWC.GUI.Plottable plottable)
+						public void addPlottable(final MWC.GUI.Plottable plottable)
 						{
 						}
 					});
 			_myExporters.put(MWC.GUI.VPF.VPFDatabase.class, new VPFDatabaseHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(ChartBoundsWrapper.class, new ChartBoundsHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
@@ -249,8 +249,8 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		}
 	}
 
-	public static void exportThisItem(MWC.GUI.Plottable nextPlottable,
-			org.w3c.dom.Element eLayer, org.w3c.dom.Document doc)
+	public static void exportThisItem(final MWC.GUI.Plottable nextPlottable,
+			final org.w3c.dom.Element eLayer, final org.w3c.dom.Document doc)
 	{
 
 		// definition of what parameter we are going to search for (since
@@ -261,10 +261,10 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		classId = nextPlottable.getClass();
 
 		// try to get this one
-		Object exporterType = _myExporters.get(classId);
+		final Object exporterType = _myExporters.get(classId);
 		if (exporterType != null)
 		{
-			PlottableExporter cl = (PlottableExporter) exporterType;
+			final PlottableExporter cl = (PlottableExporter) exporterType;
 			cl.exportThisPlottable(nextPlottable, eLayer, doc);
 		}
 		else
@@ -273,29 +273,29 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 	}
 
-	public static void exportLayer(MWC.GUI.BaseLayer layer, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
+	public static void exportLayer(final MWC.GUI.BaseLayer layer, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc)
 	{
 		exportLayer("layer", layer, parent, doc);
 	}
 
-	public static void exportLayer(String elementName, MWC.GUI.BaseLayer layer,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportLayer(final String elementName, final MWC.GUI.BaseLayer layer,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// check our exporters
 		checkExporters();
 
-		org.w3c.dom.Element eLayer = doc.createElement(elementName);
+		final org.w3c.dom.Element eLayer = doc.createElement(elementName);
 
 		eLayer.setAttribute("Name", layer.getName());
 		eLayer.setAttribute("Visible", writeThis(layer.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
 
 		// step through the components of the layer
-		java.util.Enumeration<Editable> enumer = layer.elements();
+		final java.util.Enumeration<Editable> enumer = layer.elements();
 		while (enumer.hasMoreElements())
 		{
-			MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer.nextElement();
+			final MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer.nextElement();
 
 			exportThisItem(nextPlottable, eLayer, doc);
 		}
@@ -304,8 +304,8 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 	}
 
-	public void exportThisPlottable(Plottable plottable, Element parent,
-			Document doc)
+	public void exportThisPlottable(final Plottable plottable, final Element parent,
+			final Document doc)
 	{
 		exportLayer((BaseLayer)plottable, parent, doc);
 	}

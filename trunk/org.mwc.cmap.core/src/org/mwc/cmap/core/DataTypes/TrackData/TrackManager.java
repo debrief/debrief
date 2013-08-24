@@ -125,12 +125,12 @@ public class TrackManager implements TrackDataProvider
 	private static final String MAX_MESSAGE = "Too many tracks.  Only the first "
 			+ MAX_SECONDARIES + " secondary tracks have been assigned";
 
-	public TrackManager(Layers parentLayers)
+	public TrackManager(final Layers parentLayers)
 	{
 		_theLayers = parentLayers;
 	}
 
-	public void addSecondary(WatchableList secondary)
+	public void addSecondary(final WatchableList secondary)
 	{
 		// right, insert this as a secondary track
 		addSecondaryImpl(secondary);
@@ -142,7 +142,7 @@ public class TrackManager implements TrackDataProvider
 		fireTracksChanged();
 	}
 
-	private void addSecondaryImpl(WatchableList secondary)
+	private void addSecondaryImpl(final WatchableList secondary)
 	{
 		// check we don't already hold it
 
@@ -174,7 +174,7 @@ public class TrackManager implements TrackDataProvider
 	}
 
 	@Override
-	public void addTrackDataListener(TrackDataListener listener)
+	public void addTrackDataListener(final TrackDataListener listener)
 	{
 		if (_myDataListeners == null)
 			_myDataListeners = new Vector<TrackDataListener>();
@@ -185,7 +185,7 @@ public class TrackManager implements TrackDataProvider
 	}
 
 	@Override
-	public void addTrackShiftListener(TrackShiftListener listener)
+	public void addTrackShiftListener(final TrackShiftListener listener)
 	{
 		if (_myShiftListeners == null)
 			_myShiftListeners = new Vector<TrackShiftListener>();
@@ -195,7 +195,7 @@ public class TrackManager implements TrackDataProvider
 			_myShiftListeners.add(listener);
 	}
 
-	public void assignTracks(String primaryTrack, Vector<String> secondaryTracks)
+	public void assignTracks(final String primaryTrack, final Vector<String> secondaryTracks)
 	{
 		// ok - find the matching tracks/
 		final Object theP = _theLayers.findLayer(primaryTrack);
@@ -239,7 +239,7 @@ public class TrackManager implements TrackDataProvider
 	 * @param onlyAssignTracks
 	 *          only put TracksWrappers on the tote
 	 */
-	public void autoAssign(boolean onlyAssignTracks)
+	public void autoAssign(final boolean onlyAssignTracks)
 	{
 
 		// check we have some data to search
@@ -517,7 +517,7 @@ public class TrackManager implements TrackDataProvider
 		fireTracksChanged();
 	}
 
-	public void setPrimary(WatchableList primary)
+	public void setPrimary(final WatchableList primary)
 	{
 		// ok - set it as the primary
 		setPrimaryImpl(primary);
@@ -528,7 +528,7 @@ public class TrackManager implements TrackDataProvider
 		fireTracksChanged();
 	}
 
-	private void setPrimaryImpl(WatchableList primary)
+	private void setPrimaryImpl(final WatchableList primary)
 	{
 		_thePrimary = primary;
 
@@ -544,7 +544,7 @@ public class TrackManager implements TrackDataProvider
 		}
 	}
 
-	public void setSecondary(WatchableList secondary)
+	public void setSecondary(final WatchableList secondary)
 	{
 		// clear out any existing secondarires
 		_theSecondaries = null;

@@ -118,9 +118,9 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   // constructor
   ///////////////////////////////////////////////////
 
-  public CoverageLayer(LibrarySelectionTable LST,
-                       VPFGraphicWarehouse warehouse,
-                       String coverageType)
+  public CoverageLayer(final LibrarySelectionTable LST,
+                       final VPFGraphicWarehouse warehouse,
+                       final String coverageType)
   {
     _myType = coverageType;
 
@@ -135,7 +135,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
       if (_myLST != null)
         setName(_myLST.getDescription(_myType));
     }
-    catch (Exception fe)
+    catch (final Exception fe)
     {
       fe.printStackTrace();
     }
@@ -143,34 +143,34 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
 
 
   @SuppressWarnings({ "rawtypes" })
-	public CoverageLayer(LibrarySelectionTable LST,
-                       VPFGraphicWarehouse warehouse,
-                       String coverageType,
-                       CoverageAttributeTable cat)
+	public CoverageLayer(final LibrarySelectionTable LST,
+                       final VPFGraphicWarehouse warehouse,
+                       final String coverageType,
+                       final CoverageAttributeTable cat)
   {
 
     this(LST, warehouse, coverageType);
 
     // we now pass through the coverages, adding a feature painter for each layer
     // now get the features inside this coverage
-    CoverageTable ct = cat.getCoverageTable(_myType);
+    final CoverageTable ct = cat.getCoverageTable(_myType);
 
     // get the list of features in this coverage
-    Hashtable hash = ct.getFeatureTypeInfo();
+    final Hashtable hash = ct.getFeatureTypeInfo();
 
     try
     {
-      Enumeration enumer = hash.keys();
+      final Enumeration enumer = hash.keys();
       while (enumer.hasMoreElements())
       {
-        String thisFeature = (String) enumer.nextElement();
+        final String thisFeature = (String) enumer.nextElement();
 
-        String description = _myLST.getDescription(thisFeature);
-        FeaturePainter fp = new FeaturePainter(thisFeature, description);
+        final String description = _myLST.getDescription(thisFeature);
+        final FeaturePainter fp = new FeaturePainter(thisFeature, description);
         this.add(fp);
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       e.printStackTrace();
     }
@@ -187,7 +187,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   /**
    * set the library selection table, to allow deferred creation
    */
-  public void setLST(LibrarySelectionTable lst)
+  public void setLST(final LibrarySelectionTable lst)
   {
     _myLST = lst;
   }
@@ -195,7 +195,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   /**
    * set the description of this coverage
    */
-  public void setDescription(String desc)
+  public void setDescription(final String desc)
   {
     setName(desc);
   }
@@ -217,10 +217,10 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     if (_myFeatureHash == null)
     {
       _myFeatureHash = new Hashtable<String, FeaturePainter>();
-      Enumeration<Editable> enumer = this.elements();
+      final Enumeration<Editable> enumer = this.elements();
       while (enumer.hasMoreElements())
       {
-        FeaturePainter fp = (FeaturePainter) enumer.nextElement();
+        final FeaturePainter fp = (FeaturePainter) enumer.nextElement();
         _myFeatureHash.put(fp.getFeatureType(), fp);
       }
     }
@@ -228,7 +228,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     return _myFeatureHash;
   }
 
-  public void paint(CanvasType g)
+  public void paint(final CanvasType g)
   {
 
     // check we are visible
@@ -241,17 +241,17 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     }
     else
     {
-      float oldWid = g.getLineWidth();
+      final float oldWid = g.getLineWidth();
       g.setLineWidth(this.getLineThickness());
       
-      MWC.GenericData.WorldArea area = g.getProjection().getVisibleDataArea();
+      final MWC.GenericData.WorldArea area = g.getProjection().getVisibleDataArea();
 
       // check that an area has been created
       if (area == null)
         return;
 
       // get the feature list
-      Hashtable<String, FeaturePainter> _myFeatures = getFeatureHash();
+      final Hashtable<String, FeaturePainter> _myFeatures = getFeatureHash();
 
       // put our data into the warehouse
       _myWarehouse.setCurrentFeatures(_myFeatures);
@@ -265,26 +265,26 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
       // represents the outer corners of the area
       
       // top left
-      Dimension scr = g.getProjection().getScreenArea();
-      WorldLocation tl2 = new WorldLocation(g.getProjection().toWorld(new Point(0, 0)));
-      WorldLocation tl2a = new WorldLocation(g.getProjection().toWorld(new Point(0, scr.height)));
+      final Dimension scr = g.getProjection().getScreenArea();
+      final WorldLocation tl2 = new WorldLocation(g.getProjection().toWorld(new Point(0, 0)));
+      final WorldLocation tl2a = new WorldLocation(g.getProjection().toWorld(new Point(0, scr.height)));
       tl2.setLong(Math.min(tl2.getLong(), tl2a.getLong()));
       tl2.setLat(tl2.getLat());
       
       // bottom right
-      WorldLocation br2 = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  0)));
-      WorldLocation br2a = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  scr.height)));
+      final WorldLocation br2 = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  0)));
+      final WorldLocation br2a = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  scr.height)));
       br2.setLong(Math.max(br2.getLong(), br2a.getLong()));
       br2.setLat(br2a.getLat());
       
       // put the coordinates into bbn objects
-      com.bbn.openmap.LatLonPoint tlp = new com.bbn.openmap.LatLonPoint(tl2.getLat(), tl2.getLong());
-      com.bbn.openmap.LatLonPoint brp = new com.bbn.openmap.LatLonPoint(br2.getLat(), br2.getLong());
+      final com.bbn.openmap.LatLonPoint tlp = new com.bbn.openmap.LatLonPoint(tl2.getLat(), tl2.getLong());
+      final com.bbn.openmap.LatLonPoint brp = new com.bbn.openmap.LatLonPoint(br2.getLat(), br2.getLong());
 
       // how many yards wide is this?
-      int data_wid = (int) MWC.Algorithms.Conversions.Degs2Yds(area.getWidth());
+      final int data_wid = (int) MWC.Algorithms.Conversions.Degs2Yds(area.getWidth());
 
-      java.awt.Dimension dim = g.getProjection().getScreenArea();
+      final java.awt.Dimension dim = g.getProjection().getScreenArea();
 
       // catch the occasional error we get when first paining a new layer
       try
@@ -292,7 +292,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
         // and start the repaint
         doDraw(_myLST, data_wid, dim.width, dim.height, _myType, _myWarehouse, tlp, brp);
       }
-      catch (java.lang.NullPointerException ne)
+      catch (final java.lang.NullPointerException ne)
       {
         MWC.Utilities.Errors.Trace.trace("Error painting VPF for first time", false);
       }
@@ -306,13 +306,13 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   /**
    * paint operation, used to hide whether this class does a drawTile, or a drawFeature
    */
-  protected void doDraw(LibrarySelectionTable lst,
-                        int scale,
-                        int screenwidth,
-                        int screenheight,
-                        String covname,
-                        VPFFeatureGraphicWarehouse warehouse,
-                        com.bbn.openmap.LatLonPoint ll1, com.bbn.openmap.LatLonPoint ll2)
+  protected void doDraw(final LibrarySelectionTable lst,
+                        final int scale,
+                        final int screenwidth,
+                        final int screenheight,
+                        final String covname,
+                        final VPFFeatureGraphicWarehouse warehouse,
+                        final com.bbn.openmap.LatLonPoint ll1, final com.bbn.openmap.LatLonPoint ll2)
   {
     lst.drawFeatures(scale, screenwidth, screenheight, covname, warehouse, ll1, ll2);
   }
@@ -339,7 +339,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     /**
      * the name of this feature
      */
-    private String _featureType;
+    private final String _featureType;
 
     /**
      * whether to draw lines for this feature
@@ -351,12 +351,12 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
      */
     private boolean _drawText = true;
 
-    public ReferenceCoverageLayer(LibrarySelectionTable LST,
-                                  VPFGraphicWarehouse warehouse,
-                                  String coverageType,
-                                  String featureType,
-                                  String description,
-                                  FeaturePainter theFeature)
+    public ReferenceCoverageLayer(final LibrarySelectionTable LST,
+                                  final VPFGraphicWarehouse warehouse,
+                                  final String coverageType,
+                                  final String featureType,
+                                  final String description,
+                                  final FeaturePainter theFeature)
     {
       super(LST, warehouse, coverageType);
 
@@ -371,7 +371,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
      */
     protected Hashtable<String, FeaturePainter> getFeatureHash()
     {
-      Hashtable<String, FeaturePainter> res = new Hashtable<String, FeaturePainter>();
+      final Hashtable<String, FeaturePainter> res = new Hashtable<String, FeaturePainter>();
       res.put(_featureType, _myFeature);
       return res;
     }
@@ -389,7 +389,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
       return _myFeature.getColor();
     }
 
-    public void setColor(java.awt.Color color)
+    public void setColor(final java.awt.Color color)
     {
       _myFeature.setColor(color);
     }
@@ -399,7 +399,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
       return _drawText;
     }
 
-    public void setDrawText(boolean val)
+    public void setDrawText(final boolean val)
     {
       _drawText = val;
     }
@@ -409,7 +409,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
       return _drawLine;
     }
 
-    public void setDrawLine(boolean val)
+    public void setDrawLine(final boolean val)
     {
       _drawLine = val;
     }
@@ -417,13 +417,13 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     /**
      * paint operation, used to hide whether this class does a drawTile, or a drawFeature
      */
-    protected void doDraw(LibrarySelectionTable lst,
-                          int scale,
-                          int screenwidth,
-                          int screenheight,
-                          String covname,
-                          VPFFeatureGraphicWarehouse warehouse,
-                          com.bbn.openmap.LatLonPoint ll1, com.bbn.openmap.LatLonPoint ll2)
+    protected void doDraw(final LibrarySelectionTable lst,
+                          final int scale,
+                          final int screenwidth,
+                          final int screenheight,
+                          final String covname,
+                          final VPFFeatureGraphicWarehouse warehouse,
+                          final com.bbn.openmap.LatLonPoint ll1, final com.bbn.openmap.LatLonPoint ll2)
     {
       // set the painting characteristics in the painting warehouse
       super._myWarehouse.setCoastlinePainting(new Boolean(_drawText), new Boolean(_drawLine));
@@ -445,7 +445,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public FeaturePainterInfo(ReferenceCoverageLayer data)
+			public FeaturePainterInfo(final ReferenceCoverageLayer data)
       {
         super(data, data.getName(), "");
       }
@@ -454,7 +454,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
       {
         try
         {
-          PropertyDescriptor[] res = {
+          final PropertyDescriptor[] res = {
             prop("Color", "the Color to draw this Feature"),
             prop("Visible", "whether this feature is visible"),
             prop("DrawText", "whether to draw text"),
@@ -463,7 +463,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
 
           return res;
         }
-        catch (IntrospectionException e)
+        catch (final IntrospectionException e)
         {
           return super.getPropertyDescriptors();
         }

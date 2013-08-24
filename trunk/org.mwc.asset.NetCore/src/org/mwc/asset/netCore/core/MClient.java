@@ -34,8 +34,8 @@ public class MClient implements IMClient
 {
 	private static class NetClient
 	{
-		private Client _client;
-		private HashMap<Class<?>, Listener> _listeners;
+		private final Client _client;
+		private final HashMap<Class<?>, Listener> _listeners;
 
 		public NetClient() throws IOException
 		{
@@ -49,10 +49,10 @@ public class MClient implements IMClient
 			{
 
 				@Override
-				public void received(Connection connection, Object object)
+				public void received(final Connection connection, final Object object)
 				{
 					// ok, see if we have a handler
-					Listener match = _listeners.get(object.getClass());
+					final Listener match = _listeners.get(object.getClass());
 					if (match != null)
 					{
 						match.received(connection, object);
@@ -74,7 +74,7 @@ public class MClient implements IMClient
 		{
 			if (target == null)
 			{
-				InetAddress address = _client.discoverHost(Network.UDP_PORT, 1000);
+				final InetAddress address = _client.discoverHost(Network.UDP_PORT, 1000);
 				if (address != null)
 					target = address.getHostAddress();
 
@@ -83,7 +83,7 @@ public class MClient implements IMClient
 			_client.connect(5000, target, Network.TCP_PORT, Network.UDP_PORT);
 		}
 
-		public void addListener(Class<?> objectType, Listener listener)
+		public void addListener(final Class<?> objectType, final Listener listener)
 		{
 			_listeners.put(objectType, listener);
 		}
@@ -98,7 +98,7 @@ public class MClient implements IMClient
 			_client.stop();
 		}
 
-		public void send(Object data)
+		public void send(final Object data)
 		{
 			_client.sendTCP(data);
 		}
@@ -109,7 +109,7 @@ public class MClient implements IMClient
 	{
 		final ScenarioSteppedListener _stepper;
 
-		public ScenListener(ScenarioSteppedListener stepper)
+		public ScenListener(final ScenarioSteppedListener stepper)
 		{
 			_stepper = stepper;
 		}
@@ -122,8 +122,8 @@ public class MClient implements IMClient
 		final ParticipantDecidedListener _decider;
 		final ParticipantDetectedListener _detector;
 
-		public PartListener(ParticipantMovedListener mover,
-				ParticipantDecidedListener decider, ParticipantDetectedListener detector)
+		public PartListener(final ParticipantMovedListener mover,
+				final ParticipantDecidedListener decider, final ParticipantDetectedListener detector)
 		{
 			_mover = mover;
 			_decider = decider;
@@ -131,9 +131,9 @@ public class MClient implements IMClient
 		}
 	}
 
-	private NetClient _model;
-	private HashMap<String, PartListener> _partListeners;
-	private HashMap<String, ScenListener> _scenListeners;
+	private final NetClient _model;
+	private final HashMap<String, PartListener> _partListeners;
+	private final HashMap<String, ScenListener> _scenListeners;
 
 	public MClient() throws IOException
 	{
@@ -148,18 +148,18 @@ public class MClient implements IMClient
 				});
 
 		// setup the step listener
-		Listener mover = new Listener()
+		final Listener mover = new Listener()
 		{
 			@Override
-			public void received(Connection connection, Object object)
+			public void received(final Connection connection, final Object object)
 			{
-				PartMovement pu = (PartMovement) object;
+				final PartMovement pu = (PartMovement) object;
 
-				String index = pu.scenario + pu.id;
-				PartListener pl = _partListeners.get(index);
+				final String index = pu.scenario + pu.id;
+				final PartListener pl = _partListeners.get(index);
 				if (pl != null)
 				{
-					Status newStat = pu.lStatus;
+					final Status newStat = pu.lStatus;
 					if (pl._mover != null)
 						pl._mover.moved(newStat);
 				}
@@ -170,15 +170,15 @@ public class MClient implements IMClient
 			}
 		};
 		_model.addListener(new PartMovement().getClass(), mover);
-		Listener detector = new Listener()
+		final Listener detector = new Listener()
 		{
 			@Override
-			public void received(Connection connection, Object object)
+			public void received(final Connection connection, final Object object)
 			{
-				PartDetection pu = (PartDetection) object;
+				final PartDetection pu = (PartDetection) object;
 
-				String index = pu.scenario + pu.id;
-				PartListener pl = _partListeners.get(index);
+				final String index = pu.scenario + pu.id;
+				final PartListener pl = _partListeners.get(index);
 				if (pl != null)
 				{
 					if (pl._detector != null)
@@ -192,15 +192,15 @@ public class MClient implements IMClient
 		};
 		_model.addListener(new PartDetection().getClass(), detector);
 
-		Listener stepL = new Listener()
+		final Listener stepL = new Listener()
 		{
 
 			@Override
-			public void received(Connection connection, Object object)
+			public void received(final Connection connection, final Object object)
 			{
-				ScenUpdate su = (ScenUpdate) object;
-				String index = su.scenarioName;
-				ScenListener sl = _scenListeners.get(index);
+				final ScenUpdate su = (ScenUpdate) object;
+				final String index = su.scenarioName;
+				final ScenListener sl = _scenListeners.get(index);
 
 				// have a look at the event
 				if (su.event.equals(ScenUpdate.STEPPED))
@@ -220,7 +220,7 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void connect(String target) throws IOException
+	public void connect(final String target) throws IOException
 	{
 		_model.connect(target);
 	}
@@ -238,17 +238,17 @@ public class MClient implements IMClient
 	 * @param participantId
 	 */
 	@Override
-	public void listenPart(String scenarioName, int participantId,
-			ParticipantMovedListener moveL, ParticipantDecidedListener decider,
-			ParticipantDetectedListener detector)
+	public void listenPart(final String scenarioName, final int participantId,
+			final ParticipantMovedListener moveL, final ParticipantDecidedListener decider,
+			final ParticipantDetectedListener detector)
 	{
-		ListenPart cp = new ListenPart();
+		final ListenPart cp = new ListenPart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
 
 		// ok, register the listener
-		String index = scenarioName + participantId;
-		PartListener pl = new PartListener(moveL, decider, detector);
+		final String index = scenarioName + participantId;
+		final PartListener pl = new PartListener(moveL, decider, detector);
 		_partListeners.put(index, pl);
 
 		_model.send(cp);
@@ -256,42 +256,42 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void listenScen(String scenarioName, ScenarioSteppedListener listener)
+	public void listenScen(final String scenarioName, final ScenarioSteppedListener listener)
 	{
 		// get ready to rx events
-		ScenListener sl = new ScenListener(listener);
+		final ScenListener sl = new ScenListener(listener);
 		_scenListeners.put(scenarioName, sl);
 
 		// register an interest
-		ListenScen ls = new ListenScen();
+		final ListenScen ls = new ListenScen();
 		ls.name = scenarioName;
 		_model.send(ls);
 	}
 
 	@Override
-	public void stopListenScen(String scenarioName)
+	public void stopListenScen(final String scenarioName)
 	{
 		// tell it we're not bothered
-		StopListenScen ls = new StopListenScen();
+		final StopListenScen ls = new StopListenScen();
 		ls.name = scenarioName;
 		_model.send(ls);
 
 		// ok, done. now stop listening
-		ScenListener sl = _scenListeners.get(scenarioName);
+		final ScenListener sl = _scenListeners.get(scenarioName);
 		_scenListeners.remove(sl);
 	}
 
 	@Override
-	public void step(String scenarioName)
+	public void step(final String scenarioName)
 	{
-		ScenControl sc = new ScenControl(scenarioName, ScenControl.STEP);
+		final ScenControl sc = new ScenControl(scenarioName, ScenControl.STEP);
 		_model.send(sc);
 	}
 
 	@Override
-	public void stop(String scenarioName)
+	public void stop(final String scenarioName)
 	{
-		ScenControl sc = new ScenControl(scenarioName, ScenControl.TERMINATE);
+		final ScenControl sc = new ScenControl(scenarioName, ScenControl.TERMINATE);
 		_model.send(sc);
 	}
 
@@ -302,9 +302,9 @@ public class MClient implements IMClient
 	 * @param participantId
 	 */
 	@Override
-	public void stopListenPart(String scenarioName, int participantId)
+	public void stopListenPart(final String scenarioName, final int participantId)
 	{
-		StopListenPart cp = new StopListenPart();
+		final StopListenPart cp = new StopListenPart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
 
@@ -312,7 +312,7 @@ public class MClient implements IMClient
 		_model.send(cp);
 
 		// and forget our listener
-		String index = scenarioName + participantId;
+		final String index = scenarioName + participantId;
 		_partListeners.remove(index);
 	}
 
@@ -323,9 +323,9 @@ public class MClient implements IMClient
 		final Class<?> theType = new GetScenarios().getClass();
 		final Listener listener = new Listener()
 		{
-			public void received(Connection connection, Object object)
+			public void received(final Connection connection, final Object object)
 			{
-				ScenarioList sl = (ScenarioList) object;
+				final ScenarioList sl = (ScenarioList) object;
 				handler.onSuccess(sl.list);
 				// and forget about ourselves
 				_model.removeListener(theType);
@@ -336,10 +336,10 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void controlPart(String scenario, int id, double courseDegs,
-			double speedKts, double depthM)
+	public void controlPart(final String scenario, final int id, final double courseDegs,
+			final double speedKts, final double depthM)
 	{
-		Network.DemStatus dem = new Network.DemStatus();
+		final Network.DemStatus dem = new Network.DemStatus();
 		dem.scenario = scenario;
 		dem.partId = id;
 		dem.courseDegs = courseDegs;
@@ -349,16 +349,16 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void releasePart(String scenario, int partId)
+	public void releasePart(final String scenario, final int partId)
 	{
-		ReleasePart rp = new ReleasePart();
+		final ReleasePart rp = new ReleasePart();
 		rp.scenarioName = scenario;
 		rp.partId = partId;
 		_model.send(rp);
 	}
 
 	@Override
-	public void controlScen(ScenControl sc)
+	public void controlScen(final ScenControl sc)
 	{
 		_model.send(sc);
 	}

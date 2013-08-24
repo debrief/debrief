@@ -30,16 +30,16 @@ abstract public class ShortLocationHandler extends MWCXMLReader
   }
 
   // this is one of ours, so get on with it!
-  protected void handleOurselves(String name, Attributes attributes)
+  protected void handleOurselves(final String name, final Attributes attributes)
   {
     // initialise data
     _lat = _long = _depth = 0.0;
 
-    int len = attributes.getLength();
+    final int len = attributes.getLength();
     for(int i=0; i<len;i++){
 
-      String nm = attributes.getQName(i);// getLocalName(i);
-      String val = attributes.getValue(i);
+      final String nm = attributes.getQName(i);// getLocalName(i);
+      final String val = attributes.getValue(i);
       try{
         if(nm.equals("Lat"))
           _lat = readThisDouble(val);
@@ -50,7 +50,7 @@ abstract public class ShortLocationHandler extends MWCXMLReader
           if(nm.equals("Depth"))
           _depth = readThisDouble(val);
       }
-      catch(java.text.ParseException e)
+      catch(final java.text.ParseException e)
       {
         MWC.Utilities.Errors.Trace.trace(e, "Failed reading in:" + nm + " value is:" + val);
       }
@@ -61,15 +61,15 @@ abstract public class ShortLocationHandler extends MWCXMLReader
 
   public void elementClosed()
   {
-    MWC.GenericData.WorldLocation res = new MWC.GenericData.WorldLocation(_lat, _long, _depth);
+    final MWC.GenericData.WorldLocation res = new MWC.GenericData.WorldLocation(_lat, _long, _depth);
     setLocation(res);
   }
 
   abstract public void setLocation(MWC.GenericData.WorldLocation res);
 
-  public static void exportLocation(MWC.GenericData.WorldLocation loc, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportLocation(final MWC.GenericData.WorldLocation loc, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
-    Element eLoc = doc.createElement("shortLocation");
+    final Element eLoc = doc.createElement("shortLocation");
     eLoc.setAttribute("Lat", writeThisLong(loc.getLat()));
     eLoc.setAttribute("Long", writeThisLong(loc.getLong()));
     eLoc.setAttribute("Depth", writeThis(loc.getDepth()));

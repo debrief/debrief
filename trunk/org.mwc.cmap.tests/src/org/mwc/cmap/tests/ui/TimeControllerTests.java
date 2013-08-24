@@ -14,7 +14,7 @@ public class TimeControllerTests extends TestCase
 	private static final String VIEW_ID = "org.mwc.cmap.TimeController.views.TimeController";
 	private TimeController _myController;
 	
-	public TimeControllerTests(String testName)
+	public TimeControllerTests(final String testName)
 	{
 		super(testName);
 		// TODO Auto-generated constructor stub
@@ -71,13 +71,13 @@ public class TimeControllerTests extends TestCase
    */
   public void testView() {
   	
-  	DTGBiSlider periodSlider = _myController.getPeriodSlider();
+  	final DTGBiSlider periodSlider = _myController.getPeriodSlider();
   	
   	// did we find it?
   	assertNotNull("haven't found the slider", periodSlider);
   	
   	// ok, what else can we do?
-  	Scale timeSlider = _myController.getTimeSlider();
+  	final Scale timeSlider = _myController.getTimeSlider();
 
   	// did we find it?
   	assertNotNull("haven't found the time slider", timeSlider);
@@ -92,12 +92,12 @@ public class TimeControllerTests extends TestCase
    * 
    * @param waitTimeMillis the number of milliseconds 
    */
-  protected void delay(long waitTimeMillis) {
-     Display display = Display.getCurrent();
+  protected void delay(final long waitTimeMillis) {
+     final Display display = Display.getCurrent();
 
      // If this is the user interface thread, then process input
      if (display != null) {
-        long endTimeMillis =
+        final long endTimeMillis =
            System.currentTimeMillis() + waitTimeMillis;
         while (System.currentTimeMillis()
            < endTimeMillis) {
@@ -112,7 +112,7 @@ public class TimeControllerTests extends TestCase
         try {
            Thread.sleep(waitTimeMillis);
         }
-        catch (InterruptedException e) {
+        catch (final InterruptedException e) {
            // ignored
         }
      }

@@ -101,11 +101,11 @@ public class AWTStatusBar extends Panel implements StatusBar
    * ////////////////////////////////////////////////////////////
    *
    */
-  public AWTStatusBar(MWC.GUI.Properties.PropertiesPanel panel, MWC.GUI.ToolParent parent)
+  public AWTStatusBar(final MWC.GUI.Properties.PropertiesPanel panel, final MWC.GUI.ToolParent parent)
   {
     theText = new Label("  ");
     theText.setAlignment(Label.CENTER);
-    BorderLayout lm = new BorderLayout();
+    final BorderLayout lm = new BorderLayout();
     setLayout(lm);
     add("Center", theText);
 
@@ -124,7 +124,7 @@ public class AWTStatusBar extends Panel implements StatusBar
    * @param theVal the text to display
    */
 
-  public void setText(String theVal)
+  public void setText(final String theVal)
   {
     theText.setText(theVal);
   }
@@ -134,11 +134,11 @@ public class AWTStatusBar extends Panel implements StatusBar
    *
    * @param p1 parameter for paint
    */
-  public void paint(Graphics p1)
+  public void paint(final Graphics p1)
   {
     super.paint(p1);
 
-    Rectangle rt = super.getBounds();
+    final Rectangle rt = super.getBounds();
     p1.setColor(Color.lightGray);
     p1.draw3DRect(1, 1, rt.width-3, rt.height-3, false);
   }
@@ -160,10 +160,10 @@ public class AWTStatusBar extends Panel implements StatusBar
    * @param range the range in degrees
    * @param bearing the bearing in radians
    */
-  public void setRngBearing(double range, double bearing)
+  public void setRngBearing(final double range, final double bearing)
   {
-    String rngStr = _support.formatRange(range);
-    String brgStr = _support.formatBearing(bearing);
+    final String rngStr = _support.formatRange(range);
+    final String brgStr = _support.formatBearing(bearing);
 
     setText(rngStr + " " + brgStr);
   }
@@ -209,7 +209,7 @@ public class AWTStatusBar extends Panel implements StatusBar
      * with the details of the units it is to use
      *
      */
-    public void setParent(MWC.GUI.ToolParent parent)
+    public void setParent(final MWC.GUI.ToolParent parent)
     {
       _theParent = parent;
     }
@@ -219,7 +219,7 @@ public class AWTStatusBar extends Panel implements StatusBar
      *
      * @param range range in degrees
      */
-    public String formatRange(double range)
+    public String formatRange(final double range)
     {
 
       String theUnits = "";
@@ -269,7 +269,7 @@ public class AWTStatusBar extends Panel implements StatusBar
      *
      * @param brg the bearing in radians
      */
-    public String formatBearing(double brg)
+    public String formatBearing(final double brg)
     {
       // prepare the bearing, since there's little doubt about this
       double bearing = MWC.Algorithms.Conversions.Rads2Degs(brg);
@@ -314,7 +314,7 @@ public class AWTStatusBar extends Panel implements StatusBar
       return theUnits;
     }
 
-    public void setUnits(String val)
+    public void setUnits(final String val)
     {
       if(_theParent != null)
         _theParent.setProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY, val);
@@ -333,7 +333,7 @@ public class AWTStatusBar extends Panel implements StatusBar
        * constructor, takes the status bar we are editing
        *
        */
-      public StatusInfo(StatusBarSupport data)
+      public StatusInfo(final StatusBarSupport data)
       {
         super(data, data.getName(), "");
       }
@@ -341,13 +341,13 @@ public class AWTStatusBar extends Panel implements StatusBar
       public PropertyDescriptor[] getPropertyDescriptors()
       {
         try{
-          PropertyDescriptor[] res={
+          final PropertyDescriptor[] res={
             longProp("Units", "the units for display", UnitsPropertyEditor.class)
           };
 
           return res;
 
-        }catch(IntrospectionException e)
+        }catch(final IntrospectionException e)
         {
           return super.getPropertyDescriptors();
         }

@@ -20,7 +20,7 @@ public abstract class AbstractItemsInterpolator implements ItemsInterpolator {
 	 * 		if descriptor is not interpolate-able,
 	 * @see LinearItemsInterpolator#canInterpolate(GriddableItemDescriptor)
 	 */
-	public AbstractItemsInterpolator(GriddableItemDescriptor descriptor) {
+	public AbstractItemsInterpolator(final GriddableItemDescriptor descriptor) {
 		if (!canInterpolate(descriptor)) {
 			throw new IllegalArgumentException("I can only interpolate double or float values, not applicable to type: " + descriptor.getType());
 		}
@@ -35,8 +35,8 @@ public abstract class AbstractItemsInterpolator implements ItemsInterpolator {
 	 * @return <code>true</code> if given descriptor represents a bean property
 	 * 	of either double or float primitive type, or their "boxed" counterparts
 	 */
-	public static final boolean canInterpolate(GriddableItemDescriptor descriptor) {
-		Class<?> type = descriptor.getType();
+	public static final boolean canInterpolate(final GriddableItemDescriptor descriptor) {
+		final Class<?> type = descriptor.getType();
 		if (ValueInUnits.class.isAssignableFrom(type)) {
 			return true;
 		}
@@ -46,13 +46,13 @@ public abstract class AbstractItemsInterpolator implements ItemsInterpolator {
 				Float.class.equals(type);
 	}
 
-	protected static final Object getSafeInterpolatedValue(TimeStampedDataItem item, GriddableItemDescriptor descriptor, Double interpolatedValue) {
-		Class<?> descriptorType = descriptor.getType();
+	protected static final Object getSafeInterpolatedValue(final TimeStampedDataItem item, final GriddableItemDescriptor descriptor, final Double interpolatedValue) {
+		final Class<?> descriptorType = descriptor.getType();
 		if (ValueInUnits.class.isAssignableFrom(descriptorType)) {
-			ValueInUnits actualValue = BeanUtil.getItemValue(item, descriptor, ValueInUnits.class);
-			UnitsSet unitsSet = actualValue.getUnitsSet();
-			UnitsSet.Unit mainUnit = unitsSet.getMainUnit();
-			ValueInUnits result = actualValue.makeCopy();
+			final ValueInUnits actualValue = BeanUtil.getItemValue(item, descriptor, ValueInUnits.class);
+			final UnitsSet unitsSet = actualValue.getUnitsSet();
+			final UnitsSet.Unit mainUnit = unitsSet.getMainUnit();
+			final ValueInUnits result = actualValue.makeCopy();
 			result.setValues(interpolatedValue, mainUnit);
 			return result;
 		} else if (double.class.equals(descriptorType) || Double.class.equals(descriptorType)) {
@@ -63,16 +63,16 @@ public abstract class AbstractItemsInterpolator implements ItemsInterpolator {
 		throw new IllegalArgumentException("I can only interpolate double or float values, not applicable to type: " + descriptor.getType());
 	}
 
-	protected static final double getDoubleValue(TimeStampedDataItem dataItem, GriddableItemDescriptor descriptor) {
+	protected static final double getDoubleValue(final TimeStampedDataItem dataItem, final GriddableItemDescriptor descriptor) {
 		Number value;
 		if (descriptor.getType().isPrimitive()) {
-			Object boxedPrimitive = BeanUtil.getItemValue(dataItem, descriptor);
+			final Object boxedPrimitive = BeanUtil.getItemValue(dataItem, descriptor);
 			//should be safe -- any boxed primitive is a Number
 			value = (Number) boxedPrimitive;
 		} else if (ValueInUnits.class.isAssignableFrom(descriptor.getType())) {
-			ValueInUnits actualValue = BeanUtil.getItemValue(dataItem, descriptor, ValueInUnits.class);
-			UnitsSet unitsSet = actualValue.getUnitsSet();
-			UnitsSet.Unit mainUnit = unitsSet.getMainUnit();
+			final ValueInUnits actualValue = BeanUtil.getItemValue(dataItem, descriptor, ValueInUnits.class);
+			final UnitsSet unitsSet = actualValue.getUnitsSet();
+			final UnitsSet.Unit mainUnit = unitsSet.getMainUnit();
 			value = actualValue.getValueIn(mainUnit);
 		} else {
 			value = BeanUtil.getItemValue(dataItem, descriptor, Number.class);
@@ -80,11 +80,11 @@ public abstract class AbstractItemsInterpolator implements ItemsInterpolator {
 		return value.doubleValue();
 	}
 
-	protected static final double extractBaseValue(TimeStampedDataItem dataItem) {
+	protected static final double extractBaseValue(final TimeStampedDataItem dataItem) {
 		return dataItem.getDTG().getDate().getTime();
 	}
 
-	public boolean canInterpolate(TimeStampedDataItem item)
+	public boolean canInterpolate(final TimeStampedDataItem item)
 	{
 		return false;
 	}

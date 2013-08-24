@@ -71,9 +71,9 @@ public interface SWTPlotHighlighter extends Editable {
 		 * @param watch
 		 *            the current data point
 		 */
-		public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-				CanvasType dest, MWC.GenericData.WatchableList list,
-				MWC.GenericData.Watchable watch, boolean isPrimary) {
+		public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
+				final CanvasType dest, final MWC.GenericData.WatchableList list,
+				final MWC.GenericData.Watchable watch, final boolean isPrimary) {
 			// check that our graphics context is still valid -
 			// we can't, so we will just have to trap any exceptions it raises
 			try {
@@ -95,19 +95,19 @@ public interface SWTPlotHighlighter extends Editable {
 				// set the highlight colour
 				dest.setColor(_myColor);
 				// get the current area of the watchable
-				WorldArea wa = watch.getBounds();
+				final WorldArea wa = watch.getBounds();
 				// convert to screen coordinates
-				Point tl = proj.toScreen(wa.getTopLeft());
+				final Point tl = proj.toScreen(wa.getTopLeft());
 
-				int tlx = tl.x;
-				int tly = tl.y;
+				final int tlx = tl.x;
+				final int tly = tl.y;
 
-				Point br = proj.toScreen(wa.getBottomRight());
+				final Point br = proj.toScreen(wa.getBottomRight());
 				// get the width
-				int x = tlx - _mySize;
-				int y = tly - _mySize;
-				int wid = (br.x - tlx) + _mySize * 2;
-				int ht = (br.y - tly) + _mySize * 2;
+				final int x = tlx - _mySize;
+				final int y = tly - _mySize;
+				final int wid = (br.x - tlx) + _mySize * 2;
+				final int ht = (br.y - tly) + _mySize * 2;
 
 				// represent this area as a rectangle
 				java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
@@ -120,24 +120,24 @@ public interface SWTPlotHighlighter extends Editable {
 				// just see if we've got sensor data, so we can plot the array
 				// centre
 				if (watch instanceof FixWrapper) {
-					FixWrapper fw = (FixWrapper) watch;
-					TrackWrapper tw = fw.getTrackWrapper();
+					final FixWrapper fw = (FixWrapper) watch;
+					final TrackWrapper tw = fw.getTrackWrapper();
 					if ((tw != null) && (tw.getPlotArrayCentre())) {
-						Enumeration<Editable> enumer = tw.getSensors()
+						final Enumeration<Editable> enumer = tw.getSensors()
 								.elements();
 						while (enumer.hasMoreElements()) {
-							SensorWrapper sw = (SensorWrapper) enumer
+							final SensorWrapper sw = (SensorWrapper) enumer
 									.nextElement();
 
 							// is this sensor visible?
 							if (sw.getVisible()) {
-								ArrayLength len = sw.getSensorOffset();
+								final ArrayLength len = sw.getSensorOffset();
 								if (len != null) {
 									if (len.getValue() != 0) {
-										WorldLocation centre = tw
+										final WorldLocation centre = tw
 												.getBacktraceTo(fw.getTime(),
 														len, sw.getWormInHole()).getLocation();
-										Point pt = dest.toScreen(centre);
+										final Point pt = dest.toScreen(centre);
 										dest.drawLine(pt.x - _mySize, pt.y
 												- _mySize, pt.x + _mySize, pt.y
 												+ _mySize);
@@ -161,7 +161,7 @@ public interface SWTPlotHighlighter extends Editable {
 					}
 				}
 
-			} catch (IllegalStateException e) {
+			} catch (final IllegalStateException e) {
 				MWC.Utilities.Errors.Trace.trace(e);
 			}
 
@@ -229,7 +229,7 @@ public interface SWTPlotHighlighter extends Editable {
 		 * 
 		 * @param size
 		 */
-		public final void setRawSize(int size)
+		public final void setRawSize(final int size)
 		{
 			_mySize = size;
 		}
@@ -281,7 +281,7 @@ public interface SWTPlotHighlighter extends Editable {
 							prop("Color", "Color to paint highlight"),
 							prop("Size", "size to paint highlight (pixels)"), };
 					return res;
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					MWC.Utilities.Errors.Trace.trace(e);
 					return super.getPropertyDescriptors();
 				}

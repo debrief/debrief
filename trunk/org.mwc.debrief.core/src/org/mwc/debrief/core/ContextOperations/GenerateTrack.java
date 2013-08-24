@@ -42,20 +42,20 @@ public class GenerateTrack implements RightClickContextItemGenerator
 		// right, work through the subjects
 		for (int i = 0; i < subjects.length; i++)
 		{
-			Editable thisE = subjects[i];
+			final Editable thisE = subjects[i];
 			if(thisE instanceof BaseLayer)
 			{
 				// ok, we're started...
-				BaseLayer layer = (BaseLayer) thisE;
+				final BaseLayer layer = (BaseLayer) thisE;
 				
 				// does it have any children?
 				if(layer.size() > 0)
 				{
 					// hey, looking good, why not loop through them?
-					Enumeration<Editable> items = layer.elements();
+					final Enumeration<Editable> items = layer.elements();
 					while(items.hasMoreElements())
 					{
-						Plottable thisP = (Plottable) items.nextElement();
+						final Plottable thisP = (Plottable) items.nextElement();
 						
 						// is this one suitable?
 						if(isSuitableAsTrackPoint(thisP))
@@ -80,13 +80,13 @@ public class GenerateTrack implements RightClickContextItemGenerator
 				 title = "Convert layer to track";
 			
 			// yes, create the action
-			Action convertToTrack = new Action(title)
+			final Action convertToTrack = new Action(title)
 			{
 				public void run()
 				{
 					// ok, go for it.
 					// sort it out as an operation
-					IUndoableOperation convertToTrack1 = new ConvertTrack(title, theLayers, 
+					final IUndoableOperation convertToTrack1 = new ConvertTrack(title, theLayers, 
 							subjects);
 
 					// ok, stick it on the buffer
@@ -107,7 +107,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 	 * into a separate method so testing classes don't have to simulate the CorePlugin
 	 * @param operation
 	 */
-	protected void runIt(IUndoableOperation operation)
+	protected void runIt(final IUndoableOperation operation)
 	{
 		CorePlugin.run(operation);
 	}
@@ -115,37 +115,37 @@ public class GenerateTrack implements RightClickContextItemGenerator
 	private static class ConvertTrack extends CMAPOperation
 	{
 
-		private Layers _layers;
-		private Editable[] _subjects;
+		private final Layers _layers;
+		private final Editable[] _subjects;
 		
 		private Vector<TrackWrapper> _newTracks;
 
-		public ConvertTrack(String title, Layers layers, Editable[] subjects)
+		public ConvertTrack(final String title, final Layers layers, final Editable[] subjects)
 		{
 			super(title);
 			_layers = layers;
 			_subjects = subjects;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException
 		{
 			// right, get going through the track
 			for (int i = 0; i < _subjects.length; i++)
 			{
-				Editable thisE = _subjects[i];
+				final Editable thisE = _subjects[i];
 				if(thisE instanceof BaseLayer)
 				{
-					BaseLayer layer = (BaseLayer) thisE;
-					Enumeration<Editable> numer = layer.elements();
+					final BaseLayer layer = (BaseLayer) thisE;
+					final Enumeration<Editable> numer = layer.elements();
 					while (numer.hasMoreElements())
 					{
-						Plottable pl = (Plottable) numer.nextElement();
+						final Plottable pl = (Plottable) numer.nextElement();
 						
 						// ok, is it suitable?
 						if(isSuitableAsTrackPoint(pl))
 						{
 							// cool, pass through it, generating the track points
-							TrackWrapper tw = generateTrackFor(layer);
+							final TrackWrapper tw = generateTrackFor(layer);
 							
 							if(tw != null)
 							{
@@ -170,12 +170,12 @@ public class GenerateTrack implements RightClickContextItemGenerator
 			return Status.OK_STATUS;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException
 		{
 			// forget about the new tracks
-			for (Iterator<TrackWrapper> iter = _newTracks.iterator(); iter.hasNext();)
+			for (final Iterator<TrackWrapper> iter = _newTracks.iterator(); iter.hasNext();)
 			{
-				TrackWrapper trk = (TrackWrapper) iter.next();
+				final TrackWrapper trk = (TrackWrapper) iter.next();
 				_layers.removeThisLayer(trk);
 			}
 			
@@ -193,7 +193,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 	 * @param thisP
 	 * @return
 	 */
-	static boolean isSuitableAsTrackPoint(Plottable thisP)
+	static boolean isSuitableAsTrackPoint(final Plottable thisP)
 	{
 		boolean res = false;
 		
@@ -207,15 +207,15 @@ public class GenerateTrack implements RightClickContextItemGenerator
 		// drawn up as a series of lines
 		if(thisP instanceof ShapeWrapper)
 		{
-			ShapeWrapper sw = (ShapeWrapper) thisP;
-			PlainShape shp = sw.getShape();
+			final ShapeWrapper sw = (ShapeWrapper) thisP;
+			final PlainShape shp = sw.getShape();
 			if(shp instanceof LineShape)
 				res = true;
 		}
 		return res;
 	}
 
-	public static TrackWrapper generateTrackFor(BaseLayer layer)
+	public static TrackWrapper generateTrackFor(final BaseLayer layer)
 	{
 		TrackWrapper res = new TrackWrapper();
 		res.setName("T_" + layer.getName());
@@ -223,17 +223,17 @@ public class GenerateTrack implements RightClickContextItemGenerator
 		Color trackColor = null;
 		
 		// ok, step through the points
-		Enumeration<Editable> numer = layer.elements();
+		final Enumeration<Editable> numer = layer.elements();
 		
 		// remember the last line viewed, since we want to add both of it's points
 		ShapeWrapper lastLine = null;
 		
 		while (numer.hasMoreElements())
 		{
-			Plottable pl = (Plottable) numer.nextElement();
+			final Plottable pl = (Plottable) numer.nextElement();
 			if(pl instanceof LabelWrapper)
 			{
-				LabelWrapper label = (LabelWrapper) pl;
+				final LabelWrapper label = (LabelWrapper) pl;
 
 				// just check we know the track color
 				if(trackColor == null)
@@ -243,9 +243,9 @@ public class GenerateTrack implements RightClickContextItemGenerator
 				if(dtg == null)
 					dtg = new HiResDate(new Date());
 				
-				WorldLocation loc = label.getBounds().getCentre();
-				Fix newFix = new Fix(dtg, loc, 0, 0);
-				FixWrapper fw = new FixWrapper(newFix);
+				final WorldLocation loc = label.getBounds().getCentre();
+				final Fix newFix = new Fix(dtg, loc, 0, 0);
+				final FixWrapper fw = new FixWrapper(newFix);
 				
 				if(label.getColor() != trackColor)
 					fw.setColor(label.getColor());
@@ -259,19 +259,19 @@ public class GenerateTrack implements RightClickContextItemGenerator
 			}
 			else if(pl instanceof ShapeWrapper)
 			{
-				ShapeWrapper sw = (ShapeWrapper) pl;
-				PlainShape shape = sw.getShape();
+				final ShapeWrapper sw = (ShapeWrapper) pl;
+				final PlainShape shape = sw.getShape();
 				if(shape instanceof LineShape)
 				{
-					LineShape line = (LineShape) shape;
+					final LineShape line = (LineShape) shape;
 					// just check we know the track color
 					if(trackColor == null)
 						trackColor = line.getColor();
 					
-					HiResDate dtg = sw.getStartDTG();
-					WorldLocation loc = line.getLine_Start();
-					Fix newFix = new Fix(dtg, loc, 0, 0);
-					FixWrapper fw = new FixWrapper(newFix);
+					final HiResDate dtg = sw.getStartDTG();
+					final WorldLocation loc = line.getLine_Start();
+					final Fix newFix = new Fix(dtg, loc, 0, 0);
+					final FixWrapper fw = new FixWrapper(newFix);
 					
 					if(line.getColor() != trackColor)
 						fw.setColor(line.getColor());
@@ -289,11 +289,11 @@ public class GenerateTrack implements RightClickContextItemGenerator
 		// did we have a trailing line item?
 		if(lastLine != null)
 		{
-			HiResDate dtg = lastLine.getEndDTG();
-			LineShape line = (LineShape) lastLine.getShape();
-			WorldLocation loc = line.getLineEnd();
-			Fix newFix = new Fix(dtg, loc, 0, 0);
-			FixWrapper fw = new FixWrapper(newFix);
+			final HiResDate dtg = lastLine.getEndDTG();
+			final LineShape line = (LineShape) lastLine.getShape();
+			final WorldLocation loc = line.getLineEnd();
+			final Fix newFix = new Fix(dtg, loc, 0, 0);
+			final FixWrapper fw = new FixWrapper(newFix);
 			fw.setTrackWrapper(res);
 			res.add(fw);
 		}
@@ -322,24 +322,24 @@ public class GenerateTrack implements RightClickContextItemGenerator
 
 		public final void testIWork()
 		{
-			Layers theLayers = new Layers();
-			BaseLayer holder = new BaseLayer();
+			final Layers theLayers = new Layers();
+			final BaseLayer holder = new BaseLayer();
 			holder.setName("Trk");
 			theLayers.addThisLayer(holder);
 			
 			WorldLocation lastLoc = null;
 			for(int i=0;i<4;i++)
 			{
-				WorldLocation thisLoc = new WorldLocation(0,i,0,'N',0,0,0,'W', 0);
+				final WorldLocation thisLoc = new WorldLocation(0,i,0,'N',0,0,0,'W', 0);
 				if(lastLoc != null)
 				{
 					// ok, add the line
-					LineShape ls = new LineShape(lastLoc, thisLoc);
+					final LineShape ls = new LineShape(lastLoc, thisLoc);
 					
-					long theDate1 = 20000000 + i * 60000;
-					long theDate2 = 20000000 + i * 61000;
+					final long theDate1 = 20000000 + i * 60000;
+					final long theDate2 = 20000000 + i * 61000;
 					
-					ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red, new HiResDate(theDate1));
+					final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red, new HiResDate(theDate1));
 					sw.setTime_Start(new HiResDate(theDate1));
 					sw.setTimeEnd(new HiResDate(theDate2));
 					holder.add(sw);
@@ -350,19 +350,19 @@ public class GenerateTrack implements RightClickContextItemGenerator
 			}
 			
 			// ok, now do the interpolation
-			ConvertTrack ct = new ConvertTrack("convert it", theLayers, new Editable[]{holder});
+			final ConvertTrack ct = new ConvertTrack("convert it", theLayers, new Editable[]{holder});
 			
 			try
 			{
 				ct.execute(null, null);
 			}
-			catch (ExecutionException e)
+			catch (final ExecutionException e)
 			{
 				fail("Exception thrown");
 			}
 			
 			// check the track got generated
-			TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
+			final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
 			
 			// did we find it?
 			assertNotNull("track generated", tw);

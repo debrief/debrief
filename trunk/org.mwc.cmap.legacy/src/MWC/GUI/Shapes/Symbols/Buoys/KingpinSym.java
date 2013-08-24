@@ -53,28 +53,28 @@ public class KingpinSym extends PlainSymbol {
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
     return res;
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
 
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(6 * getScaleVal() * 1.5);
-    int tinyWid = (int) (getScaleVal() * 1.5);
-    int tinyWid_2 = (int)(tinyWid/2d);
-    int wid_2 = (int)(wid/2d);
+    final int wid = (int)(6 * getScaleVal() * 1.5);
+    final int tinyWid = (int) (getScaleVal() * 1.5);
+    final int tinyWid_2 = (int)(tinyWid/2d);
+    final int wid_2 = (int)(wid/2d);
 
     // start with the centre object
     dest.fillOval(centre.x - tinyWid_2, centre.y - tinyWid_2, tinyWid, tinyWid);
@@ -83,9 +83,9 @@ public class KingpinSym extends PlainSymbol {
     dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
 
     // now the direction of the stalk
-    double theta = MWC.Algorithms.Conversions.Degs2Rads(45.0);
-    double dX = Math.sin(theta) * wid_2;
-    double dY = Math.cos(theta) * wid_2;
+    final double theta = MWC.Algorithms.Conversions.Degs2Rads(45.0);
+    final double dX = Math.sin(theta) * wid_2;
+    final double dY = Math.cos(theta) * wid_2;
 
     dest.drawLine(centre.x + (int)dX, centre.y - (int)dY,
                   centre.x + wid, centre.y - wid);

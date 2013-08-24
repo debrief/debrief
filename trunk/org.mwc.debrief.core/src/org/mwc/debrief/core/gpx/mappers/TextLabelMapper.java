@@ -32,33 +32,33 @@ public class TextLabelMapper implements DebriefJaxbContextAware
 {
 	private JAXBContext debriefContext;
 
-	public LabelWrapper fromGpx(GpxType gpx)
+	public LabelWrapper fromGpx(final GpxType gpx)
 	{
-		ExtensionsType extensions = gpx.getExtensions();
+		final ExtensionsType extensions = gpx.getExtensions();
 		LabelWrapper lw = null;
 		if (extensions != null)
 		{
-			List<Object> any = extensions.getAny();
+			final List<Object> any = extensions.getAny();
 			Unmarshaller unmarshaller;
 			try
 			{
 				unmarshaller = debriefContext.createUnmarshaller();
-				Object object = unmarshaller.unmarshal((Node) any.get(0));
-				TextlabelType textLabelExtension = (TextlabelType) JAXBIntrospector.getValue(object);
+				final Object object = unmarshaller.unmarshal((Node) any.get(0));
+				final TextlabelType textLabelExtension = (TextlabelType) JAXBIntrospector.getValue(object);
 
-				LocationType centreType = textLabelExtension.getCentre();
+				final LocationType centreType = textLabelExtension.getCentre();
 
 				WorldLocation center = null;
 				if (centreType != null)
 				{
-					ShortLocation shortLocation = centreType.getShortLocation();
+					final ShortLocation shortLocation = centreType.getShortLocation();
 
 					if (shortLocation != null)
 					{
 						center = new WorldLocation(shortLocation.getLat(), shortLocation.getLong(), shortLocation.getDepth());
 					}
 				}
-				Color color = GpxUtil.resolveColor(textLabelExtension.getColour());
+				final Color color = GpxUtil.resolveColor(textLabelExtension.getColour());
 				lw = new LabelWrapper(textLabelExtension.getLabel(), center, color);
 				lw.setFont(GpxUtil.resolveFont(textLabelExtension.getFont()));
 				lw.setLabelLocation(GpxUtil.resolveLabelLocation(textLabelExtension.getLabelLocation()));
@@ -68,7 +68,7 @@ public class TextLabelMapper implements DebriefJaxbContextAware
 				lw.setSymbolSize(GpxUtil.resolveSymbolScale(textLabelExtension.getScale()));
 				// lw.setSymbolType(val) TODO
 			}
-			catch (JAXBException e)
+			catch (final JAXBException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Error while mapping textLabel from GPX", e);
 			}
@@ -77,7 +77,7 @@ public class TextLabelMapper implements DebriefJaxbContextAware
 	}
 
 	@Override
-	public void setJaxbContext(JAXBContext ctx)
+	public void setJaxbContext(final JAXBContext ctx)
 	{
 		debriefContext = ctx;
 	}

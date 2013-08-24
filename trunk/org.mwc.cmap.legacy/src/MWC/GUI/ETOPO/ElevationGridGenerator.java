@@ -128,7 +128,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws IllegalArgumentException One of the points were <= 1 or the
      *   dimensions are non-positive
      */
-    public ElevationGridGenerator(float w, float d, int wPnts, int dPnts)
+    public ElevationGridGenerator(final float w, final float d, final int wPnts, final int dPnts)
     {
         this(w, d, wPnts, dPnts, (float[])null, DEFAULT_HEIGHT);
     }
@@ -146,12 +146,12 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws IllegalArgumentException One of the points were <= 1 or the
      *   dimensions are non-positive
      */
-    public ElevationGridGenerator(float w,
-                                  float d,
-                                  int wPnts,
-                                  int dPnts,
-                                  float[] heights,
-                                  float baseHeight)
+    public ElevationGridGenerator(final float w,
+                                  final float d,
+                                  final int wPnts,
+                                  final int dPnts,
+                                  final float[] heights,
+                                  final float baseHeight)
     {
         if((wPnts < 2) || (dPnts < 2))
             throw new IllegalArgumentException("Point count <= 1");
@@ -187,12 +187,12 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws IllegalArgumentException One of the points were <= 1 or the
      *   dimensions are non-positive
      */
-    public ElevationGridGenerator(float w,
-                                  float d,
-                                  int wPnts,
-                                  int dPnts,
-                                  float[][] heights,
-                                  float baseHeight)
+    public ElevationGridGenerator(final float w,
+                                  final float d,
+                                  final int wPnts,
+                                  final int dPnts,
+                                  final float[][] heights,
+                                  final float baseHeight)
     {
         if((wPnts < 2) || (dPnts < 2))
             throw new IllegalArgumentException("Point count <= 1");
@@ -238,7 +238,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws IllegalArgumentException One of the points were <= 1 or the
      *   dimensions are non-positive
      */
-    public void setDimensions(float w, float d, int wPnts, int dPnts)
+    public void setDimensions(final float w, final float d, final int wPnts, final int dPnts)
     {
         if((terrainWidth != w) || (terrainDepth != d))
         {
@@ -265,7 +265,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @param heights The array of height values to use
      * @param baseHeight The base height for relative calcs. May be zero
      */
-    public void setTerrainDetail(float[] heights, float baseHeight)
+    public void setTerrainDetail(final float[] heights, final float baseHeight)
     {
         flatHeights = heights;
         this.baseHeight = baseHeight;
@@ -281,7 +281,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @param heights The array of height values to use
      * @param baseHeight The base height for relative calcs. May be zero
      */
-    public void setTerrainDetail(float[][] heights, float baseHeight)
+    public void setTerrainDetail(final float[][] heights, final float baseHeight)
     {
         arrayHeights = heights;
         this.baseHeight = baseHeight;
@@ -301,7 +301,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws UnsupportedTypeException The generator cannot handle the type
      *   of geometry you have requested.
      */
-    public int getVertexCount(GeometryData data)
+    public int getVertexCount(final GeometryData data)
         throws UnsupportedTypeException
     {
         int ret_val = 0;
@@ -351,7 +351,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws UnsupportedTypeException The generator cannot handle the type
      *   of geometry you have requested
      */
-    public void generate(GeometryData data)
+    public void generate(final GeometryData data)
         throws UnsupportedTypeException, InvalidArraySizeException
     {
         switch(data.geometryType)
@@ -394,7 +394,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void unindexedTriangles(GeometryData data)
+    private void unindexedTriangles(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateUnindexedTriCoordinates(data);
@@ -416,7 +416,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void unindexedQuads(GeometryData data)
+    private void unindexedQuads(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateUnindexedQuadCoordinates(data);
@@ -438,7 +438,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void indexedQuads(GeometryData data)
+    private void indexedQuads(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateIndexedCoordinates(data);
@@ -452,7 +452,7 @@ public class ElevationGridGenerator extends GeometryGenerator
             generateTriTexture3D(data);
 
         // now let's do the index list
-        int index_size = data.vertexCount * 4;
+        final int index_size = data.vertexCount * 4;
 
         if(data.indexes == null)
             data.indexes = new int[index_size];
@@ -461,7 +461,7 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.indexes.length,
                                                 index_size);
 
-        int[] indexes = data.indexes;
+        final int[] indexes = data.indexes;
         data.indexesCount = index_size;
         int idx = 0;
         int vtx = 0;
@@ -488,7 +488,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void indexedTriangles(GeometryData data)
+    private void indexedTriangles(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateIndexedCoordinates(data);
@@ -502,7 +502,7 @@ public class ElevationGridGenerator extends GeometryGenerator
             generateTriTexture3D(data);
 
         // now let's do the index list
-        int index_size = data.vertexCount * 6;
+        final int index_size = data.vertexCount * 6;
 
         if(data.indexes == null)
             data.indexes = new int[index_size];
@@ -511,7 +511,7 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.indexes.length,
                                                 index_size);
 
-        int[] indexes = data.indexes;
+        final int[] indexes = data.indexes;
         data.indexesCount = index_size;
         int idx = 0;
         int vtx = 0;
@@ -544,7 +544,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void triangleStrips(GeometryData data)
+    private void triangleStrips(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateUnindexedTriStripCoordinates(data);
@@ -557,7 +557,7 @@ public class ElevationGridGenerator extends GeometryGenerator
         else if((data.geometryComponents & GeometryData.TEXTURE_3D_DATA) != 0)
             generateTriTexture3D(data);
 
-        int num_strips = depthPoints - 1;
+        final int num_strips = depthPoints - 1;
 
         if(data.stripCounts == null)
             data.stripCounts = new int[num_strips];
@@ -578,7 +578,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void triangleFans(GeometryData data)
+    private void triangleFans(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateUnindexedTriFanCoordinates(data);
@@ -591,7 +591,7 @@ public class ElevationGridGenerator extends GeometryGenerator
         else if((data.geometryComponents & GeometryData.TEXTURE_3D_DATA) != 0)
             generateTriTexture3D(data);
 
-        int num_strips = facetCount;
+        final int num_strips = facetCount;
 
         if(data.stripCounts == null)
             data.stripCounts = new int[num_strips];
@@ -617,7 +617,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void indexedTriangleStrips(GeometryData data)
+    private void indexedTriangleStrips(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateIndexedCoordinates(data);
@@ -631,8 +631,8 @@ public class ElevationGridGenerator extends GeometryGenerator
             generateTriTexture3D(data);
 
         // now let's do the index list
-        int index_size = widthPoints * (depthPoints - 1) * 2;
-        int num_strips = depthPoints - 1;
+        final int index_size = widthPoints * (depthPoints - 1) * 2;
+        final int num_strips = depthPoints - 1;
 
         if(data.indexes == null)
             data.indexes = new int[index_size];
@@ -648,13 +648,13 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.stripCounts.length,
                                                 num_strips);
 
-        int[] indexes = data.indexes;
-        int[] stripCounts = data.stripCounts;
+        final int[] indexes = data.indexes;
+        final int[] stripCounts = data.stripCounts;
         data.indexesCount = index_size;
         data.numStrips = num_strips;
         int idx = 0;
         int vtx = 0;
-        int total_points = widthPoints * (depthPoints - 1);
+        final int total_points = widthPoints * (depthPoints - 1);
 
         // The side is one big strip
         for(int i = total_points; --i >= 0; )
@@ -679,7 +679,7 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void indexedTriangleFans(GeometryData data)
+    private void indexedTriangleFans(final GeometryData data)
         throws InvalidArraySizeException
     {
         generateIndexedCoordinates(data);
@@ -693,8 +693,8 @@ public class ElevationGridGenerator extends GeometryGenerator
             generateTriTexture3D(data);
 
         // now let's do the index list
-        int index_size = facetCount * 4;
-        int num_strips = facetCount;
+        final int index_size = facetCount * 4;
+        final int num_strips = facetCount;
 
         if(data.indexes == null)
             data.indexes = new int[index_size];
@@ -710,8 +710,8 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.stripCounts.length,
                                                 num_strips);
 
-        int[] indexes = data.indexes;
-        int[] stripCounts = data.stripCounts;
+        final int[] indexes = data.indexes;
+        final int[] stripCounts = data.stripCounts;
         data.indexesCount = index_size;
         data.numStrips = num_strips;
         int idx = 0;
@@ -746,10 +746,10 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedTriCoordinates(GeometryData data)
+    private void generateUnindexedTriCoordinates(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = depthPoints * widthPoints * 6;
+        final int vtx_cnt = depthPoints * widthPoints * 6;
 
         if(data.coordinates == null)
             data.coordinates = new float[vtx_cnt * 3];
@@ -758,7 +758,7 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.coordinates.length,
                                                 vtx_cnt * 3);
 
-        float[] coords = data.coordinates;
+        final float[] coords = data.coordinates;
         data.vertexCount = vtx_cnt;
 
         regenerateBase();
@@ -766,7 +766,7 @@ public class ElevationGridGenerator extends GeometryGenerator
         int count = 0;
         int i = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
+        final int width_inc = widthPoints * 3;
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -815,10 +815,10 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedTriStripCoordinates(GeometryData data)
+    private void generateUnindexedTriStripCoordinates(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = widthPoints * (depthPoints - 1) * 2;
+        final int vtx_cnt = widthPoints * (depthPoints - 1) * 2;
 
         if(data.coordinates == null)
             data.coordinates = new float[vtx_cnt * 3];
@@ -827,7 +827,7 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.coordinates.length,
                                                 vtx_cnt * 3);
 
-        float[] coords = data.coordinates;
+        final float[] coords = data.coordinates;
         data.vertexCount = vtx_cnt;
 
         regenerateBase();
@@ -835,8 +835,8 @@ public class ElevationGridGenerator extends GeometryGenerator
         int i;
         int count = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
-        int total_points = widthPoints * (depthPoints - 1);
+        final int width_inc = widthPoints * 3;
+        final int total_points = widthPoints * (depthPoints - 1);
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -865,10 +865,10 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedTriFanCoordinates(GeometryData data)
+    private void generateUnindexedTriFanCoordinates(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = facetCount * 4;
+        final int vtx_cnt = facetCount * 4;
 
         if(data.coordinates == null)
             data.coordinates = new float[vtx_cnt * 3];
@@ -877,7 +877,7 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.coordinates.length,
                                                 vtx_cnt * 3);
 
-        float[] coords = data.coordinates;
+        final float[] coords = data.coordinates;
         data.vertexCount = vtx_cnt;
 
         regenerateBase();
@@ -885,7 +885,7 @@ public class ElevationGridGenerator extends GeometryGenerator
         int count = 0;
         int i = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
+        final int width_inc = widthPoints * 3;
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -924,10 +924,10 @@ public class ElevationGridGenerator extends GeometryGenerator
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedQuadCoordinates(GeometryData data)
+    private void generateUnindexedQuadCoordinates(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = facetCount * 4;
+        final int vtx_cnt = facetCount * 4;
 
         if(data.coordinates == null)
             data.coordinates = new float[vtx_cnt * 3];
@@ -936,7 +936,7 @@ public class ElevationGridGenerator extends GeometryGenerator
                                                 data.coordinates.length,
                                                 vtx_cnt * 3);
 
-        float[] coords = data.coordinates;
+        final float[] coords = data.coordinates;
         data.vertexCount = vtx_cnt;
 
         regenerateBase();
@@ -944,7 +944,7 @@ public class ElevationGridGenerator extends GeometryGenerator
         int count = 0;
         int i = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
+        final int width_inc = widthPoints * 3;
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -1000,10 +1000,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateIndexedCoordinates(GeometryData data)
+    private void generateIndexedCoordinates(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = widthPoints * depthPoints;
+        final int vtx_cnt = widthPoints * depthPoints;
 
         if(data.coordinates == null)
             data.coordinates = new float[vtx_cnt * 3];
@@ -1012,7 +1012,7 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
                                                 data.coordinates.length,
                                                 vtx_cnt * 3);
 
-        float[] coords = data.coordinates;
+        final float[] coords = data.coordinates;
         data.vertexCount = vtx_cnt;
 
         regenerateBase();
@@ -1037,10 +1037,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedTriNormals(GeometryData data)
+    private void generateUnindexedTriNormals(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = data.vertexCount * 3;
+        final int vtx_cnt = data.vertexCount * 3;
 
         if(data.normals == null)
             data.normals = new float[vtx_cnt];
@@ -1054,8 +1054,8 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
         int i = 0;
         int count = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
-        float[] normals = data.normals;
+        final int width_inc = widthPoints * 3;
+        final float[] normals = data.normals;
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -1105,10 +1105,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedTriStripNormals(GeometryData data)
+    private void generateUnindexedTriStripNormals(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = data.vertexCount * 3;
+        final int vtx_cnt = data.vertexCount * 3;
 
         if(data.normals == null)
             data.normals = new float[vtx_cnt];
@@ -1120,11 +1120,11 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
         regenerateNormals();
 
         int i;
-        float[] normals = data.normals;
+        final float[] normals = data.normals;
         int count = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
-        int total_points = widthPoints * (depthPoints - 1);
+        final int width_inc = widthPoints * 3;
+        final int total_points = widthPoints * (depthPoints - 1);
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -1153,10 +1153,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedTriFanNormals(GeometryData data)
+    private void generateUnindexedTriFanNormals(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = data.vertexCount * 3;
+        final int vtx_cnt = data.vertexCount * 3;
 
         if(data.normals == null)
             data.normals = new float[vtx_cnt];
@@ -1167,11 +1167,11 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
 
         regenerateNormals();
 
-        float[] normals = data.normals;
+        final float[] normals = data.normals;
         int count = 0;
         int i = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
+        final int width_inc = widthPoints * 3;
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -1211,10 +1211,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedQuadNormals(GeometryData data)
+    private void generateUnindexedQuadNormals(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = data.vertexCount * 3;
+        final int vtx_cnt = data.vertexCount * 3;
 
         if(data.normals == null)
             data.normals = new float[vtx_cnt];
@@ -1225,11 +1225,11 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
 
         regenerateNormals();
 
-        float[] normals = data.normals;
+        final float[] normals = data.normals;
         int count = 0;
         int i = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 3;
+        final int width_inc = widthPoints * 3;
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -1283,10 +1283,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateIndexedNormals(GeometryData data)
+    private void generateIndexedNormals(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = data.vertexCount * 3;
+        final int vtx_cnt = data.vertexCount * 3;
 
         if(data.normals == null)
             data.normals = new float[vtx_cnt];
@@ -1311,10 +1311,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedTriStripTexture2D(GeometryData data)
+    private void generateUnindexedTriStripTexture2D(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = widthPoints * (depthPoints - 1) * 2;
+        final int vtx_cnt = widthPoints * (depthPoints - 1) * 2;
 
         if(data.textureCoordinates == null)
             data.textureCoordinates = new float[vtx_cnt * 2];
@@ -1323,15 +1323,15 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
                                                 data.textureCoordinates.length,
                                                 vtx_cnt * 2);
 
-        float[] coords = data.textureCoordinates;
+        final float[] coords = data.textureCoordinates;
 
         regenerateTexcoords();
 
         int i;
         int count = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 2;
-        int total_points = widthPoints * (depthPoints - 1);
+        final int width_inc = widthPoints * 2;
+        final int total_points = widthPoints * (depthPoints - 1);
 
         // Start of with one less row (width) here because we don't have two
         // sets of coordinates for those.
@@ -1355,10 +1355,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateUnindexedQuadTexture2D(GeometryData data)
+    private void generateUnindexedQuadTexture2D(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = facetCount * 4;
+        final int vtx_cnt = facetCount * 4;
 
         if(data.textureCoordinates == null)
             data.textureCoordinates = new float[vtx_cnt * 2];
@@ -1367,14 +1367,14 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
                                                 data.textureCoordinates.length,
                                                 vtx_cnt * 2);
 
-        float[] coords = data.textureCoordinates;
+        final float[] coords = data.textureCoordinates;
 
         regenerateTexcoords();
 
         int count = 0;
         int i = 0;
         int base_count = 0;
-        int width_inc = widthPoints * 2;
+        final int width_inc = widthPoints * 2;
 
         for(i = facetCount; --i >= 0; )
         {
@@ -1406,10 +1406,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateTriTexture2D(GeometryData data)
+    private void generateTriTexture2D(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = data.vertexCount * 2;
+        final int vtx_cnt = data.vertexCount * 2;
 
         if(data.textureCoordinates == null)
             data.textureCoordinates = new float[vtx_cnt];
@@ -1433,10 +1433,10 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @throws InvalidArraySizeException The array is not big enough to contain
      *   the requested geometry
      */
-    private void generateTriTexture3D(GeometryData data)
+    private void generateTriTexture3D(final GeometryData data)
         throws InvalidArraySizeException
     {
-        int vtx_cnt = data.vertexCount * 2;
+        final int vtx_cnt = data.vertexCount * 2;
 
         if(data.textureCoordinates == null)
             data.textureCoordinates = new float[vtx_cnt];
@@ -1456,7 +1456,7 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @param coords The coordinates to work with
      * @param cnt The count of vertices to work on
      */
-    private void checkRelativeHeights(int subFlags, float[] coords, int cnt)
+    private void checkRelativeHeights(final int subFlags, final float[] coords, final int cnt)
     {
         if((subFlags & RELATIVE_HEIGHTS) == 0)
             return;
@@ -1487,14 +1487,14 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
 
         float d = -terrainDepth / 2;
         float w = -terrainWidth / 2;
-        float width_inc = terrainWidth / (widthPoints - 1);
-        float depth_inc = terrainDepth / (depthPoints - 1);
+        final float width_inc = terrainWidth / (widthPoints - 1);
+        final float depth_inc = terrainDepth / (depthPoints - 1);
 
         int count = 0;
 
         if(flatHeights != null)
         {
-            int num = numTerrainValues / 3;
+            final int num = numTerrainValues / 3;
             for(int i = 1; i <= num; i++)
             {
                 terrainCoordinates[count++] = w;
@@ -1796,14 +1796,14 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
 
         float d = 0;
         float w = 0;
-        float width_inc = 1.0f / (widthPoints - 1);
-        float depth_inc = 1.0f / (depthPoints - 1);
+        final float width_inc = 1.0f / (widthPoints - 1);
+        final float depth_inc = 1.0f / (depthPoints - 1);
 
         int count = 0;
 
         if(flatHeights != null)
         {
-            int num = numTerrainValues / 3;
+            final int num = numTerrainValues / 3;
             for(int i = 1; i <= num; i++)
             {
                 terrainTexcoords[count++] = w;

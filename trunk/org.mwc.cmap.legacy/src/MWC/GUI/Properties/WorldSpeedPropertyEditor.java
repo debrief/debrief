@@ -71,7 +71,7 @@ abstract public class WorldSpeedPropertyEditor extends
   /**
    * store the new value (in minutes)
    */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     // reset value
     _myVal = null;
@@ -109,19 +109,19 @@ abstract public class WorldSpeedPropertyEditor extends
     try
     {
       // get the speed
-      double duration = getSpeed();
+      final double duration = getSpeed();
 
       // get the units scale factor
-      int units = getUnits();
+      final int units = getUnits();
 
       // scale the speed to our output units (minutes)
       val = new WorldSpeed(duration, units);
     }
-    catch (NumberFormatException e)
+    catch (final NumberFormatException e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
-    catch (java.text.ParseException pe)
+    catch (final java.text.ParseException pe)
     {
       MWC.Utilities.Errors.Trace.trace(pe);
     }
@@ -174,7 +174,7 @@ abstract public class WorldSpeedPropertyEditor extends
    *
    * @param num the number of columns to show in the text field
    */
-  public void setColumns(int num)
+  public void setColumns(final int num)
   {
     _numColumns = num;
   }

@@ -45,7 +45,7 @@ public class Util
      * @param g a graphics context
      * @return the font height, in pixels
     */
-    public static int getFontHeight(Graphics g)
+    public static int getFontHeight(final Graphics g)
     {
         return getFontHeight(g.getFontMetrics());
     }
@@ -57,7 +57,7 @@ public class Util
      * @return the font height, in pixels
      */
     @SuppressWarnings("deprecation")
-		public static int getFontHeight(Font f)
+		public static int getFontHeight(final Font f)
     {
         return getFontHeight(Toolkit.getDefaultToolkit().getFontMetrics(f));
     }
@@ -68,7 +68,7 @@ public class Util
      * @param m the metrics of the font
      * @return the font height, in pixels
      */
-    public static int getFontHeight(FontMetrics m)
+    public static int getFontHeight(final FontMetrics m)
     {
         return m.getHeight();
     }
@@ -80,7 +80,7 @@ public class Util
      * @param s the string to determine the width of
      * @return the width of the string, in pixels
      */
-    public static int getStringWidth(Graphics g, String s)
+    public static int getStringWidth(final Graphics g, final String s)
     {
         return getStringWidth(g.getFontMetrics(), s);
     }
@@ -93,7 +93,7 @@ public class Util
      * @return the width of the string, in pixels
      */
     @SuppressWarnings("deprecation")
-		public static int getStringWidth(Font f, String s)
+		public static int getStringWidth(final Font f, final String s)
     {
         return getStringWidth(Toolkit.getDefaultToolkit().getFontMetrics(f), s);
     }
@@ -105,14 +105,14 @@ public class Util
      * @param s the string to determine the width of
      * @return the width of the string, in pixels
      */
-    public static int getStringWidth(FontMetrics m, String s)
+    public static int getStringWidth(final FontMetrics m, final String s)
     {
         return m.stringWidth(s);
     }
 
     /**
      * Retrieves a default dialog font.
-     * In this case the typeface is a plain 12-point “Dialog”.
+     * In this case the typeface is a plain 12-point ï¿½Dialogï¿½.
      * @return the default dialog font
      */
     public static Font getDefaultFont()
@@ -130,19 +130,19 @@ public class Util
      * Preserves the font information of a graphics object retrieved from
      * an image. This ensures that susequent calls to getFontMetrics through
      * the graphics object will not result in a NullPointerException.
-     * It does this by setting the font in the image’s graphics context to
+     * It does this by setting the font in the imageï¿½s graphics context to
      * the font in the component, as needed.
      *
      * @param image the image with the desired graphics context
      * @param component the component
      * @return a graphics context with a currently set font
      */
-	public static Graphics getGraphics(Image image, Component component)
+	public static Graphics getGraphics(final Image image, final Component component)
 	{
 		if(image == null)
 			return null;
 
-		Graphics graphics = image.getGraphics();
+		final Graphics graphics = image.getGraphics();
 		if(graphics != null && component != null && component.getFont() != null)
 		{
 			graphics.setFont(component.getFont());
@@ -157,9 +157,9 @@ public class Util
 	 * @return the zero-relative component index, or -1 if the component is not
 	 * found in the container
      */
-	public static int findComponent(Container container, Component component)
+	public static int findComponent(final Container container, final Component component)
 	{
-		Component[] components = container.getComponents();
+		final Component[] components = container.getComponents();
 		for (int i = 0;i < components.length;i++)
 		{
 			if (components[i] == component)

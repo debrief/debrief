@@ -172,7 +172,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    *
    * @param p1 the value to use
    */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if (p1 instanceof Integer)
     {
@@ -180,7 +180,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
     }
     if (p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
@@ -190,13 +190,13 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    *
    * @param val user input
    */
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
-    int[] list = getValues();
-    String[] tags = getTags();
+    final int[] list = getValues();
+    final String[] tags = getTags();
     for (int i = 0; i < tags.length; i++)
     {
-      String thisS = tags[i];
+      final String thisS = tags[i];
       if (thisS.equals(val))
       {
         _myFreq = new Integer(list[i]);
@@ -213,14 +213,14 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    */
   public String getAsText()
   {
-    int[] list = getValues();
-    String[] tags = getTags();
+    final int[] list = getValues();
+    final String[] tags = getTags();
 
     String res = null;
-    double current = _myFreq.intValue();
+    final double current = _myFreq.intValue();
     for (int i = 0; i < list.length; i++)
     {
-      double v = list[i];
+      final double v = list[i];
       if (v == current)
       {
         res = tags[i];

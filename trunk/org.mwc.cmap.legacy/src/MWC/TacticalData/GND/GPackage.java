@@ -26,14 +26,14 @@ public class GPackage extends BaseLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public GPackage(String name, final String dbUrl, final ArrayList<String> ids)
+	public GPackage(final String name, final String dbUrl, final ArrayList<String> ids)
 	{
 		super(false);
 		super.setName(name);
 		super.setVisible(false);
 
 		// populate ourselves in a separate thread?
-		Thread doer = new Thread()
+		final Thread doer = new Thread()
 		{
 
 			@Override
@@ -55,62 +55,62 @@ public class GPackage extends BaseLayer
 	{
 		return false;
 	}
-	private void loadMe(String dbUrl, ArrayList<String> ids)
+	private void loadMe(final String dbUrl, final ArrayList<String> ids)
 	{
 		// collate the ids
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode root = mapper.createObjectNode();
-		ArrayNode keys = mapper.createArrayNode();
-		Iterator<String> iter = ids.iterator();
+		final ObjectMapper mapper = new ObjectMapper();
+		final ObjectNode root = mapper.createObjectNode();
+		final ArrayNode keys = mapper.createArrayNode();
+		final Iterator<String> iter = ids.iterator();
 		while (iter.hasNext())
 		{
-			String id = (String) iter.next();
+			final String id = (String) iter.next();
 			keys.add(id);
 		}
 		root.put("keys", keys);
 
 		try
 		{
-			String uri = dbUrl + "/_all_docs?include_docs=true";
-			URL databaseURL = new URL(dbUrl);
+			final String uri = dbUrl + "/_all_docs?include_docs=true";
+			final URL databaseURL = new URL(dbUrl);
 			System.err.println("to:" + uri);
-			String cStr = root.toString();
-			byte[] content = cStr.getBytes();
-			Post doIt = new Post(uri, content, 1000, 10000);
+			final String cStr = root.toString();
+			final byte[] content = cStr.getBytes();
+			final Post doIt = new Post(uri, content, 1000, 10000);
 			doIt.header("Content-Type", "application/json");
-			int result = doIt.responseCode();
+			final int result = doIt.responseCode();
 			if (result == 200)
 			{
-				byte[] resB = doIt.bytes();
-				JsonNode list = mapper.readValue(resB, JsonNode.class);
+				final byte[] resB = doIt.bytes();
+				final JsonNode list = mapper.readValue(resB, JsonNode.class);
 
 				// ok, what happens next?
-				JsonNode tmpRows = list.get("rows");
+				final JsonNode tmpRows = list.get("rows");
 				if (tmpRows.isArray())
 				{
-					ArrayNode rows = (ArrayNode) tmpRows;
+					final ArrayNode rows = (ArrayNode) tmpRows;
 					for (int i = 0; i < rows.size(); i++)
 					{
-						JsonNode theNode = rows.get(i);
-						JsonNode theDoc = theNode.get("doc");
-						GDataset newData = new GDataset(theDoc, databaseURL);
-						GTrack track = new GTrack(newData);
+						final JsonNode theNode = rows.get(i);
+						final JsonNode theDoc = theNode.get("doc");
+						final GDataset newData = new GDataset(theDoc, databaseURL);
+						final GTrack track = new GTrack(newData);
 						add(track);
 					}
 				}
 			}
 		}
-		catch (JsonParseException e)
+		catch (final JsonParseException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (JsonMappingException e)
+		catch (final JsonMappingException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

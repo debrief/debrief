@@ -42,7 +42,7 @@ public class ScenarioWrapper extends Layers
 			this.setName("Generator Pending");
 		}
 
-		public void setObservers(Vector<ScenarioObserver> observers)
+		public void setObservers(final Vector<ScenarioObserver> observers)
 		{
 			// clear out
 			this.removeAllElements();
@@ -58,10 +58,10 @@ public class ScenarioWrapper extends Layers
 			this.add(_layerObs);
 
 			// ok, now load the observers themselves
-			Iterator<ScenarioObserver> iter = observers.iterator();
+			final Iterator<ScenarioObserver> iter = observers.iterator();
 			while (iter.hasNext())
 			{
-				ScenarioObserver thisS = iter.next();
+				final ScenarioObserver thisS = iter.next();
 				_layerObs.add(thisS);
 			}
 
@@ -73,10 +73,10 @@ public class ScenarioWrapper extends Layers
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private MultiScenarioPresenter _thePresenter;
-	private ControllerWrapper _controlWrapper;
+	private final MultiScenarioPresenter _thePresenter;
+	private final ControllerWrapper _controlWrapper;
 
-	private ScenarioLayer _scenLayer;
+	private final ScenarioLayer _scenLayer;
 
 	/**
 	 * convenience method for when we have our own scenario layer
@@ -84,8 +84,8 @@ public class ScenarioWrapper extends Layers
 	 * @param scenarioController
 	 * @param layer
 	 */
-	public ScenarioWrapper(MultiScenarioPresenter scenarioController,
-			ScenarioLayer layer)
+	public ScenarioWrapper(final MultiScenarioPresenter scenarioController,
+			final ScenarioLayer layer)
 	{
 		_thePresenter = scenarioController;
 		_controlWrapper = new ControllerWrapper();
@@ -102,10 +102,10 @@ public class ScenarioWrapper extends Layers
 	public void ditchChartFeatures()
 	{
 
-		Enumeration<Editable> layers = this.elements();
+		final Enumeration<Editable> layers = this.elements();
 		while (layers.hasMoreElements())
 		{
-			Layer thisLayer = (Layer) layers.nextElement();
+			final Layer thisLayer = (Layer) layers.nextElement();
 			if ((thisLayer == _scenLayer) || (thisLayer == _controlWrapper))
 			{
 				// ok, leave it

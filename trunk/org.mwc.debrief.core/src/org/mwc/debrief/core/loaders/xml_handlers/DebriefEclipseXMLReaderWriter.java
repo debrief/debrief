@@ -48,8 +48,8 @@ public final class DebriefEclipseXMLReaderWriter extends
 	 * handle the import of XML data, creating a new session for it
 	 */
 	public final void importThis(final String fName,
-			final java.io.InputStream is, Layers destination,
-			IControllableViewport view, PlotEditor plot)
+			final java.io.InputStream is, final Layers destination,
+			final IControllableViewport view, final PlotEditor plot)
 	{
 		// create the handler for this type of data
 		final MWCXMLReader handler = new PlotHandler(fName, destination, view, plot);
@@ -65,7 +65,7 @@ public final class DebriefEclipseXMLReaderWriter extends
 	 *          the version number of Debrief that's doing the export
 	 */
 	static public void exportThis(final PlotEditor thePlot,
-			final java.io.OutputStream os, String version)
+			final java.io.OutputStream os, final String version)
 	{
 		// first put the plot into an XML document
 		try
@@ -78,12 +78,12 @@ public final class DebriefEclipseXMLReaderWriter extends
 
 			outputContent(os, doc);
 		}
-		catch (DOMException e)
+		catch (final DOMException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst export Debrief plot", e);
 
 		}
-		catch (ParserConfigurationException e)
+		catch (final ParserConfigurationException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst exporting Debrief plot", e);
 		}
@@ -106,12 +106,12 @@ public final class DebriefEclipseXMLReaderWriter extends
 			outputContent(os, doc);
 
 		}
-		catch (DOMException e)
+		catch (final DOMException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst export Debrief plot", e);
 
 		}
-		catch (ParserConfigurationException e)
+		catch (final ParserConfigurationException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst exporting Debrief plot", e);
 		}
@@ -133,16 +133,16 @@ public final class DebriefEclipseXMLReaderWriter extends
 		// download
 		try
 		{
-			TransformerFactory tF = TransformerFactory.newInstance();
-			Transformer tr = tF.newTransformer();
+			final TransformerFactory tF = TransformerFactory.newInstance();
+			final Transformer tr = tF.newTransformer();
 			tr.setOutputProperty(OutputKeys.INDENT, "yes");
 
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(os);
+			final DOMSource source = new DOMSource(doc);
+			final StreamResult result = new StreamResult(os);
 
 			tr.transform(source, result);
 		}
-		catch (TransformerException e)
+		catch (final TransformerException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Failed to export document to file", e);
 		}

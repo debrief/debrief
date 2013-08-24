@@ -17,9 +17,9 @@ public class TestOne implements MessageListener
 {
 	XMPPConnection connection;
 
-	public void login(String userName, String password) throws XMPPException
+	public void login(final String userName, final String password) throws XMPPException
 	{
-		ConnectionConfiguration config = new ConnectionConfiguration(
+		final ConnectionConfiguration config = new ConnectionConfiguration(
 				"Mayo-Mac.local", 5222, "Work");
 		connection = new XMPPConnection(config);
 
@@ -27,19 +27,19 @@ public class TestOne implements MessageListener
 		connection.login(userName, password);
 	}
 
-	public void sendMessage(String message, String to) throws XMPPException
+	public void sendMessage(final String message, final String to) throws XMPPException
 	{
-		Chat chat = connection.getChatManager().createChat(to, this);
+		final Chat chat = connection.getChatManager().createChat(to, this);
 		chat.sendMessage(message);
 	}
 
 	public void displayBuddyList()
 	{
-		Roster roster = connection.getRoster();
-		Collection<RosterEntry> entries = roster.getEntries();
+		final Roster roster = connection.getRoster();
+		final Collection<RosterEntry> entries = roster.getEntries();
 
 		System.out.println("\n\n" + entries.size() + " buddy(ies):");
-		for (RosterEntry r : entries)
+		for (final RosterEntry r : entries)
 		{
 			System.out.println(r.getUser());
 		}
@@ -50,17 +50,17 @@ public class TestOne implements MessageListener
 		connection.disconnect();
 	}
 
-	public void processMessage(Chat chat, Message message)
+	public void processMessage(final Chat chat, final Message message)
 	{
 		if (message.getType() == Message.Type.chat)
 			System.out.println(chat.getParticipant() + " says: " + message.getBody());
 	}
 
-	public static void main(String args[]) throws XMPPException, IOException
+	public static void main(final String args[]) throws XMPPException, IOException
 	{
 		// declare variables
 
-		TestOne c = new TestOne();
+		final TestOne c = new TestOne();
 		// turn on the enhanced debugger
 		XMPPConnection.DEBUG_ENABLED = true;
 
@@ -93,7 +93,7 @@ public class TestOne implements MessageListener
 
 	private void doRoom()
 	{
-		MultiUserChat multi = new MultiUserChat(connection, "Scenario1@conference.mayo-mac.local");
+		final MultiUserChat multi = new MultiUserChat(connection, "Scenario1@conference.mayo-mac.local");
 		try
 		{
 			multi.join("trial@mayo-mac.local");
@@ -101,7 +101,7 @@ public class TestOne implements MessageListener
 			multi.sendMessage("ping 2");
 			multi.sendMessage("ping 3");
 		}
-		catch (XMPPException e)
+		catch (final XMPPException e)
 		{
 			e.printStackTrace();
 		}

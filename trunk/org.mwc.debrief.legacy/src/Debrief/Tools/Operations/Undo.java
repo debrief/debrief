@@ -17,7 +17,7 @@ public final class Undo extends PlainTool
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public Undo(Application theParent){
+  public Undo(final Application theParent){
     super(theParent, "Undo", null);
     
     _theParent = theParent;
@@ -28,7 +28,7 @@ public final class Undo extends PlainTool
   ////////////////////////////////////////////////////////////
   public final Action getData()
   {
-    Session theSession = _theParent.getCurrentSession();
+    final Session theSession = _theParent.getCurrentSession();
     
     if(theSession != null)
       return new UndoAction(theSession.getUndoBuffer());
@@ -46,7 +46,7 @@ public final class Undo extends PlainTool
      */
     final UndoBuffer _theBuffer;
     
-    public UndoAction(UndoBuffer theBuffer){
+    public UndoAction(final UndoBuffer theBuffer){
       _theBuffer = theBuffer;
     }
     

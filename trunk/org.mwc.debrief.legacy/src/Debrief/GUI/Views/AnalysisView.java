@@ -518,7 +518,7 @@ abstract public class AnalysisView extends PlainView implements
 					new ShowVideo(_theParent, _theProperties, _theChart.getPanel()),
 					null, ' '));
 		}
-		catch (java.lang.NoClassDefFoundError e)
+		catch (final java.lang.NoClassDefFoundError e)
 		{
 			System.err.println("Record to video not provided, JMF classes not found");
 			// e.printStackTrace();
@@ -783,7 +783,7 @@ abstract public class AnalysisView extends PlainView implements
 		{
 			super.finalize();
 		}
-		catch (Throwable t)
+		catch (final Throwable t)
 		{
 			t.printStackTrace();
 		}

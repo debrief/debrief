@@ -199,7 +199,7 @@ public class GridPainter implements Plottable, Serializable
 	/**
 	 * the minimum space between grid lines
 	 */
-	private int MIN_SEPARATION = 4;
+	private final int MIN_SEPARATION = 4;
 
 	/**
 	 * our editor
@@ -235,7 +235,7 @@ public class GridPainter implements Plottable, Serializable
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	public void setVisible(boolean val)
+	public void setVisible(final boolean val)
 	{
 		_isOn = val;
 	}
@@ -245,7 +245,7 @@ public class GridPainter implements Plottable, Serializable
 		return _isOn;
 	}
 
-	public void setColor(Color val)
+	public void setColor(final Color val)
 	{
 		_myColor = val;
 	}
@@ -261,7 +261,7 @@ public class GridPainter implements Plottable, Serializable
 	 * @param val
 	 *          the size in minutes
 	 */
-	public void setDelta(WorldDistance val)
+	public void setDelta(final WorldDistance val)
 	{
 		if (val != null)
 			_myDelta = val;
@@ -282,7 +282,7 @@ public class GridPainter implements Plottable, Serializable
 		return _theFont;
 	}
 
-	public void setFont(Font theFont)
+	public void setFont(final Font theFont)
 	{
 		_theFont = theFont;
 	}
@@ -298,7 +298,7 @@ public class GridPainter implements Plottable, Serializable
 	/**
 	 * whether to plot the labels or not
 	 */
-	public void setPlotLabels(boolean val)
+	public void setPlotLabels(final boolean val)
 	{
 		_plotLabels = val;
 	}
@@ -306,12 +306,12 @@ public class GridPainter implements Plottable, Serializable
 	/**
 	 * whether to plot the labels or not
 	 */
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		_myName = name;
 	}
 
-	public void paint(CanvasType g)
+	public void paint(final CanvasType g)
 	{
 
 		// check we are visible
@@ -323,7 +323,7 @@ public class GridPainter implements Plottable, Serializable
 		if (g.getProjection().getPrimaryOriented())
 			return;
 
-		float oldLineWidth = g.getLineWidth();
+		final float oldLineWidth = g.getLineWidth();
 
 		g.setLineWidth(1.0f);
 
@@ -340,20 +340,20 @@ public class GridPainter implements Plottable, Serializable
 		g.setColor(_myColor);
 
 		// get the delta in degrees
-		double deltaDegs = _myDelta.getValueIn(WorldDistance.DEGS);
+		final double deltaDegs = _myDelta.getValueIn(WorldDistance.DEGS);
 
 		// ok, find the outer limits of the lines to plot
-		WorldArea outerBounds = getOuterBounds(g, screenArea, deltaDegs);
+		final WorldArea outerBounds = getOuterBounds(g, screenArea, deltaDegs);
 
 		double maxLat = outerBounds.getTopLeft().getLat();
 		double minLong = outerBounds.getTopLeft().getLong();
 		double minLat = outerBounds.getBottomRight().getLat();
 		double maxLong = outerBounds.getBottomRight().getLong();
 
-		WorldArea screenBounds = new WorldArea(g.toWorld(new Point(0, 0)),g.toWorld(new Point(0, 0)));
+		final WorldArea screenBounds = new WorldArea(g.toWorld(new Point(0, 0)),g.toWorld(new Point(0, 0)));
 		screenBounds.extend(g.toWorld(new Point(screenArea.width, screenArea.height)));
-		double maxScreenLat = screenBounds.getTopLeft().getLat();
-		double minScreenLat = screenBounds.getBottomLeft().getLat();
+		final double maxScreenLat = screenBounds.getTopLeft().getLat();
+		final double minScreenLat = screenBounds.getBottomLeft().getLat();
 
 		// keep track of the point separation: if they are closer than 3 pixels,
 		// drop out
@@ -396,7 +396,7 @@ public class GridPainter implements Plottable, Serializable
 
 		for (double thisLat = minLat; thisLat <= maxLat; thisLat += deltaDegs)
 		{
-			Point p3 = g.toScreen(new WorldLocation(thisLat, maxLong, 0));
+			final Point p3 = g.toScreen(new WorldLocation(thisLat, maxLong, 0));
 			
 			if(p3 == null)
 			{
@@ -445,7 +445,7 @@ public class GridPainter implements Plottable, Serializable
 					else
 					{
 						// ok, use a counter for the units
-						double thisVal = (counter++ - latGridCounterOffset)
+						final double thisVal = (counter++ - latGridCounterOffset)
 								* _myDelta.getValueIn(_myDelta.getUnits());
 						val = _distanceFormatter.format(thisVal) + " "
 								+ _myDelta.getUnitsLabel();
@@ -485,7 +485,7 @@ public class GridPainter implements Plottable, Serializable
 			else
 			{
 
-				WorldLocation thisLoc = new WorldLocation(minLat, thisLong, 0);
+				final WorldLocation thisLoc = new WorldLocation(minLat, thisLong, 0);
 				// move it across a bit
 				thisLoc.addToMe(symetricUnitOffset);
 
@@ -496,11 +496,11 @@ public class GridPainter implements Plottable, Serializable
 
 			// note: we only use the screen-lat limits, not the outer bounds ones
 			// this improves how we locate the axis labels
-			Point p3 = g.toScreen(new WorldLocation(minScreenLat, thisLong, 0));
+			final Point p3 = g.toScreen(new WorldLocation(minScreenLat, thisLong, 0));
 
-			int p3x = p3.x;
-			int p3y = p3.y;
-			Point p4 = g.toScreen(new WorldLocation(maxScreenLat, thisLong, 0));
+			final int p3x = p3.x;
+			final int p3y = p3.y;
+			final Point p4 = g.toScreen(new WorldLocation(maxScreenLat, thisLong, 0));
 
 			// just check that both ends of the line are visible
 			if ((p3x >= 0) || (p4.x >= 0))
@@ -524,7 +524,7 @@ public class GridPainter implements Plottable, Serializable
 					else
 					{
 						// ok, use a counter for the units
-						double thisVal = (counter++ - longGridCounterOffset)
+						final double thisVal = (counter++ - longGridCounterOffset)
 								* _myDelta.getValueIn(_myDelta.getUnits());
 						thisLabel = _distanceFormatter.format(thisVal) + " "
 								+ _myDelta.getUnitsLabel();
@@ -547,7 +547,7 @@ public class GridPainter implements Plottable, Serializable
 	 * @param bounds
 	 * @return
 	 */
-	protected WorldLocation getGridLabelOrigin(WorldArea bounds)
+	protected WorldLocation getGridLabelOrigin(final WorldArea bounds)
 	{
 		return bounds.getBottomLeft();
 	}
@@ -576,28 +576,28 @@ public class GridPainter implements Plottable, Serializable
 	 *          the grid separation requested
 	 * @return an area providing the coverage requested
 	 */
-	protected WorldArea getOuterBounds(CanvasType g, Dimension screenArea,
-			double deltaDegs)
+	protected WorldArea getOuterBounds(final CanvasType g, final Dimension screenArea,
+			final double deltaDegs)
 	{
 		// create data coordinates from the current corners of the screen
-		WorldLocation topLeft = g.toWorld(new Point(0, 0));
+		final WorldLocation topLeft = g.toWorld(new Point(0, 0));
 
 		// create new corners just outside the current plot area, and clip
 		// them to the nearest 'delta' value
-		double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
-		double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs)
+		final double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
+		final double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs)
 				* deltaDegs;
 
 		// now for the bottom right
-		WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
+		final WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
 				screenArea.height));
 
 		// create new corners just outside the current plot area, and clip
 		// them to the nearest 'delta' value
-		double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
-		double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
+		final double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
+		final double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
 
-		WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
+		final WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
 				new WorldLocation(minLat1, maxLong1, 0));
 		return bounds;
 	}
@@ -619,7 +619,7 @@ public class GridPainter implements Plottable, Serializable
 		return null;
 	}
 
-	public double rangeFrom(MWC.GenericData.WorldLocation other)
+	public double rangeFrom(final MWC.GenericData.WorldLocation other)
 	{
 		// doesn't return a sensible distance;
 		return INVALID_RANGE;
@@ -651,11 +651,11 @@ public class GridPainter implements Plottable, Serializable
 		return _myEditor;
 	}
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
-		Plottable other = (Plottable) arg0;
-		String myName = this.getName() + this.hashCode();
-		String hisName = other.getName() + arg0.hashCode();
+		final Plottable other = (Plottable) arg0;
+		final String myName = this.getName() + this.hashCode();
+		final String hisName = other.getName() + arg0.hashCode();
 		return myName.compareTo(hisName);
 	}
 
@@ -671,7 +671,7 @@ public class GridPainter implements Plottable, Serializable
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public GridPainterInfo(GridPainter data)
+		public GridPainterInfo(final GridPainter data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -680,7 +680,7 @@ public class GridPainter implements Plottable, Serializable
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("Color", "the Color to draw the grid", FORMAT),
 						prop("Visible", "whether this grid is visible", VISIBILITY),
 						prop("PlotLabels", "whether to plot grid labels", VISIBILITY),
@@ -690,7 +690,7 @@ public class GridPainter implements Plottable, Serializable
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -704,7 +704,7 @@ public class GridPainter implements Plottable, Serializable
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public GridPainterTest(String val)
+		public GridPainterTest(final String val)
 		{
 			super(val);
 		}

@@ -68,9 +68,9 @@ abstract public class AWTCustomEditor extends Panel implements Customizer
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  public void setObject(Object data, 
-                        PlainChart theChart,
-                        PropertiesPanel thePanel)
+  public void setObject(final Object data, 
+                        final PlainChart theChart,
+                        final PropertiesPanel thePanel)
   {
     _theChart = theChart;
     _thePanel = thePanel;
@@ -81,11 +81,11 @@ abstract public class AWTCustomEditor extends Panel implements Customizer
 
   abstract public void setObject(Object data);
 
-  public void addPropertyChangeListener(PropertyChangeListener p1)
+  public void addPropertyChangeListener(final PropertyChangeListener p1)
   {
   }
 
-  public void removePropertyChangeListener(PropertyChangeListener p1)
+  public void removePropertyChangeListener(final PropertyChangeListener p1)
   {
   }
 }

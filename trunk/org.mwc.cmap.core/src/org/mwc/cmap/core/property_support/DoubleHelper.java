@@ -17,18 +17,18 @@ public class DoubleHelper extends EditorHelper
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	public boolean editsThis(Class target)
+	public boolean editsThis(final Class target)
 	{
 		return ((target == Double.class) || (target == double.class));
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		_previousValue = value;
 		return "" + value;
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		Object res;
 
@@ -43,7 +43,7 @@ public class DoubleHelper extends EditorHelper
 			{
 				res = Double.valueOf((String) value);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				res = _previousValue;
 			}
@@ -52,9 +52,9 @@ public class DoubleHelper extends EditorHelper
 		return res;
 	}
 
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
-		TextCellEditor res = new TextCellEditor(parent);
+		final TextCellEditor res = new TextCellEditor(parent);
 		
 		return res;
 	}

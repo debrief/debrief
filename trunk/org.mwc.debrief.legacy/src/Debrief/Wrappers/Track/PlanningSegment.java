@@ -35,8 +35,8 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	public static class ClosingSegment extends PlanningSegment
 	{
 
-		public ClosingSegment(String name, double courseDegs,
-				WorldSpeed worldSpeed, WorldDistance worldDistance, Color myColor)
+		public ClosingSegment(final String name, final double courseDegs,
+				final WorldSpeed worldSpeed, final WorldDistance worldDistance, final Color myColor)
 		{
 			super(name, courseDegs, worldSpeed, worldDistance, myColor);
 			this.setCalculation(PlanningLegCalcModelPropertyEditor.RANGE_SPEED);
@@ -192,7 +192,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 * 
 	 * @param other
 	 */
-	public PlanningSegment(PlanningSegment other)
+	public PlanningSegment(final PlanningSegment other)
 	{
 		_calcModel = other._calcModel;
 		_created = System.nanoTime();
@@ -206,8 +206,8 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		this.setName(other.getName());
 	}
 
-	public PlanningSegment(String name, double courseDegs, WorldSpeed worldSpeed,
-			WorldDistance worldDistance, Color color)
+	public PlanningSegment(final String name, final double courseDegs, final WorldSpeed worldSpeed,
+			final WorldDistance worldDistance, final Color color)
 	{
 		this.setName(name);
 		this.setCourse(courseDegs);
@@ -222,13 +222,13 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		return _myDepth;
 	}
 
-	public void setDepth(WorldDistance depth)
+	public void setDepth(final WorldDistance depth)
 	{
 		_myDepth = depth;
 		recalc();
 	}
 
-	public void setDepthSilent(WorldDistance depth)
+	public void setDepthSilent(final WorldDistance depth)
 	{
 		_myDepth = depth;
 	}
@@ -244,7 +244,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@Override
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
 		int res = 1;
 		if (arg0 instanceof ClosingSegment)
@@ -254,25 +254,25 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		}
 		else if (arg0 instanceof PlanningSegment)
 		{
-			PlanningSegment other = (PlanningSegment) arg0;
-			Long myTime = _created;
-			Long hisTime = other._created;
+			final PlanningSegment other = (PlanningSegment) arg0;
+			final Long myTime = _created;
+			final Long hisTime = other._created;
 			res = myTime.compareTo(hisTime);
 		}
 		return res;
 	}
 
 	@Override
-	public double rangeFrom(WorldLocation other)
+	public double rangeFrom(final WorldLocation other)
 	{
 		double firstRange = Plottable.INVALID_RANGE;
 
-		Enumeration<Editable> numer = this.elements();
+		final Enumeration<Editable> numer = this.elements();
 		while (numer.hasMoreElements())
 		{
-			Editable editable = (Editable) numer.nextElement();
-			FixWrapper fw = (FixWrapper) editable;
-			double thisR = fw.rangeFrom(other);
+			final Editable editable = (Editable) numer.nextElement();
+			final FixWrapper fw = (FixWrapper) editable;
+			final double thisR = fw.rangeFrom(other);
 			if (firstRange == Plottable.INVALID_RANGE)
 				firstRange = thisR;
 			else
@@ -287,13 +287,13 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@FireExtended
-	public void setCalculation(int calculation)
+	public void setCalculation(final int calculation)
 	{
 		_calcModel = calculation;
 	}
 
 	@FireExtended
-	public void setCalculation(Integer calculation)
+	public void setCalculation(final Integer calculation)
 	{
 		_calcModel = calculation;
 	}
@@ -304,7 +304,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@FireExtended
-	public void setDistance(WorldDistance length)
+	public void setDistance(final WorldDistance length)
 	{
 		this._myLength = length;
 		recalc();
@@ -316,13 +316,13 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@FireExtended
-	public void setCourse(double courseDegs)
+	public void setCourse(final double courseDegs)
 	{
 		this._myCourseDegs = courseDegs;
 		recalc();
 	}
 
-	public void setCourseSilent(double courseDegs)
+	public void setCourseSilent(final double courseDegs)
 	{
 		this._myCourseDegs = courseDegs;
 	}
@@ -333,7 +333,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@FireExtended
-	public void setSpeed(WorldSpeed speed)
+	public void setSpeed(final WorldSpeed speed)
 	{
 		this._mySpeed = speed;
 		recalc();
@@ -345,7 +345,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@FireExtended
-	public void setDuration(Duration period)
+	public void setDuration(final Duration period)
 	{
 		this._myPeriod = period;
 		recalc();
@@ -354,7 +354,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	@Override
 	public Object clone() throws CloneNotSupportedException
 	{
-		PlanningSegment res = new PlanningSegment(this);
+		final PlanningSegment res = new PlanningSegment(this);
 
 		return res;
 	}
@@ -378,7 +378,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		return _myColor;
 	}
 
-	public void setColor(Color color)
+	public void setColor(final Color color)
 	{
 		if(color == null)
 			return;
@@ -386,11 +386,11 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		_myColor = color;
 
 		// ok, loop through the elements and update the color
-		Enumeration<Editable> numer = elements();
+		final Enumeration<Editable> numer = elements();
 		while (numer.hasMoreElements())
 		{
-			Editable nextE = numer.nextElement();
-			FixWrapper fix = (FixWrapper) nextE;
+			final Editable nextE = numer.nextElement();
+			final FixWrapper fix = (FixWrapper) nextE;
 			fix.setColor(color);
 		}
 	}
@@ -402,13 +402,13 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@Override
-	protected void sortOutDate(HiResDate startDTG)
+	protected void sortOutDate(final HiResDate startDTG)
 	{
 		// ignore - we want to keep the layer name
 	}
 
 	@Override
-	public void setWrapper(TrackWrapper wrapper)
+	public void setWrapper(final TrackWrapper wrapper)
 	{
 		// store the parent
 		super.setWrapper(wrapper);
@@ -418,19 +418,19 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 
 	}
 
-	public void setSpeedSilent(WorldSpeed worldSpeed)
+	public void setSpeedSilent(final WorldSpeed worldSpeed)
 	{
 		_mySpeed = worldSpeed;
 		// don't bother triggering recalc
 	}
 
-	public void setDistanceSilent(WorldDistance worldDistance)
+	public void setDistanceSilent(final WorldDistance worldDistance)
 	{
 		_myLength = worldDistance;
 		// don't bother triggering recalc
 	}
 
-	public void setDurationSilent(Duration duration)
+	public void setDurationSilent(final Duration duration)
 	{
 		_myPeriod = duration;
 		// don't bother triggering recalc
@@ -438,7 +438,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 
 	public PlanningSegment createCopy()
 	{
-		PlanningSegment res = new PlanningSegment(this);
+		final PlanningSegment res = new PlanningSegment(this);
 		res._calcModel = _calcModel;
 		res._myCourseDegs = _myCourseDegs;
 		res._myDepth = _myDepth;
@@ -463,7 +463,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 
 	@Override
-	public void setDTG(HiResDate date)
+	public void setDTG(final HiResDate date)
 	{
 		// ingore, we don't set the DTG for a planning segment
 		System.err.println("Should not set DTG for planning segment");

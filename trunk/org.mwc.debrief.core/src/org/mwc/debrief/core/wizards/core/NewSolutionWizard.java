@@ -26,8 +26,8 @@ public class NewSolutionWizard extends Wizard
 	
 	// SelectOffsetPage selectOffsetPage;
 	// EnterSolutionPage enterSolutionPage;
-	private HiResDate _tNow;
-	private TrackWrapper _track;
+	private final HiResDate _tNow;
+	private final TrackWrapper _track;
 	private TMAWrapper _tma;
 	private EnterStringPage namePage;
 	private EnterDTGPage datePage;
@@ -36,7 +36,7 @@ public class NewSolutionWizard extends Wizard
 	private SelectColorPage colorPage;
 	private EnterRangePage rangePage;
 
-	public NewSolutionWizard(HiResDate tNow, TrackWrapper track, TMAWrapper tma)
+	public NewSolutionWizard(final HiResDate tNow, final TrackWrapper track, final TMAWrapper tma)
 	{
 		_tNow = tNow;
 		_track = track;
@@ -94,17 +94,17 @@ public class NewSolutionWizard extends Wizard
 				imagePath, helpContext);
 		addPage(colorPage);
 
-		WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
+		final WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
 		rangePage = new EnterRangePage(null, PAGE_TITLE,
 				"Now specify the size of ellipse",
 				"initial size (radius) for  ellipse", defaultWidth, imagePath,
 				helpContext);
 		addPage(rangePage);
 
-		String message = "The solution will now be added to the specified track, \n"
+		final String message = "The solution will now be added to the specified track, \n"
 				+ "and provided with the default ellipse size - you\n"
 				+ "can customise the ellipse further in the Properties window";
-		MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
+		final MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
 				PAGE_TITLE, "Steps complete", message, imagePath);
 		addPage(messagePage);
 
@@ -116,7 +116,7 @@ public class NewSolutionWizard extends Wizard
 	}
 
 	@Override
-	public IWizardPage getPage(String name)
+	public IWizardPage getPage(final String name)
 	{
 		return super.getPage(name);
 	}
@@ -147,12 +147,12 @@ public class NewSolutionWizard extends Wizard
 	 */
 	public TMAContactWrapper getSolution()
 	{
-		TMAContactWrapper tw = new TMAContactWrapper();
+		final TMAContactWrapper tw = new TMAContactWrapper();
 
-		SolutionDataItem sol = (SolutionDataItem) solutionPage.getEditable();
+		final SolutionDataItem sol = (SolutionDataItem) solutionPage.getEditable();
 		tw.buildSetTargetState(sol.getCourse(),
 				sol.getSpeed().getValueIn(WorldSpeed.Kts), 0);
-		WorldDistance radius = rangePage.getRange();
+		final WorldDistance radius = rangePage.getRange();
 		tw.buildSetEllipse(0, radius, radius);
 		tw.buildSetVector(rngBearingPage.getBearingDegs(),
 				rngBearingPage.getRange(), 0);
@@ -163,7 +163,7 @@ public class NewSolutionWizard extends Wizard
 		tw.setColor(colorPage.getColor());
 
 
-		String lblStr = sol.getSpeed().toString() + sol.getCourse() + "Degs";
+		final String lblStr = sol.getSpeed().toString() + sol.getCourse() + "Degs";
 		tw.setLabel(lblStr);
 		return tw;
 	}

@@ -11,12 +11,12 @@ import java.util.TimeZone;
 
 public class LabelledDateFormat 
 {
-  static public String toString(long theVal)
+  static public String toString(final long theVal)
   {
     
-    java.util.Date theTime = new java.util.Date(theVal);
+    final java.util.Date theTime = new java.util.Date(theVal);
     String res;
-    DateFormat df = new SimpleDateFormat("dd'd HH'h mm'm ss's");
+    final DateFormat df = new SimpleDateFormat("dd'd HH'h mm'm ss's");
     df.setTimeZone(TimeZone.getTimeZone("GMT"));
     res = df.format(theTime);
 

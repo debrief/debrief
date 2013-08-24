@@ -50,25 +50,25 @@ import MWC.GenericData.WorldArea;
 
 public class CreateCoast extends PlainCreate
 {
-	public CreateCoast(MWC.GUI.ToolParent theParent,
-										MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
-										MWC.GUI.Layers theData,
-                    MWC.GUI.PlainChart theChart)
+	public CreateCoast(final MWC.GUI.ToolParent theParent,
+										final MWC.GUI.Properties.PropertiesPanel thePanel,
+										final MWC.GUI.Layer theLayer,
+										final MWC.GUI.Layers theData,
+                    final MWC.GUI.PlainChart theChart)
 	{
 		super(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast.gif");
 	}
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
 	{
-		CoastPainter cp = new CoastPainter(getParent());
+		final CoastPainter cp = new CoastPainter(getParent());
 		// see if the chart has a data area defined.  If not, make it cover our
-		WorldArea wa = theChart.getDataArea();
+		final WorldArea wa = theChart.getDataArea();
 
 		if(wa == null)
 		{
 			cp.setVisible(true);
-			WorldArea ca = cp.getBounds();
+			final WorldArea ca = cp.getBounds();
 			cp.setVisible(false);
 			theChart.getCanvas().getProjection().setDataArea(ca);
 		}

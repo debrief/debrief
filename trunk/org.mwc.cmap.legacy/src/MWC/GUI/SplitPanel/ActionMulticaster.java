@@ -38,7 +38,7 @@ public class ActionMulticaster implements ActionListener
 {
   // ActionListener Implementation
 
-  public void actionPerformed(ActionEvent e) {
+  public void actionPerformed(final ActionEvent e) {
     if (listeners != null)
       dispatch(e);
   }
@@ -53,16 +53,16 @@ public class ActionMulticaster implements ActionListener
   /**
    * High speed dispatcher that does not need to be synchronized.
    */
-  public final void dispatch(ActionEvent e) {
+  public final void dispatch(final ActionEvent e) {
     // Synchronized not needed becuase all updates are made to a "copy"
     // of listeners.  Assumes reference assignment is atomic.
-    ActionListener[] listenersCopy = this.listeners;
+    final ActionListener[] listenersCopy = this.listeners;
 
     // Once I have a local copy of the list, don't have to worry about threads
     // adding/deleting from this list since they will make a copy of the list,
     // not modify the list.
     if (listenersCopy != null) {
-      int count = listenersCopy.length;
+      final int count = listenersCopy.length;
       for (int index = 0; index < count; ++index) {
         //long time = System.currentTimeMillis();
         //Diagnostic.trace(EventMulticaster.class, "->dispatch e=" + e + " => " + listenersCopy[index]);
@@ -77,7 +77,7 @@ public class ActionMulticaster implements ActionListener
    * implementation is that all changes are made to a "copy" of the original list.  This allows
    * for non-synchronized access of listners when event dispatch is called.
    */
-  public int find(ActionListener listener) {
+  public int find(final ActionListener listener) {
     if (listeners != null ) {
       for (int index = 0; index < listeners.length; ++index)
         if (listeners[index] == listener)
@@ -89,7 +89,7 @@ public class ActionMulticaster implements ActionListener
   /**
    *
    */
-  public synchronized final void add(ActionListener listener) {
+  public synchronized final void add(final ActionListener listener) {
     if (find(listener) < 0) {
       ActionListener[] newListeners;
 
@@ -108,14 +108,14 @@ public class ActionMulticaster implements ActionListener
   /**
    *
    */
-  public synchronized final void remove(ActionListener listener) {
-    int index = find(listener);
+  public synchronized final void remove(final ActionListener listener) {
+    final int index = find(listener);
     if (index > -1) {
       // Important: hasListeners() expects listeners too be null if there are no listeners.
       if (listeners.length == 1)
         listeners = null;
       else {
-        ActionListener[] newListeners = new ActionListener[listeners.length-1];
+        final ActionListener[] newListeners = new ActionListener[listeners.length-1];
         System.arraycopy(listeners, 0, newListeners, 0, index);
 
         if (index < newListeners.length)

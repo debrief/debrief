@@ -117,8 +117,8 @@ public class Fix implements java.io.Serializable
 	 * @param theSpeed
 	 *          the current speed (in yards per second)
 	 */
-	public Fix(HiResDate theTime, WorldLocation theLocation, double theCourse,
-			double theSpeed)
+	public Fix(final HiResDate theTime, final WorldLocation theLocation, final double theCourse,
+			final double theSpeed)
 	{
 		_theTime = theTime;
 		_theLocation = theLocation;
@@ -136,7 +136,7 @@ public class Fix implements java.io.Serializable
 	 */
 	public Fix makeCopy()
 	{
-		Fix newFix = new Fix();
+		final Fix newFix = new Fix();
 		newFix._theCourse = _theCourse;
 		newFix._theSpeed = _theSpeed;
 		if (_theLocation != null)
@@ -179,7 +179,7 @@ public class Fix implements java.io.Serializable
 	/**
 	 * set the location of the fix
 	 */
-	public void setLocation(WorldLocation val)
+	public void setLocation(final WorldLocation val)
 	{
 		_theLocation = val;
 	}
@@ -187,7 +187,7 @@ public class Fix implements java.io.Serializable
 	/**
 	 * set the time of the fix
 	 */
-	public void setTime(HiResDate dtg)
+	public void setTime(final HiResDate dtg)
 	{
 		_theTime = dtg;
 	}
@@ -195,7 +195,7 @@ public class Fix implements java.io.Serializable
 	/**
 	 * set the course of the fix (rads)
 	 */
-	public void setCourse(double rads)
+	public void setCourse(final double rads)
 	{
 		_theCourse = rads;
 	}
@@ -203,7 +203,7 @@ public class Fix implements java.io.Serializable
 	/**
 	 * set the speed of the fix (yards per sec)
 	 */
-	public void setSpeed(double yps)
+	public void setSpeed(final double yps)
 	{
 		_theSpeed = yps;
 	}

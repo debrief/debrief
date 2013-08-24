@@ -74,7 +74,7 @@ public class PlotType {
      *     {@link SessionType }
      *     
      */
-    public void setSession(SessionType value) {
+    public void setSession(final SessionType value) {
         this.session = value;
     }
 
@@ -98,7 +98,7 @@ public class PlotType {
      *     {@link DetailsType }
      *     
      */
-    public void setDetails(DetailsType value) {
+    public void setDetails(final DetailsType value) {
         this.details = value;
     }
 
@@ -122,7 +122,7 @@ public class PlotType {
      *     {@link String }
      *     
      */
-    public void setCreated(String value) {
+    public void setCreated(final String value) {
         this.created = value;
     }
 
@@ -146,7 +146,7 @@ public class PlotType {
      *     {@link String }
      *     
      */
-    public void setName(String value) {
+    public void setName(final String value) {
         this.name = value;
     }
 
@@ -170,7 +170,7 @@ public class PlotType {
      *     {@link String }
      *     
      */
-    public void setPlotId(String value) {
+    public void setPlotId(final String value) {
         this.plotId = value;
     }
 

@@ -24,7 +24,7 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 	 * @param display
 	 * @param model
 	 */
-	public MultiPathPresenterTest(Display display)
+	public MultiPathPresenterTest(final Display display)
 	{
 		super(display);
 
@@ -39,7 +39,7 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 		// now listen out for ranges being dropped on the slider
 		_display.addRangesListener(new FileHandler()
 		{
-			public void newFile(String path)
+			public void newFile(final String path)
 			{
 				loadRanges(path);
 				
@@ -83,7 +83,7 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 
 	}
 
-	protected void loadRanges(String path)
+	protected void loadRanges(final String path)
 	{
 		try
 		{
@@ -92,18 +92,18 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 
 			_ranges.load(path);
 		}
-		catch (NumberFormatException e)
+		catch (final NumberFormatException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"ranges file number formatting problem", e);
 			_ranges  = null;
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "ranges file loading problem", e);
 			_ranges  = null;
 		}
-		catch (DataFormatException e)
+		catch (final DataFormatException e)
 		{
 			CorePlugin.logError(Status.ERROR, "ranges file data formatting problem",
 					e);
@@ -114,7 +114,7 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 			updateCalc(100);
 	}
 
-	protected TimeSeries getCalculatedProfile(int val)
+	protected TimeSeries getCalculatedProfile(final int val)
 	{
 		TimeSeries calculated = null;
 

@@ -184,12 +184,12 @@ public class ArcShape extends CircleShape
    * @param theCentre the WorldLocation marking the centre of the circle
    * @param theRadius the radius of the circle (in yards)
    */
-  public ArcShape(WorldLocation theCentre,
-                  double theRadius,
-                  double centreBearing,
-                  double arcWidth,
-                  boolean plotOrigin,
-                  boolean plotSpokes)
+  public ArcShape(final WorldLocation theCentre,
+                  final double theRadius,
+                  final double centreBearing,
+                  final double arcWidth,
+                  final boolean plotOrigin,
+                  final boolean plotSpokes)
   {
   	this(theCentre, new WorldDistance(theRadius, WorldDistance.YARDS), centreBearing, arcWidth, plotOrigin, plotSpokes);
   } 
@@ -200,12 +200,12 @@ public class ArcShape extends CircleShape
    * @param theCentre the WorldLocation marking the centre of the circle
    * @param theRadius the radius of the circle (in yards)
    */
-  public ArcShape(WorldLocation theCentre,
-                  WorldDistance theRadius,
-                  double centreBearing,
-                  double arcWidth,
-                  boolean plotOrigin,
-                  boolean plotSpokes)
+  public ArcShape(final WorldLocation theCentre,
+                  final WorldDistance theRadius,
+                  final double centreBearing,
+                  final double arcWidth,
+                  final boolean plotOrigin,
+                  final boolean plotSpokes)
   {
     super(theCentre, theRadius);
 
@@ -224,7 +224,7 @@ public class ArcShape extends CircleShape
   // member functions
   //////////////////////////////////////////////////
 
-  public void paint(CanvasType dest)
+  public void paint(final CanvasType dest)
   {
     // are we visible?
     if (!getVisible())
@@ -233,27 +233,27 @@ public class ArcShape extends CircleShape
     if (this.getColor() != null)
     {
       // create a transparent colour
-      Color newcol = getColor();
+      final Color newcol = getColor();
       dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(), TRANSPARENCY_SHADE));
     }
 
-    double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
-    WorldLocation topLeft = new WorldLocation(_theCentre.add(new WorldVector(0, radDegs, 0)));
+    final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
+    final WorldLocation topLeft = new WorldLocation(_theCentre.add(new WorldVector(0, radDegs, 0)));
     topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), radDegs, 0));
 
     // create & extend to bottom right
-    WorldLocation bottomRight = new WorldLocation(_theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), radDegs, 0)));
+    final WorldLocation bottomRight = new WorldLocation(_theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), radDegs, 0)));
     bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), radDegs, 0));
 
 
     // get the origin
-    Point tl = dest.toScreen(topLeft);
+    final Point tl = dest.toScreen(topLeft);
 
-    int tlx = tl.x;
-    int tly = tl.y;
+    final int tlx = tl.x;
+    final int tly = tl.y;
 
     // get the width and height
-    Point br = dest.toScreen(bottomRight);
+    final Point br = dest.toScreen(bottomRight);
 
     // sort out the start angle
     int startAngle = (int) (_centreBearing - _arcWidth / 2d);
@@ -264,8 +264,8 @@ public class ArcShape extends CircleShape
     // and make it go anticlockwise
     startAngle = -startAngle;
 
-    int wid = br.x - tlx;
-    int height = br.y - tly;
+    final int wid = br.x - tlx;
+    final int height = br.y - tly;
 
     // and now draw it
 
@@ -279,7 +279,7 @@ public class ArcShape extends CircleShape
     }
 
 
-    Point origin = new Point(dest.toScreen(_theCentre));
+    final Point origin = new Point(dest.toScreen(_theCentre));
 
 
     // does the user want us to plot the origin?
@@ -292,11 +292,11 @@ public class ArcShape extends CircleShape
     // spokes?
     if (_plotSpokes)
     {
-      Point startPoint = dest.toScreen(getStartPoint(radDegs));
+      final Point startPoint = dest.toScreen(getStartPoint(radDegs));
 
       dest.drawLine(origin.x, origin.y, startPoint.x, startPoint.y);
 
-      Point endPoint = dest.toScreen(getEndPoint(radDegs));
+      final Point endPoint = dest.toScreen(getEndPoint(radDegs));
 
       dest.drawLine(origin.x, origin.y, endPoint.x, endPoint.y);
     }
@@ -311,21 +311,21 @@ public class ArcShape extends CircleShape
   protected void calcPoints()
   {
     // calc the radius in degrees
-    double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
+    final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
 
     // create our area, starting with the centre point
     _theArea = new WorldArea(_theCentre, _theCentre);
 
     // extend to start of line
-    WorldLocation other = getStartPoint(radDegs);
+    final WorldLocation other = getStartPoint(radDegs);
     _theArea.extend(other);
 
     // extend to centre of line
-    WorldLocation other2 = getCentrePoint(radDegs);
+    final WorldLocation other2 = getCentrePoint(radDegs);
     _theArea.extend(other2);
 
     // extend to centre of line
-    WorldLocation other3 = getEndPoint(radDegs);
+    final WorldLocation other3 = getEndPoint(radDegs);
     _theArea.extend(other3);
   }
 
@@ -335,10 +335,10 @@ public class ArcShape extends CircleShape
    * @param radDegs
    * @return
    */
-  private WorldLocation getStartPoint(double radDegs)
+  private WorldLocation getStartPoint(final double radDegs)
   {
-    double startAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing - _arcWidth / 2);
-    WorldLocation other = _theCentre.add(new WorldVector(startAng, radDegs, 0));
+    final double startAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing - _arcWidth / 2);
+    final WorldLocation other = _theCentre.add(new WorldVector(startAng, radDegs, 0));
     return other;
   }
 
@@ -348,10 +348,10 @@ public class ArcShape extends CircleShape
    * @param radDegs
    * @return
    */
-  private WorldLocation getCentrePoint(double radDegs)
+  private WorldLocation getCentrePoint(final double radDegs)
   {
-    double centre = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing);
-    WorldLocation other2 = _theCentre.add(new WorldVector(centre, radDegs, 0));
+    final double centre = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing);
+    final WorldLocation other2 = _theCentre.add(new WorldVector(centre, radDegs, 0));
     return other2;
   }
 
@@ -361,10 +361,10 @@ public class ArcShape extends CircleShape
    * @param radDegs
    * @return
    */
-  private WorldLocation getEndPoint(double radDegs)
+  private WorldLocation getEndPoint(final double radDegs)
   {
-    double endAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing + _arcWidth / 2);
-    WorldLocation other3 = _theCentre.add(new WorldVector(endAng, radDegs, 0));
+    final double endAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing + _arcWidth / 2);
+    final WorldLocation other3 = _theCentre.add(new WorldVector(endAng, radDegs, 0));
     return other3;
   }
 
@@ -374,14 +374,14 @@ public class ArcShape extends CircleShape
    * making this abstract allows for individual shapes
    * to have 'hit-spots' in various locations.
    */
-  public double rangeFrom(WorldLocation point)
+  public double rangeFrom(final WorldLocation point)
   {
     double res = this._theCentre.rangeFrom(point);
 
     /** note, the user may also be clicking on the arc itself
      *
      */
-    double radDegs =_theRadius.getValueIn(WorldDistance.DEGS);
+    final double radDegs =_theRadius.getValueIn(WorldDistance.DEGS);
 
     // first the start
     double res2 = getStartPoint(radDegs).rangeFrom(point);
@@ -413,7 +413,7 @@ public class ArcShape extends CircleShape
    *
    * @param _arcWidth the size
    */
-  public void setArcWidth(double _arcWidth)
+  public void setArcWidth(final double _arcWidth)
   {
     this._arcWidth = _arcWidth;
     
@@ -440,7 +440,7 @@ public class ArcShape extends CircleShape
    *
    * @param centreBearing angle from the origin to 1/2 way along line of arc
    */
-  public void setCentreBearing(double centreBearing)
+  public void setCentreBearing(final double centreBearing)
   {
     this._centreBearing = centreBearing;
     
@@ -467,7 +467,7 @@ public class ArcShape extends CircleShape
    *
    * @param plotOrigin yes/no
    */
-  public void setPlotOrigin(boolean plotOrigin)
+  public void setPlotOrigin(final boolean plotOrigin)
   {
     this._plotOrigin = plotOrigin;
   }
@@ -487,7 +487,7 @@ public class ArcShape extends CircleShape
    *
    * @param plotSpokes yes/no
    */
-  public void setPlotSpokes(boolean plotSpokes)
+  public void setPlotSpokes(final boolean plotSpokes)
   {
     this._plotSpokes = plotSpokes;
   }
@@ -528,8 +528,8 @@ public class ArcShape extends CircleShape
   public class ArcInfo extends EditorType
   {
 
-    public ArcInfo(ArcShape data,
-                   String theName)
+    public ArcInfo(final ArcShape data,
+                   final String theName)
     {
       super(data, theName, "");
     }
@@ -543,7 +543,7 @@ public class ArcShape extends CircleShape
     {
       try
       {
-        PropertyDescriptor[] res = {
+        final PropertyDescriptor[] res = {
           prop("Radius", "the circle radius"),
           prop("Centre", "the centre of the circle"),
           prop("CentreBearing", "bearing from centre of circle to 1/2 way along arc"),
@@ -556,7 +556,7 @@ public class ArcShape extends CircleShape
         return res;
 
       }
-      catch (IntrospectionException e)
+      catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
@@ -570,7 +570,7 @@ public class ArcShape extends CircleShape
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public CircleTest(String val)
+    public CircleTest(final String val)
     {
       super(val);
     }

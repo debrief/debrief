@@ -102,12 +102,12 @@ public class SwingStatusBar extends JPanel implements StatusBar
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public SwingStatusBar(MWC.GUI.Properties.PropertiesPanel editor, MWC.GUI.ToolParent parent)
+  public SwingStatusBar(final MWC.GUI.Properties.PropertiesPanel editor, final MWC.GUI.ToolParent parent)
   {
     theText = new JLabel("             ");
     theText.setAlignmentX(JLabel.CENTER);
     theText.setToolTipText("Double-click to change units");
-    java.awt.BorderLayout lm = new java.awt.BorderLayout();
+    final java.awt.BorderLayout lm = new java.awt.BorderLayout();
     setLayout(lm);
     add("Center", theText);
 
@@ -116,7 +116,7 @@ public class SwingStatusBar extends JPanel implements StatusBar
 
     // handle a double-click on the status bar (used to set units)
     theText.addMouseListener(new java.awt.event.MouseAdapter(){
-      public void mouseClicked(java.awt.event.MouseEvent e)
+      public void mouseClicked(final java.awt.event.MouseEvent e)
       {
         if(e.getClickCount() == 2)
         {
@@ -140,7 +140,7 @@ public class SwingStatusBar extends JPanel implements StatusBar
 
   }
 
-  public void setText(String theVal)
+  public void setText(final String theVal)
   {
     theText.setText(" " + theVal);
   }
@@ -149,20 +149,20 @@ public class SwingStatusBar extends JPanel implements StatusBar
    *  @param range the range in degrees
    *  @param bearing the bearing in radians
    */
-  public void setRngBearing(double range, double bearing)
+  public void setRngBearing(final double range, final double bearing)
   {
-    String rngStr = _support.formatRange(range);
-    String brgStr = _support.formatBearing(bearing);
+    final String rngStr = _support.formatRange(range);
+    final String brgStr = _support.formatBearing(bearing);
 
     setText(rngStr + " " + brgStr);
   }
 
 
-  public void paint(java.awt.Graphics p1)
+  public void paint(final java.awt.Graphics p1)
   {
     super.paint(p1);
 
-    java.awt.Rectangle rt = super.getBounds();
+    final java.awt.Rectangle rt = super.getBounds();
     p1.setColor(java.awt.Color.lightGray);
     p1.draw3DRect(1, 1, rt.width-3, rt.height-3, false);
   }

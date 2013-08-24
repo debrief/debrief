@@ -124,12 +124,12 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 
   private static String FOCUSED_COMP_INDEX = "JToolBar.focusedCompIndex";
 
-  public static ComponentUI createUI( JComponent c )
+  public static ComponentUI createUI( final JComponent c )
   {
     return new MyBasicToolBarUI();
   }
 
-  public void installUI( JComponent c )
+  public void installUI( final JComponent c )
   {
     toolBar = (JToolBar) c;
 
@@ -154,7 +154,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
   }
 
-  public void uninstallUI( JComponent c )
+  public void uninstallUI( final JComponent c )
   {
 
     // Clear defaults
@@ -235,7 +235,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     if ( toolBarFocusListener != null )
     {
       // Put focus listener on all components in toolbar
-      Component[] components = toolBar.getComponents();
+      final Component[] components = toolBar.getComponents();
 
       for ( int i = 0; i < components.length; ++i )
       {
@@ -268,7 +268,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     if ( toolBarFocusListener != null )
     {
       // Remove focus listener from all components in toolbar
-      Component[] components = toolBar.getComponents();
+      final Component[] components = toolBar.getComponents();
 
       for ( int i = 0; i < components.length; ++i )
       {
@@ -281,13 +281,13 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 
   protected void installKeyboardActions( )
   {
-    InputMap km = getInputMap2(JComponent.
+    final InputMap km = getInputMap2(JComponent.
                               WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
     SwingUtilities.replaceUIInputMap(toolBar, JComponent.
                                               WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
                                      km);
-    ActionMap am = getActionMap();
+    final ActionMap am = getActionMap();
 
     if (am != null) {
       SwingUtilities.replaceUIActionMap(toolBar, am);
@@ -314,7 +314,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
   }
 
   ActionMap createActionMap() {
-    ActionMap map = new ActionMapUIResource();
+    final ActionMap map = new ActionMapUIResource();
     map.put("navigateRight", new RightAction());
     map.put("navigateLeft", new LeftAction());
     map.put("navigateUp", new UpAction());
@@ -331,9 +331,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
   }
 
   @SuppressWarnings("deprecation")
-	protected void navigateFocusedComp( int direction )
+	protected void navigateFocusedComp( final int direction )
   {
-    int nComp = toolBar.getComponentCount();
+    final int nComp = toolBar.getComponentCount();
     int j;
 
     switch ( direction )
@@ -348,7 +348,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
         while ( j != focusedCompIndex )
         {
           if ( j >= nComp ) j = 0;
-          Component comp = toolBar.getComponentAtIndex( j++ );
+          final Component comp = toolBar.getComponentAtIndex( j++ );
 
           if ( comp != null && comp.isFocusTraversable() )
           {
@@ -369,7 +369,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
         while ( j != focusedCompIndex )
         {
           if ( j < 0 ) j = nComp - 1;
-          Component comp = toolBar.getComponentAtIndex( j-- );
+          final Component comp = toolBar.getComponentAtIndex( j-- );
 
           if ( comp != null && comp.isFocusTraversable() )
           {
@@ -385,22 +385,22 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
   }
 
-  protected JDialog createMyFloatingFrame(JToolBar toolbar) {
-    Frame f = (java.awt.Frame)SwingUtilities.getAncestorOfClass(java.awt.Frame.class, toolbar);
+  protected JDialog createMyFloatingFrame(final JToolBar toolbar) {
+    final Frame f = (java.awt.Frame)SwingUtilities.getAncestorOfClass(java.awt.Frame.class, toolbar);
 
-    JDialog frame = new JDialog(f, false);
+    final JDialog frame = new JDialog(f, false);
 
     frame.setTitle(toolbar.getName() + " (" + getToolbarOwner()  + ")");
     frame.setResizable(true);
-    WindowListener wl = createFrameListener();
+    final WindowListener wl = createFrameListener();
     frame.addWindowListener(wl);
 
     // also listen to the internal frame closing - if we have one as a parent
-    JInternalFrame internalFrame = (javax.swing.JInternalFrame)SwingUtilities.getAncestorOfClass(javax.swing.JInternalFrame.class, toolbar);
+    final JInternalFrame internalFrame = (javax.swing.JInternalFrame)SwingUtilities.getAncestorOfClass(javax.swing.JInternalFrame.class, toolbar);
     if(internalFrame != null)
     {
       internalFrame.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter(){
-        public void internalFrameClosed(InternalFrameEvent e)
+        public void internalFrameClosed(final InternalFrameEvent e)
         {
           setFloating(false, null);
         }
@@ -408,7 +408,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
 
     // also listen to the properies panel - if we have one as a parent
-    Component comp = toolbar.getComponentAtIndex(0);
+    final Component comp = toolbar.getComponentAtIndex(0);
     if(comp instanceof SwingPropertiesPanel.CloseableJPanel)
     {
       final SwingPropertiesPanel.CloseableJPanel panel = (SwingPropertiesPanel.CloseableJPanel) comp;
@@ -425,7 +425,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
         // tell it when we close
         frame.addWindowListener(new WindowAdapter()
                                 {
-          public void windowClosing(WindowEvent e)
+          public void windowClosing(final WindowEvent e)
           {
             panel.triggerClose();
           }
@@ -446,7 +446,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     return " ";
   }
 
-  protected DragWindow createMyDragWindow(JToolBar toolbar) {
+  protected DragWindow createMyDragWindow(final JToolBar toolbar) {
     Window frame = null;
     if(toolBar != null) {
       Container p;
@@ -463,23 +463,23 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
     frame = floatingFrame;
 
-    DragWindow dragWindow1 = new DragWindow(frame);
+    final DragWindow dragWindow1 = new DragWindow(frame);
     return dragWindow1;
   }
 
-  public Dimension getMinimumSize(JComponent c) {
+  public Dimension getMinimumSize(final JComponent c) {
     return getPreferredSize(c);
   }
 
-  public Dimension getPreferredSize(JComponent c) {
+  public Dimension getPreferredSize(final JComponent c) {
     return null;
   }
 
-  public Dimension getMaximumSize(JComponent c) {
+  public Dimension getMaximumSize(final JComponent c) {
     return getPreferredSize(c);
   }
 
-  public void setFloatingLocation(int x, int y) {
+  public void setFloatingLocation(final int x, final int y) {
     floatingX = x;
     floatingY = y;
   }
@@ -489,7 +489,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
   }
 
   @SuppressWarnings("deprecation")
-	public void setFloating(boolean b, Point p) {
+	public void setFloating(final boolean b, final Point p) {
     if (toolBar.isFloatable() == true) {
       if (dragWindow != null)
         dragWindow.setVisible(false);
@@ -515,9 +515,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
           floatingFrame = createMyFloatingFrame(toolBar);
         floatingFrame.setVisible(false);
         floatingFrame.getContentPane().remove(toolBar);
-        String constraint = getDockingConstraint(dockingSource,
+        final String constraint = getDockingConstraint(dockingSource,
                                                  p);
-        int orientation = mapConstraintToOrientation(constraint);
+        final int orientation = mapConstraintToOrientation(constraint);
         setOrientation(orientation);
         if (dockingSource== null)
           dockingSource = toolBar.getParent();
@@ -526,14 +526,14 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
         dockingSource.add(constraint, toolBar);
       }
       dockingSource.invalidate();
-      Container dockingSourceParent = dockingSource.getParent();
+      final Container dockingSourceParent = dockingSource.getParent();
       if (dockingSourceParent != null)
         dockingSourceParent.validate();
       dockingSource.repaint();
     }
   }
 
-  private int mapConstraintToOrientation(String constraint)
+  private int mapConstraintToOrientation(final String constraint)
   {
     int orientation = toolBar.getOrientation();
 
@@ -548,7 +548,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     return orientation;
   }
 
-  public void setOrientation(int orientation)
+  public void setOrientation(final int orientation)
   {
     toolBar.setOrientation( orientation );
 
@@ -566,7 +566,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
   /**
    * Sets the color displayed when over a docking area
    */
-  public void setDockingColor(Color c) {
+  public void setDockingColor(final Color c) {
     this.dockingColor = c;
   }
 
@@ -580,11 +580,11 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
   /**
    * Sets the color displayed when over a floating area
    */
-  public void setFloatingColor(Color c) {
+  public void setFloatingColor(final Color c) {
     this.floatingColor = c;
   }
 
-  public boolean canDock(Component c, Point p) {
+  public boolean canDock(final Component c, final Point p) {
     // System.out.println("Can Dock: " + p);
     boolean b = false;
     if (c.contains(p)) {
@@ -606,7 +606,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     return b;
   }
 
-  private String getDockingConstraint(Component c, Point p) {
+  private String getDockingConstraint(final Component c, final Point p) {
 
 //    String s = BorderLayout.NORTH;
 //    if ((p != null) && (c.contains(p))) {
@@ -632,7 +632,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
   }
 
   @SuppressWarnings("deprecation")
-	protected void dragTo(Point position, Point origin)
+	protected void dragTo(final Point position, final Point origin)
   {
     if (toolBar.isFloatable() == true)
     {
@@ -642,25 +642,25 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
           dragWindow = createMyDragWindow(toolBar);
         Point offset = dragWindow.getOffset();
         if (offset == null) {
-          Dimension size = toolBar.getPreferredSize();
+          final Dimension size = toolBar.getPreferredSize();
           offset = new Point(size.width/2, size.height/2);
           dragWindow.setOffset(offset);
         }
-        Point global = new Point(origin.x+ position.x,
+        final Point global = new Point(origin.x+ position.x,
                                  origin.y+position.y);
-        Point dragPoint = new Point(global.x- offset.x,
+        final Point dragPoint = new Point(global.x- offset.x,
                                     global.y- offset.y);
         if (dockingSource == null)
           dockingSource = toolBar.getParent();
 
-        Point dockingPosition = dockingSource.getLocationOnScreen();
-        Point comparisonPoint = new Point(global.x-dockingPosition.x,
+        final Point dockingPosition = dockingSource.getLocationOnScreen();
+        final Point comparisonPoint = new Point(global.x-dockingPosition.x,
                                           global.y-dockingPosition.y);
         if (canDock(dockingSource, comparisonPoint)) {
           dragWindow.setBackground(getDockingColor());
-          String constraint = getDockingConstraint(dockingSource,
+          final String constraint = getDockingConstraint(dockingSource,
                                                    comparisonPoint);
-          int orientation = mapConstraintToOrientation(constraint);
+          final int orientation = mapConstraintToOrientation(constraint);
           dragWindow.setOrientation(orientation);
           dragWindow.setBorderColor(dockingBorderColor);
         } else {
@@ -671,18 +671,18 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 
         dragWindow.setLocation(dragPoint.x, dragPoint.y);
         if (dragWindow.isVisible() == false) {
-          Dimension size = toolBar.getPreferredSize();
+          final Dimension size = toolBar.getPreferredSize();
           dragWindow.setSize(size.width, size.height);
           dragWindow.show();
         }
       }
-      catch ( IllegalComponentStateException e )
+      catch ( final IllegalComponentStateException e )
       {
       }
     }
   }
 
-  protected void floatAt(Point position, Point origin)
+  protected void floatAt(final Point position, final Point origin)
   {
     if(toolBar.isFloatable() == true)
     {
@@ -693,13 +693,13 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
           offset = position;
           dragWindow.setOffset(offset);
         }
-        Point global = new Point(origin.x+ position.x,
+        final Point global = new Point(origin.x+ position.x,
                                  origin.y+position.y);
         setFloatingLocation(global.x-offset.x,
                             global.y-offset.y);
         if (dockingSource != null) {
-          Point dockingPosition = dockingSource.getLocationOnScreen();
-          Point comparisonPoint = new Point(global.x-dockingPosition.x,
+          final Point dockingPosition = dockingSource.getLocationOnScreen();
+          final Point comparisonPoint = new Point(global.x-dockingPosition.x,
                                             global.y-dockingPosition.y);
           if (canDock(dockingSource, comparisonPoint)) {
             setFloating(false, comparisonPoint);
@@ -711,7 +711,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
         }
         dragWindow.setOffset(null);
       }
-      catch ( IllegalComponentStateException e )
+      catch ( final IllegalComponentStateException e )
       {
       }
     }
@@ -761,9 +761,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void actionPerformed(ActionEvent e) {
-      JToolBar toolBar = (JToolBar)e.getSource();
-      MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
+		public void actionPerformed(final ActionEvent e) {
+      final JToolBar toolBar = (JToolBar)e.getSource();
+      final MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(EAST);
     }
   }
@@ -775,9 +775,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void actionPerformed(ActionEvent e) {
-      JToolBar toolBar = (JToolBar)e.getSource();
-      MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
+		public void actionPerformed(final ActionEvent e) {
+      final JToolBar toolBar = (JToolBar)e.getSource();
+      final MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(WEST);
     }
   }
@@ -789,9 +789,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void actionPerformed(ActionEvent e) {
-      JToolBar toolBar = (JToolBar)e.getSource();
-      MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
+		public void actionPerformed(final ActionEvent e) {
+      final JToolBar toolBar = (JToolBar)e.getSource();
+      final MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(NORTH);
     }
   }
@@ -803,15 +803,15 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void actionPerformed(ActionEvent e) {
-      JToolBar toolBar = (JToolBar)e.getSource();
-      MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
+		public void actionPerformed(final ActionEvent e) {
+      final JToolBar toolBar = (JToolBar)e.getSource();
+      final MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(SOUTH);
     }
   }
 
   protected class FrameListener extends WindowAdapter {
-    public void windowClosing(WindowEvent w) {
+    public void windowClosing(final WindowEvent w) {
       setFloating(false, null);
     }
 
@@ -819,9 +819,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 
   protected class ToolBarContListener implements ContainerListener
   {
-    public void componentAdded( ContainerEvent e )
+    public void componentAdded( final ContainerEvent e )
     {
-      Component c = e.getChild();
+      final Component c = e.getChild();
 
       if ( toolBarFocusListener != null )
       {
@@ -829,9 +829,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
       }
     }
 
-    public void componentRemoved( ContainerEvent e )
+    public void componentRemoved( final ContainerEvent e )
     {
-      Component c = e.getChild();
+      final Component c = e.getChild();
 
       if ( toolBarFocusListener != null )
       {
@@ -843,14 +843,14 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 
   protected class ToolBarFocusListener implements FocusListener
   {
-    public void focusGained( FocusEvent e )
+    public void focusGained( final FocusEvent e )
     {
-      Component c = e.getComponent();
+      final Component c = e.getComponent();
 
       focusedCompIndex = toolBar.getComponentIndex( c );
     }
 
-    public void focusLost( FocusEvent e )
+    public void focusLost( final FocusEvent e )
     {
     }
 
@@ -858,7 +858,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 
   protected class PropertyListener implements PropertyChangeListener
   {
-    public void propertyChange( PropertyChangeEvent e )
+    public void propertyChange( final PropertyChangeEvent e )
     {
       if ( e.getPropertyName().equals("lookAndFeel") )
       {
@@ -877,23 +877,23 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     protected boolean isDragging = false;
     protected Point origin = null;
 
-    public DockingListener(JToolBar t) {
+    public DockingListener(final JToolBar t) {
       this.toolBar1 = t;
     }
 
-    public void mouseClicked(MouseEvent e) {}
-    public void mousePressed(MouseEvent e) {
+    public void mouseClicked(final MouseEvent e) {}
+    public void mousePressed(final MouseEvent e) {
       if (!toolBar1.isEnabled()) {
         return;
       }
       isDragging = false;
     }
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(final MouseEvent e) {
       if (!toolBar1.isEnabled()) {
         return;
       }
       if (isDragging == true) {
-        Point position = e.getPoint();
+        final Point position = e.getPoint();
         if (origin == null)
           origin = e.getComponent().getLocationOnScreen();
         floatAt(position, origin);
@@ -901,20 +901,20 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
       origin = null;
       isDragging = false;
     }
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
+    public void mouseEntered(final MouseEvent e) { }
+    public void mouseExited(final MouseEvent e) { }
 
-    public void mouseDragged(MouseEvent e) {
+    public void mouseDragged(final MouseEvent e) {
       if (!toolBar1.isEnabled()) {
         return;
       }
       isDragging = true;
-      Point position = e.getPoint();
+      final Point position = e.getPoint();
       if (origin == null)
         origin = e.getComponent().getLocationOnScreen();
       dragTo(position, origin);
     }
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(final MouseEvent e) {
     }
   }
 
@@ -928,16 +928,16 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     int orientation = toolBar.getOrientation();
     Point offset; // offset of the mouse cursor inside the DragWindow
 
-    DragWindow(Window f) {
+    DragWindow(final Window f) {
       super(f);
     }
 
-    public void setOrientation(int o) {
+    public void setOrientation(final int o) {
       if(isShowing()) {
         if (o == this.orientation)
           return;
         this.orientation = o;
-        Dimension size = getSize();
+        final Dimension size = getSize();
         setSize(new Dimension(size.height, size.width));
         if (offset!=null) {
           if( toolBar.getComponentOrientation().isLeftToRight()) {
@@ -956,11 +956,11 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
       return offset;
     }
 
-    public void setOffset(Point p) {
+    public void setOffset(final Point p) {
       this.offset = p;
     }
 
-    public void setBorderColor(Color c) {
+    public void setBorderColor(final Color c) {
       if (this.borderColor == c)
         return;
       this.borderColor = c;
@@ -971,10 +971,10 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
       return this.borderColor;
     }
 
-    public void paint(Graphics g) {
-      Color temp = g.getColor();
+    public void paint(final Graphics g) {
+      final Color temp = g.getColor();
       g.setColor(getBackground());
-      Dimension size = getSize();
+      final Dimension size = getSize();
       g.fillRect(0,0,size.width, size.height);
       g.setColor(getBorderColor());
       g.drawRect(0,0,size.width-1, size.height-1);

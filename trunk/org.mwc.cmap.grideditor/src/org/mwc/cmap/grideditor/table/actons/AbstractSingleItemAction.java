@@ -22,26 +22,26 @@ public abstract class AbstractSingleItemAction extends AbstractViewerAction {
 	 * @param allowEmptySelection whether we can run without a selection
 	 * @param operationRequiresAddRemoveSupport whether our data source must support add/remove
 	 */
-	public AbstractSingleItemAction(boolean allowEmptySelection, boolean operationRequiresAddRemoveSupport) {
+	public AbstractSingleItemAction(final boolean allowEmptySelection, final boolean operationRequiresAddRemoveSupport) {
 		myAllowEmptySelection = allowEmptySelection;
 		needsAddRemoveSupport = operationRequiresAddRemoveSupport;
 	}
 
 	@Override
-	public IUndoableOperation createUndoableOperation(GridEditorActionContext actionContext) {
+	public IUndoableOperation createUndoableOperation(final GridEditorActionContext actionContext) {
 		final IUndoContext undoContext = actionContext.getUndoSupport().getUndoContext();
 		final GriddableSeries mySeries = actionContext.getTableInput();
 		if (mySeries == null) {
 			return null;
 		}
-		IStructuredSelection selection = actionContext.getStructuredSelection();
+		final IStructuredSelection selection = actionContext.getStructuredSelection();
 		if (selection.isEmpty() && !myAllowEmptySelection) {
 			return null;
 		}
 		if (selection.size() > 1) {
 			return null;
 		}
-		Object firstSelected = selection.getFirstElement();
+		final Object firstSelected = selection.getFirstElement();
 		if(firstSelected == null)
 			return null;
 		
@@ -53,11 +53,11 @@ public abstract class AbstractSingleItemAction extends AbstractViewerAction {
 		if(needsAddRemoveSupport)
 		{
 
-			GriddableWrapper gw = (GriddableWrapper) actionContext.getInput();
-			Editable ed = gw.getWrapper().getEditable();
+			final GriddableWrapper gw = (GriddableWrapper) actionContext.getInput();
+			final Editable ed = gw.getWrapper().getEditable();
 			if(ed instanceof GriddableSeriesMarker)
 			{
-				GriddableSeriesMarker gs = (GriddableSeriesMarker) ed;
+				final GriddableSeriesMarker gs = (GriddableSeriesMarker) ed;
 				if(!gs.supportsAddRemove())
 					return null;
 			}

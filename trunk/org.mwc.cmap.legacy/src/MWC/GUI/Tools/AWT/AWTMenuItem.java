@@ -75,11 +75,11 @@ public class AWTMenuItem extends MenuItem implements java.awt.event.ActionListen
   // constructor
   ////////////////////////////////////////////////////////////
   
-  public AWTMenuItem(Tool theTool){
+  public AWTMenuItem(final Tool theTool){
     _theTool = theTool;
   }
   
-  public AWTMenuItem(String theLabel, Tool theTool){
+  public AWTMenuItem(final String theLabel, final Tool theTool){
     super(theLabel);
     _theTool = theTool;
     this.addActionListener(this);
@@ -95,7 +95,7 @@ public class AWTMenuItem extends MenuItem implements java.awt.event.ActionListen
   
   /** callback function for when menu item if selected
    */
-  public void actionPerformed(java.awt.event.ActionEvent e){
+  public void actionPerformed(final java.awt.event.ActionEvent e){
     /** check that we have a tool declared
      */
     if(_theTool != null)

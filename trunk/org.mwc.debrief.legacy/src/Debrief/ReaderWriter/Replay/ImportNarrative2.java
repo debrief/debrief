@@ -82,11 +82,11 @@ public final class ImportNarrative2 implements PlainLineImporter
 
   /** read in this string and return a Label
    */
-  public final Object readThisLine(String theLine)
+  public final Object readThisLine(final String theLine)
   {
 
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
     HiResDate DTG = null;
@@ -98,8 +98,8 @@ public final class ImportNarrative2 implements PlainLineImporter
     st.nextToken();
 
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		DTG = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -117,7 +117,7 @@ public final class ImportNarrative2 implements PlainLineImporter
     // can we trim any leading whitespace?
     theEntry = theEntry.trim();
 
-    NarrativeEntry entry = new NarrativeEntry(theTrack, theType, DTG, theEntry);
+    final NarrativeEntry entry = new NarrativeEntry(theTrack, theType, DTG, theEntry);
 
     return entry;
   }
@@ -133,9 +133,9 @@ public final class ImportNarrative2 implements PlainLineImporter
    * @return the shape in String form
    * @param theWrapper the Shape we are exporting
    */
-  public final String exportThis(MWC.GUI.Plottable theWrapper)
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
   {
-    NarrativeEntry theEntry = (NarrativeEntry) theWrapper;
+    final NarrativeEntry theEntry = (NarrativeEntry) theWrapper;
 
     String line = null;
 
@@ -156,14 +156,14 @@ public final class ImportNarrative2 implements PlainLineImporter
    * @param val the object to test
    * @return boolean saying whether you can do it
    */
-  public final boolean canExportThis(Object val)
+  public final boolean canExportThis(final Object val)
   {
     boolean res = false;
 
     if(val instanceof NarrativeEntry)
     {
     	// right, it's narrative data, but does it have a type?
-    	NarrativeEntry ne = (NarrativeEntry) val;
+    	final NarrativeEntry ne = (NarrativeEntry) val;
     	if(ne.getType() != null)
     		// yup, let's export it then.
     		res = true;
@@ -181,7 +181,7 @@ public final class ImportNarrative2 implements PlainLineImporter
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testImport(String val)
+    public testImport(final String val)
     {
       super(val);
     }
@@ -189,12 +189,12 @@ public final class ImportNarrative2 implements PlainLineImporter
     public void testImportSingleLine()
     {
       final String theLine = ";NARRATIVE2:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
-      ImportNarrative2 in = new ImportNarrative2();
-      Object res = in.readThisLine(theLine);
-      NarrativeEntry ne = (NarrativeEntry)res;
+      final ImportNarrative2 in = new ImportNarrative2();
+      final Object res = in.readThisLine(theLine);
+      final NarrativeEntry ne = (NarrativeEntry)res;
 
       // check it contains the right data
-      String theDate = ne.getDTGString();
+      final String theDate = ne.getDTGString();
       assertEquals(theDate, "020421 121857");
       assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
 			assertEquals("type matches", "GenComment", ne.getType());
@@ -203,12 +203,12 @@ public final class ImportNarrative2 implements PlainLineImporter
     public void testImportQuotedLine()
     {
       final String theLine = ";NARRATIVE2:	020421	121857	\"HMS TORBAY\" 	GenComment2	Mk Rge BAAA R121212";
-      ImportNarrative2 in = new ImportNarrative2();
-      Object res = in.readThisLine(theLine);
-      NarrativeEntry ne = (NarrativeEntry)res;
+      final ImportNarrative2 in = new ImportNarrative2();
+      final Object res = in.readThisLine(theLine);
+      final NarrativeEntry ne = (NarrativeEntry)res;
 
       // check it contains the right data
-      String theDate = ne.getDTGString();
+      final String theDate = ne.getDTGString();
       assertEquals("020421 121857", theDate);
       assertEquals("found track name", "HMS TORBAY", ne.getTrackName());
 			assertEquals("type matches", "GenComment2", ne.getType());
@@ -223,9 +223,9 @@ public final class ImportNarrative2 implements PlainLineImporter
    *
    * @param args
    */
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
-    testImport ti = new testImport("tester");
+    final testImport ti = new testImport("tester");
     ti.testImportSingleLine();
     ti.testImportQuotedLine();
   }

@@ -214,10 +214,10 @@ public class WMF
 
 
 
-  public void arc(int i, int i_0_,
-									int i_1_, int i_2_,
-									int i_3_, int i_4_,
-									int i_5_, int i_6_)
+  public void arc(final int i, final int i_0_,
+									final int i_1_, final int i_2_,
+									final int i_3_, final int i_4_,
+									final int i_5_, final int i_6_)
   {
     metaRecord(2071, 8);
     writeWord(i_6_);
@@ -230,13 +230,13 @@ public class WMF
     writeWord(i);
   }
 
-  public void bitBlt(int i, int i_7_,
-										 int i_8_, int i_9_,
-										 int i_10_, int i_11_,
-										 int i_12_, int[] is,
-										 int i_13_, int i_14_)
+  public void bitBlt(final int i, final int i_7_,
+										 final int i_8_, final int i_9_,
+										 final int i_10_, final int i_11_,
+										 final int i_12_, final int[] is,
+										 final int i_13_, final int i_14_)
   {
-    int i_15_ = ((i_13_ * 3 + 3) / 4) * 4;
+    final int i_15_ = ((i_13_ * 3 + 3) / 4) * 4;
     metaRecord(2368, 28 + (i_15_ / 2) * i_14_);
     writeInteger(i_12_);
     writeWord(i_11_);
@@ -250,9 +250,9 @@ public class WMF
 
 
 
-  private int calcChecksum(int i, int i_16_,
-													 int i_17_, int i_18_,
-													 int i_19_)
+  private int calcChecksum(final int i, final int i_16_,
+													 final int i_17_, final int i_18_,
+													 final int i_19_)
   {
     int i_20_ = 39622;
     i_20_ ^= 0xcdd7;
@@ -266,10 +266,10 @@ public class WMF
 
 
 
-  public void chord(int i, int i_21_,
-										int i_22_, int i_23_,
-										int i_24_, int i_25_,
-										int i_26_, int i_27_)
+  public void chord(final int i, final int i_21_,
+										final int i_22_, final int i_23_,
+										final int i_24_, final int i_25_,
+										final int i_26_, final int i_27_)
   {
     metaRecord(2096, 8);
     writeWord(i_27_);
@@ -284,8 +284,8 @@ public class WMF
 
 
 
-  public int createBrushIndirect(int i, Color color,
-																 int i_28_)
+  public int createBrushIndirect(final int i, final Color color,
+																 final int i_28_)
   {
     metaRecord(764, 4);
     writeWord(i);
@@ -294,8 +294,8 @@ public class WMF
     return addHandle();
   }
 
-  public int createFont(Font font, int escapement,
-												boolean isUnderline, boolean isStrikeout)
+  public int createFont(final Font font, final int escapement,
+												final boolean isUnderline, final boolean isStrikeout)
   {
     char isBold = '\u0190';
     if (font.isBold())
@@ -309,13 +309,13 @@ public class WMF
   }
 
 	@SuppressWarnings("deprecation")
-	public int createFontIndirect(int height, int width,
-																int escapement, int orientation,
-																int weight, boolean isItalic,
-																boolean isUnderline, boolean isStrikeOut,
-																byte charSet, byte outputPrecision,
-																byte clipPrecision, byte outputQuality,
-																byte pitchAndFamily, String string)
+	public int createFontIndirect(int height, final int width,
+																final int escapement, final int orientation,
+																final int weight, final boolean isItalic,
+																final boolean isUnderline, final boolean isStrikeOut,
+																final byte charSet, final byte outputPrecision,
+																final byte clipPrecision, final byte outputQuality,
+																final byte pitchAndFamily, final String string)
   {
     metaRecord(763, 9 + (string.length() + 2) / 2);
     // scale the height up a bit
@@ -337,7 +337,7 @@ public class WMF
     writeWord(i_42_);
     writeWord(outputPrecision | clipPrecision << 8 & 0xff00);
     writeWord(outputQuality | pitchAndFamily << 8 & 0xff00);
-    byte[] is = new byte[string.length() + 2];
+    final byte[] is = new byte[string.length() + 2];
 // @@IM next method is deprecated
 		string.getBytes(0, string.length(), is, 0);
 		//is = string.getBytes();
@@ -348,10 +348,10 @@ public class WMF
     return addHandle();
   }
 
-  public int createPatternBrush(int[] is, int i,
-																int i_44_)
+  public int createPatternBrush(final int[] is, final int i,
+																final int i_44_)
   {
-    int i_45_ = ((i * 3 + 3)) / 4 * 4;
+    final int i_45_ = ((i * 3 + 3)) / 4 * 4;
     metaRecord(322, 22 + (i_45_ / 2) * i_44_);
     writeWord(3);
     writeWord(0);
@@ -361,8 +361,8 @@ public class WMF
 
 
 
-  public int createPenIndirect(int i, int i_46_,
-															 Color color)
+  public int createPenIndirect(final int i, final int i_46_,
+															 final Color color)
   {
     metaRecord(762, 5);
     writeWord(i);
@@ -373,7 +373,7 @@ public class WMF
 
 
 
-  public void deleteObject(int i)
+  public void deleteObject(final int i)
   {
     if (i < handles.size() && ((Boolean) handles.elementAt(i)).booleanValue())
     {
@@ -394,8 +394,8 @@ public class WMF
     }
   }
 
-  public void ellipse(int i, int i_47_,
-											int i_48_, int i_49_)
+  public void ellipse(final int i, final int i_47_,
+											final int i_48_, final int i_49_)
   {
     metaRecord(1048, 4);
     writeWord(i_49_);
@@ -406,12 +406,12 @@ public class WMF
 
 
 
-  public void escape(int i, byte[] is)
+  public void escape(final int i, final byte[] is)
   {
     metaRecord(1574, 2 + (is.length + 1) / 2);
     writeWord(i);
     writeWord(is.length);
-    byte[] is_50_ = new byte[((is.length + 1) / 2) * 2];
+    final byte[] is_50_ = new byte[((is.length + 1) / 2) * 2];
     System.arraycopy(is, 0, is_50_, 0, is.length);
     for (int i_51_ = 0; i_51_ < is_50_.length; i_51_ += 2)
       writeWord(is_50_[i_51_] | is_50_[i_51_ + 1] << 8 & 0xff00);
@@ -420,8 +420,8 @@ public class WMF
 
 
 
-  public void extTextOut(int i, int i_52_, int i_53_,
-												 Rectangle rectangle, String string)
+  public void extTextOut(final int i, final int i_52_, final int i_53_,
+												 final Rectangle rectangle, final String string)
   {
     extTextOut(i, i_52_, i_53_, rectangle, string, null);
   }
@@ -429,9 +429,9 @@ public class WMF
 
 
   @SuppressWarnings("deprecation")
-	public void extTextOut(int i, int i_54_,
-												 int i_55_, Rectangle rectangle,
-												 String string, int[] is)
+	public void extTextOut(final int i, final int i_54_,
+												 final int i_55_, final Rectangle rectangle,
+												 final String string, final int[] is)
   {
     int i_56_ = 4 + (string.length() + 1) / 2;
     if (i_55_ != 0)
@@ -451,7 +451,7 @@ public class WMF
       writeWord(rectangle.height);
     }
 
-    byte[] is_57_ = new byte[string.length() + 1];
+    final byte[] is_57_ = new byte[string.length() + 1];
 // @@IM
 		string.getBytes(0, string.length(), is_57_, 0);
 		//is_57_ = string.getBytes();
@@ -459,7 +459,7 @@ public class WMF
     for (int i_58_ = 0; i_58_ < is_57_.length / 2; i_58_++)
     {
 			//@@ IM never used:  boolean bool = false;
-      int i_59_ = is_57_[i_58_ * 2] | is_57_[i_58_ * 2 + 1] << 8 & 0xff00;
+      final int i_59_ = is_57_[i_58_ * 2] | is_57_[i_58_ * 2 + 1] << 8 & 0xff00;
       writeWord(i_59_);
     }
 
@@ -477,14 +477,14 @@ public class WMF
     return fontnames;
   }
 
-  private int highWord(int i)
+  private int highWord(final int i)
   {
     return (i & 0xffff0000) >> 16;
   }
 
 
 
-  public void lineTo(int i, int i_61_)
+  public void lineTo(final int i, final int i_61_)
   {
     metaRecord(531, 2);
     writeWord(i_61_);
@@ -493,14 +493,14 @@ public class WMF
 
 
 
-  private int lowWord(int i)
+  private int lowWord(final int i)
   {
     return i & 0xffff;
   }
 
 
 
-  private void maxObjectSize(int i)
+  private void maxObjectSize(final int i)
   {
     if (i > maxobjectsize)
       maxobjectsize = i;
@@ -508,9 +508,9 @@ public class WMF
 
 
 
-  protected void metaRecord(int i, int i_62_)
+  protected void metaRecord(final int i, final int i_62_)
   {
-    int i_63_ = i_62_ + 3;
+    final int i_63_ = i_62_ + 3;
     writeInteger(i_63_);
     writeWord(i);
     maxObjectSize(i_63_);
@@ -518,7 +518,7 @@ public class WMF
 
 
 
-  public void moveTo(int i, int i_64_)
+  public void moveTo(final int i, final int i_64_)
   {
     metaRecord(532, 2);
     writeWord(i_64_);
@@ -527,7 +527,7 @@ public class WMF
 
 
 
-  public void offsetViewportOrg(int i, int i_65_)
+  public void offsetViewportOrg(final int i, final int i_65_)
   {
     metaRecord(529, 2);
     writeWord(i_65_);
@@ -535,7 +535,7 @@ public class WMF
   }
 
 
-  public void offsetWindowOrg(int i, int i_66_)
+  public void offsetWindowOrg(final int i, final int i_66_)
   {
     metaRecord(527, 2);
     writeWord(i_66_);
@@ -543,7 +543,7 @@ public class WMF
   }
 
 
-  private void outputInteger(OutputStream outputstream, int i)
+  private void outputInteger(final OutputStream outputstream, final int i)
     throws IOException
   {
     outputWord(outputstream, lowWord(i));
@@ -553,19 +553,19 @@ public class WMF
 
   private static byte[] _cachedByte = new byte[2];
 
-  private void outputWord(OutputStream outputstream, int i)
+  private void outputWord(final OutputStream outputstream, final int i)
     throws IOException
   {
 //    byte[] is = new byte[2];
-    byte[] is = _cachedByte;
+    final byte[] is = _cachedByte;
     is[0] = (byte) (i & 0xff);
     is[1] = (byte) ((i & 0xff00) >> 8);
     outputstream.write(is);
   }
 
-  public void patBlt(int i, int i_67_,
-										 int i_68_, int i_69_,
-										 int i_70_)
+  public void patBlt(final int i, final int i_67_,
+										 final int i_68_, final int i_69_,
+										 final int i_70_)
   {
     metaRecord(1565, 6);
     writeInteger(i_70_);
@@ -575,10 +575,10 @@ public class WMF
     writeWord(i);
   }
 
-  public void pie(int i, int i_71_,
-									int i_72_, int i_73_,
-									int i_74_, int i_75_,
-									int i_76_, int i_77_)
+  public void pie(final int i, final int i_71_,
+									final int i_72_, final int i_73_,
+									final int i_74_, final int i_75_,
+									final int i_76_, final int i_77_)
   {
     metaRecord(2074, 8);
     writeWord(i_77_);
@@ -593,7 +593,7 @@ public class WMF
 
 
 
-  public void polygon(int[] is, int[] is_78_, int i)
+  public void polygon(final int[] is, final int[] is_78_, final int i)
   {
     metaRecord(804, 1 + 2 * i);
     writeWord(i);
@@ -606,7 +606,7 @@ public class WMF
 
 
 
-  public void polyline(int[] is, int[] is_80_, int i)
+  public void polyline(final int[] is, final int[] is_80_, final int i)
   {
     metaRecord(805, 1 + 2 * i);
     writeWord(i);
@@ -619,8 +619,8 @@ public class WMF
 
 
 
-  public void rectangle(int i, int i_82_,
-												int i_83_, int i_84_)
+  public void rectangle(final int i, final int i_82_,
+												final int i_83_, final int i_84_)
   {
     metaRecord(1051, 4);
     writeWord(i_84_);
@@ -631,9 +631,9 @@ public class WMF
 
 
 
-  public void roundRect(int i, int i_85_,
-												int i_86_, int i_87_,
-												int i_88_, int i_89_)
+  public void roundRect(final int i, final int i_85_,
+												final int i_86_, final int i_87_,
+												final int i_88_, final int i_89_)
   {
     metaRecord(1564, 6);
     writeWord(i_89_);
@@ -646,8 +646,8 @@ public class WMF
 
 
 
-  public void scaleViewportExt(int i, int i_90_,
-															 int i_91_, int i_92_)
+  public void scaleViewportExt(final int i, final int i_90_,
+															 final int i_91_, final int i_92_)
   {
     metaRecord(1042, 4);
     writeWord(i_92_);
@@ -658,8 +658,8 @@ public class WMF
 
 
 
-  public void scaleWindowExt(int i, int i_93_,
-														 int i_94_, int i_95_)
+  public void scaleWindowExt(final int i, final int i_93_,
+														 final int i_94_, final int i_95_)
   {
     metaRecord(1024, 4);
     writeWord(i_95_);
@@ -670,7 +670,7 @@ public class WMF
 
 
 
-  public void selectObject(int i)
+  public void selectObject(final int i)
   {
     if (i < handles.size() && ((Boolean) handles.elementAt(i)).booleanValue())
     {
@@ -683,27 +683,27 @@ public class WMF
 
 
 
-  public void setBKColor(Color color)
+  public void setBKColor(final Color color)
   {
     metaRecord(513, 2);
     writeColor(color);
   }
 
-  public void setBKMode(int i)
+  public void setBKMode(final int i)
   {
     metaRecord(258, 1);
     writeWord(i);
   }
 
 
-  public void setMapMode(int i)
+  public void setMapMode(final int i)
   {
     metaRecord(259, 1);
     writeWord(i);
   }
 
 
-  public void setPixel(int i, int i_96_, Color color)
+  public void setPixel(final int i, final int i_96_, final Color color)
   {
     metaRecord(1055, 4);
     writeColor(color);
@@ -712,56 +712,56 @@ public class WMF
   }
 
 
-  public void setPolyFillMode(int i)
+  public void setPolyFillMode(final int i)
   {
     metaRecord(262, 1);
     writeWord(i);
   }
 
 
-  public void setROP2(int i)
+  public void setROP2(final int i)
   {
     metaRecord(260, 1);
     writeWord(i);
   }
 
-  public void setStretchBltMode(int i)
+  public void setStretchBltMode(final int i)
   {
     metaRecord(263, 1);
     writeWord(i);
   }
 
-  public void setTextAlign(int i)
+  public void setTextAlign(final int i)
   {
     metaRecord(302, 1);
     writeWord(i);
   }
 
-  public void setTextCharacterExtra(int i)
+  public void setTextCharacterExtra(final int i)
   {
     metaRecord(264, 1);
     writeWord(i);
   }
 
-  public void setTextColor(Color color)
+  public void setTextColor(final Color color)
   {
     metaRecord(521, 2);
     writeColor(color);
   }
 
-  public void setTextJustification(int i, int i_97_)
+  public void setTextJustification(final int i, final int i_97_)
   {
     metaRecord(522, 2);
     writeWord(i_97_);
     writeWord(i);
   }
 
-  public void setTranslateFontNames(String strings[][])
+  public void setTranslateFontNames(final String strings[][])
   {
     fontnames = strings;
   }
 
-  public void setViewportExt(int i, int i_98_)
+  public void setViewportExt(final int i, final int i_98_)
   {
     metaRecord(526, 2);
     writeWord(i_98_);
@@ -769,35 +769,35 @@ public class WMF
   }
 
 
-  public void setViewportOrg(int i, int i_99_)
+  public void setViewportOrg(final int i, final int i_99_)
   {
     metaRecord(525, 2);
     writeWord(i_99_);
     writeWord(i);
   }
 
-  public void setWindowExt(int width, int height)
+  public void setWindowExt(final int width, final int height)
   {
     metaRecord(524, 2);
     writeWord(height);
     writeWord(width);
   }
 
-  public void setWindowOrg(int i, int i_101_)
+  public void setWindowOrg(final int i, final int i_101_)
   {
     metaRecord(523, 2);
     writeWord(i_101_);
     writeWord(i);
   }
 
-  public void stretchBlt(int i, int i_102_,
-												 int i_103_, int i_104_,
-												 int i_105_, int i_106_,
-												 int i_107_, int i_108_,
-												 int i_109_, int[] is,
-												 int i_110_, int i_111_)
+  public void stretchBlt(final int i, final int i_102_,
+												 final int i_103_, final int i_104_,
+												 final int i_105_, final int i_106_,
+												 final int i_107_, final int i_108_,
+												 final int i_109_, final int[] is,
+												 final int i_110_, final int i_111_)
   {
-    int i_112_ = ((i_110_ * 3 + 3) / 4) * 4;
+    final int i_112_ = ((i_110_ * 3 + 3) / 4) * 4;
     metaRecord(2881, 30 + (i_112_ / 2) * i_111_);
     writeInteger(i_109_);
     writeWord(i_108_);
@@ -812,11 +812,11 @@ public class WMF
   }
 
   @SuppressWarnings("deprecation")
-	public void textOut(int i, int i_113_, String string)
+	public void textOut(final int i, final int i_113_, final String string)
   {
     metaRecord(1313, 3 + (string.length() + 1) / 2);
     writeWord(string.length());
-    byte[] is = new byte[string.length() + 1];
+    final byte[] is = new byte[string.length() + 1];
     // @@IM next command is deprecated
 		string.getBytes(0, string.length(), is, 0);
 		//is = string.getBytes();
@@ -824,14 +824,14 @@ public class WMF
     for (int i_114_ = 0; i_114_ < is.length / 2; i_114_++)
     {
       //@@ IM never used:  boolean bool = false;
-      int i_115_ = is[i_114_ * 2] | is[i_114_ * 2 + 1] << 8 & 0xff00;
+      final int i_115_ = is[i_114_ * 2] | is[i_114_ * 2 + 1] << 8 & 0xff00;
       writeWord(i_115_);
     }
     writeWord(i_113_);
     writeWord(i);
   }
 
-  public String translateFontName(String string)
+  public String translateFontName(final String string)
   {
     String string_116_ = string;
     for (int i = 0; i < fontnames.length; i++)
@@ -842,16 +842,16 @@ public class WMF
     return string_116_;
   }
 
-  protected void writeBitmap(int[] is, int i, int i_117_)
+  protected void writeBitmap(final int[] is, final int i, final int i_117_)
   {
-    int i_118_ = ((i * 3 + 3) / 4) * 4;
-    byte[] is_119_ = new byte[i_118_ * i_117_];
+    final int i_118_ = ((i * 3 + 3) / 4) * 4;
+    final byte[] is_119_ = new byte[i_118_ * i_117_];
     for (int i_120_ = 0; i_120_ < i_117_; i_120_++)
     {
       for (int i_121_ = 0; i_121_ < i; i_121_++)
       {
-        int i_122_ = i_121_ * 3 + i_120_ * i_118_;
-        int i_123_ = is[i_121_ + i_120_ * i];
+        final int i_122_ = i_121_ * 3 + i_120_ * i_118_;
+        final int i_123_ = is[i_121_ + i_120_ * i];
         is_119_[i_122_ + 2] = (byte) (i_123_ >> 16 & 0xff);
         is_119_[i_122_ + 1] = (byte) (i_123_ >> 8 & 0xff);
         is_119_[i_122_] = (byte) (i_123_ & 0xff);
@@ -870,28 +870,28 @@ public class WMF
     writeInteger(0);
     for (int i_124_ = i_117_ - 1; i_124_ >= 0; i_124_--)
     {
-      int i_125_ = i_124_ * i_118_;
+      final int i_125_ = i_124_ * i_118_;
       for (int i_126_ = 0; i_126_ < i_118_; i_126_ += 2)
       {
-        int i_127_ = i_126_ + i_125_;
+        final int i_127_ = i_126_ + i_125_;
         writeWord(is_119_[i_127_ + 1] << 8 & 0xff00 | is_119_[i_127_] & 0xff);
       }
     }
   }
 
-  private void writeBody(OutputStream outputstream)
+  private void writeBody(final OutputStream outputstream)
     throws IOException
   {
     for (int i = 0; i < this.wmf.size(); i++)
       outputWord(outputstream, ((Integer) this.wmf.elementAt(i)).intValue());
   }
 
-  protected void writeColor(Color color)
+  protected void writeColor(final Color color)
   {
     writeInteger(color.getRed() & 0xff | color.getGreen() << 8 & 0xff00 | color.getBlue() << 16 & 0xff0000);
   }
 
-  private void writeHeader(OutputStream outputstream)
+  private void writeHeader(final OutputStream outputstream)
     throws IOException
   {
     setROP2(13);
@@ -913,7 +913,7 @@ public class WMF
 
 
 
-  protected void writeInteger(int i)
+  protected void writeInteger(final int i)
   {
     writeWord(lowWord(i));
     writeWord(highWord(i));
@@ -921,10 +921,10 @@ public class WMF
 
 
 
-  private void writePlaceableHeader(OutputStream outputstream,
-																		int i, int i_134_,
-																		int i_135_, int i_136_,
-																		int i_137_)
+  private void writePlaceableHeader(final OutputStream outputstream,
+																		final int i, final int i_134_,
+																		final int i_135_, final int i_136_,
+																		final int i_137_)
     throws IOException
   {
     outputInteger(outputstream, 0x9ac6cdd7);
@@ -940,23 +940,23 @@ public class WMF
 
 
 
-  public void writePlaceableWMF(OutputStream outputstream, int i,
-																int i_138_, int i_139_,
-																int i_140_, int i_141_)
+  public void writePlaceableWMF(final OutputStream outputstream, final int i,
+																final int i_138_, final int i_139_,
+																final int i_140_, final int i_141_)
     throws IOException
   {
     writePlaceableHeader(outputstream, i, i_138_, i_139_, i_140_, i_141_);
     writeWMF(outputstream);
   }
 
-  public void writeWMF(OutputStream outputstream)
+  public void writeWMF(final OutputStream outputstream)
     throws IOException
   {
     writeHeader(outputstream);
     writeBody(outputstream);
   }
 
-  protected void writeWord(int i)
+  protected void writeWord(final int i)
   {
     this.wmf.addElement(new Integer(i));
   }

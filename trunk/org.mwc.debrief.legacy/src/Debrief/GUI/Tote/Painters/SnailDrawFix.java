@@ -457,7 +457,7 @@ public final class SnailDrawFix implements SnailPainter.drawHighLight, Editable
 
         return res;
       }
-      catch(Exception e)
+      catch(final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
         return super.getPropertyDescriptors();

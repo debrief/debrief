@@ -32,7 +32,7 @@ public final class NarrativeHandler extends
 	// our "working" Narrative
 	Debrief.Wrappers.NarrativeWrapper _myNarrative;
 
-	public NarrativeHandler(MWC.GUI.Layers theLayers)
+	public NarrativeHandler(final MWC.GUI.Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(_myType);
@@ -42,14 +42,14 @@ public final class NarrativeHandler extends
 
 		addAttributeHandler(new HandleAttribute("Name")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_myNarrative.setName(val);
 			}
 		});
 		addHandler(new EntryHandler()
 		{
-			public void addEntry(MWC.TacticalData.NarrativeEntry entry)
+			public void addEntry(final MWC.TacticalData.NarrativeEntry entry)
 			{
 				addThis(entry);
 			}
@@ -57,7 +57,7 @@ public final class NarrativeHandler extends
 	}
 
 	// this is one of ours, so get on with it!
-	protected final void handleOurselves(String name, Attributes attributes)
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
 		_myNarrative = new Debrief.Wrappers.NarrativeWrapper("");
 
@@ -65,7 +65,7 @@ public final class NarrativeHandler extends
 
 	}
 
-	void addThis(MWC.TacticalData.NarrativeEntry entry)
+	void addThis(final MWC.TacticalData.NarrativeEntry entry)
 	{
 		_myNarrative.add(entry);
 	}
@@ -77,13 +77,13 @@ public final class NarrativeHandler extends
 		{
 			// yes, better put the narrative name into the type field, since the user won't see it 
 			// in the layer manager
-			String narrName = _myNarrative.getName();
+			final String narrName = _myNarrative.getName();
 
-			Enumeration<Editable> enumer = _myNarrative.elements();
+			final Enumeration<Editable> enumer = _myNarrative.elements();
 			while (enumer.hasMoreElements())
 			{
-				NarrativeEntry ne = (NarrativeEntry) enumer.nextElement();
-				String theType = ne.getType();
+				final NarrativeEntry ne = (NarrativeEntry) enumer.nextElement();
+				final String theType = ne.getType();
 				// does it already have a source?
 				if (theType == null)
 					ne.setType(narrName);
@@ -91,15 +91,15 @@ public final class NarrativeHandler extends
 		}
 
 		// is there already a narratives layer?
-		Layer oldNarr = _theLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+		final Layer oldNarr = _theLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
 
 		if (oldNarr != null)
 		{
 			// ok, add the new narrative to the old one
-			Enumeration<Editable> enumer = _myNarrative.elements();
+			final Enumeration<Editable> enumer = _myNarrative.elements();
 			while (enumer.hasMoreElements())
 			{
-				NarrativeEntry ne = (NarrativeEntry) enumer.nextElement();
+				final NarrativeEntry ne = (NarrativeEntry) enumer.nextElement();
 				oldNarr.add(ne);
 			}
 		}
@@ -121,20 +121,20 @@ public final class NarrativeHandler extends
 	}
 
 	public static void exportNarrative(
-			Debrief.Wrappers.NarrativeWrapper Narrative, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
+			final Debrief.Wrappers.NarrativeWrapper Narrative, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc)
 	{
 
-		Element trk = doc.createElement(_myType);
+		final Element trk = doc.createElement(_myType);
 		trk.setAttribute("Name", Narrative.getName());
 		// now the entries
-		java.util.Enumeration<Editable> iter = Narrative.elements();
+		final java.util.Enumeration<Editable> iter = Narrative.elements();
 		while (iter.hasMoreElements())
 		{
-			MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
+			final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
 			if (pl instanceof MWC.TacticalData.NarrativeEntry)
 			{
-				MWC.TacticalData.NarrativeEntry fw = (MWC.TacticalData.NarrativeEntry) pl;
+				final MWC.TacticalData.NarrativeEntry fw = (MWC.TacticalData.NarrativeEntry) pl;
 				EntryHandler.exportEntry(fw, trk, doc);
 			}
 
@@ -165,7 +165,7 @@ public final class NarrativeHandler extends
 
 			addAttributeHandler(new HandleAttribute("Entry")
 			{
-				public void setValue(String name, String value)
+				public void setValue(final String name, final String value)
 				{
 					_entry = value;
 				}
@@ -173,7 +173,7 @@ public final class NarrativeHandler extends
 
 			addAttributeHandler(new HandleAttribute("Track")
 			{
-				public void setValue(String name, String value)
+				public void setValue(final String name, final String value)
 				{
 					_track = value;
 				}
@@ -181,7 +181,7 @@ public final class NarrativeHandler extends
 
 			addAttributeHandler(new HandleAttribute("Type")
 			{
-				public void setValue(String name, String value)
+				public void setValue(final String name, final String value)
 				{
 					_type = value;
 				}
@@ -189,7 +189,7 @@ public final class NarrativeHandler extends
 
 			addAttributeHandler(new HandleAttribute("Dtg")
 			{
-				public void setValue(String name, String value)
+				public void setValue(final String name, final String value)
 				{
 					_dtg = DebriefFormatDateTime.parseThis(value);
 				}
@@ -197,7 +197,7 @@ public final class NarrativeHandler extends
 
 		}
 
-		public final void handleOurselves(String name, Attributes atts)
+		public final void handleOurselves(final String name, final Attributes atts)
 		{
 			// create the new items
 			_entry = "";
@@ -211,7 +211,7 @@ public final class NarrativeHandler extends
 		public final void elementClosed()
 		{
 			// create the new object
-			MWC.TacticalData.NarrativeEntry ne = new MWC.TacticalData.NarrativeEntry(
+			final MWC.TacticalData.NarrativeEntry ne = new MWC.TacticalData.NarrativeEntry(
 					_track, _type, _dtg, _entry);
 
 			// pass it to the parent
@@ -221,17 +221,17 @@ public final class NarrativeHandler extends
 
 		abstract public void addEntry(MWC.TacticalData.NarrativeEntry entry);
 
-		public static void exportEntry(MWC.TacticalData.NarrativeEntry Entry,
-				org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+		public static void exportEntry(final MWC.TacticalData.NarrativeEntry Entry,
+				final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 		{
 
-			Element eEntry = doc.createElement(_myType1);
+			final Element eEntry = doc.createElement(_myType1);
 			eEntry.setAttribute("Dtg", writeThis(Entry.getDTG()));
 			eEntry.setAttribute("Entry", Entry.getEntry());
 			eEntry.setAttribute("Track", Entry.getTrackName());
 
 			// do we have an type attribute?
-			String typeStr = Entry.getType();
+			final String typeStr = Entry.getType();
 			if (typeStr != null)
 				eEntry.setAttribute("Type", typeStr);
 

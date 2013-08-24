@@ -8,8 +8,8 @@ import MWC.GenericData.WatchableList;
 public class NullHighlighter implements SWTPlotHighlighter
 {
 
-	public void highlightIt(PlainProjection proj, CanvasType dest,
-			WatchableList list, Watchable watch, boolean isPrimary)
+	public void highlightIt(final PlainProjection proj, final CanvasType dest,
+			final WatchableList list, final Watchable watch, final boolean isPrimary)
 	{
 		// ignore, we don't do anything
 	}

@@ -88,7 +88,7 @@ public class TextlabelType {
      *     {@link FontType }
      *     
      */
-    public void setFont(FontType value) {
+    public void setFont(final FontType value) {
         this.font = value;
     }
 
@@ -112,7 +112,7 @@ public class TextlabelType {
      *     {@link ColourType }
      *     
      */
-    public void setColour(ColourType value) {
+    public void setColour(final ColourType value) {
         this.colour = value;
     }
 
@@ -136,7 +136,7 @@ public class TextlabelType {
      *     {@link LocationType }
      *     
      */
-    public void setCentre(LocationType value) {
+    public void setCentre(final LocationType value) {
         this.centre = value;
     }
 
@@ -160,7 +160,7 @@ public class TextlabelType {
      *     {@link TimeRangeType }
      *     
      */
-    public void setTimeRange(TimeRangeType value) {
+    public void setTimeRange(final TimeRangeType value) {
         this.timeRange = value;
     }
 
@@ -184,7 +184,7 @@ public class TextlabelType {
      *     {@link String }
      *     
      */
-    public void setLabel(String value) {
+    public void setLabel(final String value) {
         this.label = value;
     }
 
@@ -208,7 +208,7 @@ public class TextlabelType {
      *     {@link LabelLocationType }
      *     
      */
-    public void setLabelLocation(LabelLocationType value) {
+    public void setLabelLocation(final LabelLocationType value) {
         this.labelLocation = value;
     }
 
@@ -236,7 +236,7 @@ public class TextlabelType {
      *     {@link Boolean }
      *     
      */
-    public void setLabelVisible(Boolean value) {
+    public void setLabelVisible(final Boolean value) {
         this.labelVisible = value;
     }
 
@@ -260,7 +260,7 @@ public class TextlabelType {
      *     {@link String }
      *     
      */
-    public void setScale(String value) {
+    public void setScale(final String value) {
         this.scale = value;
     }
 
@@ -284,7 +284,7 @@ public class TextlabelType {
      *     {@link String }
      *     
      */
-    public void setSymbol(String value) {
+    public void setSymbol(final String value) {
         this.symbol = value;
     }
 
@@ -312,7 +312,7 @@ public class TextlabelType {
      *     {@link Boolean }
      *     
      */
-    public void setSymbolVisible(Boolean value) {
+    public void setSymbolVisible(final Boolean value) {
         this.symbolVisible = value;
     }
 
@@ -340,7 +340,7 @@ public class TextlabelType {
      *     {@link Boolean }
      *     
      */
-    public void setVisible(Boolean value) {
+    public void setVisible(final Boolean value) {
         this.visible = value;
     }
 

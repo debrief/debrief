@@ -199,15 +199,15 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		{
 			final String msg = fix.getTrackWrapper().getName();
 			
-			WorldLocation fixLoc = fix.getFixLocation();
-			TextLabel trkName = new TextLabel(fixLoc, msg);
+			final WorldLocation fixLoc = fix.getFixLocation();
+			final TextLabel trkName = new TextLabel(fixLoc, msg);
 			trkName.setColor(col);
 			// position the track name according to how it's specified in the parent track
 			trkName.setRelativeLocation(fix.getTrackWrapper().getNameLocation());
 			trkName.paint(dest);
 
 			// use the coordinates to indicate how much of the plot has been repainted
-			Point p2 = dest.toScreen(trkName.getAnchor());
+			final Point p2 = dest.toScreen(trkName.getAnchor());
 			
 			// shift the centre point across a bit
 			p2.translate(5, 0);
@@ -216,7 +216,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 			final int sWid = msg.length() * 6;
 
 			// shift from the start of the string
-			Point shiftedPoint = new Point(centre);
+			final Point shiftedPoint = new Point(centre);
 			shiftedPoint.translate(sWid, 0);
 
 			// and add to the limits rectangle
@@ -383,7 +383,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 
         return res;
       }
-      catch(Exception e)
+      catch(final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
         return super.getPropertyDescriptors();

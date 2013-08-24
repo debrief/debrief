@@ -52,7 +52,7 @@ public class DebriefApp {
      *
      * @param args Array of parameters passed to the application via the command line.
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         new DebriefApp();
 

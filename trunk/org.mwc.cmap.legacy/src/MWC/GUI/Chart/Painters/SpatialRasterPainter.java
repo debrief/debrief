@@ -113,7 +113,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   /** allow a class to over-ride our spatial plotter
    * 
    */
-  public static void overridePainter(PainterComponent newPainter)
+  public static void overridePainter(final PainterComponent newPainter)
   {
   	_painter = newPainter;
   }
@@ -259,7 +259,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   public int getColor(final int elevation, 
   		final double lowerLimit, 
   		final double upperLimit,
-  		ColorConverter converter)
+  		final ColorConverter converter)
   {
     int res;
 
@@ -295,9 +295,9 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
    * @param red
    * @return
    */
-  public static int getRGB(int red, int green, int blue)
+  public static int getRGB(final int red, final int green, final int blue)
   {
-    int res = ((255 & 0xFF) << 24) |
+    final int res = ((255 & 0xFF) << 24) |
       ((red & 0xFF) << 16) |
       ((green & 0xFF) << 8) |
       ((blue & 0xFF) << 0);
@@ -323,7 +323,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   /**
    * provide the depth in metres at the indicated location
    */
-  public double getDepthAt(WorldLocation loc)
+  public double getDepthAt(final WorldLocation loc)
   {
     return getValueAt(loc);
   }
@@ -400,8 +400,8 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 		 * @param max_height
 		 * @param dest where we're painting to
 		 */
-		protected  void updatePixelColors(SpatialRasterPainter parent, final int width,
-				final int height, int min_height, int max_height, CanvasType dest)
+		protected  void updatePixelColors(final SpatialRasterPainter parent, final int width,
+				final int height, final int min_height, final int max_height, final CanvasType dest)
 		{
 			// do a second pass to set the actual colours
       for (int i = 0; i < width * height; i++)
@@ -415,7 +415,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       }
 		}
 
-		public int convertColor(int red, int green, int blue)
+		public int convertColor(final int red, final int green, final int blue)
 		{
 			// TODO Auto-generated method stub
 			return getRGB(red, green, blue);
@@ -440,7 +440,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 		 */
 		public static class SwingColorConverter implements ColorConverter
 		{
-			public int convertColor(int red, int green, int blue)
+			public int convertColor(final int red, final int green, final int blue)
 			{
 				return getRGB(red, green, blue);
 			}			
@@ -482,7 +482,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
     /**
      * repaint the noise levels
      */
-    public final void paint(final CanvasType dest, SpatialRasterPainter parent)
+    public final void paint(final CanvasType dest, final SpatialRasterPainter parent)
     {
 
       /* todo - create a series of painted rectangles, not an image buffer -
@@ -526,7 +526,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
      * @param dest where we're painting to
      * @return the min and max depths for this waterspace
      */
-    private double[] createRasterImage(final CanvasType dest, SpatialRasterPainter parent)
+    private double[] createRasterImage(final CanvasType dest, final SpatialRasterPainter parent)
     {
 
       final double[] res = {0d, 0d};
@@ -647,7 +647,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
                        final double min_height,
                        double max_height,
                        final Integer keyLocation,
-                       SpatialRasterPainter parent)
+                       final SpatialRasterPainter parent)
     {
 
       // how big is the screen?
@@ -747,9 +747,9 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
           thisPoint.move(TL.x + (int) (i * stepWidth), TL.y + (int) (i * stepHeight));
 
           // produce this new colour
-          int thisCol = parent.getColor(thisDepth, min_height, max_height, SWING_COLOR_CONVERTER);
+          final int thisCol = parent.getColor(thisDepth, min_height, max_height, SWING_COLOR_CONVERTER);
           
-          Color thisColor = new Color(thisCol);
+          final Color thisColor = new Color(thisCol);
             
           // draw this rectangle
           dest.setColor(thisColor);
@@ -1244,7 +1244,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
         final double d = Double.parseDouble(token.nextToken());
         sortedDepths.add(new Double(d));
       }
-      catch (NumberFormatException e)
+      catch (final NumberFormatException e)
       {
         // don't worry, we'll just move onto the next one
       }
@@ -1259,7 +1259,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       int counter = 0;
 
       // and put the depths into our working array
-      for (Iterator<Double> iterator = sortedDepths.iterator(); iterator.hasNext();)
+      for (final Iterator<Double> iterator = sortedDepths.iterator(); iterator.hasNext();)
       {
         final Double thisDepth = (Double) iterator.next();
         _contourDepths[counter++] = thisDepth.doubleValue();

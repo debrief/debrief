@@ -123,9 +123,9 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public MoveableDragger(PlainChart theChart,
-                         ToolParent theParent,
-                         String theLabel)
+  public MoveableDragger(final PlainChart theChart,
+                         final ToolParent theParent,
+                         final String theLabel)
   {
     super(theChart, theParent, theLabel, null);
 
@@ -148,7 +148,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
   /**
    * cursor is moving, see if it is hitting anything
    */
-  public void cursorMoved(WorldLocation thePos, boolean dragging, Layers theData)
+  public void cursorMoved(final WorldLocation thePos, final boolean dragging, final Layers theData)
   {
     // see if we are already in a 'drag' movement
     if (_dragging)
@@ -161,11 +161,11 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
     // convert this to screen
     Moveable res = null;
     // find the nearest editable item
-    RightClickEdit.ObjectConstruct vals = new RightClickEdit.ObjectConstruct();
-    int num = theData.size();
+    final RightClickEdit.ObjectConstruct vals = new RightClickEdit.ObjectConstruct();
+    final int num = theData.size();
     for (int i = 0; i < num; i++)
     {
-      Layer thisL = theData.elementAt(i);
+      final Layer thisL = theData.elementAt(i);
       if (thisL.getVisible())
       {
         // find the nearest items, this method call will recursively pass down through
@@ -182,7 +182,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
       if (HitTester.doesHit(thePos, res.getBounds(), 20, _theChart.getCanvas().getProjection()))
       {
         // get the existing listener
-        PlainChart.ChartDragListener cd = _theChart.getChartDragListener();
+        final PlainChart.ChartDragListener cd = _theChart.getChartDragListener();
 
         // remember what we are moving
         _movingObject = res;
@@ -249,19 +249,19 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
   /**
    * drag operation is complete - move the object
    */
-  public void areaSelected(MWC.GenericData.WorldLocation theLocation, Point thePoint)
+  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint)
   {
     super.areaSelected(theLocation, thePoint);
 
     // see if we have selected a worthwhile area
-    Rectangle rt = new Rectangle(_theStartPoint);
+    final Rectangle rt = new Rectangle(_theStartPoint);
     rt.add(_theEndPoint);
 
     // check we still have our object
     if (_movingObject != null)
     {
 
-      WorldLocation oldL = _movingObject.getLocation();
+      final WorldLocation oldL = _movingObject.getLocation();
 
       // do the operation
       super.doExecute(new MoveableDraggerAction(_theChart,
@@ -323,24 +323,24 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
     _dragging = true;
   }
 
-  public static void findNearestMoveable(Layer thisLayer,
-                                         MWC.GenericData.WorldLocation cursorPos,
-                                         RightClickEdit.ObjectConstruct currentNearest)
+  public static void findNearestMoveable(final Layer thisLayer,
+                                         final MWC.GenericData.WorldLocation cursorPos,
+                                         final RightClickEdit.ObjectConstruct currentNearest)
   {
     // so, step through this layer
     if (thisLayer.getVisible())
     {
       // go through this layer
-      Enumeration<Editable> enumer = thisLayer.elements();
+      final Enumeration<Editable> enumer = thisLayer.elements();
       while (enumer.hasMoreElements())
       {
-        Plottable p = (Plottable) enumer.nextElement();
+        final Plottable p = (Plottable) enumer.nextElement();
 
         // is this item draggable?
         if (p instanceof Moveable)
         {
           // how far away is it?
-          double rng = p.rangeFrom(cursorPos);
+          final double rng = p.rangeFrom(cursorPos);
 
           // does it return a range?
           if (rng != -1.0)
@@ -367,7 +367,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
           if (p instanceof Layer)
           {
             // cast to Layer
-            Layer l = (Layer) p;
+            final Layer l = (Layer) p;
 
             // find the nearest values
             findNearestMoveable(l, cursorPos, currentNearest);
@@ -386,16 +386,16 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
   protected class MoveableDraggerAction implements Action
   {
 
-    private PlainChart _theChart1;
-    private WorldLocation _oldLocation;
-    private WorldLocation _newLocation;
-    private Moveable _theMoveable;
+    private final PlainChart _theChart1;
+    private final WorldLocation _oldLocation;
+    private final WorldLocation _newLocation;
+    private final Moveable _theMoveable;
 
 
-    public MoveableDraggerAction(PlainChart theChart,
-                                 Moveable theMoveable,
-                                 WorldLocation oldLocation,
-                                 WorldLocation newLocation)
+    public MoveableDraggerAction(final PlainChart theChart,
+                                 final Moveable theMoveable,
+                                 final WorldLocation oldLocation,
+                                 final WorldLocation newLocation)
     {
       _theMoveable = theMoveable;
       _theChart1 = theChart;

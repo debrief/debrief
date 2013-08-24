@@ -61,10 +61,10 @@ import MWC.GUI.Tools.PlainTool;
    * @param theSuffix file suffix for type of file we are importing
    * @param theDescription textual description of file type
    */
-  public ShowLayers(ToolParent theParent,
-              String theLabel,
-              MWC.GUI.Properties.PropertiesPanel thePanel,
-              MWC.GUI.Layers theData){
+  public ShowLayers(final ToolParent theParent,
+              final String theLabel,
+              final MWC.GUI.Properties.PropertiesPanel thePanel,
+              final MWC.GUI.Layers theData){
 
     super(theParent, theLabel, "images/layer_mgr.gif");
 
@@ -85,7 +85,7 @@ import MWC.GUI.Tools.PlainTool;
   public Action getData()
   {
 
-    Action res = null;
+    final Action res = null;
 
     final Editable.EditorType et = _theData.getInfo();
     // is this projection editable?

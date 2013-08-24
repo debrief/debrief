@@ -17,8 +17,8 @@ public class ZoomOut extends PlainTool
   /////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
-  public ZoomOut(ToolParent theParent, 
-                 PlainChart theChart){      
+  public ZoomOut(final ToolParent theParent, 
+                 final PlainChart theChart){      
     super(theParent, "Zoom Out", "images/zoomout.gif");
     // remember the chart we are acting upon
     _theChart = theChart;
@@ -34,7 +34,7 @@ public class ZoomOut extends PlainTool
   public Action getData()
   {
     // get the current data area
-    WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
+    final WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
     return new ZoomOutAction(_theChart, oldArea, 2.0);
   }
 
@@ -43,13 +43,13 @@ public class ZoomOut extends PlainTool
   // store action information
   ///////////////////////////////////////////////////////
   public static class ZoomOutAction implements Action{
-    private PlainChart _theChart;  
-    private WorldArea _oldArea;
-    private double _zoomFactor;
+    private final PlainChart _theChart;  
+    private final WorldArea _oldArea;
+    private final double _zoomFactor;
 
-    public ZoomOutAction(PlainChart theChart,
-                          WorldArea oldArea,
-                         double zoomFactor){
+    public ZoomOutAction(final PlainChart theChart,
+                          final WorldArea oldArea,
+                         final double zoomFactor){
       _theChart = theChart;
       _oldArea = oldArea;
       _zoomFactor = zoomFactor;

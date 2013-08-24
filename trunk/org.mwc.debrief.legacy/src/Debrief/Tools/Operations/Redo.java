@@ -14,7 +14,7 @@ public final class Redo extends PlainTool
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public Redo(Application theParent){
+  public Redo(final Application theParent){
     super(theParent, "Redo", null);
     
     _theParent = theParent;
@@ -25,7 +25,7 @@ public final class Redo extends PlainTool
   ////////////////////////////////////////////////////////////
   public final Action getData()
   {
-    Session theSession = _theParent.getCurrentSession();
+    final Session theSession = _theParent.getCurrentSession();
     
     if(theSession != null)
       return new RedoAction(theSession.getUndoBuffer());
@@ -42,7 +42,7 @@ public final class Redo extends PlainTool
      */
     final UndoBuffer _theBuffer;
     
-    public RedoAction(UndoBuffer theBuffer){
+    public RedoAction(final UndoBuffer theBuffer){
       _theBuffer = theBuffer;
     }
     

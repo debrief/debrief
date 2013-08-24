@@ -164,11 +164,11 @@ public final class ImportFix implements PlainLineImporter
 
 	/**
    */
-	public final Object readThisLine(String theLine)
+	public final Object readThisLine(final String theLine)
 	{
 
 		// get a stream from the string
-		StringTokenizer st = new StringTokenizer(theLine);
+		final StringTokenizer st = new StringTokenizer(theLine);
 
 		// declare local variables
 		WorldLocation theLoc;
@@ -191,8 +191,8 @@ public final class ImportFix implements PlainLineImporter
 		// first the date
 
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -215,12 +215,12 @@ public final class ImportFix implements PlainLineImporter
 		 * now, we may have trouble here, since there may not be a space between the
 		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
 		 */
-		String vDiff = st.nextToken();
+		final String vDiff = st.nextToken();
 		if (vDiff.length() > 3)
 		{
 			// hmm, they are combined
 			latHem = vDiff.charAt(0);
-			String secondPart = vDiff.substring(1, vDiff.length());
+			final String secondPart = vDiff.substring(1, vDiff.length());
 			longDeg = Double.valueOf(secondPart);
 		}
 		else
@@ -240,7 +240,7 @@ public final class ImportFix implements PlainLineImporter
 				.valueOf(st.nextToken()).doubleValue());
 
 		// get the depth value
-		String depthStr = st.nextToken();
+		final String depthStr = st.nextToken();
 
 		// we know that the Depth str may be NaN, but Java can interpret this
 		// directly
@@ -261,8 +261,8 @@ public final class ImportFix implements PlainLineImporter
 				longMin, longSec, longHem, theDepth);
 
 		// create the fix ready to store it
-		Fix res = new Fix(theDate, theLoc, theCourse, theSpeed);
-		ReplayFix rf = new ReplayFix();
+		final Fix res = new Fix(theDate, theLoc, theCourse, theSpeed);
+		final ReplayFix rf = new ReplayFix();
 		rf.theFix = res;
 		rf.theTrackName = theTrackName;
 		rf.theSymbology = theSymbology;
@@ -287,10 +287,10 @@ public final class ImportFix implements PlainLineImporter
 	 *          the Shape we are exporting
 	 * @return the shape in String form
 	 */
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
-		FixWrapper theFix = (FixWrapper) theWrapper;
-		Fix fix = theFix.getFix();
+		final FixWrapper theFix = (FixWrapper) theWrapper;
+		final Fix fix = theFix.getFix();
 
 		// result value
 		String line;
@@ -313,8 +313,8 @@ public final class ImportFix implements PlainLineImporter
 		line += " "
 				+ MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(Conversions.Rads2Degs(fix.getCourse()));
-		double theSpeedYPS = fix.getSpeed();
-		double theSpeedKts = Conversions.Yps2Kts(theSpeedYPS);
+		final double theSpeedYPS = fix.getSpeed();
+		final double theSpeedKts = Conversions.Yps2Kts(theSpeedYPS);
 		line += " "
 				+ MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(theSpeedKts);
@@ -342,7 +342,7 @@ public final class ImportFix implements PlainLineImporter
 	 *          the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 
@@ -366,19 +366,19 @@ public final class ImportFix implements PlainLineImporter
 	 *          the tokenised stream to read the name from
 	 * @return a string containing the (possibly multi-word) track name
 	 */
-	static public String checkForQuotedTrackName(StringTokenizer st)
+	static public String checkForQuotedTrackName(final StringTokenizer st)
 	{
 		String theTrackName = st.nextToken();
 
 		// so, does the track name contain a quote character?
-		int quoteIndex = theTrackName.indexOf("\"");
+		final int quoteIndex = theTrackName.indexOf("\"");
 		if (quoteIndex >= 0)
 		{
 			// aah, but, we may have just read in all of the item. just check if
 			// the
 			// token contains
 			// both speech marks...
-			int secondQuoteIndex = theTrackName.indexOf("\"", quoteIndex + 1);
+			final int secondQuoteIndex = theTrackName.indexOf("\"", quoteIndex + 1);
 
 			if (secondQuoteIndex >= 0)
 			{
@@ -436,7 +436,7 @@ public final class ImportFix implements PlainLineImporter
 	{
 		static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-		public testImport(String val)
+		public testImport(final String val)
 		{
 			super(val);
 		}
@@ -517,7 +517,7 @@ public final class ImportFix implements PlainLineImporter
 		public void testValues()
 		{
 			String iLine = "951212 051600 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			ImportFix iff = new ImportFix();
+			final ImportFix iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			// and check the result
@@ -601,27 +601,27 @@ public final class ImportFix implements PlainLineImporter
 					0.01);
 
 			// find the track name
-			String theTrack = res.theTrackName;
-			Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
+			final String theTrack = res.theTrackName;
+			final Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
 
 			// create the wrapper for this annotation
-			SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
+			final SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
 
-			TrackWrapper parentTrack = new TrackWrapper();
+			final TrackWrapper parentTrack = new TrackWrapper();
 			parentTrack.setName(theTrack);
 
 			// get the colour for this track
 			parentTrack.setColor(thisColor);
 
 			// set the sym type for the track
-			String theSymType = ImportReplay.replayTrackSymbolFor(res.theSymbology);
+			final String theSymType = ImportReplay.replayTrackSymbolFor(res.theSymbology);
 			parentTrack.setSymbolType(theSymType);
 
-			FixWrapper thisFix = (FixWrapper) thisWrapper;
+			final FixWrapper thisFix = (FixWrapper) thisWrapper;
 			thisFix.setTrackWrapper(parentTrack);
 
 			// now do the export
-			String oLine = iff.exportThis(thisFix);
+			final String oLine = iff.exportThis(thisFix);
 
 			// and check they're the same
 			assertEquals("exported line matches", iLine, oLine);
@@ -725,7 +725,7 @@ public final class ImportFix implements PlainLineImporter
 		public void testPadding()
 		{
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			ImportFix iff = new ImportFix();
+			final ImportFix iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			// and our special time data
@@ -821,7 +821,7 @@ public final class ImportFix implements PlainLineImporter
 		public void testHiResValues()
 		{
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			ImportFix iff = new ImportFix();
+			final ImportFix iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			// and check the result
@@ -833,24 +833,24 @@ public final class ImportFix implements PlainLineImporter
 					0.01);
 
 			// and check the DTG
-			HiResDate hrd = DebriefFormatDateTime.parseThis("951212 051600.000100");
+			final HiResDate hrd = DebriefFormatDateTime.parseThis("951212 051600.000100");
 			assertEquals("time hasn't got mangled", hrd, res.theFix.getTime());
 
-			DateFormat otherFormat = new SimpleDateFormat("yyMMdd HHmmss");
+			final DateFormat otherFormat = new SimpleDateFormat("yyMMdd HHmmss");
 			otherFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			Date theDate = null;
 			try
 			{
 				theDate = otherFormat.parse("951212 051600");
 			}
-			catch (ParseException e)
+			catch (final ParseException e)
 			{
 				e.printStackTrace(); // To change body of catch statement use
 				// File |
 				// Settings | File Templates.
 				return;
 			}
-			HiResDate calculated = new HiResDate(theDate.getTime(), 100);
+			final HiResDate calculated = new HiResDate(theDate.getTime(), 100);
 			assertEquals("time hasn't got mangled", calculated, res.theFix.getTime());
 
 			// ok, try our more difficult import string
@@ -926,27 +926,27 @@ public final class ImportFix implements PlainLineImporter
 					0.01);
 
 			// find the track name
-			String theTrack = res.theTrackName;
-			Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
+			final String theTrack = res.theTrackName;
+			final Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
 
 			// create the wrapper for this annotation
-			SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
+			final SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
 
-			TrackWrapper parentTrack = new TrackWrapper();
+			final TrackWrapper parentTrack = new TrackWrapper();
 			parentTrack.setName(theTrack);
 
 			// get the colour for this track
 			parentTrack.setColor(thisColor);
 
 			// set the sym type for the track
-			String theSymType = ImportReplay.replayTrackSymbolFor(res.theSymbology);
+			final String theSymType = ImportReplay.replayTrackSymbolFor(res.theSymbology);
 			parentTrack.setSymbolType(theSymType);
 
-			FixWrapper thisFix = (FixWrapper) thisWrapper;
+			final FixWrapper thisFix = (FixWrapper) thisWrapper;
 			thisFix.setTrackWrapper(parentTrack);
 
 			// now do the export
-			String oLine = iff.exportThis(thisFix);
+			final String oLine = iff.exportThis(thisFix);
 
 			// and check they're the same
 			assertEquals("exported line matches", iLine, oLine);
@@ -956,10 +956,10 @@ public final class ImportFix implements PlainLineImporter
 	// ////////////////////////////////////////////////
 	// testing code
 	// ////////////////////////////////////////////////
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
-		String test = "NaN";
-		double val = Double.valueOf(test).doubleValue();
+		final String test = "NaN";
+		final double val = Double.valueOf(test).doubleValue();
 
 		System.out.println("res is:" + val);
 	}

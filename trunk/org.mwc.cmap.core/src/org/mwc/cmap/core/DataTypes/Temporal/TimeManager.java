@@ -47,7 +47,7 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 * @see org.mwc.cmap.core.DataTypes.Temporal.ControllableTime#setTime(java.lang.Object,
 	 *      MWC.GenericData.HiResDate)
 	 */
-	public void setTime(Object origin, HiResDate newDate, boolean fireUpdate)
+	public void setTime(final Object origin, final HiResDate newDate, final boolean fireUpdate)
 	{
 		// ok. remember the old time (if we have one)
 		HiResDate oldTime = null;
@@ -98,7 +98,7 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 * @param propertyType
 	 *          the (optional) property to listen to. Use null if you don't mind
 	 */
-	public void addListener(PropertyChangeListener listener, String propertyType)
+	public void addListener(final PropertyChangeListener listener, final String propertyType)
 	{
 		if (_pSupport == null)
 			_pSupport = new PropertyChangeSupport(this);
@@ -115,7 +115,7 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 *          the (optional) property to stop listening to. Use null if you
 	 *          don't mind
 	 */
-	public void removeListener(PropertyChangeListener listener, String propertyType)
+	public void removeListener(final PropertyChangeListener listener, final String propertyType)
 	{
 		_pSupport.removePropertyChangeListener(propertyType, listener);
 	}
@@ -129,10 +129,10 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 * @param period -
 	 *          the new time period
 	 */
-	public void setPeriod(Object origin, TimePeriod period)
+	public void setPeriod(final Object origin, final TimePeriod period)
 	{
 		// remember the old period
-		TimePeriod oldPeriod = _timePeriod;
+		final TimePeriod oldPeriod = _timePeriod;
 
 		// store the new time
 		_timePeriod = period;
@@ -154,7 +154,7 @@ public class TimeManager implements ControllableTime, TimeProvider
 
 
 
-	public void setId(String val)
+	public void setId(final String val)
 	{
 		_myId = val;
 	}

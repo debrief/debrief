@@ -36,14 +36,14 @@ public class DebriefLayerHandler extends
 	private static boolean _exportersInitialised = false;
 	
 	
-	public DebriefLayerHandler(MWC.GUI.Layers theLayers)
+	public DebriefLayerHandler(final MWC.GUI.Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(theLayers);
 
 		addHandler(new LineHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -52,14 +52,14 @@ public class DebriefLayerHandler extends
 		addHandler(new VectorHandler() {
 			
 			@Override
-			public void addPlottable(Plottable plottable) {
+			public void addPlottable(final Plottable plottable) {
 				addThis(plottable);
 			}
 		});
 
 		addHandler(new PolygonHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -67,7 +67,7 @@ public class DebriefLayerHandler extends
 
 		addHandler(new EllipseHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -75,7 +75,7 @@ public class DebriefLayerHandler extends
 
 		addHandler(new RectangleHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -83,7 +83,7 @@ public class DebriefLayerHandler extends
 
 		addHandler(new ArcHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -91,7 +91,7 @@ public class DebriefLayerHandler extends
 
 		addHandler(new CircleHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -99,14 +99,14 @@ public class DebriefLayerHandler extends
 
 		addHandler(new WheelHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
 		});
 		addHandler(new RangeRingsHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -114,14 +114,14 @@ public class DebriefLayerHandler extends
 		addHandler(new FurthestOnCircleHandler()
 		{
 			@Override
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
 		});
 		addHandler(new LabelHandler()
 		{
-			public void addPlottable(MWC.GUI.Plottable plottable)
+			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
 			}
@@ -129,8 +129,8 @@ public class DebriefLayerHandler extends
 
 	}
 
-	public static void exportThisDebriefItem(MWC.GUI.Plottable nextPlottable,
-			org.w3c.dom.Element eLayer, org.w3c.dom.Document doc)
+	public static void exportThisDebriefItem(final MWC.GUI.Plottable nextPlottable,
+			final org.w3c.dom.Element eLayer, final org.w3c.dom.Document doc)
 	{
 		// get ready..
 		checkExporters();
@@ -142,17 +142,17 @@ public class DebriefLayerHandler extends
 		// if this is a shape then we've got to suck the shape out
 		if (nextPlottable instanceof ShapeWrapper)
 		{
-			ShapeWrapper sw = (ShapeWrapper) nextPlottable;
+			final ShapeWrapper sw = (ShapeWrapper) nextPlottable;
 			classId = sw.getShape().getClass();
 		}
 		else
 			classId = nextPlottable.getClass();
 
 		// try to get this one
-		Object exporterType = _myExporters.get(classId);
+		final Object exporterType = _myExporters.get(classId);
 		if (exporterType != null)
 		{
-			PlottableExporter cl = (PlottableExporter) exporterType;
+			final PlottableExporter cl = (PlottableExporter) exporterType;
 			cl.exportThisPlottable(nextPlottable, eLayer, doc);
 		}
 		else
@@ -173,50 +173,50 @@ public class DebriefLayerHandler extends
 
 			_myExporters.put(MWC.GUI.Shapes.ArcShape.class, new ArcHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Shapes.CircleShape.class, new CircleHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Shapes.EllipseShape.class, new EllipseHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Shapes.LineShape.class, new LineHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Shapes.VectorShape.class, new VectorHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Shapes.PolygonShape.class, new PolygonHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 			_myExporters.put(MWC.GUI.Shapes.RectangleShape.class,
 					new RectangleHandler()
 					{
-						public void addPlottable(MWC.GUI.Plottable plottable)
+						public void addPlottable(final MWC.GUI.Plottable plottable)
 						{
 						}
 					});
 			_myExporters.put(MWC.GUI.Shapes.WheelShape.class, new WheelHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
@@ -224,44 +224,44 @@ public class DebriefLayerHandler extends
 					new FurthestOnCircleHandler()
 					{
 						@Override
-						public void addPlottable(MWC.GUI.Plottable plottable)
+						public void addPlottable(final MWC.GUI.Plottable plottable)
 						{
 						}
 					});
 			_myExporters.put(MWC.GUI.Shapes.RangeRingShape.class,
 					new RangeRingsHandler()
 					{
-						public void addPlottable(MWC.GUI.Plottable plottable)
+						public void addPlottable(final MWC.GUI.Plottable plottable)
 						{
 						}
 					});
 
 			_myExporters.put(Debrief.Wrappers.LabelWrapper.class, new LabelHandler()
 			{
-				public void addPlottable(MWC.GUI.Plottable plottable)
+				public void addPlottable(final MWC.GUI.Plottable plottable)
 				{
 				}
 			});
 		}
 	}
 
-	public static void exportLayer(MWC.GUI.BaseLayer layer,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportLayer(final MWC.GUI.BaseLayer layer,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// check our exporters
 		checkExporters();
 
-		org.w3c.dom.Element eLayer = doc.createElement("layer");
+		final org.w3c.dom.Element eLayer = doc.createElement("layer");
 
 		eLayer.setAttribute("Name", layer.getName());
 		eLayer.setAttribute("Visible", writeThis(layer.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
 
 		// step through the components of the layer
-		java.util.Enumeration<Editable> iter = layer.elements();
+		final java.util.Enumeration<Editable> iter = layer.elements();
 		while (iter.hasMoreElements())
 		{
-			MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) iter.nextElement();
+			final MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) iter.nextElement();
 
 			exportThisDebriefItem(nextPlottable, eLayer, doc);
 		}

@@ -62,11 +62,11 @@ public class SwingMenuItem extends JMenuItem implements java.awt.event.ActionLis
   // constructor
   ////////////////////////////////////////////////////////////
   
-  public SwingMenuItem(Tool theTool){
+  public SwingMenuItem(final Tool theTool){
     _theTool = theTool;
   }
   
-  public SwingMenuItem(String theLabel, Tool theTool){
+  public SwingMenuItem(final String theLabel, final Tool theTool){
     super(theLabel);
     _theTool = theTool;
     this.addActionListener(this);
@@ -82,7 +82,7 @@ public class SwingMenuItem extends JMenuItem implements java.awt.event.ActionLis
   
   /** callback function for when menu item if selected
    */
-  public void actionPerformed(java.awt.event.ActionEvent e){
+  public void actionPerformed(final java.awt.event.ActionEvent e){
     /** check that we have a tool declared
      */
     if(_theTool != null)

@@ -16,16 +16,16 @@ public class RubberbandEllipse extends Rubberband{
 
 	public RubberbandEllipse() {
 	}
-    public RubberbandEllipse(Component component) {
+    public RubberbandEllipse(final Component component) {
         super(component);
     }
-    public void drawLast(Graphics graphics) {
-        Rectangle r = lastBounds();
+    public void drawLast(final Graphics graphics) {
+        final Rectangle r = lastBounds();
         graphics.drawArc(r.x, r.y, 
             r.width, r.height, startAngle, endAngle);
     }
-    public void drawNext(Graphics graphics) {
-        Rectangle r = getBounds();
+    public void drawNext(final Graphics graphics) {
+        final Rectangle r = getBounds();
         graphics.drawArc(r.x, r.y, 
             r.width, r.height, startAngle, endAngle);
     }

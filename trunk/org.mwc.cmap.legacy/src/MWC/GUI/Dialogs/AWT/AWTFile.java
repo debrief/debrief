@@ -66,27 +66,27 @@ import java.io.File;
 public class AWTFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 {
   @SuppressWarnings("deprecation")
-	public File[] getExistingFile(String filter,
-																	String description,
-																	String lastDirectory){
-    Frame frm = new Frame("dummy");
-    FileDialog fd = new FileDialog(frm, "Load a file");
+	public File[] getExistingFile(final String filter,
+																	final String description,
+																	final String lastDirectory){
+    final Frame frm = new Frame("dummy");
+    final FileDialog fd = new FileDialog(frm, "Load a file");
     fd.setFile(filter);
     fd.setMode(FileDialog.LOAD);
     fd.show();
     frm.dispose();
 		
-		File[] res = new File[1];
+		final File[] res = new File[1];
 		res[0] = new File(fd.getDirectory() + fd.getFile());
 		return res;
   }
   
   @SuppressWarnings("deprecation")
-	public java.io.File getNewFile(String filter,
-																	String description,
-																	String lastDirectory){
-    Frame frm = new Frame("dummy");
-    FileDialog fd = new FileDialog(frm, "Load a file");
+	public java.io.File getNewFile(final String filter,
+																	final String description,
+																	final String lastDirectory){
+    final Frame frm = new Frame("dummy");
+    final FileDialog fd = new FileDialog(frm, "Load a file");
     fd.setFile(filter);
     fd.setMode(FileDialog.SAVE);
     fd.show();

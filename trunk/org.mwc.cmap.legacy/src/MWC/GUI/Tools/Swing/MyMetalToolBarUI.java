@@ -54,8 +54,8 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
   protected ContainerListener contListener;
   protected PropertyChangeListener rolloverListener;
 
-  private Hashtable<JButton, Border> borderTable = new Hashtable<JButton, Border>();
-  private Hashtable<JButton, Insets> marginTable = new Hashtable<JButton, Insets>();
+  private final Hashtable<JButton, Border> borderTable = new Hashtable<JButton, Border>();
+  private final Hashtable<JButton, Insets> marginTable = new Hashtable<JButton, Insets>();
 
   boolean rolloverBorders = false;
 
@@ -71,7 +71,7 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
   /** constructor for this class
    * @param owner the name of the session, displayed when the toolbar is floated
    */
-  public MyMetalToolBarUI(ToolbarOwner owner)
+  public MyMetalToolBarUI(final ToolbarOwner owner)
   {
     _owner = owner;
   }
@@ -88,16 +88,16 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
   }
 
 
-  public static ComponentUI createUI( JComponent c )
+  public static ComponentUI createUI( final JComponent c )
   {
     return new MyMetalToolBarUI(null);
   }
 
-  public void installUI( JComponent c )
+  public void installUI( final JComponent c )
   {
     super.installUI( c );
 
-    Object rolloverProp = c.getClientProperty( IS_ROLLOVER );
+    final Object rolloverProp = c.getClientProperty( IS_ROLLOVER );
 
     if ( rolloverProp != null )
     {
@@ -117,7 +117,7 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     });
   }
 
-  public void uninstallUI( JComponent c )
+  public void uninstallUI( final JComponent c )
   {
     super.uninstallUI( c );
 
@@ -161,7 +161,7 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     return new MetalDockingListener( toolBar );
   }
 
-  protected void setDragOffset( Point p )
+  protected void setDragOffset( final Point p )
   {
     if (dragWindow == null)
       dragWindow = createMyDragWindow(toolBar);
@@ -174,7 +174,7 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     return rolloverBorders;
   }
 
-  public void setRolloverBorders( boolean rollover )
+  public void setRolloverBorders( final boolean rollover )
   {
     rolloverBorders = rollover;
 
@@ -188,10 +188,10 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     }
   }
 
-  protected void installRolloverBorders ( JComponent c )
+  protected void installRolloverBorders ( final JComponent c )
   {
     // Put rollover borders on buttons
-    Component[] components = c.getComponents();
+    final Component[] components = c.getComponents();
 
     for ( int i = 0; i < components.length; ++i )
     {
@@ -204,10 +204,10 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     }
   }
 
-  protected void installNonRolloverBorders ( JComponent c )
+  protected void installNonRolloverBorders ( final JComponent c )
   {
     // Put nonrollover borders on buttons
-    Component[] components = c.getComponents();
+    final Component[] components = c.getComponents();
 
     for ( int i = 0; i < components.length; ++i )
     {
@@ -220,10 +220,10 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     }
   }
 
-  protected void installNormalBorders ( JComponent c )
+  protected void installNormalBorders ( final JComponent c )
   {
     // Put back the normal borders on buttons
-    Component[] components = c.getComponents();
+    final Component[] components = c.getComponents();
 
     for ( int i = 0; i < components.length; ++i )
     {
@@ -231,11 +231,11 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     }
   }
 
-  protected void setBorderToRollover( Component c )
+  protected void setBorderToRollover( final Component c )
   {
     if ( c instanceof JButton )
     {
-      JButton b = (JButton)c;
+      final JButton b = (JButton)c;
 
       if ( b.getUI() instanceof MetalButtonUI )
       {
@@ -260,11 +260,11 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     }
   }
 
-  protected void setBorderToNonRollover( Component c )
+  protected void setBorderToNonRollover( final Component c )
   {
     if ( c instanceof JButton )
     {
-      JButton b = (JButton)c;
+      final JButton b = (JButton)c;
 
       if ( b.getUI() instanceof MetalButtonUI )
       {
@@ -289,11 +289,11 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
     }
   }
 
-  protected void setBorderToNormal( Component c )
+  protected void setBorderToNormal( final Component c )
   {
     if ( c instanceof JButton )
     {
-      JButton b = (JButton)c;
+      final JButton b = (JButton)c;
 
       if ( b.getUI() instanceof MetalButtonUI )
       {
@@ -315,9 +315,9 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
 
   protected class MetalContainerListener implements ContainerListener
   {
-    public void componentAdded( ContainerEvent e )
+    public void componentAdded( final ContainerEvent e )
     {
-      Component c = e.getChild();
+      final Component c = e.getChild();
 
       if ( rolloverBorders )
       {
@@ -329,9 +329,9 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
       }
     }
 
-    public void componentRemoved( ContainerEvent e )
+    public void componentRemoved( final ContainerEvent e )
     {
-      Component c = e.getChild();
+      final Component c = e.getChild();
       setBorderToNormal( c );
     }
 
@@ -340,9 +340,9 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
 
   protected class MetalRolloverListener implements PropertyChangeListener
   {
-    public void propertyChange( PropertyChangeEvent e )
+    public void propertyChange( final PropertyChangeEvent e )
     {
-      String name = e.getPropertyName();
+      final String name = e.getPropertyName();
 
       if ( name.equals( IS_ROLLOVER ) )
       {
@@ -363,12 +363,12 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
   {
     private boolean pressedInBumps = false;
 
-    public MetalDockingListener( JToolBar t )
+    public MetalDockingListener( final JToolBar t )
     {
       super( t );
     }
 
-    public void mousePressed( MouseEvent e )
+    public void mousePressed( final MouseEvent e )
     {
       super.mousePressed( e );
       if (!toolBar.isEnabled()) {
@@ -376,7 +376,7 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
       }
       pressedInBumps = false;
 
-      Rectangle bumpRect = new Rectangle();
+      final Rectangle bumpRect = new Rectangle();
 
       if ( toolBar.getSize().height <= toolBar.getSize().width )  // horizontal
       {
@@ -396,7 +396,7 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
       {
         pressedInBumps = true;
 
-        Point dragOffset = e.getPoint();
+        final Point dragOffset = e.getPoint();
         if( !toolBar.getComponentOrientation().isLeftToRight() ) {
           dragOffset.x -= toolBar.getSize().width
                   - toolBar.getPreferredSize().width;
@@ -406,7 +406,7 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
       }
     }
 
-    public void mouseDragged( MouseEvent e )
+    public void mouseDragged( final MouseEvent e )
     {
       if ( pressedInBumps )
       {

@@ -40,7 +40,7 @@ public class SplashScreen extends Window
   private int imgWidth;
   private int imgHeight;
 
-  private int _myBorderWidth = 2;
+  private final int _myBorderWidth = 2;
 
 
   /****************************************************
@@ -50,10 +50,10 @@ public class SplashScreen extends Window
    * image - the image to plot
    * title - title of the splash screen
    */
-  public SplashScreen(Frame parent,
-                      String imageName,
-                      String title,
-                      Color titleColor)
+  public SplashScreen(final Frame parent,
+                      final String imageName,
+                      final String title,
+                      final Color titleColor)
   {
     super(parent);
 
@@ -74,7 +74,7 @@ public class SplashScreen extends Window
       /**
        * Invoked when the mouse has been clicked on a component.
        */
-      public void mouseClicked(MouseEvent e)
+      public void mouseClicked(final MouseEvent e)
       {
         setVisible(false);
         dispose();
@@ -86,13 +86,13 @@ public class SplashScreen extends Window
   /****************************************************
    * member methods
    ***************************************************/
-  private Image loadSplashImage(String imageName)
+  private Image loadSplashImage(final String imageName)
   {
     Image image = null;
-    URL theURL = getClass().getClassLoader().getResource(imageName);
+    final URL theURL = getClass().getClassLoader().getResource(imageName);
     if(theURL != null)
     {
-      ImageIcon io = new ImageIcon(theURL);
+      final ImageIcon io = new ImageIcon(theURL);
       image = io.getImage();
       imgWidth = image.getWidth(this);
       imgHeight = image.getHeight(this);
@@ -102,11 +102,11 @@ public class SplashScreen extends Window
 
   private void showSplashScreen()
   {
-    Dimension screenSize = _myToolkit.getScreenSize();
-    int w = imgWidth + _myBorderWidth * 2;
-    int h = imgHeight + _myBorderWidth * 2;
-    int x = (screenSize.width - w) / 2;
-    int y = (screenSize.height - h) / 2;
+    final Dimension screenSize = _myToolkit.getScreenSize();
+    final int w = imgWidth + _myBorderWidth * 2;
+    final int h = imgHeight + _myBorderWidth * 2;
+    final int x = (screenSize.width - w) / 2;
+    final int y = (screenSize.height - h) / 2;
     setBounds(x, y, w, h);
     setVisible(true);
   }
@@ -122,17 +122,17 @@ public class SplashScreen extends Window
    * @param g the specified Graphics window
    * @see   java.awt.Component#update(java.awt.Graphics)
    */
-  public void paint(Graphics g)
+  public void paint(final Graphics g)
   {
     g.drawImage(_myImage, _myBorderWidth, _myBorderWidth, imgWidth, imgHeight, this);
 
     // work out where to put the text
-    Font newF = new Font("SansSerif", Font.BOLD, 15);
-    Font oldF = g.getFont();
+    final Font newF = new Font("SansSerif", Font.BOLD, 15);
+    final Font oldF = g.getFont();
     g.setFont(newF);
     g.setColor(_myColor);
-    FontMetrics fm = g.getFontMetrics();
-    int wid = fm.stringWidth(this._myTitle);
+    final FontMetrics fm = g.getFontMetrics();
+    final int wid = fm.stringWidth(this._myTitle);
     g.drawString(_myTitle, (imgWidth - wid), (imgHeight - 2));
 
     g.setFont(oldF);

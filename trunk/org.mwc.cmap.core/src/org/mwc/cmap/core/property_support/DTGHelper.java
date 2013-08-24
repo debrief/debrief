@@ -79,7 +79,7 @@ public class DTGHelper extends EditorHelper
 					new TextPropertyDescriptor(ID_TIME, "time (hh:mm:ss)"), };
 		}
 
-		public DTGPropertySource(HiResDate dtg)
+		public DTGPropertySource(final HiResDate dtg)
 		{
 
 			checkDateFormat();
@@ -101,7 +101,7 @@ public class DTGHelper extends EditorHelper
 			_originalTime = _time;
 		}
 
-		protected void firePropertyChanged(String propName)
+		protected void firePropertyChanged(final String propName)
 		{
 			// Control ctl = (Control)element.getControl();
 			//
@@ -122,7 +122,7 @@ public class DTGHelper extends EditorHelper
 			return descriptors;
 		}
 
-		public Object getPropertyValue(Object propName)
+		public Object getPropertyValue(final Object propName)
 		{
 			String res = "";
 			if (ID_DATE.equals(propName))
@@ -147,7 +147,7 @@ public class DTGHelper extends EditorHelper
 				// see if they have been set yet
 				if (!_date.equals(UNSET))
 				{
-					Date date = _dateFormat.parse(_date);
+					final Date date = _dateFormat.parse(_date);
 					millis += date.getTime();
 				}
 
@@ -160,7 +160,7 @@ public class DTGHelper extends EditorHelper
 					{
 						time = _longTimeFormat.parse(_time);
 					}
-					catch (ParseException e)
+					catch (final ParseException e)
 					{
 						time = _shortTimeFormat.parse(_time);
 					}
@@ -175,7 +175,7 @@ public class DTGHelper extends EditorHelper
 				}
 
 			}
-			catch (ParseException e)
+			catch (final ParseException e)
 			{
 				// fall back on the original value
 				CorePlugin.logError(Status.ERROR, "Failed to produce dtg", e);
@@ -187,7 +187,7 @@ public class DTGHelper extends EditorHelper
 		/**
 		 * @see org.eclipse.ui.views.properties.IPropertySource#isPropertySet(Object)
 		 */
-		public boolean isPropertySet(Object propName)
+		public boolean isPropertySet(final Object propName)
 		{
 			boolean res = false;
 			if (ID_DATE.equals(propName))
@@ -201,7 +201,7 @@ public class DTGHelper extends EditorHelper
 			return res;
 		}
 
-		public void resetPropertyValue(Object propName)
+		public void resetPropertyValue(final Object propName)
 		{
 			if (ID_DATE.equals(propName))
 			{
@@ -213,7 +213,7 @@ public class DTGHelper extends EditorHelper
 			}
 		}
 
-		public void setPropertyValue(Object propName, Object value)
+		public void setPropertyValue(final Object propName, final Object value)
 		{
 			if (ID_DATE.equals(propName))
 			{
@@ -240,7 +240,7 @@ public class DTGHelper extends EditorHelper
 			return res;
 		}
 
-		public boolean isPropertyResettable(Object id)
+		public boolean isPropertyResettable(final Object id)
 		{
 			// both parameters are resettable. cool.
 			return true;
@@ -253,43 +253,43 @@ public class DTGHelper extends EditorHelper
 		super(HiResDate.class);
 	}
 
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return null;
 	}
 
 	@SuppressWarnings(
 	{ "rawtypes" })
-	public boolean editsThis(Class target)
+	public boolean editsThis(final Class target)
 	{
 		return (target == HiResDate.class);
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		// ok, we've received a DTG. Return our new property source representing a
 		// DTG
 		return new DTGPropertySource((HiResDate) value);
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
-		DTGPropertySource res = (DTGPropertySource) value;
+		final DTGPropertySource res = (DTGPropertySource) value;
 		return res.getValue();
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				DTGPropertySource val = (DTGPropertySource) element;
+				final DTGPropertySource val = (DTGPropertySource) element;
 				checkDateFormat();
 				return val.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}

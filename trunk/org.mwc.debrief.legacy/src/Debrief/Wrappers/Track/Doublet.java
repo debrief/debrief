@@ -21,11 +21,11 @@ public final class Doublet implements Comparable<Doublet>
 	static public final class testCalc extends junit.framework.TestCase
 	{
 
-		private double convertAndTest(double myCrseDegs, double bearingDegs,
-				double mySpeedKts, double observedFreq)
+		private double convertAndTest(final double myCrseDegs, final double bearingDegs,
+				final double mySpeedKts, final double observedFreq)
 		{
-			double myCrseRads = MWC.Algorithms.Conversions.Degs2Rads(myCrseDegs);
-			double bearingRads = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
+			final double myCrseRads = MWC.Algorithms.Conversions.Degs2Rads(myCrseDegs);
+			final double bearingRads = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
 			return calcDopplerComponent(bearingRads, myCrseRads, mySpeedKts,
 					observedFreq);
 		}
@@ -50,11 +50,11 @@ public final class Doublet implements Comparable<Doublet>
 
 		public void testDopplerShiftHighLevel()
 		{
-			WorldLocation loc1 = new WorldLocation(50, 0, 0);
-			WorldLocation loc2 = new WorldLocation(51, 1, 0);
-			WorldVector sep = loc2.subtract(loc1);
-			double dLat = Math.cos(sep.getBearing()) * sep.getRange();
-			double dLong = Math.sin(sep.getBearing()) * sep.getRange();
+			final WorldLocation loc1 = new WorldLocation(50, 0, 0);
+			final WorldLocation loc2 = new WorldLocation(51, 1, 0);
+			final WorldVector sep = loc2.subtract(loc1);
+			final double dLat = Math.cos(sep.getBearing()) * sep.getRange();
+			final double dLong = Math.sin(sep.getBearing()) * sep.getRange();
 
 			assertEquals(dLat, 1d, 0.0001d);
 			assertEquals(dLong, 0.63607d, 0.0001d);
@@ -64,8 +64,8 @@ public final class Doublet implements Comparable<Doublet>
 		{
 			final double SPEED_OF_SOUND = 1500;
 
-			WorldLocation hostLoc = new WorldLocation(4, 4, 0);
-			WorldLocation tgtLoc = new WorldLocation(4, 7, 0);
+			final WorldLocation hostLoc = new WorldLocation(4, 4, 0);
+			final WorldLocation tgtLoc = new WorldLocation(4, 7, 0);
 			double hostCourse = MWC.Algorithms.Conversions.Degs2Rads(60);
 			double hostSpeed = 8d; // MWC.Algorithms.Conversions.Kts2Yps(8);
 			double tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(300);
@@ -190,9 +190,9 @@ public final class Doublet implements Comparable<Doublet>
 	 *          degs
 	 * @return
 	 */
-	private static double calcDopplerShift(double SpeedOfSound,
-			double osHeadingRads, double tgtHeadingRads, double osSpeed,
-			double tgtSpeed, double dLat, double dLong)
+	private static double calcDopplerShift(final double SpeedOfSound,
+			final double osHeadingRads, final double tgtHeadingRads, final double osSpeed,
+			final double tgtSpeed, final double dLat, final double dLong)
 	{
 		double a = -Math.atan2(dLong, dLat);
 
@@ -201,15 +201,15 @@ public final class Doublet implements Comparable<Doublet>
 		else
 			a -= Math.PI / 2;
 
-		double b = tgtHeadingRads;
-		double c = a - b;
-		double d = osHeadingRads;
-		double e = a - d;
+		final double b = tgtHeadingRads;
+		final double c = a - b;
+		final double d = osHeadingRads;
+		final double e = a - d;
 
-		double s1 = Math.cos(c) * tgtSpeed;
-		double s2 = Math.cos(e) * osSpeed;
+		final double s1 = Math.cos(c) * tgtSpeed;
+		final double s2 = Math.cos(e) * osSpeed;
 
-		double doppler = (s2 - s1 + SpeedOfSound) / SpeedOfSound;
+		final double doppler = (s2 - s1 + SpeedOfSound) / SpeedOfSound;
 
 		return doppler;
 	}
@@ -221,17 +221,17 @@ public final class Doublet implements Comparable<Doublet>
 	 *          the speed of sound to use, m/sec
 	 * @return
 	 */
-	public static double getDopplerShift(double SpeedOfSound, Fix host, Fix tgt)
+	public static double getDopplerShift(final double SpeedOfSound, final Fix host, final Fix tgt)
 	{
-		double osSpeed = MWC.Algorithms.Conversions.Kts2Mps(host.getSpeed());
-		double tgtSpeed = MWC.Algorithms.Conversions.Kts2Mps(tgt.getSpeed());
-		double osHeadingRads = host.getCourse();
-		double tgtHeadingRads = tgt.getCourse();
+		final double osSpeed = MWC.Algorithms.Conversions.Kts2Mps(host.getSpeed());
+		final double tgtSpeed = MWC.Algorithms.Conversions.Kts2Mps(tgt.getSpeed());
+		final double osHeadingRads = host.getCourse();
+		final double tgtHeadingRads = tgt.getCourse();
 
 		// produce dLat, dLong at the correct point on the earth
-		WorldVector offset = tgt.getLocation().subtract(host.getLocation());
-		double dLat = offset.getRange() * Math.cos(offset.getBearing());
-		double dLong = offset.getRange() * Math.sin(offset.getBearing());
+		final WorldVector offset = tgt.getLocation().subtract(host.getLocation());
+		final double dLat = offset.getRange() * Math.cos(offset.getBearing());
+		final double dLong = offset.getRange() * Math.sin(offset.getBearing());
 
 		// done, go for it.
 		return calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads,
@@ -259,7 +259,7 @@ public final class Doublet implements Comparable<Doublet>
 	// constructor
 	// ////////////////////////////////////////////////
 	public Doublet(final SensorContactWrapper sensor, final FixWrapper targetFix,
-			TrackSegment parent, final FixWrapper hostFix)
+			final TrackSegment parent, final FixWrapper hostFix)
 	{
 		_sensor = sensor;
 		_targetFix = targetFix;
@@ -274,7 +274,7 @@ public final class Doublet implements Comparable<Doublet>
 	 * @param calcValue
 	 * @return
 	 */
-	public double calculateBearingError(double measuredValue, double calcValue)
+	public double calculateBearingError(final double measuredValue, final double calcValue)
 	{
 		double theError = measuredValue - calcValue;
 
@@ -294,7 +294,7 @@ public final class Doublet implements Comparable<Doublet>
 	 * @param calcValue
 	 * @return
 	 */
-	public double calculateFreqError(double measuredValue, double calcValue)
+	public double calculateFreqError(final double measuredValue, final double calcValue)
 	{
 		double theError = measuredValue - calcValue;
 
@@ -308,7 +308,7 @@ public final class Doublet implements Comparable<Doublet>
 	}
 
 	@Override
-	public int compareTo(Doublet o)
+	public int compareTo(final Doublet o)
 	{
 		int res = 0;
 		res = _hostFix.getDTG().compareTo(o._hostFix.getDTG());
@@ -334,7 +334,7 @@ public final class Doublet implements Comparable<Doublet>
 		double res = INVALID_BASE_FREQUENCY;
 		if (_targetTrack instanceof CoreTMASegment)
 		{
-			CoreTMASegment tma = (CoreTMASegment) _targetTrack;
+			final CoreTMASegment tma = (CoreTMASegment) _targetTrack;
 			res = tma.getBaseFrequency();
 		}
 
@@ -389,7 +389,7 @@ public final class Doublet implements Comparable<Doublet>
 		final double myCourseRads = _hostFix.getCourse();
 
 		final double mySpeedKts = _hostFix.getSpeed();
-		double observedFreq = _sensor.getFrequency();
+		final double observedFreq = _sensor.getFrequency();
 		final double dopplerComponent = calcDopplerComponent(theBearingRads,
 				myCourseRads, mySpeedKts, observedFreq);
 
@@ -438,14 +438,14 @@ public final class Doublet implements Comparable<Doublet>
 
 		if (_targetTrack instanceof RelativeTMASegment)
 		{
-			RelativeTMASegment rt = (RelativeTMASegment) _targetTrack;
+			final RelativeTMASegment rt = (RelativeTMASegment) _targetTrack;
 			final double theBearingDegs = getCalculatedBearing(null, null);
 			final double theBearingRads = MWC.Algorithms.Conversions
 					.Degs2Rads(theBearingDegs);
 			final double myCourseRads = _hostFix.getCourse();
 
 			final double mySpeedKts = _hostFix.getSpeed();
-			double baseFreq = rt.getBaseFrequency();
+			final double baseFreq = rt.getBaseFrequency();
 			final double myDopplerComponent = calcDopplerComponent(theBearingRads,
 					myCourseRads, mySpeedKts, baseFreq);
 

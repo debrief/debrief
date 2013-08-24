@@ -184,7 +184,7 @@ public class SymbolFactory
    * create a symbol using the given identifier,
    * else return null
    */
-  static public PlainSymbol createSymbol(String symbolType)
+  static public PlainSymbol createSymbol(final String symbolType)
   {
 
     if (symbolType == null)
@@ -200,10 +200,10 @@ public class SymbolFactory
     if (symClass == null)
     {
       // ok, try it the long way
-      java.util.Iterator<String> it = _theFactory._theSymbols.keySet().iterator();
+      final java.util.Iterator<String> it = _theFactory._theSymbols.keySet().iterator();
       while (it.hasNext())
       {
-        String thisKey = (String) it.next();
+        final String thisKey = (String) it.next();
         if (thisKey != null)
         {
           if (thisKey.toUpperCase().equals(symbolType.toUpperCase()))
@@ -221,12 +221,12 @@ public class SymbolFactory
       try
       {
         // create it
-        Object newSym = symClass.newInstance();
+        final Object newSym = symClass.newInstance();
 
         // convert to correct type
         res = (PlainSymbol) newSym;
       }
-      catch (Exception ill)
+      catch (final Exception ill)
       {
         //
         MWC.Utilities.Errors.Trace.trace(ill, "Failed to create new symbol, unable to create new instance");
@@ -244,7 +244,7 @@ public class SymbolFactory
    * create a symbol using the given identifier,
    * else return null
    */
-  static public String createSymbolFromId(String charAsString)
+  static public String createSymbolFromId(final String charAsString)
   {
     String res = null;
 
@@ -252,12 +252,12 @@ public class SymbolFactory
     checkFactory();
 
     // ok, try it the long way
-    java.util.Iterator<String> it = _theVesselIds.values().iterator();
-    Iterator<String> keyIterator = _theVesselIds.keySet().iterator();
+    final java.util.Iterator<String> it = _theVesselIds.values().iterator();
+    final Iterator<String> keyIterator = _theVesselIds.keySet().iterator();
     while (it.hasNext())
     {
-      String thisKey = (String) it.next();
-      String thisSymbolName = (String) keyIterator.next();
+      final String thisKey = (String) it.next();
+      final String thisSymbolName = (String) keyIterator.next();
 
       if (thisKey != null)
       {
@@ -272,7 +272,7 @@ public class SymbolFactory
     return res;
   }
 
-  public static String findIdForSymbolType(String type)
+  public static String findIdForSymbolType(final String type)
   {
     String res = null;
 
@@ -284,11 +284,11 @@ public class SymbolFactory
     // do we need to try a case-insensitive comparison
     if (res == null)
     {
-      String typeUpper = type.toUpperCase();
-      Iterator<String> iter = _theVesselIds.keySet().iterator();
+      final String typeUpper = type.toUpperCase();
+      final Iterator<String> iter = _theVesselIds.keySet().iterator();
       while (iter.hasNext())
       {
-        String thisKey = (String) iter.next();
+        final String thisKey = (String) iter.next();
         if (thisKey.toUpperCase().equals(typeUpper))
         {
           res = findIdForSymbolType(thisKey);
@@ -344,7 +344,7 @@ public class SymbolFactory
       /////////////////////////////////////////
       // first the vessels
       /////////////////////////////////////////
-      java.util.HashMap<String, Class<?>> vessels = new java.util.HashMap<String, Class<?>>();
+      final java.util.HashMap<String, Class<?>> vessels = new java.util.HashMap<String, Class<?>>();
       vessels.put("Helicopter", MWC.GUI.Shapes.Symbols.Vessels.HelicopterSym.class);
       vessels.put("Aircraft", MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
       vessels.put("ScaledAmphib", MWC.GUI.Shapes.Symbols.Vessels.ScaledAmphibSym.class);
@@ -407,7 +407,7 @@ public class SymbolFactory
       /////////////////////////////////////////
       // now the buoys
       /////////////////////////////////////////
-      java.util.HashMap<String, Class<?>> buoys = new java.util.HashMap<String, Class<?>>();
+      final java.util.HashMap<String, Class<?>> buoys = new java.util.HashMap<String, Class<?>>();
       buoys.put("Active", MWC.GUI.Shapes.Symbols.Buoys.ActiveSym.class);
       buoys.put("Difar", MWC.GUI.Shapes.Symbols.Buoys.DifarSym.class);
       buoys.put("Lofar", MWC.GUI.Shapes.Symbols.Buoys.LofarSym.class);
@@ -436,7 +436,7 @@ public class SymbolFactory
 
 
       // collate list of symbol names from our list
-      String[] sampler = new String[]{"dummy1"};
+      final String[] sampler = new String[]{"dummy1"};
 
       // convert the big vector to the list
       java.util.SortedSet<String> sortedKeys = new java.util.TreeSet<String>(_theFactory._theSymbols.keySet());
@@ -477,8 +477,8 @@ public class SymbolFactory
      */
     public void testFindFromChar()
     {
-      String cA = "A";
-      String ps = SymbolFactory.createSymbolFromId(cA);
+      final String cA = "A";
+      final String ps = SymbolFactory.createSymbolFromId(cA);
       assertEquals("aircraft symbol returned", ps, "Aircraft");
 
       String newChar = SymbolFactory.findIdForSymbolType("Aircraft");

@@ -65,7 +65,7 @@ public abstract class StreamInputReader implements InputReader {
      * @return number of bytes added in this call, to pass along to
      *         anything else that will be interested.
      */
-    protected int count(int add) {
+    protected int count(final int add) {
         inputStreamCount += add;
         return (int) add;
     }
@@ -95,7 +95,7 @@ public abstract class StreamInputReader implements InputReader {
      * @exception IOException Any IO errors that occur in skipping
      *            bytes in the underlying file
      */
-    public long skipBytes(long n) throws IOException {
+    public long skipBytes(final long n) throws IOException {
 
         long count = 0;
         long gotsofar = 0;
@@ -132,14 +132,14 @@ public abstract class StreamInputReader implements InputReader {
      * @exception IOException Any IO Errors that occur in seeking the
      *            underlying file.
      */
-    public void seek(long pos) throws IOException {
+    public void seek(final long pos) throws IOException {
         boolean seekComments = false;
         long skipped;
         if (Debug.debugging("binaryfileseek")) {
             seekComments = true;
         }
 
-        long curPosition = inputStreamCount;
+        final long curPosition = inputStreamCount;
         if (pos >= curPosition) {
             if (seekComments) {
                 Debug.output("StreamInputReader - seeking to " + pos + " from "
@@ -217,7 +217,7 @@ public abstract class StreamInputReader implements InputReader {
 
             if (inputStream != null)
                 inputStream.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         inputStream = null;
@@ -245,11 +245,11 @@ public abstract class StreamInputReader implements InputReader {
      * @exception IOException Any IO errors encountered in reading
      *            from the file
      */
-    public int read(byte b[], int off, int len) throws IOException {
+    public int read(final byte b[], final int off, final int len) throws IOException {
 
         int gotsofar = 0;
         while (gotsofar < len) {
-            int read = inputStream.read(b, off + gotsofar, len - gotsofar);
+            final int read = inputStream.read(b, off + gotsofar, len - gotsofar);
             if (read == -1) {
                 if (gotsofar > 0) {
                     // Hit the EOF in the middle of the loop.
@@ -276,7 +276,7 @@ public abstract class StreamInputReader implements InputReader {
      *            from the file
      * @see java.io.RandomAccessFile#read(byte[])
      */
-    public int read(byte b[]) throws IOException {
+    public int read(final byte b[]) throws IOException {
         return inputStream.read(b, 0, b.length);
     }
 
@@ -293,10 +293,10 @@ public abstract class StreamInputReader implements InputReader {
      *            allowless was <code>false</code>, but NO bytes
      *            had been read.
      */
-    public byte[] readBytes(int howmany, boolean allowless)
+    public byte[] readBytes(final int howmany, final boolean allowless)
             throws EOFException, FormatException {
 
-        byte foo[] = new byte[howmany];
+        final byte foo[] = new byte[howmany];
         int gotsofar = 0;
         int err = 0;
         try {
@@ -308,7 +308,7 @@ public abstract class StreamInputReader implements InputReader {
                         //return a smaller array, so the caller can
                         // tell how much
                         //they really got
-                        byte retval[] = new byte[gotsofar];
+                        final byte retval[] = new byte[gotsofar];
                         System.arraycopy(foo, 0, retval, 0, gotsofar);
                         count(gotsofar);
                         return retval;
@@ -322,7 +322,7 @@ public abstract class StreamInputReader implements InputReader {
                 }
                 gotsofar += err;
             }
-        } catch (IOException i) {
+        } catch (final IOException i) {
             throw new FormatException("StreamInputReader: readBytes IOException: "
                     + i.getMessage());
         }

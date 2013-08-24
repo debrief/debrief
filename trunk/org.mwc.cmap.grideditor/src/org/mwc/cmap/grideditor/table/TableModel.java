@@ -40,13 +40,13 @@ public class TableModel
 
 	private ColumnBase myRowSelectorColumn;
 
-	private List<ColumnBase> myAllColumns = new ArrayList<ColumnBase>(10);
+	private final List<ColumnBase> myAllColumns = new ArrayList<ColumnBase>(10);
 
 	private final TableViewer myViewer;
 
 	private final GridEditorUndoSupport myUndoSupport;
 
-	public TableModel(TableViewer viewer, GridEditorUndoSupport undoSupport)
+	public TableModel(final TableViewer viewer, final GridEditorUndoSupport undoSupport)
 	{
 		myViewer = viewer;
 		myUndoSupport = undoSupport;
@@ -62,7 +62,7 @@ public class TableModel
 		return myUndoSupport;
 	}
 
-	public void setInputSeries(GriddableSeries newSeries)
+	public void setInputSeries(final GriddableSeries newSeries)
 	{
 		removeColumns(newSeries == null);
 		mySeries = newSeries;
@@ -72,7 +72,7 @@ public class TableModel
 		}
 	}
 
-	public ColumnBase getColumnData(int columnIndex)
+	public ColumnBase getColumnData(final int columnIndex)
 	{
 		if (columnIndex >= myAllColumns.size())
 		{
@@ -81,9 +81,9 @@ public class TableModel
 		return myAllColumns.get(columnIndex);
 	}
 
-	public ColumnBase findColumnData(TableColumn tableColumn)
+	public ColumnBase findColumnData(final TableColumn tableColumn)
 	{
-		for (ColumnBase next : myAllColumns)
+		for (final ColumnBase next : myAllColumns)
 		{
 			if (next.getTableViewerColumn().getColumn() == tableColumn)
 			{
@@ -93,15 +93,15 @@ public class TableModel
 		return null;
 	}
 
-	private void removeColumns(boolean removeFixedColumns)
+	private void removeColumns(final boolean removeFixedColumns)
 	{
 		getViewer().getTable().setRedraw(false);
 		try
 		{
-			for (Iterator<ColumnBase> columns = myAllColumns.iterator(); columns
+			for (final Iterator<ColumnBase> columns = myAllColumns.iterator(); columns
 					.hasNext();)
 			{
-				ColumnBase next = columns.next();
+				final ColumnBase next = columns.next();
 				if (!removeFixedColumns && next.isFixed())
 				{
 					continue;
@@ -124,7 +124,7 @@ public class TableModel
 		}
 	}
 
-	private void createColumns(boolean createFixedCOlumns)
+	private void createColumns(final boolean createFixedCOlumns)
 	{
 		getViewer().getTable().setRedraw(false);
 		try
@@ -134,11 +134,11 @@ public class TableModel
 				myAllColumns.add(myRowSelectorColumn = new RowSelectorColumn(this));
 				myAllColumns.add(myDateTimeColumn = new DateTimeColumn(this, false));
 			}
-			GriddableItemDescriptor[] allAttributes = mySeries.getAttributes();
+			final GriddableItemDescriptor[] allAttributes = mySeries.getAttributes();
 			if (allAttributes != null)
 				for (int i = 0; i < allAttributes.length; i++)
 				{
-					boolean isLast = (i == allAttributes.length - 1);
+					final boolean isLast = (i == allAttributes.length - 1);
 					myAllColumns.add(new DescriptorBasedColumn(this, allAttributes[i],
 							myAllColumns.size(), isLast));
 				}
@@ -154,7 +154,7 @@ public class TableModel
 
 		private final TableModel myModel;
 
-		public ColumnBase(TableModel model)
+		public ColumnBase(final TableModel model)
 		{
 			myModel = model;
 		}
@@ -182,17 +182,17 @@ public class TableModel
 		 */
 		public abstract GriddableItemDescriptor getDescriptor();
 
-		protected TableViewerColumn createColumn(String title)
+		protected TableViewerColumn createColumn(final String title)
 		{
 			return createColumn(title, title);
 		}
 
-		protected TableViewerColumn createColumn(String title, String sampleTextHint)
+		protected TableViewerColumn createColumn(final String title, final String sampleTextHint)
 		{
-			TableViewerColumn result = new TableViewerColumn(getViewer(), SWT.NONE);
-			TableColumn column = result.getColumn();
+			final TableViewerColumn result = new TableViewerColumn(getViewer(), SWT.NONE);
+			final TableColumn column = result.getColumn();
 			column.setText(title);
-			Point hintWidth = hintMeasureText(sampleTextHint);
+			final Point hintWidth = hintMeasureText(sampleTextHint);
 			hintWidth.x += 2 * COLUMN_WIDTH_PADDING;
 			column.setWidth(hintWidth.x);
 			column.setResizable(true);
@@ -200,9 +200,9 @@ public class TableModel
 			return result;
 		}
 
-		protected final Point hintMeasureText(String text)
+		protected final Point hintMeasureText(final String text)
 		{
-			GC gc = new GC(getViewer().getControl().getDisplay());
+			final GC gc = new GC(getViewer().getControl().getDisplay());
 			gc.setFont(getViewer().getControl().getFont());
 			try
 			{
@@ -233,16 +233,16 @@ public class TableModel
 
 		private LabelProvider myLabelProvider;
 
-		public DescriptorBasedColumn(TableModel model,
-				GriddableItemDescriptor descriptor, int columnIndex,
-				boolean isLastColumn)
+		public DescriptorBasedColumn(final TableModel model,
+				final GriddableItemDescriptor descriptor, final int columnIndex,
+				final boolean isLastColumn)
 		{
 			super(model);
 			myDescriptor = descriptor;
 			String widthEstimator = descriptor.getTitle();
 			if (descriptor instanceof GriddableItemDescriptorExtension)
 			{
-				String dataSample = ((GriddableItemDescriptorExtension) descriptor)
+				final String dataSample = ((GriddableItemDescriptorExtension) descriptor)
 						.getSampleString();
 				if (dataSample != null && dataSample.length() > widthEstimator.length())
 				{
@@ -250,7 +250,7 @@ public class TableModel
 				}
 			}
 			myTableViewerColumn = createColumn(descriptor.getTitle(), widthEstimator);
-			DescriptorEditingSupport editingSupport = new DescriptorEditingSupport(
+			final DescriptorEditingSupport editingSupport = new DescriptorEditingSupport(
 					model, myDescriptor);
 			if (isLastColumn)
 			{
@@ -284,7 +284,7 @@ public class TableModel
 		}
 
 		@Override
-		public ILabelProvider getLabelProvider(Object element)
+		public ILabelProvider getLabelProvider(final Object element)
 		{
 			// XXX: the line below does not work -- there are no meaningful
 			// implementation of the label providers in actual descriptors
@@ -308,7 +308,7 @@ public class TableModel
 			{
 
 				@Override
-				public String getText(Object element)
+				public String getText(final Object element)
 				{
 					final String res;
 					if (false == element instanceof TimeStampedDataItem)
@@ -317,8 +317,8 @@ public class TableModel
 					}
 					else
 					{
-						TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
-						Object value = BeanUtil.getItemValue(dataItem, getDescriptor());
+						final TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
+						final Object value = BeanUtil.getItemValue(dataItem, getDescriptor());
 						res = String.valueOf(value);
 					}
 					return res;
@@ -335,7 +335,7 @@ public class TableModel
 
 		private final LabelProvider myLabelProvider;
 
-		public RowSelectorColumn(TableModel tableModel)
+		public RowSelectorColumn(final TableModel tableModel)
 		{
 			super(tableModel);
 			myEmptyColumn = createColumn("");
@@ -343,7 +343,7 @@ public class TableModel
 			{
 
 				@Override
-				public String getText(Object element)
+				public String getText(final Object element)
 				{
 					return "";
 				}
@@ -369,7 +369,7 @@ public class TableModel
 		}
 
 		@Override
-		public ILabelProvider getLabelProvider(Object arg0)
+		public ILabelProvider getLabelProvider(final Object arg0)
 		{
 			return myLabelProvider;
 		}
@@ -400,22 +400,22 @@ public class TableModel
 
 		private final boolean myAppendMilliseconds;
 
-		public DateTimeColumn(TableModel model, boolean appendMilliseconds)
+		public DateTimeColumn(final TableModel model, final boolean appendMilliseconds)
 		{
 			super(model);
 			myAppendMilliseconds = appendMilliseconds;
 			final String SAMPLE_DATE = getSampleDateTimeLabel();
 			myTableViewerColumn = createColumn(DATE_TIME_COLUMN_TITLE, SAMPLE_DATE);
-			DateTimeEditingSupportRich editingSupport = new DateTimeEditingSupportRich(
+			final DateTimeEditingSupportRich editingSupport = new DateTimeEditingSupportRich(
 					model);
 			editingSupport.setTabTraverseTarget(new SameElementDifferentColumnTarget(
 					getViewer(), DATE_TIME_COLUMN_INDEX + 1));
 			myTableViewerColumn.setEditingSupport(editingSupport);
 
-			DateTimeCellEditor shouldFit = new DateTimeCellEditor(getViewer()
+			final DateTimeCellEditor shouldFit = new DateTimeCellEditor(getViewer()
 					.getTable());
 			shouldFit.setValue(new Date());
-			Point shouldFitSize = shouldFit.getControl().computeSize(SWT.DEFAULT,
+			final Point shouldFitSize = shouldFit.getControl().computeSize(SWT.DEFAULT,
 					SWT.DEFAULT);
 			myTableViewerColumn.getColumn()
 					.setWidth(
@@ -447,7 +447,7 @@ public class TableModel
 		}
 
 		@Override
-		public ILabelProvider getLabelProvider(Object element)
+		public ILabelProvider getLabelProvider(final Object element)
 		{
 			if (myDateTimeLabelProvider == null)
 			{
@@ -455,7 +455,7 @@ public class TableModel
 				{
 
 					@Override
-					public String getText(Object element)
+					public String getText(final Object element)
 					{
 						HiResDate date = null;
 						if (element instanceof HiResDate)
@@ -470,7 +470,7 @@ public class TableModel
 						{
 							return NOT_A_DATE;
 						}
-						StringBuffer result = new StringBuffer();
+						final StringBuffer result = new StringBuffer();
 						result.append(FormatDateTime.toString(date.getDate().getTime()));
 						if (myAppendMilliseconds)
 						{
@@ -487,7 +487,7 @@ public class TableModel
 
 		private String getSampleDateTimeLabel()
 		{
-			HiResDate now = new HiResDate(new Date());
+			final HiResDate now = new HiResDate(new Date());
 			return getLabelProvider(now).getText(now);
 		}
 
@@ -501,7 +501,7 @@ public class TableModel
 
 		private final ColumnViewer myViewer;
 
-		public SameElementDifferentColumnTarget(ColumnViewer viewer, int columnIndex)
+		public SameElementDifferentColumnTarget(final ColumnViewer viewer, final int columnIndex)
 		{
 			myViewer = viewer;
 			myColumnIndex = columnIndex;
@@ -517,7 +517,7 @@ public class TableModel
 			return myViewer;
 		}
 
-		public Object getElementToEdit(Object actuallyEdited)
+		public Object getElementToEdit(final Object actuallyEdited)
 		{
 			return actuallyEdited;
 		}
@@ -530,8 +530,8 @@ public class TableModel
 
 		private final boolean myCreateOnDemand;
 
-		public NextElementFirstColumnTarget(ColumnViewer viewer,
-				boolean createOnDemand)
+		public NextElementFirstColumnTarget(final ColumnViewer viewer,
+				final boolean createOnDemand)
 		{
 			myViewer = viewer;
 			myCreateOnDemand = createOnDemand;
@@ -547,24 +547,24 @@ public class TableModel
 			return myViewer;
 		}
 
-		public Object getElementToEdit(Object actuallyEdited)
+		public Object getElementToEdit(final Object actuallyEdited)
 		{
 			if (getColumnViewer().getInput() instanceof GriddableSeries
 					&& actuallyEdited instanceof TimeStampedDataItem)
 			{
-				GriddableSeries series = (GriddableSeries) getColumnViewer().getInput();
-				TimeStampedDataItem actualItem = (TimeStampedDataItem) actuallyEdited;
+				final GriddableSeries series = (GriddableSeries) getColumnViewer().getInput();
+				final TimeStampedDataItem actualItem = (TimeStampedDataItem) actuallyEdited;
 				if (isLastItem(series, actualItem))
 				{
 					return myCreateOnDemand ? cloneActualItem(series, actualItem) : null;
 				}
 				else
 				{
-					ListIterator<TimeStampedDataItem> items = series.getItems()
+					final ListIterator<TimeStampedDataItem> items = series.getItems()
 							.listIterator();
 					while (items.hasNext())
 					{
-						TimeStampedDataItem next = items.next();
+						final TimeStampedDataItem next = items.next();
 						if (next == actualItem)
 						{
 							break;
@@ -576,21 +576,21 @@ public class TableModel
 			return null;
 		}
 
-		private Object cloneActualItem(GriddableSeries series,
-				TimeStampedDataItem lastItem)
+		private Object cloneActualItem(final GriddableSeries series,
+				final TimeStampedDataItem lastItem)
 		{
-			TimeStampedDataItem copy = series.makeCopy(lastItem);
+			final TimeStampedDataItem copy = series.makeCopy(lastItem);
 			series.insertItem(copy);
 			return copy;
 		}
 
-		private boolean isLastItem(GriddableSeries series, TimeStampedDataItem item)
+		private boolean isLastItem(final GriddableSeries series, final TimeStampedDataItem item)
 		{
 			if (series.getItems().isEmpty())
 			{
 				return false;
 			}
-			List<TimeStampedDataItem> allItems = series.getItems();
+			final List<TimeStampedDataItem> allItems = series.getItems();
 			return allItems.get(allItems.size() - 1) == item;
 		}
 

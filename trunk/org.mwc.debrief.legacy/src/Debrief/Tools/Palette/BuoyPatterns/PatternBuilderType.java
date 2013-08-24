@@ -134,9 +134,9 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
   // Member functions
   //////////////////////////////////////////
 
-  public PatternBuilderType(WorldLocation centre,
-                        MWC.GUI.Properties.PropertiesPanel thePanel,
-                        MWC.GUI.Layers theData)
+  public PatternBuilderType(final WorldLocation centre,
+                        final MWC.GUI.Properties.PropertiesPanel thePanel,
+                        final MWC.GUI.Layers theData)
   {
     _jigPoint = centre;
     _thePanel = thePanel;
@@ -151,10 +151,10 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
   /** method called by child classes to format a new symbol (LabelWrapper) with
    *  the current default formatting options
    */
-  final void formatSymbol(Debrief.Wrappers.LabelWrapper wrapper, Debrief.Wrappers.BuoyPatternWrapper parent)
+  final void formatSymbol(final Debrief.Wrappers.LabelWrapper wrapper, final Debrief.Wrappers.BuoyPatternWrapper parent)
   {
       // get the shape for the symbol
-      String type = getSymbolType();
+      final String type = getSymbolType();
 
       // create a new symbol
       wrapper.setSymbolType(type);
@@ -203,7 +203,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
   final void Create()
   {
     // create the new feature
-    Debrief.Wrappers.BuoyPatternWrapper bw = new Debrief.Wrappers.BuoyPatternWrapper(_jigPoint);
+    final Debrief.Wrappers.BuoyPatternWrapper bw = new Debrief.Wrappers.BuoyPatternWrapper(_jigPoint);
 
     // and set the name
     bw.setName(getName());
@@ -267,10 +267,10 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
   //////////////////////////////
   public final WorldLocation getKingpin()
   {
-    double rng_degs = MWC.Algorithms.Conversions.Nm2Degs(_kingpinRange);
-    double brg_rads = MWC.Algorithms.Conversions.Degs2Rads(_kingpinBearing);
-    WorldVector offset = new WorldVector(brg_rads, rng_degs, 0.0);
-    WorldLocation res = _jigPoint.add(offset);
+    final double rng_degs = MWC.Algorithms.Conversions.Nm2Degs(_kingpinRange);
+    final double brg_rads = MWC.Algorithms.Conversions.Degs2Rads(_kingpinBearing);
+    final WorldVector offset = new WorldVector(brg_rads, rng_degs, 0.0);
+    final WorldLocation res = _jigPoint.add(offset);
     return res;
   }
 
@@ -284,7 +284,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return _theShape.getType();
   }
 
-  public final void setSymbolType(String val)
+  public final void setSymbolType(final String val)
   {
     // is this the type of our symbol?
     if(val.equals(_theShape.getType()))
@@ -294,7 +294,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     else
     {
       // remember the size of the symbol
-      double scale = _theShape.getScaleVal();
+      final double scale = _theShape.getScaleVal();
       // replace our symbol with this new one
       _theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
       _theShape.setColor(this.getColor());
@@ -304,7 +304,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     }
   }
 
-  public final void setSymbolSize(Double val)
+  public final void setSymbolSize(final Double val)
   {
     _theShape.setScaleVal(val.doubleValue());
   }
@@ -314,7 +314,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return new Double(_theShape.getScaleVal());
   }
 
-  public final void setColor(java.awt.Color val)
+  public final void setColor(final java.awt.Color val)
   {
     _theColor = val;
   }
@@ -329,7 +329,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return  _theStartDTG;
   }
 
-  public final void setDateTimeGroup(HiResDate val)
+  public final void setDateTimeGroup(final HiResDate val)
   {
     _theStartDTG = val;
   }
@@ -337,7 +337,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
 
 
   // set the lifetime of the buoypattern (expressed in hours)
-  public final void setDuration(Duration val)
+  public final void setDuration(final Duration val)
   {
     // convert hours to millis
     _theBuoyPatternLifetime = (long) val.getValueIn(Duration.MICROSECONDS);
@@ -353,7 +353,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return _labelVisible;
   }
 
-  public final void setBuoyLabelVisible(boolean val)
+  public final void setBuoyLabelVisible(final boolean val)
   {
     _labelVisible = val;
   }
@@ -363,7 +363,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return _jigPoint;
   }
 
-  public final void setJigPoint(WorldLocation val)
+  public final void setJigPoint(final WorldLocation val)
   {
     _jigPoint = val;
   }
@@ -373,7 +373,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return new WorldDistance(_kingpinRange, WorldDistance.NM);
   }
 
-  public final void setKingpinRange(WorldDistance val)
+  public final void setKingpinRange(final WorldDistance val)
   {
     _kingpinRange = val.getValueIn(WorldDistance.NM);
   }
@@ -383,7 +383,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return _kingpinBearing;
   }
 
-  public final void setKingpinBearing(double val)
+  public final void setKingpinBearing(final double val)
   {
     _kingpinBearing = val;
   }
@@ -394,7 +394,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return new Integer(_number);
   }
 
-  public final void setNumberOfBuoys(Integer val)
+  public final void setNumberOfBuoys(final Integer val)
   {
     _number = val.intValue();
   }
@@ -410,7 +410,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
     return getName();
   }
 
-  public final void setPatternName(String val)
+  public final void setPatternName(final String val)
   {
     _name = val;
   }

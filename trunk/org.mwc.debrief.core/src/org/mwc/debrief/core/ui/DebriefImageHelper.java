@@ -24,7 +24,7 @@ import MWC.TacticalData.NarrativeEntry;
 public class DebriefImageHelper implements ViewLabelImageHelper
 {
 
-	public ImageDescriptor getImageFor(Editable editable)
+	public ImageDescriptor getImageFor(final Editable editable)
 	{
 		ImageDescriptor res = null;
 		

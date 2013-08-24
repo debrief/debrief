@@ -147,7 +147,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public void setFillSymbol(boolean val)
+  public void setFillSymbol(final boolean val)
   {
     _fillMe = val;
   }
@@ -180,11 +180,11 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
    * @param dest the Canvas to draw to
    * @param theCentre the WorldLoc to centre this symbol on
     */
-  public void paint(CanvasType dest,
-                    WorldLocation theCentre){
+  public void paint(final CanvasType dest,
+                    final WorldLocation theCentre){
     dest.setColor(_theCol);
 
-    java.awt.Point centre = dest.toScreen(theCentre);
+    final java.awt.Point centre = dest.toScreen(theCentre);
     dest.drawRect(centre.x -2, centre.y - 2, 4, 4);
   }
 
@@ -194,7 +194,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
     return _theScaleVal;
   }
 
-  public void setScaleVal(double scaleVal){
+  public void setScaleVal(final double scaleVal){
     _theScaleVal = scaleVal;
   }
 
@@ -202,7 +202,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
     return _theCol;
   }
 
-  public void setColor(Color theCol){
+  public void setColor(final Color theCol){
     _theCol = theCol;
   }
 
@@ -213,7 +213,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
    */
   public Vector<Vector<Point2D>> getCoordinates()
   {
-  	Vector<Vector<Point2D>> res = null;
+  	final Vector<Vector<Point2D>> res = null;
     return res;
   }
 

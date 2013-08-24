@@ -23,14 +23,14 @@ abstract public class WorldVectorHandler extends MWCXMLReader
   private static final String BEARING = "BearingDegs";
   private static final String RANGE = "Range";
 
-  public WorldVectorHandler(String myType)
+  public WorldVectorHandler(final String myType)
   {
     super(myType);
 
     addHandler(new WorldDistanceHandler(RANGE){
 		
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_range = res;
 			}
@@ -38,7 +38,7 @@ abstract public class WorldVectorHandler extends MWCXMLReader
 
     addAttributeHandler(new HandleDoubleAttribute(BEARING)
     {
-      public void setValue(String name, double val)
+      public void setValue(final String name, final double val)
       {
       	_bearingDegs = val;
       }
@@ -55,7 +55,7 @@ abstract public class WorldVectorHandler extends MWCXMLReader
 
   public void elementClosed()
   {
-  	WorldVector res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(_bearingDegs),
+  	final WorldVector res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(_bearingDegs),
   			_range, null);
     setWorldVector(res);
 
@@ -68,15 +68,15 @@ abstract public class WorldVectorHandler extends MWCXMLReader
 
 
 
-  public static void exportVector(String myType, WorldVector vector, org.w3c.dom.Element parent,
-                                    org.w3c.dom.Document doc)
+  public static void exportVector(final String myType, final WorldVector vector, final org.w3c.dom.Element parent,
+                                    final org.w3c.dom.Document doc)
   {
   	// create the object
-    org.w3c.dom.Element eLoc = doc.createElement(myType);
+    final org.w3c.dom.Element eLoc = doc.createElement(myType);
     
     // store the fields
     eLoc.setAttribute(BEARING, writeThis(MWC.Algorithms.Conversions.Rads2Degs(vector.getBearing())));
-    WorldDistance dist = new WorldDistance(vector.getRange(), WorldDistance.DEGS);
+    final WorldDistance dist = new WorldDistance(vector.getRange(), WorldDistance.DEGS);
     WorldDistanceHandler.exportDistance(RANGE, dist, eLoc, doc);
 
     // remember it

@@ -23,19 +23,19 @@ abstract public class WorldAreaHandler extends MWCXMLReader
 	WorldLocation _topLeft;
 	WorldLocation _bottomRight;
 
-	public WorldAreaHandler(String name)
+	public WorldAreaHandler(final String name)
 	{
 		super(name);
 		addHandler(new LocationHandler(TOP_LEFT)
 		{
-			public void setLocation(WorldLocation res)
+			public void setLocation(final WorldLocation res)
 			{
 				_topLeft = res;
 			}
 		});
 		addHandler(new LocationHandler(BOTTOM_RIGHT)
 		{
-			public void setLocation(WorldLocation res)
+			public void setLocation(final WorldLocation res)
 			{
 				_bottomRight = res;
 			}
@@ -56,10 +56,10 @@ abstract public class WorldAreaHandler extends MWCXMLReader
 
 	abstract public void setArea(WorldArea area);
 
-	public static void exportThis(WorldArea area, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc, String name)
+	public static void exportThis(final WorldArea area, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc, final String name)
 	{
-		org.w3c.dom.Element eLoc = doc.createElement(name);
+		final org.w3c.dom.Element eLoc = doc.createElement(name);
 
 		// step through the list
 		LocationHandler.exportLocation(area.getTopLeft(), TOP_LEFT, eLoc, doc);
@@ -68,8 +68,8 @@ abstract public class WorldAreaHandler extends MWCXMLReader
 
 		parent.appendChild(eLoc);
 	}
-	public static void exportThis(WorldArea area, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
+	public static void exportThis(final WorldArea area, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc)
 	{
 		exportThis(area, parent, doc, _myType);
 	}

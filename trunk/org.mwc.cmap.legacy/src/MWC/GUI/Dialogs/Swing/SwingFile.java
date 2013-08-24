@@ -88,15 +88,15 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 
   private static EFileChooser _myChooser = null;
 
-	public File[] getExistingFile(String filter,
-																String description,
-																String lastDirectory)
+	public File[] getExistingFile(final String filter,
+																final String description,
+																final String lastDirectory)
 	{
 
     if(_myChooser == null)
 	    _myChooser = new EFileChooser();
 
-	  JFileChooser jf = _myChooser;
+	  final JFileChooser jf = _myChooser;
 
 		// allow multiple selections
 		jf.setMultiSelectionEnabled(true);
@@ -113,12 +113,12 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 
     // try to set as modal
 
-		int state = jf.showOpenDialog(null);
+		final int state = jf.showOpenDialog(null);
 
 		// see how many files were selected
-		File[] files = jf.getSelectedFiles();
+		final File[] files = jf.getSelectedFiles();
 
-		File theFile = jf.getSelectedFile();
+		final File theFile = jf.getSelectedFile();
 
 		if(state == JFileChooser.APPROVE_OPTION)
 		{
@@ -145,13 +145,13 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 		return res;
   }
 
-  public java.io.File getNewFile(String filter,
-																String description,
-																String lastDirectory){
+  public java.io.File getNewFile(final String filter,
+																final String description,
+																final String lastDirectory){
     if(_myChooser == null)
       _myChooser = new EFileChooser();
 
-	  JFileChooser jf = _myChooser;
+	  final JFileChooser jf = _myChooser;
 		java.io.File res = null;
 
 		if(filter != null){
@@ -164,8 +164,8 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 
 
 
-		int state = jf.showSaveDialog(null);
-		java.io.File fl = jf.getSelectedFile();
+		final int state = jf.showSaveDialog(null);
+		final java.io.File fl = jf.getSelectedFile();
 
 		if(fl != null &&
 			 state == JFileChooser.APPROVE_OPTION)
@@ -196,24 +196,24 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
      *  @param myName the name of this file type
      *  @param myType a comma-separated list of suffixes we accept
      */
-		public TextFilter(String myName,
-											String myType)
+		public TextFilter(final String myName,
+											final String myType)
 		{
 			_myName = myName;
 			_myType =  myType.toUpperCase();
 		}
 
-		public boolean accept(java.io.File p1)
+		public boolean accept(final java.io.File p1)
 		{
 			boolean accept = p1.isDirectory();
 
 			if(!accept)
 			{
-				String suffix = getSuffix(p1.getPath());
+				final String suffix = getSuffix(p1.getPath());
 				if(suffix != null)
 				{
           // does our list of suffixes contain this characters?
-          int index = _myType.indexOf(suffix.toUpperCase());
+          final int index = _myType.indexOf(suffix.toUpperCase());
 
           // find out if it was found
           if(index != -1)
@@ -226,10 +226,10 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 		}
 
 
-		private String getSuffix(String s)
+		private String getSuffix(final String s)
 		{
 			String suffix = null;
-			int i = s.lastIndexOf(".");
+			final int i = s.lastIndexOf(".");
 			if(i>0 && i < s.length() - 1)
 			{
 				suffix = s.substring(i+1).toLowerCase();

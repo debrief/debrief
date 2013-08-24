@@ -44,12 +44,12 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		public final PropertyDescriptor[] getPropertyDescriptors()
 		{
 			// start off with the parent
-			PropertyDescriptor[] parent = super.getPropertyDescriptors();
+			final PropertyDescriptor[] parent = super.getPropertyDescriptors();
 			PropertyDescriptor[] mine;
 
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						expertProp("Time_Start", "Start time for this TMA Solution",
 								SOLUTION),
@@ -66,7 +66,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			}
 
 			// now combine them.
-			PropertyDescriptor[] bigRes = new PropertyDescriptor[parent.length
+			final PropertyDescriptor[] bigRes = new PropertyDescriptor[parent.length
 					+ mine.length];
 			System.arraycopy(parent, 0, bigRes, 0, parent.length);
 			System.arraycopy(mine, 0, bigRes, parent.length, mine.length);
@@ -95,9 +95,9 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	 * @param startTime
 	 * @param endTime
 	 */
-	public AbsoluteTMASegment(AbsoluteTMASegment relevantSegment,
-			SortedSet<Editable> theItems, WorldLocation location,
-			HiResDate startTime, HiResDate endTime)
+	public AbsoluteTMASegment(final AbsoluteTMASegment relevantSegment,
+			final SortedSet<Editable> theItems, final WorldLocation location,
+			final HiResDate startTime, final HiResDate endTime)
 	{
 		// start off with the obvious bits
 		super(relevantSegment._courseDegs, relevantSegment._speed);
@@ -121,7 +121,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	 * @param origin
 	 */
 	public AbsoluteTMASegment(final double courseDegs, final WorldSpeed speed,
-			WorldLocation origin, HiResDate startTime, HiResDate endTime)
+			final WorldLocation origin, final HiResDate startTime, final HiResDate endTime)
 	{
 		super(courseDegs, speed);
 		_origin = origin;
@@ -148,18 +148,18 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	 * @param startTime
 	 * @param endTime
 	 */
-	private void createDataFrom(HiResDate startTime, HiResDate endTime)
+	private void createDataFrom(final HiResDate startTime, final HiResDate endTime)
 	{
 		// ditch any existing data
 		this.removeAllElements();
 
 		// and stick some fresh ones in
-		long tStart = startTime.getDate().getTime();
-		long tEnd = endTime.getDate().getTime();
-		long interval = 60 * 1000;
+		final long tStart = startTime.getDate().getTime();
+		final long tEnd = endTime.getDate().getTime();
+		final long interval = 60 * 1000;
 		for (long tNow = tStart; tNow <= tEnd; tNow += interval)
 		{
-			FixWrapper newFix = createFixAt(tNow);
+			final FixWrapper newFix = createFixAt(tNow);
 			newFix.setSymbolShowing(true);
 			this.addFix(newFix);
 		}
@@ -199,13 +199,13 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
 		// right - we just rotate about the ends, and we use different
 		// processing depending on which end is being shifted.
-		FixWrapper first = (FixWrapper) this.getData().iterator().next();
+		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
 		if (first.getLocation().equals(origin))
 		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our course
-			double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(brg);
-			double newBrg = this.getCourse() + brgDegs;
+			final double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(brg);
+			final double newBrg = this.getCourse() + brgDegs;
 			// right, the start is the origin, so we just set our course to the
 			// bearing
 			this.setCourse(newBrg);
@@ -216,13 +216,13 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			// and fix the bearing
 
 			// rotate the origin about the far end
-			WorldLocation newStart = _origin.rotatePoint(origin, -brg);
+			final WorldLocation newStart = _origin.rotatePoint(origin, -brg);
 
 			// find out the offset from the origin
 			_origin = newStart;
 
 			// what's the course from the new start to the origin?
-			WorldVector vec = origin.subtract(newStart);
+			final WorldVector vec = origin.subtract(newStart);
 
 			// update the course
 			this.setCourse(MWC.Algorithms.Conversions.Rads2Degs(vec.getBearing()));
@@ -237,7 +237,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
 	}
 
-	public void setTime_Start(HiResDate timeStart)
+	public void setTime_Start(final HiResDate timeStart)
 	{
 		_startTime = timeStart;
 
@@ -245,7 +245,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		createDataFrom(_startTime, _endTime);
 	}
 
-	public void setTimeEnd(HiResDate timeEnd)
+	public void setTimeEnd(final HiResDate timeEnd)
 	{
 		_endTime = timeEnd;
 
@@ -254,7 +254,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	}
 
 	@Override
-	public void shear(WorldLocation cursor, final WorldLocation origin)
+	public void shear(final WorldLocation cursor, final WorldLocation origin)
 	{
 		WorldVector offset = cursor.subtract(origin);
 		double rngDegs = offset.getRange();
@@ -266,7 +266,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
-		FixWrapper first = (FixWrapper) this.getData().iterator().next();
+		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
 		if (first.getLocation().equals(origin))
 		{
 			// set the new course
@@ -284,19 +284,19 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		}
 
 		// how long do we have for the travel?
-		long periodMillis = this.endDTG().getDate().getTime()
+		final long periodMillis = this.endDTG().getDate().getTime()
 				- this.startDTG().getDate().getTime();
 
 		// what's that in hours?
-		double periodHours = periodMillis / 1000d / 60d / 60d;
+		final double periodHours = periodMillis / 1000d / 60d / 60d;
 
 		// what's distance in minutes?
-		double distMins = rngDegs * 60;
+		final double distMins = rngDegs * 60;
 
 		// how far must we go to sort this
-		double spdKts = distMins / periodHours;
+		final double spdKts = distMins / periodHours;
 
-		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
+		final WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
 		this.setSpeed(newSpeed);
 
 		// tidy the course
@@ -314,7 +314,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	}
 
 	@Override
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		// really, we just need to add this vector to our orign
 		// WorldLocation tmpOrigin = new WorldLocation(getTrackStart());
@@ -344,7 +344,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
-		FixWrapper first = (FixWrapper) this.getData().iterator().next();
+		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
 		if (first.getLocation().equals(origin))
 		{
 			// right, we're dragging around the last point. Couldn't be easier,
@@ -356,10 +356,10 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			// and fix the bearing
 
 			// calculate a new start point
-			WorldVector thisLeg = getTrackStart().subtract(origin);
+			final WorldVector thisLeg = getTrackStart().subtract(origin);
 
 			// now change the distance
-			WorldVector newLeg = new WorldVector(thisLeg.getBearing(), rngDegs,
+			final WorldVector newLeg = new WorldVector(thisLeg.getBearing(), rngDegs,
 					thisLeg.getDepth());
 
 			// calculate the new start point
@@ -367,19 +367,19 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		}
 
 		// how long do we have for the travel?
-		long periodMillis = this.endDTG().getDate().getTime()
+		final long periodMillis = this.endDTG().getDate().getTime()
 				- this.startDTG().getDate().getTime();
 
 		// what's that in hours?
-		double periodHours = periodMillis / 1000d / 60d / 60d;
+		final double periodHours = periodMillis / 1000d / 60d / 60d;
 
 		// what's distance in minutes?
-		double distMins = rngDegs * 60;
+		final double distMins = rngDegs * 60;
 
 		// how far must we go to sort this
-		double spdKts = distMins / periodHours;
+		final double spdKts = distMins / periodHours;
 
-		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
+		final WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
 		this.setSpeed(newSpeed);
 
 		// tell the segment it's being stretched

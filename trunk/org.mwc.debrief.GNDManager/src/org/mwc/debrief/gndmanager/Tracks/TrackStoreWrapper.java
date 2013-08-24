@@ -71,8 +71,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	private static final long serialVersionUID = 1L;
 	public static final String COUCHDB_LOCATION = "CouchDbURL";
 	public static final String ES_LOCATION = "EsURL";
-	private String _couchURL;
-	private String _esURL;
+	private final String _couchURL;
+	private final String _esURL;
 
 	/**
 	 * the time period we've been filtered to
@@ -102,7 +102,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	{
 		return false;
 	}
-	public TrackStoreWrapper(String couchURL, String esURL)
+	public TrackStoreWrapper(final String couchURL, final String esURL)
 	{
 
 		_mapper = new ObjectMapper();
@@ -122,7 +122,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		public class CouchTrackInfo extends Editable.EditorType
 		{
 
-			public CouchTrackInfo(CouchTrack data)
+			public CouchTrackInfo(final CouchTrack data)
 			{
 				super(data, data.getName(), "");
 			}
@@ -131,14 +131,14 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			{
 				try
 				{
-					PropertyDescriptor[] res =
+					final PropertyDescriptor[] res =
 					{ prop("Visible", "the Layer visibility", VISIBILITY),
 							prop("Color", "the color for this track", FORMAT) };
 
 					return res;
 
 				}
-				catch (IntrospectionException e)
+				catch (final IntrospectionException e)
 				{
 					return super.getPropertyDescriptors();
 				}
@@ -159,10 +159,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		private WorldArea _myBounds = null;
 		private String _myName = null;
 		private EditorType _myEditor = null;
-		private ObjectMapper _mapper = new ObjectMapper();
+		private final ObjectMapper _mapper = new ObjectMapper();
 		private TrackStoreWrapper _parent;
 
-		public CouchTrack(JsonNode theDoc, TrackStoreWrapper parent)
+		public CouchTrack(final JsonNode theDoc, final TrackStoreWrapper parent)
 		{
 			_parent = parent;
 			_doc = theDoc;
@@ -173,33 +173,33 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		 * 
 		 * @param tw
 		 */
-		public CouchTrack(TrackWrapper tw)
+		public CouchTrack(final TrackWrapper tw)
 		{
 			_doc = _mapper.createObjectNode();
 			
-			ObjectNode oNode = (ObjectNode) _doc;
+			final ObjectNode oNode = (ObjectNode) _doc;
 
 			// ok, start off with the points
-			Enumeration<Editable> posits = tw.getPositions();
+			final Enumeration<Editable> posits = tw.getPositions();
 
-			ArrayNode locs = _mapper.createArrayNode();
-			ArrayNode times = _mapper.createArrayNode();
-			ArrayNode courses = _mapper.createArrayNode();
-			ArrayNode speeds = _mapper.createArrayNode();
+			final ArrayNode locs = _mapper.createArrayNode();
+			final ArrayNode times = _mapper.createArrayNode();
+			final ArrayNode courses = _mapper.createArrayNode();
+			final ArrayNode speeds = _mapper.createArrayNode();
 
 			TimePeriod extent = null;
 			WorldArea area = null;
 			
 			while (posits.hasMoreElements())
 			{
-				Editable editable = (Editable) posits.nextElement();
-				FixWrapper fw = (FixWrapper) editable;
+				final Editable editable = (Editable) posits.nextElement();
+				final FixWrapper fw = (FixWrapper) editable;
 
 				// first the time
 				times.add(iso.format(fw.getDateTimeGroup().getDate()));
 
 				// location first
-				ArrayNode thisLoc = _mapper.createArrayNode();
+				final ArrayNode thisLoc = _mapper.createArrayNode();
 				thisLoc.add(fw.getLocation().getLong());
 				thisLoc.add(fw.getLocation().getLat());
 				locs.add(thisLoc);
@@ -223,31 +223,31 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			}
 
 			// wrap the location
-			ObjectNode locHolder = _mapper.createObjectNode();
+			final ObjectNode locHolder = _mapper.createObjectNode();
 			locHolder.put("type", "MultiPoint");
 			locHolder.put("coordinates", locs);
 
 			// the metadata bounds
-			ObjectNode timeB = _mapper.createObjectNode();
+			final ObjectNode timeB = _mapper.createObjectNode();
 			timeB.put("start", iso.format(extent.getStartDTG().getDate()));
 			timeB.put("end", iso.format(extent.getEndDTG().getDate()));
 
-			ArrayNode boundsCoords = _mapper.createArrayNode();
-			ArrayNode tlCoord = _mapper.createArrayNode();
-			ArrayNode brCoord = _mapper.createArrayNode();
+			final ArrayNode boundsCoords = _mapper.createArrayNode();
+			final ArrayNode tlCoord = _mapper.createArrayNode();
+			final ArrayNode brCoord = _mapper.createArrayNode();
 			tlCoord.add(area.getTopLeft().getLong());
 			tlCoord.add(area.getTopLeft().getLat());
 			brCoord.add(area.getBottomRight().getLong());
 			brCoord.add(area.getBottomRight().getLat());
 			boundsCoords.add(tlCoord);
 			boundsCoords.add(brCoord);
-			ObjectNode geoB = _mapper.createObjectNode();
+			final ObjectNode geoB = _mapper.createObjectNode();
 			geoB.put("type", "envelope");
 			geoB.put("coordinates", boundsCoords);
 			
 			// now the metadata
-			ObjectNode metadata = _mapper.createObjectNode();
-			ArrayNode dataTypes = _mapper.createArrayNode();
+			final ObjectNode metadata = _mapper.createObjectNode();
+			final ArrayNode dataTypes = _mapper.createArrayNode();
 			dataTypes.add("location");
 			dataTypes.add("course");
 			dataTypes.add("speed");
@@ -285,11 +285,11 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			return res;
 		}
 
-		private ArrayNode getArray(String arrName)
+		private ArrayNode getArray(final String arrName)
 		{
 			ArrayNode res = null;
 			// ok, get the times
-			JsonNode timeDat = _doc.get(arrName);
+			final JsonNode timeDat = _doc.get(arrName);
 			if (timeDat != null)
 
 			{
@@ -328,20 +328,20 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			{
 				_timeVals = new ArrayList<Long>();
 
-				ArrayNode timeArray = getArray("time");
+				final ArrayNode timeArray = getArray("time");
 
 				if (timeArray != null)
 					try
 					{
 						for (int i = 0; i < timeArray.size(); i++)
 						{
-							String thisT = timeArray.get(i).asText();
+							final String thisT = timeArray.get(i).asText();
 							Date thisD;
 							thisD = iso.parse(thisT);
 							_timeVals.add(thisD.getTime());
 						}
 					}
-					catch (ParseException e)
+					catch (final ParseException e)
 					{
 						e.printStackTrace();
 					}
@@ -350,17 +350,17 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			return _timeVals;
 		}
 
-		public boolean overlaps(BaseTimePeriod targetPeriod)
+		public boolean overlaps(final BaseTimePeriod targetPeriod)
 		{
 			boolean overlaps = false;
 
 			if (_myCoverage == null)
 			{
-				ArrayList<Long> times = getTimes();
+				final ArrayList<Long> times = getTimes();
 				if (times != null && times.size() > 0)
 				{
-					Date fDate = new Date(times.get(0));
-					Date lDate = new Date(times.get(times.size() - 1));
+					final Date fDate = new Date(times.get(0));
+					final Date lDate = new Date(times.get(times.size() - 1));
 					_myCoverage = new TimePeriod.BaseTimePeriod(new HiResDate(fDate),
 							new HiResDate(lDate));
 				}
@@ -374,7 +374,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			return overlaps;
 		}
 
-		public WorldLocation getLocationAt(int i)
+		public WorldLocation getLocationAt(final int i)
 		{
 			WorldLocation res = null;
 
@@ -400,10 +400,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			if (_myName == null)
 			{
 				final String theID = _doc.get("_id").asText();
-				JsonNode metadata = _doc.get("metadata");
+				final JsonNode metadata = _doc.get("metadata");
 				if (metadata != null)
 				{
-					JsonNode pNode = metadata.get("platform");
+					final JsonNode pNode = metadata.get("platform");
 					if (pNode != null && pNode.asText().length() > 0)
 						_myName = pNode.asText();
 
@@ -428,11 +428,11 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		public TimePeriod getPeriod()
 		{
 			TimePeriod res = null;
-			ArrayList<Long> times = getTimes();
+			final ArrayList<Long> times = getTimes();
 			if (times != null)
 			{
-				HiResDate start = new HiResDate(times.get(0));
-				HiResDate end = new HiResDate(times.get(times.size() - 1));
+				final HiResDate start = new HiResDate(times.get(0));
+				final HiResDate end = new HiResDate(times.get(times.size() - 1));
 				res = new TimePeriod.BaseTimePeriod(start, end);
 			}
 			return res;
@@ -453,26 +453,26 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		}
 
 		@Override
-		public int compareTo(Plottable arg0)
+		public int compareTo(final Plottable arg0)
 		{
 			return getName().compareTo(arg0.getName());
 		}
 
 		@Override
-		public void paint(CanvasType dest)
+		public void paint(final CanvasType dest)
 		{
 			if (!getVisible())
 				return;
 
 			dest.setColor(getColor());
 
-			long startTime = _parent._currentFilterPeriod.getStartDTG().getDate()
+			final long startTime = _parent._currentFilterPeriod.getStartDTG().getDate()
 					.getTime();
-			long endTime = _parent._currentFilterPeriod.getEndDTG().getDate()
+			final long endTime = _parent._currentFilterPeriod.getEndDTG().getDate()
 					.getTime();
 
-			int len = length();
-			ArrayList<Long> times = getTimes();
+			final int len = length();
+			final ArrayList<Long> times = getTimes();
 
 			// if we don't have time, there's just no point!
 			if (times == null)
@@ -519,7 +519,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				if (thisL != null)
 				{
 					// convert to screen coords
-					Point thisLoc = dest.toScreen(thisL);
+					final Point thisLoc = dest.toScreen(thisL);
 
 					// draw teh line
 					dest.drawLine(lastLoc.x, lastLoc.y, thisLoc.x, thisLoc.y);
@@ -535,12 +535,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		{
 			if (_myBounds == null)
 			{
-				ArrayList<Long> times = getTimes();
+				final ArrayList<Long> times = getTimes();
 				if ((times != null && (times.size() > 0)))
 				{
 					for (int i = 0; i < times.size(); i++)
 					{
-						WorldLocation thisLoc = getLocationAt(i);
+						final WorldLocation thisLoc = getLocationAt(i);
 						if (_myBounds == null)
 							_myBounds = new WorldArea(thisLoc, thisLoc);
 						else
@@ -560,7 +560,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		}
 
 		@FireReformatted
-		public void setColor(Color val)
+		public void setColor(final Color val)
 		{
 			_thisTrackColor = val;
 		}
@@ -573,24 +573,24 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		@Override
 		@FireReformatted
-		public void setVisible(boolean val)
+		public void setVisible(final boolean val)
 		{
 			_isVisible = val;
 		}
 
 		@Override
-		public double rangeFrom(WorldLocation other)
+		public double rangeFrom(final WorldLocation other)
 		{
 			// are we vis?
 			if (!getVisible())
 				return Plottable.INVALID_RANGE;
 
 			double thisD = Double.MAX_VALUE;
-			int len = length();
+			final int len = length();
 			for (int i = 0; i < len; i++)
 			{
-				WorldLocation thisL = getLocationAt(i);
-				double thisR = thisL.rangeFrom(other);
+				final WorldLocation thisL = getLocationAt(i);
+				final double thisR = thisL.rangeFrom(other);
 				thisD = Math.min(thisD, thisR);
 			}
 
@@ -607,12 +607,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				{
 					res = new TrackWrapper();
 					res.setName(getName());
-					ArrayNode courses = getArray("course");
-					ArrayNode speeds = getArray("speed");
+					final ArrayNode courses = getArray("course");
+					final ArrayNode speeds = getArray("speed");
 					for (int i = 0; i < length(); i++)
 					{
-						Long thisT = getTimes().get(i);
-						WorldLocation loc = getLocationAt(i);
+						final Long thisT = getTimes().get(i);
+						final WorldLocation loc = getLocationAt(i);
 						double crse = 0;
 						double spd = 0;
 						// see if we have course data
@@ -621,8 +621,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 							crse = courses.get(i).asDouble();
 							spd = speeds.get(i).asDouble();
 						}
-						Fix newF = new Fix(new HiResDate(thisT), loc, crse, spd);
-						FixWrapper fw = new FixWrapper(newF);
+						final Fix newF = new Fix(new HiResDate(thisT), loc, crse, spd);
+						final FixWrapper fw = new FixWrapper(newF);
 						res.addFix(fw);
 					}
 				}
@@ -669,11 +669,11 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	private boolean _interpolatePoints = false;
 
 	@Override
-	public void add(Editable thePlottable)
+	public void add(final Editable thePlottable)
 	{
 		if (thePlottable instanceof CouchTrack)
 		{
-			CouchTrack ct = (CouchTrack) thePlottable;
+			final CouchTrack ct = (CouchTrack) thePlottable;
 			_myCache.put(ct.getId(), ct);
 			super.add(thePlottable);
 		}
@@ -683,7 +683,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	}
 
 	@Override
-	public void removeElement(Editable p)
+	public void removeElement(final Editable p)
 	{
 		if (p instanceof CouchTrack)
 		{
@@ -721,10 +721,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			public void run()
 			{
 				// ok, collate the time fields
-				String myFilter = collateDateFilter(start, end);
+				final String myFilter = collateDateFilter(start, end);
 
 				// hmm, which tracks match our current time period?
-				ArrayList<String> docsToDownload = getDownloadList(myFilter);
+				final ArrayList<String> docsToDownload = getDownloadList(myFilter);
 
 				// now get any new items
 				if (docsToDownload.size() > 0)
@@ -749,49 +749,49 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		});
 	}
 
-	private void doTheDownload(ArrayList<String> docsToDownload)
+	private void doTheDownload(final ArrayList<String> docsToDownload)
 	{
 		String uri;
 		// collate the ids
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode root = mapper.createObjectNode();
-		ArrayNode keys = mapper.createArrayNode();
-		Iterator<String> iter = docsToDownload.iterator();
+		final ObjectMapper mapper = new ObjectMapper();
+		final ObjectNode root = mapper.createObjectNode();
+		final ArrayNode keys = mapper.createArrayNode();
+		final Iterator<String> iter = docsToDownload.iterator();
 
 		// TESTING - just do a single id
 		// keys.add("0d9500c05ef3a901397b5d7dda14d956");
 
 		while (iter.hasNext())
 		{
-			String id = (String) iter.next();
+			final String id = (String) iter.next();
 			keys.add(id);
 		}
 		root.put("keys", keys);
 
 		try
 		{
-			String cStr = root.toString();
-			byte[] content = cStr.getBytes();
+			final String cStr = root.toString();
+			final byte[] content = cStr.getBytes();
 			uri = _couchURL + "/tracks/_all_docs?include_docs=true";
 			CorePlugin.logError(Status.INFO, "CouchDb get: " + uri, null);
-			Post doIt = new Post(uri, content, 5000, 10000);
+			final Post doIt = new Post(uri, content, 5000, 10000);
 			doIt.header("Content-Type", "application/json");
-			int result = doIt.responseCode();
+			final int result = doIt.responseCode();
 			if (result == 200)
 			{
-				byte[] resB = doIt.bytes();
-				JsonNode list = mapper.readValue(resB, JsonNode.class);
+				final byte[] resB = doIt.bytes();
+				final JsonNode list = mapper.readValue(resB, JsonNode.class);
 
 				// ok, what happens next?
-				JsonNode tmpRows = list.get("rows");
+				final JsonNode tmpRows = list.get("rows");
 				if (tmpRows.isArray())
 				{
-					ArrayNode rows = (ArrayNode) tmpRows;
+					final ArrayNode rows = (ArrayNode) tmpRows;
 					for (int i = 0; i < rows.size(); i++)
 					{
-						JsonNode theNode = rows.get(i);
-						JsonNode theDoc = theNode.get("doc");
-						CouchTrack track = new CouchTrack(theDoc, this);
+						final JsonNode theNode = rows.get(i);
+						final JsonNode theDoc = theNode.get("doc");
+						final CouchTrack track = new CouchTrack(theDoc, this);
 
 						// put in our local hashmap
 						_myCache.put(track.getId(), track);
@@ -808,15 +808,15 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 						+ result, null);
 			}
 		}
-		catch (JsonParseException e)
+		catch (final JsonParseException e)
 		{
 			e.printStackTrace();
 		}
-		catch (JsonMappingException e)
+		catch (final JsonMappingException e)
 		{
 			e.printStackTrace();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -828,40 +828,40 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		return _myCache.size();
 	}
 
-	private ArrayList<String> getDownloadList(String myFilter)
+	private ArrayList<String> getDownloadList(final String myFilter)
 	{
-		String uri = _esURL + "/data/dataset/_search?source=" + myFilter;
-		ArrayList<String> docsToDownload = new ArrayList<String>();
+		final String uri = _esURL + "/data/dataset/_search?source=" + myFilter;
+		final ArrayList<String> docsToDownload = new ArrayList<String>();
 		try
 		{
 			CorePlugin.logError(Status.INFO, "ElasticSearch get: " + uri, null);
 
-			Get doIt = new Get(uri, 1000, 10000);
+			final Get doIt = new Get(uri, 1000, 10000);
 			doIt.header("Content-Type", "application/json");
-			int result = doIt.responseCode();
+			final int result = doIt.responseCode();
 			if (result == 200)
 			{
 				// ok, we have data
 
 				// get the doc ids
-				byte[] resB = doIt.bytes();
-				JsonNode list = _mapper.readValue(resB, JsonNode.class);
+				final byte[] resB = doIt.bytes();
+				final JsonNode list = _mapper.readValue(resB, JsonNode.class);
 
 				// ok, what happens next?
-				JsonNode items = list.get("hits");
-				JsonNode rawRows = items.get("hits");
+				final JsonNode items = list.get("hits");
+				final JsonNode rawRows = items.get("hits");
 				if (rawRows.isArray())
 				{
-					ArrayNode rows = (ArrayNode) rawRows;
-					int rowCount = rows.size();
+					final ArrayNode rows = (ArrayNode) rawRows;
+					final int rowCount = rows.size();
 					Activator.logError(Status.INFO, "ES found " + rowCount + " rows",
 							null);
 					if (rowCount < MAX_ROWS_TO_IMPORT)
 					{
 						for (int i = 0; i < rowCount; i++)
 						{
-							JsonNode theNode = rows.get(i);
-							String theDoc = theNode.get("_id").asText();
+							final JsonNode theNode = rows.get(i);
+							final String theDoc = theNode.get("_id").asText();
 
 							// do we already have this document
 							if (_myCache.containsKey(theDoc))
@@ -882,34 +882,34 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 			}
 		}
-		catch (MalformedURLException e)
+		catch (final MalformedURLException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"failed to create URI for ElasticSearch query", e);
 		}
-		catch (JsonParseException e)
+		catch (final JsonParseException e)
 		{
 			CorePlugin.logError(Status.ERROR, "failed to parse returned ES rows", e);
 		}
-		catch (JsonMappingException e)
+		catch (final JsonMappingException e)
 		{
 			CorePlugin.logError(Status.ERROR, "failed to parse returned ES rows", e);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "failed to parse returned ES rows", e);
 		}
 		return docsToDownload;
 	}
 
-	private String collateDateFilter(HiResDate start, HiResDate end)
+	private String collateDateFilter(final HiResDate start, final HiResDate end)
 	{
 
-		SearchRequest request = new SearchRequest();
+		final SearchRequest request = new SearchRequest();
 		request.after(new SearchDate(start.getDate(), iso.format(start.getDate())));
 		request.before(new SearchDate(end.getDate(), iso.format(end.getDate())));
 
-		String res = SearchRequestConverter.toRequestString(request,
+		final String res = SearchRequestConverter.toRequestString(request,
 				new ElasticFacet[]
 				{}, new ElasticFacet[]
 				{});
@@ -918,7 +918,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	}
 
 	@Override
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// set the line thickness
 		dest.setLineWidth(super.getLineThickness());
@@ -932,10 +932,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		}
 
 		// ok, loop through my tracks
-		Iterator<CouchTrack> iter = _myCache.values().iterator();
+		final Iterator<CouchTrack> iter = _myCache.values().iterator();
 		while (iter.hasNext())
 		{
-			TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
+			final TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
 					.next();
 			// ok, check it's visible at all
 			if (thisT.getVisible())
@@ -958,7 +958,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	 * temporal & spatial)
 	 * 
 	 */
-	public void setIncludeInBounds(boolean val)
+	public void setIncludeInBounds(final boolean val)
 	{
 		_includeInBounds = val;
 	}
@@ -977,7 +977,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	 * whether to interpolate the point marker when in time-stepping mode
 	 * 
 	 */
-	public void setInterpolatePoints(boolean val)
+	public void setInterpolatePoints(final boolean val)
 	{
 		_interpolatePoints = val;
 	}
@@ -996,7 +996,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	 * whether to return time step results, for time stepper
 	 * 
 	 */
-	public void setIncludeInTimeStep(boolean val)
+	public void setIncludeInTimeStep(final boolean val)
 	{
 		_includeInTimeStep = val;
 	}
@@ -1023,7 +1023,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	 * whether to plot the track name
 	 * 
 	 */
-	public void setShowTrackName(boolean showTrackName)
+	public void setShowTrackName(final boolean showTrackName)
 	{
 		this._showTrackName = showTrackName;
 	}
@@ -1034,12 +1034,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		WorldArea res = null;
 		if (_includeInBounds)
 		{
-			Iterator<CouchTrack> iter = _myCache.values().iterator();
+			final Iterator<CouchTrack> iter = _myCache.values().iterator();
 			while (iter.hasNext())
 			{
-				TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
+				final TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
 						.next();
-				WorldArea thisB = thisT.getBounds();
+				final WorldArea thisB = thisT.getBounds();
 				if (thisB != null)
 				{
 					if (res == null)
@@ -1093,36 +1093,36 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	}
 
 	@Override
-	public Watchable[] getNearestTo(HiResDate DTG)
+	public Watchable[] getNearestTo(final HiResDate DTG)
 	{
-		ArrayList<Watchable> res = new ArrayList<Watchable>();
+		final ArrayList<Watchable> res = new ArrayList<Watchable>();
 
 		if (_includeInTimeStep)
 		{
 			// find items near this time
 
 			// loop through our tracks
-			Iterator<CouchTrack> iter = _myCache.values().iterator();
+			final Iterator<CouchTrack> iter = _myCache.values().iterator();
 
 			while (iter.hasNext())
 			{
-				TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
+				final TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
 						.next();
 				// in period?
-				TimePeriod thisP = thisT.getPeriod();
+				final TimePeriod thisP = thisT.getPeriod();
 
 				if (thisT.getVisible())
 					if (thisP != null)
 						if (thisP.contains(DTG))
 						{
 							// find nearest point
-							ArrayList<Long> times = thisT.getTimes();
+							final ArrayList<Long> times = thisT.getTimes();
 							if (times != null)
 							{
 								int ctr = 0;
 								while (ctr < times.size() - 1)
 								{
-									Long tNow = times.get(ctr);
+									final Long tNow = times.get(ctr);
 									if (tNow > DTG.getDate().getTime())
 									{
 										break;
@@ -1137,10 +1137,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 									if (_interpolatePoints && (ctr > 0))
 									{
 										// ok, dodgy maths to interpolate the location at this time
-										FixWrapper before = new FixWrapper(
+										final FixWrapper before = new FixWrapper(
 												new Fix(new HiResDate(times.get(ctr - 1)),
 														thisT.getLocationAt(ctr - 1), 0, 0));
-										FixWrapper next = new FixWrapper(new Fix(new HiResDate(
+										final FixWrapper next = new FixWrapper(new Fix(new HiResDate(
 												times.get(ctr)), thisT.getLocationAt(ctr), 0, 0));
 
 										if (before.getTime().greaterThan(DTG))
@@ -1148,7 +1148,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 										if (next.getTime().lessThan(DTG))
 											System.err.println("not after");
 
-										FixWrapper newFix = FixWrapper.interpolateFix(before, next,
+										final FixWrapper newFix = FixWrapper.interpolateFix(before, next,
 												new HiResDate(DTG));
 										newFix.setColor(_myColor);
 										res.add(newFix);
@@ -1175,12 +1175,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	}
 
 	@Override
-	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
+	public Collection<Editable> getItemsBetween(final HiResDate start, final HiResDate end)
 	{
 		return null;
 	}
 
-	public void setColor(Color col)
+	public void setColor(final Color col)
 	{
 		_myColor = col;
 
@@ -1201,7 +1201,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	public class TrackStoreInfo extends Editable.EditorType
 	{
 
-		public TrackStoreInfo(TrackStoreWrapper data)
+		public TrackStoreInfo(final TrackStoreWrapper data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -1210,7 +1210,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("Visible", "the Layer visibility", VISIBILITY),
 						prop("Name", "the name of the Layer", FORMAT),
@@ -1236,7 +1236,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}

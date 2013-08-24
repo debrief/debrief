@@ -66,7 +66,7 @@ public final class GeneralUtils
 	 * @param objectA one of the objects to be compared
 	 * @param objectB one of the objects to be compared
 	 */
-	public static boolean objectsEqual(Object objectA,Object objectB)
+	public static boolean objectsEqual(final Object objectA,final Object objectB)
 	{
 		if (objectA == null)
 			return (objectB == null);
@@ -79,7 +79,7 @@ public final class GeneralUtils
      * @exception IllegalArgumentException
      * if the specified percentage value is unacceptable
 	 */
-	public static void checkValidPercent(double percent) throws IllegalArgumentException
+	public static void checkValidPercent(final double percent) throws IllegalArgumentException
 	{
 		if(percent > 1 || percent < 0)
 			throw new IllegalArgumentException(percent + " is not a valid percentage value. It should be <= 1 && >= 0");

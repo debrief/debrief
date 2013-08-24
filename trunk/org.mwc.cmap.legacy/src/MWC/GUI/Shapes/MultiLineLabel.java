@@ -40,43 +40,43 @@ public class MultiLineLabel extends Canvas {
   protected boolean measured = false; // Have the lines been measured?
 
   // Here are five versions of the constructor
-  public MultiLineLabel(String label, int margin_width,
-                        int margin_height, int alignment) {
+  public MultiLineLabel(final String label, final int margin_width,
+                        final int margin_height, final int alignment) {
     this.label = label;                 // Remember all the properties
     this.margin_width = margin_width;
     this.margin_height = margin_height;
     this.alignment = alignment;
     newLabel();                         // Break the label up into lines
   }
-  public MultiLineLabel(String label, int margin_width, int margin_height) {
+  public MultiLineLabel(final String label, final int margin_width, final int margin_height) {
     this(label, margin_width, margin_height, LEFT);
   }
-  public MultiLineLabel(String label, int alignment) {
+  public MultiLineLabel(final String label, final int alignment) {
     this(label, 10, 10, alignment);
   }
-  public MultiLineLabel(String label) { this(label, 10, 10, LEFT); }
+  public MultiLineLabel(final String label) { this(label, 10, 10, LEFT); }
   public MultiLineLabel() { this(""); }
 
   // Methods to set and query the various attributes of the component
   // Note that some query methods are inherited from the superclass.
-  public void setLabel(String label) {
+  public void setLabel(final String label) {
     this.label = label;
     newLabel();               // Break the label into lines
     measured = false;         // Note that we need to measure lines
     repaint();                // Request a redraw
   }
-  public void setFont(Font f) {
+  public void setFont(final Font f) {
     super.setFont(f);         // tell our superclass about the new font
     measured = false;         // Note that we need to remeasure lines
     repaint();                // Request a redraw
   }
-  public void setForeground(Color c) {
+  public void setForeground(final Color c) {
     super.setForeground(c);   // tell our superclass about the new color
     repaint();                // Request a redraw (size is unchanged)
   }
-  public void setAlignment(int a) { alignment = a; repaint(); }
-  public void setMarginWidth(int mw) { margin_width = mw; repaint(); }
-  public void setMarginHeight(int mh) { margin_height = mh; repaint(); }
+  public void setAlignment(final int a) { alignment = a; repaint(); }
+  public void setMarginWidth(final int mw) { margin_width = mw; repaint(); }
+  public void setMarginHeight(final int mh) { margin_height = mh; repaint(); }
   public String getLabel() { return label; }
   public int getAlignment() { return alignment; }
   public int getMarginWidth() { return margin_width; }
@@ -108,9 +108,9 @@ public class MultiLineLabel extends Canvas {
    * takes care of setting those in the Graphics object we're passed.
    */
   @SuppressWarnings("deprecation")
-	public void paint(Graphics g) {
+	public void paint(final Graphics g) {
     int x, y;
-    Dimension size = this.size();  // use getSize() in Java 1.1
+    final Dimension size = this.size();  // use getSize() in Java 1.1
     if (!measured) measure();
     y = line_ascent + (size.height - num_lines * line_height)/2;
     for(int i = 0; i < num_lines; i++, y += line_height) {
@@ -127,7 +127,7 @@ public class MultiLineLabel extends Canvas {
   /** This internal method breaks a specified label up into an array of lines.
    *  It uses the StringTokenizer utility class. */
   protected synchronized void newLabel() {
-    StringTokenizer t = new StringTokenizer(label, "\n");
+    final StringTokenizer t = new StringTokenizer(label, "\n");
     num_lines = t.countTokens();
     lines = new String[num_lines];
     line_widths = new int[num_lines];
@@ -138,7 +138,7 @@ public class MultiLineLabel extends Canvas {
    *  line of the label is, and how wide the widest line is. */
   @SuppressWarnings("deprecation")
 	protected synchronized void measure() {
-    FontMetrics fm = this.getToolkit().getFontMetrics(this.getFont());
+    final FontMetrics fm = this.getToolkit().getFontMetrics(this.getFont());
     line_height = fm.getHeight();
     line_ascent = fm.getAscent();
     max_width = 0;

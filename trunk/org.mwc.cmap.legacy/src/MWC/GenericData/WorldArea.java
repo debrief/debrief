@@ -51,7 +51,7 @@ public final class WorldArea implements Serializable
 	 * 
 	 * @see #normalise
 	 */
-	public WorldArea(WorldLocation TopLeftVal, WorldLocation BottomRightVal)
+	public WorldArea(final WorldLocation TopLeftVal, final WorldLocation BottomRightVal)
 	{
 		// remember to normalise
 		_topLeft = new WorldLocation(TopLeftVal);
@@ -65,7 +65,7 @@ public final class WorldArea implements Serializable
 	/**
 	 * other constructor, takes copy of coordinates in target area
 	 */
-	public WorldArea(WorldArea other)
+	public WorldArea(final WorldArea other)
 	{
 		this(other._topLeft, other._bottomRight);
 	}
@@ -81,9 +81,9 @@ public final class WorldArea implements Serializable
 	 */
 	final public WorldLocation getCentre()
 	{
-		double dLat = getHeight() / 2.0;
-		double dLong = (_bottomRight.getLong() - _topLeft.getLong()) / 2.0;
-		double dDepth = getDepthRange() / 2.0;
+		final double dLat = getHeight() / 2.0;
+		final double dLong = (_bottomRight.getLong() - _topLeft.getLong()) / 2.0;
+		final double dDepth = getDepthRange() / 2.0;
 
 		// do we need to create our centre?
 		if (_thisCentre == null)
@@ -105,17 +105,17 @@ public final class WorldArea implements Serializable
 	 * @param newCentre
 	 *          the new centre of the area
 	 */
-	final public void setCentre(WorldLocation newCentre)
+	final public void setCentre(final WorldLocation newCentre)
 	{
 		// what's the area
-		double wid = this.getFlatEarthWidth();
-		double ht = this.getHeight();
-		double depth = this.getCentre().getDepth();
+		final double wid = this.getFlatEarthWidth();
+		final double ht = this.getHeight();
+		final double depth = this.getCentre().getDepth();
 
-		WorldLocation newTL = new WorldLocation(newCentre.getLat() + ht / 2,
+		final WorldLocation newTL = new WorldLocation(newCentre.getLat() + ht / 2,
 				newCentre.getLong() - wid / 2, depth);
 
-		WorldLocation newBR = new WorldLocation(newCentre.getLat() - ht / 2,
+		final WorldLocation newBR = new WorldLocation(newCentre.getLat() - ht / 2,
 				newCentre.getLong() + wid / 2, depth);
 
 		_topLeft = newTL;
@@ -131,7 +131,7 @@ public final class WorldArea implements Serializable
 	 */
 	final public WorldLocation getCentreAtSurface()
 	{
-		WorldLocation res = getCentre();
+		final WorldLocation res = getCentre();
 		res.setDepth(0);
 		return res;
 	}
@@ -146,12 +146,12 @@ public final class WorldArea implements Serializable
 		return _bottomRight;
 	}
 
-	final public void setBottomRight(WorldLocation loc)
+	final public void setBottomRight(final WorldLocation loc)
 	{
 		_bottomRight = loc;
 	}
 
-	final public void setTopLeft(WorldLocation loc)
+	final public void setTopLeft(final WorldLocation loc)
 	{
 		_topLeft = loc;
 	}
@@ -183,7 +183,7 @@ public final class WorldArea implements Serializable
 	 * 
 	 * @return flag for contains
 	 */
-	final public boolean contains(WorldLocation other)
+	final public boolean contains(final WorldLocation other)
 	{
 		boolean res = true;
 		if (this._topLeft._theLat < other._theLat)
@@ -206,16 +206,16 @@ public final class WorldArea implements Serializable
 	 * find the range of the nearest corner (or the centre point) to the indicated
 	 * point
 	 */
-	final public double rangeFrom(WorldLocation other)
+	final public double rangeFrom(final WorldLocation other)
 	{
 		// first the TL/BR corners
-		double r1 = getTopLeft().rangeFrom(other);
-		double r2 = getBottomRight().rangeFrom(other);
+		final double r1 = getTopLeft().rangeFrom(other);
+		final double r2 = getBottomRight().rangeFrom(other);
 		// now the centre
-		double r3 = getCentre().rangeFrom(other);
+		final double r3 = getCentre().rangeFrom(other);
 		// now the TR / BL corners
-		double r4 = getTopRight().rangeFrom(other);
-		double r5 = getBottomLeft().rangeFrom(other);
+		final double r4 = getTopRight().rangeFrom(other);
+		final double r5 = getBottomLeft().rangeFrom(other);
 
 		// System.out.print("ranges:" + (int)(10000d * r1));
 		// System.out.println(", " + (int)(r2 *10000d)+ ", " +
@@ -234,7 +234,7 @@ public final class WorldArea implements Serializable
 	 * find the range of the nearest corner (or the centre point) to the indicated
 	 * point
 	 */
-	final public double rangeFromEdge(WorldLocation other)
+	final public double rangeFromEdge(final WorldLocation other)
 	{
 		double res;
 
@@ -243,10 +243,10 @@ public final class WorldArea implements Serializable
 		else
 		{
 			// first the TL/BR corners
-			double r1 = distancePointLine(getTopLeft(), getTopRight(), other);
-			double r2 = distancePointLine(getTopRight(), getBottomRight(), other);
-			double r3 = distancePointLine(getBottomRight(), getBottomLeft(), other);
-			double r4 = distancePointLine(getBottomLeft(), getTopLeft(), other);
+			final double r1 = distancePointLine(getTopLeft(), getTopRight(), other);
+			final double r2 = distancePointLine(getTopRight(), getBottomRight(), other);
+			final double r3 = distancePointLine(getBottomRight(), getBottomLeft(), other);
+			final double r4 = distancePointLine(getBottomLeft(), getTopLeft(), other);
 
 			res = Math.min(r1, r2);
 			res = Math.min(res, r3);
@@ -267,7 +267,7 @@ public final class WorldArea implements Serializable
    * @param B another point of the line (must be different to A)
    * @return the distance from p to line segment AB
    */
-  private static double distancePointLine(WorldLocation A, WorldLocation B, WorldLocation p)
+  private static double distancePointLine(final WorldLocation A, final WorldLocation B, final WorldLocation p)
   {
     // if start==end, then use pt distance
     if (  A.equals(B) ) return p.rangeFrom(A);
@@ -285,7 +285,7 @@ public final class WorldArea implements Serializable
 	*/
     /** NOTE: we use getLat for .y and getLong for .x */
 
-    double r = ( (p.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (p.getLat() - A.getLat()) * (B.getLat() - A.getLat()) )
+    final double r = ( (p.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (p.getLat() - A.getLat()) * (B.getLat() - A.getLat()) )
               /
             ( (B.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (B.getLat() - A.getLat()) * (B.getLat() - A.getLat()) );
 
@@ -301,7 +301,7 @@ public final class WorldArea implements Serializable
 		Then the distance from C to P = |s|*L.
 	*/
 
-    double s = ((A.getLat() - p.getLat()) *(B.getLong() - A.getLong()) - (A.getLong() - p.getLong())*(B.getLat() - A.getLat()) )
+    final double s = ((A.getLat() - p.getLat()) *(B.getLong() - A.getLong()) - (A.getLong() - p.getLong())*(B.getLat() - A.getLat()) )
               /
             ((B.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (B.getLat() - A.getLat()) * (B.getLat() - A.getLat()) );
 
@@ -361,7 +361,7 @@ public final class WorldArea implements Serializable
 	 * 
 	 * @return flag for overlap
 	 */
-	final public boolean overlaps(WorldArea other)
+	final public boolean overlaps(final WorldArea other)
 	{
 		boolean res = true;
 
@@ -381,7 +381,7 @@ public final class WorldArea implements Serializable
 	/**
 	 * grow the area to include a border or the indicated degrees
 	 */
-	final public void grow(double border_degs, double depth_metres)
+	final public void grow(final double border_degs, final double depth_metres)
 	{
 		_topLeft.setLat(_topLeft.getLat() + border_degs);
 		_topLeft.setLong(_topLeft.getLong() - border_degs);
@@ -394,7 +394,7 @@ public final class WorldArea implements Serializable
 	/**
 	 * extend the area to include this new point. includes a normalise operation
 	 */
-	final public void extend(WorldLocation newPoint)
+	final public void extend(final WorldLocation newPoint)
 	{
 
 		// check there is a valid point
@@ -431,7 +431,7 @@ public final class WorldArea implements Serializable
 	/**
 	 * extend the area to include this new area. Includes a normalise operation
 	 */
-	final public void extend(WorldArea newArea)
+	final public void extend(final WorldArea newArea)
 	{
 		// check we've received a valid area
 		if (newArea == null)
@@ -526,12 +526,12 @@ public final class WorldArea implements Serializable
 
 	}
 
-	final public boolean equals(Object tt)
+	final public boolean equals(final Object tt)
 	{
 		if (!(tt instanceof WorldArea))
 			return false;
 
-		WorldArea o = (WorldArea) tt;
+		final WorldArea o = (WorldArea) tt;
 		boolean res = true;
 		if (!o.getTopLeft().equals(getTopLeft()))
 			res = false;
@@ -566,12 +566,12 @@ public final class WorldArea implements Serializable
 		midLat = _bottomRight.getLat() + midLat;
 
 		// create the points we are going to work with
-		WorldLocation leftPoint = new WorldLocation(midLat, _topLeft.getLong(), 0.0);
-		WorldLocation rightPoint = new WorldLocation(midLat,
+		final WorldLocation leftPoint = new WorldLocation(midLat, _topLeft.getLong(), 0.0);
+		final WorldLocation rightPoint = new WorldLocation(midLat,
 				_bottomRight.getLong(), 0.0);
 
 		// and calculate the range
-		double res = leftPoint.rangeFrom(rightPoint);
+		final double res = leftPoint.rangeFrom(rightPoint);
 
 		return res;
 	}
@@ -600,7 +600,7 @@ public final class WorldArea implements Serializable
 	 *          - the total number we are going to produce
 	 * @return this location in the distribution
 	 */
-	final public WorldLocation getDistributedLocation(int counter, int total)
+	final public WorldLocation getDistributedLocation(final int counter, final int total)
 	{
 
 		WorldLocation res = null;
@@ -610,16 +610,16 @@ public final class WorldArea implements Serializable
 				.getWidth());
 		final double heightMetres = MWC.Algorithms.Conversions.Degs2m(this
 				.getHeight());
-		double areaMetres = widthMetres * heightMetres;
+		final double areaMetres = widthMetres * heightMetres;
 
 		// what's the area of each cell
-		double cellArea = areaMetres / total;
+		final double cellArea = areaMetres / total;
 
 		// and what's their width?
-		double spacing = Math.sqrt(cellArea);
+		final double spacing = Math.sqrt(cellArea);
 
 		// ok, how many will fit across is this?
-		int acrossSpacing = (int) (widthMetres / spacing);
+		final int acrossSpacing = (int) (widthMetres / spacing);
 
 		// divide counter by this
 		int numDown, numAcross;
@@ -637,8 +637,8 @@ public final class WorldArea implements Serializable
 		// how many does this leave
 
 		// and calculate hte point
-		double latOffset = MWC.Algorithms.Conversions.m2Degs(numDown * spacing);
-		double longOffset = MWC.Algorithms.Conversions.m2Degs(numAcross * spacing);
+		final double latOffset = MWC.Algorithms.Conversions.m2Degs(numDown * spacing);
+		final double longOffset = MWC.Algorithms.Conversions.m2Degs(numAcross * spacing);
 
 		// now add this to the bottom-left of the area
 		res = new WorldLocation(getBottomLeft().getLat() + latOffset,
@@ -664,7 +664,7 @@ public final class WorldArea implements Serializable
 		WorldArea wa4;
 		private WorldArea wa5;
 
-		public WorldAreaTest(String val)
+		public WorldAreaTest(final String val)
 		{
 			super(val);
 		}
@@ -720,16 +720,16 @@ public final class WorldArea implements Serializable
 		
 		public final void testDiffRangeFromEdge()
 		{
-			WorldArea was = new WorldArea(new WorldLocation(0.5, 4.05, 0), new WorldLocation(0, 4.05, 0));
-			WorldLocation tgt =  new WorldLocation(0.127, 0.5, 0);
-			double dist = was.rangeFrom(tgt);
+			final WorldArea was = new WorldArea(new WorldLocation(0.5, 4.05, 0), new WorldLocation(0, 4.05, 0));
+			final WorldLocation tgt =  new WorldLocation(0.127, 0.5, 0);
+			final double dist = was.rangeFrom(tgt);
 			assertTrue(dist > 1);
 		}
 
 		public final void testConstructor()
 		{
-			WorldArea ww1 = new WorldArea(w1, w2);
-			WorldArea ww2 = new WorldArea(wa1);
+			final WorldArea ww1 = new WorldArea(w1, w2);
+			final WorldArea ww2 = new WorldArea(wa1);
 			assertEquals("constructor worked", ww1.equals(wa1), true);
 			assertEquals("constructor worked", ww2.equals(wa1), true);
 		}
@@ -738,12 +738,12 @@ public final class WorldArea implements Serializable
 		{
 			// assuming the area is TL: 12, 9, 110 and BR: 9, 12, 0
 			//
-			WorldLocation offLeft = new WorldLocation(10, 8, 0);
-			WorldLocation offRight = new WorldLocation(10, 13, 0);
-			WorldLocation offTop = new WorldLocation(14, 9, 0);
-			WorldLocation offBottom = new WorldLocation(7, 9, 0);
-			WorldLocation tooShallow = new WorldLocation(9, 9, -5);
-			WorldLocation tooDeep = new WorldLocation(9, 9, 200);
+			final WorldLocation offLeft = new WorldLocation(10, 8, 0);
+			final WorldLocation offRight = new WorldLocation(10, 13, 0);
+			final WorldLocation offTop = new WorldLocation(14, 9, 0);
+			final WorldLocation offBottom = new WorldLocation(7, 9, 0);
+			final WorldLocation tooShallow = new WorldLocation(9, 9, -5);
+			final WorldLocation tooDeep = new WorldLocation(9, 9, 200);
 			assertTrue("w1 in wa3", wa3.contains(w1));
 			assertTrue("w2 in wa3", wa3.contains(w2));
 			assertTrue("w3 in wa3", wa3.contains(w3));
@@ -757,16 +757,16 @@ public final class WorldArea implements Serializable
 
 		public final void testEquals()
 		{
-			WorldArea ww = new WorldArea(w2, w1);
+			final WorldArea ww = new WorldArea(w2, w1);
 			assertTrue("Identical areas", ww.equals(wa1));
-			WorldArea ww2 = new WorldArea(w3, w1);
+			final WorldArea ww2 = new WorldArea(w3, w1);
 			assertTrue("Different areas", !ww2.equals(wa1));
 		}
 
 		public final void testExtend()
 		{
-			WorldArea ww4 = new WorldArea(wa1);
-			WorldArea ww5 = new WorldArea(wa1);
+			final WorldArea ww4 = new WorldArea(wa1);
+			final WorldArea ww5 = new WorldArea(wa1);
 			ww4.extend(w3);
 			assertTrue("Extending using location", ww4.equals(wa3));
 			ww5.extend(wa3);
@@ -782,8 +782,8 @@ public final class WorldArea implements Serializable
 			assertTrue(wa4.getTopLeft().equals(new WorldLocation(62, 10, 100)));
 			assertTrue(wa4.getTopRight().equals(new WorldLocation(62, 12, 100)));
 			assertTrue(wa4.getBottomLeft().equals(new WorldLocation(58, 10, 0)));
-			WorldLocation first = wa4.getCentre();
-			WorldLocation other = new WorldLocation(60, 11, 50);
+			final WorldLocation first = wa4.getCentre();
+			final WorldLocation other = new WorldLocation(60, 11, 50);
 			assertTrue(first.equals(other));
 			assertEquals("Check depth range of area", wa4.getDepthRange(), 100, 0d);
 			assertEquals("Check height of area", wa4.getHeight(), 4.0, 0d);
@@ -794,7 +794,7 @@ public final class WorldArea implements Serializable
 		{
 			w4 = new WorldLocation(58, 12, 0);
 			w5 = new WorldLocation(62, 10, 100);
-			WorldLocation w6 = new WorldLocation(64, 9, Double.NaN);
+			final WorldLocation w6 = new WorldLocation(64, 9, Double.NaN);
 			wa4 = new WorldArea(w4, w5);
 
 			// ok, try to extend it
@@ -817,45 +817,45 @@ public final class WorldArea implements Serializable
 
 		public final void testNormalise()
 		{
-			WorldArea ww1 = new WorldArea(w1, w3);
-			WorldArea ww2 = new WorldArea(w3, w1);
+			final WorldArea ww1 = new WorldArea(w1, w3);
+			final WorldArea ww2 = new WorldArea(w3, w1);
 			assertTrue("Checking normalise", ww1.equals(ww2));
 		}
 
 		public final void testOverlap()
 		{
-			WorldLocation aa = new WorldLocation(4, 3, 0);
-			WorldLocation ab = new WorldLocation(2, 5, 0);
-			WorldLocation a1a = new WorldLocation(6, 1, 0);
-			WorldLocation a1b = new WorldLocation(4, 2.9, 0);
-			WorldLocation a2a = new WorldLocation(6, 5.1, 0);
-			WorldLocation a2b = new WorldLocation(4, 7, 0);
-			WorldLocation a3a = new WorldLocation(5, 2, 0);
-			WorldLocation a3b = new WorldLocation(3, 4, 0);
-			WorldLocation a4a = new WorldLocation(5, 4, 0);
-			WorldLocation a4b = new WorldLocation(3, 6, 0);
-			WorldLocation a5a = new WorldLocation(3.5, 3.5, 0);
-			WorldLocation a5b = new WorldLocation(4.5, 4.5, 0);
-			WorldLocation a6a = new WorldLocation(3, 2, 0);
-			WorldLocation a6b = new WorldLocation(1, 4, 0);
-			WorldLocation a7a = new WorldLocation(3, 4, 0);
-			WorldLocation a7b = new WorldLocation(1, 6, 0);
-			WorldLocation a8a = new WorldLocation(2, 1, 0);
-			WorldLocation a8b = new WorldLocation(0, 2.9, 0);
-			WorldLocation a9a = new WorldLocation(2, 5.1, 0);
-			WorldLocation a9b = new WorldLocation(0, 7, 0);
+			final WorldLocation aa = new WorldLocation(4, 3, 0);
+			final WorldLocation ab = new WorldLocation(2, 5, 0);
+			final WorldLocation a1a = new WorldLocation(6, 1, 0);
+			final WorldLocation a1b = new WorldLocation(4, 2.9, 0);
+			final WorldLocation a2a = new WorldLocation(6, 5.1, 0);
+			final WorldLocation a2b = new WorldLocation(4, 7, 0);
+			final WorldLocation a3a = new WorldLocation(5, 2, 0);
+			final WorldLocation a3b = new WorldLocation(3, 4, 0);
+			final WorldLocation a4a = new WorldLocation(5, 4, 0);
+			final WorldLocation a4b = new WorldLocation(3, 6, 0);
+			final WorldLocation a5a = new WorldLocation(3.5, 3.5, 0);
+			final WorldLocation a5b = new WorldLocation(4.5, 4.5, 0);
+			final WorldLocation a6a = new WorldLocation(3, 2, 0);
+			final WorldLocation a6b = new WorldLocation(1, 4, 0);
+			final WorldLocation a7a = new WorldLocation(3, 4, 0);
+			final WorldLocation a7b = new WorldLocation(1, 6, 0);
+			final WorldLocation a8a = new WorldLocation(2, 1, 0);
+			final WorldLocation a8b = new WorldLocation(0, 2.9, 0);
+			final WorldLocation a9a = new WorldLocation(2, 5.1, 0);
+			final WorldLocation a9b = new WorldLocation(0, 7, 0);
 
-			WorldArea a1 = new WorldArea(a1a, a1b);
-			WorldArea a2 = new WorldArea(a2a, a2b);
-			WorldArea a3 = new WorldArea(a3a, a3b);
-			WorldArea a4 = new WorldArea(a4a, a4b);
-			WorldArea a5 = new WorldArea(a5a, a5b);
-			WorldArea a6 = new WorldArea(a6a, a6b);
-			WorldArea a7 = new WorldArea(a7a, a7b);
-			WorldArea a8 = new WorldArea(a8a, a8b);
-			WorldArea a9 = new WorldArea(a9a, a9b);
+			final WorldArea a1 = new WorldArea(a1a, a1b);
+			final WorldArea a2 = new WorldArea(a2a, a2b);
+			final WorldArea a3 = new WorldArea(a3a, a3b);
+			final WorldArea a4 = new WorldArea(a4a, a4b);
+			final WorldArea a5 = new WorldArea(a5a, a5b);
+			final WorldArea a6 = new WorldArea(a6a, a6b);
+			final WorldArea a7 = new WorldArea(a7a, a7b);
+			final WorldArea a8 = new WorldArea(a8a, a8b);
+			final WorldArea a9 = new WorldArea(a9a, a9b);
 
-			WorldArea waa = new WorldArea(aa, ab);
+			final WorldArea waa = new WorldArea(aa, ab);
 			assertTrue("a1", !waa.overlaps(a1));
 			assertTrue("a2", !waa.overlaps(a2));
 			assertTrue("a3", waa.overlaps(a3));
@@ -869,28 +869,28 @@ public final class WorldArea implements Serializable
 
 		public final void testRangeFrom()
 		{
-			WorldLocation a1a = new WorldLocation(6, 1, 0);
-			WorldLocation a1b = new WorldLocation(4, 3, 0);
-			WorldLocation a2a = new WorldLocation(6, 5, 0);
-			WorldLocation a2b = new WorldLocation(4, 7, 0);
-			WorldArea a1 = new WorldArea(a1a, a1b);
-			double r1 = a1.rangeFrom(a2a);
-			double r2 = a1.rangeFrom(a2b);
-			double r3 = a2a.rangeFrom(new WorldLocation(6, 3, 0));
-			double r4 = new WorldLocation(4, 3, 0d).rangeFrom(a2b);
+			final WorldLocation a1a = new WorldLocation(6, 1, 0);
+			final WorldLocation a1b = new WorldLocation(4, 3, 0);
+			final WorldLocation a2a = new WorldLocation(6, 5, 0);
+			final WorldLocation a2b = new WorldLocation(4, 7, 0);
+			final WorldArea a1 = new WorldArea(a1a, a1b);
+			final double r1 = a1.rangeFrom(a2a);
+			final double r2 = a1.rangeFrom(a2b);
+			final double r3 = a2a.rangeFrom(new WorldLocation(6, 3, 0));
+			final double r4 = new WorldLocation(4, 3, 0d).rangeFrom(a2b);
 			assertEquals("Checking range A from", r3, r1, 0d);
 			assertEquals("Checking range B from", r4, r2, 0d);
 		}
 
 		public final void testRangeFrom2()
 		{
-			WorldLocation a1a = new WorldLocation(0, 0, 0);
-			WorldLocation a1b = new WorldLocation(8, 4, 0);
-			WorldLocation a2a = new WorldLocation(0, 2, 0);
-			WorldLocation a2b = new WorldLocation(8, 2, 0);
-			WorldArea a1 = new WorldArea(a1a, a1b);
-			double r1 = a1.rangeFrom(a2a);
-			double r2 = a1.rangeFrom(a2b);
+			final WorldLocation a1a = new WorldLocation(0, 0, 0);
+			final WorldLocation a1b = new WorldLocation(8, 4, 0);
+			final WorldLocation a2a = new WorldLocation(0, 2, 0);
+			final WorldLocation a2b = new WorldLocation(8, 2, 0);
+			final WorldArea a1 = new WorldArea(a1a, a1b);
+			final double r1 = a1.rangeFrom(a2a);
+			final double r2 = a1.rangeFrom(a2b);
 			// double r3 = a2a.rangeFrom(new WorldLocation(6, 3, 0));
 			// double r4 = new WorldLocation(4, 3, 0d).rangeFrom(a2b);
 			assertEquals("Checking range A from", 2, r1, 0d);
@@ -899,11 +899,11 @@ public final class WorldArea implements Serializable
 
 		public final void testGrow()
 		{
-			WorldLocation a1a = new WorldLocation(6, 1, 0);
-			WorldLocation a1b = new WorldLocation(4, 3, 0);
-			WorldLocation newTL = new WorldLocation(7, 0, 100);
-			WorldLocation newBR = new WorldLocation(3, 4, -100);
-			WorldArea a1 = new WorldArea(a1a, a1b);
+			final WorldLocation a1a = new WorldLocation(6, 1, 0);
+			final WorldLocation a1b = new WorldLocation(4, 3, 0);
+			final WorldLocation newTL = new WorldLocation(7, 0, 100);
+			final WorldLocation newBR = new WorldLocation(3, 4, -100);
+			final WorldArea a1 = new WorldArea(a1a, a1b);
 			a1.grow(1, 100);
 			assertEquals("Checking new top left", newTL, a1.getTopLeft());
 			assertEquals("Checking new bottom right", newBR, a1.getBottomRight());
@@ -911,11 +911,11 @@ public final class WorldArea implements Serializable
 
 		public void testChangeCentre()
 		{
-			WorldLocation wa = new WorldLocation(15, 13, 0);
-			WorldLocation wb = new WorldLocation(13, 15, 0);
-			WorldLocation wcenter = new WorldLocation(14, 14, 0);
-			WorldLocation wcenter_b = new WorldLocation(1, 1, 0);
-			WorldArea w_a = new WorldArea(wa, wb);
+			final WorldLocation wa = new WorldLocation(15, 13, 0);
+			final WorldLocation wb = new WorldLocation(13, 15, 0);
+			final WorldLocation wcenter = new WorldLocation(14, 14, 0);
+			final WorldLocation wcenter_b = new WorldLocation(1, 1, 0);
+			final WorldArea w_a = new WorldArea(wa, wb);
 			// check the centre
 			assertEquals("original centre is right", w_a.getCentre(), wcenter);
 
@@ -937,7 +937,7 @@ public final class WorldArea implements Serializable
 			assertEquals("new BR", wb.getLat(), w_a.getBottomRight().getLat(), 0.03);
 			assertEquals("new BR", wb.getLong(), w_a.getBottomRight().getLong(), 0.03);
 
-			WorldLocation currentTL = new WorldLocation(w_a.getTopLeft());
+			final WorldLocation currentTL = new WorldLocation(w_a.getTopLeft());
 
 			// go through the cycle once again
 			// shift it
@@ -959,9 +959,9 @@ public final class WorldArea implements Serializable
 
 		public void testDistribution()
 		{
-			WorldArea theArea = new WorldArea(new WorldLocation(2, 2, 0),
+			final WorldArea theArea = new WorldArea(new WorldLocation(2, 2, 0),
 					new WorldLocation(3, 3, 0));
-			WorldLocation first = theArea.getDistributedLocation(0, 10);
+			final WorldLocation first = theArea.getDistributedLocation(0, 10);
 
 			assertEquals("first point correct", 2, first.getLat(), 0);
 			assertEquals("first point correct", 2, first.getLong(), 0);
@@ -985,7 +985,7 @@ public final class WorldArea implements Serializable
 		return new WorldLocation(_lat, _long, _depth);
 	}
 
-	private void trimLocation(WorldLocation loc)
+	private void trimLocation(final WorldLocation loc)
 	{
 		loc.setLat(Math.min(loc.getLat(), 90));
 		loc.setLat(Math.max(loc.getLat(), -90));

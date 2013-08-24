@@ -164,7 +164,7 @@ public final class AWTApplication extends Application {
       // IM  Thread.sleep(3000);
 
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
     }
 
@@ -174,7 +174,7 @@ public final class AWTApplication extends Application {
     {
       Thread.sleep(100);
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
     }
 

@@ -81,11 +81,11 @@ public final class ImportNarrative implements PlainLineImporter
 
   /** read in this string and return a Label
    */
-  public final Object readThisLine(String theLine)
+  public final Object readThisLine(final String theLine)
   {
 
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
     HiResDate DTG = null;
@@ -96,8 +96,8 @@ public final class ImportNarrative implements PlainLineImporter
     st.nextToken();
     
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		DTG = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -111,7 +111,7 @@ public final class ImportNarrative implements PlainLineImporter
     // can we trim any leading whitespace?
     theEntry = theEntry.trim();
 
-    NarrativeEntry entry = new NarrativeEntry(theTrack, DTG, theEntry);
+    final NarrativeEntry entry = new NarrativeEntry(theTrack, DTG, theEntry);
 
     return entry;
   }
@@ -127,9 +127,9 @@ public final class ImportNarrative implements PlainLineImporter
    * @return the shape in String form
    * @param theWrapper the Shape we are exporting
    */
-  public final String exportThis(MWC.GUI.Plottable theWrapper)
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
   {
-    NarrativeEntry theEntry = (NarrativeEntry) theWrapper;
+    final NarrativeEntry theEntry = (NarrativeEntry) theWrapper;
 
     String line = null;
 
@@ -150,14 +150,14 @@ public final class ImportNarrative implements PlainLineImporter
    * @param val the object to test
    * @return boolean saying whether you can do it
    */
-  public final boolean canExportThis(Object val)
+  public final boolean canExportThis(final Object val)
   {
     boolean res = false;
 
     if(val instanceof NarrativeEntry)
     {
     	// right, we have our narrative.
-    	NarrativeEntry ne = (NarrativeEntry) val;
+    	final NarrativeEntry ne = (NarrativeEntry) val;
     	
     	// does it have a type?  if it does, it should be the type-2 narrative exporter that's used
     	if(ne.getType() == null)
@@ -176,7 +176,7 @@ public final class ImportNarrative implements PlainLineImporter
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testImport(String val)
+    public testImport(final String val)
     {
       super(val);
     }
@@ -184,12 +184,12 @@ public final class ImportNarrative implements PlainLineImporter
     public void testImportSingleLine()
     {
       final String theLine = ";NARRATIVE:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
-      ImportNarrative in = new ImportNarrative();
-      Object res = in.readThisLine(theLine);
-      NarrativeEntry ne = (NarrativeEntry)res;
+      final ImportNarrative in = new ImportNarrative();
+      final Object res = in.readThisLine(theLine);
+      final NarrativeEntry ne = (NarrativeEntry)res;
 
       // check it contains the right data
-      String theDate = ne.getDTGString();
+      final String theDate = ne.getDTGString();
       assertEquals(theDate, "020421 121857");
       assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
     }
@@ -197,12 +197,12 @@ public final class ImportNarrative implements PlainLineImporter
     public void testImportQuotedLine()
     {
       final String theLine = ";NARRATIVE:	020421	121857	\"HMS TORBAY\" 	GenComment	Mk Rge BAAA R121212";
-      ImportNarrative in = new ImportNarrative();
-      Object res = in.readThisLine(theLine);
-      NarrativeEntry ne = (NarrativeEntry)res;
+      final ImportNarrative in = new ImportNarrative();
+      final Object res = in.readThisLine(theLine);
+      final NarrativeEntry ne = (NarrativeEntry)res;
 
       // check it contains the right data
-      String theDate = ne.getDTGString();
+      final String theDate = ne.getDTGString();
       assertEquals("020421 121857", theDate);
       assertEquals("found track name", "HMS TORBAY", ne.getTrackName());
     }
@@ -215,30 +215,30 @@ public final class ImportNarrative implements PlainLineImporter
 
       
       // check we can find the file
-      java.io.File file = new java.io.File(testFile);
+      final java.io.File file = new java.io.File(testFile);
       assertTrue("test file not found:" + testFile, file.exists());
       
       // ok, now try to read it in
-      Layers theHolder = new Layers();
+      final Layers theHolder = new Layers();
 
       // add the REP importer
       MWC.Utilities.ReaderWriter.ImportManager.addImporter
         (new Debrief.ReaderWriter.Replay.ImportReplay());
 
-      PlainImporterBase pib = new Debrief.ReaderWriter.Replay.ImportReplay();
+      final PlainImporterBase pib = new Debrief.ReaderWriter.Replay.ImportReplay();
 
 
       try
       {
         pib.importThis(testFile, new FileInputStream(testFile), theHolder);
       }
-      catch(FileNotFoundException e)
+      catch(final FileNotFoundException e)
       {
         e.printStackTrace();  //To change body of catch statement use Options | File Templates.
       }
 
       // check we have the right number of lines read in
-      NarrativeWrapper nw = (NarrativeWrapper)theHolder.findLayer(ImportReplay.NARRATIVE_LAYER);
+      final NarrativeWrapper nw = (NarrativeWrapper)theHolder.findLayer(ImportReplay.NARRATIVE_LAYER);
       assertNotNull(nw);
 
       // and count the items
@@ -251,9 +251,9 @@ public final class ImportNarrative implements PlainLineImporter
    *
    * @param args
    */
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
-    testImport ti = new testImport("tester");
+    final testImport ti = new testImport("tester");
     ti.testImportSingleLine();
     ti.testImportQuotedLine();
     ti.testImportNarrative();

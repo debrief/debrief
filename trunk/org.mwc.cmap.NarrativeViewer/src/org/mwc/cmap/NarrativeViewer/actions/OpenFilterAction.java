@@ -7,7 +7,7 @@ public class OpenFilterAction extends AbstractDynamicAction {
 	private final NarrativeViewer myViewer;
 	private final Column myColumn;
 
-	public OpenFilterAction(NarrativeViewer viewer, Column column, String name){
+	public OpenFilterAction(final NarrativeViewer viewer, final Column column, final String name){
 		myViewer = viewer;
 		myColumn = column;
 		setText(name);

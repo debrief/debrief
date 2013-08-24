@@ -13,10 +13,10 @@ class Separator extends Component {
 	private static final long serialVersionUID = 1L;
 	int   thickness= 2;
 
-	public void paint(Graphics g) {
-		Dimension size     = getSize();
-        Color highlight = SystemColor.controlLtHighlight;
-        Color shadow   = SystemColor.controlShadow;
+	public void paint(final Graphics g) {
+		final Dimension size     = getSize();
+        final Color highlight = SystemColor.controlLtHighlight;
+        final Color shadow   = SystemColor.controlShadow;
 
 		g.setColor(shadow);
 		int y = (size.height/2) - (thickness/2);
@@ -32,7 +32,7 @@ class Separator extends Component {
 		}	
 	}
 	public Dimension getPreferredSize() {
-		Dimension prefsz = getSize();
+		final Dimension prefsz = getSize();
 
 		prefsz.height = thickness;
 		return prefsz;

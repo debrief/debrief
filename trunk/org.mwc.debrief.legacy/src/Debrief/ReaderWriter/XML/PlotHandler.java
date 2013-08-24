@@ -15,9 +15,9 @@ final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
   private final Debrief.GUI.Frames.Application _parent;
 
-  public PlotHandler(Debrief.GUI.Frames.Application theDestination,
-                     Debrief.GUI.Frames.Session theSession,
-                     String fileName)
+  public PlotHandler(final Debrief.GUI.Frames.Application theDestination,
+                     final Debrief.GUI.Frames.Session theSession,
+                     final String fileName)
   {
     // inform our parent what type of class we are
     super("plot");
@@ -34,7 +34,7 @@ final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     // sort out the handlers
     addHandler(new SessionHandler(_parent, theSession, fileName)
     {
-      public void addSession(Debrief.GUI.Frames.Session data)
+      public void addSession(final Debrief.GUI.Frames.Session data)
       {
         addThisSession(data);
       }
@@ -44,32 +44,32 @@ final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
     super.addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         System.out.println("Name of Plot is " + val);
       }
     });
     super.addAttributeHandler(new HandleAttribute("Created")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         System.out.println("Plot was created on " + val);
       }
     });
   }
 
-  void addThisSession(Debrief.GUI.Frames.Session data)
+  void addThisSession(final Debrief.GUI.Frames.Session data)
   {
     // tidy up the session, and add it to the application
     _parent.newSession(data);
   }
 
-  public static org.w3c.dom.Element exportPlot(Debrief.GUI.Frames.Session session, org.w3c.dom.Document doc)
+  public static org.w3c.dom.Element exportPlot(final Debrief.GUI.Frames.Session session, final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element plt = doc.createElement("plot");
+    final org.w3c.dom.Element plt = doc.createElement("plot");
     plt.setAttribute("Created", new java.util.Date().toString());
     plt.setAttribute("Name", "Debrief Plot");
-    String details = "Saved with Debrief version dated " + Debrief.GUI.VersionInfo.getVersion();
+    final String details = "Saved with Debrief version dated " + Debrief.GUI.VersionInfo.getVersion();
     SessionHandler.exportThis(session, plt, doc);
     DetailsHandler.exportPlot(details, plt, doc);
     return plt;

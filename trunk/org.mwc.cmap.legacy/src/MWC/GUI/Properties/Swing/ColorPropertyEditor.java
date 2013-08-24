@@ -98,7 +98,7 @@ public class ColorPropertyEditor extends
    */
   protected Vector<NamedColor> createColors()
   {
-    Vector<NamedColor> res = super.createColors();
+    final Vector<NamedColor> res = super.createColors();
 
     // and append our custom item
     res.add(new NamedColor(CUSTOM_LABEL, Color.white));
@@ -121,7 +121,7 @@ public class ColorPropertyEditor extends
    */
   public java.awt.Component getCustomEditor()
   {
-    JPanel _theHolder = new JPanel();
+    final JPanel _theHolder = new JPanel();
     _theHolder.setLayout(new java.awt.BorderLayout());
 
     _theList = new TickableComboBox(_theColors);
@@ -138,17 +138,17 @@ public class ColorPropertyEditor extends
   /** user has selected something from the combo box
    * @param p1 data for action performed
    */
-  public void actionPerformed(ActionEvent p1)
+  public void actionPerformed(final ActionEvent p1)
   {
     // retrieve the value from the list
-    String selectedColor = _theList.getSelectedItem().toString();
+    final String selectedColor = _theList.getSelectedItem().toString();
 
     // is it the custom item?
     if(selectedColor == CUSTOM_LABEL)
     {
       // see if the colour is our "custom" colour. If so,
       // popup the custom dialog
-      Color theCol = JColorChooser.showDialog(null, "Select Color", (Color)this.getValue());
+      final Color theCol = JColorChooser.showDialog(null, "Select Color", (Color)this.getValue());
 
       if(theCol != null)
       {
@@ -166,7 +166,7 @@ public class ColorPropertyEditor extends
   /** reflect the new color value
    * @param p1 new colour
    */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     super.setValue(p1);
 
@@ -210,7 +210,7 @@ public class ColorPropertyEditor extends
     private Color color;
     /** width and height of this icon
      */
-    private int w, h;
+    private final int w, h;
 
     /** default (gray) constructor
      */
@@ -222,7 +222,7 @@ public class ColorPropertyEditor extends
      * @param w the width of this icon
      * @param h the height of this icon
      */
-    public ColorIcon(Color color, int w, int h) {
+    public ColorIcon(final Color color, final int w, final int h) {
       this.color = color;
       this.w = w;
       this.h = h;
@@ -233,7 +233,7 @@ public class ColorPropertyEditor extends
      * @param x x coordinate
      * @param y y coordinate
      */
-    public void paintIcon(Component c, Graphics g, int x, int y) {
+    public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
       g.setColor(Color.black);
       g.drawRect(x, y, w-1, h-1);
       g.setColor(color);
@@ -248,7 +248,7 @@ public class ColorPropertyEditor extends
     /** set the colour of this icon
      * @param color the colour
      */
-    public void setColor(Color color) {
+    public void setColor(final Color color) {
       this.color = color;
     }
     /** get the current width of this icon
@@ -279,7 +279,7 @@ public class ColorPropertyEditor extends
      */
     private int _currentValue;
 
-    public TickableComboBox(java.util.Vector<?> list)
+    public TickableComboBox(final java.util.Vector<?> list)
     {
       super(list);
       this.setRenderer(new ColorRenderer());
@@ -290,7 +290,7 @@ public class ColorPropertyEditor extends
     /** event handler so that we are informed when the user sets a new value
      *
      */
-    public void actionPerformed(java.awt.event.ActionEvent event)
+    public void actionPerformed(final java.awt.event.ActionEvent event)
     {
       setCurrentValue(this.getSelectedIndex());
 
@@ -298,7 +298,7 @@ public class ColorPropertyEditor extends
     /** over-ride this method so that we can update our
      *  index of the current value
      */
-    public void setSelectedItem(Object oj)
+    public void setSelectedItem(final Object oj)
     {
       super.setSelectedItem(oj);
       setCurrentValue(getSelectedIndex());
@@ -307,13 +307,13 @@ public class ColorPropertyEditor extends
     /** modifier (used near construction) to set the current value of the list
      *
      */
-    private void setCurrentValue(int index)
+    private void setCurrentValue(final int index)
     {
       _currentValue = index;
     }
     /** accessor method to determine if this index is the current value
      */
-    public boolean isCurrentValue(int index)
+    public boolean isCurrentValue(final int index)
     {
       return (_currentValue == index);
     }
@@ -337,11 +337,11 @@ public class ColorPropertyEditor extends
 
 			/** rectangular object which gets shaded in a particular colour
        */
-      private ColorIcon icon = new ColorIcon();
+      private final ColorIcon icon = new ColorIcon();
 
       /** red border, to show the currently selected item
        */
-      private javax.swing.border.Border
+      private final javax.swing.border.Border
         redBorder = BorderFactory.createLineBorder(Color.red,1),
         emptyBorder = BorderFactory.createEmptyBorder(1,1,1,1);
 
@@ -354,12 +354,12 @@ public class ColorPropertyEditor extends
        * @return a component to use
        */
       public Component getListCellRendererComponent(
-                      JList list,
-                      Object value,
-                      int index,
-                      boolean isSelected,
-                      boolean cellHasFocus) {
-        NamedColor nm = (NamedColor)value;
+                      final JList list,
+                      final Object value,
+                      final int index,
+                      final boolean isSelected,
+                      final boolean cellHasFocus) {
+        final NamedColor nm = (NamedColor)value;
         if(isCurrentValue(index))
         {
           setForeground(Color.red);

@@ -86,7 +86,7 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
   /**
    * the list of tags shown in the drop-down list
    */
-  private String _stringTags[] =
+  private final String _stringTags[] =
     {
       "All",
       "1 Secs",
@@ -110,7 +110,7 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
   /**
    * the values to use for the tags in the list
    */
-  private long _freqs[] =
+  private final long _freqs[] =
     {
       SHOW_ALL_FREQUENCY,
       1 * 1000000l,
@@ -148,7 +148,7 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
   }
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if (p1 instanceof HiResDate)
     {
@@ -156,18 +156,18 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
     }
     if (p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
-    long[] freqs = getFreqs();
-    String[] tags = getTags();
+    final long[] freqs = getFreqs();
+    final String[] tags = getTags();
     for (int i = 0; i < tags.length; i++)
     {
-      String thisS = tags[i];
+      final String thisS = tags[i];
       if (thisS.equals(val))
       {
         _myFreq = new HiResDate(0, freqs[i]);
@@ -185,12 +185,12 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
     if(_myFreq == null)
     	return res;
     
-    long[] freqs = getFreqs();
-    String[] tags = getTags();
-    long current = _myFreq.getMicros();
+    final long[] freqs = getFreqs();
+    final String[] tags = getTags();
+    final long current = _myFreq.getMicros();
     for (int i = 0; i < freqs.length; i++)
     {
-      long v = freqs[i];
+      final long v = freqs[i];
       if (v == current)
       {
         res = tags[i];

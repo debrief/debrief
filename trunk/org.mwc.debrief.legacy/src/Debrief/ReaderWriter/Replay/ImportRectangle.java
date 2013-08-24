@@ -82,10 +82,10 @@ final class ImportRectangle implements PlainLineImporter {
 	/**
 	 * read in this string and return a Label
 	 */
-	public final Object readThisLine(String theLine) {
+	public final Object readThisLine(final String theLine) {
 
 		// get a stream from the string
-		StringTokenizer st = new StringTokenizer(theLine);
+		final StringTokenizer st = new StringTokenizer(theLine);
 
 		// declare local variables
 		WorldLocation TL, BR;
@@ -114,7 +114,7 @@ final class ImportRectangle implements PlainLineImporter {
 		if (vDiff.length() > 3) {
 			// hmm, they are combined
 			latHem = vDiff.charAt(0);
-			String secondPart = vDiff.substring(1, vDiff.length());
+			final String secondPart = vDiff.substring(1, vDiff.length());
 			longDeg = Double.valueOf(secondPart);
 		} else {
 			// they are separate, so only the hem is in this one
@@ -142,7 +142,7 @@ final class ImportRectangle implements PlainLineImporter {
 		if (vDiff.length() > 3) {
 			// hmm, they are combined
 			latHem = vDiff.charAt(0);
-			String secondPart = vDiff.substring(1, vDiff.length());
+			final String secondPart = vDiff.substring(1, vDiff.length());
 			longDeg = Double.valueOf(secondPart);
 		} else {
 			// they are separate, so only the hem is in this one
@@ -164,14 +164,14 @@ final class ImportRectangle implements PlainLineImporter {
 				theText = theText.trim();
 		}
 		// create the Rectangle object
-		PlainShape sp = new RectangleShape(TL, BR);
+		final PlainShape sp = new RectangleShape(TL, BR);
 		sp.setColor(ImportReplay.replayColorFor(theSymbology));
 
-		WorldArea tmp = new WorldArea(TL, BR);
+		final WorldArea tmp = new WorldArea(TL, BR);
 		tmp.normalise();
 
 		// and put it into a shape
-		ShapeWrapper sw = new ShapeWrapper(theText, sp,
+		final ShapeWrapper sw = new ShapeWrapper(theText, sp,
 				ImportReplay.replayColorFor(theSymbology), null);
 
 		return sw;
@@ -191,10 +191,10 @@ final class ImportRectangle implements PlainLineImporter {
 	 * @param shape
 	 *            the Shape we are exporting
 	 */
-	public final String exportThis(MWC.GUI.Plottable theWrapper) {
-		ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 
-		RectangleShape Rectangle = (RectangleShape) theShape.getShape();
+		final RectangleShape Rectangle = (RectangleShape) theShape.getShape();
 
 		// result value
 		String line;
@@ -222,12 +222,12 @@ final class ImportRectangle implements PlainLineImporter {
 	 *            the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val) {
+	public final boolean canExportThis(final Object val) {
 		boolean res = false;
 
 		if (val instanceof ShapeWrapper) {
-			ShapeWrapper sw = (ShapeWrapper) val;
-			PlainShape ps = sw.getShape();
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
 			res = (ps instanceof RectangleShape);
 		}
 
@@ -237,12 +237,12 @@ final class ImportRectangle implements PlainLineImporter {
 
 	public static class TestImport extends TestCase {
 		public void testNoLabel() {
-			String line1 = ";RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-			ImportRectangle ir = new ImportRectangle();
-			ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
+			final String line1 = ";RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			final ImportRectangle ir = new ImportRectangle();
+			final ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
 			assertNotNull("read it in", res);
 			assertNull(res.getLabel());
-			RectangleShape rect = (RectangleShape) res.getShape();
+			final RectangleShape rect = (RectangleShape) res.getShape();
 			assertNotNull("found shape", rect);
 			assertEquals("correct tl lat", 49.7303, rect.getCorner_TopLeft().getLat(), 0.0001);
 			assertEquals("correct tl long", 4.16989, rect.getCorner_TopLeft().getLong(), 0.0001);
@@ -250,12 +250,12 @@ final class ImportRectangle implements PlainLineImporter {
 			assertEquals("correct br lat", 4.39945, rect.getCornerBottomRight().getLong(), 0.0001);
 		}
 		public void testLeadingSpace() {
-			String line1 = "	;RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-			ImportRectangle ir = new ImportRectangle();
-			ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
+			final String line1 = "	;RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			final ImportRectangle ir = new ImportRectangle();
+			final ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
 			assertNotNull("read it in", res);
 			assertNull(res.getLabel());
-			RectangleShape rect = (RectangleShape) res.getShape();
+			final RectangleShape rect = (RectangleShape) res.getShape();
 			assertNotNull("found shape", rect);
 			assertEquals("correct tl lat", 49.7303, rect.getCorner_TopLeft().getLat(), 0.0001);
 			assertEquals("correct tl long", 4.16989, rect.getCorner_TopLeft().getLong(), 0.0001);
@@ -263,12 +263,12 @@ final class ImportRectangle implements PlainLineImporter {
 			assertEquals("correct br lat", 4.39945, rect.getCornerBottomRight().getLong(), 0.0001);
 		}
 		public void testWithLabel() {
-			String line1 = ";RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
-			ImportRectangle ir = new ImportRectangle();
-			ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
+			final String line1 = ";RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
+			final ImportRectangle ir = new ImportRectangle();
+			final ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
 			assertNotNull("read it in", res);
 			assertNotNull(res.getLabel());
-			RectangleShape rect = (RectangleShape) res.getShape();
+			final RectangleShape rect = (RectangleShape) res.getShape();
 			assertNotNull("found shape", rect);
 			assertEquals("correct tl lat", 49.7303, rect.getCorner_TopLeft().getLat(), 0.0001);
 			assertEquals("correct tl long", 4.16989, rect.getCorner_TopLeft().getLong(), 0.0001);

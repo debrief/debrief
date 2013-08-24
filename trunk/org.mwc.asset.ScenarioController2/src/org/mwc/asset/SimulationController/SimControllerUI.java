@@ -22,13 +22,13 @@ public class SimControllerUI extends Composite
 
 	private static final String START_LABEL_TEXT = Messages.SimControllerUI_1;
 
-	private Button myStartButton;
+	private final Button myStartButton;
 
 	private ISimulationQue mySimulationQue;
 
-	private SimulationTable myTable;
+	private final SimulationTable myTable;
 
-	public SimControllerUI(Composite parent, final NewScenarioListener listener)
+	public SimControllerUI(final Composite parent, final NewScenarioListener listener)
 	{
 		super(parent, SWT.BORDER);
 
@@ -37,7 +37,7 @@ public class SimControllerUI extends Composite
 
 		setLayout(new GridLayout(2, false));
 
-		Label titleLabel = new Label(this, SWT.NONE);
+		final Label titleLabel = new Label(this, SWT.NONE);
 		titleLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		titleLabel.setText(TITLE_LABEL_TEXT);
 
@@ -49,7 +49,7 @@ public class SimControllerUI extends Composite
 		myStartButton.addListener(SWT.Selection, new Listener()
 		{
 
-			public void handleEvent(Event event)
+			public void handleEvent(final Event event)
 			{
 				mySimulationQue.startQue(listener);
 			}
@@ -60,14 +60,14 @@ public class SimControllerUI extends Composite
 				new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 	}
 
-	public void setInput(ISimulationQue input)
+	public void setInput(final ISimulationQue input)
 	{
 		mySimulationQue = input;
 		myStartButton.setEnabled(mySimulationQue != null);
 		myTable.setInput(mySimulationQue);
 	}
 
-	public void setSelectionProvider(ISelectionProvider selectionProvider)
+	public void setSelectionProvider(final ISelectionProvider selectionProvider)
 	{
 		myTable.setSelectionProvider(selectionProvider);
 	}

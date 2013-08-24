@@ -116,7 +116,7 @@ public class SquareSymbol extends PlainSymbol
 	 */
 	public java.awt.Dimension getBounds()
 	{
-		int sWid = (int) (wid * getScaleVal());
+		final int sWid = (int) (wid * getScaleVal());
 		return new java.awt.Dimension(2 * sWid, 2 * sWid);
 	}
 
@@ -147,11 +147,11 @@ public class SquareSymbol extends PlainSymbol
 	 */
 	public Vector<Vector<Point2D>> getCoordinates()
 	{
-		Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0, 1);
+		final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0, 1);
 
-		Vector<Point2D> line1 = new Vector<Point2D>(0, 1);
+		final Vector<Point2D> line1 = new Vector<Point2D>(0, 1);
 
-		int wid1 = (int) (2 * getScaleVal());
+		final int wid1 = (int) (2 * getScaleVal());
 		line1.add(new Point(-wid1, -wid1));
 		line1.add(new Point(wid1, -wid1));
 		line1.add(new Point(wid1, wid1));
@@ -163,7 +163,7 @@ public class SquareSymbol extends PlainSymbol
 		return res;
 	}
 
-	public void paint(CanvasType dest, WorldLocation centre)
+	public void paint(final CanvasType dest, final WorldLocation centre)
 	{
 		paint(dest, centre, 0.0);
 	}
@@ -176,16 +176,16 @@ public class SquareSymbol extends PlainSymbol
 	 * @param theLocation
 	 *          the place where we paint it
 	 */
-	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
 	{
 		// set the colour
 		dest.setColor(getColor());
 
 		// create our centre point
-		java.awt.Point centre = dest.toScreen(theLocation);
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
 		// calculate the scaled width
-		int sWid = (int) (wid * getScaleVal());
+		final int sWid = (int) (wid * getScaleVal());
 
 		// draw our square at the set radius around the centre
 		if (getFillSymbol())

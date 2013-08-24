@@ -17,7 +17,7 @@ public class TestAll extends TestCase {
     public static Test suite()
     throws Throwable {
         try {
-          TestSuite suite = new TestSuite();
+          final TestSuite suite = new TestSuite();
 //            String classRootString = System.getProperty("class_root");
 //          System.out.println("loading classes from:" + classRootString);
 //            if (classRootString == null) throw new IllegalArgumentException ("System property class_root must be set.");
@@ -30,7 +30,7 @@ public class TestAll extends TestCase {
 //            int numberOfTests = addAllTests (suite, testCaseLoader.getClasses ());
 //            System.out.println("Number of test classes found: " + numberOfTests);
             return suite;
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             // This ensures we have extra information. Otherwise all we get is a "Could not invoke the suite method." message.
             t.printStackTrace ();
             throw t;
@@ -41,21 +41,21 @@ public class TestAll extends TestCase {
      * Basic constructor - called by the test runners.
      */
 
-    public TestAll(String s) {
+    public TestAll(final String s) {
         super(s);
     }
 
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     System.setProperty("test_type", "UNIT");
 //    System.setProperty("class_root", "c:\\temp\\d2001\\d2002\\mwc\\gui\\java3d");
     System.setProperty("class_root", "d:\\dev\\debrief\\source\\build\\debrief");
     try {
-      Test test = TestAll.suite();
-      TestResult tr = new TestResult();
+      final Test test = TestAll.suite();
+      final TestResult tr = new TestResult();
       test.run(tr);
     }
-    catch (Throwable throwable) {
+    catch (final Throwable throwable) {
       throwable.printStackTrace();  //To change body of catch statement use Options | File Templates.
     }
   }

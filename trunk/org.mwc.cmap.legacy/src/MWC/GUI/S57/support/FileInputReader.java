@@ -56,7 +56,7 @@ public class FileInputReader implements InputReader {
      * RandomAccessFile with f
      * @see java.io.RandomAccessFile 
      */
-    public FileInputReader(File f) throws IOException {
+    public FileInputReader(final File f) throws IOException {
         if (Debug.debugging("binaryfile")) {
             Debug.output("FileInputReader created from " + f.getAbsolutePath());
         }
@@ -73,7 +73,7 @@ public class FileInputReader implements InputReader {
      * RandomAccessFile with f
      * @see java.io.RandomAccessFile 
      */
-    public FileInputReader(String f) throws IOException {
+    public FileInputReader(final String f) throws IOException {
         if (Debug.debugging("binaryfile")) {
             Debug.output("FileInputReader created from " + f);
         }
@@ -95,11 +95,11 @@ public class FileInputReader implements InputReader {
      * @param f a java.io.File
      * @throws IOException
      */
-    protected void init(File f) throws IOException {
+    protected void init(final File f) throws IOException {
         try {
             name = f.getName();
             inputFile = new RandomAccessFile(f, "r");
-        } catch (IOException i) {
+        } catch (final IOException i) {
             if (i instanceof FileNotFoundException) {
                 throw i;
             }
@@ -129,7 +129,7 @@ public class FileInputReader implements InputReader {
      * @exception IOException Any IO errors that occur in skipping bytes
      * in the underlying file
      */
-    public long skipBytes(long n) throws IOException {
+    public long skipBytes(final long n) throws IOException {
         return inputFile.skipBytes((int)n);
     }
 
@@ -151,7 +151,7 @@ public class FileInputReader implements InputReader {
      * @exception IOException Any IO Errors that occur in seeking the
      * underlying file.
      */
-    public void seek(long pos) throws IOException {
+    public void seek(final long pos) throws IOException {
         inputFile.seek(pos);
     }
 
@@ -187,7 +187,7 @@ public class FileInputReader implements InputReader {
         }
         try {
             if (inputFile != null) inputFile.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         inputFile = null;
@@ -212,7 +212,7 @@ public class FileInputReader implements InputReader {
      * @return the number of bytes read
      * @exception IOException Any IO errors encountered in reading from the file
      */
-    public int read(byte b[], int off, int len) throws IOException {
+    public int read(final byte b[], final int off, final int len) throws IOException {
         return inputFile.read(b, off, len);
     }
 
@@ -225,7 +225,7 @@ public class FileInputReader implements InputReader {
      * @exception IOException Any IO errors encountered in reading from the file
      * @see java.io.RandomAccessFile#read(byte[])
      */
-    public int read(byte b[]) throws IOException {
+    public int read(final byte b[]) throws IOException {
         return inputFile.read(b);
     }
 
@@ -241,10 +241,10 @@ public class FileInputReader implements InputReader {
      * @exception EOFException Encountered an end-of-file while allowless 
      * was <code>false</code>, but NO bytes had been read.
      */
-    public byte[] readBytes(int howmany, boolean allowless) 
+    public byte[] readBytes(final int howmany, final boolean allowless) 
         throws EOFException, FormatException {
 
-        byte foo[] = new byte[howmany];
+        final byte foo[] = new byte[howmany];
         int gotsofar = 0;
         int err = 0;
         try {
@@ -255,7 +255,7 @@ public class FileInputReader implements InputReader {
                     if (allowless) {
                         //return a smaller array, so the caller can tell how much
                         //they really got
-                        byte retval[] = new byte[gotsofar];
+                        final byte retval[] = new byte[gotsofar];
                         System.arraycopy(foo, 0, retval, 0, gotsofar);
                         return retval;
                     } else { //some kind of failure...
@@ -268,7 +268,7 @@ public class FileInputReader implements InputReader {
                 }
                 gotsofar += err;
             }
-        } catch (IOException i) {
+        } catch (final IOException i) {
             throw new FormatException("FileInputReader: readBytes IOException: " + i.getMessage());
         }
         return foo;

@@ -53,10 +53,10 @@ final class BuoyPatternDirector
   //////////////////////////////////////////
 
 
-  public final PatternBuilderType createBuilder(MWC.GenericData.WorldLocation centre,
-                                          String type,
-                                          MWC.GUI.Properties.PropertiesPanel thePanel,
-                                          MWC.GUI.Layers theData)
+  public final PatternBuilderType createBuilder(final MWC.GenericData.WorldLocation centre,
+                                          final String type,
+                                          final MWC.GUI.Properties.PropertiesPanel thePanel,
+                                          final MWC.GUI.Layers theData)
   {
     PatternBuilderType res = null;
     if(type.equals("Field"))
@@ -85,7 +85,7 @@ final class BuoyPatternDirector
 
   public final Object[] getPatterns()
   {
-    Vector<String> res = new Vector<String>(0,1);
+    final Vector<String> res = new Vector<String>(0,1);
     Object[] res2 = new String[]{"d1", "d2"};
     res.addElement("Field");
     res.addElement("Barrier");

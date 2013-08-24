@@ -167,12 +167,12 @@ public class LineShape extends PlainShape implements Editable,
 	// constructor
 	// ////////////////////////////////////////////////
 
-	public LineShape(WorldLocation start, WorldLocation end)
+	public LineShape(final WorldLocation start, final WorldLocation end)
 	{
 		this(start, end, "Line");
 	}
 
-	public LineShape(WorldLocation start, WorldLocation end, String name)
+	public LineShape(final WorldLocation start, final WorldLocation end, final String name)
 	{
 		super(0, 1, name);
 		// store the data
@@ -191,7 +191,7 @@ public class LineShape extends PlainShape implements Editable,
 	// member functions
 	// ////////////////////////////////////////////////
 
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// are we visible?
 		if (!getVisible())
@@ -204,10 +204,10 @@ public class LineShape extends PlainShape implements Editable,
 			dest.setFont(getFont());
 
 		// get the origin
-		Point start = new Point(dest.toScreen(_start));
+		final Point start = new Point(dest.toScreen(_start));
 
 		// get the width and height
-		Point end = new Point(dest.toScreen(_end));
+		final Point end = new Point(dest.toScreen(_end));
 
 		// and now draw it
 		dest.drawLine(start.x, start.y, end.x, end.y);
@@ -216,22 +216,22 @@ public class LineShape extends PlainShape implements Editable,
 		{
 
 			// sort out the direction
-			double direction = _end.bearingFrom(_start) + Math.PI / 2;
+			final double direction = _end.bearingFrom(_start) + Math.PI / 2;
 
 			// and the size
-			double theScale = 1;
+			final double theScale = 1;
 
-			double len = 15d * theScale;
-			double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
+			final double len = 15d * theScale;
+			final double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
 
 			// find the tip of the arrow
-			Point p1 = dest.toScreen(_end);
+			final Point p1 = dest.toScreen(_end);
 
 			// now the back corners
-			Point p2 = new Point(p1);
+			final Point p2 = new Point(p1);
 			p2.translate((int) (len * Math.cos(direction - angle)),
 					(int) (len * Math.sin(direction - angle)));
-			Point p3 = new Point(p1);
+			final Point p3 = new Point(p1);
 			p3.translate((int) (len * Math.cos(direction + angle)),
 					(int) (len * Math.sin(direction + angle)));
 
@@ -245,17 +245,17 @@ public class LineShape extends PlainShape implements Editable,
 		if (isShowAutoCalc())
 		{			
 			calcCentre();
-			Point center = new Point(dest.toScreen(_centre));
+			final Point center = new Point(dest.toScreen(_centre));
 						
 			String myUnits = Trace.getParent().getProperty(
 					MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
 			if (myUnits == null)
 				myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
 			
-			WorldVector wv = _end.subtract(_start);
-			double range = Conversions.convertRange(wv.getRange(), myUnits);
-			double bearing = wv.getBearing();
-			String msg = String.format("%.3f", range) + " " + myUnits + " "
+			final WorldVector wv = _end.subtract(_start);
+			final double range = Conversions.convertRange(wv.getRange(), myUnits);
+			final double bearing = wv.getBearing();
+			final String msg = String.format("%.3f", range) + " " + myUnits + " "
 					+ String.format("%.3f", bearing) + "\u00B0";
 			
 			float rotate = (float) Math.toDegrees(bearing);
@@ -276,7 +276,7 @@ public class LineShape extends PlainShape implements Editable,
 		return _arrowAtEnd;
 	}
 
-	public void setArrowAtEnd(boolean lineAtEnd)
+	public void setArrowAtEnd(final boolean lineAtEnd)
 	{
 		_arrowAtEnd = lineAtEnd;
 	}
@@ -286,7 +286,7 @@ public class LineShape extends PlainShape implements Editable,
 		return _showAutoCalc;
 	}
 
-	public void setShowAutoCalc(boolean showAutoCalc)
+	public void setShowAutoCalc(final boolean showAutoCalc)
 	{
 		_showAutoCalc = showAutoCalc;
 	}
@@ -300,10 +300,10 @@ public class LineShape extends PlainShape implements Editable,
 	 * get the range from the indicated world location - making this abstract
 	 * allows for individual shapes to have 'hit-spots' in various locations.
 	 */
-	public double rangeFrom(WorldLocation point)
+	public double rangeFrom(final WorldLocation point)
 	{
-		double r1 = point.rangeFrom(_start);
-		double r2 = point.rangeFrom(_end);
+		final double r1 = point.rangeFrom(_start);
+		final double r2 = point.rangeFrom(_end);
 		return Math.min(r1, r2);
 	}
 
@@ -344,7 +344,7 @@ public class LineShape extends PlainShape implements Editable,
 	 * @param loc
 	 *          WorldLocation representing the start of the line
 	 */
-	public void setLine_Start(WorldLocation loc)
+	public void setLine_Start(final WorldLocation loc)
 	{
 		_start = loc;
 		calcCentre();
@@ -367,7 +367,7 @@ public class LineShape extends PlainShape implements Editable,
 	 * @param loc
 	 *          WorldLocation representing the end of the line
 	 */
-	public void setLineEnd(WorldLocation loc)
+	public void setLineEnd(final WorldLocation loc)
 	{
 		_end = loc;
 		calcCentre();
@@ -379,7 +379,7 @@ public class LineShape extends PlainShape implements Editable,
 		return super.getColor();
 	}
 
-	public void setLineColor(Color val)
+	public void setLineColor(final Color val)
 	{
 		super.setColor(val);
 	}
@@ -390,7 +390,7 @@ public class LineShape extends PlainShape implements Editable,
 	public class LineInfo extends Editable.EditorType
 	{
 
-		public LineInfo(LineShape data, String theName)
+		public LineInfo(final LineShape data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -399,7 +399,7 @@ public class LineShape extends PlainShape implements Editable,
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("Line_Start", "the start of the line", SPATIAL),
 						prop("LineEnd", "the end of the line", SPATIAL),
@@ -411,7 +411,7 @@ public class LineShape extends PlainShape implements Editable,
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -421,7 +421,7 @@ public class LineShape extends PlainShape implements Editable,
 	// ////////////////////////////////////////////////////
 	// label/anchor support
 	// ///////////////////////////////////////////////////
-	public WorldLocation getAnchor(int location)
+	public WorldLocation getAnchor(final int location)
 	{
 		WorldLocation loc = null;
 
@@ -483,20 +483,20 @@ public class LineShape extends PlainShape implements Editable,
 		return loc;
 	}
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		setLine_Start(getLine_Start().add(vector));
 		setLineEnd(getLineEnd().add(vector));
 	}
 
-	public void shift(WorldLocation feature, WorldVector vector)
+	public void shift(final WorldLocation feature, final WorldVector vector)
 	{
 		// ok, just shift it...
 		feature.addToMe(vector);
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer)
 	{
 
 		// right - the first two points are easy, we just pass the location directly
@@ -512,14 +512,14 @@ public class LineShape extends PlainShape implements Editable,
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public LineTest(String val)
+		public LineTest(final String val)
 		{
 			super(val);
 		}
 
 		public void testMyParams()
 		{
-			WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
+			final WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
 			MWC.GUI.Editable ed = new LineShape(scrap, scrap);
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;

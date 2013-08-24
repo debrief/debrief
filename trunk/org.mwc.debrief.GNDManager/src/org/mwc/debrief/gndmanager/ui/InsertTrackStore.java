@@ -44,7 +44,7 @@ public class InsertTrackStore extends CoreEditorAction
 	 */
 	private final boolean _isTopLevelLayer;
 
-	public InsertTrackStore(boolean isLayer)
+	public InsertTrackStore(final boolean isLayer)
 	{
 		_isTopLevelLayer = isLayer;
 	}
@@ -58,23 +58,23 @@ public class InsertTrackStore extends CoreEditorAction
 	/**
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
-		TrackStoreWrapper res = new TrackStoreWrapper(Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.COUCHDB_LOCATION),
+		final TrackStoreWrapper res = new TrackStoreWrapper(Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.COUCHDB_LOCATION),
 				Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.ES_LOCATION));
 		
 		// TODO: IAN - set the time period to that currently visible
-		IChartBasedEditor editor = getEditor();
+		final IChartBasedEditor editor = getEditor();
 		
 		if(editor instanceof EditorPart)
 		{
 			if(editor instanceof IAdaptable)
 			{
-				IAdaptable ad = (IAdaptable) editor;
-				TimeProvider prov = (TimeProvider) ad.getAdapter(TimeProvider.class);
+				final IAdaptable ad = (IAdaptable) editor;
+				final TimeProvider prov = (TimeProvider) ad.getAdapter(TimeProvider.class);
 				if(prov != null)
 				{
-					TimePeriod thePeriod = prov.getPeriod();
+					final TimePeriod thePeriod = prov.getPeriod();
 					res.filterListTo(thePeriod.getStartDTG(), thePeriod.getEndDTG());
 				}
 			}
@@ -88,7 +88,7 @@ public class InsertTrackStore extends CoreEditorAction
 	 * 
 	 * @param theParent
 	 */
-	public static void init(ToolParent theParent)
+	public static void init(final ToolParent theParent)
 	{
 		_theParent = theParent;
 	}
@@ -99,13 +99,13 @@ public class InsertTrackStore extends CoreEditorAction
 	 * @param theChart
 	 * @return
 	 */
-	protected static WorldLocation getCentre(PlainChart theChart)
+	protected static WorldLocation getCentre(final PlainChart theChart)
 	{
 		// right, what's the area we're looking at
-		WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
+		final WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
 
 		// get centre of area (at zero depth)
-		WorldLocation centre = wa.getCentreAtSurface();
+		final WorldLocation centre = wa.getCentreAtSurface();
 
 		return centre;
 	}
@@ -119,7 +119,7 @@ public class InsertTrackStore extends CoreEditorAction
 		
 		// find out the required time period
 
-		CreateLabelAction res = createAction(theChart);
+		final CreateLabelAction res = createAction(theChart);
 
 		// did we get an action?
 		if (res != null)
@@ -131,7 +131,7 @@ public class InsertTrackStore extends CoreEditorAction
 			if (layer == null)
 			{
 				// try to get the new plottable
-				Plottable pl = res.getNewFeature();
+				final Plottable pl = res.getNewFeature();
 				if (pl instanceof Layer)
 					layer = (Layer) pl;
 				else
@@ -145,20 +145,20 @@ public class InsertTrackStore extends CoreEditorAction
 			}
 
 			// and the data?
-			Layers data = res.getLayers();
+			final Layers data = res.getLayers();
 
 			// ok, now wrap the action
-			DebriefActionWrapper daw = new DebriefActionWrapper(res, data, layer);
+			final DebriefActionWrapper daw = new DebriefActionWrapper(res, data, layer);
 
 			// and add it to our buffer (which will execute it anyway)
 			CorePlugin.run(daw);
 		}
 	}
 
-	protected final CreateLabelAction createAction(PlainChart theChart)
+	protected final CreateLabelAction createAction(final PlainChart theChart)
 	{
 		CreateLabelAction res = null;
-		WorldArea wa = theChart.getDataArea();
+		final WorldArea wa = theChart.getDataArea();
 
 		// see if we have an area defined
 		if (wa != null)
@@ -171,13 +171,13 @@ public class InsertTrackStore extends CoreEditorAction
 				return null;
 
 			// ok - get the object we're going to insert
-			Plottable thePlottable = getPlottable(theChart);
+			final Plottable thePlottable = getPlottable(theChart);
 
 			if (thePlottable != null)
 			{
 
 				// lastly, get the data
-				Layers theData = theChart.getLayers();
+				final Layers theData = theChart.getLayers();
 
 				// aah, and the misc layer, in which we will store the shape
 				Layer theLayer = null;
@@ -213,14 +213,14 @@ public class InsertTrackStore extends CoreEditorAction
 							PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 									.getActivePage().showView(IPageLayout.ID_PROP_SHEET);
 						}
-						catch (PartInitException e)
+						catch (final PartInitException e)
 						{
 							CorePlugin.logError(Status.WARNING,
 									"Failed to open properties view", e);
 						}
 
 						// find the editor
-						IChartBasedEditor editor = getEditor();
+						final IChartBasedEditor editor = getEditor();
 
 						// highlight the editor
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow()

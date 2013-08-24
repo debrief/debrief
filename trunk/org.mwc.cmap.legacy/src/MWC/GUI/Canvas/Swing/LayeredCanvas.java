@@ -35,7 +35,7 @@ public class LayeredCanvas extends javax.swing.JComponent
 
   }
 
-  public void paint(Graphics g)
+  public void paint(final Graphics g)
   {
     super.paint(g);
 
@@ -53,9 +53,9 @@ public class LayeredCanvas extends javax.swing.JComponent
     {
 
 
-      Image i1 = paintThis( 20, 40, Color.green);
-      Image i2 = paintThis( 120, 140, Color.orange);
-      Image i3 = paintThis( 220, 240, Color.cyan);
+      final Image i1 = paintThis( 20, 40, Color.green);
+      final Image i2 = paintThis( 120, 140, Color.orange);
+      final Image i3 = paintThis( 220, 240, Color.cyan);
 
       g.drawImage(i1, 0,0, this);
       g.drawImage(i2, 0,0, this);
@@ -63,7 +63,7 @@ public class LayeredCanvas extends javax.swing.JComponent
     }
   }
 
-  private Image paintThis(int x, int y, Color col)
+  private Image paintThis(final int x, final int y, final Color col)
   {
 //    Image ti = this.createImage(this.getWidth(), this.getHeight());
 //    Graphics2D g2 = (Graphics2D)ti.getGraphics();
@@ -73,8 +73,8 @@ public class LayeredCanvas extends javax.swing.JComponent
 //    Rectangle2D.Double rect = new Rectangle2D.Double(0,0,this.getWidth(), this.getHeight());
 //    g2.fill(rect);
 
-    BufferedImage ti = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-    Graphics2D g2 = ti.createGraphics();
+    final BufferedImage ti = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D g2 = ti.createGraphics();
 
     // paint the background
     paintThis(g2, x, y, col);
@@ -82,18 +82,18 @@ public class LayeredCanvas extends javax.swing.JComponent
     return ti;
   }
 
-  private void paintThis(Graphics g2, int x, int y, Color col)
+  private void paintThis(final Graphics g2, final int x, final int y, final Color col)
   {
     g2.setColor(col);
     g2.fillRect(x, y, 20, 20);
   }
 
 
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
-    LayeredCanvas canvas = new LayeredCanvas();
+    final LayeredCanvas canvas = new LayeredCanvas();
 
-    JFrame jr = new JFrame("test");
+    final JFrame jr = new JFrame("test");
     jr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     jr.setSize(400, 400);
     jr.getContentPane().setLayout(new BorderLayout());

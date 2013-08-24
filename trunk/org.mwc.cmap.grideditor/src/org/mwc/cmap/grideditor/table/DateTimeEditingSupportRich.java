@@ -22,23 +22,23 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 
 	private final GridEditorUndoSupport myUndoSupport;
 
-	public DateTimeEditingSupportRich(TableModel tableModel) {
+	public DateTimeEditingSupportRich(final TableModel tableModel) {
 		super(tableModel.getViewer());
 		myUndoSupport = tableModel.getUndoSupport();
 	}
 
-	public void setTabTraverseTarget(EditableTarget tabTraverseTarget) {
+	public void setTabTraverseTarget(final EditableTarget tabTraverseTarget) {
 		myTabTraverseTarget = tabTraverseTarget;
 	}
 
 	@Override
-	protected boolean canEdit(Object element) {
+	protected boolean canEdit(final Object element) {
 		return element instanceof TimeStampedDataItem;
 	}
 
 	@Override
-	protected CellEditor getCellEditor(Object element) {
-		DateTimeCellEditor cellEditor = new DateTimeCellEditor(getCellEditorParent());
+	protected CellEditor getCellEditor(final Object element) {
+		final DateTimeCellEditor cellEditor = new DateTimeCellEditor(getCellEditorParent());
 		if (myTabTraverseTarget != null) {
 			cellEditor.getTimeUI().addTraverseListener(new CellEditorTraverseHandler(myTabTraverseTarget, element));
 		}
@@ -46,23 +46,23 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 	}
 
 	@Override
-	protected Object getValue(Object element) {
-		TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
-		Date date = dataItem.getDTG().getDate();
+	protected Object getValue(final Object element) {
+		final TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
+		final Date date = dataItem.getDTG().getDate();
 		return date;
 	}
 
 	@Override
-	protected void setValue(Object element, Object value) {
-		TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
-		Date valueImpl = (Date) value;
+	protected void setValue(final Object element, final Object value) {
+		final TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
+		final Date valueImpl = (Date) value;
 		if (valueImpl != null && !valueImpl.equals(dataItem.getDTG().getDate())) {
-			GriddableSeries series = (GriddableSeries) getViewer().getInput();
-			OperationEnvironment environment = new OperationEnvironment(myUndoSupport.getUndoContext(), series, dataItem);
-			SetTimeStampOperation update = new SetTimeStampOperation(environment, new HiResDate(valueImpl));
+			final GriddableSeries series = (GriddableSeries) getViewer().getInput();
+			final OperationEnvironment environment = new OperationEnvironment(myUndoSupport.getUndoContext(), series, dataItem);
+			final SetTimeStampOperation update = new SetTimeStampOperation(environment, new HiResDate(valueImpl));
 			try {
 				myUndoSupport.getOperationHistory().execute(update, null, null);
-			} catch (ExecutionException e) {
+			} catch (final ExecutionException e) {
 				throw new RuntimeException("[Table]Can't set the timestamp of :" + valueImpl + //
 						" for item " + dataItem, e);
 			}
@@ -70,7 +70,7 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 	}
 
 	protected final Composite getCellEditorParent() {
-		TableViewer viewer = (TableViewer) getViewer();
+		final TableViewer viewer = (TableViewer) getViewer();
 		return viewer.getTable();
 	}
 

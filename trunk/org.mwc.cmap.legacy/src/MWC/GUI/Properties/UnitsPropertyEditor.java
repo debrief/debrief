@@ -33,7 +33,7 @@ public class UnitsPropertyEditor extends PropertyEditorSupport
    */
   public String[] getTags()
   {
-    String tags[] = {YDS_UNITS, KYD_UNITS, NM_UNITS, KM_UNITS, METRES_UNITS};
+    final String tags[] = {YDS_UNITS, KYD_UNITS, NM_UNITS, KM_UNITS, METRES_UNITS};
     return tags;
   }
 
@@ -42,16 +42,16 @@ public class UnitsPropertyEditor extends PropertyEditorSupport
     return _myUnits;
   }
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     _myUnits = val;
   }

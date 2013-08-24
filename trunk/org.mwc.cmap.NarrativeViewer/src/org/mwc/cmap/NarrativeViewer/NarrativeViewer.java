@@ -28,7 +28,7 @@ public class NarrativeViewer extends KTable
 	final NarrativeViewerModel myModel;
 	private NarrativeViewerActions myActions;
 
-	public NarrativeViewer(Composite parent, IPreferenceStore preferenceStore)
+	public NarrativeViewer(final Composite parent, final IPreferenceStore preferenceStore)
 	{
 		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
@@ -36,7 +36,7 @@ public class NarrativeViewer extends KTable
 				new ColumnSizeCalculator()
 				{
 					@SuppressWarnings("synthetic-access")
-					public int getColumnWidth(int col)
+					public int getColumnWidth(final int col)
 					{
 						return getColumnRight(col) - getColumnLeft(col);
 					}
@@ -44,7 +44,7 @@ public class NarrativeViewer extends KTable
 
 		myModel.addColumnVisibilityListener(new Column.VisibilityListener()
 		{
-			public void columnVisibilityChanged(Column column, boolean actualIsVisible)
+			public void columnVisibilityChanged(final Column column, final boolean actualIsVisible)
 			{
 				refresh();
 			}
@@ -53,7 +53,7 @@ public class NarrativeViewer extends KTable
 
 		addControlListener(new ControlAdapter()
 		{
-			public void controlResized(ControlEvent e)
+			public void controlResized(final ControlEvent e)
 			{
 				onColumnsResized(false);
 			}
@@ -61,7 +61,7 @@ public class NarrativeViewer extends KTable
 
 		addCellResizeListener(new KTableCellResizeAdapter()
 		{
-			public void columnResized(int col, int newWidth)
+			public void columnResized(final int col, final int newWidth)
 			{
 				onColumnsResized(false);
 			}
@@ -69,11 +69,11 @@ public class NarrativeViewer extends KTable
 
 		addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
 		{
-			public void fixedCellDoubleClicked(int col, int row, int statemask)
+			public void fixedCellDoubleClicked(final int col, final int row, final int statemask)
 			{
-				Column column = myModel.getVisibleColumn(col);
+				final Column column = myModel.getVisibleColumn(col);
 				showFilterDialog(column);
-				ColumnFilter filter = column.getFilter();
+				final ColumnFilter filter = column.getFilter();
 				if (filter != null)
 				{
 
@@ -96,20 +96,20 @@ public class NarrativeViewer extends KTable
 		return (NarrativeViewerModel) super.getModel();
 	}
 
-	public void showFilterDialog(Column column)
+	public void showFilterDialog(final Column column)
 	{
 		if (!myModel.hasInput())
 		{
 			return;
 		}
 
-		ColumnFilter filter = column.getFilter();
+		final ColumnFilter filter = column.getFilter();
 		if (filter == null)
 		{
 			return;
 		}
 
-		FilterDialog dialog = new FilterDialog(getShell(), myModel.getInput(),
+		final FilterDialog dialog = new FilterDialog(getShell(), myModel.getInput(),
 				column);
 
 		if (Dialog.OK == dialog.open())
@@ -119,20 +119,20 @@ public class NarrativeViewer extends KTable
 		}
 	}
 
-	void onColumnsResized(boolean force)
+	void onColumnsResized(final boolean force)
 	{
-		GC gc = new GC(this);
+		final GC gc = new GC(this);
 		myModel.onColumnsResized(gc, force);
 		gc.dispose();
 	}
 
-	public void setInput(IRollingNarrativeProvider entryWrapper)
+	public void setInput(final IRollingNarrativeProvider entryWrapper)
 	{
 		myModel.setInput(entryWrapper);
 		refresh();
 	}
 
-	public void setTimeFormatter(TimeFormatter timeFormatter)
+	public void setTimeFormatter(final TimeFormatter timeFormatter)
 	{
 		myModel.setTimeFormatter(timeFormatter);
 		redraw();
@@ -149,7 +149,7 @@ public class NarrativeViewer extends KTable
 		return myModel.isWrappingEntries();
 	}
 
-	public void setWrappingEntries(boolean shouldWrap)
+	public void setWrappingEntries(final boolean shouldWrap)
 	{
 		if (myModel.setWrappingEntries(shouldWrap))
 		{
@@ -163,23 +163,23 @@ public class NarrativeViewer extends KTable
 	 * @param dtg
 	 *          the selected dtg
 	 */
-	public void setDTG(HiResDate dtg)
+	public void setDTG(final HiResDate dtg)
 	{
 		// find the table entry immediately after or on this DTG
 		int theIndex = -1;
 		int thisIndex = 0;
 
 		// retrieve the list of visible rows
-		LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+		final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
 
 		// step through them
-		for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
+		for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
 				.hasNext();)
 		{
-			NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+			final NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
 
 			// get the date
-			HiResDate dt = narrativeEntry.getDTG();
+			final HiResDate dt = narrativeEntry.getDTG();
 
 			// is this what we're looking for?
 			if (dt.greaterThanOrEqualTo(dtg))
@@ -197,7 +197,7 @@ public class NarrativeViewer extends KTable
 		if (theIndex > -1)
 		{
 			// just check it's not already selected
-			int[] currentRows = super.getRowSelection();
+			final int[] currentRows = super.getRowSelection();
 			if (currentRows.length == 1)
 			{
 				// don't bother, we've already selected it
@@ -223,20 +223,20 @@ public class NarrativeViewer extends KTable
 	 * @param dtg
 	 *          the selected dtg
 	 */
-	public void setEntry(NarrativeEntry entry)
+	public void setEntry(final NarrativeEntry entry)
 	{
 		// find the table entry immediately after or on this DTG
 		int theIndex = -1;
 		int thisIndex = 0;
 
 		// retrieve the list of visible rows
-		LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+		final LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
 
 		// step through them
-		for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
+		for (final Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
 				.hasNext();)
 		{
-			NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+			final NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
 
 			if (narrativeEntry == entry)
 			{

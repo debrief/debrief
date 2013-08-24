@@ -78,10 +78,10 @@ final class ImportLabel implements PlainLineImporter
 
   /** read in this string and return a Label
    */
-  public final Object readThisLine(String theLine){
+  public final Object readThisLine(final String theLine){
 
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
     WorldLocation theLoc;
@@ -106,12 +106,12 @@ final class ImportLabel implements PlainLineImporter
      * a space between the hemisphere character and a 3-digit
      * latitude value - so BE CAREFUL
      */
-    String vDiff = st.nextToken();
+    final String vDiff = st.nextToken();
     if(vDiff.length() > 3)
     {
       // hmm, they are combined
       latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
+      final String secondPart = vDiff.substring(1, vDiff.length());
       longDeg  = Double.valueOf(secondPart);
     }
     else
@@ -133,12 +133,12 @@ final class ImportLabel implements PlainLineImporter
                                0);
 
     // create the fix ready to store it
-    LabelWrapper lw = new LabelWrapper(theText,
+    final LabelWrapper lw = new LabelWrapper(theText,
                                        theLoc,
                                        ImportReplay.replayColorFor(theSymbology));
     
     // also get the symbol type
-    String symType = ImportReplay.replayTrackSymbolFor(theSymbology);
+    final String symType = ImportReplay.replayTrackSymbolFor(theSymbology);
     lw.setSymbolType(symType);
 
     return lw;
@@ -154,9 +154,9 @@ final class ImportLabel implements PlainLineImporter
 	 * @return the shape in String form
 	 * @param shape the Shape we are exporting
 	 */
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
-		LabelWrapper theLabel = (LabelWrapper) theWrapper;
+		final LabelWrapper theLabel = (LabelWrapper) theWrapper;
 
     String line=null;
 
@@ -177,7 +177,7 @@ final class ImportLabel implements PlainLineImporter
 	 * @param val the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 

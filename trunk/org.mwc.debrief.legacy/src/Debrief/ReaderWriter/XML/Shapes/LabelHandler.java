@@ -48,14 +48,14 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
@@ -63,49 +63,49 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     addHandler(new FontHandler()
     {
-      public void setFont(java.awt.Font font)
+      public void setFont(final java.awt.Font font)
       {
         _font = font;
       }
     });
     addHandler(new LocationHandler("centre")
     {
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _centre = res;
       }
     });
     addAttributeHandler(new HandleAttribute("LabelLocation")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _labelLocation = value;
       }
     });
     addAttributeHandler(new HandleAttribute("Symbol")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _symbol = value;
       }
     });
     addAttributeHandler(new HandleAttribute("Label")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _label = fromXML(value);
       }
     });
     addAttributeHandler(new HandleAttribute("Scale")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _scale = value;
       }
     });
     addHandler(new TimeRangeHandler()
     {
-      public void setTimeRange(HiResDate start, HiResDate end)
+      public void setTimeRange(final HiResDate start, final HiResDate end)
       {
         _startDTG = start;
         _endDTG = end;
@@ -113,14 +113,14 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     });
     addAttributeHandler(new HandleBooleanAttribute("SymbolVisible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _symbolVisible = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("LabelVisible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _labelVisible = value;
       }
@@ -132,7 +132,7 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   {
 
     // create a Label from this data
-    Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper(_label, _centre, _theColor);
+    final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper(_label, _centre, _theColor);
     lw.setTimeStart(_startDTG);
     lw.setTime_End(_endDTG);
     lw.setVisible(_isVisible);
@@ -157,7 +157,7 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     if(_scale != null)
     {
       ss_editor.setAsText(_scale);
-      Double val = (Double) ss_editor.getValue();
+      final Double val = (Double) ss_editor.getValue();
       lw.setSymbolSize(val);
     }
 
@@ -175,12 +175,12 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
 
-  public final void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public final void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
 
-    Debrief.Wrappers.LabelWrapper lw = (Debrief.Wrappers.LabelWrapper) plottable;
-    Element label = doc.createElement("textlabel");
+    final Debrief.Wrappers.LabelWrapper lw = (Debrief.Wrappers.LabelWrapper) plottable;
+    final Element label = doc.createElement("textlabel");
 
     // do the visibility
     label.setAttribute("Visible", writeThis(lw.getVisible()));
@@ -193,7 +193,7 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     label.setAttribute("Scale", ss_editor.getAsText());
 
     lp.setValue(lw.getLabelLocation());
-    String loc = lp.getAsText();
+    final String loc = lp.getAsText();
     label.setAttribute("LabelLocation", loc);
 
     // do the colour
@@ -206,7 +206,7 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     }
 
     // and the font
-    java.awt.Font theFont = lw.getFont();
+    final java.awt.Font theFont = lw.getFont();
     if(lw != null)
     {
       FontHandler.exportFont(theFont, label, doc);
@@ -236,7 +236,7 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
         String other = LabelHandler.fromXML(start);
        assertEquals("strings match on way to XML","here\nand there\nalpha" ,other);
 
-        String andBack = LabelHandler.toXML(other);
+        final String andBack = LabelHandler.toXML(other);
 
        assertEquals("strings match on way back to text",start , andBack);
 
@@ -263,9 +263,9 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
 
 
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
-    testMe tm = new testMe("here");
+    final testMe tm = new testMe("here");
     tm.testConversion();
 
   }

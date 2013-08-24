@@ -26,7 +26,7 @@ public class DirectorySelectorWizardPage extends WizardPage
 
 	private DirectoryFieldEditor _fileFieldEditor;
 
-	private String _helpContext;
+	private final String _helpContext;
 
 	public static final String FILE_SUFFIX = "txt";
 
@@ -35,8 +35,8 @@ public class DirectorySelectorWizardPage extends WizardPage
 	 * 
 	 * @param pageName
 	 */
-	public DirectorySelectorWizardPage(String PAGE_ID, String title,
-			String description, String pluginName, String iconPath, String helpContext)
+	public DirectorySelectorWizardPage(final String PAGE_ID, final String title,
+			final String description, final String pluginName, final String iconPath, final String helpContext)
 	{
 		super(PAGE_ID);
 		setTitle(title);
@@ -49,7 +49,7 @@ public class DirectorySelectorWizardPage extends WizardPage
 	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
-	public void createControl(Composite parent)
+	public void createControl(final Composite parent)
 	{
 
 		if (_helpContext != null)
@@ -64,13 +64,13 @@ public class DirectorySelectorWizardPage extends WizardPage
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 
-		String filenameKey = super.getName();
+		final String filenameKey = super.getName();
 
-		String title = "Output directory:";
+		final String title = "Output directory:";
 		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
 		{
-			protected void fireValueChanged(String property, Object oldValue,
-					Object newValue)
+			protected void fireValueChanged(final String property, final Object oldValue,
+					final Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 
@@ -90,7 +90,7 @@ public class DirectorySelectorWizardPage extends WizardPage
 		// store the current editor value
 		_filePath = _fileFieldEditor.getStringValue();
 
-		GridLayout urlLayout = (GridLayout) container.getLayout();
+		final GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
 
 		container.layout();
@@ -118,7 +118,7 @@ public class DirectorySelectorWizardPage extends WizardPage
 		}
 
 		// just check it's a directory, not a file
-		File testFile = new File(targetDir);
+		final File testFile = new File(targetDir);
 		if (!testFile.isDirectory())
 		{
 			updateStatus("Target must be a directory, not a file");
@@ -136,7 +136,7 @@ public class DirectorySelectorWizardPage extends WizardPage
 		return _filePath;
 	}
 
-	private void updateStatus(String message)
+	private void updateStatus(final String message)
 	{
 		setErrorMessage(message);
 		if (message == null)

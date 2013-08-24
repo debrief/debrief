@@ -39,7 +39,7 @@ public class InvalidCharException extends FormatException {
      * 
      * @param val the character encountered
      */
-    public InvalidCharException(char val) {
+    public InvalidCharException(final char val) {
         super();
         c = val;
     }
@@ -50,7 +50,7 @@ public class InvalidCharException extends FormatException {
      * @param s the detail message
      * @param val the character encountered
      */
-    public InvalidCharException(String s, char val) {
+    public InvalidCharException(final String s, final char val) {
         super(s);
         c = val;
     }

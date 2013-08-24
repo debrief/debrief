@@ -24,18 +24,18 @@ load and store these mru items for persistence between client sessions.
 */
 public class MruMenuManager implements ActionListener {
   
-  private int startIndex;
-  private JMenu mruMenu;
-  private int mruSize;
-  private List<JMenuItem> mruItems;
-  private List<ActionListener> mruListeners;
-  private ApplicationProperties properties;
-  private String propertyPrefix;
+  private final int startIndex;
+  private final JMenu mruMenu;
+  private final int mruSize;
+  private final List<JMenuItem> mruItems;
+  private final List<ActionListener> mruListeners;
+  private final ApplicationProperties properties;
+  private final String propertyPrefix;
 
   /**
   Constructs a new MruMenuManager with no persistence capability
   */
-  public MruMenuManager(JMenu mruMenu, int startMenuIndex, int mruSize) {
+  public MruMenuManager(final JMenu mruMenu, final int startMenuIndex, final int mruSize) {
     this(mruMenu, startMenuIndex, mruSize, null, null);
   } // constructor
 
@@ -67,8 +67,8 @@ public class MruMenuManager implements ActionListener {
                     Then the propertyPrefix would be
                     "<code>com.simscomputing.testbed.mru</code>".
   */
-  public MruMenuManager(JMenu mruMenu, int startMenuIndex, int mruSize,
-                        ApplicationProperties appProperties, String propertyPrefix) {
+  public MruMenuManager(final JMenu mruMenu, final int startMenuIndex, final int mruSize,
+                        final ApplicationProperties appProperties, final String propertyPrefix) {
     this.mruMenu = mruMenu;
     startIndex = startMenuIndex;
     this.mruSize = mruSize;
@@ -90,7 +90,7 @@ public class MruMenuManager implements ActionListener {
 
   @param itemToAdd - the text of the JMenuItem to add.
   */
-  public void addMruItem(String itemToAdd) {
+  public void addMruItem(final String itemToAdd) {
     addMruItem(itemToAdd, true);
   }
 
@@ -108,16 +108,16 @@ public class MruMenuManager implements ActionListener {
   @param refreshImmediately - whether or not to refesh the JMenu as
                               part of this method.
   */
-  public void addMruItem(String itemToAdd, boolean refreshImmediately) {
-    Iterator<JMenuItem> it = mruItems.iterator();
+  public void addMruItem(final String itemToAdd, final boolean refreshImmediately) {
+    final Iterator<JMenuItem> it = mruItems.iterator();
     while (it.hasNext()) {
-      JMenuItem menuItem = (JMenuItem)it.next();
+      final JMenuItem menuItem = (JMenuItem)it.next();
       if (menuItem.getText().equals(itemToAdd)) {
         return;
       } // if
     } // while
-    int oldSize = mruItems.size();
-    JMenuItem newItem = new JMenuItem(itemToAdd);
+    final int oldSize = mruItems.size();
+    final JMenuItem newItem = new JMenuItem(itemToAdd);
     newItem.addActionListener(this);
     if (mruItems.size() == 0) {
       mruItems.add(newItem);
@@ -144,26 +144,26 @@ public class MruMenuManager implements ActionListener {
   are received from mru JMenuItems, all ActionListeners in
   this list will be notified.
   */
-  public void addActionListener(ActionListener listener) {
+  public void addActionListener(final ActionListener listener) {
     mruListeners.add(listener);
   }
 
   /**
   Removes the specified ActionListener from the list.
   */
-  public void removeActionListener(ActionListener listener) {
+  public void removeActionListener(final ActionListener listener) {
     mruListeners.remove(listener);
   }
 
   // Resets the JMenu to whatever is now in the mruItems list.
-  private void resetMenu(int oldSize) {
+  private void resetMenu(final int oldSize) {
     // first, remove all items from the JMenu
     for (int i=startIndex; i < (startIndex + oldSize); i++) {
       mruMenu.remove(startIndex);
     } // for
     // Now add all current items back in
     for (int i=0; i < mruItems.size(); i++) {
-      JMenuItem item = (JMenuItem)mruItems.get(i);
+      final JMenuItem item = (JMenuItem)mruItems.get(i);
       mruMenu.insert(item, startIndex + i);
     } // for
   } // resetMenu
@@ -180,17 +180,17 @@ public class MruMenuManager implements ActionListener {
   public void storeMruItems() {
     if (properties == null) return;
     // First get rid of all current mru items
-    Map<String, String> currentItemMap = properties.getPropertiesLike(propertyPrefix);
-    Iterator<String> keyIt = currentItemMap.keySet().iterator();
+    final Map<String, String> currentItemMap = properties.getPropertiesLike(propertyPrefix);
+    final Iterator<String> keyIt = currentItemMap.keySet().iterator();
     while (keyIt.hasNext()) {
       properties.removeProperty((String)keyIt.next());
     } // while
 
     // Now add all items in
     for (int i=0; i < mruItems.size(); i++) {
-      JMenuItem menuItem = (JMenuItem)mruItems.get(i);
-      String item = menuItem.getText();
-      String propertyName = propertyPrefix + "." + new Integer(i).toString();
+      final JMenuItem menuItem = (JMenuItem)mruItems.get(i);
+      final String item = menuItem.getText();
+      final String propertyName = propertyPrefix + "." + new Integer(i).toString();
       properties.setProperty(propertyName, item);
     } // for
   } // storeMruItems
@@ -208,7 +208,7 @@ public class MruMenuManager implements ActionListener {
      */
     for(int i=mruSize;i>= 0;i--)
     {
-      String thisVal = properties.getProperty(propertyPrefix + "." + i);
+      final String thisVal = properties.getProperty(propertyPrefix + "." + i);
       if(thisVal != null)
       {
         // and add it
@@ -223,10 +223,10 @@ public class MruMenuManager implements ActionListener {
   will catch events from all mru items it creates and subsequently
   broadcast them to all ActionListeners attached to it.
   */
-  public void actionPerformed(ActionEvent e) {
-    Iterator<ActionListener> listenerIt = mruListeners.iterator();
+  public void actionPerformed(final ActionEvent e) {
+    final Iterator<ActionListener> listenerIt = mruListeners.iterator();
     while (listenerIt.hasNext()) {
-      ActionListener listener = (ActionListener)listenerIt.next();
+      final ActionListener listener = (ActionListener)listenerIt.next();
       listener.actionPerformed(e);
     } // while
   } // mruMenuItemSelected

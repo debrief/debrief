@@ -12,7 +12,7 @@ import MWC.GUI.Editable;
 public class ASSETImageHelper implements ViewLabelImageHelper
 {
 
-	public ImageDescriptor getImageFor(Editable subject)
+	public ImageDescriptor getImageFor(final Editable subject)
 	{
 		final ImageDescriptor res;
 		if ((subject instanceof SensorType) || (subject instanceof SensorsPlottable))
@@ -29,9 +29,9 @@ public class ASSETImageHelper implements ViewLabelImageHelper
 		}
 		else if (subject instanceof ScenarioParticipantWrapper)
 		{
-			ScenarioParticipantWrapper sw = (ScenarioParticipantWrapper) subject;
-			NetworkParticipant part = sw.getParticipant();
-			String force = part.getCategory().getForce();
+			final ScenarioParticipantWrapper sw = (ScenarioParticipantWrapper) subject;
+			final NetworkParticipant part = sw.getParticipant();
+			final String force = part.getCategory().getForce();
 			if(force == Force.RED)
 				res = ASSETPlugin.getImageDescriptor("icons/flag_red.png");
 			else if(force == Force.GREEN)

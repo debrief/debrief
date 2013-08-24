@@ -15,7 +15,7 @@ final public class SelectionHelper implements ISelectionProvider
 {
 	private Vector<ISelectionChangedListener> _selectionListeners;
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	public void addSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
 			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
@@ -31,22 +31,22 @@ final public class SelectionHelper implements ISelectionProvider
 	}
 
 	public void removeSelectionChangedListener(
-			ISelectionChangedListener listener)
+			final ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
 	}
 
-	public void setSelection(ISelection selection)
+	public void setSelection(final ISelection selection)
 	{
 	}
 
-	public void fireNewSelection(ISelection data)
+	public void fireNewSelection(final ISelection data)
 	{
-		SelectionChangedEvent sEvent = new SelectionChangedEvent(this, data);
-		for (Iterator<ISelectionChangedListener> stepper = _selectionListeners
+		final SelectionChangedEvent sEvent = new SelectionChangedEvent(this, data);
+		for (final Iterator<ISelectionChangedListener> stepper = _selectionListeners
 				.iterator(); stepper.hasNext();)
 		{
-			ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+			final ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
 					.next();
 			if (thisL != null)
 			{

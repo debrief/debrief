@@ -35,9 +35,9 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 	/**
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
-		String chartLib = CorePlugin.getToolParent().getProperty(
+		final String chartLib = CorePlugin.getToolParent().getProperty(
 				ChartPrefsPage.PreferenceConstants.CHART_FOLDER);
 
 		// has it been set?
@@ -50,9 +50,9 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 			return null;
 		}
 
-		Vector<File> matches = new Vector<File>();
+		final Vector<File> matches = new Vector<File>();
 
-		File parent = new File(chartLib);
+		final File parent = new File(chartLib);
 
 		// is it a real directory
 		if (!parent.exists())
@@ -64,14 +64,14 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 			return null;
 		}
 
-		File[] list = parent.listFiles();
+		final File[] list = parent.listFiles();
 		findMatches(list, matches);
 
 		Plottable res = null;
 		if (matches.size() > 0)
 		{
 			// ok, let the user choose which one
-			ListDialog dl = new ListDialog(Display.getCurrent().getActiveShell());
+			final ListDialog dl = new ListDialog(Display.getCurrent().getActiveShell());
 			dl.setLabelProvider(new FileLabelProvider());
 			dl.setContentProvider(new ArrayContentProvider());
 			dl.setInput(matches.toArray());
@@ -81,12 +81,12 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 			if (dl.getReturnCode() == Window.OK)
 			{
 				// ok, go for it.
-				Object[] selection = dl.getResult();
+				final Object[] selection = dl.getResult();
 				if (selection != null)
 				{
 					if (selection.length > 0)
 					{
-						File sel = (File) dl.getResult()[0];
+						final File sel = (File) dl.getResult()[0];
 						res = ShapeFileLayer.read(sel.getPath());
 					}
 				}
@@ -101,23 +101,23 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 	{
 
 		@Override
-		public String getText(Object element)
+		public String getText(final Object element)
 		{
-			File thisF = (File) element;
+			final File thisF = (File) element;
 			return thisF.getParentFile().getName();
 		}
 
 	}
 
-	private void findMatches(final File[] list, Vector<File> matches)
+	private void findMatches(final File[] list, final Vector<File> matches)
 	{
 		// ok, go through them
 		for (int i = 0; i < list.length; i++)
 		{
-			File file = list[i];
+			final File file = list[i];
 			if (file.isDirectory())
 			{
-				File[] thisList = file.listFiles();
+				final File[] thisList = file.listFiles();
 				findMatches(thisList, matches);
 			}
 			else

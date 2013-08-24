@@ -22,7 +22,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
   final Debrief.GUI.Tote.AnalysisTote _myTote;
   private final MWC.GUI.Layers _theData;
 
-  public ToteHandler(Debrief.GUI.Tote.AnalysisTote theTote, MWC.GUI.Layers theData)
+  public ToteHandler(final Debrief.GUI.Tote.AnalysisTote theTote, final MWC.GUI.Layers theData)
   {
     // inform our parent what type of class we are
     super("tote");
@@ -36,9 +36,9 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
     addHandler(new PrimarySecondaryHandler("primary")
     {
-      public void setTrack(String name)
+      public void setTrack(final String name)
       {
-        MWC.GenericData.WatchableList wa = getTrack(name);
+        final MWC.GenericData.WatchableList wa = getTrack(name);
         if (wa != null)
         {
           if (_myTote != null)
@@ -52,9 +52,9 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
     addHandler(new PrimarySecondaryHandler("secondary")
     {
-      public void setTrack(String name)
+      public void setTrack(final String name)
       {
-        MWC.GenericData.WatchableList wa = getTrack(name);
+        final MWC.GenericData.WatchableList wa = getTrack(name);
         if (wa != null)
         {
           if (_myTote != null)
@@ -68,7 +68,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
   }
 
-  MWC.GenericData.WatchableList getTrack(String name)
+  MWC.GenericData.WatchableList getTrack(final String name)
   {
     MWC.GenericData.WatchableList res = null;
 
@@ -80,16 +80,16 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
       // no, this isn't a top level layer, maybe it's an element
 
       // find the nearest editable item
-      int num = _theData.size();
+      final int num = _theData.size();
       for (int i = 0; i < num; i++)
       {
-        MWC.GUI.Layer thisL = _theData.elementAt(i);
+        final MWC.GUI.Layer thisL = _theData.elementAt(i);
         // go through this layer
-        java.util.Enumeration<Editable> iter = thisL.elements();
+        final java.util.Enumeration<Editable> iter = thisL.elements();
         while (iter.hasMoreElements())
         {
-          MWC.GUI.Plottable p = (MWC.GUI.Plottable) iter.nextElement();
-          String nm = p.getName();
+          final MWC.GUI.Plottable p = (MWC.GUI.Plottable) iter.nextElement();
+          final String nm = p.getName();
           if (nm.equals(name))
           {
             ly = p;
@@ -108,12 +108,12 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     return res;
   }
 
-  public static void exportTote(Debrief.GUI.Frames.Session session, org.w3c.dom.Element parent,
-                                org.w3c.dom.Document doc)
+  public static void exportTote(final Debrief.GUI.Frames.Session session, final org.w3c.dom.Element parent,
+                                final org.w3c.dom.Document doc)
   {
     // create the element to put it in
-    org.w3c.dom.Element tote = doc.createElement("tote");
-    Debrief.GUI.Views.PlainView pv = session.getCurrentView();
+    final org.w3c.dom.Element tote = doc.createElement("tote");
+    final Debrief.GUI.Views.PlainView pv = session.getCurrentView();
     Debrief.GUI.Views.AnalysisView av = null;
     if (pv instanceof Debrief.GUI.Views.AnalysisView)
     {
@@ -124,17 +124,17 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
       return;
 
     // get the tote itself
-    Debrief.GUI.Tote.AnalysisTote _theTote = av.getTote();
+    final Debrief.GUI.Tote.AnalysisTote _theTote = av.getTote();
 
 
     // now output the parts of the tote
     // find the primary
-    MWC.GenericData.WatchableList primary = _theTote.getPrimary();
-    Vector<WatchableList> secondaries = _theTote.getSecondary();
+    final MWC.GenericData.WatchableList primary = _theTote.getPrimary();
+    final Vector<WatchableList> secondaries = _theTote.getSecondary();
 
     if (primary != null)
     {
-      org.w3c.dom.Element pri = doc.createElement("primary");
+      final org.w3c.dom.Element pri = doc.createElement("primary");
       pri.setAttribute("Name", primary.getName());
       tote.appendChild(pri);
     }
@@ -143,11 +143,11 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     {
       if (secondaries.size() > 0)
       {
-        java.util.Enumeration<WatchableList> iter = secondaries.elements();
+        final java.util.Enumeration<WatchableList> iter = secondaries.elements();
         while (iter.hasMoreElements())
         {
-          MWC.GenericData.WatchableList was = iter.nextElement();
-          org.w3c.dom.Element sec = doc.createElement("secondary");
+          final MWC.GenericData.WatchableList was = iter.nextElement();
+          final org.w3c.dom.Element sec = doc.createElement("secondary");
           sec.setAttribute("Name", was.getName());
           tote.appendChild(sec);
         }

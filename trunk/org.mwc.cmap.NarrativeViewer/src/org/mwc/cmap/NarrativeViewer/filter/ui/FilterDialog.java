@@ -41,8 +41,8 @@ public class FilterDialog extends Dialog
     private List myItemsToSelectList;
     private List mySelectedItemsList;
 
-    public FilterDialog(Shell parent, IRollingNarrativeProvider dataSource,
-            Column column)
+    public FilterDialog(final Shell parent, final IRollingNarrativeProvider dataSource,
+            final Column column)
     {
         super(parent);
         myCaption = "Filter by: " + column.getColumnName();
@@ -54,10 +54,10 @@ public class FilterDialog extends Dialog
         // check we have some data
         if (dataSource != null)
         {
-            for (NarrativeEntry entry : dataSource
+            for (final NarrativeEntry entry : dataSource
                     .getNarrativeHistory(new String[] {}))
             {
-                String nextValue = myFilter.getFilterValue(entry);
+                final String nextValue = myFilter.getFilterValue(entry);
                 // check that we have a value for this entry
                 if (nextValue != null)
                 {
@@ -71,16 +71,16 @@ public class FilterDialog extends Dialog
     }
 
     @Override
-    protected Control createContents(Composite parent)
+    protected Control createContents(final Composite parent)
     {
         getShell().setText(myCaption);
         return super.createContents(parent);
     }
 
     @Override
-    protected Control createDialogArea(Composite parent)
+    protected Control createDialogArea(final Composite parent)
     {
-        Composite dialogArea1 = (Composite) super.createDialogArea(parent);
+        final Composite dialogArea1 = (Composite) super.createDialogArea(parent);
         dialogArea1.setLayout(new GridLayout(3, false));
         
         Label lab1 = new Label(dialogArea1, SWT.NONE);
@@ -92,7 +92,7 @@ public class FilterDialog extends Dialog
 
         myItemsToSelectList = createItemsList(dialogArea1, myItemsToSelect);
 
-        Composite moveButtonsBar = new Composite(dialogArea1, SWT.NONE);
+        final Composite moveButtonsBar = new Composite(dialogArea1, SWT.NONE);
         moveButtonsBar.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER,
                 false, false));
         moveButtonsBar.setLayout(new GridLayout(1, true));
@@ -100,7 +100,7 @@ public class FilterDialog extends Dialog
         createMoveButton(moveButtonsBar, ">", new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(SelectionEvent e)
+            public void widgetSelected(final SelectionEvent e)
             {
                 addOne();
             }
@@ -108,7 +108,7 @@ public class FilterDialog extends Dialog
         createMoveButton(moveButtonsBar, "<", new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(SelectionEvent e)
+            public void widgetSelected(final SelectionEvent e)
             {
                 removeOne();
             }
@@ -116,7 +116,7 @@ public class FilterDialog extends Dialog
         createMoveButton(moveButtonsBar, ">>", new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(SelectionEvent e)
+            public void widgetSelected(final SelectionEvent e)
             {
                 addAll();
             }
@@ -124,7 +124,7 @@ public class FilterDialog extends Dialog
         createMoveButton(moveButtonsBar, "<<", new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(SelectionEvent e)
+            public void widgetSelected(final SelectionEvent e)
             {
                 removeAll();
             }
@@ -134,7 +134,7 @@ public class FilterDialog extends Dialog
         
         // add double-click jumping for the lists
         myItemsToSelectList.addMouseListener(new MouseAdapter(){
-            public void mouseDoubleClick(MouseEvent e)
+            public void mouseDoubleClick(final MouseEvent e)
             {
                 super.mouseDoubleClick(e);
                 // and handle it
@@ -142,7 +142,7 @@ public class FilterDialog extends Dialog
             }
         });
         mySelectedItemsList.addMouseListener(new MouseAdapter(){
-            public void mouseDoubleClick(MouseEvent e)
+            public void mouseDoubleClick(final MouseEvent e)
             {
                 super.mouseDoubleClick(e);
                 // and handle it
@@ -165,18 +165,18 @@ public class FilterDialog extends Dialog
                 myItemsToSelectList);
     }
 
-    private void moveOne(TreeSet<String> itemsFrom, TreeSet<String> itemsTo,
-            List listForm, List listTo)
+    private void moveOne(final TreeSet<String> itemsFrom, final TreeSet<String> itemsTo,
+            final List listForm, final List listTo)
     {
         if (listForm.getSelectionIndex() == -1)
         {
             return;
         }
-        String movedItem = listForm.getItem(listForm.getSelectionIndex());
+        final String movedItem = listForm.getItem(listForm.getSelectionIndex());
 
         itemsTo.add(movedItem);
         int i = 0;
-        for (String selectedItem : itemsTo)
+        for (final String selectedItem : itemsTo)
         {
             if (selectedItem == movedItem)
             {
@@ -202,8 +202,8 @@ public class FilterDialog extends Dialog
                 myItemsToSelectList);
     }
 
-    private void moveAll(TreeSet<String> itemsFrom, TreeSet<String> itemsTo,
-            List listForm, List listTo)
+    private void moveAll(final TreeSet<String> itemsFrom, final TreeSet<String> itemsTo,
+            final List listForm, final List listTo)
     {
         itemsTo.addAll(itemsFrom);
         itemsFrom.clear();
@@ -211,17 +211,17 @@ public class FilterDialog extends Dialog
         listForm.removeAll();
 
         listTo.removeAll();
-        for (String item : itemsTo)
+        for (final String item : itemsTo)
         {
             listTo.add(item);
         }
     }
 
-    private List createItemsList(Composite parent, Iterable<String> items)
+    private List createItemsList(final Composite parent, final Iterable<String> items)
     {
-        List result = new List(parent, SWT.BORDER);
+        final List result = new List(parent, SWT.BORDER);
         result.setLayoutData(new GridData(ITEM_LIST_WIDTH, ITEM_LIST_HEIGHT));
-        for (String item : items)
+        for (final String item : items)
         {
             result.add(item);
         }
@@ -229,10 +229,10 @@ public class FilterDialog extends Dialog
         return result;
     }
 
-    private Button createMoveButton(Composite parent, String caption,
-            SelectionListener selectionListener)
+    private Button createMoveButton(final Composite parent, final String caption,
+            final SelectionListener selectionListener)
     {
-        Button result = new Button(parent, SWT.PUSH);
+        final Button result = new Button(parent, SWT.PUSH);
         result.setText(caption);
         result
                 .setLayoutData(new GridData(MOVE_BUTTON_WIDTH,

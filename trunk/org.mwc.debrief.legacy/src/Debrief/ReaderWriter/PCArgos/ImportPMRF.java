@@ -164,12 +164,12 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
   /** parse this line
    * @param theLine the line to parse
    */
-  private String readLine(String theLine){
+  private String readLine(final String theLine){
     // is this line valid?
     if(theLine.length()>5){
 
       // now read it in.
-      Object thisObject = _theImporter.readThisLine(theLine);
+      final Object thisObject = _theImporter.readThisLine(theLine);
 
       // check that a value has been returned
       if(thisObject != null)
@@ -178,26 +178,26 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
         // see if we are going to do any special processing
         if(thisObject instanceof Debrief.ReaderWriter.Replay.ReplayFix)
         {
-          Debrief.ReaderWriter.Replay.ReplayFix rf = (Debrief.ReaderWriter.Replay.ReplayFix)thisObject;
+          final Debrief.ReaderWriter.Replay.ReplayFix rf = (Debrief.ReaderWriter.Replay.ReplayFix)thisObject;
 
 
 
           // we've got our fix, see if we can calculate course and speed for it
-          String trkName = rf.theTrackName;
-          Object oj = _lastPoints.get(trkName);
+          final String trkName = rf.theTrackName;
+          final Object oj = _lastPoints.get(trkName);
           if(oj != null)
           {
 
             // calculate the course and speed
-            Fix oldFix = (Fix)oj;
-            Fix newFix = rf.theFix;
-            WorldVector separation = newFix.getLocation().subtract(oldFix.getLocation());
-            double course = separation.getBearing();
-            double rng = MWC.Algorithms.Conversions.Degs2Yds(separation.getRange());
+            final Fix oldFix = (Fix)oj;
+            final Fix newFix = rf.theFix;
+            final WorldVector separation = newFix.getLocation().subtract(oldFix.getLocation());
+            final double course = separation.getBearing();
+            final double rng = MWC.Algorithms.Conversions.Degs2Yds(separation.getRange());
             // sort out the time taken
-            long microsDelta = newFix.getTime().getMicros() - oldFix.getTime().getMicros();
-            double secsDelta = ((double)(microsDelta)) / 1000000.0;
-            double yardsPerSec = rng / secsDelta;
+            final long microsDelta = newFix.getTime().getMicros() - oldFix.getTime().getMicros();
+            final double secsDelta = ((double)(microsDelta)) / 1000000.0;
+            final double yardsPerSec = rng / secsDelta;
             newFix.setCourse(MWC.Algorithms.Conversions.clipRadians(course));
             newFix.setSpeed(yardsPerSec);
 
@@ -210,7 +210,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
           _lastPoints.put(trkName, rf.theFix);
 
           // wrap it
-          PlainWrapper thisWrapper = new FixWrapper(rf.theFix);
+          final PlainWrapper thisWrapper = new FixWrapper(rf.theFix);
 
           // is there a layer for this track?
           TrackWrapper trkWrapper = (TrackWrapper)getLayerFor( rf.theTrackName );
@@ -221,7 +221,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
             trkWrapper.setName(rf.theTrackName);
 
             // get a new colour for the track counter
-            Color thisCol = (Color)colors.elementAt(track_counter);
+            final Color thisCol = (Color)colors.elementAt(track_counter);
 
             // increment the counter
             track_counter ++;
@@ -261,12 +261,12 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
    * @param DTG the y/m/d to offset the data from
    * @param freq the minimum frequency to record data at.
    */
-  public final void importThis(Layers theData,
-                         String fName,
-                         java.io.InputStream is,
-                         WorldLocation origin,
-                         long DTG,
-                         long freq)
+  public final void importThis(final Layers theData,
+                         final String fName,
+                         final java.io.InputStream is,
+                         final WorldLocation origin,
+                         final long DTG,
+                         final long freq)
   {
     super.setLayers(theData);
 
@@ -291,13 +291,13 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
 
   /** import data from this stream
    */
-  public final void importThis(String fName,
-                         java.io.InputStream is){
+  public final void importThis(final String fName,
+                         final java.io.InputStream is){
     // declare linecounter
     int lineCounter = 0;
 
-    Reader reader = new InputStreamReader(is);
-    BufferedReader br = new BufferedReader(reader);
+    final Reader reader = new InputStreamReader(is);
+    final BufferedReader br = new BufferedReader(reader);
     String thisLine=null;
 
     // reset the working variables
@@ -313,13 +313,13 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
       // check stream is valid
       if(is.available() > 0){
 
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
 
         // get rid of the first four lines, they're duff
         thisLine = br.readLine();	// dtg, description
 
         // try to get the DTG from this line
-        StringTokenizer st = new StringTokenizer(thisLine);
+        final StringTokenizer st = new StringTokenizer(thisLine);
         st.nextToken();
         String the_date = st.nextToken();
         the_date += " " + st.nextToken();
@@ -327,10 +327,10 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
 
         try
         {
-          Date dtg_offset = _dateF.parse(the_date);
+          final Date dtg_offset = _dateF.parse(the_date);
           _dtg = dtg_offset.getTime();
         }
-        catch (ParseException e)
+        catch (final ParseException e)
         {
           MWC.Utilities.Errors.Trace.trace(e, "Failed whilst reading in DTG:" + the_date);
         }
@@ -360,21 +360,21 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
           thisLine = br.readLine();
         }
 
-        long end = System.currentTimeMillis();
+        final long end = System.currentTimeMillis();
         System.out.print(" |Elapsed:" + (end - start) + " ");
 
       }
-    }catch(java.lang.NumberFormatException e){
+    }catch(final java.lang.NumberFormatException e){
        // produce the error message
        MWC.Utilities.Errors.Trace.trace(e);
        // show the message dialog
        super.readError(fName, lineCounter, "Number format error", thisLine);
-    }catch(IOException e){
+    }catch(final IOException e){
        // produce the error message
        MWC.Utilities.Errors.Trace.trace(e);
        // show the message dialog
        super.readError(fName, lineCounter, "Unknown read error", thisLine);
-    }catch(java.util.NoSuchElementException e){
+    }catch(final java.util.NoSuchElementException e){
        // produce the error message
        MWC.Utilities.Errors.Trace.trace(e);
        // show the message dialog
@@ -384,16 +384,16 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
 
   /** produce
    */
-  public final void exportThis(Plottable item)
+  public final void exportThis(final Plottable item)
   {
   }
 
 
-  public final boolean canImportThisFile(String theFile)
+  public final boolean canImportThisFile(final String theFile)
   {
     boolean res = true;
     String theSuffix=null;
-    int pos = theFile.lastIndexOf(".");
+    final int pos = theFile.lastIndexOf(".");
     theSuffix = theFile.substring(pos, theFile.length());
 
     for(int i=0; i<_myTypes.length; i++)
@@ -408,7 +408,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
     return res;
   }
 
-  public final void exportThis(String val)
+  public final void exportThis(final String val)
   {
   }
 

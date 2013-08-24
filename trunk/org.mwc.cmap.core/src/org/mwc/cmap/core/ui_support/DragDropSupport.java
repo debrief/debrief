@@ -49,7 +49,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 	/**
 	 * the control that's providing us with our selection
 	 */
-	private StructuredViewer _parent;
+	private final StructuredViewer _parent;
 
 	/**
 	 * it appears that the copy/move operations gets cancelled after we mark
@@ -69,7 +69,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 	 * 
 	 * @param parent
 	 */
-	public DragDropSupport(StructuredViewer parent)
+	public DragDropSupport(final StructuredViewer parent)
 	{
 		_parent = parent;
 	}
@@ -79,7 +79,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 	 * 
 	 * @param handler
 	 */
-	public static void addDropHelper(XMLFileDropHandler handler)
+	public static void addDropHelper(final XMLFileDropHandler handler)
 	{
 		if (_myDropHelpers == null)
 		{
@@ -88,17 +88,17 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		_myDropHelpers.add(handler);
 	}
 
-	public void dragFinished(DragSourceEvent event)
+	public void dragFinished(final DragSourceEvent event)
 	{
 	}
 
-	public void dragSetData(DragSourceEvent event)
+	public void dragSetData(final DragSourceEvent event)
 	{
-		StructuredSelection sel = getSelection();
+		final StructuredSelection sel = getSelection();
 		event.data = sel;
 	}
 
-	public void dragStart(DragSourceEvent event)
+	public void dragStart(final DragSourceEvent event)
 	{
 		// ok, clear the old detail flag
 		_oldDetail = -1;
@@ -106,9 +106,9 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		boolean res = true;
 
 		// get what's selected
-		StructuredSelection sel = getSelection();
-		EditableWrapper first = (EditableWrapper) sel.getFirstElement();
-		Editable pl = first.getEditable();
+		final StructuredSelection sel = getSelection();
+		final EditableWrapper first = (EditableWrapper) sel.getFirstElement();
+		final Editable pl = first.getEditable();
 
 		// so, is this draggable?
 		if (pl instanceof BaseLayer)
@@ -137,23 +137,23 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 	private StructuredSelection getSelection()
 	{
 		// ok, get the selection
-		StructuredSelection sel = (StructuredSelection) _parent.getSelection();
+		final StructuredSelection sel = (StructuredSelection) _parent.getSelection();
 		return sel;
 	}
 
-	public void dragEnter(DropTargetEvent event)
+	public void dragEnter(final DropTargetEvent event)
 	{
 	}
 
-	public void dragLeave(DropTargetEvent event)
+	public void dragLeave(final DropTargetEvent event)
 	{
 	}
 
-	public void dragOperationChanged(DropTargetEvent event)
+	public void dragOperationChanged(final DropTargetEvent event)
 	{
 	}
 
-	public void dragOver(DropTargetEvent event)
+	public void dragOver(final DropTargetEvent event)
 	{
 		boolean allowDrop = false;
 
@@ -163,22 +163,22 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 			// do we have any loaders?
 			if (_myDropHelpers != null)
 			{
-				TreeItem ti = (TreeItem) event.item;
+				final TreeItem ti = (TreeItem) event.item;
 
 				// check the tree isn't empty
 				if (ti != null)
 				{
-					EditableWrapper ew = (EditableWrapper) ti.getData();
-					for (Iterator<XMLFileDropHandler> iter = _myDropHelpers.iterator(); iter
+					final EditableWrapper ew = (EditableWrapper) ti.getData();
+					for (final Iterator<XMLFileDropHandler> iter = _myDropHelpers.iterator(); iter
 							.hasNext();)
 					{
-						XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
+						final XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
 
 						// right, does it handle this kind of element?
 						if (handler.canBeDroppedOn(ew.getEditable()))
 						{
 							// yup, can it drop on our target?
-							Object tgt = event.item.getData();
+							final Object tgt = event.item.getData();
 							if (tgt instanceof EditableWrapper)
 							{
 								allowDrop = true;
@@ -195,12 +195,12 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 			// look at it.
 
 			// hmm, do we want to accept this?
-			TreeItem ti = (TreeItem) event.item;
+			final TreeItem ti = (TreeItem) event.item;
 			// right, do we have a target?
 			if (ti != null)
 			{
-				EditableWrapper pw = (EditableWrapper) ti.getData();
-				Editable pl = pw.getEditable();
+				final EditableWrapper pw = (EditableWrapper) ti.getData();
+				final Editable pl = pw.getEditable();
 
 				if (pl instanceof ETOPOPainter)
 				{
@@ -217,14 +217,15 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 					allowDrop = true;
 
 					// hmm, just double-check that we're not dragging a layer over this
-					StructuredSelection sel = getSelection();
+					final StructuredSelection sel = getSelection();
 
 					// cycle through the elements
 					for (@SuppressWarnings("rawtypes")
+					final
 					Iterator iter = sel.iterator(); iter.hasNext();)
 					{
-						EditableWrapper thisP = (EditableWrapper) iter.next();
-						Editable dragee = thisP.getEditable();
+						final EditableWrapper thisP = (EditableWrapper) iter.next();
+						final Editable dragee = thisP.getEditable();
 						if (dragee instanceof BaseLayer)
 						{
 							allowDrop = false;
@@ -287,18 +288,18 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		 *          the types of thing we drop onto
 		 */
 		@SuppressWarnings("rawtypes")
-		public XMLFileDropHandler(String[] elementTypes, Class[] targetTypes)
+		public XMLFileDropHandler(final String[] elementTypes, final Class[] targetTypes)
 		{
 			_elements = elementTypes;
 			targets = targetTypes;
 		}
 
-		public boolean handlesThis(String firstElement)
+		public boolean handlesThis(final String firstElement)
 		{
 			boolean res = false;
 			for (int i = 0; i < _elements.length; i++)
 			{
-				String thisE = _elements[i];
+				final String thisE = _elements[i];
 				if (thisE.toUpperCase().equals(firstElement.toUpperCase()))
 				{
 					res = true;
@@ -309,12 +310,12 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		}
 
 		@SuppressWarnings("rawtypes")
-		public boolean canBeDroppedOn(Editable targetElement)
+		public boolean canBeDroppedOn(final Editable targetElement)
 		{
 			boolean res = false;
 			for (int i = 0; i < targets.length; i++)
 			{
-				Class thisE = targets[i];
+				final Class thisE = targets[i];
 				if (targetElement.getClass() == thisE)
 				{
 					res = true;
@@ -337,28 +338,28 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void drop(DropTargetEvent event)
+	public void drop(final DropTargetEvent event)
 	{
 		// hmm, what type of data are we receiving, is it a file?
 		if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
 		{
-			String[] names = (String[]) event.data;
-			String fileName = names[0];
-			File theFile = new File(fileName);
+			final String[] names = (String[]) event.data;
+			final String fileName = names[0];
+			final File theFile = new File(fileName);
 			if (theFile.exists())
 			{
 				// right, is it our correct type?
 
 				// is it an xml file
-				int fileSep = fileName.lastIndexOf('.');
-				String suffix = fileName.substring(fileSep + 1);
-				String uSuffix = suffix.toUpperCase();
+				final int fileSep = fileName.lastIndexOf('.');
+				final String suffix = fileName.substring(fileSep + 1);
+				final String uSuffix = suffix.toUpperCase();
 				if (uSuffix.equals("XML"))
 				{
 					// hey, could be. Extract the first 100 characters
 					try
 					{
-						FileReader fr = new FileReader(theFile);
+						final FileReader fr = new FileReader(theFile);
 						BufferedReader re = new BufferedReader(fr);
 						String firstLine = re.readLine();
 
@@ -366,7 +367,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 						boolean inComplete = true;
 						while ((firstLine.length() < 200) && (inComplete))
 						{
-							String newLine = re.readLine();
+							final String newLine = re.readLine();
 							if (newLine == null)
 								inComplete = false;
 
@@ -394,25 +395,25 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 						index = firstLine.indexOf('<', index);
 
 						// now, find the end of this XML item
-						int endOfElement = firstLine.indexOf(" ", index);
-						String thisElement = firstLine.substring(index + 1, endOfElement);
+						final int endOfElement = firstLine.indexOf(" ", index);
+						final String thisElement = firstLine.substring(index + 1, endOfElement);
 
 						// do we have any loaders?
 						if (_myDropHelpers != null)
 						{
-							for (Iterator<XMLFileDropHandler> iter = _myDropHelpers
+							for (final Iterator<XMLFileDropHandler> iter = _myDropHelpers
 									.iterator(); iter.hasNext();)
 							{
-								XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
+								final XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
 
 								// right, does it handle this kind of element?
 								if (handler.handlesThis(thisElement))
 								{
 									// yup, can it drop on our target?
-									Object tgt = event.item.getData();
+									final Object tgt = event.item.getData();
 									if (tgt instanceof EditableWrapper)
 									{
-										EditableWrapper ew = (EditableWrapper) tgt;
+										final EditableWrapper ew = (EditableWrapper) tgt;
 										if (handler.canBeDroppedOn(ew.getEditable()))
 										{
 											// yes, go for it!
@@ -426,12 +427,12 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 						}
 
 					}
-					catch (FileNotFoundException e)
+					catch (final FileNotFoundException e)
 					{
 						CorePlugin.logError(Status.ERROR, "File not found for drag/drop:"
 								+ fileName, e);
 					}
-					catch (IOException e)
+					catch (final IOException e)
 					{
 						CorePlugin.logError(Status.ERROR, "IOException handling drag/drop:"
 								+ fileName, e);
@@ -448,60 +449,60 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		else
 		{
 
-			StructuredSelection sel = getSelection();
+			final StructuredSelection sel = getSelection();
 
 			// cycle through the elements
-			for (Iterator iter = sel.iterator(); iter.hasNext();)
+			for (final Iterator iter = sel.iterator(); iter.hasNext();)
 			{
-				EditableWrapper thisP = (EditableWrapper) iter.next();
-				Editable dragee = thisP.getEditable();
+				final EditableWrapper thisP = (EditableWrapper) iter.next();
+				final Editable dragee = thisP.getEditable();
 
 				// right, are we cutting?
 				if ((_oldDetail & DND.DROP_MOVE) != 0)
 				{
 					// remove from current parent
-					EditableWrapper parent = thisP.getParent();
+					final EditableWrapper parent = thisP.getParent();
 
 					// is this a top-level item?
 					if (parent == null)
 					{
-						Layers layers = thisP.getLayers();
+						final Layers layers = thisP.getLayers();
 						layers.removeThisLayer((Layer) dragee);
 					}
 					else
 					{
-						BaseLayer parentLayer = (BaseLayer) parent.getEditable();
+						final BaseLayer parentLayer = (BaseLayer) parent.getEditable();
 						parentLayer.removeElement(dragee);
 					}
 				}
 
 				// add to new parent
-				TreeItem ti = (TreeItem) event.item;
-				EditableWrapper destination = (EditableWrapper) ti.getData();
+				final TreeItem ti = (TreeItem) event.item;
+				final EditableWrapper destination = (EditableWrapper) ti.getData();
 
 				// ok, we need to add a new instance of the dragee (so we can support
 				// multiple instances)
-				Editable newDragee = (Editable) RightClickCutCopyAdaptor
+				final Editable newDragee = (Editable) RightClickCutCopyAdaptor
 						.cloneThis(dragee);
 
 				// also add it to the plottable layer target
-				BaseLayer dest = (BaseLayer) destination.getEditable();
+				final BaseLayer dest = (BaseLayer) destination.getEditable();
 				dest.add(newDragee);
 			}
 		}
 		// fire update
-		Layers destL = (Layers) _parent.getInput();
+		final Layers destL = (Layers) _parent.getInput();
 		destL.fireExtended();
 	}
 
-	public void dropAccept(DropTargetEvent event)
+	public void dropAccept(final DropTargetEvent event)
 	{
 		// right, is htis
 	}
 
 	public Transfer[] getTypes()
 	{
-		Transfer[] res = new Transfer[]
+		final Transfer[] res = new Transfer[]
 		{ EditableTransfer.getInstance(), FileTransfer.getInstance() };
 		return res;
 	}

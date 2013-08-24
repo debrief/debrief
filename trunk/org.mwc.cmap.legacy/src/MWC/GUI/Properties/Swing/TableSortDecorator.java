@@ -14,7 +14,7 @@ public class TableSortDecorator extends TableModelDecorator
 	private static final long serialVersionUID = 1L;
 	int indexes[];
 
-	public TableSortDecorator(TableModel m) {
+	public TableSortDecorator(final TableModel m) {
 		super(m);
 
 		if(m == null || !(m instanceof AbstractTableModel))
@@ -23,14 +23,14 @@ public class TableSortDecorator extends TableModelDecorator
 		m.addTableModelListener(this);
 		allocate();
 	}
-	public Object getValueAt(int row, int column) {
+	public Object getValueAt(final int row, final int column) {
 		return super.getValueAt(indexes[row], column);
 	}
-	public void tableChanged(TableModelEvent e) {
+	public void tableChanged(final TableModelEvent e) {
 		allocate();
 	}
-	public void sort(int column) {
-		int rowCount = model.getRowCount();
+	public void sort(final int column) {
+		final int rowCount = model.getRowCount();
 
 		for(int i=0; i < rowCount; i++) {
 			for(int j = i+1; j < rowCount; j++) {
@@ -41,14 +41,14 @@ public class TableSortDecorator extends TableModelDecorator
 		}
 		fireTableStructureChanged();
 	}
-    public void swap(int i, int j) {
-		int tmp = indexes[i];
+    public void swap(final int i, final int j) {
+		final int tmp = indexes[i];
 		indexes[i] = indexes[j];
 		indexes[j] = tmp;
 	}
-	public int compare(int i, int j, int column) {
-		Object io = model.getValueAt(i,column);
-		Object jo = model.getValueAt(j,column);
+	public int compare(final int i, final int j, final int column) {
+		final Object io = model.getValueAt(i,column);
+		final Object jo = model.getValueAt(j,column);
 
 		String iStr=null;
 		String jStr=null;
@@ -56,9 +56,9 @@ public class TableSortDecorator extends TableModelDecorator
 		// comparison string
 		if(io instanceof java.beans.PropertyDescriptor)
 		{
-			java.beans.PropertyDescriptor iPd = (java.beans.PropertyDescriptor)io;
+			final java.beans.PropertyDescriptor iPd = (java.beans.PropertyDescriptor)io;
 			iStr = iPd.getDisplayName();
-			java.beans.PropertyDescriptor jPd = (java.beans.PropertyDescriptor)jo;
+			final java.beans.PropertyDescriptor jPd = (java.beans.PropertyDescriptor)jo;
 			jStr = jPd.getDisplayName();
 		}
 		else
@@ -68,7 +68,7 @@ public class TableSortDecorator extends TableModelDecorator
 		}
 		
 //		int c = jo.toString().compareTo(io.toString());
-		int c = jStr.compareTo(iStr);
+		final int c = jStr.compareTo(iStr);
 		return (c < 0) ? -1 : ((c > 0) ? 1 : 0);
 	}
 	private void allocate() {

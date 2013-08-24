@@ -9,10 +9,10 @@ public class GriddableItemDescriptor {
 	private final String _myName;
 	private final Class<?> _myTypeClass;
 	
-	private EditorHelper _myEditor;
+	private final EditorHelper _myEditor;
 
-	public GriddableItemDescriptor(String title, String name, Class<?> typeClass, 
-			EditorHelper editor) {
+	public GriddableItemDescriptor(final String title, final String name, final Class<?> typeClass, 
+			final EditorHelper editor) {
 		_myTitle = title;
 		_myName = name;
 		_myTypeClass = typeClass;

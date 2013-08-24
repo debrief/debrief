@@ -110,13 +110,13 @@ abstract public class SetTimeZero implements FilterOperation
     return res;
   }
 
-  public final void setPeriod(HiResDate startDTG, HiResDate finishDTG)
+  public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG)
   {
     _start_time = startDTG;
     _end_time = finishDTG;
   }
 
-  public final void setTracks(java.util.Vector<WatchableList> selectedTracks)
+  public final void setTracks(final java.util.Vector<WatchableList> selectedTracks)
   {
     _theTracks = selectedTracks;
   }
@@ -129,7 +129,7 @@ abstract public class SetTimeZero implements FilterOperation
    * @param startTime the new start time
    * @param endTime the new end time
    */
-  public void resetMe(HiResDate startTime, HiResDate endTime)
+  public void resetMe(final HiResDate startTime, final HiResDate endTime)
   {
     setTimeZero(null);
   }
@@ -155,7 +155,7 @@ abstract public class SetTimeZero implements FilterOperation
 
     // we have remaining questions to find out.
     // first find out the symbol frequency we want
-    Double tmpSymStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
+    final Double tmpSymStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
                                                                "Enter symbol frequency (seconds)",
                                                                5);
 
@@ -169,7 +169,7 @@ abstract public class SetTimeZero implements FilterOperation
     symStep = (long)(tmpSymStep.doubleValue() * 1000 * 1000);
 
     // now find out the label frequecy
-    Double tmpLabStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
+    final Double tmpLabStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
                                                                "Enter label frequency (seconds)",
                                                                15);
 
@@ -186,19 +186,19 @@ abstract public class SetTimeZero implements FilterOperation
     Enumeration<WatchableList> iter = _theTracks.elements();
     while(iter.hasMoreElements())
     {
-      WatchableList wl = (WatchableList)iter.nextElement();
+      final WatchableList wl = (WatchableList)iter.nextElement();
 
       // is this a track?
       if(wl instanceof Debrief.Wrappers.TrackWrapper){
 
-        TrackWrapper tw = (TrackWrapper)wl;
+        final TrackWrapper tw = (TrackWrapper)wl;
 
         long this_time = _start_time.getMicros();
 
         // first pass through, setting the labels visible
         while(this_time <= _end_time.getMicros())
         {
-          MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(0, this_time));
+          final MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(0, this_time));
           FixWrapper fw = null;
           if(list.length > 0)
              fw = (FixWrapper)list[0];
@@ -218,7 +218,7 @@ abstract public class SetTimeZero implements FilterOperation
         // first pass through, setting the symbols visible
         while(this_time <= _end_time.getMicros())
         {
-          MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(this_time));
+          final MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(this_time));
           FixWrapper fw = null;
           if(list.length > 0)
              fw = (FixWrapper)list[0];
@@ -241,32 +241,32 @@ abstract public class SetTimeZero implements FilterOperation
     iter = _theTracks.elements();
     while(iter.hasMoreElements())
     {
-      WatchableList wl = (WatchableList)iter.nextElement();
+      final WatchableList wl = (WatchableList)iter.nextElement();
 
       // is this a track?
       if(wl instanceof Debrief.Wrappers.TrackWrapper){
 
-        TrackWrapper tw = (TrackWrapper)wl;
+        final TrackWrapper tw = (TrackWrapper)wl;
 
         // step through the track
-        Collection<Editable> ss = tw.getItemsBetween(tw.getStartDTG(),
+        final Collection<Editable> ss = tw.getItemsBetween(tw.getStartDTG(),
                                           tw.getEndDTG());
 
-        Iterator<Editable> it = ss.iterator();
+        final Iterator<Editable> it = ss.iterator();
 
         while(it.hasNext())
         {
-          FixWrapper fw = (FixWrapper)it.next();
+          final FixWrapper fw = (FixWrapper)it.next();
 
           // is the label visible for this fix?
           if(fw.getLabelShowing())
           {
             // calculate the new time value
-            long thisDTG = fw.getTime().getMicros();
-            long delta = thisDTG - this._start_time.getMicros();
+            final long thisDTG = fw.getTime().getMicros();
+            final long delta = thisDTG - this._start_time.getMicros();
 
             // convert the delta to seconds
-            double secs = delta / 1000.0;
+            final double secs = delta / 1000.0;
 
             // calculate the new time label
             String val;
@@ -284,7 +284,7 @@ abstract public class SetTimeZero implements FilterOperation
             val += decimals.format(secs);
 
             // retrieve the old time label
-            String oldVal = fw.getName();
+            final String oldVal = fw.getName();
 
             // add this update to our action
             if(res == null)
@@ -318,7 +318,7 @@ abstract public class SetTimeZero implements FilterOperation
     return null;
   }
 
-  public final void actionPerformed(java.awt.event.ActionEvent p1)
+  public final void actionPerformed(final java.awt.event.ActionEvent p1)
   {
 
   }
@@ -334,20 +334,20 @@ abstract public class SetTimeZero implements FilterOperation
   final class SetTimeAction implements Action
   {
     private final String _theTimeString;
-    private HiResDate _theTime;
+    private final HiResDate _theTime;
     private final java.util.Vector<someUpdate> _theChanges;
 
-    public SetTimeAction(String theTimeString,
-                         HiResDate theTime)
+    public SetTimeAction(final String theTimeString,
+                         final HiResDate theTime)
     {
       _theTimeString = theTimeString;
       _theTime = theTime;
       _theChanges = new java.util.Vector<someUpdate>(0,1);
     }
 
-    public final void addAction(FixWrapper fw,
-                          String newLabel,
-                          String oldLabel)
+    public final void addAction(final FixWrapper fw,
+                          final String newLabel,
+                          final String oldLabel)
     {
       // add the item to our list
       _theChanges.addElement(new someUpdate(newLabel,
@@ -383,10 +383,10 @@ abstract public class SetTimeZero implements FilterOperation
     {
       // work back through the list, removing the updates
       // work through the list, making the changes
-      Enumeration<someUpdate> iter = _theChanges.elements();
+      final Enumeration<someUpdate> iter = _theChanges.elements();
       while(iter.hasMoreElements())
       {
-        someUpdate sm = (someUpdate)iter.nextElement();
+        final someUpdate sm = (someUpdate)iter.nextElement();
         sm.theFix.setLabel(sm.oldVal);
       }
 
@@ -398,10 +398,10 @@ abstract public class SetTimeZero implements FilterOperation
     public final void execute()
     {
       // work through the list, making the changes
-      Enumeration<someUpdate> iter = _theChanges.elements();
+      final Enumeration<someUpdate> iter = _theChanges.elements();
       while(iter.hasMoreElements())
       {
-        someUpdate sm = (someUpdate)iter.nextElement();
+        final someUpdate sm = (someUpdate)iter.nextElement();
         sm.theFix.setLabel(sm.newVal);
       }
 
@@ -413,9 +413,9 @@ abstract public class SetTimeZero implements FilterOperation
       public final String newVal;
       public final String oldVal;
       public final FixWrapper theFix;
-      public someUpdate(String theNewVal,
-                        String theOldVal,
-                        FixWrapper theFixVal)
+      public someUpdate(final String theNewVal,
+                        final String theOldVal,
+                        final FixWrapper theFixVal)
       {
         newVal = theNewVal;
         oldVal = theOldVal;

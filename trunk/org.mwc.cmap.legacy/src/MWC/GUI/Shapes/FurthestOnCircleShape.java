@@ -41,7 +41,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	public class FurthestInfo extends Editable.EditorType
 	{
 
-		public FurthestInfo(FurthestOnCircleShape data, String theName)
+		public FurthestInfo(final FurthestOnCircleShape data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -51,7 +51,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("RangeLabelLocation", "where to position the labels"),
 						prop("TimeInterval", "the Interval between the rings"),
@@ -69,7 +69,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -83,7 +83,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public WheelTest(String val)
+		public WheelTest(final String val)
 		{
 			super(val);
 		}
@@ -98,10 +98,10 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 
 		public void testWidthCalc()
 		{
-			FurthestOnCircleShape ed = new FurthestOnCircleShape(new WorldLocation(
+			final FurthestOnCircleShape ed = new FurthestOnCircleShape(new WorldLocation(
 					2d, 2d, 2d), 3, new WorldSpeed(60, WorldSpeed.Kts), 60 * 60 * 1000,
 					45, 180);
-			WorldDistance dist = ed.getRingWidth();
+			final WorldDistance dist = ed.getRingWidth();
 			assertEquals("the width", 1d, dist.getValueIn(WorldDistance.DEGS));
 		}
 	}
@@ -175,8 +175,8 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	 * @param theColor
 	 *          the colour to plot the wheel
 	 */
-	public FurthestOnCircleShape(WorldLocation theCentre, int numRings,
-			WorldSpeed speed, int interval, int arcCentre, int arcWidth)
+	public FurthestOnCircleShape(final WorldLocation theCentre, final int numRings,
+			final WorldSpeed speed, final int interval, final int arcCentre, final int arcWidth)
 	{
 		super(0, 1, "Range Ring");
 
@@ -284,9 +284,9 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	private WorldDistance getRingWidth()
 	{
 		// calculate the distance travelled at this speed, in this time interval
-		double degsPerHour = _speed.getValueIn(WorldSpeed.Kts) / 60;
-		double hours = _intervalMillis / 1000d / 60d / 60d;
-		double degs = degsPerHour * hours;
+		final double degsPerHour = _speed.getValueIn(WorldSpeed.Kts) / 60;
+		final double hours = _intervalMillis / 1000d / 60d / 60d;
+		final double degs = degsPerHour * hours;
 		return new WorldDistance(degs, WorldDistance.DEGS);
 	}
 
@@ -318,7 +318,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	 *          the destination
 	 */
 	@Override
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// are we visible?
 		if (!getVisible())
@@ -329,29 +329,29 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 
 		dest.setColor(getColor());
 
-		MWC.Algorithms.PlainProjection _proj = dest.getProjection();
+		final MWC.Algorithms.PlainProjection _proj = dest.getProjection();
 
 		// sort out the centre in screen coords
-		Point centre = new Point(_proj.toScreen(_theCentre));
+		final Point centre = new Point(_proj.toScreen(_theCentre));
 
 		// sort out the range in screen coords
-		WorldLocation outerEdge = _theCentre.add(new WorldVector(
+		final WorldLocation outerEdge = _theCentre.add(new WorldVector(
 				MWC.Algorithms.Conversions.Degs2Rads(0), getRingWidth().getValueIn(
 						WorldDistance.DEGS), 0));
-		Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
-		int dx = screenOuterEdge.x - centre.x;
-		int dy = screenOuterEdge.y - centre.y;
+		final Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
+		final int dx = screenOuterEdge.x - centre.x;
+		final int dy = screenOuterEdge.y - centre.y;
 		final int ringRadius = (int) Math.sqrt(dx * dx + dy * dy);
 
 		int thisRadius = ringRadius;
 
 		// now the inner and outer range rings
-		Point origin = new Point();
+		final Point origin = new Point();
 
 		final int lLoc = _rangeLabelLocation;
 
 		// create a number format
-		NumberFormat nf = new DecimalFormat("0.## Nm");
+		final NumberFormat nf = new DecimalFormat("0.## Nm");
 
 		// draw the ovals
 		for (int i = 0; i < _numRings; i++)
@@ -365,12 +365,12 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 			dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
 
 			// sort out the labels
-			double thisWidthNM = +(getRingWidth().getValueIn(WorldDistance.NM) + getRingWidth()
+			final double thisWidthNM = +(getRingWidth().getValueIn(WorldDistance.NM) + getRingWidth()
 					.getValueIn(WorldDistance.NM) * i);
-			String thisLabel = nf.format(thisWidthNM);
+			final String thisLabel = nf.format(thisWidthNM);
 
-			int strWidth = dest.getStringWidth(null, thisLabel);
-			int strHeight = dest.getStringHeight(null);
+			final int strWidth = dest.getStringWidth(null, thisLabel);
+			final int strHeight = dest.getStringHeight(null);
 
 			if ((lLoc == ALL) || (lLoc == TOP))
 				dest.drawText(thisLabel, (int) (centre.x - strWidth / 2.3),
@@ -397,7 +397,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	 * allows for individual shapes to have 'hit-spots' in various locations.
 	 */
 	@Override
-	public double rangeFrom(WorldLocation point)
+	public double rangeFrom(final WorldLocation point)
 	{
 		final double thisRes = _theCentre.rangeFrom(point);
 		double res = thisRes;
@@ -406,7 +406,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		final double ringWidthDegs = getRingWidth().getValueIn(WorldDistance.DEGS);
 		for (int i = 0; i <= _numRings; i++)
 		{
-			double thisR = i * ringWidthDegs;
+			final double thisR = i * ringWidthDegs;
 
 			res = Math.min(Math.abs(thisR - thisRes), res);
 		}
@@ -414,12 +414,12 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		return res;
 	}
 
-	public void setArcCentre(BoundedInteger centre)
+	public void setArcCentre(final BoundedInteger centre)
 	{
 		_arcCentre = centre.getCurrent();
 	}
 
-	public void setArcWidth(BoundedInteger width)
+	public void setArcWidth(final BoundedInteger width)
 	{
 		_arcWidth = width.getCurrent();
 	}
@@ -427,7 +427,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	/**
 	 * set the centre location of the Wheel
 	 */
-	public void setCentre(WorldLocation centre)
+	public void setCentre(final WorldLocation centre)
 	{
 		// inform our listeners
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, _theCentre, centre);
@@ -441,7 +441,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 
 	}
 
-	public void setNumRings(BoundedInteger numRings)
+	public void setNumRings(final BoundedInteger numRings)
 	{
 		_numRings = numRings.getCurrent();
 
@@ -452,17 +452,17 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
-	public void setRangeLabelLocation(int rangeLabelLocation)
+	public void setRangeLabelLocation(final int rangeLabelLocation)
 	{
 		_rangeLabelLocation = rangeLabelLocation;
 	}
 
-	public void setSpeed(WorldSpeed _Speed)
+	public void setSpeed(final WorldSpeed _Speed)
 	{
 		this._speed = _Speed;
 	}
 
-	public void setTimeInterval(long millis)
+	public void setTimeInterval(final long millis)
 	{
 		_intervalMillis = millis;
 
@@ -476,16 +476,16 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	// ////////////////////////////////////////
 	// convenience functions which pass calls back to parent
 	// ////////////////////////////////////////
-	public void setWheelColor(Color val)
+	public void setWheelColor(final Color val)
 	{
 		super.setColor(val);
 	}
 
 	@Override
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
-		WorldLocation oldCentre = getCentre();
-		WorldLocation newCentre = oldCentre.add(vector);
+		final WorldLocation oldCentre = getCentre();
+		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
 
 		// and calc the new summary data

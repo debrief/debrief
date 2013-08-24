@@ -16,14 +16,14 @@ import org.eclipse.wb.swt.ResourceManager;
 public class MultiPathUI extends Composite
 {
 
-	private Composite chartHolder;
-	private Composite _cmpSVP;
-	private Composite _cmpIntervals;
-	private Label _lblSVP;
-	private Label _lblIntervals;
-	private Slider _slider;
-	private Label _sliderVal;
-	private Button _btnMagic;
+	private final Composite chartHolder;
+	private final Composite _cmpSVP;
+	private final Composite _cmpIntervals;
+	private final Label _lblSVP;
+	private final Label _lblIntervals;
+	private final Slider _slider;
+	private final Label _sliderVal;
+	private final Button _btnMagic;
 
 	/**
 	 * Create the composite.
@@ -31,13 +31,13 @@ public class MultiPathUI extends Composite
 	 * @param parent
 	 * @param style
 	 */
-	public MultiPathUI(Composite parent, int style)
+	public MultiPathUI(final Composite parent, final int style)
 	{
 		super(parent, style);
 		setLayout(new GridLayout(3, false));
 
-		Composite cmpFiles = new Composite(this, SWT.NONE);
-		GridData gd_cmpFiles = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
+		final Composite cmpFiles = new Composite(this, SWT.NONE);
+		final GridData gd_cmpFiles = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
 				1);
 		gd_cmpFiles.widthHint = 190;
 		cmpFiles.setLayoutData(gd_cmpFiles);
@@ -45,7 +45,7 @@ public class MultiPathUI extends Composite
 		_cmpSVP = new Composite(cmpFiles, SWT.NONE);
 		_cmpSVP.setBounds(0, 0, 92, 32);
 
-		Label lblNewLabel = new Label(_cmpSVP, SWT.NONE);
+		final Label lblNewLabel = new Label(_cmpSVP, SWT.NONE);
 		lblNewLabel.setBounds(0, 0, 59, 14);
 		lblNewLabel.setText("SVP:");
 
@@ -57,7 +57,7 @@ public class MultiPathUI extends Composite
 		_cmpIntervals = new Composite(cmpFiles, SWT.NONE);
 		_cmpIntervals.setBounds(94, 0, 90, 32);
 
-		Label lblIntervals = new Label(_cmpIntervals, SWT.NONE);
+		final Label lblIntervals = new Label(_cmpIntervals, SWT.NONE);
 		lblIntervals.setText("Intervals:");
 		lblIntervals.setBounds(0, 0, 59, 14);
 
@@ -67,9 +67,9 @@ public class MultiPathUI extends Composite
 		_lblIntervals.setText("[pending]");
 		_lblIntervals.setBounds(0, 15, 90, 14);
 
-		Composite cmpSlider = new Composite(this, SWT.NONE);
+		final Composite cmpSlider = new Composite(this, SWT.NONE);
 		cmpSlider.setLayout(new FillLayout(SWT.VERTICAL));
-		GridData gd_cmpSlider = new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
+		final GridData gd_cmpSlider = new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
 				1);
 		gd_cmpSlider.heightHint = 32;
 		cmpSlider.setLayoutData(gd_cmpSlider);
@@ -82,8 +82,8 @@ public class MultiPathUI extends Composite
 		_slider = new Slider(cmpSlider, SWT.NONE);
 		_slider.setMaximum(800);
 
-		Composite cmpButton = new Composite(this, SWT.NONE);
-		GridData gd_cmpButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
+		final Composite cmpButton = new Composite(this, SWT.NONE);
+		final GridData gd_cmpButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
 				1);
 		gd_cmpButton.widthHint = 60;
 		cmpButton.setLayoutData(gd_cmpButton);
@@ -118,12 +118,12 @@ public class MultiPathUI extends Composite
 		return _sliderVal;
 	}
 
-	public void setSVPName(String text)
+	public void setSVPName(final String text)
 	{
 		_lblSVP.setText(text);
 	}
 
-	public void setIntervalName(String text)
+	public void setIntervalName(final String text)
 	{
 		_lblIntervals.setText(text);
 	}
@@ -144,18 +144,18 @@ public class MultiPathUI extends Composite
 		return _slider;
 	}
 
-	public void addMagicHandler(SelectionListener handler)
+	public void addMagicHandler(final SelectionListener handler)
 	{
 		_btnMagic.addSelectionListener(handler);
 	}
 
-	public void setSliderValText(String text)
+	public void setSliderValText(final String text)
 	{
 		_sliderVal.setText(text);
 	}
 
 	@Override
-	public void setEnabled(boolean enabled)
+	public void setEnabled(final boolean enabled)
 	{
 		_slider.setEnabled(enabled);
 

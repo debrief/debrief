@@ -31,17 +31,17 @@ import org.mwc.asset.netCore.common.Network.LightScenario;
 
 public class VConnect extends Composite implements IVConnect
 {
-	private Table partTable;
-	private Button btnPing;
-	private ListViewer listServerViewer;
-	private ListViewer listScenarioViewer;
-	private List listServers;
-	private List listScenarios;
-	private TableViewer partViewer;
-	private Button btnDisconnect;
+	private final Table partTable;
+	private final Button btnPing;
+	private final ListViewer listServerViewer;
+	private final ListViewer listScenarioViewer;
+	private final List listServers;
+	private final List listScenarios;
+	private final TableViewer partViewer;
+	private final Button btnDisconnect;
 	// private Button btnManual;
-	private StringProvider _stringProvider;
-	private Button btnSelfHost;
+	private final StringProvider _stringProvider;
+	private final Button btnSelfHost;
 
 	/**
 	 * Create the composite.
@@ -50,21 +50,21 @@ public class VConnect extends Composite implements IVConnect
 	 * @param style
 	 * @param stringProvider
 	 */
-	public VConnect(Composite parent, int style)
+	public VConnect(final Composite parent, final int style)
 	{
 		this(parent, style, null);
 	}
 
-	public VConnect(Composite parent, int style, StringProvider stringProvider)
+	public VConnect(final Composite parent, final int style, final StringProvider stringProvider)
 	{
 		super(parent, style);
 		_stringProvider = stringProvider;
 		setLayout(null);
 
-		Group grpConnection = new Group(this, SWT.NONE);
+		final Group grpConnection = new Group(this, SWT.NONE);
 		grpConnection.setBounds(0, 0, 260, 225);
 
-		Label lblServers = new Label(grpConnection, SWT.NONE);
+		final Label lblServers = new Label(grpConnection, SWT.NONE);
 		lblServers.setBounds(10, 27, 59, 14);
 		lblServers.setText("Servers");
 
@@ -72,11 +72,11 @@ public class VConnect extends Composite implements IVConnect
 		btnPing.setBounds(10, 3, 47, 21);
 		btnPing.setText("Ping");
 
-		Label lblScenarios = new Label(grpConnection, SWT.NONE);
+		final Label lblScenarios = new Label(grpConnection, SWT.NONE);
 		lblScenarios.setText("Scenarios");
 		lblScenarios.setBounds(106, 27, 59, 14);
 
-		Label lblParticipants = new Label(grpConnection, SWT.NONE);
+		final Label lblParticipants = new Label(grpConnection, SWT.NONE);
 		lblParticipants.setText("Participants");
 		lblParticipants.setBounds(10, 113, 67, 14);
 
@@ -84,18 +84,18 @@ public class VConnect extends Composite implements IVConnect
 		partTable = partViewer.getTable();
 		partTable.setBounds(10, 129, 240, 81);
 
-		TableViewerColumn nameCol = new TableViewerColumn(partViewer, SWT.NONE);
-		TableColumn colName = nameCol.getColumn();
+		final TableViewerColumn nameCol = new TableViewerColumn(partViewer, SWT.NONE);
+		final TableColumn colName = nameCol.getColumn();
 		colName.setWidth(50);
 		colName.setText("Name");
 
-		TableViewerColumn catCol = new TableViewerColumn(partViewer, SWT.NONE);
-		TableColumn colCategory = catCol.getColumn();
+		final TableViewerColumn catCol = new TableViewerColumn(partViewer, SWT.NONE);
+		final TableColumn colCategory = catCol.getColumn();
 		colCategory.setWidth(100);
 		colCategory.setText("Category");
 
-		TableViewerColumn actCol = new TableViewerColumn(partViewer, SWT.NONE);
-		TableColumn colActivity = actCol.getColumn();
+		final TableViewerColumn actCol = new TableViewerColumn(partViewer, SWT.NONE);
+		final TableColumn colActivity = actCol.getColumn();
 		colActivity.setWidth(100);
 		colActivity.setText("Activity");
 
@@ -149,12 +149,12 @@ public class VConnect extends Composite implements IVConnect
 	{
 		btnPing.addSelectionListener(new SelectionListener()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				handler.clicked();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 			}
 		});
@@ -165,12 +165,12 @@ public class VConnect extends Composite implements IVConnect
 	{
 		btnDisconnect.addSelectionListener(new SelectionListener()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				handler.clicked();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 			}
 		});
@@ -181,11 +181,11 @@ public class VConnect extends Composite implements IVConnect
 	{
 		listServerViewer.addDoubleClickListener(new IDoubleClickListener()
 		{
-			public void doubleClick(DoubleClickEvent event)
+			public void doubleClick(final DoubleClickEvent event)
 			{
-				ISelection sel = event.getSelection();
-				StructuredSelection ss = (StructuredSelection) sel;
-				InetAddress address = (InetAddress) ss.getFirstElement();
+				final ISelection sel = event.getSelection();
+				final StructuredSelection ss = (StructuredSelection) sel;
+				final InetAddress address = (InetAddress) ss.getFirstElement();
 				listener.selected(address);
 			}
 		});
@@ -252,24 +252,24 @@ public class VConnect extends Composite implements IVConnect
 	{
 		listScenarioViewer.addDoubleClickListener(new IDoubleClickListener()
 		{
-			public void doubleClick(DoubleClickEvent event)
+			public void doubleClick(final DoubleClickEvent event)
 			{
-				ISelection sel = event.getSelection();
-				StructuredSelection ss = (StructuredSelection) sel;
-				LightScenario scenario = (LightScenario) ss.getFirstElement();
+				final ISelection sel = event.getSelection();
+				final StructuredSelection ss = (StructuredSelection) sel;
+				final LightScenario scenario = (LightScenario) ss.getFirstElement();
 				listener.selected(scenario);
 			}
 		});
 	}
 
 	@Override
-	public void setPartContentProvider(IContentProvider provider)
+	public void setPartContentProvider(final IContentProvider provider)
 	{
 		partViewer.setContentProvider(provider);
 	}
 
 	@Override
-	public void setPartLabelProvider(IBaseLabelProvider labelProvider)
+	public void setPartLabelProvider(final IBaseLabelProvider labelProvider)
 	{
 		partViewer.setLabelProvider(labelProvider);
 	}
@@ -279,11 +279,11 @@ public class VConnect extends Composite implements IVConnect
 	{
 		partViewer.addDoubleClickListener(new IDoubleClickListener()
 		{
-			public void doubleClick(DoubleClickEvent event)
+			public void doubleClick(final DoubleClickEvent event)
 			{
-				ISelection sel = event.getSelection();
-				StructuredSelection ss = (StructuredSelection) sel;
-				LightParticipant part = (LightParticipant) ss.getFirstElement();
+				final ISelection sel = event.getSelection();
+				final StructuredSelection ss = (StructuredSelection) sel;
+				final LightParticipant part = (LightParticipant) ss.getFirstElement();
 				listener.selected(part);
 			}
 		});
@@ -311,10 +311,10 @@ public class VConnect extends Composite implements IVConnect
 			public void run()
 			{
 				listScenarioViewer.getList().removeAll();
-				Iterator<LightScenario> items = results.iterator();
+				final Iterator<LightScenario> items = results.iterator();
 				while (items.hasNext())
 				{
-					Network.LightScenario ls = (Network.LightScenario) items.next();
+					final Network.LightScenario ls = (Network.LightScenario) items.next();
 					listScenarioViewer.add(ls);
 				}
 			}
@@ -329,10 +329,10 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
-				Iterator<InetAddress> items = adds.iterator();
+				final Iterator<InetAddress> items = adds.iterator();
 				while (items.hasNext())
 				{
-					InetAddress inetAddress = (InetAddress) items.next();
+					final InetAddress inetAddress = (InetAddress) items.next();
 					listServerViewer.add(inetAddress);
 				}
 			}
@@ -382,7 +382,7 @@ public class VConnect extends Composite implements IVConnect
 	}
 
 	@Override
-	public String getString(String title, String message)
+	public String getString(final String title, final String message)
 	{
 		return _stringProvider.getString(title, message);
 	}
@@ -394,7 +394,7 @@ public class VConnect extends Composite implements IVConnect
 		{
 
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				handler.change(btnSelfHost.getSelection());
 			}

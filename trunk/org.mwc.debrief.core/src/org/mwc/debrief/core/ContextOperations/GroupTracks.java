@@ -42,7 +42,7 @@ public class GroupTracks implements RightClickContextItemGenerator
 	{
 		boolean goForIt = false;
 
-		Vector<TrackWrapper> tracks = new Vector<TrackWrapper>();
+		final Vector<TrackWrapper> tracks = new Vector<TrackWrapper>();
 		
 		// we're only going to work with two or more items, and we only put them into a track wrapper
 		if (subjects.length > 1)
@@ -50,7 +50,7 @@ public class GroupTracks implements RightClickContextItemGenerator
 			// are they tracks, or track segments
 			for (int i = 0; i < subjects.length; i++)
 			{
-				Editable thisE = subjects[i];
+				final Editable thisE = subjects[i];
 				if (thisE instanceof TrackWrapper)
 				{
 					goForIt = true;
@@ -82,15 +82,15 @@ public class GroupTracks implements RightClickContextItemGenerator
 			// right,stick in a separator
 			parent.add(new Separator());
 
-			for (Iterator<TrackWrapper> iterator = tracks.iterator(); iterator.hasNext();)
+			for (final Iterator<TrackWrapper> iterator = tracks.iterator(); iterator.hasNext();)
 			{
 				final TrackWrapper editable = iterator.next();
 				final String title = "Group tracks into " + editable.getName();
 				// create this operation
-				Action doMerge = new Action(title){
+				final Action doMerge = new Action(title){
 					public void run()
 					{
-						IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);							
+						final IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);							
 						CorePlugin.run(theAction );
 					}};
 				parent.add(doMerge);
@@ -107,11 +107,11 @@ public class GroupTracks implements RightClickContextItemGenerator
 		private final Layers _layers;
 		private final Layer[] _parents;
 		private final Editable[] _subjects;
-		private TrackWrapper wrapper;
+		private final TrackWrapper wrapper;
 
 
-		public GroupTracksOperation(String title, TrackWrapper receiver, Layers theLayers, Layer[] parentLayers,
-				Editable[] subjects)
+		public GroupTracksOperation(final String title, final TrackWrapper receiver, final Layers theLayers, final Layer[] parentLayers,
+				final Editable[] subjects)
 		{
 			super(title);
 			wrapper = receiver;
@@ -120,7 +120,7 @@ public class GroupTracks implements RightClickContextItemGenerator
 			_subjects = subjects;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			TrackWrapper.groupTracks(wrapper, _layers, _parents, _subjects);
@@ -148,7 +148,7 @@ public class GroupTracks implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			CorePlugin.logError(Status.INFO, "Undo not permitted for merge operation", null);

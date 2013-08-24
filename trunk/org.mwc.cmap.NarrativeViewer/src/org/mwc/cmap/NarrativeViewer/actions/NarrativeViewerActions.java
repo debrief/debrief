@@ -10,15 +10,15 @@ import org.mwc.cmap.NarrativeViewer.NarrativeViewerModel;
 
 
 public class NarrativeViewerActions extends ActionGroup {
-	private AbstractDynamicAction myShowVisibleColumn;
-	private AbstractDynamicAction myShowSourceColumn;
-	private AbstractDynamicAction myShowTypeColumn;
+	private final AbstractDynamicAction myShowVisibleColumn;
+	private final AbstractDynamicAction myShowSourceColumn;
+	private final AbstractDynamicAction myShowTypeColumn;
 	
-	private AbstractDynamicAction myFilterSource;
-	private AbstractDynamicAction myFilterType;
+	private final AbstractDynamicAction myFilterSource;
+	private final AbstractDynamicAction myFilterType;
 	
-	public NarrativeViewerActions(NarrativeViewer viewer){
-		NarrativeViewerModel model = viewer.getModel();
+	public NarrativeViewerActions(final NarrativeViewer viewer){
+		final NarrativeViewerModel model = viewer.getModel();
 		myShowSourceColumn = new SwitchColumnVisibilityAction(model.getColumnSource(), "Show source");
 		myShowVisibleColumn = new SwitchColumnVisibilityAction(model.getColumnVisible(), "Show visible");
 		myShowVisibleColumn.setChecked(false);
@@ -35,9 +35,9 @@ public class NarrativeViewerActions extends ActionGroup {
 	}
 	
 	@Override
-	public void fillActionBars(IActionBars actionBars) {
+	public void fillActionBars(final IActionBars actionBars) {
 		super.fillActionBars(actionBars);
-		IMenuManager menu = actionBars.getMenuManager();
+		final IMenuManager menu = actionBars.getMenuManager();
 		menu.add(myShowVisibleColumn);
 		menu.add(myShowSourceColumn);
 		menu.add(myShowTypeColumn);
@@ -46,7 +46,7 @@ public class NarrativeViewerActions extends ActionGroup {
 		menu.add(myFilterType);
 		
 		menu.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
+			public void menuAboutToShow(final IMenuManager manager) {
 				updateActions();
 			}
 		});

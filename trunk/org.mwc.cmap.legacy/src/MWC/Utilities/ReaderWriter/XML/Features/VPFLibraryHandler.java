@@ -38,21 +38,21 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
 
     addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _myName = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addHandler(new VPFCoverageHandler()
     {
-      public void addCoverage(String type, String description, boolean visible, java.util.Enumeration<FeaturePainter> features)
+      public void addCoverage(final String type, final String description, final boolean visible, final java.util.Enumeration<FeaturePainter> features)
       {
         addThisCoverage(type, description, visible, features);
       }
@@ -66,17 +66,17 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
 
   abstract public void addLibrary(String name, boolean visible, java.util.Vector<CoverageLayer> coverages);
 
-  void addThisCoverage(String type, String description, boolean visible, java.util.Enumeration<FeaturePainter> features)
+  void addThisCoverage(final String type, final String description, final boolean visible, final java.util.Enumeration<FeaturePainter> features)
   {
     // do we have our list?
     if (_myCoverages == null)
       _myCoverages = new java.util.Vector<CoverageLayer>(0, 1);
 
     // create this coverage
-    LibrarySelectionTable lsTable = getLST(_myName);
+    final LibrarySelectionTable lsTable = getLST(_myName);
     if(lsTable != null)
     {
-      CoverageLayer cl = new CoverageLayer(lsTable, getWarehouse(), type);
+      final CoverageLayer cl = new CoverageLayer(lsTable, getWarehouse(), type);
 
       // format the coverage
       cl.setVisible(visible);
@@ -88,7 +88,7 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
         // add the features
         while (features.hasMoreElements())
         {
-          FeaturePainter fp = (FeaturePainter) features.nextElement();
+          final FeaturePainter fp = (FeaturePainter) features.nextElement();
           cl.add(fp);
         }
       }
@@ -110,12 +110,12 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
   }
 
 
-  public static void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent,
-                                         org.w3c.dom.Document doc)
+  public static void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent,
+                                         final org.w3c.dom.Document doc)
   {
 
-    MWC.GUI.VPF.LibraryLayer ll = (MWC.GUI.VPF.LibraryLayer) plottable;
-    Element coast = doc.createElement(_myType);
+    final MWC.GUI.VPF.LibraryLayer ll = (MWC.GUI.VPF.LibraryLayer) plottable;
+    final Element coast = doc.createElement(_myType);
 
     // do the visibility
     coast.setAttribute("Visible", writeThis(ll.getVisible()));
@@ -124,10 +124,10 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
     coast.setAttribute("Name", ll.getName());
 
     // now pass throuth the coverages, outputting each one
-    java.util.Enumeration<Editable> enumer = ll.elements();
+    final java.util.Enumeration<Editable> enumer = ll.elements();
     while (enumer.hasMoreElements())
     {
-      CoverageLayer cl = (CoverageLayer) enumer.nextElement();
+      final CoverageLayer cl = (CoverageLayer) enumer.nextElement();
       VPFCoverageHandler.exportThisCoverage(cl, coast, doc);
     }
 

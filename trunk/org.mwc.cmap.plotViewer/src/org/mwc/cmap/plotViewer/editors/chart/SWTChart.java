@@ -213,7 +213,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		private static final long serialVersionUID = 1L;
 
-		public CustomisedSWTCanvas(Composite parent, GeoToolsHandler projection)
+		public CustomisedSWTCanvas(final Composite parent, final GeoToolsHandler projection)
 		{
 			super(parent, projection);
 		}
@@ -227,22 +227,22 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				MenuManager menuManager, Plottable selected, Layer theParentLayer);
 
 		@Override
-		protected void fillContextMenu(MenuManager mmgr, Point scrPoint,
-				WorldLocation loc)
+		protected void fillContextMenu(final MenuManager mmgr, final Point scrPoint,
+				final WorldLocation loc)
 		{
 			// let the parent do it's stuff
 			super.fillContextMenu(mmgr, scrPoint, loc);
 
 			// ok, get a handle to our layers
-			Layers theData = getLayers();
+			final Layers theData = getLayers();
 			double layerDist = -1;
 
 			// find the nearest editable item
-			ObjectConstruct vals = new ObjectConstruct();
-			int num = theData.size();
+			final ObjectConstruct vals = new ObjectConstruct();
+			final int num = theData.size();
 			for (int i = 0; i < num; i++)
 			{
-				Layer thisL = theData.elementAt(i);
+				final Layer thisL = theData.elementAt(i);
 				if (thisL.getVisible())
 				{
 					// find the nearest items, this method call will recursively pass down
@@ -259,9 +259,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 			// ok, now retrieve the values produced by the range-finding algorithm
 			Plottable res = vals.object;
-			Layer theParent = vals.parent;
-			double dist = vals.distance;
-			Vector<Plottable> noPoints = vals.rangeIndependent;
+			final Layer theParent = vals.parent;
+			final double dist = vals.distance;
+			final Vector<Plottable> noPoints = vals.rangeIndependent;
 
 			// see if this is in our dbl-click range
 			if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y), loc,
@@ -278,7 +278,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			if (res != null)
 			{
 				// so get the editor
-				Editable.EditorType e = res.getInfo();
+				final Editable.EditorType e = res.getInfo();
 				if (e != null)
 				{
 					RightClickSupport.getDropdownListFor(mmgr, new Editable[]
@@ -303,7 +303,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					// stick in a separator
 					mmgr.add(new Separator());
 
-					for (Iterator<Plottable> iter = noPoints.iterator(); iter.hasNext();)
+					for (final Iterator<Plottable> iter = noPoints.iterator(); iter.hasNext();)
 					{
 						final Plottable pl = iter.next();
 						RightClickSupport.getDropdownListFor(mmgr, new Editable[]
@@ -313,14 +313,14 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						if (pl.getInfo() != null)
 						{
 							// ok, also insert an "Edit..." item
-							Action editThis = new Action("Edit " + pl.getName() + " ...")
+							final Action editThis = new Action("Edit " + pl.getName() + " ...")
 							{
 								@Override
 								public void run()
 								{
 									// ok, wrap the editab
-									EditableWrapper pw = new EditableWrapper(pl, getLayers());
-									ISelection selected = new StructuredSelection(pw);
+									final EditableWrapper pw = new EditableWrapper(pl, getLayers());
+									final ISelection selected = new StructuredSelection(pw);
 									parentFireSelectionChanged(selected);
 								}
 							};
@@ -335,27 +335,27 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 			final CustomisedSWTCanvas chart = this;
 
-			Action changeBackColor = new Action("Edit base chart")
+			final Action changeBackColor = new Action("Edit base chart")
 			{
 				@Override
 				public void run()
 				{
-					EditableWrapper wrapped = new EditableWrapper(chart, getLayers());
-					ISelection selected = new StructuredSelection(wrapped);
+					final EditableWrapper wrapped = new EditableWrapper(chart, getLayers());
+					final ISelection selected = new StructuredSelection(wrapped);
 					parentFireSelectionChanged(selected);
 				}
 
 			};
 			mmgr.add(changeBackColor);
 
-			Action editProjection = new Action("Edit Projection")
+			final Action editProjection = new Action("Edit Projection")
 			{
 				@Override
 				public void run()
 				{
-					EditableWrapper wrapped = new EditableWrapper(getProjection(),
+					final EditableWrapper wrapped = new EditableWrapper(getProjection(),
 							getLayers());
-					ISelection selected = new StructuredSelection(wrapped);
+					final ISelection selected = new StructuredSelection(wrapped);
 					parentFireSelectionChanged(selected);
 				}
 
@@ -396,7 +396,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param theCanvas
 		 */
 		public void doMouseMove(final org.eclipse.swt.graphics.Point pt,
-				final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
+				final int JITTER, final Layers theLayers, final SWTCanvas theCanvas)
 		{
 			// provide a dummy implementation - most of our modes don't use this...
 		}
@@ -523,8 +523,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 *          the data to plot
 	 * @param _myProjection
 	 */
-	public SWTChart(final Layers theLayers, Composite parent,
-			GeoToolsHandler _myProjection)
+	public SWTChart(final Layers theLayers, final Composite parent,
+			final GeoToolsHandler _myProjection)
 	{
 		super(theLayers);
 		_theCanvas = createCanvas(parent, (GtProjection) _myProjection);
@@ -532,7 +532,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// sort out the area of coverage of the plot
 		if (theLayers != null)
 		{
-			WorldArea area = theLayers.getBounds();
+			final WorldArea area = theLayers.getBounds();
 			_theCanvas.getProjection().setDataArea(area);
 		}
 
@@ -549,7 +549,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			}
 		});
 
-		Dimension dim = _theCanvas.getSize();
+		final Dimension dim = _theCanvas.getSize();
 
 		if (dim != null)
 			_theCanvas.getProjection().setScreenArea(dim);
@@ -558,7 +558,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		{
 
 			@Override
-			public void mouseMove(MouseEvent e)
+			public void mouseMove(final MouseEvent e)
 			{
 				doMouseMove(e);
 			}
@@ -567,19 +567,19 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		{
 
 			@Override
-			public void mouseDoubleClick(MouseEvent e)
+			public void mouseDoubleClick(final MouseEvent e)
 			{
 				doMouseDoubleClick(e);
 			}
 
 			@Override
-			public void mouseDown(MouseEvent e)
+			public void mouseDown(final MouseEvent e)
 			{
 				doMouseDown(e);
 			}
 
 			@Override
-			public void mouseUp(MouseEvent e)
+			public void mouseUp(final MouseEvent e)
 			{
 				doMouseUp(e);
 			}
@@ -587,7 +587,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		_theCanvas.addMouseWheelListener(new MouseWheelListener()
 		{
 			@Override
-			public void mouseScrolled(MouseEvent e)
+			public void mouseScrolled(final MouseEvent e)
 			{
 				// is ctrl held down?
 				if ((e.stateMask & SWT.CONTROL) != 0)
@@ -621,7 +621,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	}
 
 	@Override
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	public void addSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 	}
 
@@ -651,13 +651,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	private void clearImages()
 	{
 		// tell the images to clear themselves out
-		Iterator<Image> iter = _myLayers.values().iterator();
+		final Iterator<Image> iter = _myLayers.values().iterator();
 		while (iter.hasNext())
 		{
-			Object nextI = iter.next();
+			final Object nextI = iter.next();
 			if (nextI instanceof Image)
 			{
-				Image thisI = (Image) nextI;
+				final Image thisI = (Image) nextI;
 				thisI.dispose();
 			}
 			else
@@ -708,7 +708,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * 
 	 * @return the Canvas to use
 	 */
-	public SWTCanvas createCanvas(Composite parent, GtProjection projection)
+	public SWTCanvas createCanvas(final Composite parent, final GtProjection projection)
 	{
 		return new CustomisedSWTCanvas(parent, projection)
 		{
@@ -719,13 +719,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void doSupplementalRightClickProcessing(MenuManager menuManager,
-					Plottable selected, Layer theParentLayer)
+			public void doSupplementalRightClickProcessing(final MenuManager menuManager,
+					final Plottable selected, final Layer theParentLayer)
 			{
 			}
 
 			@Override
-			public void parentFireSelectionChanged(ISelection selected)
+			public void parentFireSelectionChanged(final ISelection selected)
 			{
 				chartFireSelectionChanged(selected);
 			}
@@ -741,18 +741,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * @return
 	 */
 	protected static org.eclipse.swt.graphics.Image createSWTImage(
-			ImageData myImageTemplate)
+			final ImageData myImageTemplate)
 	{
-		Color trColor = Color.white;
-		int transPx = myImageTemplate.palette.getPixel(new RGB(trColor.getRed(),
+		final Color trColor = Color.white;
+		final int transPx = myImageTemplate.palette.getPixel(new RGB(trColor.getRed(),
 				trColor.getGreen(), trColor.getBlue()));
 		myImageTemplate.transparentPixel = transPx;
-		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
+		final org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
 				Display.getCurrent(), myImageTemplate);
 		return image;
 	}
 
-	protected void doMouseDoubleClick(MouseEvent e)
+	protected void doMouseDoubleClick(final MouseEvent e)
 	{
 
 		// was this the right-hand button
@@ -764,22 +764,22 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		else
 		{
 			// right, find out which one it was.
-			java.awt.Point pt = new java.awt.Point(e.x, e.y);
+			final java.awt.Point pt = new java.awt.Point(e.x, e.y);
 
 			// and now the WorldLocation
-			WorldLocation loc = getCanvas().getProjection().toWorld(pt);
+			final WorldLocation loc = getCanvas().getProjection().toWorld(pt);
 
 			// and now see if we are near anything..
 			if (_theDblClickListeners.size() > 0)
 			{
 				// get the top one off the stack
-				ChartDoubleClickListener lc = _theDblClickListeners.lastElement();
+				final ChartDoubleClickListener lc = _theDblClickListeners.lastElement();
 				lc.cursorDblClicked(this, loc, pt);
 			}
 		}
 	}
 
-	protected void doMouseDown(MouseEvent e)
+	protected void doMouseDown(final MouseEvent e)
 	{
 		// was this the right-hand button?
 		if (e.button != 3)
@@ -798,13 +798,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		}
 	}
 
-	public void doMouseMove(MouseEvent e)
+	public void doMouseMove(final MouseEvent e)
 	{
-		java.awt.Point thisPoint = new java.awt.Point(e.x, e.y);
+		final java.awt.Point thisPoint = new java.awt.Point(e.x, e.y);
 
 		super.mouseMoved(thisPoint);
 
-		Point swtPoint = new Point(e.x, e.y);
+		final Point swtPoint = new Point(e.x, e.y);
 
 		final PlotMouseDragger theMode;
 		if (e.button == 2)
@@ -831,7 +831,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		}
 	}
 
-	protected void doMouseUp(MouseEvent e)
+	protected void doMouseUp(final MouseEvent e)
 	{
 		// was this the right-hand button
 		if (e.button != 3)
@@ -852,7 +852,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					theMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
 
 					// and restore the mouse mode cursor
-					Cursor normalCursor = theMode.getNormalCursor();
+					final Cursor normalCursor = theMode.getNormalCursor();
 					_theCanvas.getCanvas().setCursor(normalCursor);
 				}
 			}
@@ -864,8 +864,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				if (_theLeftClickListener != null)
 				{
 					// get the world location
-					java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
-					WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
+					final java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
+					final WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
 					_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(),
 							_theLayers);
 				}
@@ -919,7 +919,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	@Override
 	public final java.awt.Dimension getScreenSize()
 	{
-		Dimension dim = _theCanvas.getSize();
+		final Dimension dim = _theCanvas.getSize();
 		// get the current size of the canvas
 		return dim;
 	}
@@ -947,7 +947,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		boolean paintedBackground = false;
 
 		// also plot any GeoTools stuff
-		PlainProjection proj = dest.getProjection();
+		final PlainProjection proj = dest.getProjection();
 
 		// fill the background, to start with
 		final Dimension sa = proj.getScreenArea();
@@ -956,7 +956,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 		if (proj instanceof GtProjection)
 		{
-			GtProjection gp = (GtProjection) proj;
+			final GtProjection gp = (GtProjection) proj;
 
 			// do we have a cached image?
 			if (_swtImage == null)
@@ -977,11 +977,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						// we start plotting the images
 						proj.toScreen(proj.getDataArea().getCentre());
 
-						BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
+						final BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
 								dest.getBackgroundColor());
 						if (img != null)
 						{
-							ImageData swtImage = awtToSwt(img, width + 1, height + 1);
+							final ImageData swtImage = awtToSwt(img, width + 1, height + 1);
 							_swtImage = new Image(Display.getCurrent(), swtImage);
 						}
 					}
@@ -993,9 +993,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			{
 				if (_swtImage != null)
 				{
-					SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
+					final SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
 					int alpha = 255;
-					String alphaStr = CorePlugin.getDefault().getPreferenceStore()
+					final String alphaStr = CorePlugin.getDefault().getPreferenceStore()
 							.getString(PreferenceConstants.CHART_TRANSPARENCY);
 					if (alphaStr != null)
 						if (alphaStr.length() > 0)
@@ -1010,7 +1010,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				if (gp.numLayers() > 0)
 				{
 					// yes, generate the image
-					BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
+					final BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
 							dest.getBackgroundColor());
 					dest.drawImage(img, 0, 0, width, height, null);
 				}
@@ -1079,13 +1079,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						clearImages();
 					}
 
-					int canvasHeight = _theCanvas.getSize().height;
-					int canvasWidth = _theCanvas.getSize().width;
+					final int canvasHeight = _theCanvas.getSize().height;
+					final int canvasWidth = _theCanvas.getSize().width;
 
 					paintBackground(dest);
 
 					// ok, pass through the layers, repainting any which need it
-					Enumeration<Layer> numer = _theLayers.sortedElements();
+					final Enumeration<Layer> numer = _theLayers.sortedElements();
 					while (numer.hasMoreElements())
 					{
 						final Layer thisLayer = numer.nextElement();
@@ -1123,7 +1123,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 												if (_myImageTemplate == null)
 												{
 													// nope, better create one
-													Image template = new Image(Display.getCurrent(),
+													final Image template = new Image(Display.getCurrent(),
 															canvasWidth, canvasHeight);
 													// and remember it.
 													_myImageTemplate = template.getImageData();
@@ -1136,7 +1136,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 												image = createSWTImage(_myImageTemplate);
 
 												// we need to wrap it into a GC so we can write to it.
-												GC newGC = new GC(image);
+												final GC newGC = new GC(image);
 
 												// in Windows 7 & OSX we've had problem where
 												// anti-aliased text bleeds through assigned
@@ -1145,7 +1145,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 												newGC.setTextAntialias(SWT.OFF);
 
 												// wrap the GC into something we know how to plot to.
-												SWTCanvasAdapter ca = new SWTCanvasAdapter(
+												final SWTCanvasAdapter ca = new SWTCanvasAdapter(
 														dest.getProjection());
 												ca.setScreenSize(_theCanvas.getProjection()
 														.getScreenArea());
@@ -1171,7 +1171,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 											if (image != null)
 											{
 												// get the graphics to paint to
-												SWTCanvas canv = (SWTCanvas) dest;
+												final SWTCanvas canv = (SWTCanvas) dest;
 
 												// lastly add this image to our Graphics object
 												canv.drawSWTImage(image, 0, 0, canvasWidth,
@@ -1212,14 +1212,14 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * @param thisLayer
 	 * @param dest
 	 */
-	protected void paintThisLayer(final Layer thisLayer, CanvasType dest)
+	protected void paintThisLayer(final Layer thisLayer, final CanvasType dest)
 	{
 		// draw into it
 		thisLayer.paint(dest);
 	}
 
 	@Override
-	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 	}
 
@@ -1252,7 +1252,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * @param val
 	 *          yes/no
 	 */
-	public void setDeferPaints(boolean val)
+	public void setDeferPaints(final boolean val)
 	{
 		_theCanvas.setDeferPaints(val);
 	}
@@ -1266,7 +1266,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	}
 
 	@Override
-	public void setSelection(ISelection selection)
+	public void setSelection(final ISelection selection)
 	{
 	}
 
@@ -1290,7 +1290,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		else
 		{
 			// get the image
-			Image theImage = _myLayers.get(changedLayer);
+			final Image theImage = _myLayers.get(changedLayer);
 
 			// and ditch the image
 			if (theImage != null)
@@ -1325,14 +1325,14 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		}
 	}
 
-	public static ImageData awtToSwt(BufferedImage bufferedImage, int width,
-			int height)
+	public static ImageData awtToSwt(final BufferedImage bufferedImage, final int width,
+			final int height)
 	{
 		System.err.println("DOING AWT TO SWT!!!!");
 		final int[] awtPixels = new int[width * height];
-		ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
+		final ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
 		swtImageData.transparentPixel = TRANSPARENT_COLOR;
-		int step = swtImageData.depth / 8;
+		final int step = swtImageData.depth / 8;
 		final byte[] data = swtImageData.data;
 		bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
 		for (int i = 0; i < height; i++)
@@ -1340,7 +1340,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
 			for (int j = 0; j < width; j++)
 			{
-				int rgb = awtPixels[j + i * width];
+				final int rgb = awtPixels[j + i * width];
 				for (int k = swtImageData.depth - 8; k >= 0; k -= 8)
 				{
 					data[idx++] = (byte) ((rgb >> k) & 0xFF);

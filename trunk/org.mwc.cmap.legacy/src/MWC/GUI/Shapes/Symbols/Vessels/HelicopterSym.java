@@ -50,30 +50,30 @@ public class HelicopterSym extends PlainSymbol {
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
     return res;
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
 
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(4 * getScaleVal());
+    final int wid = (int)(4 * getScaleVal());
 
     // start with the centre object
     dest.drawOval(centre.x - wid/2, centre.y - wid/2, wid, wid);
 
-    double theta = MWC.Algorithms.Conversions.Degs2Rads(120.0);
+    final double theta = MWC.Algorithms.Conversions.Degs2Rads(120.0);
     double thisAng = MWC.Algorithms.Conversions.Degs2Rads(180);
 
     // now for the arcs
@@ -81,10 +81,10 @@ public class HelicopterSym extends PlainSymbol {
     {
       // the inner end of the arc
 
-      int deltaX = (int)(Math.sin(thisAng) * wid / 2.0);
-      int deltaY =(int)(Math.cos(thisAng) * wid / 2.0);
-      int endX = (int)(Math.sin(thisAng) * wid * 1.5);
-      int endY = (int)(Math.cos(thisAng) * wid * 1.5);
+      final int deltaX = (int)(Math.sin(thisAng) * wid / 2.0);
+      final int deltaY =(int)(Math.cos(thisAng) * wid / 2.0);
+      final int endX = (int)(Math.sin(thisAng) * wid * 1.5);
+      final int endY = (int)(Math.cos(thisAng) * wid * 1.5);
 
       // step to the next angle
       thisAng += theta;

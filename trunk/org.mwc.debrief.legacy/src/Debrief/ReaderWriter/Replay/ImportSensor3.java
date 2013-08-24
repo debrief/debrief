@@ -97,7 +97,7 @@ final class ImportSensor3 implements PlainLineImporter {
   /**
    * read in this string and return a Label
    */
-  public final Object readThisLine(String theLine) {
+  public final Object readThisLine(final String theLine) {
 
 
   	
@@ -262,9 +262,9 @@ final class ImportSensor3 implements PlainLineImporter {
    * @param theWrapper the thing we are going to export
    * @return the shape in String form
    */
-  public final String exportThis(MWC.GUI.Plottable theWrapper) {
+  public final String exportThis(final MWC.GUI.Plottable theWrapper) {
     // result value
-    String line = ";; Export of sensor data not implemented";
+    final String line = ";; Export of sensor data not implemented";
     return line;
 
   }
@@ -275,7 +275,7 @@ final class ImportSensor3 implements PlainLineImporter {
    * @param val the object to test
    * @return boolean saying whether you can do it
    */
-  public final boolean canExportThis(Object val) {
+  public final boolean canExportThis(final Object val) {
     boolean res = false;
 
     if (val instanceof SensorWrapper) {
@@ -302,20 +302,20 @@ final class ImportSensor3 implements PlainLineImporter {
 
 		public final void testImport()
 		{
-			String lineA = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
-			String lineB = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
-			String lineTabs = ";SENSOR2:	20090722	041434.000	NONSUCH	@B	NULL	59.3	300.8	49.96	NULL	\"Contact bearings\"	0414";
-			String lineD = ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 NULL NULL NULL \"Contact bearings\" 0414";
+			final String lineA = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
+			final String lineB = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
+			final String lineTabs = ";SENSOR2:	20090722	041434.000	NONSUCH	@B	NULL	59.3	300.8	49.96	NULL	\"Contact bearings\"	0414";
+			final String lineD = ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 NULL NULL NULL \"Contact bearings\" 0414";
 			
-			ImportSensor3 is2 = new ImportSensor3();
-			SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
+			final ImportSensor3 is2 = new ImportSensor3();
+			final SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
 			Assert.assertEquals("lineA failed", "Contact_bearings", resA.getSensorName());
 			Assert.assertEquals("lineA failed", "0414", resA.getLabel());
-			SensorContactWrapper resB = (SensorContactWrapper) is2.readThisLine(lineB);
+			final SensorContactWrapper resB = (SensorContactWrapper) is2.readThisLine(lineB);
 			Assert.assertEquals("lineB failed", "0414", resB.getLabel());
-			SensorContactWrapper resC = (SensorContactWrapper) is2.readThisLine(lineTabs);
+			final SensorContactWrapper resC = (SensorContactWrapper) is2.readThisLine(lineTabs);
 			Assert.assertEquals("lineTabs failed", "0414", resC.getLabel());
-			SensorContactWrapper resD = (SensorContactWrapper) is2.readThisLine(lineD);
+			final SensorContactWrapper resD = (SensorContactWrapper) is2.readThisLine(lineD);
 			Assert.assertEquals("lineD failed", "0414", resD.getLabel());
 		}
 	}

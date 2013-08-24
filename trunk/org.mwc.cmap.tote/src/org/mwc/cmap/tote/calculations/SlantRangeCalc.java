@@ -19,7 +19,7 @@ public class SlantRangeCalc extends rangeCalc
 	 * @param thisTime
 	 * @return
 	 */
-	public double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
+	public double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
 	{
 		double range = 0.0;
 		double theRng = 0.0;
@@ -34,21 +34,21 @@ public class SlantRangeCalc extends rangeCalc
 				// separation
 
 				// what's the depth separation in metres
-				double depthSep = Math.abs(primary.getLocation().getDepth()
+				final double depthSep = Math.abs(primary.getLocation().getDepth()
 						- secondary.getLocation().getDepth());
 
 				// convert to degs
-				double sep = MWC.Algorithms.Conversions.m2Degs(depthSep);
+				final double sep = MWC.Algorithms.Conversions.m2Degs(depthSep);
 
 				// now calc the slant range
-				double range2 = Math.sqrt(sep * sep + range * range);
+				final double range2 = Math.sqrt(sep * sep + range * range);
 
 				range = range2;
 			}
 
 			// we output the range value according to the currently selected range
 			// units
-			String theUnits = getUnits();
+			final String theUnits = getUnits();
 
 			theRng = convertRange(range, theUnits);
 
@@ -61,9 +61,9 @@ public class SlantRangeCalc extends rangeCalc
 	 */
 	private boolean doSlant()
 	{
-		String calcSlantStr = CorePlugin.getToolParent().getProperty(
+		final String calcSlantStr = CorePlugin.getToolParent().getProperty(
 				PrefsPage.PreferenceConstants.CALC_SLANT_RANGE);
-		boolean slantStr = Boolean.parseBoolean(calcSlantStr);
+		final boolean slantStr = Boolean.parseBoolean(calcSlantStr);
 		return slantStr;
 	}
 
@@ -74,7 +74,7 @@ public class SlantRangeCalc extends rangeCalc
 	 * @param time
 	 * @return
 	 */
-	public String update(Watchable primary, Watchable secondary, HiResDate time)
+	public String update(final Watchable primary, final Watchable secondary, final HiResDate time)
 	{
 		String res = super.update(primary, secondary, time);
 

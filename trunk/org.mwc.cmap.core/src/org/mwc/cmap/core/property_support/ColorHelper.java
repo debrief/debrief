@@ -28,9 +28,9 @@ public class ColorHelper extends EditorHelper
 
 	private final static java.awt.Color OFF_WHITE = new Color(255, 255, 254);
 
-	private CustomColorsStore _customColorsStore = new CustomColorsStore();
+	private final CustomColorsStore _customColorsStore = new CustomColorsStore();
 
-	public ColorHelper(Control parentControl)
+	public ColorHelper(final Control parentControl)
 	{
 		super(java.awt.Color.class);
 
@@ -38,34 +38,34 @@ public class ColorHelper extends EditorHelper
 	}
 
 	@Override
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new ColorCellEditor(parent);
 	}
 
 	@Override
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		// ok, convert the AWT color to SWT
-		Color col = (Color) value;
+		final Color col = (Color) value;
 		return convertColor(col);
 	}
 
 	@Override
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		// ok, convert the AWT color to SWT
-		RGB col = (RGB) value;
+		final RGB col = (RGB) value;
 		return convertColor(col);
 	}
 
 	private static ColorRegistry _colRegistry;
 
-	public static java.awt.Color convertColor(org.eclipse.swt.graphics.RGB swtCol)
+	public static java.awt.Color convertColor(final org.eclipse.swt.graphics.RGB swtCol)
 	{
 		// ok, convert the AWT color to SWT
 		java.awt.Color res = null;
-		RGB col = (RGB) swtCol;
+		final RGB col = (RGB) swtCol;
 		res = new Color(col.red, col.green, col.blue);
 		return res;
 	}
@@ -91,7 +91,7 @@ public class ColorHelper extends EditorHelper
 			if (_colRegistry == null)
 				_colRegistry = new ColorRegistry();
 
-			String colName = "" + javaCol.getRGB();
+			final String colName = "" + javaCol.getRGB();
 
 			// retrieve the color
 			thisCol = _colRegistry.get(colName);
@@ -104,7 +104,7 @@ public class ColorHelper extends EditorHelper
 				final int red = javaCol.getRed();
 				final int green = javaCol.getGreen();
 				final int blue = javaCol.getBlue();
-				RGB newData = new RGB(red, green, blue);
+				final RGB newData = new RGB(red, green, blue);
 				_colRegistry.put(colName, newData);
 
 				// and try to retrieve it again
@@ -118,16 +118,16 @@ public class ColorHelper extends EditorHelper
 		return thisCol;
 	}
 
-	public static org.eclipse.swt.graphics.RGB convertColor(java.awt.Color javaCol)
+	public static org.eclipse.swt.graphics.RGB convertColor(final java.awt.Color javaCol)
 	{
 		RGB res = null;
-		org.eclipse.swt.graphics.Color thisCol = getColor(javaCol);
+		final org.eclipse.swt.graphics.Color thisCol = getColor(javaCol);
 		if (thisCol != null)
 			res = thisCol.getRGB();
 		return res;
 	}
 
-	static ImageData createColorImage(RGB color)
+	static ImageData createColorImage(final RGB color)
 	{
 
 		ImageData data = null;
@@ -138,8 +138,8 @@ public class ColorHelper extends EditorHelper
 		// gc.dispose();
 		int size = 14;
 
-		int indent = 6;
-		int extent = 8;
+		final int indent = 6;
+		final int extent = 8;
 
 		// if (_parentControl instanceof Table)
 		// extent = ((Table) _parentControl).getItemHeight() - 1;
@@ -149,19 +149,19 @@ public class ColorHelper extends EditorHelper
 		if (size > extent)
 			size = extent;
 
-		int width = indent + size;
-		int height = extent;
+		final int width = indent + size;
+		final int height = extent;
 
-		int xoffset = indent;
-		int yoffset = (height - size) / 2;
+		final int xoffset = indent;
+		final int yoffset = (height - size) / 2;
 
-		RGB black = new RGB(0, 0, 0);
-		PaletteData dataPalette = new PaletteData(new RGB[]
+		final RGB black = new RGB(0, 0, 0);
+		final PaletteData dataPalette = new PaletteData(new RGB[]
 		{ black, black, color });
 		data = new ImageData(width, height, 4, dataPalette);
 		data.transparentPixel = 0;
 
-		int end = size - 1;
+		final int end = size - 1;
 		for (int y = 0; y < size; y++)
 		{
 			for (int x = 0; x < size; x++)
@@ -177,23 +177,23 @@ public class ColorHelper extends EditorHelper
 	}
 
 	@Override
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				RGB rgb = (RGB) element;
-				String res = "(" + rgb.red + ", " + rgb.green + ", " + rgb.blue + ")";
+				final RGB rgb = (RGB) element;
+				final String res = "(" + rgb.red + ", " + rgb.green + ", " + rgb.blue + ")";
 				return res;
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				Image res = null;
-				RGB rgb = (RGB) element;
-				ImageData id = createColorImage(rgb);
-				ImageData mask = id.getTransparencyMask();
+				final RGB rgb = (RGB) element;
+				final ImageData id = createColorImage(rgb);
+				final ImageData mask = id.getTransparencyMask();
 				res = new Image(Display.getCurrent(), id, mask);
 				return res;
 			}
@@ -214,7 +214,7 @@ public class ColorHelper extends EditorHelper
 		 * @param element
 		 * @return
 		 */
-		public Image getImage(Object element)
+		public Image getImage(final Object element)
 		{
 			// RGB rgCol = (RGB) element;
 			// ImageData theD = createColorImage(rgCol);
@@ -241,7 +241,7 @@ public class ColorHelper extends EditorHelper
 		 * @param element
 		 * @return
 		 */
-		public String getText(Object element)
+		public String getText(final Object element)
 		{
 			return super.getText(element);
 		}
@@ -254,9 +254,9 @@ public class ColorHelper extends EditorHelper
 		 * @param inputElement
 		 * @return
 		 */
-		public Object[] getElements(Object inputElement)
+		public Object[] getElements(final Object inputElement)
 		{
-			RGB[] cols = new RGB[]
+			final RGB[] cols = new RGB[]
 			{ new RGB(255, 0, 0), new RGB(0, 255, 0), new RGB(0, 0, 255) };
 			return cols;
 		}
@@ -269,22 +269,22 @@ public class ColorHelper extends EditorHelper
 	 * @return
 	 */
 	@Override
-	public Control getEditorControlFor(Composite parent,
+	public Control getEditorControlFor(final Composite parent,
 			final IDebriefProperty property)
 	{
 
 		final ColorSelector sel = new ColorSelector(parent);
 		sel.addListener(new IPropertyChangeListener()
 		{
-			public void propertyChange(PropertyChangeEvent event)
+			public void propertyChange(final PropertyChangeEvent event)
 			{
-				RGB theCol = sel.getColorValue();
+				final RGB theCol = sel.getColorValue();
 				property.setValue(theCol);
 			}
 		});
 
 		// try to set the default color
-		RGB current = (RGB) property.getValue();
+		final RGB current = (RGB) property.getValue();
 		sel.setColorValue(current);
 
 		return sel.getButton();
@@ -294,14 +294,14 @@ public class ColorHelper extends EditorHelper
 	class ColorCellEditor extends org.eclipse.jface.viewers.ColorCellEditor
 	{
 
-		public ColorCellEditor(Composite parent)
+		public ColorCellEditor(final Composite parent)
 		{
 			super(parent);
 		}
 
-		protected Object openDialogBox(Control cellEditorWindow)
+		protected Object openDialogBox(final Control cellEditorWindow)
 		{
-			ColorDialog dialog = new ColorDialog(cellEditorWindow.getShell());
+			final ColorDialog dialog = new ColorDialog(cellEditorWindow.getShell());
 			Object value = getValue();
 			if (value != null)
 			{
@@ -313,7 +313,7 @@ public class ColorHelper extends EditorHelper
 			if (initialColors == null || initialColors.size() == 0)
 			{
 				initialColors = new Vector<RGB>();
-				for (org.eclipse.swt.graphics.Color color : _myColorList.values())
+				for (final org.eclipse.swt.graphics.Color color : _myColorList.values())
 				{
 					initialColors.add(color.getRGB());
 				}

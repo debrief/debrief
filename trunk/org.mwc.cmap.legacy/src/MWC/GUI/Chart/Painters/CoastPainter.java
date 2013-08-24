@@ -202,7 +202,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 	/**
 	 * copy constructor
 	 */
-	public CoastPainter(Coastline cl)
+	public CoastPainter(final Coastline cl)
 	{
 		_myCoast = cl;
 	}
@@ -210,7 +210,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 	/**
 	 * default constructor, loads global chart
 	 */
-	public CoastPainter(ToolParent parent)
+	public CoastPainter(final ToolParent parent)
 	{
 		this();
 		_myParent = parent;
@@ -243,7 +243,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 			if (_myCoast == null)
 			{
 				// start loading data, in a new thread
-				Thread runner = new Thread(this);
+				final Thread runner = new Thread(this);
 				runner.setPriority(Thread.MIN_PRIORITY);
 				runner.start();
 			}
@@ -268,7 +268,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		{
 			res = new FileInputStream(fProp);
 		}
-		catch (FileNotFoundException e)
+		catch (final FileNotFoundException e)
 		{
 			_myParent.logError(ToolParent.ERROR, "Coastline file not found", e);
 		}
@@ -281,7 +281,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 	 * 
 	 * @param theParent
 	 */
-	public static void initialise(ToolParent theParent)
+	public static void initialise(final ToolParent theParent)
 	{
 		_myParent = theParent;
 	}
@@ -292,7 +292,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		try
 		{
 			// we will have to read it in from file
-			InputStream fs = getCoastLineInput();
+			final InputStream fs = getCoastLineInput();
 
 			if (fs != null)
 			{
@@ -313,7 +313,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 							"File not available. Coastline not loaded.", null);
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			if (_myParent != null)
 				_myParent.logError(ToolParent.ERROR,
@@ -331,7 +331,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		return _visible;
 	}
 
-	final public void setVisible(boolean val)
+	final public void setVisible(final boolean val)
 	{
 		_visible = val;
 	}
@@ -341,12 +341,12 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		return _myColor;
 	}
 
-	final public void setColor(Color val)
+	final public void setColor(final Color val)
 	{
 		_myColor = val;
 	}
 
-	final public double rangeFrom(MWC.GenericData.WorldLocation other)
+	final public double rangeFrom(final MWC.GenericData.WorldLocation other)
 	{
 		return INVALID_RANGE;
 	}
@@ -383,8 +383,8 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		return _myEditor;
 	}
 
-	final public void resizedEvent(PlainProjection theProj,
-			Dimension newScreenArea)
+	final public void resizedEvent(final PlainProjection theProj,
+			final Dimension newScreenArea)
 	{
 		// not really interested, although we could use this
 		// to keep an internal (threaded) eye on what sections are visible
@@ -395,7 +395,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		return null;
 	}
 
-	final public void paint(CanvasType dest)
+	final public void paint(final CanvasType dest)
 	{
 		// and get on with the painting
 		if (_myCoast != null)
@@ -406,18 +406,18 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 				{
 					// draw to the canvas
 					CoastSegment cs = null;
-					PlainProjection proj = dest.getProjection();
-					WorldArea dArea = proj.getVisibleDataArea();
+					final PlainProjection proj = dest.getProjection();
+					final WorldArea dArea = proj.getVisibleDataArea();
 
 					dest.setColor(_myColor);
 
 					// get ready to loop through
-					Iterator<CoastSegment> iterator = _myCoast.iterator();
+					final Iterator<CoastSegment> iterator = _myCoast.iterator();
 					while (iterator.hasNext())
 					{
 						cs = iterator.next();
 						boolean firstPoint = true;
-						Point lastP = new Point();
+						final Point lastP = new Point();
 
 						// see of this section of coastline is in our area
 						if (cs.getBounds().overlaps(dArea))
@@ -426,19 +426,19 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 							for (int j = 0; j < cs.size(); j++)
 							{
 								// get the next position
-								WorldLocation loc = (WorldLocation) cs.elementAt(j);
+								final WorldLocation loc = (WorldLocation) cs.elementAt(j);
 
 								// see if this is a point we are interested in
 								{
 									if (firstPoint)
 									{
-										Point tmp = proj.toScreen(loc);
+										final Point tmp = proj.toScreen(loc);
 										lastP.move(tmp.x, tmp.y);
 										firstPoint = false;
 									}
 									else
 									{
-										Point thisP = proj.toScreen(loc);
+										final Point thisP = proj.toScreen(loc);
 
 										dest.drawLine(lastP.x, lastP.y, thisP.x, thisP.y);
 										lastP.move(thisP.x, thisP.y);
@@ -454,9 +454,9 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		}
 	}
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
-		Plottable other = (Plottable) arg0;
+		final Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());
 	}
 
@@ -472,7 +472,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public CoastPainterInfo(CoastPainter data)
+		public CoastPainterInfo(final CoastPainter data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -481,13 +481,13 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("Color", "the Color to draw the coast"),
 						prop("Visible", "whether the coast is visible"), };
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -501,7 +501,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public CoastPainterTest(String val)
+		public CoastPainterTest(final String val)
 		{
 			super(val);
 		}

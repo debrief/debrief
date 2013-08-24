@@ -28,19 +28,19 @@ public class Activator extends AbstractUIPlugin
 	 *          the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path)
+	public static ImageDescriptor getImageDescriptor(final String path)
 	{
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	private void addImage(ImageRegistry registry, String pluginPath)
+	private void addImage(final ImageRegistry registry, final String pluginPath)
 	{
 		registry.put(pluginPath, ImageDescriptor.createFromURL(FileLocator.find(
 				getBundle(), new Path(pluginPath), null)));
 	}
 
 	@Override
-	protected void initializeImageRegistry(ImageRegistry reg)
+	protected void initializeImageRegistry(final ImageRegistry reg)
 	{
 		super.initializeImageRegistry(reg);
 		addImage(reg, IMG_ASCEND);

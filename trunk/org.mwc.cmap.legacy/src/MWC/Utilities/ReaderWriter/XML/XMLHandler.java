@@ -26,7 +26,7 @@ public class XMLHandler extends HandlerBase
 {
 
   protected Vector<XMLHandler> _myHandlers;
-  private String _myType;
+  private final String _myType;
   protected Parser _theParser;
   protected DocumentHandler _theParent;
 
@@ -51,7 +51,7 @@ public class XMLHandler extends HandlerBase
   //////////////////////////////////////////////////
   // constructor
   /////////////////////////////////////////////////
-  public XMLHandler(String myType)
+  public XMLHandler(final String myType)
   {
     _myType = myType;
     _myHandlers = new Vector<XMLHandler>(0, 1);
@@ -62,15 +62,15 @@ public class XMLHandler extends HandlerBase
   /**
    * the actual data for this type of object
    */
-  protected void handleOurselves(String name, AttributeList attributes)
+  protected void handleOurselves(final String name, final AttributeList attributes)
   {
 
     // go through our list of handlers
-    Enumeration<HandleAttribute> enumer = _myAttributeHandlers.elements();
+    final Enumeration<HandleAttribute> enumer = _myAttributeHandlers.elements();
     while (enumer.hasMoreElements())
     {
-      HandleAttribute ha = (HandleAttribute) enumer.nextElement();
-      String val = attributes.getValue(ha.myName);
+      final HandleAttribute ha = (HandleAttribute) enumer.nextElement();
+      final String val = attributes.getValue(ha.myName);
       if (val != null)
       {
         // handle this next call, since it does occasionally fail
@@ -80,7 +80,7 @@ public class XMLHandler extends HandlerBase
           ha.setValue(ha.myName, val);
           ////
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           MWC.Utilities.Errors.Trace.trace(e, "Trouble handling attribute: " + ha.myName + " for:" + _myType);
         }
@@ -95,7 +95,7 @@ public class XMLHandler extends HandlerBase
   }
 
 
-  public void addAttributeHandler(HandleAttribute val)
+  public void addAttributeHandler(final HandleAttribute val)
   {
     _myAttributeHandlers.addElement(val);
   }
@@ -103,7 +103,7 @@ public class XMLHandler extends HandlerBase
   /**
    * remember that we also have this type of handler
    */
-  public void addHandler(XMLHandler handler)
+  public void addHandler(final XMLHandler handler)
   {
     _myHandlers.addElement(handler);
   }
@@ -111,7 +111,7 @@ public class XMLHandler extends HandlerBase
   /**
    * remove this type of handler from our list
    */
-  public void removeHandler(XMLHandler handler)
+  public void removeHandler(final XMLHandler handler)
   {
     _myHandlers.remove(handler);
   }
@@ -119,7 +119,7 @@ public class XMLHandler extends HandlerBase
   /**
    * see if we can handle this type of data
    */
-  public boolean canHandleThis(String element)
+  public boolean canHandleThis(final String element)
   {
     return element.equals(_myType);
   }
@@ -127,8 +127,8 @@ public class XMLHandler extends HandlerBase
   /**
    * take over the parsing "stack"
    */
-  public void handleThis(Parser parser,
-                         DocumentHandler parent)
+  public void handleThis(final Parser parser,
+                         final DocumentHandler parent)
   {
     _theParent = parent;
     _theParser = parser;
@@ -139,7 +139,7 @@ public class XMLHandler extends HandlerBase
   /**
    * process this stream of characters
    */
-  public void characters(char[] ch, int start, int length)
+  public void characters(final char[] ch, final int start, final int length)
     throws SAXException
   {
     // accumulate the contents into a buffer.
@@ -151,8 +151,8 @@ public class XMLHandler extends HandlerBase
    * a new element has started. if it is one of ours, process it, else
    * see if one of our handlers can manage it for us, thanks
    */
-  public void startElement(String name,
-                           AttributeList attributes)
+  public void startElement(final String name,
+                           final AttributeList attributes)
     throws SAXException
   {
     boolean handled = false;
@@ -168,10 +168,10 @@ public class XMLHandler extends HandlerBase
     // see if we have a handler for this object
       if (_myHandlers != null)
       {
-        Enumeration<XMLHandler> enumer = _myHandlers.elements();
+        final Enumeration<XMLHandler> enumer = _myHandlers.elements();
         while (enumer.hasMoreElements())
         {
-          XMLHandler hand = (XMLHandler) enumer.nextElement();
+          final XMLHandler hand = (XMLHandler) enumer.nextElement();
           if (hand.canHandleThis(name))
           {
             hand.startElement(name, attributes);
@@ -184,7 +184,7 @@ public class XMLHandler extends HandlerBase
             {
               hand.handleThis(_theParser, this);
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
               MWC.Utilities.Errors.Trace.trace(e, "Trouble handling attribute:" + name);
             }
@@ -206,7 +206,7 @@ public class XMLHandler extends HandlerBase
    * we have reached the end of an element.  See if it is our element - so
    * we should drop out, else let's continue
    */
-  public void endElement(String name)
+  public void endElement(final String name)
     throws SAXException
   {
     // check if it is us which have finished, if so, drop back to our parent
@@ -217,10 +217,10 @@ public class XMLHandler extends HandlerBase
       {
         elementClosed();
       }
-      catch (NullPointerException se)
+      catch (final NullPointerException se)
       {
         // output a hopefully useful message
-        String msg = "Trouble parsing element: " + name;
+        final String msg = "Trouble parsing element: " + name;
         MWC.Utilities.Errors.Trace.trace(se, msg);
 
         // and continue back up the stack
@@ -244,7 +244,7 @@ public class XMLHandler extends HandlerBase
   {
     public String myName;
 
-    public HandleAttribute(String name)
+    public HandleAttribute(final String name)
     {
       myName = name;
     }
@@ -254,19 +254,19 @@ public class XMLHandler extends HandlerBase
 
   abstract static public class HandleDoubleAttribute extends HandleAttribute
   {
-    public HandleDoubleAttribute(String name)
+    public HandleDoubleAttribute(final String name)
     {
       super(name);
     }
 
-    public void setValue(String name, String value)
+    public void setValue(final String name, final String value)
     {
       try
       {
-        double val = longFormat.parse(value).doubleValue();
+        final double val = longFormat.parse(value).doubleValue();
         setValue(name, val);
       }
-      catch (java.text.ParseException pe)
+      catch (final java.text.ParseException pe)
       {
         MWC.Utilities.Errors.Trace.trace(pe, "Handler: Whilst reading in " + name + " value of :" + value);
       }
@@ -279,14 +279,14 @@ public class XMLHandler extends HandlerBase
 
   abstract static public class HandleLongAttribute extends HandleAttribute
   {
-    public HandleLongAttribute(String name)
+    public HandleLongAttribute(final String name)
     {
       super(name);
     }
 
-    public void setValue(String name, String value)
+    public void setValue(final String name, final String value)
     {
-      long val = Long.parseLong(value);
+      final long val = Long.parseLong(value);
       setValue(name, val);
     }
 
@@ -295,14 +295,14 @@ public class XMLHandler extends HandlerBase
 
   abstract static public class HandleBooleanAttribute extends HandleAttribute
   {
-    public HandleBooleanAttribute(String name)
+    public HandleBooleanAttribute(final String name)
     {
       super(name);
     }
 
-    public void setValue(String name, String value)
+    public void setValue(final String name, final String value)
     {
-      boolean val = Boolean.getBoolean(value);
+      final boolean val = Boolean.getBoolean(value);
       setValue(name, val);
     }
 
@@ -312,7 +312,7 @@ public class XMLHandler extends HandlerBase
   // number formatting used in XML export
   //////////////////////////////////////////////////////////////////
 
-  static public String writeThis(boolean val)
+  static public String writeThis(final boolean val)
   {
     if (val)
       return "true";
@@ -320,33 +320,33 @@ public class XMLHandler extends HandlerBase
       return "false";
   }
 
-  static public String writeThis(Boolean val)
+  static public String writeThis(final Boolean val)
   {
     return writeThis(val.booleanValue());
   }
 
 
-  static public String writeThis(int val)
+  static public String writeThis(final int val)
   {
     return Integer.toString(val);
   }
 
-  static public String writeThis(long val)
+  static public String writeThis(final long val)
   {
     return Long.toString(val);
   }
 
-  static public String writeThis(double val)
+  static public String writeThis(final double val)
   {
     return shortFormat.format(val);
   }
 
-  static public String writeThis(Date val)
+  static public String writeThis(final Date val)
   {
     return RNdateFormat.format(val);
   }
 
-  static public String writeThisLong(double val)
+  static public String writeThisLong(final double val)
   {
     return longFormat.format(val);
   }

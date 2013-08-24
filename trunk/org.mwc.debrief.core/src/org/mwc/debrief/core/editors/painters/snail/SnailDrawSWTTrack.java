@@ -82,8 +82,8 @@ final class SnailDrawSWTTrack
 	 * @param datumTime the time of this data item
 	 * @return
 	 */
-	public static Color getFadedColorFor(Color mainCol, Color backColor,
-			long trail_len, HiResDate stepTime, HiResDate datumTime)
+	public static Color getFadedColorFor(final Color mainCol, final Color backColor,
+			final long trail_len, final HiResDate stepTime, final HiResDate datumTime)
 	{
 
 		// how far back through the time period are we?
@@ -103,9 +103,9 @@ final class SnailDrawSWTTrack
 		final float backG = backColor.getGreen();
 		final float backB = backColor.getBlue();
 
-		int mainR = mainCol.getRed();
-		int mainG = mainCol.getGreen();
-		int mainB = mainCol.getBlue();
+		final int mainR = mainCol.getRed();
+		final int mainG = mainCol.getGreen();
+		final int mainB = mainCol.getBlue();
 
 		// now apply this proportion to the indicated color
 		final float r = (mainR - backR )* proportion;
@@ -117,7 +117,7 @@ final class SnailDrawSWTTrack
 		final int new_g = (int) (backG + g);
 		final int new_b = (int) (backB + b);
 		
-		Color thisCol = new Color(new_r, new_g, new_b);
+		final Color thisCol = new Color(new_r, new_g, new_b);
 
 		return thisCol;
 	}
@@ -125,9 +125,9 @@ final class SnailDrawSWTTrack
 	// /////////////////////////////////
 	// member functions
 	// ////////////////////////////////
-	public final java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-			CanvasType dest, Watchable watch, SnailHighlighter parent, HiResDate dtg,
-			Color backColor)
+	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+			final CanvasType dest, final Watchable watch, final SnailHighlighter parent, final HiResDate dtg,
+			final Color backColor)
 	{
 		// represent this area as a rectangle
 		java.awt.Rectangle thisR = null;
@@ -138,7 +138,7 @@ final class SnailDrawSWTTrack
 
 		// get the fix and the track
 		final FixWrapper theFix = (FixWrapper) watch;
-		TrackWrapper trk = theFix.getTrackWrapper();
+		final TrackWrapper trk = theFix.getTrackWrapper();
 		
 		// does this object return a track?
 		if(trk == null)
@@ -148,7 +148,7 @@ final class SnailDrawSWTTrack
 		final Collection<Editable> dotPoints;
 
 		// do we have these points already?
-		Collection<Editable> myList = _fixLists.get(theFix);
+		final Collection<Editable> myList = _fixLists.get(theFix);
 
 		// did we find it?
 		if (myList != null)
@@ -187,25 +187,25 @@ final class SnailDrawSWTTrack
 		{
 			if (dotPoints.size() > 0)
 			{
-				int _mySize = 5;
+				final int _mySize = 5;
 				
 				// have a go at plotting the array sensor
 				if (trk.getPlotArrayCentre()) {
-					Enumeration<Editable> enumer = trk.getSensors()
+					final Enumeration<Editable> enumer = trk.getSensors()
 							.elements();
 					while (enumer.hasMoreElements()) {
-						SensorWrapper sw = (SensorWrapper) enumer
+						final SensorWrapper sw = (SensorWrapper) enumer
 								.nextElement();
 
 						// is this sensor visible?
 						if (sw.getVisible()) {
-							ArrayLength len = sw.getSensorOffset();
+							final ArrayLength len = sw.getSensorOffset();
 							if (len != null) {
 								if (len.getValue() != 0) {
-									WorldLocation centre = trk
+									final WorldLocation centre = trk
 											.getBacktraceTo(dtg,
 													len, sw.getWormInHole()).getLocation();
-									Point pt = dest.toScreen(centre);
+									final Point pt = dest.toScreen(centre);
 									dest.drawLine(pt.x - _mySize, pt.y
 											- _mySize, pt.x + _mySize, pt.y
 											+ _mySize);
@@ -226,15 +226,15 @@ final class SnailDrawSWTTrack
 				// set the line style
 				dest.setLineStyle(trk.getLineStyle());
 				
-				Iterator<Editable> iter = dotPoints.iterator();
+				final Iterator<Editable> iter = dotPoints.iterator();
 				while (iter.hasNext())
 				{
 
 					// get this fix
-					FixWrapper gw = (FixWrapper) iter.next();
+					final FixWrapper gw = (FixWrapper) iter.next();
 
 					// get the location
-					WorldLocation loc = gw.getLocation();
+					final WorldLocation loc = gw.getLocation();
 
 					// get the screen location
 					final Point screenP = new Point(proj.toScreen(loc));
@@ -264,7 +264,7 @@ final class SnailDrawSWTTrack
 					if (trk.getNameVisible() && !titlePlotted)
 					{
 						
-						Enumeration<Editable> numer = trk.getPositions();
+						final Enumeration<Editable> numer = trk.getPositions();
 						if (numer.hasMoreElements())
 						{
 							// is this the first fix of the track?

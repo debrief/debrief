@@ -156,7 +156,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		_dateChangeListener = new PropertyChangeListener()
 		{
 			@Override
-			public void propertyChange(PropertyChangeEvent evt)
+			public void propertyChange(final PropertyChangeEvent evt)
 			{
 				// double-check it's the date
 				if (evt.getPropertyName().equals(NarrativeEntry.DTG))
@@ -252,10 +252,10 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 			// and the narrative listeners, if we have one
 			if (_myListeners != null)
 			{
-				for (Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
+				for (final Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
 						.hasNext();)
 				{
-					INarrativeListener thisL = iter.next();
+					final INarrativeListener thisL = iter.next();
 					thisL.entryRemoved((NarrativeEntry) editable);
 				}
 			}
@@ -316,15 +316,15 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the time to find an entry for
 	 * @return
 	 */
-	public NarrativeEntry getEntryNearestTo(HiResDate dtg)
+	public NarrativeEntry getEntryNearestTo(final HiResDate dtg)
 	{
 		NarrativeEntry res = null;
 
 		// ahh, do we have data?
 		if (_myEntries.size() > 0)
 		{
-			NarrativeEntry firstN = (NarrativeEntry) _myEntries.first();
-			NarrativeEntry lastN = (NarrativeEntry) _myEntries.last();
+			final NarrativeEntry firstN = (NarrativeEntry) _myEntries.first();
+			final NarrativeEntry lastN = (NarrativeEntry) _myEntries.last();
 			// just see if this dtg is outside our time period
 			if (dtg.lessThan(firstN.getDTG()))
 			{
@@ -339,10 +339,10 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 			{
 
 				// create an object to use for comparisons
-				NarrativeEntry toTest = new NarrativeEntry("", dtg, " ");
+				final NarrativeEntry toTest = new NarrativeEntry("", dtg, " ");
 
 				// and retrieve all items before this one
-				SortedSet<Editable> before = _myEntries.headSet(toTest);
+				final SortedSet<Editable> before = _myEntries.headSet(toTest);
 
 				// did we find any?
 				if (before != null)
@@ -354,10 +354,10 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@SuppressWarnings("deprecation")
-	public static NarrativeWrapper createDummyData(String title, int len)
+	public static NarrativeWrapper createDummyData(final String title, final int len)
 	{
-		NarrativeWrapper res = new NarrativeWrapper(title);
-		Date newDate = new Date(2005, 06, (int) (Math.random() * 12),
+		final NarrativeWrapper res = new NarrativeWrapper(title);
+		final Date newDate = new Date(2005, 06, (int) (Math.random() * 12),
 				(int) (Math.random() * 13), 33);
 		for (int i = 0; i < len; i++)
 		{
@@ -367,7 +367,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				entryTxt += "\n and more...";
 			}
-			NarrativeEntry ne = new NarrativeEntry(title, "type_"
+			final NarrativeEntry ne = new NarrativeEntry(title, "type_"
 					+ (int) (Math.random() * 5), new HiResDate(newDate.getTime() + i
 					* 10000, 0), entryTxt);
 
@@ -453,7 +453,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -480,8 +480,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		TimePeriod res = null;
 
-		HiResDate start = ((NarrativeEntry) _myEntries.first()).getDTG();
-		HiResDate end = ((NarrativeEntry) _myEntries.last()).getDTG();
+		final HiResDate start = ((NarrativeEntry) _myEntries.first()).getDTG();
+		final HiResDate end = ((NarrativeEntry) _myEntries.last()).getDTG();
 
 		res = new TimePeriod.BaseTimePeriod(start, end);
 
@@ -494,16 +494,16 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param categories
 	 * @return
 	 */
-	public NarrativeEntry[] getNarrativeHistory(String[] categories)
+	public NarrativeEntry[] getNarrativeHistory(final String[] categories)
 	{
 		NarrativeEntry[] res = new NarrativeEntry[]
 		{};
 		// ok, cn
-		Vector<NarrativeEntry> theNarrs = new Vector<NarrativeEntry>(10, 10);
-		Iterator<Editable> iter = getData().iterator();
+		final Vector<NarrativeEntry> theNarrs = new Vector<NarrativeEntry>(10, 10);
+		final Iterator<Editable> iter = getData().iterator();
 		while (iter.hasNext())
 		{
-			NarrativeEntry ne = (NarrativeEntry) iter.next();
+			final NarrativeEntry ne = (NarrativeEntry) iter.next();
 			theNarrs.add(ne);
 		}
 		res = theNarrs.toArray(res);
@@ -511,7 +511,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		return res;
 	}
 
-	public void addNarrativeListener(String category, INarrativeListener listener)
+	public void addNarrativeListener(final String category, final INarrativeListener listener)
 	{
 		if (_myListeners == null)
 			_myListeners = new Vector<INarrativeListener>(1, 1);
@@ -519,8 +519,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		_myListeners.add(listener);
 	}
 
-	public void removeNarrativeListener(String category,
-			INarrativeListener listener)
+	public void removeNarrativeListener(final String category,
+			final INarrativeListener listener)
 	{
 		_myListeners.remove(listener);
 	}

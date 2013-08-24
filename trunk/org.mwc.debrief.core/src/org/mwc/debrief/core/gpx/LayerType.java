@@ -81,7 +81,7 @@ public class LayerType {
      *     {@link TextlabelType }
      *     
      */
-    public void setTextlabel(TextlabelType value) {
+    public void setTextlabel(final TextlabelType value) {
         this.textlabel = value;
     }
 
@@ -105,7 +105,7 @@ public class LayerType {
      *     {@link LineType }
      *     
      */
-    public void setLine(LineType value) {
+    public void setLine(final LineType value) {
         this.line = value;
     }
 
@@ -129,7 +129,7 @@ public class LayerType {
      *     {@link RectangleType }
      *     
      */
-    public void setRectangle(RectangleType value) {
+    public void setRectangle(final RectangleType value) {
         this.rectangle = value;
     }
 
@@ -157,7 +157,7 @@ public class LayerType {
      *     {@link BigInteger }
      *     
      */
-    public void setLineThickness(BigInteger value) {
+    public void setLineThickness(final BigInteger value) {
         this.lineThickness = value;
     }
 
@@ -181,7 +181,7 @@ public class LayerType {
      *     {@link String }
      *     
      */
-    public void setName(String value) {
+    public void setName(final String value) {
         this.name = value;
     }
 
@@ -209,7 +209,7 @@ public class LayerType {
      *     {@link Boolean }
      *     
      */
-    public void setVisible(Boolean value) {
+    public void setVisible(final Boolean value) {
         this.visible = value;
     }
 

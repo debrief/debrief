@@ -68,7 +68,7 @@ final public class WorldDistance
    * @param value the distance in the supplied units
    * @param units the units used for this distance
    */
-  public WorldDistance(double value, int units)
+  public WorldDistance(final double value, final int units)
   {
   	setValues(value, units);
   }
@@ -76,12 +76,12 @@ final public class WorldDistance
   /**
    * copy constructor
    */
-  public WorldDistance(WorldDistance other)
+  public WorldDistance(final WorldDistance other)
   {
     _myDistance = other._myDistance;
   }
   
-  public void setValues(double value, int units)
+  public void setValues(final double value, final int units)
   {
     _myDistance = convert(units, WorldDistance.NM, value);
   }
@@ -93,13 +93,13 @@ final public class WorldDistance
   /**
    * perform a units conversion
    */
-  static public double convert(int from, int to, double val)
+  static public double convert(final int from, final int to, final double val)
   {
     // get this scale value
     double scaleVal = _scaleVals[from];
 
     // convert to mins
-    double tmpVal = val / scaleVal;
+    final double tmpVal = val / scaleVal;
 
     // get the new scale val
     scaleVal = _scaleVals[to];
@@ -111,7 +111,7 @@ final public class WorldDistance
   /**
    * get the string representing this set of units
    */
-  static public String getLabelFor(int units)
+  static public String getLabelFor(final int units)
   {
     return UnitLabels[units];
   }
@@ -119,12 +119,12 @@ final public class WorldDistance
   /**
    * get the index for this type of unit
    */
-  static public int getUnitIndexFor(String units)
+  static public int getUnitIndexFor(final String units)
   {
     int res = 0;
     for (int i = 0; i < UnitLabels.length; i++)
     {
-      String unitLabel = UnitLabels[i];
+      final String unitLabel = UnitLabels[i];
       if (units.equals(unitLabel))
       {
         res = i;
@@ -137,7 +137,7 @@ final public class WorldDistance
   /**
    * get this actual distance, expressed in minutes
    */
-  public double getValueIn(int units)
+  public double getValueIn(final int units)
   {
     return convert(WorldDistance.NM, units, _myDistance);
   }
@@ -148,11 +148,11 @@ final public class WorldDistance
   public String toString()
   {
     // so, what are the preferred units?
-    int theUnits = selectUnitsFor(_myDistance);
+    final int theUnits = selectUnitsFor(_myDistance);
 
-    double theValue = getValueIn(theUnits);
+    final double theValue = getValueIn(theUnits);
 
-    String res = theValue + " " + getLabelFor(theUnits);
+    final String res = theValue + " " + getLabelFor(theUnits);
 
     return res;
   }
@@ -170,13 +170,13 @@ final public class WorldDistance
    * method to find the smallest set of units which will show the
    * indicated value (in millis) as a whole or 1/2 value
    */
-  static public int selectUnitsFor(double millis)
+  static public int selectUnitsFor(final double millis)
   {
 
     int goodUnits = -1;
 
     // how many set of units are there?
-    int len = UnitLabels.length;
+    final int len = UnitLabels.length;
 
     // count downwards from last value
     for (int thisUnit = len - 1; thisUnit >= 0; thisUnit--)
@@ -215,12 +215,12 @@ final public class WorldDistance
   // comparison methods
   ////////////////////////////////////////////////////////////
 
-  public boolean lessThan(WorldDistance other)
+  public boolean lessThan(final WorldDistance other)
   {
     return this.getValueIn(METRES) < other.getValueIn(METRES);
   }
 
-  public boolean greaterThan(WorldDistance other)
+  public boolean greaterThan(final WorldDistance other)
   {
     return this.getValueIn(METRES) > other.getValueIn(METRES);
   }

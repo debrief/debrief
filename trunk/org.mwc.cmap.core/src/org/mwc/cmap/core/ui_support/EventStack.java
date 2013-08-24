@@ -21,13 +21,13 @@ public class EventStack
 		private Runnable nextEvent = null;
 		private Long eventReceivedTime = null;
 	
-		public DelayedEventRunner(int delay)
+		public DelayedEventRunner(final int delay)
 		{
 			this.delay = delay;
 			setDaemon(true);
 		}
 	
-		synchronized public void setNextEvent(Runnable runnable)
+		synchronized public void setNextEvent(final Runnable runnable)
 		{
 			// store the time we received this
 			eventReceivedTime = System.currentTimeMillis();
@@ -49,7 +49,7 @@ public class EventStack
 						final long currentTime = System.currentTimeMillis();
 	
 						// how long since we last received an event?
-						long elapsedTime = currentTime - eventReceivedTime;
+						final long elapsedTime = currentTime - eventReceivedTime;
 	
 						// have we passed the required waiting time?
 						isDelayUp = elapsedTime > delay;
@@ -66,7 +66,7 @@ public class EventStack
 				{
 					Thread.sleep(10);
 				}
-				catch (InterruptedException e)
+				catch (final InterruptedException e)
 				{
 					// we can not do anything about it, let's ignore
 				}
@@ -82,7 +82,7 @@ public class EventStack
 	 * 
 	 * @param delay how (millis) long we should wait for another before running the current operation
 	 */
-	public EventStack(int delay)
+	public EventStack(final int delay)
 	{
 		_delay = delay;
 		if (delay <= 0)
@@ -91,7 +91,7 @@ public class EventStack
 		}
 	}
 
-	public void addEvent(Runnable event)
+	public void addEvent(final Runnable event)
 	{
 		if (event == null)
 		{

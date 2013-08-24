@@ -81,7 +81,7 @@ public abstract class SteppingBoundedIntegerEditor extends PropertyEditorSupport
 		
     if(p1 instanceof SteppingBoundedInteger)
     {
-      SteppingBoundedInteger val = (SteppingBoundedInteger)p1;
+      final SteppingBoundedInteger val = (SteppingBoundedInteger)p1;
 			// take duplicate of bounded integer value - so that we are not editing
 			// the original one
       _myVal = new SteppingBoundedInteger(val.getCurrent(), 

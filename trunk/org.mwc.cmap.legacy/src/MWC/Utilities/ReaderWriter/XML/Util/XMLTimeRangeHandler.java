@@ -22,7 +22,7 @@ abstract public class XMLTimeRangeHandler extends MWCXMLReader
 	private HiResDate _start = MWC.GenericData.TimePeriod.INVALID_DATE;
   private HiResDate _end = MWC.GenericData.TimePeriod.INVALID_DATE;
   
-  public XMLTimeRangeHandler(String type)
+  public XMLTimeRangeHandler(final String type)
   {
     // inform our parent what type of class we are
     super(type);
@@ -30,7 +30,7 @@ abstract public class XMLTimeRangeHandler extends MWCXMLReader
     // sort out the handlers
     addAttributeHandler(new HandleDateTimeAttribute(START)
     {
-      public void setValue(String name, final long val)
+      public void setValue(final String name, final long val)
       {
       	_start = new HiResDate(val);
       }
@@ -38,7 +38,7 @@ abstract public class XMLTimeRangeHandler extends MWCXMLReader
     // sort out the handlers
     addAttributeHandler(new HandleDateTimeAttribute(END)
     {
-      public void setValue(String name, final long val)
+      public void setValue(final String name, final long val)
       {
       	_end = new HiResDate(val);
       }
@@ -59,15 +59,15 @@ abstract public class XMLTimeRangeHandler extends MWCXMLReader
 
   abstract public void setTimeRange(HiResDate start, HiResDate end);
 
-  public static void exportThis(HiResDate start, HiResDate end, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportThis(final HiResDate start, final HiResDate end, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
   	exportThis(start, end, parent, doc, MY_TYPE);
   }
 
-  public static void exportThis(HiResDate start, HiResDate end, org.w3c.dom.Element parent, org.w3c.dom.Document doc, String type)
+  public static void exportThis(final HiResDate start, final HiResDate end, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc, final String type)
   {
     boolean useful = false;
-    org.w3c.dom.Element eTime = doc.createElement(type);
+    final org.w3c.dom.Element eTime = doc.createElement(type);
     if (start != MWC.GenericData.TimePeriod.INVALID_DATE)
     {
       eTime.setAttribute(START, writeThisInXML(start.getDate()));

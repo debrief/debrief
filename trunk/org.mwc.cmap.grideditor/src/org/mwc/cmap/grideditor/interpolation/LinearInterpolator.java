@@ -6,12 +6,12 @@ package org.mwc.cmap.grideditor.interpolation;
 public class LinearInterpolator {
 
 	@SuppressWarnings("unused")
-	private double A, B, a, b, f;
+	private final double A, B, a, b, f;
 
 	/**
 	 * Create a linear interpolator which maps [a,b] to [A,B]
 	 */
-	public LinearInterpolator(double A, double B, double a, double b) {
+	public LinearInterpolator(final double A, final double B, final double a, final double b) {
 		this.A = A;
 		this.B = B;
 		this.a = a;
@@ -22,7 +22,7 @@ public class LinearInterpolator {
 	/**
 	 * Return the interpolated value corresponding to x.
 	 */
-	public double interp(double x) {
+	public double interp(final double x) {
 		return A + (x - a) * f;
 	}
 }

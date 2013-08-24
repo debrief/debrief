@@ -79,55 +79,55 @@ public class HitTester
   /**
    * does the screen point represent a valid click on the data point?
    */
-  static public boolean doesHit(Point theHitScreen,
-                                WorldLocation theHitData,
-                                double theDistance,
-                                PlainProjection theProjection)
+  static public boolean doesHit(final Point theHitScreen,
+                                final WorldLocation theHitData,
+                                final double theDistance,
+                                final PlainProjection theProjection)
   {
 
     // first create a pretend point in data coordinates
     // (make it a point due east of the origin, so that it is still a valid earth location)
-    WorldLocation other = theHitData.add(new MWC.GenericData.WorldVector(1.57, theDistance, 0));
+    final WorldLocation other = theHitData.add(new MWC.GenericData.WorldVector(1.57, theDistance, 0));
 
     // and convert it to screen coordinates
-    Point pOther = theProjection.toScreen(other);
-    int dx = pOther.x - theHitScreen.x;
-    int dy = pOther.y - theHitScreen.y;
-    int pDist = (int) Math.sqrt(dx * dx + dy * dy);
+    final Point pOther = theProjection.toScreen(other);
+    final int dx = pOther.x - theHitScreen.x;
+    final int dy = pOther.y - theHitScreen.y;
+    final int pDist = (int) Math.sqrt(dx * dx + dy * dy);
 
     return pDist < THRESHOLD;
   }
 
-  static public boolean doesHit(WorldLocation theHitScreen,
-                                WorldLocation theHitData,
-                                double theDistance,
-                                PlainProjection theProjection)
+  static public boolean doesHit(final WorldLocation theHitScreen,
+                                final WorldLocation theHitData,
+                                final double theDistance,
+                                final PlainProjection theProjection)
   {
 
     // first create a pretend point in data coordinates
-    Point pThis = theProjection.toScreen(theHitScreen);
-    Point pOther = theProjection.toScreen(theHitData);
+    final Point pThis = theProjection.toScreen(theHitScreen);
+    final Point pOther = theProjection.toScreen(theHitData);
 
-    int dx = pOther.x - pThis.x;
-    int dy = pOther.y - pThis.y;
-    int pDist = (int) Math.sqrt(dx * dx + dy * dy);
+    final int dx = pOther.x - pThis.x;
+    final int dy = pOther.y - pThis.y;
+    final int pDist = (int) Math.sqrt(dx * dx + dy * dy);
 
     return pDist < THRESHOLD;
   }
 
-  static public boolean doesHit(WorldLocation theHitScreen,
-                                WorldArea theHitData,
-                                double theDistance,
-                                PlainProjection theProjection)
+  static public boolean doesHit(final WorldLocation theHitScreen,
+                                final WorldArea theHitData,
+                                final double theDistance,
+                                final PlainProjection theProjection)
   {
 
     // first create a pretend point in data coordinates
-    Point pThis = new Point(theProjection.toScreen(theHitScreen));
-    Point pOtherTL = new Point(theProjection.toScreen(theHitData.getTopLeft()));
-    Point pOtherBR = new Point(theProjection.toScreen(theHitData.getBottomRight()));
+    final Point pThis = new Point(theProjection.toScreen(theHitScreen));
+    final Point pOtherTL = new Point(theProjection.toScreen(theHitData.getTopLeft()));
+    final Point pOtherBR = new Point(theProjection.toScreen(theHitData.getBottomRight()));
 
     // create a screen rectangle from the area
-    Rectangle rt = new Rectangle(pOtherTL);
+    final Rectangle rt = new Rectangle(pOtherTL);
     rt.add(pOtherBR);
 
     // grow the area by the threshold

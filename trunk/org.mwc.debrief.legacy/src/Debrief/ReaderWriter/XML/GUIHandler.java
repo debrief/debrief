@@ -27,7 +27,7 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
 
   static private StepperHandler _myStepperHandler;
 
-  public GUIHandler(Debrief.GUI.Frames.Session session)
+  public GUIHandler(final Debrief.GUI.Frames.Session session)
   {
     // inform our parent what type of class we are
     super("gui");
@@ -35,30 +35,30 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     _session = session;
 
     Debrief.GUI.Tote.AnalysisTote _theTote = null;
-    Debrief.GUI.Views.PlainView pv = _session.getCurrentView();
+    final Debrief.GUI.Views.PlainView pv = _session.getCurrentView();
     if(pv instanceof Debrief.GUI.Views.AnalysisView)
     {
       _analysisView = (Debrief.GUI.Views.AnalysisView) pv;
       _theTote = _analysisView.getTote();
     }
 
-    MWC.GUI.Layers _theData = _session.getData();
+    final MWC.GUI.Layers _theData = _session.getData();
 
     addHandler(new ToteHandler(_theTote, _theData));
     addHandler(new ComponentHandler(){
-      public void addComponent(GUIHandler.ComponentDetails details)
+      public void addComponent(final GUIHandler.ComponentDetails details)
       {
         addThisComponent(details);
       }
     });
     addHandler(new BackgroundHandler()
     {
-      public void setBackgroundColor(Color theColor)
+      public void setBackgroundColor(final Color theColor)
       {
-        PlainView pv1 = _session.getCurrentView();
+        final PlainView pv1 = _session.getCurrentView();
         if(pv1 instanceof AnalysisView)
         {
-          AnalysisView av = (AnalysisView)pv1;
+          final AnalysisView av = (AnalysisView)pv1;
           av.getChart().getCanvas().setBackgroundColor(theColor);
         }
       }
@@ -71,12 +71,12 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     _myCreators.put("Stepper", _myStepperHandler);
   }
 
-  void addThisComponent(ComponentDetails details)
+  void addThisComponent(final ComponentDetails details)
   {
     // sort out this component
-    String cType = details.type;
+    final String cType = details.type;
 
-    ComponentCreator cc = _myCreators.get(cType);
+    final ComponentCreator cc = _myCreators.get(cType);
     if(cc != null)
     {
       cc.makeThis(details, _analysisView);
@@ -89,19 +89,19 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
   {
     public final java.util.Hashtable<String, String> properties = new java.util.Hashtable<String, String>();
     public String type = null;
-    public final void addProperty(String name, String val)
+    public final void addProperty(final String name, final String val)
     {
       properties.put(name, val);
     }
-    public final void exportTo(String title, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+    public final void exportTo(final String title, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
     {
-      Element comp = doc.createElement("component");
+      final Element comp = doc.createElement("component");
       comp.setAttribute("Type", title);
-      java.util.Enumeration<String> iter = properties.keys();
+      final java.util.Enumeration<String> iter = properties.keys();
       while(iter.hasMoreElements())
       {
-        String thisK = iter.nextElement();
-        String value = properties.get(thisK);
+        final String thisK = iter.nextElement();
+        final String value = properties.get(thisK);
         MWC.Utilities.ReaderWriter.XML.Util.PropertyHandler.exportProperty(thisK, value, comp, doc);
       }
 
@@ -118,10 +118,10 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
   // the constructors for our components
   /////////////////////////////////////////////////////////////////////////
 
-  public static void exportThis(Debrief.GUI.Frames.Session session, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportThis(final Debrief.GUI.Frames.Session session, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     // create ourselves
-    Element gui = doc.createElement("gui");
+    final Element gui = doc.createElement("gui");
 
     ////////////////////////////////////////////////
     // first the tote
@@ -133,14 +133,14 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     // check the stepper handler
     if(_myStepperHandler == null)
       _myStepperHandler = new StepperHandler();
-    ComponentDetails stepperD = _myStepperHandler.exportThis(session);
+    final ComponentDetails stepperD = _myStepperHandler.exportThis(session);
     stepperD.exportTo("Stepper", gui, doc);
 
-    PlainView pv = session.getCurrentView();
+    final PlainView pv = session.getCurrentView();
     if(pv instanceof AnalysisView)
     {
-      AnalysisView av = (AnalysisView)pv;
-      Color col = av.getChart().getCanvas().getBackgroundColor();
+      final AnalysisView av = (AnalysisView)pv;
+      final Color col = av.getChart().getCanvas().getBackgroundColor();
       BackgroundHandler.exportThis(col, gui, doc);
     }
 

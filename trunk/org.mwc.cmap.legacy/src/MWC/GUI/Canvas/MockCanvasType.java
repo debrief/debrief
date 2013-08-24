@@ -16,100 +16,100 @@ import MWC.GenericData.WorldLocation;
 public class MockCanvasType implements CanvasType
 {
 
-    public void addPainter(PaintListener listener)
+    public void addPainter(final PaintListener listener)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void drawArc(int x, int y, int width, int height, int startAngle,
-            int arcAngle)
+    public void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
+            final int arcAngle)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public boolean drawImage(Image img, int x, int y, int width, int height,
-            ImageObserver observer)
+    public boolean drawImage(final Image img, final int x, final int y, final int width, final int height,
+            final ImageObserver observer)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public void drawLine(int startX, int startY, int endX, int endY)
+    public void drawLine(final int startX, final int startY, final int endX, final int endY)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void drawOval(int x, int y, int width, int height)
+    public void drawOval(final int x, final int y, final int width, final int height)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void drawPolygon(int[] points, int[] points2, int points3)
+    public void drawPolygon(final int[] points, final int[] points2, final int points3)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void drawPolyline(int[] points, int[] points2, int points3)
+    public void drawPolyline(final int[] points, final int[] points2, final int points3)
     {
         // TODO Auto-generated method stub
 
     }
     
-    public void drawPolyline(int[] points)
+    public void drawPolyline(final int[] points)
     {        
     }    
 
-    public void drawRect(int x1, int y1, int wid, int height)
+    public void drawRect(final int x1, final int y1, final int wid, final int height)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void drawText(String str, int x, int y)
+    public void drawText(final String str, final int x, final int y)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void drawText(Font theFont, String theStr, int x, int y)
+    public void drawText(final Font theFont, final String theStr, final int x, final int y)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void endDraw(Object theVal)
+    public void endDraw(final Object theVal)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void fillArc(int x, int y, int width, int height, int startAngle,
-            int arcAngle)
+    public void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+            final int arcAngle)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void fillOval(int x, int y, int width, int height)
+    public void fillOval(final int x, final int y, final int width, final int height)
     {
         // TODO Auto-generated method stub
 
     }
 
-    public void fillPolygon(int[] points, int[] points2, int points3)
+    public void fillPolygon(final int[] points, final int[] points2, final int points3)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void fillRect(int x, int y, int wid, int height)
+    public void fillRect(final int x, final int y, final int wid, final int height)
     {
         // TODO Auto-generated method stub
 
@@ -158,21 +158,21 @@ public class MockCanvasType implements CanvasType
     }
 
 
-    public int getStringHeight(Font theFont)
+    public int getStringHeight(final Font theFont)
     {
         // TODO Auto-generated method stub
         return 0;
     }
 
 
-    public int getStringWidth(Font theFont, String theString)
+    public int getStringWidth(final Font theFont, final String theString)
     {
         // TODO Auto-generated method stub
         return 0;
     }
 
 
-    public void removePainter(PaintListener listener)
+    public void removePainter(final PaintListener listener)
     {
         // TODO Auto-generated method stub
 
@@ -186,62 +186,62 @@ public class MockCanvasType implements CanvasType
     }
 
 
-    public void setBackgroundColor(Color theColor)
+    public void setBackgroundColor(final Color theColor)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void setColor(Color theCol)
+    public void setColor(final Color theCol)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void setLineStyle(int style)
+    public void setLineStyle(final int style)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void setLineWidth(float width)
+    public void setLineWidth(final float width)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void setProjection(PlainProjection val)
+    public void setProjection(final PlainProjection val)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void setTooltipHandler(TooltipHandler handler)
+    public void setTooltipHandler(final TooltipHandler handler)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public void startDraw(Object theVal)
+    public void startDraw(final Object theVal)
     {
         // TODO Auto-generated method stub
 
     }
 
 
-    public Point toScreen(WorldLocation val)
+    public Point toScreen(final WorldLocation val)
     {
         return new Point(1,2);
     }
 
 
-    public WorldLocation toWorld(Point val)
+    public WorldLocation toWorld(final Point val)
     {
         // TODO Auto-generated method stub
         return null;
@@ -255,13 +255,13 @@ public class MockCanvasType implements CanvasType
     }
 
 	@Override
-	public void drawText(String str, int x, int y, float rotate) {
+	public void drawText(final String str, final int x, final int y, final float rotate) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void setFont(Font theFont)
+	public void setFont(final Font theFont)
 	{
 		// TODO Auto-generated method stub
 		

@@ -9,10 +9,10 @@ public class Postcard extends Panel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Panel       panelContainer = new Panel();
-	private ImageCanvas canvas = new ImageCanvas();
+	private final Panel       panelContainer = new Panel();
+	private final ImageCanvas canvas = new ImageCanvas();
 
-	public Postcard(Image image, Panel panel) {
+	public Postcard(final Image image, final Panel panel) {
 		if(image != null) setImage(image);
 		if(panel != null) setPanel(panel);
 
@@ -26,11 +26,11 @@ public class Postcard extends Panel {
 		else
 			return null;
 	}
-	public void setImage(Image image) {
+	public void setImage(final Image image) {
 		Util.waitForImage(this, image);
 		canvas.setImage(image);
 	}
-	public void setPanel(Panel panel) {
+	public void setPanel(final Panel panel) {
 		if(panelContainer.getComponentCount() == 1) {
 			panelContainer.remove(getComponent(0));
 		}

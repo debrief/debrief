@@ -115,8 +115,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not us
 						if (part != getMe())
@@ -131,8 +131,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
 						if (part != getMe())
@@ -145,10 +145,10 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						TrackManager provider = (TrackManager) part;
+						final TrackManager provider = (TrackManager) part;
 
 						// is this different to our current one?
 						if (provider != _trackData)
@@ -159,8 +159,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						if (part == _trackData)
 						{
@@ -172,8 +172,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 
 						// is this different to our current one?
@@ -183,19 +183,19 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 								_layerListener = new DataListener()
 								{
 
-									public void dataExtended(Layers theData)
+									public void dataExtended(final Layers theData)
 									{
 										// redo the data
 										recalculateData();
 									}
 
-									public void dataModified(Layers theData, Layer changedLayer)
+									public void dataModified(final Layers theData, final Layer changedLayer)
 									{
 										// redo the data
 										recalculateData();
 									}
 
-									public void dataReformatted(Layers theData, Layer changedLayer)
+									public void dataReformatted(final Layers theData, final Layer changedLayer)
 									{
 										// redo the presentation
 										redrawPlot();
@@ -215,8 +215,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						if (part == _currentLayers)
 						{
@@ -231,7 +231,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 	}
 
-	protected void startListeningTo(Layers part)
+	protected void startListeningTo(final Layers part)
 	{
 		_currentLayers = part;
 		_currentLayers.addDataModifiedListener(_layerListener);
@@ -239,7 +239,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_currentLayers.addDataExtendedListener(_layerListener);
 	}
 
-	protected void stopListeningTo(Layers part)
+	protected void stopListeningTo(final Layers part)
 	{
 		if (_currentLayers != null)
 		{
@@ -250,20 +250,20 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_currentLayers = null;
 	}
 
-	protected void startListeningTo(ISelectionProvider part)
+	protected void startListeningTo(final ISelectionProvider part)
 	{
 		_currentProvider = part;
 		_currentProvider.addSelectionChangedListener(_selectionChangeListener);
 	}
 
-	protected void stopListeningTo(ISelectionProvider part)
+	protected void stopListeningTo(final ISelectionProvider part)
 	{
 		if (_currentProvider != null)
 			_currentProvider.removeSelectionChangedListener(_selectionChangeListener);
 		_currentProvider = null;
 	}
 
-	protected void storeDetails(TrackManager provider, IWorkbenchPart parentPart)
+	protected void storeDetails(final TrackManager provider, final IWorkbenchPart parentPart)
 	{
 		// ok, we've got a new plot to watch. better watch it...
 		_trackData = provider;
@@ -279,7 +279,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	{
 
 		// which is the primary?
-		WatchableList primary = _trackData.getPrimaryTrack();
+		final WatchableList primary = _trackData.getPrimaryTrack();
 
 		if (primary == null)
 			_myChartFrame.getChart().setTitle("Primary track missing");
@@ -294,12 +294,12 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		}
 		else
 		{
-			TrackWrapper _primary = (TrackWrapper) primary;
+			final TrackWrapper _primary = (TrackWrapper) primary;
 			// and which are the secondaries?
-			WatchableList[] secondaries = _trackData.getSecondaryTracks();
+			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
 
 			// sort out the bearing tracks
-			TimeSeriesCollection newData = new TimeSeriesCollection();
+			final TimeSeriesCollection newData = new TimeSeriesCollection();
 			DataSupport.tracksFor(_primary, secondaries, newData);
 
 			DataSupport.sensorDataFor(_primary, newData, _trackIndex);
@@ -314,7 +314,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		makeActions();
 		contributeToActionBars();
@@ -332,7 +332,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		parent.setLayout(new FillLayout());
 
 		// ok, let's mockup the UI
-		JFreeChart myChart = DataSupport.createChart(null);
+		final JFreeChart myChart = DataSupport.createChart(null);
 		myChart.setTitle(CHART_NAME);
 		myChart.getXYPlot().setRenderer(_plotRenderer);
 		
@@ -345,21 +345,21 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myChartFrame.addChartMouseListener(new ChartMouseListener()
 		{
 
-			public void chartMouseClicked(ChartMouseEvent event)
+			public void chartMouseClicked(final ChartMouseEvent event)
 			{
-				ChartEntity entity = event.getEntity();
+				final ChartEntity entity = event.getEntity();
 				if (entity instanceof XYItemEntity)
 				{
-					XYItemEntity xyi = (XYItemEntity) entity;
-					TimeSeriesCollection coll = (TimeSeriesCollection) xyi.getDataset();
-					TacticalSeries ts = (TacticalSeries) coll
+					final XYItemEntity xyi = (XYItemEntity) entity;
+					final TimeSeriesCollection coll = (TimeSeriesCollection) xyi.getDataset();
+					final TacticalSeries ts = (TacticalSeries) coll
 							.getSeries(((XYItemEntity) entity).getSeriesIndex());
 					if (ts instanceof SensorSeries)
 					{
-						SensorSeries ss = (SensorSeries) ts;
+						final SensorSeries ss = (SensorSeries) ts;
 
 						// right, is ctrl-key pressed
-						int mods = event.getTrigger().getModifiers();
+						final int mods = event.getTrigger().getModifiers();
 						if ((mods & InputEvent.CTRL_MASK) == 0)
 						{
 							_selectedTracks.removeAllElements();
@@ -392,7 +392,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				}
 			}
 
-			public void chartMouseMoved(ChartMouseEvent event)
+			public void chartMouseMoved(final ChartMouseEvent event)
 			{
 			}
 		});
@@ -401,22 +401,22 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		{
 
 			@SuppressWarnings({ "rawtypes" })
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				// right, see what it is
-				ISelection sel = event.getSelection();
+				final ISelection sel = event.getSelection();
 				if (sel instanceof StructuredSelection)
 				{
-					StructuredSelection ss = (StructuredSelection) sel;
-					Iterator eles = ss.iterator();
+					final StructuredSelection ss = (StructuredSelection) sel;
+					final Iterator eles = ss.iterator();
 					boolean processingThese = false;
 					while (eles.hasNext())
 					{
-						Object datum = eles.next();
+						final Object datum = eles.next();
 						if (datum instanceof EditableWrapper)
 						{
-							EditableWrapper pw = (EditableWrapper) datum;
-							Editable ed = pw.getEditable();
+							final EditableWrapper pw = (EditableWrapper) datum;
+							final Editable ed = pw.getEditable();
 							if (ed instanceof SensorWrapper)
 							{
 								if (!processingThese)
@@ -425,7 +425,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 									_selectedTracks.removeAllElements();
 
 								}
-								SensorSeries thisSeries = _trackIndex.get(ed);
+								final SensorSeries thisSeries = _trackIndex.get(ed);
 								_selectedTracks.add(thisSeries);
 							}
 						}
@@ -453,27 +453,27 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 	protected void updatedSelection()
 	{
-		Vector<EditableWrapper> wrappers = new Vector<EditableWrapper>(0, 1);
-		Iterator<SensorSeries> it = _selectedTracks.iterator();
+		final Vector<EditableWrapper> wrappers = new Vector<EditableWrapper>(0, 1);
+		final Iterator<SensorSeries> it = _selectedTracks.iterator();
 		while (it.hasNext())
 		{
-			SensorSeries ss = (SensorSeries) it.next();
-			SensorWrapper sw = ss.getSensor();
-			EditableWrapper ed = new EditableWrapper(sw);
+			final SensorSeries ss = (SensorSeries) it.next();
+			final SensorWrapper sw = ss.getSensor();
+			final EditableWrapper ed = new EditableWrapper(sw);
 			wrappers.add(ed);
 		}
 
 		if (wrappers.size() > 0)
 		{
 			// and provide the selection object
-			StructuredSelection trackSelection = new StructuredSelection(wrappers);
+			final StructuredSelection trackSelection = new StructuredSelection(wrappers);
 			setSelection(trackSelection);
 		}
 	}
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(_useOriginalColors);
 		bars.getToolBarManager().add(_doSplit);
 		// and the help link
@@ -516,11 +516,11 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		// ok, go get the primary track
 		if (_trackData != null)
 		{
-			TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
-			BaseLayer sensors = primary.getSensors();
+			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
+			final BaseLayer sensors = primary.getSensors();
 			if (sensors instanceof SplittableLayer)
 			{
-				SplittableLayer youSplitter = (SplittableLayer) sensors;
+				final SplittableLayer youSplitter = (SplittableLayer) sensors;
 				youSplitter.AutoSplitTracks();
 
 				// ok, fire off a layers extended event to share the good news
@@ -591,7 +591,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	{
 	}
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	public void addSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		_selectionHelper.addSelectionChangedListener(listener);
 	}
@@ -601,12 +601,12 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		return _selectionHelper.getSelection();
 	}
 
-	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		_selectionHelper.removeSelectionChangedListener(listener);
 	}
 
-	public void setSelection(ISelection selection)
+	public void setSelection(final ISelection selection)
 	{
 		_selectionHelper.fireNewSelection(selection);
 	}

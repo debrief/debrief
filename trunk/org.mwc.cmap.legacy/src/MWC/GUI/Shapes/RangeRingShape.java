@@ -125,7 +125,7 @@ public class RangeRingShape extends PlainShape implements Editable
 	public class WheelInfo extends Editable.EditorType
 	{
 
-		public WheelInfo(RangeRingShape data, String theName)
+		public WheelInfo(final RangeRingShape data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -135,7 +135,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("NumRings", "the number of rings to plot"),
 						prop("RingWidth", "the width of the range rings"),
 						prop("Centre", "the centre of the Wheel"),
@@ -146,7 +146,7 @@ public class RangeRingShape extends PlainShape implements Editable
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -160,7 +160,7 @@ public class RangeRingShape extends PlainShape implements Editable
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public WheelTest(String val)
+		public WheelTest(final String val)
 		{
 			super(val);
 		}
@@ -224,8 +224,8 @@ public class RangeRingShape extends PlainShape implements Editable
 	 * @param theColor
 	 *          the colour to plot the wheel
 	 */
-	public RangeRingShape(WorldLocation theCentre, int numRings,
-			WorldDistance ringWidth)
+	public RangeRingShape(final WorldLocation theCentre, final int numRings,
+			final WorldDistance ringWidth)
 	{
 		super(0, 1, "Range Ring");
 
@@ -318,7 +318,7 @@ public class RangeRingShape extends PlainShape implements Editable
 	 *          the destination
 	 */
 	@Override
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// are we visible?
 		if (!getVisible())
@@ -329,24 +329,24 @@ public class RangeRingShape extends PlainShape implements Editable
 
 		dest.setColor(getColor());
 
-		MWC.Algorithms.PlainProjection _proj = dest.getProjection();
+		final MWC.Algorithms.PlainProjection _proj = dest.getProjection();
 
 		// sort out the centre in screen coords
-		Point centre = new Point(_proj.toScreen(_theCentre));
+		final Point centre = new Point(_proj.toScreen(_theCentre));
 
 		// sort out the range in screen coords
-		WorldLocation outerEdge = _theCentre.add(new WorldVector(
+		final WorldLocation outerEdge = _theCentre.add(new WorldVector(
 				MWC.Algorithms.Conversions.Degs2Rads(0), getRingWidth().getValueIn(
 						WorldDistance.DEGS), 0));
-		Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
-		int dx = screenOuterEdge.x - centre.x;
-		int dy = screenOuterEdge.y - centre.y;
+		final Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
+		final int dx = screenOuterEdge.x - centre.x;
+		final int dy = screenOuterEdge.y - centre.y;
 		final int ringRadius = (int) Math.sqrt(dx * dx + dy * dy);
 
 		int thisRadius = ringRadius;
 
 		// now the inner and outer range rings
-		Point origin = new Point();
+		final Point origin = new Point();
 
 		final int lLoc = _rangeLabelLocation;
 
@@ -366,8 +366,8 @@ public class RangeRingShape extends PlainShape implements Editable
 					+ (getRingWidth().getValue() + getRingWidth().getValue() * i);
 			thisLabel += " " + getRingWidth().getUnitsLabel();
 
-			int strWidth = dest.getStringWidth(null, thisLabel);
-			int strHeight = dest.getStringHeight(null);
+			final int strWidth = dest.getStringWidth(null, thisLabel);
+			final int strHeight = dest.getStringHeight(null);
 
 			if ((lLoc == ALL) || (lLoc == TOP))
 				dest.drawText(thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
@@ -393,7 +393,7 @@ public class RangeRingShape extends PlainShape implements Editable
 	 * allows for individual shapes to have 'hit-spots' in various locations.
 	 */
 	@Override
-	public double rangeFrom(WorldLocation point)
+	public double rangeFrom(final WorldLocation point)
 	{
 		final double thisRes = _theCentre.rangeFrom(point);
 		double res = thisRes;
@@ -401,7 +401,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		// sort out the range from each radius
 		for(int i=0;i<=_numRings;i++)
 		{
-			double thisR = i * _ringWidth.getValueIn(WorldDistance.DEGS);
+			final double thisR = i * _ringWidth.getValueIn(WorldDistance.DEGS);
 			
 			res = Math.min(Math.abs(thisR - thisRes) ,res);
 		}
@@ -413,7 +413,7 @@ public class RangeRingShape extends PlainShape implements Editable
 	/**
 	 * set the centre location of the Wheel
 	 */
-	public void setCentre(WorldLocation centre)
+	public void setCentre(final WorldLocation centre)
 	{
 		// inform our listeners
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, _theCentre, centre);
@@ -432,7 +432,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		return _rangeLabelLocation;
 	}
 
-	public void setRangeLabelLocation(int rangeLabelLocation)
+	public void setRangeLabelLocation(final int rangeLabelLocation)
 	{
 		_rangeLabelLocation = rangeLabelLocation;
 	}
@@ -442,7 +442,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		return _ringWidth;
 	}
 
-	public void setRingWidth(WorldDistance ringWidth)
+	public void setRingWidth(final WorldDistance ringWidth)
 	{
 		_ringWidth = ringWidth;
 
@@ -458,7 +458,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		return new BoundedInteger(_numRings, 1, 10);
 	}
 
-	public void setNumRings(BoundedInteger numRings)
+	public void setNumRings(final BoundedInteger numRings)
 	{
 		_numRings = numRings.getCurrent();
 
@@ -472,15 +472,15 @@ public class RangeRingShape extends PlainShape implements Editable
 	// ////////////////////////////////////////
 	// convenience functions which pass calls back to parent
 	// ////////////////////////////////////////
-	public void setWheelColor(Color val)
+	public void setWheelColor(final Color val)
 	{
 		super.setColor(val);
 	}
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
-		WorldLocation oldCentre = getCentre();
-		WorldLocation newCentre = oldCentre.add(vector);
+		final WorldLocation oldCentre = getCentre();
+		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
 
 		// and calc the new summary data

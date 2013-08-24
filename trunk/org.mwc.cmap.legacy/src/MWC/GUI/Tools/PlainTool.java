@@ -109,7 +109,7 @@ abstract public class PlainTool implements Tool {
   /////////////////////////////////////////////////////////
   // constructor
   /////////////////////////////////////////////////////////
-  public PlainTool(ToolParent theParent, String theLabel, String theImage){
+  public PlainTool(final ToolParent theParent, final String theLabel, final String theImage){
     _theParent = theParent;
     if(theLabel == null){
       // check we have a label, if so use it, else
@@ -142,7 +142,7 @@ abstract public class PlainTool implements Tool {
 
 	/** allow us to be defined as an action listener
 	 */
-	public void actionPerformed(java.awt.event.ActionEvent p1)
+	public void actionPerformed(final java.awt.event.ActionEvent p1)
 	{
 		execute();
 	}
@@ -159,7 +159,7 @@ abstract public class PlainTool implements Tool {
     setBusy(true);
 
     // create the memento
-    Action newAction = getData();
+    final Action newAction = getData();
 
     // do the action
     if(newAction != null)
@@ -179,7 +179,7 @@ abstract public class PlainTool implements Tool {
   }
 
 
-  public void setBusy(boolean isBusy){
+  public void setBusy(final boolean isBusy){
     if(_theParent != null){
       if(isBusy)
         _theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
@@ -198,7 +198,7 @@ abstract public class PlainTool implements Tool {
     return _label;
   }
 
-	public void setLabel(String val)
+	public void setLabel(final String val)
 	{
 		_label = val;
 	}

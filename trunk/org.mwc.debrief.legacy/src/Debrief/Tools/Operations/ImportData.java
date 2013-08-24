@@ -149,8 +149,8 @@ public final class ImportData extends PlainTool
 	 * @param theSessionVal
 	 *          the Session to add the file to (or null, see above)
 	 */
-	public ImportData(ToolParent theParent, Application theApplication,
-			Session theSessionVal)
+	public ImportData(final ToolParent theParent, final Application theApplication,
+			final Session theSessionVal)
 	{
 		super(theParent, "Import data", "images/import_rep.gif");
 		// store the Session
@@ -179,13 +179,13 @@ public final class ImportData extends PlainTool
 		// see if we have an old directory to retrieve
 		if (_lastDirectory == "")
 		{
-			String val = getParent().getProperty("REP_Directory");
+			final String val = getParent().getProperty("REP_Directory");
 			if (val != null)
 				_lastDirectory = val;
 		}
 
 		// get the filename of the file to import
-		File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep",
+		final File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep",
 				"Replay Files (*.rep)", _lastDirectory);
 
 		// check if anything was returned
@@ -193,12 +193,12 @@ public final class ImportData extends PlainTool
 		{
 
 			// got the filename now do the import
-			Layers theLayers = new Layers();
+			final Layers theLayers = new Layers();
 
 			// loop through
 			for (int i = 0; i < fList.length; i++)
 			{
-				File fl = fList[i];
+				final File fl = fList[i];
 
 				// have we got file?
 				if ((fl != null) && (!fl.getName().equals("nullnull")))
@@ -218,7 +218,7 @@ public final class ImportData extends PlainTool
 						Application.addToMru(fl.getAbsolutePath());
 
 					}
-					catch (java.io.FileNotFoundException e)
+					catch (final java.io.FileNotFoundException e)
 					{
 						MWC.Utilities.Errors.Trace.trace(e);
 					}
@@ -230,7 +230,7 @@ public final class ImportData extends PlainTool
 							if (is != null)
 								is.close();
 						}
-						catch (java.io.IOException ex)
+						catch (final java.io.IOException ex)
 						{
 							MWC.Utilities.Errors.Trace.trace(ex, "Closing REPLAY file");
 						}
@@ -295,7 +295,7 @@ public final class ImportData extends PlainTool
 		 * constructor - produced AFTER we have read in the data, but before we have
 		 * added it to the session
 		 */
-		public ImportAction(String theFileName, Session theSession, Layers theLayers)
+		public ImportAction(final String theFileName, final Session theSession, final Layers theLayers)
 		{
 			_theSession = theSession;
 			_theFileName = theFileName;
@@ -329,13 +329,14 @@ public final class ImportData extends PlainTool
 
 			// inform any NarrativeWrapper objects of the StepContorl
 			// find any narratives
-			int len = _theSession.getData().size();
+			final int len = _theSession.getData().size();
 			for (int i = 0; i < len; i++)
 			{
-				Layer ly = _theSession.getData().elementAt(i);
+				final Layer ly = _theSession.getData().elementAt(i);
 				if (ly instanceof Debrief.Wrappers.NarrativeWrapper)
 				{
 					@SuppressWarnings("unused")
+					final
 					Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
 				}
 			}

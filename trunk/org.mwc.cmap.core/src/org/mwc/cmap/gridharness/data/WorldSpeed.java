@@ -60,7 +60,7 @@ final public class WorldSpeed
    * @param value the distance in the supplied units
    * @param units the units used for this distance
    */
-  public WorldSpeed(double value, int units)
+  public WorldSpeed(final double value, final int units)
   {
     _mySpeed = convert(units, WorldSpeed.M_sec, value);
   }
@@ -68,7 +68,7 @@ final public class WorldSpeed
   /**
    * copy constructor
    */
-  public WorldSpeed(WorldSpeed other)
+  public WorldSpeed(final WorldSpeed other)
   {
     _mySpeed = other._mySpeed;
   }
@@ -81,13 +81,13 @@ final public class WorldSpeed
   /**
    * perform a units conversion
    */
-  static public double convert(int from, int to, double val)
+  static public double convert(final int from, final int to, final double val)
   {
     // get this scale value
     double scaleVal = _scaleVals[from];
 
     // convert to mins
-    double tmpVal = val / scaleVal;
+    final double tmpVal = val / scaleVal;
 
     // get the new scale val
     scaleVal = _scaleVals[to];
@@ -99,7 +99,7 @@ final public class WorldSpeed
   /**
    * get the string representing this set of units
    */
-  static public String getLabelFor(int units)
+  static public String getLabelFor(final int units)
   {
     return UnitLabels[units];
   }
@@ -107,12 +107,12 @@ final public class WorldSpeed
   /**
    * get the index for this type of unit
    */
-  static public int getUnitIndexFor(String units)
+  static public int getUnitIndexFor(final String units)
   {
     int res = 0;
     for (int i = 0; i < UnitLabels.length; i++)
     {
-      String unitLabel = UnitLabels[i];
+      final String unitLabel = UnitLabels[i];
       if (units.equals(unitLabel))
       {
         res = i;
@@ -125,7 +125,7 @@ final public class WorldSpeed
   /**
    * get this actual distance, expressed in minutes
    */
-  public double getValueIn(int units)
+  public double getValueIn(final int units)
   {
     return convert(WorldSpeed.M_sec, units, _mySpeed);
   }
@@ -144,11 +144,11 @@ final public class WorldSpeed
   public String toString()
   {
     // so, what are the preferred units?
-    int theUnits = selectUnitsFor(_mySpeed);
+    final int theUnits = selectUnitsFor(_mySpeed);
 
-    double theValue = getValueIn(theUnits);
+    final double theValue = getValueIn(theUnits);
 
-    String res = theValue + " " + getLabelFor(theUnits);
+    final String res = theValue + " " + getLabelFor(theUnits);
 
     return res;
   }
@@ -157,13 +157,13 @@ final public class WorldSpeed
    * method to find the smallest set of units which will show the
    * indicated value (in millis) as a whole or 1/2 value
    */
-  static public int selectUnitsFor(double millis)
+  static public int selectUnitsFor(final double millis)
   {
 
     int goodUnits = -1;
 
     // how many set of units are there?
-    int len = UnitLabels.length;
+    final int len = UnitLabels.length;
 
     // count downwards from last value
     for (int thisUnit = len - 1; thisUnit >= 0; thisUnit--)

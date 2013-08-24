@@ -70,15 +70,15 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 	private static class TMAfromCuts extends CMAPOperation
 	{
 
-		private Layers _layers;
-		private SensorContactWrapper[] _items;
+		private final Layers _layers;
+		private final SensorContactWrapper[] _items;
 		private TrackWrapper _newTrack;
-		private double _courseDegs;
-		private WorldSpeed _speed;
-		private WorldVector _offset;
+		private final double _courseDegs;
+		private final WorldSpeed _speed;
+		private final WorldVector _offset;
 
-		public TMAfromCuts(SensorContactWrapper[] items, Layers theLayers,
-				WorldVector offset, double courseDegs, WorldSpeed speed)
+		public TMAfromCuts(final SensorContactWrapper[] items, final Layers theLayers,
+				final WorldVector offset, final double courseDegs, final WorldSpeed speed)
 		{
 			super("Create TMA solution");
 			_items = items;
@@ -89,18 +89,18 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// create it, then
-			TrackSegment seg = new RelativeTMASegment(_items, _offset, _speed,
+			final TrackSegment seg = new RelativeTMASegment(_items, _offset, _speed,
 					_courseDegs, _layers);
 
 			// now wrap it
 			_newTrack = new TrackWrapper();
 			_newTrack.setColor(Color.red);
 			_newTrack.add(seg);
-			String tNow = TrackSegment.TMA_LEADER
+			final String tNow = TrackSegment.TMA_LEADER
 					+ FormatRNDateTime.toString(_newTrack.getStartDTG().getDate()
 							.getTime());
 			_newTrack.setName(tNow);
@@ -114,7 +114,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// forget about the new tracks
@@ -142,20 +142,20 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 		if (subjects.length == 1)
 		{
 			// ok, do I know how to create a TMA segment from this?
-			Editable onlyOne = subjects[0];
+			final Editable onlyOne = subjects[0];
 			if (onlyOne instanceof SensorWrapper)
 			{
-				SensorWrapper sw = (SensorWrapper) onlyOne;
+				final SensorWrapper sw = (SensorWrapper) onlyOne;
 				// cool, go for it
-				Vector<SensorContactWrapper> wraps = new Vector<SensorContactWrapper>();
-				Enumeration<Editable> numer = sw.elements();
+				final Vector<SensorContactWrapper> wraps = new Vector<SensorContactWrapper>();
+				final Enumeration<Editable> numer = sw.elements();
 				while (numer.hasMoreElements())
 				{
 					wraps.add((SensorContactWrapper) numer.nextElement());
 				}
 				if(!wraps.isEmpty())
 				{
-				SensorContactWrapper[] items = new SensorContactWrapper[wraps.size()];
+				final SensorContactWrapper[] items = new SensorContactWrapper[wraps.size()];
 				final SensorContactWrapper[] finalItems = wraps.toArray(items);
 				final SensorContactWrapper firstContact = finalItems[0];
 
@@ -177,10 +177,10 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 							theDist = new WorldDistance(6, WorldDistance.NM);
 
 						// get the supporting data
-						TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
+						final TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
 								.getBearing(), theDist, DEFAULT_TARGET_COURSE,
 								DEFAULT_TARGET_SPEED);
-						WizardDialog dialog = new WizardDialog(Display.getCurrent()
+						final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 								.getActiveShell(), wizard);
 						dialog.create();
 						dialog.open();
@@ -189,7 +189,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 						if (dialog.getReturnCode() == WizardDialog.OK)
 						{
 
-							RangeBearingPage offsetPage = (RangeBearingPage) wizard
+							final RangeBearingPage offsetPage = (RangeBearingPage) wizard
 									.getPage(RangeBearingPage.NAME);
 							if (offsetPage != null)
 							{
@@ -201,13 +201,13 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 								}
 							}
 
-							EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
+							final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
 									.getPage(EnterSolutionPage.NAME);
 							if (solutionPage != null)
 							{
 								if (solutionPage.isPageComplete())
 								{
-									EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
+									final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
 											.getEditable();
 									courseDegs = item.getCourse();
 									speed = item.getSpeed();
@@ -216,7 +216,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 
 							// ok, go for it.
 							// sort it out as an operation
-							IUndoableOperation convertToTrack1 = new TMAfromCuts(finalItems,
+							final IUndoableOperation convertToTrack1 = new TMAfromCuts(finalItems,
 									theLayers, res, courseDegs, speed);
 
 							// ok, stick it on the buffer
@@ -237,7 +237,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 			final SensorContactWrapper[] items = new SensorContactWrapper[subjects.length];
 			for (int i = 0; i < subjects.length; i++)
 			{
-				Editable editable = subjects[i];
+				final Editable editable = subjects[i];
 				if (editable instanceof SensorContactWrapper)
 				{
 					// cool, stick with it
@@ -263,10 +263,10 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 						{
 
 							// get the supporting data
-							TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
+							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
 									.getBearing(), firstContact.getRange(),
 									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
-							WizardDialog dialog = new WizardDialog(Display.getCurrent()
+							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 									.getActiveShell(), wizard);
 							dialog.create();
 							dialog.open();
@@ -279,7 +279,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 								double courseDegs = 0;
 								WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
-								RangeBearingPage offsetPage = (RangeBearingPage) wizard
+								final RangeBearingPage offsetPage = (RangeBearingPage) wizard
 										.getPage(RangeBearingPage.NAME);
 								if (offsetPage != null)
 								{
@@ -291,13 +291,13 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 									}
 								}
 
-								EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
+								final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
 										.getPage(EnterSolutionPage.NAME);
 								if (solutionPage != null)
 								{
 									if (solutionPage.isPageComplete())
 									{
-										EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
+										final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
 												.getEditable();
 										courseDegs = item.getCourse();
 										speed = item.getSpeed();
@@ -306,7 +306,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 
 								// ok, go for it.
 								// sort it out as an operation
-								IUndoableOperation convertToTrack1 = new TMAfromCuts(items,
+								final IUndoableOperation convertToTrack1 = new TMAfromCuts(items,
 										theLayers, res, courseDegs, speed);
 
 								// ok, stick it on the buffer
@@ -336,7 +336,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 	 * 
 	 * @param operation
 	 */
-	protected void runIt(IUndoableOperation operation)
+	protected void runIt(final IUndoableOperation operation)
 	{
 		CorePlugin.run(operation);
 	}

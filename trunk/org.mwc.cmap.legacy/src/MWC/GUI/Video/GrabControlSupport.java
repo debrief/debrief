@@ -124,7 +124,7 @@ public class GrabControlSupport
       thisDest = "file:" + thisDest;
     }
 
-    MediaLocator res = new MediaLocator(thisDest);
+    final MediaLocator res = new MediaLocator(thisDest);
     return res;
   }
 
@@ -151,18 +151,18 @@ public class GrabControlSupport
         _mySource.connect();
 
       // do we know the format?
-      Object[] the_streams = _mySource.getStreams();
-      LiveStream str = (LiveStream)  the_streams[0];
-      Format my_format = str.getFormat();
-      Format[] formats = new Format[1];
+      final Object[] the_streams = _mySource.getStreams();
+      final LiveStream str = (LiveStream)  the_streams[0];
+      final Format my_format = str.getFormat();
+      final Format[] formats = new Format[1];
       formats[0] = my_format;
 
-      Format[] inter_format  = new Format[]{new VideoFormat(VideoFormat.RGB)};
+      final Format[] inter_format  = new Format[]{new VideoFormat(VideoFormat.RGB)};
 
       // prepare the output file
-      FileTypeDescriptor output_format = new FileTypeDescriptor(_myFileType);
+      final FileTypeDescriptor output_format = new FileTypeDescriptor(_myFileType);
       // create the processor model
-      ProcessorModel theModel = new ProcessorModel(_mySource,
+      final ProcessorModel theModel = new ProcessorModel(_mySource,
                                                    inter_format,
                                                    output_format);
 
@@ -170,12 +170,12 @@ public class GrabControlSupport
       _myProcessor = Manager.createRealizedProcessor(theModel);
 
       // finally the destination
-      MediaLocator destination = getDestinationLocator();
-      DataSource source = _myProcessor.getDataOutput(); // take the data from our compressor
+      final MediaLocator destination = getDestinationLocator();
+      final DataSource source = _myProcessor.getDataOutput(); // take the data from our compressor
       _myWriter = Manager.createDataSink(source, destination);
       _myWriter.addDataSinkListener(new DataSinkListener()
       {
-        public void dataSinkUpdate(DataSinkEvent event)
+        public void dataSinkUpdate(final DataSinkEvent event)
         {
           _myWriter.close();
         }
@@ -208,11 +208,11 @@ public class GrabControlSupport
       // ok, lets go!
       _myProcessor.start();
     }
-    catch(java.io.IOException e)
+    catch(final java.io.IOException e)
     {
       MWC.Utilities.Errors.Trace.trace(e, "Failed to open video file writer, is file already open?");
     }
-    catch(javax.media.MediaException me)
+    catch(final javax.media.MediaException me)
     {
       MWC.Utilities.Errors.Trace.trace(me, "Failed to configure video formats.  Is correct version of JMF installed?");
     }
@@ -243,7 +243,7 @@ public class GrabControlSupport
   /** set the file type for the processing
    *
    */
-  public void setFileType(String fileType)
+  public void setFileType(final String fileType)
   {
     _myFileType = fileType;
   }
@@ -251,7 +251,7 @@ public class GrabControlSupport
   /** set the frame rate for the recording
    *
    */
-  public void setFrameRate(float val)
+  public void setFrameRate(final float val)
   {
     // check if this will change what we're doing
     if(val != _myFrameRate)
@@ -272,7 +272,7 @@ public class GrabControlSupport
   /** set the Rectangle which we will be recording
    *
    */
-  public void setArea(Rectangle area)
+  public void setArea(final Rectangle area)
   {
     // check if this will change what we're doing
     if(!area.equals(_myArea))
@@ -293,7 +293,7 @@ public class GrabControlSupport
   /** set the destination for the recording
    *
    */
-  public void setDestination(String path)
+  public void setDestination(final String path)
   {
     // see if this changes how we write our data
     if(!path.equals(_myDestination))

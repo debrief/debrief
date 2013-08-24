@@ -65,13 +65,13 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 	private static class AddSolution extends CMAPOperation
 	{
 
-		private Layers _layers;
+		private final Layers _layers;
 		private TrackWrapper _track;
 		private TMAWrapper _solutionWrapper;
-		private TMAContactWrapper _solution;
+		private final TMAContactWrapper _solution;
 
-		public AddSolution(Layers layers, TrackWrapper track,
-				TMAWrapper solutionWrapper, TMAContactWrapper solution)
+		public AddSolution(final Layers layers, final TrackWrapper track,
+				final TMAWrapper solutionWrapper, final TMAContactWrapper solution)
 		{
 			super("Create TMA ellipse");
 			_track = track;
@@ -81,23 +81,23 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// do we know the parent track?
 			if (_track != null)
 			{
 				// right, just see if a solution with this name already exists
-				BaseLayer solLayer = _track.getSolutions();
+				final BaseLayer solLayer = _track.getSolutions();
 
 				if (solLayer != null)
 				{
-					Collection<Editable> theSols = solLayer.getData();
-					for (Iterator<Editable> iterator = theSols.iterator(); iterator
+					final Collection<Editable> theSols = solLayer.getData();
+					for (final Iterator<Editable> iterator = theSols.iterator(); iterator
 							.hasNext();)
 					{
-						Editable editable = (Editable) iterator.next();
-						TMAWrapper sw = (TMAWrapper) editable;
+						final Editable editable = (Editable) iterator.next();
+						final TMAWrapper sw = (TMAWrapper) editable;
 						if (sw.getName().equals(_solutionWrapper.getName()))
 						{
 							// remember this solution
@@ -140,7 +140,7 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			return null;
@@ -164,20 +164,20 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 		if (subjects.length == 1)
 		{
 			// sort out the current time
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-			IEditorPart editor = page.getActiveEditor();
+			final IWorkbench wb = PlatformUI.getWorkbench();
+			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			final IWorkbenchPage page = win.getActivePage();
+			final IEditorPart editor = page.getActiveEditor();
 			if (editor != null)
 			{
-				TimeProvider timer = (TimeProvider) editor
+				final TimeProvider timer = (TimeProvider) editor
 						.getAdapter(TimeProvider.class);
 				if (timer != null)
 				{
 					final HiResDate tNow = timer.getTime();
 
 					// ok, do I know how to create a TMA segment from this?
-					Editable onlyOne = subjects[0];
+					final Editable onlyOne = subjects[0];
 					if (onlyOne instanceof TrackWrapper)
 					{
 						final TrackWrapper tw = (TrackWrapper) onlyOne;
@@ -188,7 +188,7 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 							public void run()
 							{
 								// get the supporting data
-								NewSolutionWizard wizard = new NewSolutionWizard(tNow, tw, null);
+								final NewSolutionWizard wizard = new NewSolutionWizard(tNow, tw, null);
 								runOperation(theLayers, wizard);
 							}
 						};
@@ -203,7 +203,7 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 							public void run()
 							{
 								// get the supporting data
-								NewSolutionWizard wizard = new NewSolutionWizard(tNow, null, tw);
+								final NewSolutionWizard wizard = new NewSolutionWizard(tNow, null, tw);
 								runOperation(theLayers, wizard);
 							}
 						};
@@ -225,9 +225,9 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 	 * @param wizard
 	 * @param helpContext
 	 */
-	private void runOperation(final Layers theLayers, NewSolutionWizard wizard)
+	private void runOperation(final Layers theLayers, final NewSolutionWizard wizard)
 	{
-		WizardDialog dialog = new WizardDialog(Display.getCurrent()
+		final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		TrayDialog.setDialogHelpAvailable(true);
 		dialog.setHelpAvailable(true);
@@ -237,13 +237,13 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
-			TMAWrapper newSolWrapper = wizard.getSolutionWrapper();
+			final TMAWrapper newSolWrapper = wizard.getSolutionWrapper();
 			;
-			TMAContactWrapper newSol = wizard.getSolution();
-			TrackWrapper theTrack = wizard.getTrack();
+			final TMAContactWrapper newSol = wizard.getSolution();
+			final TrackWrapper theTrack = wizard.getTrack();
 			// ok, go for it.
 			// sort it out as an operation
-			IUndoableOperation convertToTrack1 = new AddSolution(theLayers, theTrack,
+			final IUndoableOperation convertToTrack1 = new AddSolution(theLayers, theTrack,
 					newSolWrapper, newSol);
 
 			// ok, stick it on the buffer
@@ -257,7 +257,7 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 	 * 
 	 * @param operation
 	 */
-	protected void runIt(IUndoableOperation operation)
+	protected void runIt(final IUndoableOperation operation)
 	{
 		CorePlugin.run(operation);
 	}

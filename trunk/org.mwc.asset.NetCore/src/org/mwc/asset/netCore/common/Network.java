@@ -25,9 +25,9 @@ public class Network
 	public static final int DUFF_INDEX = -1;
 
 	// This registers objects that are going to be sent over the network.
-	static public void register(EndPoint endPoint)
+	static public void register(final EndPoint endPoint)
 	{
-		Kryo kryo = endPoint.getKryo();
+		final Kryo kryo = endPoint.getKryo();
 		// sample ones
 		kryo.register(SomeRequest.class);
 		kryo.register(SomeResponse.class);
@@ -97,15 +97,15 @@ public class Network
 		{
 		};
 
-		public LightScenario(ScenarioType scenario)
+		public LightScenario(final ScenarioType scenario)
 		{
 			listOfParticipants = new Vector<LightParticipant>();
 			name = scenario.getName();
-			Integer[] list = scenario.getListOfParticipants();
+			final Integer[] list = scenario.getListOfParticipants();
 			for (int i = 0; i < list.length; i++)
 			{
-				Integer integer = list[i];
-				ParticipantType pt = scenario.getThisParticipant(integer);
+				final Integer integer = list[i];
+				final ParticipantType pt = scenario.getThisParticipant(integer);
 				listOfParticipants.add(new LightParticipant(pt));
 			}
 		};
@@ -162,7 +162,7 @@ public class Network
 		{
 		};
 
-		public ScenUpdate(String scenName, String stepped2, long newTime2)
+		public ScenUpdate(final String scenName, final String stepped2, final long newTime2)
 		{
 			scenarioName = scenName;
 			event = STEPPED;
@@ -205,7 +205,7 @@ public class Network
 		{
 		};
 
-		public ScenControl(String scenarioName, String step2)
+		public ScenControl(final String scenarioName, final String step2)
 		{
 			this.scenarioName = scenarioName;
 			this.instruction = step2;
@@ -223,7 +223,7 @@ public class Network
 		{
 		};
 
-		public PartDetection(int id, String scenario, DetectionList detections)
+		public PartDetection(final int id, final String scenario, final DetectionList detections)
 		{
 			this.id = id;
 			this.scenario = scenario;
@@ -240,7 +240,7 @@ public class Network
 		{
 		};
 
-		public PartMovement(int id, String scenario, Status status)
+		public PartMovement(final int id, final String scenario, final Status status)
 		{
 			this.id = id;
 			this.scenario = scenario;
@@ -254,7 +254,7 @@ public class Network
 		{
 		};
 
-		public LightParticipant(int Id, String string)
+		public LightParticipant(final int Id, final String string)
 		{
 			this.id = Id;
 			name = string;
@@ -263,7 +263,7 @@ public class Network
 			activity = "some activity";
 		}
 
-		public LightParticipant(ParticipantType pt)
+		public LightParticipant(final ParticipantType pt)
 		{
 			id = pt.getId();
 			name = pt.getName();
@@ -283,7 +283,7 @@ public class Network
 	 */
 	public abstract static class AHandler<T>
 	{
-		public void onFailure(Throwable t)
+		public void onFailure(final Throwable t)
 		{
 			t.printStackTrace();
 		}

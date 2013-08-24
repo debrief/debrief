@@ -43,7 +43,7 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 
 		addHandler(new LocationHandler("centre")
 		{
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_centre = res;
 			}
@@ -52,14 +52,14 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 		addHandler(new WorldDistanceHandler(INNER_RADIUS){
 
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_innerDist = res;
 			}});
 		addHandler(new WorldDistanceHandler(OUTER_RADIUS){
 
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_outerDist = res;
 			}});
@@ -67,21 +67,21 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 		addAttributeHandler(new HandleBooleanAttribute(EMPTY_INNER){
 
 			@Override
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_emptyInner = value;
 			}});
 		
 		addAttributeHandler(new HandleAttribute(INNER_RADIUS)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				try
 				{
-					double _inner = readThisDouble(val);
+					final double _inner = readThisDouble(val);
 					_innerDist = new WorldDistance(_inner, WorldDistance.YARDS);
 				}
-				catch (java.text.ParseException pe)
+				catch (final java.text.ParseException pe)
 				{
 					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:"
 							+ val);
@@ -91,14 +91,14 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 		});
 		addAttributeHandler(new HandleAttribute(OUTER_RADIUS)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				try
 				{
-					double _outer = readThisDouble(val);
+					final double _outer = readThisDouble(val);
 					_outerDist = new WorldDistance(_outer, WorldDistance.YARDS);
 				}
-				catch (java.text.ParseException pe)
+				catch (final java.text.ParseException pe)
 				{
 					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:"
 							+ val);
@@ -108,14 +108,14 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 		});
 		addAttributeHandler(new HandleAttribute("SpokeSize")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_spokeSize = Integer.valueOf(val);
 			}
 		});
 		addAttributeHandler(new HandleAttribute(ORIENTATION)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_orientation = Integer.valueOf(val);
 			}
@@ -124,7 +124,7 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 	}
 
 	// this is one of ours, so get on with it!
-	protected final void handleOurselves(String name, Attributes attributes)
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
 		_centre = null;
 		_innerDist = _outerDist = null;
@@ -133,7 +133,7 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 
 	public final MWC.GUI.Shapes.PlainShape getShape()
 	{
-		MWC.GUI.Shapes.WheelShape ls = new MWC.GUI.Shapes.WheelShape(_centre, _innerDist, _outerDist);
+		final MWC.GUI.Shapes.WheelShape ls = new MWC.GUI.Shapes.WheelShape(_centre, _innerDist, _outerDist);
 		if(_spokeSize != null)
 			 ls.setSpokeSize(new SteppingBoundedInteger(_spokeSize.intValue(), 0,10, 1));
 		
@@ -148,23 +148,23 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 		return ls;
 	}
 
-	public final void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public final void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// output the shape related stuff first
-		org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+		final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
 		super.exportThisPlottable(plottable, ePlottable, doc);
 
 		// now our circle related stuff
 
 		// get the circle
-		Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
-		MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+		final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+		final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
 		if (ps instanceof MWC.GUI.Shapes.WheelShape)
 		{
 			// export the attributes
-			MWC.GUI.Shapes.WheelShape cs = (MWC.GUI.Shapes.WheelShape) ps;
+			final MWC.GUI.Shapes.WheelShape cs = (MWC.GUI.Shapes.WheelShape) ps;
 			ePlottable.setAttribute(INNER_RADIUS, writeThis(cs.getRadiusInner().getValueIn(
 					WorldDistance.YARDS)));
 			ePlottable.setAttribute(OUTER_RADIUS, writeThis(cs.getRadiusOuter().getValueIn(

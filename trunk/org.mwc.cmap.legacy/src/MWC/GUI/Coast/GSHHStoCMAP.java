@@ -63,7 +63,7 @@ public class GSHHStoCMAP {
    static FileInputStream  fisGSHHS;
    static FileWriter       fwCMAP, fwOutputLog;
 
-   public static void main(String[] args) {
+   public static void main(final String[] args) {
       try {
          System.out.println("GSHHStoCMAP");
          // Print usage guide if need be
@@ -106,7 +106,7 @@ public class GSHHStoCMAP {
 
                      // Read the input polygon's points
                      
-                     int tmpNumPoints = fisGSHHS.read(points);
+                     final int tmpNumPoints = fisGSHHS.read(points);
 										if (nbytes != tmpNumPoints)
                      {
                         throw new IOException("Could not read the required bytes. Expected:" + nbytes + " was:" + tmpNumPoints);
@@ -168,7 +168,7 @@ public class GSHHStoCMAP {
          } finally {
             fisGSHHS.close();
          } //try fisGSHHS
-      } catch (IOException ioe) {
+      } catch (final IOException ioe) {
          System.err.println(ioe);
       } //try
       System.exit(0);
@@ -178,7 +178,7 @@ public class GSHHStoCMAP {
     * Writes a segment header/break.
     * @param fwCMAP The FileWriter
     */
-   public static void write_break(FileWriter fwCMAP) throws IOException {
+   public static void write_break(final FileWriter fwCMAP) throws IOException {
       fwCMAP.write("# -b" + CRLF);
    } //write_break
 
@@ -188,7 +188,7 @@ public class GSHHStoCMAP {
     * @param lon longitude (0..360)
     * @param lat latitude
     */
-   public static void write_lonlat(FileWriter fwCMAP, double lon, double lat) throws IOException {
+   public static void write_lonlat(final FileWriter fwCMAP, final double lon, final double lat) throws IOException {
       fwCMAP.write(Double.toString((lon > 180.0) ? (lon - 360.0) : lon) + " " + Double.toString(lat) + CRLF);
    } //write_lonlat
 
@@ -205,13 +205,13 @@ public class GSHHStoCMAP {
     * @param isLast       whether this is the last point in the polygon
     * @return             whether to inhibit the next point
     */
-   public static boolean snip(FileWriter fwCMAP, 
-                              double lon_previous, 
-                              double lat_previous, 
-                              double lon, 
-                              double lat, 
-                              boolean isLast) throws IOException {
-      double lon_interp = 180.0;
+   public static boolean snip(final FileWriter fwCMAP, 
+                              final double lon_previous, 
+                              final double lat_previous, 
+                              final double lon, 
+                              final double lat, 
+                              final boolean isLast) throws IOException {
+      final double lon_interp = 180.0;
       double lat_interp;
 
       // Is an intervention required?
@@ -257,7 +257,7 @@ public class GSHHStoCMAP {
     * @param b The byte array
     * @return The integer
     */
-   public static int byteArrayToInt(byte[] b) {
+   public static int byteArrayToInt(final byte[] b) {
       return byteArrayToInt(b, 0);
    } //byteArrayToInt
 
@@ -269,11 +269,11 @@ public class GSHHStoCMAP {
     * @param offset The array offset
     * @return The integer
     */
-   public static int byteArrayToInt(byte[] b,
-                                    int offset) {
+   public static int byteArrayToInt(final byte[] b,
+                                    final int offset) {
       int value = 0;
       for (int i = 0; i < 4; i++) {
-         int shift = ((4 - 1) - i)*8;
+         final int shift = ((4 - 1) - i)*8;
          value += (b[i + offset] & 0x000000FF) << shift;
       } //for
       return value;

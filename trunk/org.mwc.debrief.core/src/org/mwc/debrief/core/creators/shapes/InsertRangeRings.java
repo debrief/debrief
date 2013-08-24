@@ -21,10 +21,10 @@ public class InsertRangeRings extends CoreInsertShape
 	 *          the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		// generate the shape
-		PlainShape res = new RangeRingShape(centre, 5, new WorldDistance(4000,
+		final PlainShape res = new RangeRingShape(centre, 5, new WorldDistance(4000,
 				WorldDistance.YARDS));
 		return res;
 	}

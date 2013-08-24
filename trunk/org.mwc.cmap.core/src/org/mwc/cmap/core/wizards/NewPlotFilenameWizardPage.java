@@ -42,7 +42,7 @@ public class NewPlotFilenameWizardPage extends WizardPage
 	 * 
 	 * @param pageName
 	 */
-	public NewPlotFilenameWizardPage(ISelection selection)
+	public NewPlotFilenameWizardPage(final ISelection selection)
 	{
 		super("wizardPage");
 		setTitle("Create new Debrief Plot");
@@ -55,7 +55,7 @@ public class NewPlotFilenameWizardPage extends WizardPage
 	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
-	public void createControl(Composite parent)
+	public void createControl(final Composite parent)
 	{
 		final Composite container = new Composite(parent, SWT.NULL);
 		final GridLayout layout = new GridLayout();
@@ -70,7 +70,7 @@ public class NewPlotFilenameWizardPage extends WizardPage
 		containerText.setLayoutData(gd);
 		containerText.addModifyListener(new ModifyListener()
 		{
-			public void modifyText(ModifyEvent e)
+			public void modifyText(final ModifyEvent e)
 			{
 				dialogChanged();
 			}
@@ -81,7 +81,7 @@ public class NewPlotFilenameWizardPage extends WizardPage
 		button.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				handleBrowse();
 			}
@@ -94,7 +94,7 @@ public class NewPlotFilenameWizardPage extends WizardPage
 		fileText.setLayoutData(gd);
 		fileText.addModifyListener(new ModifyListener()
 		{
-			public void modifyText(ModifyEvent e)
+			public void modifyText(final ModifyEvent e)
 			{
 				dialogChanged();
 			}
@@ -209,7 +209,7 @@ public class NewPlotFilenameWizardPage extends WizardPage
 		fileText.setText("new_plot.xml");
 	}
 
-	private void updateStatus(String message)
+	private void updateStatus(final String message)
 	{
 		setErrorMessage(message);
 		setPageComplete(message == null);

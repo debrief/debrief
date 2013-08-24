@@ -14,7 +14,7 @@ public class TagListHelper extends EditorHelper
 
 	final java.beans.PropertyEditor _propEditor;
 
-	public TagListHelper(String[] theTags,
+	public TagListHelper(final String[] theTags,
 			final java.beans.PropertyEditor propEditor)
 	{
 		super(null);
@@ -22,12 +22,12 @@ public class TagListHelper extends EditorHelper
 		_propEditor = propEditor;
 	}
 
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new ComboBoxCellEditor(parent, _theTags);
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		Object res = value;
 		if (value instanceof String)
@@ -37,16 +37,16 @@ public class TagListHelper extends EditorHelper
 		}
 		else
 		{
-			Integer index = (Integer) value;
+			final Integer index = (Integer) value;
 			// ok, set the index of the text field first, then get the
 			// object vlaue
-			String selectedItem = _theTags[index.intValue()];
+			final String selectedItem = _theTags[index.intValue()];
 			res = translateFromSWT(selectedItem);
 		}
 		return res;
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		Object res = value;
 		if (value instanceof String)
@@ -54,7 +54,7 @@ public class TagListHelper extends EditorHelper
 			// we have to translate the string to the string index
 			for (int i = 0; i < _theTags.length; i++)
 			{
-				String thisItem = _theTags[i];
+				final String thisItem = _theTags[i];
 				if (thisItem.equals(value))
 				{
 					res = new Integer(i);
@@ -68,17 +68,17 @@ public class TagListHelper extends EditorHelper
 			// index of
 			// that string
 			_propEditor.setValue(value);
-			String txtVersion = _propEditor.getAsText();
+			final String txtVersion = _propEditor.getAsText();
 			res = translateToSWT(txtVersion);
 		}
 		return res;
 	}
 
-	public ILabelProvider getLabelFor(Object value)
+	public ILabelProvider getLabelFor(final Object value)
 	{
-		LabelProvider theProvider = new LabelProvider()
+		final LabelProvider theProvider = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
 				String res = null;
 				_propEditor.setValue(element);
@@ -90,7 +90,7 @@ public class TagListHelper extends EditorHelper
 	}
 
 	@Override
-	public Control getEditorControlFor(Composite parent,
+	public Control getEditorControlFor(final Composite parent,
 			final IDebriefProperty property)
 	{
 		final Combo myCombo = new Combo(parent, SWT.NONE);
@@ -100,13 +100,13 @@ public class TagListHelper extends EditorHelper
 		// also insert a listener
 		myCombo.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				// process the new selection
-				int index = myCombo.getSelectionIndex();
+				final int index = myCombo.getSelectionIndex();
 				if (index != -1)
 				{
-					String res = _theTags[index];
+					final String res = _theTags[index];
 					property.setValue(res);
 				}
 			}

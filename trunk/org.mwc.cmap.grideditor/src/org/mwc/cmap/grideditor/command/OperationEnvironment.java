@@ -21,11 +21,11 @@ public class OperationEnvironment {
 //		this(undoContext, series, null, null);
 //	}
 
-	public OperationEnvironment(IUndoContext undoContext, GriddableSeries series, TimeStampedDataItem optionalSubject) {
+	public OperationEnvironment(final IUndoContext undoContext, final GriddableSeries series, final TimeStampedDataItem optionalSubject) {
 		this(undoContext, series, optionalSubject, null);
 	}
 
-	public OperationEnvironment(IUndoContext undoContext, GriddableSeries series, TimeStampedDataItem optionalSubject, GriddableItemDescriptor optionalDescriptor) {
+	public OperationEnvironment(final IUndoContext undoContext, final GriddableSeries series, final TimeStampedDataItem optionalSubject, final GriddableItemDescriptor optionalDescriptor) {
 		myUndoContext = undoContext;
 		mySeries = series;
 		mySubject = optionalSubject;

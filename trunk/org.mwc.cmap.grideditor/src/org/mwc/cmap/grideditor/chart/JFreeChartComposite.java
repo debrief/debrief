@@ -30,8 +30,8 @@ public class JFreeChartComposite extends FixedChartComposite
 
 	private final GridEditorTable _dataGrid;
 
-	public JFreeChartComposite(Composite parent,
-			GridEditorActionContext actionContext, GridEditorTable dataGrid)
+	public JFreeChartComposite(final Composite parent,
+			final GridEditorActionContext actionContext, final GridEditorTable dataGrid)
 	{
 		// next: double-buffer the chart, so when we switch back to Debrief from another app we don't have 
 		// to wait for it to get redrawn
@@ -46,7 +46,7 @@ public class JFreeChartComposite extends FixedChartComposite
 	}
 
 	@Override
-	public void addChartMouseListener(ChartMouseListener listener)
+	public void addChartMouseListener(final ChartMouseListener listener)
 	{
 		super.addChartMouseListener(listener);
 		if (listener instanceof ChartMouseListenerExtension)
@@ -60,7 +60,7 @@ public class JFreeChartComposite extends FixedChartComposite
 		}
 	}
 
-	public void setInput(ChartDataManager input)
+	public void setInput(final ChartDataManager input)
 	{
 		if (myInput != null)
 		{
@@ -70,23 +70,23 @@ public class JFreeChartComposite extends FixedChartComposite
 		myInput = input;
 		myInput.attach(this);
 
-		ChartBuilder builder = new ChartBuilder(input);
-		JFreeChart chart = builder.buildChart();
+		final ChartBuilder builder = new ChartBuilder(input);
+		final JFreeChart chart = builder.buildChart();
 		setChart(chart);
 		redraw();
 		myActionContext.setChartInput(input);
 	}
 
 	@Override
-	public void mouseUp(MouseEvent event)
+	public void mouseUp(final MouseEvent event)
 	{
-		Object[] listeners = myListenerExtensions
+		final Object[] listeners = myListenerExtensions
 				.getListeners(ChartMouseListenerExtension.class);
 		if (listeners.length != 0)
 		{
 			// pass mouse down event if some ChartMouseListener are listening
-			java.awt.event.MouseEvent awtEvent = SWTUtils.toAwtMouseEvent(event);
-			ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), awtEvent,
+			final java.awt.event.MouseEvent awtEvent = SWTUtils.toAwtMouseEvent(event);
+			final ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), awtEvent,
 					null);
 			for (int i = listeners.length - 1; i >= 0; i -= 1)
 			{
@@ -103,9 +103,9 @@ public class JFreeChartComposite extends FixedChartComposite
 	}
 
 	@Override
-	public void mouseDoubleClick(MouseEvent event)
+	public void mouseDoubleClick(final MouseEvent event)
 	{
-		Rectangle scaledDataArea = getScreenDataArea(event.x, event.y);
+		final Rectangle scaledDataArea = getScreenDataArea(event.x, event.y);
 		if (scaledDataArea == null)
 			return;
 		int x = (int) ((event.x - getClientArea().x) / getScaleX());
@@ -115,13 +115,13 @@ public class JFreeChartComposite extends FixedChartComposite
 
 		if (this.getChartRenderingInfo() != null)
 		{
-			EntityCollection entities = this.getChartRenderingInfo()
+			final EntityCollection entities = this.getChartRenderingInfo()
 					.getEntityCollection();
 			if (entities != null)
 			{
-				for (Object next : entities.getEntities())
+				for (final Object next : entities.getEntities())
 				{
-					ChartEntity nextEntity = (ChartEntity) next;
+					final ChartEntity nextEntity = (ChartEntity) next;
 					if (false == nextEntity instanceof XYItemEntity)
 					{
 						continue;
@@ -130,7 +130,7 @@ public class JFreeChartComposite extends FixedChartComposite
 					if (nextEntity.getArea().contains(x, y))
 					{
 						// sort out it's details
-						XYItemEntity xyEntity = (XYItemEntity) nextEntity;
+						final XYItemEntity xyEntity = (XYItemEntity) nextEntity;
 						int theIndex = 0;
 						if (xyEntity.getDataset() instanceof XYSeriesCollection)
 						{
@@ -148,12 +148,12 @@ public class JFreeChartComposite extends FixedChartComposite
 						}
 						else if (xyEntity.getDataset() instanceof TimeSeriesCollection)
 						{
-							TimeSeriesCollection theDataset = (TimeSeriesCollection) xyEntity
+							final TimeSeriesCollection theDataset = (TimeSeriesCollection) xyEntity
 									.getDataset();
-							TimeSeries theSeries = theDataset.getSeries(xyEntity
+							final TimeSeries theSeries = theDataset.getSeries(xyEntity
 									.getSeriesIndex());
 							theIndex = xyEntity.getItem();
-							int itemCount = theSeries.getItemCount();
+							final int itemCount = theSeries.getItemCount();
 							// the items are in reverse order. reverse the index
 							theIndex = itemCount - (theIndex + 1);
 

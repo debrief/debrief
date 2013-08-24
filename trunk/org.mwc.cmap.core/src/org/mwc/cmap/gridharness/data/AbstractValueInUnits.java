@@ -8,12 +8,12 @@ public abstract class AbstractValueInUnits implements ValueInUnits {
 
 	private double myStorageValue;
 
-	public AbstractValueInUnits(UnitsSet unitsSet) {
+	public AbstractValueInUnits(final UnitsSet unitsSet) {
 		myUnitsSet = unitsSet;
 		myStorageUnits = unitsSet.getMainUnit();
 	}
 
-	public void setValues(double value, UnitsSet.Unit units) {
+	public void setValues(final double value, final UnitsSet.Unit units) {
 		myStorageValue = myUnitsSet.convert(units, myStorageUnits, value);
 	}
 
@@ -25,7 +25,7 @@ public abstract class AbstractValueInUnits implements ValueInUnits {
 		return myStorageValue;
 	}
 	
-	public double getValueIn(UnitsSet.Unit units) {
+	public double getValueIn(final UnitsSet.Unit units) {
 		return myUnitsSet.convert(myStorageUnits, units, myStorageValue);
 	}
 
@@ -35,9 +35,9 @@ public abstract class AbstractValueInUnits implements ValueInUnits {
 	@Override
 	public String toString() {
 		// so, what are the preferred units?
-		UnitsSet.Unit theUnits = myUnitsSet.selectUnitsFor(myStorageValue);
-		double theValue = getValueIn(theUnits);
-		String res = theValue + " " + theUnits.getLabel();
+		final UnitsSet.Unit theUnits = myUnitsSet.selectUnitsFor(myStorageValue);
+		final double theValue = getValueIn(theUnits);
+		final String res = theValue + " " + theUnits.getLabel();
 		return res;
 	}
 

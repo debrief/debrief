@@ -76,12 +76,12 @@ public final class CreateBuoyPattern extends PlainTool
    * @param theParent parent where we can change cursor
    * @param thePanel panel
    */
-  public CreateBuoyPattern(ToolParent theParent,
-                     PropertiesPanel thePanel,
-                     Layers theData,
-                     MWC.GUI.PlainChart theChart,
-                     String theName,
-                     String theImage)
+  public CreateBuoyPattern(final ToolParent theParent,
+                     final PropertiesPanel thePanel,
+                     final Layers theData,
+                     final MWC.GUI.PlainChart theChart,
+                     final String theName,
+                     final String theImage)
   {
     super(theParent, theName, theImage);
 
@@ -123,10 +123,10 @@ public final class CreateBuoyPattern extends PlainTool
 
     PatternBuilderType _myBuilder;
 
-    public CreateBuoyPatternAction(PropertiesPanel thePanel,
-                               Layers theLayers,
-                               MWC.GUI.PlainChart theChart,
-                               BuoyPatternDirector theDirector)
+    public CreateBuoyPatternAction(final PropertiesPanel thePanel,
+                               final Layers theLayers,
+                               final MWC.GUI.PlainChart theChart,
+                               final BuoyPatternDirector theDirector)
     {
       _thePanel1 = thePanel;
       _theChart1 = theChart;
@@ -173,7 +173,7 @@ public final class CreateBuoyPattern extends PlainTool
     public final void execute()
     {
       // find the centre of the plot
-      WorldArea wa = _theChart1.getDataArea();
+      final WorldArea wa = _theChart1.getDataArea();
 
       // have we actually got data?
       if(wa == null)
@@ -183,10 +183,10 @@ public final class CreateBuoyPattern extends PlainTool
       }
 
       // retrieve the centre of this area
-      WorldLocation centre = wa.getCentre();
+      final WorldLocation centre = wa.getCentre();
 
       // find out which type of shape we want
-      String selection = getChoice();
+      final String selection = getChoice();
 
       // check that the user has entered something
       if(selection == null)
@@ -212,8 +212,8 @@ public final class CreateBuoyPattern extends PlainTool
 
   String getChoice()
   {
-    Object[] opts = _theDirector.getPatterns();
-    String res = (String)javax.swing.JOptionPane.showInputDialog(null,
+    final Object[] opts = _theDirector.getPatterns();
+    final String res = (String)javax.swing.JOptionPane.showInputDialog(null,
                                             "Which pattern?",
                                             "Create Buoy Pattern",
                                             javax.swing.JOptionPane.QUESTION_MESSAGE,

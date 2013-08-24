@@ -49,7 +49,7 @@ public class SensorRCPView2 extends ViewPart {
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
-	public void createPartControl(Composite parent) {
+	public void createPartControl(final Composite parent) {
 		sensor = new VSensor(parent, SWT.NONE);
 		
 		_timer = sensor;
@@ -70,7 +70,7 @@ public class SensorRCPView2 extends ViewPart {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 

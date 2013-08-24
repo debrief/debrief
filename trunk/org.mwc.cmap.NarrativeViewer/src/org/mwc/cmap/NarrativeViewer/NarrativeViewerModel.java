@@ -58,8 +58,8 @@ public class NarrativeViewerModel extends KTableDefaultModel
     private int myEntryCellContentWidth = -1;
     private IRollingNarrativeProvider myInput;
 
-    public NarrativeViewerModel(IPreferenceStore store,
-            ColumnSizeCalculator columnSizeCalculator)
+    public NarrativeViewerModel(final IPreferenceStore store,
+            final ColumnSizeCalculator columnSizeCalculator)
     {
         myColumnSizeCalculator = columnSizeCalculator;
 
@@ -80,7 +80,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
         mySourceFilter = new ColumnFilter()
         {
-            public String getFilterValue(NarrativeEntry entry)
+            public String getFilterValue(final NarrativeEntry entry)
             {
                 return entry.getTrackName();
             }
@@ -92,7 +92,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         };
         myTypeFilter = new ColumnFilter()
         {
-            public String getFilterValue(NarrativeEntry entry)
+            public String getFilterValue(final NarrativeEntry entry)
             {
                 return entry.getType();
             }
@@ -108,8 +108,8 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
         addColumnVisibilityListener(new Column.VisibilityListener()
         {
-            public void columnVisibilityChanged(Column column,
-                    boolean actualIsVisible)
+            public void columnVisibilityChanged(final Column column,
+                    final boolean actualIsVisible)
             {
                 updateColumnsVisibility();
             }
@@ -117,7 +117,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         updateColumnsVisibility();
     }
 
-    public void setInput(IRollingNarrativeProvider entryWrapper)
+    public void setInput(final IRollingNarrativeProvider entryWrapper)
     {
         myInput = entryWrapper;
         myAllEntries = null;
@@ -125,7 +125,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         if (entryWrapper != null)
         {
             // check it has some data.
-            NarrativeEntry[] entries = entryWrapper
+            final NarrativeEntry[] entries = entryWrapper
                     .getNarrativeHistory(new String[] {});
             if (entries != null)
                 myAllEntries = entries;
@@ -140,7 +140,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         return myInput;
     }
 
-    public void setTimeFormatter(TimeFormatter timeFormatter)
+    public void setTimeFormatter(final TimeFormatter timeFormatter)
     {
         myColumnTime.setTimeFormatter(timeFormatter);
     }
@@ -150,7 +150,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         return myColumnEntry.isWrapping();
     }
 
-    public boolean setWrappingEntries(boolean shouldWrap)
+    public boolean setWrappingEntries(final boolean shouldWrap)
     {
         return myColumnEntry.setWrapping(shouldWrap);
     }
@@ -162,7 +162,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         {
             return;
         }
-        for (NarrativeEntry entry : myAllEntries)
+        for (final NarrativeEntry entry : myAllEntries)
         {
             if (mySourceFilter.accept(entry) && myTypeFilter.accept(entry))
             {
@@ -174,7 +174,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
     void updateColumnsVisibility()
     {
         myVisibleColumns.clear();
-        for (AbstractColumn next : myAllColumns)
+        for (final AbstractColumn next : myAllColumns)
         {
             if (next.isVisible())
             {
@@ -183,7 +183,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         }
     }
 
-    public Column getVisibleColumn(int col)
+    public Column getVisibleColumn(final int col)
     {
         return myVisibleColumns.get(col);
     }
@@ -219,13 +219,13 @@ public class NarrativeViewerModel extends KTableDefaultModel
     }
 
     @Override
-    public KTableCellEditor doGetCellEditor(int col, int row)
+    public KTableCellEditor doGetCellEditor(final int col, final int row)
     {
         return row == 0 ? null : getVisibleColumn(col).getCellEditor();
     }
 
     @Override
-    public KTableCellRenderer doGetCellRenderer(int col, int row)
+    public KTableCellRenderer doGetCellRenderer(final int col, final int row)
     {
         return row == 0 ? myHeaderCellRenderer : getVisibleColumn(col)
                 .getCellRenderer();
@@ -238,14 +238,14 @@ public class NarrativeViewerModel extends KTableDefaultModel
     }
 
     @Override
-    public Object doGetContentAt(int col, int row)
+    public Object doGetContentAt(final int col, final int row)
     {
-        Column column = getVisibleColumn(col);
+        final Column column = getVisibleColumn(col);
         return row == 0 ? column.getColumnName() : column
                 .getProperty(myVisibleRows.get(row - 1));
     }
     
-    public NarrativeEntry getEntryAt(int col, int row)
+    public NarrativeEntry getEntryAt(final int col, final int row)
     {
         return myVisibleRows.get(row - 1);
     }
@@ -257,7 +257,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
     }
 
     @Override
-    public void doSetContentAt(int col, int row, Object value)
+    public void doSetContentAt(final int col, final int row, final Object value)
     {
         if (row == 0)
         {
@@ -271,12 +271,12 @@ public class NarrativeViewerModel extends KTableDefaultModel
     }
 
     @Override
-    public int getInitialRowHeight(int row)
+    public int getInitialRowHeight(final int row)
     {
         return ROW_HEIGHT;
     }
 
-    public boolean isRowResizable(int row)
+    public boolean isRowResizable(final int row)
     {
         return false;
     }
@@ -302,7 +302,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
     }
 
     @Override
-    public int getInitialColumnWidth(int column)
+    public int getInitialColumnWidth(final int column)
     {
         return getVisibleColumn(column).getColumnWidth();
     }
@@ -312,13 +312,13 @@ public class NarrativeViewerModel extends KTableDefaultModel
         return ROW_HEIGHT;
     }
 
-    public boolean isColumnResizable(int col)
+    public boolean isColumnResizable(final int col)
     {
         return true;
     }
 
     public void addColumnVisibilityListener(
-            AbstractColumn.VisibilityListener listener)
+            final AbstractColumn.VisibilityListener listener)
     {
         myColumnSource.addVisibilityListener(listener);
         myColumnTime.addVisibilityListener(listener);
@@ -327,9 +327,9 @@ public class NarrativeViewerModel extends KTableDefaultModel
         myColumnType.addVisibilityListener(listener);
     }
 
-    public void onColumnsResized(GC gc, boolean force)
+    public void onColumnsResized(final GC gc, final boolean force)
     {
-        int newEntryCellContentWidth = myColumnSizeCalculator
+        final int newEntryCellContentWidth = myColumnSizeCalculator
                 .getColumnWidth(myVisibleColumns.indexOf(myColumnEntry))
                 - KTABLE_CELL_CONTENT_MARGIN_WIDTH * 2;
         if (newEntryCellContentWidth == myEntryCellContentWidth && !force)
@@ -345,7 +345,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
             {
                 entry = SWTX.wrapText(gc, entry, myEntryCellContentWidth);
             }
-            int newRowHeight = gc.textExtent(entry).y
+            final int newRowHeight = gc.textExtent(entry).y
                     + KTABLE_CELL_CONTENT_MARGIN_HEIGHT * 2;
             setRowHeight(row + 1, newRowHeight);
         }
@@ -353,7 +353,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
     private static abstract class AbstractTextColumn extends AbstractColumn
     {
-        public AbstractTextColumn(int index, String name, IPreferenceStore store)
+        public AbstractTextColumn(final int index, final String name, final IPreferenceStore store)
         {
             super(index, name, store);
         }
@@ -367,21 +367,21 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
     private static class ColumnVisible extends AbstractColumn
     {
-        public ColumnVisible(IPreferenceStore store)
+        public ColumnVisible(final IPreferenceStore store)
         {
             super(0, "Visible", store);
         }
 
-        public Object getProperty(NarrativeEntry entry)
+        public Object getProperty(final NarrativeEntry entry)
         {
             return entry.getVisible();
         }
 
         public KTableCellEditor getCellEditor()
         {
-            Rectangle imgBounds = CheckableCellRenderer.IMAGE_CHECKED
+            final Rectangle imgBounds = CheckableCellRenderer.IMAGE_CHECKED
                     .getBounds();
-            Point sensible = new Point(imgBounds.width, imgBounds.height);
+            final Point sensible = new Point(imgBounds.width, imgBounds.height);
             return new KTableCellEditorCheckbox2(sensible,
                     SWTX.ALIGN_HORIZONTAL_CENTER, SWTX.ALIGN_VERTICAL_CENTER);
         }
@@ -399,17 +399,17 @@ public class NarrativeViewerModel extends KTableDefaultModel
     {
         private TimeFormatter myTimeFormatter = DEFAULT_TIME;
 
-        public ColumnTime(IPreferenceStore store)
+        public ColumnTime(final IPreferenceStore store)
         {
             super(1, "Time", store);
         }
 
-        public Object getProperty(NarrativeEntry entry)
+        public Object getProperty(final NarrativeEntry entry)
         {
             return myTimeFormatter.format(entry.getDTG());
         }
 
-        public void setTimeFormatter(TimeFormatter formatter)
+        public void setTimeFormatter(final TimeFormatter formatter)
         {
             myTimeFormatter = formatter;
         }
@@ -417,12 +417,12 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
     private static class ColumnSource extends AbstractTextColumn
     {
-        public ColumnSource(IPreferenceStore store)
+        public ColumnSource(final IPreferenceStore store)
         {
             super(2, "Source", store);
         }
 
-        public Object getProperty(NarrativeEntry entry)
+        public Object getProperty(final NarrativeEntry entry)
         {
             return entry.getTrackName();
         }
@@ -430,12 +430,12 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
     private static class ColumnType extends AbstractTextColumn
     {
-        public ColumnType(IPreferenceStore store)
+        public ColumnType(final IPreferenceStore store)
         {
             super(3, "Type", store);
         }
 
-        public Object getProperty(NarrativeEntry entry)
+        public Object getProperty(final NarrativeEntry entry)
         {
             return entry.getType();
         }
@@ -446,14 +446,14 @@ public class NarrativeViewerModel extends KTableDefaultModel
         private boolean myIsWrapping;
         private TextCellRenderer myWrappingRenderer;
 
-        public ColumnEntry(IPreferenceStore store)
+        public ColumnEntry(final IPreferenceStore store)
         {
             super(4, "Entry", store);
         }
 
-        public boolean setWrapping(boolean shouldWrap)
+        public boolean setWrapping(final boolean shouldWrap)
         {
-            boolean changed = myIsWrapping ^ shouldWrap;
+            final boolean changed = myIsWrapping ^ shouldWrap;
             if (changed)
             {
                 myIsWrapping = shouldWrap;
@@ -467,7 +467,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
             return myIsWrapping;
         }
 
-        public Object getProperty(NarrativeEntry entry)
+        public Object getProperty(final NarrativeEntry entry)
         {
             return entry.getEntry();
         }
@@ -499,7 +499,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
     static TimeFormatter DEFAULT_TIME = new TimeFormatter()
     {
-        public String format(HiResDate time)
+        public String format(final HiResDate time)
         {
             return time.toString();
             // Calendar calendar = Calendar.getInstance();

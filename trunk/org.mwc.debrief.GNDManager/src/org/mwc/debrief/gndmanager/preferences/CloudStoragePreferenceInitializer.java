@@ -22,7 +22,7 @@ public class CloudStoragePreferenceInitializer extends AbstractPreferenceInitial
 	public void initializeDefaultPreferences()
 	{
 			// and store the default location
-			IPreferenceStore store = DebriefPlugin.getDefault().getPreferenceStore();
+			final IPreferenceStore store = DebriefPlugin.getDefault().getPreferenceStore();
 			store.setDefault(TrackStoreWrapper.COUCHDB_LOCATION,DEFAULT_COUCH);
 			store.setDefault(TrackStoreWrapper.ES_LOCATION,DEFAULT_ES);
 		

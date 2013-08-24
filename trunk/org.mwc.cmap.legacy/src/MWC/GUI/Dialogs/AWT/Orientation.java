@@ -14,7 +14,7 @@ public class Orientation {
     public static final Orientation HORIZONTAL = new Orientation();
     public static final Orientation VERTICAL   = new Orientation();
 
-    static public Orientation fromString(String s) {
+    static public Orientation fromString(final String s) {
 		Orientation o = null;
 
         if(s.equals("NORTH") || s.equals("north"))    o = NORTH;

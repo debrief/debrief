@@ -33,7 +33,7 @@ public class ProjSidecarGenerator
 	{
 		if (pCode != null)
 		{
-			CoordinateReferenceSystem crs = CRS.decode(pCode);
+			final CoordinateReferenceSystem crs = CRS.decode(pCode);
 			prjWkt = crs.toWKT();
 		}
 
@@ -55,11 +55,11 @@ public class ProjSidecarGenerator
 
 			if (prjWkt != null)
 			{
-				for (File file : filesList)
+				for (final File file : filesList)
 				{
-					String nameWithoutExtention = FileUtilities
+					final String nameWithoutExtention = FileUtilities
 							.getNameWithoutExtention(file);
-					File prjFile = new File(file.getParentFile(), nameWithoutExtention
+					final File prjFile = new File(file.getParentFile(), nameWithoutExtention
 							+ ".prj"); //$NON-NLS-1$
 					if (!prjFile.exists())
 					{
@@ -88,9 +88,9 @@ public class ProjSidecarGenerator
 	 * @throws IOException 
 	 * @throws FactoryException 
 	 */
-	public static void addPrj(String folder, String epsg) throws FactoryException, IOException
+	public static void addPrj(final String folder, final String epsg) throws FactoryException, IOException
 	{
-		ProjSidecarGenerator fiter = new ProjSidecarGenerator();
+		final ProjSidecarGenerator fiter = new ProjSidecarGenerator();
 		fiter.inFolder = folder;
 		fiter.pCode = epsg;
 		fiter.process();
@@ -104,7 +104,7 @@ public class ProjSidecarGenerator
 			{
 				onDirectory(f);
 				final File[] childs = f.listFiles();
-				for (File child : childs)
+				for (final File child : childs)
 				{
 					traverse(child);
 				}

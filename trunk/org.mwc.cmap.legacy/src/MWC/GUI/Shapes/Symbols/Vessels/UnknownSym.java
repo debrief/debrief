@@ -50,34 +50,34 @@ public class UnknownSym extends PlainSymbol {
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
     return res;
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
 
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(6 * getScaleVal());
-    int wid_2 = (int)(wid/2d);
+    final int wid = (int)(6 * getScaleVal());
+    final int wid_2 = (int)(wid/2d);
 
     // now the outer circle
     dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
 
     // now the slash
-    double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
-    double dX = Math.sin(theta) * wid_2;
-    double dY = Math.sin(theta) * wid_2;
+    final double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
+    final double dX = Math.sin(theta) * wid_2;
+    final double dY = Math.sin(theta) * wid_2;
 
     dest.drawLine(centre.x - (int)dX, centre.y + (int)dY,
                   centre.x + (int)dX, centre.y - (int)dY);

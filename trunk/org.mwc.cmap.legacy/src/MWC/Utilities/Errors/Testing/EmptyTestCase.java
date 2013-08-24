@@ -8,7 +8,7 @@ public class EmptyTestCase extends TestCase {
   /**
   * Basic constructor - called by the test runners.
   */
-  public EmptyTestCase(String s) {
+  public EmptyTestCase(final String s) {
     super (s);
   }
 

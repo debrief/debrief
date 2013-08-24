@@ -48,7 +48,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	 * 
 	 * @param parent
 	 */
-	public ValueWithUnitsControl(Composite parent)
+	public ValueWithUnitsControl(final Composite parent)
 	{
 		super(parent, SWT.NONE);
 
@@ -83,9 +83,9 @@ final public class ValueWithUnitsControl extends Composite implements
 	 * @param property
 	 *          who we tell if we've changed
 	 */
-	public ValueWithUnitsControl(Composite parent, String textTip,
-			String comboText, ValueWithUnitsDataModel dataModel,
-			IDebriefProperty property)
+	public ValueWithUnitsControl(final Composite parent, final String textTip,
+			final String comboText, final ValueWithUnitsDataModel dataModel,
+			final IDebriefProperty property)
 	{
 		this(parent);
 		init(textTip, comboText, dataModel);
@@ -119,7 +119,7 @@ final public class ValueWithUnitsControl extends Composite implements
 		final String distTxt = _myText.getText();
 		if (distTxt.length() > 0)
 		{
-			double dist = new Double(distTxt).doubleValue();
+			final double dist = new Double(distTxt).doubleValue();
 			final int units = _myCombo.getSelectionIndex();
 			if(units != -1)
 				res = _myModel.createResultsObject(dist, units);
@@ -136,8 +136,8 @@ final public class ValueWithUnitsControl extends Composite implements
 	 * @param comboTip
 	 * @param model
 	 */
-	public void init(String textTip, String comboTip,
-			ValueWithUnitsDataModel model)
+	public void init(final String textTip, final String comboTip,
+			final ValueWithUnitsDataModel model)
 	{
 		_myModel = model;
 		_myText.setToolTipText(textTip);
@@ -151,7 +151,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	 * 
 	 * @param value
 	 */
-	public void setData(Object value)
+	public void setData(final Object value)
 	{
 		// let the daddy do his bit
 		super.setData(value);
@@ -161,17 +161,17 @@ final public class ValueWithUnitsControl extends Composite implements
 		doUpdate();
 	}
 
-	public void modifyText(ModifyEvent e)
+	public void modifyText(final ModifyEvent e)
 	{
 		// store the value in the property, if we have one?
 		if (_property != null)
 			_property.setValue(getData());
 		
 		// also tell any listeners
-		Listener[] listeners = this.getListeners(SWT.Selection);
+		final Listener[] listeners = this.getListeners(SWT.Selection);
 		for (int i = 0; i < listeners.length; i++)
 		{
-			Listener listener = listeners[i];
+			final Listener listener = listeners[i];
 			listener.handleEvent(new Event());
 		}
 		

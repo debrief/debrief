@@ -625,7 +625,7 @@ public class SwingCanvas extends javax.swing.JComponent
     _theDest.drawPolyline(xPoints, yPoints, nPoints);
   }
   
-	final public void drawPolyline(int[] points) {
+	final public void drawPolyline(final int[] points) {
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
 	} 
@@ -1126,7 +1126,7 @@ public class SwingCanvas extends javax.swing.JComponent
         return res;
 
       }
-      catch (IntrospectionException e)
+      catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
@@ -1202,7 +1202,7 @@ public class SwingCanvas extends javax.swing.JComponent
   }
 
 @Override
-public void drawText(String str, int x, int y, float rotate) {
+public void drawText(final String str, final int x, final int y, final float rotate) {
 	// TODO Auto-generated method stub
 	
 }

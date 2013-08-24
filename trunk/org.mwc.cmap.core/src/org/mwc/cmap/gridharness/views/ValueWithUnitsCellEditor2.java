@@ -37,7 +37,7 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 
 	private String[] _unitLabels;
 
-	public ValueWithUnitsCellEditor2(Composite parent, String textTip, String comboTip) {
+	public ValueWithUnitsCellEditor2(final Composite parent, final String textTip, final String comboTip) {
 		super(parent);
 		_textTip = textTip;
 		_comboTip = comboTip;
@@ -45,16 +45,16 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 	
 	protected abstract ValueInUnits initializeValue();
 
-	protected Control createControl(Composite parent) {
+	protected Control createControl(final Composite parent) {
 		_value = initializeValue();
 		_unitsSet = _value.getUnitsSet();
 		_unitLabels = _unitsSet.getAllUnitLabels();
 		return createControl(parent, _textTip, _comboTip);
 	}
 
-	protected Control createControl(Composite parent, String tipOne, String tipTwo) {
-		Composite holder = new Composite(parent, SWT.NONE);
-		RowLayout rows = new RowLayout();
+	protected Control createControl(final Composite parent, final String tipOne, final String tipTwo) {
+		final Composite holder = new Composite(parent, SWT.NONE);
+		final RowLayout rows = new RowLayout();
 		rows.marginLeft = rows.marginRight = 0;
 		rows.marginTop = rows.marginBottom = 0;
 		rows.fill = false;
@@ -72,7 +72,7 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		new MultiControlFocusHandler(_myText, _myCombo) {
 
 			@Override
-			protected void focusReallyLost(FocusEvent e) {
+			protected void focusReallyLost(final FocusEvent e) {
 				ValueWithUnitsCellEditor2.this.focusLost();
 			}
 		};
@@ -85,13 +85,13 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 	}
 	
 	protected Object doGetValue() {
-		String distTxt = _myText.getText();
-		double dist = new Double(distTxt).doubleValue();
-		int selectedIndex = _myCombo.getSelectionIndex();
-		String selectedLabel = _myCombo.getItem(selectedIndex);
-		UnitsSet.Unit units = _unitsSet.findUnit(selectedLabel);
+		final String distTxt = _myText.getText();
+		final double dist = new Double(distTxt).doubleValue();
+		final int selectedIndex = _myCombo.getSelectionIndex();
+		final String selectedLabel = _myCombo.getItem(selectedIndex);
+		final UnitsSet.Unit units = _unitsSet.findUnit(selectedLabel);
 
-		ValueInUnits result = _value.makeCopy();
+		final ValueInUnits result = _value.makeCopy();
 		result.setValues(dist, units);
 		return result;
 	}
@@ -100,17 +100,17 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		_myText.setFocus();
 	}
 
-	protected void doSetValue(Object value) {
-		ValueInUnits valueImpl = (ValueInUnits) value;
-		UnitsSet.Unit mainUnit = _unitsSet.getMainUnit();
-		double doubleValue = valueImpl.getValueIn(mainUnit);
+	protected void doSetValue(final Object value) {
+		final ValueInUnits valueImpl = (ValueInUnits) value;
+		final UnitsSet.Unit mainUnit = _unitsSet.getMainUnit();
+		final double doubleValue = valueImpl.getValueIn(mainUnit);
 		_value.setValues(doubleValue, mainUnit);
-		UnitsSet.Unit bestFitUnit = _unitsSet.selectUnitsFor(doubleValue);
+		final UnitsSet.Unit bestFitUnit = _unitsSet.selectUnitsFor(doubleValue);
 		_myCombo.select(getUndexFor(bestFitUnit));
 		_myText.setText(String.valueOf(_value.getValueIn(bestFitUnit)));
 	}
 
-	private int getUndexFor(Unit unit) {
+	private int getUndexFor(final Unit unit) {
 		for (int i = 0; i < _unitLabels.length; i++) {
 			if (unit.getLabel().equals(_unitLabels[i])) {
 				return i;

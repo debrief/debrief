@@ -26,7 +26,7 @@ public class Position implements TimeStampedDataItem {
 	public Position() {
 	}
 
-	public Position(HiResDate time, double latitude, double longitude, double course, WorldSpeed2 speed) {
+	public Position(final HiResDate time, final double latitude, final double longitude, final double course, final WorldSpeed2 speed) {
 		_myTime = time;
 		_course = course;
 		_location = new WorldLocation(latitude, longitude);
@@ -45,7 +45,7 @@ public class Position implements TimeStampedDataItem {
 		return _myTime;
 	}
 
-	public void setTime(HiResDate time) {
+	public void setTime(final HiResDate time) {
 		_myTime = time;
 	}
 
@@ -53,7 +53,7 @@ public class Position implements TimeStampedDataItem {
 		return _location.getLatitude();
 	}
 
-	public void setLatitude(double latitude) {
+	public void setLatitude(final double latitude) {
 		this._location = new WorldLocation(latitude, _location.getLongitude());
 	}
 
@@ -61,11 +61,11 @@ public class Position implements TimeStampedDataItem {
 		return _location.getLongitude();
 	}
 
-	public void setLongitude(double _longitude) {
+	public void setLongitude(final double _longitude) {
 		this._location = new WorldLocation(_location.getLatitude(), _longitude);
 	}
 
-	public void setLocation(WorldLocation location) {
+	public void setLocation(final WorldLocation location) {
 		this._location = location;
 	}
 
@@ -77,7 +77,7 @@ public class Position implements TimeStampedDataItem {
 		return _course;
 	}
 
-	public void setCourse(double _course) {
+	public void setCourse(final double _course) {
 		this._course = _course;
 	}
 
@@ -85,11 +85,11 @@ public class Position implements TimeStampedDataItem {
 		return _speed;
 	}
 
-	public void setSpeed(WorldSpeed2 _speed) {
+	public void setSpeed(final WorldSpeed2 _speed) {
 		this._speed = _speed;
 	}
 
-	public void setDTG(HiResDate newTime) {
+	public void setDTG(final HiResDate newTime) {
 		this._myTime = newTime;
 	}
 

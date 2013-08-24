@@ -25,7 +25,7 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 
 	private HiResDate _currentTime;
 
-	private String _myId;
+	private final String _myId;
 
 	public WrappingSteppableTime()
 	{
@@ -43,7 +43,7 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	 * @param propertyType
 	 *          the (optional) property to listen to. Use null if you don't mind
 	 */
-	public void addListener(PropertyChangeListener listener, String propertyType)
+	public void addListener(final PropertyChangeListener listener, final String propertyType)
 	{
 		if (_pSupport == null)
 			_pSupport = new PropertyChangeSupport(this);
@@ -76,7 +76,7 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		return _currentTime;
 	}
 
-	public void pause(Object origin, boolean fireUpdate)
+	public void pause(final Object origin, final boolean fireUpdate)
 	{
 		if (_myScenario != null)
 		{
@@ -93,13 +93,13 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	 *          the (optional) property to stop listening to. Use null if you
 	 *          don't mind
 	 */
-	public void removeListener(PropertyChangeListener listener,
-			String propertyType)
+	public void removeListener(final PropertyChangeListener listener,
+			final String propertyType)
 	{
 		_pSupport.removePropertyChangeListener(propertyType, listener);
 	}
 
-	public void restart(Object origin, boolean fireUpdate)
+	public void restart(final Object origin, final boolean fireUpdate)
 	{
 		if (_myScenario != null)
 		{
@@ -107,12 +107,12 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		}
 	}
 
-	public void restart(ScenarioType scenario)
+	public void restart(final ScenarioType scenario)
 	{
 
 	}
 
-	public void run(Object origin, boolean fireUpdate)
+	public void run(final Object origin, final boolean fireUpdate)
 	{
 		if (_myScenario != null)
 		{
@@ -126,7 +126,7 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	 * @param scenario
 	 *          the scenario to watch
 	 */
-	public void setCurrentScenario(ScenarioType scenario)
+	public void setCurrentScenario(final ScenarioType scenario)
 	{
 		if (scenario != _myScenario)
 		{
@@ -147,7 +147,7 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	 * @param period
 	 *          - the new time period
 	 */
-	public void setPeriod(Object origin, TimePeriod period)
+	public void setPeriod(final Object origin, final TimePeriod period)
 	{
 		// ignore, we don't handle this
 	}
@@ -159,7 +159,7 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	 * org.mwc.cmap.core.DataTypes.Temporal.ControllableTime#setTime(java.lang
 	 * .Object, MWC.GenericData.HiResDate)
 	 */
-	public void setTime(Object origin, HiResDate newDate, boolean fireUpdate)
+	public void setTime(final Object origin, final HiResDate newDate, final boolean fireUpdate)
 	{
 		// ok. remember the old time (if we have one)
 		HiResDate oldTime = null;
@@ -175,11 +175,11 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 			// do we have any listeners?
 			if (_pSupport != null)
 			{
-				PropertyChangeListener[] theseListeners = _pSupport
+				final PropertyChangeListener[] theseListeners = _pSupport
 						.getPropertyChangeListeners(TIME_CHANGED_PROPERTY_NAME);
 				for (int i = 0; i < theseListeners.length; i++)
 				{
-					PropertyChangeListener pcl = theseListeners[i];
+					final PropertyChangeListener pcl = theseListeners[i];
 					pcl.propertyChange(new PropertyChangeEvent(this,
 							TIME_CHANGED_PROPERTY_NAME, oldTime, newDate));
 				}
@@ -192,14 +192,14 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	private void startWatching()
 	{
 		_myScenario.addScenarioSteppedListener(this);
-		long curTime = _myScenario.getTime();
+		final long curTime = _myScenario.getTime();
 		if (curTime != -1)
 		{
 			setTime(_myScenario, new HiResDate(curTime), true);
 		}
 	}
 
-	public void step(Object origin, boolean fireUpdate)
+	public void step(final Object origin, final boolean fireUpdate)
 	{
 		if (_myScenario != null)
 		{
@@ -207,12 +207,12 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		}
 	}
 
-	public void step(ScenarioType scenario, long newTime)
+	public void step(final ScenarioType scenario, final long newTime)
 	{
 		setTime(scenario, new HiResDate(newTime), true);
 	}
 
-	public void stop(Object origin, boolean fireUpdate)
+	public void stop(final Object origin, final boolean fireUpdate)
 	{
 		if (_myScenario != null)
 		{

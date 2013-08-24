@@ -22,10 +22,10 @@ public final class SymbolHighlighter implements PlotHighlighter
    * @param dest the place to draw this highlight
    * @param watch the current data point
    */
-  public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-                          java.awt.Graphics dest,
-                          MWC.GenericData.WatchableList list,
-                          MWC.GenericData.Watchable watch, final boolean isPrimary)
+  public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
+                          final java.awt.Graphics dest,
+                          final MWC.GenericData.WatchableList list,
+                          final MWC.GenericData.Watchable watch, final boolean isPrimary)
   {
     // check that our graphics context is still valid -
     // we can't, so we will just have to trap any exceptions it raises
@@ -37,7 +37,7 @@ public final class SymbolHighlighter implements PlotHighlighter
       if(list != null)
       {
         // retrieve the symbol
-        MWC.GUI.Shapes.Symbols.PlainSymbol sym = list.getSnailShape();
+        final MWC.GUI.Shapes.Symbols.PlainSymbol sym = list.getSnailShape();
 
         WorldLocation centre = null;
 
@@ -48,10 +48,10 @@ public final class SymbolHighlighter implements PlotHighlighter
           centre = watch.getBounds().getCentre();
 
           // wrap the Graphics so we can paint to it
-          MWC.GUI.Canvas.CanvasAdaptor adaptor = new MWC.GUI.Canvas.CanvasAdaptor(proj, dest);
+          final MWC.GUI.Canvas.CanvasAdaptor adaptor = new MWC.GUI.Canvas.CanvasAdaptor(proj, dest);
 
           // store the size
-          double size = sym.getScaleVal();
+          final double size = sym.getScaleVal();
 
           // use our size
           sym.setScaleVal(_mySize);
@@ -71,30 +71,30 @@ public final class SymbolHighlighter implements PlotHighlighter
       // paint this symbol if we haven't already managed to do it
       if(!isPainted)
       {
-        int myIntSize = 5;
+        final int myIntSize = 5;
 
         // set the highlight colour
         dest.setColor(_myColor);
         // get the current area of the watchable
-        WorldArea wa = watch.getBounds();
+        final WorldArea wa = watch.getBounds();
         // convert to screen coordinates
-        Point tl = proj.toScreen(wa.getTopLeft());
+        final Point tl = proj.toScreen(wa.getTopLeft());
 
-        int tlx = tl.x;
-        int tly = tl.y;
+        final int tlx = tl.x;
+        final int tly = tl.y;
 
-        Point br = proj.toScreen(wa.getBottomRight());
+        final Point br = proj.toScreen(wa.getBottomRight());
         // get the width
-        int x = tlx - myIntSize;
-        int y = tly - myIntSize;
-        int wid = (br.x - tlx) + (myIntSize * 2);
-        int ht = (br.y - tly) + (myIntSize * 2);
+        final int x = tlx - myIntSize;
+        final int y = tly - myIntSize;
+        final int wid = (br.x - tlx) + (myIntSize * 2);
+        final int ht = (br.y - tly) + (myIntSize * 2);
 
         // plot the rectangle
         dest.drawRect(x , y, wid, ht);
       }
     }
-    catch(IllegalStateException e)
+    catch(final IllegalStateException e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -181,7 +181,7 @@ public final class SymbolHighlighter implements PlotHighlighter
         res[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
         return res;
       }
-      catch(Exception e)
+      catch(final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
         return super.getPropertyDescriptors();

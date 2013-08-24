@@ -14,13 +14,13 @@ public class TMAFromSensorWizard extends Wizard
 	private static final String PAGE_TITLE = "Generate TMA segment";
 	RangeBearingPage selectOffsetPage;
 	EnterSolutionPage enterSolutionPage;
-	private double _brgDegs;
-	private WorldDistance _range;
-	private double _initalCourse;
-	private WorldSpeed _initialSpeed;
+	private final double _brgDegs;
+	private final WorldDistance _range;
+	private final double _initalCourse;
+	private final WorldSpeed _initialSpeed;
 
-	public TMAFromSensorWizard(double brgDegs, WorldDistance range,
-			double initialCourse, WorldSpeed initialSpeed)
+	public TMAFromSensorWizard(final double brgDegs, final WorldDistance range,
+			final double initialCourse, final WorldSpeed initialSpeed)
 	{
 		_brgDegs = brgDegs;
 		_range = range;
@@ -32,7 +32,7 @@ public class TMAFromSensorWizard extends Wizard
 	{
 		final String imagePath = "images/grid_wizard.gif";
 
-		String helpContext = null;
+		final String helpContext = null;
 		
 		// now for the easy fields
 		// ok, we need to let the user enter the solution wrapper name
@@ -52,7 +52,7 @@ public class TMAFromSensorWizard extends Wizard
 
 		enterSolutionPage = new EnterSolutionPage(null, PAGE_TITLE,
 				"This page lets you enter an initial solution", imagePath, helpContext);
-		SolutionDataItem d2 = (SolutionDataItem) enterSolutionPage.createMe();
+		final SolutionDataItem d2 = (SolutionDataItem) enterSolutionPage.createMe();
 		d2._course = _initalCourse;
 		d2._speed = _initialSpeed;
 
@@ -65,7 +65,7 @@ public class TMAFromSensorWizard extends Wizard
 	}
 
 	@Override
-	public IWizardPage getPage(String name)
+	public IWizardPage getPage(final String name)
 	{
 		return super.getPage(name);
 	}

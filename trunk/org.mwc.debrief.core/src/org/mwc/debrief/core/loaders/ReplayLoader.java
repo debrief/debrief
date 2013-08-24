@@ -43,13 +43,13 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 				// to the data-file - and the legacy code won't be able to find the file.
 				// we do, however have a stream for the input file - just count the
 				// lines in this.
-				public int countLinesFor(String fName)
+				public int countLinesFor(final String fName)
 				{
 					int lines = 0;
 					try
 					{
 						// create a file-wrapper to see if we can open the file directly
-						File countFile = new File(fName);
+						final File countFile = new File(fName);
 						if (countFile.exists())
 						{
 							// create ourselves a fresh stream. we create some fresh streams
@@ -61,7 +61,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 									+ lines + " lines", null);
 						}
 					}
-					catch (FileNotFoundException fe)
+					catch (final FileNotFoundException fe)
 					{
 						DebriefPlugin
 								.logError(
@@ -69,7 +69,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 										"Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.",
 										fe);
 					}
-					catch (IOException e)
+					catch (final IOException e)
 					{
 						DebriefPlugin.logError(Status.ERROR,
 								"Failed to open stream for counting lines:" + fName, null);
@@ -125,11 +125,11 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 
 		try
 		{
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IProgressService ps = wb.getProgressService();
+			final IWorkbench wb = PlatformUI.getWorkbench();
+			final IProgressService ps = wb.getProgressService();
 			ps.busyCursorWhile(new IRunnableWithProgress()
 			{
-				public void run(IProgressMonitor pm)
+				public void run(final IProgressMonitor pm)
 				{
 					// right, better suspend the LayerManager extended updates from
 					// firing
@@ -143,7 +143,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 						// and inform the plot editor
 						thePlot.loadingComplete(this);
 					}
-					catch (RuntimeException e)
+					catch (final RuntimeException e)
 					{
 						DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
 								+ fileName, e);
@@ -161,7 +161,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 							{
 								inputStream.close();
 							}
-							catch (IOException e)
+							catch (final IOException e)
 							{
 								DebriefPlugin.logError(Status.ERROR,
 										"whilst closing input stream", e);
@@ -174,11 +174,11 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 				}
 			});
 		}
-		catch (InvocationTargetException e)
+		catch (final InvocationTargetException e)
 		{
 			DebriefPlugin.logError(Status.ERROR, "whilst loading replay file", e);
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 			DebriefPlugin.logError(Status.ERROR, "whilst loading replay file", e);
 		}

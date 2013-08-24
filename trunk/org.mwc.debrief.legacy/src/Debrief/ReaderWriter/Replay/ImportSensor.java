@@ -101,12 +101,12 @@ final class ImportSensor implements PlainLineImporter {
   /**
    * read in this string and return a Label
    */
-  public final Object readThisLine(String theLine) {
+  public final Object readThisLine(final String theLine) {
 
     //;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H  BBB.B  RRR XXX YYY.....YYY
 
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
     String theText;
@@ -125,8 +125,8 @@ final class ImportSensor implements PlainLineImporter {
     st.nextToken();
 
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -138,7 +138,7 @@ final class ImportSensor implements PlainLineImporter {
     theSymbology = st.nextToken(normalDelimiters);
 
     // now the sensor offsets
-    String next = st.nextToken();
+    final String next = st.nextToken();
 
     // let's trim this string aswell, just so we're sure N is the first letter
     // if that's its destiny
@@ -160,11 +160,11 @@ final class ImportSensor implements PlainLineImporter {
        * a space between the hemisphere character and a 3-digit
        * latitude value - so BE CAREFUL
        */
-      String vDiff = st.nextToken();
+      final String vDiff = st.nextToken();
       if (vDiff.length() > 3) {
         // hmm, they are combined
         latHem = vDiff.charAt(0);
-        String secondPart = vDiff.substring(1, vDiff.length());
+        final String secondPart = vDiff.substring(1, vDiff.length());
         longDeg = Double.valueOf(secondPart);
       } else {
         // they are separate, so only the hem is in this one
@@ -204,11 +204,11 @@ final class ImportSensor implements PlainLineImporter {
 
     theColor = ImportReplay.replayColorFor(theSymbology);
 
-    int theStyle = ImportReplay.replayLineStyleFor(theSymbology);
+    final int theStyle = ImportReplay.replayLineStyleFor(theSymbology);
 
 
     // create the contact object
-    SensorContactWrapper data =
+    final SensorContactWrapper data =
         new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin, theColor, theText, theStyle, sensorName);
 
     return data;
@@ -227,9 +227,9 @@ final class ImportSensor implements PlainLineImporter {
    * @param theWrapper the thing we are going to export
    * @return the shape in String form
    */
-  public final String exportThis(MWC.GUI.Plottable theWrapper) {
+  public final String exportThis(final MWC.GUI.Plottable theWrapper) {
     // result value
-    String line = ";; Export of sensor data not implemented";
+    final String line = ";; Export of sensor data not implemented";
     return line;
 
   }
@@ -240,7 +240,7 @@ final class ImportSensor implements PlainLineImporter {
    * @param val the object to test
    * @return boolean saying whether you can do it
    */
-  public final boolean canExportThis(Object val) {
+  public final boolean canExportThis(final Object val) {
     boolean res = false;
 
     if (val instanceof SensorWrapper) {

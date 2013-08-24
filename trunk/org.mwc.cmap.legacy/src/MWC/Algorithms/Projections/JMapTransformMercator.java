@@ -30,7 +30,7 @@ public class JMapTransformMercator extends PlainProjection
       super("Mercator");
     }
   
-  public void setDataArea(WorldArea theArea)
+  public void setDataArea(final WorldArea theArea)
   {
     super.setDataArea(theArea);
     x1_ = theArea.getTopLeft().getLong();
@@ -41,7 +41,7 @@ public class JMapTransformMercator extends PlainProjection
     resetData();
   }
 
-  public void setScreenArea(Dimension screen)
+  public void setScreenArea(final Dimension screen)
   {
     super.setScreenArea(screen);
     
@@ -62,8 +62,8 @@ public class JMapTransformMercator extends PlainProjection
   	centerMap_ = x1_-(x1_-x2_)/2.0;
   	centerScreen_ = (double)screen_.width/2.0;
 //  	double sx = (double)screen_.width/(0.67*(x2_-x1_));
-  	double sx = (double)screen_.width/(x2_-x1_);
-  	double sy = (double)screen_.height/(y1_-y2_);
+  	final double sx = (double)screen_.width/(x2_-x1_);
+  	final double sy = (double)screen_.height/(y1_-y2_);
   	if(sx<sy)scale_ = sx;
   	else scale_ = sy;
   	yscale_ = sy;
@@ -72,34 +72,34 @@ public class JMapTransformMercator extends PlainProjection
     
     
     
-  public WorldLocation getPoint(int x, int y){
+  public WorldLocation getPoint(final int x, final int y){
   	latScale_ = Math.cos(((oy_-(double)y/scale_)/180.0)*PI);
    	return new WorldLocation(centerMap_-(x-centerScreen_)/(latScale_*scale_),
                              (oy_-((double)y/scale_)),
                              0);
 	}
     
-  public Point getPoint(double x, double y){
+  public Point getPoint(final double x, final double y){
        	latScale_ = Math.cos((y/180.0)*PI);
         return new Point((int)((centerMap_-x)*latScale_*-1 *scale_+centerScreen_),
                          (int)((oy_-y)*scale_));
   }
 
-  public WorldLocation toWorld(Point val)
+  public WorldLocation toWorld(final Point val)
   {
-    WorldLocation res = getPoint(val.x,
+    final WorldLocation res = getPoint(val.x,
                                  val.y);
     return res;
   }
 
-  public Point toScreen(WorldLocation val)
+  public Point toScreen(final WorldLocation val)
   {
-    Point res = getPoint(val.getLong(),
+    final Point res = getPoint(val.getLong(),
                          val.getLat());
     return res;
   }
 
-  public void zoom(double value)
+  public void zoom(final double value)
   {
   }
 

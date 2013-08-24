@@ -64,30 +64,30 @@ public class BarraSym extends PlainSymbol {
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
     return res;
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
 
 
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(4 * getScaleVal());
+    final int wid = (int)(4 * getScaleVal());
 
     // draw our box, line by line
-    java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y - wid);
-    java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y + wid);
+    final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y - wid);
+    final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y + wid);
 
     if(showSimplifiedSymbol())
     {
@@ -98,9 +98,9 @@ public class BarraSym extends PlainSymbol {
 
       // do the central character
       // what's the width?
-      String str = "P";
-      int strW = dest.getStringWidth(_myFont,str);
-      int strH = dest.getStringHeight(_myFont);
+      final String str = "P";
+      final int strW = dest.getStringWidth(_myFont,str);
+      final int strH = dest.getStringHeight(_myFont);
       dest.drawText(_myFont, str, centre.x - strW/2, centre.y + strH/4);
     }
 

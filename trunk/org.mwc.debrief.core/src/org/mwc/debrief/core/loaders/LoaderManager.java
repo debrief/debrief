@@ -21,13 +21,13 @@ public abstract class LoaderManager
 	private ArrayList<INamedItem> _loaders;
 	
 	// Extension point tag and attributes in plugin.xml
-	private String EXTENSION_POINT_ID;
-	private String EXTENSION_TAG;
-	private String PLUGIN_ID;	
-	private String EXTENSION_TAG_LABEL_ATTRIB = "name";
+	private final String EXTENSION_POINT_ID;
+	private final String EXTENSION_TAG;
+	private final String PLUGIN_ID;	
+	private final String EXTENSION_TAG_LABEL_ATTRIB = "name";
 	
 
-	public LoaderManager(String extensionId, String extensionTag, String pluginId)
+	public LoaderManager(final String extensionId, final String extensionTag, final String pluginId)
 	{
 		EXTENSION_POINT_ID = extensionId;
 		EXTENSION_TAG = extensionTag;
@@ -42,15 +42,15 @@ public abstract class LoaderManager
 		CorePlugin.logError(Status.INFO, "Starting to load Debrief data importers", null);
 
 		_loaders = new ArrayList<INamedItem>();
-		IExtensionPoint point = Platform.getExtensionRegistry()
+		final IExtensionPoint point = Platform.getExtensionRegistry()
 				.getExtensionPoint(PLUGIN_ID, EXTENSION_POINT_ID);
 
 		// check: Any <extension> tags for our extension-point?
 		if (point != null) {
-			IExtension[] extensions = point.getExtensions();
+			final IExtension[] extensions = point.getExtensions();
 
 			for (int i = 0; i < extensions.length; i++) {
-				IConfigurationElement[] ces = extensions[i].getConfigurationElements();
+				final IConfigurationElement[] ces = extensions[i].getConfigurationElements();
 
 				for (int j = 0; j < ces.length; j++) {
 					// if this is the tag we want ("tool") create a descriptor
@@ -76,15 +76,15 @@ public abstract class LoaderManager
 		return _loaders;
 	}
 
-	private void addToolActionDescriptor(IConfigurationElement configElement)
+	private void addToolActionDescriptor(final IConfigurationElement configElement)
 	{
-		String label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+		final String label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 		
 		// get menu item label
 		// search for double entries
 		boolean doubleEntry = false;
 		for (int i = 0; i < getToolActionDescriptors().size(); i++) {
-			String l = 
+			final String l = 
 				((INamedItem) getToolActionDescriptors().get(i)).getName();
 			if (l.equals(label))
 				doubleEntry = true;
@@ -92,7 +92,7 @@ public abstract class LoaderManager
 
 		// we take the first matching label
 		if (!doubleEntry) {
-			INamedItem newInstance = createInstance(configElement, label);
+			final INamedItem newInstance = createInstance(configElement, label);
 			getToolActionDescriptors().add(newInstance);
 		} else {
 			CorePlugin.logError(Status.ERROR, "Tag:" + configElement.getName() + " failed to load. " + label + " already. Check for double-entry in plugin.xml", null);
@@ -108,13 +108,13 @@ public abstract class LoaderManager
 	 */
 	abstract public INamedItem createInstance(IConfigurationElement configElement, String label);
 
-	public IPlotLoader[] findLoadersFor(String fileName)
+	public IPlotLoader[] findLoadersFor(final String fileName)
 	{
-		Vector<IPlotLoader> list = new Vector<IPlotLoader>(0,1);
+		final Vector<IPlotLoader> list = new Vector<IPlotLoader>(0,1);
 		
-		for (Iterator<INamedItem> iter = _loaders.iterator(); iter.hasNext();)
+		for (final Iterator<INamedItem> iter = _loaders.iterator(); iter.hasNext();)
 		{
-			IPlotLoader element = (IPlotLoader) iter.next();
+			final IPlotLoader element = (IPlotLoader) iter.next();
 
 			// can it do it?
 			if(element.canLoad(fileName))
@@ -128,7 +128,7 @@ public abstract class LoaderManager
 		
 		if(list.size() > 0)
 		{
-			Object [] tmp = list.toArray(res);
+			final Object [] tmp = list.toArray(res);
 			res = (IPlotLoader[])  tmp; 
 		}
 		

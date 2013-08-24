@@ -101,7 +101,7 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
    *
    * @param relativeTimes
    */
-  public void setRelativeTimes(boolean relativeTimes)
+  public void setRelativeTimes(final boolean relativeTimes)
   {
     _relativeTimes = relativeTimes;
   }

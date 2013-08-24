@@ -109,16 +109,16 @@ public class Pan extends PlainDragTool implements Serializable
   //////////////////////////////////////////////////
   // constructor
   //////////////////////////////////////////////////
-  public Pan(PlainChart theChart,
-                         ToolParent theParent,
-                         String theImage){
+  public Pan(final PlainChart theChart,
+                         final ToolParent theParent,
+                         final String theImage){
     this(theChart, theParent, theImage, false);
   }
 
-  public Pan(PlainChart theChart,
-                         ToolParent theParent,
-                         String theImage,
-                         boolean isAlternate){
+  public Pan(final PlainChart theChart,
+                         final ToolParent theParent,
+                         final String theImage,
+                         final boolean isAlternate){
     super(theChart, theParent, "Pan", "images/drag.gif", isAlternate);
   }
 
@@ -127,7 +127,7 @@ public class Pan extends PlainDragTool implements Serializable
   // member functions
   //////////////////////////////////////////////////
 
-  public void areaSelected(MWC.GenericData.WorldLocation theLocation, Point thePoint){
+  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
     super.areaSelected(theLocation, thePoint);
 
     super.restoreCursor();
@@ -141,14 +141,14 @@ public class Pan extends PlainDragTool implements Serializable
     _theEnd = getChart().getCanvas().toWorld(thePoint);
 
     // sort out the vector to apply to the corners
-    WorldVector wv = _theStart.subtract(_theEnd);
+    final WorldVector wv = _theStart.subtract(_theEnd);
 
     // apply this vector to the corners
-    WorldLocation currentCentre = _oldArea.getCentre();
-    WorldLocation newCentre = currentCentre.add(wv);
+    final WorldLocation currentCentre = _oldArea.getCentre();
+    final WorldLocation newCentre = currentCentre.add(wv);
 
     // and store the new area
-    WorldArea _newArea = new WorldArea(_oldArea);
+    final WorldArea _newArea = new WorldArea(_oldArea);
     _newArea.setCentre(newCentre);
 
     super.doExecute(new PanAction(getChart().getCanvas().getProjection(), _oldArea, _newArea));
@@ -162,7 +162,7 @@ public class Pan extends PlainDragTool implements Serializable
     _tmpArea = new WorldArea(_oldArea);
     _tmpLocation = null;
 
-    MWC.GUI.ToolParent parent = getParent();
+    final MWC.GUI.ToolParent parent = getParent();
     if(parent != null)
       parent.setCursor(java.awt.Cursor.MOVE_CURSOR);
   }
@@ -183,8 +183,8 @@ public class Pan extends PlainDragTool implements Serializable
   }
 
 
-  protected void setNewArea(PlainProjection proj, WorldArea theArea){
-    double oldBorder = proj.getDataBorder();
+  protected void setNewArea(final PlainProjection proj, final WorldArea theArea){
+    final double oldBorder = proj.getDataBorder();
     proj.setDataBorderNoZoom(1.0);
     proj.setDataArea(theArea);
     proj.zoom(0.0);
@@ -192,15 +192,15 @@ public class Pan extends PlainDragTool implements Serializable
   }
 
 
-  public void dragging(WorldLocation theLocation, Point thePoint)
+  public void dragging(final WorldLocation theLocation, final Point thePoint)
   {
     if(_tmpLocation != null){
 
       // sort out the vector to apply to the corners
-      WorldVector wv = _tmpLocation.subtract(theLocation);
+      final WorldVector wv = _tmpLocation.subtract(theLocation);
 
       // apply this vector to the corners
-      WorldArea newArea = new WorldArea(_tmpArea.getTopLeft().add(wv),
+      final WorldArea newArea = new WorldArea(_tmpArea.getTopLeft().add(wv),
                                          _tmpArea.getBottomRight().add(wv));
 
       setNewArea(getChart().getCanvas().getProjection(), newArea);
@@ -222,14 +222,14 @@ public class Pan extends PlainDragTool implements Serializable
 
   public static class PanAction implements Action{
 
-    private PlainProjection _theProj;
-    private WorldArea _oldArea;
-    private WorldArea _newArea;
+    private final PlainProjection _theProj;
+    private final WorldArea _oldArea;
+    private final WorldArea _newArea;
 
 
-    public PanAction(PlainProjection theProjection,
-                     WorldArea oldArea,
-                     WorldArea newArea){
+    public PanAction(final PlainProjection theProjection,
+                     final WorldArea oldArea,
+                     final WorldArea newArea){
     	_theProj = theProjection;
       _oldArea = oldArea;
       _newArea = newArea;
@@ -267,7 +267,7 @@ public class Pan extends PlainDragTool implements Serializable
      * @param theArea the new area to show
      */
     public static void setNewArea(final PlainProjection proj, final WorldArea theArea){
-      double oldBorder = proj.getDataBorder();
+      final double oldBorder = proj.getDataBorder();
       proj.setDataBorderNoZoom(1.0);
       proj.setDataArea(theArea);
       // Note: pre-GeoTools we used to have to do a zero zoom to fit to window

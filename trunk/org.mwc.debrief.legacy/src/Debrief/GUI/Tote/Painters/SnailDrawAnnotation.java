@@ -74,45 +74,45 @@ public final class SnailDrawAnnotation implements SnailPainter.drawHighLight
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-	public final java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-																	 java.awt.Graphics dest,
-																	 WatchableList list,
-																	 Watchable watch,
-																	 SnailPainter parent,
-																	 HiResDate dtg,
-                                   java.awt.Color backColor)
+	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+																	 final java.awt.Graphics dest,
+																	 final WatchableList list,
+																	 final Watchable watch,
+																	 final SnailPainter parent,
+																	 final HiResDate dtg,
+                                   final java.awt.Color backColor)
 	{
     dest.setXORMode(backColor);
 
     if(dest instanceof Graphics2D)
     {
-    	Graphics2D g2 = (Graphics2D) dest;
+    	final Graphics2D g2 = (Graphics2D) dest;
     	g2.setStroke(new BasicStroke(1));
     }
     
-    PlainWrapper swa = (PlainWrapper)watch;
+    final PlainWrapper swa = (PlainWrapper)watch;
 
-    CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
+    final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
 
     swa.paint(cad);
 
 		// get the current area of the watchable
-		WorldArea wa = watch.getBounds();
+		final WorldArea wa = watch.getBounds();
 
 		// convert to screen coordinates
-		Point tl = proj.toScreen(wa.getTopLeft());
+		final Point tl = proj.toScreen(wa.getTopLeft());
 
-    int tlx = tl.x;
-    int tly = tl.y;
+    final int tlx = tl.x;
+    final int tly = tl.y;
 
-		Point br = proj.toScreen(wa.getBottomRight());
+		final Point br = proj.toScreen(wa.getBottomRight());
 
 		// get the width
-		int wid = (br.x - tlx);
-		int ht = (br.y - tly);
+		final int wid = (br.x - tlx);
+		final int ht = (br.y - tly);
 
 		// represent this area as a rectangle
-		java.awt.Rectangle thisR = new Rectangle(tlx, br.y, wid, ht);
+		final java.awt.Rectangle thisR = new Rectangle(tlx, br.y, wid, ht);
 
 		return thisR;
 	}

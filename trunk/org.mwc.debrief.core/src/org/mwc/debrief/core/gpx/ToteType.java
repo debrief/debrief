@@ -82,7 +82,7 @@ public class ToteType {
      *     {@link ToteType.Primary }
      *     
      */
-    public void setPrimary(ToteType.Primary value) {
+    public void setPrimary(final ToteType.Primary value) {
         this.primary = value;
     }
 
@@ -160,7 +160,7 @@ public class ToteType {
          *     {@link String }
          *     
          */
-        public void setName(String value) {
+        public void setName(final String value) {
             this.name = value;
         }
 
@@ -211,7 +211,7 @@ public class ToteType {
          *     {@link String }
          *     
          */
-        public void setName(String value) {
+        public void setName(final String value) {
             this.name = value;
         }
 

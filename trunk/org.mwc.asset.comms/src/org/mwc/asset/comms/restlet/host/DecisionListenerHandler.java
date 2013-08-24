@@ -12,19 +12,19 @@ public class DecisionListenerHandler extends ASSETResource implements
 		ListenerResource
 {
 
-	public int accept(String listenerTxt)
+	public int accept(final String listenerTxt)
 	{
 		URI listener;
 		int res = 0;
 		try
 		{
 			listener = new URI(listenerTxt);
-			ASSETHost.HostProvider host = (HostProvider) getApplication();
+			final ASSETHost.HostProvider host = (HostProvider) getApplication();
 			res = host.getHost().newParticipantDecisionListener(getScenarioId(),
 					getParticipantId(), listener);
 
 		}
-		catch (URISyntaxException e)
+		catch (final URISyntaxException e)
 		{
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
 		}
@@ -33,11 +33,11 @@ public class DecisionListenerHandler extends ASSETResource implements
 
 	public void remove()
 	{
-		Map<String, Object> attrs = this.getRequestAttributes();
-		Object thisP = attrs.get("listener");
-		int theId = Integer.parseInt((String) thisP);
+		final Map<String, Object> attrs = this.getRequestAttributes();
+		final Object thisP = attrs.get("listener");
+		final int theId = Integer.parseInt((String) thisP);
 
-		ASSETHost.HostProvider host = (HostProvider) getApplication();
+		final ASSETHost.HostProvider host = (HostProvider) getApplication();
 		host.getHost().deleteParticipantDecisionListener(getScenarioId(),
 				getParticipantId(), theId);
 	}

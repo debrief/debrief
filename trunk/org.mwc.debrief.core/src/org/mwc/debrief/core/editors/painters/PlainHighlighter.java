@@ -27,8 +27,8 @@ public class PlainHighlighter implements TemporalLayerPainter
 
 	private int _mySize = 5;
 
-	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-			CanvasType dest, MWC.GenericData.Watchable watch)
+	public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
+			final CanvasType dest, final MWC.GenericData.Watchable watch)
 	{
 		// check that our graphics context is still valid -
 		// we can't, so we will just have to trap any exceptions it raises
@@ -38,19 +38,19 @@ public class PlainHighlighter implements TemporalLayerPainter
 			// set the highlight colour
 			dest.setColor(_myColor);
 			// get the current area of the watchable
-			WorldArea wa = watch.getBounds();
+			final WorldArea wa = watch.getBounds();
 			// convert to screen coordinates
-			Point tl = proj.toScreen(wa.getTopLeft());
+			final Point tl = proj.toScreen(wa.getTopLeft());
 
-			int tlx = tl.x;
-			int tly = tl.y;
+			final int tlx = tl.x;
+			final int tly = tl.y;
 
-			Point br = proj.toScreen(wa.getBottomRight());
+			final Point br = proj.toScreen(wa.getBottomRight());
 			// get the width
-			int x = tlx - _mySize;
-			int y = tly - _mySize;
-			int wid = (br.x - tlx) + _mySize * 2;
-			int ht = (br.y - tly) + _mySize * 2;
+			final int x = tlx - _mySize;
+			final int y = tly - _mySize;
+			final int wid = (br.x - tlx) + _mySize * 2;
+			final int ht = (br.y - tly) + _mySize * 2;
 
 			boolean lineStyleOverridden = false;
 			
@@ -70,7 +70,7 @@ public class PlainHighlighter implements TemporalLayerPainter
 			if(lineStyleOverridden)
 				dest.setLineStyle(CanvasType.SOLID);
 		}
-		catch (IllegalStateException e)
+		catch (final IllegalStateException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -83,7 +83,7 @@ public class PlainHighlighter implements TemporalLayerPainter
 	 * @param dest
 	 * @param dtg
 	 */
-	public void paintThisLayer(Layer theLayer, CanvasType dest, HiResDate dtg)
+	public void paintThisLayer(final Layer theLayer, final CanvasType dest, final HiResDate dtg)
 	{
 		// paint it, to start off with
 		theLayer.paint(dest);
@@ -117,7 +117,7 @@ public class PlainHighlighter implements TemporalLayerPainter
 		return _myColor;
 	}
 
-	public void setColor(Color color)
+	public void setColor(final Color color)
 	{
 		_myColor = color;
 	}
@@ -127,7 +127,7 @@ public class PlainHighlighter implements TemporalLayerPainter
 		return new BoundedInteger(_mySize, 1, 10);
 	}
 
-	public void setSize(BoundedInteger size)
+	public void setSize(final BoundedInteger size)
 	{
 		_mySize = size.getCurrent();
 	}
@@ -180,7 +180,7 @@ public class PlainHighlighter implements TemporalLayerPainter
         };
         return res;
       }
-      catch(Exception e)
+      catch(final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
         return super.getPropertyDescriptors();

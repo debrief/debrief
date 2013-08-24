@@ -21,31 +21,31 @@ public class CustomColorsStore
 	
 	public Vector<RGB> load()
 	{
-		Vector<RGB> colors = new Vector<RGB>();
+		final Vector<RGB> colors = new Vector<RGB>();
 		try
 		{
-			String rgbs = _store.getString(CUSTOM_COLORS);
-			String[] rgbs_values = rgbs.split(RGBS_DELIMITER);
-			for (String s: rgbs_values)
+			final String rgbs = _store.getString(CUSTOM_COLORS);
+			final String[] rgbs_values = rgbs.split(RGBS_DELIMITER);
+			for (final String s: rgbs_values)
 			{
-				String[] rgb = s.split(RGB_DELIMITER);
-				int red = Integer.parseInt(rgb[0]);
-				int green = Integer.parseInt(rgb[1]);
-				int blue = Integer.parseInt(rgb[2]);
+				final String[] rgb = s.split(RGB_DELIMITER);
+				final int red = Integer.parseInt(rgb[0]);
+				final int green = Integer.parseInt(rgb[1]);
+				final int blue = Integer.parseInt(rgb[2]);
 				colors.add(new RGB(red, green, blue));
 			}
 		} 
-		catch(Exception e)
+		catch(final Exception e)
 		{
 			return null;
 		}
 		return colors;
 	}
 	
-	public void save(Vector<RGB> initialColors)
+	public void save(final Vector<RGB> initialColors)
 	{
-		StringBuffer value = new StringBuffer();
-		for (RGB rgb: initialColors)
+		final StringBuffer value = new StringBuffer();
+		for (final RGB rgb: initialColors)
 		{
 			value.append(rgb.red + RGB_DELIMITER + rgb.green + RGB_DELIMITER + rgb.blue);
 			value.append(RGBS_DELIMITER);
@@ -53,9 +53,9 @@ public class CustomColorsStore
 		_store.setValue(CUSTOM_COLORS, value.toString());
 	}
 	
-	public void addColor(RGB rgb)
+	public void addColor(final RGB rgb)
 	{
-		StringBuffer res = new StringBuffer();
+		final StringBuffer res = new StringBuffer();
 		res.append(_store.getString(CUSTOM_COLORS));
 		res.append(RGBS_DELIMITER);
 		res.append(rgb.red + RGB_DELIMITER + rgb.green + RGB_DELIMITER + rgb.blue);

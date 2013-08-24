@@ -34,7 +34,7 @@ public final class GpxUtil
 		@Override
 		public void run()
 		{
-			DirectoryDialog dlg = new DirectoryDialog(Display.getDefault().getActiveShell());
+			final DirectoryDialog dlg = new DirectoryDialog(Display.getDefault().getActiveShell());
 
 			// Change the title bar text
 			dlg.setText("Export to GPS");
@@ -61,23 +61,23 @@ public final class GpxUtil
 			GPX_1_0_SCHEMA = FACTORY.newSchema(new StreamSource(GpxUtil.class.getResourceAsStream("gpx_1.0.xsd")));
 			GPX_1_1_SCHEMA = FACTORY.newSchema(new StreamSource(GpxUtil.class.getResourceAsStream("gpx_1.1.xsd")));
 		}
-		catch (SAXException e)
+		catch (final SAXException e)
 		{
 			throw new IllegalStateException("Unable to load GPX schema. Cannot perform validation of imported documents", e);
 		}
 	}
 
-	public static Source getDocumentSource(InputStream gpxStream) throws JDOMException, IOException
+	public static Source getDocumentSource(final InputStream gpxStream) throws JDOMException, IOException
 	{
-		SAXBuilder builder = new SAXBuilder();
-		Document document = builder.build(gpxStream);
-		JDOMSource in = new JDOMSource(document);
+		final SAXBuilder builder = new SAXBuilder();
+		final Document document = builder.build(gpxStream);
+		final JDOMSource in = new JDOMSource(document);
 		return in;
 	}
 
-	public static boolean isGpx10(Source source)
+	public static boolean isGpx10(final Source source)
 	{
-		Document document = ((JDOMSource) source).getDocument();
+		final Document document = ((JDOMSource) source).getDocument();
 		if ("1.0".equals(document.getRootElement().getAttributeValue("version")))
 		{
 			return true;
@@ -85,7 +85,7 @@ public final class GpxUtil
 		return false;
 	}
 
-	public static boolean isValid(Source source, boolean isGpx10) throws SAXException, IOException
+	public static boolean isValid(final Source source, final boolean isGpx10) throws SAXException, IOException
 	{
 		Validator validator;
 
@@ -111,7 +111,7 @@ public final class GpxUtil
 			validator.validate(source);
 			return true;
 		}
-		catch (SAXException ex)
+		catch (final SAXException ex)
 		{
 			CorePlugin.logError(Status.ERROR, "GPX file trying to import is not valid because " + ex.getMessage(), ex);
 			CorePlugin.errorDialog("Load GPS File", "GPX failed validation. Reason: " + ex.getMessage());
@@ -121,13 +121,13 @@ public final class GpxUtil
 
 	public static String collectDirecotryPath()
 	{
-		DirectoryCollector collector = new DirectoryCollector();
+		final DirectoryCollector collector = new DirectoryCollector();
 		Display.getDefault().syncExec(collector);
 
 		return collector.getSelectedFolder();
 	}
 		
-	public static boolean isValid(File f) throws SAXException, IOException
+	public static boolean isValid(final File f) throws SAXException, IOException
 	{
 		Validator validator;
 

@@ -22,7 +22,7 @@ public class CompositeTrackHandler extends TrackHandler
 	protected int _symInt;
 	protected int _labInt;
 
-	public CompositeTrackHandler(Layers theLayers)
+	public CompositeTrackHandler(final Layers theLayers)
 	{
 		super(theLayers, COMPOSITE_TRACK);
 
@@ -31,7 +31,7 @@ public class CompositeTrackHandler extends TrackHandler
 		{
 
 			@Override
-			public void setLocation(WorldLocation res)
+			public void setLocation(final WorldLocation res)
 			{
 				_origin = res;
 			}
@@ -39,7 +39,7 @@ public class CompositeTrackHandler extends TrackHandler
 
 		addAttributeHandler(new HandleAttribute(START_TIME)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_startTime = DebriefFormatDateTime.parseThis(value);
 			}
@@ -47,14 +47,14 @@ public class CompositeTrackHandler extends TrackHandler
 
 		addAttributeHandler(new HandleAttribute(SYMBOL_INTERVAL)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_symInt = Integer.parseInt(value);
 			}
 		});
 		addAttributeHandler(new HandleAttribute(LABEL_INTERVAL)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_labInt = Integer.parseInt(value);
 			}
@@ -72,7 +72,7 @@ public class CompositeTrackHandler extends TrackHandler
 	public void elementClosed()
 	{
 		// sort out the origin and start time
-		CompositeTrackWrapper comp = (CompositeTrackWrapper) super._myTrack;
+		final CompositeTrackWrapper comp = (CompositeTrackWrapper) super._myTrack;
 		comp.setOrigin(_origin);
 		comp.setStartDate(_startTime);
 
@@ -101,10 +101,10 @@ public class CompositeTrackHandler extends TrackHandler
 		_labInt = -1;
 	}
 
-	public static void exportTrack(Debrief.Wrappers.TrackWrapper track,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportTrack(final Debrief.Wrappers.TrackWrapper track,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
-		CompositeTrackWrapper comp = (CompositeTrackWrapper) track;
+		final CompositeTrackWrapper comp = (CompositeTrackWrapper) track;
 		final Element trk = doc.createElement(COMPOSITE_TRACK);
 		parent.appendChild(trk);
 		exportTrackObject(track, trk, doc);
@@ -116,8 +116,8 @@ public class CompositeTrackHandler extends TrackHandler
 		// we also wish to store the symbol and label frequencies - they're more
 		// effective in
 		// planning charts
-		HiResDate symInt = track.getSymbolFrequency();
-		HiResDate labInt = track.getLabelFrequency();
+		final HiResDate symInt = track.getSymbolFrequency();
+		final HiResDate labInt = track.getLabelFrequency();
 
 		trk.setAttribute(SYMBOL_INTERVAL, writeThis(symInt.getDate().getTime()));
 		trk.setAttribute(LABEL_INTERVAL, writeThis(labInt.getDate().getTime()));

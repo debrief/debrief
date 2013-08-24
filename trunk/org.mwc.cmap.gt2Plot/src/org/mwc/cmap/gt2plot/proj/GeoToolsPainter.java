@@ -30,25 +30,25 @@ public class GeoToolsPainter
 	 * @param bkColor (optional) background color to fill the image
 	 * @return
 	 */
-	public static BufferedImage drawAwtImage(int width, int height,
-			GtProjection proj, Color bkColor)
+	public static BufferedImage drawAwtImage(final int width, final int height,
+			final GtProjection proj, final Color bkColor)
 	{
-		MapContent map = proj.getMapContent();
-		StreamingRenderer renderer = new StreamingRenderer();
+		final MapContent map = proj.getMapContent();
+		final StreamingRenderer renderer = new StreamingRenderer();
 		renderer.setMapContent(map);
 
-		RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+		final RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		renderer.setJava2DHints(hints);
 
-		Map<String, Object> rendererParams = new HashMap<String, Object>();
+		final Map<String, Object> rendererParams = new HashMap<String, Object>();
 		rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
 
 		renderer.setRendererHints(rendererParams);
 
-		BufferedImage baseImage = new BufferedImage(width + 1, height + 1,
+		final BufferedImage baseImage = new BufferedImage(width + 1, height + 1,
 				BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2d = baseImage.createGraphics();
+		final Graphics2D g2d = baseImage.createGraphics();
 
 		// do we need to set the background color?
 		if (bkColor != null)
@@ -62,9 +62,9 @@ public class GeoToolsPainter
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		// renderer.setContext(context);
-		java.awt.Rectangle awtRectangle = new Rectangle(0, 0, width, height);
+		final java.awt.Rectangle awtRectangle = new Rectangle(0, 0, width, height);
 		final ReferencedEnvelope mapAOI = map.getViewport().getBounds();
-		AffineTransform worldToScreen = map.getViewport().getWorldToScreen();
+		final AffineTransform worldToScreen = map.getViewport().getWorldToScreen();
 		renderer.paint(g2d, awtRectangle, mapAOI, worldToScreen);
 		// swtImage.dispose();
 

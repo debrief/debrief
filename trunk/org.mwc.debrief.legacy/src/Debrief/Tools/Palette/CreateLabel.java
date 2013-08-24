@@ -91,12 +91,12 @@ public final class CreateLabel extends PlainTool
    * @param theParent parent where we can change cursor
    * @param thePanel panel
    */
-  public CreateLabel(ToolParent theParent,
-                     PropertiesPanel thePanel,
-                     Layers theData,
-                     MWC.GUI.PlainChart theChart,
-                     String theName,
-                     String theImage)
+  public CreateLabel(final ToolParent theParent,
+                     final PropertiesPanel thePanel,
+                     final Layers theData,
+                     final MWC.GUI.PlainChart theChart,
+                     final String theName,
+                     final String theImage)
   {
     super(theParent, theName, theImage);
 
@@ -113,13 +113,13 @@ public final class CreateLabel extends PlainTool
   public final Action getData()
   {
 
-    WorldArea wa = _theChart.getDataArea();
+    final WorldArea wa = _theChart.getDataArea();
     if(wa != null)
     {
       // put the label in the centre of the plot (at the surface)
-      WorldLocation centre = wa.getCentreAtSurface();
+      final WorldLocation centre = wa.getCentreAtSurface();
 
-      LabelWrapper theWrapper = new LabelWrapper("blank label",
+      final LabelWrapper theWrapper = new LabelWrapper("blank label",
                                                  centre,
                                                  java.awt.Color.orange);
 
@@ -165,10 +165,10 @@ public final class CreateLabel extends PlainTool
 		final private Layers _theData;
 
 
-    public CreateLabelAction(PropertiesPanel thePanel,
-                               Layer theLayer,
-                               LabelWrapper theShape,
-                               Layers theData)
+    public CreateLabelAction(final PropertiesPanel thePanel,
+                               final Layer theLayer,
+                               final LabelWrapper theShape,
+                               final Layers theData)
     {
       _thePanel = thePanel;
       _theLayer = theLayer;

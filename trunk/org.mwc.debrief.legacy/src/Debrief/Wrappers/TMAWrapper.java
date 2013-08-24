@@ -179,7 +179,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 	 * 
 	 * @param defaultColor
 	 */
-	public void setDefaultColor(Color defaultColor)
+	public void setDefaultColor(final Color defaultColor)
 	{
 		super.setColor(defaultColor);
 	}
@@ -189,16 +189,16 @@ public final class TMAWrapper extends TacticalDataWrapper
 		return _showBearingLines;
 	}
 
-	public void setShowBearingLines(boolean showBearingLines)
+	public void setShowBearingLines(final boolean showBearingLines)
 	{
 		// store the val
 		setUnderlyingBearingLineVisibility(showBearingLines);
 
 		// also reset the children's bearing line data
-		Iterator<Editable> iter = _myContacts.iterator();
+		final Iterator<Editable> iter = _myContacts.iterator();
 		while (iter.hasNext())
 		{
-			TMAContactWrapper nextSol = (TMAContactWrapper) iter.next();
+			final TMAContactWrapper nextSol = (TMAContactWrapper) iter.next();
 			nextSol.clearLineVisibleFlag();
 		}
 	}
@@ -208,16 +208,16 @@ public final class TMAWrapper extends TacticalDataWrapper
 		return _showLabels;
 	}
 
-	public void setShowLabels(boolean showLabels)
+	public void setShowLabels(final boolean showLabels)
 	{
 		// store the val
 		_showLabels = showLabels;
 
 		// also reset the children's bearing line data
-		Iterator<Editable> iter = _myContacts.iterator();
+		final Iterator<Editable> iter = _myContacts.iterator();
 		while (iter.hasNext())
 		{
-			TMAContactWrapper nextSol = (TMAContactWrapper) iter.next();
+			final TMAContactWrapper nextSol = (TMAContactWrapper) iter.next();
 			nextSol.setLabelVisible(showLabels);
 		}
 	}
@@ -229,7 +229,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 	 * @param showBearingLines
 	 *          yes/no
 	 */
-	public void setUnderlyingBearingLineVisibility(boolean showBearingLines)
+	public void setUnderlyingBearingLineVisibility(final boolean showBearingLines)
 	{
 		this._showBearingLines = showBearingLines;
 	}
@@ -241,7 +241,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 	 * @param showLabels
 	 *          yes/no
 	 */
-	public void setUnderlyingLabelVisibility(boolean showLabels)
+	public void setUnderlyingLabelVisibility(final boolean showLabels)
 	{
 		this._showLabels = showLabels;
 	}
@@ -286,7 +286,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 				{
 
 					// get the bounds of this wrapper
-					WorldArea thisA = fw.getBounds();
+					final WorldArea thisA = fw.getBounds();
 
 					// has our data been initialised?
 					if (res == null)
@@ -316,26 +316,26 @@ public final class TMAWrapper extends TacticalDataWrapper
 	 * 
 	 */
 	protected PlottableWrapperWithTimeAndOverrideableColor createItem(
-			PlottableWrapperWithTimeAndOverrideableColor last,
-			PlottableWrapperWithTimeAndOverrideableColor next,
-			LinearInterpolator interp, long tNow)
+			final PlottableWrapperWithTimeAndOverrideableColor last,
+			final PlottableWrapperWithTimeAndOverrideableColor next,
+			final LinearInterpolator interp, final long tNow)
 	{
-		TMAContactWrapper _next = (TMAContactWrapper) next;
-		TMAContactWrapper _last = (TMAContactWrapper) last;
+		final TMAContactWrapper _next = (TMAContactWrapper) next;
+		final TMAContactWrapper _last = (TMAContactWrapper) last;
 
-		double courseDegs = MWC.Algorithms.Conversions.Rads2Degs(interp.interp(
+		final double courseDegs = MWC.Algorithms.Conversions.Rads2Degs(interp.interp(
 				_last.getCourse(), _next.getCourse()));
-		double speedKts = interp.interp(_last.getSpeed(), _next.getSpeed());
-		double depthM = interp.interp(_last.getDepth(), _next.getDepth());
+		final double speedKts = interp.interp(_last.getSpeed(), _next.getSpeed());
+		final double depthM = interp.interp(_last.getDepth(), _next.getDepth());
 
-		double minima = interp.interp(_last.getMinima().getValueIn(
+		final double minima = interp.interp(_last.getMinima().getValueIn(
 				WorldDistance.DEGS), _next.getMinima().getValueIn(WorldDistance.DEGS));
-		double maxima = interp.interp(_last.getMaxima().getValueIn(
+		final double maxima = interp.interp(_last.getMaxima().getValueIn(
 				WorldDistance.DEGS), _next.getMaxima().getValueIn(WorldDistance.DEGS));
-		double orient = interp.interp(_last.getOrientation(), _next
+		final double orient = interp.interp(_last.getOrientation(), _next
 				.getOrientation());
 
-		EllipseShape theEllipse = new EllipseShape(null, orient, new WorldDistance(
+		final EllipseShape theEllipse = new EllipseShape(null, orient, new WorldDistance(
 				maxima, WorldDistance.DEGS), new WorldDistance(minima,
 				WorldDistance.DEGS));
 
@@ -344,9 +344,9 @@ public final class TMAWrapper extends TacticalDataWrapper
 		double rangeYds = 0, bearingDegs = 0;
 		if ((_last.getOrigin() != null) && (_next.getOrigin() != null))
 		{
-			double orLat = interp.interp(_last.getOrigin().getLat(), _next
+			final double orLat = interp.interp(_last.getOrigin().getLat(), _next
 					.getOrigin().getLat());
-			double orLong = interp.interp(_last.getOrigin().getLong(), _next
+			final double orLong = interp.interp(_last.getOrigin().getLong(), _next
 					.getOrigin().getLong());
 			origin = new WorldLocation(orLat, orLong, 0);
 		}
@@ -357,7 +357,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 					_last.getRange().getValueIn(WorldDistance.YARDS), _last.getRange()
 							.getValueIn(WorldDistance.YARDS));
 
-			double bearingRads = interp
+			final double bearingRads = interp
 					.interp(_last.getBearingRads(), _next.getBearingRads());
 			bearingDegs = MWC.Algorithms.Conversions.Rads2Degs(bearingRads);
 		}
@@ -543,7 +543,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -734,7 +734,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
 					.getTime().getTime(), 0), new WorldLocation(2.5, 2.0, 0.0), 12, 12)));
 			cal.set(2001, 10, 4, 4, 4, 28);
-			WorldLocation theLoc = new WorldLocation(2.75d, 2.0, 0.0);
+			final WorldLocation theLoc = new WorldLocation(2.75d, 2.0, 0.0);
 			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
 					.getTime().getTime(), 0), theLoc, 12, 12)));
 			cal.set(2001, 10, 4, 4, 4, 55);
@@ -750,7 +750,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 			cal.set(2001, 10, 4, 4, 4, 27);
 			list = solution.getNearestTo(new HiResDate(cal.getTime().getTime()));
 			nearest = (TMAContactWrapper) list[0];
-			WorldLocation theCentre = nearest.getCentre(track);
+			final WorldLocation theCentre = nearest.getCentre(track);
 			assertEquals("first test", new WorldLocation(2.75, 2.0, 0.0), theCentre);
 
 			// ah-ha! what about a contact between two fixes
@@ -848,16 +848,16 @@ public final class TMAWrapper extends TacticalDataWrapper
 
 		public void testMultipleContacts()
 		{
-			TMAContactWrapper sc1 = new TMAContactWrapper("aaa", "bbb",
+			final TMAContactWrapper sc1 = new TMAContactWrapper("aaa", "bbb",
 					new HiResDate(12), 0, 0, 0, 0, 0, null, "first", null, null);
-			TMAContactWrapper sc2 = new TMAContactWrapper("aaa", "bbb",
+			final TMAContactWrapper sc2 = new TMAContactWrapper("aaa", "bbb",
 					new HiResDate(13), 0, 0, 0, 0, 0, null, "first", null, null);
-			TMAContactWrapper sc3 = new TMAContactWrapper("aaa", "bbb",
+			final TMAContactWrapper sc3 = new TMAContactWrapper("aaa", "bbb",
 					new HiResDate(12), 0, 0, 0, 0, 0, null, "first", null, null);
-			TMAContactWrapper sc4 = new TMAContactWrapper("aaa", "bbb",
+			final TMAContactWrapper sc4 = new TMAContactWrapper("aaa", "bbb",
 					new HiResDate(15), 0, 0, 0, 0, 0, null, "first", null, null);
 
-			TMAWrapper sw = new TMAWrapper("bbb");
+			final TMAWrapper sw = new TMAWrapper("bbb");
 			sw.add(sc1);
 			sw.add(sc2);
 			sw.add(sc3);

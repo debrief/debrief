@@ -54,8 +54,8 @@ public class NewNarrativeEntryWizard extends Wizard
 				helpContext, true);
 		addPage(entryPage);
 
-		String message = "The entry will now be added to the Narratives layer";
-		MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
+		final String message = "The entry will now be added to the Narratives layer";
+		final MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
 				PAGE_TITLE, "Steps complete", message, imagePath);
 		addPage(messagePage);
 
@@ -67,7 +67,7 @@ public class NewNarrativeEntryWizard extends Wizard
 	}
 
 	@Override
-	public IWizardPage getPage(String name)
+	public IWizardPage getPage(final String name)
 	{
 		return super.getPage(name);
 	}

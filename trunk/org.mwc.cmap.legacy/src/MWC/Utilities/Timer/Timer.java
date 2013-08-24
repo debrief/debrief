@@ -85,9 +85,9 @@ implements java.io.Serializable {
   /** Setter method for the delay property.
   * @param value New delay value
   */
-  public void setDelay (long value) {
+  public void setDelay (final long value) {
     if (delay == value) return;
-    long oldValue = delay;
+    final long oldValue = delay;
     delay = value;
     propertySupport.firePropertyChange (PROP_DELAY,
                                         new Long (oldValue),
@@ -104,7 +104,7 @@ implements java.io.Serializable {
   /** Setter method for the onceOnly property.
   * @param value New onceOnly value
   */
-  public void setOnceOnly (boolean value) {
+  public void setOnceOnly (final boolean value) {
     if (onceOnly == value) return;
     onceOnly = value;
     propertySupport.firePropertyChange (PROP_ONCE_ONLY,
@@ -112,22 +112,22 @@ implements java.io.Serializable {
                                         new Boolean (onceOnly));
   }
 
-  public void addPropertyChangeListener (PropertyChangeListener l) {
+  public void addPropertyChangeListener (final PropertyChangeListener l) {
     propertySupport.addPropertyChangeListener (l);
   }
 
-  public void removePropertyChangeListener (PropertyChangeListener l) {
+  public void removePropertyChangeListener (final PropertyChangeListener l) {
     propertySupport.removePropertyChangeListener (l);
   }
 
-  public void addTimerListener (TimerListener l) {
+  public void addTimerListener (final TimerListener l) {
     if (listeners == null)
       listeners = new Vector<TimerListener>();
 
     listeners.addElement (l);
   }
 
-  public void removeTimerListener (TimerListener l) {
+  public void removeTimerListener (final TimerListener l) {
     if (listeners == null)
       return;
     listeners.removeElement (l);
@@ -140,8 +140,8 @@ implements java.io.Serializable {
       l = (Vector<TimerListener>) listeners.clone ();
     }
 
-    for (Enumeration e = l.elements (); e.hasMoreElements ();) {
-      TimerListener tl = (TimerListener) e.nextElement ();
+    for (final Enumeration e = l.elements (); e.hasMoreElements ();) {
+      final TimerListener tl = (TimerListener) e.nextElement ();
       tl.onTime (new ActionEvent (this, ActionEvent.ACTION_PERFORMED, "onTime"));
     }
 
@@ -155,11 +155,11 @@ implements java.io.Serializable {
         {
           sleep(delay);
         } 
-        catch (InterruptedException e) 
+        catch (final InterruptedException e) 
         {
         	
         }
-        catch (Exception e) 
+        catch (final Exception e) 
         {
         	System.err.println("Exception in time-stepper");
         	e.printStackTrace();
@@ -176,7 +176,7 @@ implements java.io.Serializable {
   transient private Vector<TimerListener> listeners;
 
   /** The support for firing property changes */
-  private PropertyChangeSupport propertySupport;
+  private final PropertyChangeSupport propertySupport;
 
   /** The flag indicating whether the timer is running */
   boolean running;

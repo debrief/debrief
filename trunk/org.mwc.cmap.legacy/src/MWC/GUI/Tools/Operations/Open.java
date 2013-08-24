@@ -84,10 +84,10 @@ abstract public class Open extends PlainTool
    * @param theSuffix file suffix for type of file we are importing
    * @param theDescription textual description of file type
    */
-  public Open(ToolParent theParent,
-              String theLabel,
-              String theSuffix,
-							String theDescription){
+  public Open(final ToolParent theParent,
+              final String theLabel,
+              final String theSuffix,
+							final String theDescription){
     super(theParent, theLabel, "images/open.gif");
     
     _theSuffix = theSuffix;
@@ -102,7 +102,7 @@ abstract public class Open extends PlainTool
   
   protected class myFilter implements java.io.FilenameFilter{
     
-    public boolean accept(File p1, String p2)
+    public boolean accept(final File p1, final String p2)
     {
       return p2.endsWith(_theSuffix);
     }
@@ -125,13 +125,13 @@ abstract public class Open extends PlainTool
     Action res = null;
     
     // get the filename of the file to import
-    File[] fList = getFileName();
+    final File[] fList = getFileName();
 		
 		// check the user didn't press cancel		
 		if(fList != null)
 		{
 			// get the first parameter				
-			File fn = fList[0];
+			final File fn = fList[0];
     
 			// check user didn't press cancel
 			if(fn != null)

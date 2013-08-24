@@ -129,7 +129,7 @@ public class SwingBoundedIntegerEditor extends
    * @param showValue - whether to show the current value
    * @param preferredSize - the preferred size (ignored)
    */
-  public SwingBoundedIntegerEditor(boolean showValue, Dimension preferredSize)
+  public SwingBoundedIntegerEditor(final boolean showValue, final Dimension preferredSize)
   {
     _showValue = showValue;
   }
@@ -160,7 +160,7 @@ public class SwingBoundedIntegerEditor extends
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public void paint(Graphics g) {
+			public void paint(final Graphics g) {
         // we'e got a workaround for JDK1.3 here. It's a JDC Bug when a
         // JSlider is inserted into a JDesktop component.
         if(!_hasBeenUpdated)
@@ -201,7 +201,7 @@ public class SwingBoundedIntegerEditor extends
       // put the text into the fields
       if(_myVal != null)
       {
-        int startVal = _myVal.getCurrent();
+        final int startVal = _myVal.getCurrent();
         _theSlider.setMinimum(_myVal.getMin());
         _theSlider.setMaximum(_myVal.getMax());
         _theSlider.setValue(startVal);
@@ -220,7 +220,7 @@ public class SwingBoundedIntegerEditor extends
     }
   }
 
-  public void setCurrent(int val)
+  public void setCurrent(final int val)
   {
     // this is a bit of a round-about way, we update the GUI then update the remaining
     // data from it
@@ -236,28 +236,28 @@ public class SwingBoundedIntegerEditor extends
   /** set the tick sliders
    *
    */
-  public void setTicks(int minor, int major)
+  public void setTicks(final int minor, final int major)
   {
     _theSlider.setMinorTickSpacing(minor);
     _theSlider.setMajorTickSpacing(major);
   }
 
-  public void stateChanged(javax.swing.event.ChangeEvent p1)
+  public void stateChanged(final javax.swing.event.ChangeEvent p1)
   {
     _myVal.setCurrent(_theSlider.getValue());
     _theCurrent.setText(_numFormat.format(_myVal.getCurrent()));
   }
 
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
-    JFrame jf = new JFrame("test");
+    final JFrame jf = new JFrame("test");
     jf.setSize(200, 200);
 
-    SwingBoundedIntegerEditor bt = new SwingBoundedIntegerEditor(true, null);
-    BoundedInteger br = new BoundedInteger(12, 0, 20);
+    final SwingBoundedIntegerEditor bt = new SwingBoundedIntegerEditor(true, null);
+    final BoundedInteger br = new BoundedInteger(12, 0, 20);
     bt.setValue(br);
 
-    JPanel holder = new JPanel();
+    final JPanel holder = new JPanel();
     holder.setLayout(new BorderLayout());
     jf.getContentPane().add(holder);
     holder.add(bt.getCustomEditor());

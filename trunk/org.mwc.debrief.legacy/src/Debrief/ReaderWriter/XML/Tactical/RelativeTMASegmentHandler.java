@@ -28,7 +28,7 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 	protected WorldVector _offset = null;
 	private final Layers _theLayers;
 
-	public RelativeTMASegmentHandler(Layers theLayers)
+	public RelativeTMASegmentHandler(final Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(TMA_SEGMENT);
@@ -38,7 +38,7 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 		addAttributeHandler(new HandleAttribute(HOST)
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_host = val;
 			}
@@ -48,7 +48,7 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 		{
 
 			@Override
-			public void setWorldVector(WorldVector res)
+			public void setWorldVector(final WorldVector res)
 			{
 				_offset = res;
 			}
@@ -65,15 +65,15 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 			throw new RuntimeException("Offset data missing for TMA segment on " + _host);
 		}
 		
-		RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed,
+		final RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed,
 				_offset, _theLayers);
 		res.setBaseFrequency(_baseFrequency);
 		res.setHostName(_host);
 		return res;
 	}
 
-	public static void exportThisTMASegment(org.w3c.dom.Document doc,
-			Element trk, RelativeTMASegment seg)
+	public static void exportThisTMASegment(final org.w3c.dom.Document doc,
+			final Element trk, final RelativeTMASegment seg)
 	{
 
 		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg,
@@ -83,14 +83,14 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 		CoreTMASegmentHandler.exportThisTMASegment(doc, seg, segE);
 
 		// sort out the remaining attributes
-		WatchableList refTrack = seg.getReferenceTrack();
+		final WatchableList refTrack = seg.getReferenceTrack();
 		if (refTrack != null)
 		{
 			segE.setAttribute(HOST, refTrack.getName());
 		}
 
 		// and the offset vector
-		WorldVector theOffset = seg.getOffset();
+		final WorldVector theOffset = seg.getOffset();
 		
 		// now we must have an offset. Throw a wobbly if we don't
 		WorldVectorHandler.exportVector(OFFSET, theOffset, segE, doc);

@@ -55,7 +55,7 @@ public class SymbolFactoryPropertyEditor extends PropertyEditorSupport
   public String[] getTags()
   {
     // retrieve the set of symbols from the factory
-    String[] _theSymbols = SymbolFactory.getSymbolList();
+    final String[] _theSymbols = SymbolFactory.getSymbolList();
 
     return _theSymbols;
   }
@@ -67,20 +67,20 @@ public class SymbolFactoryPropertyEditor extends PropertyEditorSupport
 
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }else if(p1 instanceof Integer)
     {
-    	Integer index = (Integer) p1;
+    	final Integer index = (Integer) p1;
 			setAsText(getTags()[index ]);
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     _mySymbolType = val;
   }
@@ -100,7 +100,7 @@ public class SymbolFactoryPropertyEditor extends PropertyEditorSupport
     public String[] getTags()
     {
       // retrieve the set of symbols from the factory
-      String[] _theSymbols = SymbolFactory.getVesselSymbolList();
+      final String[] _theSymbols = SymbolFactory.getVesselSymbolList();
 
       return _theSymbols;
     }
@@ -115,7 +115,7 @@ public class SymbolFactoryPropertyEditor extends PropertyEditorSupport
     public String[] getTags()
     {
       // retrieve the set of symbols from the factory
-      String[] _theSymbols = SymbolFactory.getBuoySymbolList();
+      final String[] _theSymbols = SymbolFactory.getBuoySymbolList();
 
       return _theSymbols;
     }

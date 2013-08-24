@@ -82,7 +82,7 @@ public final class courseCalc extends plainCalc
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
+  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
   {
     double res = Conversions.Rads2Degs(primary.getCourse());
     if(res < 0)
@@ -91,7 +91,7 @@ public final class courseCalc extends plainCalc
     return res;
   }
   
-  public final String update(Watchable primary, Watchable secondary, HiResDate time)
+  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
   {
 		// check we have data
 		if(primary == null)

@@ -70,7 +70,7 @@ abstract public class DistanceWithUnitsPropertyEditor extends
 
 	/** store the new value (in minutes)
 	 */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     // reset value
     _myVal = null;
@@ -90,13 +90,13 @@ abstract public class DistanceWithUnitsPropertyEditor extends
   /** method to find the smallest set of units which will show the
    * indicated value (in minutes) as a whole or 1/2 value
    */
-  static public int selectUnitsFor(double minutes)
+  static public int selectUnitsFor(final double minutes)
   {
 
     int goodUnits = -1;
 
     // how many set of units are there?
-    int len = WorldDistance.UnitLabels.length;
+    final int len = WorldDistance.UnitLabels.length;
 
     // count downwards from last value
     for(int thisUnit=len - 1; thisUnit>= 0; thisUnit--)
@@ -144,21 +144,21 @@ abstract public class DistanceWithUnitsPropertyEditor extends
 		WorldDistance val=null;
 		try{
       // get the distance
-      double distance = getDistance();
+      final double distance = getDistance();
 
       // get the units scale factor
-      int units = getUnits();
+      final int units = getUnits();
 
       // scale the distance to our output units (minutes)
       val = new WorldDistance(distance, units);
 
 
 		}
-		catch(NumberFormatException e)
+		catch(final NumberFormatException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
-    catch(ParseException pe)
+    catch(final ParseException pe)
     {
       MWC.Utilities.Errors.Trace.trace(pe);
     }

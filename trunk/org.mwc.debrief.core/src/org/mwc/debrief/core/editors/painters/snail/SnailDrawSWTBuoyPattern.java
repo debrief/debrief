@@ -35,9 +35,9 @@ public final class SnailDrawSWTBuoyPattern implements drawSWTHighLight, Editable
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-	public final java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-			CanvasType dest, WatchableList list, Watchable watch,
-			SnailHighlighter parent, HiResDate dtg, Color backColor)
+	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+			final CanvasType dest, final WatchableList list, final Watchable watch,
+			final SnailHighlighter parent, final HiResDate dtg, final Color backColor)
 	{
     Rectangle thisR = null;
 

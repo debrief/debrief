@@ -26,21 +26,21 @@ public class DateAxisEditor extends AbstractPropertyEditor
 	public static class OptimisedDateTickUnit extends DateTickUnit
 	{
 
-		public OptimisedDateTickUnit(DateTickUnitType unitType, int multiple)
+		public OptimisedDateTickUnit(final DateTickUnitType unitType, final int multiple)
 		{
 			super(unitType, multiple);
 			// TODO Auto-generated constructor stub
 		}
 
-		public OptimisedDateTickUnit(DateTickUnitType unitType, int multiple,
-				DateFormat formatter)
+		public OptimisedDateTickUnit(final DateTickUnitType unitType, final int multiple,
+				final DateFormat formatter)
 		{
 			super(unitType, multiple, formatter);
 			// TODO Auto-generated constructor stub
 		}
 
-		public OptimisedDateTickUnit(DateTickUnitType unitType, int multiple,
-				DateTickUnitType rollUnitType, int rollMultiple, DateFormat formatter)
+		public OptimisedDateTickUnit(final DateTickUnitType unitType, final int multiple,
+				final DateTickUnitType rollUnitType, final int rollMultiple, final DateFormat formatter)
 		{
 			super(unitType, multiple, rollUnitType, rollMultiple, formatter);
 			// TODO Auto-generated constructor stub
@@ -62,7 +62,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		 * instance rather than creating it lots of times.
 		 */
 		@SuppressWarnings("deprecation")
-		public Date addToDate(Date base, TimeZone zone)
+		public Date addToDate(final Date base, final TimeZone zone)
 		{
 			
 			// do we have a calenar already?
@@ -101,8 +101,8 @@ public class DateAxisEditor extends AbstractPropertyEditor
 
 	public MWCDateTickUnitWrapper getDateTickUnit()
 	{
-		Integer index = (Integer) this.getValue();
-		MWCDateTickUnitWrapper theUnit = _theData[index.intValue()];
+		final Integer index = (Integer) this.getValue();
+		final MWCDateTickUnitWrapper theUnit = _theData[index.intValue()];
 		return theUnit;
 	}
 
@@ -112,7 +112,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		if (_theData == null)
 		{
 			// create them
-			ArrayList<MWCDateTickUnitWrapper> theList = createStandardDateTickUnitsAsArrayList();
+			final ArrayList<MWCDateTickUnitWrapper> theList = createStandardDateTickUnitsAsArrayList();
 
 			// _theDates = new TickUnits();
 
@@ -123,7 +123,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 			// work through the list
 			for (int i = 0; i < theList.size(); i++)
 			{
-				MWCDateTickUnitWrapper unit = (MWCDateTickUnitWrapper) theList.get(i);
+				final MWCDateTickUnitWrapper unit = (MWCDateTickUnitWrapper) theList.get(i);
 
 				_theData[i] = unit;
 
@@ -152,7 +152,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 	 * 
 	 * @param p1
 	 */
-	public void setValue(Object p1)
+	public void setValue(final Object p1)
 	{
 		// check we have the data
 		checkCreated();
@@ -162,7 +162,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 			// pass through to match
 			for (int i = 0; i < _theData.length; i++)
 			{
-				MWCDateTickUnitWrapper unit = _theData[i];
+				final MWCDateTickUnitWrapper unit = _theData[i];
 				if (unit.equals(p1))
 				{
 					this.setValue(new Integer(i));
@@ -183,13 +183,13 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		// check we have the data
 		checkCreated();
 
-		Integer theIndex = (Integer) super.getValue();
+		final Integer theIndex = (Integer) super.getValue();
 		return _theData[theIndex.intValue()];
 	}
 
 	public static TickUnits createStandardDateTickUnitsAsTickUnits()
 	{
-		TickUnits units = new TickUnits();
+		final TickUnits units = new TickUnits();
 
 		// milliseconds
 		units.add(new OptimisedDateTickUnit(DateTickUnitType.MILLISECOND, 500,
@@ -251,7 +251,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 	public static ArrayList<MWCDateTickUnitWrapper> createStandardDateTickUnitsAsArrayList()
 	{
 
-		ArrayList<MWCDateTickUnitWrapper> units = new ArrayList<MWCDateTickUnitWrapper>();
+		final ArrayList<MWCDateTickUnitWrapper> units = new ArrayList<MWCDateTickUnitWrapper>();
 
 		units.add(MWCDateTickUnitWrapper.getAutoScale());
 
@@ -366,7 +366,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		 * locale. <b>Note:</b> Not all locales support SimpleDateFormat; for full
 		 * generality, use the factory methods in the DateFormat class.
 		 */
-		public RNFormatter(String pattern)
+		public RNFormatter(final String pattern)
 		{
 			super(pattern);
 			this.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -390,8 +390,8 @@ public class DateAxisEditor extends AbstractPropertyEditor
 
 		protected String _formatter;
 
-		public MWCDateTickUnitWrapper(DateTickUnitType unit, int count,
-				String formatter)
+		public MWCDateTickUnitWrapper(final DateTickUnitType unit, final int count,
+				final String formatter)
 		{
 			_unit = unit;
 			_count = count;
@@ -404,7 +404,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 
 			if (_formatter != DateAxisEditor.RELATIVE_DTG_FORMAT)
 			{
-				SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
+				final SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
 				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 				res = new OptimisedDateTickUnit(_unit, _count, sdf);
@@ -412,7 +412,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 			}
 			else
 			{
-				SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
+				final SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
 				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 				res = new OptimisedDateTickUnit(_unit, _count, sdf)
@@ -429,11 +429,11 @@ public class DateAxisEditor extends AbstractPropertyEditor
 					 *          the date.
 					 * @return the formatted date.
 					 */
-					public String dateToString(Date date)
+					public String dateToString(final Date date)
 					{
 						String res1 = null;
 						// how many secs?
-						long secs = date.getTime() / 1000;
+						final long secs = date.getTime() / 1000;
 						res1 = secs + "s";
 						return res1;
 					}

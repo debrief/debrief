@@ -25,7 +25,7 @@ public class Value2ValueManager implements ChartDataManager {
 
 	private GriddableSeries myInput;
 
-	public Value2ValueManager(GriddableItemDescriptor descriptor, GriddableItemChartComponent xComponent, GriddableItemChartComponent yComponent) {
+	public Value2ValueManager(final GriddableItemDescriptor descriptor, final GriddableItemChartComponent xComponent, final GriddableItemChartComponent yComponent) {
 		myDescriptor = descriptor;
 		myXComponent = xComponent;
 		myYComponent = yComponent;
@@ -48,7 +48,7 @@ public class Value2ValueManager implements ChartDataManager {
 	}
 
 	private NumberAxis createNumberAxis() {
-		NumberAxis result = new NumberAxis();
+		final NumberAxis result = new NumberAxis();
 		result.setAutoRangeIncludesZero(false);
 		return result;
 	}
@@ -65,20 +65,20 @@ public class Value2ValueManager implements ChartDataManager {
 		return myDataSet;
 	}
 
-	public void handleItemAdded(int index, TimeStampedDataItem addedItem) {
+	public void handleItemAdded(final int index, final TimeStampedDataItem addedItem) {
 		mySeries.insertAt(index, createChartItem(addedItem));
 	}
 
-	public void handleItemChanged(TimeStampedDataItem changedItem) {
-		int index = myInput.getItems().indexOf(changedItem);
+	public void handleItemChanged(final TimeStampedDataItem changedItem) {
+		final int index = myInput.getItems().indexOf(changedItem);
 		if (index < 0) {
 			return;
 		}
 
-		double currentXValue = myXComponent.getDoubleValue(changedItem);
-		BackedXYDataItem chartItem = (BackedXYDataItem) mySeries.getDataItem(index);
+		final double currentXValue = myXComponent.getDoubleValue(changedItem);
+		final BackedXYDataItem chartItem = (BackedXYDataItem) mySeries.getDataItem(index);
 		if (chartItem.getDomainItem() != changedItem) {
-			int shouldBeAt = myInput.getItems().indexOf(chartItem.getDomainItem());
+			final int shouldBeAt = myInput.getItems().indexOf(chartItem.getDomainItem());
 			throw new IllegalStateException("domain position for element: " + changedItem + //
 					" is " + index + //
 					", but chart series contains " + chartItem.getDomainItem() + //
@@ -92,30 +92,30 @@ public class Value2ValueManager implements ChartDataManager {
 		}
 	}
 
-	public void handleItemDeleted(int oldIndex, TimeStampedDataItem deletedItem) {
+	public void handleItemDeleted(final int oldIndex, final TimeStampedDataItem deletedItem) {
 		mySeries.remove(oldIndex);
 	}
 
-	public void setInput(GriddableSeries input) {
+	public void setInput(final GriddableSeries input) {
 		myInput = input;
 		int index = 0;
-		for (TimeStampedDataItem nextItem : input.getItems()) {
+		for (final TimeStampedDataItem nextItem : input.getItems()) {
 			handleItemAdded(index, nextItem);
 			index++;
 		}
 	}
 
-	public void attach(JFreeChartComposite chartPanel) {
+	public void attach(final JFreeChartComposite chartPanel) {
 		//
 	}
 
-	public void detach(JFreeChartComposite chartPanel) {
+	public void detach(final JFreeChartComposite chartPanel) {
 		//
 	}
 
-	private BackedXYDataItem createChartItem(TimeStampedDataItem domainItem) {
-		double xValue = myXComponent.getDoubleValue(domainItem);
-		double yValue = myYComponent.getDoubleValue(domainItem);
+	private BackedXYDataItem createChartItem(final TimeStampedDataItem domainItem) {
+		final double xValue = myXComponent.getDoubleValue(domainItem);
+		final double yValue = myYComponent.getDoubleValue(domainItem);
 		return new BackedXYDataItem(xValue, yValue, domainItem);
 	}
 

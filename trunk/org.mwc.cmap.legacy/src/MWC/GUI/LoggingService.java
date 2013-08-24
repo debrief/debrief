@@ -13,13 +13,13 @@ public class LoggingService implements ErrorLogger
 	static ErrorLogger _substituteParent;
 	static LoggingService _singleton;
 
-	public static void initialise(ErrorLogger logger)
+	public static void initialise(final ErrorLogger logger)
 	{
 		_substituteParent = logger;
 	}
 
 	@Override
-	public void logError(int status, String text, Exception e)
+	public void logError(final int status, final String text, final Exception e)
 	{
 		if (_substituteParent != null)
 			_substituteParent.logError(status, text, e);

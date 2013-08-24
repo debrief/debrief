@@ -44,7 +44,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 	 * 
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(IWorkbench workbench)
+	public void init(final IWorkbench workbench)
 	{
 	}
 

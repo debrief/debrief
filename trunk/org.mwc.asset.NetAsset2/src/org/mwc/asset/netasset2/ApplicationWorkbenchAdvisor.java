@@ -10,12 +10,12 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	private static final String PERSPECTIVE_ID = "org.mwc.asset.NetAsset2.perspective";
 
 	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(
-			IWorkbenchWindowConfigurer configurer) {
+			final IWorkbenchWindowConfigurer configurer) {
 		return new ApplicationWorkbenchWindowAdvisor(configurer);
 	}
 
 	@Override
-	public void initialize(IWorkbenchConfigurer configurer)
+	public void initialize(final IWorkbenchConfigurer configurer)
 	{
 		super.initialize(configurer);
 		

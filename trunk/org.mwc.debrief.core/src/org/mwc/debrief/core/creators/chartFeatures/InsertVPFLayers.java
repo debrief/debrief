@@ -23,7 +23,7 @@ public class InsertVPFLayers extends CoreInsertChartFeature
 	/**
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		return CreateVPFLayers.createMyLibrary(true);
 	}

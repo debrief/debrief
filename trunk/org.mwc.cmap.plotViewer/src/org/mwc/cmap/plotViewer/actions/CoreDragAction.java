@@ -27,19 +27,19 @@ abstract public class CoreDragAction extends CoreEditorAction
 	protected void execute()
 	{
 		// find out what the current dragger is
-		PlainChart chrs = getChart();
-		SWTChart myChart = (SWTChart) chrs;
+		final PlainChart chrs = getChart();
+		final SWTChart myChart = (SWTChart) chrs;
 
-		SWTChart.PlotMouseDragger oldMode = myChart.getDragMode();
+		final SWTChart.PlotMouseDragger oldMode = myChart.getDragMode();
 
 		// get rid of the old model
 		oldMode.close();
 
 		// create an instance of the new mode
-		SWTChart.PlotMouseDragger newMode = getDragMode();
+		final SWTChart.PlotMouseDragger newMode = getDragMode();
 
 		// create the action
-		CoreDragAction.SwitchModeAction theAction = new CoreDragAction.SwitchModeAction(
+		final CoreDragAction.SwitchModeAction theAction = new CoreDragAction.SwitchModeAction(
 				newMode, myChart);
 
 		// initialise the cursor
@@ -47,7 +47,7 @@ abstract public class CoreDragAction extends CoreEditorAction
 		myChart.getCanvasControl().setCursor(normalCursor);
 
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
+		final DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
 
 		// and run it
 		CorePlugin.run(daw);
@@ -65,13 +65,13 @@ abstract public class CoreDragAction extends CoreEditorAction
 		 * the editor we're controlling
 		 * 
 		 */
-		private SWTChart _editor;
+		private final SWTChart _editor;
 
 		/**
 		 * the mode we're switching to
 		 * 
 		 */
-		private SWTChart.PlotMouseDragger _newMode;
+		private final SWTChart.PlotMouseDragger _newMode;
 
 		public SwitchModeAction(final SWTChart.PlotMouseDragger newMode,
 				final SWTChart editor)

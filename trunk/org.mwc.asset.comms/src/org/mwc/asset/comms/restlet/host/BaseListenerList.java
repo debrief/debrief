@@ -20,7 +20,7 @@ import org.restlet.resource.ResourceException;
  */
 abstract public class BaseListenerList<EventType extends AssetEvent>
 {
-	private HashMap<Integer, URI> _myURIs = new HashMap<Integer, URI>();
+	private final HashMap<Integer, URI> _myURIs = new HashMap<Integer, URI>();
 	int ctr = 0;
 
 	/** how many listeners are there? (mostly for debug)
@@ -37,7 +37,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 * @param url
 	 * @return the unique index provided to this listener
 	 */
-	protected int add(URI url)
+	protected int add(final URI url)
 	{
 		_myURIs.put(++ctr, url);
 
@@ -48,7 +48,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 * 
 	 * @param id
 	 */
-	protected void remove(int id)
+	protected void remove(final int id)
 	{
 		_myURIs.remove(id);
 	}
@@ -65,20 +65,20 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 * 
 	 * @param event
 	 */
-	protected void fireEvent(EventType event)
+	protected void fireEvent(final EventType event)
 	{
 		Vector<URI> toDitch = null;
 
-		for (Iterator<URI> url = _myURIs.values().iterator(); url.hasNext();)
+		for (final Iterator<URI> url = _myURIs.values().iterator(); url.hasNext();)
 		{
-			URI thisURI = url.next();
+			final URI thisURI = url.next();
 
 			try
 			{
-				ClientResource client = new ClientResource(thisURI.toString());
+				final ClientResource client = new ClientResource(thisURI.toString());
 				fireThisEvent(client, event);
 			}
-			catch (ResourceException re)
+			catch (final ResourceException re)
 			{
 				if (re.getStatus().getCode() == 1001)
 				{
@@ -95,15 +95,15 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 		if (toDitch != null)
 		{
 			// yup, work through them
-			for (Iterator<URI> iterator = toDitch.iterator(); iterator.hasNext();)
+			for (final Iterator<URI> iterator = toDitch.iterator(); iterator.hasNext();)
 			{
-				URI thisURI = (URI) iterator.next();
+				final URI thisURI = (URI) iterator.next();
 
-				Set<Integer> mine = _myURIs.keySet();
-				for (Iterator<Integer> iterator2 = mine.iterator(); iterator2
+				final Set<Integer> mine = _myURIs.keySet();
+				for (final Iterator<Integer> iterator2 = mine.iterator(); iterator2
 						.hasNext();)
 				{
-					Integer thisId = (Integer) iterator2.next();
+					final Integer thisId = (Integer) iterator2.next();
 					if (_myURIs.get(thisId).equals(thisURI))
 					{
 						_myURIs.remove(thisId);

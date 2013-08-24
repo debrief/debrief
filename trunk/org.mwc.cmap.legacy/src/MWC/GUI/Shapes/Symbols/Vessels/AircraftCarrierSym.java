@@ -53,26 +53,26 @@ public class AircraftCarrierSym extends PlainSymbol {
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
     return res;
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
 
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(6 * getScaleVal());
-    int tinyWid = (int) getScaleVal();
+    final int wid = (int)(6 * getScaleVal());
+    final int tinyWid = (int) getScaleVal();
 
     // start with the centre object
     dest.fillOval(centre.x - tinyWid/2, centre.y - tinyWid/2, tinyWid, tinyWid);
@@ -81,9 +81,9 @@ public class AircraftCarrierSym extends PlainSymbol {
     dest.drawOval(centre.x - wid/2, centre.y - wid/2, wid, wid);
 
     // now the slash
-    double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
-    double dX = Math.sin(theta) * wid * 1.3;
-    double dY = Math.sin(theta) * wid * 1.3;
+    final double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
+    final double dX = Math.sin(theta) * wid * 1.3;
+    final double dY = Math.sin(theta) * wid * 1.3;
 
     dest.drawLine(centre.x - (int)dX, centre.y + (int)dY,
                   centre.x + (int)dX, centre.y - (int)dY);

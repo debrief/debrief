@@ -49,13 +49,13 @@ public class FishingVesselSym extends ScreenScaledSym
 	public java.awt.Dimension getBounds()
 	{
 		// sort out the size of the symbol at the current scale factor
-		java.awt.Dimension res = new java.awt.Dimension(
+		final java.awt.Dimension res = new java.awt.Dimension(
 				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
 		return res;
 	}
 
 	@Override
-	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
 	{
 		// override the scale values
 		super.setScaleVal(1);
@@ -64,7 +64,7 @@ public class FishingVesselSym extends ScreenScaledSym
 
 	protected Vector<double[][]> getCoords()
 	{
-		Vector<double[][]> hullLines = new Vector<double[][]>();
+		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
 		hullLines.add(new double[][]
 		{

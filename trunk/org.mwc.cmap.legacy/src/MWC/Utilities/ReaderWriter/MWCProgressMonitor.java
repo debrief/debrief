@@ -65,10 +65,10 @@ public class MWCProgressMonitor extends Object
     private JOptionPane     pane;
     private JProgressBar    myBar;
     private JLabel          noteLabel;
-    private Component       parentComponent;
+    private final Component       parentComponent;
     private String          note;
     Object[]        cancelOption = null;
-    private Object          message;
+    private final Object          message;
     private long            T0;
     private int             millisToDecideToPopup = 500;
     private int             millisToPopup = 2000;
@@ -101,21 +101,21 @@ public class MWCProgressMonitor extends Object
      * @see JDialog
      * @see JOptionPane
      */
-    public MWCProgressMonitor(Component parentComponent,
-                           Object message,
-                           String note,
-                           int min,
-                           int max) {
+    public MWCProgressMonitor(final Component parentComponent,
+                           final Object message,
+                           final String note,
+                           final int min,
+                           final int max) {
         this(parentComponent, message, note, min, max, null);
     }
 
 
-    private MWCProgressMonitor(Component parentComponent,
-                            Object message,
-                            String note,
-                            int min,
-                            int max,
-                            MWCProgressMonitor group) {
+    private MWCProgressMonitor(final Component parentComponent,
+                            final Object message,
+                            final String note,
+                            final int min,
+                            final int max,
+                            final MWCProgressMonitor group) {
         this.min = min;
         this.max = max;
         this.parentComponent = parentComponent;
@@ -146,7 +146,7 @@ public class MWCProgressMonitor extends Object
 			private static final long serialVersionUID = 1L;
 
 
-				ProgressOptionPane(Object messageList) {
+				ProgressOptionPane(final Object messageList) {
             super(messageList,
                   JOptionPane.INFORMATION_MESSAGE,
                   JOptionPane.DEFAULT_OPTION,
@@ -165,10 +165,10 @@ public class MWCProgressMonitor extends Object
         // but create a modeless dialog.
         // This is necessary because the Solaris implementation doesn't
         // support Dialog.setModal yet.
-        public JDialog createDialog(Component parentComponent1, String title) {
-            Frame frame = JOptionPane.getFrameForComponent(parentComponent1);
+        public JDialog createDialog(final Component parentComponent1, final String title) {
+            final Frame frame = JOptionPane.getFrameForComponent(parentComponent1);
             final JDialog dialog1 = new JDialog(frame, title, false);
-            Container contentPane = dialog1.getContentPane();
+            final Container contentPane = dialog1.getContentPane();
 
             contentPane.setLayout(new BorderLayout());
             contentPane.add(this, BorderLayout.CENTER);
@@ -177,11 +177,11 @@ public class MWCProgressMonitor extends Object
             dialog1.addWindowListener(new WindowAdapter() {
                 boolean gotFocus = false;
 
-                public void windowClosing(WindowEvent we) {
+                public void windowClosing(final WindowEvent we) {
                     setValue(null);
                 }
 
-                public void windowActivated(WindowEvent we) {
+                public void windowActivated(final WindowEvent we) {
                     // Once window gets focus, set initial focus
                     if (!gotFocus) {
                         selectInitialValue();
@@ -191,7 +191,7 @@ public class MWCProgressMonitor extends Object
             });
 
             addPropertyChangeListener(new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent event) {
+                public void propertyChange(final PropertyChangeEvent event) {
                     if(dialog1.isVisible() &&
                        event.getSource() == ProgressOptionPane.this &&
                        (event.getPropertyName().equals(VALUE_PROPERTY) ||
@@ -217,7 +217,7 @@ public class MWCProgressMonitor extends Object
      * @see #close
      */
     @SuppressWarnings("deprecation")
-		public void setProgress(int nv) {
+		public void setProgress(final int nv) {
         if (nv >= max) {
           System.out.println("max reached, closing!");
             close();
@@ -228,8 +228,8 @@ public class MWCProgressMonitor extends Object
               myBar.setValue(nv);
             }
             else {
-                long T = System.currentTimeMillis();
-                long dT = (int)(T-T0);
+                final long T = System.currentTimeMillis();
+                final long dT = (int)(T-T0);
                 if (dT >= millisToDecideToPopup) {
                     int predictedCompletionTime;
                     if (nv > min) {
@@ -293,7 +293,7 @@ public class MWCProgressMonitor extends Object
      * @param m  an int specifying the minimum value
      * @see #getMinimum
      */
-    public void setMinimum(int m) {
+    public void setMinimum(final int m) {
         min = m;
     }
 
@@ -315,7 +315,7 @@ public class MWCProgressMonitor extends Object
      * @param m  an int specifying the maximum value
      * @see #getMaximum
      */
-    public void setMaximum(int m) {
+    public void setMaximum(final int m) {
         max = m;
     }
 
@@ -325,7 +325,7 @@ public class MWCProgressMonitor extends Object
      */
     public boolean isCanceled() {
         if (pane == null) return false;
-        Object v = pane.getValue();
+        final Object v = pane.getValue();
         return ((v != null) &&
                 (cancelOption.length == 1) &&
                 (v.equals(cancelOption[0])));
@@ -340,7 +340,7 @@ public class MWCProgressMonitor extends Object
      *        in milliseconds
      * @see #getMillisToDecideToPopup
      */
-    public void setMillisToDecideToPopup(int millisToDecideToPopup) {
+    public void setMillisToDecideToPopup(final int millisToDecideToPopup) {
         this.millisToDecideToPopup = millisToDecideToPopup;
     }
 
@@ -366,7 +366,7 @@ public class MWCProgressMonitor extends Object
      * @param millisToPopup  an int specifying the time in milliseconds
      * @see #getMillisToPopup
      */
-    public void setMillisToPopup(int millisToPopup) {
+    public void setMillisToPopup(final int millisToPopup) {
         this.millisToPopup = millisToPopup;
     }
 
@@ -390,7 +390,7 @@ public class MWCProgressMonitor extends Object
      * @param note  a String specifying the note to display
      * @see #getNote
      */
-    public void setNote(String note) {
+    public void setNote(final String note) {
         this.note = note;
         if (noteLabel != null) {
             noteLabel.setText(note);

@@ -89,7 +89,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	/**
 	 * a working variable to stop us excessively creating new objects
 	 */
-	private MWC.GenericData.WorldLocation _workingLocation = new MWC.GenericData.WorldLocation(
+	private final MWC.GenericData.WorldLocation _workingLocation = new MWC.GenericData.WorldLocation(
 			0, 0, 0);
 
 	/**
@@ -139,7 +139,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * @param canvas
 	 *          the canvas
 	 */
-	public void setCanvas(MWC.GUI.CanvasType canvas)
+	public void setCanvas(final MWC.GUI.CanvasType canvas)
 	{
 		_myCanvas = canvas;
 	}
@@ -147,7 +147,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	/**
 	 * set the coastline painter characteristics
 	 */
-	public void setCoastlinePainting(Boolean drawText, Boolean drawLines)
+	public void setCoastlinePainting(final Boolean drawText, final Boolean drawLines)
 	{
 		_drawText = drawText;
 		_drawLines = drawLines;
@@ -160,7 +160,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * @param theFeatures
 	 *          the set of features for this coverage
 	 */
-	public void setCurrentFeatures(Hashtable<String, FeaturePainter> theFeatures)
+	public void setCurrentFeatures(final Hashtable<String, FeaturePainter> theFeatures)
 	{
 		_currentFeatures = theFeatures;
 		_currentFeatureList = null;
@@ -182,10 +182,10 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				Enumeration<FeaturePainter> enumer = _currentFeatures.elements();
 				while (enumer.hasMoreElements())
 				{
-					FeaturePainter fp = enumer.nextElement();
+					final FeaturePainter fp = enumer.nextElement();
 					if (fp.getVisible())
 					{
-						String nm = fp.getFeatureType();
+						final String nm = fp.getFeatureType();
 						if (nm.endsWith("a"))
 							_currentFeatureList.add(fp.getFeatureType());
 					}
@@ -195,10 +195,10 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				enumer = _currentFeatures.elements();
 				while (enumer.hasMoreElements())
 				{
-					FeaturePainter fp = enumer.nextElement();
+					final FeaturePainter fp = enumer.nextElement();
 					if (fp.getVisible())
 					{
-						String nm = fp.getFeatureType();
+						final String nm = fp.getFeatureType();
 						if (!nm.endsWith("a"))
 							_currentFeatureList.add(fp.getFeatureType());
 					}
@@ -240,7 +240,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 *          LibrarySelectionTable to use to get information about the data, if
 	 *          needed.
 	 */
-	public java.awt.Component getGUI(LibrarySelectionTable lst)
+	public java.awt.Component getGUI(final LibrarySelectionTable lst)
 	{
 		return null;
 	}
@@ -256,21 +256,21 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	/**
 	 * get the colour
 	 */
-	protected java.awt.Color getColor(String featureType)
+	protected java.awt.Color getColor(final String featureType)
 	{
 		java.awt.Color res = null;
-		Hashtable<String, FeaturePainter> hash = this._currentFeatures;
+		final Hashtable<String, FeaturePainter> hash = this._currentFeatures;
 		FeaturePainter thisFeature = null;
 		if (hash != null)
 		{
 			if (featureType == null)
 			{
-				int len = hash.size();
+				final int len = hash.size();
 				if (len == 1)
 				{
 					if (hash.elements().hasMoreElements())
 					{
-						Object val = hash.elements().nextElement();
+						final Object val = hash.elements().nextElement();
 						thisFeature = (FeaturePainter) val;
 					}
 				}
@@ -291,21 +291,21 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * look through the list of coordinate, and see if any are contained within
 	 * the currently visible area
 	 */
-	private boolean isVisible(LatLonPoint tl, LatLonPoint br,
-			CoordFloatString coords)
+	private boolean isVisible(final LatLonPoint tl, final LatLonPoint br,
+			final CoordFloatString coords)
 	{
 		boolean res = false;
-		MWC.GenericData.WorldLocation _tl = new MWC.GenericData.WorldLocation(tl
+		final MWC.GenericData.WorldLocation _tl = new MWC.GenericData.WorldLocation(tl
 				.getLatitude(), tl.getLongitude(), 0);
-		MWC.GenericData.WorldLocation _br = new MWC.GenericData.WorldLocation(br
+		final MWC.GenericData.WorldLocation _br = new MWC.GenericData.WorldLocation(br
 				.getLatitude(), br.getLongitude(), 0);
-		MWC.GenericData.WorldArea area = new MWC.GenericData.WorldArea(_tl, _br);
+		final MWC.GenericData.WorldArea area = new MWC.GenericData.WorldArea(_tl, _br);
 		area.normalise();
 
 		for (int i = 0; i < coords.maxIndex(); i++)
 		{
-			float x = coords.getXasFloat(i);
-			float y = coords.getYasFloat(i);
+			final float x = coords.getXasFloat(i);
+			final float y = coords.getYasFloat(i);
 
 			_workingLocation.setLat(y);
 			_workingLocation.setLong(x);
@@ -321,8 +321,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		return res;
 	}
 
-	private boolean overlaps(LatLonPoint tl, LatLonPoint br,
-			CoordFloatString coords)
+	private boolean overlaps(final LatLonPoint tl, final LatLonPoint br,
+			final CoordFloatString coords)
 	{
 		boolean res = false;
 		float maxLat = 0, minLat = 0, maxLong = 0, minLong = 0;
@@ -335,13 +335,13 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		_workingArea.getBottomRight().setLong(br.getLongitude());
 
 		// build up the area of the coords
-		int len = Math.abs(coords.maxIndex());
+		final int len = Math.abs(coords.maxIndex());
 
 		for (int i = 0; i < len; i++)
 		{
 			// retrieve the x and y values
-			float x = coords.getXasFloat(i);
-			float y = coords.getYasFloat(i);
+			final float x = coords.getXasFloat(i);
+			final float y = coords.getYasFloat(i);
 
 			// initialise our values if this is the first pass
 			if (first)
@@ -381,15 +381,15 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * into a single large polyline, since it jumps around a little!
 	 */
 	@SuppressWarnings("rawtypes")
-	public void createEdge(CoverageTable c, EdgeTable edgetable, Vector edgevec,
-			LatLonPoint ll1, LatLonPoint ll2, float dpplat, float dpplon,
-			CoordFloatString coords)
+	public void createEdge(final CoverageTable c, final EdgeTable edgetable, final Vector edgevec,
+			final LatLonPoint ll1, final LatLonPoint ll2, final float dpplat, final float dpplon,
+			final CoordFloatString coords)
 	{
 
 		// is the current painter interested in text?
 		if (_drawLines != null)
 		{
-			boolean res = _drawLines.booleanValue();
+			final boolean res = _drawLines.booleanValue();
 			if (!res)
 				return;
 		}
@@ -403,13 +403,13 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 			return;
 
 		// get the colour
-		java.awt.Color res = getColor(null);
+		final java.awt.Color res = getColor(null);
 
 		// set the colour
 		_myCanvas.setColor(res);
 
 		// now plot the polygon
-		int len = coords.maxIndex();
+		final int len = coords.maxIndex();
 		java.awt.Point _lastPoint = null;
 
 		// create working location
@@ -417,12 +417,12 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		{
 			for (int i = 0; i < len; i++)
 			{
-				float x = coords.getXasFloat(i);
-				float y = coords.getYasFloat(i);
+				final float x = coords.getXasFloat(i);
+				final float y = coords.getYasFloat(i);
 
 				_workingLocation.setLat(y);
 				_workingLocation.setLong(x);
-				java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+				final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
 
 				// xpoints[i] = pt.x;
 				// ypoints[i] = pt.y;
@@ -438,7 +438,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 			// finally plot the polygon
 			// _myCanvas.drawPolygon(xpoints, ypoints, len);
 		}
-		catch (Exception E)
+		catch (final Exception E)
 		{
 			E.printStackTrace();
 		}
@@ -464,13 +464,13 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 *          the type for this feature
 	 */
 	@SuppressWarnings("rawtypes")
-	public void createEdge(CoverageTable c, EdgeTable edgetable, Vector edgevec,
-			LatLonPoint ll1, LatLonPoint ll2, float dpplat, float dpplon,
-			CoordFloatString coords, String featureType)
+	public void createEdge(final CoverageTable c, final EdgeTable edgetable, final Vector edgevec,
+			final LatLonPoint ll1, final LatLonPoint ll2, final float dpplat, final float dpplon,
+			final CoordFloatString coords, final String featureType)
 	{
 
 		// get this feature painter
-		FeaturePainter fp = _currentFeatures.get(featureType);
+		final FeaturePainter fp = _currentFeatures.get(featureType);
 
 		// is this feature currently visible?
 		if (!fp.getVisible())
@@ -481,7 +481,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 			return;
 
 		// get the colour
-		java.awt.Color res = fp.getColor();
+		final java.awt.Color res = fp.getColor();
 
 		if (res == null)
 		{
@@ -493,8 +493,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		_myCanvas.setColor(res);
 
 		// now plot the polygon
-		int len = coords.maxIndex();
-		int[] points = new int[len * 2];
+		final int len = coords.maxIndex();
+		final int[] points = new int[len * 2];
 
 		counter++;
 
@@ -502,12 +502,12 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		{
 			for (int i = 0; i < len; i++)
 			{
-				float x = coords.getXasFloat(i);
-				float y = coords.getYasFloat(i);
+				final float x = coords.getXasFloat(i);
+				final float y = coords.getYasFloat(i);
 
 				_workingLocation.setLat(y);
 				_workingLocation.setLong(x);
-				java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+				final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
 
 				points[i * 2] = pt.x;
 				points[i * 2 + 1] = pt.y;
@@ -517,7 +517,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 			// finally plot the polygon
 			_myCanvas.drawPolyline(points);
 		}
-		catch (Exception E)
+		catch (final Exception E)
 		{
 			E.printStackTrace();
 		}
@@ -525,14 +525,14 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void createText(CoverageTable c, TextTable texttable, Vector textvec,
-			float latitude, float longitude, String text)
+	public void createText(final CoverageTable c, final TextTable texttable, final Vector textvec,
+			final float latitude, final float longitude, final String text)
 	{
 
 		// is the current painter interested in text?
 		if (_drawText != null)
 		{
-			boolean res = _drawText.booleanValue();
+			final boolean res = _drawText.booleanValue();
 			if (!res)
 				return;
 		}
@@ -551,7 +551,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		counter++;
 
 		// convert to screen coordinates
-		java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+		final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
 
 		// and plot it
 		_myCanvas.drawText(text, pt.x, pt.y);
@@ -559,13 +559,13 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void createText(CoverageTable c, TextTable texttable, Vector textvec,
-			float latitude, float longitude, String text, String featureType)
+	public void createText(final CoverageTable c, final TextTable texttable, final Vector textvec,
+			final float latitude, final float longitude, final String text, final String featureType)
 	{
 		counter++;
 
 		// get the colour
-		java.awt.Color res = getColor(featureType);
+		final java.awt.Color res = getColor(featureType);
 
 		// set the colour
 		_myCanvas.setColor(res);
@@ -573,7 +573,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		// find the screen location
 		_workingLocation.setLat(latitude);
 		_workingLocation.setLong(longitude);
-		java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+		final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
 
 		// and plot it
 		_myCanvas.drawText(text, pt.x, pt.y);
@@ -583,9 +583,9 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
    *
    */
 	@SuppressWarnings("rawtypes")
-	public void createArea(CoverageTable covtable, AreaTable areatable,
-			Vector facevec, LatLonPoint ll1, LatLonPoint ll2, float dpplat,
-			float dpplon, boolean doAntarcticaWorkaround)
+	public void createArea(final CoverageTable covtable, final AreaTable areatable,
+			final Vector facevec, final LatLonPoint ll1, final LatLonPoint ll2, final float dpplat,
+			final float dpplon, final boolean doAntarcticaWorkaround)
 	{
 		this.createArea(covtable, areatable, facevec, ll1, ll2, dpplat, dpplon,
 				doAntarcticaWorkaround, null);
@@ -595,18 +595,19 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * method to convert multiple polylines into a single area
 	 */
 	@SuppressWarnings("rawtypes")
-	private java.awt.Polygon extendArea(Vector ipts, int totalSize,
-			LatLonPoint ll1, LatLonPoint ll2, float dpplat, float dpplon,
-			boolean doAntarcticaWorkaround, MWC.Algorithms.PlainProjection proj)
+	private java.awt.Polygon extendArea(final Vector ipts, final int totalSize,
+			final LatLonPoint ll1, final LatLonPoint ll2, final float dpplat, final float dpplon,
+			boolean doAntarcticaWorkaround, final MWC.Algorithms.PlainProjection proj)
 	{
 		Polygon res = null;
 
-		int i, j, size = ipts.size();
+		int i, j;
+		final int size = ipts.size();
 		int npts = 0;
 
 		// create the output arrays
-		int[] xlpts = new int[totalSize];
-		int[] ylpts = new int[totalSize];
+		final int[] xlpts = new int[totalSize];
+		final int[] ylpts = new int[totalSize];
 
 		// only do it if we're in the vicinity
 		if (doAntarcticaWorkaround)
@@ -617,10 +618,10 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		// step through the areas we've been provided
 		for (j = 0; j < size; j++)
 		{
-			CoordFloatString cfs = (CoordFloatString) ipts.elementAt(j);
+			final CoordFloatString cfs = (CoordFloatString) ipts.elementAt(j);
 			int cfscnt = cfs.tcount;
-			int cfssz = cfs.tsize;
-			float cfsvals[] = cfs.vals;
+			final int cfssz = cfs.tsize;
+			final float cfsvals[] = cfs.vals;
 			// see if this line is going clockwise or anti-clockwise
 			if (cfscnt > 0)
 			{ // normal
@@ -628,7 +629,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				{
 					_workingLocation.setLat(cfsvals[i * cfssz + 1]);
 					_workingLocation.setLong(cfsvals[i * cfssz]);
-					java.awt.Point pt = proj.toScreen(_workingLocation);
+					final java.awt.Point pt = proj.toScreen(_workingLocation);
 					xlpts[npts] = pt.x;
 					ylpts[npts++] = pt.y;
 					// res.addPoint(pt.x, pt.y);
@@ -641,7 +642,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				{
 					_workingLocation.setLat(cfsvals[i * cfssz + 1]);
 					_workingLocation.setLong(cfsvals[i * cfssz]);
-					java.awt.Point pt = proj.toScreen(_workingLocation);
+					final java.awt.Point pt = proj.toScreen(_workingLocation);
 					xlpts[npts] = pt.x;
 					ylpts[npts++] = pt.y;
 					// res.addPoint(pt.x, pt.y);
@@ -669,12 +670,12 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 *          the type of feature we are plotting
 	 */
 	@SuppressWarnings({ "rawtypes" })
-	public void createArea(CoverageTable covtable, AreaTable areatable,
-			Vector facevec, LatLonPoint ll1, LatLonPoint ll2, float dpplat,
-			float dpplon, boolean doAntarcticaWorkaround, String featureType)
+	public void createArea(final CoverageTable covtable, final AreaTable areatable,
+			final Vector facevec, final LatLonPoint ll1, final LatLonPoint ll2, final float dpplat,
+			final float dpplon, final boolean doAntarcticaWorkaround, final String featureType)
 	{
 
-		Vector ipts = new Vector();
+		final Vector ipts = new Vector();
 
 		// get the algorithm to collate the edge points for the polygon
 		int totalSize = 0;
@@ -682,7 +683,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		{
 			totalSize = areatable.computeEdgePoints(facevec, ipts);
 		}
-		catch (com.bbn.openmap.io.FormatException f)
+		catch (final com.bbn.openmap.io.FormatException f)
 		{
 			f.printStackTrace();
 			return;
@@ -692,12 +693,12 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		boolean worth_it = false;
 
 		// area any of these shapes within our area?
-		Enumeration theEdges = ipts.elements();
+		final Enumeration theEdges = ipts.elements();
 
 		//
 		while (theEdges.hasMoreElements())
 		{
-			CoordFloatString cfs = (CoordFloatString) theEdges.nextElement();
+			final CoordFloatString cfs = (CoordFloatString) theEdges.nextElement();
 
 			if (overlaps(ll1, ll2, cfs))
 			{
@@ -715,13 +716,13 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		}
 
 		// get the colour
-		java.awt.Color res = getColor(featureType);
+		final java.awt.Color res = getColor(featureType);
 
 		// set the colour
 		_myCanvas.setColor(res);
 
 		// convert the group of lines into a single polygon
-		java.awt.Polygon poly = extendArea(ipts, totalSize, ll1, ll2, dpplat,
+		final java.awt.Polygon poly = extendArea(ipts, totalSize, ll1, ll2, dpplat,
 				dpplon, false, _myCanvas.getProjection());
 
 		// increment the shape counter

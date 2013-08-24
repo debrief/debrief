@@ -95,9 +95,9 @@ public final class BarrierBuilder extends PatternBuilderType
   //////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////
-  public BarrierBuilder(WorldLocation centre,
-                        MWC.GUI.Properties.PropertiesPanel thePanel,
-                        MWC.GUI.Layers theData)
+  public BarrierBuilder(final WorldLocation centre,
+                        final MWC.GUI.Properties.PropertiesPanel thePanel,
+                        final MWC.GUI.Layers theData)
   {
     super(centre, thePanel, theData);
 
@@ -120,19 +120,19 @@ public final class BarrierBuilder extends PatternBuilderType
   /** this method is called by the 'Create' function, and it fills in the
    *  buoys into the correct pattern
    */
-  protected final void addBuoys(Debrief.Wrappers.BuoyPatternWrapper pattern)
+  protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern)
   {
     WorldLocation lastPoint = getKingpin();
-    double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
-    double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
-    WorldVector step = new MWC.GenericData.WorldVector(orient_rads, spacing_degs, 0);
+    final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+    final double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
+    final WorldVector step = new MWC.GenericData.WorldVector(orient_rads, spacing_degs, 0);
 
     boolean first_buoy = true;
 
     for(int i =0;i<getNumberOfBuoys().intValue();i++)
     {
       // create the new symbol
-      Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("B" + (i + 1),
+      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("B" + (i + 1),
                                                   lastPoint,
                                                   java.awt.Color.red);
 
@@ -163,7 +163,7 @@ public final class BarrierBuilder extends PatternBuilderType
     return _orientation;
   }
 
-  public final void setOrientation(double val)
+  public final void setOrientation(final double val)
   {
     _orientation = val;
   }
@@ -173,7 +173,7 @@ public final class BarrierBuilder extends PatternBuilderType
     return new WorldDistance(_spacing, WorldDistance.NM);
   }
 
-  public final void setPatternBuoySpacing(WorldDistance val)
+  public final void setPatternBuoySpacing(final WorldDistance val)
   {
     _spacing = val.getValueIn(WorldDistance.NM);
   }
@@ -204,8 +204,8 @@ public final class BarrierBuilder extends PatternBuilderType
   public final class BarrierInfo extends MWC.GUI.Editable.EditorType
   {
 
-    public BarrierInfo(BarrierBuilder data,
-                   String theName)
+    public BarrierInfo(final BarrierBuilder data,
+                   final String theName)
     {
       super(data, theName, "Barrier:");
     }
@@ -226,7 +226,7 @@ public final class BarrierBuilder extends PatternBuilderType
     {
       try
       {
-        PropertyDescriptor[] myRes=
+        final PropertyDescriptor[] myRes=
         {
           prop("SymbolType", "the type of symbol plotted for this label"),
           prop("SymbolSize", "the scale of the symbol"),
@@ -248,7 +248,7 @@ public final class BarrierBuilder extends PatternBuilderType
 
         return myRes;
 
-      }catch(IntrospectionException e)
+      }catch(final IntrospectionException e)
       {
         // find out which property fell over
         MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Barrier Builder");
@@ -264,7 +264,7 @@ public final class BarrierBuilder extends PatternBuilderType
   static public final class testMe extends junit.framework.TestCase
   {
     static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(String val)
+    public testMe(final String val)
     {
       super(val);
     }

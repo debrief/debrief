@@ -12,8 +12,8 @@ final class SavePlot extends SavePlotAs
   ///////////////////////////////////
   // constructor
   //////////////////////////////////
-  public SavePlot(ToolParent theParent,
-                  Session theSession){
+  public SavePlot(final ToolParent theParent,
+                  final Session theSession){
     super(theParent, theSession, "Save Plot", "images/save.gif");
     
   }
@@ -25,7 +25,7 @@ final class SavePlot extends SavePlotAs
 	public final void execute()
 	{
 		// do we have a filename already?
-		String fn = getSession().getFileName();
+		final String fn = getSession().getFileName();
 		
 		if(fn != null)
 		{

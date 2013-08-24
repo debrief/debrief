@@ -28,7 +28,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 	 * @param length length of the platform
 	 * @param width width (beam) of the platform
 	 */
-	public WorldScaledSym(WorldDistance length, WorldDistance width)
+	public WorldScaledSym(final WorldDistance length, final WorldDistance width)
 	{
 		super();
 		this._length = length;
@@ -54,7 +54,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 		return _length;
 	}
 
-	public void setLength(WorldDistance length)
+	public void setLength(final WorldDistance length)
 	{
 		_length = length;
 	}
@@ -64,7 +64,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 		return _width;
 	}
 
-	public void setHeight(WorldDistance width)
+	public void setHeight(final WorldDistance width)
 	{
 		_width = width;
 	}
@@ -79,7 +79,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 	public java.awt.Dimension getBounds()
 	{
 		// sort out the size of the symbol at the current scale factor
-		java.awt.Dimension res = new java.awt.Dimension(
+		final java.awt.Dimension res = new java.awt.Dimension(
 				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
 		return res;
 	}
@@ -91,7 +91,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 	 *          parameter for paint
 	 * 
 	 */
-	public void paint(CanvasType dest, WorldLocation centre)
+	public void paint(final CanvasType dest, final WorldLocation centre)
 	{
 		paint(dest, centre, 90.0 / 180 * Math.PI);
 	}
@@ -120,46 +120,46 @@ public abstract class WorldScaledSym extends PlainSymbol
 	 * @param direction
 	 *          direction in Radians
 	 */
-	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
 	{
 		// set the colour
 		dest.setColor(getColor());
 
 		// create centre rotation
-		AffineTransform thisRotation = AffineTransform.getRotateInstance(
+		final AffineTransform thisRotation = AffineTransform.getRotateInstance(
 				-direction, 0, 0);
 
 		// do the scale-factor
-		double lenFactor =  _length.getValueIn(WorldDistance.METRES) / getLengthNormalFactor() ;
-		double widFactor =   _width.getValueIn(WorldDistance.METRES) / getWidthNormalFactor();
+		final double lenFactor =  _length.getValueIn(WorldDistance.METRES) / getLengthNormalFactor() ;
+		final double widFactor =   _width.getValueIn(WorldDistance.METRES) / getWidthNormalFactor();
 		
-		AffineTransform scale = AffineTransform
+		final AffineTransform scale = AffineTransform
 				.getScaleInstance(widFactor, lenFactor);
 
 		// find the lines that make up the shape
-		Vector<double[][]> hullLines = getMyCoords();
+		final Vector<double[][]> hullLines = getMyCoords();
 
 		// start looping through - to paint them
-		Iterator<double[][]> iter = hullLines.iterator();
+		final Iterator<double[][]> iter = hullLines.iterator();
 		while (iter.hasNext())
 		{
 			Point lastPoint = null;
-			double[][] thisLine = iter.next();
+			final double[][] thisLine = iter.next();
 			for (int i = 0; i < thisLine.length; i++)
 			{
-				Point2D raw = new Point2D.Double(thisLine[i][0], thisLine[i][1]);
-				Point2D postTurn = new Point2D.Double();
-				Point2D postScale = new Point2D.Double();
+				final Point2D raw = new Point2D.Double(thisLine[i][0], thisLine[i][1]);
+				final Point2D postTurn = new Point2D.Double();
+				final Point2D postScale = new Point2D.Double();
 
 				scale.transform(raw, postScale);
 				thisRotation.transform(postScale, postTurn);
 
-				double latM = MWC.Algorithms.Conversions.m2Degs(postTurn.getY())
+				final double latM = MWC.Algorithms.Conversions.m2Degs(postTurn.getY())
 						+ theLocation.getLat();
-				double longM = MWC.Algorithms.Conversions.m2Degs(postTurn.getX())
+				final double longM = MWC.Algorithms.Conversions.m2Degs(postTurn.getX())
 						+ theLocation.getLong();
 
-				WorldLocation loc = new WorldLocation(latM, longM, 0d);
+				final WorldLocation loc = new WorldLocation(latM, longM, 0d);
 
 				// double thisX = MWC.Algorithms.Conversions.m2Degs(thisLine[i][0])
 				// + theLocation.getLong();
@@ -176,7 +176,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 				// // and the scale
 				// scale.transform(after2, after3);
 
-				java.awt.Point newP = dest.toScreen(loc);
+				final java.awt.Point newP = dest.toScreen(loc);
 
 				if (lastPoint != null)
 				{

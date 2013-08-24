@@ -91,9 +91,9 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	 * @param watch
 	 *          the current data point
 	 */
-	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-			CanvasType dest, MWC.GenericData.WatchableList list,
-			MWC.GenericData.Watchable watch, boolean isPrimary)
+	public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
+			final CanvasType dest, final MWC.GenericData.WatchableList list,
+			final MWC.GenericData.Watchable watch, final boolean isPrimary)
 	{
 		boolean doPlot = true;
 		if (isJustPlotPrimary())
@@ -121,8 +121,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 			}
 			else
 			{
-				WorldLocation center = watch.getLocation();
-				int headingDegs = (int) MWC.Algorithms.Conversions.Rads2Degs(watch
+				final WorldLocation center = watch.getLocation();
+				final int headingDegs = (int) MWC.Algorithms.Conversions.Rads2Degs(watch
 						.getCourse());
 				drawRangeRings(center, headingDegs, dest);
 			}
@@ -217,7 +217,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 		final int axis = (int) MWC.Algorithms.Conversions.Rads2Degs(Math.atan2(dx,
 				-dy));
 
-		Point edge = new Point(0, 0);
+		final Point edge = new Point(0, 0);
 
 		// do we do a centre stalk?
 		if ((_arcStart < 0) && (_arcEnd > 0))
@@ -293,7 +293,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 				// draw in the arc itself
 				if (dest instanceof ExtendedCanvasType)
 				{
-					ExtendedCanvasType ed = (ExtendedCanvasType) dest;
+					final ExtendedCanvasType ed = (ExtendedCanvasType) dest;
 					ed.semiFillArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
 							startAngle, angle);
 				}
@@ -377,7 +377,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 		return _fillArcs;
 	}
 
-	public void setFillArcs(boolean fillArcs)
+	public void setFillArcs(final boolean fillArcs)
 	{
 		_fillArcs = fillArcs;
 	}
@@ -387,7 +387,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 		return _useCurrentTrackColor;
 	}
 
-	public void setUseCurrentTrackColor(boolean useCurrentTrackColor)
+	public void setUseCurrentTrackColor(final boolean useCurrentTrackColor)
 	{
 		_useCurrentTrackColor = useCurrentTrackColor;
 	}
@@ -407,7 +407,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	 * 
 	 * @param justPlotPrimary
 	 */
-	public void setJustPlotPrimary(boolean justPlotPrimary)
+	public void setJustPlotPrimary(final boolean justPlotPrimary)
 	{
 		_justPlotPrimary = justPlotPrimary;
 	}
@@ -559,7 +559,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 				};
 				return res;
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				MWC.Utilities.Errors.Trace.trace(e);
 				return super.getPropertyDescriptors();

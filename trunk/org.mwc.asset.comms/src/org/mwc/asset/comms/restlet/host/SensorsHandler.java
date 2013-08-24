@@ -14,10 +14,10 @@ public class SensorsHandler extends ASSETResource implements
 	@Get
 	public List<Sensor> retrieve()
 	{
-		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
-		ASSETHost host = hostP.getHost();
+		final ASSETHost.HostProvider hostP = (HostProvider) getApplication();
+		final ASSETHost host = hostP.getHost();
 		
-		List<Sensor> list = host.getSensorsFor(getScenarioId(), getParticipantId());
+		final List<Sensor> list = host.getSensorsFor(getScenarioId(), getParticipantId());
 		return list;
 	}
 	

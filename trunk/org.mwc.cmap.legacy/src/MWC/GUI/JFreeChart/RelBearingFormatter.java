@@ -18,7 +18,7 @@ public class RelBearingFormatter implements formattingOperation, Serializable
 
 	public void format(final XYPlot thePlot)
 	{
-		NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
+		final NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
 		theAxis.setRange(-180, +180);
 		theAxis.setLabel("(Red)    " + theAxis.getLabel() + "     (Green)");
 		

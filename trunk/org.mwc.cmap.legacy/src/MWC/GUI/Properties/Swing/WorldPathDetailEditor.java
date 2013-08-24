@@ -102,7 +102,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * the type of object we will be editing
    */
-  private String _myType;
+  private final String _myType;
 
 
   /**
@@ -110,8 +110,8 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    * constructor
    * *************************************************************
    */
-  public WorldPathDetailEditor(WorldPath _myPath, PlainChart theChart, PropertiesPanel thePanel, ToolParent theParent,
-                               String myType)
+  public WorldPathDetailEditor(final WorldPath _myPath, final PlainChart theChart, final PropertiesPanel thePanel, final ToolParent theParent,
+                               final String myType)
   {
     _myType = myType;
     setObject(_myPath, theChart, null, thePanel);
@@ -131,7 +131,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     return _myType;
   }
 
-  public void setObject(Object data)
+  public void setObject(final Object data)
   {
 
     // store the path
@@ -172,55 +172,55 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     msg += " 5. Finally use Apply then Close to update the shape.\r\n";
 
     // create the information panel
-    JTextArea info = new JTextArea();
+    final JTextArea info = new JTextArea();
     info.setBackground(this.getBackground());
     info.setLineWrap(true);
     info.setWrapStyleWord(true);
     info.setText(msg);
     // make the text a little smaller
-    Font infoFont = info.getFont();
+    final Font infoFont = info.getFont();
     info.setFont(infoFont.deriveFont((float) 10.0));
 
     // create the top panel (with the new, up, down button)
-    JPanel infoPanel = new JPanel();
+    final JPanel infoPanel = new JPanel();
     infoPanel.setLayout(new BorderLayout());
-    JPanel btnBar = new JPanel();
+    final JPanel btnBar = new JPanel();
     btnBar.setLayout(new GridLayout(2, 0));
     infoPanel.add("East", btnBar);
     infoPanel.add("Center", info);
 
     // and the new, up, down buttons
-    JButton upBtn = createButton("Move current point up", "images/Up.gif", "Up");
+    final JButton upBtn = createButton("Move current point up", "images/Up.gif", "Up");
     upBtn.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doUpDown(true);
       }
     });
 
-    JButton downBtn = createButton("Move current point down", "images/Down.gif", "Down");
+    final JButton downBtn = createButton("Move current point down", "images/Down.gif", "Down");
     downBtn.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doUpDown(false);
       }
     });
 
-    JButton newBtn = createButton("Add new point", "images/NewPin.gif", "New");
+    final JButton newBtn = createButton("Add new point", "images/NewPin.gif", "New");
     newBtn.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         addNew();
       }
     });
 
-    JButton deleteBtn = createButton("Delete current point", "images/DeletePin.gif", "Delete");
+    final JButton deleteBtn = createButton("Delete current point", "images/DeletePin.gif", "Delete");
     deleteBtn.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         deleteCurrent();
       }
@@ -238,13 +238,13 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     _myList.setBorder(new javax.swing.border.EtchedBorder());
     _myList.addListSelectionListener(new ListSelectionListener()
     {
-      public void valueChanged(ListSelectionEvent e)
+      public void valueChanged(final ListSelectionEvent e)
       {
         if (!e.getValueIsAdjusting())
         {
           if (!_myList.isSelectionEmpty())
           {
-            WorldLocation loc = (WorldLocation) _myList.getSelectedValue();
+            final WorldLocation loc = (WorldLocation) _myList.getSelectedValue();
             if (loc != null)
               editThis(_myList.getSelectedValue());
           }
@@ -253,7 +253,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     });
 
     // show the list
-    JPanel listHolder = new JPanel();
+    final JPanel listHolder = new JPanel();
     listHolder.setLayout(new BorderLayout());
     _dragger = new DragButton(getChart(), _theParent);
     listHolder.add("North", _dragger);
@@ -266,20 +266,20 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     _subPanel.setName("Point editor");
     _subPanel.setLayout(new BorderLayout());
     _subPanel.add("Center", _editor.getCustomEditor());
-    JButton subApply = new JButton("Apply");
+    final JButton subApply = new JButton("Apply");
     subApply.setToolTipText("Apply the changes to our " + getMyType());
     subApply.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
-        WorldLocation curLoc = (WorldLocation) _myList.getSelectedValue();
+        final WorldLocation curLoc = (WorldLocation) _myList.getSelectedValue();
         if (curLoc != null)
         {
           curLoc.copy((WorldLocation) _editor.getValue());
           _myList.repaint();
 
           // also update the point in the path
-          int index = _myList.getSelectedIndex();
+          final int index = _myList.getSelectedIndex();
           getPath().getLocationAt(index).copy(curLoc);
 
           // update the plot
@@ -291,34 +291,34 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     });
 
     // create the bottom toolbar
-    JButton closeBtn = new JButton("Close");
+    final JButton closeBtn = new JButton("Close");
     closeBtn.setToolTipText("Close this panel");
     closeBtn.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doClose();
       }
     });
 
     // now the reset button
-    JButton resetBtn = new JButton("Reset");
+    final JButton resetBtn = new JButton("Reset");
     resetBtn.setToolTipText("Reset the data");
     resetBtn.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doReset();
       }
     });
 
-    JPanel buttonHolder = new JPanel();
+    final JPanel buttonHolder = new JPanel();
     buttonHolder.setLayout(new GridLayout(1, 0));
     buttonHolder.add(closeBtn);
     buttonHolder.add(subApply);
     buttonHolder.add(resetBtn);
 
-    JPanel bottomHolder = new JPanel();
+    final JPanel bottomHolder = new JPanel();
     bottomHolder.setLayout(new BorderLayout());
     bottomHolder.add("Center", _subPanel);
     bottomHolder.add("South", buttonHolder);
@@ -335,18 +335,18 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * create and format a new button
    */
-  private JButton createButton(String toolTip, String image, String title)
+  private JButton createButton(final String toolTip, final String image, final String title)
   {
     JButton newB = null;
 
     // first try to get the URL of the image
-    java.lang.ClassLoader loader = getClass().getClassLoader();
+    final java.lang.ClassLoader loader = getClass().getClassLoader();
     if (loader != null)
     {
-      java.net.URL imLoc = loader.getResource(image);
+      final java.net.URL imLoc = loader.getResource(image);
       if (imLoc != null)
       {
-        ImageIcon im = new ImageIcon(imLoc);
+        final ImageIcon im = new ImageIcon(imLoc);
         newB = new JButton(im);
       }
     }
@@ -364,11 +364,11 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * move the current point up or down
    */
-  void doUpDown(boolean up)
+  void doUpDown(final boolean up)
   {
 
     // can we get the current point
-    WorldLocation curLoc = (WorldLocation) _myList.getSelectedValue();
+    final WorldLocation curLoc = (WorldLocation) _myList.getSelectedValue();
 
     if (curLoc != null)
     {
@@ -397,7 +397,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    */
   void addNew()
   {
-    WorldLocation center = getChart().getDataArea().getCentre();
+    final WorldLocation center = getChart().getDataArea().getCentre();
     getPath().addPoint(center);
 
     // and update the data
@@ -421,7 +421,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   {
 
     // can we get the current point
-    WorldLocation curLoc = (WorldLocation) _myList.getSelectedValue();
+    final WorldLocation curLoc = (WorldLocation) _myList.getSelectedValue();
 
     if (curLoc != null)
     {
@@ -463,7 +463,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * an item has been selected, edit it
    */
-  void editThis(Object val)
+  void editThis(final Object val)
   {
     _editor.setValue(val);
   }
@@ -479,7 +479,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * setter, to set the path object
    */
-  private void setPath(WorldPath path)
+  private void setPath(final WorldPath path)
   {
     _myPath = path;
   }
@@ -489,7 +489,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    */
   private void showPath()
   {
-    Layers theLayers = getChart().getLayers();
+    final Layers theLayers = getChart().getLayers();
     Layer bl = theLayers.findLayer(editorName);
     if (bl == null)
     {
@@ -510,18 +510,18 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   {
 
     // find out which one is selected
-    int curSel = _myList.getSelectedIndex();
+    final int curSel = _myList.getSelectedIndex();
 
     // create an object to put the data into
-    Vector<WorldLocationHolder> list = new Vector<WorldLocationHolder>(0, 1);
+    final Vector<WorldLocationHolder> list = new Vector<WorldLocationHolder>(0, 1);
 
     if (getPath() != null)
     {
-      int len = getPath().size();
+      final int len = getPath().size();
       for (int i = 0; i < len; i++)
       {
-        WorldLocation thisLoc = getPath().getLocationAt(i);
-        WorldLocationHolder holder = new WorldLocationHolder(thisLoc, i + 1);
+        final WorldLocation thisLoc = getPath().getLocationAt(i);
+        final WorldLocationHolder holder = new WorldLocationHolder(thisLoc, i + 1);
         list.add(holder);
       }
     }
@@ -547,7 +547,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     getPanel().remove(this);
 
     // remove the layer painter
-    BaseLayer editorLayer = (BaseLayer) getChart().getLayers().findLayer(editorName);
+    final BaseLayer editorLayer = (BaseLayer) getChart().getLayers().findLayer(editorName);
     editorLayer.removeElement(_myPlotter);
 
     // are there any items remaining in the editors layer?
@@ -592,21 +592,21 @@ public class WorldPathDetailEditor extends SwingCustomEditor
 		/**
      * paint this list to the canvas
      */
-    public void paint(CanvasType dest)
+    public void paint(final CanvasType dest)
     {
       Point lastPoint = null;
 
-      Enumeration<Editable> enumer = this.elements();
+      final Enumeration<Editable> enumer = this.elements();
       while (enumer.hasMoreElements())
       {
         // get the next location
-        LocationPlotter lp = (LocationPlotter) enumer.nextElement();
+        final LocationPlotter lp = (LocationPlotter) enumer.nextElement();
 
         // plot it
         lp.paint(dest);
 
         // get it's location
-        Point thisPoint = lp.toScreen(dest);
+        final Point thisPoint = lp.toScreen(dest);
 
         // have we already plotted the first point?
         if (lastPoint != null)
@@ -626,7 +626,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
       this.removeAllElements();
 
       // go through the path
-      int len = getPath().size();
+      final int len = getPath().size();
 
       for (int i = 0; i < len; i++)
       {
@@ -646,7 +646,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   {
     int _myIndex;
 
-    public LocationPlotter(int index)
+    public LocationPlotter(final int index)
     {
       _myIndex = index;
     }
@@ -654,26 +654,26 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     /**
      * apply the necessary movement (during drag)
      */
-    public void dragBy(WorldVector wv)
+    public void dragBy(final WorldVector wv)
     {
       //
     }
 
-  	public int compareTo(Plottable arg0)
+  	public int compareTo(final Plottable arg0)
   	{
-  		Plottable other = (Plottable) arg0;
+  		final Plottable other = (Plottable) arg0;
   		return this.getName().compareTo(other.getName());
   	}
     /**
      * and apply the final movement
      */
-    public void doMove(WorldLocation start, WorldLocation end)
+    public void doMove(final WorldLocation start, final WorldLocation end)
     {
       if (getLocation() != null)
       {
 
         // retrieve the depth
-        double depth = getLocation().getDepth();
+        final double depth = getLocation().getDepth();
 
         // paste in the lat/long
         getLocation().copy(end);
@@ -687,9 +687,9 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     /**
      * paint this object to the specified canvas
      */
-    public void paint(CanvasType dest)
+    public void paint(final CanvasType dest)
     {
-      Point pt = toScreen(dest);
+      final Point pt = toScreen(dest);
       dest.setColor(Color.yellow);
       dest.drawRect(pt.x - 1, pt.y - 1, 3, 3);
 
@@ -707,7 +707,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     /**
      * get the screen location of this point
      */
-    protected Point toScreen(CanvasType dest)
+    protected Point toScreen(final CanvasType dest)
     {
       return dest.toScreen(getLocation());
     }
@@ -717,7 +717,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
      */
     public WorldArea getBounds()
     {
-      WorldLocation loc = getLocation();
+      final WorldLocation loc = getLocation();
       return new WorldArea(loc, loc);
     }
 
@@ -732,7 +732,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     /**
      * set the visibility of this item
      */
-    public void setVisible(boolean val)
+    public void setVisible(final boolean val)
     {
       //
     }
@@ -741,9 +741,9 @@ public class WorldPathDetailEditor extends SwingCustomEditor
      * Determine how far away we are from this point.
      * or return null if it can't be calculated
      */
-    public double rangeFrom(WorldLocation other)
+    public double rangeFrom(final WorldLocation other)
     {
-      WorldLocation loc = getPath().getLocationAt(_myIndex);
+      final WorldLocation loc = getPath().getLocationAt(_myIndex);
       return loc.rangeFrom(other);
     }
 
@@ -791,9 +791,9 @@ public class WorldPathDetailEditor extends SwingCustomEditor
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private MoveableDragger _myDragger;
+		private final MoveableDragger _myDragger;
 
-    public DragButton(PlainChart chart, ToolParent parent)
+    public DragButton(final PlainChart chart, final ToolParent parent)
     {
       super("Drag", false);
 
@@ -806,7 +806,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
 				 */
 				private static final long serialVersionUID = 1L;
 
-				public void areaSelected(MWC.GenericData.WorldLocation theLocation, Point thePoint)
+				public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint)
         {
           super.areaSelected(theLocation, thePoint);
           updateData();
@@ -820,7 +820,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     /**
      * Invoked when an action occurs.
      */
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(final ActionEvent e)
     {
       if (this.isSelected())
       {
@@ -854,9 +854,9 @@ public class WorldPathDetailEditor extends SwingCustomEditor
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private int _myIndex;
+		private final int _myIndex;
 
-    public WorldLocationHolder(WorldLocation location, int index)
+    public WorldLocationHolder(final WorldLocation location, final int index)
     {
       super(location);
       _myIndex = index;

@@ -28,7 +28,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 
 	static Control _theControl;
 
-	public DebriefNonBeanProperty( NonBeanPropertyDescriptor prop, Control theControl)
+	public DebriefNonBeanProperty( final NonBeanPropertyDescriptor prop, final Control theControl)
 	{
 		_theProp = prop;
 		_theControl = theControl;
@@ -39,13 +39,13 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	private EditorHelper findHelperFor(Class theClass)
+	private EditorHelper findHelperFor(final Class theClass)
 	{
 		EditorHelper res = null;
 
-			for (Iterator iter = _myHelperList.iterator(); iter.hasNext();)
+			for (final Iterator iter = _myHelperList.iterator(); iter.hasNext();)
 			{
-				EditorHelper thisHelper = (EditorHelper) iter.next();
+				final EditorHelper thisHelper = (EditorHelper) iter.next();
 				if (thisHelper.editsThis(theClass))
 				{
 					res = thisHelper;
@@ -56,7 +56,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 			if (res == null)
 			{
 				// ok, log the error
-				String msg = "editor not found for:"
+				final String msg = "editor not found for:"
 						+ _theProp.getDataType().toString() + "("
 						+ _theProp.getFieldName() + ")";
 				System.out.println(msg);
@@ -65,15 +65,15 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		return res;
 	}
 
-	public static void addSupplementalHelpers(Vector<EditorHelper> newHelpers)
+	public static void addSupplementalHelpers(final Vector<EditorHelper> newHelpers)
 	{
 		// make sure our starter list is created
 		initialiseHelpers();
 
 		// now add the new ones
-		for (Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();)
+		for (final Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();)
 		{
-			EditorHelper thisHelper = (EditorHelper) iter.next();
+			final EditorHelper thisHelper = (EditorHelper) iter.next();
 			_myHelperList.add(thisHelper);
 		}
 	}
@@ -89,7 +89,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 					.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
 			_myHelperList.add(new EditorHelper(String.class)
 			{
-				public CellEditor getCellEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(final Composite parent)
 				{
 					return new TextCellEditor(parent, SWT.MULTI | SWT.V_SCROLL);
 				}
@@ -97,26 +97,26 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 			_myHelperList.add(new EditorHelper(Long.class)
 			{
 
-				public CellEditor getCellEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(final Composite parent)
 				{
 					return new TextCellEditor(parent);
 				}
 
-				public Object translateToSWT(Object value)
+				public Object translateToSWT(final Object value)
 				{
 					String res = " ";
-					Long val = (Long) value;
+					final Long val = (Long) value;
 					if (val != null)
 					{
-						int thisInt = val.intValue();
+						final int thisInt = val.intValue();
 						res = "" + thisInt;
 					}
 					return res;
 				}
 
-				public Object translateFromSWT(Object value)
+				public Object translateFromSWT(final Object value)
 				{
-					String val = (String) value;
+					final String val = (String) value;
 					Long res = null;
 					res = new Long(val);
 					return res;
@@ -126,26 +126,26 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 			_myHelperList.add(new EditorHelper(Integer.class)
 			{
 
-				public CellEditor getCellEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(final Composite parent)
 				{
 					return new TextCellEditor(parent);
 				}
 
-				public Object translateToSWT(Object value)
+				public Object translateToSWT(final Object value)
 				{
 					String res = " ";
-					Integer val = (Integer) value;
+					final Integer val = (Integer) value;
 					if (val != null)
 					{
-						int thisInt = val.intValue();
+						final int thisInt = val.intValue();
 						res = "" + thisInt;
 					}
 					return res;
 				}
 
-				public Object translateFromSWT(Object value)
+				public Object translateFromSWT(final Object value)
 				{
-					String val = (String) value;
+					final String val = (String) value;
 					Integer res = null;
 					res = new Integer(val);
 					return res;
@@ -169,7 +169,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		}
 	}
 
-	public CellEditor createPropertyEditor(Composite parent)
+	public CellEditor createPropertyEditor(final Composite parent)
 	{
 		CellEditor res = null;
 		if (_myHelper != null)
@@ -179,7 +179,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		return res;
 	}
 
-	public Control createEditor(Composite parent)
+	public Control createEditor(final Composite parent)
 	{
 		Control res = null;
 		if (_myHelper != null)
@@ -234,7 +234,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		return _myHelper;
 	}
 
-	public boolean isCompatibleWith(IPropertyDescriptor anotherProperty)
+	public boolean isCompatibleWith(final IPropertyDescriptor anotherProperty)
 	{
 		// the name properties aren't compatible.
 		boolean res = true;
@@ -257,7 +257,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 			res = _theProp.getDataObject().getValue(_theProp.getFieldName());
 			
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}

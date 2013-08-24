@@ -16,9 +16,9 @@ public class TimeRCPView extends ViewPart implements IAdaptable
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
-		VTime time = new VTime(parent, SWT.NONE);
+		final VTime time = new VTime(parent, SWT.NONE);
 		_control = time;
 		_view = time;
 	}
@@ -33,7 +33,7 @@ public class TimeRCPView extends ViewPart implements IAdaptable
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 
@@ -52,7 +52,7 @@ public class TimeRCPView extends ViewPart implements IAdaptable
 		return res;
 	}
 
-	public void setEnabled(boolean val)
+	public void setEnabled(final boolean val)
 	{
 		_control.setEnabled(val);
 	}

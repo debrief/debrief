@@ -135,28 +135,28 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
 
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     _myFormat = getIndexOf(val);
   }
 
-  public static int getIndexOf(String val)
+  public static int getIndexOf(final String val)
   {
   	int res = INVALID_INDEX;
   	
   	// cycle through the tags until we get a matching one
   	for (int i = 0; i < getTagList().length; i++)
 		{
-			String thisTag = getTagList()[i];
+			final String thisTag = getTagList()[i];
 			if(thisTag.equals(val))
 			{
 				res = i;
@@ -184,10 +184,10 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
 		public SwingDateFormatEditor()
     {
       // get our property editor data
-      DateFormatPropertyEditor pe = new DateFormatPropertyEditor();
+      final DateFormatPropertyEditor pe = new DateFormatPropertyEditor();
 
       // create and collate the data model for the combo box
-      javax.swing.DefaultComboBoxModel dcm = new javax.swing.DefaultComboBoxModel(pe.getTags());
+      final javax.swing.DefaultComboBoxModel dcm = new javax.swing.DefaultComboBoxModel(pe.getTags());
 
       // put the model into the combo box
       super.setModel(dcm);
@@ -195,9 +195,9 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
       // assign the listener for the combobox
       super.addActionListener( new java.awt.event.ActionListener()
       {
-        public void actionPerformed(java.awt.event.ActionEvent e)
+        public void actionPerformed(final java.awt.event.ActionEvent e)
         {
-          String current = (String)getSelectedItem();
+          final String current = (String)getSelectedItem();
           if(current != null)
             newFormat(current);
         }

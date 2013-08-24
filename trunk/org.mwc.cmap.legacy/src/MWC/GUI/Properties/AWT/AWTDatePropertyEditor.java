@@ -127,14 +127,14 @@ public class AWTDatePropertyEditor extends
 
   /** set the date text in string form
    */
-  protected void setDateText(String val)
+  protected void setDateText(final String val)
   {
     _theDate.setText(val);
   }
 
   /** set the time text in string form
    */
-  protected void setTimeText(String val)
+  protected void setTimeText(final String val)
   {
     _theTime.setText(val);
   }
@@ -144,7 +144,7 @@ public class AWTDatePropertyEditor extends
    *
    * @param val
    */
-  protected void setMicroText(long val)
+  protected void setMicroText(final long val)
   {
     throw new RuntimeException("Not implemented!!!");
   }

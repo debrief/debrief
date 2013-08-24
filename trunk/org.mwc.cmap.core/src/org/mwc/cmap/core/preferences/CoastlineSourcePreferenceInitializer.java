@@ -24,10 +24,10 @@ public class CoastlineSourcePreferenceInitializer extends AbstractPreferenceInit
 	{
 
 		// hmm, set the default location
-		Path coastPath = new Path("data/world.dat");
+		final Path coastPath = new Path("data/world.dat");
 
 		URL fileURL = null;
-		Bundle staticBundle = Platform.getBundle("org.mwc.cmap.static_resources");
+		final Bundle staticBundle = Platform.getBundle("org.mwc.cmap.static_resources");
 		if (staticBundle != null)
 		{
 			// and get the relative path compared to the Core Plugin
@@ -40,13 +40,13 @@ public class CoastlineSourcePreferenceInitializer extends AbstractPreferenceInit
 			{
 				fileURL = FileLocator.toFileURL(fileURL);
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Unable to find coastline data-file", e);
 			}
 
 			// and store the default location
-			IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+			final IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 			store.setDefault(CoastlineSourcePrefsPage.PreferenceConstants.COASTLINE_FILE,
 					fileURL.getFile());
 		}

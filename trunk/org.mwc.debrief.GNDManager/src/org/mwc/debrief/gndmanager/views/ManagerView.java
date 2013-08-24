@@ -18,7 +18,7 @@ public interface ManagerView
 	{
 		private final URL _url;
 		private final String _name;
-		public ResultItem(URL url, String name)
+		public ResultItem(final URL url, final String name)
 		{
 			_url = url;
 			_name = name;

@@ -22,17 +22,17 @@ public class InsertLabel extends CoreInsertShape
 	 * @param theChart
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		
 		// right, what's the area we're looking at
-		WorldArea wa = theChart.getDataArea();
+		final WorldArea wa = theChart.getDataArea();
 		
 		// get centre of area (at zero depth)
-		WorldLocation centre = wa.getCentreAtSurface();
+		final WorldLocation centre = wa.getCentreAtSurface();
 
 		// and now wrap the shape
-		LabelWrapper theWrapper = new LabelWrapper("Blank label", centre,
+		final LabelWrapper theWrapper = new LabelWrapper("Blank label", centre,
 				Color.red);
 		
 		return theWrapper;
@@ -40,7 +40,7 @@ public class InsertLabel extends CoreInsertShape
 	}
 
 	@Override
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		// don't bother, we're not generating shapes this way...
 		return null;

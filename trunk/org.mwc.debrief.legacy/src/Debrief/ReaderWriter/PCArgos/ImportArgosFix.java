@@ -58,10 +58,10 @@ final class ImportArgosFix implements PlainLineImporter
 	private Hashtable<String, Fix> _lastPoints = null;
 	private long _freq = 0;
 	
-	public final void setParameters(WorldLocation origin,
-														long DTG,
-														Hashtable<String, Fix> lastPoints,
-														long freq)
+	public final void setParameters(final WorldLocation origin,
+														final long DTG,
+														final Hashtable<String, Fix> lastPoints,
+														final long freq)
 	{
 		_origin = origin;
 		_dtg = DTG;
@@ -71,7 +71,7 @@ final class ImportArgosFix implements PlainLineImporter
 	
   /**
    */
-  public final Object readThisLine(String theLine){
+  public final Object readThisLine(final String theLine){
     
     // declare local variables
     WorldLocation theLoc;
@@ -84,13 +84,13 @@ final class ImportArgosFix implements PlainLineImporter
 // ?? A01210000  -164.20 36235.19  -113.40     3.58    -1.15     0.15    -0.04     0.08     0.04
 		
     // first the trackname
-		String trk =theLine.substring(2, 6);
-		String theDTG = theLine.substring(6, 12);
+		final String trk =theLine.substring(2, 6);
+		final String theDTG = theLine.substring(6, 12);
 
 		// sort out this time as elapsed seconds		
-		int hrs = Integer.parseInt(theDTG.substring(0,2));
-		int mins = Integer.parseInt(theDTG.substring(2,4));
-		int secs = Integer.parseInt(theDTG.substring(4,6));
+		final int hrs = Integer.parseInt(theDTG.substring(0,2));
+		final int mins = Integer.parseInt(theDTG.substring(2,4));
+		final int secs = Integer.parseInt(theDTG.substring(4,6));
 		long val = (hrs * 60 * 60) +
 							 (mins * 60) +
 							 (secs);
@@ -102,11 +102,11 @@ final class ImportArgosFix implements PlainLineImporter
 		val += _dtg;		
 		
 		// what is the last dtg for this track?
-		Fix fx = (Fix)_lastPoints.get(trk);
+		final Fix fx = (Fix)_lastPoints.get(trk);
 		if(fx != null)
 		{
 			// get the time
-			HiResDate lastDTG = fx.getTime();
+			final HiResDate lastDTG = fx.getTime();
 			
 			// see if we have passed through midnight,
 			if(val < lastDTG.getDate().getTime())
@@ -130,13 +130,13 @@ final class ImportArgosFix implements PlainLineImporter
 			// this is the first item we have found for this track, use it
 		}
 		
-		String location_details = theLine.substring(12, theLine.length());
-		StringTokenizer st = new StringTokenizer(location_details);
+		final String location_details = theLine.substring(12, theLine.length());
+		final StringTokenizer st = new StringTokenizer(location_details);
 		
 		
-		String theX = st.nextToken();
-		String theY = st.nextToken();
-		String theZ = st.nextToken();
+		final String theX = st.nextToken();
+		final String theY = st.nextToken();
+		final String theZ = st.nextToken();
 
 		x = Double.valueOf(theX).doubleValue();
 		y = Double.valueOf(theY).doubleValue();
@@ -144,18 +144,18 @@ final class ImportArgosFix implements PlainLineImporter
 
 		
 		// calc the bearing
-		double brg = Math.atan2(y,x);
-		double rng = Math.sqrt(x*x + y*y);
-		WorldVector offset = new WorldVector(brg, MWC.Algorithms.Conversions.Yds2Degs(rng), z);
+		final double brg = Math.atan2(y,x);
+		final double rng = Math.sqrt(x*x + y*y);
+		final WorldVector offset = new WorldVector(brg, MWC.Algorithms.Conversions.Yds2Degs(rng), z);
 		theLoc = _origin.add(offset);
 
     dtg = new HiResDate(val, 0);
 
 
     // create the fix ready to store it
-    Fix res = new Fix(dtg, theLoc, 0.0, 0.0);
+    final Fix res = new Fix(dtg, theLoc, 0.0, 0.0);
 		
-    ReplayFix rf = new ReplayFix();
+    final ReplayFix rf = new ReplayFix();
     rf.theFix = res;
     rf.theTrackName = trk;
     rf.theSymbology = "@@";
@@ -171,7 +171,7 @@ final class ImportArgosFix implements PlainLineImporter
 	 * @return the shape in String form
 	 * @param theWrapper the Shape we are exporting
 	 */	
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
 		return null;
 	}
@@ -180,7 +180,7 @@ final class ImportArgosFix implements PlainLineImporter
 	 * @param val the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		return false;
 	}

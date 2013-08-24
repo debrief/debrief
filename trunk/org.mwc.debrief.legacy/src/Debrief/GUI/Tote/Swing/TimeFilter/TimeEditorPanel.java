@@ -156,7 +156,7 @@ final public class TimeEditorPanel extends JPanel
     // put the tracks into the list
     populateTracks();
 
-    Layers.DataListener theListener = new Layers.DataListener()
+    final Layers.DataListener theListener = new Layers.DataListener()
     {
       public void dataModified(final Layers theData1, final Layer changedLayer)
       {
@@ -306,7 +306,7 @@ final public class TimeEditorPanel extends JPanel
     // create our operations
     _myOperations.addElement(new SetTimeZero()
     {
-      public void setTimeZero(HiResDate newDate)
+      public void setTimeZero(final HiResDate newDate)
       {
         _theStepper.setTimeZero(newDate);
       }
@@ -434,7 +434,7 @@ final public class TimeEditorPanel extends JPanel
   {
     resetMe(_startTime, _endTime, _starter.get_DTG(), _finisher.get_DTG());
 
-    FilterOperation currentOperation = getOperation();
+    final FilterOperation currentOperation = getOperation();
 
     // just fire a reset event at the current operation, in case it's interested
     if (currentOperation != null)
@@ -539,21 +539,21 @@ final public class TimeEditorPanel extends JPanel
         // and solutions
         if (l instanceof TrackWrapper)
         {
-          Enumeration<Editable> solutions = ((TrackWrapper) l).getSolutions().elements();
+          final Enumeration<Editable> solutions = ((TrackWrapper) l).getSolutions().elements();
           if (solutions != null)
           {
             while (solutions.hasMoreElements())
             {
-              TMAWrapper tmaWrapper = (TMAWrapper) solutions.nextElement();
+              final TMAWrapper tmaWrapper = (TMAWrapper) solutions.nextElement();
               addElement(tmaWrapper, res);
             }
           }
-          Enumeration<Editable> sensors = ((TrackWrapper) l).getSensors().elements();
+          final Enumeration<Editable> sensors = ((TrackWrapper) l).getSensors().elements();
           if (sensors != null)
           {
             while (sensors.hasMoreElements())
             {
-              SensorWrapper sensorWrapper = (SensorWrapper) sensors.nextElement();
+              final SensorWrapper sensorWrapper = (SensorWrapper) sensors.nextElement();
               addElement(sensorWrapper, res);
             }
           }
@@ -809,7 +809,7 @@ final public class TimeEditorPanel extends JPanel
      * @param startTime the new start time
      * @param endTime   the new end time
      */
-    public void resetMe(HiResDate startTime, HiResDate endTime)
+    public void resetMe(final HiResDate startTime, final HiResDate endTime)
     {
       doResetMe(startTime, endTime);
     }

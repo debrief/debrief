@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.Color;
 public class ColorUtils 
 {
 	
-	public static Color convertAWTtoSWTColor(java.awt.Color color)
+	public static Color convertAWTtoSWTColor(final java.awt.Color color)
 	{
 		return new Color(null, color.getRed(), color.getGreen(), color.getBlue());
 	}

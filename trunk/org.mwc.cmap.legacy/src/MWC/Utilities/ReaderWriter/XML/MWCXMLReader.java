@@ -100,7 +100,7 @@ public class MWCXMLReader extends DefaultHandler {
 					// //
 					ha.setValue(ha.myName, val);
 					// //
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					MWC.Utilities.Errors.Trace.trace(e,
 							"Trouble handling attribute: " + ha.myName
 									+ " for:" + _myType);
@@ -195,7 +195,7 @@ public class MWCXMLReader extends DefaultHandler {
 
 					try {
 						hand.handleThis(_theParser, this);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						MWC.Utilities.Errors.Trace.trace(e,
 								"Trouble handling attribute:" + localName);
 					}
@@ -235,7 +235,7 @@ public class MWCXMLReader extends DefaultHandler {
 
 			try {
 				elementClosed();
-			} catch (NullPointerException se) {
+			} catch (final NullPointerException se) {
 				// output a hopefully useful message
 				final String msg = "Trouble parsing element: " + localName;
 				MWC.Utilities.Errors.Trace.trace(se, msg);
@@ -296,7 +296,7 @@ public class MWCXMLReader extends DefaultHandler {
 			try {
 				final double val = Double.parseDouble(value);// longFormat.parse(value).doubleValue();
 				setValue(name, val);
-			} catch (java.lang.NumberFormatException pe) {
+			} catch (final java.lang.NumberFormatException pe) {
 				MWC.Utilities.Errors.Trace.trace(pe,
 						"Reader: Whilst reading in " + name + " value of :"
 								+ value);
@@ -360,7 +360,7 @@ public class MWCXMLReader extends DefaultHandler {
 			try {
 				final long time = getXMLDateFormatter().parse(value).getTime();
 				setValue(name, time);
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				MWC.Utilities.Errors.Trace.trace(e,
 						"Failed to parse Date value of:" + value + " for:"
 								+ name);
@@ -409,12 +409,12 @@ public class MWCXMLReader extends DefaultHandler {
 	}
 
 	static public String writeThis(final HiResDate val) {
-		String res = DebriefFormatDateTime.toStringHiRes(val);
+		final String res = DebriefFormatDateTime.toStringHiRes(val);
 		return res;
 	}
 
 	static public String writeThis(final Duration val) {
-		String res = val.toString();
+		final String res = val.toString();
 		return res;
 	}
 

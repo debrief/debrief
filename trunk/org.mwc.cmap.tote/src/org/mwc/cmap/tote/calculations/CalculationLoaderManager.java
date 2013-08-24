@@ -23,16 +23,16 @@ public abstract class CalculationLoaderManager
 	private ArrayList<toteCalculation> _loaders;
 
 	// Extension point tag and attributes in plugin.xml
-	private String EXTENSION_POINT_ID;
+	private final String EXTENSION_POINT_ID;
 
-	private String EXTENSION_TAG;
+	private final String EXTENSION_TAG;
 
-	private String PLUGIN_ID;
+	private final String PLUGIN_ID;
 
-	private String EXTENSION_TAG_LABEL_ATTRIB = "name";
+	private final String EXTENSION_TAG_LABEL_ATTRIB = "name";
 
-	public CalculationLoaderManager(String extensionId, String extensionTag,
-			String pluginId)
+	public CalculationLoaderManager(final String extensionId, final String extensionTag,
+			final String pluginId)
 	{
 		EXTENSION_POINT_ID = extensionId;
 		EXTENSION_TAG = extensionTag;
@@ -45,17 +45,17 @@ public abstract class CalculationLoaderManager
 	{
 
 		_loaders = new ArrayList<toteCalculation>();
-		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
+		final IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
 				PLUGIN_ID, EXTENSION_POINT_ID);
 
 		// check: Any <extension> tags for our extension-point?
 		if (point != null)
 		{
-			IExtension[] extensions = point.getExtensions();
+			final IExtension[] extensions = point.getExtensions();
 
 			for (int i = 0; i < extensions.length; i++)
 			{
-				IConfigurationElement[] ces = extensions[i].getConfigurationElements();
+				final IConfigurationElement[] ces = extensions[i].getConfigurationElements();
 
 				for (int j = 0; j < ces.length; j++)
 				{
@@ -80,16 +80,16 @@ public abstract class CalculationLoaderManager
 		return _loaders;
 	}
 
-	private void addToolActionDescriptor(IConfigurationElement configElement)
+	private void addToolActionDescriptor(final IConfigurationElement configElement)
 	{
-		String label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+		final String label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 
 		// get menu item label
 		// search for double entries
 		boolean doubleEntry = false;
 		for (int i = 0; i < getToolActionDescriptors().size(); i++)
 		{
-			String l = ((toteCalculation) getToolActionDescriptors().get(i)).getTitle();
+			final String l = ((toteCalculation) getToolActionDescriptors().get(i)).getTitle();
 			if (l.equals(label))
 				doubleEntry = true;
 		}
@@ -97,7 +97,7 @@ public abstract class CalculationLoaderManager
 		// we take the first matching label
 		if (!doubleEntry)
 		{
-			toteCalculation newInstance = createInstance(configElement, label);
+			final toteCalculation newInstance = createInstance(configElement, label);
 			getToolActionDescriptors().add(newInstance);
 		}
 		else
@@ -120,7 +120,7 @@ public abstract class CalculationLoaderManager
 
 	public toteCalculation[] findCalculations()
 	{
-		toteCalculation[] template = new toteCalculation[] {};
+		final toteCalculation[] template = new toteCalculation[] {};
 		return (toteCalculation[]) _loaders.toArray(template);
 	}
 
@@ -138,8 +138,8 @@ public abstract class CalculationLoaderManager
 		 * @param icon
 		 * @param fileTypes
 		 */
-		public DeferredCalculation(IConfigurationElement configElement,
-				String name, String icon)
+		public DeferredCalculation(final IConfigurationElement configElement,
+				final String name, final String icon)
 		{
 			_config = configElement;
 		}
@@ -154,7 +154,7 @@ public abstract class CalculationLoaderManager
 				{
 					// and create the loader
 					_myCalc = (toteCalculation) _config.createExecutableExtension("class");
-				} catch (CoreException e)
+				} catch (final CoreException e)
 				{
 					TotePlugin.logError(Status.ERROR,
 							"Failed to create instance of loader:" + _config, e);
@@ -162,21 +162,21 @@ public abstract class CalculationLoaderManager
 			}
 		}
 
-		public String update(Watchable primary, Watchable secondary,
-				HiResDate thisTime)
+		public String update(final Watchable primary, final Watchable secondary,
+				final HiResDate thisTime)
 		{
 			checkMe();
 			return _myCalc.update(primary, secondary, thisTime);
 		}
 
-		public double calculate(Watchable primary, Watchable secondary,
-				HiResDate thisTime)
+		public double calculate(final Watchable primary, final Watchable secondary,
+				final HiResDate thisTime)
 		{
 			checkMe();
 			return _myCalc.calculate(primary, secondary, thisTime);
 		}
 
-		public void setPattern(NumberFormat format)
+		public void setPattern(final NumberFormat format)
 		{
 			checkMe();
 			_myCalc.setPattern(format);

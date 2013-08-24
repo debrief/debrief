@@ -47,7 +47,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 	 * Auto-generated main method to display this
 	 * org.eclipse.swt.widgets.Composite inside a new Shell.
 	 */
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
 		showGUI();
 	}
@@ -58,10 +58,10 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 	 */
 	public static void showGUI()
 	{
-		Display display = Display.getDefault();
-		Shell shell = new Shell(display);
-		StatusIndicator inst = new StatusIndicator(shell, SWT.NULL);
-		Point size = inst.getSize();
+		final Display display = Display.getDefault();
+		final Shell shell = new Shell(display);
+		final StatusIndicator inst = new StatusIndicator(shell, SWT.NULL);
+		final Point size = inst.getSize();
 		shell.setLayout(new FillLayout());
 		shell.layout();
 		if (size.x == 0 && size.y == 0)
@@ -71,7 +71,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 		}
 		else
 		{
-			Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
+			final Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
 			shell.setSize(shellBounds.width, shellBounds.height);
 		}
 		shell.open();
@@ -82,13 +82,13 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 		}
 	}
 
-	public StatusIndicator(org.eclipse.swt.widgets.Composite parent, int style)
+	public StatusIndicator(final org.eclipse.swt.widgets.Composite parent, final int style)
 	{
 		super(parent, style);
 		initGUI();
 	}
 
-	public void setName(String val)
+	public void setName(final String val)
 	{
 		if (!this.isDisposed())
 		{
@@ -100,14 +100,14 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 	{
 		try
 		{
-			RowLayout thisLayout = new RowLayout(org.eclipse.swt.SWT.VERTICAL);
+			final RowLayout thisLayout = new RowLayout(org.eclipse.swt.SWT.VERTICAL);
 			thisLayout.type = SWT.VERTICAL;
 			thisLayout.wrap = false;
 			this.setLayout(thisLayout);
 			this.setSize(254, 140);
 			{
 				nameLabel = new Label(this, SWT.NONE);
-				RowData nameLabelLData = new RowData();
+				final RowData nameLabelLData = new RowData();
 				nameLabelLData.width = 187;
 				nameLabelLData.height = 13;
 				nameLabel.setLayoutData(nameLabelLData);
@@ -115,7 +115,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 			}
 			{
 				statusLbl = new Label(this, SWT.NONE);
-				RowData statusLblLData = new RowData();
+				final RowData statusLblLData = new RowData();
 				statusLblLData.width = 174;
 				statusLblLData.height = 13;
 				statusLbl.setLayoutData(statusLblLData);
@@ -123,14 +123,14 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 			}
 			{
 				MonitorGroup = new Group(this, SWT.NONE);
-				GridLayout MonitorGroupLayout = new GridLayout();
+				final GridLayout MonitorGroupLayout = new GridLayout();
 				MonitorGroupLayout.numColumns = 3;
 				MonitorGroupLayout.horizontalSpacing = 2;
 				MonitorGroupLayout.marginHeight = 2;
 				MonitorGroupLayout.marginWidth = 2;
 				MonitorGroupLayout.verticalSpacing = 2;
 				MonitorGroup.setLayout(MonitorGroupLayout);
-				RowData MonitorGroupLData = new RowData();
+				final RowData MonitorGroupLData = new RowData();
 				MonitorGroupLData.width = 183;
 				MonitorGroupLData.height = 62;
 				MonitorGroup.setLayoutData(MonitorGroupLData);
@@ -153,7 +153,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					curCourse = new Label(MonitorGroup, SWT.NONE);
-					GridData curCourseLData = new GridData();
+					final GridData curCourseLData = new GridData();
 					curCourseLData.widthHint = 47;
 					curCourseLData.heightHint = 13;
 					curCourse.setLayoutData(curCourseLData);
@@ -161,7 +161,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					demCourseLbl = new Label(MonitorGroup, SWT.NONE);
-					GridData demCourseLblLData = new GridData();
+					final GridData demCourseLblLData = new GridData();
 					demCourseLblLData.widthHint = 52;
 					demCourseLblLData.heightHint = 13;
 					demCourseLbl.setLayoutData(demCourseLblLData);
@@ -173,7 +173,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					curSpeed = new Label(MonitorGroup, SWT.NONE);
-					GridData curSpeedLData = new GridData();
+					final GridData curSpeedLData = new GridData();
 					curSpeedLData.widthHint = 54;
 					curSpeedLData.heightHint = 13;
 					curSpeed.setLayoutData(curSpeedLData);
@@ -181,7 +181,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					demSpeedLbl = new Label(MonitorGroup, SWT.NONE);
-					GridData demSpeedLblLData = new GridData();
+					final GridData demSpeedLblLData = new GridData();
 					demSpeedLblLData.widthHint = 55;
 					demSpeedLblLData.heightHint = 13;
 					demSpeedLbl.setLayoutData(demSpeedLblLData);
@@ -193,7 +193,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					curDepth = new Label(MonitorGroup, SWT.NONE);
-					GridData curDepthLData = new GridData();
+					final GridData curDepthLData = new GridData();
 					curDepthLData.widthHint = 53;
 					curDepthLData.heightHint = 13;
 					curDepth.setLayoutData(curDepthLData);
@@ -201,7 +201,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 				}
 				{
 					demDepthLbl = new Label(MonitorGroup, SWT.NONE);
-					GridData demDepthLblLData = new GridData();
+					final GridData demDepthLblLData = new GridData();
 					demDepthLblLData.widthHint = 56;
 					demDepthLblLData.heightHint = 13;
 					demDepthLbl.setLayoutData(demDepthLblLData);
@@ -210,7 +210,7 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 			}
 			this.layout();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -231,26 +231,26 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 		return curDepth;
 	}
 
-	public void setStatus(Status newStatus)
+	public void setStatus(final Status newStatus)
 	{
 		curSpeed.setText(formatMe(newStatus.getSpeed().getValueIn(WorldSpeed.Kts)) + " kts");
 		curCourse.setText("" + formatMe(newStatus.getCourse()) + "degs");
 		curDepth.setText("" + formatMe(newStatus.getLocation().getDepth()) + "");
 	}
 
-	private NumberFormat _format = new DecimalFormat("0.0");
+	private final NumberFormat _format = new DecimalFormat("0.0");
 
-	private String formatMe(double val)
+	private String formatMe(final double val)
 	{
 		return _format.format(val);
 	}
 
-	public void setDecision(String description, DemandedStatus dem_status)
+	public void setDecision(final String description, final DemandedStatus dem_status)
 	{
 		// sort out what we know
 		if (dem_status instanceof SimpleDemandedStatus)
 		{
-			SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
+			final SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
 			demSpeedLbl.setText("" + formatMe(sds.getSpeed()) + " kts");
 			demCourseLbl.setText("" + formatMe(sds.getCourse()) + " degs");
 			demDepthLbl.setText("" + formatMe(sds.getHeight()) + " m");

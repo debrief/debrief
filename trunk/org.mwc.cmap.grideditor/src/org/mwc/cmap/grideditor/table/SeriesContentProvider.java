@@ -17,8 +17,8 @@ public class SeriesContentProvider implements IStructuredContentProvider {
 
 	private TableRefresher myTableRefresher;
 
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		ColumnViewer columnViewer = (ColumnViewer) viewer;
+	public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
+		final ColumnViewer columnViewer = (ColumnViewer) viewer;
 		if (newInput == myInput) {
 			return;
 		}
@@ -27,7 +27,7 @@ public class SeriesContentProvider implements IStructuredContentProvider {
 		}
 		myInput = null;
 		if (newInput instanceof GriddableSeries) {
-			GriddableSeries newInputImpl = (GriddableSeries) newInput;
+			final GriddableSeries newInputImpl = (GriddableSeries) newInput;
 			installRefresher(columnViewer, newInputImpl);
 			myInput = newInputImpl;
 		}
@@ -38,14 +38,14 @@ public class SeriesContentProvider implements IStructuredContentProvider {
 		myInput = null;
 	}
 
-	public Object[] getElements(Object inputElement) {
+	public Object[] getElements(final Object inputElement) {
 		if (inputElement != myInput) {
 			return NOTHING;
 		}
 		return myInput.getItems().toArray();
 	}
 
-	private void installRefresher(ColumnViewer viewer, GriddableSeries input) {
+	private void installRefresher(final ColumnViewer viewer, final GriddableSeries input) {
 		disposeRefresher();
 		myTableRefresher = new TableRefresher(viewer, input);
 	}
@@ -63,13 +63,13 @@ public class SeriesContentProvider implements IStructuredContentProvider {
 
 		private GriddableSeries myData;
 
-		public TableRefresher(ColumnViewer viewer, GriddableSeries data) {
+		public TableRefresher(final ColumnViewer viewer, final GriddableSeries data) {
 			myColumnViewer = viewer;
 			myData = data;
 			myData.addPropertyChangeListener(this);
 		}
 
-		public void propertyChange(PropertyChangeEvent evt) {
+		public void propertyChange(final PropertyChangeEvent evt) {
 			if (myColumnViewer.getControl().isDisposed()) {
 				dispose();
 				return;

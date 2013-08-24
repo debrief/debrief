@@ -20,7 +20,7 @@ public class ColumnsResizer
 
 	private int myUserTotalWidth;
 
-	public ColumnsResizer(Table table, int fixedColumnsWidth,
+	public ColumnsResizer(final Table table, final int fixedColumnsWidth,
 			final boolean fitOnResize)
 	{
 		myTable = table;
@@ -28,7 +28,7 @@ public class ColumnsResizer
 		myTable.addListener(SWT.Resize, new Listener()
 		{
 
-			public void handleEvent(Event event)
+			public void handleEvent(final Event event)
 			{
 				if (mySizeDatas != null)
 				{
@@ -38,7 +38,7 @@ public class ColumnsResizer
 		});
 	}
 
-	private void doResize(boolean checkWidth, boolean fitTable)
+	private void doResize(final boolean checkWidth, final boolean fitTable)
 	{
 		if (checkWidth && myTableWidth == myTable.getClientArea().width)
 		{
@@ -46,7 +46,7 @@ public class ColumnsResizer
 		}
 
 		boolean updateWeights = false;
-		for (ColumnSizeData sizeData : mySizeDatas)
+		for (final ColumnSizeData sizeData : mySizeDatas)
 		{
 			if (sizeData.isWidthChanged())
 			{
@@ -58,7 +58,7 @@ public class ColumnsResizer
 		{
 			myUserTableWidth = myTableWidth;
 			myUserTotalWidth = myFixedColumnsWidth;
-			for (ColumnSizeData sizeData : mySizeDatas)
+			for (final ColumnSizeData sizeData : mySizeDatas)
 			{
 				sizeData.updateWeight();
 				myUserTotalWidth += sizeData.getTableColumn().getWidth();
@@ -85,11 +85,11 @@ public class ColumnsResizer
 		totalWidth -= myFixedColumnsWidth;
 
 		int totalWeight = 0;
-		for (ColumnSizeData sizeData : mySizeDatas)
+		for (final ColumnSizeData sizeData : mySizeDatas)
 		{
 			totalWeight += sizeData.getWeight();
 		}
-		for (ColumnSizeData sizeData : mySizeDatas)
+		for (final ColumnSizeData sizeData : mySizeDatas)
 		{
 			sizeData.setWidth(totalWidth * sizeData.getWeight() / totalWeight);
 		}
@@ -100,7 +100,7 @@ public class ColumnsResizer
 		doResize(false, true);
 	}
 
-	public void setSizeDatas(Iterable<ColumnSizeData> sizeDatas)
+	public void setSizeDatas(final Iterable<ColumnSizeData> sizeDatas)
 	{
 		mySizeDatas = sizeDatas;
 	}

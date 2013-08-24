@@ -76,13 +76,13 @@ abstract public class CoreTMASegment extends TrackSegment
 	 * @param theTime
 	 * @return the new fix, with valid course and speed
 	 */
-	protected FixWrapper createFixAt(long theTime)
+	protected FixWrapper createFixAt(final long theTime)
 	{
-		Fix fix = new Fix(new HiResDate(theTime), new WorldLocation(0, 0, 0),
+		final Fix fix = new Fix(new HiResDate(theTime), new WorldLocation(0, 0, 0),
 				MWC.Algorithms.Conversions.Degs2Rads(_courseDegs),
 				_speed.getValueIn(WorldSpeed.ft_sec) / 3);
 
-		FixWrapper newFix = new FixWrapper(fix);
+		final FixWrapper newFix = new FixWrapper(fix);
 		return newFix;
 	}
 
@@ -115,9 +115,9 @@ abstract public class CoreTMASegment extends TrackSegment
 	abstract public WorldLocation getTrackStart();
 
 	@Override
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
-		Collection<Editable> items = getData();
+		final Collection<Editable> items = getData();
 
 		// ok - draw that line!
 		Point lastPoint = null;
@@ -131,11 +131,11 @@ abstract public class CoreTMASegment extends TrackSegment
 		WorldLocation firstEnd = null;
 		// WorldLocation lastEnd = null;
 
-		for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
 		{
-			FixWrapper thisF = (FixWrapper) iterator.next();
+			final FixWrapper thisF = (FixWrapper) iterator.next();
 
-			long thisTime = thisF.getDateTimeGroup().getDate().getTime();
+			final long thisTime = thisF.getDateTimeGroup().getDate().getTime();
 
 			// ok, is this our first location?
 			if (tmaLastLoc == null)
@@ -146,8 +146,8 @@ abstract public class CoreTMASegment extends TrackSegment
 			else
 			{
 				// calculate a new vector
-				long timeDelta = thisTime - tmaLastDTG;
-				WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(),
+				final long timeDelta = thisTime - tmaLastDTG;
+				final WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(),
 						thisF.getCourse());
 				tmaLastLoc.addToMe(thisVec);
 
@@ -160,7 +160,7 @@ abstract public class CoreTMASegment extends TrackSegment
 			// cool, remember the time.
 			tmaLastDTG = thisTime;
 
-			Point thisPoint = dest.toScreen(thisF.getFixLocation());
+			final Point thisPoint = dest.toScreen(thisF.getFixLocation());
 
 			// do we have enough for a line?
 			if (lastPoint != null)
@@ -178,7 +178,7 @@ abstract public class CoreTMASegment extends TrackSegment
 		// ok, plot the 1/2 way message
 		if (_dragMsg != null)
 		{
-			Point pt = dest.toScreen(firstEnd);
+			final Point pt = dest.toScreen(firstEnd);
 
 			// project this point out past the actual start point
 			pt.translate((int) (30d * Math.cos(MWC.Algorithms.Conversions
@@ -186,11 +186,11 @@ abstract public class CoreTMASegment extends TrackSegment
 					.sin(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))));
 
 			// try to make it bold
-			Font newFont = new Font("Arial", Font.BOLD, 12);
+			final Font newFont = new Font("Arial", Font.BOLD, 12);
 
 			// put the text in a solid backdrop
-			int ht = dest.getStringHeight(newFont) + 2;
-			int wid = dest.getStringWidth(newFont, _dragMsg);
+			final int ht = dest.getStringHeight(newFont) + 2;
+			final int wid = dest.getStringWidth(newFont, _dragMsg);
 			dest.setColor(Color.BLACK);
 			dest.fillRect(pt.x - 2, pt.y + 18 - ht, wid, ht);
 
@@ -208,7 +208,7 @@ abstract public class CoreTMASegment extends TrackSegment
 	@Override
 	abstract public void rotate(double brg, final WorldLocation origin);
 
-	public void setBaseFrequency(double baseFrequency)
+	public void setBaseFrequency(final double baseFrequency)
 	{
 		_baseFreq = baseFrequency;
 	}
@@ -219,15 +219,15 @@ abstract public class CoreTMASegment extends TrackSegment
 	 * @param course
 	 *          (degs)
 	 */
-	public void setCourse(double course)
+	public void setCourse(final double course)
 	{
 		_courseDegs = course;
 
-		double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
-		Collection<Editable> data = getData();
-		for (Iterator<Editable> iterator = data.iterator(); iterator.hasNext();)
+		final double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
+		final Collection<Editable> data = getData();
+		for (final Iterator<Editable> iterator = data.iterator(); iterator.hasNext();)
 		{
-			FixWrapper fix = (FixWrapper) iterator.next();
+			final FixWrapper fix = (FixWrapper) iterator.next();
 			fix.getFix().setCourse(crseRads);
 		}
 
@@ -241,15 +241,15 @@ abstract public class CoreTMASegment extends TrackSegment
 	 * @param speed
 	 *          the new speed
 	 */
-	public void setSpeed(WorldSpeed speed)
+	public void setSpeed(final WorldSpeed speed)
 	{
 		_speed = speed;
 
-		double spdYps = speed.getValueIn(WorldSpeed.ft_sec) / 3;
-		Collection<Editable> data = getData();
-		for (Iterator<Editable> iterator = data.iterator(); iterator.hasNext();)
+		final double spdYps = speed.getValueIn(WorldSpeed.ft_sec) / 3;
+		final Collection<Editable> data = getData();
+		for (final Iterator<Editable> iterator = data.iterator(); iterator.hasNext();)
 		{
-			FixWrapper fix = (FixWrapper) iterator.next();
+			final FixWrapper fix = (FixWrapper) iterator.next();
 			fix.getFix().setSpeed(spdYps);
 		}
 

@@ -25,14 +25,14 @@ abstract public class PropertyHandler extends MWCXMLReader
 
     super.addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String val){
+      public void setValue(final String name, final String val){
         _name = val;
       }
     });
 
     super.addAttributeHandler(new HandleAttribute("Value")
     {
-      public void setValue(String name, String val){
+      public void setValue(final String name, final String val){
         _value = val;
       }
     });
@@ -50,9 +50,9 @@ abstract public class PropertyHandler extends MWCXMLReader
 
   abstract public void setProperty(String name, String value);
 
-  public static void exportProperty(String name, String value, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportProperty(final String name, final String value, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element prop  = doc.createElement("property");
+    final org.w3c.dom.Element prop  = doc.createElement("property");
     prop.setAttribute("Name", name);
     prop.setAttribute("Value", value);
     parent.appendChild(prop);

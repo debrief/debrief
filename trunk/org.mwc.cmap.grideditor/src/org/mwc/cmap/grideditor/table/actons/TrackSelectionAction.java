@@ -16,7 +16,7 @@ public class TrackSelectionAction extends Action {
 
 	private final ImageDescriptor myUnlockedImage;
 
-	public TrackSelectionAction(GridEditorTable tableUI) {
+	public TrackSelectionAction(final GridEditorTable tableUI) {
 		super(ACTION_TEXT, AS_PUSH_BUTTON);
 		myTableUI = tableUI;
 		myLockedImage = GridEditorPlugin.getInstance().getImageRegistry().getDescriptor(GridEditorPlugin.IMG_LOCKED);
@@ -28,13 +28,13 @@ public class TrackSelectionAction extends Action {
 
 	@Override
 	public void run() {
-		boolean wasTrackingSelection = myTableUI.isTrackingSelection();
+		final boolean wasTrackingSelection = myTableUI.isTrackingSelection();
 		myTableUI.setTrackingSelection(!wasTrackingSelection);
 		refreshWithTableUI();
 	}
 
 	public void refreshWithTableUI() {
-		boolean isTracking = myTableUI.isTrackingSelection();
+		final boolean isTracking = myTableUI.isTrackingSelection();
 		setChecked(isTracking);
 		setImageDescriptor(isTracking ? myLockedImage : myUnlockedImage);
 	}

@@ -110,7 +110,7 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
   private final Panel _toteHolder;
   
   public AWTTote(final AWTPropertiesPanel theTabPanel,
-                 final MWC.GUI.Layers theData, ToolParent theParent)
+                 final MWC.GUI.Layers theData, final ToolParent theParent)
   {
 		super(theData);
 		
@@ -173,7 +173,7 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
     // and now add the members (going across first)
     _theTote.add(new Label("  "));
     _theTote.add(new Label(_thePrimary.getName(), Label.CENTER));
-    Enumeration<WatchableList> iter2 = _theSecondary.elements();
+    final Enumeration<WatchableList> iter2 = _theSecondary.elements();
     while(iter2.hasMoreElements())
     {
       final WatchableList w = (WatchableList) iter2.nextElement();
@@ -182,7 +182,7 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
     _theTote.add(new Label("  "));
     
     // and now the data for each row
-    Enumeration<Class<?>> iter = _theCalculationTypes.elements();
+    final Enumeration<Class<?>> iter = _theCalculationTypes.elements();
     while(iter.hasMoreElements())
     {
       final Class<?> cl = (Class<?>)iter.nextElement();
@@ -211,7 +211,7 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
         
         _theTote.add(new Label(tc.getUnits()));
       }
-      catch(Exception e)
+      catch(final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }

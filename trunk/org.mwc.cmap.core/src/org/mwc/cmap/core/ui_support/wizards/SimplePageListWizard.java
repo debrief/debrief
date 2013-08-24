@@ -23,7 +23,7 @@ public class SimplePageListWizard extends Wizard
 	 * 
 	 * @param page
 	 */
-	public void addWizard(IWizardPage page)
+	public void addWizard(final IWizardPage page)
 	{
 		if(_myPages == null)
 		_myPages = new Vector<IWizardPage>();
@@ -33,10 +33,10 @@ public class SimplePageListWizard extends Wizard
 
 	public void addPages()
 	{
-	  Iterator<IWizardPage> iter = _myPages.iterator();
+	  final Iterator<IWizardPage> iter = _myPages.iterator();
 	  while (iter.hasNext())
 		{
-			IWizardPage thisP = iter.next();
+			final IWizardPage thisP = iter.next();
 			addPage(thisP);
 		}
 	}

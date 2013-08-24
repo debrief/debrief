@@ -180,7 +180,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * 
 	 * @param projection
 	 */
-	public SWTCanvas(Composite parent, GeoToolsHandler projection)
+	public SWTCanvas(final Composite parent, final GeoToolsHandler projection)
 	{
 		super((PlainProjection) projection);
 		// super(null);
@@ -189,7 +189,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		_myCanvas.addMouseTrackListener(new MouseTrackAdapter()
 		{
 
-			public void mouseHover(MouseEvent e)
+			public void mouseHover(final MouseEvent e)
 			{
 				String tip = getTheToolTipText(new java.awt.Point(e.x, e.y));
 
@@ -215,7 +215,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		});
 		_myCanvas.addMouseMoveListener(new MouseMoveListener()
 		{
-			public void mouseMove(MouseEvent e)
+			public void mouseMove(final MouseEvent e)
 			{
 				if (_tooltip == null)
 					return;
@@ -231,8 +231,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 			public void controlResized(final ControlEvent e)
 			{
-				Point pt = _myCanvas.getSize();
-				Dimension dim = new Dimension(pt.x, pt.y);
+				final Point pt = _myCanvas.getSize();
+				final Dimension dim = new Dimension(pt.x, pt.y);
 				setScreenSize(dim);
 			}
 		});
@@ -240,7 +240,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		// setup our own painter
 		_myCanvas.addPaintListener(new org.eclipse.swt.events.PaintListener()
 		{
-			public void paintControl(PaintEvent e)
+			public void paintControl(final PaintEvent e)
 			{
 				repaintMe(e);
 			}
@@ -254,18 +254,18 @@ public class SWTCanvas extends SWTCanvasAdapter
 			/**
 			 * @param e
 			 */
-			public void mouseUp(MouseEvent e)
+			public void mouseUp(final MouseEvent e)
 			{
 				if (e.button == 3)
 				{
 					// cool, right-had button. process it
-					MenuManager mmgr = new MenuManager();
-					Point display = Display.getCurrent().getCursorLocation();
-					Point scrPoint = _myCanvas.toControl(display);
-					WorldLocation targetLoc = getProjection().toWorld(
+					final MenuManager mmgr = new MenuManager();
+					final Point display = Display.getCurrent().getCursorLocation();
+					final Point scrPoint = _myCanvas.toControl(display);
+					final WorldLocation targetLoc = getProjection().toWorld(
 							new java.awt.Point(scrPoint.x, scrPoint.y));
 					fillContextMenu(mmgr, scrPoint, targetLoc);
-					Menu thisM = mmgr.createContextMenu(_myCanvas);
+					final Menu thisM = mmgr.createContextMenu(_myCanvas);
 					thisM.setVisible(true);
 				}
 			}
@@ -280,7 +280,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * @param defer
 	 *          yes/no
 	 */
-	public void setDeferPaints(boolean defer)
+	public void setDeferPaints(final boolean defer)
 	{
 		_deferPaints = defer;
 	}
@@ -291,8 +291,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * @param mmgr
 	 * @param scrPoint
 	 */
-	protected void fillContextMenu(MenuManager mmgr, Point scrPoint,
-			WorldLocation loc)
+	protected void fillContextMenu(final MenuManager mmgr, final Point scrPoint,
+			final WorldLocation loc)
 	{
 		// right, we create the actions afresh each time here. We can't
 		// automatically calculate it.
@@ -305,16 +305,16 @@ public class SWTCanvas extends SWTCanvasAdapter
 			 * @param pt
 			 *          the screen coordinate of the click
 			 */
-			public void run(WorldLocation theLoc)
+			public void run(final WorldLocation theLoc)
 			{
 				// represent the location as a text-string
-				String locText = CorePlugin.toClipboard(theLoc);
+				final String locText = CorePlugin.toClipboard(theLoc);
 
 				// right, copy the location to the clipboard
-				Clipboard clip = CorePlugin.getDefault().getClipboard();
-				Object[] data = new Object[]
+				final Clipboard clip = CorePlugin.getDefault().getClipboard();
+				final Object[] data = new Object[]
 				{ locText };
-				Transfer[] types = new Transfer[]
+				final Transfer[] types = new Transfer[]
 				{ TextTransfer.getInstance() };
 				clip.setContents(data, types);
 
@@ -330,24 +330,24 @@ public class SWTCanvas extends SWTCanvasAdapter
 	// screen redraw related
 	// ////////////////////////////////////////////////////
 
-	protected void repaintMe(PaintEvent pe)
+	protected void repaintMe(final PaintEvent pe)
 	{
 
 		// paintPlot(pe.gc);
 		// get the graphics destination
-		GC gc = pe.gc;
+		final GC gc = pe.gc;
 
 		// put double-buffering code in here.
 		if (_dblBuff == null)
 		{
 			// ok, create the new image
-			Point theSize = _myCanvas.getSize();
+			final Point theSize = _myCanvas.getSize();
 
 			if ((theSize.x == 0) || (theSize.y == 0))
 				return;
 
 			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
-			GC theDest = new GC(_dblBuff);
+			final GC theDest = new GC(_dblBuff);
 
 			// prepare the ground (remember the graphics dest for a start)
 			startDraw(theDest);
@@ -380,7 +380,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * 
 	 * @param g1
 	 */
-	public void paintPlot(CanvasType dest)
+	public void paintPlot(final CanvasType dest)
 	{
 		// go through our painters
 		final Enumeration<PaintListener> enumer = _thePainters.elements();
@@ -480,7 +480,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		return "SWT Canvas";
 	}
 
-	public void redraw(int x, int y, int width, int height, boolean b)
+	public void redraw(final int x, final int y, final int width, final int height, final boolean b)
 	{
 		_myCanvas.redraw(x, y, width, height, b);
 	}
@@ -500,14 +500,14 @@ public class SWTCanvas extends SWTCanvasAdapter
 		if (_deferPaints)
 		{
 
-			long tNow = System.currentTimeMillis();
-			long elapsed = tNow - lastRun;
+			final long tNow = System.currentTimeMillis();
+			final long elapsed = tNow - lastRun;
 			if (elapsed > TIME_INTERVAL)
 			{
 				lastRun = tNow;
 
 				// nope, fire it right away
-				Display thisD = Display.getDefault();
+				final Display thisD = Display.getDefault();
 				if (thisD != null)
 					thisD.syncExec(new Runnable()
 					{
@@ -543,7 +543,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		else
 		{
 			// nope, fire it right away
-			Display thisD = Display.getDefault();
+			final Display thisD = Display.getDefault();
 			if (thisD != null)
 				thisD.syncExec(new Runnable()
 				{
@@ -556,23 +556,23 @@ public class SWTCanvas extends SWTCanvasAdapter
 		}
 	}
 
-	public void addControlListener(ControlAdapter adapter)
+	public void addControlListener(final ControlAdapter adapter)
 	{
 		_myCanvas.addControlListener(adapter);
 	}
 
-	public void addMouseMoveListener(MouseMoveListener listener)
+	public void addMouseMoveListener(final MouseMoveListener listener)
 	{
 		_myCanvas.addMouseMoveListener(listener);
 	}
 
-	public void addMouseListener(MouseListener listener)
+	public void addMouseListener(final MouseListener listener)
 	{
 		_myCanvas.addMouseListener(listener);
 
 	}
 
-	public void addMouseWheelListener(MouseWheelListener listener)
+	public void addMouseWheelListener(final MouseWheelListener listener)
 	{
 		_myCanvas.addMouseWheelListener(listener);
 	}
@@ -597,7 +597,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		 * @param theProjection
 		 *          - our screen/world converter
 		 */
-		public LocationSelectedAction(String text, int style, WorldLocation theLoc)
+		public LocationSelectedAction(final String text, final int style, final WorldLocation theLoc)
 		{
 			super(text, style);
 			_theLoc = theLoc;
@@ -627,7 +627,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	{
 		static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-		public testImport(String val)
+		public testImport(final String val)
 		{
 			super(val);
 		}
@@ -648,7 +648,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 			assertNull("is a location string", validStr);
 
 			// and back to the location
-			WorldLocation loc2 = CorePlugin.fromClipboard(txt);
+			final WorldLocation loc2 = CorePlugin.fromClipboard(txt);
 			assertEquals("correct location parsed back in", theLoc, loc2);
 
 			// try southern/western location

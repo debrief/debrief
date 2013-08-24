@@ -22,13 +22,13 @@ public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport
 	/**
 	 * the list of tags shown in the drop-down list
 	 */
-	private String _stringTags[] =
+	private final String _stringTags[] =
 	{ "1 Min", "10 Mins", "30 Mins", "1 Hour", "6 Hours"};
 
 	/**
 	 * the values to use for the tags in the list
 	 */
-	private long _freqs[] =
+	private final long _freqs[] =
 	{ 1 * 60 * 1000l, _10_MINS, _30_MINS, _60_MINS, 6 * _60_MINS};
 
 	public String[] getTags()
@@ -46,7 +46,7 @@ public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport
 		return new Long(_myFreq);
 	}
 
-	public void setValue(Object p1)
+	public void setValue(final Object p1)
 	{
 		if (p1 instanceof Long)
 		{
@@ -54,7 +54,7 @@ public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport
 		}
 		else if (p1 instanceof String)
 		{
-			String val = (String) p1;
+			final String val = (String) p1;
 			setAsText(val);
 		}
 		else if (p1 == null)
@@ -63,13 +63,13 @@ public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport
 		}
 	}
 
-	public void setAsText(String val)
+	public void setAsText(final String val)
 	{
-		long[] freqs = getFreqs();
-		String[] tags = getTags();
+		final long[] freqs = getFreqs();
+		final String[] tags = getTags();
 		for (int i = 0; i < tags.length; i++)
 		{
-			String thisS = tags[i];
+			final String thisS = tags[i];
 			if (thisS.equals(val))
 			{
 				_myFreq = freqs[i];
@@ -87,12 +87,12 @@ public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport
 		if (_myFreq == null)
 			return res;
 
-		long[] freqs = getFreqs();
-		String[] tags = getTags();
-		long current = _myFreq;
+		final long[] freqs = getFreqs();
+		final String[] tags = getTags();
+		final long current = _myFreq;
 		for (int i = 0; i < freqs.length; i++)
 		{
-			long v = freqs[i];
+			final long v = freqs[i];
 			if (v == current)
 			{
 				res = tags[i];

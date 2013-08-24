@@ -96,7 +96,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 
 	}
 
-	public boolean isPropertyResettable(Object id)
+	public boolean isPropertyResettable(final Object id)
 	{
 		return true;
 	}
@@ -115,7 +115,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 
 			LARGE_STEP = new PropertyDescriptor(LARGE_STEP_ID, LARGE_STEP_ID)
 			{
-				public CellEditor createPropertyEditor(Composite parent)
+				public CellEditor createPropertyEditor(final Composite parent)
 				{
 					return new DurationHelper.DurationCellEditor(parent);
 				}
@@ -125,7 +125,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 
 			SMALL_STEP = new PropertyDescriptor(SMALL_STEP_ID, SMALL_STEP_ID)
 			{
-				public CellEditor createPropertyEditor(Composite parent)
+				public CellEditor createPropertyEditor(final Composite parent)
 				{
 					return new DurationHelper.DurationCellEditor(parent);
 				}
@@ -143,7 +143,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 			// };
 			AUTO_STEP = new PropertyDescriptor(STEP_INTERVAL_ID, STEP_INTERVAL_ID)
 			{
-				public CellEditor createPropertyEditor(Composite parent)
+				public CellEditor createPropertyEditor(final Composite parent)
 				{
 					return new DurationHelper.TimeIntervalEditor(parent);
 				}
@@ -153,15 +153,15 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 				 */
 				public ILabelProvider getLabelProvider()
 				{
-					ILabelProvider provider = new LabelProvider()
+					final ILabelProvider provider = new LabelProvider()
 					{
-						public String getText(Object element)
+						public String getText(final Object element)
 						{
 							// ok, this is a duration. get the duration itself
-							Duration dur = (Duration) element;
+							final Duration dur = (Duration) element;
 
 							// find which is the matching entry
-							TimeIntervalPropertyEditor ep = new TimeIntervalPropertyEditor();
+							final TimeIntervalPropertyEditor ep = new TimeIntervalPropertyEditor();
 							ep.setValue(new Integer((int) dur
 									.getValueIn(Duration.MILLISECONDS)));
 
@@ -194,7 +194,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	public Object getPropertyValue(Object id)
+	public Object getPropertyValue(final Object id)
 	{
 		Object res = null;
 		if (id == LARGE_STEP_ID)
@@ -209,7 +209,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return res;
 	}
 
-	public void resetPropertyValue(Object id)
+	public void resetPropertyValue(final Object id)
 	{
 		Object oldVal = null;
 		Object newVal = null;
@@ -238,7 +238,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		fireChange((String) id, oldVal, newVal);
 	}
 
-	public void setPropertyValue(Object id, Object value)
+	public void setPropertyValue(final Object id, final Object value)
 	{
 		Object oldVal = null;
 		Object newVal = null;
@@ -268,7 +268,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 
 	}
 
-	public boolean isPropertySet(Object id)
+	public boolean isPropertySet(final Object id)
 	{
 		boolean res = false;
 		if (id == LARGE_STEP_ID)
@@ -283,9 +283,9 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return res;
 	}
 
-	private void fireChange(String name, Object oldValue, Object newValue)
+	private void fireChange(final String name, final Object oldValue, final Object newValue)
 	{
-		PropertyChangeEvent pe = new PropertyChangeEvent(this, name, oldValue,
+		final PropertyChangeEvent pe = new PropertyChangeEvent(this, name, oldValue,
 				newValue);
 		super.firePropertyChange(pe);
 	}
@@ -309,9 +309,9 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return _largeStep;
 	}
 
-	public void setDTGFormat(String format)
+	public void setDTGFormat(final String format)
 	{
-		int index = DateFormatPropertyEditor.getIndexOf(format);
+		final int index = DateFormatPropertyEditor.getIndexOf(format);
 
 		// ok, what's the index
 		// if (index == DateFormatPropertyEditor.INVALID_INDEX)
@@ -334,14 +334,14 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return _largeStep;
 	}
 
-	public void setSmallStep(Duration step)
+	public void setSmallStep(final Duration step)
 	{
 		if (step != null)
 			_smallStep = step;
 
 	}
 
-	public void setLargeStep(Duration step)
+	public void setLargeStep(final Duration step)
 	{
 		if (step != null)
 			_largeStep = step;
@@ -352,7 +352,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return _autoInterval;
 	}
 
-	public void setAutoInterval(Duration duration)
+	public void setAutoInterval(final Duration duration)
 	{
 		_autoInterval = duration;
 	}
@@ -367,10 +367,10 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return _sliderEnd;
 	}
 
-	public void setSliderStartTime(HiResDate dtg)
+	public void setSliderStartTime(final HiResDate dtg)
 	{
 		// take a copy, to start with
-		HiResDate oldDTG = dtg;
+		final HiResDate oldDTG = dtg;
 
 		// update the value
 		_sliderStart = dtg;
@@ -380,10 +380,10 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 
 	}
 
-	public void setSliderEndTime(HiResDate dtg)
+	public void setSliderEndTime(final HiResDate dtg)
 	{
 		// take a copy, to start with
-		HiResDate oldDTG = dtg;
+		final HiResDate oldDTG = dtg;
 
 		// update the value
 		_sliderEnd = dtg;

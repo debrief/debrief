@@ -65,7 +65,7 @@ public class IntegerEditor extends PropertyEditorSupport
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     // check we are receiving a string
     if (p1 instanceof String)
@@ -73,10 +73,10 @@ public class IntegerEditor extends PropertyEditorSupport
       // check we can produce an integer
       try
       {
-        Integer val = new Integer((String) p1);
+        final Integer val = new Integer((String) p1);
         super.setValue(val);
       }
-      catch (java.lang.NumberFormatException e)
+      catch (final java.lang.NumberFormatException e)
       {
         // don't really worry, let's not update
       }
@@ -93,7 +93,7 @@ public class IntegerEditor extends PropertyEditorSupport
   public String getAsText()
   {
     String res = null;
-    Integer val = (Integer) super.getValue();
+    final Integer val = (Integer) super.getValue();
     if (val != null)
       res = "" + val.intValue();
 

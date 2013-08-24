@@ -38,7 +38,7 @@ public class PaneConstraints {
   public PaneConstraints() {
   }
 
-  public PaneConstraints(String name,String splitComponentName, String position, float proportion) {
+  public PaneConstraints(final String name,final String splitComponentName, final String position, final float proportion) {
     this.name = name;
     this.splitComponentName = splitComponentName;
     this.position = position;

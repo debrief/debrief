@@ -136,7 +136,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     /////////////////////////////////////////////////////////////
     // constructor
     ////////////////////////////////////////////////////////////
-    public BaseTimePeriod(HiResDate start, HiResDate end)
+    public BaseTimePeriod(final HiResDate start, final HiResDate end)
     {
       _startDTG = start;
       _endDTG = end;
@@ -166,7 +166,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     /**
      * set the start of this time period
      */
-    public final void setStartDTG(HiResDate val)
+    public final void setStartDTG(final HiResDate val)
     {
       _startDTG = val;
     }
@@ -174,7 +174,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     /**
      * set the end of this time period
      */
-    public final void setEndDTG(HiResDate val)
+    public final void setEndDTG(final HiResDate val)
     {
       _endDTG = val;
     }
@@ -182,7 +182,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     /**
      * extend the time period to enclose this time
      */
-    public final void extend(HiResDate val)
+    public final void extend(final HiResDate val)
     {
       // are we using duff values
       if (_startDTG == INVALID_DATE)
@@ -205,7 +205,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
      * see if our period contains this time.  If the start and end times are unset, then
      * contains will always return TRUE
      */
-    public final boolean contains(HiResDate other)
+    public final boolean contains(final HiResDate other)
     {
       boolean res = false;
 
@@ -224,7 +224,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     /**
      * see if this time period overlaps the one provided
      */
-    public final boolean overlaps(HiResDate start, HiResDate end)
+    public final boolean overlaps(final HiResDate start, final HiResDate end)
     {
       boolean res = false;
 
@@ -261,7 +261,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     /**
      * see if this time period overlaps the one provided
      */
-    public final boolean overlaps(TimePeriod other)
+    public final boolean overlaps(final TimePeriod other)
     {
       return overlaps(other.getStartDTG(), other.getEndDTG());
     }
@@ -271,7 +271,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
      */
     public String toString()
     {
-      String res = "Period:" + DebriefFormatDateTime.toStringHiRes(_startDTG) + " to " + DebriefFormatDateTime.toStringHiRes(_endDTG);
+      final String res = "Period:" + DebriefFormatDateTime.toStringHiRes(_startDTG) + " to " + DebriefFormatDateTime.toStringHiRes(_endDTG);
       return res;
     }
 

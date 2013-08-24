@@ -64,15 +64,15 @@ public class LongEditor extends PropertyEditorSupport
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     // check we are receiving a string
     if(p1 instanceof String){
       // check we can produce an Long
       try{
-        Long val = new Long((String)p1);
+        final Long val = new Long((String)p1);
         super.setValue(val);
-      }catch(java.lang.NumberFormatException e){
+      }catch(final java.lang.NumberFormatException e){
         // don't really worry, let's not update
       }
     }
@@ -85,7 +85,7 @@ public class LongEditor extends PropertyEditorSupport
   
   public String getAsText()
   {
-    Long val = (Long)super.getValue();
+    final Long val = (Long)super.getValue();
     return "" + val.intValue();
   }
   

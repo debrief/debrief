@@ -189,7 +189,7 @@ final public class AWTCanvas extends java.awt.Canvas
     // add handler to catch canvas resizes
     this.addComponentListener(new ComponentAdapter()
     {
-      public void componentResized(ComponentEvent e)
+      public void componentResized(final ComponentEvent e)
       {
         setScreenSize(e.getComponent().getSize());
       }
@@ -197,7 +197,7 @@ final public class AWTCanvas extends java.awt.Canvas
   }
 
   // constructor taking projection
-  public AWTCanvas(PlainProjection theProjection)
+  public AWTCanvas(final PlainProjection theProjection)
   {
     this();
     // take copy of projection
@@ -214,7 +214,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * update the projection
    */
-  public void setProjection(PlainProjection theProjection)
+  public void setProjection(final PlainProjection theProjection)
   {
     _theProjection = theProjection;
   }
@@ -230,7 +230,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * convenience function
    */
-  public java.awt.Point toScreen(WorldLocation val)
+  public java.awt.Point toScreen(final WorldLocation val)
   {
     return _theProjection.toScreen(val);
   }
@@ -238,7 +238,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * convenience function
    */
-  public WorldLocation toWorld(java.awt.Point val)
+  public WorldLocation toWorld(final java.awt.Point val)
   {
     return _theProjection.toWorld(val);
   }
@@ -251,11 +251,11 @@ final public class AWTCanvas extends java.awt.Canvas
   {
     // get the data area for the current painters
     WorldArea theArea = null;
-    Enumeration<PaintListener> enumer = _thePainters.elements();
+    final Enumeration<PaintListener> enumer = _thePainters.elements();
     while (enumer.hasMoreElements())
     {
-      CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer.nextElement();
-      WorldArea thisArea = thisP.getDataArea();
+      final CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer.nextElement();
+      final WorldArea thisArea = thisP.getDataArea();
       if (thisArea != null)
       {
         if (theArea == null)
@@ -288,7 +288,7 @@ final public class AWTCanvas extends java.awt.Canvas
    * handler for a screen resize - inform our projection of the resize
    * then inform the painters
    */
-  public void setScreenSize(java.awt.Dimension p1)
+  public void setScreenSize(final java.awt.Dimension p1)
   {
     // check if this is a real resize
     if ((_theSize == null) ||
@@ -309,10 +309,10 @@ final public class AWTCanvas extends java.awt.Canvas
       _dblBuff = null;
 
       // inform the listeners that we have resized
-      Enumeration<PaintListener> enumer = _thePainters.elements();
+      final Enumeration<PaintListener> enumer = _thePainters.elements();
       while (enumer.hasMoreElements())
       {
-        CanvasType.PaintListener thisPainter =
+        final CanvasType.PaintListener thisPainter =
           (CanvasType.PaintListener) enumer.nextElement();
         thisPainter.resizedEvent(_theProjection, p1);
       }
@@ -324,17 +324,17 @@ final public class AWTCanvas extends java.awt.Canvas
   /////////////////////////////////////////////////////////////
   // graphics plotting related
   ////////////////////////////////////////////////////////////
-  public java.awt.FontMetrics getFontMetrics(java.awt.Font theFont)
+  public java.awt.FontMetrics getFontMetrics(final java.awt.Font theFont)
   {
     return _theDest.getFontMetrics(theFont);
   }
 
-  public int getStringHeight(java.awt.Font theFont)
+  public int getStringHeight(final java.awt.Font theFont)
   {
     return _theDest.getFontMetrics().getHeight();
   }
 
-  public int getStringWidth(java.awt.Font theFont, String theString)
+  public int getStringWidth(final java.awt.Font theFont, final String theString)
   {
     return _theDest.getFontMetrics().stringWidth(theString);
   }
@@ -359,7 +359,7 @@ final public class AWTCanvas extends java.awt.Canvas
     return res;
   }
 
-  public void setFont(java.awt.Font theFont)
+  public void setFont(final java.awt.Font theFont)
   {
     //super.setFont(theFont);
   }
@@ -371,9 +371,9 @@ final public class AWTCanvas extends java.awt.Canvas
    * @param yPoints list of y coordinates
    * @param nPoints length of list
    */
-  public void fillPolygon(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints)
+  public void fillPolygon(final int[] xPoints,
+                          final int[] yPoints,
+                          final int nPoints)
   {
     if (_theDest == null)
       return;
@@ -388,9 +388,9 @@ final public class AWTCanvas extends java.awt.Canvas
    * @param yPoints list of y coordinates
    * @param nPoints length of list
    */
-  public void drawPolyline(int[] xPoints,
-                           int[] yPoints,
-                           int nPoints)
+  public void drawPolyline(final int[] xPoints,
+                           final int[] yPoints,
+                           final int nPoints)
   {
     if (_theDest == null)
       return;
@@ -399,7 +399,7 @@ final public class AWTCanvas extends java.awt.Canvas
   }
   
   
-	final public void drawPolyline(int[] points) {
+	final public void drawPolyline(final int[] points) {
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
 	}
@@ -411,9 +411,9 @@ final public class AWTCanvas extends java.awt.Canvas
    * @param yPoints list of y coordinates
    * @param nPoints length of list
    */
-  public void drawPolygon(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints)
+  public void drawPolygon(final int[] xPoints,
+                          final int[] yPoints,
+                          final int nPoints)
   {
     if (_theDest == null)
       return;
@@ -422,12 +422,12 @@ final public class AWTCanvas extends java.awt.Canvas
   }
 
 
-  public boolean drawImage(Image img,
-                           int x,
-                           int y,
-                           int width,
-                           int height,
-                           ImageObserver observer)
+  public boolean drawImage(final Image img,
+                           final int x,
+                           final int y,
+                           final int width,
+                           final int height,
+                           final ImageObserver observer)
   {
     if (_theDest == null)
       return true;
@@ -435,7 +435,7 @@ final public class AWTCanvas extends java.awt.Canvas
     return _theDest.drawImage(img, x, y, width, height, observer);
   }
 
-  public void drawLine(int x1, int y1, int x2, int y2)
+  public void drawLine(final int x1, final int y1, final int x2, final int y2)
   {
     if (_theDest == null)
       return;
@@ -443,7 +443,7 @@ final public class AWTCanvas extends java.awt.Canvas
     _theDest.drawLine(x1, y1, x2, y2);
   }
 
-  public void drawOval(int x, int y, int width, int height)
+  public void drawOval(final int x, final int y, final int width, final int height)
   {
     if (_theDest == null)
       return;
@@ -451,7 +451,7 @@ final public class AWTCanvas extends java.awt.Canvas
     _theDest.drawOval(x, y, width, height);
   }
 
-  public void fillOval(int x, int y, int width, int height)
+  public void fillOval(final int x, final int y, final int width, final int height)
   {
     if (_theDest == null)
       return;
@@ -462,7 +462,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * set the style for the line, using our constants
    */
-  public void setLineStyle(int style)
+  public void setLineStyle(final int style)
   {
     // we can't do this!
   }
@@ -470,7 +470,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * set the width of the line, in pixels
    */
-  public void setLineWidth(float width)
+  public void setLineWidth(final float width)
   {
     // we can't do this!
   }
@@ -485,7 +485,7 @@ final public class AWTCanvas extends java.awt.Canvas
     return 1;
   }
 
-  public void setColor(java.awt.Color theCol)
+  public void setColor(final java.awt.Color theCol)
   {
     if (_theDest == null)
       return;
@@ -493,27 +493,27 @@ final public class AWTCanvas extends java.awt.Canvas
     _theDest.setColor(theCol);
   }
 
-  public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle)
+  public void fillArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
   {
     _theDest.fillArc(x, y, width, height, startAngle, arcAngle);
   }
 
-  public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle)
+  public void drawArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
   {
     _theDest.drawArc(x, y, width, height, startAngle, arcAngle);
   }
 
-  public void startDraw(Object theVal)
+  public void startDraw(final Object theVal)
   {
     _theDest = (java.awt.Graphics) theVal;
   }
 
-  public void endDraw(Object theVal)
+  public void endDraw(final Object theVal)
   {
     _theDest = null;
   }
 
-  public void drawText(String theStr, int x, int y)
+  public void drawText(final String theStr, final int x, final int y)
   {
     if (_theDest == null)
       return;
@@ -521,7 +521,7 @@ final public class AWTCanvas extends java.awt.Canvas
     _theDest.drawString(theStr, x, y);
   }
 
-  public void drawText(java.awt.Font theFont, String theStr, int x, int y)
+  public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y)
   {
     if (_theDest == null)
       return;
@@ -530,7 +530,7 @@ final public class AWTCanvas extends java.awt.Canvas
     _theDest.drawString(theStr, x, y);
   }
 
-  public void drawRect(int x1, int y1, int wid, int height)
+  public void drawRect(final int x1, final int y1, final int wid, final int height)
   {
     if (_theDest == null)
       return;
@@ -538,7 +538,7 @@ final public class AWTCanvas extends java.awt.Canvas
     _theDest.drawRect(x1, y1, wid, height);
   }
 
-  public void fillRect(int x, int y, int wid, int height)
+  public void fillRect(final int x, final int y, final int wid, final int height)
   {
     if (_theDest == null)
       return;
@@ -557,7 +557,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * set the current background colour, and trigger a screen update
    */
-  public void setBackgroundColor(java.awt.Color theColor)
+  public void setBackgroundColor(final java.awt.Color theColor)
   {
     // set the colour in the parent
     setBackground(theColor);
@@ -568,12 +568,12 @@ final public class AWTCanvas extends java.awt.Canvas
   ////////////////////////////////////////////////////////////
   // painter handling
   ////////////////////////////////////////////////////////////
-  public void addPainter(CanvasType.PaintListener listener)
+  public void addPainter(final CanvasType.PaintListener listener)
   {
     _thePainters.addElement(listener);
   }
 
-  public void removePainter(CanvasType.PaintListener listener)
+  public void removePainter(final CanvasType.PaintListener listener)
   {
     _thePainters.removeElement(listener);
   }
@@ -588,7 +588,7 @@ final public class AWTCanvas extends java.awt.Canvas
   // screen redraw related
   //////////////////////////////////////////////////////
 
-  public void paint(java.awt.Graphics p1)
+  public void paint(final java.awt.Graphics p1)
   {
     // paint code moved to Update function
     update(p1);
@@ -597,7 +597,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * screen redraw, just repaint the buffer
    */
-  public void update(java.awt.Graphics p1)
+  public void update(final java.awt.Graphics p1)
   {
     // this is a screen redraw, we can just paint in the buffer
     // (although we may have to redraw it first)
@@ -623,7 +623,7 @@ final public class AWTCanvas extends java.awt.Canvas
     {
       // we may need to recreate the image if
       // we have just restored this session
-      java.awt.Dimension sz = this.getSize();
+      final java.awt.Dimension sz = this.getSize();
       _dblBuff = createImage(sz.width,
                              sz.height);
 
@@ -634,13 +634,13 @@ final public class AWTCanvas extends java.awt.Canvas
     }
 
     // hey, let's double-buffer it
-    java.awt.Graphics g1 = _dblBuff.getGraphics();
+    final java.awt.Graphics g1 = _dblBuff.getGraphics();
 
     // prepare the ground (remember the graphics dest for a start)
     startDraw(g1);
 
     // erase background
-    java.awt.Dimension sz = this.getSize();
+    final java.awt.Dimension sz = this.getSize();
     g1.setColor(this.getBackground());
     g1.fillRect(0, 0, sz.width, sz.height);
 
@@ -648,10 +648,10 @@ final public class AWTCanvas extends java.awt.Canvas
     // g1.setColor(java.awt.Color.red);
 
     // go through our painters
-    Enumeration<PaintListener> enumer = _thePainters.elements();
+    final Enumeration<PaintListener> enumer = _thePainters.elements();
     while (enumer.hasMoreElements())
     {
-      CanvasType.PaintListener thisPainter =
+      final CanvasType.PaintListener thisPainter =
         (CanvasType.PaintListener) enumer.nextElement();
 
       thisPainter.paintMe(this);
@@ -679,19 +679,19 @@ final public class AWTCanvas extends java.awt.Canvas
   }
 
 
-  public void setSize(int p1, int p2)
+  public void setSize(final int p1, final int p2)
   {
     super.setSize(p1, p2);
   }
 
 
-  public void setTooltipHandler(CanvasType.TooltipHandler handler)
+  public void setTooltipHandler(final CanvasType.TooltipHandler handler)
   {
     // tooltip support not provided for AWT canvas type
   }
 
 @Override
-public void drawText(String str, int x, int y, float rotate) {
+public void drawText(final String str, final int x, final int y, final float rotate) {
 	// TODO Auto-generated method stub
 	
 }

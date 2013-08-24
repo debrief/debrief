@@ -35,7 +35,7 @@ public class EnterRangePage extends CoreEditableWizardPage
 			return false;
 		}
 
-		public void setRange(WorldDistance range)
+		public void setRange(final WorldDistance range)
 		{
 			_range = range;
 		}
@@ -50,8 +50,8 @@ public class EnterRangePage extends CoreEditableWizardPage
 	final private String _rangeTitle;
 	private WorldDistance _defaultRange;
 
-	public EnterRangePage(ISelection selection, String pageName,
-			String pageDescription, String rangeTitle, WorldDistance defaultRange, String imagePath, String helpContext)
+	public EnterRangePage(final ISelection selection, final String pageName,
+			final String pageDescription, final String rangeTitle, final WorldDistance defaultRange, final String imagePath, final String helpContext)
 	{
 		super(selection, NAME, pageName, pageDescription, imagePath,helpContext,
 				false);
@@ -67,11 +67,11 @@ public class EnterRangePage extends CoreEditableWizardPage
 
 		if (prefs != null)
 		{
-			String speedStr = prefs.get(RANGE, NULL_RANGE);
-			String[] parts = speedStr.split(",");
-			double val = Double.parseDouble(parts[0]);
-			int units = Integer.parseInt(parts[1]);
-			WorldDistance  range = new WorldDistance(val, units);
+			final String speedStr = prefs.get(RANGE, NULL_RANGE);
+			final String[] parts = speedStr.split(",");
+			final double val = Double.parseDouble(parts[0]);
+			final int units = Integer.parseInt(parts[1]);
+			final WorldDistance  range = new WorldDistance(val, units);
 			_defaultRange = range;
 		}
 	}	
@@ -80,7 +80,7 @@ public class EnterRangePage extends CoreEditableWizardPage
 	public void dispose()
 	{
 		// try to store some defaults
-		Preferences prefs = getPrefs();
+		final Preferences prefs = getPrefs();
 		WorldDistance res = this.getRange();
 		if(res == null)
 			res = new WorldDistance(0, WorldDistance.YARDS);
@@ -90,7 +90,7 @@ public class EnterRangePage extends CoreEditableWizardPage
 		super.dispose();
 	}
 	
-	public void setRange(WorldDistance range)
+	public void setRange(final WorldDistance range)
 	{
 		createMe();
 		_myWrapper.setRange(range);
@@ -103,7 +103,7 @@ public class EnterRangePage extends CoreEditableWizardPage
 
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors =
+		final PropertyDescriptor[] descriptors =
 		{
 				prop("Range", _rangeTitle,
 						getEditable()),};

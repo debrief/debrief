@@ -95,13 +95,13 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 	 * @param normalFormat
 	 *          the normal format to use
 	 */
-	private static void formatThisTrack(TrackWrapper track)
+	private static void formatThisTrack(final TrackWrapper track)
 	{
 		try
 		{
 			
-			SimpleDateFormat dayFormat = new java.text.SimpleDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
-			SimpleDateFormat normalFormat = new java.text.SimpleDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
+			final SimpleDateFormat dayFormat = new java.text.SimpleDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
+			final SimpleDateFormat normalFormat = new java.text.SimpleDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
 
 			dayFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			normalFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -111,35 +111,35 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 			long lastStamp = -1;
 
 			// right, get the tarck segments in the track
-			Enumeration<Editable> iter = track.elements();
+			final Enumeration<Editable> iter = track.elements();
 
 			// working values
-			Date worker = new Date();
+			final Date worker = new Date();
 			String thisLabel = null;
 
 			// loop through the segments
 			while (iter.hasMoreElements())
 			{
-				Object next = iter.nextElement();
+				final Object next = iter.nextElement();
 
 				// right, this is prob a track segment. have a look at it
 				if (next instanceof TrackSegment)
 				{
-					TrackSegment thisSeg = (TrackSegment) next;
-					Enumeration<Editable> items = thisSeg.elements();
+					final TrackSegment thisSeg = (TrackSegment) next;
+					final Enumeration<Editable> items = thisSeg.elements();
 
 					// ok, loop through the segment
 					while (items.hasMoreElements())
 					{
-						Object item = items.nextElement();
+						final Object item = items.nextElement();
 						if (item instanceof FixWrapper)
 						{
-							FixWrapper fw = (FixWrapper) item;
+							final FixWrapper fw = (FixWrapper) item;
 
 							// does this fix already have a label? if so, we'll leave it
 							if (!fw.getUserLabelSupplied())
 							{
-								long thisTime = fw.getTime().getDate().getTime();
+								final long thisTime = fw.getTime().getDate().getTime();
 
 								// update the time
 								worker.setTime(thisTime);
@@ -156,7 +156,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 								else
 								{
 									// find the last hour stamp before this time
-									long hour = thisTime / _day;
+									final long hour = thisTime / _day;
 
 									if (hour > lastStamp)
 									{
@@ -176,7 +176,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(
 					e,
@@ -191,7 +191,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 	 * @param theTrack
 	 *          the track to be reformatted
 	 */
-	public static void formatTrack(TrackWrapper theTrack)
+	public static void formatTrack(final TrackWrapper theTrack)
 	{
 		// and format it
 		formatThisTrack(theTrack);
@@ -200,7 +200,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 	/**
 	 * have a go at setting the detault time/date values for imported tracks
 	 */
-	public final void formatLayers(Layers newData)
+	public final void formatLayers(final Layers newData)
 	{
 		// have we received valid data?
 		if (newData == null)
@@ -210,13 +210,13 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 		for (int i = 0; i < newData.size(); i++)
 		{
 			// get this layer
-			Layer thisL = newData.elementAt(i);
+			final Layer thisL = newData.elementAt(i);
 
 			// is this a track?
 			if (thisL instanceof Debrief.Wrappers.TrackWrapper)
 			{
 				// yes, go for it!
-				Debrief.Wrappers.TrackWrapper thisTrack = (TrackWrapper) thisL;
+				final Debrief.Wrappers.TrackWrapper thisTrack = (TrackWrapper) thisL;
 
 				// now, apply the formatting to this track
 				formatThisTrack(thisTrack);

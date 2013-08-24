@@ -111,8 +111,8 @@ abstract public class PlainCreate extends PlainTool
 	 * @param theData
 	 *          the layer we are adding the item to
 	 */
-	public PlainCreate(ToolParent theParent, PropertiesPanel thePanel, Layer theLayer,
-			Layers theData, MWC.GUI.PlainChart theChart, String theName, String theImage)
+	public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel, final Layer theLayer,
+			final Layers theData, final MWC.GUI.PlainChart theChart, final String theName, final String theImage)
 	{
 		super(theParent, theName, theImage);
 
@@ -146,7 +146,7 @@ abstract public class PlainCreate extends PlainTool
 		Action res = null;
 
 		// ask the child class to create itself
-		Plottable pl = createItem(_theChart);
+		final Plottable pl = createItem(_theChart);
 
 		// did it work?
 		if (pl != null)
@@ -174,8 +174,8 @@ abstract public class PlainCreate extends PlainTool
 
 		final protected Layers _myData;
 
-		public CreateLabelAction(PropertiesPanel thePanel, Layer theLayer, Layers theData,
-				Plottable theShape)
+		public CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer, final Layers theData,
+				final Plottable theShape)
 		{
 			_thePanel = thePanel;
 			_theLayer = theLayer;
@@ -270,8 +270,8 @@ abstract public class PlainCreate extends PlainTool
 					if (_theShape instanceof Layer)
 					{
 						// ahh, just check we don't have one already
-						Layer newLayer = (Layer) _theShape;
-						Layer sameLayer = _myData.findLayer(newLayer.getName());
+						final Layer newLayer = (Layer) _theShape;
+						final Layer sameLayer = _myData.findLayer(newLayer.getName());
 						if (sameLayer == null)
 						{
 							// no, we don't already store it.  add it.
@@ -312,7 +312,7 @@ abstract public class PlainCreate extends PlainTool
 
 		final protected Layers _myData;
 
-		public CreateLayerAction(PropertiesPanel thePanel, Layer theLayer, Layers theData)
+		public CreateLayerAction(final PropertiesPanel thePanel, final Layer theLayer, final Layers theData)
 		{
 			_thePanel = thePanel;
 			_theLayer = theLayer;

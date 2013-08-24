@@ -383,7 +383,7 @@ public class SnailPainter extends TotePainter
 						final TrackWrapper trw = (TrackWrapper) thisLayer;
 
 						// first plot the sensors
-						BaseLayer sensorsLayer = trw.getSensors();
+						final BaseLayer sensorsLayer = trw.getSensors();
 						if (sensorsLayer.getVisible())
 						{
 							final Enumeration<Editable> sensors = sensorsLayer.elements();
@@ -403,7 +403,7 @@ public class SnailPainter extends TotePainter
 						}
 
 						// now the TMA solutons
-						BaseLayer tuaLayer = trw.getSolutions();
+						final BaseLayer tuaLayer = trw.getSolutions();
 						if (tuaLayer.getVisible())
 						{
 							final Enumeration<Editable> solutions = tuaLayer.elements();
@@ -429,15 +429,15 @@ public class SnailPainter extends TotePainter
 				while (iter.hasMoreElements())
 				{
 
-					Editable thisE = iter.nextElement();
+					final Editable thisE = iter.nextElement();
 					if (thisE instanceof Plottable)
 					{
 						final Plottable p = (Plottable) thisE;
 						if (p instanceof WatchableList)
 						{
 							// look at the date date
-							WatchableList wl = (WatchableList) p;
-							HiResDate startDTG = wl.getStartDTG();
+							final WatchableList wl = (WatchableList) p;
+							final HiResDate startDTG = wl.getStartDTG();
 
 							// is it a real date?
 							if (startDTG != null)
@@ -472,7 +472,7 @@ public class SnailPainter extends TotePainter
 			final Layer thisLayer = theData.elementAt(i);
 
 			// get the watchables from this layer
-			Vector<Plottable> newElements = getWatchables(thisLayer);
+			final Vector<Plottable> newElements = getWatchables(thisLayer);
 
 			// and add to our growing total
 			res.addAll(newElements);
@@ -913,7 +913,7 @@ public class SnailPainter extends TotePainter
 			}
 
 		}
-		catch (IllegalStateException e)
+		catch (final IllegalStateException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}

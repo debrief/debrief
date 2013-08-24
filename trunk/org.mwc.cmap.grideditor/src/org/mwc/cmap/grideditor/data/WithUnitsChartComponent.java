@@ -15,14 +15,14 @@ class WithUnitsChartComponent implements GriddableItemChartComponent {
 
 	private final Class<? extends ValueInUnits> myUnitsClass;
 
-	public WithUnitsChartComponent(Class<? extends ValueInUnits> unitsClass, GriddableItemDescriptor descriptor) {
+	public WithUnitsChartComponent(final Class<? extends ValueInUnits> unitsClass, final GriddableItemDescriptor descriptor) {
 		myUnitsClass = unitsClass;
 		myDescriptor = descriptor;
 	}
 
-	public double getDoubleValue(TimeStampedDataItem dataItem) {
-		ValueInUnits valueInUnits = BeanUtil.getItemValue(dataItem, myDescriptor, myUnitsClass);
-		UnitsSet unitsSet = valueInUnits.getUnitsSet();
+	public double getDoubleValue(final TimeStampedDataItem dataItem) {
+		final ValueInUnits valueInUnits = BeanUtil.getItemValue(dataItem, myDescriptor, myUnitsClass);
+		final UnitsSet unitsSet = valueInUnits.getUnitsSet();
 		return valueInUnits.getValueIn(unitsSet.getMainUnit());
 	}
 

@@ -43,7 +43,7 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 
 		addHandler(new LocationHandler(CENTRE)
 		{
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_centre = res;
 			}
@@ -53,7 +53,7 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 		{
 
 			@Override
-			public void setSpeed(WorldSpeed res)
+			public void setSpeed(final WorldSpeed res)
 			{
 				_speed = res;
 			}
@@ -61,7 +61,7 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleIntegerAttribute(NUM_RINGS)
 		{
-			public void setValue(String name, int val)
+			public void setValue(final String name, final int val)
 			{
 				_numRings = val;
 			}
@@ -69,7 +69,7 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleIntegerAttribute(ARC_CENTRE)
 		{
-			public void setValue(String name, int val)
+			public void setValue(final String name, final int val)
 			{
 				_arcCentre = val;
 			}
@@ -77,7 +77,7 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleIntegerAttribute(ARC_WIDTH)
 		{
-			public void setValue(String name, int val)
+			public void setValue(final String name, final int val)
 			{
 				_arcWidth = val;
 			}
@@ -86,7 +86,7 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleIntegerAttribute(INTERVAL)
 		{
-			public void setValue(String name, int val)
+			public void setValue(final String name, final int val)
 			{
 				_timeInterval = val;
 			}
@@ -95,7 +95,7 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 		
 		addAttributeHandler(new HandleAttribute(RANGE_LABEL_LOC)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_labelLoc = val;
 			}
@@ -105,12 +105,12 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 
 	public final MWC.GUI.Shapes.PlainShape getShape()
 	{
-		FurthestOnCircleShape ls = new FurthestOnCircleShape(
+		final FurthestOnCircleShape ls = new FurthestOnCircleShape(
 				_centre, _numRings, _speed, _timeInterval, _arcCentre, _arcWidth);
 
 		if (_labelLoc != null)
 		{
-			LabelLocationPropertyEditor lp = new LabelLocationPropertyEditor();
+			final LabelLocationPropertyEditor lp = new LabelLocationPropertyEditor();
 			lp.setValue(_labelLoc);
 			ls.setRangeLabelLocation((Integer) lp.getValue());
 		}
@@ -118,25 +118,25 @@ abstract public class FurthestOnCircleHandler extends ShapeHandler implements
 		return ls;
 	}
 
-	public final void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public final void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// output the shape related stuff first
-		org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+		final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
 		super.exportThisPlottable(plottable, ePlottable, doc);
 
 		// now our circle related stuff
 
 		// get the circle
-		Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
-		MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+		final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+		final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
 		if (ps instanceof MWC.GUI.Shapes.FurthestOnCircleShape)
 		{
 			// export the attributes
-			FurthestOnCircleShape cs = (MWC.GUI.Shapes.FurthestOnCircleShape) ps;
+			final FurthestOnCircleShape cs = (MWC.GUI.Shapes.FurthestOnCircleShape) ps;
 
-			LabelLocationPropertyEditor lpe = new LabelLocationPropertyEditor();
+			final LabelLocationPropertyEditor lpe = new LabelLocationPropertyEditor();
 			lpe.setValue(cs.getRangeLabelLocation());
 			ePlottable.setAttribute(RANGE_LABEL_LOC, lpe.getAsText());
 			ePlottable.setAttribute(NUM_RINGS, writeThis(cs.getNumRings()

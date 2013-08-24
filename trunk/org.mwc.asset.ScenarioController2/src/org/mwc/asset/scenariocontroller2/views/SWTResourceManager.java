@@ -44,8 +44,8 @@ public class SWTResourceManager {
 	 *            the ID value for the color
 	 * @return the system {@link Color} matching the specific ID
 	 */
-	public static Color getColor(int systemColorID) {
-		Display display = Display.getCurrent();
+	public static Color getColor(final int systemColorID) {
+		final Display display = Display.getCurrent();
 		return display.getSystemColor(systemColorID);
 	}
 	/**
@@ -59,7 +59,7 @@ public class SWTResourceManager {
 	 *            the blue component of the color
 	 * @return the {@link Color} matching the given red, green and blue component values
 	 */
-	public static Color getColor(int r, int g, int b) {
+	public static Color getColor(final int r, final int g, final int b) {
 		return getColor(new RGB(r, g, b));
 	}
 	/**
@@ -69,10 +69,10 @@ public class SWTResourceManager {
 	 *            the {@link RGB} value of the color
 	 * @return the {@link Color} matching the RGB value
 	 */
-	public static Color getColor(RGB rgb) {
+	public static Color getColor(final RGB rgb) {
 		Color color = m_colorMap.get(rgb);
 		if (color == null) {
-			Display display = Display.getCurrent();
+			final Display display = Display.getCurrent();
 			color = new Color(display, rgb);
 			m_colorMap.put(rgb, color);
 		}
@@ -82,7 +82,7 @@ public class SWTResourceManager {
 	 * Dispose of all the cached {@link Color}'s.
 	 */
 	public static void disposeColors() {
-		for (Color color : m_colorMap.values()) {
+		for (final Color color : m_colorMap.values()) {
 			color.dispose();
 		}
 		m_colorMap.clear();
@@ -103,10 +103,10 @@ public class SWTResourceManager {
 	 *            the {@link InputStream} encoding the image data
 	 * @return the {@link Image} encoded by the specified input stream
 	 */
-	protected static Image getImage(InputStream stream) throws IOException {
+	protected static Image getImage(final InputStream stream) throws IOException {
 		try {
-			Display display = Display.getCurrent();
-			ImageData data = new ImageData(stream);
+			final Display display = Display.getCurrent();
+			final ImageData data = new ImageData(stream);
 			if (data.transparentPixel > 0) {
 				return new Image(display, data, data.getTransparencyMask());
 			}
@@ -122,13 +122,13 @@ public class SWTResourceManager {
 	 *            the path to the image file
 	 * @return the {@link Image} stored in the file at the specified path
 	 */
-	public static Image getImage(String path) {
+	public static Image getImage(final String path) {
 		Image image = m_imageMap.get(path);
 		if (image == null) {
 			try {
 				image = getImage(new FileInputStream(path));
 				m_imageMap.put(path, image);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				image = getMissingImage();
 				m_imageMap.put(path, image);
 			}
@@ -144,14 +144,14 @@ public class SWTResourceManager {
 	 *            the path to the image file, if starts with <code>'/'</code>
 	 * @return the {@link Image} stored in the file at the specified path
 	 */
-	public static Image getImage(Class<?> clazz, String path) {
-		String key = clazz.getName() + '|' + path;
+	public static Image getImage(final Class<?> clazz, final String path) {
+		final String key = clazz.getName() + '|' + path;
 		Image image = m_imageMap.get(key);
 		if (image == null) {
 			try {
 				image = getImage(clazz.getResourceAsStream(path));
 				m_imageMap.put(key, image);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				image = getMissingImage();
 				m_imageMap.put(key, image);
 			}
@@ -163,9 +163,9 @@ public class SWTResourceManager {
 	 * @return the small {@link Image} that can be used as placeholder for missing image.
 	 */
 	private static Image getMissingImage() {
-		Image image = new Image(Display.getCurrent(), MISSING_IMAGE_SIZE, MISSING_IMAGE_SIZE);
+		final Image image = new Image(Display.getCurrent(), MISSING_IMAGE_SIZE, MISSING_IMAGE_SIZE);
 		//
-		GC gc = new GC(image);
+		final GC gc = new GC(image);
 		gc.setBackground(getColor(SWT.COLOR_RED));
 		gc.fillRectangle(0, 0, MISSING_IMAGE_SIZE, MISSING_IMAGE_SIZE);
 		gc.dispose();
@@ -206,7 +206,7 @@ public class SWTResourceManager {
 	 *            the {@link Image} to decorate the base image
 	 * @return {@link Image} The resulting decorated image
 	 */
-	public static Image decorateImage(Image baseImage, Image decorator) {
+	public static Image decorateImage(final Image baseImage, final Image decorator) {
 		return decorateImage(baseImage, decorator, BOTTOM_RIGHT);
 	}
 	/**
@@ -237,12 +237,12 @@ public class SWTResourceManager {
 		//
 		Image result = decoratedMap.get(decorator);
 		if (result == null) {
-			Rectangle bib = baseImage.getBounds();
-			Rectangle dib = decorator.getBounds();
+			final Rectangle bib = baseImage.getBounds();
+			final Rectangle dib = decorator.getBounds();
 			//
 			result = new Image(Display.getCurrent(), bib.width, bib.height);
 			//
-			GC gc = new GC(result);
+			final GC gc = new GC(result);
 			gc.drawImage(baseImage, 0, 0);
 			if (corner == TOP_LEFT) {
 				gc.drawImage(decorator, 0, 0);
@@ -265,17 +265,17 @@ public class SWTResourceManager {
 	public static void disposeImages() {
 		// dispose loaded images
 		{
-			for (Image image : m_imageMap.values()) {
+			for (final Image image : m_imageMap.values()) {
 				image.dispose();
 			}
 			m_imageMap.clear();
 		}
 		// dispose decorated images
 		for (int i = 0; i < m_decoratedImageMap.length; i++) {
-			Map<Image, Map<Image, Image>> cornerDecoratedImageMap = m_decoratedImageMap[i];
+			final Map<Image, Map<Image, Image>> cornerDecoratedImageMap = m_decoratedImageMap[i];
 			if (cornerDecoratedImageMap != null) {
-				for (Map<Image, Image> decoratedMap : cornerDecoratedImageMap.values()) {
-					for (Image image : decoratedMap.values()) {
+				for (final Map<Image, Image> decoratedMap : cornerDecoratedImageMap.values()) {
+					for (final Image image : decoratedMap.values()) {
 						image.dispose();
 					}
 					decoratedMap.clear();
@@ -308,7 +308,7 @@ public class SWTResourceManager {
 	 *            the style of the font
 	 * @return {@link Font} The font matching the name, height and style
 	 */
-	public static Font getFont(String name, int height, int style) {
+	public static Font getFont(final String name, final int height, final int style) {
 		return getFont(name, height, style, false, false);
 	}
 	/**
@@ -327,15 +327,15 @@ public class SWTResourceManager {
 	 *            the underline flag (warning: Windows only)
 	 * @return {@link Font} The font matching the name, height, style, strikeout and underline
 	 */
-	public static Font getFont(String name, int size, int style, boolean strikeout, boolean underline) {
-		String fontName = name + '|' + size + '|' + style + '|' + strikeout + '|' + underline;
+	public static Font getFont(final String name, final int size, final int style, final boolean strikeout, final boolean underline) {
+		final String fontName = name + '|' + size + '|' + style + '|' + strikeout + '|' + underline;
 		Font font = m_fontMap.get(fontName);
 		if (font == null) {
-			FontData fontData = new FontData(name, size, style);
+			final FontData fontData = new FontData(name, size, style);
 			if (strikeout || underline) {
 				try {
-					Class<?> logFontClass = Class.forName("org.eclipse.swt.internal.win32.LOGFONT"); //$NON-NLS-1$
-					Object logFont = FontData.class.getField("data").get(fontData); //$NON-NLS-1$
+					final Class<?> logFontClass = Class.forName("org.eclipse.swt.internal.win32.LOGFONT"); //$NON-NLS-1$
+					final Object logFont = FontData.class.getField("data").get(fontData); //$NON-NLS-1$
 					if (logFont != null && logFontClass != null) {
 						if (strikeout) {
 							logFontClass.getField("lfStrikeOut").set(logFont, Byte.valueOf((byte) 1)); //$NON-NLS-1$
@@ -344,7 +344,7 @@ public class SWTResourceManager {
 							logFontClass.getField("lfUnderline").set(logFont, Byte.valueOf((byte) 1)); //$NON-NLS-1$
 						}
 					}
-				} catch (Throwable e) {
+				} catch (final Throwable e) {
 					System.err.println("Unable to set underline or strikeout" + " (probably on a non-Windows platform). " + e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
@@ -360,11 +360,11 @@ public class SWTResourceManager {
 	 *            the {@link Font} for which a bold version is desired
 	 * @return the bold version of the given {@link Font}
 	 */
-	public static Font getBoldFont(Font baseFont) {
+	public static Font getBoldFont(final Font baseFont) {
 		Font font = m_fontToBoldFontMap.get(baseFont);
 		if (font == null) {
-			FontData fontDatas[] = baseFont.getFontData();
-			FontData data = fontDatas[0];
+			final FontData fontDatas[] = baseFont.getFontData();
+			final FontData data = fontDatas[0];
 			font = new Font(Display.getCurrent(), data.getName(), data.getHeight(), SWT.BOLD);
 			m_fontToBoldFontMap.put(baseFont, font);
 		}
@@ -375,12 +375,12 @@ public class SWTResourceManager {
 	 */
 	public static void disposeFonts() {
 		// clear fonts
-		for (Font font : m_fontMap.values()) {
+		for (final Font font : m_fontMap.values()) {
 			font.dispose();
 		}
 		m_fontMap.clear();
 		// clear bold fonts
-		for (Font font : m_fontToBoldFontMap.values()) {
+		for (final Font font : m_fontToBoldFontMap.values()) {
 			font.dispose();
 		}
 		m_fontToBoldFontMap.clear();
@@ -401,8 +401,8 @@ public class SWTResourceManager {
 	 *            int The ID value for the cursor
 	 * @return Cursor The system cursor matching the specific ID
 	 */
-	public static Cursor getCursor(int id) {
-		Integer key = Integer.valueOf(id);
+	public static Cursor getCursor(final int id) {
+		final Integer key = Integer.valueOf(id);
 		Cursor cursor = m_idToCursorMap.get(key);
 		if (cursor == null) {
 			cursor = new Cursor(Display.getDefault(), id);
@@ -414,7 +414,7 @@ public class SWTResourceManager {
 	 * Dispose all of the cached cursors.
 	 */
 	public static void disposeCursors() {
-		for (Cursor cursor : m_idToCursorMap.values()) {
+		for (final Cursor cursor : m_idToCursorMap.values()) {
 			cursor.dispose();
 		}
 		m_idToCursorMap.clear();

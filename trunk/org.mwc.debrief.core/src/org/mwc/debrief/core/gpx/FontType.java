@@ -68,7 +68,7 @@ public class FontType {
      *     {@link Boolean }
      *     
      */
-    public void setBold(Boolean value) {
+    public void setBold(final Boolean value) {
         this.bold = value;
     }
 
@@ -92,7 +92,7 @@ public class FontType {
      *     {@link String }
      *     
      */
-    public void setFamily(String value) {
+    public void setFamily(final String value) {
         this.family = value;
     }
 
@@ -116,7 +116,7 @@ public class FontType {
      *     {@link Boolean }
      *     
      */
-    public void setItalic(Boolean value) {
+    public void setItalic(final Boolean value) {
         this.italic = value;
     }
 
@@ -140,7 +140,7 @@ public class FontType {
      *     {@link BigInteger }
      *     
      */
-    public void setSize(BigInteger value) {
+    public void setSize(final BigInteger value) {
         this.size = value;
     }
 

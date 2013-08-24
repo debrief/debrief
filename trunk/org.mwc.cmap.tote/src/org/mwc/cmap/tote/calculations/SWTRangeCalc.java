@@ -17,17 +17,17 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class SWTRangeCalc implements toteCalculation
 {
 
-	public String update(Watchable primary, Watchable secondary, HiResDate thisTime)
+	public String update(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
 	{
 		return "updated at:" + DebriefFormatDateTime.toStringHiRes(thisTime);
 	}
 
-	public double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
+	public double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
 	{
 		return -1;
 	}
 
-	public void setPattern(NumberFormat format)
+	public void setPattern(final NumberFormat format)
 	{
 	
 	}

@@ -56,7 +56,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * Obsolete. Use TabPanel(int tabsPostion, int tabsStyle).
      */
      // @see symantec.itools.awt.TabPanel#TabPanel(int, int)
-	public AWTTabPanel(boolean bTabsOnTop)
+	public AWTTabPanel(final boolean bTabsOnTop)
 	{
 		this(bTabsOnTop ? TOP : BOTTOM, bTabsOnTop ? ROUNDED : SQUARE);
 	}
@@ -72,11 +72,11 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @see symantec.itools.awt.BaseTabbedPanel#ROUNDED
      * @see symantec.itools.awt.BaseTabbedPanel#SQUARE
      */
-	public AWTTabPanel(int tabsPostion, int tabsStyle)
+	public AWTTabPanel(final int tabsPostion, final int tabsStyle)
 	{
 		super(tabsPostion, tabsStyle);
 		vPanels = new Vector<Component>();
-		String sOS = System.getProperty("os.name");
+		final String sOS = System.getProperty("os.name");
 		if (sOS.equals("Windows 95"))
 			bOsHack = true;
 		else
@@ -102,12 +102,12 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-	public void setCurrentPanelNdx(int index) throws PropertyVetoException
+	public void setCurrentPanelNdx(final int index) throws PropertyVetoException
 	{
 		if(index != curIndex)
 		{
-			Integer oldindex = new Integer(curIndex);
-			Integer newindex = new Integer(index);
+			final Integer oldindex = new Integer(curIndex);
+			final Integer newindex = new Integer(index);
 
 			vetos.fireVetoableChange("CurrentPanelNdx", oldindex, newindex);
 		    showTabPanel(index);
@@ -130,9 +130,9 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-	public void setPanelLabels(String[] sLabels) throws PropertyVetoException
+	public void setPanelLabels(final String[] sLabels) throws PropertyVetoException
 	{
-		String[] oldLabels = labels;
+		final String[] oldLabels = labels;
 
 		vetos.fireVetoableChange("PanelLabels", oldLabels, sLabels);
 
@@ -160,12 +160,12 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-	public void setPanelLabel(String newLabel, int labelIndex) throws PropertyVetoException
+	public void setPanelLabel(final String newLabel, final int labelIndex) throws PropertyVetoException
 	{
 
 		if(labelIndex >= 0 && labelIndex < labels.length && labels[labelIndex] != newLabel)
 		{
-			String oldLabel = labels[labelIndex];
+			final String oldLabel = labels[labelIndex];
 			vetos.fireVetoableChange("PanelLabel", oldLabel, newLabel);
 
 		    labels[labelIndex] = newLabel;
@@ -182,7 +182,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @return String the label of the panel at the given index. Null if the index is out of range.
      * @see setPanelLabel
      */
-	public String getPanelLabel(int labelIndex)
+	public String getPanelLabel(final int labelIndex)
 	{
 		if(labelIndex >= 0 && labelIndex < labels.length)
 		{
@@ -200,10 +200,10 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-	public void setTabsOnBottom(boolean bTabsOnBottom) throws PropertyVetoException
+	public void setTabsOnBottom(final boolean bTabsOnBottom) throws PropertyVetoException
 	{
-		Boolean oldValue = new Boolean(getTabsOnBottom());
-		Boolean newValue = new Boolean(bTabsOnBottom);
+		final Boolean oldValue = new Boolean(getTabsOnBottom());
+		final Boolean newValue = new Boolean(bTabsOnBottom);
 
 		if(!oldValue.equals(newValue))
 		{
@@ -249,7 +249,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-	public synchronized void setTabPanel(String sLabel, boolean bEnabled, Component panel, int index) throws PropertyVetoException
+	public synchronized void setTabPanel(final String sLabel, final boolean bEnabled, final Component panel, final int index) throws PropertyVetoException
 	{
 		if ((index < 0) || (index >= vPanels.size()))
 			return;
@@ -259,7 +259,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 
 		try
 		{
-			Component oldPanel = (Component) vPanels.elementAt(index);
+			final Component oldPanel = (Component) vPanels.elementAt(index);
 			vetos.fireVetoableChange("TabPanel", oldPanel, panel);
 
 			vPanels.setElementAt(panel, index);
@@ -267,7 +267,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 
 			changes.firePropertyChange("TabPanel", oldPanel, panel);
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 
 	}
 
@@ -277,7 +277,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 	 * @return returns the Panel associated with the tab
 	 * @see #setTabPanel
 	 */
-	public synchronized Component getTabPanel(int index)
+	public synchronized Component getTabPanel(final int index)
 	{
 		if ((index < 0) || (index >= vPanels.size()))
 			return null;
@@ -287,7 +287,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 		{
 			p =  (Component)vPanels.elementAt(index);
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 
 		return p;
 	}
@@ -297,7 +297,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 	 * @param panel the panel to get the index of
 	 * @return the zero-relative index of the panel or -1 if it is not found
 	 */
-	public synchronized int getPanelTabIndex(Component panel)
+	public synchronized int getPanelTabIndex(final Component panel)
 	{
 		return vPanels.indexOf(panel);
 	}
@@ -309,13 +309,13 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 	 * @param index zero-relative index of the tab to select
 	 * @see #enableTabPanel
 	 */
-	public synchronized void showTabPanel(int index)
+	public synchronized void showTabPanel(final int index)
 	{
 		if ( isEnabled(index) )
 		{
 			try
 			{
-				Component p = (Component) vPanels.elementAt(index);
+				final Component p = (Component) vPanels.elementAt(index);
 				setCurrentTab(index);
 //				if (bOsHack && p != null)
 //				{
@@ -326,8 +326,8 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 //				else
 					showPanel(p);
 			}
-			catch (ArrayIndexOutOfBoundsException e) {}
-			catch (PropertyVetoException e) {}
+			catch (final ArrayIndexOutOfBoundsException e) {}
+			catch (final PropertyVetoException e) {}
 		}
 	}
 
@@ -340,7 +340,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @param panel the panel to associate with the tab
 	 * @return the zero-relative index of the newly added tab panel
      */
-	public int addTabPanel(String sLabel, boolean bEnabled, Component panel)
+	public int addTabPanel(final String sLabel, final boolean bEnabled, final Component panel)
 	{
 		return addTabPanel(sLabel, bEnabled, panel, -1);
 	}
@@ -354,7 +354,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @param pos the zero-relative index of the new tab panel
 	 * @return the zero-relative index of the newly added tab panel
      */
-	public int addTabPanel(String sLabel, boolean bEnabled, Component panel, int pos)
+	public int addTabPanel(final String sLabel, final boolean bEnabled, final Component panel, final int pos)
 	{
 		if (pos == -1)
 		    vPanels.addElement(panel);
@@ -378,7 +378,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @return the added component
      * @see #remove
      */
-	public Component add(Component comp) { return add(comp,-1); }
+	public Component add(final Component comp) { return add(comp,-1); }
 
 
     /**
@@ -400,13 +400,13 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @return the added component
      * @see #remove
      */
-	public synchronized Component add(Component comp, int pos)
+	public synchronized Component add(final Component comp, final int pos)
 	{
-		boolean wasSuppressingRepaints = setSuppressRepaints(true);
+		final boolean wasSuppressingRepaints = setSuppressRepaints(true);
 
 		try
 		{
-			int newIndex = addTabPanel(createDefaultLabel(vPanels.size()),true,comp,pos);
+			final int newIndex = addTabPanel(createDefaultLabel(vPanels.size()),true,comp,pos);
 
 			// If this is the panel that we've set to be the default, or we're designing,
 			// go ahead and switch to the new panel.
@@ -435,7 +435,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @param comp the component to add (IGNORED)
      * @return the component parameter
      */
-	public synchronized Component add(String name, Component comp) { return comp; }
+	public synchronized Component add(final String name, final Component comp) { return comp; }
 
     /**
 	 * Removes the specified component from this container.
@@ -447,9 +447,9 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @see symantec.itools.awt.BaseTabbedPanel#removeAll
      * @see #add
 	 */
-	public synchronized void remove(Component comp)
+	public synchronized void remove(final Component comp)
 	{
-		int i=getPanelTabIndex(comp);
+		final int i=getPanelTabIndex(comp);
 
 		if (countTabs()==1)
 			removeAllTabPanels();
@@ -483,7 +483,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 					{
 			    		newlabel=labels[i];
 					}
-					catch (ArrayIndexOutOfBoundsException e)
+					catch (final ArrayIndexOutOfBoundsException e)
 					{
 			    		newlabel=createDefaultLabel(i);
 					}
@@ -493,7 +493,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 				setLabel(newlabel,i);
 		    }
 	    }
-	    catch(Throwable thr) {}
+	    catch(final Throwable thr) {}
 	}
 
 
@@ -505,7 +505,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
 	 */
-	public synchronized void enableTabPanel(boolean bEnable, int index) throws PropertyVetoException
+	public synchronized void enableTabPanel(final boolean bEnable, final int index) throws PropertyVetoException
 	{
 		// ??? LAB ??? 05/07/97 Shouldn't this become an ambient property?
 		if ((index < 0) || (index >= vPanels.size()) || index == curIndex)
@@ -521,7 +521,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 	 * @param panel The panel to insert
 	 * @param index zero-relative index at which the tab panel will be inserted.
 	 */
-	public synchronized void insertTabPanel(String sLabel, boolean bEnabled, Component panel, int index)
+	public synchronized void insertTabPanel(final String sLabel, final boolean bEnabled, final Component panel, final int index)
     {
         if ((index < 0) || (index >= vPanels.size()))
             return;
@@ -534,7 +534,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
             vPanels.insertElementAt(panel, index);
             insertTab(sLabel, bEnabled, index);
         }
-        catch (ArrayIndexOutOfBoundsException e) {}
+        catch (final ArrayIndexOutOfBoundsException e) {}
     }
 
 	/**
@@ -542,7 +542,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 	 * The currently active tab cannot be removed.
 	 * @param index zero-relative index of the tab
 	 */
-	public synchronized void removeTabPanel(int index)
+	public synchronized void removeTabPanel(final int index)
 	{
     
     // select another, but leave the first one  HACK: IM
@@ -554,11 +554,11 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 
 		try
 		{
-			Component p = (Component) vPanels.elementAt(index);
+			final Component p = (Component) vPanels.elementAt(index);
 			super.remove(p);
 			vPanels.removeElementAt(index);
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 
 		removeTab(index);
 	}
@@ -594,8 +594,8 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 	 */
     public Dimension getPreferredSize()
     {
-    	Dimension p = getSize();
-    	Dimension m = getMinimumSize();
+    	final Dimension p = getSize();
+    	final Dimension m = getMinimumSize();
     	return new Dimension(Math.max(p.width, m.width), Math.max(p.height, m.height));
     }
 
@@ -617,7 +617,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @param listener the listener to add.
      * @see #removePropertyChangeListener
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener)
+    public void addPropertyChangeListener(final PropertyChangeListener listener)
     {
     	super.addPropertyChangeListener(listener);
     	changes.addPropertyChangeListener(listener);
@@ -628,7 +628,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @param listener the listener to remove.
      * @see #addPropertyChangeListener
      */
-    public void removePropertyChangeListener(PropertyChangeListener listener)
+    public void removePropertyChangeListener(final PropertyChangeListener listener)
     {
     	super.removePropertyChangeListener(listener);
     	changes.removePropertyChangeListener(listener);
@@ -639,7 +639,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @param listener the listener to add.
      * @see #removeVetoableChangeListener
      */
-    public void addVetoableChangeListener(VetoableChangeListener listener)
+    public void addVetoableChangeListener(final VetoableChangeListener listener)
     {
      	super.addVetoableChangeListener(listener);
 		vetos.addVetoableChangeListener(listener);
@@ -650,7 +650,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
      * @param listener the listener to remove.
      * @see #addVetoableChangeListener
      */
-    public void removeVetoableChangeListener(VetoableChangeListener listener)
+    public void removeVetoableChangeListener(final VetoableChangeListener listener)
     {
     	super.removeVetoableChangeListener(listener);
     	vetos.removeVetoableChangeListener(listener);
@@ -666,7 +666,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 		 */
 		private static final long serialVersionUID = 1L;
 
-				public void propertyChange(PropertyChangeEvent e)
+				public void propertyChange(final PropertyChangeEvent e)
         {
 	        showTabPanel(((Integer)e.getNewValue()).intValue());
         }
@@ -679,16 +679,16 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 	 * @see add(Component comp, int pos)
 	 * @see updatePanelLabels()
 	 */
-	private String createDefaultLabel(int i)
+	private String createDefaultLabel(final int i)
 	{
 	    String name="tab - ";
 	    name += String.valueOf(i);
 	    return name;
 	}
 
-    private PropertyChange myPropertyChangeHandler = new PropertyChange();
-    private VetoableChangeSupport vetos = new VetoableChangeSupport(this);
-    private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+    private final PropertyChange myPropertyChangeHandler = new PropertyChange();
+    private final VetoableChangeSupport vetos = new VetoableChangeSupport(this);
+    private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
 	Vector<Component> vPanels;
 
 	String[] labels = null;

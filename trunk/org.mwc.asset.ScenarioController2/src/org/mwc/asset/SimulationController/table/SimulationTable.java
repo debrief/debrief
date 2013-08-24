@@ -50,7 +50,7 @@ public class SimulationTable
 	private abstract class ColumnData extends ColumnSizeData
 	{
 
-		public ColumnData(String title, int weight)
+		public ColumnData(final String title, final int weight)
 		{
 			super(new TableColumn(getTable(), SWT.LEFT), weight);
 			getTableColumn().setText(title);
@@ -68,18 +68,18 @@ public class SimulationTable
 			ITableLabelProvider
 	{
 
-		public Image getColumnImage(Object element, int columnIndex)
+		public Image getColumnImage(final Object element, final int columnIndex)
 		{
 			return null;
 		}
 
-		public String getColumnText(Object element, int columnIndex)
+		public String getColumnText(final Object element, final int columnIndex)
 		{
 			if (!hasInput())
 			{
 				return ""; //$NON-NLS-1$
 			}
-			Object value = getCellValue(element, getTable().getColumn(columnIndex));
+			final Object value = getCellValue(element, getTable().getColumn(columnIndex));
 			return value == null ? "" : value.toString(); //$NON-NLS-1$
 		}
 	}
@@ -102,8 +102,8 @@ public class SimulationTable
 		private Vector<IAttribute> myAttributeList;
 		private final IAttribute _state;
 
-		public SimulationRow(ISimulation simulation, Vector<IAttribute> attributes,
-				IAttribute state)
+		public SimulationRow(final ISimulation simulation, final Vector<IAttribute> attributes,
+				final IAttribute state)
 		{
 			mySimulation = simulation;
 			myListenedAttributes = new HashSet<IAttribute>();
@@ -113,7 +113,7 @@ public class SimulationTable
 			myAttributeListener = new PropertyChangeListener()
 			{
 
-				public void propertyChange(PropertyChangeEvent evt)
+				public void propertyChange(final PropertyChangeEvent evt)
 				{
 					Display.getDefault().asyncExec(new Runnable()
 					{
@@ -132,7 +132,7 @@ public class SimulationTable
 			myStateListener = new PropertyChangeListener()
 			{
 
-				public void propertyChange(PropertyChangeEvent evt)
+				public void propertyChange(final PropertyChangeEvent evt)
 				{
 					// is it one of ours?
 					if (evt.getSource() == mySimulation)
@@ -175,15 +175,15 @@ public class SimulationTable
 
 		private void onStateChanged()
 		{
-			Object theState = _state.getCurrent(getSimulation()).getValue();
+			final Object theState = _state.getCurrent(getSimulation()).getValue();
 			if (ISimulation.RUNNING.equals(theState))
 			{
 				if (!myIsRunning)
 				{
 					myIsRunning = true;
-					for (ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
+					for (final ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
 					{
-						IAttribute attribute = myAttributeList.get(columnDescriptor
+						final IAttribute attribute = myAttributeList.get(columnDescriptor
 								.getIndex());
 						attribute.addPropertyChangeListener(myAttributeListener);
 						myListenedAttributes.add(attribute);
@@ -215,10 +215,10 @@ public class SimulationTable
 				return;
 			}
 
-			HashSet<IAttribute> newListenedAttributes = new HashSet<IAttribute>();
-			for (ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
+			final HashSet<IAttribute> newListenedAttributes = new HashSet<IAttribute>();
+			for (final ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
 			{
-				IAttribute newListenedAttribute = myAttributeList
+				final IAttribute newListenedAttribute = myAttributeList
 						.elementAt(columnDescriptor.getIndex());
 				if (myListenedAttributes.contains(newListenedAttribute))
 				{
@@ -230,7 +230,7 @@ public class SimulationTable
 				}
 				newListenedAttributes.add(newListenedAttribute);
 			}
-			for (IAttribute oldListenedAttribute : myListenedAttributes)
+			for (final IAttribute oldListenedAttribute : myListenedAttributes)
 			{
 				oldListenedAttribute.removePropertyChangeListener(myAttributeListener);
 			}
@@ -239,7 +239,7 @@ public class SimulationTable
 
 		private void removeAttributeListeners()
 		{
-			for (IAttribute attribute : myListenedAttributes)
+			for (final IAttribute attribute : myListenedAttributes)
 			{
 				attribute.removePropertyChangeListener(myAttributeListener);
 			}
@@ -266,17 +266,17 @@ public class SimulationTable
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public int compare(Viewer viewer, Object e1, Object e2)
+		public int compare(final Viewer viewer, final Object e1, final Object e2)
 		{
 			if (myTableColumn == null)
 			{
 				return 0;
 			}
 
-			Object value1 = getCellValue(e1, myTableColumn);
-			Object value2 = getCellValue(e2, myTableColumn);
-			boolean value1empty = value1 == null || "".equals(value1.toString()); //$NON-NLS-1$
-			boolean value2empty = value2 == null || "".equals(value2.toString()); //$NON-NLS-1$
+			final Object value1 = getCellValue(e1, myTableColumn);
+			final Object value2 = getCellValue(e2, myTableColumn);
+			final boolean value1empty = value1 == null || "".equals(value1.toString()); //$NON-NLS-1$
+			final boolean value2empty = value2 == null || "".equals(value2.toString()); //$NON-NLS-1$
 
 			int result = 0;
 			if (value1empty && value2empty)
@@ -317,7 +317,7 @@ public class SimulationTable
 			return result;
 		}
 
-		public void setColumn(TableColumn tableColumn)
+		public void setColumn(final TableColumn tableColumn)
 		{
 			if (tableColumn == null)
 			{
@@ -346,7 +346,7 @@ public class SimulationTable
 			myTableColumn.setImage(Activator.getImageDescriptor(
 					myIsAscending ? Activator.IMG_ASCEND : Activator.IMG_DESCEND)
 					.createImage());
-			boolean isCellSelected = myTableCursor.getRow() != null;
+			final boolean isCellSelected = myTableCursor.getRow() != null;
 			myTableViewer.refresh(true, true);
 			if (isCellSelected && getTable().getSelectionIndex() != -1)
 			{
@@ -359,13 +359,13 @@ public class SimulationTable
 	private abstract class SortableColumnData extends ColumnData
 	{
 
-		public SortableColumnData(String title, int weight)
+		public SortableColumnData(final String title, final int weight)
 		{
 			super(title, weight);
 			getTableColumn().addListener(SWT.Selection, new Listener()
 			{
 
-				public void handleEvent(Event event)
+				public void handleEvent(final Event event)
 				{
 					myViewerSorter.setColumn(getTableColumn());
 				}
@@ -381,33 +381,33 @@ public class SimulationTable
 
 	private static final String NAME_COLUMN_TITLE = Messages.SimulationTable_1;
 
-	private TableViewer myTableViewer;
+	private final TableViewer myTableViewer;
 
 	private ISimulationQue myInput;
 
-	private ArrayList<SimulationRow> myRows;
+	private final ArrayList<SimulationRow> myRows;
 
-	private ArrayList<ColumnDescriptor> myAttributeColumns;
+	private final ArrayList<ColumnDescriptor> myAttributeColumns;
 
-	private ArrayList<ColumnDescriptor> myVisibleAttributeColumns;
+	private final ArrayList<ColumnDescriptor> myVisibleAttributeColumns;
 
-	private Menu myContextMenu;
+	private final Menu myContextMenu;
 
-	private SimulationViewerSorter myViewerSorter;
+	private final SimulationViewerSorter myViewerSorter;
 
 	private ISelectionProvider mySelectionProvider;
 
 	private ISelection mySelection;
 
-	private TableCursor myTableCursor;
+	private final TableCursor myTableCursor;
 
-	private ColumnsResizer myColumnsResizer;
+	private final ColumnsResizer myColumnsResizer;
 
-	private MultiScenarioPresenter _myPresenter;
+	private final MultiScenarioPresenter _myPresenter;
 
 	private HashMap<ScenarioType, ScenarioWrapper> _wrappedScenarios = new HashMap<ScenarioType, ScenarioWrapper>();
 
-	public SimulationTable(Composite parent, MultiScenarioPresenter contPresenter)
+	public SimulationTable(final Composite parent, final MultiScenarioPresenter contPresenter)
 	{
 		myTableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 
@@ -438,20 +438,20 @@ public class SimulationTable
 		myTableCursor = new TableCursor(getTable(), SWT.NONE);
 		myTableCursor.addListener(SWT.Selection, new Listener()
 		{
-			public void handleEvent(Event event)
+			public void handleEvent(final Event event)
 			{
 				getTable().setSelection(myTableCursor.getRow());
-				ISimulation theSim = (ISimulation) myTableCursor.getRow().getData();
+				final ISimulation theSim = (ISimulation) myTableCursor.getRow().getData();
 
 				fireNewSelection(theSim);
 			}
 		});
 	}
 	
-	private EditableWrapper wrapScenario(ScenarioType theScenario)
+	private EditableWrapper wrapScenario(final ScenarioType theScenario)
 	{
 		// better wrap it
-		ScenarioLayer sl = new ScenarioLayer();
+		final ScenarioLayer sl = new ScenarioLayer();
 		sl.setScenario(theScenario);
 
 		// right, do we have a wrapper for this object. we cache them so we
@@ -462,7 +462,7 @@ public class SimulationTable
 			sw = new ScenarioWrapper(_myPresenter, sl);
 
 			// tell it about any backdrop data
-			Layer theBackdrop = theScenario.getBackdrop();
+			final Layer theBackdrop = theScenario.getBackdrop();
 			if (theBackdrop != null)
 				sw.addThisLayer(theBackdrop);
 
@@ -476,11 +476,11 @@ public class SimulationTable
 		return new EditableWrapper(sw);
 	}
 
-	protected void fireNewSelection(ISimulation selection)
+	protected void fireNewSelection(final ISimulation selection)
 	{
 
 		// hmm, is this a data column?
-		Object newSel = getColumnData(
+		final Object newSel = getColumnData(
 				getTable().getColumn(myTableCursor.getColumn())).getSelection(
 				selection, myInput.getAttributes());
 
@@ -488,20 +488,20 @@ public class SimulationTable
 
 		if (newSel instanceof CoreScenario)
 		{
-			ScenarioType theScenario = (ScenarioType) newSel;
+			final ScenarioType theScenario = (ScenarioType) newSel;
 		
 			// ok, now wrap it as an editable
-			EditableWrapper ew = wrapScenario(theScenario);
+			final EditableWrapper ew = wrapScenario(theScenario);
 
 			// and as a selection
 			strSel = new StructuredSelection(ew);
 		}
 		else if (newSel instanceof IAttribute)
 		{
-			IAttribute attr = (IAttribute) newSel;
+			final IAttribute attr = (IAttribute) newSel;
 
 			// ok, create indexed attributed
-			IndexedAttribute indexed = new IndexedAttribute(selection, attr);
+			final IndexedAttribute indexed = new IndexedAttribute(selection, attr);
 
 			// better wrap it
 			strSel = new StructuredSelection(indexed);
@@ -524,8 +524,8 @@ public class SimulationTable
 				if (getTable().getData() != null)
 				{
 					getTable().select(0);
-					TableItem fRow = getTable().getItem(0);
-					Object item = fRow.getData();
+					final TableItem fRow = getTable().getItem(0);
+					final Object item = fRow.getData();
 					fireNewSelection((ISimulation) item);
 				}
 			}
@@ -546,20 +546,20 @@ public class SimulationTable
 		EditableWrapper res = null;
 		if (myRows.size() > 0)
 		{
-			SimulationRow row = myRows.get(0);
+			final SimulationRow row = myRows.get(0);
 			res = wrapScenario((ScenarioType) row.getSimulation());
 		}
 
 		return res;
 	}
 
-	private Object getCellValue(Object element, TableColumn tableColumn)
+	private Object getCellValue(final Object element, final TableColumn tableColumn)
 	{
 		return getColumnData(tableColumn).getValue((ISimulation) element,
 				myInput.getAttributes());
 	}
 
-	private ColumnData getColumnData(TableColumn tableColumn)
+	private ColumnData getColumnData(final TableColumn tableColumn)
 	{
 		return (ColumnData) tableColumn.getData();
 	}
@@ -591,7 +591,7 @@ public class SimulationTable
 		{
 
 			myVisibleAttributeColumns.clear();
-			for (ColumnDescriptor columnDescriptor : myAttributeColumns)
+			for (final ColumnDescriptor columnDescriptor : myAttributeColumns)
 			{
 				if (columnDescriptor.isVisible())
 				{
@@ -599,7 +599,7 @@ public class SimulationTable
 				}
 			}
 
-			for (TableColumn column : myTableViewer.getTable().getColumns())
+			for (final TableColumn column : myTableViewer.getTable().getColumns())
 			{
 				column.dispose();
 			}
@@ -609,18 +609,18 @@ public class SimulationTable
 				return;
 			}
 
-			ArrayList<ColumnSizeData> columnSizeDatas = new ArrayList<ColumnSizeData>();
-			ColumnData rowMarkerColumnData = new ColumnData("", -1) { //$NON-NLS-1$
+			final ArrayList<ColumnSizeData> columnSizeDatas = new ArrayList<ColumnSizeData>();
+			final ColumnData rowMarkerColumnData = new ColumnData("", -1) { //$NON-NLS-1$
 
 				@Override
-				public Object getSelection(ISimulation simulation,
-						Vector<IAttribute> attrs)
+				public Object getSelection(final ISimulation simulation,
+						final Vector<IAttribute> attrs)
 				{
 					return simulation;
 				}
 
 				@Override
-				public Object getValue(ISimulation simulation, Vector<IAttribute> attrs)
+				public Object getValue(final ISimulation simulation, final Vector<IAttribute> attrs)
 				{
 					return ""; //$NON-NLS-1$
 				}
@@ -631,7 +631,7 @@ public class SimulationTable
 					new Listener()
 					{
 
-						public void handleEvent(Event event)
+						public void handleEvent(final Event event)
 						{
 							myColumnsResizer.fitTableWidth();
 						}
@@ -641,14 +641,14 @@ public class SimulationTable
 			{
 
 				@Override
-				public Object getSelection(ISimulation simulation,
-						Vector<IAttribute> attrs)
+				public Object getSelection(final ISimulation simulation,
+						final Vector<IAttribute> attrs)
 				{
 					return simulation;
 				}
 
 				@Override
-				public Object getValue(ISimulation simulation, Vector<IAttribute> attrs)
+				public Object getValue(final ISimulation simulation, final Vector<IAttribute> attrs)
 				{
 					return simulation.getName();
 				}
@@ -660,19 +660,19 @@ public class SimulationTable
 				{
 
 					@Override
-					public Object getSelection(ISimulation simulation,
-							Vector<IAttribute> attrs)
+					public Object getSelection(final ISimulation simulation,
+							final Vector<IAttribute> attrs)
 					{
 						return attrs.get(columnDescriptor.getIndex());
 					}
 
 					@Override
-					public Object getValue(ISimulation simulation,
-							Vector<IAttribute> attrs)
+					public Object getValue(final ISimulation simulation,
+							final Vector<IAttribute> attrs)
 					{
 						// return new Integer(15);
 						final int colIndex = columnDescriptor.getIndex();
-						DataDoublet dataDoublet = attrs.get(colIndex)
+						final DataDoublet dataDoublet = attrs.get(colIndex)
 								.getCurrent(simulation);
 						return dataDoublet == null ? null : dataDoublet.getValue();
 					}
@@ -682,7 +682,7 @@ public class SimulationTable
 			myColumnsResizer.setSizeDatas(columnSizeDatas);
 			myColumnsResizer.fitTableWidth();
 
-			for (SimulationRow simulationRow : myRows)
+			for (final SimulationRow simulationRow : myRows)
 			{
 				simulationRow.refreshListenedAttributes();
 			}
@@ -697,7 +697,7 @@ public class SimulationTable
 
 	private void refreshMenu()
 	{
-		for (MenuItem menuItem : myContextMenu.getItems())
+		for (final MenuItem menuItem : myContextMenu.getItems())
 		{
 			menuItem.dispose();
 		}
@@ -709,7 +709,7 @@ public class SimulationTable
 			menuItem.addListener(SWT.Selection, new Listener()
 			{
 
-				public void handleEvent(Event event)
+				public void handleEvent(final Event event)
 				{
 					columnDescriptor.setVisible(!columnDescriptor.isVisible());
 					menuItem.setSelection(columnDescriptor.isVisible());
@@ -719,9 +719,9 @@ public class SimulationTable
 		}
 	}
 
-	public void setInput(ISimulationQue input)
+	public void setInput(final ISimulationQue input)
 	{
-		for (SimulationRow row : myRows)
+		for (final SimulationRow row : myRows)
 		{
 			row.dispose();
 		}
@@ -733,8 +733,8 @@ public class SimulationTable
 		if (hasInput())
 		{
 			int i = 0;
-			Vector<IAttribute> theAttrs = myInput.getAttributes();
-			for (IAttribute attribute : theAttrs)
+			final Vector<IAttribute> theAttrs = myInput.getAttributes();
+			for (final IAttribute attribute : theAttrs)
 			{
 				myAttributeColumns.add(new ColumnDescriptor(attribute.getName(), i,
 						attribute.isSignificant()));
@@ -752,7 +752,7 @@ public class SimulationTable
 		myRows.clear();
 		if (hasInput())
 		{
-			for (ISimulation simulation : myInput.getSimulations())
+			for (final ISimulation simulation : myInput.getSimulations())
 			{
 				myRows.add(new SimulationRow(simulation, myInput.getAttributes(),
 						myInput.getState()));
@@ -762,13 +762,13 @@ public class SimulationTable
 		refreshMenu();
 	}
 
-	private void setSelection(ISelection selection)
+	private void setSelection(final ISelection selection)
 	{
 		mySelection = selection;
 		doSetSelection();
 	}
 
-	public void setSelectionProvider(ISelectionProvider selectionProvider)
+	public void setSelectionProvider(final ISelectionProvider selectionProvider)
 	{
 		mySelectionProvider = selectionProvider;
 		doSetSelection();

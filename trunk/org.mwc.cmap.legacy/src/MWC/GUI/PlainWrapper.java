@@ -228,15 +228,15 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     /* (non-Javadoc)
 		 * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
 		 */
-    public void addPropertyChangeListener(String property,
-            java.beans.PropertyChangeListener listener)
+    public void addPropertyChangeListener(final String property,
+            final java.beans.PropertyChangeListener listener)
     {
         // add to our list
         getSupport().addPropertyChangeListener(property, listener);
     }
 
-    public void firePropertyChange(String propertyChanged, Object oldValue,
-				Object newValue)
+    public void firePropertyChange(final String propertyChanged, final Object oldValue,
+				final Object newValue)
 		{
     	_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
 		}
@@ -245,7 +245,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 		 * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.beans.PropertyChangeListener)
 		 */
     public void addPropertyChangeListener(
-            java.beans.PropertyChangeListener listener)
+            final java.beans.PropertyChangeListener listener)
     {
         // add to our list
         getSupport().addPropertyChangeListener(listener);
@@ -255,7 +255,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 		 * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.beans.PropertyChangeListener)
 		 */
     public void removePropertyChangeListener(
-            java.beans.PropertyChangeListener listener)
+            final java.beans.PropertyChangeListener listener)
     {
         getSupport().removePropertyChangeListener(listener);
     }
@@ -263,8 +263,8 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     /* (non-Javadoc)
 		 * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
 		 */
-    public void removePropertyChangeListener(String property,
-            java.beans.PropertyChangeListener listener)
+    public void removePropertyChangeListener(final String property,
+            final java.beans.PropertyChangeListener listener)
     {
         getSupport().removePropertyChangeListener(property, listener);
     }
@@ -282,10 +282,10 @@ abstract public class PlainWrapper implements Plottable, Serializable,
      * @param theColor
      */
     @FireReformatted
-    public void setColor(java.awt.Color theColor)
+    public void setColor(final java.awt.Color theColor)
     {
         // store the old colour
-        Color oldCol = _theColor;
+        final Color oldCol = _theColor;
 
         // update the value
         setColorQuiet(theColor);
@@ -294,7 +294,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
         getSupport().firePropertyChange(COLOR_CHANGED, oldCol, theColor);
     }
     
-    protected void setColorQuiet(Color theColor)
+    protected void setColorQuiet(final Color theColor)
     {
         // do the update
         _theColor = theColor;
@@ -317,13 +317,13 @@ abstract public class PlainWrapper implements Plottable, Serializable,
      * specify is this object is visible
      */
     @FireReformatted
-    final public void setVisible(boolean val)
+    final public void setVisible(final boolean val)
     {
         // is this a different value?
         if (val != _visible)
         {
             // store the old vis
-            boolean oldVis = _visible;
+            final boolean oldVis = _visible;
 
             // do the update
             _visible = val;
@@ -359,7 +359,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
      * it can't be calculated 
      * @return distance in floating point degrees
      */
-    public double rangeFrom(MWC.GenericData.WorldLocation other)
+    public double rangeFrom(final MWC.GenericData.WorldLocation other)
     {
         return INVALID_RANGE;
     }
@@ -383,12 +383,12 @@ abstract public class PlainWrapper implements Plottable, Serializable,
         _theColor = null;
     }
 
-    public int compareTo(Plottable arg0)
+    public int compareTo(final Plottable arg0)
     {
         final int res;
-        Plottable other = (Plottable) arg0;
-        int myCode = hashCode();
-        int otherCode = other.hashCode();
+        final Plottable other = (Plottable) arg0;
+        final int myCode = hashCode();
+        final int otherCode = other.hashCode();
         if (myCode < otherCode)
             res = -1;
         else if (myCode > otherCode)

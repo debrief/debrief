@@ -26,18 +26,18 @@ public class ExportTimeDataToClipboard extends TimeControllerOperation
 
 	@Override
 	protected void executeExport(final WatchableList primaryTrack,
-			WatchableList[] secondaryTracks, TimePeriod period)
+			final WatchableList[] secondaryTracks, final TimePeriod period)
 	{
 
-		Vector<WatchableList> theSecs = new Vector<WatchableList>(0, 1);
+		final Vector<WatchableList> theSecs = new Vector<WatchableList>(0, 1);
 		for (int i = 0; i < secondaryTracks.length; i++)
 		{
-			WatchableList list = secondaryTracks[i];
+			final WatchableList list = secondaryTracks[i];
 			theSecs.add(list);
 		}
 
 		// ok, now get the primary & secondary tracks
-		CopyTimeDataToClipboard exporter = new CopyTimeDataToClipboard()
+		final CopyTimeDataToClipboard exporter = new CopyTimeDataToClipboard()
 		{
 			public WatchableList getPrimary()
 			{

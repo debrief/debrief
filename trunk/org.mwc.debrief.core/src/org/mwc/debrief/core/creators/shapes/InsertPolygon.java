@@ -27,7 +27,7 @@ public class InsertPolygon extends CoreInsertShape
 	 *          the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		return null;
 	}
@@ -39,18 +39,18 @@ public class InsertPolygon extends CoreInsertShape
 	 * @param theChart
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		// get centre of area
-		WorldLocation centre = getCentre(theChart);
+		final WorldLocation centre = getCentre(theChart);
 
 		// create the shape, based on the centre
-		Vector<PolygonNode> path2 = new Vector<PolygonNode>();
+		final Vector<PolygonNode> path2 = new Vector<PolygonNode>();
 
-		PolygonShape newShape = new PolygonShape(path2);
+		final PolygonShape newShape = new PolygonShape(path2);
 
 		// and now wrap the shape
-		PolygonWrapper theWrapper = new PolygonWrapper("New " + getShapeName(),
+		final PolygonWrapper theWrapper = new PolygonWrapper("New " + getShapeName(),
 				newShape, PlainShape.DEFAULT_COLOR, null);
 
 		// store the new point

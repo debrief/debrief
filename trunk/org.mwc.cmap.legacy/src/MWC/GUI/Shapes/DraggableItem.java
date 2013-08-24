@@ -80,8 +80,8 @@ public interface DraggableItem
 
 		// private WorldLocation _hotSpot;
 
-		public void setData(DraggableItem p, WorldDistance dist, WorldLocation hotSpot,
-				Layer topLayer)
+		public void setData(final DraggableItem p, final WorldDistance dist, final WorldLocation hotSpot,
+				final Layer topLayer)
 		{
 			_object = p;
 			_distance = new WorldDistance(dist);
@@ -89,8 +89,8 @@ public interface DraggableItem
 			// _hotSpot = hotSpot;
 		}
 
-		public void checkMe(DraggableItem p, WorldDistance dist, WorldLocation hotSpot,
-				Layer topLayer)
+		public void checkMe(final DraggableItem p, final WorldDistance dist, final WorldLocation hotSpot,
+				final Layer topLayer)
 		{
 			if (!populated())
 			{

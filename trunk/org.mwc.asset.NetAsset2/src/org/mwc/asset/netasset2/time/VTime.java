@@ -13,13 +13,13 @@ import org.eclipse.swt.widgets.Text;
 
 public class VTime extends Composite implements IVTime, IVTimeControl
 {
-	private Text _time;
-	private Button btnStep;
-	private Button btnPlay;
-	private Button btnStop;
-	private Button btnFaster;
-	private Button btnSlower;
-	private Composite composite;
+	private final Text _time;
+	private final Button btnStep;
+	private final Button btnPlay;
+	private final Button btnStop;
+	private final Button btnFaster;
+	private final Button btnSlower;
+	private final Composite composite;
 
 	/**
 	 * Create the composite.
@@ -27,7 +27,7 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	 * @param parent
 	 * @param style
 	 */
-	public VTime(Composite parent, int style)
+	public VTime(final Composite parent, final int style)
 	{
 		super(parent, style);
 		setLayout(new RowLayout(SWT.HORIZONTAL));
@@ -37,7 +37,7 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 		_time.setText("00/00/00 00:00:00");
 
 		composite = new Composite(this, SWT.NONE);
-		RowLayout rl_composite = new RowLayout(SWT.HORIZONTAL);
+		final RowLayout rl_composite = new RowLayout(SWT.HORIZONTAL);
 		rl_composite.justify = true;
 		composite.setLayout(rl_composite);
 		composite.setLayoutData(new RowData(116, 55));
@@ -73,7 +73,7 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	@Override
 	public void newTime(final long newTime)
 	{
-		Date dt = new Date(newTime);
+		final Date dt = new Date(newTime);
 		final String date = dt.toString();
 
 		Display.getDefault().asyncExec(new Runnable()
@@ -88,19 +88,19 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	}
 
 	@Override
-	public void addStepListener(SelectionListener listener)
+	public void addStepListener(final SelectionListener listener)
 	{
 		btnStep.addSelectionListener(listener);
 	}
 
 	@Override
-	public void addPlayListener(SelectionListener listener)
+	public void addPlayListener(final SelectionListener listener)
 	{
 		btnPlay.addSelectionListener(listener);
 	}
 
 	@Override
-	public void addStopListener(SelectionListener listener)
+	public void addStopListener(final SelectionListener listener)
 	{
 		btnStop.addSelectionListener(listener);
 	}
@@ -142,13 +142,13 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	}
 
 	@Override
-	public void addFasterListener(SelectionListener listener)
+	public void addFasterListener(final SelectionListener listener)
 	{
 		btnFaster.addSelectionListener(listener);
 	}
 
 	@Override
-	public void addSlowerListener(SelectionListener listener)
+	public void addSlowerListener(final SelectionListener listener)
 	{
 		btnSlower.addSelectionListener(listener);
 	}

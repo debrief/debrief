@@ -11,7 +11,7 @@ public class BackedTimeSeriesDataItem extends TimeSeriesDataItem implements Back
 
 	private final TimeStampedDataItem myDomainItem;
 
-	public BackedTimeSeriesDataItem(FixedMillisecond period, double value, TimeStampedDataItem domainItem) {
+	public BackedTimeSeriesDataItem(final FixedMillisecond period, final double value, final TimeStampedDataItem domainItem) {
 		super(period, value);
 		myDomainItem = domainItem;
 	}

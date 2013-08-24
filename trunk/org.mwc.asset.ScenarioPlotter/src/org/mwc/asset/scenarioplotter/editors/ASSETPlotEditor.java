@@ -60,7 +60,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	protected ISelectionChangedListener _selectionChangeListener;
 
-	private GtProjection _myProjection;
+	private final GtProjection _myProjection;
 
 	// //////////////////////////////
 	// constructor
@@ -74,10 +74,10 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				// right, see what it is
-				ISelection sel = event.getSelection();
+				final ISelection sel = event.getSelection();
 				newSelection(sel);
 
 			}
@@ -86,23 +86,23 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		_listenForMods = new DataListener2()
 		{
-			public void dataModified(Layers theData, Layer changedLayer)
+			public void dataModified(final Layers theData, final Layer changedLayer)
 			{
 				fireDirty();
 			}
 
-			public void dataExtended(Layers theData)
+			public void dataExtended(final Layers theData)
 			{
 				fireDirty();
 			}
 
-			public void dataReformatted(Layers theData, Layer changedLayer)
+			public void dataReformatted(final Layers theData, final Layer changedLayer)
 			{
 				fireDirty();
 			}
 
 			@Override
-			public void dataExtended(Layers theData, Plottable newItem, Layer parent)
+			public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
 			{
 				fireDirty();
 			}
@@ -110,22 +110,22 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	}
 
-	private void newSelection(ISelection sel)
+	private void newSelection(final ISelection sel)
 	{
 		if (sel instanceof StructuredSelection)
 		{
-			StructuredSelection ss = (StructuredSelection) sel;
-			Object datum = ss.getFirstElement();
+			final StructuredSelection ss = (StructuredSelection) sel;
+			final Object datum = ss.getFirstElement();
 			if (datum instanceof EditableWrapper)
 			{
-				EditableWrapper pw = (EditableWrapper) datum;
-				Editable edd = pw.getEditable();
+				final EditableWrapper pw = (EditableWrapper) datum;
+				final Editable edd = pw.getEditable();
 				if (edd instanceof ScenarioWrapper)
 				{
-					ScenarioWrapper sw = (ScenarioWrapper) edd;
+					final ScenarioWrapper sw = (ScenarioWrapper) edd;
 
 					// also sort out the scenario component
-					ScenarioType scen = sw.getScenario();
+					final ScenarioType scen = sw.getScenario();
 
 					if (scen != _myScenario)
 					{
@@ -137,8 +137,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 		}
 	}
 
-	protected void updateScenario(ScenarioWrapper scenarioLayers,
-			ScenarioType scenario)
+	protected void updateScenario(final ScenarioWrapper scenarioLayers,
+			final ScenarioType scenario)
 	{
 		// are we already listening to it?
 		if (_myScenario != null)
@@ -158,7 +158,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	}
 
-	private void startListeningTo(Layers layers)
+	private void startListeningTo(final Layers layers)
 	{
 
 		// are we already listening to it?
@@ -183,7 +183,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		fireDirty();
 	}
 
-	private void stopListeningToThis(Layers layers)
+	private void stopListeningToThis(final Layers layers)
 	{
 		layers.removeDataExtendedListener(_listenForMods);
 		layers.removeDataModifiedListener(_listenForMods);
@@ -193,19 +193,19 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myChart.setLayers(null);
 	}
 
-	private void startListeningTo(ScenarioType scenario)
+	private void startListeningTo(final ScenarioType scenario)
 	{
 		_myScenario = scenario;
 
 		if (_stepListener == null)
 			_stepListener = new ScenarioSteppedListener()
 			{
-				public void restart(ScenarioType scenario)
+				public void restart(final ScenarioType scenario)
 				{
 					update();
 				}
 
-				public void step(ScenarioType scenario, long newTime)
+				public void step(final ScenarioType scenario, final long newTime)
 				{
 					update();
 				}
@@ -218,7 +218,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	}
 
-	private void stopListeningToThis(ScenarioType scenario)
+	private void stopListeningToThis(final ScenarioType scenario)
 	{
 		if (scenario != null)
 			scenario.removeScenarioSteppedListener(_stepListener);
@@ -245,7 +245,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myPartMonitor = null;
 	}
 
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		super.createPartControl(parent);
 
@@ -256,9 +256,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 		getChart().getCanvas().setBackgroundColor(Color.black); 
 
 		// and over-ride the undo button
-		IAction undoAction = new UndoActionHandler(getEditorSite(),
+		final IAction undoAction = new UndoActionHandler(getEditorSite(),
 				ASSETPlugin.ASSET_CONTEXT);
-		IAction redoAction = new RedoActionHandler(getEditorSite(),
+		final IAction redoAction = new RedoActionHandler(getEditorSite(),
 				ASSETPlugin.ASSET_CONTEXT);
 
 		getEditorSite().getActionBars().setGlobalActionHandler(
@@ -267,16 +267,16 @@ public class ASSETPlotEditor extends CorePlotEditor
 				ActionFactory.REDO.getId(), redoAction);
 
 		// put in the plot-copy support
-		IAction _copyClipboardAction = new Action()
+		final IAction _copyClipboardAction = new Action()
 		{
-			public void runWithEvent(Event event)
+			public void runWithEvent(final Event event)
 			{
-				ExportWMF ew = new ExportWMF(true, false);
+				final ExportWMF ew = new ExportWMF(true, false);
 				ew.run(null);
 			}
 		};
 
-		IActionBars actionBars = getEditorSite().getActionBars();
+		final IActionBars actionBars = getEditorSite().getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
 				_copyClipboardAction);
 
@@ -292,18 +292,19 @@ public class ASSETPlotEditor extends CorePlotEditor
 	{
 		// ok, cycle through the open views and check if we're after any of them
 		@SuppressWarnings("deprecation")
+		final
 		IViewPart[] views = getSite().getWorkbenchWindow().getActivePage()
 				.getViews();
 		for (int i = 0; i < views.length; i++)
 		{
-			IViewPart iViewPart = views[i];
+			final IViewPart iViewPart = views[i];
 
-			Object obj = iViewPart.getAdapter(ISelectionProvider.class);
+			final Object obj = iViewPart.getAdapter(ISelectionProvider.class);
 			if (obj != null)
 			{
-				ISelectionProvider iS = (ISelectionProvider) obj;
+				final ISelectionProvider iS = (ISelectionProvider) obj;
 				// have a look at the selection
-				ISelection sel = iS.getSelection();
+				final ISelection sel = iS.getSelection();
 				if (sel != null)
 					newSelection(sel);
 			}
@@ -318,9 +319,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 	 * @param parent
 	 *          the parent object to stick it into
 	 */
-	protected SWTChart createTheChart(Composite parent)
+	protected SWTChart createTheChart(final Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent, _myProjection)
+		final SWTChart res = new SWTChart(_myLayers, parent, _myProjection)
 		{
 
 			/**
@@ -328,7 +329,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public void chartFireSelectionChanged(ISelection sel)
+			public void chartFireSelectionChanged(final ISelection sel)
 			{
 				//
 			}
@@ -343,7 +344,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		// ok, set the drag mode to whatever our common "mode" is.
 		// - start off by getting the current mode
-		PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
+		final PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
 
 		// has one been set?
 		if (curMode != null)
@@ -359,7 +360,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		return getChart().getCanvas().getProjection().getDataArea();
 	}
 
-	public void setViewport(WorldArea target)
+	public void setViewport(final WorldArea target)
 	{
 		getChart().getCanvas().getProjection().setDataArea(target);
 	}
@@ -369,7 +370,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		return getChart().getCanvas().getProjection();
 	}
 
-	public void setProjection(PlainProjection proj)
+	public void setProjection(final PlainProjection proj)
 	{
 		// yes, just update it.
 		_myChart.getCanvas().setProjection(proj);
@@ -416,7 +417,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myChart.rescale();
 	}
 
-	public void doSave(IProgressMonitor monitor)
+	public void doSave(final IProgressMonitor monitor)
 	{
 	}
 
@@ -424,7 +425,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 	{
 	}
 
-	public void init(IEditorSite site, IEditorInput input)
+	public void init(final IEditorSite site, final IEditorInput input)
 			throws PartInitException
 	{
 		// initialise importand stuff
@@ -445,13 +446,13 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not us
 						if (part != this)
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
+							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.addSelectionChangedListener(_selectionChangeListener);
 						}
 					}
@@ -459,13 +460,13 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
 						if (part != this)
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
+							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.removeSelectionChangedListener(_selectionChangeListener);
 						}
 					}

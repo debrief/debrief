@@ -45,7 +45,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	protected static class TestMockCanvas extends MockCanvasType
 	{
 		@Override
-		public void drawPolyline(int[] points)
+		public void drawPolyline(final int[] points)
 		{
 			callCount++;
 			pointCount += points.length;
@@ -54,13 +54,13 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	private static final String TRACK_NAME = "test track";
 
-	public static FixWrapper createFix(int timeMillis, int vLatDeg, int vLatMin,
-			double vLatSec, int vLongDeg, int vLongMin, double vLongSec,
-			int crseDegs, int spdKts)
+	public static FixWrapper createFix(final int timeMillis, final int vLatDeg, final int vLatMin,
+			final double vLatSec, final int vLongDeg, final int vLongMin, final double vLongSec,
+			final int crseDegs, final int spdKts)
 	{
-		double vLat = vLatDeg + (vLatMin / 60d) + (vLatSec / 3600d);
-		double vLong = vLongDeg + (vLongMin / 60d) + (vLongSec / 3600d);
-		FixWrapper theFix = createFix(timeMillis, vLat, vLong);
+		final double vLat = vLatDeg + (vLatMin / 60d) + (vLatSec / 3600d);
+		final double vLong = vLongDeg + (vLongMin / 60d) + (vLongSec / 3600d);
+		final FixWrapper theFix = createFix(timeMillis, vLat, vLong);
 		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
 		theFix.getFix()
 				.setSpeed(
@@ -70,10 +70,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		return theFix;
 	}
 
-	public static FixWrapper createFix(int timeMillis, int vLat, int vLong,
-			int crseDegs, int spdKts)
+	public static FixWrapper createFix(final int timeMillis, final int vLat, final int vLong,
+			final int crseDegs, final int spdKts)
 	{
-		FixWrapper theFix = createFix(timeMillis, vLat, vLong);
+		final FixWrapper theFix = createFix(timeMillis, vLat, vLong);
 		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
 		theFix.getFix()
 				.setSpeed(
@@ -83,9 +83,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		return theFix;
 	}
 
-	public static FixWrapper createFix(long timeMillis, double vLat, double vLong)
+	public static FixWrapper createFix(final long timeMillis, final double vLat, final double vLong)
 	{
-		FixWrapper fw = new FixWrapper(new Fix(new HiResDate(timeMillis),
+		final FixWrapper fw = new FixWrapper(new Fix(new HiResDate(timeMillis),
 				new WorldLocation(vLat, vLong, 0), 1, 1));
 		return fw;
 	}
@@ -118,7 +118,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-	private int countCuts(Enumeration<Editable> sensors)
+	private int countCuts(final Enumeration<Editable> sensors)
 	{
 		if (sensors == null)
 			return 0;
@@ -126,8 +126,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		int counter = 0;
 		while (sensors.hasMoreElements())
 		{
-			SensorWrapper sw = (SensorWrapper) sensors.nextElement();
-			Enumeration<Editable> ele = sw.elements();
+			final SensorWrapper sw = (SensorWrapper) sensors.nextElement();
+			final Enumeration<Editable> ele = sw.elements();
 			while (ele.hasMoreElements())
 			{
 				counter++;
@@ -142,7 +142,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		return counter;
 	}
 
-	private int countSolutions(Enumeration<Editable> solutions)
+	private int countSolutions(final Enumeration<Editable> solutions)
 	{
 		if (solutions == null)
 			return 0;
@@ -150,8 +150,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		int counter = 0;
 		while (solutions.hasMoreElements())
 		{
-			TMAWrapper sw = (TMAWrapper) solutions.nextElement();
-			Enumeration<Editable> ele = sw.elements();
+			final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
+			final Enumeration<Editable> ele = sw.elements();
 			while (ele.hasMoreElements())
 			{
 				counter++;
@@ -168,19 +168,19 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	private int countVisibleItems()
 	{
-		Enumeration<Editable> all = _tw.contiguousElements();
+		final Enumeration<Editable> all = _tw.contiguousElements();
 		int ctr = 0;
 		while (all.hasMoreElements())
 		{
-			Plottable thisE = (Plottable) all.nextElement();
+			final Plottable thisE = (Plottable) all.nextElement();
 			if (thisE.getVisible())
 				ctr++;
 		}
 		return ctr;
 	}
 
-	private SensorContactWrapper createSensorItem(TrackWrapper tw,
-			SensorWrapper sw, int sensorDTG)
+	private SensorContactWrapper createSensorItem(final TrackWrapper tw,
+			final SensorWrapper sw, final int sensorDTG)
 	{
 		return new SensorContactWrapper(tw.getName(), new HiResDate(sensorDTG),
 				new WorldDistance(12, WorldDistance.NM), 12d, null, Color.red,
@@ -190,18 +190,18 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	private int numSegments()
 	{
 		int res = 0;
-		Enumeration<Editable> layers = _tw.elements();
+		final Enumeration<Editable> layers = _tw.elements();
 		while (layers.hasMoreElements())
 		{
-			Object child = layers.nextElement();
+			final Object child = layers.nextElement();
 			if (child instanceof TrackSegment)
 			{
 				res++;
 			}
 			else if (child instanceof SegmentList)
 			{
-				SegmentList segl = (SegmentList) child;
-				Enumeration<Editable> segs = segl.elements();
+				final SegmentList segl = (SegmentList) child;
+				final Enumeration<Editable> segs = segl.elements();
 				while (segs.hasMoreElements())
 				{
 					res++;
@@ -250,13 +250,13 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("start condition", 6, this.trackLength());
 
 		// check we can add a fix
-		FixWrapper fw = createFix(12, 3d, 4d);
+		final FixWrapper fw = createFix(12, 3d, 4d);
 		_tw.add(fw);
 
 		assertEquals("got added", 7, this.trackLength());
 
 		// now something else
-		SensorWrapper sw = new SensorWrapper("some sensor");
+		final SensorWrapper sw = new SensorWrapper("some sensor");
 		sw.add(new SensorContactWrapper());
 		sw.setVisible(true);
 		_tw.add(sw);
@@ -275,7 +275,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("start condition", 6, this.trackLength());
 
 		// check we can add a fix
-		FixWrapper fw = createFix(12, 3d, 4d);
+		final FixWrapper fw = createFix(12, 3d, 4d);
 		_tw.addFix(fw);
 
 		assertEquals("got added", 7, this.trackLength());
@@ -288,9 +288,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testAppend()
 	{
-		TrackWrapper tw2 = new TrackWrapper();
-		FixWrapper f1 = createFix(13, 2, 2);
-		FixWrapper f2 = createFix(14, 32, 12);
+		final TrackWrapper tw2 = new TrackWrapper();
+		final FixWrapper f1 = createFix(13, 2, 2);
+		final FixWrapper f2 = createFix(14, 32, 12);
 		tw2.addFix(f1);
 		tw2.addFix(f2);
 
@@ -311,7 +311,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have initial items", 6, trackLength());
 
 		// give it a little more data
-		SensorWrapper sw = new SensorWrapper("sensor a");
+		final SensorWrapper sw = new SensorWrapper("sensor a");
 		sw.add(new SensorContactWrapper("trk", new HiResDate(12), null, null, null,
 				null, null, 0, null));
 		sw.add(new SensorContactWrapper("trk", new HiResDate(13), null, null, null,
@@ -322,7 +322,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		_tw.add(sw);
 
-		Enumeration<Editable> tester = _tw.contiguousElements();
+		final Enumeration<Editable> tester = _tw.contiguousElements();
 		_ctr = 0;
 		while (tester.hasMoreElements())
 		{
@@ -334,34 +334,34 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testDecimate()
 	{
-		TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment();
 		ts1.addFix(createFix(0 * 1000000l, 32, 33));
 		ts1.addFix(createFix(1 * 1000000l, 32, 33));
 		ts1.addFix(createFix(2 * 1000000l, 32, 33));
 		ts1.addFix(createFix(3 * 1000000l, 32, 33));
 		ts1.addFix(createFix(4 * 1000000l, 32, 33));
 
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(5 * 1000000l, 32, 33));
 		ts2.addFix(createFix(6 * 1000000l, 32, 33));
 		ts2.addFix(createFix(7 * 1000000l, 32, 33));
 		ts2.addFix(createFix(8 * 1000000l, 32, 33));
 		ts2.addFix(createFix(9 * 1000000l, 32, 33));
 
-		TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment();
 		ts3.addFix(createFix(10 * 1000000l, 32, 33));
 		ts3.addFix(createFix(11 * 1000000l, 32, 33));
 		ts3.addFix(createFix(12 * 1000000l, 32, 33));
 		ts3.addFix(createFix(13 * 1000000l, 32, 33));
 		ts3.addFix(createFix(24 * 1000000l, 32, 33));
 
-		TrackWrapper tw = new TrackWrapper();
+		final TrackWrapper tw = new TrackWrapper();
 		tw.add(ts1);
 		tw.add(ts2);
 		tw.add(ts3);
 
-		Enumeration<Editable> data = tw.elements();
-		SegmentList sl = (SegmentList) data.nextElement();
+		final Enumeration<Editable> data = tw.elements();
+		final SegmentList sl = (SegmentList) data.nextElement();
 
 		// check it's got the segs
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
@@ -384,41 +384,41 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testDecimatePositionsAndData()
 	{
-		TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment();
 		ts1.addFix(createFix(0 * 60000, 32, 33));
 		ts1.addFix(createFix(1 * 60000, 32, 33));
 		ts1.addFix(createFix(2 * 60000, 32, 33));
 		ts1.addFix(createFix(3 * 60000, 32, 33));
 		ts1.addFix(createFix(4 * 60000, 32, 33));
 
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(5 * 60000, 32, 33));
 		ts2.addFix(createFix(6 * 60000, 32, 33));
 		ts2.addFix(createFix(7 * 60000, 32, 33));
 		ts2.addFix(createFix(8 * 60000, 32, 33));
 		ts2.addFix(createFix(9 * 60000, 32, 33));
 
-		TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment();
 		ts3.addFix(createFix(10 * 60000, 32, 33));
 		ts3.addFix(createFix(11 * 60000, 32, 33));
 		ts3.addFix(createFix(12 * 60000, 32, 33));
 		ts3.addFix(createFix(13 * 60000, 32, 33));
 		ts3.addFix(createFix(24 * 60000, 32, 33));
 
-		SensorWrapper sw = new SensorWrapper("dummy sensor");
-		SensorContactWrapper scw1 = new SensorContactWrapper("the track",
+		final SensorWrapper sw = new SensorWrapper("dummy sensor");
+		final SensorContactWrapper scw1 = new SensorContactWrapper("the track",
 				new HiResDate(1 * 60000), new WorldDistance(2, WorldDistance.NM), 12d,
 				new Double(12), new Double(44), null, Color.red, "aa", 1,
 				"dummy sensor");
-		SensorContactWrapper scw2 = new SensorContactWrapper("the track",
+		final SensorContactWrapper scw2 = new SensorContactWrapper("the track",
 				new HiResDate(3 * 60000), new WorldDistance(4, WorldDistance.NM), 15d,
 				new Double(15), new Double(46), null, Color.red, "aa", 1,
 				"dummy sensor");
-		SensorContactWrapper scw3 = new SensorContactWrapper("the track",
+		final SensorContactWrapper scw3 = new SensorContactWrapper("the track",
 				new HiResDate(7 * 60000), new WorldDistance(12, WorldDistance.NM), 18d,
 				new Double(12), new Double(12), null, Color.red, "aa", 1,
 				"dummy sensor");
-		SensorContactWrapper scw4 = new SensorContactWrapper("the track",
+		final SensorContactWrapper scw4 = new SensorContactWrapper("the track",
 				new HiResDate(8 * 60000), new WorldDistance(7, WorldDistance.NM), 35d,
 				new Double(12), new Double(312), null, Color.red, "aa", 1,
 				"dummy sensor");
@@ -427,20 +427,20 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		sw.add(scw3);
 		sw.add(scw4);
 
-		TMAWrapper tmw = new TMAWrapper("dummy tma");
-		TMAContactWrapper tc1 = new TMAContactWrapper("sola", "tracla",
+		final TMAWrapper tmw = new TMAWrapper("dummy tma");
+		final TMAContactWrapper tc1 = new TMAContactWrapper("sola", "tracla",
 				new HiResDate(2 * 60000), 12d, 14d, 22d, 12.2, 0d, Color.red, "bb",
 				new EllipseShape(null, 12, new WorldDistance(12, WorldDistance.DEGS),
 						new WorldDistance(12, WorldDistance.DEGS)), "aa");
-		TMAContactWrapper tc2 = new TMAContactWrapper("sola", "tracla",
+		final TMAContactWrapper tc2 = new TMAContactWrapper("sola", "tracla",
 				new HiResDate(7 * 60000), 13d, 22d, 17d, 12.2, 0d, Color.red, "bb",
 				new EllipseShape(null, 14, new WorldDistance(21, WorldDistance.DEGS),
 						new WorldDistance(15, WorldDistance.DEGS)), "aa");
-		TMAContactWrapper tc3 = new TMAContactWrapper("sola", "tracla",
+		final TMAContactWrapper tc3 = new TMAContactWrapper("sola", "tracla",
 				new HiResDate(9 * 60000), 21d, 23d, 15d, 12.2, 0d, Color.red, "bb",
 				new EllipseShape(null, 19, new WorldDistance(29, WorldDistance.DEGS),
 						new WorldDistance(32, WorldDistance.DEGS)), "aa");
-		TMAContactWrapper tc4 = new TMAContactWrapper("sola", "tracla",
+		final TMAContactWrapper tc4 = new TMAContactWrapper("sola", "tracla",
 				new HiResDate(16 * 60000), 14d, 14d, 22d, 12.2, 0d, Color.red, "bb",
 				new EllipseShape(null, 12, new WorldDistance(22, WorldDistance.DEGS),
 						new WorldDistance(12, WorldDistance.DEGS)), "aa");
@@ -450,7 +450,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tmw.add(tc3);
 		tmw.add(tc4);
 
-		TrackWrapper tw = new TrackWrapper();
+		final TrackWrapper tw = new TrackWrapper();
 		tw.add(ts1);
 		tw.add(ts2);
 		tw.add(ts3);
@@ -458,10 +458,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.add(tmw);
 
 		SegmentList sl = null;
-		Enumeration<Editable> data = tw.elements();
+		final Enumeration<Editable> data = tw.elements();
 		while (data.hasMoreElements())
 		{
-			Object nextO = data.nextElement();
+			final Object nextO = data.nextElement();
 			if (nextO instanceof SegmentList)
 				sl = (SegmentList) nextO;
 		}
@@ -517,7 +517,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("just has positions", 1, _ctr);
 
 		// give it a little more data
-		SensorWrapper sw = new SensorWrapper("sensor a");
+		final SensorWrapper sw = new SensorWrapper("sensor a");
 		sw.add(new SensorContactWrapper("trk", new HiResDate(12), null, null, null,
 				null, null, 0, null));
 		sw.add(new SensorContactWrapper("trk", new HiResDate(13), null, null, null,
@@ -557,9 +557,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testFixAsVector()
 	{
-		TrackSegment ts = new TrackSegment();
-		long period = 1000 * 60 * 60;
-		double speedKts = 60;
+		final TrackSegment ts = new TrackSegment();
+		final long period = 1000 * 60 * 60;
+		final double speedKts = 60;
 		WorldVector res = ts.vectorFor(period, speedKts, 0);
 		assertEquals("Correct course", 0, res.getBearing(), 0.001);
 		assertEquals("Correct distance", 1, res.getRange(), 0.001);
@@ -584,12 +584,12 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	{
 		// now something else
 		_ctr = 0;
-		SensorWrapper sw = new SensorWrapper("some sensor")
+		final SensorWrapper sw = new SensorWrapper("some sensor")
 		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void setHost(TrackWrapper host)
+			public void setHost(final TrackWrapper host)
 			{
 				super.setHost(host);
 				_ctr++;
@@ -611,8 +611,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testGenInfill()
 	{
-		TrackSegment ts1 = new TrackSegment();
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 
 		ts1.addFix(createFix(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
 		ts1.addFix(createFix(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
@@ -628,6 +628,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// try the function
 		@SuppressWarnings("unused")
+		final
 		TrackSegment infill = new TrackSegment(ts1, ts2);
 
 		// check there are the correct number of items
@@ -641,7 +642,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	 */
 	public void testGetBounds()
 	{
-		WorldArea correctBounds = new WorldArea(new WorldLocation(1, 1, 0),
+		final WorldArea correctBounds = new WorldArea(new WorldLocation(1, 1, 0),
 				new WorldLocation(4, 6, 0));
 		assertEquals("wrong bounds returned", correctBounds, _tw.getBounds());
 	}
@@ -652,7 +653,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testGetEndDTG()
 	{
-		HiResDate dt = _tw.getEndDTG();
+		final HiResDate dt = _tw.getEndDTG();
 		assertEquals("correct end time", 600000, dt.getDate().getTime());
 	}
 
@@ -717,7 +718,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testGetPositions()
 	{
-		Enumeration<Editable> list = _tw.getPositions();
+		final Enumeration<Editable> list = _tw.getPositions();
 		// check the length
 		_ctr = 0;
 		while (list.hasMoreElements())
@@ -734,7 +735,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testGetStartDTG()
 	{
-		HiResDate dt = _tw.getStartDTG();
+		final HiResDate dt = _tw.getStartDTG();
 		assertEquals("correct end time", 100000, dt.getDate().getTime());
 	}
 
@@ -768,8 +769,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testRangeFromWorldLocation()
 	{
-		WorldLocation wl = new WorldLocation(4, 1, 0);
-		double res = _tw.rangeFrom(wl);
+		final WorldLocation wl = new WorldLocation(4, 1, 0);
+		final double res = _tw.rangeFrom(wl);
 		assertEquals("correct range", 0d, res, 0.001);
 	}
 
@@ -824,7 +825,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testSplitTrack1()
 	{
-		Vector<TrackSegment> segs = _tw.splitTrack(_fw1, true);
+		final Vector<TrackSegment> segs = _tw.splitTrack(_fw1, true);
 		assertEquals("now two segments", 2, segs.size());
 		assertEquals("first is of correct length", 2, segs.firstElement().size());
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
@@ -839,7 +840,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("correct layer name:", "010005.00", s2.getName());
 
 		// split it again
-		Vector<TrackSegment> segs2 = _tw.splitTrack(_fw2, true);
+		final Vector<TrackSegment> segs2 = _tw.splitTrack(_fw2, true);
 		assertEquals("two blocks returned", 2, segs2.size());
 		assertEquals("has 3 segments", 3, numSegments());
 		assertEquals("first is of correct length", 2, segs2.firstElement().size());
@@ -850,7 +851,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		segments = list.elements();
 		s1 = (TrackSegment) segments.nextElement();
 		s2 = (TrackSegment) segments.nextElement();
-		TrackSegment s3 = (TrackSegment) segments.nextElement();
+		final TrackSegment s3 = (TrackSegment) segments.nextElement();
 		assertEquals("correct layer name:", "010001.40", s1.getName());
 		assertEquals("correct layer name:", "010005.00", s2.getName());
 		assertEquals("correct layer name:", "010008.20", s3.getName());
@@ -883,7 +884,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testSplitTrack2()
 	{
-		Vector<TrackSegment> segs = _tw.splitTrack(_fw1, false);
+		final Vector<TrackSegment> segs = _tw.splitTrack(_fw1, false);
 		assertEquals("now two segments", 2, segs.size());
 		assertEquals("first is of correct length", 3, segs.firstElement().size());
 		assertEquals("first is of correct length", 3, segs.lastElement().size());
@@ -898,18 +899,18 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// //////////////////////////////////
 		// start off building from a track
 		// //////////////////////////////////
-		TrackWrapper tw = new TrackWrapper();
+		final TrackWrapper tw = new TrackWrapper();
 
-		FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
-		FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
+		final FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
+		final FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
 		tw.addFix(f1);
 		tw.addFix(f2);
 		tw.addFix(createFix(300000, 3, 3, 4, 12));
 		tw.addFix(createFix(400000, 4, 6, 4, 12));
 
-		WorldVector offset = new WorldVector(12, 12, 0);
-		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-		double course = 33;
+		final WorldVector offset = new WorldVector(12, 12, 0);
+		final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+		final double course = 33;
 
 		// ok, create the segment
 		CoreTMASegment seg = null;
@@ -920,7 +921,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// ////////////////////////
 		// NOW FROM A SENSOR WRAPPER
 		// /////////////////////////
-		SensorWrapper sw = new SensorWrapper("some sensor");
+		final SensorWrapper sw = new SensorWrapper("some sensor");
 		sw.setHost(tw);
 		sw.add(createSensorItem(tw, sw, 110000));
 		sw.add(createSensorItem(tw, sw, 120000));
@@ -953,7 +954,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// ///////////////////////////////////////////
 		// lastly, build from a set of sensor observations
 		// ///////////////////////////////////////////
-		SensorContactWrapper[] items = new SensorContactWrapper[5];
+		final SensorContactWrapper[] items = new SensorContactWrapper[5];
 		items[0] = createSensorItem(tw, sw, 110000);
 		items[1] = createSensorItem(tw, sw, 115000);
 		items[2] = createSensorItem(tw, sw, 119000);
@@ -963,7 +964,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// sort out the host
 		for (int i = 0; i < items.length; i++)
 		{
-			SensorContactWrapper sensorContactWrapper = items[i];
+			final SensorContactWrapper sensorContactWrapper = items[i];
 			sensorContactWrapper.setSensor(sw);
 		}
 
@@ -972,7 +973,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// check the create worked
 		assertEquals("enough points created", 5, seg.size());
 
-		Iterator<Editable> someIt = seg.getData().iterator();
+		final Iterator<Editable> someIt = seg.getData().iterator();
 		// check the before
 		firstFix = (FixWrapper) someIt.next();
 		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
@@ -1015,10 +1016,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	public void testTMASegmentRotate()
 	{
 
-		FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
-		FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
-		WorldVector vector = new WorldVector(0, 1, 0);
-		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
+		final FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
+		final FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
+		final WorldVector vector = new WorldVector(0, 1, 0);
+		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
 				WorldSpeed.Kts), vector, null)
 		{
 			private static final long serialVersionUID = 1L;
@@ -1032,11 +1033,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		ts.addFix(f1);
 		ts.addFix(f2);
 
-		Iterator<Editable> iter = ts.getData().iterator();
+		final Iterator<Editable> iter = ts.getData().iterator();
 		iter.next();
-		FixWrapper farEnd = (FixWrapper) iter.next();
-		WorldLocation origin = farEnd.getLocation();
-		double brg = MWC.Algorithms.Conversions.Degs2Rads(-90);
+		final FixWrapper farEnd = (FixWrapper) iter.next();
+		final WorldLocation origin = farEnd.getLocation();
+		final double brg = MWC.Algorithms.Conversions.Degs2Rads(-90);
 		ts.rotate(brg, origin);
 
 		// check we're on the new course
@@ -1065,10 +1066,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTMASegmentStretch()
 	{
-		FixWrapper f1 = createFix(0, 1, 1, 270, 12);
-		FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
-		WorldVector vector = new WorldVector(0, 1, 0);
-		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
+		final FixWrapper f1 = createFix(0, 1, 1, 270, 12);
+		final FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
+		final WorldVector vector = new WorldVector(0, 1, 0);
+		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
 				WorldSpeed.Kts), vector, null)
 		{
 			private static final long serialVersionUID = 1L;
@@ -1082,10 +1083,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		ts.addFix(f1);
 		ts.addFix(f2);
 
-		Iterator<Editable> iter = ts.getData().iterator();
-		FixWrapper nearEnd = (FixWrapper) iter.next();
-		WorldLocation origin = nearEnd.getLocation();
-		double rng = 2;
+		final Iterator<Editable> iter = ts.getData().iterator();
+		final FixWrapper nearEnd = (FixWrapper) iter.next();
+		final WorldLocation origin = nearEnd.getLocation();
+		final double rng = 2;
 		ts.stretch(rng, origin);
 
 		// check we're on the new course
@@ -1119,7 +1120,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// //////////////////////////////////
 		// start off building from a track
 		// //////////////////////////////////
-		TrackWrapper tw = new TrackWrapper();
+		final TrackWrapper tw = new TrackWrapper();
 
 		tw.addFix(createFix(100000, 1, 1, 4, 12));
 		tw.addFix(createFix(200000, 2, 3, 4, 12));
@@ -1129,9 +1130,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.addFix(createFix(600000, 4, 6, 4, 12));
 		tw.addFix(createFix(700000, 4, 6, 4, 12));
 
-		WorldVector offset = new WorldVector(12, 12, 0);
-		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-		double course = 33;
+		final WorldVector offset = new WorldVector(12, 12, 0);
+		final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+		final double course = 33;
 
 		// ok, create the segment
 		CoreTMASegment seg = null;
@@ -1142,7 +1143,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// ////////////////////////
 		// NOW FROM A SENSOR WRAPPER
 		// /////////////////////////
-		SensorWrapper sw = new SensorWrapper("some sensor");
+		final SensorWrapper sw = new SensorWrapper("some sensor");
 		sw.setHost(tw);
 		sw.add(createSensorItem(tw, sw, 110000));
 		sw.add(createSensorItem(tw, sw, 120000));
@@ -1166,19 +1167,19 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
 
 		// ok, now do the split
-		TrackWrapper segW = new TrackWrapper();
+		final TrackWrapper segW = new TrackWrapper();
 		segW.setName("TMA");
 		segW.add(seg);
 
 		// get hold of an item in the segment
-		Enumeration<Editable> enumer = seg.elements();
+		final Enumeration<Editable> enumer = seg.elements();
 		enumer.nextElement();
 		enumer.nextElement();
-		FixWrapper fw = (FixWrapper) enumer.nextElement();
+		final FixWrapper fw = (FixWrapper) enumer.nextElement();
 		assertNotNull("Found a fix", fw);
 
 		// do the split
-		Vector<TrackSegment> segs = segW.splitTrack(fw, false);
+		final Vector<TrackSegment> segs = segW.splitTrack(fw, false);
 
 		// check we have enough segments
 		assertEquals("now two segments", 2, segs.size());
@@ -1186,8 +1187,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
 
 		// check they're of the correct type
-		TrackSegment seg1 = segs.firstElement();
-		TrackSegment seg2 = segs.lastElement();
+		final TrackSegment seg1 = segs.firstElement();
+		final TrackSegment seg2 = segs.lastElement();
 		assertTrue(" is a tma segment", seg1 instanceof RelativeTMASegment);
 		assertTrue(" is a tma segment", seg2 instanceof RelativeTMASegment);
 
@@ -1202,7 +1203,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// //////////////////////////////////
 		// start off building from a track
 		// //////////////////////////////////
-		TrackWrapper tw = new TrackWrapper();
+		final TrackWrapper tw = new TrackWrapper();
 
 		tw.addFix(createFix(100000, 1, 1, 4, 12));
 		tw.addFix(createFix(200000, 2, 3, 4, 12));
@@ -1212,8 +1213,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.addFix(createFix(600000, 4, 6, 4, 12));
 		tw.addFix(createFix(700000, 4, 6, 4, 12));
 
-		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-		double course = 33;
+		final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+		final double course = 33;
 
 		// ok, create the segment
 		CoreTMASegment seg = null;
@@ -1224,9 +1225,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// ////////////////////////
 		// NOW AN ABSOLUTE ONE
 		// /////////////////////////
-		WorldLocation origin = new WorldLocation(12, 12, 12);
-		HiResDate startTime = new HiResDate(11 * 60 * 1000);
-		HiResDate endTime = new HiResDate(17 * 60 * 1000);
+		final WorldLocation origin = new WorldLocation(12, 12, 12);
+		final HiResDate startTime = new HiResDate(11 * 60 * 1000);
+		final HiResDate endTime = new HiResDate(17 * 60 * 1000);
 		seg = new AbsoluteTMASegment(course, speed, origin, startTime, endTime);
 
 		// check the create worked
@@ -1242,19 +1243,19 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
 
 		// ok, now do the split
-		TrackWrapper segW = new TrackWrapper();
+		final TrackWrapper segW = new TrackWrapper();
 		segW.setName("TMA");
 		segW.add(seg);
 
 		// get hold of an item in the segment
-		Enumeration<Editable> enumer = seg.elements();
+		final Enumeration<Editable> enumer = seg.elements();
 		enumer.nextElement();
 		enumer.nextElement();
-		FixWrapper fw = (FixWrapper) enumer.nextElement();
+		final FixWrapper fw = (FixWrapper) enumer.nextElement();
 		assertNotNull("Found a fix", fw);
 
 		// do the split
-		Vector<TrackSegment> segs = segW.splitTrack(fw, false);
+		final Vector<TrackSegment> segs = segW.splitTrack(fw, false);
 
 		// check we have enough segments
 		assertEquals("now two segments", 2, segs.size());
@@ -1262,8 +1263,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
 
 		// check they're of the correct type
-		TrackSegment seg1 = segs.firstElement();
-		TrackSegment seg2 = segs.lastElement();
+		final TrackSegment seg1 = segs.firstElement();
+		final TrackSegment seg2 = segs.lastElement();
 		assertTrue(" is a tma segment", seg1 instanceof AbsoluteTMASegment);
 		assertTrue(" is a tma segment", seg2 instanceof AbsoluteTMASegment);
 
@@ -1271,16 +1272,16 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackGroup1()
 	{
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(310000, 32, 33));
 		ts2.addFix(createFix(311000, 32, 33));
 		ts2.addFix(createFix(312000, 32, 33));
 		ts2.addFix(createFix(313000, 32, 33));
 		ts2.addFix(createFix(314000, 32, 33));
-		TrackWrapper tw3 = new TrackWrapper();
+		final TrackWrapper tw3 = new TrackWrapper();
 		tw3.setName("tw3");
 		tw3.add(ts2);
-		Layers theLayers = new Layers();
+		final Layers theLayers = new Layers();
 		theLayers.addThisLayer(tw3);
 		theLayers.addThisLayer(_tw);
 
@@ -1290,9 +1291,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		Layer[] parents = new Layer[]
+		final Layer[] parents = new Layer[]
 		{ _tw, tw3 };
-		Editable[] subjects = new Editable[]
+		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
 		TrackWrapper.groupTracks(_tw, theLayers, parents, subjects);
 
@@ -1300,12 +1301,12 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("track 3 is longer", 11, _tw.numFixes());
 
 		// check it's been a group, not an add
-		Enumeration<Editable> iter = _tw.elements();
+		final Enumeration<Editable> iter = _tw.elements();
 		_ctr = 0;
 		while (iter.hasMoreElements())
 		{
-			SegmentList sl = (SegmentList) iter.nextElement();
-			Enumeration<Editable> segments = sl.elements();
+			final SegmentList sl = (SegmentList) iter.nextElement();
+			final Enumeration<Editable> segments = sl.elements();
 			while (segments.hasMoreElements())
 			{
 				_ctr++;
@@ -1319,14 +1320,14 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackGroupOrder()
 	{
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(310000, 32, 33));
 		ts2.addFix(createFix(311000, 32, 33));
 		ts2.addFix(createFix(312000, 32, 33));
 		ts2.addFix(createFix(313000, 32, 33));
 		ts2.addFix(createFix(314000, 32, 33));
 
-		TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment();
 		ts3.addFix(createFix(410000, 32, 33));
 		ts3.addFix(createFix(411000, 32, 33));
 		ts3.addFix(createFix(412000, 32, 33));
@@ -1365,16 +1366,16 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackMerge1()
 	{
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(910000, 32, 33));
 		ts2.addFix(createFix(911000, 32, 33));
 		ts2.addFix(createFix(912000, 32, 33));
 		ts2.addFix(createFix(913000, 32, 33));
 		ts2.addFix(createFix(914000, 32, 33));
-		TrackWrapper tw3 = new TrackWrapper();
+		final TrackWrapper tw3 = new TrackWrapper();
 		tw3.setName("tw3");
 		tw3.add(ts2);
-		Layers theLayers = new Layers();
+		final Layers theLayers = new Layers();
 		theLayers.addThisLayer(tw3);
 		theLayers.addThisLayer(_tw);
 
@@ -1384,9 +1385,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		Layer[] parents = new Layer[]
+		final Layer[] parents = new Layer[]
 		{ _tw, tw3 };
-		Editable[] subjects = new Editable[]
+		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
 		TrackWrapper.mergeTracks(ts2, theLayers, parents, subjects);
 
@@ -1398,16 +1399,16 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackMerge2()
 	{
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(910000, 32, 33));
 		ts2.addFix(createFix(911000, 32, 33));
 		ts2.addFix(createFix(912000, 32, 33));
 		ts2.addFix(createFix(913000, 32, 33));
 		ts2.addFix(createFix(914000, 32, 33));
-		TrackWrapper tw3 = new TrackWrapper();
+		final TrackWrapper tw3 = new TrackWrapper();
 		tw3.setName("tw3");
 		tw3.add(ts2);
-		Layers theLayers = new Layers();
+		final Layers theLayers = new Layers();
 		theLayers.addThisLayer(tw3);
 		theLayers.addThisLayer(_tw);
 
@@ -1417,32 +1418,32 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		Layer[] parents = new Layer[]
+		final Layer[] parents = new Layer[]
 		{ _tw, tw3 };
-		Editable[] subjects = new Editable[]
+		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
 		TrackWrapper.mergeTracks(_tw, theLayers, parents, subjects);
 
 		// have a look at the results
 		assertEquals("track is longer", 11, _tw.numFixes());
 		assertEquals("track got ditched", 1, theLayers.size());
-		TrackSegment sl = (TrackSegment) _tw.elements().nextElement();
+		final TrackSegment sl = (TrackSegment) _tw.elements().nextElement();
 		assertEquals("just the one segment - with all our points", 11, sl.size());
 
 	}
 
 	public void testTrackMerge3()
 	{
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(310000, 32, 33));
 		ts2.addFix(createFix(311000, 32, 33));
 		ts2.addFix(createFix(312000, 32, 33));
 		ts2.addFix(createFix(313000, 32, 33));
 		ts2.addFix(createFix(314000, 32, 33));
-		TrackWrapper tw3 = new TrackWrapper();
+		final TrackWrapper tw3 = new TrackWrapper();
 		tw3.setName("tw3");
 		tw3.add(ts2);
-		Layers theLayers = new Layers();
+		final Layers theLayers = new Layers();
 		theLayers.addThisLayer(tw3);
 		theLayers.addThisLayer(_tw);
 
@@ -1452,9 +1453,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		Layer[] parents = new Layer[]
+		final Layer[] parents = new Layer[]
 		{ _tw, tw3 };
-		Editable[] subjects = new Editable[]
+		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
 		TrackWrapper.mergeTracks(_tw, theLayers, parents, subjects);
 
@@ -1477,34 +1478,34 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackMergeAllSegments()
 	{
-		TrackSegment ts1 = new TrackSegment();
+		final TrackSegment ts1 = new TrackSegment();
 		ts1.addFix(createFix(110000, 32, 33));
 		ts1.addFix(createFix(111000, 32, 33));
 		ts1.addFix(createFix(112000, 32, 33));
 		ts1.addFix(createFix(113000, 32, 33));
 		ts1.addFix(createFix(114000, 32, 33));
 
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(210000, 32, 33));
 		ts2.addFix(createFix(211000, 32, 33));
 		ts2.addFix(createFix(212000, 32, 33));
 		ts2.addFix(createFix(213000, 32, 33));
 		ts2.addFix(createFix(214000, 32, 33));
 
-		TrackSegment ts3 = new TrackSegment();
+		final TrackSegment ts3 = new TrackSegment();
 		ts3.addFix(createFix(910000, 32, 33));
 		ts3.addFix(createFix(911000, 32, 33));
 		ts3.addFix(createFix(912000, 32, 33));
 		ts3.addFix(createFix(913000, 32, 33));
 		ts3.addFix(createFix(914000, 32, 33));
 
-		TrackWrapper tw = new TrackWrapper();
+		final TrackWrapper tw = new TrackWrapper();
 		tw.add(ts1);
 		tw.add(ts2);
 		tw.add(ts3);
 
-		Enumeration<Editable> data = tw.elements();
-		SegmentList sl = (SegmentList) data.nextElement();
+		final Enumeration<Editable> data = tw.elements();
+		final SegmentList sl = (SegmentList) data.nextElement();
 
 		// check it's got the segs
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
@@ -1526,16 +1527,16 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	public void testTrackStartEnd()
 	{
-		TrackSegment ts2 = new TrackSegment();
+		final TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(910000, 32, 33));
 		ts2.addFix(createFix(911000, 32, 33));
 		ts2.addFix(createFix(912000, 32, 33));
 		ts2.addFix(createFix(913000, 32, 33));
 		ts2.addFix(createFix(914000, 32, 33));
-		TrackWrapper tw3 = new TrackWrapper();
+		final TrackWrapper tw3 = new TrackWrapper();
 		tw3.setName("tw3");
 		tw3.add(ts2);
-		Layers theLayers = new Layers();
+		final Layers theLayers = new Layers();
 		theLayers.addThisLayer(tw3);
 		theLayers.addThisLayer(_tw);
 
@@ -1545,9 +1546,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		Layer[] parents = new Layer[]
+		final Layer[] parents = new Layer[]
 		{ _tw, tw3 };
-		Editable[] subjects = new Editable[]
+		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
 		TrackWrapper.mergeTracks(ts2, theLayers, parents, subjects);
 
@@ -1575,7 +1576,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	private int trackLength()
 	{
-		Enumeration<Editable> all = _tw.contiguousElements();
+		final Enumeration<Editable> all = _tw.contiguousElements();
 		int ctr = 0;
 		while (all.hasMoreElements())
 		{
@@ -1586,7 +1587,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	}
 
 	@SuppressWarnings("synthetic-access")
-	private int countVisibleFixes(TrackWrapper tw)
+	private int countVisibleFixes(final TrackWrapper tw)
 	{
 		int ctr = 0;
 		final Enumeration<Editable> iter = tw.getPositions();
@@ -1602,7 +1603,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	}
 
 	@SuppressWarnings("synthetic-access")
-	private int countVisibleSensorWrappers(TrackWrapper tw)
+	private int countVisibleSensorWrappers(final TrackWrapper tw)
 	{
 		final Enumeration<Editable> iter2 = tw.getSensors().elements();
 		int sCtr = 0;
@@ -1623,7 +1624,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	}
 
 	@SuppressWarnings("synthetic-access")
-	private int countVisibleSolutionWrappers(TrackWrapper tw)
+	private int countVisibleSolutionWrappers(final TrackWrapper tw)
 	{
 		final Enumeration<Editable> iter2 = tw.getSolutions().elements();
 		int sCtr = 0;

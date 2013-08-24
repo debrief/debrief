@@ -101,7 +101,7 @@ public class DDFFieldDefinition implements DDFConstants {
     }
 
     /** this is just for an S-57 hack for swedish data */
-    public void setRepeating(boolean val) {
+    public void setRepeating(final boolean val) {
         bRepeatingSubfields = val;
     }
 
@@ -119,8 +119,8 @@ public class DDFFieldDefinition implements DDFConstants {
         bRepeatingSubfields = false;
     }
 
-    public DDFFieldDefinition(DDFModule poModuleIn, String pszTagIn,
-            byte[] pachFieldArea) {
+    public DDFFieldDefinition(final DDFModule poModuleIn, final String pszTagIn,
+            final byte[] pachFieldArea) {
 
         initialize(poModuleIn, pszTagIn, pachFieldArea);
     }
@@ -134,8 +134,8 @@ public class DDFFieldDefinition implements DDFConstants {
      * @param pachFieldArea the data bytes in the file representing
      *        the field from the header.
      */
-    public boolean initialize(DDFModule poModuleIn, String pszTagIn,
-                              byte[] pachFieldArea) {
+    public boolean initialize(final DDFModule poModuleIn, final String pszTagIn,
+                              final byte[] pachFieldArea) {
 
         /// pachFieldArea needs to be specified better. It's an
         /// offset into a character array, and we need to know what
@@ -172,7 +172,7 @@ public class DDFFieldDefinition implements DDFConstants {
                 0,
                 pachFieldArea.length - iFDOffset);
 
-        MutableInt nCharsConsumed = new MutableInt();
+        final MutableInt nCharsConsumed = new MutableInt();
 
         _fieldName = DDFUtils.fetchVariable(tempData,
                 tempData.length,
@@ -235,7 +235,7 @@ public class DDFFieldDefinition implements DDFConstants {
      * its subfields are written out too.
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer("  DDFFieldDefn:\n");
+        final StringBuffer buf = new StringBuffer("  DDFFieldDefn:\n");
         buf.append("      Tag = " + pszTag + "\n");
         buf.append("      _fieldName = " + _fieldName + "\n");
         buf.append("      _arrayDescr = " + _arrayDescr + "\n");
@@ -244,7 +244,7 @@ public class DDFFieldDefinition implements DDFConstants {
         buf.append("      _data_type_code = " + _data_type_code + "\n");
 
         if (paoSubfieldDefns != null) {
-            for (Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); it.hasNext();) {
+            for (final Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); it.hasNext();) {
                 buf.append(it.next());
             }
         }
@@ -264,12 +264,12 @@ public class DDFFieldDefinition implements DDFConstants {
             pszSublist = pszSublist.substring(1);
         }
 
-        Vector papszSubfieldNames = PropUtils.parseMarkers(pszSublist, "!");
+        final Vector papszSubfieldNames = PropUtils.parseMarkers(pszSublist, "!");
 
         paoSubfieldDefns = new Vector<DDFSubfieldDefinition>();
 
-        for (Iterator it = papszSubfieldNames.iterator(); it.hasNext();) {
-            DDFSubfieldDefinition ddfsd = new DDFSubfieldDefinition();
+        for (final Iterator it = papszSubfieldNames.iterator(); it.hasNext();) {
+            final DDFSubfieldDefinition ddfsd = new DDFSubfieldDefinition();
             ddfsd.setName((String) it.next());
             paoSubfieldDefns.add(ddfsd);
         }
@@ -286,7 +286,7 @@ public class DDFFieldDefinition implements DDFConstants {
      * Given a string like "(A,3(B,C),D),X,Y)" return "A,3(B,C),D".
      * Give a string like "3A,2C" return "3A".
      */
-    protected String extractSubstring(String pszSrc) {
+    protected String extractSubstring(final String pszSrc) {
         int nBracket = 0;
         int i;
         String pszReturn;
@@ -313,8 +313,8 @@ public class DDFFieldDefinition implements DDFConstants {
      * Given a string that contains a coded size symbol, expand it
      * out.
      */
-    protected String expandFormat(String pszSrc) {
-        StringBuffer szDest = new StringBuffer();
+    protected String expandFormat(final String pszSrc) {
+        final StringBuffer szDest = new StringBuffer();
         int iSrc = 0;
         int nRepeat = 0;
 
@@ -327,8 +327,8 @@ public class DDFFieldDefinition implements DDFConstants {
              */
             if ((iSrc == 0 || pszSrc.charAt(iSrc - 1) == ',')
                     && pszSrc.charAt(iSrc) == '(') {
-                String pszContents = extractSubstring(pszSrc + iSrc);
-                String pszExpandedContents = expandFormat(pszContents);
+                final String pszContents = extractSubstring(pszSrc + iSrc);
+                final String pszExpandedContents = expandFormat(pszContents);
 
                 szDest.append(pszExpandedContents);
                 iSrc = iSrc + pszContents.length() + 2;
@@ -341,16 +341,16 @@ public class DDFFieldDefinition implements DDFConstants {
                                                                       */
                     && Character.isDigit(pszSrc.charAt(iSrc))) {
 
-                int orig_iSrc = iSrc;
+                final int orig_iSrc = iSrc;
 
                 // skip over repeat count.
                 for (; Character.isDigit(pszSrc.charAt(iSrc)); iSrc++) {
                 }
-                String nRepeatString = pszSrc.substring(orig_iSrc, iSrc);
+                final String nRepeatString = pszSrc.substring(orig_iSrc, iSrc);
                 nRepeat = Integer.parseInt(nRepeatString);
 
-                String pszContents = extractSubstring(pszSrc.substring(iSrc));
-                String pszExpandedContents = expandFormat(pszContents);
+                final String pszContents = extractSubstring(pszSrc.substring(iSrc));
+                final String pszExpandedContents = expandFormat(pszContents);
 
                 for (int i = 0; i < nRepeat; i++) {
                     szDest.append(pszExpandedContents);
@@ -379,7 +379,7 @@ public class DDFFieldDefinition implements DDFConstants {
      * turn does final parsing of the subfield formats.
      */
     @SuppressWarnings("rawtypes")
-		protected boolean applyFormats(String _formatControls1) {
+		protected boolean applyFormats(final String _formatControls1) {
         String pszFormatList;
         Vector papszFormatItems;
 
@@ -421,7 +421,7 @@ public class DDFFieldDefinition implements DDFConstants {
         /* -------------------------------------------------------------------- */
 
         int iFormatItem = 0;
-        for (Iterator it = papszFormatItems.iterator(); it.hasNext(); iFormatItem++) {
+        for (final Iterator it = papszFormatItems.iterator(); it.hasNext(); iFormatItem++) {
 
             String pszPastPrefix = (String) it.next();
 
@@ -471,7 +471,7 @@ public class DDFFieldDefinition implements DDFConstants {
         /* -------------------------------------------------------------------- */
         nFixedWidth = 0;
         for (int i = 0; i < paoSubfieldDefns.size(); i++) {
-            DDFSubfieldDefinition ddfsd = paoSubfieldDefns.elementAt(i);
+            final DDFSubfieldDefinition ddfsd = paoSubfieldDefns.elementAt(i);
             if (ddfsd.getWidth() == 0) {
                 nFixedWidth = 0;
                 break;
@@ -491,11 +491,11 @@ public class DDFFieldDefinition implements DDFConstants {
      * @return The subfield pointer, or null if there isn't any such
      *         subfield.
      */
-    public DDFSubfieldDefinition findSubfieldDefn(String pszMnemonic) {
+    public DDFSubfieldDefinition findSubfieldDefn(final String pszMnemonic) {
         if (paoSubfieldDefns != null) {
-            for (Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); pszMnemonic != null
+            for (final Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); pszMnemonic != null
                     && it.hasNext();) {
-                DDFSubfieldDefinition ddfsd = it.next();
+                final DDFSubfieldDefinition ddfsd = it.next();
                 if (pszMnemonic.equalsIgnoreCase(ddfsd.getName())) {
                     return ddfsd;
                 }
@@ -513,7 +513,7 @@ public class DDFFieldDefinition implements DDFConstants {
      * @return The subfield pointer, or null if the index is out of
      *         range.
      */
-    public DDFSubfieldDefinition getSubfieldDefn(int i) {
+    public DDFSubfieldDefinition getSubfieldDefn(final int i) {
         if (paoSubfieldDefns == null || i < 0 || i >= paoSubfieldDefns.size()) {
             return null;
         }
@@ -530,7 +530,7 @@ public class DDFFieldDefinition implements DDFConstants {
         char code = '0';
         String prettyName;
 
-        public DataStructCode(char structCode, String name) {
+        public DataStructCode(final char structCode, final String name) {
             code = structCode;
             prettyName = name;
         }
@@ -543,7 +543,7 @@ public class DDFFieldDefinition implements DDFConstants {
             return prettyName;
         }
 
-        public static DataStructCode get(char c) {
+        public static DataStructCode get(final char c) {
             if (c == CONCATENATED.getCode())
                 return CONCATENATED;
             if (c == VECTOR.getCode())
@@ -572,7 +572,7 @@ public class DDFFieldDefinition implements DDFConstants {
         char code = '0';
         String prettyName;
 
-        public DataTypeCode(char structCode, String desc) {
+        public DataTypeCode(final char structCode, final String desc) {
             code = structCode;
             prettyName = desc;
         }
@@ -585,7 +585,7 @@ public class DDFFieldDefinition implements DDFConstants {
             return prettyName;
         }
 
-        public static DataTypeCode get(char c) {
+        public static DataTypeCode get(final char c) {
             if (c == IMPLICIT_POINT.getCode())
                 return IMPLICIT_POINT;
             if (c == EXPLICIT_POINT.getCode())

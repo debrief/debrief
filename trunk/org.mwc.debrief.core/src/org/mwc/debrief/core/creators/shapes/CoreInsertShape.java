@@ -36,16 +36,16 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 * @param theChart
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		// get centre of area
-		WorldLocation centre = getCentre(theChart);
+		final WorldLocation centre = getCentre(theChart);
 
 		// create the shape, based on the centre
-		PlainShape shape = getShape(centre);
+		final PlainShape shape = getShape(centre);
 
 		// and now wrap the shape
-		ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(), shape,
+		final ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(), shape,
 				PlainShape.DEFAULT_COLOR, null);
 
 		return theWrapper;
@@ -72,15 +72,15 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 			final PlainChart theChart = getChart();
 
 			// get the non-track layers
-			Layers theLayers = theChart.getLayers();
+			final Layers theLayers = theChart.getLayers();
 			final String[] ourLayers = trimmedLayers(theLayers);
 
 			// popup the layers in a question dialog
-			IStructuredContentProvider theVals = new ArrayContentProvider();
-			ILabelProvider theLabels = new LabelProvider();
+			final IStructuredContentProvider theVals = new ArrayContentProvider();
+			final ILabelProvider theLabels = new LabelProvider();
 
 			// collate the dialog
-			ListDialog list = new ListDialog(Display.getCurrent().getActiveShell());
+			final ListDialog list = new ListDialog(Display.getCurrent().getActiveShell());
 			list.setContentProvider(theVals);
 			list.setLabelProvider(theLabels);
 			list.setInput(ourLayers);
@@ -93,13 +93,13 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 			{ ourLayers[0] });
 
 			// open it
-			int selection = list.open();
+			final int selection = list.open();
 
 			// did user say yes?
 			if (selection != ListDialog.CANCEL)
 			{
 				// yup, store it's name
-				Object[] val = list.getResult();
+				final Object[] val = list.getResult();
 
 				// check something got selected
 				if (val.length > 0)
@@ -112,7 +112,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 						// better create one. Ask the user
 
 						// create input box dialog
-						InputDialog inp = new InputDialog(Display.getCurrent()
+						final InputDialog inp = new InputDialog(Display.getCurrent()
 								.getActiveShell(), "New layer", "Enter name for new layer",
 								"name here...", null);
 
@@ -120,14 +120,14 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 						if (inp.open() == InputDialog.OK)
 						{
 							// get the results
-							String txt = inp.getValue();
+							final String txt = inp.getValue();
 
 							// check there's something there
 							if (txt.length() > 0)
 							{
 								res = txt;
 								// create base layer
-								Layer newLayer = new BaseLayer();
+								final Layer newLayer = new BaseLayer();
 								newLayer.setName(res);
 
 								// add to layers object
@@ -158,16 +158,16 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 *          the list to search through
 	 * @return receptive layers (those derived from BaseLayer).
 	 */
-	private String[] trimmedLayers(Layers theLayers)
+	private String[] trimmedLayers(final Layers theLayers)
 	{
-		Vector<String> res = new Vector<String>(0, 1);
-		Enumeration<Editable> enumer = theLayers.elements();
+		final Vector<String> res = new Vector<String>(0, 1);
+		final Enumeration<Editable> enumer = theLayers.elements();
 		while (enumer.hasMoreElements())
 		{
-			Layer thisLayer = (Layer) enumer.nextElement();
+			final Layer thisLayer = (Layer) enumer.nextElement();
 			if (thisLayer instanceof BaseLayer)
 			{
-				BaseLayer bl = (BaseLayer) thisLayer;
+				final BaseLayer bl = (BaseLayer) thisLayer;
 				if (bl.canTakeShapes())
 					res.add(thisLayer.getName());
 			}
@@ -175,7 +175,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 
 		res.add(NEW_LAYER_COMMAND);
 
-		String[] sampleArray = new String[]
+		final String[] sampleArray = new String[]
 		{ "aa" };
 		return res.toArray(sampleArray);
 	}

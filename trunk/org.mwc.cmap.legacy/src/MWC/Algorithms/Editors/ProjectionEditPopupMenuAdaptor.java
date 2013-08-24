@@ -86,17 +86,17 @@ public class ProjectionEditPopupMenuAdaptor extends RightClickEdit.BaseMenuCreat
   ////////////////////////////////////////////////////////////
 
 
-	public void createMenu(javax.swing.JPopupMenu menu,
-												 Point thePoint,
-												 CanvasType theCanvas,
-												 PropertiesPanel thePanel,
-												 Layers theData)
+	public void createMenu(final javax.swing.JPopupMenu menu,
+												 final Point thePoint,
+												 final CanvasType theCanvas,
+												 final PropertiesPanel thePanel,
+												 final Layers theData)
 	{
     final Editable.EditorType et = theCanvas.getProjection().getInfo();
     // is this projection editable?
     if(et != null)
     {
-      javax.swing.JMenuItem mi = new javax.swing.JMenuItem("Edit " + et.getBeanDescriptor().getDisplayName());
+      final javax.swing.JMenuItem mi = new javax.swing.JMenuItem("Edit " + et.getBeanDescriptor().getDisplayName());
       mi.addActionListener(new RightClickEdit.EditThisActionListener(thePanel, et, null));
       menu.add(mi);
 

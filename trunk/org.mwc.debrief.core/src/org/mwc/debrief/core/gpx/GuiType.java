@@ -141,7 +141,7 @@ public class GuiType {
          *     {@link ColourType }
          *     
          */
-        public void setColour(ColourType value) {
+        public void setColour(final ColourType value) {
             this.colour = value;
         }
 

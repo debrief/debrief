@@ -18,10 +18,10 @@ public class InsertVector extends CoreInsertShape
 	 * @param centre the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		// generate the shape
-		PlainShape res = new VectorShape(centre,45.0, new WorldDistance(4, WorldDistance.NM));
+		final PlainShape res = new VectorShape(centre,45.0, new WorldDistance(4, WorldDistance.NM));
 		return res;
 	}	
 	

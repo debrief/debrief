@@ -70,7 +70,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /** True if has focus. */
     protected boolean hasFocus;
     /** True if draws focus border around icon as well. */
-    private boolean drawsFocusBorderAroundIcon;
+    private final boolean drawsFocusBorderAroundIcon;
 
     // Icons
     /** Icon used to show non-leaf nodes that aren't expanded. */
@@ -115,7 +115,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
 	setBackgroundSelectionColor(UIManager.getColor("Tree.selectionBackground"));
 	setBackgroundNonSelectionColor(UIManager.getColor("Tree.textBackground"));
 	setBorderSelectionColor(UIManager.getColor("Tree.selectionBorderColor"));
-	Object value = UIManager.get("Tree.drawsFocusBorderAroundIcon");
+	final Object value = UIManager.get("Tree.drawsFocusBorderAroundIcon");
 	drawsFocusBorderAroundIcon = (value != null && ((Boolean)value).
 				      booleanValue());
     }
@@ -148,7 +148,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the icon used to represent non-leaf nodes that are expanded.
       */
-    public void setOpenIcon(Icon newIcon) {
+    public void setOpenIcon(final Icon newIcon) {
 	openIcon = newIcon;
     }
 
@@ -162,7 +162,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the icon used to represent non-leaf nodes that are not expanded.
       */
-    public void setClosedIcon(Icon newIcon) {
+    public void setClosedIcon(final Icon newIcon) {
 	closedIcon = newIcon;
     }
 
@@ -177,7 +177,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the icon used to represent leaf nodes.
       */
-    public void setLeafIcon(Icon newIcon) {
+    public void setLeafIcon(final Icon newIcon) {
 	leafIcon = newIcon;
     }
 
@@ -191,7 +191,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the color the text is drawn with when the node is selected.
       */
-    public void setTextSelectionColor(Color newColor) {
+    public void setTextSelectionColor(final Color newColor) {
 	textSelectionColor = newColor;
     }
 
@@ -205,7 +205,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the color the text is drawn with when the node isn't selected.
       */
-    public void setTextNonSelectionColor(Color newColor) {
+    public void setTextNonSelectionColor(final Color newColor) {
 	textNonSelectionColor = newColor;
     }
 
@@ -219,7 +219,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the color to use for the background if node is selected.
       */
-    public void setBackgroundSelectionColor(Color newColor) {
+    public void setBackgroundSelectionColor(final Color newColor) {
 	backgroundSelectionColor = newColor;
     }
 
@@ -234,7 +234,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the background color to be used for non selected nodes.
       */
-    public void setBackgroundNonSelectionColor(Color newColor) {
+    public void setBackgroundNonSelectionColor(final Color newColor) {
 	backgroundNonSelectionColor = newColor;
     }
 
@@ -248,7 +248,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Sets the color to use for the border.
       */
-    public void setBorderSelectionColor(Color newColor) {
+    public void setBorderSelectionColor(final Color newColor) {
 	borderSelectionColor = newColor;
     }
 
@@ -294,12 +294,12 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
       * The foreground color is set based on the selection and the icon
       * is set based on on leaf and expanded.
       */
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
-						  boolean sel,
-						  boolean expanded,
-						  boolean leaf, int row,
-						  boolean hasFocus1) {
-	String         stringValue = tree.convertValueToText(value, sel,
+    public Component getTreeCellRendererComponent(final JTree tree, final Object value,
+						  final boolean sel,
+						  final boolean expanded,
+						  final boolean leaf, final int row,
+						  final boolean hasFocus1) {
+	final String         stringValue = tree.convertValueToText(value, sel,
 					  expanded, leaf, row, hasFocus1);
 
 	this.hasFocus = hasFocus1;
@@ -339,7 +339,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     /**
       * Paints the value.  The background is filled based on selected.
       */
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
 	Color bColor;
 
 	if(selected) {
@@ -369,7 +369,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
 	    else if (imageOffset == -1) {
 		imageOffset = getLabelStart();
 	    }
-	    Color       bsColor = getBorderSelectionColor();
+	    final Color       bsColor = getBorderSelectionColor();
 
 	    if (bsColor != null) {
 		g.setColor(bsColor);
@@ -386,7 +386,7 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     }
 
     private int getLabelStart() {
-	Icon currentI = getIcon();
+	final Icon currentI = getIcon();
 	if(currentI != null && getText() != null) {
 	    return currentI.getIconWidth() + Math.max(0, getIconTextGap() - 1);
 	}
@@ -425,21 +425,21 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void repaint(long tm, int x, int y, int width, int height) {System.out.println("repa1");}
+    public void repaint(final long tm, final int x, final int y, final int width, final int height) {System.out.println("repa1");}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void repaint(Rectangle r) {System.out.println("repa2");}
+    public void repaint(final Rectangle r) {System.out.println("repa2");}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
 	// Strings get interned...
 	if (propertyName=="text")
 	    super.firePropertyChange(propertyName, oldValue, newValue);
@@ -450,55 +450,55 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, byte oldValue, byte newValue) {}
+    public void firePropertyChange(final String propertyName, final byte oldValue, final byte newValue) {}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, char oldValue, char newValue) {}
+    public void firePropertyChange(final String propertyName, final char oldValue, final char newValue) {}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, short oldValue, short newValue) {}
+    public void firePropertyChange(final String propertyName, final short oldValue, final short newValue) {}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, int oldValue, int newValue) {}
+    public void firePropertyChange(final String propertyName, final int oldValue, final int newValue) {}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, long oldValue, long newValue) {}
+    public void firePropertyChange(final String propertyName, final long oldValue, final long newValue) {}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, float oldValue, float newValue) {}
+    public void firePropertyChange(final String propertyName, final float oldValue, final float newValue) {}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, double oldValue, double newValue) {}
+    public void firePropertyChange(final String propertyName, final double oldValue, final double newValue) {}
 
    /**
     * Overridden for performance reasons.
     * See the <a href="#override">Implementation Note</a>
     * for more information.
     */
-    public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
+    public void firePropertyChange(final String propertyName, final boolean oldValue, final boolean newValue) {}
 
 }

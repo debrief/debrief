@@ -44,7 +44,7 @@ abstract public class WorldAccelerationHandler extends BaseDataHandler
     super(_myType);
   }
 
-  public WorldAccelerationHandler(String myType)
+  public WorldAccelerationHandler(final String myType)
   {
     super(myType);
   }
@@ -56,8 +56,8 @@ abstract public class WorldAccelerationHandler extends BaseDataHandler
   public void elementClosed()
   {
     // produce a value using these units
-    int theUnits = WorldAcceleration.getUnitIndexFor(_units);
-    WorldAcceleration res = new WorldAcceleration(_value, theUnits);
+    final int theUnits = WorldAcceleration.getUnitIndexFor(_units);
+    final WorldAcceleration res = new WorldAcceleration(_value, theUnits);
 
     setAcceleration(res);
 
@@ -67,21 +67,21 @@ abstract public class WorldAccelerationHandler extends BaseDataHandler
 
   abstract public void setAcceleration(WorldAcceleration res);
 
-  public static void exportAcceleration(String element_type,
-                                 WorldAcceleration Acceleration,
-                                 org.w3c.dom.Element parent,
-                                 org.w3c.dom.Document doc)
+  public static void exportAcceleration(final String element_type,
+                                 final WorldAcceleration Acceleration,
+                                 final org.w3c.dom.Element parent,
+                                 final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eLoc = doc.createElement(element_type);
+    final org.w3c.dom.Element eLoc = doc.createElement(element_type);
 
     // set the attributes
-    int theUnit = Acceleration.getUnits();
+    final int theUnit = Acceleration.getUnits();
 
     // and get value
-    double value = Acceleration.getValue();
+    final double value = Acceleration.getValue();
 
     // get the name of the units
-    String units = WorldAcceleration.getLabelFor(theUnit);
+    final String units = WorldAcceleration.getLabelFor(theUnit);
 
     eLoc.setAttribute(VALUE, writeThis(value));
     eLoc.setAttribute(UNITS, units);
@@ -89,8 +89,8 @@ abstract public class WorldAccelerationHandler extends BaseDataHandler
     parent.appendChild(eLoc);
   }
 
-  public static void exportAcceleration(WorldAcceleration Acceleration, org.w3c.dom.Element parent,
-                                    org.w3c.dom.Document doc)
+  public static void exportAcceleration(final WorldAcceleration Acceleration, final org.w3c.dom.Element parent,
+                                    final org.w3c.dom.Document doc)
   {
     exportAcceleration(_myType, Acceleration, parent, doc);
   }

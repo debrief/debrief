@@ -60,7 +60,7 @@ public class JaxbGpxHelper implements GpxHelper
 			DEBRIEF_EXTENSIONS_JAXB_CTX = JAXBContext
 					.newInstance("org.mwc.debrief.core.gpx");
 		}
-		catch (JAXBException e)
+		catch (final JAXBException e)
 		{
 			throw new IllegalStateException(
 					"Exception while initialzing JAXB Context", e);
@@ -73,7 +73,7 @@ public class JaxbGpxHelper implements GpxHelper
 	}
 
 	@Override
-	public Layers unmarshall(InputStream gpxStream, Layers theLayers)
+	public Layers unmarshall(final InputStream gpxStream, Layers theLayers)
 	{
 		if (theLayers == null)
 		{
@@ -81,17 +81,17 @@ public class JaxbGpxHelper implements GpxHelper
 		}
 		try
 		{
-			JDOMSource source = (JDOMSource) getDocumentSource(gpxStream);
+			final JDOMSource source = (JDOMSource) getDocumentSource(gpxStream);
 
-			boolean isGpx10 = isGpx10(source);
-			boolean xmlValid = isValid(source, isGpx10);
+			final boolean isGpx10 = isGpx10(source);
+			final boolean xmlValid = isValid(source, isGpx10);
 
 			if(!xmlValid)
 			{
 				CorePlugin.logError(Status.WARNING, "GPX Doc failed to validate. Trying to import anyway", null);
 			}
 			
-			Document document = source.getDocument();
+			final Document document = source.getDocument();
 			Unmarshaller unmarshaller;
 			List<TrackWrapper> tracks = Collections.emptyList();
 
@@ -99,7 +99,7 @@ public class JaxbGpxHelper implements GpxHelper
 			{
 
 				unmarshaller = GPX_1_0_JAXB_CTX.createUnmarshaller();
-				com.topografix.gpx.v10.Gpx gpx10Type = (com.topografix.gpx.v10.Gpx) JAXBIntrospector
+				final com.topografix.gpx.v10.Gpx gpx10Type = (com.topografix.gpx.v10.Gpx) JAXBIntrospector
 						.getValue(unmarshaller.unmarshal(new DOMOutputter()
 								.output(document)));
 				tracks = trackMapper.fromGpx10(gpx10Type);
@@ -107,16 +107,16 @@ public class JaxbGpxHelper implements GpxHelper
 			else
 			{
 				unmarshaller = GPX_1_1_JAXB_CTX.createUnmarshaller();
-				GpxType gpxType = (GpxType) JAXBIntrospector.getValue(unmarshaller
+				final GpxType gpxType = (GpxType) JAXBIntrospector.getValue(unmarshaller
 						.unmarshal(new DOMOutputter().output(document)));
 				tracks = trackMapper.fromGpx(gpxType);
 			}
-			for (TrackWrapper track : tracks)
+			for (final TrackWrapper track : tracks)
 			{
 				theLayers.addThisLayer(track);
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Problem reading GPX", e);
 			CorePlugin.errorDialog("Load GPS File", "Problem reading GPX");
@@ -127,9 +127,9 @@ public class JaxbGpxHelper implements GpxHelper
 	}
 
 	@Override
-	public void marshall(Layers from, File fileName)
+	public void marshall(final Layers from, final File fileName)
 	{
-		String direcotryPath = collectDirecotryPath();
+		final String direcotryPath = collectDirecotryPath();
 
 		if (direcotryPath == null)
 		{
@@ -140,23 +140,23 @@ public class JaxbGpxHelper implements GpxHelper
 
 		try
 		{
-			File saveTo = new File(direcotryPath, fileName.getName());
-			List<TrackWrapper> tracks = getTracksToMarshall(from);
+			final File saveTo = new File(direcotryPath, fileName.getName());
+			final List<TrackWrapper> tracks = getTracksToMarshall(from);
 
 			if (tracks.size() > 0)
 			{
 				CorePlugin.logError(Status.INFO, "Exporting " + tracks.size()
 						+ " tracks to gpx file " + saveTo.getAbsolutePath(), null);
 
-				Gpx gpxType = GPX_1_0_OBJ_FACTORY.createGpx();
+				final Gpx gpxType = GPX_1_0_OBJ_FACTORY.createGpx();
 				gpxType.setVersion("1.0");
 				gpxType.setName("Exported DebriefNG tracks");
 				gpxType.setCreator("DebriefNG");
 
-				List<Trk> gpxTracks = trackMapper.toGpx10(tracks);
+				final List<Trk> gpxTracks = trackMapper.toGpx10(tracks);
 				gpxType.getTrk().addAll(gpxTracks);
 
-				Marshaller marshaller = GPX_1_0_JAXB_CTX.createMarshaller();
+				final Marshaller marshaller = GPX_1_0_JAXB_CTX.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 				marshaller.marshal(gpxType, saveTo);
 				if (!isValid(saveTo))
@@ -170,7 +170,7 @@ public class JaxbGpxHelper implements GpxHelper
 				CorePlugin.infoDialog("Export to GPS", "No tracks vailable to export");
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			CorePlugin.logError(
 					Status.ERROR,
@@ -185,13 +185,13 @@ public class JaxbGpxHelper implements GpxHelper
 		}
 	}
 
-	private List<TrackWrapper> getTracksToMarshall(Layers from)
+	private List<TrackWrapper> getTracksToMarshall(final Layers from)
 	{
-		Enumeration<Editable> allLayers = from.elements();
-		List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+		final Enumeration<Editable> allLayers = from.elements();
+		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
 		while (allLayers.hasMoreElements())
 		{
-			Editable element = allLayers.nextElement();
+			final Editable element = allLayers.nextElement();
 			if (element instanceof TrackWrapper)
 			{
 				tracks.add((TrackWrapper) element);

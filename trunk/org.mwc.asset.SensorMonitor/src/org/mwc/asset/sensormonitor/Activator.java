@@ -33,20 +33,20 @@ public class Activator extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		
 		
 		// also provide the method to let sensors open their own monitor
 		CoreSensor.setWatchMethod(new CoreSensor.SensorOperation(){
-			public void run(SensorType me)
+			public void run(final SensorType me)
 			{
 				// open a view, based on this sensor
 				// ok, open a new view
-				IViewPart part = CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
+				final IViewPart part = CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
 						IWorkbenchPage.VIEW_VISIBLE);
 				
-				SensorMonitor sm = (SensorMonitor) part;
+				final SensorMonitor sm = (SensorMonitor) part;
 				sm.updateSensor(me);	
 				sm.setKeepMonitoring(false);
 			}});		
@@ -56,7 +56,7 @@ public class Activator extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(final BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
 	}
@@ -77,7 +77,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @param path the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
+	public static ImageDescriptor getImageDescriptor(final String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 }

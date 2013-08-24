@@ -283,9 +283,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void propertyChange(PropertyChangeEvent evt)
+		public void propertyChange(final PropertyChangeEvent evt)
 		{
-			Layer layer = (Layer) evt.getSource();
+			final Layer layer = (Layer) evt.getSource();
 			fireReformatted(layer);
 		}
 
@@ -302,7 +302,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * data (other than via static data, but it needs to be unique for each
 	 * operation).
 	 */
-	public void setEditor(MWC.GUI.Tools.Chart.RightClickEdit editor)
+	public void setEditor(final MWC.GUI.Tools.Chart.RightClickEdit editor)
 	{
 		_myEditor = editor;
 	}
@@ -330,10 +330,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		WorldArea res = null;
 
-		Iterator<Editable> it = _theLayers.iterator();
+		final Iterator<Editable> it = _theLayers.iterator();
 		while (it.hasNext())
 		{
-			Layer thisL = (Layer) it.next();
+			final Layer thisL = (Layer) it.next();
 			final WorldArea newBounds = thisL.getBounds();
 			if (newBounds != null)
 			{
@@ -373,15 +373,15 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theOther
 	 *          layer to add to us
 	 */
-	public void addThis(Layers theOther)
+	public void addThis(final Layers theOther)
 	{
 		//
-		Enumeration<Editable> other = theOther._theLayers.elements();
+		final Enumeration<Editable> other = theOther._theLayers.elements();
 		while (other.hasMoreElements())
 		{
-			Layer thisL = (Layer) other.nextElement();
+			final Layer thisL = (Layer) other.nextElement();
 			// see if we are storing this layer already
-			Layer current = findLayer(thisL.getName());
+			final Layer current = findLayer(thisL.getName());
 			if (current == null)
 			{
 				// ok, now we can add it
@@ -434,16 +434,16 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	public Enumeration<Layer> sortedElements()
 	{
 		// have a got a creating a sorted set of layers
-		Vector<Layer> res = new Vector<Layer>(0, 1);
-		Enumeration<Editable> numer = _theLayers.elements();
+		final Vector<Layer> res = new Vector<Layer>(0, 1);
+		final Enumeration<Editable> numer = _theLayers.elements();
 
-		Vector<Layer> _backgrounds = new Vector<Layer>(0, 1);
-		Vector<Layer> _buffered = new Vector<Layer>(0, 1);
-		Vector<Layer> _nonBuffered = new Vector<Layer>(0, 1);
+		final Vector<Layer> _backgrounds = new Vector<Layer>(0, 1);
+		final Vector<Layer> _buffered = new Vector<Layer>(0, 1);
+		final Vector<Layer> _nonBuffered = new Vector<Layer>(0, 1);
 		while (numer.hasMoreElements())
 		{
 			boolean inserted = false;
-			Layer thisLayer = (Layer) numer.nextElement();
+			final Layer thisLayer = (Layer) numer.nextElement();
 			if (thisLayer instanceof BackgroundLayer)
 			{
 				_backgrounds.add(thisLayer);
@@ -451,7 +451,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			}
 			else if (thisLayer instanceof BaseLayer)
 			{
-				BaseLayer bl = (BaseLayer) thisLayer;
+				final BaseLayer bl = (BaseLayer) thisLayer;
 				if (bl.isBuffered())
 				{
 					_buffered.add(thisLayer);
@@ -474,12 +474,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		return _isVisible;
 	}
 
-	public void setVisible(boolean visible)
+	public void setVisible(final boolean visible)
 	{
 		this._isVisible = visible;
 	}
 
-	public double rangeFrom(WorldLocation other)
+	public double rangeFrom(final WorldLocation other)
 	{
 		return -1;
 	}
@@ -491,15 +491,15 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 *          the name of the layer to look for
 	 * @return the layer
 	 */
-	public Layer findLayer(String theLayerName)
+	public Layer findLayer(final String theLayerName)
 	{
 		Layer res = null;
 		// step through our layers
-		Enumeration<Editable> enumer = _theLayers.elements();
+		final Enumeration<Editable> enumer = _theLayers.elements();
 		while (enumer.hasMoreElements())
 		{
-			Layer thisL = (Layer) enumer.nextElement();
-			String layerName = thisL.getName();
+			final Layer thisL = (Layer) enumer.nextElement();
+			final String layerName = thisL.getName();
 			if (layerName != null)
 				if (layerName.equalsIgnoreCase(theLayerName))
 				{
@@ -511,10 +511,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		return res;
 	}
 
-	public void addThisLayerDoNotResize(Layer theLayer)
+	public void addThisLayerDoNotResize(final Layer theLayer)
 	{
 		// see if we are already storing this layer
-		Layer res = findLayer(theLayer.getName());
+		final Layer res = findLayer(theLayer.getName());
 
 		if (res == null)
 		{
@@ -538,7 +538,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
 		if (theLayer instanceof SupportsPropertyListeners)
 		{
-			SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
+			final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
 			pr.addPropertyChangeListener(SupportsPropertyListeners.FORMAT,
 					_formatListener);
 		}
@@ -557,7 +557,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		if (theLayer instanceof NeedsWrappingInLayerManager)
 		{
 			// right, does it already exist at the top level
-			Layer exists = this.findLayer(theLayer.getName());
+			final Layer exists = this.findLayer(theLayer.getName());
 			if (exists != null)
 			{
 				// better rename it then
@@ -566,14 +566,14 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			}
 
 			// now wrap it
-			NeedsWrappingInLayerManager nl = (NeedsWrappingInLayerManager) theLayer;
+			final NeedsWrappingInLayerManager nl = (NeedsWrappingInLayerManager) theLayer;
 			theLayer = nl.wrapMe();
 		}
 		
 		// does it need to know about the layers, or that it has been added to the layers?
 		if(theLayer instanceof NeedsToKnowAboutLayers)
 		{
-			NeedsToKnowAboutLayers need = (NeedsToKnowAboutLayers) theLayer;
+			final NeedsToKnowAboutLayers need = (NeedsToKnowAboutLayers) theLayer;
 			need.setLayers(this);
 		}
 
@@ -592,10 +592,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	public void addThisLayerAllowDuplication(final Layer theLayer)
 	{
 		// right, does this layer name already exist?
-		Iterator<Editable> iter = _theLayers.iterator();
+		final Iterator<Editable> iter = _theLayers.iterator();
 		while (iter.hasNext())
 		{
-			Layer thisLayer = (Layer) iter.next();
+			final Layer thisLayer = (Layer) iter.next();
 			if (thisLayer.getName().equals(theLayer.getName()))
 			{
 				// right, we've got to subtlely change the new layer name
@@ -616,14 +616,14 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theLayer
 	 *          the layer to remove
 	 */
-	public void removeThisLayer(Layer theLayer)
+	public void removeThisLayer(final Layer theLayer)
 	{
 		// first remove the layer
 		_theLayers.removeElement(theLayer);
 
 		if (theLayer instanceof SupportsPropertyListeners)
 		{
-			SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
+			final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
 			pr.removePropertyChangeListener(SupportsPropertyListeners.FORMAT,
 					_formatListener);
 		}
@@ -639,7 +639,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 *          the index to look at
 	 * @return the Layer, or null
 	 */
-	public Layer elementAt(int index)
+	public Layer elementAt(final int index)
 	{
 		return (Layer) _theLayers.elementAt(index);
 	}
@@ -650,21 +650,21 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param dest
 	 *          destination for the plotting
 	 */
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// check that we have a valid canvas (that the sizes are set)
-		java.awt.Dimension sArea = dest.getProjection().getScreenArea();
+		final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
 		if (sArea != null)
 		{
 			if (sArea.width > 0)
 			{
-				Enumeration<Editable> enumer = _theLayers.elements();
+				final Enumeration<Editable> enumer = _theLayers.elements();
 				while (enumer.hasMoreElements())
 				{
-					Layer thisLayer = (Layer) enumer.nextElement();
+					final Layer thisLayer = (Layer) enumer.nextElement();
 
 					// set the line width
-					float oldWid = dest.getLineWidth();
+					final float oldWid = dest.getLineWidth();
 					dest.setLineWidth(thisLayer.getLineThickness());
 					thisLayer.paint(dest);
 					dest.setLineWidth((int) oldWid);
@@ -680,7 +680,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public Layer cleanLayer()
 	{
-		Layer res = new BaseLayer();
+		final Layer res = new BaseLayer();
 		return res;
 	}
 
@@ -695,10 +695,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		if (!_suspendFiringExtended)
 		{
-			Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
+			final Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
 			while (enumer.hasMoreElements())
 			{
-				DataListener thisOne = (DataListener) enumer.nextElement();
+				final DataListener thisOne = (DataListener) enumer.nextElement();
 				thisOne.dataExtended(this);
 			}
 		}
@@ -707,20 +707,20 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	/**
 	 * inform listeners that we have been extended
 	 */
-	public void fireExtended(Plottable newItem, Layer parent)
+	public void fireExtended(final Plottable newItem, final Layer parent)
 	{
 		if (!_suspendFiringExtended)
 		{
-			Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
+			final Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
 			while (enumer.hasMoreElements())
 			{
-				DataListener thisOne = (DataListener) enumer.nextElement();
+				final DataListener thisOne = (DataListener) enumer.nextElement();
 
 				// just see if this is a special listener
 				if (thisOne instanceof DataListener2)
 				{
 					// yes, indicate which is the new item
-					DataListener2 d2 = (DataListener2) thisOne;
+					final DataListener2 d2 = (DataListener2) thisOne;
 					d2.dataExtended(this, newItem, parent);
 				}
 				else
@@ -732,12 +732,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	/**
 	 * inform listeners that we have been modified
 	 */
-	public void fireModified(Layer changedLayer)
+	public void fireModified(final Layer changedLayer)
 	{
-		Enumeration<DataListener> enumer = _dataModifiedListeners.elements();
+		final Enumeration<DataListener> enumer = _dataModifiedListeners.elements();
 		while (enumer.hasMoreElements())
 		{
-			DataListener thisOne = (DataListener) enumer.nextElement();
+			final DataListener thisOne = (DataListener) enumer.nextElement();
 			thisOne.dataModified(this, changedLayer);
 		}
 	}
@@ -745,12 +745,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	/**
 	 * inform listeners that we have had a formatting change
 	 */
-	public void fireReformatted(Layer changedLayer)
+	public void fireReformatted(final Layer changedLayer)
 	{
-		Enumeration<DataListener> enumer = _dataReformattedListeners.elements();
+		final Enumeration<DataListener> enumer = _dataReformattedListeners.elements();
 		while (enumer.hasMoreElements())
 		{
-			DataListener thisOne = (DataListener) enumer.nextElement();
+			final DataListener thisOne = (DataListener) enumer.nextElement();
 			thisOne.dataReformatted(this, changedLayer);
 		}
 	}
@@ -761,7 +761,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theListener
 	 *          the listener to add
 	 */
-	public void addDataModifiedListener(DataListener theListener)
+	public void addDataModifiedListener(final DataListener theListener)
 	{
 		_dataModifiedListeners.addElement(theListener);
 	}
@@ -772,7 +772,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theListener
 	 *          the listener to add
 	 */
-	public void addDataExtendedListener(DataListener theListener)
+	public void addDataExtendedListener(final DataListener theListener)
 	{
 		_dataExtendedListeners.addElement(theListener);
 	}
@@ -783,7 +783,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theListener
 	 *          the listener to add
 	 */
-	public void addDataReformattedListener(DataListener theListener)
+	public void addDataReformattedListener(final DataListener theListener)
 	{
 		_dataReformattedListeners.addElement(theListener);
 	}
@@ -794,7 +794,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theListener
 	 *          the listener to remove
 	 */
-	public void removeDataModifiedListener(DataListener theListener)
+	public void removeDataModifiedListener(final DataListener theListener)
 	{
 		_dataModifiedListeners.removeElement(theListener);
 	}
@@ -805,7 +805,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theListener
 	 *          the listener to remove
 	 */
-	public void removeDataExtendedListener(DataListener theListener)
+	public void removeDataExtendedListener(final DataListener theListener)
 	{
 		_dataExtendedListeners.removeElement(theListener);
 	}
@@ -816,12 +816,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theListener
 	 *          the listener to remove
 	 */
-	public void removeDataReformattedListener(DataListener theListener)
+	public void removeDataReformattedListener(final DataListener theListener)
 	{
 		_dataReformattedListeners.removeElement(theListener);
 	}
 
-	private void readObject(java.io.ObjectInputStream in) throws IOException,
+	private void readObject(final java.io.ObjectInputStream in) throws IOException,
 			ClassNotFoundException
 	{
 
@@ -856,7 +856,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param val
 	 *          largely ignored by the people of New Guinea
 	 */
-	public void setName(String val)
+	public void setName(final String val)
 	{
 		//
 	}
@@ -881,12 +881,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		return new LayersInfo(this);
 	}
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
 		final int res;
-		Plottable other = (Plottable) arg0;
-		int myCode = hashCode();
-		int otherCode = other.hashCode();
+		final Plottable other = (Plottable) arg0;
+		final int myCode = hashCode();
+		final int otherCode = other.hashCode();
 		if (myCode < otherCode)
 			res = -1;
 		else if (myCode > otherCode)
@@ -902,13 +902,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	public void close()
 	{
 		// first, get the layers to close themselves
-		Enumeration<Editable> enumer = _theLayers.elements();
+		final Enumeration<Editable> enumer = _theLayers.elements();
 		while (enumer.hasMoreElements())
 		{
-			Object layer = enumer.nextElement();
+			final Object layer = enumer.nextElement();
 			if (layer instanceof PlainWrapper)
 			{
-				PlainWrapper pw = (PlainWrapper) layer;
+				final PlainWrapper pw = (PlainWrapper) layer;
 				pw.closeMe();
 			}
 		}
@@ -1016,7 +1016,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		 * @param data
 		 *          the Layers themselves
 		 */
-		public LayersInfo(Layers data)
+		public LayersInfo(final Layers data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -1029,7 +1029,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		 */
 		public BeanDescriptor getBeanDescriptor()
 		{
-			BeanDescriptor bp = new BeanDescriptor(Layers.class,
+			final BeanDescriptor bp = new BeanDescriptor(Layers.class,
 					MWC.GUI.LayerManager.Swing.SwingLayerManager.class);
 			bp.setDisplayName("Layer Manager");
 			return bp;
@@ -1045,12 +1045,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("Name", "the name for these layers"), };
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1064,7 +1064,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public LayersTest(String val)
+		public LayersTest(final String val)
 		{
 			super(val);
 		}
@@ -1083,7 +1083,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * 
 	 * @param suspendFiring
 	 */
-	public void suspendFiringExtended(boolean suspendFiring)
+	public void suspendFiringExtended(final boolean suspendFiring)
 	{
 		_suspendFiringExtended = suspendFiring;
 	}

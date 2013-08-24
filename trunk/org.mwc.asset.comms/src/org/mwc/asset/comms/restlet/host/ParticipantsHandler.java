@@ -14,10 +14,10 @@ public class ParticipantsHandler extends ASSETResource implements
 	@Get
 	public List<Participant> retrieve()
 	{
-		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
-		ASSETHost host = hostP.getHost();
+		final ASSETHost.HostProvider hostP = (HostProvider) getApplication();
+		final ASSETHost host = hostP.getHost();
 		
-		List<Participant> list = host.getParticipantsFor(getScenarioId());
+		final List<Participant> list = host.getParticipantsFor(getScenarioId());
 		return list;
 	}
 	

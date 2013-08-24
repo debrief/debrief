@@ -65,18 +65,18 @@ public class AWTEditFrame extends Dialog implements ActionListener
 	 */
 	private static final long serialVersionUID = 1L;
 	protected PropertyEditor _pe;
-  public AWTEditFrame(Frame parent, PropertyEditor pe)
+  public AWTEditFrame(final Frame parent, final PropertyEditor pe)
   {
     super(parent);
     _pe = pe;
     initForm();
     setBackground(SystemColor.control);
-    Dimension di = Toolkit.getDefaultToolkit().getScreenSize();
-    Rectangle dme = getBounds();
+    final Dimension di = Toolkit.getDefaultToolkit().getScreenSize();
+    final Rectangle dme = getBounds();
     setLocation( (di.width - dme.width)/2,
                  (di.height - dme.height)/2);
     this.addWindowListener(new WindowAdapter(){
-      public void windowClosing(WindowEvent e)
+      public void windowClosing(final WindowEvent e)
       {
         dispose();
       }
@@ -86,17 +86,17 @@ public class AWTEditFrame extends Dialog implements ActionListener
   public void initForm()
   {
     setLayout(new BorderLayout());
-    Component cp = _pe.getCustomEditor();
+    final Component cp = _pe.getCustomEditor();
     add("Center", cp);
-    Button fin = new Button("Done");
+    final Button fin = new Button("Done");
     fin.addActionListener(this);
     add("South", fin);
-    Dimension sz = cp.getPreferredSize();
+    final Dimension sz = cp.getPreferredSize();
     setSize(sz.width + 50,
             sz.height + fin.getPreferredSize().height + 50);
   }
       
-  public void actionPerformed(ActionEvent e)
+  public void actionPerformed(final ActionEvent e)
   {
     dispose();
   }

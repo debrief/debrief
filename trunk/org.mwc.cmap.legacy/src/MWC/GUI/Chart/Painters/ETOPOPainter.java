@@ -54,7 +54,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
   ///////////////////////////////////
   // constructor
   ///////////////////////////////////
-  public ETOPOPainter(String pathName, Layers parentLayers)
+  public ETOPOPainter(final String pathName, final Layers parentLayers)
   {
     if (_etopo == null)
       _etopo = new ETOPOWrapper(pathName, parentLayers, this);
@@ -71,7 +71,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
 
     final String thePath = etopo_path + "//" + "Etopo5";
 
-    File testFile = new File(thePath);
+    final File testFile = new File(thePath);
 
     if (testFile.exists())
       res = true;
@@ -107,7 +107,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     return "ETOPO Bathy Data";
   }
 
-  public void paint(CanvasType dest)
+  public void paint(final CanvasType dest)
   {
     if (getVisible())
       _etopo.doPaint(dest);
@@ -118,12 +118,12 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     return null;
   }
 
-  public void add(Plottable point)
+  public void add(final Plottable point)
   {
     // ignore
   }
 
-  public void append(Layer other)
+  public void append(final Layer other)
   {
     // ignore
   }
@@ -151,7 +151,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     return _isVisible;
   }
 
-  public void setVisible(boolean isVisible)
+  public void setVisible(final boolean isVisible)
   {
     _isVisible = isVisible;
   }
@@ -167,7 +167,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
   /**
    * setter for whether to show land
    */
-  public void setShowLand(boolean val)
+  public void setShowLand(final boolean val)
   {
     _etopo.setShowLand(val);
   }
@@ -178,12 +178,12 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     return true;
   }
 
-  public double rangeFrom(WorldLocation other)
+  public double rangeFrom(final WorldLocation other)
   {
     return INVALID_RANGE;
   }
 
-  public void removeElement(Plottable point)
+  public void removeElement(final Plottable point)
   {
   }
 
@@ -195,7 +195,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     return _etopo.getKeyLocation();
   }
 
-  public void setKeyLocation(Integer val)
+  public void setKeyLocation(final Integer val)
   {
     _etopo.setKeyLocation(val);
   }
@@ -203,7 +203,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
   /**
    * the colour of the key
    */
-  public void setColor(Color val)
+  public void setColor(final Color val)
   {
     _etopo.setColor(val);
   }
@@ -254,7 +254,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     return _etopo.getThickness();
   }
 
-  public void setLineThickness(int thickness)
+  public void setLineThickness(final int thickness)
   {
     _etopo.setThickness(thickness);
   }
@@ -270,13 +270,13 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public boolean imageUpdate(Image img, int infoflags,
-                               int x, int y, int width, int height)
+		public boolean imageUpdate(final Image img, final int infoflags,
+                               final int x, final int y, final int width, final int height)
     {
       return false;
     }
 
-    public ETOPOInfo(ETOPOPainter data)
+    public ETOPOInfo(final ETOPOPainter data)
     {
       super(data, data.getName(), "");
     }
@@ -285,7 +285,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     {
       try
       {
-        java.beans.PropertyDescriptor[] res = {
+        final java.beans.PropertyDescriptor[] res = {
           prop("Visible", "whether this layer is visible"),
           prop("KeyLocation", "the current location of the color-key"),
           prop("Color", "the color of the color-key"),
@@ -300,7 +300,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
 
         return res;
       }
-      catch (java.beans.IntrospectionException e)
+      catch (final java.beans.IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
@@ -345,7 +345,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
       return _myLineLocation;
     }
 
-    public void setValue(Object p1)
+    public void setValue(final Object p1)
     {
       if (p1 instanceof Integer)
       {
@@ -353,16 +353,16 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
       }
       if (p1 instanceof String)
       {
-        String val = (String) p1;
+        final String val = (String) p1;
         setAsText(val);
       }
     }
 
-    public void setAsText(String val)
+    public void setAsText(final String val)
     {
       for (int i = 0; i < getTags().length; i++)
       {
-        String thisStr = getTags()[i];
+        final String thisStr = getTags()[i];
         if (thisStr.equals(val))
           _myLineLocation = new Integer(i);
       }
@@ -371,7 +371,7 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     public String getAsText()
     {
       String res = null;
-      int index = _myLineLocation.intValue();
+      final int index = _myLineLocation.intValue();
       res = getTags()[index];
       return res;
     }

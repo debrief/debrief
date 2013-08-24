@@ -31,7 +31,7 @@ abstract public class AbsoluteTMASegmentHandler extends CoreTMASegmentHandler
 		addHandler(new LocationHandler(ORIGIN)
 		{
 			@Override
-			public void setLocation(WorldLocation val)
+			public void setLocation(final WorldLocation val)
 			{
 				_origin = val;
 			}
@@ -43,14 +43,14 @@ abstract public class AbsoluteTMASegmentHandler extends CoreTMASegmentHandler
 	@Override
 	protected TrackSegment createTrack()
 	{
-		AbsoluteTMASegment res = new AbsoluteTMASegment(_courseDegs, _speed, _origin, null, null);
+		final AbsoluteTMASegment res = new AbsoluteTMASegment(_courseDegs, _speed, _origin, null, null);
 		res.setBaseFrequency(_baseFrequency);
 		return res;
 	}
 
 
-	public static void exportThisTMASegment(org.w3c.dom.Document doc, Element trk,
-			AbsoluteTMASegment seg)
+	public static void exportThisTMASegment(final org.w3c.dom.Document doc, final Element trk,
+			final AbsoluteTMASegment seg)
 	{
 		
 		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg, TMA_SEGMENT);

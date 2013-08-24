@@ -31,60 +31,60 @@ public class ESearch implements SearchModel
 	}
 
 	@Override
-	public MatchList getMatches(String indexURL, String dbURL, ManagerView view)
+	public MatchList getMatches(final String indexURL, final String dbURL, final ManagerView view)
 			throws IOException
 	{
-		JsonNode query = createQuery(view);
+		final JsonNode query = createQuery(view);
 		return fireSearch(indexURL, dbURL, query);
 	}
 
 	@Override
-	public MatchList getAll(String indexURL, String dbURL) throws IOException
+	public MatchList getAll(final String indexURL, final String dbURL) throws IOException
 	{
-		ObjectNode queryObj = _mapper.createObjectNode();
+		final ObjectNode queryObj = _mapper.createObjectNode();
 		queryObj.put("match_all", _mapper.createObjectNode());
 
 		return fireSearch(indexURL, dbURL, queryObj);
 	}
 
-	public JsonNode createQuery(ManagerView view)
+	public JsonNode createQuery(final ManagerView view)
 	{
-		ArrayNode facets = _mapper.createArrayNode();
+		final ArrayNode facets = _mapper.createArrayNode();
 		// ok, get collating the items.
 		addThis(facets, view.getPlatforms().getSelectedItems(), "platform");
 		addThis(facets, view.getPlatformTypes().getSelectedItems(), "platform_type");
 		addThis(facets, view.getTrials().getSelectedItems(), "trial");
 
 		// we also have to do the free search
-		String freeText = view.getFreeText();
+		final String freeText = view.getFreeText();
 		if (freeText != null)
 		{
-			ObjectNode field = _mapper.createObjectNode();
-			ObjectNode term = _mapper.createObjectNode();
+			final ObjectNode field = _mapper.createObjectNode();
+			final ObjectNode term = _mapper.createObjectNode();
 			term.put("query", freeText);
 			field.put("query_string", term);
 			facets.set(facets.size(), field);
 		}
 
-		ObjectNode mustHolder = _mapper.createObjectNode();
+		final ObjectNode mustHolder = _mapper.createObjectNode();
 
 		mustHolder.put("must", facets);
-		ObjectNode boolHolder = _mapper.createObjectNode();
+		final ObjectNode boolHolder = _mapper.createObjectNode();
 		boolHolder.put("bool", mustHolder);
 
 		return boolHolder;
 	}
 
-	private void addThis(ArrayNode facets, List<String> items, String tag_name)
+	private void addThis(final ArrayNode facets, final List<String> items, final String tag_name)
 	{
 		if (items.size() > 0)
 		{
-			ObjectNode holder = _mapper.createObjectNode();
-			ObjectNode terms = _mapper.createObjectNode();
-			ArrayNode matches = _mapper.createArrayNode();
-			for (Iterator<String> iterator = items.iterator(); iterator.hasNext();)
+			final ObjectNode holder = _mapper.createObjectNode();
+			final ObjectNode terms = _mapper.createObjectNode();
+			final ArrayNode matches = _mapper.createArrayNode();
+			for (final Iterator<String> iterator = items.iterator(); iterator.hasNext();)
 			{
-				String thisItem = (String) iterator.next();
+				final String thisItem = (String) iterator.next();
 
 				// and store it
 				matches.add(thisItem);
@@ -96,20 +96,20 @@ public class ESearch implements SearchModel
 		}
 	}
 
-	private MatchList fireSearch(String root, String dbURL, JsonNode queryObj)
+	private MatchList fireSearch(final String root, final String dbURL, final JsonNode queryObj)
 			throws IOException
 	{
 		MatchList res = null;
 
 		// sort out the facets
-		ObjectNode facets = _mapper.createObjectNode();
+		final ObjectNode facets = _mapper.createObjectNode();
 		addFacetFor(facets, "platform");
 		addFacetFor(facets, "platform_type");
 		addFacetFor(facets, "trial");
 		addFacetFor(facets, "sensor");
 		addFacetFor(facets, "sensor_type");
 
-		ObjectNode qq = _mapper.createObjectNode();
+		final ObjectNode qq = _mapper.createObjectNode();
 		qq.put("size", 500);
 		qq.put("query", queryObj);
 		qq.put("facets", facets);
@@ -118,20 +118,20 @@ public class ESearch implements SearchModel
 		{
 			URL url;
 			url = new URL(root + "/_search?pretty=true&source=" + qq.toString());
-			JsonNode obj = _mapper.readValue(url, JsonNode.class);
+			final JsonNode obj = _mapper.readValue(url, JsonNode.class);
 			res = new MatchListWrap(obj, dbURL);
 		}
-		catch (MalformedURLException e)
+		catch (final MalformedURLException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (JsonParseException e)
+		catch (final JsonParseException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (JsonMappingException e)
+		catch (final JsonMappingException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -145,7 +145,7 @@ public class ESearch implements SearchModel
 		private final JsonNode _node;
 		private final String _dbURL;
 
-		public MatchListWrap(JsonNode list, String dbURL)
+		public MatchListWrap(final JsonNode list, final String dbURL)
 		{
 			_node = list;
 			_dbURL = dbURL;
@@ -154,21 +154,21 @@ public class ESearch implements SearchModel
 		@Override
 		public int getNumMatches()
 		{
-			int hits = _node.get("hits").get("hits").size();
+			final int hits = _node.get("hits").get("hits").size();
 			return hits;
 		}
 
 		@Override
-		public Match getMatch(int index)
+		public Match getMatch(final int index)
 		{
-			JsonNode node = _node.get("hits").get("hits").get(index);
+			final JsonNode node = _node.get("hits").get("hits").get(index);
 			return new MatchWrap(node, _dbURL);
 		}
 
 		@Override
-		public Facet getFacet(String name)
+		public Facet getFacet(final String name)
 		{
-			JsonNode facets = _node.get("facets");
+			final JsonNode facets = _node.get("facets");
 			return new FacetWrap(facets.get(name));
 		}
 
@@ -177,9 +177,9 @@ public class ESearch implements SearchModel
 	public static class FacetWrap implements Facet
 	{
 
-		private JsonNode _node;
+		private final JsonNode _node;
 
-		public FacetWrap(JsonNode jsonNode)
+		public FacetWrap(final JsonNode jsonNode)
 		{
 			_node = jsonNode;
 		}
@@ -194,13 +194,13 @@ public class ESearch implements SearchModel
 		}
 
 		@Override
-		public String getName(int index)
+		public String getName(final int index)
 		{
 			return _node.get("terms").get(index).get("term").getTextValue();
 		}
 
 		@Override
-		public int getCount(int index)
+		public int getCount(final int index)
 		{
 			return _node.get("terms").get(index).get("count").asInt();
 		}
@@ -208,7 +208,7 @@ public class ESearch implements SearchModel
 		@Override
 		public ArrayList<String> toList()
 		{
-			ArrayList<String> res = new ArrayList<String>();
+			final ArrayList<String> res = new ArrayList<String>();
 			for (int i = 0; i < size(); i++)
 			{
 				res.add(getName(i));
@@ -224,7 +224,7 @@ public class ESearch implements SearchModel
 		private final String _dbURL;
 		private EditableWrapper _wrappedMe;
 
-		public MatchWrap(JsonNode item, String dbURL)
+		public MatchWrap(final JsonNode item, final String dbURL)
 		{
 			_node = item;
 			_dbURL = dbURL;
@@ -264,14 +264,14 @@ public class ESearch implements SearchModel
 
 		@SuppressWarnings("rawtypes")
 		@Override
-		public Object getAdapter(Class adapter)
+		public Object getAdapter(final Class adapter)
 		{
 			final Object res;
 			if (adapter == EditableWrapper.class)
 			{
 				if (_wrappedMe == null)
 				{
-					GTrack track = loadTrack(getId());
+					final GTrack track = loadTrack(getId());
 					_wrappedMe = new EditableWrapper(track, null, null);
 				}
 				res = _wrappedMe;
@@ -281,29 +281,29 @@ public class ESearch implements SearchModel
 			return res;
 		}
 
-		public GTrack loadTrack(String id)
+		public GTrack loadTrack(final String id)
 		{
 			GTrack res = null;
 			JsonNode obj;
 			try
 			{
-				URL url = new URL(_dbURL + "/" + id);
-				URL databaseURL = new URL(_dbURL);
+				final URL url = new URL(_dbURL + "/" + id);
+				final URL databaseURL = new URL(_dbURL);
 				obj = _mapper.readValue(url, JsonNode.class);
-				GDataset data = new GDataset(obj, databaseURL);
+				final GDataset data = new GDataset(obj, databaseURL);
 				res = new GTrack(data);
 			}
-			catch (JsonParseException e)
+			catch (final JsonParseException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			catch (JsonMappingException e)
+			catch (final JsonMappingException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -320,10 +320,10 @@ public class ESearch implements SearchModel
 	 * @param parent
 	 * @param term
 	 */
-	private void addFacetFor(ObjectNode parent, String term)
+	private void addFacetFor(final ObjectNode parent, final String term)
 	{
-		ObjectNode platform = _mapper.createObjectNode();
-		ObjectNode platTerm = _mapper.createObjectNode();
+		final ObjectNode platform = _mapper.createObjectNode();
+		final ObjectNode platTerm = _mapper.createObjectNode();
 		platTerm.put("field", term);
 		platTerm.put("size", 1000);
 		platform.put("terms", platTerm);

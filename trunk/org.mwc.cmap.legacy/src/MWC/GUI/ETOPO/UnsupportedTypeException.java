@@ -41,7 +41,7 @@ public class UnsupportedTypeException extends RuntimeException {
      *
      * @param msg The message to associate with this exception
      */
-    public UnsupportedTypeException(String msg) {
+    public UnsupportedTypeException(final String msg) {
         super(msg);
     }
 }

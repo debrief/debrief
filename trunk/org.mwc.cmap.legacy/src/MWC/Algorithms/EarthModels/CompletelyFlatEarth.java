@@ -76,7 +76,7 @@ public class CompletelyFlatEarth implements EarthModel
   /**
    * working world location, used to reduce amount of object creation
    */
-  private WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
+  private final WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
 
   //////////////////////////////////////////////////
   // constructor
@@ -86,14 +86,14 @@ public class CompletelyFlatEarth implements EarthModel
    * add a vector to a location: note that the value returned
    * is the same instance of an object each time
    */
-  public WorldLocation add(WorldLocation start, WorldVector delta)
+  public WorldLocation add(final WorldLocation start, final WorldVector delta)
   {
     if ((delta.getRange()) == 0 && (delta.getDepth() == 0))
       return start;
 
-    double dLat = delta.getRange() * Math.cos(delta.getBearing());
-    double dLong = delta.getRange() * Math.sin(delta.getBearing());
-    double dDepth = delta.getDepth();
+    final double dLat = delta.getRange() * Math.cos(delta.getBearing());
+    final double dLong = delta.getRange() * Math.sin(delta.getBearing());
+    final double dDepth = delta.getDepth();
 
     // use our internal object for calculation, to reduce object creation
     _workingLocation.setLat(start.getLat() + dLat);
@@ -111,9 +111,9 @@ public class CompletelyFlatEarth implements EarthModel
    * @param from parameter for bearingBetween
    * @return the returned double
    */
-  public double bearingBetween(WorldLocation from, WorldLocation to)
+  public double bearingBetween(final WorldLocation from, final WorldLocation to)
   {
-    WorldVector res = from.subtract(to);
+    final WorldVector res = from.subtract(to);
 
     return res.getBearing();
   }
@@ -124,14 +124,14 @@ public class CompletelyFlatEarth implements EarthModel
    * @param from parameter for rangeBetween
    * @return the returned double
    */
-  public double rangeBetween(WorldLocation from, WorldLocation to)
+  public double rangeBetween(final WorldLocation from, final WorldLocation to)
   {
-    WorldVector res = subtract(from, to);
+    final WorldVector res = subtract(from, to);
     return res.getRange();
   }
 
-  public WorldVector subtract(WorldLocation from,
-                              WorldLocation to)
+  public WorldVector subtract(final WorldLocation from,
+                              final WorldLocation to)
   {
     WorldVector res = new WorldVector(0, 0, 0);
     res = subtract(from, to, res);
@@ -144,7 +144,7 @@ public class CompletelyFlatEarth implements EarthModel
    * @param from parameter for subtract
    * @return the returned WorldVector
    */
-  public WorldVector subtract(WorldLocation from, WorldLocation to, WorldVector res)
+  public WorldVector subtract(final WorldLocation from, final WorldLocation to, WorldVector res)
   {
 
     // the algorithm used here is from Short Sailing Calculations in the
@@ -157,13 +157,13 @@ public class CompletelyFlatEarth implements EarthModel
       return new WorldVector(0, 0, 0);
 
     // calculate the deltas
-    double dLat = to.getLat() - from.getLat();
-    double dLong = to.getLong() - from.getLong();
-    double dDepth = to.getDepth() - from.getDepth();
+    final double dLat = to.getLat() - from.getLat();
+    final double dLong = to.getLong() - from.getLong();
+    final double dDepth = to.getDepth() - from.getDepth();
 
     // produce range and bearing from the deltas
-    double bearing = Math.atan2(dLong, dLat); // it's ok to keep this value in radians
-    double range = Math.sqrt(dLat * dLat + dLong * dLong);
+    final double bearing = Math.atan2(dLong, dLat); // it's ok to keep this value in radians
+    final double range = Math.sqrt(dLat * dLat + dLong * dLong);
 
     res = new WorldVector(bearing, range, dDepth);
 
@@ -182,7 +182,7 @@ public class CompletelyFlatEarth implements EarthModel
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public FlatEarthTest(String val)
+    public FlatEarthTest(final String val)
     {
       super(val);
     }
@@ -190,23 +190,23 @@ public class CompletelyFlatEarth implements EarthModel
     public void testIt()
     {
 
-      CompletelyFlatEarth cf = new CompletelyFlatEarth();
-      FlatEarth fe = new FlatEarth();
-      WorldLocation w1 = new WorldLocation(5.1, 1, 0);
-      WorldLocation w2 = new WorldLocation(5, 0.4, 1);
+      final CompletelyFlatEarth cf = new CompletelyFlatEarth();
+      final FlatEarth fe = new FlatEarth();
+      final WorldLocation w1 = new WorldLocation(5.1, 1, 0);
+      final WorldLocation w2 = new WorldLocation(5, 0.4, 1);
 
       WorldLocation.setModel(cf);
 
-      WorldVector res = cf.subtract(w1, w2);
-      WorldVector res2 = fe.subtract(w1, w2);
-      WorldVector res3 = w2.subtract(w1);
+      final WorldVector res = cf.subtract(w1, w2);
+      final WorldVector res2 = fe.subtract(w1, w2);
+      final WorldVector res3 = w2.subtract(w1);
       System.out.println("res is:" + res.toString());
       System.out.println("res2 is:" + res2.toString());
       System.out.println("res3 is:" + res3.toString());
 
       // try adding them back in
-      WorldLocation w4 = cf.add(w1, res);
-      WorldLocation w5 = fe.add(w1, res2);
+      final WorldLocation w4 = cf.add(w1, res);
+      final WorldLocation w5 = fe.add(w1, res2);
       assertEquals("Completely flat", w4, w2);
       assertEquals("locally flat lat", w5.getLat(), w2.getLat(), 0.0001);
       assertEquals("locally flat long", w5.getLong(), w2.getLong(), 0.0001);

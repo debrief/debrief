@@ -48,7 +48,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 	 */
     ISelection _theSelection = null;
     
-    private Layers _myLayers;
+    private final Layers _myLayers;
     
    // GanttChart _chart;
     
@@ -57,7 +57,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
    
     ITimeBarsPainter _painter;
     
-    public TimeBarViewer(Composite parent, final Layers theLayers)
+    public TimeBarViewer(final Composite parent, final Layers theLayers)
     {
     	_myLayers = theLayers;
     	_painter = new NebulaGanttPainter(parent);    
@@ -94,7 +94,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
      *  to display them as point markers. 
      * @param theLayers - Debrief data.
      */
-    public void drawDiagram(final Layers theLayers, boolean jumpToBegin)
+    public void drawDiagram(final Layers theLayers, final boolean jumpToBegin)
     {   
     	_timeBars.clear();
     	_timeSpots.clear();
@@ -102,9 +102,9 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     	_painter.clear();
     	
     	walkThrough(theLayers);    	
-    	for(IEventEntry barEvent: _timeBars)
+    	for(final IEventEntry barEvent: _timeBars)
     		_painter.drawBar(barEvent);
-    	for(IEventEntry spotEvent: _timeSpots)
+    	for(final IEventEntry spotEvent: _timeSpots)
     		_painter.drawSpot(spotEvent);
     	// move chart start date to the earliest event
     	if (jumpToBegin)
@@ -116,7 +116,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     	this.drawDiagram(theLayers, false);
     }
     
-    private void walkThrough(Object root)
+    private void walkThrough(final Object root)
     {
     	Enumeration<Editable> numer; 
     	if (root instanceof Layer)
@@ -127,7 +127,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     	
     	while(numer.hasMoreElements())  
     	{
-    		Editable next = numer.nextElement();  
+    		final Editable next = numer.nextElement();  
     		if (next instanceof PlainWrapper)
     		{
 				((PlainWrapper) next).addPropertyChangeListener(
@@ -136,7 +136,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     		
     		if (next instanceof WatchableList)
 	    	{
-    			WatchableList wlist = (WatchableList) next;
+    			final WatchableList wlist = (WatchableList) next;
     			if (wlist.getStartDTG() != null)
     			{
     				if (wlist.getEndDTG() != null)
@@ -154,7 +154,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 	    	}
 	    	else if (next instanceof Watchable)
 	    	{	    		
-	    		Watchable wb = (Watchable) next;
+	    		final Watchable wb = (Watchable) next;
 	    		if (wb.getTime() != null)
 	    			_timeSpots.add(new TimeSpot(wb));
 	    	}
@@ -168,7 +168,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     }  
     
 	@Override
-	public void addSelectionChangedListener(ISelectionChangedListener listener) 
+	public void addSelectionChangedListener(final ISelectionChangedListener listener) 
 	{
 		if (! _listeners.contains(listener))
 			_listeners.add(listener);	
@@ -182,22 +182,22 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 
 	@Override
 	public void removeSelectionChangedListener(
-			ISelectionChangedListener listener) 
+			final ISelectionChangedListener listener) 
 	{
 		_listeners.remove(listener);		
 	}
 	
-	public void setSelectionToObject(Object modelEntry)
+	public void setSelectionToObject(final Object modelEntry)
 	{
 		if (modelEntry instanceof Editable)
 		{
-			Editable ed = (Editable) modelEntry;    					
+			final Editable ed = (Editable) modelEntry;    					
 			setSelection(new StructuredSelection(new EditableWrapper(ed, null, _myLayers)));
 		}
 	}
 
 	@Override
-	public void setSelection(ISelection selection) 
+	public void setSelection(final ISelection selection) 
 	{
 		_theSelection = selection;
 		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
@@ -211,22 +211,22 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 		}
 	}
 	
-	public void setSelectionToWidget(StructuredSelection selection)
+	public void setSelectionToWidget(final StructuredSelection selection)
 	{
-		Object o = selection.getFirstElement();
+		final Object o = selection.getFirstElement();
 		if (!(o instanceof EditableWrapper))
 			return;
-		EditableWrapper element = (EditableWrapper) o;
-		Editable selectedItem = element.getEditable();
+		final EditableWrapper element = (EditableWrapper) o;
+		final Editable selectedItem = element.getEditable();
 		_painter.selectTimeBar(selectedItem);		
 	}
 
 
 	@Override
-	public void chartDoubleClicked(Date clickedAt) 
+	public void chartDoubleClicked(final Date clickedAt) 
 	{
-		HiResDate newDTG = new HiResDate(clickedAt);
-		IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
+		final HiResDate newDTG = new HiResDate(clickedAt);
+		final IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
 		if (part != null)
 		{
 			((TimeController) part).fireNewTime(newDTG);
@@ -235,7 +235,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 
 
 	@Override
-	public void eventDoubleClicked(Object eventEntry) 
+	public void eventDoubleClicked(final Object eventEntry) 
 	{
 		CorePlugin.openView(CorePlugin.LAYER_MANAGER);
 		CorePlugin.openView(IPageLayout.ID_PROP_SHEET);		
@@ -243,7 +243,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 
 
 	@Override
-	public void eventSelected(Object eventEntry) 
+	public void eventSelected(final Object eventEntry) 
 	{
 		setSelectionToObject(eventEntry);		
 	}

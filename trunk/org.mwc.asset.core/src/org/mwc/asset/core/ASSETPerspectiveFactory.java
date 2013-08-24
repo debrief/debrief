@@ -17,13 +17,13 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 	 * @param layout
 	 */
 	@SuppressWarnings("deprecation")
-	public void createInitialLayout(IPageLayout layout)
+	public void createInitialLayout(final IPageLayout layout)
 	{
 		// Get the editor area.
-		String editorArea = layout.getEditorArea();
+		final String editorArea = layout.getEditorArea();
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT,
+		final IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT,
 				0.4f, editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 
@@ -33,7 +33,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 //	//				0.2f, "topLeft");
 
 		// Bottom left: Outline view and Property Sheet view
-		IFolderLayout upperMidLeft = layout.createFolder("upperMidLeft",
+		final IFolderLayout upperMidLeft = layout.createFolder("upperMidLeft",
 				IPageLayout.BOTTOM, 0.2f, "topLeft");
 		upperMidLeft.addView(ASSETPlugin.SCENARIO_CONTROLLER2);
 		upperMidLeft.addPlaceholder(IPageLayout.ID_BOOKMARKS);
@@ -42,13 +42,13 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		upperMidLeft.addPlaceholder(ASSETPlugin.SENSOR_MONITOR);
 		
 		// Bottom left: Outline view and Property Sheet view
-		IFolderLayout bottomLeft = layout.createFolder("bottomLeft",
+		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft",
 				IPageLayout.BOTTOM, 0.6f, "upperMidLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
 
 		// bottom: placeholder for the xyplot
-		IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder(
+		final IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder(
 				"bottom", IPageLayout.BOTTOM, 0.6f, editorArea);
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(CorePlugin.LIVE_DATA_MONITOR);

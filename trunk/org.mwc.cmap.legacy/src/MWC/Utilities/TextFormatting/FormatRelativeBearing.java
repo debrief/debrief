@@ -39,7 +39,7 @@ public class FormatRelativeBearing
     
     theBrg = Math.abs(theBrg);
     
-    NumberFormat df = new DecimalFormat("0.0");
+    final NumberFormat df = new DecimalFormat("0.0");
     res += df.format(theBrg);
     
     return res;

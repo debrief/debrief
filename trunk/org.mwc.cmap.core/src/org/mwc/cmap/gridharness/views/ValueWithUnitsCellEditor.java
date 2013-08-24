@@ -30,13 +30,13 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 
 	final private String _comboTip;
 
-	public ValueWithUnitsCellEditor(Composite parent, String textTip, String comboTip) {
+	public ValueWithUnitsCellEditor(final Composite parent, final String textTip, final String comboTip) {
 		super(parent);
 		_textTip = textTip;
 		_comboTip = comboTip;
 	}
 
-	protected Control createControl(Composite parent) {
+	protected Control createControl(final Composite parent) {
 		return createControl(parent, _textTip, _comboTip);
 	}
 	
@@ -44,9 +44,9 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 		return _myCombo;
 	}
 
-	protected Control createControl(Composite parent, String tipOne, String tipTwo) {
-		Composite holder = new Composite(parent, SWT.NONE);
-		RowLayout rows = new RowLayout();
+	protected Control createControl(final Composite parent, final String tipOne, final String tipTwo) {
+		final Composite holder = new Composite(parent, SWT.NONE);
+		final RowLayout rows = new RowLayout();
 		rows.marginLeft = rows.marginRight = 0;
 		rows.marginTop = rows.marginBottom = 0;
 		rows.fill = false;
@@ -64,7 +64,7 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 		new MultiControlFocusHandler(_myText, _myCombo) {
 
 			@Override
-			protected void focusReallyLost(FocusEvent e) {
+			protected void focusReallyLost(final FocusEvent e) {
 				ValueWithUnitsCellEditor.this.focusLost();
 			}
 		};
@@ -99,10 +99,10 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 	abstract protected String[] getTagsList();
 
 	protected Object doGetValue() {
-		String distTxt = _myText.getText();
-		double dist = new Double(distTxt).doubleValue();
-		int units = _myCombo.getSelectionIndex();
-		Object res = createResultsObject(dist, units);
+		final String distTxt = _myText.getText();
+		final double dist = new Double(distTxt).doubleValue();
+		final int units = _myCombo.getSelectionIndex();
+		final Object res = createResultsObject(dist, units);
 		return res;
 	}
 
@@ -119,7 +119,7 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 		_myText.setFocus();
 	}
 
-	protected void doSetValue(Object value) {
+	protected void doSetValue(final Object value) {
 		storeMe(value);
 		doUpdate();
 	}

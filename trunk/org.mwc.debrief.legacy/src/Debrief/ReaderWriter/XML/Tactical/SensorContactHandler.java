@@ -86,7 +86,7 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleAttribute(LABEL)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_theContact.setLabel(fromXML(value));
 			}
@@ -94,7 +94,7 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleDoubleAttribute(RANGE)
 		{
-			public void setValue(String name, double value)
+			public void setValue(final String name, final double value)
 			{
 				_theContact.setRange(new WorldDistance(value, WorldDistance.YARDS));
 			}
@@ -102,7 +102,7 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleDoubleAttribute(BEARING)
 		{
-			public void setValue(String name, double value)
+			public void setValue(final String name, final double value)
 			{
 				_theContact.setBearing(value);
 			}
@@ -110,14 +110,14 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleDoubleAttribute(AMBIGUOUS_BEARING)
 		{
-			public void setValue(String name, double value)
+			public void setValue(final String name, final double value)
 			{
 				_theContact.setAmbiguousBearing(value);
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(HAS_AMBIGUOUS_BEARING)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_theContact.setHasAmbiguousBearing(value);
 			}
@@ -125,14 +125,14 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleDoubleAttribute(FREQUENCY)
 		{
-			public void setValue(String name, double value)
+			public void setValue(final String name, final double value)
 			{
 				_theContact.setFrequency(value);
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(HAS_FREQUENCY)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_theContact.setHasFrequency(value);
 			}
@@ -140,7 +140,7 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleAttribute(DTG)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_theContact.setDTG(parseThisDate(value));
 			}
@@ -148,7 +148,7 @@ abstract public class SensorContactHandler extends
 
 		addHandler(new LocationHandler(CENTRE)
 		{
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_theContact.setOrigin(res);
 			}
@@ -156,7 +156,7 @@ abstract public class SensorContactHandler extends
 
 		addHandler(new ColourHandler()
 		{
-			public void setColour(java.awt.Color theVal)
+			public void setColour(final java.awt.Color theVal)
 			{
 				_theContact.setColor(theVal);
 			}
@@ -164,7 +164,7 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleBooleanAttribute(LABEL_SHOWING)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_theContact.setLabelVisible(value);
 			}
@@ -172,7 +172,7 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_theContact.setVisible(value);
 			}
@@ -180,30 +180,30 @@ abstract public class SensorContactHandler extends
 
 		addAttributeHandler(new HandleAttribute(LABEL_LOCATION)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				lp.setAsText(val);
-				Integer res = (Integer) lp.getValue();
+				final Integer res = (Integer) lp.getValue();
 				if (res != null)
 					_theContact.setLabelLocation(res);
 			}
 		});
 		addAttributeHandler(new HandleAttribute(PUT_LABEL_AT)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				ll.setAsText(val);
-				Integer res = (Integer) ll.getValue();
+				final Integer res = (Integer) ll.getValue();
 				if (res != null)
 					_theContact.setPutLabelAt(res);
 			}
 		});
 		addAttributeHandler(new HandleAttribute(LINE_STYLE)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				ls.setAsText(val.replace('_', ' '));
-				Integer res = (Integer) ls.getValue();
+				final Integer res = (Integer) ls.getValue();
 				if (res != null)
 					_theContact.setLineStyle(res);
 			}
@@ -211,14 +211,14 @@ abstract public class SensorContactHandler extends
 
 		addHandler(new WorldDistanceHandler(RANGE)
 		{
-			public void setWorldDistance(WorldDistance value)
+			public void setWorldDistance(final WorldDistance value)
 			{
 				_myRange = value;
 			}
 		});
 	}
 
-	public final void handleOurselves(String name, Attributes atts)
+	public final void handleOurselves(final String name, final Attributes atts)
 	{
 		// create the new items
 		_theContact = new Debrief.Wrappers.SensorContactWrapper();
@@ -258,8 +258,8 @@ abstract public class SensorContactHandler extends
 	 * @param parent the xml parent element
 	 * @param doc the document we're being written to
 	 */
-	public static void exportFix(Debrief.Wrappers.SensorContactWrapper contact,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportFix(final Debrief.Wrappers.SensorContactWrapper contact,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		exportFix(SENSOR_CONTACT, contact, parent, doc);
 	}
@@ -272,8 +272,8 @@ abstract public class SensorContactHandler extends
 	 * @param parent the xml parent element
 	 * @param doc the document we're being written to
 	 */
-	public static void exportFix(final String typeName, Debrief.Wrappers.SensorContactWrapper contact,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportFix(final String typeName, final Debrief.Wrappers.SensorContactWrapper contact,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		/*
 		 * 
@@ -283,7 +283,7 @@ abstract public class SensorContactHandler extends
 		 * (Top|Left|Bottom|Centre|Right) "Left" LineStyle
 		 * (SOLID|DOTTED|DOT_DASH|SHORT_DASHES|LONG_DASHES|UNCONNECTED) "SOLID"
 		 */
-		Element eFix = doc.createElement(typeName);
+		final Element eFix = doc.createElement(typeName);
 
 		eFix.setAttribute(DTG, writeThis(contact.getDTG()));
 
@@ -334,13 +334,13 @@ abstract public class SensorContactHandler extends
 		// note, we are accessing the "actual" colour for this fix, we are not
 		// using the
 		// normal getColor method which may return the track colour
-		java.awt.Color fCol = contact.getActualColor();
+		final java.awt.Color fCol = contact.getActualColor();
 		if (fCol != null)
 			MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(fCol,
 					eFix, doc);
 
 		// and now the centre item,
-		MWC.GenericData.WorldLocation origin = contact.getOrigin();
+		final MWC.GenericData.WorldLocation origin = contact.getOrigin();
 		if (origin != null)
 			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
 					origin, CENTRE, eFix, doc);

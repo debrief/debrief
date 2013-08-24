@@ -42,14 +42,14 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		super("");
 	}
 
-	public void importThis(String fName, InputStream is)
+	public void importThis(final String fName, final InputStream is)
 	{
 		// null implementation!
 		throw new RuntimeException("importThis method not implemented!");
 	}
 
 	@Override
-	public boolean canHandleThis(String type)
+	public boolean canHandleThis(final String type)
 	{
 		// hey! we can't really handle anything!
 		return false;
@@ -74,11 +74,11 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 			// "http://apache.org/xml/features/nonvalidating/load-external-dtd",
 			// false);
 		}
-		catch (SAXException e)
+		catch (final SAXException e)
 		{
 			System.err.println("could not set parser feature");
 		}
-		catch (ParserConfigurationException e)
+		catch (final ParserConfigurationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -88,14 +88,14 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 
 	}
 
-	protected void doImport(InputSource is, MWCXMLReader theHandler)
+	protected void doImport(final InputSource is, final MWCXMLReader theHandler)
 	{
 
 		try
 		{
 
 			// Create SAX 2 parser...
-			SAXParser spf = getConfiguredParser();
+			final SAXParser spf = getConfiguredParser();
 
 			// put our plot handler into the chain
 			theHandler.handleThis(spf.getXMLReader(), this);
@@ -103,7 +103,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 			// start parsing
 			spf.parse(is, theHandler);
 		}
-		catch (SAXParseException se)
+		catch (final SAXParseException se)
 		{
 			if (_importCancelled == true)
 			{
@@ -111,30 +111,30 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 			}
 			else
 			{
-				int line = se.getLineNumber();
-				int col = se.getColumnNumber();
-				String msg = "Trouble reading input file at line:" + line + ", column:"
+				final int line = se.getLineNumber();
+				final int col = se.getColumnNumber();
+				final String msg = "Trouble reading input file at line:" + line + ", column:"
 						+ col;
 				MWC.Utilities.Errors.Trace.trace(se, msg);
 				MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", msg);
 			}
 		}
-		catch (SAXNotRecognizedException sre)
+		catch (final SAXNotRecognizedException sre)
 		{
 			MWC.Utilities.Errors.Trace.trace(sre,
 					"Unknown trouble with SAX parsing (not recognised):"
 							+ sre.getMessage());
 		}
-		catch (SAXNotSupportedException spe)
+		catch (final SAXNotSupportedException spe)
 		{
 			MWC.Utilities.Errors.Trace.trace(spe,
 					"Unknown trouble with SAX parsing (not supported)");
 		}
-		catch (SAXException se)
+		catch (final SAXException se)
 		{
 			throw new RuntimeException(se.getMessage(), se);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e, "Errors parsing XML document");
 		}
@@ -147,10 +147,10 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * do an import using the indicated handler
 	 */
-	static public void importThis(MWCXMLReader theHandler, String name,
-			InputStream is) throws SAXException
+	static public void importThis(final MWCXMLReader theHandler, final String name,
+			final InputStream is) throws SAXException
 	{
-		MWCXMLReaderWriter xr = new MWCXMLReaderWriter();
+		final MWCXMLReaderWriter xr = new MWCXMLReaderWriter();
 
 		xr.importThis(name, is, theHandler);
 	}
@@ -158,11 +158,11 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * handle the import of XML data into an existing session
 	 */
-	public void importThis(String fName, InputStream is, MWCXMLReader reader)
+	public void importThis(final String fName, final InputStream is, final MWCXMLReader reader)
 	{
 
 		// create progress monitor for this stream
-		javax.swing.ProgressMonitorInputStream po = new ModifiedProgressMonitorInputStream(
+		final javax.swing.ProgressMonitorInputStream po = new ModifiedProgressMonitorInputStream(
 				null, "Opening " + fName, is);
 
 		// initialise cancelled flag
@@ -176,7 +176,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * handle the import of XML data into an existing session
 	 */
-	public void importThis(String fName, InputStream is, MWC.GUI.Layers theData)
+	public void importThis(final String fName, final InputStream is, final MWC.GUI.Layers theData)
 	{
 		if (theData == null)
 		{
@@ -185,7 +185,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		else
 		{
 			// create a handler
-			MWCXMLReader handler = new LayersHandler(theData);
+			final MWCXMLReader handler = new LayersHandler(theData);
 
 			// do the import
 			importThis(fName, is, handler);
@@ -201,22 +201,22 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	{
 		private int override_nread = 0;
 
-		public ModifiedProgressMonitorInputStream(Component parentComponent,
-				Object message, InputStream in)
+		public ModifiedProgressMonitorInputStream(final Component parentComponent,
+				final Object message, final InputStream in)
 		{
 			super(parentComponent, message, in);
 		}
 
 		@Override
-		public int read(byte b[], int off, int len) throws IOException
+		public int read(final byte b[], final int off, final int len) throws IOException
 		{
-			int nr = in.read(b, off, len);
+			final int nr = in.read(b, off, len);
 			if (nr > 0)
 				getProgressMonitor().setProgress(override_nread += nr);
 			if (getProgressMonitor().isCanceled())
 			{
 				_importCancelled = true;
-				InterruptedIOException exc = new InterruptedIOException("progress");
+				final InterruptedIOException exc = new InterruptedIOException("progress");
 				throw exc;
 			}
 			return nr;
@@ -226,11 +226,11 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * read in this whole file
 	 */
-	public boolean canImportThisFile(String theFile)
+	public boolean canImportThisFile(final String theFile)
 	{
 		boolean res = false;
 		String theSuffix = null;
-		int pos = theFile.lastIndexOf(".");
+		final int pos = theFile.lastIndexOf(".");
 		theSuffix = theFile.substring(pos, theFile.length()).toUpperCase();
 
 		if (theSuffix.equals(".XML"))
@@ -242,14 +242,14 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * export this item using this format
 	 */
-	public void exportThis(MWC.GUI.Plottable item)
+	public void exportThis(final MWC.GUI.Plottable item)
 	{
 	}
 
 	/**
 	 * export this item using this format
 	 */
-	public void exportThis(String comment)
+	public void exportThis(final String comment)
 	{
 
 	}
@@ -257,18 +257,18 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * signal problem importing data
 	 */
-	public void readError(String fName, int line, String msg, String thisLine)
+	public void readError(final String fName, final int line, final String msg, final String thisLine)
 	{
 
 	}
 
-	public void endExport(Plottable item)
+	public void endExport(final Plottable item)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void startExport(Plottable item)
+	public void startExport(final Plottable item)
 	{
 		// TODO Auto-generated method stub
 

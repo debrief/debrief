@@ -132,9 +132,9 @@ public class SwingGrabControl extends JPanel
    */
   protected String _destinationPath = null;
 
-  public SwingGrabControl(Component target,
-                          MWC.GUI.ToolParent parent,
-                          MWC.GUI.Properties.PropertiesPanel parentPanel)
+  public SwingGrabControl(final Component target,
+                          final MWC.GUI.ToolParent parent,
+                          final MWC.GUI.Properties.PropertiesPanel parentPanel)
   {
     setName("Video");
 
@@ -150,7 +150,7 @@ public class SwingGrabControl extends JPanel
     // sort out the directory name
     if (parent != null)
     {
-      String res = parent.getProperty(MWC.GUI.Tools.Chart.WriteMetafile.PROP_NAME);
+      final String res = parent.getProperty(MWC.GUI.Tools.Chart.WriteMetafile.PROP_NAME);
       if (res != null)
         _destinationPath = res;
     }
@@ -162,13 +162,13 @@ public class SwingGrabControl extends JPanel
   protected void initForm()
   {
     this.setLayout(new BorderLayout());
-    JPanel btnHolder = new JPanel();
+    final JPanel btnHolder = new JPanel();
     btnHolder.setLayout(new GridLayout(0, 3));
-    JButton conner = new JButton("Configure");
+    final JButton conner = new JButton("Configure");
     conner.setToolTipText("Prepare output files & video streams");
     conner.addActionListener(new java.awt.event.ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         configure();
       }
@@ -177,7 +177,7 @@ public class SwingGrabControl extends JPanel
     starter.setToolTipText("Start recording to file");
     starter.addActionListener(new java.awt.event.ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         start();
 
@@ -189,17 +189,17 @@ public class SwingGrabControl extends JPanel
     stopper.setEnabled(false);
     stopper.addActionListener(new java.awt.event.ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         stop();
 
       }
     });
-    JButton closer = new JButton("Close");
+    final JButton closer = new JButton("Close");
     closer.setToolTipText("Close this panel");
     closer.addActionListener(new java.awt.event.ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         close();
       }
@@ -220,7 +220,7 @@ public class SwingGrabControl extends JPanel
     btnHolder.add(new JLabel("Frame Rate:", JLabel.RIGHT));
     btnHolder.add(_frameRate);
 
-    JPanel closeHolder = new JPanel();
+    final JPanel closeHolder = new JPanel();
     closeHolder.setLayout(new GridLayout(0, 3));
     closeHolder.add(new JLabel(" "));
     closeHolder.add(closer);
@@ -269,11 +269,11 @@ public class SwingGrabControl extends JPanel
   {
 
     // get the dimensions, using the screen location of the target
-    Rectangle rect = new Rectangle(_target.getLocationOnScreen(), _target.getSize());
+    final Rectangle rect = new Rectangle(_target.getLocationOnScreen(), _target.getSize());
 
     // check if there is a file of this name already
-    String thePath = getPath();
-    java.io.File theFile = new java.io.File(thePath);
+    final String thePath = getPath();
+    final java.io.File theFile = new java.io.File(thePath);
     if (theFile.exists())
     {
 
@@ -283,7 +283,7 @@ public class SwingGrabControl extends JPanel
                                                JOptionPane.YES_NO_OPTION);
       final JDialog dialog = pane.createDialog(jp, "Start recording");
       dialog.show();
-      Integer value = (Integer) pane.getValue();
+      final Integer value = (Integer) pane.getValue();
       if (value.intValue() == JOptionPane.NO_OPTION)
       {
         return;
@@ -302,10 +302,10 @@ public class SwingGrabControl extends JPanel
     // can we get an integer from the frame rate?
     try
     {
-      int rate = Integer.parseInt(_frameRate.getText());
+      final int rate = Integer.parseInt(_frameRate.getText());
       _grabber.setFrameRate(rate);
     }
-    catch (java.lang.NumberFormatException fe)
+    catch (final java.lang.NumberFormatException fe)
     {
       MWC.Utilities.Errors.Trace.trace(fe, "Failed to get integer from string:" + _frameRate.getText());
       fe.printStackTrace();
@@ -325,11 +325,11 @@ public class SwingGrabControl extends JPanel
       _destination.setEnabled(false);
       _frameRate.setEnabled(false);
     }
-    catch (java.io.FileNotFoundException fee)
+    catch (final java.io.FileNotFoundException fee)
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Configure Video", "Video output not ready, please try again");
     }
-    catch (Exception me)
+    catch (final Exception me)
     {
       MWC.Utilities.Errors.Trace.trace(me, "Failed to configure video:");
     }
@@ -377,7 +377,7 @@ public class SwingGrabControl extends JPanel
           this.repaint();
           Thread.sleep(500);
         }
-        catch (java.lang.InterruptedException e)
+        catch (final java.lang.InterruptedException e)
         {
           e.printStackTrace();
         }
@@ -386,14 +386,14 @@ public class SwingGrabControl extends JPanel
 
     private static java.text.DateFormat df = new java.text.SimpleDateFormat("hh:mm:ss.SSS");
 
-    public void paint(Graphics g)
+    public void paint(final Graphics g)
     {
       if (!updater.isAlive())
         updater.start();
 
       super.paint(g);
       g.setColor(Color.red);
-      Dimension dim = this.getSize();
+      final Dimension dim = this.getSize();
       g.drawLine(0, 0, dim.width, dim.height);
       g.drawLine(0, dim.height, dim.width, 0);
 
@@ -404,24 +404,24 @@ public class SwingGrabControl extends JPanel
   }
 
   @SuppressWarnings("rawtypes")
-	public static void main6(String[] args)
+	public static void main6(final String[] args)
   {
-    Vector lst = PlugInManager.getPlugInList(null, null, PlugInManager.CODEC);
-    Enumeration enumer = lst.elements();
+    final Vector lst = PlugInManager.getPlugInList(null, null, PlugInManager.CODEC);
+    final Enumeration enumer = lst.elements();
     while (enumer.hasMoreElements())
     {
-      Object val = enumer.nextElement();
+      final Object val = enumer.nextElement();
       System.out.println("mgr: " + val);
     }
   }
 
-  public static void main3(String[] args)
+  public static void main3(final String[] args)
   {
 
-    JFrame fr = new JFrame("tester");
+    final JFrame fr = new JFrame("tester");
     fr.setSize(600, 400);
     fr.getContentPane().setLayout(new GridLayout(1, 0));
-    JComponent watched = new Mobile();
+    final JComponent watched = new Mobile();
     watched.setForeground(Color.red);
     watched.setBackground(Color.blue);
     fr.getContentPane().add(new SwingGrabControl(watched, null, null));
@@ -431,34 +431,34 @@ public class SwingGrabControl extends JPanel
   }
 
   @SuppressWarnings("rawtypes")
-	public static void main(String[] args)
+	public static void main(final String[] args)
   {
     System.out.println("working");
 
-    String location = "screen:/352,264,320,240/2";
-    MediaLocator ml = new MediaLocator(location);
-    JDataSource jd = new JDataSource();
+    final String location = "screen:/352,264,320,240/2";
+    final MediaLocator ml = new MediaLocator(location);
+    final JDataSource jd = new JDataSource();
     jd.setLocator(ml);
 
     try
     {
       // artificially kisk-start the streams
-      Object[] the_streams = jd.getStreams();
-      LiveStream str = (LiveStream) the_streams[0];
+      final Object[] the_streams = jd.getStreams();
+      final LiveStream str = (LiveStream) the_streams[0];
       jd.connect();
-      Format[] formats = new Format[1];
+      final Format[] formats = new Format[1];
       formats[0] = str.getFormat();
 
 
-      CaptureDeviceInfo cdi = new CaptureDeviceInfo("Screen grab", ml, formats);
+      final CaptureDeviceInfo cdi = new CaptureDeviceInfo("Screen grab", ml, formats);
       CaptureDeviceManager.addDevice(cdi);
       CaptureDeviceInfo c_info = null;
 
       Vector dev = CaptureDeviceManager.getDeviceList(new RGBFormat());
-      Enumeration enumer = dev.elements();
+      final Enumeration enumer = dev.elements();
       while (enumer.hasMoreElements())
       {
-        CaptureDeviceInfo cd = (CaptureDeviceInfo) enumer.nextElement();
+        final CaptureDeviceInfo cd = (CaptureDeviceInfo) enumer.nextElement();
         System.out.println("device:" + cd);
         if (c_info == null)
           c_info = cd;
@@ -471,14 +471,14 @@ public class SwingGrabControl extends JPanel
       }
 
 
-      FileTypeDescriptor output_format = new FileTypeDescriptor(FileTypeDescriptor.MSVIDEO);
-      ProcessorModel _myProcessor = new ProcessorModel(jd, formats, output_format);
-      Processor p = Manager.createRealizedProcessor(_myProcessor);
+      final FileTypeDescriptor output_format = new FileTypeDescriptor(FileTypeDescriptor.MSVIDEO);
+      final ProcessorModel _myProcessor = new ProcessorModel(jd, formats, output_format);
+      final Processor p = Manager.createRealizedProcessor(_myProcessor);
       System.out.println("processor:" + p);
-      DataSource source = p.getDataOutput();
+      final DataSource source = p.getDataOutput();
 
-      MediaLocator dest = new MediaLocator("file:c://foo.avi");
-      DataSink fileWriter = Manager.createDataSink(source, dest);
+      final MediaLocator dest = new MediaLocator("file:c://foo.avi");
+      final DataSink fileWriter = Manager.createDataSink(source, dest);
       fileWriter.open();
       fileWriter.start();
 
@@ -494,7 +494,7 @@ public class SwingGrabControl extends JPanel
       System.out.println("about to exit!");
       System.exit(0);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       e.printStackTrace();
     }

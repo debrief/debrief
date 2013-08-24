@@ -26,7 +26,7 @@ abstract public class ComponentHandler extends MWC.Utilities.ReaderWriter.XML.MW
 
     addHandler(new PropertyHandler()
     {
-      public void setProperty(String name, String val)
+      public void setProperty(final String name, final String val)
       {
         details.addProperty(name, val);
       }
@@ -34,7 +34,7 @@ abstract public class ComponentHandler extends MWC.Utilities.ReaderWriter.XML.MW
 
     super.addAttributeHandler(new HandleAttribute("Type")
     {
-      public void setValue(String name, String val){
+      public void setValue(final String name, final String val){
         details.type = val;
       }
     });

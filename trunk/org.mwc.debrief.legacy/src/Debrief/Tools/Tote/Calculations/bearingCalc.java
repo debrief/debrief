@@ -91,12 +91,12 @@ public final class bearingCalc extends plainCalc
  * @param secondary secondary watchable
  * @return string representation of calculated value
  */  
-  public final String update(Watchable primary, Watchable secondary, HiResDate time)
+  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
   {
     String res = null;
     if((primary != null) && (secondary != null) && (primary != secondary))
     {
-			double brg = calculate(primary, secondary, time);
+			final double brg = calculate(primary, secondary, time);
       res = _myPattern.format(brg);
     }
     else
@@ -112,7 +112,7 @@ public final class bearingCalc extends plainCalc
     return true;
   }
 
-  public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
+  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
   {
     double brg = 0.0;
     if((primary != null) && (secondary != null) && (primary != secondary))

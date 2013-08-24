@@ -37,7 +37,7 @@ abstract public class RangeRingsHandler extends ShapeHandler implements
 
 		addHandler(new LocationHandler(CENTRE)
 		{
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_centre = res;
 			}
@@ -47,7 +47,7 @@ abstract public class RangeRingsHandler extends ShapeHandler implements
 		{
 
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_ringWidth = res;
 			}
@@ -55,7 +55,7 @@ abstract public class RangeRingsHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleAttribute(NUM_RINGS)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_numRings = Integer.valueOf(val);
 			}
@@ -63,7 +63,7 @@ abstract public class RangeRingsHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleAttribute(RANGE_LABEL_LOC)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_labelLoc = val;
 			}
@@ -73,12 +73,12 @@ abstract public class RangeRingsHandler extends ShapeHandler implements
 
 	public final MWC.GUI.Shapes.PlainShape getShape()
 	{
-		MWC.GUI.Shapes.RangeRingShape ls = new MWC.GUI.Shapes.RangeRingShape(
+		final MWC.GUI.Shapes.RangeRingShape ls = new MWC.GUI.Shapes.RangeRingShape(
 				_centre, _numRings, _ringWidth);
 
 		if (_labelLoc != null)
 		{
-			LabelLocationPropertyEditor lp = new LabelLocationPropertyEditor();
+			final LabelLocationPropertyEditor lp = new LabelLocationPropertyEditor();
 			lp.setValue(_labelLoc);
 			ls.setRangeLabelLocation((Integer) lp.getValue());
 		}
@@ -86,25 +86,25 @@ abstract public class RangeRingsHandler extends ShapeHandler implements
 		return ls;
 	}
 
-	public final void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public final void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// output the shape related stuff first
-		org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+		final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
 		super.exportThisPlottable(plottable, ePlottable, doc);
 
 		// now our circle related stuff
 
 		// get the circle
-		Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
-		MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+		final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+		final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
 		if (ps instanceof MWC.GUI.Shapes.RangeRingShape)
 		{
 			// export the attributes
-			RangeRingShape cs = (MWC.GUI.Shapes.RangeRingShape) ps;
+			final RangeRingShape cs = (MWC.GUI.Shapes.RangeRingShape) ps;
 
-			LabelLocationPropertyEditor lpe = new LabelLocationPropertyEditor();
+			final LabelLocationPropertyEditor lpe = new LabelLocationPropertyEditor();
 			lpe.setValue(cs.getRangeLabelLocation());
 			ePlottable.setAttribute(RANGE_LABEL_LOC, lpe.getAsText());
 			ePlottable.setAttribute(NUM_RINGS, writeThis(cs.getNumRings()

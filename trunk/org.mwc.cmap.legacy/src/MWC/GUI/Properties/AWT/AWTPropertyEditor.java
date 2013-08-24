@@ -179,11 +179,11 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
    * @param theParent   the application we're contained in
    * @param parentLayer the layer above us, to be updated on completion
    */
-  public AWTPropertyEditor(MWC.GUI.Editable.EditorType info,
-                           AWTPropertiesPanel parent,
-                           MWC.GUI.PlainChart theChart,
-                           MWC.GUI.ToolParent theParent,
-                           Layer parentLayer)
+  public AWTPropertyEditor(final MWC.GUI.Editable.EditorType info,
+                           final AWTPropertiesPanel parent,
+                           final MWC.GUI.PlainChart theChart,
+                           final MWC.GUI.ToolParent theParent,
+                           final Layer parentLayer)
   {
     super(info, theChart, parent, theParent, parentLayer);
 
@@ -196,7 +196,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
   /**
    * layout the editors on the page
    */
-  protected void initForm(PropertiesPanel thePanel)
+  protected void initForm(final PropertiesPanel thePanel)
   {
 
 
@@ -219,14 +219,14 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     {
       try
       {
-        AWTCustomEditor p = (AWTCustomEditor) super._theCustomEditor.newInstance();
+        final AWTCustomEditor p = (AWTCustomEditor) super._theCustomEditor.newInstance();
         p.setObject(super._theData,
           _theChart,
           _theParent);
         host.add((Panel) p);
         host.doLayout();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
@@ -235,12 +235,12 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     else
     {
       // show all of the editor entities
-      Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+      final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
       while (enumer.hasMoreElements())
       {
-        PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
-        PropertyDescriptor p = pei.theDescriptor;
-        PropertyEditor pe = pei.theEditor;
+        final PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
+        final PropertyDescriptor p = pei.theDescriptor;
+        final PropertyEditor pe = pei.theEditor;
         if (pe != null)
         {
           showThis(p, pe);
@@ -249,14 +249,14 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
 
     }
 
-    Panel infoPanel = new Panel();
+    final Panel infoPanel = new Panel();
     infoPanel.setLayout(new BorderLayout());
     _main.add("Center", infoPanel);
     _info = new Label("====");
     infoPanel.add("Center", _info);
 
     // create the button holder
-    Panel footer = new Panel();
+    final Panel footer = new Panel();
     footer.setLayout(new GridLayout(1, 0));
     _main.add("South", footer);
 
@@ -265,7 +265,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     footer.add(_close);
     _close.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         close();
       }
@@ -276,7 +276,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     footer.add(_apply);
     _apply.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         apply();
       }
@@ -286,7 +286,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     footer.add(_reset);
     _reset.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         reset();
       }
@@ -304,7 +304,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     return _main;
   }
 
-  public void setNames(String apply, String close, String reset)
+  public void setNames(final String apply, final String close, final String reset)
   {
     if (apply != null)
       _apply.setLabel(apply);
@@ -315,7 +315,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
   }
 
 
-  private void showThis(PropertyDescriptor p, PropertyEditor pe)
+  private void showThis(final PropertyDescriptor p, final PropertyEditor pe)
   {
 
     // see if there is a custom editor
@@ -326,7 +326,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     }
 
     // see if there is a list of values
-    String[] tags = pe.getTags();
+    final String[] tags = pe.getTags();
     if (tags != null)
     {
       // create a choice item
@@ -335,14 +335,14 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     }
 
     // and lastly see if there is a text editor
-    String res = pe.getAsText();
+    final String res = pe.getAsText();
     if (res != null)
     {
       makeBox(p, pe);
     }
   }
 
-  private void makePanel(PropertyDescriptor p, PropertyEditor pe)
+  private void makePanel(final PropertyDescriptor p, final PropertyEditor pe)
   {
     Component cp = null;
     if (pe.isPaintable())
@@ -356,7 +356,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
       // see if this custom editor wants to know about the chart
       if (pe instanceof PlainPropertyEditor.EditorUsesChart)
       {
-        PlainPropertyEditor.EditorUsesChart eu =
+        final PlainPropertyEditor.EditorUsesChart eu =
           (PlainPropertyEditor.EditorUsesChart) pe;
         eu.setChart(super._theChart);
       }
@@ -365,12 +365,12 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     addPanel(p.getDisplayName(), cp, p.getShortDescription(), p);
   }
 
-  private void makeChoice(PropertyDescriptor p, PropertyEditor pe)
+  private void makeChoice(final PropertyDescriptor p, final PropertyEditor pe)
   {
-    String[] tags = pe.getTags();
+    final String[] tags = pe.getTags();
     final PropertyEditor pf = pe;
-    Choice cl = new Choice();
-    int num = tags.length;
+    final Choice cl = new Choice();
+    final int num = tags.length;
     for (int i = 0; i < num; i++)
     {
       cl.addItem(tags[i]);
@@ -379,7 +379,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     // handler for new selection
     cl.addItemListener(new ItemListener()
     {
-      public void itemStateChanged(ItemEvent e)
+      public void itemStateChanged(final ItemEvent e)
       {
         pf.setAsText((String) e.getItem());
       }
@@ -387,23 +387,23 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
 
 
     // and set the initial value
-    String sel = pe.getAsText();
+    final String sel = pe.getAsText();
     cl.select(sel);
 
     addPanel(p.getDisplayName(), cl, p.getShortDescription(), p);
   }
 
-  private void makeBox(PropertyDescriptor p, PropertyEditor pe)
+  private void makeBox(final PropertyDescriptor p, final PropertyEditor pe)
   {
-    String res = pe.getAsText();
+    final String res = pe.getAsText();
     final TextField tf = new TextField(res);
     final PropertyEditor pt = pe;
     tf.addTextListener(new TextListener()
     {
-      public void textValueChanged(TextEvent t)
+      public void textValueChanged(final TextEvent t)
       {
-        TextField td = (TextField) t.getSource();
-        String val = td.getText();
+        final TextField td = (TextField) t.getSource();
+        final String val = td.getText();
         pt.setValue(val);
       }
     });
@@ -411,23 +411,23 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     addPanel(p.getDisplayName(), tf, p.getShortDescription(), p);
   }
 
-  private void addPanel(String lbl,
-                        Component c,
-                        String details,
-                        PropertyDescriptor p)
+  private void addPanel(final String lbl,
+                        final Component c,
+                        final String details,
+                        final PropertyDescriptor p)
   {
 
     // take a copy of the component, so that we can edit
     // it later
-    PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(p);
+    final PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(p);
     pei.theEditorGUI = c;
 
     // prepare our handler for showing the details for this
     // parameter
-    FocusListener fl = new showInfo(_info, details);
+    final FocusListener fl = new showInfo(_info, details);
 
-    Panel P = new Panel();
-    Label lb = new Label(lbl);
+    final Panel P = new Panel();
+    final Label lb = new Label(lbl);
 
     P.setLayout(new BorderLayout());
 
@@ -447,7 +447,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     c.addKeyListener(this);
   }
 
-  protected void gainFocus(Component c)
+  protected void gainFocus(final Component c)
   {
     _info.setText(c.getName());
   }
@@ -470,13 +470,13 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
   }
 
 
-  public void keyTyped(KeyEvent p1)
+  public void keyTyped(final KeyEvent p1)
   {
-    int mods = p1.getModifiers();
+    final int mods = p1.getModifiers();
     if ((mods & KeyEvent.ALT_MASK) != 0)
     {
       // so an alt-key has been pressed
-      char k = p1.getKeyChar();
+      final char k = p1.getKeyChar();
       if (k == 'a')
       {
         apply();
@@ -484,11 +484,11 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     }
   }
 
-  public void keyPressed(KeyEvent p1)
+  public void keyPressed(final KeyEvent p1)
   {
   }
 
-  public void keyReleased(KeyEvent p1)
+  public void keyReleased(final KeyEvent p1)
   {
   }
 
@@ -497,18 +497,18 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     return _theParent.getBuffer();
   }
 
-  protected void showInfo(String val)
+  protected void showInfo(final String val)
   {
     _info.setText(val);
   }
 
-  protected void updateThis(Component c,
-                            PropertyEditor pe)
+  protected void updateThis(final Component c,
+                            final PropertyEditor pe)
   {
     // update the gui
     if (c instanceof TextField)
     {
-      TextField t = (TextField) c;
+      final TextField t = (TextField) c;
       t.setText(pe.getAsText());
     }
   }
@@ -526,7 +526,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
 		protected PropertyEditor _myEditor;
     protected Label _myLabel;
 
-    public paintLabel(PropertyEditor pe)
+    public paintLabel(final PropertyEditor pe)
     {
       _myEditor = pe;
       _myLabel = new Label("  ")
@@ -536,9 +536,9 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
 				 */
 				private static final long serialVersionUID = 1L;
 
-				public void paint(Graphics p1)
+				public void paint(final Graphics p1)
         {
-          Rectangle area = _myLabel.getBounds();
+          final Rectangle area = _myLabel.getBounds();
           // we have to paint in the background first
           p1.setColor(SystemColor.control);
           p1.fillRect(area.x, area.y, area.width, area.height);
@@ -548,11 +548,11 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
         }
 
       };
-      Button edit = new Button("Edit");
+      final Button edit = new Button("Edit");
       setLayout(new BorderLayout());
       edit.addActionListener(new ActionListener()
       {
-        public void actionPerformed(ActionEvent e)
+        public void actionPerformed(final ActionEvent e)
         {
           doClick();
         }
@@ -565,8 +565,8 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     public void doClick()
     {
       // show the panel itself
-      Frame tmp = new Frame();
-      Dialog fr = new AWTEditFrame(tmp, _myEditor);
+      final Frame tmp = new Frame();
+      final Dialog fr = new AWTEditFrame(tmp, _myEditor);
       fr.setModal(true);
       fr.setVisible(true);
       tmp.dispose();
@@ -580,7 +580,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
    *
    * @param report the text to show
    */
-  protected void fireNewReport(String report)
+  protected void fireNewReport(final String report)
   {
     // don't bother firing this in our interface
   }
@@ -631,14 +631,14 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     protected String _info1;
     protected Label _lbl;
 
-    public showInfo(Label theLbl, String info)
+    public showInfo(final Label theLbl, final String info)
     {
       _lbl = theLbl;
       _info1 = info;
     }
 
 
-    public void focusGained(FocusEvent p1)
+    public void focusGained(final FocusEvent p1)
     {
       showInfo(_info1);
     }

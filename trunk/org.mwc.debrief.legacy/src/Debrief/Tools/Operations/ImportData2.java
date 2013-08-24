@@ -176,9 +176,9 @@ public final class ImportData2 extends PlainTool {
    * session to import the file into, if the session val is null
    * @param theSessionVal the Session to add the file to (or null, see above)
    */
-  public ImportData2(ToolParent theParent,
-                    Application theApplication,
-                    Session theSessionVal){
+  public ImportData2(final ToolParent theParent,
+                    final Application theApplication,
+                    final Session theSessionVal){
     super(theParent, "Import data", "images/import_rep.gif");
     // store the Session
     _theSession = theSessionVal;
@@ -197,20 +197,20 @@ public final class ImportData2 extends PlainTool {
      * or create a fresh one each time (if we need to retrieve the variable
      * from the application).
      */
-    Session tmpSession = _theSession;
+    final Session tmpSession = _theSession;
 
     ImportAction res = null;
 
     // see if we have an old directory to retrieve
     if(_lastDirectory.equals(""))
     {
-      String val = getParent().getProperty("REP_Directory");
+      final String val = getParent().getProperty("REP_Directory");
       if(val != null)
         _lastDirectory = val;
     }
 
     // get the filename of the file to import
-    File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep,*.dsf,*.dtf",
+    final File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep,*.dsf,*.dtf",
                                                               "Replay Files (*.rep)",
                                                               _lastDirectory);
 
@@ -241,9 +241,9 @@ public final class ImportData2 extends PlainTool {
     /** constructor - produced AFTER we have read in the data, but
      * before we have added it to the session
      */
-    public ImportAction(Session theSession,
-                        java.io.File[] theFiles,
-                        Application theApplication){
+    public ImportAction(final Session theSession,
+                        final java.io.File[] theFiles,
+                        final Application theApplication){
       _theSession = theSession;
       _theFiles = theFiles;
       if(_theSession != null)
@@ -326,13 +326,14 @@ public final class ImportData2 extends PlainTool {
       final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) _theSession.getCurrentView();
 
       // find any narratives
-      int len = _theSession.getData().size();
+      final int len = _theSession.getData().size();
       for(int i=0;i<len;i++)
       {
-        Layer ly = _theSession.getData().elementAt(i);
+        final Layer ly = _theSession.getData().elementAt(i);
         if(ly instanceof Debrief.Wrappers.NarrativeWrapper)
         {
           @SuppressWarnings("unused")
+		final
 					Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper)ly;
         }
       }
@@ -343,7 +344,7 @@ public final class ImportData2 extends PlainTool {
       /** put the scren update bit into a runnable object - so that we can
        * make it run once the load is complete
        */
-      Runnable runnable = new Runnable()
+      final Runnable runnable = new Runnable()
       {
         public void run()
         {
@@ -361,18 +362,18 @@ public final class ImportData2 extends PlainTool {
     public final void execute()
     {
       // get our thread to import this
-      MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
+      final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
         new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(_theFiles,_theLayers)
       {
         // handle the completion of each file
-        public void fileFinished(File fName, Layers newData)
+        public void fileFinished(final File fName, final Layers newData)
         {
     //      System.out.println("file finished received for:" + fName.getPath());
           Application.addToMru(fName.getPath());
         }
 
         // handle completion of the full import process
-        public void allFilesFinished(File[] fNames, Layers newData)
+        public void allFilesFinished(final File[] fNames, final Layers newData)
         {
    //       System.out.println("ImportData: all files finished received!");
           finished();

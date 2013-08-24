@@ -15,10 +15,10 @@ public class ScenariosHandler extends ASSETResource implements
 	@Get
 	public List<Scenario> retrieve()
 	{
-		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
-		ASSETHost host = hostP.getHost();
+		final ASSETHost.HostProvider hostP = (HostProvider) getApplication();
+		final ASSETHost host = hostP.getHost();
 		
-		Vector<Scenario> res = host.getScenarios();
+		final Vector<Scenario> res = host.getScenarios();
 		
 		return res;
 	}

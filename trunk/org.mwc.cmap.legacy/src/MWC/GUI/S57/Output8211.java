@@ -50,7 +50,7 @@ public class Output8211
 
 	protected String pszFilename = null;
 
-	public Output8211(String filename, boolean fspt_repeating)
+	public Output8211(final String filename, final boolean fspt_repeating)
 	{
 		pszFilename = filename;
 		bFSPTHack = fspt_repeating;
@@ -69,7 +69,7 @@ public class Output8211
 
 			if (bFSPTHack)
 			{
-				DDFFieldDefinition poFSPT = oModule.findFieldDefn("FSPT");
+				final DDFFieldDefinition poFSPT = oModule.findFieldDefn("FSPT");
 
 				if (poFSPT == null)
 					Debug.error("View8211: unable to find FSPT field to set repeating flag.");
@@ -90,7 +90,7 @@ public class Output8211
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
-				for (Iterator<DDFField> it = poRecord.iterator(); it != null && it.hasNext();
+				for (final Iterator<DDFField> it = poRecord.iterator(); it != null && it.hasNext();
 				// dOut(((DDFField)it.next()).toString()));
 				viewRecordField(((DDFField) it.next())))
 				{
@@ -99,7 +99,7 @@ public class Output8211
 			}
 
 		}
-		catch (IOException ioe)
+		catch (final IOException ioe)
 		{
 			Debug.error(ioe.getMessage());
 			ioe.printStackTrace();
@@ -109,9 +109,9 @@ public class Output8211
 	/**
 	 * Dump the contents of a field instance in a record.
 	 */
-	protected void viewRecordField(DDFField poField)
+	protected void viewRecordField(final DDFField poField)
 	{
-		DDFFieldDefinition poFieldDefn = poField.getFieldDefn();
+		final DDFFieldDefinition poFieldDefn = poField.getFieldDefn();
 
 		// Report general information about the field.
 		dOut("    Field " + poFieldDefn.getName() + ": "
@@ -141,23 +141,23 @@ public class Output8211
 			for (int iSF = 0; iSF < poFieldDefn.getSubfieldCount(); iSF++)
 			{
 
-				DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
-				int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
+				final DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
+				final int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
 				nBytesRemaining -= nBytesConsumed;
-				byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
+				final byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
 				System.arraycopy(pachFieldData, nBytesConsumed, tempData, 0, tempData.length);
 				pachFieldData = tempData;
 			}
 		}
 	}
 
-	protected int viewSubfield(DDFSubfieldDefinition poSFDefn, byte[] pachFieldData,
-			int nBytesRemaining)
+	protected int viewSubfield(final DDFSubfieldDefinition poSFDefn, final byte[] pachFieldData,
+			final int nBytesRemaining)
 	{
 
-		MutableInt nBytesConsumed = new MutableInt();
+		final MutableInt nBytesConsumed = new MutableInt();
 
-		DDFDataType ddfdt = poSFDefn.getType();
+		final DDFDataType ddfdt = poSFDefn.getType();
 
 		if (ddfdt == DDFDataType.DDFInt)
 		{
@@ -197,7 +197,7 @@ public class Output8211
 		{
 			os = new FileWriter("d:\\\\dev\\s57_listing2.txt");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -230,13 +230,13 @@ public class Output8211
 
 	}
 	
-	private static void dOut(String txt)
+	private static void dOut(final String txt)
 	{
 		try
 		{
 			os.write(txt + "\r\n");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

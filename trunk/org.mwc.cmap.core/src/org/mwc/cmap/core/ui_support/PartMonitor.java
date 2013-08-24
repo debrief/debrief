@@ -47,7 +47,7 @@ public class PartMonitor implements IPartListener
 	
 	private final IPartService _myPartService;
 
-	public PartMonitor(IPartService partService)
+	public PartMonitor(final IPartService partService)
 	{
 		_myPartService = partService;
 		partService.addPartListener(this);
@@ -55,7 +55,7 @@ public class PartMonitor implements IPartListener
 
 	public Action createSyncedAction(final String title, final String tooltip, final IWorkbenchPartSite site)
 	{
-		Action res = new Action(title, Action.AS_CHECK_BOX)
+		final Action res = new Action(title, Action.AS_CHECK_BOX)
 		{
 			public void run()
 			{
@@ -76,20 +76,20 @@ public class PartMonitor implements IPartListener
 	
 	
 	
-	public void dispose(IPartService partService)
+	public void dispose(final IPartService partService)
 	{
 		// right stop listening
 		partService.removePartListener(this);
 		
 		// hey, ditch our lists aswell
-		Iterator<HashMap<Class<?>, Vector<ICallback>>> iter = _myEvents.values().iterator();
+		final Iterator<HashMap<Class<?>, Vector<ICallback>>> iter = _myEvents.values().iterator();
 		while(iter.hasNext())
 		{
-			HashMap<Class<?>, Vector<ICallback>> thisEventList = iter.next();
-			Iterator<Vector<ICallback>> iter2 = thisEventList.values().iterator();
+			final HashMap<Class<?>, Vector<ICallback>> thisEventList = iter.next();
+			final Iterator<Vector<ICallback>> iter2 = thisEventList.values().iterator();
 			while(iter2.hasNext())
 			{
-				Vector<ICallback> callbacks =  iter2.next();
+				final Vector<ICallback> callbacks =  iter2.next();
 				
 				// right. ditch the callbacks
 				callbacks.clear();
@@ -109,7 +109,7 @@ public class PartMonitor implements IPartListener
 	 * if applicable
 	 * @param currentPage
 	 */
-	public void fireActivePart(IWorkbenchPage currentPage)
+	public void fireActivePart(final IWorkbenchPage currentPage)
 	{
 		// just check we have an editor
 		if(currentPage != null)
@@ -125,7 +125,7 @@ public class PartMonitor implements IPartListener
 		_myEvents.clear();
 	}
 	
-	public void addPartListener(Class<?> Subject, String event, PartMonitor.ICallback callback)
+	public void addPartListener(final Class<?> Subject, final String event, final PartMonitor.ICallback callback)
 	{
 
 		if (_myEvents == null)
@@ -155,7 +155,7 @@ public class PartMonitor implements IPartListener
 		thisSubjectList.add(callback);
 	}
 
-	private void processEvent(IWorkbenchPart part, String event)
+	private void processEvent(final IWorkbenchPart part, final String event)
 	{
 		if (_myEvents == null)
 			return;
@@ -165,43 +165,43 @@ public class PartMonitor implements IPartListener
 			 return;
 		
 		// ok. see if we are looking for any subjects related to this event
-		 HashMap<Class<?>, Vector<ICallback>> thisEventList = _myEvents.get(event);
+		 final HashMap<Class<?>, Vector<ICallback>> thisEventList = _myEvents.get(event);
 		if (thisEventList != null)
 		{
 			// double-check
 			if (thisEventList.size() > 0)
 			{
 				// yup. work though and check the objects
-				Set<Class<?>> theSet = thisEventList.keySet();
+				final Set<Class<?>> theSet = thisEventList.keySet();
 
 				// have a go at sorting the events, so we can process them in a predictable fashion
-				Comparator<Object> myComparator = new Comparator<Object>(){
-					public int compare(Object arg0, Object arg1)
+				final Comparator<Object> myComparator = new Comparator<Object>(){
+					public int compare(final Object arg0, final Object arg1)
 					{
 						// the following comparison test is relied upon in order to fire
 						// the new time provider partMonitor callback before the new
 						// time control preferences callback event (all in TimeController view)
 						return arg1.toString().compareTo(arg0.toString());
 					}};
-				SortedSet<Class<?>> ss = new java.util.TreeSet<Class<?>>(myComparator );
+				final SortedSet<Class<?>> ss = new java.util.TreeSet<Class<?>>(myComparator );
 				
 				// add all the current entries
 				ss.addAll(theSet);
 				
 				// and work through them.
-				Iterator<Class<?>> iter = ss.iterator();
+				final Iterator<Class<?>> iter = ss.iterator();
 				while (iter.hasNext())
 				{
-					Class<?> thisType = iter.next();
-					Object adaptedItem = part.getAdapter(thisType);
+					final Class<?> thisType = iter.next();
+					final Object adaptedItem = part.getAdapter(thisType);
 					if (adaptedItem != null)
 					{
 						// yup, here we are. fire away.
-						Vector<PartMonitor.ICallback> callbacksForThisSubject =  thisEventList.get(thisType);
-						Iterator<ICallback> iter2 = callbacksForThisSubject.iterator();
+						final Vector<PartMonitor.ICallback> callbacksForThisSubject =  thisEventList.get(thisType);
+						final Iterator<ICallback> iter2 = callbacksForThisSubject.iterator();
 						while(iter2.hasNext())
 						{
-							PartMonitor.ICallback callback = (PartMonitor.ICallback) iter2.next();
+							final PartMonitor.ICallback callback = (PartMonitor.ICallback) iter2.next();
 							callback.eventTriggered(event, adaptedItem, part);
 						}
 					}
@@ -216,7 +216,7 @@ public class PartMonitor implements IPartListener
 	 * 
 	 * @see org.eclipse.ui.IPartListener#partActivated(org.eclipse.ui.IWorkbenchPart)
 	 */
-	public void partActivated(IWorkbenchPart part)
+	public void partActivated(final IWorkbenchPart part)
 	{
 		processEvent(part, ACTIVATED);
 
@@ -227,7 +227,7 @@ public class PartMonitor implements IPartListener
 	 * 
 	 * @see org.eclipse.ui.IPartListener#partBroughtToTop(org.eclipse.ui.IWorkbenchPart)
 	 */
-	public void partBroughtToTop(IWorkbenchPart part)
+	public void partBroughtToTop(final IWorkbenchPart part)
 	{
 		processEvent(part, BROUGHT_TO_TOP);
 	}
@@ -237,7 +237,7 @@ public class PartMonitor implements IPartListener
 	 * 
 	 * @see org.eclipse.ui.IPartListener#partClosed(org.eclipse.ui.IWorkbenchPart)
 	 */
-	public void partClosed(IWorkbenchPart part)
+	public void partClosed(final IWorkbenchPart part)
 	{
 		processEvent(part, CLOSED);
 	}
@@ -247,7 +247,7 @@ public class PartMonitor implements IPartListener
 	 * 
 	 * @see org.eclipse.ui.IPartListener#partDeactivated(org.eclipse.ui.IWorkbenchPart)
 	 */
-	public void partDeactivated(IWorkbenchPart part)
+	public void partDeactivated(final IWorkbenchPart part)
 	{
 		processEvent(part, DEACTIVATED);
 	}
@@ -257,7 +257,7 @@ public class PartMonitor implements IPartListener
 	 * 
 	 * @see org.eclipse.ui.IPartListener#partOpened(org.eclipse.ui.IWorkbenchPart)
 	 */
-	public void partOpened(IWorkbenchPart part)
+	public void partOpened(final IWorkbenchPart part)
 	{
 		processEvent(part, OPENED);
 	}
@@ -284,14 +284,14 @@ public class PartMonitor implements IPartListener
 
 		public void testPartMonitor()
 		{
-			IPartService ips = new IPartService()
+			final IPartService ips = new IPartService()
 			{
-				public void addPartListener(IPartListener listener)
+				public void addPartListener(final IPartListener listener)
 				{
 					_ipsRegistered = listener;
 				}
 
-				public void addPartListener(IPartListener2 listener)
+				public void addPartListener(final IPartListener2 listener)
 				{
 				}
 
@@ -305,12 +305,12 @@ public class PartMonitor implements IPartListener
 					return null;
 				}
 
-				public void removePartListener(IPartListener listener)
+				public void removePartListener(final IPartListener listener)
 				{
 					_ipsRegistered = null;
 				}
 
-				public void removePartListener(IPartListener2 listener)
+				public void removePartListener(final IPartListener2 listener)
 				{
 				}
 			};
@@ -323,7 +323,7 @@ public class PartMonitor implements IPartListener
 			assertFalse("part monitoring not ready", _closedCalled);
 
 			// and on with the testing
-			PartMonitor pm = new PartMonitor(ips);
+			final PartMonitor pm = new PartMonitor(ips);
 
 			assertEquals("PartMonitor registered", pm, _ipsRegistered);
 			assertNull("PartMonitor empty", pm._myEvents);
@@ -332,7 +332,7 @@ public class PartMonitor implements IPartListener
 			pm.partOpened(new TestPart()
 			{
 				@SuppressWarnings("rawtypes")
-				public Object getAdapter(Class adapter)
+				public Object getAdapter(final Class adapter)
 				{
 					return new String("string");
 				}
@@ -348,7 +348,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(String.class, PartMonitor.OPENED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+						public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 						{
 							_openedCalled = true;
 							_eventNames.add(type);
@@ -360,7 +360,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(String.class, PartMonitor.CLOSED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+						public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 						{
 							_closedCalled = true;
 							_eventNames.add(type);
@@ -372,7 +372,7 @@ public class PartMonitor implements IPartListener
 			pm.partOpened(new TestPart()
 			{
 				@SuppressWarnings("rawtypes")
-				public Object getAdapter(Class adapter)
+				public Object getAdapter(final Class adapter)
 				{
 					return new String("string");
 				}
@@ -393,7 +393,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(Integer.class, PartMonitor.OPENED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+						public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 						{
 							_openedCalled = true;
 							_eventNames.add(type);
@@ -403,7 +403,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(Integer.class, PartMonitor.CLOSED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+						public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 						{
 							_closedCalled = true;
 							_eventNames.add(type);
@@ -415,7 +415,7 @@ public class PartMonitor implements IPartListener
 			pm.partOpened(new TestPart()
 					{
 						@SuppressWarnings("rawtypes")
-						public Object getAdapter(Class adapter)
+						public Object getAdapter(final Class adapter)
 						{
 							Object res = null;
 							if(adapter == String.class)
@@ -440,7 +440,7 @@ public class PartMonitor implements IPartListener
 			pm.partOpened(new TestPart()
 			{
 				@SuppressWarnings("rawtypes")
-				public Object getAdapter(Class adapter)
+				public Object getAdapter(final Class adapter)
 				{
 					Object res = null;
 					if (adapter == String.class)
@@ -472,7 +472,7 @@ public class PartMonitor implements IPartListener
 			pm.partOpened(new TestPart()
 			{
 				@SuppressWarnings("rawtypes")
-				public Object getAdapter(Class adapter)
+				public Object getAdapter(final Class adapter)
 				{
 					Object res = null;
 					if (adapter == String.class)
@@ -489,7 +489,7 @@ public class PartMonitor implements IPartListener
 			pm.partClosed(new TestPart()
 					{
 						@SuppressWarnings("rawtypes")
-						public Object getAdapter(Class adapter)
+						public Object getAdapter(final Class adapter)
 						{
 							Object res = null;
 							if (adapter == String.class)
@@ -523,11 +523,11 @@ public class PartMonitor implements IPartListener
 		 */
 		protected abstract static class TestPart implements IWorkbenchPart
 		{
-			public void addPropertyListener(IPropertyListener listener)
+			public void addPropertyListener(final IPropertyListener listener)
 			{
 			}
 
-			public void createPartControl(Composite parent)
+			public void createPartControl(final Composite parent)
 			{
 			}
 
@@ -555,7 +555,7 @@ public class PartMonitor implements IPartListener
 				return null;
 			}
 
-			public void removePropertyListener(IPropertyListener listener)
+			public void removePropertyListener(final IPropertyListener listener)
 			{
 			}
 

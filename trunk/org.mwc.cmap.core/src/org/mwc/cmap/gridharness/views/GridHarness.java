@@ -58,16 +58,16 @@ public class GridHarness extends ViewPart {
 			 * content (like Task List, for example).
 			 */
 	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+		public void inputChanged(final Viewer v, final Object oldInput, final Object newInput) {
 		}
 
 		public void dispose() {
 		}
 
-		public Object[] getElements(Object parent) {
-			Object[] res = new Object[4];
-			PropertyChangeListener pcl = new PropertyChangeListener() {
-				public void propertyChange(PropertyChangeEvent evt) {
+		public Object[] getElements(final Object parent) {
+			final Object[] res = new Object[4];
+			final PropertyChangeListener pcl = new PropertyChangeListener() {
+				public void propertyChange(final PropertyChangeEvent evt) {
 					propertyChanged(evt);
 				}
 			};
@@ -81,15 +81,15 @@ public class GridHarness extends ViewPart {
 
 	class ViewLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
+		public String getColumnText(final Object obj, final int index) {
 			return getText(obj);
 		}
 
-		public Image getColumnImage(Object obj, int index) {
+		public Image getColumnImage(final Object obj, final int index) {
 			return getImage(obj);
 		}
 
-		public Image getImage(Object obj) {
+		public Image getImage(final Object obj) {
 			return PlatformUI.getWorkbench().getSharedImages().getImage(
 					ISharedImages.IMG_OBJ_ELEMENT);
 		}
@@ -105,8 +105,8 @@ public class GridHarness extends ViewPart {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void propertyChanged(PropertyChangeEvent event) {
-		String txt = new Date().toGMTString() + ":" + event.getNewValue();
+	public void propertyChanged(final PropertyChangeEvent event) {
+		final String txt = new Date().toGMTString() + ":" + event.getNewValue();
 		_myList.add(txt);
 	}
 
@@ -114,9 +114,9 @@ public class GridHarness extends ViewPart {
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent) {
+	public void createPartControl(final Composite parent) {
 		// do the layout
-		Composite holder = new Composite(parent, SWT.NONE);
+		final Composite holder = new Composite(parent, SWT.NONE);
 		holder.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		viewer = new TableViewer(holder, SWT.MULTI | SWT.H_SCROLL
@@ -139,18 +139,18 @@ public class GridHarness extends ViewPart {
 	}
 
 	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager) {
+	private void fillLocalPullDown(final IMenuManager manager) {
 		manager.add(subtleChange);
 		manager.add(new Separator());
 		manager.add(clearList);
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager) {
+	private void fillLocalToolBar(final IToolBarManager manager) {
 		manager.add(subtleChange);
 		manager.add(clearList);
 	}
@@ -175,11 +175,11 @@ public class GridHarness extends ViewPart {
 
 	protected void makeSubtleChange() {
 		// ok, get the selected item
-		ISelection current = viewer.getSelection();
+		final ISelection current = viewer.getSelection();
 
 		if (current != null) {
-			IStructuredSelection sel = (IStructuredSelection) current;
-			Object selected = sel.getFirstElement();
+			final IStructuredSelection sel = (IStructuredSelection) current;
+			final Object selected = sel.getFirstElement();
 			if (selected instanceof ObservationList) {
 				changeObs((ObservationList) selected);
 			} else if (selected instanceof PositionList) {
@@ -189,11 +189,11 @@ public class GridHarness extends ViewPart {
 
 	}
 
-	private void changePos(PositionList selected) {
+	private void changePos(final PositionList selected) {
 		selected.makeSubtleChange();
 	}
 
-	private void changeObs(ObservationList selected) {
+	private void changeObs(final ObservationList selected) {
 		selected.makeSubtleChange();
 	}
 

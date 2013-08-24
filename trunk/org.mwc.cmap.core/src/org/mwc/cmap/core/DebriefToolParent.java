@@ -28,13 +28,13 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	/**
 	 * the set of preferences we support
 	 */
-	private IPreferenceStore _myPrefs;
+	private final IPreferenceStore _myPrefs;
 
 	/**
 	 * the undo buffer we support
 	 * 
 	 */
-	private IOperationHistory _myUndo;
+	private final IOperationHistory _myUndo;
 
 	/** convenience object, used to get selected import mode back from the popup dialog
 	 * 
@@ -43,7 +43,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	
 
 	
-	public DebriefToolParent(IPreferenceStore prefs, IOperationHistory undoBuffer)
+	public DebriefToolParent(final IPreferenceStore prefs, final IOperationHistory undoBuffer)
 	{
 		_myPrefs = prefs;
 		_myUndo = undoBuffer;
@@ -52,7 +52,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	/**
 	 * @param theCursor
 	 */
-	public void setCursor(int theCursor)
+	public void setCursor(final int theCursor)
 	{
 		// TODO Auto-generated method stub
 
@@ -70,10 +70,10 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	/**
 	 * @param theAction
 	 */
-	public void addActionToBuffer(Action theAction)
+	public void addActionToBuffer(final Action theAction)
 	{
 		// ok, better wrap the action first
-		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
+		final DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
 
 		// now add it to the buffer (though we don't need to start with the activate
 		// bit)
@@ -81,7 +81,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 		{
 			_myUndo.execute(daw, null, null);
 		}
-		catch (ExecutionException e)
+		catch (final ExecutionException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Executing newly added action", e);
@@ -93,9 +93,9 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	 * @param name
 	 * @return
 	 */
-	public String getProperty(String name)
+	public String getProperty(final String name)
 	{
-		String res = _myPrefs.getString(name);
+		final String res = _myPrefs.getString(name);
 
 		return res;
 	}
@@ -104,9 +104,9 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	 * @param pattern
 	 * @return
 	 */
-	public Map<String, String> getPropertiesLike(String pattern)
+	public Map<String, String> getPropertiesLike(final String pattern)
 	{
-		Map<String, String> retMap = new HashMap<String, String>();
+		final Map<String, String> retMap = new HashMap<String, String>();
 
 		// SPECIAL PROCESSING. THE ONLY TIME WE USE CURRENTLY USE THIS IS FOR THE
 		// VPF PATHS
@@ -115,7 +115,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 			//
 			for (int i = 1; i < 10; i++)
 			{
-				String thisVPFPath = pattern + "." + i;
+				final String thisVPFPath = pattern + "." + i;
 				if (_myPrefs.contains(thisVPFPath))
 				{
 					// ok, has it been changed from the default?
@@ -136,13 +136,13 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	 * @param name
 	 * @param value
 	 */
-	public void setProperty(String name, String value)
+	public void setProperty(final String name, final String value)
 	{
 		_myPrefs.putValue(name, value);
 
 	}
 
-	public void logError(int status, String text, Exception e)
+	public void logError(final int status, final String text, final Exception e)
 	{
 		CorePlugin.logError(status, text, e);
 	}
@@ -157,9 +157,9 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 		current.syncExec(new Runnable(){
 			public void run()
 			{
-				Shell active = PlatformUI.getWorkbench().getWorkbenchWindows()[0].getShell();
+				final Shell active = PlatformUI.getWorkbench().getWorkbenchWindows()[0].getShell();
 				// ok, popup our custom dialog, let user decide
-				SelectImportModeDialog dialog = new SelectImportModeDialog(active, trackName);
+				final SelectImportModeDialog dialog = new SelectImportModeDialog(active, trackName);
 				// store the value
 				_selectedImportMode = dialog.open();
 			}});

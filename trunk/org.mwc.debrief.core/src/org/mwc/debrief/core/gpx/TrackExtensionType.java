@@ -102,7 +102,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setInterpolatePoints(Boolean value) {
+    public void setInterpolatePoints(final Boolean value) {
         this.interpolatePoints = value;
     }
 
@@ -130,7 +130,7 @@ public class TrackExtensionType {
      *     {@link BigInteger }
      *     
      */
-    public void setLineThickness(BigInteger value) {
+    public void setLineThickness(final BigInteger value) {
         this.lineThickness = value;
     }
 
@@ -158,7 +158,7 @@ public class TrackExtensionType {
      *     {@link BigInteger }
      *     
      */
-    public void setLineStyle(BigInteger value) {
+    public void setLineStyle(final BigInteger value) {
         this.lineStyle = value;
     }
 
@@ -186,7 +186,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setLinkPositions(Boolean value) {
+    public void setLinkPositions(final Boolean value) {
         this.linkPositions = value;
     }
 
@@ -214,7 +214,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setNameAtStart(Boolean value) {
+    public void setNameAtStart(final Boolean value) {
         this.nameAtStart = value;
     }
 
@@ -242,7 +242,7 @@ public class TrackExtensionType {
      *     {@link String }
      *     
      */
-    public void setNameLocation(String value) {
+    public void setNameLocation(final String value) {
         this.nameLocation = value;
     }
 
@@ -270,7 +270,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setNameVisible(Boolean value) {
+    public void setNameVisible(final Boolean value) {
         this.nameVisible = value;
     }
 
@@ -298,7 +298,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setPlotArrayCentre(Boolean value) {
+    public void setPlotArrayCentre(final Boolean value) {
         this.plotArrayCentre = value;
     }
 
@@ -326,7 +326,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setPositionsLinked(Boolean value) {
+    public void setPositionsLinked(final Boolean value) {
         this.positionsLinked = value;
     }
 
@@ -354,7 +354,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setPositionsVisible(Boolean value) {
+    public void setPositionsVisible(final Boolean value) {
         this.positionsVisible = value;
     }
 
@@ -382,7 +382,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setSensorsVisible(Boolean value) {
+    public void setSensorsVisible(final Boolean value) {
         this.sensorsVisible = value;
     }
 
@@ -410,7 +410,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setSolutionsVisible(Boolean value) {
+    public void setSolutionsVisible(final Boolean value) {
         this.solutionsVisible = value;
     }
 
@@ -438,7 +438,7 @@ public class TrackExtensionType {
      *     {@link String }
      *     
      */
-    public void setSymbol(String value) {
+    public void setSymbol(final String value) {
         this.symbol = value;
     }
 
@@ -466,7 +466,7 @@ public class TrackExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setVisible(Boolean value) {
+    public void setVisible(final Boolean value) {
         this.visible = value;
     }
 

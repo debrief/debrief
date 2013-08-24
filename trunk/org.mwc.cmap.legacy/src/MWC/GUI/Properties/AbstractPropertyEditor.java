@@ -88,11 +88,11 @@ abstract public class AbstractPropertyEditor extends PropertyEditorSupport
    *
    * @param p1
    */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
     if(p1 instanceof Integer)
@@ -105,15 +105,15 @@ abstract public class AbstractPropertyEditor extends PropertyEditorSupport
    *
    * @param val
    */
-  public void setIndex(int val)
+  public void setIndex(final int val)
   {
     _currentlySelectedValue = val;
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     // loop through the tags to match this
-    String [] theTags = getTags();
+    final String [] theTags = getTags();
     for(int i=0;i<theTags.length;i++)
     {
       if(theTags[i].equals(val))

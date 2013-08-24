@@ -44,12 +44,12 @@ public class RangeBearingPage extends CoreEditableWizardPage
 			return false;
 		}
 
-		public void setBearing(double bearing)
+		public void setBearing(final double bearing)
 		{
 			_bearing = bearing;
 		}
 
-		public void setRange(WorldDistance range)
+		public void setRange(final WorldDistance range)
 		{
 			_range = range;
 		}
@@ -61,9 +61,9 @@ public class RangeBearingPage extends CoreEditableWizardPage
 	final private String _rangeTitle;
 	final private String _bearingTitle;
 
-	public RangeBearingPage(ISelection selection, String pageName,
-			String pageDescription, String rangeTitle, String bearingTitle,
-			String imagePath, String helpContext)
+	public RangeBearingPage(final ISelection selection, final String pageName,
+			final String pageDescription, final String rangeTitle, final String bearingTitle,
+			final String imagePath, final String helpContext)
 	{
 		super(selection, NAME, pageName, pageDescription, imagePath, helpContext,
 				false);
@@ -79,17 +79,17 @@ public class RangeBearingPage extends CoreEditableWizardPage
 
 		if (prefs != null)
 		{
-			double bearing = prefs.getDouble("BEARING", 0d);
-			String rangeStr = prefs.get(RANGE, NULL_RANGE);
-			String[] parts = rangeStr.split(",");
-			double val = Double.parseDouble(parts[0]);
-			int units = Integer.parseInt(parts[1]);
-			WorldDistance range = new WorldDistance(val, units);
+			final double bearing = prefs.getDouble("BEARING", 0d);
+			final String rangeStr = prefs.get(RANGE, NULL_RANGE);
+			final String[] parts = rangeStr.split(",");
+			final double val = Double.parseDouble(parts[0]);
+			final int units = Integer.parseInt(parts[1]);
+			final WorldDistance range = new WorldDistance(val, units);
 			setData(range, bearing);
 		}
 	}
 
-	public void setData(WorldDistance range, double bearing)
+	public void setData(final WorldDistance range, final double bearing)
 	{
 		createMe();
 		_myWrapper.setRange(range);
@@ -105,8 +105,8 @@ public class RangeBearingPage extends CoreEditableWizardPage
 	public void dispose()
 	{
 		// try to store some defaults
-		Preferences prefs = getPrefs();
-		WorldDistance res = this.getRange();
+		final Preferences prefs = getPrefs();
+		final WorldDistance res = this.getRange();
 		prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
 		prefs.putDouble(BEARING, _myWrapper.getBearing());
 
@@ -121,7 +121,7 @@ public class RangeBearingPage extends CoreEditableWizardPage
 
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors =
+		final PropertyDescriptor[] descriptors =
 		{ prop("Range", _rangeTitle, getEditable()),
 				prop("Bearing", _bearingTitle, getEditable()) };
 		return descriptors;

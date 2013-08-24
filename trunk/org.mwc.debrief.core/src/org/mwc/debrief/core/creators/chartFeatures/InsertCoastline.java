@@ -17,16 +17,16 @@ public class InsertCoastline extends CoreInsertChartFeature
 	/**
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
-		CoastPainter cp = new CoastPainter();
+		final CoastPainter cp = new CoastPainter();
 		// see if the chart has a data area defined.  If not, make it cover our
-		WorldArea wa = theChart.getDataArea();
+		final WorldArea wa = theChart.getDataArea();
 
 		if(wa == null)
 		{
 			cp.setVisible(true);
-			WorldArea ca = cp.getBounds();
+			final WorldArea ca = cp.getBounds();
 			cp.setVisible(true);
 			theChart.getCanvas().getProjection().setDataArea(ca);
 		}

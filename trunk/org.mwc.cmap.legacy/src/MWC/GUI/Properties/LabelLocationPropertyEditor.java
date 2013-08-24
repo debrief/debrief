@@ -67,7 +67,7 @@ public class LabelLocationPropertyEditor extends PropertyEditorSupport
     
   public String[] getTags()
   {
-    String tags[] = {"Top",
+    final String tags[] = {"Top",
                      "Bottom",
                      "Left",
                      "Right",
@@ -82,7 +82,7 @@ public class LabelLocationPropertyEditor extends PropertyEditorSupport
 
   
   
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Integer)
     {
@@ -90,12 +90,12 @@ public class LabelLocationPropertyEditor extends PropertyEditorSupport
     }
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
     
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     if(val.equals("Top"))
       _myLocation = new Integer(TOP);

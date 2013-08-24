@@ -77,11 +77,11 @@ final class ImportPeriodText implements PlainLineImporter
   /**
    * read in this string and return a Label
    */
-  public final Object readThisLine(String theLine)
+  public final Object readThisLine(final String theLine)
   {
 
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
     WorldLocation theLoc;
@@ -102,8 +102,8 @@ final class ImportPeriodText implements PlainLineImporter
     theSymbology = st.nextToken();
 
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -123,12 +123,12 @@ final class ImportPeriodText implements PlainLineImporter
      * a space between the hemisphere character and a 3-digit
      * latitude value - so BE CAREFUL
      */
-    String vDiff = st.nextToken();
+    final String vDiff = st.nextToken();
     if (vDiff.length() > 3)
     {
       // hmm, they are combined
       latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
+      final String secondPart = vDiff.substring(1, vDiff.length());
       longDeg = Double.valueOf(secondPart);
     }
     else
@@ -141,12 +141,12 @@ final class ImportPeriodText implements PlainLineImporter
     longSec = Double.valueOf(st.nextToken()).doubleValue();
     longHem = st.nextToken().charAt(0);
 
-    String depthStr = st.nextToken();
+    final String depthStr = st.nextToken();
     try
     {
       theDepth = Double.parseDouble(depthStr);
     }
-    catch (NumberFormatException fe)
+    catch (final NumberFormatException fe)
     {
       // hey, it didn't contain a double, just use it as a text string
       theText = depthStr;
@@ -173,7 +173,7 @@ final class ImportPeriodText implements PlainLineImporter
                                theDepth);
 
     // create the fix ready to store it
-    LabelWrapper lw = new LabelWrapper(theText,
+    final LabelWrapper lw = new LabelWrapper(theText,
                                        theLoc,
                                        ImportReplay.replayColorFor(theSymbology),
                                        theDate,
@@ -196,13 +196,13 @@ final class ImportPeriodText implements PlainLineImporter
    * @param theWrapper the Shape we are exporting
    * @return the shape in String form
    */
-  public final String exportThis(MWC.GUI.Plottable theWrapper)
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
   {
-    LabelWrapper theLabel = (LabelWrapper) theWrapper;
+    final LabelWrapper theLabel = (LabelWrapper) theWrapper;
 
     String line = null;
 
-    TimePeriod theTime = theLabel.getTimePeriod();
+    final TimePeriod theTime = theLabel.getTimePeriod();
 
     line = _myType + " " + ImportReplay.replaySymbolFor(theLabel.getColor(), theLabel.getSymbolType());
     line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(theTime.getStartDTG());
@@ -221,14 +221,14 @@ final class ImportPeriodText implements PlainLineImporter
    * @param val the object to test
    * @return boolean saying whether you can do it
    */
-  public final boolean canExportThis(Object val)
+  public final boolean canExportThis(final Object val)
   {
     boolean res = false;
 
     if (val instanceof LabelWrapper)
     {
       // also see if there is just the start time specified
-      LabelWrapper lw = (LabelWrapper) val;
+      final LabelWrapper lw = (LabelWrapper) val;
 
       // does it have a time period?
       if ((lw.getTimePeriod() != null) && (lw.getTimePeriod().getStartDTG() != null))

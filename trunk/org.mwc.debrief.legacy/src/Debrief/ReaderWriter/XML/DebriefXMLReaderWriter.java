@@ -44,7 +44,7 @@ public final class DebriefXMLReaderWriter extends
 			{
 				importThis(fName, is);
 			}
-			catch (RuntimeException e)
+			catch (final RuntimeException e)
 			{
 
 				MWC.Utilities.Errors.Trace.trace("Sorry, unable to read file:"

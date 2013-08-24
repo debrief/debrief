@@ -50,7 +50,7 @@ public class Spinner extends JPanel {
      *
      * @param comp The component to turn into a Spinner.
      */
-    public Spinner(JComponent comp) {
+    public Spinner(final JComponent comp) {
 	super();
 	this.component = comp;
 
@@ -64,8 +64,8 @@ public class Spinner extends JPanel {
 
 
 	// Layout
-	GridBagLayout gbl = new GridBagLayout();
-	GridBagConstraints gbc = new GridBagConstraints();
+	final GridBagLayout gbl = new GridBagLayout();
+	final GridBagConstraints gbc = new GridBagConstraints();
 
 	gbc.ipadx = 0; gbc.ipady = 0;
 	gbc.insets = new Insets(0, 0, 0, 0);
@@ -89,10 +89,10 @@ public class Spinner extends JPanel {
      *
      * @param listener The SpinListener to be added.
      */
-    public void addSpinListener(SpinListener listener) {
+    public void addSpinListener(final SpinListener listener) {
 	final SpinListener l = listener;
 	scroller.addAdjustmentListener(new AdjustmentListener(){
-		public void adjustmentValueChanged(AdjustmentEvent ae){
+		public void adjustmentValueChanged(final AdjustmentEvent ae){
 		    switch (ae.getValue()) {
 		    case 0:
 			l.spinnerSpunUp(new SpinEvent(scroller,
@@ -109,7 +109,7 @@ public class Spinner extends JPanel {
     }
 
 
-    public void setToolTipText(String tip) {
+    public void setToolTipText(final String tip) {
 	component.setToolTipText(tip);
 	scroller.setToolTipText(tip);
     }
@@ -120,7 +120,7 @@ public class Spinner extends JPanel {
      *
      * @param cmd The action command to set.
      */
-    public void setActionCommand(String cmd) {
+    public void setActionCommand(final String cmd) {
 	this.ac = cmd;
     }
 

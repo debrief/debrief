@@ -88,9 +88,9 @@ public final class WedgeBuilder extends PatternBuilderType
   //////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////
-  public WedgeBuilder(WorldLocation centre,
-                        MWC.GUI.Properties.PropertiesPanel thePanel,
-                        MWC.GUI.Layers theData)
+  public WedgeBuilder(final WorldLocation centre,
+                        final MWC.GUI.Properties.PropertiesPanel thePanel,
+                        final MWC.GUI.Layers theData)
   {
     super(centre, thePanel, theData);
 
@@ -114,18 +114,18 @@ public final class WedgeBuilder extends PatternBuilderType
   /** this method is called by the 'Create' function, and it fills in the
    *  buoys into the correct pattern
    */
-  protected final void addBuoys(Debrief.Wrappers.BuoyPatternWrapper pattern)
+  protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern)
   {
     WorldLocation origin = getKingpin();
     // note that as we calculate the LH angle
-    double lh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation2);
-    double rh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1);
-    double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
+    final double lh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation2);
+    final double rh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1);
+    final double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
 
 
     // how many bouys in each leg?
     // an even number means we don't have one at the tip, which becomes a special case
-    int num_buoys = getNumberOfBuoys().intValue();
+    final int num_buoys = getNumberOfBuoys().intValue();
     boolean even_num = false;
     if((num_buoys % 2) == 0)
     {
@@ -133,7 +133,7 @@ public final class WedgeBuilder extends PatternBuilderType
     }
 
     // sort out how many there are in each leg
-    int num_in_leg = num_buoys / 2;
+    final int num_in_leg = num_buoys / 2;
 
     // sort out the direction
     double this_orient = rh_orient_rads;
@@ -147,7 +147,7 @@ public final class WedgeBuilder extends PatternBuilderType
     for(int i = 0;i< num_in_leg ;i++)
     {
       // create the new symbol
-      Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
+      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
                                                   origin,
                                                   java.awt.Color.red);
 
@@ -165,7 +165,7 @@ public final class WedgeBuilder extends PatternBuilderType
 
 
       // create the step to use to get to the next buoy
-      WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
+      final WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
 
       // place buoy
       origin = origin.add(thisStep);
@@ -175,7 +175,7 @@ public final class WedgeBuilder extends PatternBuilderType
     if(even_num)
     {
       // calculate the size of this small step
-      double reverse_rh_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1 + 180.0);
+      final double reverse_rh_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1 + 180.0);
       WorldVector short_hop = new WorldVector(reverse_rh_rads, spacing_degs / 2, 0.0);
 
       // move the origin forward
@@ -191,13 +191,13 @@ public final class WedgeBuilder extends PatternBuilderType
     {
 
       // drop a buoy at the current point
-      Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
+      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
                                                   origin,
                                                   java.awt.Color.red);
       buoy_counter++;
 
       // move to the correct location for the next point
-      WorldVector short_hop = new WorldVector(lh_orient_rads, spacing_degs, 0.0);
+      final WorldVector short_hop = new WorldVector(lh_orient_rads, spacing_degs, 0.0);
 
       // move the origin forward
       origin = origin.add(short_hop);
@@ -217,7 +217,7 @@ public final class WedgeBuilder extends PatternBuilderType
     {
 
       // create the new symbol
-      Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
+      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
                                                   origin,
                                                   java.awt.Color.red);
 
@@ -227,7 +227,7 @@ public final class WedgeBuilder extends PatternBuilderType
       this.formatSymbol(lw, pattern);
 
       // create the step to use to get to the next buoy
-      WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
+      final WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
 
       // start moving down the return leg
       // move buoy
@@ -248,7 +248,7 @@ public final class WedgeBuilder extends PatternBuilderType
     return _orientation2;
   }
 
-  public final void setOrientation2(double val)
+  public final void setOrientation2(final double val)
   {
     _orientation2 = val;
   }
@@ -258,7 +258,7 @@ public final class WedgeBuilder extends PatternBuilderType
     return _orientation1;
   }
 
-  public final void setOrientation1(double val)
+  public final void setOrientation1(final double val)
   {
     _orientation1 = val;
   }
@@ -270,7 +270,7 @@ public final class WedgeBuilder extends PatternBuilderType
     return new WorldDistance(_spacing, WorldDistance.NM);
   }
 
-  public final void setPatternBuoySpacing(WorldDistance val)
+  public final void setPatternBuoySpacing(final WorldDistance val)
   {
     _spacing = val.getValueIn(WorldDistance.NM);
   }
@@ -300,8 +300,8 @@ public final class WedgeBuilder extends PatternBuilderType
   public final class WedgeInfo extends MWC.GUI.Editable.EditorType
   {
 
-    public WedgeInfo(WedgeBuilder data,
-                   String theName)
+    public WedgeInfo(final WedgeBuilder data,
+                   final String theName)
     {
       super(data, theName, "Wedge:");
     }
@@ -322,7 +322,7 @@ public final class WedgeBuilder extends PatternBuilderType
     {
       try
       {
-        PropertyDescriptor[] myRes=
+        final PropertyDescriptor[] myRes=
         {
           prop("SymbolType", "the type of symbol plotted for this label"),
           prop("SymbolSize", "the scale of the symbol"),
@@ -344,7 +344,7 @@ public final class WedgeBuilder extends PatternBuilderType
 
         return myRes;
 
-      }catch(IntrospectionException e)
+      }catch(final IntrospectionException e)
       {
         // find out which property fell over
         MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Wedge Builder");
@@ -360,7 +360,7 @@ public final class WedgeBuilder extends PatternBuilderType
   static public final class testMe extends junit.framework.TestCase
   {
     static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(String val)
+    public testMe(final String val)
     {
       super(val);
     }

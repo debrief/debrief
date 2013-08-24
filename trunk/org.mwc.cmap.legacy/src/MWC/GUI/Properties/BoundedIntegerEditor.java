@@ -79,7 +79,7 @@ abstract public class BoundedIntegerEditor extends
 		
     if(p1 instanceof BoundedInteger)
     {
-      BoundedInteger val = (BoundedInteger)p1;
+      final BoundedInteger val = (BoundedInteger)p1;
 			// take duplicate of bounded integer value - so that we are not editing
 			// the original one
       _myVal = new BoundedInteger(val.getCurrent(), val.getMin(), val.getMax());

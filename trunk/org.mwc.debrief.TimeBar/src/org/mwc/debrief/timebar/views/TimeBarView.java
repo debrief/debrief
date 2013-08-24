@@ -63,7 +63,7 @@ public class TimeBarView extends ViewPart {
 	
 	
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(final Composite parent) {
 		_viewer = new TimeBarViewer(parent, _myLayers);
 
 		getSite().setSelectionProvider(_viewer);
@@ -78,14 +78,14 @@ public class TimeBarView extends ViewPart {
 		_selectionChangeListener = new ISelectionChangedListener() {
 
 			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection sel = event.getSelection();
+			public void selectionChanged(final SelectionChangedEvent event) {
+				final ISelection sel = event.getSelection();
 				if (!(sel instanceof IStructuredSelection))
 					return;
-				IStructuredSelection ss = (IStructuredSelection) sel;
-				Object o = ss.getFirstElement();
+				final IStructuredSelection ss = (IStructuredSelection) sel;
+				final Object o = ss.getFirstElement();
 				if (o instanceof EditableWrapper) {
-					EditableWrapper pw = (EditableWrapper) o;
+					final EditableWrapper pw = (EditableWrapper) o;
 					editableSelected(sel, pw);
 				}
 			}
@@ -95,11 +95,11 @@ public class TimeBarView extends ViewPart {
 	
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 	
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(_zoomInAction);
 		manager.add(_zoomOutAction);
@@ -149,7 +149,7 @@ public class TimeBarView extends ViewPart {
 		
 	}
 	
-	void processNewLayers(Object part)
+	void processNewLayers(final Object part)
 	{
 		// just check we're not already looking at it
 		if (part.equals(_myLayers))
@@ -161,22 +161,22 @@ public class TimeBarView extends ViewPart {
 			_myLayersListener = new Layers.DataListener2()
 			{
 
-				public void dataModified(Layers theData, Layer changedLayer)
+				public void dataModified(final Layers theData, final Layer changedLayer)
 				{						
 				}
 
-				public void dataExtended(Layers theData)
+				public void dataExtended(final Layers theData)
 				{
 					dataExtended(theData, null, null);
 				}
 
-				public void dataReformatted(Layers theData, Layer changedLayer)
+				public void dataReformatted(final Layers theData, final Layer changedLayer)
 				{
 					processReformattedLayer(theData, changedLayer);
 				}
 
-				public void dataExtended(Layers theData, Plottable newItem,
-								Layer parentLayer)
+				public void dataExtended(final Layers theData, final Plottable newItem,
+								final Layer parentLayer)
 				{
 					processNewData(theData, newItem, parentLayer);
 				}
@@ -192,7 +192,7 @@ public class TimeBarView extends ViewPart {
 		processNewData(_myLayers, null, null);		
 	}	
 	
-	void processReformattedLayer(Layers theData, Layer changedLayer)
+	void processReformattedLayer(final Layers theData, final Layer changedLayer)
 	{
 		_viewer.drawDiagram(theData);
 	}
@@ -210,11 +210,11 @@ public class TimeBarView extends ViewPart {
 					if (newItem != null)
 					{
 						// wrap the plottable
-						EditableWrapper parentWrapper = new EditableWrapper(parentLayer,
+						final EditableWrapper parentWrapper = new EditableWrapper(parentLayer,
 								null, theData);
-						EditableWrapper wrapped = new EditableWrapper(newItem,
+						final EditableWrapper wrapped = new EditableWrapper(newItem,
 								parentWrapper, theData);
-						ISelection selected = new StructuredSelection(wrapped);
+						final ISelection selected = new StructuredSelection(wrapped);
 
 						// and select it
 						editableSelected(selected, wrapped);
@@ -264,8 +264,8 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						processNewLayers(part);
 					}
@@ -273,8 +273,8 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						processNewLayers(part);
 					}
@@ -282,8 +282,8 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// is this our set of layers?
 						if (part == _myLayers)
@@ -298,10 +298,10 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						TimeProvider provider = ((TimeController) part).getTimeProvider();						
+						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
 						if (provider != null && provider.equals(_timeProvider))
 							return;						
 						_timeProvider = provider;
@@ -312,10 +312,10 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						TimeProvider provider = ((TimeController) part).getTimeProvider();						
+						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
 						if (provider != null && provider.equals(_timeProvider))
 							return;						
 						_timeProvider = provider;
@@ -327,10 +327,10 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						TimeProvider provider = ((TimeController) part).getTimeProvider();						
+						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
 						if (provider != null && provider.equals(_timeProvider))
 						{
 							_timeProvider.removeListener(_temporalListener, 
@@ -346,13 +346,13 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
 						if (part != _viewer)
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
+							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.addSelectionChangedListener(_selectionChangeListener);
 						}
 					}
@@ -360,13 +360,13 @@ public class TimeBarView extends ViewPart {
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
 						if (part != _viewer)
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
+							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.removeSelectionChangedListener(_selectionChangeListener);
 						}
 					}
@@ -377,7 +377,7 @@ public class TimeBarView extends ViewPart {
 				.getActivePage());
 	}
 	
-	public void editableSelected(ISelection sel, EditableWrapper pw) 
+	public void editableSelected(final ISelection sel, final EditableWrapper pw) 
 	{
 
 		// ahh, just check if this is a whole new layers object
@@ -390,14 +390,14 @@ public class TimeBarView extends ViewPart {
 		// just check that this is something we can work with
 		if (sel instanceof StructuredSelection) 
 		{
-			StructuredSelection str = (StructuredSelection) sel;
+			final StructuredSelection str = (StructuredSelection) sel;
 
 			// hey, is there a payload?
 			if (str.getFirstElement() != null) 
 			{
 				// sure is. we only support single selections, so get the first
 				// element
-				Object first = str.getFirstElement();
+				final Object first = str.getFirstElement();
 				if (first instanceof EditableWrapper) 
 					_viewer.setSelectionToWidget((StructuredSelection) sel);				
 			}
@@ -406,7 +406,7 @@ public class TimeBarView extends ViewPart {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 
@@ -424,7 +424,7 @@ public class TimeBarView extends ViewPart {
 	
 	protected final class NewTimeListener implements PropertyChangeListener
 	{
-		public void propertyChange(PropertyChangeEvent event)
+		public void propertyChange(final PropertyChangeEvent event)
 		{
 			// see if it's the time or the period which
 			// has changed
@@ -434,7 +434,7 @@ public class TimeBarView extends ViewPart {
 				// ok, use the new time
 				final HiResDate newDTG = (HiResDate) event.getNewValue();
 				final HiResDate oldDTG = (HiResDate) event.getOldValue();
-				Runnable nextEvent = new Runnable()
+				final Runnable nextEvent = new Runnable()
 				{
 					public void run()
 					{

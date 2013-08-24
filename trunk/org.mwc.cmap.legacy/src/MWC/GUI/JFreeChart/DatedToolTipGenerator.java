@@ -24,17 +24,17 @@ public final class DatedToolTipGenerator extends StandardXYToolTipGenerator
    *
    * @return the tool tip text.
    */
-  public String generateToolTip(XYDataset data, int series, int item)
+  public String generateToolTip(final XYDataset data, final int series, final int item)
   {
     String result = "|" + data.getSeriesKey(series) + " | ";
-    Number x = data.getXValue(series, item);
+    final Number x = data.getXValue(series, item);
 
     // put into Date value
-    Date newD = new Date(x.longValue());
+    final Date newD = new Date(x.longValue());
 
     result = result + " DTG: " + newD.toString();
 
-    Number y = data.getYValue(series, item);
+    final Number y = data.getYValue(series, item);
     if (y != null) {
       result = result + ", value: " + this.getYFormat().format(y);
     }

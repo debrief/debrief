@@ -4,7 +4,7 @@ import java.beans.PropertyDescriptor;
 
 public abstract class Griddable extends Editable.EditorType
 {
-	public Griddable(Object data, String name, String displayName)
+	public Griddable(final Object data, final String name, final String displayName)
 	{
 		super(data, name, displayName);
 	}

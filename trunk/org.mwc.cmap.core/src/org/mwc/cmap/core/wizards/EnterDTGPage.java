@@ -17,8 +17,8 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 {
 	private static final String DATE = "DATE";
 
-	public EnterDTGPage(ISelection selection, HiResDate startDate,
-			String pageTitle, String pageExplanation, String fieldExplanation, String imagePath, String helpContext)
+	public EnterDTGPage(final ISelection selection, final HiResDate startDate,
+			final String pageTitle, final String pageExplanation, final String fieldExplanation, final String imagePath, final String helpContext)
 	{
 		super(selection,
 				FullFormatDateTime.toString(startDate.getDate().getTime()), pageTitle,
@@ -50,10 +50,10 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 		HiResDate res = null;
 		try
 		{
-			long time = FullFormatDateTime.fromString(super.getString());
+			final long time = FullFormatDateTime.fromString(super.getString());
 			res = new HiResDate(time);
 		}
-		catch (ParseException e)
+		catch (final ParseException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Parsing this text:"
 					+ super.getString(), e);
@@ -66,24 +66,24 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 	public void dispose()
 	{
 		// try to store some defaults
-		Preferences prefs = getPrefs();
+		final Preferences prefs = getPrefs();
 		prefs.put(DATE, _myWrapper.getName());
 
 		super.dispose();
 	}
 
-	public void modifyText(ModifyEvent e)
+	public void modifyText(final ModifyEvent e)
 	{
 		// ok, check we can parse it
-		Text text = (Text) e.widget;
-		String val = text.getText();
+		final Text text = (Text) e.widget;
+		final String val = text.getText();
 
 		try
 		{
 			// do a trial conversion, just to check it's valid
 			FullFormatDateTime.fromString(val);
 		}
-		catch (ParseException e1)
+		catch (final ParseException e1)
 		{
 			// invalid - try to stop it!!!
 			super.setErrorMessage("Date not formatted correctly");

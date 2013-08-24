@@ -24,7 +24,7 @@ public class WriteClipboard extends PlainTool
    * @param theApp the parent application, so we can set cursors
    * @param theChart the chart we are to resize
    */
-  public WriteClipboard(ToolParent theParent,PlainChart theChart,Layers theData){      
+  public WriteClipboard(final ToolParent theParent,final PlainChart theChart,final Layers theData){      
     super(theParent, "Write Clipboard","images/write_wmf.gif");
     // remember the chart we are acting upon
     _theChart = theChart;
@@ -47,13 +47,13 @@ public class WriteClipboard extends PlainTool
     try{
     
     // create our output metafile
-    WindowsClipboard wc = new WindowsClipboard();
+    final WindowsClipboard wc = new WindowsClipboard();
     
     // take a copy of the screen size
-    java.awt.Dimension oldDim  = _theChart.getCanvas().getProjection().getScreenArea();
+    final java.awt.Dimension oldDim  = _theChart.getCanvas().getProjection().getScreenArea();
     
     // insert a new screen size
-    java.awt.Dimension newDim = new java.awt.Dimension(400, 400);
+    final java.awt.Dimension newDim = new java.awt.Dimension(400, 400);
     _theChart.getCanvas().getProjection().setScreenArea(newDim);
     
     // start drawing
@@ -67,7 +67,7 @@ public class WriteClipboard extends PlainTool
     wc.setBackgroundColor(java.awt.Color.white);
     
     // ask the canvas to paint the image
-    MWC.GUI.Canvas.Swing.SwingCanvas sc = (MWC.GUI.Canvas.Swing.SwingCanvas)_theChart.getCanvas();
+    final MWC.GUI.Canvas.Swing.SwingCanvas sc = (MWC.GUI.Canvas.Swing.SwingCanvas)_theChart.getCanvas();
     sc.paintIt(wc);
 
     // replace the screen size
@@ -77,13 +77,13 @@ public class WriteClipboard extends PlainTool
     wc.endDraw(null);
     
     }
-    catch(java.lang.NoClassDefFoundError e)
+    catch(final java.lang.NoClassDefFoundError e)
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Write Operation", 
                                                 "Sorry, Windows utilities not found on this installation");
       MWC.Utilities.Errors.Trace.trace(e, "Sorry, Microsoft classes not enabled on this installation");
     }
-    catch(java.lang.Exception e)
+    catch(final java.lang.Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -104,28 +104,28 @@ public class WriteClipboard extends PlainTool
 		_theChart = null;
 	}
   
-	protected java.io.Serializable cloneThis(java.io.Serializable item)
+	protected java.io.Serializable cloneThis(final java.io.Serializable item)
 	{
 		java.io.Serializable res = null;
 		try{
-			java.io.ByteArrayOutputStream bas = new java.io.ByteArrayOutputStream();
-			java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bas);
+			final java.io.ByteArrayOutputStream bas = new java.io.ByteArrayOutputStream();
+			final java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bas);
 			oos.writeObject(item);
 			// get closure
 			oos.close();
 			bas.close();
 		
 			// now get the item
-			byte[] bt  = bas.toByteArray();
+			final byte[] bt  = bas.toByteArray();
 		
 			// and read it back in as a new item
-			java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(bt);
+			final java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(bt);
 		
 			// create the reader
-			java.io.ObjectInputStream iis = new java.io.ObjectInputStream(bis);
+			final java.io.ObjectInputStream iis = new java.io.ObjectInputStream(bis);
 		
 			// and read it in
-			Object oj = iis.readObject();
+			final Object oj = iis.readObject();
 		
 			// get more closure
 			bis.close();
@@ -135,7 +135,7 @@ public class WriteClipboard extends PlainTool
       res = (java.io.Serializable) oj;
 		
 		}
-		catch(Exception e)
+		catch(final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}

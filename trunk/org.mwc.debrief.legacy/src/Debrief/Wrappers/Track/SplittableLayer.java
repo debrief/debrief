@@ -23,7 +23,7 @@ public class SplittableLayer extends BaseLayer
 	public class SplittableInfo extends BaseLayer.LayerInfo
 	{
 
-		public SplittableInfo(SplittableLayer data)
+		public SplittableInfo(final SplittableLayer data)
 		{
 			super(data);
 		}
@@ -33,13 +33,13 @@ public class SplittableLayer extends BaseLayer
 		public MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			Class c = SplittableLayer.class;
-			MethodDescriptor mds[] = super.getMethodDescriptors();
+			final Class c = SplittableLayer.class;
+			final MethodDescriptor mds[] = super.getMethodDescriptors();
 
-			MethodDescriptor newMeds[] = new MethodDescriptor[]
+			final MethodDescriptor newMeds[] = new MethodDescriptor[]
 			{ method(c, "AutoSplitTracks", null, "Automatically separate into tracks") };
 
-			MethodDescriptor resMeds[] = new MethodDescriptor[mds.length
+			final MethodDescriptor resMeds[] = new MethodDescriptor[mds.length
 					+ newMeds.length];
 			System.arraycopy(mds, 0, resMeds, 0, mds.length);
 			System.arraycopy(newMeds, 0, resMeds, mds.length, newMeds.length);
@@ -56,7 +56,7 @@ public class SplittableLayer extends BaseLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public SplittableLayer(boolean b)
+	public SplittableLayer(final boolean b)
 	{
 		super(b);
 	}
@@ -75,14 +75,14 @@ public class SplittableLayer extends BaseLayer
 	public void AutoSplitTracks()
 	{
 		// remember any layers we want to add/remove after we've looped through
-		Vector<SensorWrapper> toAdd = new Vector<SensorWrapper>(0, 1);
-		Vector<SensorWrapper> toDitch = new Vector<SensorWrapper>(0, 1);
+		final Vector<SensorWrapper> toAdd = new Vector<SensorWrapper>(0, 1);
+		final Vector<SensorWrapper> toDitch = new Vector<SensorWrapper>(0, 1);
 
 		// ok, loop through my children, splitting them
-		Enumeration<Editable> iter = this.elements();
+		final Enumeration<Editable> iter = this.elements();
 		while (iter.hasMoreElements())
 		{
-			SensorWrapper thisWrapper = (SensorWrapper) iter.nextElement();
+			final SensorWrapper thisWrapper = (SensorWrapper) iter.nextElement();
 
 			// get ready to store these items
 			final Vector<SensorWrapper> childLayers = new Vector<SensorWrapper>();
@@ -92,7 +92,7 @@ public class SplittableLayer extends BaseLayer
 
 			// ok, start looping through this wrapper
 			SensorContactWrapper lastCut = null;
-			Enumeration<Editable> theseCuts = thisWrapper.elements();
+			final Enumeration<Editable> theseCuts = thisWrapper.elements();
 			while (theseCuts.hasMoreElements())
 			{
 				final SensorContactWrapper thisCut = (SensorContactWrapper) theseCuts
@@ -103,7 +103,7 @@ public class SplittableLayer extends BaseLayer
 				if (lastCut != null)
 				{
 					// what's the delta
-					long delta = thisCut.getTime().getDate().getTime()
+					final long delta = thisCut.getTime().getDate().getTime()
 							- lastCut.getTime().getDate().getTime();
 					if (delta > DELTA_LIMIT)
 					{
@@ -135,11 +135,11 @@ public class SplittableLayer extends BaseLayer
 				toDitch.add(thisWrapper);
 
 				// and insert the new ones
-				Iterator<SensorWrapper> newOnes = childLayers.iterator();
+				final Iterator<SensorWrapper> newOnes = childLayers.iterator();
 				int ctr = 1;
 				while (newOnes.hasNext())
 				{
-					SensorWrapper thisOne = newOnes.next();
+					final SensorWrapper thisOne = newOnes.next();
 					thisOne.setName(thisWrapper.getName() + "_" + ctr++);
 					toAdd.add(thisOne);
 				}
@@ -147,16 +147,16 @@ public class SplittableLayer extends BaseLayer
 
 		}
 		// we've looped through, now do the tidying
-		Iterator<SensorWrapper> ditches = toDitch.iterator();
+		final Iterator<SensorWrapper> ditches = toDitch.iterator();
 		while (ditches.hasNext())
 		{
-			SensorWrapper sensorWrapper = ditches.next();
+			final SensorWrapper sensorWrapper = ditches.next();
 			this.removeElement(sensorWrapper);
 		}
-		Iterator<SensorWrapper> adds = toAdd.iterator();
+		final Iterator<SensorWrapper> adds = toAdd.iterator();
 		while (adds.hasNext())
 		{
-			SensorWrapper sensorWrapper = adds.next();
+			final SensorWrapper sensorWrapper = adds.next();
 			this.add(sensorWrapper);
 		}
 

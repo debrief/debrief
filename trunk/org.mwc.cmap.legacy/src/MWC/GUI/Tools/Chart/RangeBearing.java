@@ -90,9 +90,9 @@ public class RangeBearing extends PlainDragTool implements java.io.Serializable
   //////////////////////////////////////////////////
   // constructor
   //////////////////////////////////////////////////
-  public RangeBearing(PlainChart theChart,
-                      ToolParent theParent,
-                      StatusBar theBar){
+  public RangeBearing(final PlainChart theChart,
+                      final ToolParent theParent,
+                      final StatusBar theBar){
     super(theChart, theParent, "Range Brg", "images/rng_brg.gif");
     _theBar = theBar;
 
@@ -113,15 +113,15 @@ public class RangeBearing extends PlainDragTool implements java.io.Serializable
   }
 
 
-  public void dragging(WorldLocation theLocation, Point thePoint)
+  public void dragging(final WorldLocation theLocation, final Point thePoint)
   {
     // right, now sort out the range and bearing back to
     // the origin
-    WorldVector wv = theLocation.subtract(_theStart);
+    final WorldVector wv = theLocation.subtract(_theStart);
 
     // get the data
-    double rng = wv.getRange();
-    double brg = wv.getBearing();
+    final double rng = wv.getRange();
+    final double brg = wv.getBearing();
 
 
     // we don't format the results anymore, since the status bar knows how to
@@ -138,7 +138,7 @@ public class RangeBearing extends PlainDragTool implements java.io.Serializable
     return null;
   }
 
-  public void showResults(String val)
+  public void showResults(final String val)
   {
     _theBar.setText(val);
   }

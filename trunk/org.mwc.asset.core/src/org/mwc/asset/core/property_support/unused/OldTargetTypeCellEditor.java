@@ -41,15 +41,15 @@ public class OldTargetTypeCellEditor extends CellEditor
 
 	final private String _typeTip = "the type of the subject participant(s)";
 
-	public OldTargetTypeCellEditor(Composite parent)
+	public OldTargetTypeCellEditor(final Composite parent)
 	{
 		super(parent);
 	}
 
-	protected Control createControl(Composite parent)
+	protected Control createControl(final Composite parent)
 	{
-		Composite holder = new Composite(parent, SWT.NONE);
-		RowLayout rows = new RowLayout();
+		final Composite holder = new Composite(parent, SWT.NONE);
+		final RowLayout rows = new RowLayout();
 		rows.marginLeft = rows.marginRight = 0;
 		rows.marginTop = rows.marginBottom = 0;
 		rows.fill = false;
@@ -104,7 +104,7 @@ public class OldTargetTypeCellEditor extends CellEditor
 
 	protected Object doGetValue()
 	{
-		TargetType tt = new TargetType();
+		final TargetType tt = new TargetType();
 
 		if (_myForce.getSelectionIndex() != -1)
 			tt.addTargetType(_myForce.getItem(_myForce.getSelectionIndex()));
@@ -119,15 +119,15 @@ public class OldTargetTypeCellEditor extends CellEditor
 	{
 	}
 
-	protected void doSetValue(Object value)
+	protected void doSetValue(final Object value)
 	{
-		TargetType _myCat = (TargetType) value;
+		final TargetType _myCat = (TargetType) value;
 
 		// ok, sort out the forces
-		Collection<String> types = _myCat.getTargets();
-		for (Iterator<String> iter = types.iterator(); iter.hasNext();)
+		final Collection<String> types = _myCat.getTargets();
+		for (final Iterator<String> iter = types.iterator(); iter.hasNext();)
 		{
-			String type = (String) iter.next();
+			final String type = (String) iter.next();
 
 			// is this a force?
 			if (Category.getForces().contains(type))

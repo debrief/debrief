@@ -16,7 +16,7 @@ public class ButtonPanel extends Panel {
 	public ButtonPanel() {
 		this(Orientation.CENTER);
 	}
-    public ButtonPanel(Orientation orientation) {
+    public ButtonPanel(final Orientation orientation) {
 		int buttonPanelOrient = FlowLayout.CENTER;
         setLayout(new BorderLayout(0,5));
 
@@ -31,11 +31,11 @@ public class ButtonPanel extends Panel {
         add(separator, "North");
         add(buttonPanel, "Center");
     }
-    public void add(Button button) {
+    public void add(final Button button) {
         buttonPanel.add(button);
     }
-    public Button add(String buttonLabel) {
-        Button addMe = new Button(buttonLabel);
+    public Button add(final String buttonLabel) {
+        final Button addMe = new Button(buttonLabel);
         buttonPanel.add(addMe);
         return addMe;
     }

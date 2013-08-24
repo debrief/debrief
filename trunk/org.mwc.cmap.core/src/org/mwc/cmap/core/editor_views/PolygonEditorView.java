@@ -28,7 +28,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 {
 	private WorldPath _myPath;
 
-	private PropertyChangeSupport _pSupport;
+	private final PropertyChangeSupport _pSupport;
 
 	private PolygonEditorControl _myEditor;
 
@@ -53,15 +53,15 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		_pSupport = new PropertyChangeSupport(this);
 	}
 
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		_myEditor = new PolygonEditorControl(parent, SWT.NONE)
 		{
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 			}
 
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				btnPushed(e);
 			}
@@ -81,13 +81,13 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 				return null;
 			}
 
-			public void paintMe(CanvasType dest)
+			public void paintMe(final CanvasType dest)
 			{
 				// ok - draw it.
 				paintPolygon(dest);
 			}
 
-			public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
+			public void resizedEvent(final PlainProjection theProj, final Dimension newScreenArea)
 			{
 			}
 		};
@@ -95,10 +95,10 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		// try to sort out a fancy painter thingy
 		_labeller = new CountingLabelProvider();
 		_myEditor.pointList2.setLabelProvider(_labeller);
-		IDoubleClickListener _dblClickListener = new IDoubleClickListener()
+		final IDoubleClickListener _dblClickListener = new IDoubleClickListener()
 		{
 
-			public void doubleClick(DoubleClickEvent event)
+			public void doubleClick(final DoubleClickEvent event)
 			{
 				doubleClicked(event);
 			}
@@ -114,10 +114,10 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		getSite().setSelectionProvider(this);
 	}
 
-	protected void doubleClicked(DoubleClickEvent event)
+	protected void doubleClicked(final DoubleClickEvent event)
 	{
-		StructuredSelection sel = (StructuredSelection) event.getSelection();
-		WorldLocation loc = (WorldLocation) sel.getFirstElement();
+		final StructuredSelection sel = (StructuredSelection) event.getSelection();
+		final WorldLocation loc = (WorldLocation) sel.getFirstElement();
 		editThisInProperties(loc);
 	}
 
@@ -125,9 +125,9 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	{
 		WorldLocation res = null;
 
-		StructuredSelection curr = (StructuredSelection) _myEditor.pointList2
+		final StructuredSelection curr = (StructuredSelection) _myEditor.pointList2
 				.getSelection();
-		Object first = curr.getFirstElement();
+		final Object first = curr.getFirstElement();
 		if (first != null)
 		{
 			res = (WorldLocation) first;
@@ -135,13 +135,13 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		return res;
 	}
 
-	protected void btnPushed(SelectionEvent e)
+	protected void btnPushed(final SelectionEvent e)
 	{
-		WorldLocation thisPoint = getSelectedPoint();
+		final WorldLocation thisPoint = getSelectedPoint();
 		ISelection selection = _myEditor.pointList2.getSelection();
 
 		// ok, the user has done something in the editor control. what was it?
-		Object source = e.widget;
+		final Object source = e.widget;
 		if (source == _myEditor.delBtn)
 		{
 			removePoint(thisPoint);
@@ -158,7 +158,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		else if (source == _myEditor.newBtn)
 		{
 			// right, what's the center point?
-			WorldLocation centre = _myPath.getBounds().getCentre();
+			final WorldLocation centre = _myPath.getBounds().getCentre();
 			addPoint(centre);
 		}
 
@@ -172,7 +172,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	 * 
 	 * @param thisPoint
 	 */
-	private void pasteLoc(WorldLocation thisPoint)
+	private void pasteLoc(final WorldLocation thisPoint)
 	{
 		// is a location selected?
 		if (thisPoint != null)
@@ -181,13 +181,13 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			// is there a location on the clipboard?
 			// right, see what's on the clipboard
 			// right, copy the location to the clipboard
-			Clipboard clip = CorePlugin.getDefault().getClipboard();
-			Object val = clip.getContents(TextTransfer.getInstance());
+			final Clipboard clip = CorePlugin.getDefault().getClipboard();
+			final Object val = clip.getContents(TextTransfer.getInstance());
 			if (val != null)
 			{
-				String txt = (String) val;
+				final String txt = (String) val;
 				// cool, get the text
-				WorldLocation loc = CorePlugin.fromClipboard(txt);
+				final WorldLocation loc = CorePlugin.fromClipboard(txt);
 				if (loc != null)
 				{
 					// create the output value
@@ -209,9 +209,9 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	/**
 	 * @param centre
 	 */
-	private void addPoint(WorldLocation centre)
+	private void addPoint(final WorldLocation centre)
 	{
-		NewPointAction theAction = new NewPointAction(_myPath, centre);
+		final NewPointAction theAction = new NewPointAction(_myPath, centre);
 		CorePlugin.run(theAction);
 	}
 
@@ -227,18 +227,18 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	/**
 	 * @param thisPoint
 	 */
-	private void moveUpward(WorldLocation thisPoint)
+	private void moveUpward(final WorldLocation thisPoint)
 	{
-		MoveUpAction theAction = new MoveUpAction(_myPath, thisPoint);
+		final MoveUpAction theAction = new MoveUpAction(_myPath, thisPoint);
 		CorePlugin.run(theAction);
 	}
 
 	/**
 	 * @param thisPoint
 	 */
-	private void removePoint(WorldLocation thisPoint)
+	private void removePoint(final WorldLocation thisPoint)
 	{
-		DeleteAction theAction = new DeleteAction(_myPath, thisPoint);
+		final DeleteAction theAction = new DeleteAction(_myPath, thisPoint);
 		CorePlugin.run(theAction);
 	}
 
@@ -246,21 +246,21 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	{
 	}
 
-	public void setPolygon(WorldPath thePath)
+	public void setPolygon(final WorldPath thePath)
 	{
 		_myPath = thePath;
 		updateUI();
 
 		// ok, see if we have a canvas open
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		final IWorkbenchPage page = win.getActivePage();
 		if (page != null)
 		{
-			IEditorPart editor = page.getActiveEditor();
+			final IEditorPart editor = page.getActiveEditor();
 
 			// hmm, see if this editor has some layers we can fire a reformatted at
-			CanvasType newCanvas = (CanvasType) editor.getAdapter(CanvasType.class);
+			final CanvasType newCanvas = (CanvasType) editor.getAdapter(CanvasType.class);
 			if (newCanvas != null)
 			{
 				// right, ditch the old canvas, if we have one
@@ -279,12 +279,12 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	public void addListener(PropertyChangeListener listener)
+	public void addListener(final PropertyChangeListener listener)
 	{
 		_pSupport.addPropertyChangeListener(listener);
 	}
 
-	public void removeListener(PropertyChangeListener listener)
+	public void removeListener(final PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(listener);
 	}
@@ -302,16 +302,16 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			// first the count
 			_myEditor.editorPanel.setText(_myPath.getPoints().size() + " Points");
 
-			Object[] thePts = _myPath.getPoints().toArray();
+			final Object[] thePts = _myPath.getPoints().toArray();
 			_myEditor.pointList2.add(thePts);
 
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-			IEditorPart editor = page.getActiveEditor();
+			final IWorkbench wb = PlatformUI.getWorkbench();
+			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			final IWorkbenchPage page = win.getActivePage();
+			final IEditorPart editor = page.getActiveEditor();
 
 			// hmm, see if this editor has some layers we can fire a reformatted at
-			Layers theLayers = (Layers) editor.getAdapter(Layers.class);
+			final Layers theLayers = (Layers) editor.getAdapter(Layers.class);
 			if (theLayers != null)
 			{
 				theLayers.fireReformatted(null);
@@ -362,17 +362,17 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	/**
 	 * @param dest
 	 */
-	void paintPolygon(CanvasType dest)
+	void paintPolygon(final CanvasType dest)
 	{
 		// ok - draw the polygon
 		int counter = 2;
 		dest.setColor(java.awt.Color.gray);
-		Collection<WorldLocation> pts = _myPath.getPoints();
+		final Collection<WorldLocation> pts = _myPath.getPoints();
 		Point lastP = null;
 		Point startP = null;
-		for (Iterator<WorldLocation> iter = pts.iterator(); iter.hasNext();)
+		for (final Iterator<WorldLocation> iter = pts.iterator(); iter.hasNext();)
 		{
-			WorldLocation thisL = (WorldLocation) iter.next();
+			final WorldLocation thisL = (WorldLocation) iter.next();
 			if (lastP == null)
 			{
 				// ignore, we won't plot it - but remember where we came from..
@@ -385,7 +385,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			else
 			{
 				// get drawing
-				Point thisP = dest.toScreen(thisL);
+				final Point thisP = dest.toScreen(thisL);
 				dest.drawLine(lastP.x, lastP.y, thisP.x, thisP.y);
 
 				// mark point
@@ -432,7 +432,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			counter = 0;
 		}
 
-		public String getText(Object element)
+		public String getText(final Object element)
 		{
 			return "" + ++counter + ": " + super.getText(element);
 		}
@@ -444,21 +444,21 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		return null;// _currentSelection;
 	}
 
-	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
 	}
 
-	public void setSelection(ISelection selection)
+	public void setSelection(final ISelection selection)
 	{
 		_currentSelection = (StructuredSelection) selection;
 		if (_selectionListeners != null)
 		{
-			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, selection);
-			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners
+			final SelectionChangedEvent sEvent = new SelectionChangedEvent(this, selection);
+			for (final Iterator<ISelectionChangedListener> stepper = _selectionListeners
 					.iterator(); stepper.hasNext();)
 			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+				final ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
 						.next();
 				if (thisL != null)
 				{
@@ -468,7 +468,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	public void addSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
 			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
@@ -481,15 +481,15 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	/**
 	 * @param asSelection
 	 */
-	private void editThisInProperties(WorldLocation loc)
+	private void editThisInProperties(final WorldLocation loc)
 	{
 		// are we already listening to something?
 		clearPropertyListener();
 
-		LatLongPropertySource source = new LatLongHelper.LatLongPropertySource(loc);
+		final LatLongPropertySource source = new LatLongHelper.LatLongPropertySource(loc);
 		source.addPropertyChangeListener(this);
 		// ok, better store it.
-		StructuredSelection newSelection = new StructuredSelection(source);
+		final StructuredSelection newSelection = new StructuredSelection(source);
 		setSelection(newSelection);
 	}
 
@@ -500,18 +500,18 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	{
 		if (_currentSelection != null)
 		{
-			LatLongPropertySource ps = (LatLongPropertySource) _currentSelection
+			final LatLongPropertySource ps = (LatLongPropertySource) _currentSelection
 					.getFirstElement();
 			ps.removePropertyChangeListener(this);
 			_currentSelection = null;
 		}
 	}
 
-	public void propertyChange(PropertyChangeEvent evt)
+	public void propertyChange(final PropertyChangeEvent evt)
 	{
 		// right, get the location that's changed
-		WorldLocation original = (WorldLocation) evt.getOldValue();
-		WorldLocation newLoc = (WorldLocation) evt.getNewValue();
+		final WorldLocation original = (WorldLocation) evt.getOldValue();
+		final WorldLocation newLoc = (WorldLocation) evt.getNewValue();
 
 		// update the old one
 		original.copy(newLoc);
@@ -522,12 +522,12 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 
 	public class MoveUpAction extends AbstractPolygonAction
 	{
-		public MoveUpAction(WorldPath path, WorldLocation loc)
+		public MoveUpAction(final WorldPath path, final WorldLocation loc)
 		{
 			super(path, loc, "Move point upward");
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			goUp();
@@ -536,7 +536,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			return Status.OK_STATUS;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			goDown();
@@ -548,12 +548,12 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 
 	public class MoveDownAction extends AbstractPolygonAction
 	{
-		public MoveDownAction(WorldPath path, WorldLocation loc)
+		public MoveDownAction(final WorldPath path, final WorldLocation loc)
 		{
 			super(path, loc, "Move point downward");
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			goDown();
@@ -562,7 +562,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			return Status.OK_STATUS;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			goUp();
@@ -574,12 +574,12 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 
 	public class NewPointAction extends AbstractPolygonAction
 	{
-		public NewPointAction(WorldPath path, WorldLocation loc)
+		public NewPointAction(final WorldPath path, final WorldLocation loc)
 		{
 			super(path, loc, "Insert new point");
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_path.addPoint(_loc);
@@ -588,7 +588,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			return Status.OK_STATUS;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_path.remove(_loc);
@@ -602,13 +602,13 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	{
 		private int _index;
 
-		public DeleteAction(WorldPath path, WorldLocation loc)
+		public DeleteAction(final WorldPath path, final WorldLocation loc)
 		{
 			super(path, loc, "Delete point in polygon");
 
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// right, remember where it is
@@ -621,7 +621,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			return Status.OK_STATUS;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// ok, put it back in
@@ -647,14 +647,14 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		 */
 		protected WorldLocation _loc;
 
-		public AbstractPolygonAction(WorldPath path, WorldLocation loc, String title)
+		public AbstractPolygonAction(final WorldPath path, final WorldLocation loc, final String title)
 		{
 			super(title);
 			_path = path;
 			_loc = loc;
 		}
 
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			return execute(monitor, info);

@@ -131,7 +131,7 @@ public class TimeStepPropertyEditor extends PropertyEditorSupport
   }
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if (p1 instanceof Long)
     {
@@ -139,18 +139,18 @@ public class TimeStepPropertyEditor extends PropertyEditorSupport
     }
     else if (p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     initialiseLists();
 
     for (int i = 0; i < _stringTags.length; i++)
     {
-      String thisS = _stringTags[i];
+      final String thisS = _stringTags[i];
       if (thisS.equals(val))
       {
         _myStep = _freqs[i];
@@ -166,7 +166,7 @@ public class TimeStepPropertyEditor extends PropertyEditorSupport
     String res = null;
     for (int i = 0; i < _freqs.length; i++)
     {
-      double v = _freqs[i];
+      final double v = _freqs[i];
       if (v == _myStep)
       {
         res = _stringTags[i];

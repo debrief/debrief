@@ -39,7 +39,7 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
      * @param sourceBean the bean to be given as the source for any events
      */
 
-    public VetoableChangeSupport(Object sourceBean)
+    public VetoableChangeSupport(final Object sourceBean)
     {
 		super(sourceBean);
 		source = sourceBean;
@@ -52,7 +52,7 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
      * @param listener  the VetoableChangeListener to be added
      * @see #removeVetoableChangeListener
      */
-    public synchronized void addVetoableChangeListener(String propertyName, VetoableChangeListener listener)
+    public synchronized void addVetoableChangeListener(final String propertyName, final VetoableChangeListener listener)
     {
     	java.util.Vector<VetoableChangeListener> listenerList;
 
@@ -81,7 +81,7 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
      * @param listener	the VetoableChangeListener to be removed
      * @see #addVetoableChangeListener
      */
-    public synchronized void removeVetoableChangeListener(String propertyName, VetoableChangeListener listener)
+    public synchronized void removeVetoableChangeListener(final String propertyName, final VetoableChangeListener listener)
     {
     	java.util.Vector<VetoableChangeListener> listenerList;
 
@@ -109,7 +109,7 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
      * if the specified property value is unacceptable
      */
     @SuppressWarnings("unchecked")
-		public void fireVetoableChange(String propertyName, Object oldValue, Object newValue) throws PropertyVetoException
+		public void fireVetoableChange(final String propertyName, final Object oldValue, final Object newValue) throws PropertyVetoException
     {
 		if (oldValue != null && oldValue.equals(newValue))
 		{
@@ -139,11 +139,11 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
 		{
 		    for (int i = 0; i < listenerList.size(); i++)
 		    {
-		        VetoableChangeListener target = listenerList.elementAt(i);
+		        final VetoableChangeListener target = listenerList.elementAt(i);
 		        target.vetoableChange(evt);
 		    }
 		}
-		catch (PropertyVetoException veto)
+		catch (final PropertyVetoException veto)
 		{
 		    // Create an event to revert everyone to the old value.
 	       	evt = new PropertyChangeEvent(source, propertyName, newValue, oldValue);
@@ -151,10 +151,10 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
 		    {
 				try
 				{
-		            VetoableChangeListener target = listenerList.elementAt(i);
+		            final VetoableChangeListener target = listenerList.elementAt(i);
 		            target.vetoableChange(evt);
 				}
-				catch (PropertyVetoException ex)
+				catch (final PropertyVetoException ex)
 				{
 				     // We just ignore exceptions that occur during reversions.
 				}
@@ -179,5 +179,5 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
      * @see #removeVetoableChangeListener
      */
     protected java.util.Hashtable<String, Vector<VetoableChangeListener>> listenerTable;
-    private Object source;
+    private final Object source;
 }

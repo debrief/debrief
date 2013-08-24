@@ -48,8 +48,8 @@ public class GndDemonstrator extends ViewPart
 
 	public class GenerateTrack implements RightClickContextItemGenerator
 	{
-		public void generate(IMenuManager parent, Layers theLayers,
-				Layer[] parentLayers, Editable[] subjects)
+		public void generate(final IMenuManager parent, final Layers theLayers,
+				final Layer[] parentLayers, final Editable[] subjects)
 		{
 			// we're only going to work with one item
 			if (subjects.length > 0)
@@ -57,7 +57,7 @@ public class GndDemonstrator extends ViewPart
 				for (int i=0;i<subjects.length;i++)
 				{
 					// is it a track?
-					Editable thisE = subjects[i];
+					final Editable thisE = subjects[i];
 					if (thisE instanceof TrackWrapper)
 					{
 						final TrackWrapper thisTrack = (TrackWrapper) thisE;
@@ -67,7 +67,7 @@ public class GndDemonstrator extends ViewPart
 
 						// and the new drop-down list of interpolation frequencies
 						// yes, create the action
-						Action convertToTrack = new Action("Copy to database")
+						final Action convertToTrack = new Action("Copy to database")
 						{
 							public void run()
 							{
@@ -86,7 +86,7 @@ public class GndDemonstrator extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		makeActions();
 		contributeToActionBars();
@@ -106,12 +106,12 @@ public class GndDemonstrator extends ViewPart
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(action1);
 		manager.add(sendToDB);
@@ -119,7 +119,7 @@ public class GndDemonstrator extends ViewPart
 		manager.add(action4);
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(action1);
 		manager.add(sendToDB);
@@ -167,16 +167,16 @@ public class GndDemonstrator extends ViewPart
 	{
 		try
 		{
-			java.sql.Connection conn = getConnection();
-			Statement s = conn.createStatement();
+			final java.sql.Connection conn = getConnection();
+			final Statement s = conn.createStatement();
 			int ctr = 0;
-			String theQuery = "delete from roads_geom;";
+			final String theQuery = "delete from roads_geom;";
 			ctr = s.executeUpdate(theQuery);
 			System.out.println("changed " + ctr + " records");
 			s.close();
 			conn.close();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -192,7 +192,7 @@ public class GndDemonstrator extends ViewPart
 	private java.sql.Connection getConnection() throws SQLException
 	{
 		java.sql.Connection conn;
-		String url = "jdbc:postgresql://localhost:5432/postgis";
+		final String url = "jdbc:postgresql://localhost:5432/postgis";
 		conn = DriverManager.getConnection(url, "postgres", "4pfonmr");
 
 		return conn;
@@ -202,9 +202,9 @@ public class GndDemonstrator extends ViewPart
 	{
 		try
 		{
-			java.sql.Connection conn = getConnection();
-			Statement s = conn.createStatement();
-			ResultSet r = s.executeQuery("select id, name from roads_geom");
+			final java.sql.Connection conn = getConnection();
+			final Statement s = conn.createStatement();
+			final ResultSet r = s.executeQuery("select id, name from roads_geom");
 			int ctr = 0;
 			while (r.next())
 			{
@@ -215,7 +215,7 @@ public class GndDemonstrator extends ViewPart
 			s.close();
 			conn.close();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -224,23 +224,23 @@ public class GndDemonstrator extends ViewPart
 	int rowCounter = 100;
 	protected TrackWrapper _myTrack = null;
 
-	private void copyThisTrackToDatabase(TrackWrapper theTrack)
+	private void copyThisTrackToDatabase(final TrackWrapper theTrack)
 	{
 		try
 		{
 			if (theTrack == null)
 				return;
 
-			java.sql.Connection conn = getConnection();
+			final java.sql.Connection conn = getConnection();
 			int ctr = 0;
-			String theQuery = "insert into roads_geom (id, latVal, longVal, name) VALUES (?,?,?,'aa' );";
-			PreparedStatement st = conn.prepareStatement(theQuery);
+			final String theQuery = "insert into roads_geom (id, latVal, longVal, name) VALUES (?,?,?,'aa' );";
+			final PreparedStatement st = conn.prepareStatement(theQuery);
 
-			Enumeration<Editable> enumer = theTrack.getPositions();
+			final Enumeration<Editable> enumer = theTrack.getPositions();
 			while (enumer.hasMoreElements())
 			{
-				FixWrapper thisF = (FixWrapper) enumer.nextElement();
-				WorldLocation wl = thisF.getLocation();
+				final FixWrapper thisF = (FixWrapper) enumer.nextElement();
+				final WorldLocation wl = thisF.getLocation();
 				st.setInt(1, ++rowCounter);
 				st.setFloat(2, (float) wl.getLong());
 				st.setFloat(3, (float) wl.getLat());
@@ -251,7 +251,7 @@ public class GndDemonstrator extends ViewPart
 			st.close();
 			conn.close();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -262,12 +262,12 @@ public class GndDemonstrator extends ViewPart
 
 		try
 		{
-			java.sql.Connection conn = getConnection();
+			final java.sql.Connection conn = getConnection();
 
 			System.out.println("Connection successful!");
 			conn.close();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -282,10 +282,10 @@ public class GndDemonstrator extends ViewPart
 		_myPartMonitor.addPartListener(TrackDataProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						TrackDataProvider trk = (TrackDataProvider) part;
+						final TrackDataProvider trk = (TrackDataProvider) part;
 						_myTrack = (TrackWrapper) trk.getPrimaryTrack();
 						sendToDB.setEnabled(true);
 					}

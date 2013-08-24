@@ -64,7 +64,7 @@ public interface IPlotLoader extends INamedItem
 			return _myName;
 		}
 		
-		public String getFileName(IEditorInput input)
+		public String getFileName(final IEditorInput input)
 		{
 			String res = null;
 
@@ -79,14 +79,14 @@ public interface IPlotLoader extends INamedItem
 		 * @param fileName the input file to check
 		 * @return yes/no
 		 */
-		public boolean canLoad(String fileName)
+		public boolean canLoad(final String fileName)
 		{
 			boolean res = false;
 			// now pass through our list
-			String[] mySuffixes = _fileTypes.split(";");
+			final String[] mySuffixes = _fileTypes.split(";");
 			for (int i = 0; i < mySuffixes.length; i++)
 			{
-				String mySuffix = mySuffixes[i];
+				final String mySuffix = mySuffixes[i];
 				if(fileName.toUpperCase().endsWith(mySuffix.toUpperCase()))
 				{
 					res = true;
@@ -112,8 +112,8 @@ public interface IPlotLoader extends INamedItem
 		 * @param icon
 		 * @param fileTypes
 		 */
-		public DeferredPlotLoader(IConfigurationElement configElement,
-				String name,  String icon, String fileTypes)
+		public DeferredPlotLoader(final IConfigurationElement configElement,
+				final String name,  final String icon, final String fileTypes)
 		{
 			_config = configElement;
 			init(name, icon, fileTypes);
@@ -124,7 +124,7 @@ public interface IPlotLoader extends INamedItem
 			return _myLoader;
 		}
 
-		public void loadFile(PlotEditor thePlot, InputStream inputStream, String fileName)
+		public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
 		{
 			if(_myLoader == null)
 			{
@@ -139,7 +139,7 @@ public interface IPlotLoader extends INamedItem
 					_myLoader.init(_myName, _icon, _fileTypes);					
 						
 				}
-				catch (CoreException e)
+				catch (final CoreException e)
 				{			
 					DebriefPlugin.logError(Status.ERROR, "Failed to create instance of loader:"
 							+ _config, e);

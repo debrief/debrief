@@ -24,7 +24,7 @@ abstract public class TimeRangeHandler extends MWCXMLReader
 
   private java.text.SimpleDateFormat sdf = null;
 
-  public TimeRangeHandler(String type)
+  public TimeRangeHandler(final String type)
   {
     // inform our parent what type of class we are
     super(type);
@@ -40,16 +40,16 @@ abstract public class TimeRangeHandler extends MWCXMLReader
   }
 
   // this is one of ours, so get on with it!
-  protected void handleOurselves(String name, Attributes attributes)
+  protected void handleOurselves(final String name, final Attributes attributes)
   {
     _start = _end = MWC.GenericData.TimePeriod.INVALID_DATE;
 
-    int len = attributes.getLength();
+    final int len = attributes.getLength();
     for (int i = 0; i < len; i++)
     {
 
-      String nm = attributes.getLocalName(i);
-      String val = attributes.getValue(i);
+      final String nm = attributes.getLocalName(i);
+      final String val = attributes.getValue(i);
       if (nm.equals("Start"))
         _start = parseThisDate(val);
       else if (nm.equals("End"))
@@ -68,15 +68,15 @@ abstract public class TimeRangeHandler extends MWCXMLReader
 
   abstract public void setTimeRange(HiResDate start, HiResDate end);
 
-  public static void exportThis(HiResDate start, HiResDate end, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportThis(final HiResDate start, final HiResDate end, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
   	exportThis(start, end, parent, doc, MY_TYPE);
   }
 
-  public static void exportThis(HiResDate start, HiResDate end, org.w3c.dom.Element parent, org.w3c.dom.Document doc, String type)
+  public static void exportThis(final HiResDate start, final HiResDate end, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc, final String type)
   {
     boolean useful = false;
-    org.w3c.dom.Element eTime = doc.createElement(type);
+    final org.w3c.dom.Element eTime = doc.createElement(type);
     if (start != MWC.GenericData.TimePeriod.INVALID_DATE)
     {
       eTime.setAttribute("Start", writeThis(start));

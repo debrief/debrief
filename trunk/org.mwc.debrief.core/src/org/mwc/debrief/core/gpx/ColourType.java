@@ -67,7 +67,7 @@ public class ColourType {
      *     {@link Integer }
      *     
      */
-    public void setCustomBlue(Integer value) {
+    public void setCustomBlue(final Integer value) {
         this.customBlue = value;
     }
 
@@ -91,7 +91,7 @@ public class ColourType {
      *     {@link Integer }
      *     
      */
-    public void setCustomGreen(Integer value) {
+    public void setCustomGreen(final Integer value) {
         this.customGreen = value;
     }
 
@@ -115,7 +115,7 @@ public class ColourType {
      *     {@link Integer }
      *     
      */
-    public void setCustomRed(Integer value) {
+    public void setCustomRed(final Integer value) {
         this.customRed = value;
     }
 
@@ -139,7 +139,7 @@ public class ColourType {
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 

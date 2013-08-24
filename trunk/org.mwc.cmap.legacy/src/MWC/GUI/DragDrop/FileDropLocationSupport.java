@@ -24,7 +24,7 @@ public class FileDropLocationSupport extends FileDropSupport
    * @param locationListener the listener, which will be told of receive events
    * @param suffixes the file suffix to accept (including the dot)
    */
-  public void setFileDropListener(FileDropLocationListener locationListener, String suffixes) {
+  public void setFileDropListener(final FileDropLocationListener locationListener, final String suffixes) {
     _suffixes = suffixes.toUpperCase();
     _locationListener = locationListener;
   }
@@ -32,14 +32,14 @@ public class FileDropLocationSupport extends FileDropSupport
   /** remove the class listener for file drop events
    *
    */
-  public void removeFileDropListener(FileDropLocationListener locationListener)
+  public void removeFileDropListener(final FileDropLocationListener locationListener)
   {
     if(_locationListener == locationListener)
       _locationListener = null;
   }
 
 
-  protected void fileReceived(java.util.Vector<File> theFiles, java.awt.Point thePoint)
+  protected void fileReceived(final java.util.Vector<File> theFiles, final java.awt.Point thePoint)
   {
     if(_locationListener != null)
       _locationListener.FilesReceived(theFiles, thePoint);
