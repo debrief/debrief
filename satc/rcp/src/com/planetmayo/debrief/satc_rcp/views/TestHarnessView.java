@@ -392,12 +392,12 @@ public class TestHarnessView extends ViewPart
 	{
 		UIUtils.createLabel(parent, "Start temperature:", new GridData());
 		FormattedText startTemperature = new FormattedText(parent);
-		startTemperature.setFormatter(new NumberFormatter("0.0#"));
+		startTemperature.setFormatter(new NumberFormatter("0.0##"));
 		startTemperature.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
 		UIUtils.createLabel(parent, "End temperature:", new GridData());
 		FormattedText endTemperature = new FormattedText(parent);
-		endTemperature.setFormatter(new NumberFormatter("0.0#"));
+		endTemperature.setFormatter(new NumberFormatter("0.0##"));
 		endTemperature.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
 		UIUtils.createLabel(parent, "Parallel threads:", new GridData());

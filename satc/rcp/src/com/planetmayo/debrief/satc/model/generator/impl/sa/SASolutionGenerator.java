@@ -49,7 +49,8 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 			@Override
 			public double neighborDistance(SAParameters parameters, Random rnd, double T)
 			{
-				return T * (Math.pow(1 + 1 / T, 2 * rnd.nextDouble() - 1) - 1);
+				return Math.signum(rnd.nextDouble() - 0.5) * T *
+						(Math.pow(1 + 1 / T, 2 * rnd.nextDouble() - 1) - 1);
 			}
 			
 			@Override
@@ -61,7 +62,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 			@Override
 			public double probabilityToAcceptWorse(SAParameters parameters, double T,	double eCur, double eNew)
 			{
-				if (T < 0.5) 
+				if (T < 0.3) 
 				{
 					return 0;
 				}
