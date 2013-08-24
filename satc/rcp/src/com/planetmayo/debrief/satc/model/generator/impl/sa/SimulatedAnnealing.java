@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
@@ -15,6 +17,7 @@ import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 public class SimulatedAnnealing implements Callable<CoreRoute>
 {
+	private final IProgressMonitor progressMonitor;
 	private final IContributions contributions;
 	private final StraightLeg leg;
 	private final SafeProblemSpace problemSpace;
@@ -25,9 +28,10 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 	private volatile PointsGenerator end;
 	private volatile List<BoundedState> states;
 	
-	public SimulatedAnnealing(SAParameters parameters, StraightLeg leg, 
-			IContributions contributions, SafeProblemSpace problemSpace, Random rnd)
+	public SimulatedAnnealing(IProgressMonitor progressMonitor, SAParameters parameters, 
+			StraightLeg leg, IContributions contributions, SafeProblemSpace problemSpace, Random rnd)
 	{
+		this.progressMonitor = progressMonitor;
 		this.contributions = contributions;
 		this.leg = leg;
 		this.problemSpace = problemSpace;
@@ -56,7 +60,7 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 		return sum;
 	}	
 	
-	public CoreRoute simulateAnnealing() 
+	public CoreRoute simulateAnnealing() throws InterruptedException
 	{
 		double min = Double.MAX_VALUE;
 		CoreRoute result = null;
@@ -78,6 +82,10 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 			{
 				CoreRoute newRoute;
 				while (true) {
+					if (progressMonitor.isCanceled()) 
+					{
+						throw new InterruptedException();
+					}
 					newRoute = leg.createRoute("",
 						start.newPoint(current.getStartPoint(), t),
 						end.newPoint(current.getEndPoint(), t));				
@@ -125,6 +133,6 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 
 	@Override
 	public SimulatedAnnealing clone() {
-		return new SimulatedAnnealing(parameters, leg, contributions, problemSpace, rnd);
+		return new SimulatedAnnealing(progressMonitor, parameters, leg, contributions, problemSpace, rnd);
 	}
 }

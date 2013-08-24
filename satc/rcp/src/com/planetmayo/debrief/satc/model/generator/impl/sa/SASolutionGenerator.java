@@ -138,7 +138,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		return parameters;
 	}
 
-	protected void runSA(IProgressMonitor monitor) 
+	protected void runSA(IProgressMonitor monitor) throws InterruptedException
 	{
 		Random rnd = new MersenneTwisterRNG();		
 		ExecutorService executor = Executors.newFixedThreadPool(parameters.getParallelThreads());
@@ -149,7 +149,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 			{
 				if (leg.getType() == LegType.STRAIGHT)
 				{
-					routes.add(findRouteForLeg((StraightLeg) leg, rnd, executor));
+					routes.add(findRouteForLeg(monitor, (StraightLeg) leg, rnd, executor));
 				}
 			}
 			routes = generateAlteringRoutes(routes);
@@ -161,9 +161,11 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		}
 	}
 	
-	protected CoreRoute findRouteForLeg(StraightLeg leg, Random rnd, ExecutorService executor) 
+	protected CoreRoute findRouteForLeg(IProgressMonitor progressMonitor, StraightLeg leg, 
+			Random rnd, ExecutorService executor) throws InterruptedException 
 	{
-		SimulatedAnnealing simulator = new SimulatedAnnealing(parameters, leg, contributions, problemSpaceView, rnd);
+		SimulatedAnnealing simulator = new SimulatedAnnealing(progressMonitor, parameters, leg, 
+				contributions, problemSpaceView, rnd);
 		List<Future<CoreRoute>> results = new ArrayList<Future<CoreRoute>>(parameters.getParallelThreads());
 		for (int i = 0; i < parameters.getParallelThreads(); i++) 
 		{
@@ -184,11 +186,15 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		}
 		catch (ExecutionException ex)
 		{
+			if (ex.getCause() instanceof InterruptedException) 
+			{
+				throw (InterruptedException) ex.getCause();
+			} 
 			LogFactory.getLog().error("Problem in SA thread", ex);					
 		}		
 		catch (InterruptedException ex)
 		{
-			LogFactory.getLog().error("SA thread was interrupted", ex);				
+			LogFactory.getLog().error("Problem in SA thread", ex);		
 		}
 		return null;
 	}

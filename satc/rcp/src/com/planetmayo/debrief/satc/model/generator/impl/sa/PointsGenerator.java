@@ -40,21 +40,48 @@ public class PointsGenerator
 
 	public Point newPoint(Point p, double T)
 	{
-		Coordinate border1 = envelope.getCoordinates()[rnd.nextInt(envelope
-				.getNumPoints())];
+		int coords = envelope.getNumPoints();
+		Coordinate border1 = envelope.getCoordinates()[rnd.nextInt(coords)];
 		Coordinate border2;
 		do
 		{
-			border2 = envelope.getCoordinates()[rnd.nextInt(envelope.getNumPoints())];
+			border2 = envelope.getCoordinates()[rnd.nextInt(coords)];
 		}
 		while (border1 == border2);
 
-		Point p1 = MathUtils.calculateBezier(distance(T), p,
+		Point p1 = MathUtils.calculateBezier(Math.abs(distance(T)), p,
 				toPoint(border1), null);
-		Point p2 = MathUtils.calculateBezier(distance(T), p,
+		Point p2 = MathUtils.calculateBezier(Math.abs(distance(T)), p,
 				toPoint(border2), null);
 		return MathUtils.calculateBezier(rnd.nextDouble(), p1, p2, null);
 	}
+	
+	/*public Point newPoint(Point p, double T)
+	{
+		double dx = distance(T);
+		double dy = distance(T);
+		if (dx == 0 || dy == 0)
+		{
+			return p;
+		}
+		Coordinate border1;
+		do 
+		{
+			border1 = envelope.getCoordinates()[rnd.nextInt(envelope
+					.getNumPoints())];
+		}
+		while (Math.signum(border1.x - p.getX()) != Math.signum(dx));
+		Coordinate border2 = border1;
+		while (Math.signum(border2.y - p.getY()) != Math.signum(dy)) 
+		{
+			border2 = envelope.getCoordinates()[rnd.nextInt(envelope
+					.getNumPoints())]; 
+		}
+		return GeoSupport.createPoint(
+				p.getX() + Math.abs(border1.x - p.getX()) * dx, 
+				p.getY() + Math.abs(border2.y - p.getY()) * dy
+		); 
+	}*/	
 
 	public double getArea()
 	{
