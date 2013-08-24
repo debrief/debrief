@@ -128,10 +128,6 @@ public class PointsGenerator
 		double y1 = (startY - p.getY()) / height;
 		double y2 = 1 + y1;
 		double yCoef = distance(T, y1, y2);
-		if (! (yCoef >= y1 && yCoef<= y2)) 
-		{
-			
-		}
 		double y = p.getY() + yCoef * height;
 		int startEdge = -1, endEdge = -1;
 		for (int i = 0; i < edges.length; i++)
