@@ -36,7 +36,7 @@ public class RightClickCutCopyAdaptor
 	 * 
 	 * @author ian.mayo
 	 */
-	public static class EditableTransfer extends ByteArrayTransfer
+	public final static class EditableTransfer extends ByteArrayTransfer
 	{
 
 		private static final String MYTYPENAME = "CMAP_EDITABLE";

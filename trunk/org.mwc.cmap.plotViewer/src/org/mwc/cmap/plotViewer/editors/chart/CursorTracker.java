@@ -11,7 +11,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 import MWC.Utilities.TextFormatting.PlainFormatLocation;
 
-public class CursorTracker extends CoreTracker
+public final class CursorTracker extends CoreTracker
 {
 	private static final String POSITION_TOOLTIP = "Mouse position";
 

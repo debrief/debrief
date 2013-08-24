@@ -117,7 +117,7 @@ import java.util.Iterator;
  * patterns Factory (just receive name of shape, let classes
  * produce actual shape)
  */
-public class SymbolFactory
+public final class SymbolFactory
 {
 
   private static final String SQUARE = "Square";

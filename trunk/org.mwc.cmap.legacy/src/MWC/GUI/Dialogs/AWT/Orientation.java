@@ -1,6 +1,6 @@
 package MWC.GUI.Dialogs.AWT;
 
-public class Orientation {
+public final class Orientation {
     public static final Orientation NORTH  = new Orientation();
     public static final Orientation SOUTH  = new Orientation();
     public static final Orientation EAST   = new Orientation();
