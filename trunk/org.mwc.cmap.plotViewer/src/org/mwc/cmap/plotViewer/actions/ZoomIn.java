@@ -59,7 +59,6 @@ public class ZoomIn extends CoreDragAction
 			
 		};
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
 				final Layers theLayers, SWTCanvas theCanvas)
@@ -76,11 +75,9 @@ public class ZoomIn extends CoreDragAction
 
 				this.JITTER = JITTER;
 				this.layers = theLayers;
-				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, -deltaX,
-						-deltaY);
-				
+				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
+						deltaY);
 				res = rect;
-				
 				GC gc = new GC(_myCanvas.getCanvas());
 				Color fc = new Color(Display.getDefault(), 255, 255, 255);
 				gc.setForeground(fc);
@@ -89,42 +86,8 @@ public class ZoomIn extends CoreDragAction
 				gc.drawRectangle(rect);
 				fc.dispose();
 				gc.dispose();
-				
 			}
-		}
 
-		private void run()
-		{
-			if (dragResult)
-			{
-				// get world area
-				java.awt.Point tl = new java.awt.Point(res.x, res.y);
-				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
-						+ res.height);
-
-				if (res.width > JITTER || res.height > JITTER)
-				{
-
-					WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
-							.toWorld(tl));
-					WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
-							.toWorld(br));
-					WorldArea area = new WorldArea(locA, locB);
-
-					WorldArea oldArea = _myCanvas.getProjection().getDataArea();
-					Action theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(
-														_myChart, oldArea, area);
-					
-					// and wrap it
-					DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-							layers, null);
-
-					// and add it to the clipboard
-					CorePlugin.run(daw);
-
-				}
-
-			}
 		}
 
 		@Override
@@ -149,12 +112,36 @@ public class ZoomIn extends CoreDragAction
 			dragResult = true;
 		}
 
+		private void run() {
+			if (dragResult) {
+				// get world area
+				java.awt.Point tl = new java.awt.Point(res.x, res.y);
+				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
+						+ res.height);
+				if (res.width > JITTER || res.height > JITTER) {
+					WorldLocation locA = new WorldLocation(_myCanvas
+							.getProjection().toWorld(tl));
+					WorldLocation locB = new WorldLocation(_myCanvas
+							.getProjection().toWorld(br));
+					WorldArea area = new WorldArea(locA, locB);
+
+					WorldArea oldArea = _myCanvas.getProjection().getDataArea();
+					Action theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(
+							_myChart, oldArea, area);
+					// and wrap it
+					DebriefActionWrapper daw = new DebriefActionWrapper(
+							theAction, layers, null);
+					// and add it to the clipboard
+					CorePlugin.run(daw);
+				}
+			}
+		}
+
 	}
 
 	@Override
 	public PlotMouseDragger getDragMode()
 	{
-		// TODO Auto-generated method stub
 		return new ZoomInMode();
 	}
 }
