@@ -266,10 +266,11 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
      * through. On the other hand, if <code>font</code> is non-null, and not
      * a <code>FontUIResource</code>, the font becomes <code>font</code>.
      */
-    public void setFont(Font font) {
-	if(font instanceof FontUIResource)
-	    font = null;
-	super.setFont(font);
+    public void setFont(final Font fnt) {
+    	Font theFont = fnt;
+    	if(theFont instanceof FontUIResource)
+    		theFont = null;
+    	super.setFont(theFont);
     }
 
     /**
@@ -280,10 +281,11 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
      * a <code>ColorUIResource</code>, the background becomes
      * <code>color</code>.
      */
-    public void setBackground(Color color) {
-	if(color instanceof ColorUIResource)
-	    color = null;
-	super.setBackground(color);
+    public void setBackground(final Color color) {
+    	Color theColor = color;
+    	if(theColor instanceof ColorUIResource)
+    		theColor = null;
+    	super.setBackground(theColor);
     }
 
     /**

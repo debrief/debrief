@@ -25,19 +25,21 @@ public class InsertRowAction extends AbstractSingleItemAction {
 	}
 
 	@Override
-	protected IUndoableOperation createUndoableOperation(final IUndoContext undoContext, final GriddableSeries series, TimeStampedDataItem selected) {
+	protected IUndoableOperation createUndoableOperation(final IUndoContext undoContext, 
+			final GriddableSeries series, final TimeStampedDataItem selected) {
+		TimeStampedDataItem theSelected = selected;
 		
-		if (selected == null) {
+		if (theSelected == null) {
 			final List<TimeStampedDataItem> allItems = series.getItems();
-			selected = allItems.get(allItems.size() - 1);
+			theSelected = allItems.get(allItems.size() - 1);
 		}
 
-		int selectedIndex = series.getItems().indexOf(selected);
+		int selectedIndex = series.getItems().indexOf(theSelected);
 		if (selectedIndex < 0) {
 			//wow
 			selectedIndex = series.getItems().size() - 1;
 		}
-		final TimeStampedDataItem copy = series.makeCopy(selected);
+		final TimeStampedDataItem copy = series.makeCopy(theSelected);
 		final OperationEnvironment environment = new OperationEnvironment(undoContext, series, copy);
 		final InsertItemOperation insert = new InsertItemOperation(environment, selectedIndex + 1);
 		return insert;

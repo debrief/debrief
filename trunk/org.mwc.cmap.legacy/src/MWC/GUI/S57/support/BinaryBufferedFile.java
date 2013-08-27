@@ -265,35 +265,37 @@ public class BinaryBufferedFile extends BinaryFile {
      * Read from the file
      * 
      * @param b The byte array to read into
-     * @param off the first array position to read into
-     * @param len the number of bytes to read
+     * @param theOff the first array position to read into
+     * @param theLen the number of bytes to read
      * @return the number of bytes read
      * @exception IOException Any IO errors encountered in reading
      *            from the file
      */
-    public int read(final byte b[], int off, int len) throws IOException {
+    public int read(final byte b[], final int off, final int len) throws IOException {
         int numread = 0;
         int copy;
-        if (len < bytesinbuffer)
-            copy = len;
+        int theOff = off;
+        int theLen = len;
+        if (theLen < bytesinbuffer)
+            copy = theLen;
         else
             copy = bytesinbuffer;
         numread += copy;
         bytesinbuffer -= copy;
-        System.arraycopy(buffer, curptr, b, off, copy);
+        System.arraycopy(buffer, curptr, b, theOff, copy);
         curptr += copy;
-        off += copy;
+        theOff += copy;
 
-        if (len == copy)
+        if (theLen == copy)
             return numread;
 
-        len -= copy;
+        theLen -= copy;
         //was not enough stuff in buffer, do some reads...
 
-        if (len > 512) {//threshold exceeded, read straight into user
+        if (theLen > 512) {//threshold exceeded, read straight into user
                         // buffer
 
-            final int bcnt = super.read(b, off, len);
+            final int bcnt = super.read(b, theOff, theLen);
             firstbyteoffset += (curptr + bcnt);
             curptr = 0;
             return (numread + bcnt);
@@ -305,7 +307,7 @@ public class BinaryBufferedFile extends BinaryFile {
             } catch (final EOFException e) {
                 return numread;
             }
-            return (numread + read(b, off, len));
+            return (numread + read(b, theOff, theLen));
 
         }
     }
@@ -405,36 +407,38 @@ public class BinaryBufferedFile extends BinaryFile {
      * Reads an array of shorts.
      * 
      * @param vec the array to write the shorts into
-     * @param offset the first array index to write to
-     * @param len the number of shorts to read
+     * @param theOffset the first array index to write to
+     * @param theLen the number of shorts to read
      * @exception EOFException there were fewer bytes than needed in
      *            the file
      * @exception FormatException rethrow of IOExceptions encountered
      *            while reading the bytes for the array
      */
-    public void readShortArray(final short vec[], int offset, int len)
+    public void readShortArray(final short vec[], final int offset, final int len)
             throws EOFException, FormatException {
+    	int theOffset = offset;
+    	int theLen = len;
 
-        while (len > 0) {
+        while (theLen > 0) {
             final int shortsleft = bytesinbuffer / 2;
             if (shortsleft == 0) {
                 assertSize(2); //force a buffer refill - throws
                                // exception if it can't
                 continue;
             }
-            final int reallyread = (len < shortsleft) ? len : shortsleft;
+            final int reallyread = (theLen < shortsleft) ? theLen : shortsleft;
             if (MSBFirst) {
                 for (int i = 0; i < reallyread; i++) {
-                    vec[offset++] = MoreMath.BuildShortBE(buffer, curptr);
+                    vec[theOffset++] = MoreMath.BuildShortBE(buffer, curptr);
                     curptr += 2;
                 }
             } else {
                 for (int i = 0; i < reallyread; i++) {
-                    vec[offset++] = MoreMath.BuildShortLE(buffer, curptr);
+                    vec[theOffset++] = MoreMath.BuildShortLE(buffer, curptr);
                     curptr += 2;
                 }
             }
-            len -= reallyread;
+            theLen -= reallyread;
             bytesinbuffer -= (2 * reallyread);
         }
     }
@@ -465,28 +469,31 @@ public class BinaryBufferedFile extends BinaryFile {
      * @exception FormatException rethrow of IOExceptions encountered
      *            while reading the bytes for the array
      */
-    public void readIntegerArray(final int vec[], int offset, int len)
+    public void readIntegerArray(final int vec[], final int offset, final int len)
             throws EOFException, FormatException {
-        while (len > 0) {
+    	int theOffset = offset;
+    	int theLen = len;
+    	
+        while (theLen > 0) {
             final int intsleft = bytesinbuffer / 4;
             if (intsleft == 0) {
                 assertSize(4); //force a buffer refill
                 continue;
             }
-            final int reallyread = (len < intsleft) ? len : intsleft;
+            final int reallyread = (theLen < intsleft) ? theLen : intsleft;
             int cursor = curptr;
             if (MSBFirst) {
                 for (int i = 0; i < reallyread; i++) {
-                    vec[offset++] = MoreMath.BuildIntegerBE(buffer, cursor);
+                    vec[theOffset++] = MoreMath.BuildIntegerBE(buffer, cursor);
                     cursor += 4;
                 }
             } else {
                 for (int i = 0; i < reallyread; i++) {
-                    vec[offset++] = MoreMath.BuildIntegerLE(buffer, cursor);
+                    vec[theOffset++] = MoreMath.BuildIntegerLE(buffer, cursor);
                     cursor += 4;
                 }
             }
-            len -= reallyread;
+            theLen -= reallyread;
             bytesinbuffer -= (4 * reallyread);
             curptr = cursor;
         }
@@ -496,36 +503,38 @@ public class BinaryBufferedFile extends BinaryFile {
      * Reads an array of floats from the input.
      * 
      * @param vec the vector to read into
-     * @param offset the first float read goes into vec[offset]
-     * @param len the number of floats to read from the stream
+     * @param theOffset the first float read goes into vec[offset]
+     * @param theLen the number of floats to read from the stream
      * @exception EOFException not enough bytes were left in the file
      * @exception FormatException rethrow of IOExceptions encountered
      *            while reading the bytes for the integer
      */
-    public void readFloatArray(final float vec[], int offset, int len)
+    public void readFloatArray(final float vec[], final int offset, final int len)
             throws EOFException, FormatException {
-        while (len > 0) {
+    	int theOffset = offset;
+    	int theLen = len;
+        while (theLen > 0) {
             final int floatsleft = bytesinbuffer / 4;
             if (floatsleft == 0) {
                 assertSize(4); //force a buffer refill
                 continue;
             }
-            final int reallyread = (len < floatsleft) ? len : floatsleft;
+            final int reallyread = (theLen < floatsleft) ? theLen : floatsleft;
             int cursor = curptr;
             if (MSBFirst) {
                 for (int i = 0; i < reallyread; i++) {
                     final int floatasint = MoreMath.BuildIntegerBE(buffer, cursor);
-                    vec[offset++] = Float.intBitsToFloat(floatasint);
+                    vec[theOffset++] = Float.intBitsToFloat(floatasint);
                     cursor += 4;
                 }
             } else {
                 for (int i = 0; i < reallyread; i++) {
                     final int floatasint = MoreMath.BuildIntegerLE(buffer, cursor);
-                    vec[offset++] = Float.intBitsToFloat(floatasint);
+                    vec[theOffset++] = Float.intBitsToFloat(floatasint);
                     cursor += 4;
                 }
             }
-            len -= reallyread;
+            theLen -= reallyread;
             bytesinbuffer -= (4 * reallyread);
             curptr = cursor;
         }

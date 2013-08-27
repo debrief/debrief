@@ -509,13 +509,14 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 	private abstract static class PlanningCalc
 	{
-		void construct(final PlanningSegment seg, WorldLocation origin, final HiResDate date)
+		void construct(final PlanningSegment seg, final WorldLocation origin, final HiResDate date)
 		{
 			// check we have some data
 			if (date == null || origin == null)
 				return;
 
 			final double timeTravelledMillis = getSecsTravelled(seg) * 1000;
+			WorldLocation theOrigin = origin;
 
 			// ditch the existing items
 			seg.removeAllElements();
@@ -552,7 +553,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 				final HiResDate thisDtg = new HiResDate(tNow);
 
 				// ok, do this fix
-				final Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
+				final Fix thisF = new Fix(thisDtg, theOrigin, courseRads, seg.getSpeed()
 						.getValueIn(WorldSpeed.ft_sec) / 3);
 
 				// override the depth
@@ -570,7 +571,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 				fw.resetName();
 
 				// produce a new position
-				origin = origin.add(vec);
+				theOrigin = theOrigin.add(vec);
 			}
 		}
 

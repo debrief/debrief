@@ -518,7 +518,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		return res;
 	}
 
-	public File getProjectPathFor(File tgtDir)
+	public File getProjectPathFor(final File tgtDir)
 	{
 		File res = null;
 
@@ -530,10 +530,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			final IPath filePath = someProject.getLocation();
 
 			// ok, now stick the output folder in this parent
-			tgtDir = new File(filePath.toOSString() + File.separator
+			res = new File(filePath.toOSString() + File.separator
 					+ tgtDir.getPath());
-
-			res = tgtDir;
 		}
 
 		return res;

@@ -144,9 +144,9 @@ public class CompletelyFlatEarth implements EarthModel
    * @param from parameter for subtract
    * @return the returned WorldVector
    */
-  public WorldVector subtract(final WorldLocation from, final WorldLocation to, WorldVector res)
+  public WorldVector subtract(final WorldLocation from, final WorldLocation to, final WorldVector res)
   {
-
+	 
     // the algorithm used here is from Short Sailing Calculations in the
     // admiralty manual of navigation
 
@@ -160,14 +160,15 @@ public class CompletelyFlatEarth implements EarthModel
     final double dLat = to.getLat() - from.getLat();
     final double dLong = to.getLong() - from.getLong();
     final double dDepth = to.getDepth() - from.getDepth();
+    WorldVector result = res;
 
     // produce range and bearing from the deltas
     final double bearing = Math.atan2(dLong, dLat); // it's ok to keep this value in radians
     final double range = Math.sqrt(dLat * dLat + dLong * dLong);
 
-    res = new WorldVector(bearing, range, dDepth);
+    result = new WorldVector(bearing, range, dDepth);
 
-    return res;
+    return result;
   }
 
   //////////////////////////////////////////////////

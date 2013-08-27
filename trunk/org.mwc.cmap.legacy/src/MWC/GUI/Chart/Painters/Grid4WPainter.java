@@ -881,22 +881,23 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	/**
 	 * find the index of the supplied string
 	 * 
-	 * @param target
+	 * @param theTarget
 	 * @return
 	 */
-	public static int indexOf(String target)
+	public static int indexOf(final String target)
 	{
+		String theTarget = target;
 		// trim it down
-		target = target.trim();
+		theTarget = theTarget.trim();
 
 		// move to upper case
-		target = target.toUpperCase();
+		theTarget = theTarget.toUpperCase();
 
 		// now find a match
 		int res = 0;
 		for (int i = 0; i < indices.length; i++)
 		{
-			if (indices[i].equals(target))
+			if (indices[i].equals(theTarget))
 			{
 				res = i;
 				break;

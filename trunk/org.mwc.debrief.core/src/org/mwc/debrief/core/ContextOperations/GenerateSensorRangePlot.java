@@ -297,10 +297,11 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	@SuppressWarnings("unused")
 	private static void addDataSeries(final TrackWrapper primaryTrack,
 			final Vector<SensorWrapper> theSensors, final HiResDate start_time,
-			final HiResDate end_time, TimeSeriesCollection theSeriesCollection,
+			final HiResDate end_time, final TimeSeriesCollection theSeriesCollection,
 			final boolean useSensorName)
 	{
 
+		TimeSeriesCollection seriesCollection = theSeriesCollection;
 		// calculate the data variables for our tracks
 		final Enumeration<SensorWrapper> iter = theSensors.elements();
 		while (iter.hasMoreElements())
@@ -535,13 +536,13 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				{
 					CorePlugin.logError(Status.OK, "created:" + thisSeries.getItemCount()
 							+ " pts", null);
-					theSeriesCollection.addSeries(thisSeries);
+					seriesCollection.addSeries(thisSeries);
 				}
 
 		} // looping through the tracks
 
-		if (theSeriesCollection.getSeriesCount() == 0)
-			theSeriesCollection = null;
+		if (seriesCollection.getSeriesCount() == 0)
+			seriesCollection = null;
 	}
 
 	public static class TestCalcs extends TestCase

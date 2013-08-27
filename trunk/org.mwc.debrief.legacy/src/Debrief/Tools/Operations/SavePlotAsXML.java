@@ -55,7 +55,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
    * @param fileName
    * @return
    */
-  protected final Action doSave(String fileName)
+  protected final Action doSave(final String fileName)
   {
     Action res = null;
 
@@ -64,21 +64,22 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
 
 
     // check the output filename
-    final int idx = fileName.toLowerCase().indexOf(".xml");
+    String theFileName = fileName;
+    final int idx = theFileName.toLowerCase().indexOf(".xml");
     if (idx == -1)
     {
-      fileName += ".xml";
+      theFileName += ".xml";
     }
 
     // the name of the temp filename, if we need one.
     String tmpFileName = null;
 
     // the name of the file which we actually store to
-    String outputFileName = fileName;
+    String outputFileName = theFileName;
 
 
     // does this file exist
-    final File targetFile = new File(fileName);
+    final File targetFile = new File(theFileName);
     if (targetFile.exists())
     {
       // yes, the file already exists.  Write to a temp filename
@@ -135,7 +136,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
       if (tmpFileName != null)
       {
         // yes.  delete the original file
-        final File oldFile = new File(fileName);
+        final File oldFile = new File(theFileName);
         oldFile.delete();
 
         // and rename our new file
@@ -150,13 +151,13 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
       }
 
       // inform the session of it's filename
-      _theSession.setFileName(fileName);
+      _theSession.setFileName(theFileName);
 
       // store the action
       res = new SavePlotAction(_theSession.getName());
 
       // put the filename into the MRU
-      Debrief.GUI.Frames.Application.addToMru(fileName);
+      Debrief.GUI.Frames.Application.addToMru(theFileName);
 
     }
     else

@@ -357,11 +357,12 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return _subject;
 	}
 	
-	public void setValue(Object value)
+	public void setValue(final Object value)
 	{
+		Object theValue = value;
 		if (_myHelper != null)
 		{
-			value = _myHelper.translateFromSWT(value);
+			theValue = _myHelper.translateFromSWT(theValue);
 		}
 
 		// find out the type of the editor
@@ -369,22 +370,22 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		try
 		{
 			write.invoke(_subject, new Object[]
-			{ value });
+			{ theValue });
 		}
 		catch (final IllegalArgumentException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
-					+ value, e);
+					+ theValue, e);
 		}
 		catch (final IllegalAccessException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
-					+ value, e);
+					+ theValue, e);
 		}
 		catch (final InvocationTargetException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
-					+ value, e);
+					+ theValue, e);
 		}
 
 	}

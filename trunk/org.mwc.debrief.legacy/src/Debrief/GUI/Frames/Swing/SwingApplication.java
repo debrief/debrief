@@ -367,21 +367,21 @@ public final class SwingApplication extends Application
   /**
    * add the session passed in, to include adding it to our stack
    */
-  public final void newSession(Session theSession)
+  public final void newSession(final Session theSession)
   {
 
     // see if we are being passed a null parameter,
     // if so, we are to create a fresh session
-
-    if (theSession == null)
+	Session session = theSession;
+    if (session == null)
     {
-      theSession = new SwingSession(this, getClipboard(), super.getNewSessionName());
+      session = new SwingSession(this, getClipboard(), super.getNewSessionName());
     }
 
-    SwingSession aws = (SwingSession) theSession;
+    SwingSession aws = (SwingSession) session;
 
     // pass the session to the parent
-    super.newSession(theSession);
+    super.newSession(session);
 
 
     // see if we've already been loaded

@@ -323,26 +323,26 @@ public class DataSupport
 		}
 	}
 
-	private static ColouredDataItem create(final HiResDate hiResDate, double thisVal,
-			final Color color)
+	private static ColouredDataItem create(final HiResDate hiResDate, 
+			final double thisVal, final Color color)
 	{
-
-		if (thisVal < 0)
-			thisVal += 360;
+		double val = thisVal;
+		if (val < 0)
+			val += 360;
 
 		// aaah, but is it a jump?
 		boolean connectToPrevious = true;
 		if (_previousVal != Double.NaN)
 		{
-			final double delta = Math.abs(thisVal - _previousVal);
+			final double delta = Math.abs(val - _previousVal);
 			if (delta > 100)
 			{
 				connectToPrevious = false;
 			}
 		}
-		_previousVal = thisVal;
+		_previousVal = val;
 		final ColouredDataItem cd = new ColouredDataItem(new FixedMillisecond(hiResDate
-				.getDate().getTime()), thisVal, color, connectToPrevious, null);
+				.getDate().getTime()), val, color, connectToPrevious, null);
 
 		return cd;
 	}

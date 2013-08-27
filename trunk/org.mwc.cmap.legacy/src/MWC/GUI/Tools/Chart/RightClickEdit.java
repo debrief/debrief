@@ -724,7 +724,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 
 	}
 
-	protected void showMenu(JPopupMenu theMenu, Point thePoint,
+	//CS-IGNORE:ON FINAL_PARAMETERS
+	protected void showMenu(JPopupMenu menu, Point thePoint,
 			CanvasType theCanvas)
 	{
 		if (theCanvas instanceof java.awt.Canvas)
@@ -738,14 +739,15 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 		if (theCanvas instanceof javax.swing.JComponent)
 		{
 			final javax.swing.JComponent dest = (javax.swing.JComponent) theCanvas;
-			dest.add(theMenu);
-			theMenu.show(dest, thePoint.x, thePoint.y);
+			dest.add(menu);
+			menu.show(dest, thePoint.x, thePoint.y);
 		}
 
-		theMenu = null;
+		menu = null;
 		thePoint = null;
 		theCanvas = null;
 	}
+	//CS-IGNORE:OFF FINAL_PARAMETERS
 
 	static protected void createAdditionalMethodInvokers(final JMenu theMenu,
 			final Editable theItem, final CanvasType theCanvas)

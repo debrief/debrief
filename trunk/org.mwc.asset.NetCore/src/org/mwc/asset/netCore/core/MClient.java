@@ -70,17 +70,18 @@ public class MClient implements IMClient
 			return _client.discoverHosts(Network.UDP_PORT, 1000);
 		}
 
-		public void connect(String target) throws IOException
+		public void connect(final String target) throws IOException
 		{
-			if (target == null)
+			String theTarget = target;
+			if (theTarget == null)
 			{
 				final InetAddress address = _client.discoverHost(Network.UDP_PORT, 1000);
 				if (address != null)
-					target = address.getHostAddress();
+					theTarget = address.getHostAddress();
 
 			}
 
-			_client.connect(5000, target, Network.TCP_PORT, Network.UDP_PORT);
+			_client.connect(5000, theTarget, Network.TCP_PORT, Network.UDP_PORT);
 		}
 
 		public void addListener(final Class<?> objectType, final Listener listener)

@@ -1220,13 +1220,14 @@ public class FlatFileExporter
 		return res;
 	}
 
-	private double trimDegs(double brgVal)
+	private double trimDegs(final double brgVal)
 	{
-		if (brgVal > 360)
-			brgVal -= 360;
-		if (brgVal < 0)
-			brgVal += 360;
-		return brgVal;
+		double theBrgVal = brgVal;
+		if (theBrgVal > 360)
+			theBrgVal -= 360;
+		if (theBrgVal < 0)
+			theBrgVal += 360;
+		return theBrgVal;
 	}
 
 }

@@ -438,7 +438,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	 *            plotting destination
 	 */
 	public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-			CanvasType canvas) {
+			final CanvasType canvas) {
 		// check we have a valid new DTG
 		if (newDTG == null)
 			return;
@@ -520,10 +520,11 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 		// we now have our lists, lets plot them
 		// Get the graphics
-		if (canvas == null)
-			canvas = _theChart.getCanvas();
+		CanvasType theCanvas = canvas;
+		if (theCanvas == null)
+			theCanvas = _theChart.getCanvas();
 
-		final Graphics dest = canvas.getGraphicsTemp();
+		final Graphics dest = theCanvas.getGraphicsTemp();
 
 		// check we were able to get our destination plotting canvas
 		// and drop out if we haven't - it's no surprise if we
@@ -539,7 +540,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		}
 
 		// set the XOR painting mode
-		dest.setXORMode(canvas.getBackgroundColor());
+		dest.setXORMode(theCanvas.getBackgroundColor());
 		final PlainProjection proj = _theChart.getCanvas().getProjection();
 
 		// remove the old primary highlight

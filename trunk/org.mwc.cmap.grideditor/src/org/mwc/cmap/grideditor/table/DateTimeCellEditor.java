@@ -103,11 +103,12 @@ public class DateTimeCellEditor extends CellEditor {
 	}
 
 	@Override
-	protected void doSetValue(Object value) {
-		if (false == value instanceof Date) {
-			value = new Date();
+	protected void doSetValue(final Object value) {
+		Object theValue = value;
+		if (false == theValue instanceof Date) {
+			theValue = new Date();
 		}
-		final Date date = (Date) value;
+		final Date date = (Date) theValue;
 		if (myDateUI == null) {
 			myDeferredValue = date;
 		} else {

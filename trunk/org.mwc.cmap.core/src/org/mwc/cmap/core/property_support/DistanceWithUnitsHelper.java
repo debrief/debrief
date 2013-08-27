@@ -84,14 +84,15 @@ public class DistanceWithUnitsHelper extends EditorHelper
 	 * an attribute.  But, our editor cannot edit null values.  So, if we receive a null
 	 * distance, convert it to a zero length.  
 	 */
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
+		Object theValue = value;
 		// right, is it null? if so provide zero world distance
-		if(value == null)
-			value = new WorldDistance(0, WorldDistance.METRES);
+		if(theValue == null)
+			theValue = new WorldDistance(0, WorldDistance.METRES);
 		
 		// ok, done. let the parent look at it - just out of politeness
-		return super.translateToSWT(value);
+		return super.translateToSWT(theValue);
 	}
 
 	/** produce editable version.  In our data model we may rely on a null value to describe
@@ -99,17 +100,18 @@ public class DistanceWithUnitsHelper extends EditorHelper
 	 * to an editable range - but we also need to be able to convert back.  So convert a 
 	 * zero range to a null value.  
 	 */
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
-		if(value != null)
+		Object theValue = value;
+		if(theValue != null)
 		{
-			final WorldDistance dist = (WorldDistance) value;
+			final WorldDistance dist = (WorldDistance) theValue;
 			if(dist.getValue() == 0)
-				value = null;
+				theValue = null;
 		}
 		
 		// ok, done. let the parent look at it - just out of politeness
-		return super.translateFromSWT(value);
+		return super.translateFromSWT(theValue);
 	}
 	
 	/** create an instance of the cell editor suited to our data-type

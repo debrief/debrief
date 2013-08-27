@@ -100,25 +100,26 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
+	String theVal = val;
     // handle our two "old" values, Tiny is now small, and regular is now medium
-    if(val.equals("Tiny"))
+    if(theVal.equals("Tiny"))
     {
-      val = "Small";
+      theVal = "Small";
     }
     else
     {
-      if(val.equals("Regular"))
+      if(theVal.equals("Regular"))
       {
-        val = "Medium";
+        theVal = "Medium";
       }
     }
 
     for(int i=0;i<stringTags.length;i++)
     {
       final String thisS = stringTags[i];
-      if(thisS.equals(val))
+      if(thisS.equals(theVal))
       {
         _mySize = new Double(sizes[i]);
       }

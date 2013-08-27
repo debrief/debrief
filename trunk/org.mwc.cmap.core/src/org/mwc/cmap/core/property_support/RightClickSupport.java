@@ -671,7 +671,7 @@ public class RightClickSupport
 	}
 
 	static private MenuManager generateBooleanEditorFor(
-			final IMenuManager manager, MenuManager subMenu,
+			final IMenuManager manager, final MenuManager subMenu,
 			final PropertyDescriptor thisP, final Editable[] editables,
 			final Layers theLayers, final Layer topLevelLayer)
 	{
@@ -679,6 +679,7 @@ public class RightClickSupport
 		boolean currentVal = false;
 		final Method getter = thisP.getReadMethod();
 		final Method setter = thisP.getWriteMethod();
+		MenuManager result = subMenu;
 		try
 		{
 			final Boolean valNow = (Boolean) getter.invoke(editables[0],
@@ -715,7 +716,7 @@ public class RightClickSupport
 		changeThis.setToolTipText(thisP.getShortDescription());
 
 		// is our sub-menu already created?
-		if (subMenu == null)
+		if (result == null)
 		{
 			String nameStr;
 			if (editables.length > 1)
@@ -723,13 +724,13 @@ public class RightClickSupport
 			else
 				nameStr = editables[0].getName();
 
-			subMenu = new MenuManager(nameStr);
-			manager.add(subMenu);
+			result = new MenuManager(nameStr);
+			manager.add(result);
 		}
 
-		subMenu.add(changeThis);
+		result.add(changeThis);
 
-		return subMenu;
+		return result;
 	}
 
 	static private IAction generateUndoableActionFor(
@@ -763,7 +764,7 @@ public class RightClickSupport
 
 	@SuppressWarnings("rawtypes")
 	static private MenuManager generateListEditorFor(final IMenuManager manager,
-			MenuManager subMenu, final PropertyDescriptor thisP,
+			final MenuManager subMenu, final PropertyDescriptor thisP,
 			final Editable[] editables, final Layers theLayers,
 			final Layer topLevelLayer)
 	{
@@ -771,6 +772,7 @@ public class RightClickSupport
 		// find out the type of the editor
 		final Method m = thisP.getReadMethod();
 		final Class cl = m.getReturnType();
+		MenuManager result = subMenu;
 
 		// is there a custom editor for this type?
 		final Class c = thisP.getPropertyEditorClass();
@@ -874,7 +876,7 @@ public class RightClickSupport
 			}
 
 			// is our sub-menu already created?
-			if (subMenu == null)
+			if (result == null)
 			{
 				String nameStr;
 				if (editables.length > 1)
@@ -882,15 +884,15 @@ public class RightClickSupport
 				else
 					nameStr = editables[0].getName();
 
-				subMenu = new MenuManager(nameStr);
-				manager.add(subMenu);
+				result = new MenuManager(nameStr);
+				manager.add(result);
 			}
 
-			subMenu.add(thisChoice);
+			result.add(thisChoice);
 
 		}
 
-		return subMenu;
+		return result;
 	}
 
 	/**

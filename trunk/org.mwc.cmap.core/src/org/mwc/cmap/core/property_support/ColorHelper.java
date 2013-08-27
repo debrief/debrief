@@ -70,19 +70,20 @@ public class ColorHelper extends EditorHelper
 		return res;
 	}
 
-	public static org.eclipse.swt.graphics.Color getColor(java.awt.Color javaCol)
+	public static org.eclipse.swt.graphics.Color getColor(final java.awt.Color javaCol)
 	{
 
+		java.awt.Color theColor = javaCol;
 		// hmm, we're having trouble with white. is this white?
-		if (javaCol.equals(java.awt.Color.WHITE))
+		if (theColor.equals(java.awt.Color.WHITE))
 		{
 			// right - switch White to off-white. For some reason SWT won't plot white
-			javaCol = OFF_WHITE;
+			theColor = OFF_WHITE;
 		}
 
 		// see if we have it in our own private list
 		org.eclipse.swt.graphics.Color thisCol = (org.eclipse.swt.graphics.Color) _myColorList
-				.get(javaCol);
+				.get(theColor);
 
 		if (thisCol == null)
 		{
@@ -91,7 +92,7 @@ public class ColorHelper extends EditorHelper
 			if (_colRegistry == null)
 				_colRegistry = new ColorRegistry();
 
-			final String colName = "" + javaCol.getRGB();
+			final String colName = "" + theColor.getRGB();
 
 			// retrieve the color
 			thisCol = _colRegistry.get(colName);
@@ -101,9 +102,9 @@ public class ColorHelper extends EditorHelper
 			{
 
 				// bugger, we'll have to create it
-				final int red = javaCol.getRed();
-				final int green = javaCol.getGreen();
-				final int blue = javaCol.getBlue();
+				final int red = theColor.getRed();
+				final int green = theColor.getGreen();
+				final int blue = theColor.getBlue();
 				final RGB newData = new RGB(red, green, blue);
 				_colRegistry.put(colName, newData);
 
@@ -113,7 +114,7 @@ public class ColorHelper extends EditorHelper
 
 			// ok, if we found it, try to store it locally
 			if (thisCol != null)
-				_myColorList.put(javaCol, thisCol);
+				_myColorList.put(theColor, thisCol);
 		}
 		return thisCol;
 	}

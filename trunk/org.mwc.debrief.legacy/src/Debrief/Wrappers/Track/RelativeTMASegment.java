@@ -592,9 +592,9 @@ public class RelativeTMASegment extends CoreTMASegment
 	}
 
 	@Override
-	public void rotate(double brg, final WorldLocation origin)
+	public void rotate(final double brg, final WorldLocation origin)
 	{
-		brg = -brg;
+		final double theBrg = -brg;
 
 		// right - we just rotate about the ends, and we use different
 		// processing depending on which end is being shifted.
@@ -603,7 +603,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our course
-			final double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(brg);
+			final double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(theBrg);
 			final double newBrg = this.getCourse() + brgDegs;
 			// right, the start is the origin, so we just set our course to the
 			// bearing
@@ -620,7 +620,7 @@ public class RelativeTMASegment extends CoreTMASegment
 			final WorldLocation startPoint = hostReference.add(_offset);
 
 			// rotate the origin about the far end
-			final WorldLocation newStart = startPoint.rotatePoint(origin, -brg);
+			final WorldLocation newStart = startPoint.rotatePoint(origin, -theBrg);
 
 			// find out the offset from the origin
 			final WorldVector offset = newStart.subtract(hostReference);
@@ -775,16 +775,17 @@ public class RelativeTMASegment extends CoreTMASegment
 	}
 
 	@FireExtended
-	public void setDTG_Start(HiResDate newStart)
+	public void setDTG_Start(final HiResDate newStart)
 	{
+		HiResDate theNewStart = newStart;
 		// check that we're still after the start of the host track
-		if (newStart.lessThan(this.getReferenceTrack().getStartDTG()))
+		if (theNewStart.lessThan(this.getReferenceTrack().getStartDTG()))
 		{
-			newStart = this.getReferenceTrack().getStartDTG();
+			theNewStart = this.getReferenceTrack().getStartDTG();
 		}
 
 		// ok, how far is this from the current end
-		final long delta = newStart.getMicros() - startDTG().getMicros();
+		final long delta = theNewStart.getMicros() - startDTG().getMicros();
 
 		// and what distance does this mean?
 		final double deltaHrs = delta / 1000000d / 60d / 60d;
@@ -803,7 +804,7 @@ public class RelativeTMASegment extends CoreTMASegment
 				distDegs, 0));
 
 		// and what's the point on the host track
-		final Watchable[] matches = this.getReferenceTrack().getNearestTo(newStart);
+		final Watchable[] matches = this.getReferenceTrack().getNearestTo(theNewStart);
 		final Watchable newRefPt = matches[0];
 		final WorldVector newOffset = newOrigin.subtract(newRefPt.getLocation());
 
@@ -812,7 +813,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		{
 			// right, we're shortening the track.
 			// check the end point is before the end
-			if (newStart.getMicros() > endDTG().getMicros())
+			if (theNewStart.getMicros() > endDTG().getMicros())
 				return;
 
 			// ok, it's worth bothering with. get ready to store ones we'll lose
@@ -822,7 +823,7 @@ public class RelativeTMASegment extends CoreTMASegment
 			while (iter.hasNext())
 			{
 				final FixWrapper thisF = (FixWrapper) iter.next();
-				if (thisF.getTime().lessThan(newStart))
+				if (thisF.getTime().lessThan(theNewStart))
 				{
 					onesToRemove.add(thisF);
 				}
@@ -839,7 +840,7 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// right, we may have pruned off too far. See if we need to put a bit back
 		// in...
-		if (newStart.lessThan(startDTG()))
+		if (theNewStart.lessThan(startDTG()))
 		{
 
 			// right, we if we have to add another
@@ -848,7 +849,7 @@ public class RelativeTMASegment extends CoreTMASegment
 
 			// don't worry about the location, we're going to DR it on anyway...
 			final WorldLocation newLoc = null;
-			final Fix newFix = new Fix(newStart, newLoc,
+			final Fix newFix = new Fix(theNewStart, newLoc,
 					MWC.Algorithms.Conversions.Degs2Rads(this.getCourse()),
 					MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
 							WorldSpeed.Kts)));
@@ -1039,10 +1040,10 @@ public class RelativeTMASegment extends CoreTMASegment
 	 *          origin of stretch, probably one end of the track
 	 */
 	@Override
-	public void stretch(double rngDegs, final WorldLocation origin)
+	public void stretch(final double rngDegs, final WorldLocation origin)
 	{
 		// make it always +ve, we'll just overwrite ourselves anyway
-		rngDegs = Math.abs(rngDegs);
+		final double theRngDegs = Math.abs(rngDegs);
 
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
@@ -1062,7 +1063,7 @@ public class RelativeTMASegment extends CoreTMASegment
 			final WorldVector thisLeg = getTrackStart().subtract(origin);
 
 			// now change the distance
-			final WorldVector newLeg = new WorldVector(thisLeg.getBearing(), rngDegs,
+			final WorldVector newLeg = new WorldVector(thisLeg.getBearing(), theRngDegs,
 					thisLeg.getDepth());
 
 			// calculate the new start point
@@ -1086,7 +1087,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		final double periodHours = periodMillis / 1000d / 60d / 60d;
 
 		// what's distance in minutes?
-		final double distMins = rngDegs * 60;
+		final double distMins = theRngDegs * 60;
 
 		// how far must we go to sort this
 		final double spdKts = distMins / periodHours;

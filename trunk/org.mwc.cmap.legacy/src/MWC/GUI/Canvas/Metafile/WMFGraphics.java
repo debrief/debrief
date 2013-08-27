@@ -219,6 +219,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 										.cos(6.283185307179586 * (double) (startAngle + 90) / 360.0)));
 	}
 
+	//CS-IGNORE:ON FINAL_PARAMETERS
 	public boolean drawImage(final Image image, int i, int i_24_, final int i_25_, final int i_26_,
 			int i_27_, int i_28_, final int i_29_, int i_30_, final Color color,
 			final ImageObserver imageobserver)
@@ -300,8 +301,9 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 				0xcc0020, image_array, im_width, im_height);
 		return true;
 
-	}
-
+	}//CS-IGNORE:OFF FINAL_PARAMETERS
+	
+	//CS-IGNORE:ON FINAL_PARAMETERS
 	public boolean drawImage(final Image image, int tl_x, int tl_y, final int br_x, final int br_y,
 			int i_43_, int i_44_, final int im_width, int im_height,
 			final ImageObserver imageobserver)
@@ -395,6 +397,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 				i_52_, 0xee0086, is, im_width2, im_height2);
 		return true;
 	}
+	//CS-IGNORE:OFF FINAL_PARAMETERS
 
 	public boolean drawImage(final Image image, final int i, final int i_56_, final int i_57_, final int i_58_,
 			final Color color, final ImageObserver imageobserver)

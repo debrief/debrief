@@ -77,18 +77,19 @@ public class DescriptorEditingSupport extends EditingSupport {
 	}
 
 	@Override
-	protected void setValue(final Object element, Object value) {
+	protected void setValue(final Object element, final Object value) {
+		Object theValue = value;
 		if (element instanceof TimeStampedDataItem) {
 			final TimeStampedDataItem item = (TimeStampedDataItem) element;
-			value = transformFromCellEditor(value);
-			if (value != null && !value.equals(BeanUtil.getItemValue(item, myDescriptor))) {
+			theValue = transformFromCellEditor(theValue);
+			if (theValue != null && !theValue.equals(BeanUtil.getItemValue(item, myDescriptor))) {
 				final GriddableSeries series = (GriddableSeries) getViewer().getInput();
 				final OperationEnvironment environment = new OperationEnvironment(getUndoContext(), series, item, myDescriptor);
-				final SetDescriptorValueOperation update = new SetDescriptorValueOperation(environment, value);
+				final SetDescriptorValueOperation update = new SetDescriptorValueOperation(environment, theValue);
 				try {
 					getOperationHistory().execute(update, null, null);
 				} catch (final ExecutionException e) {
-					throw new RuntimeException("Can't set the value of :" + value + //
+					throw new RuntimeException("Can't set the value of :" + theValue + //
 							" for descriptor " + myDescriptor.getTitle() + //
 							" of item: " + item, e);
 				}

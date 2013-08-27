@@ -551,36 +551,37 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theLayer
 	 *          the layer to add
 	 */
-	public void addThisLayer(Layer theLayer)
+	public void addThisLayer(final Layer theLayer)
 	{
+		Layer layer = theLayer;
 		// right, see if it's one to be wrapped
-		if (theLayer instanceof NeedsWrappingInLayerManager)
+		if (layer instanceof NeedsWrappingInLayerManager)
 		{
 			// right, does it already exist at the top level
-			final Layer exists = this.findLayer(theLayer.getName());
+			final Layer exists = this.findLayer(layer.getName());
 			if (exists != null)
 			{
 				// better rename it then
-				theLayer.setName(theLayer.getName() + "_"
+				layer.setName(layer.getName() + "_"
 						+ (int) (Math.random() * 1000));
 			}
 
 			// now wrap it
-			final NeedsWrappingInLayerManager nl = (NeedsWrappingInLayerManager) theLayer;
-			theLayer = nl.wrapMe();
+			final NeedsWrappingInLayerManager nl = (NeedsWrappingInLayerManager) layer;
+			layer = nl.wrapMe();
 		}
 		
 		// does it need to know about the layers, or that it has been added to the layers?
-		if(theLayer instanceof NeedsToKnowAboutLayers)
+		if(layer instanceof NeedsToKnowAboutLayers)
 		{
-			final NeedsToKnowAboutLayers need = (NeedsToKnowAboutLayers) theLayer;
+			final NeedsToKnowAboutLayers need = (NeedsToKnowAboutLayers) layer;
 			need.setLayers(this);
 		}
 
-		addThisLayerDoNotResize(theLayer);
+		addThisLayerDoNotResize(layer);
 
 		// and fire the extended event
-		fireExtended(null, theLayer);
+		fireExtended(null, layer);
 	}
 
 	/**

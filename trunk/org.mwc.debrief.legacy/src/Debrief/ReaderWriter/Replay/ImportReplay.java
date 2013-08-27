@@ -697,7 +697,7 @@ public class ImportReplay extends PlainImporterBase
 	 * @param theLine
 	 *          the line to parse
 	 */
-	public HiResDate readLine(String theLine) throws java.io.IOException
+	public HiResDate readLine(final String theLine) throws java.io.IOException
 	{
 		HiResDate res = null;
 		
@@ -706,29 +706,29 @@ public class ImportReplay extends PlainImporterBase
 			return null;
 		
 		// ok, trim any leading/trailing whitespace
-		theLine = theLine.trim();
+		final String line = theLine.trim();
 			
 		// what type of item is this?
-		final PlainLineImporter thisOne = getImporterFor(theLine);
+		final PlainLineImporter thisOne = getImporterFor(line);
 
 		// check that we have found an importer
 		if (thisOne == null)
 		{
 			// just check it wasn't a comment
-			if (theLine.startsWith(";;"))
+			if (line.startsWith(";;"))
 			{
 					// don't bother, it's just a comment
 			}
 			else
 			{
 				MWC.Utilities.Errors.Trace
-						.trace("Annotation type not recognised for:" + theLine);
+						.trace("Annotation type not recognised for:" + line);
 			}
 			return null;
 		}
 
 		// now read it in.
-		final Object thisObject = thisOne.readThisLine(theLine);
+		final Object thisObject = thisOne.readThisLine(line);
 
 		// see if we are going to do any special processing
 

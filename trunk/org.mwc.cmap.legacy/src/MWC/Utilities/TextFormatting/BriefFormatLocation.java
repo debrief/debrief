@@ -113,12 +113,12 @@ public class BriefFormatLocation implements PlainFormatLocation
       setData(val, isLat);
     }
 
-    public void setData(double val, final boolean isLat)
+    public void setData(final double val, final boolean isLat)
     {
       hem = doHem(val, isLat);
-      val = Math.abs(val);
-      deg = (int) (val);
-      double degVal = Math.rint((val - deg) * SCALE) / SCALE;
+      final double theVal = Math.abs(val);
+      deg = (int) (theVal);
+      double degVal = Math.rint((theVal - deg) * SCALE) / SCALE;
 
       // special case - if we're saying that there are 60 minutes, we really
       // mean 1 degree and 59 minutes. trap it.

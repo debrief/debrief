@@ -645,19 +645,19 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
      */
     final void drawKey(final CanvasType dest,
                        final double min_height,
-                       double max_height,
+                       final double max_height,
                        final Integer keyLocation,
                        final SpatialRasterPainter parent)
     {
 
       // how big is the screen?
       final Dimension screen_size = dest.getProjection().getScreenArea();
-
+      double max_h = max_height;
       // are we showing land?
       if (parent.zeroIsMax())
       {
         // yes, make zero the highest value
-        max_height = 0;
+        max_h = 0;
       }
 
       // define the approximate proportions of the key
@@ -668,7 +668,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       // how high is a piece of text at this scale?
       final int txtHt = dest.getStringHeight(_myFont) + 5;
 //      final int txtHt = 85;
-      final int txtWid = dest.getStringWidth(_myFont, " " + (int) Math.max(min_height * -1, max_height));
+      final int txtWid = dest.getStringWidth(_myFont, " " + (int) Math.max(min_height * -1, max_h));
 
       // sort out where the key is going to go
       // determine the start / end points according to the scale location
@@ -729,7 +729,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
         return;
 
       // sort out how many shade steps we are going to produce (it depends on how big the text string is)
-      final int depth_step = (int) ((max_height - min_height) / num_labels);
+      final int depth_step = (int) ((max_h - min_height) / num_labels);
 
       // get ready to step through the colours
       Point thisPoint = null;
@@ -741,13 +741,13 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 
         for (int i = 0; i < num_labels; i++)
         {
-          final short thisDepth = (short) (max_height - (i * depth_step));
+          final short thisDepth = (short) (max_h - (i * depth_step));
 
           // move forward
           thisPoint.move(TL.x + (int) (i * stepWidth), TL.y + (int) (i * stepHeight));
 
           // produce this new colour
-          final int thisCol = parent.getColor(thisDepth, min_height, max_height, SWING_COLOR_CONVERTER);
+          final int thisCol = parent.getColor(thisDepth, min_height, max_h, SWING_COLOR_CONVERTER);
           
           final Color thisColor = new Color(thisCol);
             
@@ -771,12 +771,12 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
         for (int i = 0; i < parent._contourDepths.length; i++)
         {
           final double depth = parent._contourDepths[i];
-          if ((depth > min_height) && (depth < max_height))
+          if ((depth > min_height) && (depth < max_h))
           {
             // calculate where this line would fall
 
             // how far through the range is it?
-            final double offset = 1 - ((depth - min_height) / (max_height - min_height));
+            final double offset = 1 - ((depth - min_height) / (max_h - min_height));
 
             // what does this translate to?
             final Point thisP = new Point((int) (wholeSize.getWidth() * offset),
@@ -845,7 +845,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       for (int i = 0; i < num_labels; i++)
       {
 
-        final short thisDepth = (short) (max_height - (i * depth_step));
+        final short thisDepth = (short) (max_h - (i * depth_step));
 
         // move forward
         thisPoint.move(TL.x + (int) (i * stepWidth), TL.y + (int) (i * stepHeight));

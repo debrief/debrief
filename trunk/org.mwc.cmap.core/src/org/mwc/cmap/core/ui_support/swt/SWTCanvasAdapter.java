@@ -842,12 +842,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	/**
 	 * set the width of the line, in pixels
 	 */
-	public final void setLineWidth(float width)
+	public final void setLineWidth(final float width)
 	{
+		float theWidth = width;
 		// check we've got a valid width
-		width = Math.max(width, 0);
+		theWidth = Math.max(theWidth, 0);
 
-		_lineWidth = width;
+		_lineWidth = theWidth;
 
 		// are we currently in a plot operation?
 		if (_theDest != null)
@@ -857,7 +858,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
 			// g2.setStroke(stk);
 			if (!_theDest.isDisposed())
-				_theDest.setLineWidth((int) width);
+				_theDest.setLineWidth((int) theWidth);
 		}
 	}
 

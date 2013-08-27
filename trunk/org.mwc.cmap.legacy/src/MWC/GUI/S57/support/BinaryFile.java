@@ -560,10 +560,11 @@ public class BinaryFile {
         return MoreMath.BuildInteger(readBytes(4, false), MSBFirst);
     }
 
-    public void readIntegerArray(final int vec[], int offset, final int len)
+    public void readIntegerArray(final int vec[], final int offset, final int len)
             throws EOFException, FormatException {
+    	int idx = offset;
         for (int i = 0; i < len; i++) {
-            vec[offset++] = readInteger();
+            vec[idx++] = readInteger();
         }
     }
 
@@ -597,10 +598,11 @@ public class BinaryFile {
         return Float.intBitsToFloat(readInteger());
     }
 
-    public void readFloatArray(final float vec[], int offset, final int len)
+    public void readFloatArray(final float vec[], final int offset, final int len)
             throws EOFException, FormatException {
+    	int idx = offset;
         for (int i = 0; i < len; i++) {
-            vec[offset++] = readFloat();
+            vec[idx++] = readFloat();
         }
     }
 

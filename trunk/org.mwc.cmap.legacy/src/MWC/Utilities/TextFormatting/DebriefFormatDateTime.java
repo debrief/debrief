@@ -180,7 +180,7 @@ public class DebriefFormatDateTime
 	/**
 	 * parse a date string using our format
 	 */
-	public static HiResDate parseThis(String dateToken, final String timeToken)
+	public static HiResDate parseThis(final String dateToken, final String timeToken)
 	{
 		// do we have millis?
 		final int decPoint = timeToken.indexOf(".");
@@ -199,10 +199,10 @@ public class DebriefFormatDateTime
 		
 		// sort out if we have to padd
 		// check the date for missing leading zeros
-		dateToken = String.format("%06d", Integer.parseInt(dateToken));
+		final String theDateToken = String.format("%06d", Integer.parseInt(dateToken));
 		timeStr = String.format("%06d", Integer.parseInt(timeStr));
 
-		final String composite = dateToken + " " + timeStr + milliStr;
+		final String composite = theDateToken + " " + timeStr + milliStr;
 
 //		if (milliStr.length() > 0)
 //			composite += milliStr;
@@ -213,7 +213,7 @@ public class DebriefFormatDateTime
 	/**
 	 * parse a date string using our format
 	 */
-	public static HiResDate parseThis(String rawText)
+	public static HiResDate parseThis(final String rawText)
 	{
 		// make sure our two and four-digit date bits are initialised
 		initialisePatterns();
@@ -222,33 +222,33 @@ public class DebriefFormatDateTime
 		HiResDate res = null;
 
 		// right, start off by trimming spaces off the date
-		rawText = rawText.trim();
+		final String theRawText = rawText.trim();
 
 		// right. Special check to see if this is an incorrectly represented null
 		// date (-1)
-		if (rawText.equals(NULL_DATE_STRING) || rawText.equals(INVALID_DATE_STRING))
+		if (theRawText.equals(NULL_DATE_STRING) || theRawText.equals(INVALID_DATE_STRING))
 		{
-			System.err.println("Invalid date read from xml file: " + rawText);
+			System.err.println("Invalid date read from xml file: " + theRawText);
 			res = null;
 		}
 		else
 		{
 
-			String secondPart = rawText;
+			String secondPart = theRawText;
 			String subSecondPart = null;
 
 			// start off by seeing if we have sub-millisecond date
-			final int subSecondIndex = rawText.indexOf('.');
+			final int subSecondIndex = theRawText.indexOf('.');
 			if (subSecondIndex > 0)
 			{
 				// so, there is a separator - extract the text before the separator
-				secondPart = rawText.substring(0, subSecondIndex);
+				secondPart = theRawText.substring(0, subSecondIndex);
 
 				// just check that the '.' isn't the last character
-				if (subSecondIndex < rawText.length() - 1)
+				if (subSecondIndex < theRawText.length() - 1)
 				{
 					// yes, we do have digits after the separator
-					subSecondPart = rawText.substring(subSecondIndex + 1);
+					subSecondPart = theRawText.substring(subSecondIndex + 1);
 				}
 			}
 
@@ -292,7 +292,7 @@ public class DebriefFormatDateTime
 				{
 					System.err
 							.println("Debrief is only capable of reading data to microsecond resolution (dtg:"
-									+ rawText + ")");
+									+ theRawText + ")");
 					micros = -1;
 				}
 			}

@@ -1615,9 +1615,10 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 			}
 
 			public Component getListCellRendererComponent(final JList list, final Object value,
-					int index, final boolean isSelected, final boolean cellHasFocus)
+					final int index, final boolean isSelected, final boolean cellHasFocus)
 			{
-				if (index == -1)
+				int idx = index;
+				if (idx == -1)
 				{
 					// This shouldn't happen since we won't be using this
 					// renderer in a combo box
@@ -1625,14 +1626,14 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 					if (selected == -1)
 						return this;
 					else
-						index = selected;
+						idx = selected;
 				}
 
 				setBorder(new EmptyBorder(1, 2, 1, 2));
 				setFont(new Font("Helvetica", Font.PLAIN, 10));
 
 				// show absolute path of file
-				final File file = (File) model.elementAt(index);
+				final File file = (File) model.elementAt(idx);
 				setText(file.getAbsolutePath());
 
 				// selection characteristics

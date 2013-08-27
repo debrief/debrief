@@ -580,7 +580,10 @@ class PaneNode
     }
   }
 
-  public void addChild(final String childName, final Component child, String position, float proportion) {
+  public void addChild(final String childName, final Component child, 
+		  final String position, final float proportion) {
+	String thePosition = position;
+	float theProportion = proportion;
     // Only two cases: either
     // a) node contains a single component => split it
     // b) node contains two sub nodes => pass the component on
@@ -595,19 +598,19 @@ class PaneNode
       // ii)  Put new node into the other child slot
       childNodeB = new PaneNode(childName,child, PaneConstraints.ROOT);
       // iii) Split as instructed
-      proportion = 1.0f - proportion;
-      if (position.equals(PaneConstraints.RIGHT) || position.equals(PaneConstraints.BOTTOM))
+      theProportion = 1.0f - theProportion;
+      if (thePosition.equals(PaneConstraints.RIGHT) || thePosition.equals(PaneConstraints.BOTTOM))
          reverse = false;
       else
         reverse = true;
-      if (position.equals(PaneConstraints.LEFT) || position.equals(PaneConstraints.RIGHT)) {
-        widthDivide = proportion;
+      if (thePosition.equals(PaneConstraints.LEFT) || thePosition.equals(PaneConstraints.RIGHT)) {
+        widthDivide = theProportion;
         heightDivide = 1.0f;
         horizontal = false;
       }
       else {
         widthDivide = 1.0f;
-        heightDivide = proportion;
+        heightDivide = theProportion;
         horizontal = true;
       }
       //Diagnostic.println("addChild "+splitHorizontal+"  widthD:"+widthDivide+" heightD:"+heightDivide);
@@ -615,10 +618,10 @@ class PaneNode
     else {
       // Option b). Pass the component in to the second node
       if (horizontal)
-        position = PaneConstraints.RIGHT;
+        thePosition = PaneConstraints.RIGHT;
       else
-        position = PaneConstraints.BOTTOM;
-      childNodeB.addChild(childName,child, position, proportion);
+        thePosition = PaneConstraints.BOTTOM;
+      childNodeB.addChild(childName,child, thePosition, theProportion);
     }
   }
 
@@ -967,10 +970,10 @@ class PaneNode
   void calculateLocations(final Rectangle location1,
                           final Rectangle childALocation,
                           final Rectangle childBLocation,
-                          int Border) {
+                          final int border) {
     //Diagnostic.println("CALC horizontal:"+horizontal+" widthD:"+widthDivide+" heightD:"+heightDivide+" loc:"+location);
     //Diagnostic.println("  xOffset:"+xOffset+"  yOffset:"+yOffset);
-    Border = Border + Border;
+    final int theBorder = border + border;
 
     if (heightDivide == 1.0f) {
       float proportion = widthDivide;
@@ -978,16 +981,16 @@ class PaneNode
         proportion = 1.0f - proportion;
 
       // Work out the location of the two children
-      xOffset = (int)((float)(location1.width -Border)* proportion);
+      xOffset = (int)((float)(location1.width -theBorder)* proportion);
 
       childALocation.x = location1.x;
       childALocation.y = location1.y;
       childALocation.width = xOffset ;
       childALocation.height = location1.height;
 
-      childBLocation.x = location1.x + xOffset + Border ;
+      childBLocation.x = location1.x + xOffset + theBorder ;
       childBLocation.y = location1.y;
-      childBLocation.width = location1.width - xOffset - Border  ;
+      childBLocation.width = location1.width - xOffset - theBorder  ;
       childBLocation.height = location1.height;
 
     }
@@ -996,16 +999,16 @@ class PaneNode
       if (reverse)
         proportion = 1.0f - proportion;
       // Work out the location of the two children
-      yOffset = (int)((float)(location1.height -Border) * proportion);
+      yOffset = (int)((float)(location1.height -theBorder) * proportion);
       childALocation.x = location1.x;
       childALocation.y = location1.y;
       childALocation.width = location1.width;
       childALocation.height = yOffset ;
 
       childBLocation.x = location1.x ;
-      childBLocation.y = location1.y + yOffset + Border;
+      childBLocation.y = location1.y + yOffset + theBorder;
       childBLocation.width = location1.width;
-      childBLocation.height =  location1.height - yOffset - Border;
+      childBLocation.height =  location1.height - yOffset - theBorder;
 
     }
     if (reverse) {

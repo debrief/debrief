@@ -576,17 +576,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 
 			public INamedItem createInstance(final IConfigurationElement configElement,
-					String label)
+					final String label)
 			{
 				// get the attributes
-				label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+				final String theLabel = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 				final String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
 				final String fileTypes = configElement
 						.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
 
 				// create the instance
 				final INamedItem res = new IPlotLoader.DeferredPlotLoader(configElement,
-						label, icon, fileTypes);
+						theLabel, icon, fileTypes);
 
 				// and return it.
 				return res;
@@ -643,20 +643,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		return res;
 	}
 
-	private static TimePeriod extend(TimePeriod period, final HiResDate date)
+	private static TimePeriod extend(final TimePeriod period, final HiResDate date)
 	{
+		TimePeriod result = period;
 		// have we received a date?
 		if (date != null)
 		{
-			if (period == null)
+			if (result == null)
 			{
-				period = new TimePeriod.BaseTimePeriod(date, date);
+				result = new TimePeriod.BaseTimePeriod(date, date);
 			}
 			else
-				period.extend(date);
+				result.extend(date);
 		}
 
-		return period;
+		return result;
 	}
 
 	/**

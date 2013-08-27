@@ -352,22 +352,22 @@ public class GNDDocHandler
 			return _track;
 		}
 
-		private Date timeFrom(String str) throws ParseException
+		private Date timeFrom(final String str) throws ParseException
 		{
-
+			String theStr = str;
 			final String format = "yyyy-MM-dd HH:mm:ss";
 
-			if (str.indexOf("T") != -1)
+			if (theStr.indexOf("T") != -1)
 			{
-				str = str.replace("T", " ");
+				theStr = theStr.replace("T", " ");
 			}
 
-			if (str.indexOf("Z") != -1)
+			if (theStr.indexOf("Z") != -1)
 			{
-				str = str.replace("Z", "");
+				theStr = theStr.replace("Z", "");
 			}
 
-			return new SimpleDateFormat(format).parse(str);
+			return new SimpleDateFormat(format).parse(theStr);
 
 		}
 

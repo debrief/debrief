@@ -73,11 +73,12 @@ public class JaxbGpxHelper implements GpxHelper
 	}
 
 	@Override
-	public Layers unmarshall(final InputStream gpxStream, Layers theLayers)
+	public Layers unmarshall(final InputStream gpxStream, final Layers theLayers)
 	{
-		if (theLayers == null)
+		Layers layers = theLayers;
+		if (layers == null)
 		{
-			theLayers = new Layers();
+			layers = new Layers();
 		}
 		try
 		{
@@ -113,7 +114,7 @@ public class JaxbGpxHelper implements GpxHelper
 			}
 			for (final TrackWrapper track : tracks)
 			{
-				theLayers.addThisLayer(track);
+				layers.addThisLayer(track);
 			}
 		}
 		catch (final Exception e)
@@ -123,7 +124,7 @@ public class JaxbGpxHelper implements GpxHelper
 			return null;
 		}
 
-		return theLayers;
+		return layers;
 	}
 
 	@Override

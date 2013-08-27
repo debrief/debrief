@@ -618,29 +618,29 @@ public abstract class Application implements ToolParent, ActionListener,
 	 * @param theSession
 	 *          autofilled
 	 */
-	public final boolean closeSession(Session theSession)
+	public final boolean closeSession(final Session theSession)
 	{
-
+		Session session = theSession;
 		// check the session is valid
-		if (theSession != null)
+		if (session != null)
 		{
 
 			boolean canClose = true;
-			canClose = theSession.close();
+			canClose = session.close();
 
 			if (canClose)
 			{
 
 				// remove the GUI from our desktop
-				closeSessionGUI(theSession);
+				closeSessionGUI(session);
 
-				theSession.closeGUI();
+				session.closeGUI();
 
 				// and close the object itself
 				// remove from Sessions list
-				_theSessions.removeElement(theSession);
+				_theSessions.removeElement(session);
 
-				theSession = null;
+				session = null;
 
 				// now show another session, if we have one
 				if (_theSessions.size() > 0)

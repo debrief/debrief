@@ -707,12 +707,10 @@ public class SwingCanvas extends javax.swing.JComponent
   /**
    * set the width of the line, in pixels
    */
-  public final void setLineWidth(float width)
+  public final void setLineWidth(final float width)
   {
     // check we've got a valid width
-    width = Math.max(width, 0);
-
-    _lineWidth = width;
+    _lineWidth = Math.max(width, 0);
 
     // are we currently in a plot operation?
     if (_theDest != null)

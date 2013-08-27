@@ -463,17 +463,19 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   /** method to draw in the key
    *
    */
-  protected void drawKey(final CanvasType dest, final double min_height, double max_height, final Integer keyLocation)
+  protected void drawKey(final CanvasType dest, final double min_height, 
+		  final double max_height, final Integer keyLocation)
   {
 
     // how big is the screen?
     final Dimension screen_size = dest.getProjection().getScreenArea();
+    double maxHeight = max_height;
 
     // are we showing land?
     if(!_showLand)
     {
       // no, just make it very shallow
-      max_height = 0;
+      maxHeight = 0;
     }
 
     // define the approximate proportions of the key
@@ -484,7 +486,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
 
     // how high is a piece of text at this scale?
     final int txtHt = dest.getStringHeight(_myFont) + 5;
-    final int txtWid = dest.getStringWidth(_myFont, " " + (int)Math.max(min_height * -1, max_height));
+    final int txtWid = dest.getStringWidth(_myFont, " " + (int)Math.max(min_height * -1, maxHeight));
 
     // sort out where the key is going to go
     // determine the start / end points according to the scale location
@@ -544,7 +546,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
       return;
 
     // sort out how many shade steps we are going to produce (it depends on how big the text string is)
-    final int depth_step = (int)((max_height - min_height)/ num_labels);
+    final int depth_step = (int)((maxHeight - min_height)/ num_labels);
 
     // get ready to step through the colours
     Color thisColor = new Color(0,0,0);
@@ -553,10 +555,10 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
     for(int i=0;i<num_labels;i++)
     {
 
-      final short thisDepth =  (short)(max_height-(i * depth_step));
+      final short thisDepth =  (short)(maxHeight-(i * depth_step));
 
       // produce this new colour
-      thisColor = new Color(getColor(thisDepth, min_height, max_height, _showLand));
+      thisColor = new Color(getColor(thisDepth, min_height, maxHeight, _showLand));
 
       // draw this rectangle
       dest.setColor(thisColor);

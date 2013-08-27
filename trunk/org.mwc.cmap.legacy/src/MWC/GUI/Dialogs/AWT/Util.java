@@ -32,7 +32,8 @@ public class Util {
 			}
         }
     }
-	public static Frame getFrame(Component c) {
+	public static Frame getFrame(final Component comp) {
+		Component c = comp;
         if(c instanceof Frame)
             return (Frame)c;
 

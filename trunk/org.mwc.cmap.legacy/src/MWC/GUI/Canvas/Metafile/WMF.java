@@ -309,7 +309,7 @@ public class WMF
   }
 
 	@SuppressWarnings("deprecation")
-	public int createFontIndirect(int height, final int width,
+	public int createFontIndirect(final int height, final int width,
 																final int escapement, final int orientation,
 																final int weight, final boolean isItalic,
 																final boolean isUnderline, final boolean isStrikeOut,
@@ -319,8 +319,8 @@ public class WMF
   {
     metaRecord(763, 9 + (string.length() + 2) / 2);
     // scale the height up a bit
-    height = (int)(height * 1.3);
-    writeWord(height);
+    final int theHeight = (int)(height * 1.3);
+    writeWord(theHeight);
     writeWord(width);
     writeWord(escapement);
     writeWord(orientation);

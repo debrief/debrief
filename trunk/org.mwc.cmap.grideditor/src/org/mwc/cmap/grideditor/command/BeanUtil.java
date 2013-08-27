@@ -121,7 +121,7 @@ public class BeanUtil
 	 *          subject item to invoke setter on
 	 * @param descriptor
 	 *          meta-data describing the bean property
-	 * @param value
+	 * @param theValue
 	 *          new value to set
 	 * 
 	 * @throws IllegalArgumentException
@@ -134,15 +134,15 @@ public class BeanUtil
 	 *           if given item is <code>null</code>
 	 */
 	static void setItemValue(final TimeStampedDataItem item,
-			final GriddableItemDescriptor descriptor, Object value)
+			final GriddableItemDescriptor descriptor, final Object value)
 	{
 		if (item == null)
 		{
 			throw new NullPointerException();
 		}
-
+		
 		// convert the value from text editor to target datat ype
-		value = descriptor.getEditor().translateFromSWT(value);
+		final Object theValue = descriptor.getEditor().translateFromSWT(value);
 
 		// special case for GDataItems who do not have getter/setters
 		if(item instanceof GDataItem)
@@ -150,21 +150,21 @@ public class BeanUtil
 			// we don't use bean introspection for these types.  They're schema free,
 			// so we don't have getters and setters
 			final GDataItem g = (GDataItem) item;
-			g.setValue(descriptor.getName(), value);
+			g.setValue(descriptor.getName(), theValue);
 			return;
 		}
 
-		if (value != null
-				&& !descriptor.getType().isAssignableFrom(value.getClass()))
+		if (theValue != null
+				&& !descriptor.getType().isAssignableFrom(theValue.getClass()))
 		{
 			// not that strong of a check, but we will fail later (on invocation) in
 			// any case
 			final boolean autoUnboxable = descriptor.getType().isPrimitive()
-					&& Number.class.isAssignableFrom(value.getClass());
+					&& Number.class.isAssignableFrom(theValue.getClass());
 			if (!autoUnboxable)
 			{
 				throw new ClassCastException(//
-						"Can not cast actual value of type: " + value.getClass() + //
+						"Can not cast actual value of type: " + theValue.getClass() + //
 								" to descriptor type " + descriptor.getType());
 			}
 		}
@@ -174,7 +174,7 @@ public class BeanUtil
 
 		try
 		{
-			setter.invoke(item, value);
+			setter.invoke(item, theValue);
 		}
 		catch (final Exception e)
 		{
@@ -182,7 +182,7 @@ public class BeanUtil
 					"Can't invoke setter " + setterName + //
 							" for object " + item + //
 							" of class " + item.getClass() + //
-							" and actual parameter : " + value, e);
+							" and actual parameter : " + theValue, e);
 		}
 	}
 

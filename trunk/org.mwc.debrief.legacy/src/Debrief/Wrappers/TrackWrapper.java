@@ -3163,21 +3163,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * move the whole of the track be the provided offset
 	 */
-	public final void shiftTrack(Enumeration<Editable> theEnum,
+	public final void shiftTrack(final Enumeration<Editable> theEnum,
 			final WorldVector offset)
 	{
+		Enumeration<Editable> enumA = theEnum;
 		// keep track of if the track contains something that doesn't get
 		// dragged
 		boolean handledData = false;
 
-		if (theEnum == null)
+		if (enumA == null)
 		{
-			theEnum = elements();
+			enumA = elements();
 		}
 
-		while (theEnum.hasMoreElements())
+		while (enumA.hasMoreElements())
 		{
-			final Object thisO = theEnum.nextElement();
+			final Object thisO = enumA.nextElement();
 			if (thisO instanceof TrackSegment)
 			{
 				final TrackSegment seg = (TrackSegment) thisO;
@@ -3242,7 +3243,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// ok, did we handle the data?
 		if (!handledData)
 		{
-			System.err.println("TrackWrapper problem; not able to shift:" + theEnum);
+			System.err.println("TrackWrapper problem; not able to shift:" + enumA);
 		}
 	}
 
@@ -3327,9 +3328,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @return a list of the new track segments (used for subsequent undo
 	 *         operations)
 	 */
-	public Vector<TrackSegment> splitTrack(FixWrapper splitPoint,
+	public Vector<TrackSegment> splitTrack(final FixWrapper splitPoint,
 			final boolean splitBeforePoint)
 	{
+		FixWrapper splitPnt = splitPoint;
 		Vector<TrackSegment> res = null;
 		TrackSegment relevantSegment = null;
 
@@ -3349,7 +3351,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (segments.hasMoreElements())
 			{
 				final TrackSegment seg = (TrackSegment) segments.nextElement();
-				if (seg.getData().contains(splitPoint))
+				if (seg.getData().contains(splitPnt))
 				{
 					relevantSegment = seg;
 					break;
@@ -3379,12 +3381,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				if (previous != null)
 				{
 					// yes, this must be the one we're after
-					splitPoint = (FixWrapper) thisE;
+					splitPnt = (FixWrapper) thisE;
 					break;
 				}
 
 				// is this the one we're looking for?
-				if (thisE == splitPoint)
+				if (thisE == splitPnt)
 				{
 					// yup, remember it - we want to use the next value
 					previous = thisE;
@@ -3393,8 +3395,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		// yup, do our first split
-		final SortedSet<Editable> p1 = relevantSegment.headSet(splitPoint);
-		final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPoint);
+		final SortedSet<Editable> p1 = relevantSegment.headSet(splitPnt);
+		final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPnt);
 
 		// get our results ready
 		final TrackSegment ts1, ts2;
@@ -3413,8 +3415,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// the
 			// second part of the track
 			final WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(
-					splitPoint.getDateTimeGroup())[0].getLocation();
-			final WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
+					splitPnt.getDateTimeGroup())[0].getLocation();
+			final WorldVector secondOffset = splitPnt.getLocation().subtract(refTrackLoc);
 
 			// put the lists back into plottable layers
 			final RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1,
@@ -3441,7 +3443,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// find out the offset at the split point, so we can initiate it for
 			// the
 			// second part of the track
-			final Watchable[] matches = this.getNearestTo(splitPoint.getDateTimeGroup());
+			final Watchable[] matches = this.getNearestTo(splitPnt.getDateTimeGroup());
 			final WorldLocation origin = matches[0].getLocation();
 
 			final FixWrapper t1Start = (FixWrapper) p1.first();

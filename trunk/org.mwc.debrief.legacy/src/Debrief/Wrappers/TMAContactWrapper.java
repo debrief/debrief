@@ -1132,12 +1132,13 @@ public final class TMAContactWrapper extends
 		return _theSymbol;
 	}
 
-	public void setSymbol(String val)
+	public void setSymbol(final String val)
 	{
+		String theVal = val;
 		// just check we have a valid symbol
-		if ((val == null) || (val.length() == 0))
-			val = SymbolFactory.SUBMARINE;
-		_theSymbol = val;
+		if ((theVal == null) || (theVal.length() == 0))
+			theVal = SymbolFactory.SUBMARINE;
+		_theSymbol = theVal;
 	}
 
 	public EllipseShape buildGetEllipse()

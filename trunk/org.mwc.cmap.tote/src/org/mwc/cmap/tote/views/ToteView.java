@@ -808,10 +808,10 @@ public class ToteView extends ViewPart
 		{
 
 			public toteCalculation createInstance(
-					final IConfigurationElement configElement, String label)
+					final IConfigurationElement configElement, final String label)
 			{
 				// get the attributes
-				label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+				final String theLabel = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 				final String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
 
 				// create the instance
@@ -819,7 +819,7 @@ public class ToteView extends ViewPart
 
 				// create the instance
 				res = new CalculationLoaderManager.DeferredCalculation(configElement,
-						label, icon);
+						theLabel, icon);
 
 				// and return it.
 				return res;

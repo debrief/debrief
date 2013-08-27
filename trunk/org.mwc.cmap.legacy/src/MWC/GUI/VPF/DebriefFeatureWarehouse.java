@@ -597,7 +597,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	@SuppressWarnings("rawtypes")
 	private java.awt.Polygon extendArea(final Vector ipts, final int totalSize,
 			final LatLonPoint ll1, final LatLonPoint ll2, final float dpplat, final float dpplon,
-			boolean doAntarcticaWorkaround, final MWC.Algorithms.PlainProjection proj)
+			final boolean doAntarcticaWorkaround, final MWC.Algorithms.PlainProjection proj)
 	{
 		Polygon res = null;
 
@@ -608,11 +608,12 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		// create the output arrays
 		final int[] xlpts = new int[totalSize];
 		final int[] ylpts = new int[totalSize];
-
+		
+		boolean antarcticaWorkaround = doAntarcticaWorkaround;
 		// only do it if we're in the vicinity
-		if (doAntarcticaWorkaround)
+		if (antarcticaWorkaround)
 		{
-			doAntarcticaWorkaround = (ll2.getLatitude() < -62f);
+			antarcticaWorkaround = (ll2.getLatitude() < -62f);
 		}
 
 		// step through the areas we've been provided

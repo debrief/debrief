@@ -103,10 +103,11 @@ public class FileDropSupport implements DropTargetListener
   /** remove the class listener for file drop events
    *
    */
-  public void removeFileDropListener(FileDropListener listener)
+  
+  public void removeFileDropListener(final FileDropListener listener)
   {
     if(_listener == listener)
-      listener = null;
+      _listener = null;
   }
 
   private void checkThis(final java.awt.dnd.DropTargetDragEvent p1)

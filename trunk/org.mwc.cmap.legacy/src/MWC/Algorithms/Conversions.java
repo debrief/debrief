@@ -118,14 +118,15 @@ final public class Conversions
   }
 
 
-  final public static double clipRadians(double val)
+  final public static double clipRadians(final double val)
   {
-    while (val > 2 * Math.PI)
-      val = val - 2 * Math.PI;
-    while (val < 0)
-      val = val + 2 * Math.PI;
+	double theVal = val;
+    while (theVal > 2 * Math.PI)
+      theVal = theVal - 2 * Math.PI;
+    while (theVal < 0)
+      theVal = theVal + 2 * Math.PI;
 
-    return val;
+    return theVal;
   }
   
 	/** convert the range to the supplied units

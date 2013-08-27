@@ -655,10 +655,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 * @return a panel containing our editor
 	 */
 	private Object createCustomEditor(final Object op, final PropertiesPanel thePanel,
-			Object ourCustomEditorInstance)
+			final Object ourCustomEditorInstance)
 	{
 		SwingCustomEditor p = null;
 		JPanel jp = null;
+		Object ourCustomEditor = ourCustomEditorInstance;
 
 		if (op instanceof SwingCustomEditor)
 		{
@@ -668,7 +669,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 			p.setObject(super._theData, _theChart, _toolParent, thePanel);
 
-			ourCustomEditorInstance = op;
+			ourCustomEditor = op;
 		}
 		else
 		{
@@ -682,29 +683,29 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				_main.add("North", jp);
 				ap.setObject(super._theData, _theChart, _theParent);
 
-				ourCustomEditorInstance = op;
+				ourCustomEditor = op;
 			}
 		}
 
 		// see if this custom editor wants to know about the chart
-		if (ourCustomEditorInstance instanceof PlainPropertyEditor.EditorUsesChart)
+		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesChart)
 		{
-			final PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) ourCustomEditorInstance;
+			final PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) ourCustomEditor;
 			eu.setChart(super._theChart);
 		}
 		// see if this custom editor wants to know about the property panel
-		if (ourCustomEditorInstance instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
+		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
 		{
-			final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) ourCustomEditorInstance;
+			final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) ourCustomEditor;
 			eu.setPanel(super._thePanel);
 		}
 		// see if this custom editor wants to know about the tool parnet
-		if (ourCustomEditorInstance instanceof PlainPropertyEditor.EditorUsesToolParent)
+		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesToolParent)
 		{
-			final PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) ourCustomEditorInstance;
+			final PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) ourCustomEditor;
 			eu.setParent(super._toolParent);
 		}
-		return ourCustomEditorInstance;
+		return ourCustomEditor;
 	}
 
 	public void setNames(final String apply, final String close, final String reset)

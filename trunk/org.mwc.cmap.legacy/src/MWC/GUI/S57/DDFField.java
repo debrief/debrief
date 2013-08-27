@@ -297,19 +297,20 @@ public class DDFField {
      *         application.
      */
     public byte[] getSubfieldData(final DDFSubfieldDefinition poSFDefn,
-                                  final MutableInt pnMaxBytes, int iSubfieldIndex) {
+                                  final MutableInt pnMaxBytes, final int iSubfieldIndex) {
         int iOffset = 0;
+        int iSubfieldIdx = iSubfieldIndex;
 
         if (poSFDefn == null)
             return null;
 
-        if (iSubfieldIndex > 0 && poDefn.getFixedWidth() > 0) {
-            iOffset = poDefn.getFixedWidth() * iSubfieldIndex;
-            iSubfieldIndex = 0;
+        if (iSubfieldIdx > 0 && poDefn.getFixedWidth() > 0) {
+            iOffset = poDefn.getFixedWidth() * iSubfieldIdx;
+            iSubfieldIdx = 0;
         }
 
         final MutableInt nBytesConsumed = new MutableInt(0);
-        while (iSubfieldIndex >= 0) {
+        while (iSubfieldIdx >= 0) {
             for (int iSF = 0; iSF < poDefn.getSubfieldCount(); iSF++) {
                 final DDFSubfieldDefinition poThisSFDefn = poDefn.getSubfieldDefn(iSF);
 
@@ -320,7 +321,7 @@ public class DDFField {
                         0,
                         subPachData.length);
 
-                if (poThisSFDefn == poSFDefn && iSubfieldIndex == 0) {
+                if (poThisSFDefn == poSFDefn && iSubfieldIdx == 0) {
 
                     if (pnMaxBytes != null) {
                         pnMaxBytes.value = pachData.length - iOffset;
@@ -336,7 +337,7 @@ public class DDFField {
                 iOffset += nBytesConsumed.value;
             }
 
-            iSubfieldIndex--;
+            iSubfieldIdx--;
         }
 
         // We didn't find our target subfield or instance!

@@ -69,16 +69,17 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
   }
 
 
-  public  static WorldDistance extractWorldDistance(Element topL, final String name)
+  public  static WorldDistance extractWorldDistance(final Element topL, final String name)
   {
+	Element theTopL = topL;
     WorldDistance myDist = null;
-    final NodeList list = topL.getElementsByTagName(name);
+    final NodeList list = theTopL.getElementsByTagName(name);
     if (list.getLength() > 0)
     {
-      topL = (Element) list.item(0);
-      final String unitsVal = topL.getAttribute(UNITS);
+      theTopL = (Element) list.item(0);
+      final String unitsVal = theTopL.getAttribute(UNITS);
       final int units = WorldDistance.getUnitIndexFor(unitsVal);
-      final double value = Integer.parseInt(topL.getAttribute(VALUE));
+      final double value = Integer.parseInt(theTopL.getAttribute(VALUE));
 
       myDist = new WorldDistance(value, units);
     }

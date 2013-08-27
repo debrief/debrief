@@ -52,13 +52,13 @@ public class DebriefFormatLocation implements PlainFormatLocation
     public double sec;
     public char hem;
 
-    public brokenDown(double val, final boolean isLat)
+    public brokenDown(final double val, final boolean isLat)
     {
       hem = doHem(val, isLat);
-      val = Math.abs(val);
-      deg = (int) (val);
-      min = (int) ((val - deg) * 60.0);
-      sec = ((val - deg) - ((double) min / 60.0)) * 3600;
+      final double theVal = Math.abs(val);
+      deg = (int) (theVal);
+      min = (int) ((theVal - deg) * 60.0);
+      sec = ((theVal - deg) - ((double) min / 60.0)) * 3600;
       
       // just catch rounding problem
       if(sec > 59.99999)

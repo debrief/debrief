@@ -256,28 +256,29 @@ public class TestENC2
 	}
 
 
-	public static void main(String[] argv)
+	public static void main(final String[] argv)
 	{
+		String[] args = argv.clone();
 
 		Debug.init();
 
 		String pszFilename = null;
 		boolean bFSPTHack = false;
 
-		if (argv.length == 0)
+		if (args.length == 0)
 		{
-			argv = new String[] { "E://dev/s57/AU411141.000" };
+			args = new String[] { "E://dev/s57/AU411141.000" };
 		}
 
-		for (int iArg = 0; iArg < argv.length; iArg++)
+		for (int iArg = 0; iArg < args.length; iArg++)
 		{
-			if (argv[iArg].equals("-fspt_repeating"))
+			if (args[iArg].equals("-fspt_repeating"))
 			{
 				bFSPTHack = true;
 			}
 			else
 			{
-				pszFilename = argv[iArg];
+				pszFilename = args[iArg];
 			}
 		}
 

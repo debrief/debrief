@@ -636,9 +636,9 @@ public class SnailPainter extends TotePainter
 	}
 
 	public final void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-			MWC.GUI.CanvasType canvas)
+			final MWC.GUI.CanvasType canvas)
 	{
-
+		
 		// check if we have any data
 		if (_theTote.getPrimary() == null)
 			return;
@@ -653,10 +653,11 @@ public class SnailPainter extends TotePainter
 		_areaCovered = null;
 
 		// prepare the chart
-		if (canvas == null)
-			canvas = _theChart.getCanvas();
+		MWC.GUI.CanvasType theCanvas = canvas;
+		if (theCanvas == null)
+			theCanvas = _theChart.getCanvas();
 
-		final Graphics2D dest = (Graphics2D) canvas.getGraphicsTemp();
+		final Graphics2D dest = (Graphics2D) theCanvas.getGraphicsTemp();
 
 		// just drop out if we can't create any graphics though
 		if (dest == null)
@@ -674,13 +675,13 @@ public class SnailPainter extends TotePainter
 			while (iter.hasMoreElements())
 			{
 				final Plottable p = (Plottable) iter.nextElement();
-				p.paint(new MWC.GUI.Canvas.CanvasAdaptor(canvas.getProjection(), dest));
+				p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(), dest));
 			}
 		}
 
-		dest.setXORMode(canvas.getBackgroundColor());
+		dest.setXORMode(theCanvas.getBackgroundColor());
 
-		final java.awt.Color backColor = canvas.getBackgroundColor();
+		final java.awt.Color backColor = theCanvas.getBackgroundColor();
 
 		// get the primary track
 		final WatchableList _thePrimary = _theTote.getPrimary();
@@ -713,7 +714,7 @@ public class SnailPainter extends TotePainter
 					final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter = getCurrentPrimaryHighlighter();
 					if (thisHighlighter.getName().equals("Range Rings"))
 					{
-						thisHighlighter.highlightIt(canvas.getProjection(), dest,
+						thisHighlighter.highlightIt(theCanvas.getProjection(), dest,
 								_theTote.getPrimary(), oldPrimary, true);
 					}
 				}
@@ -737,7 +738,7 @@ public class SnailPainter extends TotePainter
 					// ok, clear the nearest items
 					final WatchableList list = (WatchableList) _oldWatchables
 							.get(thisOne);
-					highlightIt(canvas.getProjection(), dest, list, thisOne, _lastDTG,
+					highlightIt(theCanvas.getProjection(), dest, list, thisOne, _lastDTG,
 							backColor);
 				}
 			}
@@ -773,7 +774,7 @@ public class SnailPainter extends TotePainter
 			if (thisHighlighter.getName().equals("Range Rings"))
 			{
 
-				thisHighlighter.highlightIt(canvas.getProjection(), dest,
+				thisHighlighter.highlightIt(theCanvas.getProjection(), dest,
 						_theTote.getPrimary(), newPrimary, true);
 			}
 		}
@@ -799,7 +800,7 @@ public class SnailPainter extends TotePainter
 			if (watch != null)
 			{
 				// plot it
-				highlightIt(canvas.getProjection(), dest, list, watch, newDTG,
+				highlightIt(theCanvas.getProjection(), dest, list, watch, newDTG,
 						backColor);
 			}
 		}
@@ -827,7 +828,7 @@ public class SnailPainter extends TotePainter
 
 				// see if we are trying to plot in relative mode - in which
 				// case we need a full repaint
-				if (canvas.getProjection().getNonStandardPlotting())
+				if (theCanvas.getProjection().getNonStandardPlotting())
 				{
 					_theChart.update();
 				}

@@ -374,14 +374,15 @@ public class DDFRecord implements DDFConstants {
      *         an internal object, and should not be freed. It remains
      *         valid until the next record read.
      */
-    public DDFField findField(final String pszName, int iFieldIndex) {
+    public DDFField findField(final String pszName, final int iFieldIndex) {
+    	int index = iFieldIndex;
         for (final Iterator<DDFField> it = paoFields.iterator(); it.hasNext();) {
             final DDFField ddff = (DDFField) it.next();
             if (pszName.equalsIgnoreCase(ddff.getFieldDefn().getName())) {
-                if (iFieldIndex == 0) {
+                if (index == 0) {
                     return ddff;
                 } else {
-                    iFieldIndex--;
+                    index--;
                 }
             }
         }

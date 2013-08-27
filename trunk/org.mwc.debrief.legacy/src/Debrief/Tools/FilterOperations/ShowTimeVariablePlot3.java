@@ -1036,7 +1036,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	 *          the colour of this data point
 	 * @param thisSeries
 	 *          the data series we add our new point(s) to
-	 * @param connectToPrevious
+	 * @param connectToPrev
 	 *          whether the next data point should connect to these
 	 * @param theAdder
 	 * @param clipMax
@@ -1045,9 +1045,10 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	private static boolean insertWrappingPoints(final toteCalculation theCalculation,
 			final double lastSecondaryValue, final double thisVal, final HiResDate lastTime,
 			final HiResDate currentTime, final Color thisColor, final Series thisSeries,
-			boolean connectToPrevious, final ColouredDataItem.OffsetProvider provider,
+			final boolean connectToPrevious, final ColouredDataItem.OffsetProvider provider,
 			final VersatileSeriesAdder theAdder, final double clipMax)
 	{
+		boolean connectToPrev = connectToPrevious;
 		// is this the first point?
 		if ((!Double.isNaN(lastSecondaryValue)))
 		{
@@ -1146,7 +1147,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 					// right, we're about to cross zero degrees, don't connect
 					// to
 					// the next
-					connectToPrevious = true;
+					connectToPrev = true;
 
 				}
 				catch (final Exception e)
@@ -1158,7 +1159,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 			}
 		}
-		return connectToPrevious;
+		return connectToPrev;
 	}
 
 	/**
@@ -1169,50 +1170,52 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	 *          the time of the previous course value
 	 * @param current_time
 	 *          the time of the current course value
-	 * @param lastCourse
+	 * @param theLastCourse
 	 *          the last course value
-	 * @param currentCourse
+	 * @param theCurrentCourse
 	 *          the current course value
 	 * @param clipMax
 	 * @return the time at which the course would pass through zero
 	 */
 	private static final long calcZeroCrossingTime(final long last_time,
-			final long current_time, double lastCourse, double currentCourse,
-			final double clipMax)
+			final long current_time, final double lastCourse, 
+			final double currentCourse, final double clipMax)
 	{
 		long res = 0;
 		double delta, range;
+		double theLastCourse = lastCourse;
+		double theCurrentCourse = currentCourse;
 
 		if (clipMax == 180d)
 		{
 			// put the courses into the correct "frame"
-			if (lastCourse < 0)
-				lastCourse += 360;
+			if (theLastCourse < 0)
+				theLastCourse += 360;
 
-			if (currentCourse < 0)
-				currentCourse += 360;
+			if (theCurrentCourse < 0)
+				theCurrentCourse += 360;
 
 			// find the total course change
-			range = currentCourse - lastCourse;
+			range = theCurrentCourse - theLastCourse;
 
 			// how far through this is zero?
-			delta = 180 - lastCourse;
+			delta = 180 - theLastCourse;
 
 		}
 		else
 		{
 			// put the courses into the correct "frame"
-			if (lastCourse > 180)
-				lastCourse -= 360;
+			if (theLastCourse > 180)
+				theLastCourse -= 360;
 
-			if (currentCourse > 180)
-				currentCourse -= 360;
+			if (theCurrentCourse > 180)
+				theCurrentCourse -= 360;
 
 			// find the total course change
-			range = currentCourse - lastCourse;
+			range = theCurrentCourse - theLastCourse;
 
 			// how far through this is zero?
-			delta = 0 - lastCourse;
+			delta = 0 - theLastCourse;
 
 		}
 
@@ -1302,7 +1305,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	 *          the point on the secondary track
 	 * @param currentTime
 	 *          the current time
-	 * @param connectToPrevious
+	 * @param connectToPrev
 	 *          whether to connect to the previous point
 	 * @param thisColor
 	 *          the current colour
@@ -1313,10 +1316,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	 */
 	private static boolean createDataPoint(final toteCalculation theCalculation,
 			final Watchable thisPrimary, final Watchable thisSecondary,
-			final HiResDate currentTime, boolean connectToPrevious, final Color thisColor,
+			final HiResDate currentTime, final boolean connectToPrevious, final Color thisColor,
 			final Series thisSeries, final ColouredDataItem.OffsetProvider provider,
 			final VersatileSeriesAdder theAdder)
 	{
+		boolean connectToPrev = connectToPrevious;
 		// and perform the calculation
 		final double data = theCalculation.calculate(thisSecondary, thisPrimary,
 				currentTime);
@@ -1327,21 +1331,21 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 		{
 			// remember that the next point doesn't connect to it's previous one
 			// since we want to show the gap represented by this datum
-			connectToPrevious = false;
+			connectToPrev = false;
 		}
 		else
 		{
 			// yes, we have data - create the data point
-			theAdder.add(thisSeries, currentTime, data, thisColor, connectToPrevious,
+			theAdder.add(thisSeries, currentTime, data, thisColor, connectToPrev,
 					provider);
 
 			// right, we've displayed a valid point, allow the next one to
 			// connect to
 			// this
-			connectToPrevious = true;
+			connectToPrev = true;
 		}
 
-		return connectToPrevious;
+		return connectToPrev;
 	}
 
 	public final String getLabel()

@@ -417,16 +417,18 @@ public final class ImportFix implements PlainLineImporter
 	 *          the line to append the data to
 	 * @return the extended line
 	 */
-	public static String exportTrackName(String trackName, String line)
+	public static String exportTrackName(final String trackName, final String line)
 	{
+		String theTrackName = trackName;
+		String theLine = line;
 		// right, we may need to quote the track name
-		if (trackName.indexOf(" ") >= 0)
+		if (theTrackName.indexOf(" ") >= 0)
 		{
-			trackName = "\"" + trackName + "\"";
+			theTrackName = "\"" + theTrackName + "\"";
 		}
 
-		line += " " + trackName;
-		return line;
+		theLine += " " + theTrackName;
+		return theLine;
 	}
 
 	// ////////////////////////////////////////////////

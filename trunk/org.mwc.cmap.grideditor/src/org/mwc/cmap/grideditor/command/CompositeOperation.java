@@ -87,15 +87,16 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 	}
 
 	@Override
-	public IStatus undo(IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+	public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 		final List<IStatus> result = new java.util.ArrayList<IStatus>(size());
-
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
+		IProgressMonitor theMonitor = monitor;
+		
+		if (theMonitor == null) {
+			theMonitor = new NullProgressMonitor();
 		}
 
 		ExecutionException caughtException = null;
-		monitor.beginTask(getLabel(), size());
+		theMonitor.beginTask(getLabel(), size());
 		try {
 
 			for (final ListIterator<IUndoableOperation> iter = myOperations.listIterator(size()); iter.hasPrevious();) {
@@ -103,7 +104,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 				IStatus status = null;
 
 				try {
-					status = prev.undo(new SubProgressMonitor(monitor, 1), info);
+					status = prev.undo(new SubProgressMonitor(theMonitor, 1), info);
 				} catch (final ExecutionException e) {
 					caughtException = e;
 				}
@@ -114,7 +115,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 				final boolean childFailed = (caughtException != null) || status.matches(IStatus.ERROR | IStatus.CANCEL);
 				// monitor cancellation doesn't matter if this was the first child
-				if (childFailed || (monitor.isCanceled() && iter.hasPrevious())) {
+				if (childFailed || (theMonitor.isCanceled() && iter.hasPrevious())) {
 					if (childFailed) {
 						// back-track over the operation that failed, assuming that it
 						//    already rolled itself back by whatever means available
@@ -156,7 +157,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 				}
 			}
 		} finally {
-			monitor.done();
+			theMonitor.done();
 		}
 		return aggregateStatuses(result);
 	}
@@ -174,15 +175,16 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 		}
 	}
 
-	private IStatus doExecute(IProgressMonitor monitor, final IAdaptable info, final boolean firstRunNotRedo) throws ExecutionException {
+	private IStatus doExecute(final IProgressMonitor monitor, final IAdaptable info, final boolean firstRunNotRedo) throws ExecutionException {
 		final List<IStatus> result = new java.util.ArrayList<IStatus>(size());
-
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
+		IProgressMonitor theMonitor = monitor;
+		
+		if (theMonitor == null) {
+			theMonitor = new NullProgressMonitor();
 		}
 
 		ExecutionException caughtException = null;
-		monitor.beginTask(getLabel(), size());
+		theMonitor.beginTask(getLabel(), size());
 		try {
 			for (final ListIterator<IUndoableOperation> iter = myOperations.listIterator(); iter.hasNext();) {
 				final IUndoableOperation next = iter.next();
@@ -190,9 +192,9 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 				try {
 					if (firstRunNotRedo) {
-						status = next.execute(new SubProgressMonitor(monitor, 1), info);
+						status = next.execute(new SubProgressMonitor(theMonitor, 1), info);
 					} else {
-						status = next.redo(new SubProgressMonitor(monitor, 1), info);
+						status = next.redo(new SubProgressMonitor(theMonitor, 1), info);
 					}
 				} catch (final ExecutionException e) {
 					caughtException = e;
@@ -206,7 +208,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 				
 				final boolean childFailed = (caughtException != null) || statusMatchVal;
 				// monitor cancellation doesn't matter if this was the last child
-				if (childFailed || (monitor.isCanceled() && iter.hasNext())) {
+				if (childFailed || (theMonitor.isCanceled() && iter.hasNext())) {
 					if (childFailed) {
 						// back-track over the operation that failed, assuming that it
 						//    already rolled itself back by whatever means available
@@ -251,7 +253,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 				}
 			}
 		} finally {
-			monitor.done();
+			theMonitor.done();
 		}
 		return aggregateStatuses(result);
 	}

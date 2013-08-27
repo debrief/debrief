@@ -107,10 +107,11 @@ final class ImportPolygon implements PlainLineImporter
 	private final String _myType = ";POLY:";
 
 	@Override
-	public final Object readThisLine(String theLine)
+	public final Object readThisLine(final String theLine)
 	{		
+		String line = theLine;
 		// get a stream from the string
-		StringTokenizer st = new StringTokenizer(theLine);
+		StringTokenizer st = new StringTokenizer(line);
 
 		// declare local variables
 		double latDeg, longDeg, latMin, longMin;
@@ -133,8 +134,8 @@ final class ImportPolygon implements PlainLineImporter
 			startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 		} catch (final NumberFormatException e) {
 			// There is no start date specified
-			theLine = theLine.substring(theLine.indexOf(dateToken));
-			st = new StringTokenizer(theLine);
+			line = line.substring(line.indexOf(dateToken));
+			st = new StringTokenizer(line);
 		}
 		
 		//read end date
@@ -144,8 +145,8 @@ final class ImportPolygon implements PlainLineImporter
 			endDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 		} catch (final NumberFormatException e) {
 			// There is no end date specified
-			theLine = theLine.substring(theLine.indexOf(dateToken));
-			st = new StringTokenizer(theLine);
+			line = line.substring(line.indexOf(dateToken));
+			st = new StringTokenizer(line);
 		}
 		
 		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();

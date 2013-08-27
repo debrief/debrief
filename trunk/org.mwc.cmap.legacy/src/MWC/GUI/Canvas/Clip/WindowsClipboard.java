@@ -22,7 +22,7 @@ import MWC.GenericData.WorldLocation;
  */
 public class WindowsClipboard implements CanvasType
 {
-
+	//CS-IGNORE:ON FINAL_PARAMETERS
 	public native boolean drawImage(Image img, int x, int y, int width,
 			int height, ImageObserver observer);
 
@@ -65,6 +65,7 @@ public class WindowsClipboard implements CanvasType
 	public native void setLineStyle(int style);
 
 	public native void setLineWidth(float width);
+	//CS-IGNORE:OFF FINAL_PARAMETERS
 
 	public native float getLineWidth();
 

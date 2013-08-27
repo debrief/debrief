@@ -229,10 +229,11 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	}
 
 	@Override
-	public void zoom(double scaleVal)
+	public void zoom(final double scaleVal)
 	{
-		if (scaleVal == 0)
-			scaleVal = 1;
+		double theScaleVal = scaleVal;
+		if (theScaleVal == 0)
+			theScaleVal = 1;
 		final Dimension paneArea = super.getScreenArea();
 		final WorldArea dataArea = super.getDataArea();
 		if (dataArea != null)
@@ -251,7 +252,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 				double scale = _view.getWorldToScreen().getScaleX();
 				scale = Math.min(1000, scale);
-				final double newScale = scale / scaleVal;
+				final double newScale = scale / theScaleVal;
 
 				final DirectPosition2D corner = new DirectPosition2D(mapM.getX() - 0.5d
 						* paneArea.width / newScale, mapM.getY() + 0.5d * paneArea.height

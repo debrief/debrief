@@ -311,10 +311,9 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     return null;
   }
 
-  private static String tidyUp(String txt)
+  private static String tidyUp(final String txt)
   {
-  	txt = txt.replace('\n', ' ');
-  	return txt;
+  	return txt.replace('\n', ' ');
   }
   
   public final String getLabel()

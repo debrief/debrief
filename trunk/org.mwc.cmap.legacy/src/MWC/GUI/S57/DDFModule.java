@@ -465,16 +465,17 @@ public class DDFModule implements DDFConstants {
      *        should return to the first data record. Otherwise it is
      *        an absolute byte offset in the file.
      */
-    public void rewind(long nOffset) throws IOException {
-        if (nOffset == -1) {
-            nOffset = nFirstRecordOffset;
+    public void rewind(final long nOffset) throws IOException {
+    	long offset = nOffset;
+        if (offset == -1) {
+            offset = nFirstRecordOffset;
         }
 
         if (fpDDF != null) {
-            fpDDF.seek(nOffset);
+            fpDDF.seek(offset);
 
             // Don't know what this has to do with anything...
-            if (nOffset == nFirstRecordOffset && poRecord != null) {
+            if (offset == nFirstRecordOffset && poRecord != null) {
                 poRecord.clear();
             }
         }

@@ -766,12 +766,12 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return A point within the rectangle.
 	 */
-	private org.eclipse.swt.graphics.Point getPointInRectangle(int x, int y,
+	private org.eclipse.swt.graphics.Point getPointInRectangle(final int x, final int y,
 			final Rectangle area)
-	{
-		x = Math.max(area.x, Math.min(x, area.x + area.width));
-		y = Math.max(area.y, Math.min(y, area.y + area.height));
-		return new org.eclipse.swt.graphics.Point(x, y);
+	{		
+		final int x1 = Math.max(area.x, Math.min(x, area.x + area.width));
+		final int y1 = Math.max(area.y, Math.min(y, area.y + area.height));
+		return new org.eclipse.swt.graphics.Point(x1, y1);
 	}
 
 	/**

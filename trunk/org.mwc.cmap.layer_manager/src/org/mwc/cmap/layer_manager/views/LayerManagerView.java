@@ -400,22 +400,24 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setInput(getViewSite());
 		_treeViewer.setComparer(new IElementComparer()
 		{
-			public boolean equals(Object a, Object b)
+			public boolean equals(final Object a, final Object b)
 			{
+				Object obj1 = a;
+				Object obj2 = b;
 				// do our special case for comparing plottables
-				if (a instanceof EditableWrapper)
+				if (obj1 instanceof EditableWrapper)
 				{
-					final EditableWrapper pw = (EditableWrapper) a;
-					a = pw.getEditable();
+					final EditableWrapper pw = (EditableWrapper) obj1;
+					obj1 = pw.getEditable();
 				}
 
-				if (b instanceof EditableWrapper)
+				if (obj2 instanceof EditableWrapper)
 				{
-					final EditableWrapper pw = (EditableWrapper) b;
-					b = pw.getEditable();
+					final EditableWrapper pw = (EditableWrapper) obj2;
+					obj2 = pw.getEditable();
 				}
 
-				return a == b;
+				return obj1 == obj2;
 			}
 
 			public int hashCode(final Object element)

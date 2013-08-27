@@ -756,9 +756,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	}
 
 	private void decimateRelative(final HiResDate theVal, final TrackWrapper parentTrack,
-			long startTime, final Vector<FixWrapper> newItems)
+			final long startTime, final Vector<FixWrapper> newItems)
 	{
 		long tNow = 0;
+		long theStartTime = startTime; 
 
 		// get the time interval
 		final long interval = theVal.getMicros();
@@ -769,7 +770,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		// set the start time to be the later of our start time and the provided
 		// time
-		startTime = Math.max(startTime, myStart);
+		theStartTime = Math.max(theStartTime, myStart);
 
 		if (this instanceof CoreTMASegment)
 		{
@@ -783,7 +784,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			final WorldLocation myStartLocation = new WorldLocation(tma.getTrackStart());
 
 			// right - sort out what time period we're working through
-			for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+			for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow += theVal
 					.getMicros())
 			{
 				final Fix theFix = new Fix(new HiResDate(0, tNow), new WorldLocation(
@@ -804,7 +805,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			{
 				final FixWrapper myStarter = (FixWrapper) tma.first();
 				final FixWrapper myEnder = (FixWrapper) tma.last();
-				final HiResDate startDTG = new HiResDate(0, startTime);
+				final HiResDate startDTG = new HiResDate(0, theStartTime);
 				final FixWrapper newStarter = FixWrapper.interpolateFix(myStarter, myEnder,
 						startDTG);
 				final WorldLocation newStartLoc = newStarter.getLocation();
@@ -839,7 +840,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			tNow = 0;
 
 			// right - sort out what time period we're working through
-			for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+			for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow += theVal
 					.getMicros())
 			{
 
@@ -1195,15 +1196,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	/**
 	 * move the whole of the track be the provided offset
 	 */
-	public final void shiftTrack(Enumeration<Editable> theEnum,
+	public final void shiftTrack(final Enumeration<Editable> theEnum,
 			final WorldVector offset)
 	{
-		if (theEnum == null)
-			theEnum = elements();
+		Enumeration<Editable> enumA = theEnum;
+		if (enumA == null)
+			enumA = elements();
 
-		while (theEnum.hasMoreElements())
+		while (enumA.hasMoreElements())
 		{
-			final Object thisO = theEnum.nextElement();
+			final Object thisO = enumA.nextElement();
 			if (thisO instanceof FixWrapper)
 			{
 				final FixWrapper fw = (FixWrapper) thisO;
@@ -1222,14 +1224,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	protected void sortOutDate(HiResDate startDTG)
+	protected void sortOutDate(final HiResDate startDTG)
 	{
+		HiResDate theStartDTG = startDTG;
 		if (getData().size() > 0)
 		{
-			if (startDTG == null)
-				startDTG = startDTG();
+			if (theStartDTG == null)
+				theStartDTG = startDTG();
 
-			setName(FormatRNDateTime.toString(startDTG.getDate().getTime()));
+			setName(FormatRNDateTime.toString(theStartDTG.getDate().getTime()));
 		}
 	}
 

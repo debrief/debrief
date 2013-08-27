@@ -281,14 +281,15 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		return res;
 	}
 
-	public void setValue(Object value)
+	public void setValue(final Object value)
 	{
+		Object theValue = value;
 		if (_myHelper != null)
 		{
-			value = _myHelper.translateFromSWT(value);
+			theValue = _myHelper.translateFromSWT(theValue);
 		}
 
-		_theProp.getDataObject().setValue(_theProp.getFieldName(), value);
+		_theProp.getDataObject().setValue(_theProp.getFieldName(), theValue);
 		
 	}
 

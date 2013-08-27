@@ -731,13 +731,14 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * @return
 	 */
 	public static Action createOpenHelpAction(final String target,
-			String description, final IViewPart host)
+			final String description, final IViewPart host)
 	{
 		// sort out the description
-		if (description == null)
-			description = "Help";
+		String desc = description;
+		if (desc == null)
+			desc = "Help";
 
-		final Action res = new Action(description, Action.AS_PUSH_BUTTON)
+		final Action res = new Action(desc, Action.AS_PUSH_BUTTON)
 		{
 			public void run()
 			{

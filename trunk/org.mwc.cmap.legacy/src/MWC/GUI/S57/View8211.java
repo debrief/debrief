@@ -221,27 +221,28 @@ public class View8211
 		return nBytesConsumed.value;
 	}
 
-	public static void main(String[] argv)
+	public static void main(final String[] argv)
 	{
+		String[] args = argv.clone();
 
-		if (argv.length == 0)
+		if (args.length == 0)
 		{
-			argv = new String[] { "e:\\dev\\s57\\AU411141.000" };
+			args = new String[] { "e:\\dev\\s57\\AU411141.000" };
 		}
 		Debug.init();
 
 		String pszFilename = null;
 		boolean bFSPTHack = false;
 
-		for (int iArg = 0; iArg < argv.length; iArg++)
+		for (int iArg = 0; iArg < args.length; iArg++)
 		{
-			if (argv[iArg].equals("-fspt_repeating"))
+			if (args[iArg].equals("-fspt_repeating"))
 			{
 				bFSPTHack = true;
 			}
 			else
 			{
-				pszFilename = argv[iArg];
+				pszFilename = args[iArg];
 			}
 		}
 

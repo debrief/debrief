@@ -118,18 +118,18 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 	private static java.text.NumberFormat _doubleFormat =
 							new java.text.DecimalFormat("0.000");
 
-	private String convertDegs(double val)
+	private String convertDegs(final double val)
 	{
 		// scale
-		val = val * _xy_scale;
-		return _doubleFormat.format(val);
+		final double value = val * _xy_scale;
+		return _doubleFormat.format(value);
 	}
 
-	private String convertDepth(double metres)
+	private String convertDepth(final double metres)
 	{
-		metres = -metres * _depth_scale;
+		final double mtrs = -metres * _depth_scale;
 
-		return _doubleFormat.format(metres);   // convertDegs(metres);
+		return _doubleFormat.format(mtrs);   // convertDegs(metres);
 	}
 
   /////////////////////////////////////////////////////////////

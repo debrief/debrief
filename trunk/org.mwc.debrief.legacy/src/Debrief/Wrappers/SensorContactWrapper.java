@@ -366,10 +366,11 @@ public final class SensorContactWrapper extends
 	 * return the coordinates for the start of the line
 	 */
 	public final WorldLocation getCalculatedOrigin(
-			MWC.GenericData.WatchableList parent)
+			final MWC.GenericData.WatchableList parent)
 	{
-		if (parent == null)
-			parent = _mySensor.getHost();
+		MWC.GenericData.WatchableList theParent = parent;
+		if (theParent == null)
+			theParent = _mySensor.getHost();
 
 		if ((_calculatedOrigin == null))
 		{
@@ -380,11 +381,11 @@ public final class SensorContactWrapper extends
 			}
 			else
 			{
-				if (parent != null)
+				if (theParent != null)
 				{
 
 					// better calculate it ourselves then
-					final TrackWrapper parentTrack = (TrackWrapper) parent;
+					final TrackWrapper parentTrack = (TrackWrapper) theParent;
 
 					// get the origin
 					final FixWrapper backtrack = parentTrack.getBacktraceTo(_DTG,

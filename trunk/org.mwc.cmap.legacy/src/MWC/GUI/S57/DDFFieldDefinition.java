@@ -257,14 +257,15 @@ public class DDFFieldDefinition implements DDFConstants {
      * subfield definitions.
      */
     @SuppressWarnings("rawtypes")
-		protected boolean buildSubfieldDefns(String pszSublist) {
+		protected boolean buildSubfieldDefns(final String pszSublist) {
+    	String thePszSublist = pszSublist;
 
-        if (pszSublist.charAt(0) == '*') {
+        if (thePszSublist.charAt(0) == '*') {
             bRepeatingSubfields = true;
-            pszSublist = pszSublist.substring(1);
+            thePszSublist = thePszSublist.substring(1);
         }
 
-        final Vector papszSubfieldNames = PropUtils.parseMarkers(pszSublist, "!");
+        final Vector papszSubfieldNames = PropUtils.parseMarkers(thePszSublist, "!");
 
         paoSubfieldDefns = new Vector<DDFSubfieldDefinition>();
 

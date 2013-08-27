@@ -59,7 +59,7 @@ final public class PlotHandler extends
 	}
 
 	public static org.w3c.dom.Element exportPlot(final PlotEditor thePlot,
-			final org.w3c.dom.Document doc, String version)
+			final org.w3c.dom.Document doc, final String version)
 	{
 		final org.w3c.dom.Element plt = doc.createElement("plot");
 		plt.setAttribute("Created", new java.util.Date().toString());
@@ -69,9 +69,10 @@ final public class PlotHandler extends
 		{
 			plt.setAttribute("PlotId", mgr.getId());
 		}
-		if (version == null)
-			version = Debrief.GUI.VersionInfo.getVersion();
-		final String details = "Saved with Debrief version dated " + version;
+		String theVersion = version;
+		if (theVersion == null)
+			theVersion = Debrief.GUI.VersionInfo.getVersion();
+		final String details = "Saved with Debrief version dated " + theVersion;
 		DetailsHandler.exportPlot(details, plt, doc);
 		SessionHandler.exportThis(thePlot, plt, doc);
 		

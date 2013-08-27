@@ -193,9 +193,9 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	}
 
 	@Override
-	public void rotate(double brg, final WorldLocation origin)
+	public void rotate(final double brg, final WorldLocation origin)
 	{
-		brg = -brg;
+		final double theBrg = -brg;
 
 		// right - we just rotate about the ends, and we use different
 		// processing depending on which end is being shifted.
@@ -204,7 +204,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our course
-			final double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(brg);
+			final double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(theBrg);
 			final double newBrg = this.getCourse() + brgDegs;
 			// right, the start is the origin, so we just set our course to the
 			// bearing
@@ -216,7 +216,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			// and fix the bearing
 
 			// rotate the origin about the far end
-			final WorldLocation newStart = _origin.rotatePoint(origin, -brg);
+			final WorldLocation newStart = _origin.rotatePoint(origin, -theBrg);
 
 			// find out the offset from the origin
 			_origin = newStart;
@@ -337,11 +337,11 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	 *          origin of stretch, probably one end of the track
 	 */
 	@Override
-	public void stretch(double rngDegs, final WorldLocation origin)
+	public void stretch(final double rngDegs, final WorldLocation origin)
 	{
 		// make it always +ve, we'll just overwrite ourselves anyway
-		rngDegs = Math.abs(rngDegs);
-
+		final double rangDegs = Math.abs(rngDegs);
+		
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
 		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
@@ -359,7 +359,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			final WorldVector thisLeg = getTrackStart().subtract(origin);
 
 			// now change the distance
-			final WorldVector newLeg = new WorldVector(thisLeg.getBearing(), rngDegs,
+			final WorldVector newLeg = new WorldVector(thisLeg.getBearing(), rangDegs,
 					thisLeg.getDepth());
 
 			// calculate the new start point
@@ -374,7 +374,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		final double periodHours = periodMillis / 1000d / 60d / 60d;
 
 		// what's distance in minutes?
-		final double distMins = rngDegs * 60;
+		final double distMins = rangDegs * 60;
 
 		// how far must we go to sort this
 		final double spdKts = distMins / periodHours;

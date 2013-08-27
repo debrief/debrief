@@ -250,12 +250,12 @@ abstract class SliderRangeManagement
 
 	}
 
-	public HiResDate fromSliderUnits(final int value, long sliderResolution)
+	public HiResDate fromSliderUnits(final int value, final long sliderResolution)
 	{
 		long newValue = value;
 
 		// convert the resolution to micros
-		sliderResolution *= 1000;
+		//sliderResolution *= 1000;
 
 		// convert reading to real time units
 		newValue *= _timeScalar;

@@ -116,51 +116,58 @@ public class WorldLocation implements Serializable, Cloneable
 	 * go to 22 mins, 30 secs - using the mins fractional component and ignoring
 	 * the secs value.
 	 */
-	public WorldLocation(double latDegs, double latMin, double latSec, final char latHem, double longDegs, double longMin, double longSec,
-			final char longHem, final double theDepth)
+	public WorldLocation(final double latDegs, final double latMin, final double latSec, 
+			final char latHem, final double longDegs, final double longMin, 
+			final double longSec, final char longHem, final double theDepth)
 	{
+		double theLatDegs = latDegs;
+		double theLatMin = latMin;
+		double theLongDegs = longDegs;
+		double theLongMin = longMin;
+		double theLongSec = longSec;
+		double theLatSec = latSec;
 		// this constructor allows for decimal values of degs and mins,
 		// cascading them as appropriate
 
 		// just check if we've got decimal values for degs or minutes. If so,
 		// cascade them to other units
-		double dec = decimalComponentOf(latDegs);
+		double dec = decimalComponentOf(theLatDegs);
 		if (dec > 0)
 		{
-			latDegs -= dec;
-			latMin = dec * 60d;
-			latSec = 0;
+			theLatDegs -= dec;
+			theLatMin = dec * 60d;
+			theLatSec = 0;
 		}
 
-		dec = decimalComponentOf(latMin);
+		dec = decimalComponentOf(theLatMin);
 		if (dec > 0)
 		{
-			latMin -= dec;
-			latSec = dec * 60d;
+			theLatMin -= dec;
+			theLatSec = dec * 60d;
 		}
 
 		// Now for longitude:
 		//
 		// just check if we've got decimal values for degs or minutes. If so,
 		// cascade them to other units
-		dec = decimalComponentOf(longDegs);
+		dec = decimalComponentOf(theLongDegs);
 		if (dec > 0)
 		{
-			longDegs -= dec;
-			longMin = dec * 60d;
-			longSec = 0;
+			theLongDegs -= dec;
+			theLongMin = dec * 60d;
+			theLongSec = 0;
 		}
 
-		dec = decimalComponentOf(longMin);
+		dec = decimalComponentOf(theLongMin);
 		if (dec > 0)
 		{
-			longMin -= dec;
-			longSec = dec * 60d;
+			theLongMin -= dec;
+			theLongSec = dec * 60d;
 		}
 
 		// ok - do the store
-		_theLat = latDegs + latMin / 60 + latSec / (60 * 60);
-		_theLong = longDegs + longMin / 60 + longSec / (60 * 60);
+		_theLat = theLatDegs + theLatMin / 60 + theLatSec / (60 * 60);
+		_theLong = theLongDegs + theLongMin / 60 + theLongSec / (60 * 60);
 		_theDepth = theDepth;
 
 		// switch the deg vals if in -ve hemishere
@@ -265,7 +272,7 @@ public class WorldLocation implements Serializable, Cloneable
 	 *          the offset to add to this point
 	 * @return a new point
 	 */
-	final public WorldVector subtract(final WorldLocation other, WorldVector res)
+	final public WorldVector subtract(final WorldLocation other, final WorldVector res)
 	{
 		// check we have our model
 		if (_model == null)
@@ -273,9 +280,7 @@ public class WorldLocation implements Serializable, Cloneable
 			_model = new MWC.Algorithms.EarthModels.FlatEarth();
 		}
 
-		res = _model.subtract(other, this, res);
-
-		return res;
+		return  _model.subtract(other, this, res);
 	}
 
 	/**
