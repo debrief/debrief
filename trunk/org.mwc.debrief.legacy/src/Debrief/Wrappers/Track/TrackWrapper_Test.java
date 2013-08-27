@@ -619,21 +619,21 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		ts1.addFix(createFix(3000, 1, 0, 3d, 1, 0, 02d, 135, 12));
 		ts1.addFix(createFix(4000, 1, 0, 2d, 1, 0, 03d, 135, 12));
 
-		ts2.addFix(createFix(8000, 1, 0, 0d, 1, 0, 07d, 90, 12));
-		ts2.addFix(createFix(9000, 1, 0, 0d, 1, 0, 08d, 90, 12));
-		ts2.addFix(createFix(10000, 1, 0, 0d, 1, 0, 09d, 90, 12));
-		ts2.addFix(createFix(11000, 1, 0, 0d, 1, 0, 10d, 90, 12));
-		ts2.addFix(createFix(12000, 1, 0, 0d, 1, 0, 11d, 90, 12));
-		ts2.addFix(createFix(13000, 1, 0, 0d, 1, 0, 12d, 90, 12));
+		ts2.addFix(createFix(80000, 1, 0, 0d, 1, 0, 07d, 90, 12));
+		ts2.addFix(createFix(90000, 1, 0, 0d, 1, 0, 08d, 90, 12));
+		ts2.addFix(createFix(100000, 1, 0, 0d, 1, 0, 09d, 90, 12));
+		ts2.addFix(createFix(110000, 1, 0, 0d, 1, 0, 10d, 90, 12));
+		ts2.addFix(createFix(120000, 1, 0, 0d, 1, 0, 11d, 90, 12));
+		ts2.addFix(createFix(130000, 1, 0, 0d, 1, 0, 12d, 90, 12));
 
-		// try the function
-		@SuppressWarnings("unused")
-		final
-		TrackSegment infill = new TrackSegment(ts1, ts2);
+		// the test was broken after adding this line to the TrackSegment constructor:
+		// 458: tDelta = Math.max(tDelta, 10000);		
+		// tDelta is the time loop step
+		// Fixed the test: increased second track times.
+		final TrackSegment infill = new TrackSegment(ts1, ts2);
 
 		// check there are the correct number of items
-		// TODO: investigate this failing test
-//		assertEquals("wrong num entries", 3, infill.size());
+		assertEquals("wrong num entries", 7, infill.size());
 
 	}
 
