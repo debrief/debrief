@@ -481,11 +481,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 49, tw.numFixes());
-		// TODO: investigate these failing tests
-//		assertEquals("has all sensor cuts", 15, countCuts(tw.getSensors()
-//				.elements()));
-//		assertEquals("has all tma cuts", 29, countSolutions(tw.getSolutions()
-//				.elements()));
+		assertEquals("has all sensor cuts", 7, countCuts(tw.getSensors()
+				.elements()));
+		assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()
+				.elements()));
 
 		// GO FOR ULTIMATE DECIMATION
 		tw.setResampleDataAt(new HiResDate(4 * 60000));
@@ -493,11 +492,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 7, tw.numFixes());
-		// TODO: investigate these failing tests
-//		assertEquals("has all resampled sensor cuts", 3, countCuts(tw.getSensors()
-//				.elements()));
-//		assertEquals("has all tma cuts", 5, countSolutions(tw.getSolutions()
-//				.elements()));
+		assertEquals("has all resampled sensor cuts", 2, countCuts(tw.getSensors()
+				.elements()));
+		assertEquals("has all tma cuts", 3, countSolutions(tw.getSolutions()
+				.elements()));
 
 	}
 
