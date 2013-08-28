@@ -19,11 +19,11 @@ public class StretchFanOperation extends CoreDragOperation implements DraggableI
 {
 
 	final private Layers _layers;
-	private TrackWrapper _parent;
+	private final TrackWrapper _parent;
 	private Cursor _hotspotCursor;
 
-	public StretchFanOperation(TrackSegment segment, TrackWrapper parent,
-			Layers theLayers)
+	public StretchFanOperation(final TrackSegment segment, final TrackWrapper parent,
+			final Layers theLayers)
 	{
 		super(segment, "centre point");
 		_layers = theLayers;
@@ -32,12 +32,12 @@ public class StretchFanOperation extends CoreDragOperation implements DraggableI
 	}
 
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		// right, check that this is a segment that we can do business with.
 		if (_segment instanceof RelativeTMASegment)
 		{
-			RelativeTMASegment seg = (RelativeTMASegment) _segment;
+			final RelativeTMASegment seg = (RelativeTMASegment) _segment;
 
 			// tell it to do a fan stretch
 			seg.fanStretch(vector);

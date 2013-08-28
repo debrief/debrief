@@ -31,8 +31,8 @@ public class CoreTracker
 	// constructor
 	// ///////////////////////////////////////////////////
 
-	protected CoreTracker(String string, String duffString, String tooltip,
-			String prefsId)
+	protected CoreTracker(final String string, final String duffString, final String tooltip,
+			final String prefsId)
 	{
 		// first the status bar contribution
 		_myLine = new LineItem(string, duffString, tooltip, prefsId);
@@ -44,7 +44,7 @@ public class CoreTracker
 		forgetSettings(this);
 	}
 
-	public static void write(String txt)
+	public static void write(final String txt)
 	{
 		if (_singleton != null)
 		{
@@ -57,12 +57,12 @@ public class CoreTracker
 	 * teardown for this chart
 	 * 
 	 */
-	protected static void forgetSettings(CoreTracker tracker)
+	protected static void forgetSettings(final CoreTracker tracker)
 	{
 		if (tracker._myEditor != null)
 		{
 			// get the status manager for this editor
-			IStatusLineManager oldMgr = tracker._myEditor.getEditorSite()
+			final IStatusLineManager oldMgr = tracker._myEditor.getEditorSite()
 					.getActionBars().getStatusLineManager();
 
 			// try to remove our line item
@@ -77,14 +77,14 @@ public class CoreTracker
 	 * 
 	 * @param editor
 	 */
-	protected static void storeSettings(CoreTracker tracker, EditorPart editor)
+	protected static void storeSettings(final CoreTracker tracker, final EditorPart editor)
 	{
 		_singleton._myLine.reset();
 
 		tracker._myEditor = editor;
 
 		// get the status manager for this editor
-		IStatusLineManager oldMgr = tracker._myEditor.getEditorSite()
+		final IStatusLineManager oldMgr = tracker._myEditor.getEditorSite()
 				.getActionBars().getStatusLineManager();
 
 		// try to add our line item

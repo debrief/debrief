@@ -78,7 +78,7 @@ public class S57Layer implements Layer
 		setVisible(true);
 	}
 
-	protected void load(String name)
+	protected void load(final String name)
 	{
 		_myDatabase = new S57Database();
 		_myDatabase.loadDatabase(name, false);
@@ -88,7 +88,7 @@ public class S57Layer implements Layer
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	public void setVisible(boolean val)
+	public void setVisible(final boolean val)
 	{
 		_isOn = val;
 	}
@@ -98,7 +98,7 @@ public class S57Layer implements Layer
 		return _isOn;
 	}
 
-	public void paint(CanvasType g)
+	public void paint(final CanvasType g)
 	{
 
 		// check we are visible
@@ -133,17 +133,17 @@ public class S57Layer implements Layer
 		// g.setColor(Color.cyan);
 		// g.drawLine(222, 133, 244, 355);
 
-		Enumeration<Editable> theFeatures = elements();
+		final Enumeration<Editable> theFeatures = elements();
 		while (theFeatures.hasMoreElements())
 		{
-			S57Feature nextF = (S57Feature) theFeatures.nextElement();
+			final S57Feature nextF = (S57Feature) theFeatures.nextElement();
 			nextF.paint(g);
 		}
 
 		// give us the area aswell
-		WorldArea area = _myDatabase.getArea();
-		Point p1 = new Point(g.toScreen(area.getTopLeft()));
-		Point p2 = new Point(g.toScreen(area.getBottomRight()));
+		final WorldArea area = _myDatabase.getArea();
+		final Point p1 = new Point(g.toScreen(area.getTopLeft()));
+		final Point p2 = new Point(g.toScreen(area.getBottomRight()));
 		g.setColor(Color.white);
 		g.drawRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
 	}
@@ -154,7 +154,7 @@ public class S57Layer implements Layer
 		return null;
 	}
 
-	public double rangeFrom(MWC.GenericData.WorldLocation other)
+	public double rangeFrom(final MWC.GenericData.WorldLocation other)
 	{
 		// doesn't return a sensible distance;
 		return INVALID_RANGE;
@@ -186,11 +186,11 @@ public class S57Layer implements Layer
 		return _myEditor;
 	}
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
-		Plottable other = (Plottable) arg0;
-		String myName = this.getName() + this.hashCode();
-		String hisName = other.getName() + arg0.hashCode();
+		final Plottable other = (Plottable) arg0;
+		final String myName = this.getName() + this.hashCode();
+		final String hisName = other.getName() + arg0.hashCode();
 		return myName.compareTo(hisName);
 	}
 
@@ -205,7 +205,7 @@ public class S57Layer implements Layer
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public S57PainterInfo(S57Layer data)
+		public S57PainterInfo(final S57Layer data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -214,12 +214,12 @@ public class S57Layer implements Layer
 		{
 			try
 			{
-				PropertyDescriptor[] res = {
+				final PropertyDescriptor[] res = {
 						prop("Visible", "whether S57 data is visible", VISIBILITY),
 						prop("SourceFile", "the S57 data-file", FORMAT), };
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -233,7 +233,7 @@ public class S57Layer implements Layer
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public GridPainterTest(String val)
+		public GridPainterTest(final String val)
 		{
 			super(val);
 		}
@@ -246,19 +246,19 @@ public class S57Layer implements Layer
 		}
 	}
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
-		S57Layer layer = new S57Layer();
+		final S57Layer layer = new S57Layer();
 		layer.load("d://dev/AU411141.000");
 		System.out.println("loaded!");
 	}
 
-	public void add(Editable point)
+	public void add(final Editable point)
 	{
 		System.err.println("you can't add items to an S57 layer");
 	}
 
-	public void append(Layer other)
+	public void append(final Layer other)
 	{
 	}
 
@@ -284,12 +284,12 @@ public class S57Layer implements Layer
 		return false;
 	}
 
-	public void removeElement(Editable point)
+	public void removeElement(final Editable point)
 	{
 		System.err.println("you can't remove items from an S57 layer");
 	}
 
-	public void setName(String val)
+	public void setName(final String val)
 	{
 		_myName = val;
 	}
@@ -311,7 +311,7 @@ public class S57Layer implements Layer
 	 * @param file
 	 *          the _sourceFile to set
 	 */
-	public final void setSourceFile(String file)
+	public final void setSourceFile(final String file)
 	{
 		_sourceFile =  new java.io.File(file);
 	}

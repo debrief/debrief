@@ -14,12 +14,12 @@ public abstract class ColumnFilter {
 	public abstract String getFilterValue(NarrativeEntry entry);
 	protected abstract void valuesSetChanged();
 
-	public boolean accept(NarrativeEntry entry) {
+	public boolean accept(final NarrativeEntry entry) {
 		if (isEmpty()) {
 			return true;
 		}
 
-		String value = getFilterValue(entry);
+		final String value = getFilterValue(entry);
 		return value != null && myAllowedValues.contains(value);
 	}
 
@@ -38,7 +38,7 @@ public abstract class ColumnFilter {
 		return myAllowedValuesRO;
 	}
 	
-	public void setAllowedValues(Collection<String> allowedValues){
+	public void setAllowedValues(final Collection<String> allowedValues){
 		if (myAllowedValues.isEmpty() && allowedValues.isEmpty()){
 			return;
 		}

@@ -21,7 +21,7 @@ public class SwingTabPanel extends JTabbedPane implements MWC.GUI.CoreTabPanel
     super.removeAll();
   }
 
-	public int addTabPanel(String sLabel, boolean bEnabled, java.awt.Component panel)
+	public int addTabPanel(final String sLabel, final boolean bEnabled, final java.awt.Component panel)
 	{
     panel.setName(sLabel);
 		this.addTab(sLabel, panel);
@@ -29,7 +29,7 @@ public class SwingTabPanel extends JTabbedPane implements MWC.GUI.CoreTabPanel
 		return 0;
 	}
 
-  public java.awt.Component add(String title, java.awt.Component comp)
+  public java.awt.Component add(final String title, final java.awt.Component comp)
   {
     java.awt.Component res = null;
     if(title.equals("North"))
@@ -44,10 +44,10 @@ public class SwingTabPanel extends JTabbedPane implements MWC.GUI.CoreTabPanel
 
   }
 
-  public java.awt.Component add(java.awt.Component comp)
+  public java.awt.Component add(final java.awt.Component comp)
   {
     java.awt.Component res = null;
-    String title = comp.getName();
+    final String title = comp.getName();
     if(title.equals("North"))
     {
       res =  super.add(comp.getName(), comp);

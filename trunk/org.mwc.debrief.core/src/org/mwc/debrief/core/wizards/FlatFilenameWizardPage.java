@@ -117,7 +117,7 @@ public class FlatFilenameWizardPage extends WizardPage
 	 * 
 	 * @param pageName
 	 */
-	public FlatFilenameWizardPage(String fileVersion, int numSensors)
+	public FlatFilenameWizardPage(final String fileVersion, final int numSensors)
 	{
 		super(PAGENAME);
 		_numSensors = numSensors;
@@ -134,14 +134,14 @@ public class FlatFilenameWizardPage extends WizardPage
 				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
 
-	private static boolean isNumber(Object i)
+	private static boolean isNumber(final Object i)
 	{
 		try
 		{
 			Double.parseDouble(i.toString());
 			return true;
 		}
-		catch (NumberFormatException nfe)
+		catch (final NumberFormatException nfe)
 		{
 			return false;
 		}
@@ -215,7 +215,7 @@ public class FlatFilenameWizardPage extends WizardPage
 	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
-	public void createControl(Composite parent)
+	public void createControl(final Composite parent)
 	{
 
 		final Composite container = new Composite(parent, SWT.NULL);
@@ -224,18 +224,18 @@ public class FlatFilenameWizardPage extends WizardPage
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 
-		String filenameKey = "3Debrief.FlatFileOutput";
-		String sensor1Key = "3Debrief.FlatFileSensorType1";
-		String sensor2Key = "3Debrief.FlatFileSensorType2";
-		String protMarkKey = "3Debrief.FlatFileProtMarking";
-		String serialKey = "3Debrief.FlatFileSerialName";
-		String sensor1fwdKey = "3Debrief.FlatFileSensor1fwd";
-		String sensor1aftKey = "3Debrief.FlatFileSensor1aft";
-		String sensor2fwdKey = "3Debrief.FlatFileSensor2fwd";
-		String sensor2aftKey = "3Debrief.FlatFileSensor2aft";
-		String speedOfSoundKey = "3Debrief.speedOfSoundKey";
+		final String filenameKey = "3Debrief.FlatFileOutput";
+		final String sensor1Key = "3Debrief.FlatFileSensorType1";
+		final String sensor2Key = "3Debrief.FlatFileSensorType2";
+		final String protMarkKey = "3Debrief.FlatFileProtMarking";
+		final String serialKey = "3Debrief.FlatFileSerialName";
+		final String sensor1fwdKey = "3Debrief.FlatFileSensor1fwd";
+		final String sensor1aftKey = "3Debrief.FlatFileSensor1aft";
+		final String sensor2fwdKey = "3Debrief.FlatFileSensor2fwd";
+		final String sensor2aftKey = "3Debrief.FlatFileSensor2aft";
+		final String speedOfSoundKey = "3Debrief.speedOfSoundKey";
 
-		String title = "Output directory:";
+		final String title = "Output directory:";
 		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
 		{
 			@Override
@@ -245,8 +245,8 @@ public class FlatFilenameWizardPage extends WizardPage
 				fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
 			}
 
-			protected void fireValueChanged(String property, Object oldValue,
-					Object newValue)
+			protected void fireValueChanged(final String property, final Object oldValue,
+					final Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 
@@ -281,7 +281,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
 			// ok, get the sensor1 depth
-			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(
+			final StringFieldEditor speedOfSoundEditor = new StringFieldEditor(
 					speedOfSoundKey, "Speed of Sound (m/sec):", container)
 			{
 				@Override
@@ -291,8 +291,8 @@ public class FlatFilenameWizardPage extends WizardPage
 					fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
 				}
 
-				protected void fireValueChanged(String property, Object oldValue,
-						Object newValue)
+				protected void fireValueChanged(final String property, final Object oldValue,
+						final Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
 
@@ -327,6 +327,7 @@ public class FlatFilenameWizardPage extends WizardPage
 					_speedOfSound = Double.valueOf(speedOfSoundEditor.getStringValue());
 
 			@SuppressWarnings("unused")
+			final
 			Label lbl3 = new Label(container, SWT.None);
 
 		}
@@ -346,8 +347,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		_sensor1TypeEditor = new RadioGroupFieldEditor(sensor1Key,
 				"Sensor 1 type:", 2, sensorTypes, container)
 		{
-			protected void fireValueChanged(String property, Object oldValue,
-					Object newValue)
+			protected void fireValueChanged(final String property, final Object oldValue,
+					final Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 
@@ -371,6 +372,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		_sensorType1 = getPreferenceStore().getString(sensor1Key);
 
 		@SuppressWarnings("unused")
+		final
 		Label lbl = new Label(container, SWT.None);
 
 		// ok, we also need the sensor depth attribute
@@ -378,7 +380,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		{
 
 			// ok, get the sensor1 depth
-			StringFieldEditor sensor1FwdEditor = new StringFieldEditor(sensor1fwdKey,
+			final StringFieldEditor sensor1FwdEditor = new StringFieldEditor(sensor1fwdKey,
 					"Sensor 1 fwd depth (m):", container)
 			{
 				@Override
@@ -388,8 +390,8 @@ public class FlatFilenameWizardPage extends WizardPage
 					fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
 				}
 
-				protected void fireValueChanged(String property, Object oldValue,
-						Object newValue)
+				protected void fireValueChanged(final String property, final Object oldValue,
+						final Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
 
@@ -435,6 +437,7 @@ public class FlatFilenameWizardPage extends WizardPage
 					_sensor1Fwd = Double.valueOf(sensor1FwdEditor.getStringValue());
 
 			@SuppressWarnings("unused")
+			final
 			Label lbl2 = new Label(container, SWT.None);
 
 			// ok, get the sensor1 depth
@@ -448,8 +451,8 @@ public class FlatFilenameWizardPage extends WizardPage
 					fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
 				}
 
-				protected void fireValueChanged(String property, Object oldValue,
-						Object newValue)
+				protected void fireValueChanged(final String property, final Object oldValue,
+						final Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
 
@@ -487,6 +490,7 @@ public class FlatFilenameWizardPage extends WizardPage
 					_sensor1Aft = Double.valueOf(_sensor1AftEditor.getStringValue());
 
 			@SuppressWarnings("unused")
+			final
 			Label lbl3b = new Label(container, SWT.None);
 
 		}
@@ -497,8 +501,8 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensor2TypeEditor = new RadioGroupFieldEditor(sensor2Key,
 					"Sensor 2 type:", 2, sensorTypes, container)
 			{
-				protected void fireValueChanged(String property, Object oldValue,
-						Object newValue)
+				protected void fireValueChanged(final String property, final Object oldValue,
+						final Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
 
@@ -521,13 +525,14 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensorType2 = getPreferenceStore().getString(sensor2Key);
 
 			@SuppressWarnings("unused")
+			final
 			Label lbl2 = new Label(container, SWT.None);
 
 			// ok, we also need the sensor depth attribute
 			if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 			{
 				// ok, get the sensor1 depth
-				StringFieldEditor sensor2FwdEditor = new StringFieldEditor(
+				final StringFieldEditor sensor2FwdEditor = new StringFieldEditor(
 						sensor2fwdKey, "Sensor 2 fwd depth (m):", container)
 				{
 					@Override
@@ -537,8 +542,8 @@ public class FlatFilenameWizardPage extends WizardPage
 						fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
 					}
 
-					protected void fireValueChanged(String property, Object oldValue,
-							Object newValue)
+					protected void fireValueChanged(final String property, final Object oldValue,
+							final Object newValue)
 					{
 						super.fireValueChanged(property, oldValue, newValue);
 
@@ -577,6 +582,7 @@ public class FlatFilenameWizardPage extends WizardPage
 						_sensor2Fwd = Double.valueOf(sensor2FwdEditor.getStringValue());
 
 				@SuppressWarnings("unused")
+				final
 				Label lbl3 = new Label(container, SWT.None);
 
 				// ok, get the sensor1 depth
@@ -590,8 +596,8 @@ public class FlatFilenameWizardPage extends WizardPage
 						fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
 					}
 
-					protected void fireValueChanged(String property, Object oldValue,
-							Object newValue)
+					protected void fireValueChanged(final String property, final Object oldValue,
+							final Object newValue)
 					{
 						super.fireValueChanged(property, oldValue, newValue);
 
@@ -634,6 +640,7 @@ public class FlatFilenameWizardPage extends WizardPage
 						_sensor2Aft = Double.valueOf(_sensor2AftEditor.getStringValue());
 
 				@SuppressWarnings("unused")
+				final
 				Label lbl4 = new Label(container, SWT.None);
 
 			}
@@ -646,8 +653,8 @@ public class FlatFilenameWizardPage extends WizardPage
 			_protMarkingEditor = new StringFieldEditor(protMarkKey,
 					"Protective Marking:", container)
 			{
-				protected void fireValueChanged(String property, Object oldValue,
-						Object newValue)
+				protected void fireValueChanged(final String property, final Object oldValue,
+						final Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
 
@@ -678,6 +685,7 @@ public class FlatFilenameWizardPage extends WizardPage
 			_protMarking = _protMarkingEditor.getStringValue();
 
 			@SuppressWarnings("unused")
+			final
 			Label lbl3 = new Label(container, SWT.None);
 
 		}
@@ -686,8 +694,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		_serialNameEditor = new StringFieldEditor(serialKey, "Serial name:",
 				container)
 		{
-			protected void fireValueChanged(String property, Object oldValue,
-					Object newValue)
+			protected void fireValueChanged(final String property, final Object oldValue,
+					final Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 
@@ -716,7 +724,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		_serialNameEditor.load();
 		_serialName = _serialNameEditor.getStringValue();
 
-		GridLayout urlLayout = (GridLayout) container.getLayout();
+		final GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
 
 		container.layout();
@@ -744,7 +752,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		}
 
 		// just check it's a directory, not a file
-		File testFile = new File(targetDir);
+		final File testFile = new File(targetDir);
 		if (!testFile.isDirectory())
 		{
 			updateStatus("Target must be a directory, not a file");
@@ -804,7 +812,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		updateStatus(null);
 	}
 
-	private void updateStatus(String message)
+	private void updateStatus(final String message)
 	{
 		setErrorMessage(message);
 		if (message == null)

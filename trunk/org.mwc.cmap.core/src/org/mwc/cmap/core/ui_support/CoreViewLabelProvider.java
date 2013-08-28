@@ -145,7 +145,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			
 			// take a copy of the images listing, in case we receive a new
 			// helper whilst we're looping through
-			Vector<ViewLabelImageHelper> spareHelpers = new Vector<ViewLabelImageHelper>(imageHelpers);
+			final Vector<ViewLabelImageHelper> spareHelpers = new Vector<ViewLabelImageHelper>(imageHelpers);
 			
 			// ok, now go for it.
 			for (final Iterator<ViewLabelImageHelper> iter = spareHelpers

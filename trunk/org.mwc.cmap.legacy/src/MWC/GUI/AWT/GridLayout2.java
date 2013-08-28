@@ -18,19 +18,19 @@ public class GridLayout2 extends GridLayout
     this(1, 0, 0, 0);
   }
 
-  public GridLayout2(int rows, int cols) {
+  public GridLayout2(final int rows, final int cols) {
     this(rows, cols, 0, 0);
   }
 
-  public GridLayout2(int rows, int cols, int hgap, int vgap) {
+  public GridLayout2(final int rows, final int cols, final int hgap, final int vgap) {
     super(rows, cols, hgap, vgap);
   }
 
-  public Dimension preferredLayoutSize(Container parent) {
+  public Dimension preferredLayoutSize(final Container parent) {
 	//System.err.println("preferredLayoutSize");
     synchronized (parent.getTreeLock()) {
-      Insets insets = parent.getInsets();
-      int ncomponents = parent.getComponentCount();
+      final Insets insets = parent.getInsets();
+      final int ncomponents = parent.getComponentCount();
       int nrows = getRows();
       int ncols = getColumns();
       if (nrows > 0) {
@@ -39,13 +39,13 @@ public class GridLayout2 extends GridLayout
       else {
         nrows = (ncomponents + ncols - 1) / ncols;
       }
-      int[] w = new int[ncols];
-      int[] h = new int[nrows];
+      final int[] w = new int[ncols];
+      final int[] h = new int[nrows];
       for (int i = 0; i < ncomponents; i ++) {
-        int r = i / ncols;
-        int c = i % ncols;
-        Component comp = parent.getComponent(i);
-        Dimension d = comp.getPreferredSize();
+        final int r = i / ncols;
+        final int c = i % ncols;
+        final Component comp = parent.getComponent(i);
+        final Dimension d = comp.getPreferredSize();
         if (w[c] < d.width) {
           w[c] = d.width;
         }
@@ -66,11 +66,11 @@ public class GridLayout2 extends GridLayout
     }
   }
 
-  public Dimension minimumLayoutSize(Container parent) {
+  public Dimension minimumLayoutSize(final Container parent) {
 	System.err.println("minimumLayoutSize");
     synchronized (parent.getTreeLock()) {
-      Insets insets = parent.getInsets();
-      int ncomponents = parent.getComponentCount();
+      final Insets insets = parent.getInsets();
+      final int ncomponents = parent.getComponentCount();
       int nrows = getRows();
       int ncols = getColumns();
       if (nrows > 0) {
@@ -79,13 +79,13 @@ public class GridLayout2 extends GridLayout
       else {
         nrows = (ncomponents + ncols - 1) / ncols;
       }
-      int[] w = new int[ncols];
-      int[] h = new int[nrows];
+      final int[] w = new int[ncols];
+      final int[] h = new int[nrows];
       for (int i = 0; i < ncomponents; i ++) {
-        int r = i / ncols;
-        int c = i % ncols;
-        Component comp = parent.getComponent(i);
-        Dimension d = comp.getMinimumSize();
+        final int r = i / ncols;
+        final int c = i % ncols;
+        final Component comp = parent.getComponent(i);
+        final Dimension d = comp.getMinimumSize();
         if (w[c] < d.width) {
           w[c] = d.width;
         }
@@ -106,11 +106,11 @@ public class GridLayout2 extends GridLayout
     }
   }
 
-  public void layoutContainer(Container parent) {
+  public void layoutContainer(final Container parent) {
     //System.err.println("layoutContainer");
     synchronized (parent.getTreeLock()) {
-      Insets insets = parent.getInsets();
-      int ncomponents = parent.getComponentCount();
+      final Insets insets = parent.getInsets();
+      final int ncomponents = parent.getComponentCount();
       int nrows = getRows();
       int ncols = getColumns();
       if (ncomponents == 0) {
@@ -122,20 +122,20 @@ public class GridLayout2 extends GridLayout
       else {
         nrows = (ncomponents + ncols - 1) / ncols;
       }
-      int hgap = getHgap();
-      int vgap = getVgap();
+      final int hgap = getHgap();
+      final int vgap = getVgap();
 	  // scaling factors      
-      Dimension pd = preferredLayoutSize(parent);
-      double sw = (1.0 * parent.getWidth()) / pd.width;
-      double sh = (1.0 * parent.getHeight()) / pd.height;
+      final Dimension pd = preferredLayoutSize(parent);
+      final double sw = (1.0 * parent.getWidth()) / pd.width;
+      final double sh = (1.0 * parent.getHeight()) / pd.height;
       // scale
-      int[] w = new int[ncols];
-      int[] h = new int[nrows];
+      final int[] w = new int[ncols];
+      final int[] h = new int[nrows];
       for (int i = 0; i < ncomponents; i ++) {
-        int r = i / ncols;
-        int c = i % ncols;
-        Component comp = parent.getComponent(i);
-        Dimension d = comp.getPreferredSize();
+        final int r = i / ncols;
+        final int c = i % ncols;
+        final Component comp = parent.getComponent(i);
+        final Dimension d = comp.getPreferredSize();
         d.width = (int) (sw * d.width);
         d.height = (int) (sh * d.height);
         if (w[c] < d.width) {
@@ -147,7 +147,7 @@ public class GridLayout2 extends GridLayout
       }
       for (int c = 0, x = insets.left; c < ncols; c ++) {
         for (int r = 0, y = insets.top; r < nrows; r ++) {
-          int i = r * ncols + c;
+          final int i = r * ncols + c;
           if (i < ncomponents) {
             parent.getComponent(i).setBounds(x, y, w[c], h[r]);
           }

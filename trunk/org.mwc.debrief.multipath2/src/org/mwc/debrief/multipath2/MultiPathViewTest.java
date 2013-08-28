@@ -29,7 +29,7 @@ public class MultiPathViewTest extends MultiPathView
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		super.createPartControl(parent);
 	}
@@ -40,8 +40,8 @@ public class MultiPathViewTest extends MultiPathView
 		TrackDataProvider res = null;
 
 		// ok, grab the current editor
-		IEditorPart editor = this.getSite().getPage().getActiveEditor();
-		Object provider = editor.getAdapter(TrackDataProvider.class);
+		final IEditorPart editor = this.getSite().getPage().getActiveEditor();
+		final Object provider = editor.getAdapter(TrackDataProvider.class);
 		if (provider != null)
 		{
 			res = (TrackDataProvider) provider;

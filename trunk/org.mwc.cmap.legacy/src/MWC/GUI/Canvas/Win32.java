@@ -51,6 +51,7 @@ public class Win32
   /**
    * @dl.import("GDI32", auto) 
    */
+  //CS-IGNORE:ON FINAL_PARAMETERS
   public static native int CopyMetaFile(int anonymous0, String anonymous1);
 
   /**
@@ -87,7 +88,7 @@ public class Win32
    * @dl.import("kernel32",auto) 
    */
   public static native boolean CopyMemory(int addr, METAFILEPICT mp, int size);
-  
+  //CS-IGNORE:OFF FINAL_PARAMETERS
   /**
    * @dl.import("USER32",auto) 
    */
@@ -107,6 +108,7 @@ public class Win32
   /**
    * @dl.import("GDI32", auto) 
    */
+//CS-IGNORE:ON FINAL_PARAMETERS
   public static native int CreateMetaFile(String anonymous0);
 
   /**
@@ -125,6 +127,6 @@ public class Win32
   public static native int CloseMetaFile(int anonymous0);
   public static final int MM_ANISOTROPIC = 8;
   public static final int CF_METAFILEPICT = 3;
-
+//CS-IGNORE:OFF FINAL_PARAMETERS
 	
 }

@@ -10,10 +10,10 @@ import org.eclipse.ui.PlatformUI;
 @SuppressWarnings("deprecation")
 public class NarrativeViewerApplication implements IPlatformRunnable {
 
-	public Object run(Object args) throws Exception {
-		Display display = PlatformUI.createDisplay();
+	public Object run(final Object args) throws Exception {
+		final Display display = PlatformUI.createDisplay();
 		try {
-			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
+			final int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART) {
 				return IPlatformRunnable.EXIT_RESTART;
 			}

@@ -21,24 +21,24 @@ public class StretchDragMode extends RotateDragMode
 	{
 		private Double lastRange;
 
-		public StretchOperation(WorldLocation cursorLoc, WorldLocation origin,
-				CoreTMASegment segment, TrackWrapper parent, Layers theLayers)
+		public StretchOperation(final WorldLocation cursorLoc, final WorldLocation origin,
+				final CoreTMASegment segment, final TrackWrapper parent, final Layers theLayers)
 		{
 			super(cursorLoc, origin, segment, parent, theLayers);
 		}
 
-		public void shift(WorldVector vector)
+		public void shift(final WorldVector vector)
 		{
-			CoreTMASegment seg = (CoreTMASegment) _segment;
+			final CoreTMASegment seg = (CoreTMASegment) _segment;
 			
 			// find out where the cursor currently is
 			workingLoc.addToMe(vector);
 	
 			// what's the bearing from the origin
-			WorldVector thisVector = workingLoc.subtract(_origin);
+			final WorldVector thisVector = workingLoc.subtract(_origin);
 	
 			// work out the distance from the start
-			double rng =  thisVector.getRange(); //- _originalDistDegs;
+			final double rng =  thisVector.getRange(); //- _originalDistDegs;
 	
 			// undo the previous turn
 			if (lastRange != null)
@@ -78,7 +78,7 @@ public class StretchDragMode extends RotateDragMode
 	 *          the segment being dragged
 	 * @return an operation we can use to do this
 	 */
-	protected DraggableItem getCentreOperation(final TrackSegment seg, TrackWrapper parent, Layers theLayers)
+	protected DraggableItem getCentreOperation(final TrackSegment seg, final TrackWrapper parent, final Layers theLayers)
 	{
 		return new StretchFanOperation(seg, parent, theLayers);
 	}
@@ -90,14 +90,14 @@ public class StretchDragMode extends RotateDragMode
 	}
 
 	@Override
-	protected DraggableItem getEndOperation(WorldLocation cursorLoc,
-			TrackSegment seg, FixWrapper subject, TrackWrapper parent, Layers theLayers)
+	protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
+			final TrackSegment seg, final FixWrapper subject, final TrackWrapper parent, final Layers theLayers)
 	{
 		return new StretchOperation(cursorLoc, subject.getFixLocation(), (CoreTMASegment) seg, parent, theLayers);
 	}
 
 	@Override
-	protected boolean isAcceptable(TrackSegment seg)
+	protected boolean isAcceptable(final TrackSegment seg)
 	{
 		return (seg instanceof CoreTMASegment);
 	}		

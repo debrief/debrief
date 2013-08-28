@@ -50,7 +50,7 @@ public enum LabelLocationType {
     MIDDLE("Middle");
     private final String value;
 
-    LabelLocationType(String v) {
+    LabelLocationType(final String v) {
         value = v;
     }
 
@@ -58,8 +58,8 @@ public enum LabelLocationType {
         return value;
     }
 
-    public static LabelLocationType fromValue(String v) {
-        for (LabelLocationType c: LabelLocationType.values()) {
+    public static LabelLocationType fromValue(final String v) {
+        for (final LabelLocationType c: LabelLocationType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

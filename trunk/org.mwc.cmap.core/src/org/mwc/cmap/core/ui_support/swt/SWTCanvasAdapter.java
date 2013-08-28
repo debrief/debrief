@@ -210,7 +210,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 * and our default background color
 	 * 
 	 */
-	private java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.LIGHT_GRAY;
+	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.LIGHT_GRAY;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -219,7 +219,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	/**
 	 * default constructor.
 	 */
-	public SWTCanvasAdapter(PlainProjection proj)
+	public SWTCanvasAdapter(final PlainProjection proj)
 	{
 		// start with our background colour
 		setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
@@ -252,7 +252,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	{
 		// ok - let's not use the new projection. We'll keep our own projection,
 		// but we'll copy the data viewport
-		WorldArea dataArea = theProjection.getDataArea();
+		final WorldArea dataArea = theProjection.getDataArea();
 		if (dataArea != null)
 		{
 			_theProjection.setDataArea(dataArea);
@@ -293,7 +293,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 						}
 					}
 			}
-			catch (RuntimeException e)
+			catch (final RuntimeException e)
 			{
 				CorePlugin.logError(Status.INFO, "Graphics library not found", e);
 				System.err.println("GDIplus graphics library not found");
@@ -440,7 +440,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		{
 			if (theFont != null)
 			{
-				org.eclipse.swt.graphics.Font myFont = FontHelper.convertFontFromAWT(theFont);
+				final org.eclipse.swt.graphics.Font myFont = FontHelper.convertFontFromAWT(theFont);
 				if (!_theDest.isDisposed())
 					_theDest.setFont(myFont);
 			}
@@ -472,7 +472,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	public final java.awt.Graphics getGraphicsTemp()
 	{
 		System.err.println("graphics temp not implemented...");
-		java.awt.Graphics res = null;
+		final java.awt.Graphics res = null;
 		// /** if we are in a paint operation already,
 		// * return the graphics object, since it may
 		// * be a double-buffering image
@@ -497,7 +497,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 	public final void setFont(final java.awt.Font theFont)
 	{
-		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFontFromAWT(theFont);
+		final org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFontFromAWT(theFont);
 		if (!_theDest.isDisposed())
 			_theDest.setFont(swtFont);
 	}
@@ -509,10 +509,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (_theDest == null)
 			return true;
 
-		PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+		final PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
 		// PaletteData palette = new PaletteData(new RGB[]{new RGB(255,0,0), new
 		// RGB(0,255,0)});
-		ImageData imageData = new ImageData(48, 48, 24, palette);
+		final ImageData imageData = new ImageData(48, 48, 24, palette);
 
 		for (int x = 0; x < 48; x++)
 		{
@@ -537,7 +537,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			}
 		}
 
-		Image image = new Image(Display.getCurrent(), imageData);
+		final Image image = new Image(Display.getCurrent(), imageData);
 
 		if (!_theDest.isDisposed())
 			_theDest.drawImage(image, 0, 0);
@@ -551,7 +551,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	}
 
 	public final boolean drawSWTImage(final Image img, final int x, final int y,
-			final int width, final int height, int alphaTransparency)
+			final int width, final int height, final int alphaTransparency)
 	{
 		if (_theDest == null)
 			return true;
@@ -607,7 +607,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		{
 
 			// translate the polygon to SWT format
-			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
 
 			_theDest.setAlpha(45);
 			_theDest.fillPolygon(poly);
@@ -636,15 +636,15 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		{
 
 			// translate the polygon to SWT format
-			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
 
 			_theDest.fillPolygon(poly);
 		}
 	}
 
-	private static int[] getPolygonArray(int[] xPoints, int[] yPoints, int nPoints)
+	private static int[] getPolygonArray(final int[] xPoints, final int[] yPoints, final int nPoints)
 	{
-		int[] poly = new int[nPoints * 2];
+		final int[] poly = new int[nPoints * 2];
 
 		for (int i = 0; i < nPoints; i++)
 		{
@@ -675,7 +675,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (!_theDest.isDisposed())
 		{
 			// translate the polygon to SWT format
-			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
 
 			drawPolyline(poly);
 		}
@@ -726,7 +726,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 					.getLineWidth()));
 
 			// translate the polygon to SWT format
-			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
 
 			if (poly != null)
 				if (poly.length > 0)
@@ -787,7 +787,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			_currentColor = theCol;
 
 			// transfer the color
-			Color swtCol = ColorHelper.getColor(theCol);
+			final Color swtCol = ColorHelper.getColor(theCol);
 
 			if (!_theDest.isDisposed())
 			{
@@ -832,7 +832,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	public final void setLineStyle(final int style)
 	{
 		// convert the swing line-style to SWT
-		int SWT_style = style + 1;
+		final int SWT_style = style + 1;
 
 		if (!_theDest.isDisposed())
 			if (!_theDest.isDisposed())
@@ -842,12 +842,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	/**
 	 * set the width of the line, in pixels
 	 */
-	public final void setLineWidth(float width)
+	public final void setLineWidth(final float width)
 	{
+		float theWidth = width;
 		// check we've got a valid width
-		width = Math.max(width, 0);
+		theWidth = Math.max(theWidth, 0);
 
-		_lineWidth = width;
+		_lineWidth = theWidth;
 
 		// are we currently in a plot operation?
 		if (_theDest != null)
@@ -857,7 +858,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
 			// g2.setStroke(stk);
 			if (!_theDest.isDisposed())
-				_theDest.setLineWidth((int) width);
+				_theDest.setLineWidth((int) theWidth);
 		}
 	}
 
@@ -980,22 +981,22 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (!_theDest.isDisposed())
 		{
 
-			FontData[] fd = _theDest.getFont().getFontData();
-			FontData fontData = fd[0];
+			final FontData[] fd = _theDest.getFont().getFontData();
+			final FontData fontData = fd[0];
 			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
 			int y2 = y;
 			if (rotate == 0)
 				y2 -= fontData.getHeight();
 
-			Transform oldTransform = new Transform(_theDest.getDevice());
+			final Transform oldTransform = new Transform(_theDest.getDevice());
 			_theDest.getTransform(oldTransform);
 
-			Transform tr = new Transform(_theDest.getDevice());
+			final Transform tr = new Transform(_theDest.getDevice());
 			tr.translate(x, y2);
 			tr.rotate(rotate);
-			Font awFont = new Font(fontData.getName(), fontData.getStyle(),
+			final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
 					fontData.getHeight());
-			int strWidth = getStringWidth(awFont, theStr);
+			final int strWidth = getStringWidth(awFont, theStr);
 			tr.translate(-x - strWidth / 2, -y2);
 
 			_theDest.setTransform(tr);
@@ -1018,13 +1019,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (!_theDest.isDisposed())
 
 		{
-			FontData[] fd = _theDest.getFont().getFontData();
+			final FontData[] fd = _theDest.getFont().getFontData();
 
-			FontData font = fd[0];
-			int fontHt = font.getHeight();
+			final FontData font = fd[0];
+			final int fontHt = font.getHeight();
 
 			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
-			int y2 = y - fontHt;
+			final int y2 = y - fontHt;
 			
 			// and draw it
 			_theDest.drawText(theStr, x, y2, true);
@@ -1129,7 +1130,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		_backgroundColor = theColor;
 
 		// convert to SWT
-		Color swtCol = ColorHelper.getColor(theColor);
+		final Color swtCol = ColorHelper.getColor(theColor);
 
 		// set the colour in the parent
 		if (_theDest != null)
@@ -1263,7 +1264,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1330,7 +1331,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		return _theSize;
 	}
 
-	public void drawImage(Image image, int x, int y, int width, int height)
+	public void drawImage(final Image image, final int x, final int y, final int width, final int height)
 	{
 		if (_theDest != null)
 			if (!_theDest.isDisposed())

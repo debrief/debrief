@@ -24,10 +24,10 @@ public class TimeDeltas
 {
 	public static class Observation
 	{
-		private HiResDate time;
-		private double interval;
+		private final HiResDate time;
+		private final double interval;
 
-		public Observation(HiResDate timeVal, double intervalVal)
+		public Observation(final HiResDate timeVal, final double intervalVal)
 		{
 			time = timeVal;
 			interval = intervalVal;
@@ -66,13 +66,13 @@ public class TimeDeltas
 	 * @throws IOException
 	 *           if the file can't be found
 	 */
-	public void load(String path) throws NumberFormatException, IOException,
+	public void load(final String path) throws NumberFormatException, IOException,
 			MultiPathModel.DataFormatException
 	{
-		Vector<Double> times = new Vector<Double>();
-		Vector<Double> values = new Vector<Double>();
+		final Vector<Double> times = new Vector<Double>();
+		final Vector<Double> values = new Vector<Double>();
 
-		BufferedReader bufRdr = new BufferedReader(new FileReader(path));
+		final BufferedReader bufRdr = new BufferedReader(new FileReader(path));
 		String line = null;
 
 		// ditch the first line
@@ -86,21 +86,22 @@ public class TimeDeltas
 			// 2009,04,42,18,37,00,254,6.797688,22
 
 
-			StringTokenizer st = new StringTokenizer(line, ",");
-			int year = Integer.valueOf(st.nextToken().trim());
-			int month = Integer.valueOf(st.nextToken().trim());
-			int day = Integer.valueOf(st.nextToken().trim());
-			int hour = Integer.valueOf(st.nextToken().trim());
-			int min = Integer.valueOf(st.nextToken().trim());
-			int sec = Integer.valueOf(st.nextToken().trim());
-			int milli = Integer.valueOf(st.nextToken().trim());
+			final StringTokenizer st = new StringTokenizer(line, ",");
+			final int year = Integer.valueOf(st.nextToken().trim());
+			final int month = Integer.valueOf(st.nextToken().trim());
+			final int day = Integer.valueOf(st.nextToken().trim());
+			final int hour = Integer.valueOf(st.nextToken().trim());
+			final int min = Integer.valueOf(st.nextToken().trim());
+			final int sec = Integer.valueOf(st.nextToken().trim());
+			final int milli = Integer.valueOf(st.nextToken().trim());
 
-			double delay = Double.valueOf(st.nextToken().trim());
+			final double delay = Double.valueOf(st.nextToken().trim());
 			@SuppressWarnings("unused")
+			final
 			double strength = Double.valueOf(st.nextToken().trim());
 
 			// do the time
-			GregorianCalendar cal2 = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+			final GregorianCalendar cal2 = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 			cal2.clear();
 			cal2.set(Calendar.YEAR,year);
 			cal2.set(Calendar.MONTH, month-1);
@@ -111,9 +112,9 @@ public class TimeDeltas
 			cal2.set(Calendar.MILLISECOND, milli);
 			
 			// and get the value in seconds
-			long tMillis = cal2.getTimeInMillis();
+			final long tMillis = cal2.getTimeInMillis();
 			// TODO switch to storing millis as a long
-			double tSecs = tMillis / 1000;
+			final double tSecs = tMillis / 1000;
 			times.add((double) tSecs);
 			
 			// to the delay
@@ -127,7 +128,7 @@ public class TimeDeltas
 		if (values.size() > 0)
 		{
 			// just check the values are of the correct order
-			double sampleVal = values.elementAt(1);
+			final double sampleVal = values.elementAt(1);
 			if (sampleVal > 500)
 				throw new MultiPathModel.DataFormatException(
 						"Doesn't look like time interval data");
@@ -136,10 +137,10 @@ public class TimeDeltas
 			_myData = new Vector<Observation>();
 			for (int i = 0; i < numEntries; i++)
 			{
-				Double thisTime = times.elementAt(i);
-				HiResDate thisD = new HiResDate((long) (thisTime * 1000d));
-				Double thisInterval = values.elementAt(i);
-				Observation obs = new Observation(thisD, thisInterval);
+				final Double thisTime = times.elementAt(i);
+				final HiResDate thisD = new HiResDate((long) (thisTime * 1000d));
+				final Double thisInterval = values.elementAt(i);
+				final Observation obs = new Observation(thisD, thisInterval);
 				_myData.add(obs);
 			}
 		}
@@ -164,7 +165,7 @@ public class TimeDeltas
 
 		public void testMe()
 		{
-			TimeDeltas times = new TimeDeltas();
+			final TimeDeltas times = new TimeDeltas();
 
 			assertEquals("not got data", null, times._myData);
 
@@ -174,15 +175,15 @@ public class TimeDeltas
 				times.load("src/org/mwc/debrief/multipath/model2/test_times_bad.csv");
 				fail("should not have found file");
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				// ok - this should have been thrown
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}
@@ -193,15 +194,15 @@ public class TimeDeltas
 			{
 				times.load(TEST_TIMES_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				fail("unable to read lines");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}

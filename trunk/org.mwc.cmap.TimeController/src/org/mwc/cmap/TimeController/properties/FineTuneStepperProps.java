@@ -26,7 +26,7 @@ public class FineTuneStepperProps implements Editable
 	 * @param rangeSlider
 	 * @param doMinVal
 	 */
-	public FineTuneStepperProps(DTGBiSlider rangeSlider, boolean doMinVal)
+	public FineTuneStepperProps(final DTGBiSlider rangeSlider, final boolean doMinVal)
 	{
 		_slider = rangeSlider;
 		_doMin = doMinVal;
@@ -41,7 +41,7 @@ public class FineTuneStepperProps implements Editable
 			currentVal = _slider.getPeriod().getEndDTG();
 		return currentVal;
 	}
-	public void setValue(HiResDate dtg)
+	public void setValue(final HiResDate dtg)
 	{
 		if(_doMin)
 			_slider.updateSelectedRanges(dtg, _slider.getPeriod().getEndDTG());
@@ -92,7 +92,7 @@ public class FineTuneStepperProps implements Editable
           prop("Value", "the exact value of the time perid marker")         
         };
         return res;
-      }catch(IntrospectionException e){
+      }catch(final IntrospectionException e){
         return super.getPropertyDescriptors();
       }
     }

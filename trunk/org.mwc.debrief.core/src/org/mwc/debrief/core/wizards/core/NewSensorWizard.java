@@ -40,11 +40,11 @@ public class NewSensorWizard extends Wizard
 				imagePath, helpContext);
 		addPage(colorPage);
 
-		String message = "The sensor will now be added to the specified track, \n"
+		final String message = "The sensor will now be added to the specified track, \n"
 				+ "and provided with the specified default color - you\n"
 				+ "can customise the sensor further in the Properties window\n"
 				+ "but first select it in the layer manager";
-		MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
+		final MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
 				PAGE_TITLE, "Steps complete", message, imagePath);
 		addPage(messagePage);
 
@@ -56,7 +56,7 @@ public class NewSensorWizard extends Wizard
 	}
 
 	@Override
-	public IWizardPage getPage(String name)
+	public IWizardPage getPage(final String name)
 	{
 		return super.getPage(name);
 	}
@@ -68,7 +68,7 @@ public class NewSensorWizard extends Wizard
 	 */
 	public SensorWrapper getSensorWrapper()
 	{
-		SensorWrapper res = new SensorWrapper(namePage.getString());
+		final SensorWrapper res = new SensorWrapper(namePage.getString());
 		res.setColor(colorPage.getColor());
 		return res;
 	}

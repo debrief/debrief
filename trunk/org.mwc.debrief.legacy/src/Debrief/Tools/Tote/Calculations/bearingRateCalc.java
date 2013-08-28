@@ -111,16 +111,16 @@ public final class bearingRateCalc extends plainCalc
  * @param secondary secondary watchable
  * @return string representation of calculated value
  */
-  public final String update(Watchable primary, Watchable secondary, HiResDate time)
+  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
   {
     String res = null;
     if(((primary != null) && (secondary != null))
        && (primary != secondary))
     {
-      double bDot = calculate(primary, secondary, time);
+      final double bDot = calculate(primary, secondary, time);
 
       // make a copy of the original val absolute, we rely on the sign of the 
-      double formattedbDot = Math.abs(bDot);
+      final double formattedbDot = Math.abs(bDot);
       res = _myPattern.format(formattedbDot);
 
       if(bDot < 0)
@@ -143,34 +143,34 @@ public final class bearingRateCalc extends plainCalc
     return false;
   }
 
-  public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
+  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
   {
     double res = 0.0;
     if((primary != null) && (secondary != null) && (primary != secondary))
     {
-      WorldVector wv = primary.getLocation().subtract(secondary.getLocation(), _myWorldVector);
+      final WorldVector wv = primary.getLocation().subtract(secondary.getLocation(), _myWorldVector);
 
-      double brg = wv.getBearing();
+      final double brg = wv.getBearing();
       double rng = wv.getRange();
 
       // convert to yards
       rng = MWC.Algorithms.Conversions.Degs2Yds (rng);
 
       // get the vessel course and speeds (in knots and radians)
-      double oCrse = secondary.getCourse();
-      double oSpd = secondary.getSpeed();
-      double tCrse = primary.getCourse();
-      double tSpd = primary.getSpeed();
+      final double oCrse = secondary.getCourse();
+      final double oSpd = secondary.getSpeed();
+      final double tCrse = primary.getCourse();
+      final double tSpd = primary.getSpeed();
 
-      double relBrg = brg - oCrse;
-      double ATB = brg - Math.PI - tCrse;
-      double TSA = tSpd * Math.sin(ATB);
-      double OSA = oSpd * Math.sin(relBrg);
-      double RSA = TSA + OSA;
+      final double relBrg = brg - oCrse;
+      final double ATB = brg - Math.PI - tCrse;
+      final double TSA = tSpd * Math.sin(ATB);
+      final double OSA = oSpd * Math.sin(relBrg);
+      final double RSA = TSA + OSA;
 
     //  RSA = Conversions.clipRadians(RSA);
 
-      double bDot = 6080 / Math.PI * RSA / rng;
+      final double bDot = 6080 / Math.PI * RSA / rng;
 
       res = bDot;
 

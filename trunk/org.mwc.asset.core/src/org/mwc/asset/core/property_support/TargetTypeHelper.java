@@ -39,24 +39,24 @@ public class TargetTypeHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite cellParent)
+	public CellEditor getCellEditorFor(final Composite cellParent)
 	{
-		DialogCellEditor res = new TargetTypeCellEditor(cellParent);
+		final DialogCellEditor res = new TargetTypeCellEditor(cellParent);
 
 		return res;
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				TargetType val = (TargetType) element;
+				final TargetType val = (TargetType) element;
 				return val.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -102,13 +102,13 @@ public class TargetTypeHelper extends EditorHelper
 
 		private TargetType _newResult;
 
-		public TargetTypeDialog(TargetType current, Shell parent)
+		public TargetTypeDialog(final TargetType current, final Shell parent)
 		{
 			super(parent);
 			_current = current;
 		}
 		
-	   protected void configureShell(Shell newShell) {
+	   protected void configureShell(final Shell newShell) {
 	      super.configureShell(newShell);
 	      newShell.setText("Select Target Types");
 	   }
@@ -117,27 +117,27 @@ public class TargetTypeHelper extends EditorHelper
 		 * @param parent
 		 * @return the contents of the dialog (our controls)
 		 */
-		protected Control createDialogArea(Composite parent)
+		protected Control createDialogArea(final Composite parent)
 		{
-			Composite composite = (Composite) super.createDialogArea(parent);
+			final Composite composite = (Composite) super.createDialogArea(parent);
 
-			GridLayout thisLayout = new GridLayout();
+			final GridLayout thisLayout = new GridLayout();
 			thisLayout.numColumns = 3;
 			thisLayout.makeColumnsEqualWidth = true;
 
 			composite.setLayout(thisLayout);
-			Label label1 = new Label(composite, SWT.NONE);
+			final Label label1 = new Label(composite, SWT.NONE);
 			label1.setText("Force");
 
-			Label label2 = new Label(composite, SWT.NONE);
+			final Label label2 = new Label(composite, SWT.NONE);
 			label2.setText("Environment");
 
-			Label label3 = new Label(composite, SWT.NONE);
+			final Label label3 = new Label(composite, SWT.NONE);
 			label3.setText("Type");
 
 			_myForce = new List(composite, SWT.MULTI);
 			_myForce.setToolTipText(_forceTip);
-			GridData forceListLData = new GridData();
+			final GridData forceListLData = new GridData();
 			forceListLData.grabExcessHorizontalSpace = true;
 			forceListLData.verticalAlignment = GridData.BEGINNING;
 			forceListLData.horizontalAlignment = GridData.FILL;
@@ -145,14 +145,14 @@ public class TargetTypeHelper extends EditorHelper
 
 			_myType = new List(composite, SWT.MULTI);
 			_myType.setToolTipText(_typeTip);
-			GridData typeListLData = new GridData();
+			final GridData typeListLData = new GridData();
 			typeListLData.verticalAlignment = GridData.BEGINNING;
 			typeListLData.horizontalAlignment = GridData.FILL;
 			_myType.setLayoutData(typeListLData);
 
 			_myEnvironment = new List(composite, SWT.MULTI);
 			_myEnvironment.setToolTipText(_environmentTip);
-			GridData envListLData = new GridData();
+			final GridData envListLData = new GridData();
 			envListLData.grabExcessHorizontalSpace = true;
 			envListLData.verticalAlignment = GridData.BEGINNING;
 			envListLData.horizontalAlignment = GridData.FILL;
@@ -173,15 +173,15 @@ public class TargetTypeHelper extends EditorHelper
 		 */
 		private void setCurrentValues()
 		{
-			Vector<String> forces = new Vector<String>(0, 1);
-			Vector<String> types = new Vector<String>(0, 1);
-			Vector<String> envs = new Vector<String>(0, 1);
+			final Vector<String> forces = new Vector<String>(0, 1);
+			final Vector<String> types = new Vector<String>(0, 1);
+			final Vector<String> envs = new Vector<String>(0, 1);
 
 			// ok, sort out the forces
-			Collection<String> targetTypes = _current.getTargets();
-			for (Iterator<String> iter = targetTypes.iterator(); iter.hasNext();)
+			final Collection<String> targetTypes = _current.getTargets();
+			for (final Iterator<String> iter = targetTypes.iterator(); iter.hasNext();)
 			{
-				String type = (String) iter.next();
+				final String type = (String) iter.next();
 
 				// is this a force?
 				if (Category.getForces().contains(type))
@@ -198,20 +198,20 @@ public class TargetTypeHelper extends EditorHelper
 				}
 			}
 
-			String[] template = new String[] { "" };
+			final String[] template = new String[] { "" };
 			if (forces.size() > 0)
 			{
-				String[] vals = (String[]) forces.toArray(template);
+				final String[] vals = (String[]) forces.toArray(template);
 				_myForce.setSelection(vals);
 			}
 			if (types.size() > 0)
 			{
-				String[] vals = (String[]) types.toArray(template);
+				final String[] vals = (String[]) types.toArray(template);
 				_myType.setSelection(vals);
 			}
 			if (envs.size() > 0)
 			{
-				String[] vals = (String[]) envs.toArray(template);
+				final String[] vals = (String[]) envs.toArray(template);
 				_myEnvironment.setSelection(vals);
 			}
 		}
@@ -231,13 +231,13 @@ public class TargetTypeHelper extends EditorHelper
 			super.okPressed();
 		}
 
-		protected void setTypes(List holder, TargetType tt)
+		protected void setTypes(final List holder, final TargetType tt)
 		{
-			int[] forces = holder.getSelectionIndices();
+			final int[] forces = holder.getSelectionIndices();
 			for (int thisI = 0; thisI < forces.length; thisI++)
 			{
-				int index = forces[thisI];
-				String f = holder.getItem(index);
+				final int index = forces[thisI];
+				final String f = holder.getItem(index);
 				tt.addTargetType(f);
 			}
 		}
@@ -287,7 +287,7 @@ public class TargetTypeHelper extends EditorHelper
 		 * 
 		 * @param cellParent
 		 */
-		public TargetTypeCellEditor(Composite cellParent)
+		public TargetTypeCellEditor(final Composite cellParent)
 		{
 			super(cellParent);
 		}
@@ -301,14 +301,14 @@ public class TargetTypeHelper extends EditorHelper
 		 *          the parent control we belong to
 		 * @return
 		 */
-		protected Object openDialogBox(Control cellEditorWindow)
+		protected Object openDialogBox(final Control cellEditorWindow)
 		{
 			TargetType res = null;
 
-			TargetTypeDialog dialog = new TargetTypeDialog((TargetType) super.getValue(),
+			final TargetTypeDialog dialog = new TargetTypeDialog((TargetType) super.getValue(),
 					cellEditorWindow.getShell());
 
-			int response = dialog.open();
+			final int response = dialog.open();
 
 			if (response == org.eclipse.jface.dialogs.Dialog.OK)
 			{
@@ -362,9 +362,9 @@ public class TargetTypeHelper extends EditorHelper
 		 *          the parent control
 		 * @return the new button control
 		 */
-		protected Button createButton(Composite parent)
+		protected Button createButton(final Composite parent)
 		{
-			Button result = super.createButton(parent);
+			final Button result = super.createButton(parent);
 			result.setText("...");
 			return result;
 		}

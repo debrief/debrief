@@ -73,7 +73,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void start(BundleContext context) throws Exception
+	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
 		LoggingService.initialise(this);
@@ -86,7 +86,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void stop(BundleContext context) throws Exception
+	public void stop(final BundleContext context) throws Exception
 	{
 		plugin = null;
 		super.stop(context);
@@ -113,9 +113,9 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logThisError(int severity, String message, Throwable exception)
+	public static void logThisError(final int severity, final String message, final Throwable exception)
 	{
-		Status stat = new Status(severity, "org.mwc.asset.core", Status.OK,
+		final Status stat = new Status(severity, "org.mwc.asset.core", Status.OK,
 				message, exception);
 
 		if (getDefault() != null)
@@ -133,7 +133,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 	 *          the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path)
+	public static ImageDescriptor getImageDescriptor(final String path)
 	{
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.asset.core",
 				path);
@@ -142,18 +142,18 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 	protected static class XMLParticipantDropHandler extends XMLFileDropHandler
 	{
 		@SuppressWarnings("rawtypes")
-		public XMLParticipantDropHandler(String[] elementTypes, Class[] targetTypes)
+		public XMLParticipantDropHandler(final String[] elementTypes, final Class[] targetTypes)
 		{
 			super(elementTypes, targetTypes);
 		}
 
-		public void handleDrop(InputStream source, MWC.GUI.Editable targetElement,
-				Layers parent)
+		public void handleDrop(final InputStream source, final MWC.GUI.Editable targetElement,
+				final Layers parent)
 		{
-			ParticipantType part = ASSETReaderWriter.importParticipant("unknown",
+			final ParticipantType part = ASSETReaderWriter.importParticipant("unknown",
 					source);
-			ScenarioLayer layer = (ScenarioLayer) targetElement;
-			CoreScenario cs = (CoreScenario) layer.getScenario();
+			final ScenarioLayer layer = (ScenarioLayer) targetElement;
+			final CoreScenario cs = (CoreScenario) layer.getScenario();
 			cs.addParticipant(part.getId(), part);
 			// fire modified on the layer
 			parent.fireModified(layer);
@@ -173,43 +173,43 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 		// give the LayerManager our image creator.
 		CoreViewLabelProvider.addImageHelper(_myImageHelper);
 
-		XMLFileDropHandler parts = new XMLParticipantDropHandler(new String[]
+		final XMLFileDropHandler parts = new XMLParticipantDropHandler(new String[]
 		{ "SSK", "FixedWing", "Torpedo", "SSN", "Helo", "Surface" }, new Class[]
 		{ ScenarioLayer.class });
 
-		XMLFileDropHandler behaviours = new XMLFileDropHandler(new String[]
+		final XMLFileDropHandler behaviours = new XMLFileDropHandler(new String[]
 		{ "Waterfall", "Sequence", "Switch" }, new Class[]
 		{ BehavioursPlottable.class })
 		{
-			public void handleDrop(InputStream source,
-					MWC.GUI.Editable targetElement, Layers parent)
+			public void handleDrop(final InputStream source,
+					final MWC.GUI.Editable targetElement, final Layers parent)
 			{
 				// get the model for this element
-				BehavioursPlottable bp = (BehavioursPlottable) targetElement;
+				final BehavioursPlottable bp = (BehavioursPlottable) targetElement;
 
 				if (bp.getDecisionModel() instanceof BehaviourList)
 				{
-					BehaviourList bl = (BehaviourList) bp.getDecisionModel();
+					final BehaviourList bl = (BehaviourList) bp.getDecisionModel();
 					ASSETReaderWriter.importThis(bl, null, source);
 					parent.fireModified(bp.getTopLevelLayer());
 				}
 			}
 		};
 
-		XMLFileDropHandler sensors = new XMLFileDropHandler(new String[]
+		final XMLFileDropHandler sensors = new XMLFileDropHandler(new String[]
 		{ "BroadbandSensor", "ActiveBroadbandSensor",
 				"DippingActiveBroadbandSensor", "NarrowbandSensor",
 				"OpticLookupSensor", "RadarLookupSensor", "MADLookupSensor",
 				"ActiveInterceptSensor", }, new Class[]
 		{ SensorsPlottable.class })
 		{
-			public void handleDrop(InputStream source,
-					MWC.GUI.Editable targetElement, Layers parent)
+			public void handleDrop(final InputStream source,
+					final MWC.GUI.Editable targetElement, final Layers parent)
 			{
 				// get the model for this element
-				SensorsPlottable bp = (SensorsPlottable) targetElement;
+				final SensorsPlottable bp = (SensorsPlottable) targetElement;
 
-				SensorList sl = bp.getSensorFit();
+				final SensorList sl = bp.getSensorFit();
 				ASSETReaderWriter.importThis(sl, null, source);
 				parent.fireModified(bp.getTopLevelLayer());
 			}
@@ -221,9 +221,9 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
 	}
 
 	@Override
-	public void logError(int severity, String text, Exception e)
+	public void logError(final int severity, final String text, final Exception e)
 	{
-		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, text, e);
+		final Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, text, e);
 		getLog().log(stat);
 	}
 }

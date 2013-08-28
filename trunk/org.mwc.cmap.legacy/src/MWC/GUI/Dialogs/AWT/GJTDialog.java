@@ -14,13 +14,13 @@ public class GJTDialog extends Dialog {
 	private static final long serialVersionUID = 1L;
 	protected DialogClient client;
 	protected boolean      centered;
-	public void setVisible(boolean visible) {
+	public void setVisible(final boolean visible) {
 		pack();
 
 		if(centered) {
-			Dimension frameSize = getParent().getSize();
-			Point frameLoc  = getParent().getLocation();
-			Dimension mySize    = getSize();
+			final Dimension frameSize = getParent().getSize();
+			final Point frameLoc  = getParent().getLocation();
+			final Dimension mySize    = getSize();
 			int x,y;
 
 			x = frameLoc.x + (frameSize.width/2) -
@@ -33,29 +33,29 @@ public class GJTDialog extends Dialog {
 		super.setVisible(visible);
 	}
 	
-	public GJTDialog(Frame frame, String title, 
-					DialogClient aClient, boolean modal) {
+	public GJTDialog(final Frame frame, final String title, 
+					final DialogClient aClient, final boolean modal) {
 		this(frame, title, aClient, true, modal);
 	}
-	public GJTDialog(Frame frame, String title,
-					DialogClient aClient, boolean centered,
-					boolean modal) {
+	public GJTDialog(final Frame frame, final String title,
+					final DialogClient aClient, final boolean centered,
+					final boolean modal) {
 		super(frame, title, modal);
 
 		setClient(aClient);
 		setCentered(centered);
 
-		WindowAdapter wa = new myWindowAdapter();		
+		final WindowAdapter wa = new myWindowAdapter();		
 		addWindowListener(wa);
 	}
-	public void setCentered(boolean centered) {
+	public void setCentered(final boolean centered) {
 		this.centered = centered;
 	}
-	public void setClient(DialogClient client) {
+	public void setClient(final DialogClient client) {
 		this.client = client;
 	}
 	public void dispose() {
-		Frame f = Util.getFrame(this);
+		final Frame f = Util.getFrame(this);
 
 		super.dispose();
 
@@ -68,7 +68,7 @@ public class GJTDialog extends Dialog {
 
 	protected class myWindowAdapter extends WindowAdapter
 	{
-		public void windowClosing(WindowEvent event) {
+		public void windowClosing(final WindowEvent event) {
 			dispose();
 			if(client != null)
 				client.dialogCancelled(GJTDialog.this);

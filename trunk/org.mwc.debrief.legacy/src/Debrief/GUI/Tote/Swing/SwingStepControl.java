@@ -374,7 +374,7 @@ public final class SwingStepControl extends StepControl implements
 	// //////////////////////////////////////////////////////////
 	public SwingStepControl(final SwingPropertiesPanel theEditor, final Layers theData,
 			final PlainChart theChart, final MWC.GUI.Undo.UndoBuffer theBuffer,
-			final MyMetalToolBarUI.ToolbarOwner owner, ToolParent theParent)
+			final MyMetalToolBarUI.ToolbarOwner owner, final ToolParent theParent)
 	{
 
 		super(theParent);
@@ -474,7 +474,7 @@ public final class SwingStepControl extends StepControl implements
 		_middleRow.add("Center", _timeSlider);
 		_timeSlider.addChangeListener(new ChangeListener()
 		{
-			public void stateChanged(ChangeEvent e)
+			public void stateChanged(final ChangeEvent e)
 			{
 				if (!_updatingForm)
 				{
@@ -606,10 +606,10 @@ public final class SwingStepControl extends StepControl implements
 	/**
 	 * add a single keystroke handler
 	 */
-	private void assignThisKeystrokeHandler(JComponent component, JButton source,
-			int keyCode, int modifier)
+	private void assignThisKeystrokeHandler(final JComponent component, final JButton source,
+			final int keyCode, final int modifier)
 	{
-		KeyStroke newKeyStroke = KeyStroke.getKeyStroke(keyCode, modifier);
+		final KeyStroke newKeyStroke = KeyStroke.getKeyStroke(keyCode, modifier);
 		component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(newKeyStroke, source);
 		component.getActionMap().put(source, new FakeEvent(source));
 
@@ -643,7 +643,7 @@ public final class SwingStepControl extends StepControl implements
 	void newSliderTime()
 	{
 		// calculate the new time
-		HiResDate currentSliderTime = getSliderDate();
+		final HiResDate currentSliderTime = getSliderDate();
 
 		if (currentSliderTime != null)
 		{
@@ -674,14 +674,14 @@ public final class SwingStepControl extends StepControl implements
 				curValue *= 1000;
 			}
 
-			long newDate = getStartTime().getMicros() + curValue;
+			final long newDate = getStartTime().getMicros() + curValue;
 
 			res = new HiResDate(0, newDate);
 		}
 		return res;
 	}
 
-	private void setSliderDate(HiResDate newDate)
+	private void setSliderDate(final HiResDate newDate)
 	{
 
 		long offset = newDate.getMicros() - getStartTime().getMicros();
@@ -705,7 +705,7 @@ public final class SwingStepControl extends StepControl implements
 		if ((getStartTime() != null) && (getEndTime() != null))
 		{
 			// yes - initialise the ranges
-			long range = getEndTime().getMicros() - getStartTime().getMicros();
+			final long range = getEndTime().getMicros() - getStartTime().getMicros();
 
 			if (range > 0)
 			{
@@ -721,7 +721,7 @@ public final class SwingStepControl extends StepControl implements
 				}
 				else
 				{
-					long rangeMillis = range / 1000;
+					final long rangeMillis = range / 1000;
 					if (rangeMillis < Integer.MAX_VALUE)
 					{
 						// ok, we're going to run in millisecond resolution
@@ -771,13 +771,13 @@ public final class SwingStepControl extends StepControl implements
 		if (_theToolbar != null)
 		{
 			// can we get the painter
-			StepperListener painter = super.getCurrentPainter();
+			final StepperListener painter = super.getCurrentPainter();
 			if (painter instanceof Editable)
 			{
-				Editable el = (Editable) painter;
+				final Editable el = (Editable) painter;
 				if (el.hasEditor())
 				{
-					Editable.EditorType et = el.getInfo();
+					final Editable.EditorType et = el.getInfo();
 					_theEditor.addEditor(et, null);
 				}
 			}
@@ -856,7 +856,7 @@ public final class SwingStepControl extends StepControl implements
 	 */
 	public final void updateForm(final HiResDate DTG)
 	{
-		String newTime = getNewTime(DTG);
+		final String newTime = getNewTime(DTG);
 		_timeTxt.setText(newTime);
 
 		// and update the slider to reflect this new time
@@ -937,7 +937,7 @@ public final class SwingStepControl extends StepControl implements
 			}
 
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -1035,14 +1035,14 @@ public final class SwingStepControl extends StepControl implements
 		this.setEndTime(val);
 	}
 
-	public void setEndTime(HiResDate val)
+	public void setEndTime(final HiResDate val)
 	{
 		super.setEndTime(val);
 
 		resetTimeSlider();
 	}
 
-	public void setStartTime(HiResDate val)
+	public void setStartTime(final HiResDate val)
 	{
 		super.setStartTime(val);
 
@@ -1230,11 +1230,11 @@ public final class SwingStepControl extends StepControl implements
 		{
 
 			// create some dummy data so the panel has start/stop times
-			Layers layers = new Layers();
-			BaseLayer base = new BaseLayer();
+			final Layers layers = new Layers();
+			final BaseLayer base = new BaseLayer();
 			base.setName("Ian's layer");
 			layers.addThisLayer(base);
-			LabelWrapper label = new LabelWrapper("my label", new WorldLocation(12, 12, 100),
+			final LabelWrapper label = new LabelWrapper("my label", new WorldLocation(12, 12, 100),
 					Color.red, new HiResDate(120000000), new HiResDate(150000000));
 			base.add(label);
 

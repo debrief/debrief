@@ -33,12 +33,12 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 	private static class AddSensor extends CMAPOperation
 	{
 
-		private Layers _layers;
-		private Layer _parent;
-		private SensorWrapper _sensorWrapper;
+		private final Layers _layers;
+		private final Layer _parent;
+		private final SensorWrapper _sensorWrapper;
 
-		public AddSensor(Layers layers, Layer parent,
-				SensorWrapper sensor)
+		public AddSensor(final Layers layers, final Layer parent,
+				final SensorWrapper sensor)
 		{
 			super("Create sensor");
 			_parent = parent;
@@ -47,7 +47,7 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_parent.add(_sensorWrapper);
@@ -71,7 +71,7 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_parent.removeElement(_sensorWrapper);
@@ -88,8 +88,8 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 	 * @param parentLayers
 	 * @param subjects
 	 */
-	public void generate(IMenuManager parent, Layers theLayers,
-			Layer[] parentLayers, final Editable[] subjects)
+	public void generate(final IMenuManager parent, final Layers theLayers,
+			final Layer[] parentLayers, final Editable[] subjects)
 	{
 
 		// check only one item is selected
@@ -101,7 +101,7 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 		// right, go through the items and have a nice look at them
 		for (int i = 0; i < subjects.length; i++)
 		{
-			Editable thisE = subjects[i];
+			final Editable thisE = subjects[i];
 
 			// is this one we can watch?
 			if (thisE instanceof TrackWrapper)
@@ -110,7 +110,7 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 			}
 			else if (thisE instanceof SplittableLayer)
 			{
-				SplittableLayer sl = (SplittableLayer) thisE;
+				final SplittableLayer sl = (SplittableLayer) thisE;
 				
 				// right, is this the sensors layer?
 				if (sl.getName().equals(TrackWrapper.SENSORS_LAYER_NAME))
@@ -124,7 +124,7 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 		{
 			{
 				// ok, create the action
-				Action createSensor = getAction(host, theLayers);
+				final Action createSensor = getAction(host, theLayers);
 
 				// ok - set the image descriptor
 				createSensor.setImageDescriptor(CorePlugin
@@ -153,9 +153,9 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 			public void run()
 			{
 				// get the supporting data
-				NewSensorWizard wizard = new NewSensorWizard();
+				final NewSensorWizard wizard = new NewSensorWizard();
 
-				WizardDialog dialog = new WizardDialog(Display.getCurrent()
+				final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 						.getActiveShell(), wizard);
 				TrayDialog.setDialogHelpAvailable(true);
 				dialog.setHelpAvailable(true);
@@ -165,10 +165,10 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 				// did it work?
 				if (dialog.getReturnCode() == WizardDialog.OK)
 				{
-					SensorWrapper newSensor = wizard.getSensorWrapper();
+					final SensorWrapper newSensor = wizard.getSensorWrapper();
 					// ok, go for it.
 					// sort it out as an operation
-					IUndoableOperation addSensor = new AddSensor(layers, parent, newSensor);
+					final IUndoableOperation addSensor = new AddSensor(layers, parent, newSensor);
 
 					// ok, stick it on the buffer
 					CorePlugin.run(addSensor);

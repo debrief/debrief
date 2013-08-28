@@ -115,12 +115,12 @@ public final class NewSession extends PlainTool
   ///////////////////////////////////////////////////////////////
   // constructor
   ///////////////////////////////////////////////////////////////
-  public NewSession(Application theApplication)
+  public NewSession(final Application theApplication)
   {
     this(theApplication, false);
   }
 
-  public NewSession(Application application, boolean loadLayers)
+  public NewSession(final Application application, final boolean loadLayers)
   {
     super(application, "New Plot", "images/new.gif");
     _theApplication = application;
@@ -155,11 +155,11 @@ public final class NewSession extends PlainTool
     {
       try
       {
-        File defaultLayers = new File(DEFAULT_NAME);
+        final File defaultLayers = new File(DEFAULT_NAME);
         if (defaultLayers.exists())
         {
           // ok.  try to load the default layers
-          MWCXMLReader handler = new PlotHandler(_theApplication, theSess, DEFAULT_NAME);
+          final MWCXMLReader handler = new PlotHandler(_theApplication, theSess, DEFAULT_NAME);
 
           // note, the handler give the session to the application all on it's own
           DebriefXMLReaderWriter.importThis(handler, DEFAULT_NAME, new FileInputStream(DEFAULT_NAME));
@@ -171,7 +171,7 @@ public final class NewSession extends PlainTool
                                                                          System.getProperty("line.separator") + "Please create this file if required (as described in Debrief User Guide).");
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e, "Problem occured whilst trying to load default layers");
       }

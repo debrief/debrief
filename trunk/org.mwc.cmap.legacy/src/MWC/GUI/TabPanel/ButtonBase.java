@@ -101,13 +101,13 @@ public abstract class ButtonBase extends Canvas
         	setBorderColor(Color.black);
         	setButtonColor(Color.lightGray);
         }
-        catch (PropertyVetoException exc) {}
+        catch (final PropertyVetoException exc) {}
 
         if(OS.isWindows())
         {
             try {
                 setShowFocus(true);
-            } catch (PropertyVetoException e) { }
+            } catch (final PropertyVetoException e) { }
         }
 	}
 
@@ -118,12 +118,12 @@ public abstract class ButtonBase extends Canvas
      * if the specified property value is unacceptable
      * @see #getBevelHeight
      */
-    public void setBevelHeight(int height) throws PropertyVetoException
+    public void setBevelHeight(final int height) throws PropertyVetoException
     {
     	if(bevel != height)
     	{
-			Integer oldValue = new Integer(bevel);
-			Integer newValue = new Integer(height);
+			final Integer oldValue = new Integer(bevel);
+			final Integer newValue = new Integer(height);
 
 			vetos.fireVetoableChange("BevelHeight", oldValue, newValue);
 
@@ -154,12 +154,12 @@ public abstract class ButtonBase extends Canvas
      * @see #setNotifyDelay
      * @see #getNotifyDelay
      */
-    public void setNotifyWhilePressed(boolean flag) throws PropertyVetoException
+    public void setNotifyWhilePressed(final boolean flag) throws PropertyVetoException
     {
     	if(notifyWhilePressed != flag)
     	{
-			Boolean oldValue = new Boolean(notifyWhilePressed);
-			Boolean newValue = new Boolean(flag);
+			final Boolean oldValue = new Boolean(notifyWhilePressed);
+			final Boolean newValue = new Boolean(flag);
 
 			vetos.fireVetoableChange("NotifyWhilePressed", oldValue, newValue);
 
@@ -209,12 +209,12 @@ public abstract class ButtonBase extends Canvas
      * @see #setNotifyWhilePressed
      * @see #getNotifyDelay
      */
-    public void setNotifyDelay(int delay) throws PropertyVetoException
+    public void setNotifyDelay(final int delay) throws PropertyVetoException
     {
     	if(notifyDelay != delay)
     	{
-			Integer oldValue = new Integer(notifyDelay);
-			Integer newValue = new Integer(delay);
+			final Integer oldValue = new Integer(notifyDelay);
+			final Integer newValue = new Integer(delay);
 
 			vetos.fireVetoableChange("NotifyDelay", oldValue, newValue);
 	        notifyDelay = delay;
@@ -245,12 +245,12 @@ public abstract class ButtonBase extends Canvas
      * @see #setBevelHeight
      * @see #getBevelHeight
      */
-    public void setUseOffset(boolean flag) throws PropertyVetoException
+    public void setUseOffset(final boolean flag) throws PropertyVetoException
     {
 		if(useOffset != flag)
 		{
-			Boolean oldValue = new Boolean(useOffset);
-			Boolean newValue = new Boolean(flag);
+			final Boolean oldValue = new Boolean(useOffset);
+			final Boolean newValue = new Boolean(flag);
 			vetos.fireVetoableChange("UseOffset", oldValue, newValue);
 
 	        useOffset = flag;
@@ -276,12 +276,12 @@ public abstract class ButtonBase extends Canvas
      * if the specified property value is unacceptable
      * @see #isShowFocus
      */
-    public void setShowFocus(boolean flag) throws PropertyVetoException
+    public void setShowFocus(final boolean flag) throws PropertyVetoException
     {
     	if(showFocus != flag)
     	{
-			Boolean oldValue = new Boolean(showFocus);
-			Boolean newValue = new Boolean(flag);
+			final Boolean oldValue = new Boolean(showFocus);
+			final Boolean newValue = new Boolean(flag);
 			vetos.fireVetoableChange("ShowFocus", oldValue, newValue);
 
 	        showFocus = flag;
@@ -318,12 +318,12 @@ public abstract class ButtonBase extends Canvas
      * if the specified property value is unacceptable
      * @see #isShowURLStatus
      */
-    public void setShowURLStatus(boolean flag) throws PropertyVetoException
+    public void setShowURLStatus(final boolean flag) throws PropertyVetoException
     {
     	if(showURLStatus != flag)
     	{
-			Boolean oldValue = new Boolean(showURLStatus);
-			Boolean newValue = new Boolean(flag);
+			final Boolean oldValue = new Boolean(showURLStatus);
+			final Boolean newValue = new Boolean(flag);
 			vetos.fireVetoableChange("ShowURLStatus", oldValue, newValue);
 
 	        showURLStatus = flag;
@@ -352,11 +352,11 @@ public abstract class ButtonBase extends Canvas
      * if the specified property value is unacceptable
 	 * @see #getBorderColor
 	 */
-	public void setBorderColor(Color color) throws PropertyVetoException
+	public void setBorderColor(final Color color) throws PropertyVetoException
 	{
 		if (!GeneralUtils.objectsEqual(borderColor, color))
 		{
-			Color oldValue = borderColor;
+			final Color oldValue = borderColor;
 
 			vetos.fireVetoableChange("BorderColor", oldValue, color);
 
@@ -365,7 +365,7 @@ public abstract class ButtonBase extends Canvas
 			{
 				disabledBorderColor	= ColorUtils.lighten(borderColor,	0.466);
 			}
-			catch (IllegalArgumentException exc) {}
+			catch (final IllegalArgumentException exc) {}
 			repaint();
 
 			changes.firePropertyChange("BorderColor", oldValue, color);
@@ -390,11 +390,11 @@ public abstract class ButtonBase extends Canvas
      * if the specified property value is unacceptable
 	 * @see #getButtonColor
 	 */
-	public void setButtonColor(Color color) throws PropertyVetoException
+	public void setButtonColor(final Color color) throws PropertyVetoException
 	{
 		if (!GeneralUtils.objectsEqual(buttonColor, color))
 		{
-			Color oldValue = buttonColor;
+			final Color oldValue = buttonColor;
 
 			vetos.fireVetoableChange("ButtonColor", oldValue, color);
 			buttonColor = color;
@@ -409,7 +409,7 @@ public abstract class ButtonBase extends Canvas
 				disabledButtonColor		= ColorUtils.lighten(buttonColor,	0.333);
 				pressedButtonColor		= ColorUtils.darken(buttonColor,	0.250);
 			}
-			catch (IllegalArgumentException exc) {}
+			catch (final IllegalArgumentException exc) {}
 			repaint();
 
 			changes.firePropertyChange("ButtonColor", oldValue, color);
@@ -433,11 +433,11 @@ public abstract class ButtonBase extends Canvas
      * if the specified property value is unacceptable
      * @see #getLinkURL
      */
-    public void setLinkURL(URL url) throws PropertyVetoException
+    public void setLinkURL(final URL url) throws PropertyVetoException
     {
     	if(!GeneralUtils.objectsEqual(linkURL, url))
     	{
-    		URL oldValue = linkURL;
+    		final URL oldValue = linkURL;
 
 			vetos.fireVetoableChange("LinkURL", oldValue, url);
 
@@ -476,9 +476,9 @@ public abstract class ButtonBase extends Canvas
      * @see symantec.itools.util.GeneralUtils#frameTarget_top
      * @see symantec.itools.util.GeneralUtils#frameTarget_blank
      */
-    public void setFrame(String newFrame) throws PropertyVetoException
+    public void setFrame(final String newFrame) throws PropertyVetoException
     {
-    	String oldValue = frame;
+    	final String oldValue = frame;
 
 		vetos.fireVetoableChange("Frame", oldValue, newFrame);
 
@@ -551,7 +551,7 @@ public abstract class ButtonBase extends Canvas
      * @param flag true if the component is to be enabled; false if it is to be disabled.
      * @see java.awt.Component#isEnabled
      */
-    public void setEnabled(boolean flag)
+    public void setEnabled(final boolean flag)
     {
     	if(isEnabled() != flag)
     	{
@@ -725,7 +725,7 @@ public abstract class ButtonBase extends Canvas
      * @see java.awt.Component#repaint
      * @see #paint
      */
-    public void update(Graphics g)
+    public void update(final Graphics g)
     {
         paint(g);
     }
@@ -742,7 +742,7 @@ public abstract class ButtonBase extends Canvas
      * @see java.awt.Component#repaint
      * @see #update
 	 */
-    public void paint(Graphics g)
+    public void paint(final Graphics g)
     {
 		updateButtonImage();
 		g.drawImage(buttonImage, 0, 0, this);
@@ -779,7 +779,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to add.
      * @see #removePropertyChangeListener
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener)
+    public void addPropertyChangeListener(final PropertyChangeListener listener)
     {
     	changes.addPropertyChangeListener(listener);
     }
@@ -789,7 +789,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to remove.
      * @see #addPropertyChangeListener
      */
-    public void removePropertyChangeListener(PropertyChangeListener listener)
+    public void removePropertyChangeListener(final PropertyChangeListener listener)
     {
     	changes.removePropertyChangeListener(listener);
     }
@@ -799,7 +799,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to add.
      * @see #removeVetoableChangeListener
      */
-    public void addVetoableChangeListener(VetoableChangeListener listener)
+    public void addVetoableChangeListener(final VetoableChangeListener listener)
     {
 		vetos.addVetoableChangeListener(listener);
     }
@@ -809,7 +809,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to remove.
      * @see #addVetoableChangeListener
      */
-    public void removeVetoableChangeListener(VetoableChangeListener listener)
+    public void removeVetoableChangeListener(final VetoableChangeListener listener)
     {
     	vetos.removeVetoableChangeListener(listener);
     }
@@ -819,7 +819,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to add.
      * @see #removeBevelHeightListener(java.beans.PropertyChangeListener)
      */
-    public void addBevelHeightListener(PropertyChangeListener listener)
+    public void addBevelHeightListener(final PropertyChangeListener listener)
     {
     	changes.addPropertyChangeListener("BevelHeight", listener);
     }
@@ -829,7 +829,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to remove.
      * @see #addBevelHeightListener(java.beans.PropertyChangeListener)
      */
-    public void removeBevelHeightListener(PropertyChangeListener listener)
+    public void removeBevelHeightListener(final PropertyChangeListener listener)
     {
     	changes.removePropertyChangeListener("BevelHeight", listener);
     }
@@ -839,7 +839,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to add.
      * @see #removeBevelHeightListener(java.beans.VetoableChangeListener)
      */
-    public void addBevelHeightListener(VetoableChangeListener listener)
+    public void addBevelHeightListener(final VetoableChangeListener listener)
     {
     	vetos.addVetoableChangeListener("BevelHeight", listener);
     }
@@ -849,7 +849,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to remove.
      * @see #addBevelHeightListener(java.beans.VetoableChangeListener)
      */
-    public void removeBevelHeightListener(VetoableChangeListener listener)
+    public void removeBevelHeightListener(final VetoableChangeListener listener)
     {
     	vetos.removeVetoableChangeListener("BevelHeight", listener);
     }
@@ -859,7 +859,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to add.
      * @see #removeFrameListener(java.beans.PropertyChangeListener)
      */
-    public void addFrameListener(PropertyChangeListener listener)
+    public void addFrameListener(final PropertyChangeListener listener)
     {
     	changes.addPropertyChangeListener("Frame", listener);
     }
@@ -869,7 +869,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to remove.
      * @see #addFrameListener(java.beans.PropertyChangeListener)
      */
-    public void removeFrameListener(PropertyChangeListener listener)
+    public void removeFrameListener(final PropertyChangeListener listener)
     {
     	changes.removePropertyChangeListener("Frame", listener);
     }
@@ -879,7 +879,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to add.
      * @see #removeFrameListener(java.beans.VetoableChangeListener)
      */
-    public void addFrameListener(VetoableChangeListener listener)
+    public void addFrameListener(final VetoableChangeListener listener)
     {
     	vetos.addVetoableChangeListener("Frame", listener);
     }
@@ -889,7 +889,7 @@ public abstract class ButtonBase extends Canvas
      * @param listener the listener to remove.
      * @see #addFrameListener(java.beans.VetoableChangeListener)
      */
-    public void removeFrameListener(VetoableChangeListener listener)
+    public void removeFrameListener(final VetoableChangeListener listener)
     {
     	vetos.removeVetoableChangeListener("Frame", listener);
     }
@@ -900,9 +900,9 @@ public abstract class ButtonBase extends Canvas
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-    public void setActionCommand(String command) throws PropertyVetoException
+    public void setActionCommand(final String command) throws PropertyVetoException
     {
-    	String oldValue = actionCommand;
+    	final String oldValue = actionCommand;
 
 		vetos.fireVetoableChange("ActionCommand", oldValue, command);
         actionCommand = command;
@@ -923,7 +923,7 @@ public abstract class ButtonBase extends Canvas
      * from this button.
      * @param l the action listener
      */
-	public void addActionListener(ActionListener l)
+	public void addActionListener(final ActionListener l)
 	{
 		actionListener = AWTEventMulticaster.add(actionListener, l);
 	}
@@ -933,7 +933,7 @@ public abstract class ButtonBase extends Canvas
      * action events from this button.
      * @param l the action listener
      */
-	public void removeActionListener(ActionListener l)
+	public void removeActionListener(final ActionListener l)
 	{
 		actionListener = AWTEventMulticaster.remove(actionListener, l);
 	}
@@ -945,13 +945,13 @@ public abstract class ButtonBase extends Canvas
 		 */
 		private static final long serialVersionUID = 1L;
 
-			public void focusGained(FocusEvent e)
+			public void focusGained(final FocusEvent e)
 	    {
 	        hasFocus = true;
 	        repaint();
 	    }
 
-	    public void focusLost(FocusEvent e)
+	    public void focusLost(final FocusEvent e)
 	    {
 	        hasFocus = false;
 	        repaint();
@@ -964,9 +964,9 @@ public abstract class ButtonBase extends Canvas
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-			public void keyPressed(KeyEvent evt)
+			public void keyPressed(final KeyEvent evt)
 	    {
-	        boolean isSpaceBar = (evt.getKeyCode() & KeyEvent.VK_SPACE) == KeyEvent.VK_SPACE;
+	        final boolean isSpaceBar = (evt.getKeyCode() & KeyEvent.VK_SPACE) == KeyEvent.VK_SPACE;
 
 	        if(isSpaceBar && hasFocus && showFocus && !OS.isMacintosh()) {
 	        inButton = true;
@@ -985,9 +985,9 @@ public abstract class ButtonBase extends Canvas
 	        }
 
 	    }
-	    public void keyReleased(KeyEvent evt)
+	    public void keyReleased(final KeyEvent evt)
 	    {
-	        boolean isSpaceBar = (evt.getKeyCode() & KeyEvent.VK_SPACE) == KeyEvent.VK_SPACE;
+	        final boolean isSpaceBar = (evt.getKeyCode() & KeyEvent.VK_SPACE) == KeyEvent.VK_SPACE;
 
 	        if(isSpaceBar && hasFocus && showFocus && !OS.isMacintosh()) {
 	        inButton = false;
@@ -1035,7 +1035,7 @@ public abstract class ButtonBase extends Canvas
 		 * @see #setNotifyDelay
 		 * @see #mouseReleased
 		 */
-		public void mousePressed(MouseEvent e)
+		public void mousePressed(final MouseEvent e)
 		{
 	        requestFocus();
 	        notified = false;
@@ -1059,7 +1059,7 @@ public abstract class ButtonBase extends Canvas
 	     * @param e the MouseEvent
 	     * @see #mousePressed
 	     */
-	    public void mouseReleased(MouseEvent e)
+	    public void mouseReleased(final MouseEvent e)
 	    {
 	        if (notifyTimer != null && running)
 	        {
@@ -1089,7 +1089,7 @@ public abstract class ButtonBase extends Canvas
 		 * Handles Mouse Entered events
 		 * @param e the MouseEvent
 		 */
-		public void mouseEntered(MouseEvent e)
+		public void mouseEntered(final MouseEvent e)
 		{
 	        inButton = true;
 
@@ -1119,7 +1119,7 @@ public abstract class ButtonBase extends Canvas
 		 * Handles Mouse Exited events
 		 * @param e the MouseEvent
 		 */
-		public void mouseExited(MouseEvent e)
+		public void mouseExited(final MouseEvent e)
 		{
 	        inButton = false;
 
@@ -1158,7 +1158,7 @@ public abstract class ButtonBase extends Canvas
 		 * Handles Action events
 		 * @param e the ActionEvent
 		 */
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(final ActionEvent e)
 		{
 	        if (e.getSource() == notifyTimer && notifyWhilePressed && !java.beans.Beans.isDesignTime())
 	        {
@@ -1189,9 +1189,9 @@ public abstract class ButtonBase extends Canvas
 	     * @exception PropertyVetoException if the recipient wishes the property
 	     *              change to be rolled back.
 	     */
-	    public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException
+	    public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException
 	    {
-	    	int i = ((Integer)e.getNewValue()).intValue();
+	    	final int i = ((Integer)e.getNewValue()).intValue();
 	        if (!isValidBevelSize(i))
 	        {
 	            throw new PropertyVetoException("Invalid bevel size: " + i, e);
@@ -1219,9 +1219,9 @@ public abstract class ButtonBase extends Canvas
 	     * @exception PropertyVetoException if the recipient wishes the property
 	     *              change to be rolled back.
 	     */
-	    public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException
+	    public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException
 	    {
-	    	String string = (String)e.getNewValue();
+	    	final String string = (String)e.getNewValue();
 	        if (!isValidFrame(string))
 	        {
 	            throw new PropertyVetoException("Invalid Frame: " + string, e);
@@ -1243,9 +1243,9 @@ public abstract class ButtonBase extends Canvas
      * @param i the given bevel size
      * @return true if the given bevel size is acceptable, false if not.
      */
-    protected boolean isValidBevelSize(int i)
+    protected boolean isValidBevelSize(final int i)
     {
-        Dimension s = getSize();
+        final Dimension s = getSize();
 
         if (i < 0 || i >= (s.width / 2) || i >= (s.height / 2))
             return false;
@@ -1263,7 +1263,7 @@ public abstract class ButtonBase extends Canvas
      * @see symantec.itools.util.GeneralUtils#frameTarget_top
      * @see symantec.itools.util.GeneralUtils#frameTarget_blank
      */
-    protected boolean isValidFrame(String string)
+    protected boolean isValidFrame(final String string)
     {
     	if(string == null || string.equals(""))
     		return true;
@@ -1297,7 +1297,7 @@ public abstract class ButtonBase extends Canvas
      * Sets the applet context used to view documents.
      * @param c the new applet context
      */
-    protected void setAppletContext(AppletContext c)
+    protected void setAppletContext(final AppletContext c)
     {
         context = c;
     }
@@ -1309,31 +1309,31 @@ public abstract class ButtonBase extends Canvas
 	 */
 	protected void updateButtonImage()
 	{
-        Dimension s	= getSize();
-        int width	= s.width;
-        int height	= s.height;
+        final Dimension s	= getSize();
+        final int width	= s.width;
+        final int height	= s.height;
         int x		= bevel  + 1;
         int y		= bevel  + 1;
-        int w		= width  - 1;
-        int h		= height - 1;
+        final int w		= width  - 1;
+        final int h		= height - 1;
         int i;
         Color highlight1, highlight2, fillColor, tempBorderColor;
-		boolean raised = !(pressed && inButton);
+		final boolean raised = !(pressed && inButton);
 
 		if(isButtonImageInvalid())
 		{
 			buttonImage = createImage(width, height);
 			try
 			{
-	            MediaTracker tracker = new MediaTracker(this);
+	            final MediaTracker tracker = new MediaTracker(this);
 	            tracker.addImage(buttonImage, 0);
 	            tracker.waitForID(0);
             }
-            catch(InterruptedException e){}
+            catch(final InterruptedException e){}
         }
 
         buttonImageGraphics = buttonImage.getGraphics();
-        Color oldColor = buttonImageGraphics.getColor();
+        final Color oldColor = buttonImageGraphics.getColor();
 
 		if(isEnabled())	//Enabled
 		{
@@ -1432,7 +1432,7 @@ public abstract class ButtonBase extends Canvas
 	 */
 	protected boolean isButtonImageInvalid()
 	{
-		Dimension s = getSize();
+		final Dimension s = getSize();
 		return (buttonImage == null || s.width	 != buttonImage.getWidth(this) || s.height != buttonImage.getHeight(this));
 	}
 
@@ -1547,10 +1547,10 @@ public abstract class ButtonBase extends Canvas
 	private Color pressedButtonColor	= null;
     private Key key = null;
     private Focus focus = null;
-    private Action	action		= new Action();
+    private final Action	action		= new Action();
     private Mouse		mouse		= null;
     private BevelVeto	bevelVeto	= null;
     private FrameVeto	frameVeto	= null;
-	private VetoableChangeSupport vetos = new VetoableChangeSupport(this);
-    private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+	private final VetoableChangeSupport vetos = new VetoableChangeSupport(this);
+    private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
 }

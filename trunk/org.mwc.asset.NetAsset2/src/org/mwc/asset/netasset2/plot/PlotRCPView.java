@@ -21,9 +21,9 @@ public class PlotRCPView extends ViewPart implements IAdaptable
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
-		VPlot plot = new VPlot(parent, SWT.NONE);
+		final VPlot plot = new VPlot(parent, SWT.NONE);
 		_mover = plot;
 		_detector = plot;
 		_timer = plot;
@@ -38,7 +38,7 @@ public class PlotRCPView extends ViewPart implements IAdaptable
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 

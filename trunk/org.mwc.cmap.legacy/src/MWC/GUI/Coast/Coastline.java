@@ -25,17 +25,17 @@ public class Coastline implements Serializable
 	protected final Vector<CoastSegment> _data;
 	protected WorldArea _myArea;
 
-	public Coastline(InputStream str)
+	public Coastline(final InputStream str)
 	{
 		_data = new Vector<CoastSegment>(0, 1);
 		CoastSegment cs = null;
 		String thisLine = null;
-		int count = 0;
+		final int count = 0;
 
 		try
 		{
 			// DataInputStream dis = new DataInputStream(str);
-			BufferedReader dis = new BufferedReader(new InputStreamReader(str));
+			final BufferedReader dis = new BufferedReader(new InputStreamReader(str));
 
 			boolean segment_saved = false;
 
@@ -64,13 +64,13 @@ public class Coastline implements Serializable
 				else
 				{
 					// tokenize it
-					StringTokenizer st = new StringTokenizer(thisLine);
+					final StringTokenizer st = new StringTokenizer(thisLine);
 					// note that we read in the long before the lat from the file
-					String longStr = st.nextToken();
-					String latStr = st.nextToken();
-					double _lat = Double.valueOf(latStr).doubleValue();
-					double _long = Double.valueOf(longStr).doubleValue();
-					WorldLocation pt = new WorldLocation(_lat, _long, 0);
+					final String longStr = st.nextToken();
+					final String latStr = st.nextToken();
+					final double _lat = Double.valueOf(latStr).doubleValue();
+					final double _long = Double.valueOf(longStr).doubleValue();
+					final WorldLocation pt = new WorldLocation(_lat, _long, 0);
 
 					if (cs != null)
 					{
@@ -92,7 +92,7 @@ public class Coastline implements Serializable
 			}
 
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -103,11 +103,11 @@ public class Coastline implements Serializable
 
 	private void resetArea()
 	{
-		Enumeration<CoastSegment> enumer = _data.elements();
+		final Enumeration<CoastSegment> enumer = _data.elements();
 		WorldArea res = null;
 		while (enumer.hasMoreElements())
 		{
-			CoastSegment seg = (CoastSegment) enumer.nextElement();
+			final CoastSegment seg = (CoastSegment) enumer.nextElement();
 			if (res == null)
 			{
 				res = seg.getBounds();

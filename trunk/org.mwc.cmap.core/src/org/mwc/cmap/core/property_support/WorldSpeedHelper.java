@@ -57,7 +57,7 @@ public class WorldSpeedHelper extends EditorHelper
 		 *          the units for the value
 		 * @return an object representing the new data value
 		 */
-		public Object createResultsObject(double dist, int units)
+		public Object createResultsObject(final double dist, final int units)
 		{
 			return new WorldSpeed(dist, units);
 		}
@@ -67,7 +67,7 @@ public class WorldSpeedHelper extends EditorHelper
 		 * 
 		 * @param value
 		 */
-		public void storeMe(Object value)
+		public void storeMe(final Object value)
 		{
 			_myVal = (WorldSpeed) value;
 		}
@@ -88,22 +88,22 @@ public class WorldSpeedHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new ValueWithUnitsCellEditor2(parent, "speed", "units",
 				new WorldSpeedModel());
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
 				return element.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -113,7 +113,7 @@ public class WorldSpeedHelper extends EditorHelper
 	}
 
 	@Override
-	public Control getEditorControlFor(Composite parent,
+	public Control getEditorControlFor(final Composite parent,
 			final IDebriefProperty property)
 	{
 		final ValueWithUnitsControl control = new ValueWithUnitsControl(parent, "Speed", "Units",

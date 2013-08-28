@@ -54,8 +54,8 @@ public abstract class PolygonEditorControl extends
 	// }
 	// }
 
-	public PolygonEditorControl(org.eclipse.swt.widgets.Composite parent,
-			int style)
+	public PolygonEditorControl(final org.eclipse.swt.widgets.Composite parent,
+			final int style)
 	{
 		super(parent, style);
 		initGUI();
@@ -77,9 +77,9 @@ public abstract class PolygonEditorControl extends
 			this.setLayout(new GridLayout());
 			{
 				topHolder = new Composite(this, SWT.NONE);
-				FillLayout topHolderLayout = new FillLayout(
+				final FillLayout topHolderLayout = new FillLayout(
 						org.eclipse.swt.SWT.HORIZONTAL);
-				GridData topHolderLData = new GridData();
+				final GridData topHolderLData = new GridData();
 				topHolderLData.horizontalAlignment = GridData.FILL;
 				topHolderLData.grabExcessHorizontalSpace = true;
 				topHolder.setLayoutData(topHolderLData);
@@ -91,13 +91,13 @@ public abstract class PolygonEditorControl extends
 				}
 				{
 					btnHolder = new Composite(topHolder, SWT.NONE);
-					GridLayout btnHolderLayout = new GridLayout();
+					final GridLayout btnHolderLayout = new GridLayout();
 					btnHolderLayout.makeColumnsEqualWidth = true;
 					btnHolderLayout.numColumns = 2;
 					btnHolder.setLayout(btnHolderLayout);
 					{
 						upBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
-						GridData upBtnLData = new GridData();
+						final GridData upBtnLData = new GridData();
 						upBtnLData.horizontalAlignment = GridData.FILL;
 						upBtnLData.grabExcessHorizontalSpace = true;
 						upBtn.setLayoutData(upBtnLData);
@@ -107,7 +107,7 @@ public abstract class PolygonEditorControl extends
 					}
 					{
 						pasteBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
-						GridData downBtnLData = new GridData();
+						final GridData downBtnLData = new GridData();
 						downBtnLData.horizontalAlignment = GridData.FILL;
 						downBtnLData.grabExcessHorizontalSpace = true;
 						pasteBtn.setLayoutData(downBtnLData);
@@ -117,7 +117,7 @@ public abstract class PolygonEditorControl extends
 					}
 					{
 						newBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
-						GridData newBtnLData = new GridData();
+						final GridData newBtnLData = new GridData();
 						newBtnLData.horizontalAlignment = GridData.FILL;
 						newBtnLData.grabExcessHorizontalSpace = true;
 						newBtn.setLayoutData(newBtnLData);
@@ -127,7 +127,7 @@ public abstract class PolygonEditorControl extends
 					}
 					{
 						delBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
-						GridData DelBtnLData = new GridData();
+						final GridData DelBtnLData = new GridData();
 						DelBtnLData.horizontalAlignment = GridData.FILL;
 						DelBtnLData.grabExcessHorizontalSpace = true;
 						delBtn.setLayoutData(DelBtnLData);
@@ -138,7 +138,7 @@ public abstract class PolygonEditorControl extends
 				}
 			}
 			{
-				GridData pointList2LData = new GridData();
+				final GridData pointList2LData = new GridData();
 				pointList2LData.grabExcessHorizontalSpace = true;
 				pointList2LData.horizontalAlignment = GridData.FILL;
 				pointList2LData.verticalAlignment = GridData.FILL;
@@ -148,7 +148,7 @@ public abstract class PolygonEditorControl extends
 			}
 			{
 				editorPanel = new Label(this, SWT.NONE);
-				GridData editorPanelLData = new GridData();
+				final GridData editorPanelLData = new GridData();
 				editorPanelLData.horizontalAlignment = GridData.FILL;
 				editorPanelLData.grabExcessHorizontalSpace = true;
 				editorPanelLData.verticalAlignment = GridData.END;
@@ -157,7 +157,7 @@ public abstract class PolygonEditorControl extends
 			}
 			this.layout();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Problem layout out Polygon editor gui", e);

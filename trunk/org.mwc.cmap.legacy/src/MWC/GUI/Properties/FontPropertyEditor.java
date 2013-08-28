@@ -67,13 +67,13 @@ public class FontPropertyEditor extends PropertyEditorSupport
 
   public String getAsText()
   {
-    String res = theFont.getName() + " " + theFont.getSize() + " pt";
+    final String res = theFont.getName() + " " + theFont.getSize() + " pt";
     return res;
   }
 
   public String[] getTags()
   {
-    String tags[] = {"6",
+    final String tags[] = {"6",
                    "8",
                    "10",
                    "14",
@@ -86,7 +86,7 @@ public class FontPropertyEditor extends PropertyEditorSupport
     return theFont;
   }
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Font)
       theFont = (Font)p1;
@@ -94,10 +94,10 @@ public class FontPropertyEditor extends PropertyEditorSupport
   
   
 
-  public void setAsText(String p1)
+  public void setAsText(final String p1)
   {
-    Integer i = Integer.valueOf(p1);
-    Font newF = new Font(theFont.getName(), 0, i.intValue());
+    final Integer i = Integer.valueOf(p1);
+    final Font newF = new Font(theFont.getName(), 0, i.intValue());
     theFont = newF;
   }
 

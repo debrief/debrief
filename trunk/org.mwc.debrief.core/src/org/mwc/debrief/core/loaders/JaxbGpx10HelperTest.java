@@ -28,23 +28,23 @@ public class JaxbGpx10HelperTest
 	@Test
 	public void unmarshallTrackWithAllData()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx_1_0.xml"), null);
+		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx_1_0.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track
-		TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
+		final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
 		assertNotNull(track);
 		assertEquals("NELSON", track.getName());
 
 		// assert segment
-		SegmentList segments = track.getSegments();
+		final SegmentList segments = track.getSegments();
 		assertNotNull(segments);
 		assertEquals("Only 1 segment is present in the gpx xml", 1, segments.size());
 
-		TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
+		final TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
 
 		// assert Fix
-		WorldLocation trackStart = segment.getTrackStart();
+		final WorldLocation trackStart = segment.getTrackStart();
 		assertNotNull("Since there is only one track it should be the start of the track ", trackStart);
 
 		assertEquals(22.1862861, trackStart.getLat(), 0.0000001);
@@ -52,7 +52,7 @@ public class JaxbGpx10HelperTest
 		assertEquals(0.000, trackStart.getDepth(), 0.0000001);
 
 		int trackPointCount = 0;
-		Enumeration<Editable> elements = segment.elements();
+		final Enumeration<Editable> elements = segment.elements();
 		while (elements.hasMoreElements())
 		{
 			trackPointCount++;
@@ -61,7 +61,7 @@ public class JaxbGpx10HelperTest
 		}
 		assertEquals("5 track points are present in the gpx xml", 5, trackPointCount);
 
-		FixWrapper fix = (FixWrapper) segment.elements().nextElement();
+		final FixWrapper fix = (FixWrapper) segment.elements().nextElement();
 		assertNotNull(fix.getTime());
 
 		assertEquals(268.7, fix.getCourse(), 0.1);

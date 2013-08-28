@@ -13,11 +13,11 @@ public class NullRubberBand extends Rubberband{
 	private static final long serialVersionUID = 1L;
 	public NullRubberBand() {
 	}
-	public NullRubberBand(Component component) {
+	public NullRubberBand(final Component component) {
 		super(component);
 	}
-	public void drawLast(Graphics graphics) {
+	public void drawLast(final Graphics graphics) {
 	}
-	public void drawNext(Graphics graphics) {
+	public void drawNext(final Graphics graphics) {
 	}
 }

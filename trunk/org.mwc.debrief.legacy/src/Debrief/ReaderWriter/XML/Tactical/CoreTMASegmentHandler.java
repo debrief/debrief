@@ -26,7 +26,7 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 	protected  WorldSpeed _speed;
 	protected double _baseFrequency;
 	
-	public CoreTMASegmentHandler(String myName)
+	public CoreTMASegmentHandler(final String myName)
 	{
 		// inform our parent what type of class we are
 		super(myName);
@@ -35,7 +35,7 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 		addAttributeHandler(new HandleDoubleAttribute(COURSE_DEGS)
 		{
 			@Override
-			public void setValue(String name, double val)
+			public void setValue(final String name, final double val)
 			{
 				_courseDegs = val;
 			}
@@ -43,7 +43,7 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 		addAttributeHandler(new HandleDoubleAttribute(BASE_FREQ)
 		{
 			@Override
-			public void setValue(String name, double val)
+			public void setValue(final String name, final double val)
 			{
 				_baseFrequency = val;
 			}
@@ -51,14 +51,14 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 		
 		addHandler(new WorldSpeedHandler(SPEED){
 			@Override
-			public void setSpeed(WorldSpeed res)
+			public void setSpeed(final WorldSpeed res)
 			{
 				_speed = res;
 			}
 		});
 	}
 	
-	public static void exportThisTMASegment(org.w3c.dom.Document doc, CoreTMASegment theSegment, Element theElement)
+	public static void exportThisTMASegment(final org.w3c.dom.Document doc, final CoreTMASegment theSegment, final Element theElement)
 	{
 		// sort out the remaining attributes
 		theElement.setAttribute(COURSE_DEGS, writeThis(theSegment.getCourse()));

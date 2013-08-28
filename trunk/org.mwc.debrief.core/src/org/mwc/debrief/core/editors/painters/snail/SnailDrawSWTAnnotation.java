@@ -33,41 +33,41 @@ public final class SnailDrawSWTAnnotation implements drawSWTHighLight
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-	public final java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-																	 CanvasType dest,
-																	 WatchableList list,
-																	 Watchable watch,
-																	 SnailHighlighter parent,
-																	 HiResDate dtg,
-                                   java.awt.Color backColor)
+	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+																	 final CanvasType dest,
+																	 final WatchableList list,
+																	 final Watchable watch,
+																	 final SnailHighlighter parent,
+																	 final HiResDate dtg,
+                                   final java.awt.Color backColor)
 	{
     if(dest instanceof Graphics2D)
     {
-    	Graphics2D g2 = (Graphics2D) dest;
+    	final Graphics2D g2 = (Graphics2D) dest;
     	g2.setStroke(new BasicStroke(1));
     }
     
-    PlainWrapper swa = (PlainWrapper)watch;
+    final PlainWrapper swa = (PlainWrapper)watch;
 
     swa.paint(dest);
 
 		// get the current area of the watchable
-		WorldArea wa = watch.getBounds();
+		final WorldArea wa = watch.getBounds();
 
 		// convert to screen coordinates
-		Point tl = proj.toScreen(wa.getTopLeft());
+		final Point tl = proj.toScreen(wa.getTopLeft());
 
-    int tlx = tl.x;
-    int tly = tl.y;
+    final int tlx = tl.x;
+    final int tly = tl.y;
 
-		Point br = proj.toScreen(wa.getBottomRight());
+		final Point br = proj.toScreen(wa.getBottomRight());
 
 		// get the width
-		int wid = (br.x - tlx);
-		int ht = (br.y - tly);
+		final int wid = (br.x - tlx);
+		final int ht = (br.y - tly);
 
 		// represent this area as a rectangle
-		java.awt.Rectangle thisR = new Rectangle(tlx, br.y, wid, ht);
+		final java.awt.Rectangle thisR = new Rectangle(tlx, br.y, wid, ht);
 
 		return thisR;
 	}

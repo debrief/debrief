@@ -62,16 +62,16 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 	 */
 	static final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
 
-	public static void exportTrack(Debrief.Wrappers.TrackWrapper track,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportTrack(final Debrief.Wrappers.TrackWrapper track,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		final Element trk = doc.createElement(TRACK);
 		parent.appendChild(trk);
 		exportTrackObject(track, trk, doc);
 	}
 
-	protected static void exportTrackObject(Debrief.Wrappers.TrackWrapper track,
-			org.w3c.dom.Element trk, org.w3c.dom.Document doc)
+	protected static void exportTrackObject(final Debrief.Wrappers.TrackWrapper track,
+			final org.w3c.dom.Element trk, final org.w3c.dom.Document doc)
 	{
 
 		/*
@@ -149,14 +149,14 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			}
 		}
 
-		Enumeration<Editable> allItems = track.elements();
+		final Enumeration<Editable> allItems = track.elements();
 		while (allItems.hasMoreElements())
 		{
-			Editable next = allItems.nextElement();
+			final Editable next = allItems.nextElement();
 			if (next instanceof SegmentList)
 			{
 				final SegmentList list = (SegmentList) next;
-				Element sList = doc.createElement(SegmentListHandler.SEGMENT_LIST);
+				final Element sList = doc.createElement(SegmentListHandler.SEGMENT_LIST);
 				final Collection<Editable> items = list.getData();
 				for (final Iterator<Editable> iterator = items.iterator(); iterator
 						.hasNext();)
@@ -173,8 +173,8 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		}
 	}
 
-	private static void exportThisTrackSegment(org.w3c.dom.Document doc,
-			final Element trk, TrackSegment segment)
+	private static void exportThisTrackSegment(final org.w3c.dom.Document doc,
+			final Element trk, final TrackSegment segment)
 	{
 		// right, sort out what type it is
 		if (segment instanceof RelativeTMASegment)
@@ -202,12 +202,12 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			TrackSegmentHandler.exportThisSegment(doc, trk, (TrackSegment) segment);
 	}
 
-	public TrackHandler(MWC.GUI.Layers theLayers)
+	public TrackHandler(final MWC.GUI.Layers theLayers)
 	{
 		this(theLayers, TRACK);
 	}
 
-	protected TrackHandler(MWC.GUI.Layers theLayers, String name)
+	protected TrackHandler(final MWC.GUI.Layers theLayers, final String name)
 	{
 		// inform our parent what type of class we are
 		super(name);
@@ -218,7 +218,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new SensorHandler()
 		{
 			@Override
-			public void addSensor(Debrief.Wrappers.SensorWrapper sensor)
+			public void addSensor(final Debrief.Wrappers.SensorWrapper sensor)
 			{
 				addThis(sensor);
 			}
@@ -227,7 +227,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new SegmentListHandler(_theLayers)
 		{
 			@Override
-			public void addThisSegment(TrackSegment list)
+			public void addThisSegment(final TrackSegment list)
 			{
 				addThis(list);
 			}
@@ -235,7 +235,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 		addHandler(new RelativeTMASegmentHandler(_theLayers)
 		{
-			public void addSegment(TrackSegment segment)
+			public void addSegment(final TrackSegment segment)
 			{
 				addThis(segment);
 			}
@@ -243,14 +243,14 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 		addHandler(new PlanningSegmentHandler()
 		{
-			public void addSegment(TrackSegment segment)
+			public void addSegment(final TrackSegment segment)
 			{
 				addThis(segment);
 			}
 		});
 		addHandler(new PlanningSegmentHandler(PlanningSegmentHandler.CLOSING_SEGMENT)
 		{
-			public void addSegment(TrackSegment segment)
+			public void addSegment(final TrackSegment segment)
 			{
 				// store the parent
 				addThis(segment);
@@ -259,7 +259,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 		addHandler(new AbsoluteTMASegmentHandler()
 		{
-			public void addSegment(TrackSegment segment)
+			public void addSegment(final TrackSegment segment)
 			{
 				addThis(segment);
 			}
@@ -268,7 +268,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new TrackSegmentHandler()
 		{
 			@Override
-			public void addSegment(TrackSegment list)
+			public void addSegment(final TrackSegment list)
 			{
 				addThis(list);
 			}
@@ -277,7 +277,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new TMAHandler()
 		{
 			@Override
-			public void addContact(TMAWrapper data)
+			public void addContact(final TMAWrapper data)
 			{
 				addThis(data);
 			}
@@ -286,7 +286,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new ColourHandler()
 		{
 			@Override
-			public void setColour(java.awt.Color res)
+			public void setColour(final java.awt.Color res)
 			{
 				// nope, give it the track color
 				_myTrack.setColor(res);
@@ -301,7 +301,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new ColourHandler(SYMBOL_COLOR)
 		{
 			@Override
-			public void setColour(java.awt.Color res)
+			public void setColour(final java.awt.Color res)
 			{
 				_symCol = res;
 				_myTrack.setSymbolColor(res);
@@ -311,7 +311,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new FontHandler()
 		{
 			@Override
-			public void setFont(java.awt.Font font)
+			public void setFont(final java.awt.Font font)
 			{
 				_myTrack.setTrackFont(font);
 			}
@@ -320,7 +320,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new FixHandler()
 		{
 			@Override
-			public void addPlottable(MWC.GUI.Plottable fix)
+			public void addPlottable(final MWC.GUI.Plottable fix)
 			{
 				addThis(fix);
 			}
@@ -328,7 +328,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleAttribute("Name")
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_myTrack.setName(fromXML(val));
 			}
@@ -336,7 +336,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute("Visible")
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.setVisible(val);
 			}
@@ -344,7 +344,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute(SENSORS_VISIBLE)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.getSensors().setVisible(val);
 			}
@@ -352,7 +352,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute(SOLUTIONS_VISIBLE)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.getSolutions().setVisible(val);
 			}
@@ -360,7 +360,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute("PositionsVisible")
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.setPositionsVisible(val);
 			}
@@ -368,7 +368,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute(LINK_POSITIONS)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.setLinkPositions(val);
 			}
@@ -376,7 +376,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute(PLOT_ARRAY_CENTRE)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.setPlotArrayCentre(val);
 			}
@@ -384,7 +384,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute("NameVisible")
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.setNameVisible(val);
 			}
@@ -392,7 +392,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute("NameAtStart")
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.setNameAtStart(val);
 			}
@@ -400,7 +400,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleBooleanAttribute(INTERPOLATE_POINTS)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_myTrack.setInterpolatePoints(val);
 			}
@@ -408,7 +408,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleAttribute("NameLocation")
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				lp.setAsText(val);
 				_myTrack.setNameLocation((Integer) lp.getValue());
@@ -417,7 +417,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleAttribute("Symbol")
 		{
 			@Override
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_myTrack.setSymbolType(value);
 			}
@@ -425,7 +425,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleIntegerAttribute(LINE_STYLE)
 		{
 			@Override
-			public void setValue(String name, int value)
+			public void setValue(final String name, final int value)
 			{
 				_myTrack.setLineStyle(value);
 			}
@@ -434,7 +434,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
 		{
 			@Override
-			public void setValue(String name, int value)
+			public void setValue(final String name, final int value)
 			{
 				_myTrack.setLineThickness(value);
 			}
@@ -443,7 +443,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new WorldDistanceHandler(SYMBOL_WIDTH)
 		{
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_symWidth = res;
 			}
@@ -452,7 +452,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		addHandler(new WorldDistanceHandler(SYMBOL_LENGTH)
 		{
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_symLength = res;
 			}
@@ -460,7 +460,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 	}
 
-	void addThis(MWC.GUI.Plottable val)
+	void addThis(final MWC.GUI.Plottable val)
 	{
 //		if(val instanceof BaseItemLayer)
 //		{
@@ -491,7 +491,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 	// this is one of ours, so get on with it!
 	@Override
-	protected final void handleOurselves(String name, Attributes attributes)
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
 		// create the wrapper
 		_myTrack = getWrapper();

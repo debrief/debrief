@@ -72,22 +72,22 @@ public abstract class DataListenerAdaptor implements  Layers.DataListener2
    */
   protected boolean _suspendUpdates = false;
 
-  public void dataModified(Layers theData, Layer changedLayer)
+  public void dataModified(final Layers theData, final Layer changedLayer)
   {
     // do nothing
   }
 
-  public void dataExtended(Layers theData)
+  public void dataExtended(final Layers theData)
   {
     // do nothing
   }
 
-  public void dataReformatted(Layers theData, Layer changedLayer)
+  public void dataReformatted(final Layers theData, final Layer changedLayer)
   {
     // do nothing
   }
 
-  public void setSuspendUpdates(boolean updates)
+  public void setSuspendUpdates(final boolean updates)
   {
     _suspendUpdates = updates;
 
@@ -98,7 +98,7 @@ public abstract class DataListenerAdaptor implements  Layers.DataListener2
     }
   }
 
-	public void dataExtended(Layers theData, Plottable newItem, Layer parent)
+	public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
 	{
 		// do nothing
 	}

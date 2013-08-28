@@ -349,7 +349,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 				return myRes;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -362,7 +362,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	// constructor
 	// //////////////////////////////////////////////////////////
 	public ChartBoundsWrapper(final String label, final WorldLocation tl,
-			WorldLocation br, final java.awt.Color theColor, String fileName)
+			final WorldLocation br, final java.awt.Color theColor, final String fileName)
 	{
 		_theShape = new RectangleShape(tl, br);
 		_fileName = fileName;
@@ -400,7 +400,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 			dest.setLineStyle(_lineStyle);
 
 			// store the current line width
-			float lineWid = dest.getLineWidth();
+			final float lineWid = dest.getLineWidth();
 
 			// and the line width
 			dest.setLineWidth(_lineWidth);
@@ -455,7 +455,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param fileName
 	 * @return
 	 */
-	public static String getCoverageName(String fileName)
+	public static String getCoverageName(final String fileName)
 	{
 		// sort out the name of the map
 		String coverageName = fileName;
@@ -470,7 +470,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void setLayers(Layers parent)
+	public void setLayers(final Layers parent)
 	{
 		_myLayers = parent;
 	}
@@ -480,7 +480,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 		System.err.println("loading:" + _fileName + " into:" + _myLayers);
 
 		// represent it as a normal shapefile
-		Layer res = new ExternallyManagedDataLayer(WORLDIMAGE_TYPE,
+		final Layer res = new ExternallyManagedDataLayer(WORLDIMAGE_TYPE,
 				getCoverageName(_fileName), _fileName);
 		_myLayers.addThisLayer(res);
 

@@ -253,7 +253,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 		final PlottableRenderer renderer = new PlottableRenderer();
 		_myTree.setCellRenderer(renderer);
-		PlottableNodeEditor editor = new PlottableNodeEditor();
+		final PlottableNodeEditor editor = new PlottableNodeEditor();
 		_myTree.setCellEditor(new ImmediateEditor(_myTree, renderer, editor));
 		_myTree.setEditable(true);
 
@@ -268,15 +268,15 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 		_myTree.addMouseListener(new MouseAdapter()
 		{
-			public void mouseClicked(MouseEvent e)
+			public void mouseClicked(final MouseEvent e)
 			{
 				TreeNode node = null;
 
 				// get the node for this click
-				int row = _myTree.getRowForLocation(e.getX(), e.getY());
+				final int row = _myTree.getRowForLocation(e.getX(), e.getY());
 				if (row != -1)
 				{
-					TreePath path = _myTree.getPathForRow(row);
+					final TreePath path = _myTree.getPathForRow(row);
 					node = (TreeNode) path.getLastPathComponent();
 				}
 
@@ -313,26 +313,26 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		add(_myPane, java.awt.BorderLayout.CENTER);
 
 		// do the 'add' button
-		JButton addBtn = new JButton("Add layer");
+		final JButton addBtn = new JButton("Add layer");
 		addBtn.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				addLayer();
 			}
 		});
 
 		// do the 'refresh' button
-		JButton refreshBtn = new JButton("Update view");
+		final JButton refreshBtn = new JButton("Update view");
 		refreshBtn.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				doReset();
 			}
 		});
 
-		JPanel btnHolder = new JPanel();
+		final JPanel btnHolder = new JPanel();
 		btnHolder.setLayout(new java.awt.GridLayout(1, 0));
 		btnHolder.add(addBtn);
 		btnHolder.add(refreshBtn);
@@ -343,7 +343,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * get the top-level layer which contains this node
 	 */
-	protected Layer getTopLayerFor(TreeNode node)
+	protected Layer getTopLayerFor(final TreeNode node)
 	{
 		Layer res = null;
 
@@ -374,7 +374,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * show a right-click menu for this node
 	 */
-	protected void showMenuFor(TreeNode node, Point thePoint)
+	protected void showMenuFor(final TreeNode node, final Point thePoint)
 	{
 
 		Layer parentLayer = null;
@@ -434,7 +434,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 						// identify it's parent
 
 						// find the layer parent for this node
-						DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
+						final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
 
 						if (pr.getUserObject() instanceof MWC.GUI.Layer)
 						{
@@ -452,7 +452,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 				{
 
 					// find the layer parent for this node
-					DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
+					final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
 
 					if (pr.getUserObject() instanceof MWC.GUI.Layer)
 					{
@@ -467,7 +467,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		// see if we have found one!
 		if (thePlottable != null)
 		{
-			java.util.Vector<PlottableMenuCreator> extras = _myData.getEditor()
+			final java.util.Vector<PlottableMenuCreator> extras = _myData.getEditor()
 					.getExtraPlottableEditors(getPanel());
 			thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
 					getChart().getCanvas(), parentLayer, _thePanel, _myData, extras,
@@ -478,7 +478,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		// just check if we are trying paste into layers
 		if (node == null)
 		{
-			MWC.GUI.Tools.Operations.RightClickPasteAdaptor pr = new MWC.GUI.Tools.Operations.RightClickPasteAdaptor();
+			final MWC.GUI.Tools.Operations.RightClickPasteAdaptor pr = new MWC.GUI.Tools.Operations.RightClickPasteAdaptor();
 
 			thePopup = new JPopupMenu();
 
@@ -494,7 +494,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 				// move the origin of the mouse event (since we're in a scrolling
 				// window)
-				Point origin = _myPane.getViewport().getViewPosition();
+				final Point origin = _myPane.getViewport().getViewPosition();
 				thePoint.translate(-origin.x, -origin.y);
 
 				// and now show it
@@ -506,19 +506,19 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * process a double-click for this tree node
 	 */
-	protected void editThis(TreeNode node)
+	protected void editThis(final TreeNode node)
 	{
 		if (node instanceof DefaultMutableTreeNode)
 		{
-			DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
-			Object data = tn.getUserObject();
+			final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
+			final Object data = tn.getUserObject();
 			if (data instanceof MWC.GUI.Editable)
 			{
-				Editable editable = (Editable) data;
+				final Editable editable = (Editable) data;
 				if (editable.hasEditor())
 				{
 					// get the toolparent object
-					ToolParent tp = getToolParent();
+					final ToolParent tp = getToolParent();
 
 					// did we get a valid toolparent?
 					if (tp != null)
@@ -540,8 +540,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 			else if (data instanceof String)
 			{
-				String layerName = (String) data;
-				Layer thisL = _myData.findLayer(layerName);
+				final String layerName = (String) data;
+				final Layer thisL = _myData.findLayer(layerName);
 				if (thisL.hasEditor())
 					_thePanel.addEditor(thisL.getInfo(), null);
 			}
@@ -552,7 +552,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 * this is where we receive the data we are plotting, effectively the
 	 * constructor
 	 */
-	public void setObject(Object data)
+	public void setObject(final Object data)
 	{
 		_myData = (Layers) data;
 
@@ -575,7 +575,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 * @param isVisible
 	 *          whether it is now visible or not
 	 */
-	void changeVisOfThisElement(Plottable pl, boolean isVisible, Layer parentLayer)
+	void changeVisOfThisElement(final Plottable pl, final boolean isVisible, final Layer parentLayer)
 	{
 		pl.setVisible(isVisible);
 
@@ -590,22 +590,22 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 * recursive method to pass through a layer, creating sub-layers for any
 	 * layers we find
 	 */
-	protected DefaultMutableTreeNode makeLayer(Layer thisLayer, Layer theTopLayer)
+	protected DefaultMutableTreeNode makeLayer(final Layer thisLayer, final Layer theTopLayer)
 	{
 		// create the node
-		DefaultMutableTreeNode thisL = new PlottableNode(thisLayer, theTopLayer);
+		final DefaultMutableTreeNode thisL = new PlottableNode(thisLayer, theTopLayer);
 
 		// and work through the elements of this layer
-		Enumeration<Editable> enumer = thisLayer.elements();
+		final Enumeration<Editable> enumer = thisLayer.elements();
 		if (enumer != null)
 		{
 			while (enumer.hasMoreElements())
 			{
-				Plottable pl = (Plottable) enumer.nextElement();
+				final Plottable pl = (Plottable) enumer.nextElement();
 				if (pl instanceof MWC.GUI.Layer)
 				{
 					// hey, let's get recursive!
-					Layer otherLayer = (Layer) pl;
+					final Layer otherLayer = (Layer) pl;
 					thisL.add(makeLayer(otherLayer, theTopLayer));
 				}
 				else
@@ -625,24 +625,24 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	protected void updateData()
 	{
 		// find out which node is currently visible
-		int[] selections = _myTree.getSelectionRows();
+		final int[] selections = _myTree.getSelectionRows();
 		int cur = 0;
 		if (selections != null)
 			cur = _myTree.getSelectionRows()[0];
 
 		// create a new root element
-		DefaultMutableTreeNode root = new PlottableNode(ROOT_OBJECT, null);
+		final DefaultMutableTreeNode root = new PlottableNode(ROOT_OBJECT, null);
 
 		// construct the data
 		for (int i = 0; i < _myData.size(); i++)
 		{
-			Layer thisL = _myData.elementAt(i);
+			final Layer thisL = _myData.elementAt(i);
 
 			root.add(makeLayer(thisL, thisL));
 		}
 
 		// create a new tree based on this data
-		JTree tmp = new JTree(root);
+		final JTree tmp = new JTree(root);
 
 		// and put the data into our existing tree
 		_myTree.setModel(tmp.getModel());
@@ -658,7 +658,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * the main data has changed - do a fresh pass
 	 */
-	public void dataModified(Layers theData, Layer changedLayer)
+	public void dataModified(final Layers theData, final Layer changedLayer)
 	{
 		updateData();
 	}
@@ -666,7 +666,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * the main data has changed - do a fresh pass
 	 */
-	public void dataExtended(Layers theData)
+	public void dataExtended(final Layers theData)
 	{
 		updateData();
 	}
@@ -674,7 +674,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * the main data has changed - do a fresh pass
 	 */
-	public void dataReformatted(Layers theData, Layer changedLayer)
+	public void dataReformatted(final Layers theData, final Layer changedLayer)
 	{
 		// we do a wierd update here, to force the tree to reset the visibility
 		// flags of nodes in the tree
@@ -687,14 +687,14 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	protected void addLayer()
 	{
 		// get the name from the user
-		String s = javax.swing.JOptionPane.showInputDialog(_myTree,
+		final String s = javax.swing.JOptionPane.showInputDialog(_myTree,
 				"Please enter name", "New Layer",
 				javax.swing.JOptionPane.QUESTION_MESSAGE);
 
 		if (s != null)
 		{
 			// create the layer
-			Layer ly = new BaseLayer();
+			final Layer ly = new BaseLayer();
 			ly.setName(s);
 
 			// add to the data
@@ -739,7 +739,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 * @param theParent
 	 *          the parent object
 	 */
-	public void setParent(ToolParent theParent)
+	public void setParent(final ToolParent theParent)
 	{
 		_myParent = theParent;
 	}
@@ -759,11 +759,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		 */
 		private static final long serialVersionUID = 1L;
 		protected JCheckBox checkBox = new JCheckBox("");
-		private Component strut = Box.createHorizontalStrut(5);
-		private JPanel panel = new JPanel();
+		private final Component strut = Box.createHorizontalStrut(5);
+		private final JPanel panel = new JPanel();
 		private int _xOffset = 0;
 
-		public void paint(java.awt.Graphics g)
+		public void paint(final java.awt.Graphics g)
 		{
 			super.paint(g);
 
@@ -772,7 +772,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			{
 				try
 				{
-					FontMetrics fm = g.getFontMetrics();
+					final FontMetrics fm = g.getFontMetrics();
 					_xOffset = fm.stringWidth(getText()) + strut.getPreferredSize().width;
 				}
 				finally
@@ -796,12 +796,12 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 		}
 
-		public Component getTreeCellRendererComponent(JTree tree, Object node,
-				boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus1)
+		public Component getTreeCellRendererComponent(final JTree tree, final Object node,
+				final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus1)
 		{
 			if (node instanceof DefaultMutableTreeNode)
 			{
-				DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
+				final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
 				final Object data = tn.getUserObject();
 				if (data instanceof MWC.GUI.Plottable)
 				{
@@ -830,10 +830,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 	class ImmediateEditor extends DefaultTreeCellEditor
 	{
-		private PlottableRenderer renderer;
+		private final PlottableRenderer renderer;
 
-		public ImmediateEditor(JTree tree, PlottableRenderer renderer,
-				PlottableNodeEditor editor)
+		public ImmediateEditor(final JTree tree, final PlottableRenderer renderer,
+				final PlottableNodeEditor editor)
 		{
 			super(tree, renderer, editor);
 			this.renderer = renderer;
@@ -842,35 +842,35 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		/**
 		 * Configures the editor. Passed onto the <code>realEditor</code>.
 		 */
-		public Component getTreeCellEditorComponent(JTree tree1, Object value,
-				boolean isSelected, boolean expanded, boolean leaf, int row)
+		public Component getTreeCellEditorComponent(final JTree tree1, final Object value,
+				final boolean isSelected, final boolean expanded, final boolean leaf, final int row)
 		{
 			return super.getTreeCellEditorComponent(tree1, value, isSelected,
 					expanded, leaf, row);
 		}
 
-		protected boolean canEditImmediately(EventObject e)
+		protected boolean canEditImmediately(final EventObject e)
 		{
 			boolean rv = false; // rv = return value
 
 			if (e instanceof MouseEvent)
 			{
-				MouseEvent me = (MouseEvent) e;
+				final MouseEvent me = (MouseEvent) e;
 				rv = inCheckBoxHitRegion(me);
 			}
 			return rv;
 		}
 
-		public boolean shouldSelectCell(EventObject e)
+		public boolean shouldSelectCell(final EventObject e)
 		{
 			boolean rv = false; // only mouse events
 
 			if (e instanceof MouseEvent)
 			{
-				MouseEvent me = (MouseEvent) e;
-				TreePath path = tree.getPathForLocation(me.getX(), me.getY());
+				final MouseEvent me = (MouseEvent) e;
+				final TreePath path = tree.getPathForLocation(me.getX(), me.getY());
 
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
+				final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
 						.getLastPathComponent();
 
 				rv = node.isLeaf() || !inCheckBoxHitRegion(me);
@@ -879,16 +879,16 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			return rv;
 		}
 
-		public boolean inCheckBoxHitRegion(MouseEvent e)
+		public boolean inCheckBoxHitRegion(final MouseEvent e)
 		{
 			boolean rv = false;
 
 			// find the bounds
 
 			// find the bounds for this row item
-			Rectangle bounds = tree.getRowBounds(tree.getClosestRowForLocation(e
+			final Rectangle bounds = tree.getRowBounds(tree.getClosestRowForLocation(e
 					.getX(), e.getY()));
-			Dimension checkBoxOffset = renderer.getCheckBoxOffset();
+			final Dimension checkBoxOffset = renderer.getCheckBoxOffset();
 
 			bounds.translate(offset + checkBoxOffset.width, checkBoxOffset.height);
 			rv = bounds.contains(e.getPoint());
@@ -915,10 +915,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 			checkBox.addActionListener(new ActionListener()
 			{
-				public void actionPerformed(ActionEvent e)
+				public void actionPerformed(final ActionEvent e)
 				{
-					Plottable pl = (Plottable) lastEditedNode.getUserObject();
-					PlottableNode pln = (PlottableNode) lastEditedNode;
+					final Plottable pl = (Plottable) lastEditedNode.getUserObject();
+					final PlottableNode pln = (PlottableNode) lastEditedNode;
 					changeVisOfThisElement(pl, checkBox.isSelected(), pln
 							.getParentLayer());
 					stopCellEditing();
@@ -926,8 +926,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			});
 		}
 
-		public Component getTreeCellEditorComponent(JTree tree, Object value,
-				boolean selected, boolean expanded, boolean leaf, int row)
+		public Component getTreeCellEditorComponent(final JTree tree, final Object value,
+				final boolean selected, final boolean expanded, final boolean leaf, final int row)
 		{
 			lastEditedNode = (DefaultMutableTreeNode) value;
 
@@ -949,11 +949,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public Component getTreeCellRendererComponent(JTree tree, Object value,
-				boolean selected1, boolean expanded, boolean leaf, int row,
-				boolean hasFocus1)
+		public Component getTreeCellRendererComponent(final JTree tree, final Object value,
+				final boolean selected1, final boolean expanded, final boolean leaf, final int row,
+				final boolean hasFocus1)
 		{
-			Component c = super.getTreeCellRendererComponent(tree, value, selected1,
+			final Component c = super.getTreeCellRendererComponent(tree, value, selected1,
 					expanded, leaf, row, hasFocus1);
 			setIcon(null);
 			return c;
@@ -983,7 +983,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		 * @param userObject
 		 *          an Object provided by the user that constitutes the node's data
 		 */
-		public PlottableNode(Object userObject, Layer parentLayer)
+		public PlottableNode(final Object userObject, final Layer parentLayer)
 		{
 			super(userObject);
 			_theParentLayer = parentLayer;
@@ -1007,17 +1007,17 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		/**
 		 * the thing we're operating on
 		 */
-		private Plottable _myPlottable;
+		private final Plottable _myPlottable;
 
 		/**
 		 * the new viz state
 		 */
-		private boolean _isVis;
+		private final boolean _isVis;
 
 		// ////////////////////////////////////////////////
 		// constructor
 		// ////////////////////////////////////////////////
-		public ChangeVis(Plottable myPlottable, boolean isVis)
+		public ChangeVis(final Plottable myPlottable, final boolean isVis)
 		{
 			_isVis = isVis;
 			_myPlottable = myPlottable;

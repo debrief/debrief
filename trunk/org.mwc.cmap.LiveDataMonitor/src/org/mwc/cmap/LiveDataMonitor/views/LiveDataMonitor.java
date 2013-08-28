@@ -57,7 +57,7 @@ public class LiveDataMonitor extends ViewPart
 
 	private IAttribute _watchedAttr;
 
-	private PropertyChangeListener _attListener;
+	private final PropertyChangeListener _attListener;
 
 	private IndexedAttribute _myIndexedAttr;
 
@@ -77,22 +77,22 @@ public class LiveDataMonitor extends ViewPart
 	{
 		_attListener = new PropertyChangeListener()
 		{
-			public void propertyChange(PropertyChangeEvent evt)
+			public void propertyChange(final PropertyChangeEvent evt)
 			{
 				// aah, is this for the scenario we're watching
 				if (_myIndexedAttr != null)
 					if (evt.getSource() == _myIndexedAttr.index)
 					{
 
-						DataDoublet newD = (DataDoublet) evt.getNewValue();
+						final DataDoublet newD = (DataDoublet) evt.getNewValue();
 						final long time = newD.getTime();
-						Object newValue = newD.getValue();
+						final Object newValue = newD.getValue();
 						if (newValue instanceof Number)
 						{
 							final Number value = (Number) newValue;
 
 							// and store it
-							TimeSeriesCollection coll = (TimeSeriesCollection) _chart
+							final TimeSeriesCollection coll = (TimeSeriesCollection) _chart
 									.getXYPlot().getDataset();
 
 							TimeSeries tmpSeries;
@@ -143,7 +143,7 @@ public class LiveDataMonitor extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		_chart = createChart(null);
 		_chartFrame = new ChartComposite(parent, SWT.NONE, _chart, true);
@@ -157,9 +157,9 @@ public class LiveDataMonitor extends ViewPart
 	 * @param attribute
 	 *          what we're going to watch
 	 */
-	private void storeDataset(IAttribute attribute, Object index)
+	private void storeDataset(final IAttribute attribute, final Object index)
 	{
-		Vector<DataDoublet> data = attribute.getHistoricValues(index);
+		final Vector<DataDoublet> data = attribute.getHistoricValues(index);
 
 		// is there any data in it?
 		if (data.size() == 0)
@@ -169,13 +169,13 @@ public class LiveDataMonitor extends ViewPart
 		}
 		else
 		{
-			TimeSeriesCollection dataset = new TimeSeriesCollection();
-			TimeSeries series = new TimeSeries(attribute.getName());
+			final TimeSeriesCollection dataset = new TimeSeriesCollection();
+			final TimeSeries series = new TimeSeries(attribute.getName());
 
-			for (Iterator<DataDoublet> iterator = data.iterator(); iterator.hasNext();)
+			for (final Iterator<DataDoublet> iterator = data.iterator(); iterator.hasNext();)
 			{
-				DataDoublet thisD = (DataDoublet) iterator.next();
-				Object thisVal = thisD.getValue();
+				final DataDoublet thisD = (DataDoublet) iterator.next();
+				final Object thisVal = thisD.getValue();
 				if (thisVal instanceof Number)
 				{
 					series.addOrUpdate(new Millisecond(new Date(thisD.getTime())),
@@ -196,17 +196,17 @@ public class LiveDataMonitor extends ViewPart
 	/**
 	 * Creates the Chart based on a dataset
 	 */
-	private JFreeChart createChart(TimeSeriesCollection dataset)
+	private JFreeChart createChart(final TimeSeriesCollection dataset)
 	{
 
-		String annTitle = "[PENDING]";
-		String catLabel = "Time";
-		String valueLabel = "Value";
-		JFreeChart chart = ChartFactory.createXYLineChart(annTitle, catLabel,
+		final String annTitle = "[PENDING]";
+		final String catLabel = "Time";
+		final String valueLabel = "Value";
+		final JFreeChart chart = ChartFactory.createXYLineChart(annTitle, catLabel,
 				valueLabel, dataset, PlotOrientation.VERTICAL, false, true, false);
 
-		XYPlot plot = chart.getXYPlot();
-		DateAxis dateA = new DateAxis();
+		final XYPlot plot = chart.getXYPlot();
+		final DateAxis dateA = new DateAxis();
 		plot.setDomainAxis(dateA);
 		plot.setRenderer(new XYLineAndShapeRenderer());
 		plot.setNoDataMessage("No data available");
@@ -222,29 +222,29 @@ public class LiveDataMonitor extends ViewPart
 	{
 		final ISelectionListener mylistener = new ISelectionListener()
 		{
-			public void selectionChanged(IWorkbenchPart sourcepart,
-					ISelection selection)
+			public void selectionChanged(final IWorkbenchPart sourcepart,
+					final ISelection selection)
 			{
 				// is this something we can get at?
 				if (selection instanceof IStructuredSelection)
 				{
-					IStructuredSelection strS = (IStructuredSelection) selection;
-					Object val = strS.getFirstElement();
+					final IStructuredSelection strS = (IStructuredSelection) selection;
+					final Object val = strS.getFirstElement();
 					showNewSelection(val);
 				}
 			}
 		};
 
-		IWorkbenchWindow theWindow = getSite().getWorkbenchWindow();
+		final IWorkbenchWindow theWindow = getSite().getWorkbenchWindow();
 		theWindow.getSelectionService().addSelectionListener(mylistener);
 	}
 
-	protected void showNewSelection(Object sel)
+	protected void showNewSelection(final Object sel)
 	{
 		// it it something we want to watch?
 		if (sel instanceof IndexedAttribute)
 		{
-			IAttribute.IndexedAttribute ind = (IndexedAttribute) sel;
+			final IAttribute.IndexedAttribute ind = (IndexedAttribute) sel;
 
 			// cool, go for it.
 			final IAttribute attr = ind.attribute;

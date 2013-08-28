@@ -28,7 +28,7 @@ abstract public class TrackSegmentHandler extends CoreTrackSegmentHandler
 		addAttributeHandler(new HandleBooleanAttribute(PLOT_RELATIVE)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_relativeMode = val;
 			}
@@ -42,14 +42,14 @@ abstract public class TrackSegmentHandler extends CoreTrackSegmentHandler
 	@Override
 	protected TrackSegment createTrack()
 	{
-		TrackSegment res = new TrackSegment();
+		final TrackSegment res = new TrackSegment();
 		res.setPlotRelative(_relativeMode);
 		return res;
 	}
 
 
-	public static void exportThisSegment(org.w3c.dom.Document doc, Element trk,
-			TrackSegment seg)
+	public static void exportThisSegment(final org.w3c.dom.Document doc, final Element trk,
+			final TrackSegment seg)
 	{
 		
 		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg, TRACK_SEGMENT);

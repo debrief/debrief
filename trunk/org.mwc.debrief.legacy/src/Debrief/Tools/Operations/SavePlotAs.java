@@ -15,15 +15,15 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public SavePlotAs(ToolParent theParent,
-                    Session theSession){
+  public SavePlotAs(final ToolParent theParent,
+                    final Session theSession){
     this(theParent, theSession,  "Save Plot As...", "images/saveas.gif");
   }
 
-  public SavePlotAs(ToolParent theParent,
-                    Session theSession,
-                    String theTitle,
-                    String theImage)
+  public SavePlotAs(final ToolParent theParent,
+                    final Session theSession,
+                    final String theTitle,
+                    final String theImage)
   {
     super(theParent, theTitle, "*.dpl", theImage);
 
@@ -34,7 +34,7 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
     // see if we have an old directory to retrieve
     if(_lastDirectory.equals(""))
     {
-      String val = getParent().getProperty("DPL_Directory");
+      final String val = getParent().getProperty("DPL_Directory");
       if(val != null)
         _lastDirectory = val;
     }
@@ -43,7 +43,7 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
   /////////////////////////////////////////////////////////////
   // member methods
   ////////////////////////////////////////////////////////////
-  protected final Action doSave(String filename)
+  protected final Action doSave(final String filename)
   {
     Action res = null;
 
@@ -52,13 +52,13 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
     {
 
       // open the file
-      OutputStream os = new FileOutputStream(filename);
+      final OutputStream os = new FileOutputStream(filename);
 
       // inform the session of it's filename
       _theSession.setFileName(filename);
 
       // create the object output stream
-      ObjectOutputStream oos = new ObjectOutputStream(os);
+      final ObjectOutputStream oos = new ObjectOutputStream(os);
 
       // do the save
       oos.writeObject(_theSession);
@@ -70,7 +70,7 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
       res =  new SavePlotAction(_theSession.getName());
 
     }
-    catch(IOException e)
+    catch(final IOException e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -92,7 +92,7 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
      */
     final String _theSessionName;
 
-    public SavePlotAction(String theName){
+    public SavePlotAction(final String theName){
       _theSessionName = theName;
     }
 

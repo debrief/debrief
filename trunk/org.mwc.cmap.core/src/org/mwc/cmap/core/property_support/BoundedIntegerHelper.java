@@ -25,7 +25,7 @@ public class BoundedIntegerHelper extends EditorHelper
 		protected Label _myLabel;
 		protected Slider _theSlider;
 		
-		public SliderEditor(Composite parent)
+		public SliderEditor(final Composite parent)
 		{
 			super(parent, SWT.NONE);
 		}
@@ -35,15 +35,15 @@ public class BoundedIntegerHelper extends EditorHelper
 		 */
 		public LayoutData getLayoutData()
 		{
-			CellEditor.LayoutData res =  super.getLayoutData();
+			final CellEditor.LayoutData res =  super.getLayoutData();
 			res.grabHorizontal = true;
 			return res;
 		}
 
-		protected Control createControl(Composite parent)
+		protected Control createControl(final Composite parent)
 		{
-	    Font font = parent.getFont();
-      Color bg = parent.getBackground();
+	    final Font font = parent.getFont();
+      final Color bg = parent.getBackground();
 
       _myControl = new Composite(parent, getStyle());
       _myControl.setFont(font);
@@ -55,7 +55,7 @@ public class BoundedIntegerHelper extends EditorHelper
 //			rl.type = SWT.HORIZONTAL;
 //			rl.marginHeight = 0;
 //			rl.marginWidth = 0;
-      GridLayout rl = new GridLayout();
+      final GridLayout rl = new GridLayout();
       rl.marginWidth = 0;
       rl.marginHeight = 0;
       rl.numColumns = 8;
@@ -65,22 +65,22 @@ public class BoundedIntegerHelper extends EditorHelper
 			_myLabel = new Label(_myControl, SWT.NONE);
 			_myLabel.setText("000");
 			_myLabel.setBackground(bg);
-			GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
+			final GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
 			_myLabel.setLayoutData(gd1);
 			
 			_theSlider = new Slider(_myControl, SWT.NONE);
-			GridData gd2 = new GridData(GridData.FILL_HORIZONTAL);
+			final GridData gd2 = new GridData(GridData.FILL_HORIZONTAL);
 			gd2.horizontalSpan = 7;
 			_theSlider.setLayoutData(gd2);
 			_theSlider.addSelectionListener(new SelectionListener(){
 
-				public void widgetSelected(SelectionEvent e)
+				public void widgetSelected(final SelectionEvent e)
 				{
 					_myLabel.setText(formatMe(_theSlider.getSelection()));
 					_myLabel.update();
 				}
 
-				public void widgetDefaultSelected(SelectionEvent e)
+				public void widgetDefaultSelected(final SelectionEvent e)
 				{
 					// TODO Auto-generated method stub
 					
@@ -107,7 +107,7 @@ public class BoundedIntegerHelper extends EditorHelper
 
 		DecimalFormat _df  = null;
 		
-		protected String formatMe(int value)
+		protected String formatMe(final int value)
 		{
 			if(_df == null)
 				_df = new DecimalFormat("000");
@@ -115,9 +115,9 @@ public class BoundedIntegerHelper extends EditorHelper
 			return _df.format(value);
 		}
 		
-		protected void doSetValue(Object value)
+		protected void doSetValue(final Object value)
 		{
-			BoundedInteger curr = (BoundedInteger) value;
+			final BoundedInteger curr = (BoundedInteger) value;
 			if(_myLabel != null) 
 				_myLabel.setText(formatMe(curr.getCurrent()));
 			if(_theSlider != null)
@@ -142,34 +142,34 @@ public class BoundedIntegerHelper extends EditorHelper
 	 * @param targetClass
 	 */
 	@SuppressWarnings("rawtypes")
-	public BoundedIntegerHelper(Class targetClass)
+	public BoundedIntegerHelper(final Class targetClass)
 	{
 		super(targetClass);
 	}
 
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new SliderEditor(parent);
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		return value;
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		return value;
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				BoundedInteger rgb = (BoundedInteger) element;
-				String res = "" + rgb.getCurrent();
+				final BoundedInteger rgb = (BoundedInteger) element;
+				final String res = "" + rgb.getCurrent();
 				return res;
 			}
 
@@ -186,20 +186,20 @@ public class BoundedIntegerHelper extends EditorHelper
 			super(SteppingBoundedInteger.class);
 		}
 		
-		public CellEditor getCellEditorFor(Composite parent)
+		public CellEditor getCellEditorFor(final Composite parent)
 		{
 			return new SteppingSliderEditor(parent);
 		}
 		
 
-		public ILabelProvider getLabelFor(Object currentValue)
+		public ILabelProvider getLabelFor(final Object currentValue)
 		{
-			ILabelProvider label1 = new LabelProvider()
+			final ILabelProvider label1 = new LabelProvider()
 			{
-				public String getText(Object element)
+				public String getText(final Object element)
 				{
-					SteppingBoundedInteger rgb = (SteppingBoundedInteger) element;
-					String res = "" + rgb.getCurrent();
+					final SteppingBoundedInteger rgb = (SteppingBoundedInteger) element;
+					final String res = "" + rgb.getCurrent();
 					return res;
 				}
 
@@ -215,7 +215,7 @@ public class BoundedIntegerHelper extends EditorHelper
 	private static class SteppingSliderEditor extends SliderEditor
 	{
 
-		public SteppingSliderEditor(Composite parent)
+		public SteppingSliderEditor(final Composite parent)
 		{
 			super(parent);
 		}
@@ -231,11 +231,11 @@ public class BoundedIntegerHelper extends EditorHelper
 			return res;
 		}
 		
-		protected void doSetValue(Object value)
+		protected void doSetValue(final Object value)
 		{
 			
 			// TODO Auto-generated method stub
-			SteppingBoundedInteger curr = (SteppingBoundedInteger) value;
+			final SteppingBoundedInteger curr = (SteppingBoundedInteger) value;
 			if(_myLabel != null) 
 				_myLabel.setText(formatMe(curr.getCurrent()));
 			if(_theSlider != null)

@@ -52,11 +52,11 @@ public class CoreTest extends junit.framework.TestCase
 		super.setUp();
 
 		_events = new Vector<String>();
-		Logger logger = new Logger()
+		final Logger logger = new Logger()
 		{
 
 			@Override
-			public void log(int level, String category, String message, Throwable ex)
+			public void log(final int level, final String category, final String message, final Throwable ex)
 			{
 				_events.add(message);
 			}
@@ -68,13 +68,13 @@ public class CoreTest extends junit.framework.TestCase
 	{
 		// check events empty
 		assertEquals("events empty", 0, _events.size());
-		AServer server = new AServer();
+		final AServer server = new AServer();
 		server.start();
 		assertEquals("events recorded", 1, _events.size());
 		assertEquals("correct start event", "Server opened.", _events.elementAt(0));
 
 		// and now the client
-		MClient client = new MClient();
+		final MClient client = new MClient();
 		assertEquals("still no more events", 1, _events.size());
 
 		// try with dodgy target
@@ -83,7 +83,7 @@ public class CoreTest extends junit.framework.TestCase
 		{
 			client.connect("128.3.3.3");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			errorThrown = true;
 		}
@@ -105,13 +105,13 @@ public class CoreTest extends junit.framework.TestCase
 	{
 		// check events empty
 		assertEquals("events empty", 0, _events.size());
-		AServer server = new AServer();
+		final AServer server = new AServer();
 		server.start();
 		assertEquals("events recorded", 1, _events.size());
 		assertEquals("correct start event", "Server opened.", _events.elementAt(0));
 
 		// and now the client
-		MClient client = new MClient();
+		final MClient client = new MClient();
 		assertEquals("still no more events", 1, _events.size());
 
 		// now real connection
@@ -129,7 +129,7 @@ public class CoreTest extends junit.framework.TestCase
 				_events.elementAt(4).contains("connected"));
 
 		// ok, give the server some data
-		MultiScenarioLister lister = new MultiScenarioLister()
+		final MultiScenarioLister lister = new MultiScenarioLister()
 		{
 
 			@Override
@@ -141,10 +141,10 @@ public class CoreTest extends junit.framework.TestCase
 		server.setDataProvider(lister);
 
 		assertNull("scen list should be empty", _myList);
-		AHandler<Vector<LightScenario>> sHandler = new AHandler<Vector<LightScenario>>()
+		final AHandler<Vector<LightScenario>> sHandler = new AHandler<Vector<LightScenario>>()
 		{
 			@Override
-			public void onSuccess(Vector<LightScenario> result)
+			public void onSuccess(final Vector<LightScenario> result)
 			{
 				_myList = result;
 			}
@@ -158,10 +158,10 @@ public class CoreTest extends junit.framework.TestCase
 
 		assertNotNull("scen list should have data", _myList);
 		assertEquals("scen has correct number", 3, _myList.size());
-		LightScenario scen = _myList.elementAt(0);
+		final LightScenario scen = _myList.elementAt(0);
 		assertEquals("scen has correct name", "aaa", scen.name);
 		assertEquals("has correct parts", 3, scen.listOfParticipants.size());
-		LightParticipant firstPart = scen.listOfParticipants.firstElement();
+		final LightParticipant firstPart = scen.listOfParticipants.firstElement();
 		assertEquals("has correct first part", "p12", firstPart.name);
 		assertEquals("has correct first id", 12, firstPart.id);
 
@@ -170,8 +170,8 @@ public class CoreTest extends junit.framework.TestCase
 
 		// ok, check scenario listen/release
 		assertEquals("no scen lsiteners", 0, server.getScenListeners().size());
-		Vector<String> stepLog = new Vector<String>();
-		ScenarioSteppedListener sListener = new MySListener(stepLog);
+		final Vector<String> stepLog = new Vector<String>();
+		final ScenarioSteppedListener sListener = new MySListener(stepLog);
 		client.listenScen(scen.name, sListener);
 		Thread.sleep(100);
 
@@ -205,9 +205,9 @@ public class CoreTest extends junit.framework.TestCase
 		assertEquals("rx new step event", 2, stepLog.size());
 
 		// next, we want to listen to a participant
-		Vector<String> moveLog = new Vector<String>();
-		Vector<String> detectLog = new Vector<String>();
-		CombinedListener combi = new CombinedListener(moveLog, detectLog);
+		final Vector<String> moveLog = new Vector<String>();
+		final Vector<String> detectLog = new Vector<String>();
+		final CombinedListener combi = new CombinedListener(moveLog, detectLog);
 		client.listenPart(scen.name, firstPart.id, combi, combi, combi);
 		Thread.sleep(600);
 
@@ -370,18 +370,18 @@ public class CoreTest extends junit.framework.TestCase
 			 */
 		private static final long serialVersionUID = 1L;
 
-		public MyPart(int id, String force)
+		public MyPart(final int id, final String force)
 		{
 			super(id);
 			setName("p" + id);
 			this.setCategory(new Category(force, Category.Environment.SURFACE,
 					Category.Type.FRIGATE));
-			WorldLocation centre = new WorldLocation(12, 12, 2);
-			WorldDistance area = new WorldDistance(12, WorldDistance.NM);
-			DecisionType wander = new Wander(centre, area);
+			final WorldLocation centre = new WorldLocation(12, 12, 2);
+			final WorldDistance area = new WorldDistance(12, WorldDistance.NM);
+			final DecisionType wander = new Wander(centre, area);
 			wander.setName("DefaultWander");
 			this.setDecisionModel(wander);
-			Status newStat = new Status(12, 0);
+			final Status newStat = new Status(12, 0);
 			newStat.setLocation(new WorldLocation(11 + id /100d,
 					11 - id/100d, 11));
 			newStat.setCourse(12);
@@ -389,11 +389,11 @@ public class CoreTest extends junit.framework.TestCase
 			setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
 			this.setStatus(newStat);
 
-			Vector<TypedRangeDoublet> rangeDoublets = new Vector<TypedRangeDoublet>();
+			final Vector<TypedRangeDoublet> rangeDoublets = new Vector<TypedRangeDoublet>();
 			rangeDoublets.add(new TypedRangeDoublet(null, new WorldDistance(10,
 					WorldDistance.NM)));
 			// and a sensor
-			TypedCookieSensor sensor = new TypedCookieSensor(id * 30, rangeDoublets);
+			final TypedCookieSensor sensor = new TypedCookieSensor(id * 30, rangeDoublets);
 			this.addSensor(sensor);
 
 		}
@@ -401,20 +401,20 @@ public class CoreTest extends junit.framework.TestCase
 
 	public class MySListener implements ScenarioSteppedListener
 	{
-		private Vector<String> _items;
+		private final Vector<String> _items;
 
-		public MySListener(Vector<String> items)
+		public MySListener(final Vector<String> items)
 		{
 			_items = items;
 		}
 
-		public void step(ScenarioType scenario, long newTime)
+		public void step(final ScenarioType scenario, final long newTime)
 		{
 			_items.add("step to:" + newTime);
 		}
 
 		@Override
-		public void restart(ScenarioType scenario)
+		public void restart(final ScenarioType scenario)
 		{
 			_items.add("restart");
 		}
@@ -423,30 +423,30 @@ public class CoreTest extends junit.framework.TestCase
 	private static class CombinedListener implements ParticipantMovedListener,
 			ParticipantDetectedListener, ParticipantDecidedListener
 	{
-		private Vector<String> moves;
-		private Vector<String> detects;
+		private final Vector<String> moves;
+		private final Vector<String> detects;
 		protected Status lastStat;
 
-		public CombinedListener(Vector<String> movements, Vector<String> detections)
+		public CombinedListener(final Vector<String> movements, final Vector<String> detections)
 		{
 			moves = movements;
 			detects = detections;
 		}
 
 		@Override
-		public void newDecision(String description, DemandedStatus dem_status)
+		public void newDecision(final String description, final DemandedStatus dem_status)
 		{
 			moves.add("dec:" + description);
 		}
 
 		@Override
-		public void newDetections(DetectionList detections)
+		public void newDetections(final DetectionList detections)
 		{
 			detects.add("det:" + detections.size());
 		}
 
 		@Override
-		public void moved(Status newStatus)
+		public void moved(final Status newStatus)
 		{
 			moves.add("move:" + newStatus.getTime());
 			lastStat = newStatus;
@@ -455,7 +455,7 @@ public class CoreTest extends junit.framework.TestCase
 		}
 
 		@Override
-		public void restart(ScenarioType scenario)
+		public void restart(final ScenarioType scenario)
 		{
 		}
 
@@ -467,26 +467,26 @@ public class CoreTest extends junit.framework.TestCase
 		{
 			_myScenarios = new Vector<ScenarioType>();
 
-			CoreScenario scen = new MyScen();
+			final CoreScenario scen = new MyScen();
 			scen.setName("aaa");
 			testParticipant = new MyPart(12, Category.Force.RED);
-			CoreParticipant cp2 = new MyPart(13, Category.Force.BLUE);
-			CoreParticipant cp3 = new MyPart(14, Category.Force.BLUE);
-			CoreParticipant cp4 = new MyPart(22, Category.Force.RED);
-			CoreParticipant cp5 = new MyPart(23, Category.Force.BLUE);
-			CoreParticipant cp6 = new MyPart(24, Category.Force.BLUE);
-			CoreParticipant cp7 = new MyPart(32, Category.Force.BLUE);
-			CoreParticipant cp8 = new MyPart(33, Category.Force.RED);
-			CoreParticipant cp9 = new MyPart(34, Category.Force.BLUE);
+			final CoreParticipant cp2 = new MyPart(13, Category.Force.BLUE);
+			final CoreParticipant cp3 = new MyPart(14, Category.Force.BLUE);
+			final CoreParticipant cp4 = new MyPart(22, Category.Force.RED);
+			final CoreParticipant cp5 = new MyPart(23, Category.Force.BLUE);
+			final CoreParticipant cp6 = new MyPart(24, Category.Force.BLUE);
+			final CoreParticipant cp7 = new MyPart(32, Category.Force.BLUE);
+			final CoreParticipant cp8 = new MyPart(33, Category.Force.RED);
+			final CoreParticipant cp9 = new MyPart(34, Category.Force.BLUE);
 			scen.addParticipant(testParticipant.getId(), testParticipant);
 			scen.addParticipant(cp2.getId(), cp2);
 			scen.addParticipant(cp3.getId(), cp3);
-			CoreScenario scen2 = new MyScen();
+			final CoreScenario scen2 = new MyScen();
 			scen2.addParticipant(cp4.getId(), cp4);
 			scen2.addParticipant(cp5.getId(), cp5);
 			scen2.addParticipant(cp6.getId(), cp6);
 			scen2.setName("aab");
-			CoreScenario scen3 = new MyScen();
+			final CoreScenario scen3 = new MyScen();
 			scen3.addParticipant(cp7.getId(), cp7);
 			scen3.addParticipant(cp8.getId(), cp8);
 			scen3.addParticipant(cp9.getId(), cp9);
@@ -500,14 +500,14 @@ public class CoreTest extends junit.framework.TestCase
 		return _myScenarios;
 	}
 
-	protected static void showEvents(Vector<String> events)
+	protected static void showEvents(final Vector<String> events)
 	{
 		System.out.println("=================");
-		Iterator<String> iter = events.iterator();
+		final Iterator<String> iter = events.iterator();
 		int ctr = 0;
 		while (iter.hasNext())
 		{
-			String string = (String) iter.next();
+			final String string = (String) iter.next();
 			System.out.println(++ctr + " - " + string);
 		}
 	}

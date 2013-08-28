@@ -59,7 +59,7 @@ public class BeanPanel extends Panel
                  AWTEvent.MOUSE_MOTION_EVENT_MASK);
   }
 
-  public BeanPanel(LayoutManager layout) {
+  public BeanPanel(final LayoutManager layout) {
     super.setLayout(layout);
     enableEvents(AWTEvent.FOCUS_EVENT_MASK |
                  AWTEvent.KEY_EVENT_MASK |
@@ -71,13 +71,13 @@ public class BeanPanel extends Panel
    * protected implementation of action event registration methods that a subclass
    * can expose as public methods if it sources action events
    */
-  public synchronized void addActionListener(ActionListener l) {
+  public synchronized void addActionListener(final ActionListener l) {
     if (actionAdapter == null)
       actionAdapter = new ActionMulticaster();
     actionAdapter.add(l);
   }
 
-  public synchronized void removeActionListener(ActionListener l) {
+  public synchronized void removeActionListener(final ActionListener l) {
     if (actionAdapter != null)
       actionAdapter.remove(l);
   }
@@ -90,13 +90,13 @@ public class BeanPanel extends Panel
     return focusAware;
   }
 
-  protected void setFocusAware(boolean aware) {
+  protected void setFocusAware(final boolean aware) {
     focusAware = aware;
   }
 
   // General events
 
-  protected void processEvent(AWTEvent e) {
+  protected void processEvent(final AWTEvent e) {
     if (e instanceof ActionEvent)
       processActionEvent((ActionEvent)e);
     else
@@ -105,14 +105,14 @@ public class BeanPanel extends Panel
 
   // Action events
 
-  protected void processActionEvent(ActionEvent e) {
+  protected void processActionEvent(final ActionEvent e) {
     if (actionAdapter != null)
       actionAdapter.dispatch(e);
   }
 
   // Key events
 
-  protected void processKeyEvent(KeyEvent e) {
+  protected void processKeyEvent(final KeyEvent e) {
     //System.err.println("processKeyEvent(" + e + ")");
 //    if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_F6 && e.isAltDown()) {
 //      System.err.println("Consuming alt-f6!");
@@ -126,18 +126,18 @@ public class BeanPanel extends Panel
     super.processKeyEvent(e);
   }
 
-  protected void processKeyPressed(KeyEvent e) {
+  protected void processKeyPressed(final KeyEvent e) {
   }
 
-  protected void processKeyTyped(KeyEvent e) {
+  protected void processKeyTyped(final KeyEvent e) {
   }
 
-  protected void processKeyReleased(KeyEvent e) {
+  protected void processKeyReleased(final KeyEvent e) {
   }
 
   // Mouse events
 
-  protected void processMouseEvent(MouseEvent e) {
+  protected void processMouseEvent(final MouseEvent e) {
     //System.err.println("processMouseEvent(" + e + ")");
     switch (e.getID()) {
       case MouseEvent.MOUSE_PRESSED:  processMousePressed(e);  break;
@@ -149,7 +149,7 @@ public class BeanPanel extends Panel
     super.processMouseEvent(e);
   }
 
-  protected void processMouseMotionEvent(MouseEvent e) {
+  protected void processMouseMotionEvent(final MouseEvent e) {
     switch (e.getID()) {
       case MouseEvent.MOUSE_MOVED:    processMouseMoved(e);    break;
       case MouseEvent.MOUSE_DRAGGED:  processMouseDragged(e);  break;
@@ -168,29 +168,29 @@ public class BeanPanel extends Panel
   }
 */
 
-  protected void processMousePressed(MouseEvent e) {
+  protected void processMousePressed(final MouseEvent e) {
     if (e.getClickCount() == 1 && isFocusable()) {
       //System.err.println("processMousePress(" + e + ") requesting focus");
       requestFocus();
       //showFocusOwner();
     }
   }
-  protected void processMouseReleased(MouseEvent e) {
+  protected void processMouseReleased(final MouseEvent e) {
   }
-  protected void processMouseClicked(MouseEvent e) {
+  protected void processMouseClicked(final MouseEvent e) {
   }
-  protected void processMouseEntered(MouseEvent e) {
+  protected void processMouseEntered(final MouseEvent e) {
   }
-  protected void processMouseExited(MouseEvent e) {
+  protected void processMouseExited(final MouseEvent e) {
   }
-  protected void processMouseMoved(MouseEvent e) {
+  protected void processMouseMoved(final MouseEvent e) {
   }
-  protected void processMouseDragged(MouseEvent e) {
+  protected void processMouseDragged(final MouseEvent e) {
   }
 
   // Focus events
 
-  protected void processFocusEvent(FocusEvent e) {
+  protected void processFocusEvent(final FocusEvent e) {
     //System.err.println("BeanPanel.processFocusEvent e=" + e + " focusState=" + focusState + " focusAware=" + focusAware);
     if (focusAware) {
       switch (e.getID()) {

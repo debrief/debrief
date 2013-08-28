@@ -46,7 +46,7 @@ public class GNDManager extends ViewPart implements Listener
 
 	private ManagerView view;
 
-	private ESearch _search;
+	private final ESearch _search;
 
 	/**
 	 * The constructor.
@@ -73,7 +73,7 @@ public class GNDManager extends ViewPart implements Listener
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		view = new ManagerViewImpl(parent, SWT.NONE);
 		view.setListener(this);
@@ -90,19 +90,19 @@ public class GNDManager extends ViewPart implements Listener
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(action1);
 		manager.add(new Separator());
 		manager.add(action2);
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(action1);
 		manager.add(action2);
@@ -151,12 +151,12 @@ public class GNDManager extends ViewPart implements Listener
 			res = _search.getMatches(getIndexUrl(),getDBUrl(), view);
 			view.setResults(res);
 		}
-		catch (ConnectException e)
+		catch (final ConnectException e)
 		{
 			Activator.showMessage("Could not connect to server", e.getMessage());
 			e.printStackTrace();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			Activator.showMessage("Trouble retrieving search", e.getMessage());
 			e.printStackTrace();
@@ -169,27 +169,27 @@ public class GNDManager extends ViewPart implements Listener
 	}
 
 	@Override
-	public void doImport(ArrayList<String> items)
+	public void doImport(final ArrayList<String> items)
 	{
 		// find out the name to use
 		
-		InputDialog dlg = new InputDialog(this.getViewSite().getShell(), "Import data","Please provide a name for the dataset", "Imported tracks", null);
+		final InputDialog dlg = new InputDialog(this.getViewSite().getShell(), "Import data","Please provide a name for the dataset", "Imported tracks", null);
 		if(dlg.open() == IStatus.OK)
 		{
 			final String name = dlg.getValue();
 			// find the active editor
-			IWorkbenchPage page = this.getViewSite().getPage();
+			final IWorkbenchPage page = this.getViewSite().getPage();
 			if (page != null)
 			{
-				IEditorPart editor = page.getActiveEditor();
+				final IEditorPart editor = page.getActiveEditor();
 				if (editor != null)
 				{
 
 					// ok, convert them to URLs
-					GPackage data = new GPackage(name, getDBUrl(), items);
+					final GPackage data = new GPackage(name, getDBUrl(), items);
 
 					// and insert the data
-					Layers layers = (Layers) editor.getAdapter(Layers.class);
+					final Layers layers = (Layers) editor.getAdapter(Layers.class);
 					if (layers != null)
 					{
 						layers.addThisLayer(data);
@@ -208,9 +208,9 @@ public class GNDManager extends ViewPart implements Listener
 		try
 		{
 			list = _search.getAll(getIndexUrl(), getDBUrl());
-			Facet platforms = list.getFacet("platform");
-			Facet platformTypes = list.getFacet("platform_type");
-			Facet trials = list.getFacet("trial");
+			final Facet platforms = list.getFacet("platform");
+			final Facet platformTypes = list.getFacet("platform_type");
+			final Facet trials = list.getFacet("trial");
 			if (platforms != null)
 				view.getPlatforms().setItems(platforms.toList(), false);
 			if (platformTypes != null)
@@ -221,12 +221,12 @@ public class GNDManager extends ViewPart implements Listener
 			// did it work?
 			view.enableControls(true);
 		}
-		catch (ConnectException e)
+		catch (final ConnectException e)
 		{
 			Activator.showMessage("Could not connect to server", e.getMessage());
 			e.printStackTrace();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			Activator.showMessage("Trouble retrieving search", e.getMessage());
 			e.printStackTrace();

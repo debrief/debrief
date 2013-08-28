@@ -37,27 +37,27 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleAttribute("Label")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _theFixWrapper.setLabel(fromXML(value));
       }
     });
     addHandler(new FontHandler()
     {
-      public void setFont(java.awt.Font font)
+      public void setFont(final java.awt.Font font)
       {
         _theFixWrapper.setFont(font);
       }
     });
     addAttributeHandler(new HandleAttribute("Course")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         try
         {
           _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(readThisDouble(value)));
         }
-        catch (java.text.ParseException pe)
+        catch (final java.text.ParseException pe)
         {
           MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
         }
@@ -67,13 +67,13 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleAttribute("Speed")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         try
         {
           _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(readThisDouble(value)));
         }
-        catch (java.text.ParseException pe)
+        catch (final java.text.ParseException pe)
         {
           MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
         }
@@ -83,16 +83,16 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleAttribute("Dtg")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
-        HiResDate hrf = DebriefFormatDateTime.parseThis(value);
+        final HiResDate hrf = DebriefFormatDateTime.parseThis(value);
         _theFix.setTime(hrf);
       }
     });
 
     addHandler(new LocationHandler("centre")
     {
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _theFixWrapper.setFixLocation(res);
       }
@@ -100,7 +100,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color theVal)
+      public void setColour(final java.awt.Color theVal)
       {
 
         _theFixWrapper.setColor(theVal);
@@ -109,7 +109,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleBooleanAttribute("LabelShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _theFixWrapper.setLabelShowing(value);
       }
@@ -117,7 +117,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleBooleanAttribute("SymbolShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _theFixWrapper.setSymbolShowing(value);
       }
@@ -125,7 +125,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleBooleanAttribute("ArrowShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _theFixWrapper.setArrowShowing(value);
       }
@@ -133,7 +133,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleBooleanAttribute("LineShowing")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _theFixWrapper.setLineShowing(value);
       }
@@ -141,7 +141,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _theFixWrapper.setVisible(value);
       }
@@ -150,10 +150,10 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addAttributeHandler(new HandleAttribute("LabelLocation")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         lp.setAsText(val);
-        Integer res = (Integer) lp.getValue();
+        final Integer res = (Integer) lp.getValue();
         if (res != null)
           _theFixWrapper.setLabelLocation(res);
       }
@@ -161,7 +161,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
   }
 
-  public final void handleOurselves(String name, Attributes atts)
+  public final void handleOurselves(final String name, final Attributes atts)
   {
     // create the new items
     _theFix = new MWC.TacticalData.Fix();
@@ -182,7 +182,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
   abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
-  public static void exportFix(Debrief.Wrappers.FixWrapper fix, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportFix(final Debrief.Wrappers.FixWrapper fix, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     /*
 <!ELEMENT fix (colour?, centre)>
@@ -196,7 +196,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
   SymbolShowing (TRUE|FALSE) "TRUE"
   LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
     */
-    Element eFix = doc.createElement("fix");
+    final Element eFix = doc.createElement("fix");
     eFix.setAttribute("Course", "" + writeThis(MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse())));
     eFix.setAttribute("Speed", "" + writeThis(fix.getSpeed()));
     eFix.setAttribute("Dtg", writeThis(fix.getTime()));
@@ -211,11 +211,11 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     // note, we are accessing the "actual" colour for this fix, we are not using the
     // normal getColor method which may return the track colour
-    java.awt.Color fCol = fix.getActualColor();
+    final java.awt.Color fCol = fix.getActualColor();
     if (fCol != null)
     {
       // just see if the colour is different to the parent
-      java.awt.Color parentColor = fix.getTrackWrapper().getColor();
+      final java.awt.Color parentColor = fix.getTrackWrapper().getColor();
       if (fCol.equals(parentColor))
       {
         // hey, don't bother outputting the parent color
@@ -228,7 +228,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     }
 
     // and the font
-    java.awt.Font theFont = fix.getFont();
+    final java.awt.Font theFont = fix.getFont();
     if (theFont != null)
     {
       // ok, compare the font to the parent

@@ -36,8 +36,8 @@ public class BeanUtil
 	 * @throws NullPointerException
 	 *           if given item is <code>null</code>
 	 */
-	public static <T> T getItemValue(TimeStampedDataItem item,
-			GriddableItemDescriptor descriptor, Class<T> resultType)
+	public static <T> T getItemValue(final TimeStampedDataItem item,
+			final GriddableItemDescriptor descriptor, final Class<T> resultType)
 	{
 		if (item == null)
 		{
@@ -48,24 +48,24 @@ public class BeanUtil
 		{
 			// we don't use bean introspection for these types.  They're schema free,
 			// so we don't have getters and setters
-			GDataItem g = (GDataItem) item;
+			final GDataItem g = (GDataItem) item;
 			return resultType.cast(g.getValue(descriptor.getName()));
 		}
 		
-		String getterName = getGetterName(descriptor);
+		final String getterName = getGetterName(descriptor);
 		Method getter;
 		try
 		{
 			getter = item.getClass().getMethod(getterName);
 		}
-		catch (NoSuchMethodException e)
+		catch (final NoSuchMethodException e)
 		{
 			throw new IllegalArgumentException(//
 					"Descriptor: " + descriptor.getTitle() + //
 							" is not applicable to item: " + item.getClass() + //
 							", there are no getters with name : " + getterName);
 		}
-		Class<?> actualGetterType = getter.getReturnType();
+		final Class<?> actualGetterType = getter.getReturnType();
 		// if (!descriptor.getType().isAssignableFrom(actualGetterType)) {
 		// throw new IllegalArgumentException(//
 		// "Descriptor: " + descriptor.getTitle() + //
@@ -96,7 +96,7 @@ public class BeanUtil
 		{
 			result = getter.invoke(item);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			throw new IllegalArgumentException(//
 					"Can't invoke getter " + getterName + //
@@ -121,7 +121,7 @@ public class BeanUtil
 	 *          subject item to invoke setter on
 	 * @param descriptor
 	 *          meta-data describing the bean property
-	 * @param value
+	 * @param theValue
 	 *          new value to set
 	 * 
 	 * @throws IllegalArgumentException
@@ -133,62 +133,62 @@ public class BeanUtil
 	 * @throws NullPointerException
 	 *           if given item is <code>null</code>
 	 */
-	static void setItemValue(TimeStampedDataItem item,
-			GriddableItemDescriptor descriptor, Object value)
+	static void setItemValue(final TimeStampedDataItem item,
+			final GriddableItemDescriptor descriptor, final Object value)
 	{
 		if (item == null)
 		{
 			throw new NullPointerException();
 		}
-
+		
 		// convert the value from text editor to target datat ype
-		value = descriptor.getEditor().translateFromSWT(value);
+		final Object theValue = descriptor.getEditor().translateFromSWT(value);
 
 		// special case for GDataItems who do not have getter/setters
 		if(item instanceof GDataItem)
 		{
 			// we don't use bean introspection for these types.  They're schema free,
 			// so we don't have getters and setters
-			GDataItem g = (GDataItem) item;
-			g.setValue(descriptor.getName(), value);
+			final GDataItem g = (GDataItem) item;
+			g.setValue(descriptor.getName(), theValue);
 			return;
 		}
 
-		if (value != null
-				&& !descriptor.getType().isAssignableFrom(value.getClass()))
+		if (theValue != null
+				&& !descriptor.getType().isAssignableFrom(theValue.getClass()))
 		{
 			// not that strong of a check, but we will fail later (on invocation) in
 			// any case
-			boolean autoUnboxable = descriptor.getType().isPrimitive()
-					&& Number.class.isAssignableFrom(value.getClass());
+			final boolean autoUnboxable = descriptor.getType().isPrimitive()
+					&& Number.class.isAssignableFrom(theValue.getClass());
 			if (!autoUnboxable)
 			{
 				throw new ClassCastException(//
-						"Can not cast actual value of type: " + value.getClass() + //
+						"Can not cast actual value of type: " + theValue.getClass() + //
 								" to descriptor type " + descriptor.getType());
 			}
 		}
 
-		String setterName = getSetterName(descriptor);
-		Method setter = getSetter(item, descriptor, setterName);
+		final String setterName = getSetterName(descriptor);
+		final Method setter = getSetter(item, descriptor, setterName);
 
 		try
 		{
-			setter.invoke(item, value);
+			setter.invoke(item, theValue);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			throw new IllegalArgumentException(//
 					"Can't invoke setter " + setterName + //
 							" for object " + item + //
 							" of class " + item.getClass() + //
-							" and actual parameter : " + value, e);
+							" and actual parameter : " + theValue, e);
 		}
 	}
 
 
-	public static Method getSetter(TimeStampedDataItem item,
-			GriddableItemDescriptor descriptor, String setterName)
+	public static Method getSetter(final TimeStampedDataItem item,
+			final GriddableItemDescriptor descriptor, final String setterName)
 	{
 		Method setter = null;
 		
@@ -196,7 +196,7 @@ public class BeanUtil
 		{
 			setter = item.getClass().getMethod(setterName, descriptor.getType());
 		}
-		catch (NoSuchMethodException e)
+		catch (final NoSuchMethodException e)
 		{
 		}
 
@@ -210,7 +210,7 @@ public class BeanUtil
 				{
 					setter = item.getClass().getMethod(setterName, double.class);
 				}
-				catch (NoSuchMethodException e)
+				catch (final NoSuchMethodException e)
 				{
 				}
 			}
@@ -219,7 +219,7 @@ public class BeanUtil
 				{
 					setter = item.getClass().getMethod(setterName, boolean.class);
 				}
-				catch (NoSuchMethodException e)
+				catch (final NoSuchMethodException e)
 				{
 				}
 		}
@@ -233,23 +233,23 @@ public class BeanUtil
 		return setter;
 	}
 
-	public static Object getItemValue(TimeStampedDataItem item,
-			GriddableItemDescriptor descriptor)
+	public static Object getItemValue(final TimeStampedDataItem item,
+			final GriddableItemDescriptor descriptor)
 	{
 		return getItemValue(item, descriptor, Object.class);
 	}
 
-	private static String getGetterName(GriddableItemDescriptor descriptor)
+	private static String getGetterName(final GriddableItemDescriptor descriptor)
 	{
 		return "get" + capitalize(descriptor.getName());
 	}
 
-	public static String getSetterName(GriddableItemDescriptor descriptor)
+	public static String getSetterName(final GriddableItemDescriptor descriptor)
 	{
 		return "set" + capitalize(descriptor.getName());
 	}
 
-	private static String capitalize(String text)
+	private static String capitalize(final String text)
 	{
 		if (text == null)
 		{
@@ -259,7 +259,7 @@ public class BeanUtil
 		{
 			return text;
 		}
-		char firstChar = text.charAt(0);
+		final char firstChar = text.charAt(0);
 		return Character.isUpperCase(firstChar) ? text : Character
 				.toUpperCase(firstChar)
 				+ text.substring(1);

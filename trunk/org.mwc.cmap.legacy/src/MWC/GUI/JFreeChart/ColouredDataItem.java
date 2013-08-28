@@ -32,7 +32,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
   /** whether to connect this data item to the previous one
    *
    */
-  private boolean _connectToPrevious;
+  private final boolean _connectToPrevious;
 
   /** the provider for the time offset
    *
@@ -48,7 +48,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
   private ColouredDataItem(final RegularTimePeriod period,
                           final double value,
                           final Color myColor,
-                          boolean connectToPrevious) {
+                          final boolean connectToPrevious) {
     super(period, value);
     _myColor = myColor;
     _connectToPrevious = connectToPrevious;
@@ -67,8 +67,8 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
   public ColouredDataItem(final RegularTimePeriod period,
                           final double value,
                           final Color myColor,
-                          boolean connectToPrevious,
-                          OffsetProvider provider) {
+                          final boolean connectToPrevious,
+                          final OffsetProvider provider) {
     this(period, value, myColor, connectToPrevious);
     _provider = provider;
   }

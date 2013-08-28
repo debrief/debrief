@@ -84,10 +84,10 @@ public final class StepperChartPanel extends ChartPanel implements StepperListen
   
 
   /** Working storage for available panel area after deducting insets. */
-  private Rectangle2D available = new Rectangle2D.Double();
+  private final Rectangle2D available = new Rectangle2D.Double();
 
   /** Working storage for the chart area. */
-  private Rectangle2D chartArea = new Rectangle2D.Double();
+  private final Rectangle2D chartArea = new Rectangle2D.Double();
 
   
   /**
@@ -98,13 +98,13 @@ public final class StepperChartPanel extends ChartPanel implements StepperListen
    *
    * @param g  the graphics device for drawing on.
    */
-  public void paintWMFComponent(Graphics g) {
+  public void paintWMFComponent(final Graphics g) {
 
-      Graphics2D g2 = (Graphics2D) g;
+      final Graphics2D g2 = (Graphics2D) g;
 
       // first determine the size of the chart rendering area...
-      Dimension size = getSize();
-      Insets insets = getInsets();
+      final Dimension size = getSize();
+      final Insets insets = getInsets();
       available.setRect(insets.left, insets.top,
                         size.getWidth() - insets.left - insets.right,
                         size.getHeight() - insets.top - insets.bottom);
@@ -140,10 +140,10 @@ public final class StepperChartPanel extends ChartPanel implements StepperListen
 
       chartArea.setRect(0.0, 0.0, drawWidth, drawHeight);
 
-      AffineTransform saved = g2.getTransform();
+      final AffineTransform saved = g2.getTransform();
       g2.translate(insets.left, insets.right);
       if (scale) {
-          AffineTransform st = AffineTransform.getScaleInstance(scaleX, scaleY);
+          final AffineTransform st = AffineTransform.getScaleInstance(scaleX, scaleY);
           g2.transform(st);
       }
       getChart().draw(g2, chartArea, this.getChartRenderingInfo());

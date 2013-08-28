@@ -15,7 +15,7 @@ public class ChartFolio extends BaseLayer
 	private boolean _showNames = false;
 	private Color _lineColor = Color.red;
 
-	public ChartFolio(boolean showNames, Color lineColor)
+	public ChartFolio(final boolean showNames, final Color lineColor)
 	{
 		_showNames = showNames;
 		_lineColor = lineColor;
@@ -42,7 +42,7 @@ public class ChartFolio extends BaseLayer
 	}
 	
 	@Override
-	public void add(Editable thePlottable)
+	public void add(final Editable thePlottable)
 	{
 		if (thePlottable instanceof ChartBoundsWrapper)
 			super.add(thePlottable);
@@ -55,16 +55,16 @@ public class ChartFolio extends BaseLayer
 		return _showNames;
 	}
 
-	public void setShowNames(boolean showNames)
+	public void setShowNames(final boolean showNames)
 	{
 		this._showNames = showNames;
 
 		// go through kiddies setting name vis
-		Enumeration<Editable> iter = super.elements();
+		final Enumeration<Editable> iter = super.elements();
 		while (iter.hasMoreElements())
 		{
-			Editable editable = (Editable) iter.nextElement();
-			ChartBoundsWrapper chart = (ChartBoundsWrapper) editable;
+			final Editable editable = (Editable) iter.nextElement();
+			final ChartBoundsWrapper chart = (ChartBoundsWrapper) editable;
 			chart.setLabelVisible(showNames);
 		}
 	}
@@ -74,15 +74,15 @@ public class ChartFolio extends BaseLayer
 		return _lineColor;
 	}
 
-	public void setLineColor(Color lineColor)
+	public void setLineColor(final Color lineColor)
 	{
 		this._lineColor = lineColor;
 		// go through kiddies setting name vis
-		Enumeration<Editable> iter = super.elements();
+		final Enumeration<Editable> iter = super.elements();
 		while (iter.hasMoreElements())
 		{
-			Editable editable = (Editable) iter.nextElement();
-			ChartBoundsWrapper chart = (ChartBoundsWrapper) editable;
+			final Editable editable = (Editable) iter.nextElement();
+			final ChartBoundsWrapper chart = (ChartBoundsWrapper) editable;
 			chart.setColor(lineColor);
 		}
 	}
@@ -121,7 +121,7 @@ public class ChartFolio extends BaseLayer
 						prop(LINE_COLOR, "color for chart rectangles") };
 				return res;
 			}
-			catch (java.beans.IntrospectionException e)
+			catch (final java.beans.IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}

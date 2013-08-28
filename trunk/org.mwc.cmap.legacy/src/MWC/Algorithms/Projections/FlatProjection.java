@@ -27,7 +27,7 @@ public class FlatProjection extends PlainProjection
 	public class FlatProjectionInfo extends Editable.EditorType
 	{
 
-		public FlatProjectionInfo(PlainProjection data)
+		public FlatProjectionInfo(final PlainProjection data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -37,7 +37,7 @@ public class FlatProjection extends PlainProjection
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("DataBorder",
 								"the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
@@ -46,7 +46,7 @@ public class FlatProjection extends PlainProjection
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -71,18 +71,18 @@ public class FlatProjection extends PlainProjection
 	/**
 	 * working vector object, to reduce object creation ins screen operations
 	 */
-	private WorldVector _workingVector = new WorldVector(0, 0, 0);
+	private final WorldVector _workingVector = new WorldVector(0, 0, 0);
 
 	/**
 	 * working location object, to reduce object creation ins screen operations
 	 */
-	private WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
+	private final WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
 
 	/**
 	 * working screen location, to reduce screen operations
 	 * 
 	 */
-	private Point scrRes = new Point(0, 0);
+	private final Point scrRes = new Point(0, 0);
 
 	// ////////////////////////////////////////////////
 	// member functions
@@ -120,7 +120,7 @@ public class FlatProjection extends PlainProjection
 		return _scaleVal;
 	}
 
-	public void offsetOrigin(boolean updateDataArea)
+	public void offsetOrigin(final boolean updateDataArea)
 	{
 
 		// ensure there's a valid (minimum) value
@@ -147,17 +147,17 @@ public class FlatProjection extends PlainProjection
 			sHeight = sHeight - getDataArea().getHeight();
 
 			// halve the size of these borders, to give the distance each side
-			double edgeX = sWidth / 2.0;
-			double edgeY = sHeight / 2.0;
+			final double edgeX = sWidth / 2.0;
+			final double edgeY = sHeight / 2.0;
 
 			if (updateDataArea)
 			{
 				// work out the new top left
-				WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
+				final WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
 						.getLat() + edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
 
 				// and now the new bottom right
-				WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
+				final WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
 						.getLat() - edgeY,
 						getDataArea().getBottomRight().getLong() + edgeX, 0);
 
@@ -174,7 +174,7 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public void setDataArea(WorldArea theArea)
+	public void setDataArea(final WorldArea theArea)
 	{
 		super.setDataArea(theArea);
 
@@ -189,7 +189,7 @@ public class FlatProjection extends PlainProjection
 	 * 
 	 * @param scaleVal
 	 */
-	public void setScaleVal(double scaleVal)
+	public void setScaleVal(final double scaleVal)
 	{
 		_scaleVal = scaleVal;
 
@@ -197,7 +197,7 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public void setScreenArea(java.awt.Dimension theArea)
+	public void setScreenArea(final java.awt.Dimension theArea)
 	{
 		super.setScreenArea(theArea);
 
@@ -208,7 +208,7 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public java.awt.Point toScreen(WorldLocation val)
+	public java.awt.Point toScreen(final WorldLocation val)
 	{
 		// Point scrRes;
 
@@ -263,9 +263,9 @@ public class FlatProjection extends PlainProjection
 			myOrigin = _dataOrigin;
 
 		// find the offsets from the data origin
-		WorldVector delta = val.subtract(myOrigin, _workingVector);
+		final WorldVector delta = val.subtract(myOrigin, _workingVector);
 		double rng = delta.getRange();
-		double brg = delta.getBearing() - bearingOffset;
+		final double brg = delta.getBearing() - bearingOffset;
 
 		// scale from world to data
 		rng = rng / _scaleVal;
@@ -289,11 +289,11 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public WorldLocation toWorld(java.awt.Point val)
+	public WorldLocation toWorld(final java.awt.Point val)
 	{
 
-		WorldLocation answer = null;
-		Point p1 = new Point();
+		final WorldLocation answer = null;
+		final Point p1 = new Point();
 
 		if (_scaleVal == 0)
 			return answer;
@@ -302,8 +302,8 @@ public class FlatProjection extends PlainProjection
 			return answer;
 
 		// work out our offsets from the origin
-		int X = val.x - _screenOrigin.x;
-		int Y = val.y - _screenOrigin.y;
+		final int X = val.x - _screenOrigin.x;
+		final int Y = val.y - _screenOrigin.y;
 
 		// invert our y coordinate
 		p1.y = -Y;
@@ -351,7 +351,7 @@ public class FlatProjection extends PlainProjection
 				}
 			}
 		}
-		catch (NullPointerException npe)
+		catch (final NullPointerException npe)
 		{
 			// don't worry - we don't have the necessary data - just do normal
 			// plotting
@@ -372,7 +372,7 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public void zoom(double value)
+	public void zoom(final double value)
 	{
 		// check that we have some data
 		if ((getDataArea() != null) && (getScreenArea() != null))
@@ -388,13 +388,13 @@ public class FlatProjection extends PlainProjection
 
 					// find the width and height of the data
 					// we've got to calculate the new scale
-					double thisBorder = getDataBorder();
+					final double thisBorder = getDataBorder();
 
 					// find the x scale factor
-					double dx = (getDataArea().getWidth() * thisBorder)
+					final double dx = (getDataArea().getWidth() * thisBorder)
 							/ getScreenArea().width;
 					// find the y scale factor
-					double dy = (getDataArea().getHeight() * thisBorder)
+					final double dy = (getDataArea().getHeight() * thisBorder)
 							/ getScreenArea().height;
 
 					// find the maximum of these

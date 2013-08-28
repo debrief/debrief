@@ -30,7 +30,7 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 
 	public abstract String getNebulaPattern(boolean forLongitudeNotLatitude);
 
-	protected void appendHemisphere(Sexagesimal value, boolean forLongitudeNotLatitude, StringBuffer output) {
+	protected void appendHemisphere(final Sexagesimal value, final boolean forLongitudeNotLatitude, final StringBuffer output) {
 		if (value.getHemi() < 0) {
 			output.append(forLongitudeNotLatitude ? MINUS_LONGITUDE : MINUS_LATITUDE);
 		} else {
@@ -42,9 +42,9 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 	 * @return <code>1</code> if this text denotes positive hemisphere (N or W),
 	 * 	<code>-1</code> otherwise
 	 */
-	protected int getHemisphereSignum(String text, boolean forLongitudeNotLatitude) throws ParseException {
+	protected int getHemisphereSignum(final String text, final boolean forLongitudeNotLatitude) throws ParseException {
 		if (text.length() != 0) {
-			char last = text.charAt(text.length() - 1);
+			final char last = text.charAt(text.length() - 1);
 			if (forLongitudeNotLatitude) {
 				switch (last) {
 				case MINUS_LONGITUDE:
@@ -64,11 +64,11 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 		throw new ParseException("There should be hemisphere: " + (forLongitudeNotLatitude ? " (W/E)" : " (N/S)") + ": " + text, 0);
 	}
 
-	public String convertToString(WorldLocation theLocation)
+	public String convertToString(final WorldLocation theLocation)
 	{
-		Sexagesimal theLat = parseDouble(theLocation.getLat());
-		Sexagesimal theLong = parseDouble(theLocation.getLong());
-		String res = format(theLat, false) + " " + format(theLong, true);
+		final Sexagesimal theLat = parseDouble(theLocation.getLat());
+		final Sexagesimal theLong = parseDouble(theLocation.getLong());
+		final String res = format(theLat, false) + " " + format(theLong, true);
 		return res;
 	}
 

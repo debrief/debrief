@@ -11,7 +11,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 import MWC.Utilities.TextFormatting.PlainFormatLocation;
 
-public class CursorTracker extends CoreTracker
+public final class CursorTracker extends CoreTracker
 {
 	private static final String POSITION_TOOLTIP = "Mouse position";
 
@@ -48,12 +48,12 @@ public class CursorTracker extends CoreTracker
 		// sort out a chart listener
 		_myMoveListener = new PlainChart.ChartCursorMovedListener()
 		{
-			public void cursorMoved(WorldLocation thePos, boolean dragging,
-					Layers theData)
+			public void cursorMoved(final WorldLocation thePos, final boolean dragging,
+					final Layers theData)
 			{
 				String msg;
 				
-				PlainFormatLocation locationFormatter = CorePlugin.getDefault().getLocationFormat();
+				final PlainFormatLocation locationFormatter = CorePlugin.getDefault().getLocationFormat();
 
 				if (locationFormatter != null)
 					msg = locationFormatter.convertToString(thePos);
@@ -95,7 +95,7 @@ public class CursorTracker extends CoreTracker
 	 * @param editor
 	 * @param chart
 	 */
-	private void storeSettings(EditorPart editor, SWTChart chart)
+	private void storeSettings(final EditorPart editor, final SWTChart chart)
 	{
 		// do the parent's store bit
 		CoreTracker.storeSettings(this, editor);
@@ -116,7 +116,7 @@ public class CursorTracker extends CoreTracker
 	 * @param chart
 	 *          the chart who's mouse movements we now track
 	 */
-	public static void trackThisChart(SWTChart chart, EditorPart editor)
+	public static void trackThisChart(final SWTChart chart, final EditorPart editor)
 	{
 		if ((_singleton == null) || (_singleton._myEditor != editor))
 		{

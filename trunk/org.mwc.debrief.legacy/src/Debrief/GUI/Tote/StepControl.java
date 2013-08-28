@@ -355,7 +355,7 @@ abstract public class StepControl implements Editable,
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public StepControl(ToolParent parent)
+  public StepControl(final ToolParent parent)
   {
 
     // sort out the small & large time steps
@@ -494,7 +494,7 @@ abstract public class StepControl implements Editable,
       else
         step = _smallStep;
 
-      long nowMicros = _currentTime.getMicros();     
+      final long nowMicros = _currentTime.getMicros();     
       
       if (forwards)
       {
@@ -616,7 +616,7 @@ abstract public class StepControl implements Editable,
     _dateFormatter.applyPattern(val);
 
     // has our date been set?
-    HiResDate tNow = this.getCurrentTime();
+    final HiResDate tNow = this.getCurrentTime();
     if (tNow != null)
     {
       // and update the form
@@ -655,7 +655,7 @@ abstract public class StepControl implements Editable,
    *
    * @param newVal the new time (or null for no Time Zero)
    */
-  public void setTimeZero(HiResDate newVal)
+  public void setTimeZero(final HiResDate newVal)
   {
     _timeZero = newVal;
   }
@@ -953,12 +953,12 @@ abstract public class StepControl implements Editable,
     }
 
     // find out the millis
-    long timeMillis = rawTime.getDate().getTime();
+    final long timeMillis = rawTime.getDate().getTime();
 
     // trim to whole minutes
-    long roundedTimeMillis = (timeMillis / 1000) * 1000;
+    final long roundedTimeMillis = (timeMillis / 1000) * 1000;
 //    long roundedTimeMillis = timeMillis;
-    HiResDate roundedTime = new HiResDate(roundedTimeMillis, 0);   
+    final HiResDate roundedTime = new HiResDate(roundedTimeMillis, 0);   
     
     // update the GUI
     updateForm(roundedTime);
@@ -972,7 +972,7 @@ abstract public class StepControl implements Editable,
       {
         l.newTime(oldTime, roundedTime, null);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
@@ -997,7 +997,7 @@ abstract public class StepControl implements Editable,
       doStep(_goingForward, _largeSteps);
 
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -1217,7 +1217,7 @@ abstract public class StepControl implements Editable,
 
         return res;
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
         return super.getPropertyDescriptors();
@@ -1324,7 +1324,7 @@ abstract public class StepControl implements Editable,
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testMe(String val)
+    public testMe(final String val)
     {
       super(val);
     }
@@ -1364,15 +1364,15 @@ abstract public class StepControl implements Editable,
         {
         }
 
-        public void setToolboxEndTime(HiResDate val)
+        public void setToolboxEndTime(final HiResDate val)
         {
         }
 
-        public void setToolboxStartTime(HiResDate val)
+        public void setToolboxStartTime(final HiResDate val)
         {
         }
 
-        protected void updateForm(HiResDate DTG)
+        protected void updateForm(final HiResDate DTG)
         {
         }
       };

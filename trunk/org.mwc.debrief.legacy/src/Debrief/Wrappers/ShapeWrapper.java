@@ -352,7 +352,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 				return myRes;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -614,20 +614,20 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer)
 	{
 		if (_theShape instanceof HasDraggableComponents)
 		{
-			HasDraggableComponents dragger = (HasDraggableComponents) _theShape;
+			final HasDraggableComponents dragger = (HasDraggableComponents) _theShape;
 			dragger.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
 					parentLayer);
 		}
 	}
 
 	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
 	{
 		_theShape.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
 				parentLayer, theData);
@@ -751,7 +751,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 
 	public final String getLabel()
 	{
-		String label = _theLabel.getString();
+		final String label = _theLabel.getString();
 		if (label == null)
 			return "";
 		return label;
@@ -921,7 +921,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 					// convert to micros
 					res *= 1000000;
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					MWC.Utilities.Errors.Trace.trace(e,
 							"Retrieving step threshold from properties");
@@ -1000,7 +1000,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 			dest.setLineStyle(_lineStyle);
 
 			// store the current line width
-			float lineWid = dest.getLineWidth();
+			final float lineWid = dest.getLineWidth();
 
 			// and the line width
 			dest.setLineWidth(_lineWidth);
@@ -1115,7 +1115,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the line thickness (convenience wrapper around width)
 	 */
-	public void setLineThickness(int val)
+	public void setLineThickness(final int val)
 	{
 		_lineWidth = val;
 	}
@@ -1123,7 +1123,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * set the start time for this shape
 	 */
-	public final void setTime_Start(HiResDate val)
+	public final void setTime_Start(final HiResDate val)
 	{
 		_theStartDTG = val;
 	}
@@ -1131,7 +1131,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * set the start time for this shape
 	 */
-	public final void setTimeEnd(HiResDate val)
+	public final void setTimeEnd(final HiResDate val)
 	{
 		_theEndDTG = val;
 	}
@@ -1143,25 +1143,25 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void shift(WorldLocation feature, WorldVector vector)
+	public void shift(final WorldLocation feature, final WorldVector vector)
 	{
 		// ok, move the indicated point
-		WorldLocation theLoc = feature;
+		final WorldLocation theLoc = feature;
 		theLoc.addToMe(vector);
 	}
 
 	@Override
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		// ok - apply the offset
-		DraggableItem dragee = _theShape;
+		final DraggableItem dragee = _theShape;
 		dragee.shift(vector);
 	}
 
 	@Override
 	public String toString()
 	{
-		String label = _theLabel.getString();
+		final String label = _theLabel.getString();
 		if (label == null)
 			return _theShape.getName();
 		return _theShape.getName() + ":" + label;

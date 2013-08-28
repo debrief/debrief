@@ -45,15 +45,15 @@ public class KMLLoader extends IPlotLoader.BaseLoader
 			{
 
 				// hmm, is there anything in the file?
-				int numAvailable = inputStream.available();
+				final int numAvailable = inputStream.available();
 				if (numAvailable > 0)
 				{
 
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IProgressService ps = wb.getProgressService();
+					final IWorkbench wb = PlatformUI.getWorkbench();
+					final IProgressService ps = wb.getProgressService();
 					ps.busyCursorWhile(new IRunnableWithProgress()
 					{
-						public void run(IProgressMonitor pm)
+						public void run(final IProgressMonitor pm)
 						{
 							// right, better suspend the LayerManager extended updates from
 							// firing
@@ -86,7 +86,7 @@ public class KMLLoader extends IPlotLoader.BaseLoader
 								DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
 							}
-							catch (RuntimeException e)
+							catch (final RuntimeException e)
 							{
 								DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
 										+ fileName, e);
@@ -107,17 +107,17 @@ public class KMLLoader extends IPlotLoader.BaseLoader
 				}
 
 			}
-			catch (InvocationTargetException e)
+			catch (final InvocationTargetException e)
 			{
 				DebriefPlugin.logError(Status.ERROR, "Problem loading kml:"
 						+ fileName, e);
 			}
-			catch (InterruptedException e)
+			catch (final InterruptedException e)
 			{
 				DebriefPlugin.logError(Status.ERROR, "Problem loading kml:"
 						+ fileName, e);
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				DebriefPlugin.logError(Status.ERROR, "Problem loading kml:"
 						+ fileName, e);

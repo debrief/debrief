@@ -22,10 +22,10 @@ public class InsertFurthestOnCircles extends CoreInsertShape
 	 *          the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		// generate the shape
-		PlainShape res = new FurthestOnCircleShape(centre, 5, new WorldSpeed(10,
+		final PlainShape res = new FurthestOnCircleShape(centre, 5, new WorldSpeed(10,
 				WorldSpeed.Kts), 5 * 60 * 1000, 180, 360);
 		return res;
 	}

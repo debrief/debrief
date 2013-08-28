@@ -8,12 +8,12 @@ public class FormatDateTime {
 	public static final String DEFAULT_TIME_ZONE_ID = "GMT";
 	static private SimpleDateFormat _df = null;
 
-	static public String toString(long theVal) {
+	static public String toString(final long theVal) {
 		return toStringLikeThis(theVal, DEFAULT_PATTERN);
 	}
 
-	static public String toStringLikeThis(long theVal, String thePattern) {
-		java.util.Date theTime = new java.util.Date(theVal);
+	static public String toStringLikeThis(final long theVal, final String thePattern) {
+		final java.util.Date theTime = new java.util.Date(theVal);
 		String res;
 
 		if (_df == null) {

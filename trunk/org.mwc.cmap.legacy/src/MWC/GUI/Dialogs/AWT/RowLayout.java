@@ -9,23 +9,23 @@ import java.awt.LayoutManager;
 public class RowLayout implements LayoutManager {
     static private int _defaultGap = 5;
 
-    private int gap;
-    private Orientation verticalOrientation;
-    private Orientation horizontalOrientation;
+    private final int gap;
+    private final Orientation verticalOrientation;
+    private final Orientation horizontalOrientation;
 
     public RowLayout() {
         this(Orientation.CENTER, 
              Orientation.CENTER, _defaultGap);
     }
-    public RowLayout(int gap) {
+    public RowLayout(final int gap) {
         this(Orientation.CENTER, Orientation.CENTER, gap);
     }
-    public RowLayout(Orientation horizontalOrient, 
-                     Orientation verticalOrient) {
+    public RowLayout(final Orientation horizontalOrient, 
+                     final Orientation verticalOrient) {
         this(horizontalOrient, verticalOrient, _defaultGap);
     }
-    public RowLayout(Orientation horizontalOrient, 
-                     Orientation verticalOrient, int gap) {
+    public RowLayout(final Orientation horizontalOrient, 
+                     final Orientation verticalOrient, final int gap) {
         if(gap < 0 ||
             (horizontalOrient != Orientation.LEFT   &&
             horizontalOrient != Orientation.CENTER &&
@@ -42,15 +42,15 @@ public class RowLayout implements LayoutManager {
         this.horizontalOrientation = horizontalOrient;
     }
 
-    public void addLayoutComponent(String name, Component comp) {
+    public void addLayoutComponent(final String name, final Component comp) {
     }
-    public void removeLayoutComponent(Component comp) {
+    public void removeLayoutComponent(final Component comp) {
     }
 
-    public Dimension preferredLayoutSize(Container target) {
-        Insets    insets      = target.getInsets();
-        Dimension dim         = new Dimension(0,0);
-        int       ncomponents = target.getComponentCount();
+    public Dimension preferredLayoutSize(final Container target) {
+        final Insets    insets      = target.getInsets();
+        final Dimension dim         = new Dimension(0,0);
+        final int       ncomponents = target.getComponentCount();
         Component comp;
         Dimension d;
 
@@ -71,10 +71,10 @@ public class RowLayout implements LayoutManager {
 
         return dim;
     }
-    public Dimension minimumLayoutSize(Container target) {
-        Insets    insets      = target.getInsets();
-        Dimension dim         = new Dimension(0,0);
-        int       ncomponents = target.getComponentCount();
+    public Dimension minimumLayoutSize(final Container target) {
+        final Insets    insets      = target.getInsets();
+        final Dimension dim         = new Dimension(0,0);
+        final int       ncomponents = target.getComponentCount();
         Component comp;
         Dimension d;
 
@@ -95,13 +95,13 @@ public class RowLayout implements LayoutManager {
 
         return dim;
     }
-    public void layoutContainer(Container target) {
-        Insets    insets      = target.getInsets();
-        int       ncomponents = target.getComponentCount();
+    public void layoutContainer(final Container target) {
+        final Insets    insets      = target.getInsets();
+        final int       ncomponents = target.getComponentCount();
         int       top         = 0;
         int       left        = insets.left;
-        Dimension tps         = target.getPreferredSize();
-        Dimension targetSize  = target.getSize();
+        final Dimension tps         = target.getPreferredSize();
+        final Dimension targetSize  = target.getSize();
         Component comp;
         Dimension ps;
 

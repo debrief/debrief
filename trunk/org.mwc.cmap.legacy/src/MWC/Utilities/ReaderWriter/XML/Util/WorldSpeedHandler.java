@@ -29,7 +29,7 @@ abstract public class WorldSpeedHandler extends BaseDataHandler
     super(_myType);   
   }
 
-  public WorldSpeedHandler(String myType)
+  public WorldSpeedHandler(final String myType)
   {
     super(myType);
   }
@@ -41,8 +41,8 @@ abstract public class WorldSpeedHandler extends BaseDataHandler
   public void elementClosed()
   {
     // produce a value using these units
-    int theUnits = WorldSpeed.getUnitIndexFor(_units);
-    WorldSpeed res = new WorldSpeed(_value, theUnits);
+    final int theUnits = WorldSpeed.getUnitIndexFor(_units);
+    final WorldSpeed res = new WorldSpeed(_value, theUnits);
 
     setSpeed(res);
 
@@ -52,12 +52,12 @@ abstract public class WorldSpeedHandler extends BaseDataHandler
 
   abstract public void setSpeed(WorldSpeed res);
 
-  public static void exportSpeed(String element_type,
-                                 WorldSpeed speed,
-                                 org.w3c.dom.Element parent,
-                                 org.w3c.dom.Document doc)
+  public static void exportSpeed(final String element_type,
+                                 final WorldSpeed speed,
+                                 final org.w3c.dom.Element parent,
+                                 final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eLoc = doc.createElement(element_type);
+    final org.w3c.dom.Element eLoc = doc.createElement(element_type);
 
     // set the attributes
     eLoc.setAttribute(VALUE, writeThis(speed.getValue()));
@@ -66,8 +66,8 @@ abstract public class WorldSpeedHandler extends BaseDataHandler
     parent.appendChild(eLoc);
   }
 
-  public static void exportSpeed(WorldSpeed speed, org.w3c.dom.Element parent,
-                                    org.w3c.dom.Document doc)
+  public static void exportSpeed(final WorldSpeed speed, final org.w3c.dom.Element parent,
+                                    final org.w3c.dom.Document doc)
   {
     exportSpeed(_myType, speed, parent, doc);
   }

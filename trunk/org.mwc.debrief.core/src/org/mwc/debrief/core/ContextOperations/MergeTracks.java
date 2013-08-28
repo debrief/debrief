@@ -48,7 +48,7 @@ public class MergeTracks implements RightClickContextItemGenerator
 			for (int i = 0; i < subjects.length; i++)
 			{
 				boolean goForIt = false;
-				Editable thisE = subjects[i];
+				final Editable thisE = subjects[i];
 				if (thisE instanceof TrackWrapper)
 				{
 					goForIt = true;
@@ -79,11 +79,11 @@ public class MergeTracks implements RightClickContextItemGenerator
 			final Editable editable = subjects[0];
 			final String title = "Merge tracks into " + editable.getName();
 			// create this operation
-			Action doMerge = new Action(title)
+			final Action doMerge = new Action(title)
 			{
 				public void run()
 				{
-					IUndoableOperation theAction = new MergeTracksOperation(title,
+					final IUndoableOperation theAction = new MergeTracksOperation(title,
 							editable, theLayers, parentLayers, subjects);
 
 					CorePlugin.run(theAction);
@@ -96,18 +96,18 @@ public class MergeTracks implements RightClickContextItemGenerator
 			// aah, see if this a single-segment leg
 			if (subjects.length == 1)
 			{
-				Editable item = subjects[0];
+				final Editable item = subjects[0];
 
 				CoreTMASegment seg = null;
 
 				// is it a track?
 				if (item instanceof TrackWrapper)
 				{
-					TrackWrapper tw = (TrackWrapper) item;
-					SegmentList segs = tw.getSegments();
+					final TrackWrapper tw = (TrackWrapper) item;
+					final SegmentList segs = tw.getSegments();
 					if (segs.size() == 1)
 					{
-						TrackSegment thisSeg = (TrackSegment) segs.first();
+						final TrackSegment thisSeg = (TrackSegment) segs.first();
 						if (thisSeg instanceof CoreTMASegment)
 						{
 							seg = (CoreTMASegment) thisSeg;
@@ -127,11 +127,11 @@ public class MergeTracks implements RightClickContextItemGenerator
 					final String title = "Convert " + seg.getName() + " into standalone track";
 					final CoreTMASegment target = seg;
 					// create this operation
-					Action doMerge = new Action(title)
+					final Action doMerge = new Action(title)
 					{
 						public void run()
 						{
-							IUndoableOperation theAction = new ConvertTrackOperation(title,
+							final IUndoableOperation theAction = new ConvertTrackOperation(title,
 									target, theLayers);
 
 							CorePlugin.run(theAction);
@@ -155,10 +155,10 @@ public class MergeTracks implements RightClickContextItemGenerator
 		private final Layers _layers;
 		private final Layer[] _parents;
 		private final Editable[] _subjects;
-		private Editable _target;
+		private final Editable _target;
 
-		public MergeTracksOperation(String title, Editable editable,
-				Layers theLayers, Layer[] parentLayers, Editable[] subjects)
+		public MergeTracksOperation(final String title, final Editable editable,
+				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
 		{
 			super(title);
 			_target = editable;
@@ -167,10 +167,10 @@ public class MergeTracks implements RightClickContextItemGenerator
 			_subjects = subjects;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
+			final int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
 			if (res == IStatus.OK)
 				fireModified();
 			return Status.OK_STATUS;
@@ -194,7 +194,7 @@ public class MergeTracks implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			CorePlugin.logError(Status.INFO,
@@ -210,21 +210,21 @@ public class MergeTracks implements RightClickContextItemGenerator
 		 * the parent to update on completion
 		 */
 		private final Layers _layers;
-		private CoreTMASegment _target;
+		private final CoreTMASegment _target;
 
-		public ConvertTrackOperation(String title, CoreTMASegment segment,
-				Layers theLayers)
+		public ConvertTrackOperation(final String title, final CoreTMASegment segment,
+				final Layers theLayers)
 		{
 			super(title);
 			_target = segment;
 			_layers = theLayers;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// create a non-TMA track
-			TrackSegment newSegment = new TrackSegment(_target);
+			final TrackSegment newSegment = new TrackSegment(_target);
 
 			// now do some fancy footwork to remove the target from the wrapper,
 			// and
@@ -254,7 +254,7 @@ public class MergeTracks implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			CorePlugin.logError(Status.INFO,

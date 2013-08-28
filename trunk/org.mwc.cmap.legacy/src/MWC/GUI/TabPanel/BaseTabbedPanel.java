@@ -102,7 +102,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @deprecated
      * @see #BaseTabbedPanel(int, int)
      */
-	public BaseTabbedPanel(boolean bTabsOnTop)
+	public BaseTabbedPanel(final boolean bTabsOnTop)
 	{
 		this(bTabsOnTop ? TOP : BOTTOM, bTabsOnTop ? ROUNDED : SQUARE);
 	}
@@ -113,7 +113,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param tabsPostion a constant indicating TOP or BOTTOM tab location
      * @param tabsStyle a constant indicating ROUNDED or SQUARE tabs
      */
-	public BaseTabbedPanel(int tabsPostion, int tabsStyle)
+	public BaseTabbedPanel(final int tabsPostion, final int tabsStyle)
 	{
 		vLabels = new Vector<String>();
 		vEnabled = new Vector<Boolean>();
@@ -140,7 +140,7 @@ public abstract class BaseTabbedPanel extends Panel
 			dbLeft.setShowFocus(false);
 			dbRight.setShowFocus(false);
 		}
-		catch(PropertyVetoException e){}
+		catch(final PropertyVetoException e){}
 
 		dbLeft.shrinkTriangle(1, 1, 0, 1);
 		dbRight.shrinkTriangle(1, 1, 0, 1);
@@ -167,12 +167,12 @@ public abstract class BaseTabbedPanel extends Panel
      * @see #TOP
      * @see #BOTTOM
      */
-	public void setTabsPosition(int tabsPosition) throws PropertyVetoException
+	public void setTabsPosition(final int tabsPosition) throws PropertyVetoException
 	{
 		if (iTabsPosition != tabsPosition)
 		{
-			Integer oldValue = new Integer(iTabsPosition);
-			Integer newValue = new Integer(tabsPosition);
+			final Integer oldValue = new Integer(iTabsPosition);
+			final Integer newValue = new Integer(tabsPosition);
 
 			vetos.fireVetoableChange("TabsPosition", oldValue, newValue);
 
@@ -204,12 +204,12 @@ public abstract class BaseTabbedPanel extends Panel
      * @see #ROUNDED
      * @see #SQUARE
      */
-	public void setTabsStyle(int tabsStyle) throws PropertyVetoException
+	public void setTabsStyle(final int tabsStyle) throws PropertyVetoException
 	{
 		if (iTabsStyle != tabsStyle)
 		{
-			Integer oldValue = new Integer(iTabsStyle);
-			Integer newValue = new Integer(tabsStyle);
+			final Integer oldValue = new Integer(iTabsStyle);
+			final Integer newValue = new Integer(tabsStyle);
 
 			vetos.fireVetoableChange("TabsStyle", oldValue, newValue);
 
@@ -243,7 +243,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @see #ROUNDED
      * @see #SQUARE
      */
-	public void setTabsInfo(int tabsPosition, int tabsStyle)
+	public void setTabsInfo(final int tabsPosition, final int tabsStyle)
 	{
 		iTabsPosition = tabsPosition;
 		if (iTabsPosition == TOP)
@@ -259,9 +259,9 @@ public abstract class BaseTabbedPanel extends Panel
 		triggerRepaint();
 	}
 
-	public boolean setSuppressRepaints(boolean b)
+	public boolean setSuppressRepaints(final boolean b)
 	{
-		boolean wasSuppressingRepaints = suppressRepaints;
+		final boolean wasSuppressingRepaints = suppressRepaints;
 		suppressRepaints = b;
 		return wasSuppressingRepaints;
 	}
@@ -279,9 +279,9 @@ public abstract class BaseTabbedPanel extends Panel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-	public void setPanel(Component p) throws PropertyVetoException
+	public void setPanel(final Component p) throws PropertyVetoException
 	{
-		Component oldValue = userPanel;
+		final Component oldValue = userPanel;
 
 		vetos.fireVetoableChange("Panel", oldValue, p);
 
@@ -306,9 +306,9 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @see #addTab
 	 * @see #setLabel
 	 */
-	public synchronized void setTab(String sLabel, boolean bEnabled, int index) throws PropertyVetoException
+	public synchronized void setTab(final String sLabel, final boolean bEnabled, final int index) throws PropertyVetoException
 	{
-		boolean wasSuppressingRepaints = setSuppressRepaints(true);
+		final boolean wasSuppressingRepaints = setSuppressRepaints(true);
 
 		try
 		{
@@ -333,14 +333,14 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @see #addTab
 	 * @see #setTab
 	 */
-	public synchronized void setLabel(String sLabel, int index) throws PropertyVetoException
+	public synchronized void setLabel(final String sLabel, final int index) throws PropertyVetoException
 	{
 		if ((index < 0) || (index >= vLabels.size()))
 			return;
 
 		try
 		{
-			String oldValue = (String) vLabels.elementAt(index);
+			final String oldValue = (String) vLabels.elementAt(index);
 			vetos.fireVetoableChange("Label", oldValue, sLabel);
 
 			vLabels.setElementAt(sLabel, index);
@@ -348,7 +348,7 @@ public abstract class BaseTabbedPanel extends Panel
 
 		    changes.firePropertyChange("Label", oldValue, sLabel);
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 	}
 
 	/**
@@ -357,7 +357,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @return the tab label
 	 * @see #setLabel
 	 */
-	public synchronized String getLabel(int index)
+	public synchronized String getLabel(final int index)
 	{
 		if ((index < 0) || (index >= vLabels.size()))
 			return "";
@@ -366,7 +366,7 @@ public abstract class BaseTabbedPanel extends Panel
 		{
 			return (String)vLabels.elementAt(index);
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 		return "";
 	}
 
@@ -379,7 +379,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
 	 */
-	public synchronized void setEnabled(boolean bEnabled, int index) throws PropertyVetoException
+	public synchronized void setEnabled(final boolean bEnabled, final int index) throws PropertyVetoException
 	{
 		if ((index < 0) || (index >= vLabels.size()))
 			return;
@@ -389,8 +389,8 @@ public abstract class BaseTabbedPanel extends Panel
 
 		try
 		{
-			Boolean oldValue = (Boolean) vEnabled.elementAt(index);
-			Boolean newValue = new Boolean(bEnabled);
+			final Boolean oldValue = (Boolean) vEnabled.elementAt(index);
+			final Boolean newValue = new Boolean(bEnabled);
 
 			vetos.fireVetoableChange("Enabled", oldValue, newValue);
 
@@ -399,7 +399,7 @@ public abstract class BaseTabbedPanel extends Panel
 
 		    changes.firePropertyChange("Enabled", oldValue, newValue);
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 	}
 
 	/**
@@ -407,18 +407,18 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @param index the zero-relative index of the tab
 	 * @return true if the tab at the index is enabled
 	 */
-	public boolean isEnabled(int index)
+	public boolean isEnabled(final int index)
 	{
 		if ((index < 0) || (index >= vLabels.size()))
 			return false;
 
 		try
 		{
-			Boolean bool = (Boolean) vEnabled.elementAt(index);
+			final Boolean bool = (Boolean) vEnabled.elementAt(index);
 			if (bool.booleanValue())
 				return true;
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 
 		return false;
 	}
@@ -432,19 +432,19 @@ public abstract class BaseTabbedPanel extends Panel
      * if the specified property value is unacceptable
 	 * @see #getCurrentTab
 	 */
-	public void setCurrentTab(int index) throws PropertyVetoException
+	public void setCurrentTab(final int index) throws PropertyVetoException
 	{
 		if ((index < 0) || (index >= vLabels.size()) || index == curIndex)
 			return;
 
 		if ( isEnabled(index) )
 		{
-			boolean wasSuppressingRepaints = setSuppressRepaints(true);
+			final boolean wasSuppressingRepaints = setSuppressRepaints(true);
 
 			try
 			{
-				Integer oldValue = new Integer(curIndex);
-				Integer newValue = new Integer(index);
+				final Integer oldValue = new Integer(curIndex);
+				final Integer newValue = new Integer(index);
 
 				vetos.fireVetoableChange("CurrentTab", oldValue, newValue);
 
@@ -479,7 +479,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
 	 */
-	public void enableTab(boolean bEnabled, int index) throws PropertyVetoException
+	public void enableTab(final boolean bEnabled, final int index) throws PropertyVetoException
 	{
 		setEnabled(bEnabled, index);
 	}
@@ -488,7 +488,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @deprecated
 	 * @see #isEnabled(int)
 	 */
-	public boolean tabIsEnabled(int index)
+	public boolean tabIsEnabled(final int index)
 	{
 		return(isEnabled(index));
 	}
@@ -498,7 +498,7 @@ public abstract class BaseTabbedPanel extends Panel
      * Hides all other (previous) panels instead of removing them.
      * @param p the Panel to add and show
      */
-	public void showPanel(Component p)
+	public void showPanel(final Component p)
 	{
 		if (userPanel != null)
 			userPanel.setVisible(false);
@@ -506,8 +506,8 @@ public abstract class BaseTabbedPanel extends Panel
 		userPanel = p;
 		if (userPanel != null)
 		{
-			Component[] comps = getComponents();
-			int l = comps.length;
+			final Component[] comps = getComponents();
+			final int l = comps.length;
 			int x;
 			for (x = 0; x < l; x++)
 			{
@@ -532,7 +532,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @see #setTab
 	 * @see #setLabel
 	 */
-	public int addTab(String sLabel, boolean bEnabled)
+	public int addTab(final String sLabel, final boolean bEnabled)
 	{
 		return addTab(sLabel, bEnabled, -1);
 	}
@@ -546,7 +546,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @see #setTab
 	 * @see #setLabel
 	 */
-	public int addTab(String sLabel, boolean bEnabled, int pos)
+	public int addTab(final String sLabel, final boolean bEnabled, final int pos)
 	{
 		int index;
 
@@ -566,7 +566,7 @@ public abstract class BaseTabbedPanel extends Panel
 			{
 				setCurrentTab(index);
 			}
-			catch (PropertyVetoException e)
+			catch (final PropertyVetoException e)
 			{
 				//Return an error state
 				index = -1;
@@ -584,7 +584,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
 	 */
-	public void showTab(int index) throws PropertyVetoException
+	public void showTab(final int index) throws PropertyVetoException
 	{
 		setCurrentTab(index);
 	}
@@ -604,7 +604,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @param bEnabled enable the tab or not
 	 * @param index the zero-relative index at which the tab will be inserted.
 	 */
-    public synchronized void insertTab(String sLabel, boolean bEnabled, int index)
+    public synchronized void insertTab(final String sLabel, final boolean bEnabled, final int index)
     {
     	if ((index < 0) || (index >= vLabels.size()))
             return;
@@ -618,7 +618,7 @@ public abstract class BaseTabbedPanel extends Panel
             vEnabled.insertElementAt(new Boolean(bEnabled), index);
             triggerRepaint();
         }
-        catch (ArrayIndexOutOfBoundsException e) {}
+        catch (final ArrayIndexOutOfBoundsException e) {}
     }
 
 	/**
@@ -626,7 +626,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * The currently shown tab cannot be removed.
 	 * @param index the zero-relative index of the tab to remove
 	 */
-	public void removeTab(int index)
+	public void removeTab(final int index)
 	{
 		if ((index < 0) || (index >= vEnabled.size()) || index == curIndex)
 			return;
@@ -637,7 +637,7 @@ public abstract class BaseTabbedPanel extends Panel
 			vEnabled.removeElementAt(index);
 			triggerRepaint();
 		}
-		catch (ArrayIndexOutOfBoundsException e) {}
+		catch (final ArrayIndexOutOfBoundsException e) {}
 	}
 
 	/**
@@ -664,17 +664,17 @@ public abstract class BaseTabbedPanel extends Panel
 	 */
 	public void doLayout()
 	{
-		Rectangle r = this.getBounds();
+		final Rectangle r = this.getBounds();
 
-		int width = r.width - TF_LEFT + TF_RIGHT;
+		final int width = r.width - TF_LEFT + TF_RIGHT;
 		if (width < 0)
 			return;
 
-		int height = r.height - TF_TOP + TF_BOTTOM;
+		final int height = r.height - TF_TOP + TF_BOTTOM;
 		if (height < 0)
 			return;
 
-		int col = TF_LEFT;
+		final int col = TF_LEFT;
 		int row = 0;
 
 		if (iTabsPosition == TOP)
@@ -714,13 +714,13 @@ public abstract class BaseTabbedPanel extends Panel
 	// THIRD PARTY CODE - IGNORE CYCLOMATIC COMPLEXITY
 	// CS-IGNORE:ON CYCLOMATIC_COMPLEXITY
 	
-	public synchronized void paint(Graphics g)
+	public synchronized void paint(final Graphics g)
 	{
 		
-		Rectangle r = this.getBounds();
+		final Rectangle r = this.getBounds();
 		//Make sure cached colors are correct.
-		Color curForeground = getForeground();
-		Color curBackground = getBackground();
+		final Color curForeground = getForeground();
+		final Color curBackground = getBackground();
 		if (!GeneralUtils.objectsEqual(curForeground, cachedForeground))
 		{
 			cachedForeground = curForeground;
@@ -736,11 +736,11 @@ public abstract class BaseTabbedPanel extends Panel
 		// paint the box
 		// --------------------------------------------------------------------------------
 
-		int width = r.width - TF_LEFT + TF_RIGHT;
+		final int width = r.width - TF_LEFT + TF_RIGHT;
 		if (width < 0)
 			return;
 
-		int height = r.height - TF_TOP + TF_BOTTOM;
+		final int height = r.height - TF_TOP + TF_BOTTOM;
 		if (height < 0)
 			return;
 
@@ -748,10 +748,10 @@ public abstract class BaseTabbedPanel extends Panel
 			firstVisibleTab = 0;
 		lastWidth = r.width;
 
-		int col = TF_LEFT;
+		final int col = TF_LEFT;
 		int row;
 
-		Color c = g.getColor();
+		final Color c = g.getColor();
 		g.setColor(curBackground);
 		g.fillRect(0, 0, r.width, r.height);
 
@@ -785,14 +785,14 @@ public abstract class BaseTabbedPanel extends Panel
 		int x3 = 0;
 		int x4 = TF_LEFT;
 
-		int sze = vLabels.size();
+		final int sze = vLabels.size();
 		String sLabel;
 		vPolys.removeAllElements();
 
-		Font f = g.getFont();
+		final Font f = g.getFont();
 //    Font f= new Font("Sans Serif", 6, Font.PLAIN);
-		FontMetrics fm = getFontMetrics(fReg);
-		FontMetrics fms = getFontMetrics(fSel);
+		final FontMetrics fm = getFontMetrics(fReg);
+		final FontMetrics fms = getFontMetrics(fSel);
 		int labelWidth = 0;
 		Polygon p;
 
@@ -984,7 +984,7 @@ public abstract class BaseTabbedPanel extends Panel
 				}
 				vPolys.addElement(p);
 
-				Boolean bool = (Boolean) vEnabled.elementAt(w);
+				final Boolean bool = (Boolean) vEnabled.elementAt(w);
 				if (bool.booleanValue())
 					g.setColor(curForeground);
 				else
@@ -1000,7 +1000,7 @@ public abstract class BaseTabbedPanel extends Panel
 						g.drawString(sLabel, x1+14, y1-4+osAdjustment);
 				}
 			}
-			catch (ArrayIndexOutOfBoundsException e) {}
+			catch (final ArrayIndexOutOfBoundsException e) {}
 		}
 
 		// do I need to show arrows because there are too many tabs???
@@ -1070,7 +1070,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @see #setTab
      * @see #remove
      */
-    public Component add(Component comp) { return comp; }
+    public Component add(final Component comp) { return comp; }
     /**
      * Takes no action, use addTab().
      * This is a standard Java AWT method which gets called to add a
@@ -1089,7 +1089,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @see #setTab
      * @see #remove
      */
-    public synchronized Component add(Component comp, int pos) { return comp; }
+    public synchronized Component add(final Component comp, final int pos) { return comp; }
     /**
      * Takes no action, use addTab().
      * This is a standard Java AWT method which gets called to add a
@@ -1107,7 +1107,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * @see #setTab
      * @see #remove
      */
-    public synchronized Component add(String name, Component comp) { return comp; }
+    public synchronized Component add(final String name, final Component comp) { return comp; }
 
     /**
 	 * Removes the specified component from this container.
@@ -1119,7 +1119,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @see #removeAll
      * @see #addTab
 	 */
-    public synchronized void remove(Component comp)
+    public synchronized void remove(final Component comp)
     {
     	if (comp == dbLeft || comp == dbRight)
     		return;
@@ -1158,7 +1158,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * (IGNORED)
 	 * @see java.awt.Container#getLayout
 	 **/
-    public void setLayout(LayoutManager mgr) {}
+    public void setLayout(final LayoutManager mgr) {}
 
     /**
      * Returns the amount of space used by the current border.
@@ -1197,8 +1197,8 @@ public abstract class BaseTabbedPanel extends Panel
 	 */
     public Dimension getPreferredSize()
     {
-		Dimension s = getSize();// size();
-		Dimension m = getMinimumSize();
+		final Dimension s = getSize();// size();
+		final Dimension m = getMinimumSize();
 		return new Dimension(Math.max(s.width, m.width), Math.max(s.height, m.height));
     }
 
@@ -1213,7 +1213,7 @@ public abstract class BaseTabbedPanel extends Panel
     {
     	if (userPanel != null)
     	{
-			Dimension s = userPanel.getMinimumSize();
+			final Dimension s = userPanel.getMinimumSize();
 			return new Dimension(	(s.width + btpInsets.left + btpInsets.right),
 									(s.height + btpInsets.top + btpInsets.bottom) );
 		}
@@ -1285,7 +1285,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to add.
      * @see #removePropertyChangeListener
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener)
+    public void addPropertyChangeListener(final PropertyChangeListener listener)
     {
     	changes.addPropertyChangeListener(listener);
     }
@@ -1295,7 +1295,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to remove.
      * @see #addPropertyChangeListener
      */
-    public void removePropertyChangeListener(PropertyChangeListener listener)
+    public void removePropertyChangeListener(final PropertyChangeListener listener)
     {
     	changes.removePropertyChangeListener(listener);
     }
@@ -1305,7 +1305,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to add.
      * @see #removeVetoableChangeListener
      */
-    public void addVetoableChangeListener(VetoableChangeListener listener)
+    public void addVetoableChangeListener(final VetoableChangeListener listener)
     {
     	vetos.addVetoableChangeListener(listener);
     }
@@ -1315,7 +1315,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to remove.
      * @see #addVetoableChangeListener
      */
-    public void removeVetoableChangeListener(VetoableChangeListener listener)
+    public void removeVetoableChangeListener(final VetoableChangeListener listener)
     {
     	vetos.removeVetoableChangeListener(listener);
     }
@@ -1325,7 +1325,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to add.
      * @see #removePropertyChangeListener
      */
-    public void addCurrentTabListener(PropertyChangeListener listener)
+    public void addCurrentTabListener(final PropertyChangeListener listener)
     {
     	changes.addPropertyChangeListener("CurrentTab", listener);
     }
@@ -1335,7 +1335,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to remove.
      * @see #addPropertyChangeListener
      */
-    public void removeCurrentTabListener(PropertyChangeListener listener)
+    public void removeCurrentTabListener(final PropertyChangeListener listener)
     {
     	changes.removePropertyChangeListener("CurrentTab", listener);
     }
@@ -1345,7 +1345,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to add.
      * @see #removeVetoableChangeListener
      */
-    public void addCurrentTabListener(VetoableChangeListener listener)
+    public void addCurrentTabListener(final VetoableChangeListener listener)
     {
     	vetos.addVetoableChangeListener("CurrentTab", listener);
     }
@@ -1355,7 +1355,7 @@ public abstract class BaseTabbedPanel extends Panel
      * @param listener the listener to remove.
      * @see #addVetoableChangeListener
      */
-    public void removeCurrentTabListener(VetoableChangeListener listener)
+    public void removeCurrentTabListener(final VetoableChangeListener listener)
     {
     	vetos.removeVetoableChangeListener("CurrentTab", listener);
     }
@@ -1370,9 +1370,9 @@ public abstract class BaseTabbedPanel extends Panel
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void mousePressed(MouseEvent e)
+		public void mousePressed(final MouseEvent e)
 		{
-			int sizeR = vPolys.size();
+			final int sizeR = vPolys.size();
 			Polygon p;
 			for (int x = 0; x < sizeR; x++)
 			{
@@ -1385,10 +1385,10 @@ public abstract class BaseTabbedPanel extends Panel
 						{
 							setCurrentTab(x);
 						}
-						catch(PropertyVetoException exc){}
+						catch(final PropertyVetoException exc){}
 					}
 				}
-				catch (ArrayIndexOutOfBoundsException exc){}
+				catch (final ArrayIndexOutOfBoundsException exc){}
 			}
 		}
 	}
@@ -1404,7 +1404,7 @@ public abstract class BaseTabbedPanel extends Panel
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(final ActionEvent e)
 		{
 			if (e.getSource() == dbLeft)
 			{
@@ -1415,7 +1415,7 @@ public abstract class BaseTabbedPanel extends Panel
 			}
 			else if (e.getSource() == dbRight)
 			{
-				int sze = vLabels.size();
+				final int sze = vLabels.size();
 				if (++firstVisibleTab == sze)
 					firstVisibleTab--;
 				else
@@ -1428,7 +1428,7 @@ public abstract class BaseTabbedPanel extends Panel
 	 * Used to calculate the border colors from the background color.
 	 * @see #paint
 	 */
-	protected void calculateBorderColors(Color c)
+	protected void calculateBorderColors(final Color c)
 	{
 		borderLightColor	= ColorUtils.calculateHilightColor(c);
 		borderDarkColor		= ColorUtils.calculateShadowColor(c);
@@ -1439,13 +1439,13 @@ public abstract class BaseTabbedPanel extends Panel
 	 * Used to calculate the disabled text color from the foreground color.
 	 * @see #paint
 	 */
-	protected void calculateDisabledTextColor(Color c)
+	protected void calculateDisabledTextColor(final Color c)
 	{
 		try
 		{
 			disabledTextColor = ColorUtils.fade(c, Color.lightGray, 0.50);
 		}
-		catch (IllegalArgumentException exc) {}
+		catch (final IllegalArgumentException exc) {}
 	}
 
 	/**
@@ -1507,16 +1507,16 @@ public abstract class BaseTabbedPanel extends Panel
      */
 	protected Color cachedBackground	= null;
 
-	private int TF_LEFT = 9;
-	private int TF_RIGHT = -9;
-	private int TF_TOP = 30;
-	private int TF_BOTTOM = -9;
+	private final int TF_LEFT = 9;
+	private final int TF_RIGHT = -9;
+	private final int TF_TOP = 30;
+	private final int TF_BOTTOM = -9;
 	private int TF_BTN_HEIGHT = 20;
 
 	private Vector<Boolean> vEnabled;
 
-	private Font fReg;
-	private Font fSel;
+	private final Font fReg;
+	private final Font fSel;
 
 	private Component userPanel = null;
 
@@ -1531,8 +1531,8 @@ public abstract class BaseTabbedPanel extends Panel
 
 	private Mouse	mouse	= null;
 	private Action	action	= null;
-	private VetoableChangeSupport vetos = new VetoableChangeSupport(this);
-    private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+	private final VetoableChangeSupport vetos = new VetoableChangeSupport(this);
+    private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
 
 }
 

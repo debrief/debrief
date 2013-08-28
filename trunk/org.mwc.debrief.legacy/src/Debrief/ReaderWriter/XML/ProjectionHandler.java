@@ -26,7 +26,7 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
   private final Debrief.GUI.Frames.Session _session;
   private Debrief.GUI.Tote.AnalysisTote _theTote = null;
 
-  public ProjectionHandler(Debrief.GUI.Frames.Session destination)
+  public ProjectionHandler(final Debrief.GUI.Frames.Session destination)
   {
     // inform our parent what type of class we are
     super("projection");
@@ -34,47 +34,47 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     // store the session
     _session = destination;
 
-    Debrief.GUI.Views.PlainView pv = _session.getCurrentView();
+    final Debrief.GUI.Views.PlainView pv = _session.getCurrentView();
     if(pv instanceof Debrief.GUI.Views.AnalysisView)
     {
-      Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView)pv;
+      final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView)pv;
       _theTote = av.getTote();
     }
 
     // handlers for the corners
     addHandler(new LocationHandler("tl"){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _tl = res;
       }
     });
     addHandler(new LocationHandler("br"){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _br = res;
       }
     });
 
     addAttributeHandler(new HandleAttribute("Type"){
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _type = val;
       }
     });
     addAttributeHandler(new HandleAttribute("Border"){
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         try{
           _border = readThisDouble(val);
         }
-        catch(java.text.ParseException pe)
+        catch(final java.text.ParseException pe)
         {
           MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in border size for projection:" + val);
         }
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("Relative"){
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _relative = value;
       }});
@@ -99,13 +99,13 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
     if(newProj != null)
     {
-      Debrief.GUI.Views.PlainView pv = _session.getCurrentView();
+      final Debrief.GUI.Views.PlainView pv = _session.getCurrentView();
       if(pv instanceof Debrief.GUI.Views.AnalysisView)
       {
-        Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView)pv;
+        final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView)pv;
 
         // get any listeners for the current projection
-        PlainProjection oldProj = av.getChart().getCanvas().getProjection();
+        final PlainProjection oldProj = av.getChart().getCanvas().getProjection();
 
         // assign the new projection
         av.getChart().getCanvas().setProjection(newProj);
@@ -118,7 +118,7 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
   }
 
-  public static void exportProjection(MWC.Algorithms.PlainProjection projection, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportProjection(final MWC.Algorithms.PlainProjection projection, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
 /*
@@ -130,12 +130,12 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 >
 */
 
-    Element proj = doc.createElement("projection");
+    final Element proj = doc.createElement("projection");
 
     // see which type of projection it is
     if(projection instanceof MWC.Algorithms.Projections.FlatProjection)
     {
-      MWC.Algorithms.Projections.FlatProjection flat = (MWC.Algorithms.Projections.FlatProjection)projection;
+      final MWC.Algorithms.Projections.FlatProjection flat = (MWC.Algorithms.Projections.FlatProjection)projection;
 
       // first the attributes for the projection
       proj.setAttribute("Type", "Flat");
@@ -151,7 +151,7 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     else
     {
       // Hmm, we don't really know how tor handle this.
-      java.lang.RuntimeException duffer = new java.lang.RuntimeException("Unable to store this projection type");
+      final java.lang.RuntimeException duffer = new java.lang.RuntimeException("Unable to store this projection type");
       throw duffer;
     }
 

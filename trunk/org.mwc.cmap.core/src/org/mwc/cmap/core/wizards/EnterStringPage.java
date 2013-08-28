@@ -30,7 +30,7 @@ public class EnterStringPage extends CoreEditableWizardPage
 			return false;
 		}
 
-		public void setName(String name)
+		public void setName(final String name)
 		{
 			newName = name;
 		}
@@ -42,7 +42,7 @@ public class EnterStringPage extends CoreEditableWizardPage
 	public static String NAME = "Get Name";
 	DataItem _myWrapper;
 	protected String _startName;
-	private String _fieldExplanation;
+	private final String _fieldExplanation;
 
 	/**
 	 * 
@@ -55,9 +55,9 @@ public class EnterStringPage extends CoreEditableWizardPage
 	 * @param helpContext context-senstivie help
 	 * @param useDefaults whether to re-use the last string value for this page 
 	 */
-	public EnterStringPage(ISelection selection, String startName,
-			String pageTitle, String pageExplanation, String fieldExplanation,
-			String imagePath, String helpContext, boolean useDefaults)
+	public EnterStringPage(final ISelection selection, final String startName,
+			final String pageTitle, final String pageExplanation, final String fieldExplanation,
+			final String imagePath, final String helpContext, final boolean useDefaults)
 	{
 		super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
 				false);
@@ -87,7 +87,7 @@ public class EnterStringPage extends CoreEditableWizardPage
 	public void dispose()
 	{
 		// try to store some defaults
-		Preferences prefs = getPrefs();
+		final Preferences prefs = getPrefs();
 		prefs.put(VALUE, _myWrapper.getName());
 
 		super.dispose();
@@ -100,7 +100,7 @@ public class EnterStringPage extends CoreEditableWizardPage
 
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors =
+		final PropertyDescriptor[] descriptors =
 		{ prop("Name", _fieldExplanation, getEditable()) };
 		return descriptors;
 	}

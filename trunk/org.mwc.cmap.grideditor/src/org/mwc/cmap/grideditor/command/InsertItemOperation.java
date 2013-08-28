@@ -11,11 +11,11 @@ public class InsertItemOperation extends AbstractGridEditorOperation {
 
 	private final int myInsertPosition;
 
-	public InsertItemOperation(OperationEnvironment environment) {
+	public InsertItemOperation(final OperationEnvironment environment) {
 		this(environment, environment.getSeries().getItems().size());
 	}
 
-	public InsertItemOperation(OperationEnvironment environment, int insertPosition) {
+	public InsertItemOperation(final OperationEnvironment environment, final int insertPosition) {
 		super("Adding item to series", environment);
 		if (environment.getSubject() == null) {
 			throw new IllegalArgumentException("I need a subject item to insert. Is the makeCopy method implemented?");
@@ -29,17 +29,17 @@ public class InsertItemOperation extends AbstractGridEditorOperation {
 	}
 
 	@Override
-	protected EnvironmentState doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		GriddableSeries series = getOperationEnvironment().getSeries();
-		TimeStampedDataItem toBeInserted = getOperationEnvironment().getSubject();
+	protected EnvironmentState doExecute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+		final GriddableSeries series = getOperationEnvironment().getSeries();
+		final TimeStampedDataItem toBeInserted = getOperationEnvironment().getSubject();
 		series.insertItemAt(toBeInserted, myInsertPosition);
 		return new EnvironmentState.ItemAtKnownPosition(getOperationEnvironment(), myInsertPosition);
 	}
 
 	@Override
-	protected void doUndo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		GriddableSeries series = getOperationEnvironment().getSeries();
-		TimeStampedDataItem wasInserted = getOperationEnvironment().getSubject();
+	protected void doUndo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+		final GriddableSeries series = getOperationEnvironment().getSeries();
+		final TimeStampedDataItem wasInserted = getOperationEnvironment().getSubject();
 		series.deleteItem(wasInserted);
 	}
 

@@ -25,7 +25,7 @@ public class RangeTracker extends CoreTracker
 	 * @param chart
 	 *          the chart who's mouse movements we now track
 	 */
-	public static void displayResultsIn(EditorPart editor)
+	public static void displayResultsIn(final EditorPart editor)
 	{
 		if ((_singleton == null) || (_singleton._myEditor != editor))
 		{

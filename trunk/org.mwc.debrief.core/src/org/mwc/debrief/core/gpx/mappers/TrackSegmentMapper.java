@@ -7,13 +7,13 @@ import com.topografix.gpx.v11.TrksegType;
 
 public class TrackSegmentMapper
 {
-	public TrackSegment fromGpx(TrksegType segmentType)
+	public TrackSegment fromGpx(final TrksegType segmentType)
 	{
 		// nothing to map at segment level
 		return newSegment();
 	}
 
-	public TrackSegment fromGpx10(Trkseg gpxSegment)
+	public TrackSegment fromGpx10(final Trkseg gpxSegment)
 	{
 		// nothing to map at segment level
 		return newSegment();
@@ -21,7 +21,7 @@ public class TrackSegmentMapper
 
 	private TrackSegment newSegment()
 	{
-		TrackSegment segment = new TrackSegment();
+		final TrackSegment segment = new TrackSegment();
 		return segment;
 	}
 }

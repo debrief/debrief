@@ -17,19 +17,19 @@ abstract public class LocationHandler extends MWCXMLReader
 
   MWC.GenericData.WorldLocation _res = null;
 
-   public LocationHandler(String name)
+   public LocationHandler(final String name)
   {
     // inform our parent what type of class we are
     super(name);
 
     addHandler(new ShortLocationHandler(){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _res = res;
       }
     });
     addHandler(new LongLocationHandler(){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _res = res;
       }
@@ -49,9 +49,9 @@ abstract public class LocationHandler extends MWCXMLReader
   abstract public void setLocation(MWC.GenericData.WorldLocation res);
 
 
-  public static void exportLocation(MWC.GenericData.WorldLocation loc, String title, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportLocation(final MWC.GenericData.WorldLocation loc, final String title, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eLoc = doc.createElement(title);
+    final org.w3c.dom.Element eLoc = doc.createElement(title);
     // for now, stick with exporting locations in short form
     ShortLocationHandler.exportLocation(loc, eLoc, doc);
     parent.appendChild(eLoc);

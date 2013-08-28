@@ -62,7 +62,7 @@ public class BinaryFile {
      *            RandomAccessFile with f
      * @see java.io.RandomAccessFile
      */
-    public BinaryFile(File f) throws IOException {
+    public BinaryFile(final File f) throws IOException {
         inputReader = new FileInputReader(f);
     }
 
@@ -82,7 +82,7 @@ public class BinaryFile {
      * @exception IOException pass-through errors from opening the
      *            file.
      */
-    public BinaryFile(String name) throws IOException {
+    public BinaryFile(final String name) throws IOException {
         boolean showDebug = false;
         if (Debug.debugging("binaryfile")) {
             showDebug = true;
@@ -116,7 +116,7 @@ public class BinaryFile {
                 // a classpath, available for direct access.
                 if (url != null) {
 
-                    String newname = url.getFile();
+                    final String newname = url.getFile();
                     if (showDebug) {
                         Debug.output("BinaryFile: looking for " + newname);
                     }
@@ -148,10 +148,10 @@ public class BinaryFile {
                         Debug.output(" As applet, checking codebase...");
                     }
                     // Look in the codebase for applets...
-                    URL[] cba = new URL[1];
+                    final URL[] cba = new URL[1];
                     cba[0] = Environment.getApplet().getCodeBase();
 
-                    URLClassLoader ucl = URLClassLoader.newInstance(cba);
+                    final URLClassLoader ucl = URLClassLoader.newInstance(cba);
                     url = ucl.getResource(name);
 
                     if (url != null) {
@@ -167,7 +167,7 @@ public class BinaryFile {
                     }
                     try {
                         setInputReader(new URLInputReader(new URL(name)));
-                    } catch (java.security.AccessControlException ace) {
+                    } catch (final java.security.AccessControlException ace) {
                         Debug.output("BinaryFile: " + name
                                 + " couldn't be accessed.");
                         throw new IOException("AccessControlException trying to fetch "
@@ -182,7 +182,7 @@ public class BinaryFile {
                         + name);
             }
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             throw ioe;
         }
     }
@@ -194,10 +194,10 @@ public class BinaryFile {
      * and set the inputReader to a JarInputReader and returns true.
      * If not, it returns false.
      */
-    protected boolean setJarInputReader(String name) throws IOException {
+    protected boolean setJarInputReader(final String name) throws IOException {
 
         try {
-            int index = name.indexOf("!");
+            final int index = name.indexOf("!");
             if (index != -1) {
 
                 // Used to be this, modified by Erik Sanders to work
@@ -222,7 +222,7 @@ public class BinaryFile {
                 }
 
                 // skip !/ "
-                String jarEntryName = name.substring(index + 2);
+                final String jarEntryName = name.substring(index + 2);
                 if (Debug.debugging("binaryfile")) {
                     Debug.output(" got: \n" + jarFileName + "\n" + jarEntryName);
                 }
@@ -232,7 +232,7 @@ public class BinaryFile {
                 // impllications of this call, though, at some point.
 
                 // DGK added
-                File f = new File(jarFileName); 
+                final File f = new File(jarFileName); 
                 if (f.exists() == false) {
                     return false; 
                 }
@@ -240,7 +240,7 @@ public class BinaryFile {
                 setInputReader(new JarInputReader(jarFileName, jarEntryName));
                 return true;
             }
-        } catch (java.security.AccessControlException ace) {
+        } catch (final java.security.AccessControlException ace) {
             if (Debug.debugging("binaryfile")) {
                 Debug.output("BinaryFile.setJarInputFile: AccessControlException for "
                         + name);
@@ -259,7 +259,7 @@ public class BinaryFile {
      * @param name A path to a file, a URL, or a path to a jar file
      *        entry.
      */
-    public static boolean exists(String name) {
+    public static boolean exists(final String name) {
         boolean exists = false;
         try {
             File file = null;
@@ -287,10 +287,10 @@ public class BinaryFile {
                         Debug.output(" As applet, checking codebase...");
                     }
                     // Look in the codebase for applets...
-                    URL[] cba = new URL[1];
+                    final URL[] cba = new URL[1];
                     cba[0] = Environment.getApplet().getCodeBase();
 
-                    URLClassLoader ucl = URLClassLoader.newInstance(cba);
+                    final URLClassLoader ucl = URLClassLoader.newInstance(cba);
                     if (ucl.getResource(name) != null) {
                         exists = true;
 
@@ -312,16 +312,16 @@ public class BinaryFile {
                 if (!exists && name.indexOf("http:") != -1) {
 
                     try {
-                        InputStream stream = new URL(name).openStream();
+                        final InputStream stream = new URL(name).openStream();
                         stream.close();
                         exists = true;
-                    } catch (java.security.AccessControlException ace) {
+                    } catch (final java.security.AccessControlException ace) {
                         exists = false;
                     }
                 }
             }
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             Debug.message("binaryfile",
                     "BinaryFile.exists() caught IOException");
             exists = false;
@@ -357,7 +357,7 @@ public class BinaryFile {
      * Set the input reader used by the BinaryFile. Make sure it's
      * intialized properly.
      */
-    public void setInputReader(InputReader reader) {
+    public void setInputReader(final InputReader reader) {
         if (Debug.debugging("binaryfile")) {
             Debug.output("Setting inputReader");
         }
@@ -370,7 +370,7 @@ public class BinaryFile {
      * @param msbfirst <code>true</code>= MSB first,
      *        <code>false</code>= LSB first
      */
-    public void byteOrder(boolean msbfirst) {
+    public void byteOrder(final boolean msbfirst) {
         MSBFirst = msbfirst;
     }
 
@@ -391,7 +391,7 @@ public class BinaryFile {
      * @exception IOException Any IO errors that occur in skipping
      *            bytes in the underlying file
      */
-    public long skipBytes(long n) throws IOException {
+    public long skipBytes(final long n) throws IOException {
         return inputReader.skipBytes(n);
     }
 
@@ -413,7 +413,7 @@ public class BinaryFile {
      * @exception IOException Any IO Errors that occur in seeking the
      *            underlying file.
      */
-    public void seek(long pos) throws IOException {
+    public void seek(final long pos) throws IOException {
         inputReader.seek(pos);
     }
 
@@ -470,7 +470,7 @@ public class BinaryFile {
      * @exception IOException Any IO errors encountered in reading
      *            from the file
      */
-    public int read(byte b[], int off, int len) throws IOException {
+    public int read(final byte b[], final int off, final int len) throws IOException {
         return inputReader.read(b, off, len);
     }
 
@@ -484,7 +484,7 @@ public class BinaryFile {
      *            from the file
      * @see java.io.RandomAccessFile#read(byte[])
      */
-    public int read(byte b[]) throws IOException {
+    public int read(final byte b[]) throws IOException {
         return inputReader.read(b);
     }
 
@@ -501,7 +501,7 @@ public class BinaryFile {
      *            allowless was <code>false</code>, but NO bytes
      *            had been read.
      */
-    public byte[] readBytes(int howmany, boolean allowless)
+    public byte[] readBytes(final int howmany, final boolean allowless)
             throws EOFException, FormatException {
 
         return inputReader.readBytes(howmany, allowless);
@@ -517,13 +517,13 @@ public class BinaryFile {
      */
     public char readChar() throws EOFException, FormatException {
         try {
-            int retv = inputReader.read();
+            final int retv = inputReader.read();
 
             if (retv == -1) {
                 throw new EOFException("Error in ReadChar, EOF reached");
             }
             return (char) retv;
-        } catch (IOException i) {
+        } catch (final IOException i) {
             throw new FormatException("readChar IOException: " + i.getMessage());
         }
     }
@@ -560,10 +560,11 @@ public class BinaryFile {
         return MoreMath.BuildInteger(readBytes(4, false), MSBFirst);
     }
 
-    public void readIntegerArray(int vec[], int offset, int len)
+    public void readIntegerArray(final int vec[], final int offset, final int len)
             throws EOFException, FormatException {
+    	int idx = offset;
         for (int i = 0; i < len; i++) {
-            vec[offset++] = readInteger();
+            vec[idx++] = readInteger();
         }
     }
 
@@ -597,10 +598,11 @@ public class BinaryFile {
         return Float.intBitsToFloat(readInteger());
     }
 
-    public void readFloatArray(float vec[], int offset, int len)
+    public void readFloatArray(final float vec[], final int offset, final int len)
             throws EOFException, FormatException {
+    	int idx = offset;
         for (int i = 0; i < len; i++) {
-            vec[offset++] = readFloat();
+            vec[idx++] = readFloat();
         }
     }
 
@@ -630,10 +632,10 @@ public class BinaryFile {
      * @exception FormatException rethrow of IOExceptions encountered
      *            while reading the bytes for the short
      */
-    public String readFixedLengthString(int length) throws EOFException,
+    public String readFixedLengthString(final int length) throws EOFException,
             FormatException {
 
-        byte foo[] = readBytes(length, false);
+        final byte foo[] = readBytes(length, false);
         return new String(foo, 0, length);
     }
 
@@ -650,8 +652,8 @@ public class BinaryFile {
      * @exception FormatException some other error from reading the
      *            file
      */
-    public void assertChar(char expected) throws EOFException, FormatException {
-        char c = readChar();
+    public void assertChar(final char expected) throws EOFException, FormatException {
+        final char c = readChar();
         if (c != expected) {
             throw new InvalidCharException("AssertChar: expected " + expected
                     + " got " + c, c);
@@ -667,15 +669,15 @@ public class BinaryFile {
      * @exception FormatException rethrow of IOExceptions from the
      *            read methods
      */
-    public String readToDelimiter(char delim) throws FormatException {
-        StringBuffer buildretval = new StringBuffer();
+    public String readToDelimiter(final char delim) throws FormatException {
+        final StringBuffer buildretval = new StringBuffer();
         char tmp;
         try {
             while ((tmp = readChar()) != delim)
                 buildretval.append(tmp);
-        } catch (EOFException e) {
+        } catch (final EOFException e) {
             // allowable
-        } catch (FormatException fe) {
+        } catch (final FormatException fe) {
             if (buildretval.length() == 0) {
                 throw fe;
             }
@@ -705,7 +707,7 @@ public class BinaryFile {
      * 
      * @param it the object that can be closed
      */
-    public static synchronized void addClosable(Closable it) {
+    public static synchronized void addClosable(final Closable it) {
         closableList.add(new WeakReference<Closable>(it));
     }
 
@@ -714,9 +716,9 @@ public class BinaryFile {
      * 
      * @param it the object to remove
      */
-    public static synchronized void removeClosable(Closable it) {
+    public static synchronized void removeClosable(final Closable it) {
         for (int i = 0; i < closableList.size(); i++) {
-            Object o = ((WeakReference<Closable>) closableList.elementAt(i)).get();
+            final Object o = ((WeakReference<Closable>) closableList.elementAt(i)).get();
             if ((o == it) || (o == null)) {
                 closableList.removeElementAt(i);
                 i--; // in case its in the list more than once
@@ -727,7 +729,7 @@ public class BinaryFile {
     public static synchronized void closeClosable() {
         System.out.println("closeClosable " + closableList.size());
         for (int i = 0; i < closableList.size(); i++) {
-            Closable c = (Closable) (closableList.elementAt(i)).get();
+            final Closable c = (Closable) (closableList.elementAt(i)).get();
             if ((c == null) || !c.close(false)) {
                 closableList.removeElementAt(i);
                 i--;

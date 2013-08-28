@@ -8,12 +8,12 @@ public class SeriesLabelProvider extends LabelProvider implements ITableLabelPro
 
 	private final TableModel myTableModel;
 
-	public SeriesLabelProvider(TableModel tableModel) {
+	public SeriesLabelProvider(final TableModel tableModel) {
 		myTableModel = tableModel;
 	}
 
-	public String getColumnText(Object element, int columnIndex) {
-		TableModel.ColumnBase column = myTableModel.getColumnData(columnIndex);
+	public String getColumnText(final Object element, final int columnIndex) {
+		final TableModel.ColumnBase column = myTableModel.getColumnData(columnIndex);
 		if (column == null) {
 			//wow
 			return "";
@@ -21,7 +21,7 @@ public class SeriesLabelProvider extends LabelProvider implements ITableLabelPro
 		return column.getLabelProvider(element).getText(element);
 	}
 
-	public Image getColumnImage(Object element, int columnIndex) {
+	public Image getColumnImage(final Object element, final int columnIndex) {
 		return null;
 	}
 

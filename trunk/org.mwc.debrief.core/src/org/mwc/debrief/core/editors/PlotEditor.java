@@ -191,8 +191,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// dirty once they've updated
 		_trackDataProvider.addTrackDataListener(new TrackDataListener()
 		{
-			public void tracksUpdated(WatchableList primary,
-					WatchableList[] secondaries)
+			public void tracksUpdated(final WatchableList primary,
+					final WatchableList[] secondaries)
 			{
 				fireDirty();
 			}
@@ -208,7 +208,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		_layerPainterManager = new LayerPainterManager(_trackDataProvider);
 		_layerPainterManager.addPropertyChangeListener(new PropertyChangeListener()
 		{
-			public void propertyChange(PropertyChangeEvent arg0)
+			public void propertyChange(final PropertyChangeEvent arg0)
 			{
 				// ok, trigger repaint of plot
 				if (getChart() != null)
@@ -231,22 +231,22 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 
 			@SuppressWarnings("synthetic-access")
-			public void propertyChanged(Object source, int propId)
+			public void propertyChanged(final Object source, final int propId)
 			{
 				if (propId == PROP_INPUT)
 				{
-					Object input = getEditorInput();
+					final Object input = getEditorInput();
 					if (input instanceof IFileEditorInput)
 					{
-						IFileEditorInput inp = (IFileEditorInput) getEditorInput();
+						final IFileEditorInput inp = (IFileEditorInput) getEditorInput();
 						setPartName(inp.getName());
 					}
 					else
 					{
 						if (input instanceof FileStoreEditorInput)
 						{
-							FileStoreEditorInput fsi = (FileStoreEditorInput) input;
-							String theName = fsi.getName();
+							final FileStoreEditorInput fsi = (FileStoreEditorInput) input;
+							final String theName = fsi.getName();
 							setPartName(theName);
 						}
 						else
@@ -268,7 +268,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			public Object[] getTargets()
 			{
 				// ok, return our top level layers as objects
-				Vector<Layer> res = new Vector<Layer>(0, 1);
+				final Vector<Layer> res = new Vector<Layer>(0, 1);
 				for (int i = 0; i < _myLayers.size(); i++)
 				{
 					res.add(_myLayers.elementAt(i));
@@ -281,18 +281,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			 * completion
 			 */
 			@SuppressWarnings("synthetic-access")
-			public Vector<Layer> performOperation(AnOperation operationName)
+			public Vector<Layer> performOperation(final AnOperation operationName)
 			{
 				// make the actual change
-				Vector<Layer> res = super.performOperation(operationName);
+				final Vector<Layer> res = super.performOperation(operationName);
 
 				if (res != null)
 				{
 					if (res.size() != 0)
 					{
-						for (Iterator<Layer> iter = res.iterator(); iter.hasNext();)
+						for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
 						{
-							Layer thisL = (Layer) iter.next();
+							final Layer thisL = (Layer) iter.next();
 							// and update the screen
 							_myLayers.fireReformatted(thisL);
 
@@ -308,8 +308,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// do we have some time preferences?
 		if (_timePreferences != null)
 		{
-			HiResDate startDTG = _timePreferences.getSliderStartTime();
-			HiResDate endDTG = _timePreferences.getSliderEndTime();
+			final HiResDate startDTG = _timePreferences.getSliderStartTime();
+			final HiResDate endDTG = _timePreferences.getSliderEndTime();
 			// and were there any times in it?
 			if ((startDTG != null) && (endDTG != null))
 			{
@@ -339,7 +339,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 	}
 
-	public void init(IEditorSite site, IEditorInput input)
+	public void init(final IEditorSite site, final IEditorInput input)
 			throws PartInitException
 	{
 		setSite(site);
@@ -360,7 +360,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * @param input
 	 *          the file to insert
 	 */
-	private void loadThisFile(IEditorInput input)
+	private void loadThisFile(final IEditorInput input)
 	{
 		InputStream is = null;
 		if (!input.exists())
@@ -371,25 +371,25 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		try
 		{
-			IPersistableElement persist = input.getPersistable();
+			final IPersistableElement persist = input.getPersistable();
 			if (input instanceof IFileEditorInput)
 			{
-				IFileEditorInput ife = (IFileEditorInput) input;
-				IFile iff = ife.getFile();
+				final IFileEditorInput ife = (IFileEditorInput) input;
+				final IFile iff = ife.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
 				is = iff.getContents();
 			}
 			else if (persist instanceof IFileEditorInput)
 			{
-				IFileEditorInput iff = (IFileEditorInput) persist;
+				final IFileEditorInput iff = (IFileEditorInput) persist;
 				is = iff.getFile().getContents();
 			}
 			else if (input instanceof FileStoreEditorInput)
 			{
-				FileStoreEditorInput _input = (FileStoreEditorInput) input;
-				URI _uri = _input.getURI();
-				Path _p = new Path(_uri.getPath());
-				IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
+				final FileStoreEditorInput _input = (FileStoreEditorInput) input;
+				final URI _uri = _input.getURI();
+				final Path _p = new Path(_uri.getPath());
+				final IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
 				is = _ifs.openInputStream(EFS.NONE, null);
 			}
 
@@ -402,7 +402,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 
 		}
-		catch (CoreException e)
+		catch (final CoreException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Resource out of sync:" + input.getName() + " REFRESH the workspace",
@@ -421,24 +421,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * @param input
 	 *          the file to insert
 	 */
-	private void loadThisFile(String filePath)
+	private void loadThisFile(final String filePath)
 	{
 		try
 		{
-			FileInputStream ifs = new FileInputStream(filePath);
+			final FileInputStream ifs = new FileInputStream(filePath);
 			loadThisStream(ifs, filePath);
 		}
-		catch (FileNotFoundException e)
+		catch (final FileNotFoundException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Problem loading data file:" + filePath, e);
 		}
 	}
 
-	private void loadThisStream(InputStream is, String fileName)
+	private void loadThisStream(final InputStream is, final String fileName)
 	{
 		// right, see if any of them will do our edit
-		IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
+		final IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
 		// did we find any?
 		if (loaders.length > 0)
 		{
@@ -447,7 +447,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				for (int i = 0; i < loaders.length; i++)
 				{
-					IPlotLoader thisLoader = loaders[i];
+					final IPlotLoader thisLoader = loaders[i];
 
 					// get it to load. Just in case it's an asychronous load
 					// operation, we
@@ -458,18 +458,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					// set if there's just one sensor
 					if (thisLoader instanceof DeferredPlotLoader)
 					{
-						DeferredPlotLoader ld = (DeferredPlotLoader) thisLoader;
-						BaseLoader loader = ld.getLoader();
+						final DeferredPlotLoader ld = (DeferredPlotLoader) thisLoader;
+						final BaseLoader loader = ld.getLoader();
 						if (loader != null)
 						{
 							if (loader instanceof ReplayLoader)
 							{
-								ReplayLoader rl = (ReplayLoader) loader;
-								ImportReplay ir = rl.getReplayLoader();
-								Vector<SensorWrapper> sensors = ir.getNewlyLoadedSensors();
+								final ReplayLoader rl = (ReplayLoader) loader;
+								final ImportReplay ir = rl.getReplayLoader();
+								final Vector<SensorWrapper> sensors = ir.getNewlyLoadedSensors();
 								if (sensors.size() == 1)
 								{
-									SensorWrapper thisS = sensors.firstElement();
+									final SensorWrapper thisS = sensors.firstElement();
 									nameThisSensor(thisS);
 								}
 							}
@@ -477,7 +477,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					}
 				}
 			}
-			catch (RuntimeException e)
+			catch (final RuntimeException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Problem loading data file:"
 						+ fileName, e);
@@ -485,20 +485,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 	}
 
-	private void nameThisSensor(SensorWrapper thisS)
+	private void nameThisSensor(final SensorWrapper thisS)
 	{
 		// create the wizard to color/name this
-		SimplePageListWizard wizard = new SimplePageListWizard();
+		final SimplePageListWizard wizard = new SimplePageListWizard();
 
 		// right, just have a quick look and see if the sensor has range data -
 		// because
 		// if it doesn't we'll let the user set a default
-		Enumeration<Editable> cuts = thisS.elements();
+		final Enumeration<Editable> cuts = thisS.elements();
 		boolean needsRange = false;
 		if (cuts.hasMoreElements())
 		{
-			Editable firstCut = cuts.nextElement();
-			SensorContactWrapper scw = (SensorContactWrapper) firstCut;
+			final Editable firstCut = cuts.nextElement();
+			final SensorContactWrapper scw = (SensorContactWrapper) firstCut;
 			// do we have bearing?
 			if (scw.getHasBearing())
 			{
@@ -511,19 +511,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		final String imagePath = "images/NameSensor.jpg";
 
-		EnterStringPage getName = new EnterStringPage(null, thisS.getName(),
+		final EnterStringPage getName = new EnterStringPage(null, thisS.getName(),
 				"Import Sensor data", "Please provide the name for this sensor",
 				"a one-word title for this block of sensor contacts (e.g. S2046)",
 				imagePath, null, false);
-		SelectColorPage getColor = new SelectColorPage(null, thisS.getColor(),
+		final SelectColorPage getColor = new SelectColorPage(null, thisS.getColor(),
 				"Import Sensor data", "Now format the new sensor",
 				"The default color for the cuts for this new sensor", imagePath, null);
-		EnterBooleanPage getVis = new EnterBooleanPage(null, false,
+		final EnterBooleanPage getVis = new EnterBooleanPage(null, false,
 				"Import Sensor data",
 				"Please specify if this sensor should be displayed once loaded",
 				"yes/no", imagePath, null);
-		WorldDistance defRange = new WorldDistance(5000, WorldDistance.YARDS);
-		EnterRangePage getRange = new EnterRangePage(
+		final WorldDistance defRange = new WorldDistance(5000, WorldDistance.YARDS);
+		final EnterRangePage getRange = new EnterRangePage(
 				null,
 				"Import Sensor data",
 				"Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
@@ -533,7 +533,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		if (needsRange)
 			wizard.addWizard(getRange);
 		wizard.addWizard(getVis);
-		WizardDialog dialog = new WizardDialog(Display.getCurrent()
+		final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
 		dialog.setBlockOnOpen(true);
@@ -549,15 +549,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			// are we doing range?
 			if (needsRange)
 			{
-				WorldDistance theRange = getRange.getRange();
+				final WorldDistance theRange = getRange.getRange();
 
 				// did a range get entered?
 				if ((theRange != null) && (theRange.getValue() != 0))
 				{
-					Enumeration<Editable> iter = thisS.elements();
+					final Enumeration<Editable> iter = thisS.elements();
 					while (iter.hasMoreElements())
 					{
-						SensorContactWrapper cut = (SensorContactWrapper) iter
+						final SensorContactWrapper cut = (SensorContactWrapper) iter
 								.nextElement();
 						cut.setRange(new WorldDistance(theRange));
 					}
@@ -575,18 +575,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		_loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
 		{
 
-			public INamedItem createInstance(IConfigurationElement configElement,
-					String label)
+			public INamedItem createInstance(final IConfigurationElement configElement,
+					final String label)
 			{
 				// get the attributes
-				label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
-				String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
-				String fileTypes = configElement
+				final String theLabel = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+				final String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
+				final String fileTypes = configElement
 						.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
 
 				// create the instance
-				INamedItem res = new IPlotLoader.DeferredPlotLoader(configElement,
-						label, icon, fileTypes);
+				final INamedItem res = new IPlotLoader.DeferredPlotLoader(configElement,
+						theLabel, icon, fileTypes);
 
 				// and return it.
 				return res;
@@ -595,32 +595,32 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		};
 	}
 
-	private static TimePeriod getPeriodFor(Layers theData)
+	private static TimePeriod getPeriodFor(final Layers theData)
 	{
 		TimePeriod res = null;
 
-		for (Enumeration<Editable> iter = theData.elements(); iter
+		for (final Enumeration<Editable> iter = theData.elements(); iter
 				.hasMoreElements();)
 		{
-			Layer thisLayer = (Layer) iter.nextElement();
+			final Layer thisLayer = (Layer) iter.nextElement();
 
 			// and through this layer
 			if (thisLayer instanceof TrackWrapper)
 			{
-				TrackWrapper thisT = (TrackWrapper) thisLayer;
+				final TrackWrapper thisT = (TrackWrapper) thisLayer;
 				res = extend(res, thisT.getStartDTG());
 				res = extend(res, thisT.getEndDTG());
 			}
 			else if (thisLayer instanceof BaseLayer)
 			{
-				Enumeration<Editable> elements = thisLayer.elements();
+				final Enumeration<Editable> elements = thisLayer.elements();
 				while (elements.hasMoreElements())
 				{
-					Plottable nextP = (Plottable) elements.nextElement();
+					final Plottable nextP = (Plottable) elements.nextElement();
 					if (nextP instanceof Watchable)
 					{
-						Watchable wrapped = (Watchable) nextP;
-						HiResDate dtg = wrapped.getTime();
+						final Watchable wrapped = (Watchable) nextP;
+						final HiResDate dtg = wrapped.getTime();
 						if (dtg != null)
 						{
 							res = extend(res, dtg);
@@ -629,8 +629,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							if (wrapped instanceof WatchableList)
 							{
 								// ok, make sure we also handle the end time
-								WatchableList wl = (WatchableList) wrapped;
-								HiResDate endD = wl.getEndDTG();
+								final WatchableList wl = (WatchableList) wrapped;
+								final HiResDate endD = wl.getEndDTG();
 								if (endD != null)
 									res = extend(res, endD);
 							}
@@ -643,20 +643,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		return res;
 	}
 
-	private static TimePeriod extend(TimePeriod period, HiResDate date)
+	private static TimePeriod extend(final TimePeriod period, final HiResDate date)
 	{
+		TimePeriod result = period;
 		// have we received a date?
 		if (date != null)
 		{
-			if (period == null)
+			if (result == null)
 			{
-				period = new TimePeriod.BaseTimePeriod(date, date);
+				result = new TimePeriod.BaseTimePeriod(date, date);
 			}
 			else
-				period.extend(date);
+				result.extend(date);
 		}
 
-		return period;
+		return result;
 	}
 
 	/**
@@ -664,7 +665,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * 
 	 * @param source
 	 */
-	public void loadingComplete(Object source)
+	public void loadingComplete(final Object source)
 	{
 
 		// ok, stop listening for dirty calls - since there will be so many and
@@ -676,7 +677,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		DebriefPlugin.logError(Status.INFO, "File load received", null);
 
 		// and update the time management bits
-		TimePeriod timePeriod = getPeriodFor(_myLayers);
+		final TimePeriod timePeriod = getPeriodFor(_myLayers);
 
 		if (timePeriod != null)
 		{
@@ -692,7 +693,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 	}
 
-	protected void filesDropped(String[] fileNames)
+	protected void filesDropped(final String[] fileNames)
 	{
 		super.filesDropped(fileNames);
 
@@ -722,7 +723,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * 
 	 * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#timeChanged()
 	 */
-	protected void timeChanged(HiResDate newDTG)
+	protected void timeChanged(final HiResDate newDTG)
 	{
 		super.timeChanged(newDTG);
 
@@ -743,7 +744,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				// note, we've learn't to use the default display instead of the
 				// current one, we were get a null returned since this thread may not
 				// have a display
-				Display myDis = Display.getDefault();
+				final Display myDis = Display.getDefault();
 				if (myDis != null)
 				{
 					myDis.asyncExec(new Runnable()
@@ -772,7 +773,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 
@@ -821,13 +822,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			return new IGotoMarker()
 			{
-				public void gotoMarker(IMarker marker)
+				public void gotoMarker(final IMarker marker)
 				{
-					String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
+					final String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
 					if (lineNum != "na")
 					{
 						// right, convert to DTG
-						HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
+						final HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
 						_timeManager.setTime(this, tNow, true);
 					}
 				}
@@ -838,7 +839,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		else if (adapter == IRollingNarrativeProvider.class)
 		{
 			// so, do we have any narrative data?
-			Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+			final Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
 
 			if (narr != null)
 			{
@@ -864,7 +865,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					public double getHeading()
 					{
 						double res1 = 0.0;
-						Watchable thePos = getFirstPosition(_trackDataProvider,
+						final Watchable thePos = getFirstPosition(_trackDataProvider,
 								_timeManager);
 
 						if (thePos != null)
@@ -879,7 +880,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					public WorldLocation getLocation()
 					{
 						MWC.GenericData.WorldLocation res1 = null;
-						Watchable thePos = getFirstPosition(_trackDataProvider,
+						final Watchable thePos = getFirstPosition(_trackDataProvider,
 								_timeManager);
 
 						if (thePos != null)
@@ -890,13 +891,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						return res1;
 					}
 
-					private Watchable getFirstPosition(TrackDataProvider provider,
-							TimeManager manager)
+					private Watchable getFirstPosition(final TrackDataProvider provider,
+							final TimeManager manager)
 					{
 						Watchable res = null;
 
 						// do we have a primary?
-						WatchableList priTrack = provider.getPrimaryTrack();
+						final WatchableList priTrack = provider.getPrimaryTrack();
 						if (priTrack == null)
 						{
 							CorePlugin.logError(Status.ERROR,
@@ -904,7 +905,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						}
 						else
 						{
-							Watchable[] list = priTrack.getNearestTo(manager.getTime());
+							final Watchable[] list = priTrack.getNearestTo(manager.getTime());
 							if (list != null)
 								if (list.length > 0)
 									res = list[0];
@@ -936,13 +937,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	/**
 	 * @param parent
 	 */
-	protected SWTChart createTheChart(Composite parent)
+	protected SWTChart createTheChart(final Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
+		final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
 		{
 
 			@Override
-			public SWTCanvas createCanvas(Composite parent1, GtProjection projection)
+			public SWTCanvas createCanvas(final Composite parent1, final GtProjection projection)
 			{
 				return new CustomisedSWTCanvas(parent1, _myGeoHandler)
 				{
@@ -952,19 +953,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					 */
 					private static final long serialVersionUID = 1L;
 
-					public void parentFireSelectionChanged(ISelection selected)
+					public void parentFireSelectionChanged(final ISelection selected)
 					{
 						chartFireSelectionChanged(selected);
 					}
 
 					public void doSupplementalRightClickProcessing(
-							MenuManager menuManager, Plottable selected, Layer theParentLayer)
+							final MenuManager menuManager, final Plottable selected, final Layer theParentLayer)
 					{
 						if (selected instanceof CreateEditorForParent)
 						{
 							// get the parent track
-							CreateEditorForParent editor = (CreateEditorForParent) selected;
-							Editable parent11 = editor.getParent();
+							final CreateEditorForParent editor = (CreateEditorForParent) selected;
+							final Editable parent11 = editor.getParent();
 							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
 							{ parent11 }, new Layer[]
 							{ theParentLayer }, new Layer[]
@@ -974,7 +975,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				};
 			}
 
-			public void chartFireSelectionChanged(ISelection sel)
+			public void chartFireSelectionChanged(final ISelection sel)
 			{
 				fireSelectionChanged(sel);
 			}
@@ -988,12 +989,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			 * @param thisLayer
 			 * @param dest
 			 */
-			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
+			protected void paintThisLayer(final Layer thisLayer, final CanvasType dest)
 			{
 				try
 				{
 					// get the current time
-					HiResDate tNow = _timeManager.getTime();
+					final HiResDate tNow = _timeManager.getTime();
 
 					// do we know the time?
 					// if (tNow != null)
@@ -1020,24 +1021,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							if (list instanceof Layer)
 							{
 								final Layer ly = (Layer) list;
-								int thickness = ly.getLineThickness();
+								final int thickness = ly.getLineThickness();
 								dest.setLineWidth(thickness);
 							}
 
 							// ok, clear the nearest items
 							if (tNow != null)
 							{
-								Watchable[] wList = list.getNearestTo(tNow);
+								final Watchable[] wList = list.getNearestTo(tNow);
 								for (int i = 0; i < wList.length; i++)
 								{
-									Watchable watch = wList[i];
+									final Watchable watch = wList[i];
 									// if (wList.length > 0)
 									// watch = wList[0];
 
 									if (watch != null)
 									{
 										// aah, is this the primary?
-										boolean isPrimary = (list == _trackDataProvider
+										final boolean isPrimary = (list == _trackDataProvider
 												.getPrimaryTrack());
 
 										// plot it
@@ -1050,7 +1051,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						}
 					}
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin
 							.logError(Status.ERROR, "Whilst repainting:" + thisLayer, e);
@@ -1064,9 +1065,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	/**
 	 * @see org.eclipse.ui.IEditorPart#doSave(IProgressMonitor)
 	 */
-	public void doSave(IProgressMonitor monitor)
+	public void doSave(final IProgressMonitor monitor)
 	{
-		IEditorInput input = getEditorInput();
+		final IEditorInput input = getEditorInput();
 		String ext = null;
 
 		// do we have an input
@@ -1077,14 +1078,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				IFile file = null;
 				file = ((IFileEditorInput) getEditorInput()).getFile();
-				IPath path = file.getFullPath();
+				final IPath path = file.getFullPath();
 				ext = path.getFileExtension();
 			}
 			else if (input instanceof FileStoreEditorInput)
 			{
-				FileStoreEditorInput fi = (FileStoreEditorInput) input;
-				URI uri = fi.getURI();
-				Path path = new Path(uri.getPath());
+				final FileStoreEditorInput fi = (FileStoreEditorInput) input;
+				final URI uri = fi.getURI();
+				final Path path = new Path(uri.getPath());
 				ext = path.getFileExtension();
 			}
 
@@ -1096,7 +1097,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				msg += "\nThus you must specify a new folder to "
 						+ "store the plot, and a new filename.";
 				msg += "\nNote: it's important that you give the file a .xml file suffix";
-				MessageDialog md = new MessageDialog(getEditorSite().getShell(),
+				final MessageDialog md = new MessageDialog(getEditorSite().getShell(),
 						"Save as", null, msg, MessageDialog.WARNING, new String[]
 						{ "Ok" }, 0);
 				md.open();
@@ -1115,12 +1116,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					// success.
 
 					// 1. create the temp file
-					File tmpFile = File.createTempFile("DebNG_tmp", ".xml");
+					final File tmpFile = File.createTempFile("DebNG_tmp", ".xml");
 					tmpFile.createNewFile();
 					tmpFile.deleteOnExit();
 
 					// 1a. record the name of the tmp file in the log
-					String filePath = tmpFile.getAbsolutePath();
+					final String filePath = tmpFile.getAbsolutePath();
 					CorePlugin.logError(Status.INFO, "Created temp save file at:"
 							+ filePath, null);
 
@@ -1158,17 +1159,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								CorePlugin.logError(Status.INFO,
 										"Performing IFileEditorInput save", null);
 
-								IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+								final IFile file = ((IFileEditorInput) getEditorInput()).getFile();
 
 								// get the current path (since we're going to be moving the temp
 								// one to it
-								IPath thePath = file.getLocation();
+								final IPath thePath = file.getLocation();
 
 								// create a backup path
-								IPath bakPath = file.getFullPath().addFileExtension("bak");
+								final IPath bakPath = file.getFullPath().addFileExtension("bak");
 
 								// delete any existing backup file
-								File existingBackupFile = new File(file.getLocation()
+								final File existingBackupFile = new File(file.getLocation()
 										.addFileExtension("bak").toOSString());
 								if (existingBackupFile.exists())
 								{
@@ -1182,7 +1183,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								file.move(bakPath, true, monitor);
 
 								// move the temp file to be our real working file
-								File destFile = thePath.toFile().getAbsoluteFile();
+								final File destFile = thePath.toFile().getAbsoluteFile();
 								if (!tmpFile.renameTo(destFile))
 								{
 									FileUtils.moveFile(tmpFile, destFile);
@@ -1210,17 +1211,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 										"Performing FileStoreEditorInput save", null);
 
 								// get the data-file
-								FileStoreEditorInput fi = (FileStoreEditorInput) input;
-								URI _uri = fi.getURI();
-								Path _p = new Path(_uri.getPath());
+								final FileStoreEditorInput fi = (FileStoreEditorInput) input;
+								final URI _uri = fi.getURI();
+								final Path _p = new Path(_uri.getPath());
 
 								// create pointers to the existing file, and the backup file
-								IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
-								IFileStore backupFile = EFS.getLocalFileSystem().getStore(
+								final IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
+								final IFileStore backupFile = EFS.getLocalFileSystem().getStore(
 										_p.addFileExtension("bak"));
 
 								// delete any existing backup file
-								IFileInfo backupStatus = backupFile.fetchInfo();
+								final IFileInfo backupStatus = backupFile.fetchInfo();
 								if (backupStatus.exists())
 								{
 									CorePlugin.logError(Status.INFO,
@@ -1246,17 +1247,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							}
 						}
 				}
-				catch (CoreException e)
+				catch (final CoreException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Failed whilst saving external file", e);
 				}
-				catch (FileNotFoundException e)
+				catch (final FileNotFoundException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Failed to find local file to save to", e);
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Unknown file-save error occurred",
 							e);
@@ -1268,7 +1269,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						if (tmpOS != null)
 							tmpOS.close();
 					}
-					catch (IOException e)
+					catch (final IOException e)
 					{
 						CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
 					}
@@ -1285,14 +1286,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * @param monitor
 	 *          somebody/something to be informed about progress
 	 */
-	private void doSaveTo(OutputStream os, IProgressMonitor monitor)
+	private void doSaveTo(final OutputStream os, final IProgressMonitor monitor)
 	{
 		if (os != null)
 		{
 
-			IProduct prod = Platform.getProduct();
-			Bundle bund = prod.getDefiningBundle();
-			String version = "" + new Date(bund.getLastModified());
+			final IProduct prod = Platform.getProduct();
+			final Bundle bund = prod.getDefiningBundle();
+			final String version = "" + new Date(bund.getLastModified());
 
 			try
 			{
@@ -1303,7 +1304,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				_plotIsDirty = false;
 				firePropertyChange(PROP_DIRTY);
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				DebriefPlugin.logError(Status.ERROR, "Error exporting plot file", e);
 			}
@@ -1329,7 +1330,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 *          full file path
 	 * @return root of file name (before the . marker)
 	 */
-	private String fileNamePartOf(String fileName)
+	private String fileNamePartOf(final String fileName)
 	{
 		if (fileName == null)
 		{
@@ -1337,13 +1338,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 
 		// ok, extract the parent portion
-		File wholeFile = new File(fileName);
-		String parentSection = wholeFile.getParent();
-		int parentLen = parentSection.length() + 1;
-		int fileLen = fileName.length();
-		String fileSection = fileName.substring(parentLen, fileLen);
+		final File wholeFile = new File(fileName);
+		final String parentSection = wholeFile.getParent();
+		final int parentLen = parentSection.length() + 1;
+		final int fileLen = fileName.length();
+		final String fileSection = fileName.substring(parentLen, fileLen);
 
-		int pos = fileSection.lastIndexOf('.');
+		final int pos = fileSection.lastIndexOf('.');
 		if (pos > 0 && pos < fileSection.length() - 1)
 		{
 			return fileSection.substring(0, pos);
@@ -1351,11 +1352,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		return "";
 	}
 
-	public void doSaveAs(String message)
+	public void doSaveAs(final String message)
 	{
 		// do we have a project?
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IProject[] projects = workspace.getRoot().getProjects();
+		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		final IProject[] projects = workspace.getRoot().getProjects();
 		if ((projects == null) || (projects.length == 0))
 		{
 			String msg = "Debrief plots are stored in 'Projects'";
@@ -1364,7 +1365,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			msg += "\nsheet, accessed from Help/Cheat Sheets then Debrief/Getting started.";
 			msg += "\nOnce you have created your project, please start the Save process again.";
 			msg += "\nNote: the cheat sheet will open automatically when you close this dialog.";
-			MessageDialog md = new MessageDialog(getEditorSite().getShell(),
+			final MessageDialog md = new MessageDialog(getEditorSite().getShell(),
 					"Save as", null, msg, MessageDialog.WARNING, new String[]
 					{ "Ok" }, 0);
 			md.open();
@@ -1376,7 +1377,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				public void run()
 				{
-					OpenCheatSheetAction action = new OpenCheatSheetAction(CHEAT_ID);
+					final OpenCheatSheetAction action = new OpenCheatSheetAction(CHEAT_ID);
 					action.run();
 				}
 			});
@@ -1387,27 +1388,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		// get the workspace
 
-		SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
+		final SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
 		dialog.setTitle("Save Plot As");
 		if (getEditorInput() instanceof FileEditorInput)
 		{
 			// this has been loaded from the navigator
-			IFile oldFile = ((FileEditorInput) getEditorInput()).getFile();
+			final IFile oldFile = ((FileEditorInput) getEditorInput()).getFile();
 			// dialog.setOriginalFile(oldFile);
 
-			IPath oldPath = oldFile.getFullPath();
-			IPath newStart = oldPath.removeFileExtension();
-			IPath newPath = newStart.addFileExtension("xml");
-			File asFile = newPath.toFile();
-			String newName = asFile.getName();
+			final IPath oldPath = oldFile.getFullPath();
+			final IPath newStart = oldPath.removeFileExtension();
+			final IPath newPath = newStart.addFileExtension("xml");
+			final File asFile = newPath.toFile();
+			final String newName = asFile.getName();
 			dialog.setOriginalName(newName);
 		}
 		else if (getEditorInput() instanceof FileStoreEditorInput)
 		{
 			// this has been dragged from an explorer window
-			FileStoreEditorInput fi = (FileStoreEditorInput) getEditorInput();
-			URI uri = fi.getURI();
-			File thisFile = new File(uri.getPath());
+			final FileStoreEditorInput fi = (FileStoreEditorInput) getEditorInput();
+			final URI uri = fi.getURI();
+			final File thisFile = new File(uri.getPath());
 			String newPath = fileNamePartOf(thisFile.getAbsolutePath());
 			newPath += ".xml";
 			dialog.setOriginalName(newPath);
@@ -1419,7 +1420,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		else
 			dialog.setMessage("Save file to another location.");
 		dialog.open();
-		IPath path = dialog.getResult();
+		final IPath path = dialog.getResult();
 
 		if (path == null)
 		{
@@ -1427,7 +1428,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		else
 		{
-			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 			if (!file.exists())
 				try
 				{
@@ -1435,7 +1436,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					file.create(new ByteArrayInputStream(new byte[]
 					{}), false, null);
 				}
-				catch (CoreException e)
+				catch (final CoreException e)
 				{
 					DebriefPlugin.logError(IStatus.ERROR,
 							"Failed trying to create new file for save-as", e);
@@ -1450,20 +1451,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				doSaveTo(os, new NullProgressMonitor());
 
 				// also make this new file our input
-				IFileEditorInput newInput = new FileEditorInput(file);
+				final IFileEditorInput newInput = new FileEditorInput(file);
 				setInputWithNotify(newInput);
 
 				// lastly, trigger a navigator refresh
-				IFile iff = newInput.getFile();
+				final IFile iff = newInput.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
 
 			}
-			catch (FileNotFoundException e)
+			catch (final FileNotFoundException e)
 			{
 				CorePlugin
 						.logError(Status.ERROR, "Failed whilst performing Save As", e);
 			}
-			catch (CoreException e)
+			catch (final CoreException e)
 			{
 				CorePlugin.logError(Status.ERROR,
 						"Refresh failed after saving new file", e);
@@ -1476,7 +1477,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					if (os != null)
 						os.close();
 				}
-				catch (IOException e)
+				catch (final IOException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Whilst performaing save-as", e);
 				}
@@ -1499,7 +1500,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		super.layersExtended();
 
 		// we should also recalculate the time period we cover
-		TimePeriod timePeriod = getPeriodFor(_myLayers);
+		final TimePeriod timePeriod = getPeriodFor(_myLayers);
 
 		// and share the good news.
 		_timeManager.setPeriod(this, timePeriod);

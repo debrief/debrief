@@ -82,7 +82,7 @@ public class FixExtensionType {
      *     {@link String }
      *     
      */
-    public void setCourse(String value) {
+    public void setCourse(final String value) {
         this.course = value;
     }
 
@@ -106,7 +106,7 @@ public class FixExtensionType {
      *     {@link String }
      *     
      */
-    public void setLabel(String value) {
+    public void setLabel(final String value) {
         this.label = value;
     }
 
@@ -134,7 +134,7 @@ public class FixExtensionType {
      *     {@link LabelLocationType }
      *     
      */
-    public void setLabelLocation(LabelLocationType value) {
+    public void setLabelLocation(final LabelLocationType value) {
         this.labelLocation = value;
     }
 
@@ -162,7 +162,7 @@ public class FixExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setLabelShowing(Boolean value) {
+    public void setLabelShowing(final Boolean value) {
         this.labelShowing = value;
     }
 
@@ -186,7 +186,7 @@ public class FixExtensionType {
      *     {@link String }
      *     
      */
-    public void setSpeed(String value) {
+    public void setSpeed(final String value) {
         this.speed = value;
     }
 
@@ -214,7 +214,7 @@ public class FixExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setSymbolShowing(Boolean value) {
+    public void setSymbolShowing(final Boolean value) {
         this.symbolShowing = value;
     }
 
@@ -242,7 +242,7 @@ public class FixExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setArrowShowing(Boolean value) {
+    public void setArrowShowing(final Boolean value) {
         this.arrowShowing = value;
     }
 
@@ -270,7 +270,7 @@ public class FixExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setLineShowing(Boolean value) {
+    public void setLineShowing(final Boolean value) {
         this.lineShowing = value;
     }
 
@@ -298,7 +298,7 @@ public class FixExtensionType {
      *     {@link Boolean }
      *     
      */
-    public void setVisible(Boolean value) {
+    public void setVisible(final Boolean value) {
         this.visible = value;
     }
 

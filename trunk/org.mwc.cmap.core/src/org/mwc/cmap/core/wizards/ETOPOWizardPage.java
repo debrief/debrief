@@ -21,7 +21,7 @@ public class ETOPOWizardPage extends CoreEditableWizardPage {
 	 * 
 	 * @param pageName
 	 */
-	public ETOPOWizardPage(ISelection selection) {
+	public ETOPOWizardPage(final ISelection selection) {
 		super(
 				selection,
 				"etopoPage",

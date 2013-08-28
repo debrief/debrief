@@ -184,7 +184,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
    * @param theCentre the WorldLocation marking the centre of the circle
    * @param theRadius the radius of the circle (in yards)
    */
-  public CircleShape(WorldLocation theCentre, double theRadius)
+  public CircleShape(final WorldLocation theCentre, final double theRadius)
   {
   	this(theCentre, new WorldDistance(theRadius, WorldDistance.YARDS));
   }
@@ -195,7 +195,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
    * @param theCentre the WorldLocation marking the centre of the circle
    * @param theRadius the radius of the circle (in yards)
    */
-  public CircleShape(WorldLocation theCentre, WorldDistance theRadius)
+  public CircleShape(final WorldLocation theCentre, final WorldDistance theRadius)
   {
     super(0, 1, "Circle");
 
@@ -217,7 +217,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   // member functions
   //////////////////////////////////////////////////
 
-  public void paint(CanvasType dest)
+  public void paint(final CanvasType dest)
   {
 
     // are we visible?
@@ -227,19 +227,19 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
     if (this.getColor() != null)
     {
       // create a transparent colour
-      Color newcol = getColor();
+      final Color newcol = getColor();
       dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(), TRANSPARENCY_SHADE));
     }
 
     // break the circle down into points
     final int STEPS = _myPoints.size();
-    int[] xP = new int[STEPS];
-    int[] yP = new int[STEPS];
+    final int[] xP = new int[STEPS];
+    final int[] yP = new int[STEPS];
     int ctr = 0;
-    Iterator<WorldLocation> iter = _myPoints.iterator();
+    final Iterator<WorldLocation> iter = _myPoints.iterator();
     while(iter.hasNext())
     {
-      Point pt = dest.toScreen(iter.next());
+      final Point pt = dest.toScreen(iter.next());
       xP[ctr] = pt.x;
       yP[ctr++] = pt.y;
     }
@@ -263,7 +263,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   protected void calcPoints()
   {
     // calc the radius in degrees
-    double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
+    final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
     
     // create our area
     _theArea = new WorldArea(_theCentre, _theCentre);
@@ -287,9 +287,9 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
     final int STEPS = 100;
     for(int i=0;i<STEPS;i++)
     {
-    	double thisAngle = (Math.PI * 2) / (double) STEPS * i;
+    	final double thisAngle = (Math.PI * 2) / (double) STEPS * i;
       // create & extend to top left
-      WorldLocation newPt = _theCentre.add(new WorldVector(thisAngle, radDegs, 0));
+      final WorldLocation newPt = _theCentre.add(new WorldVector(thisAngle, radDegs, 0));
 			_myPoints.add(newPt);
     }
   }
@@ -304,16 +304,16 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
    * making this abstract allows for individual shapes
    * to have 'hit-spots' in various locations.
    */
-  public double rangeFrom(WorldLocation point)
+  public double rangeFrom(final WorldLocation point)
   {
-    double res = this._theCentre.rangeFrom(point);
+    final double res = this._theCentre.rangeFrom(point);
 
     /** note, also allow us to recognise that the user may
      * be clicking on the circle itself, so do a second
      * check using the difference between the range from the
      * centre of the circle and the radius of the circle
      */
-    double res2 = Math.abs(_theRadius.getValueIn(WorldDistance.DEGS) - res);
+    final double res2 = Math.abs(_theRadius.getValueIn(WorldDistance.DEGS) - res);
 
     return Math.min(res, res2);
   }
@@ -333,7 +333,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
    *
    * @param centre the WorldLocation marking the centre
    */
-  public void setCentre(WorldLocation centre)
+  public void setCentre(final WorldLocation centre)
   {
     // inform our listeners
     firePropertyChange(PlainWrapper.LOCATION_CHANGED, _theCentre, centre);
@@ -354,7 +354,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
     return _theCentre;
   }
 
-  public void setCircleColor(Color val)
+  public void setCircleColor(final Color val)
   {
     super.setColor(val);
   }
@@ -367,7 +367,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   /**
    * set the radius of this circle
    */
-  public void setRadius(WorldDistance val)
+  public void setRadius(final WorldDistance val)
   {
     _theRadius = val;
     
@@ -411,8 +411,8 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   public class CircleInfo extends Editable.EditorType
   {
 
-    public CircleInfo(CircleShape data,
-                      String theName)
+    public CircleInfo(final CircleShape data,
+                      final String theName)
     {
       super(data, theName, "");
     }
@@ -426,7 +426,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
     {
       try
       {
-        PropertyDescriptor[] res = {
+        final PropertyDescriptor[] res = {
           prop("Radius", "the circle radius"),
           prop("Centre", "the centre of the circle"),
           prop("Filled", "whether to fill the circle")
@@ -435,7 +435,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
         return res;
 
       }
-      catch (IntrospectionException e)
+      catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
@@ -443,7 +443,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   }
   
 
-	public void shift(WorldLocation feature, WorldVector vector)
+	public void shift(final WorldLocation feature, final WorldVector vector)
 	{
 		// ok, just shift it...
 		feature.addToMe(vector);
@@ -456,32 +456,32 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
 		
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer)
 	{
 		// right, see if the cursor is at the centre (that's the easy component)
 		checkThisOne(_theCentre, cursorLoc, currentNearest, this, parentLayer);
 		
 		// now for the more difficult one. See if it is on the radius.
 		// - how far is it from the centre
-		WorldVector vec = cursorLoc.subtract(_theCentre);
-		WorldDistance sep = new WorldDistance(vec);
+		final WorldVector vec = cursorLoc.subtract(_theCentre);
+		final WorldDistance sep = new WorldDistance(vec);
 		
 		// ahh, now subtract the radius from this separation
-		WorldDistance newSep = new WorldDistance(Math.abs(sep.getValueIn(WorldDistance.YARDS) - 
+		final WorldDistance newSep = new WorldDistance(Math.abs(sep.getValueIn(WorldDistance.YARDS) - 
 				this._theRadius.getValueIn(WorldDistance.YARDS)), WorldDistance.YARDS);
 		
 		// now we have to wrap this operation in a made-up location
-		WorldLocation dragCentre = new WorldLocation(cursorLoc){
+		final WorldLocation dragCentre = new WorldLocation(cursorLoc){
 			private static final long serialVersionUID = 100L;
 			
-			public void addToMe(WorldVector delta)
+			public void addToMe(final WorldVector delta)
 			{
 					// ok - process the drag
 					super.addToMe(delta);
 					// ok, what's this distance from the origin?
-					WorldVector newSep1 = subtract(_theCentre);
-					WorldDistance dist = new WorldDistance(newSep1);
+					final WorldVector newSep1 = subtract(_theCentre);
+					final WorldDistance dist = new WorldDistance(newSep1);
 					setRadius(dist);
 			
 		//		WorldDistance newDist = new WorldDistance(dist.getValueIn(WorldDistance.YARDS) + _theRadius, WorldDistance.YARDS);
@@ -501,7 +501,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public CircleTest(String val)
+    public CircleTest(final String val)
     {
       super(val);
     }
@@ -514,10 +514,10 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
     }
   }
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
-		WorldLocation oldCentre = getCentre();
-		WorldLocation newCentre = oldCentre.add(vector);
+		final WorldLocation oldCentre = getCentre();
+		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
 		
     // and calc the new summary data

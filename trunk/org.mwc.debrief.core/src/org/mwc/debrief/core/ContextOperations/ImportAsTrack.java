@@ -52,7 +52,7 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 			for (int i = 0; i < subjects.length; i++)
 			{
 				boolean goForIt = false;
-				Editable thisE = subjects[i];
+				final Editable thisE = subjects[i];
 				if (thisE instanceof GTrack)
 				{
 					goForIt = true;
@@ -85,11 +85,11 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 			final String theTitle = title;
 
 			// create this operation
-			Action doMerge = new Action(theTitle)
+			final Action doMerge = new Action(theTitle)
 			{
 				public void run()
 				{
-					IUndoableOperation theAction = new ImportAsTrackOperation(theTitle,
+					final IUndoableOperation theAction = new ImportAsTrackOperation(theTitle,
 							editable, theLayers, parentLayers, subjects);
 
 					CorePlugin.run(theAction);
@@ -108,35 +108,35 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 		private final Layers _layers;
 		private final Editable[] _subjects;
 
-		public ImportAsTrackOperation(String title, Editable editable,
-				Layers theLayers, Layer[] parentLayers, Editable[] subjects)
+		public ImportAsTrackOperation(final String title, final Editable editable,
+				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
 		{
 			super(title);
 			_layers = theLayers;
 			_subjects = subjects;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			for (int i = 0; i < _subjects.length; i++)
 			{
-				Editable ed = _subjects[i];
+				final Editable ed = _subjects[i];
 				if (ed instanceof GPackage)
 				{
-					GPackage gp = (GPackage) ed;
-					Enumeration<Editable> enumer = gp.elements();
+					final GPackage gp = (GPackage) ed;
+					final Enumeration<Editable> enumer = gp.elements();
 					while (enumer.hasMoreElements())
 					{
-						GTrack gt = (GTrack) enumer.nextElement();
-						TrackWrapper tw = getTrackFor(gt);
+						final GTrack gt = (GTrack) enumer.nextElement();
+						final TrackWrapper tw = getTrackFor(gt);
 						_layers.addThisLayer(tw);
 					}
 				}
 				else
 				{
-					GTrack gt = (GTrack) ed;
-					TrackWrapper tw = getTrackFor(gt);
+					final GTrack gt = (GTrack) ed;
+					final TrackWrapper tw = getTrackFor(gt);
 					_layers.addThisLayer(tw);
 				}
 			}
@@ -162,7 +162,7 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			CorePlugin.logError(Status.INFO,
@@ -171,20 +171,20 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 		}
 	}
 
-	public static TrackWrapper getTrackFor(GTrack gt)
+	public static TrackWrapper getTrackFor(final GTrack gt)
 	{
 		gt.setVisible(false);
 
-		TrackWrapper tw = new TrackWrapper();
+		final TrackWrapper tw = new TrackWrapper();
 		tw.setName(gt.getName());
 		tw.setColor(gt.getColor());
 
 		// loop through the points
-		int len = gt.size();
+		final int len = gt.size();
 		for (int i = 0; i < len; i++)
 		{
-			Fix f = gt.getFixAt(i);
-			FixWrapper fw = new FixWrapper(f);
+			final Fix f = gt.getFixAt(i);
+			final FixWrapper fw = new FixWrapper(f);
 			tw.addFix(fw);
 		}
 

@@ -43,7 +43,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		this(false);
 	}
 
-	public CoreInsertChartFeature(boolean isLayer)
+	public CoreInsertChartFeature(final boolean isLayer)
 	{
 		_isTopLevelLayer = isLayer;
 	}
@@ -53,7 +53,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	 * 
 	 * @param theParent
 	 */
-	public static void init(ToolParent theParent)
+	public static void init(final ToolParent theParent)
 	{
 		_theParent = theParent;
 	}
@@ -64,13 +64,13 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	 * @param theChart
 	 * @return
 	 */
-	protected static WorldLocation getCentre(PlainChart theChart)
+	protected static WorldLocation getCentre(final PlainChart theChart)
 	{
 		// right, what's the area we're looking at
-		WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
+		final WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
 		
 		// get centre of area (at zero depth)
-		WorldLocation centre = wa.getCentreAtSurface();
+		final WorldLocation centre = wa.getCentreAtSurface();
 		
 		return centre;
 	}
@@ -83,7 +83,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	{
 		final PlainChart theChart = getChart();
 
-		CreateLabelAction res = createAction(theChart);
+		final CreateLabelAction res = createAction(theChart);
 
 		// did we get an action?
 		if (res != null)
@@ -95,7 +95,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 			if (layer == null)
 			{
 				// try to get the new plottable
-				Plottable pl = res.getNewFeature();
+				final Plottable pl = res.getNewFeature();
 				if (pl instanceof Layer)
 					layer = (Layer) pl;
 				else
@@ -109,20 +109,20 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 			}
 
 			// and the data?
-			Layers data = res.getLayers();
+			final Layers data = res.getLayers();
 
 			// ok, now wrap the action
-			DebriefActionWrapper daw = new DebriefActionWrapper(res, data, layer);
+			final DebriefActionWrapper daw = new DebriefActionWrapper(res, data, layer);
 
 			// and add it to our buffer (which will execute it anyway)
 			CorePlugin.run(daw);
 		}
 	}
 
-	protected final CreateLabelAction createAction(PlainChart theChart)
+	protected final CreateLabelAction createAction(final PlainChart theChart)
 	{
 		CreateLabelAction res = null;
-		WorldArea wa = theChart.getDataArea();
+		final WorldArea wa = theChart.getDataArea();
 
 		// see if we have an area defined
 		if (wa != null)
@@ -135,13 +135,13 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 				return null;
 
 			// ok - get the object we're going to insert
-			Plottable thePlottable = getPlottable(theChart);
+			final Plottable thePlottable = getPlottable(theChart);
 
 			if (thePlottable != null)
 			{
 
 				// lastly, get the data
-				Layers theData = theChart.getLayers();
+				final Layers theData = theChart.getLayers();
 
 				// aah, and the misc layer, in which we will store the shape
 				Layer theLayer = null;
@@ -173,9 +173,9 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 
 						// right, does the user want me to auto-select the newly created
 						// item?
-						String autoSelectStr = CorePlugin.getToolParent().getProperty(
+						final String autoSelectStr = CorePlugin.getToolParent().getProperty(
 								PrefsPage.PreferenceConstants.AUTO_SELECT);
-						boolean autoSelect = Boolean.parseBoolean(autoSelectStr);
+						final boolean autoSelect = Boolean.parseBoolean(autoSelectStr);
 						if (autoSelect)
 						{
 
@@ -185,14 +185,14 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 								PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 										.getActivePage().showView(IPageLayout.ID_PROP_SHEET);
 							}
-							catch (PartInitException e)
+							catch (final PartInitException e)
 							{
 								CorePlugin.logError(Status.WARNING,
 										"Failed to open properties view", e);
 							}
 
 							// find the editor
-							IChartBasedEditor editor = getEditor();
+							final IChartBasedEditor editor = getEditor();
 
 							// highlight the editor
 							PlatformUI.getWorkbench().getActiveWorkbenchWindow()

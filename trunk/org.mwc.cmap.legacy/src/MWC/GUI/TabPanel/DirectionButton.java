@@ -82,14 +82,14 @@ public class DirectionButton extends ButtonBase
      * @see #RIGHT
      * @see #DOWN
      */
-	public DirectionButton(int d)
+	public DirectionButton(final int d)
 	{
 		direction = d;
 		left      = 0;
 		right     = 0;
 		bottom    = 0;
 		indent    = 0;
-		try { setArrowColor(Color.black); } catch (PropertyVetoException exc) {}
+		try { setArrowColor(Color.black); } catch (final PropertyVetoException exc) {}
 
 	}
 
@@ -104,12 +104,12 @@ public class DirectionButton extends ButtonBase
      * @see #RIGHT
      * @see #DOWN
      */
-	public void setDirection(int d) throws PropertyVetoException
+	public void setDirection(final int d) throws PropertyVetoException
 	{
 		if(direction != d)
 		{
-			Integer oldValue = new Integer(direction);
-			Integer newValue = new Integer(d);
+			final Integer oldValue = new Integer(direction);
+			final Integer newValue = new Integer(d);
 
 			vetos.fireVetoableChange("Direction", oldValue, newValue);
 
@@ -141,12 +141,12 @@ public class DirectionButton extends ButtonBase
      * if the specified property value is unacceptable
      * @see #getArrowIndent
      */
-    public void setArrowIndent(int ai) throws PropertyVetoException
+    public void setArrowIndent(final int ai) throws PropertyVetoException
     {
     	if(indent != ai)
     	{
-			Integer oldValue = new Integer(indent);
-			Integer newValue = new Integer(ai);
+			final Integer oldValue = new Integer(indent);
+			final Integer newValue = new Integer(ai);
 
 			vetos.fireVetoableChange("ArrowIndent", oldValue, newValue);
 
@@ -167,11 +167,11 @@ public class DirectionButton extends ButtonBase
      * if the specified property value is unacceptable
 	 * @see #getArrowColor
 	 */
-	public void setArrowColor(Color newValue) throws PropertyVetoException
+	public void setArrowColor(final Color newValue) throws PropertyVetoException
 	{
 		if (!GeneralUtils.objectsEqual(arrowColor, newValue))
 		{
-			Color oldValue = arrowColor;
+			final Color oldValue = arrowColor;
 
 			vetos.fireVetoableChange("ArrowColor", oldValue, newValue);
 
@@ -180,7 +180,7 @@ public class DirectionButton extends ButtonBase
 			{
 				disabledArrowColor = ColorUtils.fade(arrowColor, Color.lightGray, 0.50);
 			}
-			catch (IllegalArgumentException exc) {}
+			catch (final IllegalArgumentException exc) {}
 
 			repaint();
 
@@ -219,13 +219,13 @@ public class DirectionButton extends ButtonBase
      * @param top pixels to shrink from top
      * @param bottom pixels to shrink from bottom
      */
-    public void shrinkTriangle(int l, int r, int t, int b)
+    public void shrinkTriangle(final int l, final int r, final int t, final int b)
     {
     	if(isAdded)
     	{
-	    	Dimension s = getSize();
-		    int maxWidth	= s.width - bevel - bevel - 2;
-		    int maxHeight	= s.height - bevel - bevel - 2;
+	    	final Dimension s = getSize();
+		    final int maxWidth	= s.width - bevel - bevel - 2;
+		    final int maxHeight	= s.height - bevel - bevel - 2;
 
 		    if(maxWidth - (l + r + indent + indent) >= 3)
 		    {
@@ -261,7 +261,7 @@ public class DirectionButton extends ButtonBase
 	 */
     public Dimension getPreferredSize()
     {
-    	Dimension defaultSize = super.getPreferredSize();
+    	final Dimension defaultSize = super.getPreferredSize();
 
 		return new Dimension(defaultSize.width + 7, defaultSize.height + 7);
     }
@@ -276,7 +276,7 @@ public class DirectionButton extends ButtonBase
 	 */
     public Dimension getMinimumSize()
     {
-    	Dimension defaultSize = super.getPreferredSize();
+    	final Dimension defaultSize = super.getPreferredSize();
 
 		return new Dimension(defaultSize.width + 3, defaultSize.height + 3);
     }
@@ -340,7 +340,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to add.
      * @see #removePropertyChangeListener
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener)
+    public void addPropertyChangeListener(final PropertyChangeListener listener)
     {
     	super.addPropertyChangeListener(listener);
     	changes.addPropertyChangeListener(listener);
@@ -351,7 +351,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to remove.
      * @see #addPropertyChangeListener
      */
-    public void removePropertyChangeListener(PropertyChangeListener listener)
+    public void removePropertyChangeListener(final PropertyChangeListener listener)
     {
     	super.removePropertyChangeListener(listener);
     	changes.removePropertyChangeListener(listener);
@@ -362,7 +362,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to add.
      * @see #removeVetoableChangeListener
      */
-    public void addVetoableChangeListener(VetoableChangeListener listener)
+    public void addVetoableChangeListener(final VetoableChangeListener listener)
     {
      	super.addVetoableChangeListener(listener);
 		vetos.addVetoableChangeListener(listener);
@@ -373,7 +373,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to remove.
      * @see #addVetoableChangeListener
      */
-    public void removeVetoableChangeListener(VetoableChangeListener listener)
+    public void removeVetoableChangeListener(final VetoableChangeListener listener)
     {
     	super.removeVetoableChangeListener(listener);
     	vetos.removeVetoableChangeListener(listener);
@@ -384,7 +384,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to add.
      * @see #removeDirectionChangeListener
      */
-    public void addDirectionListener(PropertyChangeListener listener)
+    public void addDirectionListener(final PropertyChangeListener listener)
     {
     	changes.addPropertyChangeListener("Direction", listener);
     }
@@ -394,7 +394,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to remove.
      * @see #addDirectionChangeListener
      */
-    public void removeDirectionListener(PropertyChangeListener listener)
+    public void removeDirectionListener(final PropertyChangeListener listener)
     {
     	changes.removePropertyChangeListener("Direction", listener);
     }
@@ -404,7 +404,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to add.
      * @see #removeVetoableDirectionChangeListener
      */
-    public void addDirectionListener(VetoableChangeListener listener)
+    public void addDirectionListener(final VetoableChangeListener listener)
     {
     	vetos.addVetoableChangeListener("Direction", listener);
     }
@@ -414,7 +414,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to remove.
      * @see #addVetoableDirectionChangeListener
      */
-    public void removeDirectionListener(VetoableChangeListener listener)
+    public void removeDirectionListener(final VetoableChangeListener listener)
     {
     	vetos.removeVetoableChangeListener("Direction", listener);
     }
@@ -424,7 +424,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to add.
      * @see #removeDirectionChangeListener
      */
-    public void addArrowIndentListener(PropertyChangeListener listener)
+    public void addArrowIndentListener(final PropertyChangeListener listener)
     {
     	changes.addPropertyChangeListener("ArrowIndent", listener);
     }
@@ -434,7 +434,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to remove.
      * @see #addDirectionChangeListener
      */
-    public void removeArrowIndentListener(PropertyChangeListener listener)
+    public void removeArrowIndentListener(final PropertyChangeListener listener)
     {
     	changes.removePropertyChangeListener("ArrowIndent", listener);
     }
@@ -444,7 +444,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to add.
      * @see #removeVetoableDirectionChangeListener
      */
-    public void addArrowIndentListener(VetoableChangeListener listener)
+    public void addArrowIndentListener(final VetoableChangeListener listener)
     {
     	vetos.addVetoableChangeListener("ArrowIndent", listener);
     }
@@ -454,7 +454,7 @@ public class DirectionButton extends ButtonBase
      * @param listener the listener to remove.
      * @see #addVetoableDirectionChangeListener
      */
-    public void removeArrowIndentListener(VetoableChangeListener listener)
+    public void removeArrowIndentListener(final VetoableChangeListener listener)
     {
     	vetos.removeVetoableChangeListener("ArrowIndent", listener);
     }
@@ -479,9 +479,9 @@ public class DirectionButton extends ButtonBase
 	     * @exception PropertyVetoException if the recipient wishes the property
 	     *              change to be rolled back.
 	     */
-	    public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException
+	    public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException
 	    {
-	    	int i = ((Integer)e.getNewValue()).intValue();
+	    	final int i = ((Integer)e.getNewValue()).intValue();
 	        if (!isValidDirection(i))
 	        {
 	            throw new PropertyVetoException("Invalid direction size: " + i, e);
@@ -509,9 +509,9 @@ public class DirectionButton extends ButtonBase
 	     * @exception PropertyVetoException if the recipient wishes the property
 	     *              change to be rolled back.
 	     */
-	    public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException
+	    public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException
 	    {
-	    	int i = ((Integer)e.getNewValue()).intValue();
+	    	final int i = ((Integer)e.getNewValue()).intValue();
 	        if (!isValidArrowIndent(i))
 	        {
 	            throw new PropertyVetoException("Invalid arrow indent: " + i, e);
@@ -528,9 +528,9 @@ public class DirectionButton extends ButtonBase
 	protected void updateButtonImage()
 	{
 		super.updateButtonImage();
-		Graphics g		= buttonImage.getGraphics();
-	    Dimension s		= getSize();
-        int trueBevel	= bevel + 1;
+		final Graphics g		= buttonImage.getGraphics();
+	    final Dimension s		= getSize();
+        final int trueBevel	= bevel + 1;
         int centerHorizontal;
         int centerVertical;
         int topSide;
@@ -608,7 +608,7 @@ public class DirectionButton extends ButtonBase
 	 * @see #LEFT
 	 * @see #RIGHT
 	 */
-	protected void fillTriangle(Graphics g, int tipX, int tipY, int aX, int aY, int bX, int bY, int direction1)
+	protected void fillTriangle(final Graphics g, final int tipX, final int tipY, final int aX, final int aY, final int bX, final int bY, final int direction1)
 	{
 		int max, min;
 
@@ -640,11 +640,11 @@ public class DirectionButton extends ButtonBase
      * @param i the given bevel size
      * @return true if the given bevel size is acceptable, false if not.
      */
-    protected boolean isValidBevelSize(int i)
+    protected boolean isValidBevelSize(final int i)
     {
-        Dimension s = getSize();
+        final Dimension s = getSize();
 
-        int temp = i * 2 + 4;
+        final int temp = i * 2 + 4;
 
         if (i < 0 || s.width < temp || s.height < temp)
             return false;
@@ -657,7 +657,7 @@ public class DirectionButton extends ButtonBase
      * @param i the given bevel size
      * @return true if the given direction is acceptable, false if not.
      */
-    protected boolean isValidDirection(int i)
+    protected boolean isValidDirection(final int i)
     {
     	switch(i)
     	{
@@ -676,11 +676,11 @@ public class DirectionButton extends ButtonBase
      * @param i the given bevel size
      * @return true if the given indent size is acceptable, false if not.
      */
-    protected boolean isValidArrowIndent(int i)
+    protected boolean isValidArrowIndent(final int i)
     {
-    	Dimension s = getSize();
+    	final Dimension s = getSize();
 
-    	int temp = (i * 2) + (bevel + 1) * 2 + 4;
+    	final int temp = (i * 2) + (bevel + 1) * 2 + 4;
 
     	if(i < 0 || s.width < temp || s.height < temp)
     		return false;
@@ -727,6 +727,6 @@ public class DirectionButton extends ButtonBase
 	protected int		indent;
     private SizeVeto	sizeVeto	= null;
     private IndntVeto	indentVeto	= null;
-    private VetoableChangeSupport vetos = new VetoableChangeSupport(this);
-    private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+    private final VetoableChangeSupport vetos = new VetoableChangeSupport(this);
+    private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
 }

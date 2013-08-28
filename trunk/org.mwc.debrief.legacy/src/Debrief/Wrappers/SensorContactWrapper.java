@@ -281,16 +281,16 @@ public final class SensorContactWrapper extends
 	public SensorContactWrapper(final String trackName, final HiResDate dtg,
 			final WorldDistance range, final Double bearingDegs,
 			final WorldLocation origin, final java.awt.Color color,
-			final String label, final int style, String sensorName)
+			final String label, final int style, final String sensorName)
 	{
 		this(trackName, dtg, range, bearingDegs, null, null, origin, color, label,
 				style, sensorName);
 	}
 
-	public SensorContactWrapper(String theTrack, HiResDate theDtg,
-			WorldDistance range, Double brg, Double brg2, Double freq,
-			WorldLocation origin, Color theColor, String labelStr, int theStyle,
-			String sensorName)
+	public SensorContactWrapper(final String theTrack, final HiResDate theDtg,
+			final WorldDistance range, final Double brg, final Double brg2, final Double freq,
+			final WorldLocation origin, final Color theColor, final String labelStr, final int theStyle,
+			final String sensorName)
 	{
 		this();
 
@@ -366,10 +366,11 @@ public final class SensorContactWrapper extends
 	 * return the coordinates for the start of the line
 	 */
 	public final WorldLocation getCalculatedOrigin(
-			MWC.GenericData.WatchableList parent)
+			final MWC.GenericData.WatchableList parent)
 	{
-		if (parent == null)
-			parent = _mySensor.getHost();
+		MWC.GenericData.WatchableList theParent = parent;
+		if (theParent == null)
+			theParent = _mySensor.getHost();
 
 		if ((_calculatedOrigin == null))
 		{
@@ -380,14 +381,14 @@ public final class SensorContactWrapper extends
 			}
 			else
 			{
-				if (parent != null)
+				if (theParent != null)
 				{
 
 					// better calculate it ourselves then
-					TrackWrapper parentTrack = (TrackWrapper) parent;
+					final TrackWrapper parentTrack = (TrackWrapper) theParent;
 
 					// get the origin
-					FixWrapper backtrack = parentTrack.getBacktraceTo(_DTG,
+					final FixWrapper backtrack = parentTrack.getBacktraceTo(_DTG,
 							_mySensor.getSensorOffset(), _mySensor.getWormInHole());
 					if (backtrack != null)
 						_calculatedOrigin = backtrack.getLocation();
@@ -404,7 +405,7 @@ public final class SensorContactWrapper extends
 	 * 
 	 * @param dest
 	 */
-	final WorldLocation getFarEnd(WorldArea outerEnvelope)
+	final WorldLocation getFarEnd(final WorldArea outerEnvelope)
 	{
 		WorldLocation res = null;
 
@@ -423,7 +424,7 @@ public final class SensorContactWrapper extends
 			// do we have the range?
 			if (_range == null)
 			{
-				WorldArea totalArea = new WorldArea(outerEnvelope);
+				final WorldArea totalArea = new WorldArea(outerEnvelope);
 				totalArea.extend(_calculatedOrigin);
 
 				// just use the maximum dimension of the plot
@@ -442,7 +443,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * return the coordinates of the end of hte line
 	 */
-	private final WorldLocation getAmbiguousFarEnd(WorldArea outerEnvelope)
+	private final WorldLocation getAmbiguousFarEnd(final WorldArea outerEnvelope)
 	{
 		WorldLocation res = null;
 
@@ -453,7 +454,7 @@ public final class SensorContactWrapper extends
 			// do we have the range?
 			if (_range == null)
 			{
-				WorldArea totalArea = new WorldArea(outerEnvelope);
+				final WorldArea totalArea = new WorldArea(outerEnvelope);
 				totalArea.extend(_calculatedOrigin);
 
 				// just use the maximum dimension of the plot
@@ -501,7 +502,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * member function to meet requirements of comparable interface *
 	 */
-	public final int compareTo(Plottable o)
+	public final int compareTo(final Plottable o)
 	{
 		final SensorContactWrapper other = (SensorContactWrapper) o;
 		int res = 0;
@@ -740,7 +741,7 @@ public final class SensorContactWrapper extends
 		return _hasBearing;
 	}
 
-	public final void setHasAmbiguousBearing(boolean val)
+	public final void setHasAmbiguousBearing(final boolean val)
 	{
 		_hasAmbiguous = val;
 	}
@@ -760,7 +761,7 @@ public final class SensorContactWrapper extends
 		ditchBearing(true);
 	}
 
-	private void ditchBearing(boolean isPort)
+	private void ditchBearing(final boolean isPort)
 	{
 
 		// get the origin
@@ -774,14 +775,14 @@ public final class SensorContactWrapper extends
 		if (wa != null)
 		{
 			// find out current course
-			double course = MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
+			final double course = MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
 
 			// cool, we have a course - we can go for it. remember the bearings
-			double bearing1 = getBearing();
-			double bearing2 = getAmbiguousBearing();
+			final double bearing1 = getBearing();
+			final double bearing2 = getAmbiguousBearing();
 
 			// is the first bearing our one?
-			double relB = relBearing(course, bearing1);
+			final double relB = relBearing(course, bearing1);
 
 			// we're only going to show the bearing in 'getBearing', make sure this is
 			// the one we want.
@@ -811,7 +812,7 @@ public final class SensorContactWrapper extends
 		ditchBearing(false);
 	}
 
-	public void setAmbiguousBearing(double val)
+	public void setAmbiguousBearing(final double val)
 	{
 		_bearingAmbig = MWC.Algorithms.Conversions.Degs2Rads(val);
 	}
@@ -821,7 +822,7 @@ public final class SensorContactWrapper extends
 		return _hasFreq;
 	}
 
-	public final void setHasFrequency(boolean val)
+	public final void setHasFrequency(final boolean val)
 	{
 		_hasFreq = val;
 	}
@@ -831,7 +832,7 @@ public final class SensorContactWrapper extends
 		return _freq;
 	}
 
-	public void setFrequency(double val)
+	public void setFrequency(final double val)
 	{
 		_freq = val;
 	}
@@ -856,7 +857,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * set the range (in yards)
 	 */
-	public final void setRange(WorldDistance dist)
+	public final void setRange(final WorldDistance dist)
 	{
 		_range = dist;
 	}
@@ -972,7 +973,7 @@ public final class SensorContactWrapper extends
 			// get the range from the origin
 
 			// find our origin
-			WorldLocation theOrigin = getCalculatedOrigin(null);
+			final WorldLocation theOrigin = getCalculatedOrigin(null);
 
 			// did we manage it?
 			if (theOrigin == null)
@@ -988,7 +989,7 @@ public final class SensorContactWrapper extends
 			outerEnvelope.grow(1, 0);
 
 			// we can only do the far end if we have the range of the sensor contact
-			WorldLocation farEnd = getFarEnd(outerEnvelope);
+			final WorldLocation farEnd = getFarEnd(outerEnvelope);
 
 			// and get the range from the far end
 			if (farEnd != null)
@@ -997,7 +998,7 @@ public final class SensorContactWrapper extends
 			// lastly determine the range from the nearest point on the track
 			if ((_calculatedOrigin != null) && (farEnd != null))
 			{
-				WorldDistance dist = other.rangeFrom(_calculatedOrigin, farEnd);
+				final WorldDistance dist = other.rangeFrom(_calculatedOrigin, farEnd);
 				res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
 			}
 		}
@@ -1145,7 +1146,7 @@ public final class SensorContactWrapper extends
 	 *          absolute bearing to target (degs)
 	 * @return relative bearing to target (degs)
 	 */
-	public static double relBearing(double course, double bearing)
+	public static double relBearing(final double course, final double bearing)
 	{
 		double res = bearing - course;
 		while (res > 180)
@@ -1193,7 +1194,7 @@ public final class SensorContactWrapper extends
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1239,7 +1240,7 @@ public final class SensorContactWrapper extends
 				};
 
 				// see if we need to add rng/brg or origin data
-				SensorContactWrapper tc = (SensorContactWrapper) getData();
+				final SensorContactWrapper tc = (SensorContactWrapper) getData();
 				final PropertyDescriptor[] res1;
 				if (tc.getOrigin() == null)
 				{
@@ -1254,7 +1255,7 @@ public final class SensorContactWrapper extends
 					res1 = res2;
 				}
 
-				PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
+				final PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
 						+ res1.length];
 				System.arraycopy(res, 0, res3, 0, res.length);
 				System.arraycopy(res1, 0, res3, res.length, res1.length);
@@ -1262,7 +1263,7 @@ public final class SensorContactWrapper extends
 				return res3;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1302,7 +1303,7 @@ public final class SensorContactWrapper extends
 	public static class DitchAmbiguousBearing implements SubjectAction
 	{
 		private final boolean _keepPort;
-		private String _title;
+		private final String _title;
 
 		/**
 		 * create an instance of this operation
@@ -1312,7 +1313,7 @@ public final class SensorContactWrapper extends
 		 * @param title
 		 *          what to call ourselves
 		 */
-		public DitchAmbiguousBearing(boolean keepPort, String title)
+		public DitchAmbiguousBearing(final boolean keepPort, final String title)
 		{
 			_keepPort = keepPort;
 			_title = title;
@@ -1323,16 +1324,16 @@ public final class SensorContactWrapper extends
 			return _title;
 		}
 
-		public void execute(Editable subject)
+		public void execute(final Editable subject)
 		{
-			SensorContactWrapper contact = (SensorContactWrapper) subject;
+			final SensorContactWrapper contact = (SensorContactWrapper) subject;
 			// go for it
 			contact.ditchBearing(_keepPort);
 		}
 
-		public void undo(Editable subject)
+		public void undo(final Editable subject)
 		{
-			SensorContactWrapper _contact = (SensorContactWrapper) subject;
+			final SensorContactWrapper _contact = (SensorContactWrapper) subject;
 			_contact.setHasAmbiguousBearing(true);
 		}
 
@@ -1383,39 +1384,39 @@ public final class SensorContactWrapper extends
 					MWC.Algorithms.Conversions.Degs2Rads(55), 1, 0);
 			final WorldLocation test_other_end = origin.add(test_other_vector);
 
-			SensorWrapper sw = new SensorWrapper("dummy");
+			final SensorWrapper sw = new SensorWrapper("dummy");
 			sw.setHost(new TrackWrapper());
 			ed.setSensor(sw);
 			ed.setOrigin(origin);
 
 			// ok, now test that we find the distance from the indicated point
-			double dist = ed.rangeFrom(test_other_end);
+			final double dist = ed.rangeFrom(test_other_end);
 			assertEquals("find nearest from origin", 0d, dist, 0.001);
 
 		}
 
 		public void testSensorOffset()
 		{
-			WorldLocation locationRes = new WorldLocation(0, 0, 0);
-			WorldLocation locationBitNorth = new WorldLocation(1, 0, 0);
-			WorldLocation locationBitSouth = new WorldLocation(-1, 0, 0);
-			WorldLocation locationBitEast = new WorldLocation(0, 1, 0);
-			WorldLocation location = new WorldLocation(0, 0, 0);
-			WorldLocation location2 = new WorldLocation(0, 1, 0);
-			WorldLocation locationBitNorth2 = new WorldLocation(1, 1, 0);
-			HiResDate theDate = new HiResDate(1000);
+			final WorldLocation locationRes = new WorldLocation(0, 0, 0);
+			final WorldLocation locationBitNorth = new WorldLocation(1, 0, 0);
+			final WorldLocation locationBitSouth = new WorldLocation(-1, 0, 0);
+			final WorldLocation locationBitEast = new WorldLocation(0, 1, 0);
+			final WorldLocation location = new WorldLocation(0, 0, 0);
+			final WorldLocation location2 = new WorldLocation(0, 1, 0);
+			final WorldLocation locationBitNorth2 = new WorldLocation(1, 1, 0);
+			final HiResDate theDate = new HiResDate(1000);
 
-			SensorWrapper sw = new SensorWrapper("some sensor");
-			SensorContactWrapper scw = new SensorContactWrapper();
+			final SensorWrapper sw = new SensorWrapper("some sensor");
+			final SensorContactWrapper scw = new SensorContactWrapper();
 			sw.add(scw);
 			scw.setDTG(theDate);
 
-			Fix fx = new Fix();
+			final Fix fx = new Fix();
 			fx.setLocation(location);
 			fx.setTime(theDate);
 			fx.setCourse(0);
-			FixWrapper fw = new FixWrapper(fx);
-			TrackWrapper host = new TrackWrapper();
+			final FixWrapper fw = new FixWrapper(fx);
+			final TrackWrapper host = new TrackWrapper();
 			host.addFix(fw);
 
 			host.add(sw);

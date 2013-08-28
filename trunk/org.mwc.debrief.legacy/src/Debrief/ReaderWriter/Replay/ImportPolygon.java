@@ -107,10 +107,11 @@ final class ImportPolygon implements PlainLineImporter
 	private final String _myType = ";POLY:";
 
 	@Override
-	public final Object readThisLine(String theLine)
+	public final Object readThisLine(final String theLine)
 	{		
+		String line = theLine;
 		// get a stream from the string
-		StringTokenizer st = new StringTokenizer(theLine);
+		StringTokenizer st = new StringTokenizer(line);
 
 		// declare local variables
 		double latDeg, longDeg, latMin, longMin;
@@ -131,10 +132,10 @@ final class ImportPolygon implements PlainLineImporter
 		String timeToken = st.nextToken();
 		try {
 			startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			// There is no start date specified
-			theLine = theLine.substring(theLine.indexOf(dateToken));
-			st = new StringTokenizer(theLine);
+			line = line.substring(line.indexOf(dateToken));
+			st = new StringTokenizer(line);
 		}
 		
 		//read end date
@@ -142,21 +143,21 @@ final class ImportPolygon implements PlainLineImporter
 		timeToken = st.nextToken();
 		try {
 			endDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			// There is no end date specified
-			theLine = theLine.substring(theLine.indexOf(dateToken));
-			st = new StringTokenizer(theLine);
+			line = line.substring(line.indexOf(dateToken));
+			st = new StringTokenizer(line);
 		}
 		
-		Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
 		Integer counter = new Integer(1);
 		// create the Polygon object
-		PolygonShape sp = new PolygonShape(nodes);		
+		final PolygonShape sp = new PolygonShape(nodes);		
 		
 		while (st.hasMoreTokens()) 
 		{
 			// meet the label
-			String sts = st.nextToken();
+			final String sts = st.nextToken();
 			
 			if (!Character.isDigit(sts.charAt(0))) {
 				theText = sts;
@@ -172,11 +173,11 @@ final class ImportPolygon implements PlainLineImporter
 			 * now, we may have trouble here, since there may not be a space between
 			 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
 			 */
-			String vDiff = st.nextToken();
+			final String vDiff = st.nextToken();
 			if (vDiff.length() > 3) {
 				// hmm, they are combined
 				latHem = vDiff.charAt(0);
-				String secondPart = vDiff.substring(1, vDiff.length());
+				final String secondPart = vDiff.substring(1, vDiff.length());
 				longDeg = Double.valueOf(secondPart);
 			} else {
 				// they are separate, so only the hem is in this one
@@ -188,16 +189,16 @@ final class ImportPolygon implements PlainLineImporter
 			longHem = st.nextToken().charAt(0);
 			
 			// we have our first location, create it
-			WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+			final WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
 							longMin, longSec, longHem, 0);	
-			PolygonNode newNode = new PolygonNode(counter.toString(), theLoc, sp);
+			final PolygonNode newNode = new PolygonNode(counter.toString(), theLoc, sp);
 			sp.add(newNode);
 			
 			counter += 1;
 		}
 				
 		// and put Polygon into a shape		
-		PolygonWrapper sw = new PolygonWrapper(theText, sp,
+		final PolygonWrapper sw = new PolygonWrapper(theText, sp,
 						ImportReplay.replayColorFor(theSymbology), 
 						startDate, endDate);
 
@@ -211,11 +212,11 @@ final class ImportPolygon implements PlainLineImporter
 	}
 
 	@Override
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
-		ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 
-		PolygonShape polygon = (PolygonShape) theShape.getShape();
+		final PolygonShape polygon = (PolygonShape) theShape.getShape();
 
 		// result value. Note - we're representing this as a Replay file comment marker - since
 		// Debrief won't be able to import it.
@@ -225,16 +226,16 @@ final class ImportPolygon implements PlainLineImporter
 		int ctr = 1;
 		
 		// ok, start looping through them:
-		Iterator<PolygonNode> pts = polygon.getPoints().iterator();
+		final Iterator<PolygonNode> pts = polygon.getPoints().iterator();
 		while (pts.hasNext())
 		{
-			PolygonShape.PolygonNode node = (PolygonShape.PolygonNode) pts
+			final PolygonShape.PolygonNode node = (PolygonShape.PolygonNode) pts
 					.next();
 			// get the loc
-			WorldLocation loc = node.getLocation();
+			final WorldLocation loc = node.getLocation();
 			
 			// convert to a string
-			String str = MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+			final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
 			
 			// put in a leading newline
 			line += GeneralFormat.LINE_SEPARATOR;
@@ -249,14 +250,14 @@ final class ImportPolygon implements PlainLineImporter
 	}
 
 	@Override
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 
 		if (val instanceof ShapeWrapper)
 		{
-			ShapeWrapper sw = (ShapeWrapper) val;
-			PlainShape ps = sw.getShape();
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
 			res = (ps instanceof PolygonShape);
 		}
 
@@ -266,15 +267,15 @@ final class ImportPolygon implements PlainLineImporter
 	
 	public static class TestImport extends TestCase {
 		public void testNoLabel() {
-			String line = ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-			ImportPolygon ip = new ImportPolygon();
-			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			final String line = ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			final ImportPolygon ip = new ImportPolygon();
+			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertNull(res.getLabel());
 			assertNotNull("read it in", res);
-			PolygonShape polygon = (PolygonShape) res.getShape();
+			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
 			
-			Vector<PolygonNode> nodes = polygon.getPoints();
+			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
 			
 			assertEquals("1", nodes.get(0).getName());
@@ -289,15 +290,15 @@ final class ImportPolygon implements PlainLineImporter
 		}
 		
 		public void testLeadingSpace() {
-			String line = "	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
-			ImportPolygon ip = new ImportPolygon();
-			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			final String line = "	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
+			final ImportPolygon ip = new ImportPolygon();
+			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertNull(res.getLabel());
 			assertNotNull("read it in", res);
-			PolygonShape polygon = (PolygonShape) res.getShape();
+			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
 
-			Vector<PolygonNode> nodes = polygon.getPoints();
+			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(3, nodes.size());
 			
 			assertEquals("1", nodes.get(0).getName());
@@ -317,15 +318,15 @@ final class ImportPolygon implements PlainLineImporter
 		}
 		
 		public void testWithLabel() {
-			String line = ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
-			ImportPolygon ip = new ImportPolygon();
-			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			final String line = ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
+			final ImportPolygon ip = new ImportPolygon();
+			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertEquals("label", res.getLabel());
 			assertNotNull("read it in", res);
-			PolygonShape polygon = (PolygonShape) res.getShape();
+			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
 
-			Vector<PolygonNode> nodes = polygon.getPoints();
+			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
 			
 			assertEquals("1", nodes.get(0).getName());
@@ -340,15 +341,15 @@ final class ImportPolygon implements PlainLineImporter
 		}
 		
 		public void testWithoutEndDate() {
-			String line = ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-			ImportPolygon ip = new ImportPolygon();
-			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			final String line = ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			final ImportPolygon ip = new ImportPolygon();
+			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertNull(res.getLabel());
 			assertNotNull("read it in", res);
-			PolygonShape polygon = (PolygonShape) res.getShape();
+			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
 			
-			Vector<PolygonNode> nodes = polygon.getPoints();
+			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
 			
 			assertEquals("1", nodes.get(0).getName());
@@ -363,15 +364,15 @@ final class ImportPolygon implements PlainLineImporter
 		}
 		
 		public void testWithoutDates() {
-			String line = ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-			ImportPolygon ip = new ImportPolygon();
-			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			final String line = ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			final ImportPolygon ip = new ImportPolygon();
+			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertNull(res.getLabel());
 			assertNotNull("read it in", res);
-			PolygonShape polygon = (PolygonShape) res.getShape();
+			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
 			
-			Vector<PolygonNode> nodes = polygon.getPoints();
+			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
 			
 			assertEquals("1", nodes.get(0).getName());

@@ -281,7 +281,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public Grid4WPainter(WorldLocation origin)
+	public Grid4WPainter(final WorldLocation origin)
 	{
 		_myColor = Color.darkGray;
 
@@ -301,7 +301,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	public void setVisible(boolean val)
+	public void setVisible(final boolean val)
 	{
 		_isOn = val;
 	}
@@ -311,7 +311,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		return _isOn;
 	}
 
-	public void setColor(Color val)
+	public void setColor(final Color val)
 	{
 		_myColor = val;
 	}
@@ -327,7 +327,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param val
 	 *          the size
 	 */
-	public void setYDelta(WorldDistance val)
+	public void setYDelta(final WorldDistance val)
 	{
 		_myYDelta = val;
 	}
@@ -348,7 +348,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param val
 	 *          the size
 	 */
-	public void setXDelta(WorldDistance val)
+	public void setXDelta(final WorldDistance val)
 	{
 		_myXDelta = val;
 	}
@@ -374,7 +374,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	/**
 	 * whether to plot the labels or not
 	 */
-	public void setPlotLabels(boolean val)
+	public void setPlotLabels(final boolean val)
 	{
 		_plotLabels = val;
 	}
@@ -384,7 +384,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		return _theFont;
 	}
 
-	public void setFont(Font theFont)
+	public void setFont(final Font theFont)
 	{
 		_theFont = theFont;
 	}
@@ -392,12 +392,12 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	/**
 	 * whether to plot the labels or not
 	 */
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		_myName = name;
 	}
 
-	public void paint(CanvasType g)
+	public void paint(final CanvasType g)
 	{
 
 		// check we are visible
@@ -408,10 +408,10 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		g.setColor(new Color(_myColor.getRed(), _myColor.getGreen(), _myColor
 				.getBlue(), 160));
 
-		float oldLineWidth = g.getLineWidth();
+		final float oldLineWidth = g.getLineWidth();
 
 		// get the screen dimensions
-		Dimension dim = g.getSize();
+		final Dimension dim = g.getSize();
 
 		g.setLineWidth(1.0f);
 
@@ -419,8 +419,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		if (_fillGrid)
 		{
 			// sort out the bounds
-			int[] xPoints = new int[4];
-			int[] yPoints = new int[4];
+			final int[] xPoints = new int[4];
+			final int[] yPoints = new int[4];
 			int ctr = 0;
 
 			Point thisP = g.toScreen(calcLocationFor(_xMin, _yMin));
@@ -448,25 +448,25 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		{
 			if (_plotLines)
 			{
-				Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
-				Point end = new Point(g.toScreen(calcLocationFor(x, _yMax + 1)));
+				final Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
+				final Point end = new Point(g.toScreen(calcLocationFor(x, _yMax + 1)));
 				g.drawLine(start.x, start.y, end.x, end.y);
 			}
 
 			if ((x <= _xMax) && _plotLabels)
 			{
 				// find the centre-point for the label
-				Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
-				Point end = new Point(g.toScreen(calcLocationFor(x + 1, _yMin)));
+				final Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
+				final Point end = new Point(g.toScreen(calcLocationFor(x + 1, _yMin)));
 
-				Point centre = new Point(start.x + (end.x - start.x) / 2, start.y);
+				final Point centre = new Point(start.x + (end.x - start.x) / 2, start.y);
 
 				// what's this label
-				String thisLbl = labelFor(x);
+				final String thisLbl = labelFor(x);
 
 				// sort out the dimensions of the font
 				int ht = g.getStringHeight(_theFont);
-				int wid = g.getStringWidth(_theFont, thisLbl);
+				final int wid = g.getStringWidth(_theFont, thisLbl);
 
 				if (dim != null)
 				{
@@ -489,18 +489,18 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		{
 			if (_plotLines)
 			{
-				Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
-				Point end = new Point(g.toScreen(calcLocationFor(_xMax + 1, y)));
+				final Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
+				final Point end = new Point(g.toScreen(calcLocationFor(_xMax + 1, y)));
 				g.drawLine(start.x, start.y, end.x, end.y);
 			}
 
 			if ((y <= _yMax) && _plotLabels)
 			{
 				// find the centre-point for the label
-				Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
-				Point end = new Point(g.toScreen(calcLocationFor(_xMin, y + 1)));
+				final Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
+				final Point end = new Point(g.toScreen(calcLocationFor(_xMin, y + 1)));
 
-				Point centre = new Point(start.x, start.y + (end.y - start.y) / 2);
+				final Point centre = new Point(start.x, start.y + (end.y - start.y) / 2);
 
 				// move this into the visible area if it's outside.
 				if (dim != null)
@@ -511,11 +511,11 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 				}
 
 				// what's this label
-				String thisLbl = "" + (y + 1);
+				final String thisLbl = "" + (y + 1);
 
 				// sort out the dimensions of the font
-				int ht = g.getStringHeight(_theFont);
-				int wid = g.getStringWidth(_theFont, thisLbl);
+				final int ht = g.getStringHeight(_theFont);
+				final int wid = g.getStringWidth(_theFont, thisLbl);
 
 				// and draw it
 				g.drawText(_theFont, thisLbl, centre.x - (wid + 2), centre.y + ht / 2);
@@ -533,7 +533,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param bounds
 	 * @return
 	 */
-	protected WorldLocation getGridLabelOrigin(WorldArea bounds)
+	protected WorldLocation getGridLabelOrigin(final WorldArea bounds)
 	{
 		return bounds.getBottomLeft();
 	}
@@ -562,28 +562,28 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 *          the grid separation requested
 	 * @return an area providing the coverage requested
 	 */
-	protected WorldArea getOuterBounds(CanvasType g, Dimension screenArea,
-			double deltaDegs)
+	protected WorldArea getOuterBounds(final CanvasType g, final Dimension screenArea,
+			final double deltaDegs)
 	{
 		// create data coordinates from the current corners of the screen
-		WorldLocation topLeft = g.toWorld(new Point(0, 0));
+		final WorldLocation topLeft = g.toWorld(new Point(0, 0));
 
 		// create new corners just outside the current plot area, and clip
 		// them to the nearest 'delta' value
-		double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
-		double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs)
+		final double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
+		final double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs)
 				* deltaDegs;
 
 		// now for the bottom right
-		WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
+		final WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
 				screenArea.height));
 
 		// create new corners just outside the current plot area, and clip
 		// them to the nearest 'delta' value
-		double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
-		double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
+		final double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
+		final double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
 
-		WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
+		final WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
 				new WorldLocation(minLat1, maxLong1, 0));
 		return bounds;
 	}
@@ -602,15 +602,15 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 *          how far down to go
 	 * @return the location at this index
 	 */
-	protected WorldLocation calcLocationFor(int x, int y)
+	protected WorldLocation calcLocationFor(final int x, final int y)
 	{
 		// convert the orientation to radians
-		double orient = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+		final double orient = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
 
 		// calculate the deltas
 		final double xComponent = x * _myXDelta.getValueIn(WorldDistance.DEGS);
 		final double yComponent = y * _myYDelta.getValueIn(WorldDistance.DEGS);
-		double xNew = xComponent * Math.cos(orient) + yComponent * Math.sin(orient);
+		final double xNew = xComponent * Math.cos(orient) + yComponent * Math.sin(orient);
 		double yNew = -xComponent * Math.sin(orient) + yComponent
 				* Math.cos(orient);
 
@@ -621,15 +621,15 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			yNew = -yNew;
 		}
 
-		WorldLocation res = new WorldLocation(_origin.getLat() + yNew, _origin
+		final WorldLocation res = new WorldLocation(_origin.getLat() + yNew, _origin
 				.getLong()
 				+ xNew, 0);
 		return res;
 	}
 
-	public double rangeFrom(MWC.GenericData.WorldLocation other)
+	public double rangeFrom(final MWC.GenericData.WorldLocation other)
 	{
-		MWC.GenericData.WorldArea wa = new WorldArea(calcLocationFor(_xMin, _yMin),
+		final MWC.GenericData.WorldArea wa = new WorldArea(calcLocationFor(_xMin, _yMin),
 				calcLocationFor(_xMax + 1, _yMax + 1));
 		// doesn't return a sensible distance;
 		return wa.rangeFrom(other);
@@ -661,11 +661,11 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		return _myEditor;
 	}
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
-		Plottable other = (Plottable) arg0;
-		String myName = this.getName() + this.hashCode();
-		String hisName = other.getName() + arg0.hashCode();
+		final Plottable other = (Plottable) arg0;
+		final String myName = this.getName() + this.hashCode();
+		final String hisName = other.getName() + arg0.hashCode();
 		return myName.compareTo(hisName);
 	}
 
@@ -681,7 +681,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public GridPainterInfo(Grid4WPainter data)
+		public GridPainterInfo(final Grid4WPainter data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -690,7 +690,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("Color", "the Color to draw the grid", FORMAT),
 						prop("Visible", "whether this grid is visible", VISIBILITY),
@@ -713,7 +713,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -730,7 +730,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public Grid4WTest(String val)
+		public Grid4WTest(final String val)
 		{
 			super(val);
 		}
@@ -789,8 +789,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 		public void testInit()
 		{
-			WorldLocation origin = new WorldLocation(2, 3, 2);
-			Grid4WPainter pt = new Grid4WPainter(origin);
+			final WorldLocation origin = new WorldLocation(2, 3, 2);
+			final Grid4WPainter pt = new Grid4WPainter(origin);
 			Assert.assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
 			Assert.assertEquals("wrong x def",
 					new WorldDistance(10, WorldDistance.NM), pt.getXDelta());
@@ -806,7 +806,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 		public void testProperties()
 		{
-			Grid4WPainter pt = new Grid4WPainter(null);
+			final Grid4WPainter pt = new Grid4WPainter(null);
 			pt.setName("new grid");
 			pt.setXDelta(new WorldDistance(12, WorldDistance.DEGS));
 			pt.setYDelta(new WorldDistance(5, WorldDistance.DEGS));
@@ -814,7 +814,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			pt.setXMax("E");
 			pt.setYMin(7);
 			pt.setYMax(12);
-			WorldLocation origin = new WorldLocation(2, 2, 0);
+			final WorldLocation origin = new WorldLocation(2, 2, 0);
 			pt.setOrigin(origin);
 			Assert.assertEquals("wrong name", "new grid", pt.getName());
 			Assert.assertEquals("wrong x val", new WorldDistance(12,
@@ -831,13 +831,13 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		public void testPosCalc()
 		{
 			// coords to get
-			int x = 1, y = 1;
-			WorldLocation origin = new WorldLocation(0, 0, 0);
-			double orientation = 0;
-			WorldDistance xDelta = new WorldDistance(1, WorldDistance.DEGS);
-			WorldDistance yDelta = new WorldDistance(1, WorldDistance.DEGS);
+			final int x = 1, y = 1;
+			final WorldLocation origin = new WorldLocation(0, 0, 0);
+			final double orientation = 0;
+			final WorldDistance xDelta = new WorldDistance(1, WorldDistance.DEGS);
+			final WorldDistance yDelta = new WorldDistance(1, WorldDistance.DEGS);
 
-			Grid4WPainter pt = new Grid4WPainter(origin);
+			final Grid4WPainter pt = new Grid4WPainter(origin);
 			pt.setXDelta(xDelta);
 			pt.setYDelta(yDelta);
 			pt.setOrientation(orientation);
@@ -881,22 +881,23 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	/**
 	 * find the index of the supplied string
 	 * 
-	 * @param target
+	 * @param theTarget
 	 * @return
 	 */
-	public static int indexOf(String target)
+	public static int indexOf(final String target)
 	{
+		String theTarget = target;
 		// trim it down
-		target = target.trim();
+		theTarget = theTarget.trim();
 
 		// move to upper case
-		target = target.toUpperCase();
+		theTarget = theTarget.toUpperCase();
 
 		// now find a match
 		int res = 0;
 		for (int i = 0; i < indices.length; i++)
 		{
-			if (indices[i].equals(target))
+			if (indices[i].equals(theTarget))
 			{
 				res = i;
 				break;
@@ -912,7 +913,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 *          4w grid horizontal index
 	 * @return character representation of index
 	 */
-	protected static String labelFor(int index)
+	protected static String labelFor(final int index)
 	{
 		return indices[index];
 	}
@@ -929,7 +930,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param min
 	 *          the xMin to set
 	 */
-	public void setXMin(String min)
+	public void setXMin(final String min)
 	{
 		_xMin = indexOf(min);
 	}
@@ -946,7 +947,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param max
 	 *          the xMax to set
 	 */
-	public void setXMax(String max)
+	public void setXMax(final String max)
 	{
 		_xMax = indexOf(max);
 	}
@@ -963,7 +964,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param min
 	 *          the yMin to set
 	 */
-	public void setYMin(Integer min)
+	public void setYMin(final Integer min)
 	{
 		_yMin = min - 1;
 	}
@@ -980,7 +981,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param max
 	 *          the yMax to set
 	 */
-	public void setYMax(Integer max)
+	public void setYMax(final Integer max)
 	{
 		_yMax = max - 1;
 	}
@@ -997,7 +998,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param origin
 	 *          the origin to set
 	 */
-	public void setOrigin(WorldLocation origin)
+	public void setOrigin(final WorldLocation origin)
 	{
 		_origin = origin;
 	}
@@ -1017,7 +1018,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * 
 	 * @return
 	 */
-	public void setOriginAtTopLeft(boolean uSStandard)
+	public void setOriginAtTopLeft(final boolean uSStandard)
 	{
 		_originTopLeft = uSStandard;
 	}
@@ -1034,7 +1035,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param orientation
 	 *          the orientation to set
 	 */
-	public void setOrientation(double orientation)
+	public void setOrientation(final double orientation)
 	{
 		_orientation = orientation;
 	}
@@ -1051,7 +1052,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param fillGrid
 	 *          the fillGrid to set
 	 */
-	public void setFillGrid(boolean fillGrid)
+	public void setFillGrid(final boolean fillGrid)
 	{
 		_fillGrid = fillGrid;
 	}
@@ -1068,7 +1069,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param fillColor
 	 *          the fillColor to set
 	 */
-	public void setFillColor(Color fillColor)
+	public void setFillColor(final Color fillColor)
 	{
 		_fillColor = fillColor;
 	}
@@ -1085,17 +1086,17 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param plotLines
 	 *          the plotLines to set
 	 */
-	public void setPlotLines(boolean plotLines)
+	public void setPlotLines(final boolean plotLines)
 	{
 		_plotLines = plotLines;
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
 	{
 
 		// initialise thisDist, since we're going to be over-writing it
-		WorldDistance thisDist = new WorldDistance(calcLocationFor(_xMin, _yMin)
+		final WorldDistance thisDist = new WorldDistance(calcLocationFor(_xMin, _yMin)
 				.rangeFrom(cursorLoc), WorldDistance.DEGS);
 
 		// is this our first item?
@@ -1103,7 +1104,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 	}
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		_origin.addToMe(vector);
 	}

@@ -26,10 +26,10 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	 */
 	public static void showGUI()
 	{
-		Display display = Display.getDefault();
-		Shell shell = new Shell(display);
-		UISkeleton2 inst = new UISkeleton2(shell, SWT.NULL);
-		Point size = inst.getSize();
+		final Display display = Display.getDefault();
+		final Shell shell = new Shell(display);
+		final UISkeleton2 inst = new UISkeleton2(shell, SWT.NULL);
+		final Point size = inst.getSize();
 		shell.setLayout(new FillLayout());
 		shell.layout();
 		if (size.x == 0 && size.y == 0)
@@ -39,7 +39,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		}
 		else
 		{
-			Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
+			final Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
 			shell.setSize(shellBounds.width, shellBounds.height);
 		}
 		shell.open();
@@ -50,19 +50,19 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		}
 	}
 
-	private Label scenarioVal;
-	private Label controlVal;
-	private Button btnGenerate;
-	private Button btnRunAll;
-	private Button btnInit;
-	private Button btnStep;
-	private Button btnPlay;
-	private Composite multiTableHolder;
-	private Label lblTime;
-	private Font _timeFont;
-	private Color _timeFore;
-	private Color _timeBack;
-	private Group grpDataFiles;
+	private final Label scenarioVal;
+	private final Label controlVal;
+	private final Button btnGenerate;
+	private final Button btnRunAll;
+	private final Button btnInit;
+	private final Button btnStep;
+	private final Button btnPlay;
+	private final Composite multiTableHolder;
+	private final Label lblTime;
+	private final Font _timeFont;
+	private final Color _timeFore;
+	private final Color _timeBack;
+	private final Group grpDataFiles;
 
 	/**
 	 * Create the composite.
@@ -70,13 +70,13 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	 * @param parent
 	 * @param style
 	 */
-	public UISkeleton2(Composite parent, int style)
+	public UISkeleton2(final Composite parent, final int style)
 	{
 		super(parent, style);
 		setLayout(new FormLayout());
 
-		Composite topPanel = new Composite(this, SWT.NONE);
-		FormData fd_topPanel = new FormData();
+		final Composite topPanel = new Composite(this, SWT.NONE);
+		final FormData fd_topPanel = new FormData();
 		fd_topPanel.right = new FormAttachment(100, -10);
 		fd_topPanel.top = new FormAttachment(0, 3);
 		fd_topPanel.left = new FormAttachment(0, 3);
@@ -85,21 +85,21 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		grpDataFiles = new Group(topPanel, SWT.NONE);
 		grpDataFiles.setText("Data files");
-		GridLayout gl_grpDataFiles = new GridLayout(1, false);
+		final GridLayout gl_grpDataFiles = new GridLayout(1, false);
 		gl_grpDataFiles.verticalSpacing = 0;
 		gl_grpDataFiles.marginWidth = 0;
 		gl_grpDataFiles.marginHeight = 0;
 		gl_grpDataFiles.horizontalSpacing = 0;
 		grpDataFiles.setLayout(gl_grpDataFiles);
 
-		Composite filenameHolder = new Composite(grpDataFiles, SWT.NONE);
-		GridLayout gl_filenameHolder = new GridLayout(1, false);
+		final Composite filenameHolder = new Composite(grpDataFiles, SWT.NONE);
+		final GridLayout gl_filenameHolder = new GridLayout(1, false);
 		gl_filenameHolder.verticalSpacing = 0;
 		gl_filenameHolder.marginHeight = 0;
 		gl_filenameHolder.horizontalSpacing = 0;
 		filenameHolder.setLayout(gl_filenameHolder);
 
-		Label lblScenarioFile = new Label(filenameHolder, SWT.NONE);
+		final Label lblScenarioFile = new Label(filenameHolder, SWT.NONE);
 		// lblScenarioFile.setBounds(0, 0, 59, 14);
 		lblScenarioFile.setText("Scenario file:");
 
@@ -110,7 +110,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		// scenarioVal.setBounds(0, 0, 59, 14);
 		scenarioVal.setText("[pending]                     ");
 
-		Label lblControlFile = new Label(filenameHolder, SWT.NONE);
+		final Label lblControlFile = new Label(filenameHolder, SWT.NONE);
 		// lblControlFile.setBounds(0, 0, 59, 14);
 		lblControlFile.setText("Control file:");
 
@@ -121,11 +121,11 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		// controlVal.setBounds(0, 0, 59, 14);
 		controlVal.setText("[pending]               ");
 
-		Group grpManageScenarios = new Group(topPanel, SWT.NONE);
+		final Group grpManageScenarios = new Group(topPanel, SWT.NONE);
 		grpManageScenarios.setText("Manage scenarios");
 		grpManageScenarios.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-		Group grpAllScenarios = new Group(grpManageScenarios, SWT.NONE);
+		final Group grpAllScenarios = new Group(grpManageScenarios, SWT.NONE);
 		grpAllScenarios.setText("All scenarios");
 		grpAllScenarios.setLayout(new RowLayout(SWT.VERTICAL));
 
@@ -135,7 +135,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		btnRunAll = new Button(grpAllScenarios, SWT.NONE);
 		btnRunAll.setText("Run all");
 
-		Group grpSelectedScenario = new Group(grpManageScenarios, SWT.NONE);
+		final Group grpSelectedScenario = new Group(grpManageScenarios, SWT.NONE);
 		grpSelectedScenario.setText("Selected scenario");
 		grpSelectedScenario.setLayout(new GridLayout(2, false));
 
@@ -162,7 +162,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		multiTableHolder = new Composite(this, SWT.BORDER);
 		multiTableHolder.setLayout(new GridLayout(1, false));
-		FormData fd_multiTableHolder = new FormData();
+		final FormData fd_multiTableHolder = new FormData();
 		fd_multiTableHolder.bottom = new FormAttachment(100, -10);
 		fd_multiTableHolder.right = new FormAttachment(topPanel, 0, SWT.RIGHT);
 		fd_multiTableHolder.top = new FormAttachment(topPanel, 6);
@@ -315,17 +315,17 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	public void addInitListener(SelectionAdapter selectionAdapter)
+	public void addInitListener(final SelectionAdapter selectionAdapter)
 	{
 		btnInit.addSelectionListener(selectionAdapter);
 	}
 
-	public void addStepListener(SelectionAdapter selectionAdapter)
+	public void addStepListener(final SelectionAdapter selectionAdapter)
 	{
 		btnStep.addSelectionListener(selectionAdapter);
 	}
 
-	public void addPlayListener(SelectionAdapter selectionAdapter)
+	public void addPlayListener(final SelectionAdapter selectionAdapter)
 	{
 		btnPlay.addSelectionListener(selectionAdapter);
 	}

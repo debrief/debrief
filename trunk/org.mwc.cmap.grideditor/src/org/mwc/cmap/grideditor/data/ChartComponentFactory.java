@@ -14,17 +14,17 @@ public class ChartComponentFactory {
 	 * 	class. In this case its guaranteed that constructor won't throw
 	 * 	exception's
 	 */
-	public static boolean isChartable(GriddableItemDescriptor descriptor) {
+	public static boolean isChartable(final GriddableItemDescriptor descriptor) {
 		return isDirectlyChartable(descriptor) || isDescriptorWithUnits(descriptor);
 	}
 
-	private static boolean isDirectlyChartable(GriddableItemDescriptor descriptor) {
-		Class<?> descriptorType = descriptor.getType();
+	private static boolean isDirectlyChartable(final GriddableItemDescriptor descriptor) {
+		final Class<?> descriptorType = descriptor.getType();
 		return descriptorType.isPrimitive() || Number.class.isAssignableFrom(descriptorType);
 	}
 
-	private static boolean isDescriptorWithUnits(GriddableItemDescriptor descriptor) {
-		Class<?> descriptorType = descriptor.getType();
+	private static boolean isDescriptorWithUnits(final GriddableItemDescriptor descriptor) {
+		final Class<?> descriptorType = descriptor.getType();
 		return ValueInUnits.class.isAssignableFrom(descriptorType);
 	}
 
@@ -35,12 +35,13 @@ public class ChartComponentFactory {
 	 * 		if descriptor is not chartable
 	 * @see ChartComponentFactory#isChartable(GriddableItemDescriptor)
 	 */
-	public static GriddableItemChartComponent newChartComponent(GriddableItemDescriptor descriptor) {
+	public static GriddableItemChartComponent newChartComponent(final GriddableItemDescriptor descriptor) {
 		if (isDirectlyChartable(descriptor)) {
 			return new ChartComponentImpl(descriptor);
 		}
 		if (isDescriptorWithUnits(descriptor)) {
 			@SuppressWarnings("unchecked")
+			final
 			Class<? extends ValueInUnits> typeImpl = (Class<? extends ValueInUnits>) descriptor.getType();
 			return new WithUnitsChartComponent(typeImpl, descriptor);
 		}

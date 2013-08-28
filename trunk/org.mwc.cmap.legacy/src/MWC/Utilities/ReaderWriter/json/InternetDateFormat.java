@@ -35,9 +35,9 @@ public class InternetDateFormat extends SimpleDateFormat
         setTimeZone(GMT_TIME_ZONE);
     }
 
-    public Date parse(String source) throws ParseException
+    public Date parse(final String source) throws ParseException
     {
-        Date date = super.parse(source.toUpperCase());
+        final Date date = super.parse(source.toUpperCase());
         return date;
     }
 }

@@ -7,9 +7,9 @@ public class DecisionHandler extends ASSETResource implements
 		DecisionResource
 {
 
-	public void accept(DecidedEvent event)
+	public void accept(final DecidedEvent event)
 	{
-		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
+		final ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
 		host.getGuest().newParticipantDecision(getScenarioId(), getParticipantId(), event);
 	}
 }

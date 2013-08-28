@@ -119,7 +119,7 @@ public class OptimiseTest
 		public void testLoad() throws FileNotFoundException
 		{
 			// get some data
-			Layers layers = getTheData();
+			final Layers layers = getTheData();
 
 			assertNotNull("should have loaded data", layers);
 
@@ -127,36 +127,36 @@ public class OptimiseTest
 			assertEquals("wrong num tracks", 2, layers.size());
 
 			// ok, go for the primary
-			Layer layerPri = layers.elementAt(0);
-			Layer layerSec = layers.elementAt(1);
+			final Layer layerPri = layers.elementAt(0);
+			final Layer layerSec = layers.elementAt(1);
 
-			TrackWrapper pri = (TrackWrapper) layerPri;
-			TrackWrapper sec = (TrackWrapper) layerSec;
+			final TrackWrapper pri = (TrackWrapper) layerPri;
+			final TrackWrapper sec = (TrackWrapper) layerSec;
 
 			assertEquals("NONSUCH", pri.getName());
 			assertEquals("TMA_TGT", sec.getName());
 
 			// can we get some doublets?
-			TreeSet<Doublet> doublets = StackedDotHelper.getDoublets(pri, sec, true,
+			final TreeSet<Doublet> doublets = StackedDotHelper.getDoublets(pri, sec, true,
 					true, false);
 
 			assertNotNull("found some", doublets);
 			assertEquals("right num", 18, doublets.size());
 
 			// Create instance of Minimisation
-			Minimisation min = new Minimisation();
-			MinimisationFunction funct = new TryOffsetFunction(doublets);
+			final Minimisation min = new Minimisation();
+			final MinimisationFunction funct = new TryOffsetFunction(doublets);
 
 			// initial estimates
-			double[] start =
+			final double[] start =
 			{ 0, 0 };
 
 			// initial step sizes
-			double[] step =
+			final double[] step =
 			{ 20, 400 };
 
 			// convergence tolerance
-			double ftol = 1e-8;
+			final double ftol = 1e-8;
 
 			// set the min/max bearing
 			min.addConstraint(0, -1, 0d);
@@ -170,10 +170,10 @@ public class OptimiseTest
 			min.nelderMead(funct, start, step, ftol, 500);
 
 			// get the results out
-			double[] param = min.getParamValues();
+			final double[] param = min.getParamValues();
 
-			double bearing = param[0];
-			double range = param[1];
+			final double bearing = param[0];
+			final double range = param[1];
 
 			System.err.println("answer is:" + bearing + " degs" + range + "m");
 		}
@@ -181,34 +181,34 @@ public class OptimiseTest
 		public void testPermutations()
 		{
 
-			SensorWrapper sensor = new SensorWrapper("nane");
-			SensorContactWrapper sensorCut = new SensorContactWrapper("name", null,
+			final SensorWrapper sensor = new SensorWrapper("nane");
+			final SensorContactWrapper sensorCut = new SensorContactWrapper("name", null,
 					null, 100d, new WorldLocation(1d, 1d, 1d), null, null, 1, null);
 			sensor.add(sensorCut);
-			TrackSegment parent = null;
-			FixWrapper hostFix = null;
-			WorldLocation theLoc = new WorldLocation(0, 0, 0);
-			Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
-			FixWrapper targetFix = new FixWrapper(newFix);
-			Doublet dt = new Doublet(sensorCut, targetFix, parent, hostFix);
+			final TrackSegment parent = null;
+			final FixWrapper hostFix = null;
+			final WorldLocation theLoc = new WorldLocation(0, 0, 0);
+			final Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
+			final FixWrapper targetFix = new FixWrapper(newFix);
+			final Doublet dt = new Doublet(sensorCut, targetFix, parent, hostFix);
 
 			final TreeSet<Doublet> doublets = new TreeSet<Doublet>();
 			doublets.add(dt);
 
 			// Create instance of Minimisation
-			Minimisation min = new Minimisation();
-			MinimisationFunction funct = new TryOffsetFunction(doublets);
+			final Minimisation min = new Minimisation();
+			final MinimisationFunction funct = new TryOffsetFunction(doublets);
 
 			// initial estimates
-			double[] start =
+			final double[] start =
 			{ 0, 0 };
 
 			// initial step sizes
-			double[] step =
+			final double[] step =
 			{ 20, 400 };
 
 			// convergence tolerance
-			double ftol = 1e-8;
+			final double ftol = 1e-8;
 
 			// set the min/max bearing
 			min.addConstraint(0, -1, 0d);
@@ -222,10 +222,10 @@ public class OptimiseTest
 			min.nelderMead(funct, start, step, ftol, 500);
 
 			// get the results out
-			double[] param = min.getParamValues();
+			final double[] param = min.getParamValues();
 
-			double bearing = param[0];
-			double range = param[1];
+			final double bearing = param[0];
+			final double range = param[1];
 
 			System.err.println("answer is:" + bearing + " degs" + range + "m");
 
@@ -238,19 +238,19 @@ public class OptimiseTest
 		public void testDummyPermutations()
 		{
 			// Create instance of Minimisation
-			Minimisation min = new Minimisation();
-			MinimisationFunction funct = new DummyOffsetFunction(100, 2000);
+			final Minimisation min = new Minimisation();
+			final MinimisationFunction funct = new DummyOffsetFunction(100, 2000);
 
 			// initial estimates
-			double[] start =
+			final double[] start =
 			{ 0, 0 };
 
 			// initial step sizes
-			double[] step =
+			final double[] step =
 			{ 20, 400 };
 
 			// convergence tolerance
-			double ftol = 1e-8;
+			final double ftol = 1e-8;
 
 			// set the min/max bearing
 			min.addConstraint(0, -1, 0d);
@@ -264,10 +264,10 @@ public class OptimiseTest
 			min.nelderMead(funct, start, step, ftol, 500);
 
 			// get the results out
-			double[] param = min.getParamValues();
+			final double[] param = min.getParamValues();
 
-			double bearing = param[0];
-			double range = param[1];
+			final double bearing = param[0];
+			final double range = param[1];
 
 			System.err.println("answer is:" + bearing + " degs" + range + "m");
 
@@ -277,13 +277,13 @@ public class OptimiseTest
 
 		public void testShiftSingle() throws FileNotFoundException
 		{
-			SensorContactWrapper sensor = null;
-			TrackSegment parent = null;
-			FixWrapper hostFix = null;
-			WorldLocation theLoc = new WorldLocation(0, 0, 0);
-			Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
-			FixWrapper targetFix = new FixWrapper(newFix);
-			Doublet dt = new Doublet(sensor, targetFix, parent, hostFix);
+			final SensorContactWrapper sensor = null;
+			final TrackSegment parent = null;
+			final FixWrapper hostFix = null;
+			final WorldLocation theLoc = new WorldLocation(0, 0, 0);
+			final Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
+			final FixWrapper targetFix = new FixWrapper(newFix);
+			final Doublet dt = new Doublet(sensor, targetFix, parent, hostFix);
 
 			final TreeSet<Doublet> doublets = new TreeSet<Doublet>();
 			doublets.add(dt);
@@ -293,7 +293,7 @@ public class OptimiseTest
 			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
 			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
 
-			TryOffsetFunction func = new TryOffsetFunction(doublets);
+			final TryOffsetFunction func = new TryOffsetFunction(doublets);
 
 			WorldVector thisOffset = new WorldVector(0, 0, 0);
 			TreeSet<Doublet> res = func.shiftDoublets(thisOffset);
@@ -319,19 +319,19 @@ public class OptimiseTest
 
 		public void testShiftMultiple() throws FileNotFoundException
 		{
-			SensorContactWrapper sensor = null;
-			TrackSegment parent = null;
-			FixWrapper hostFix1 = new FixWrapper(new Fix(new HiResDate(1000), null,
+			final SensorContactWrapper sensor = null;
+			final TrackSegment parent = null;
+			final FixWrapper hostFix1 = new FixWrapper(new Fix(new HiResDate(1000), null,
 					0, 0));
 
-			WorldLocation theLoc = new WorldLocation(0, 0, 0);
-			Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
-			FixWrapper targetFix = new FixWrapper(newFix);
-			WorldLocation theLoc2 = new WorldLocation(0, 0, 0);
-			Fix newFix2 = new Fix(new HiResDate(2000), theLoc2, 0, 0);
-			FixWrapper targetFix2 = new FixWrapper(newFix2);
-			Doublet dt = new Doublet(sensor, targetFix, parent, hostFix1);
-			Doublet dt2 = new Doublet(sensor, targetFix2, parent, hostFix1);
+			final WorldLocation theLoc = new WorldLocation(0, 0, 0);
+			final Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
+			final FixWrapper targetFix = new FixWrapper(newFix);
+			final WorldLocation theLoc2 = new WorldLocation(0, 0, 0);
+			final Fix newFix2 = new Fix(new HiResDate(2000), theLoc2, 0, 0);
+			final FixWrapper targetFix2 = new FixWrapper(newFix2);
+			final Doublet dt = new Doublet(sensor, targetFix, parent, hostFix1);
+			final Doublet dt2 = new Doublet(sensor, targetFix2, parent, hostFix1);
 
 			final TreeSet<Doublet> doublets = new TreeSet<Doublet>();
 			doublets.add(dt);
@@ -343,7 +343,7 @@ public class OptimiseTest
 			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
 
 			WorldVector thisOffset = new WorldVector(0, 0, 0);
-			TryOffsetFunction func = new TryOffsetFunction(doublets);
+			final TryOffsetFunction func = new TryOffsetFunction(doublets);
 			TreeSet<Doublet> res = func.shiftDoublets(thisOffset);
 			coverage = areaFor(res);
 
@@ -365,14 +365,14 @@ public class OptimiseTest
 			assertEquals("right tl lon", 1, coverage.getTopLeft().getLong(), 0.001);
 		}
 
-		private WorldArea areaFor(TreeSet<Doublet> doublets)
+		private WorldArea areaFor(final TreeSet<Doublet> doublets)
 		{
 			WorldArea res = null;
-			Iterator<Doublet> iter = doublets.iterator();
+			final Iterator<Doublet> iter = doublets.iterator();
 			while (iter.hasNext())
 			{
-				Doublet doublet = (Doublet) iter.next();
-				WorldLocation loc = doublet.getTarget().getLocation();
+				final Doublet doublet = (Doublet) iter.next();
+				final WorldLocation loc = doublet.getTarget().getLocation();
 				if (res == null)
 					res = new WorldArea(loc, loc);
 				else
@@ -385,13 +385,13 @@ public class OptimiseTest
 
 	private static Layers getTheData() throws FileNotFoundException
 	{
-		DebriefEclipseXMLReaderWriter reader = new DebriefEclipseXMLReaderWriter();
-		Layers res = new Layers();
-		String path = "src/org/mwc/debrief/track_shift/magic/";
-		String fName = "midflow2.xml";
-		InputStream is = new FileInputStream(path + fName);
-		IControllableViewport view = Mockito.mock(IControllableViewport.class);
-		PlotEditor plot = Mockito.mock(PlotEditor.class);
+		final DebriefEclipseXMLReaderWriter reader = new DebriefEclipseXMLReaderWriter();
+		final Layers res = new Layers();
+		final String path = "src/org/mwc/debrief/track_shift/magic/";
+		final String fName = "midflow2.xml";
+		final InputStream is = new FileInputStream(path + fName);
+		final IControllableViewport view = Mockito.mock(IControllableViewport.class);
+		final PlotEditor plot = Mockito.mock(PlotEditor.class);
 		reader.importThis(fName, is, res, view, plot);
 		return res;
 	}
@@ -400,36 +400,36 @@ public class OptimiseTest
 	{
 		private final TreeSet<Doublet> _doublets;
 
-		public TryOffsetFunction(TreeSet<Doublet> doublets)
+		public TryOffsetFunction(final TreeSet<Doublet> doublets)
 		{
 			_doublets = doublets;
 		}
 
 		@Override
-		public double function(double[] param)
+		public double function(final double[] param)
 		{
 			// ok, generate bearing
-			double brgDegs = param[0];
-			double brgRads = MWC.Algorithms.Conversions.Degs2Rads(brgDegs);
-			double rngM = param[1];
-			double rngDegs = MWC.Algorithms.Conversions.m2Degs(rngM);
+			final double brgDegs = param[0];
+			final double brgRads = MWC.Algorithms.Conversions.Degs2Rads(brgDegs);
+			final double rngM = param[1];
+			final double rngDegs = MWC.Algorithms.Conversions.m2Degs(rngM);
 
 			// and the world vector
-			WorldVector offset = new WorldVector(brgRads, rngDegs, 0);
+			final WorldVector offset = new WorldVector(brgRads, rngDegs, 0);
 
 			// get shifting
-			TreeSet<Doublet> newD = shiftDoublets(offset);
+			final TreeSet<Doublet> newD = shiftDoublets(offset);
 
 			// do the math
 			double res = 0;
-			for (Iterator<Doublet> iterator = newD.iterator(); iterator.hasNext();)
+			for (final Iterator<Doublet> iterator = newD.iterator(); iterator.hasNext();)
 			{
-				Doublet thisD = iterator.next();
-				double measuredBearing = thisD.getMeasuredBearing();
-				double calculatedBearing = thisD.getCalculatedBearing(null, null);
+				final Doublet thisD = iterator.next();
+				final double measuredBearing = thisD.getMeasuredBearing();
+				final double calculatedBearing = thisD.getCalculatedBearing(null, null);
 				final double thisError = thisD.calculateBearingError(measuredBearing,
 						calculatedBearing);
-				double score = Math.abs(thisError * thisError);
+				final double score = Math.abs(thisError * thisError);
 
 				res += score;
 			}
@@ -444,29 +444,29 @@ public class OptimiseTest
 		 * @param thisOffset
 		 * @return
 		 */
-		private TreeSet<Doublet> shiftDoublets(WorldVector thisOffset)
+		private TreeSet<Doublet> shiftDoublets(final WorldVector thisOffset)
 		{
-			TreeSet<Doublet> res = new TreeSet<Doublet>();
+			final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
 			// loop through the doublets
-			Iterator<Doublet> iter = _doublets.iterator();
+			final Iterator<Doublet> iter = _doublets.iterator();
 			while (iter.hasNext())
 			{
-				Doublet doublet = (Doublet) iter.next();
+				final Doublet doublet = (Doublet) iter.next();
 
 				// get this fix
-				FixWrapper fix = doublet.getTarget();
+				final FixWrapper fix = doublet.getTarget();
 
 				// clone it
-				FixWrapper newF = new FixWrapper(fix.getFix().makeCopy());
+				final FixWrapper newF = new FixWrapper(fix.getFix().makeCopy());
 
 				// move it
-				WorldLocation newLoc = new WorldLocation(newF.getLocation());
+				final WorldLocation newLoc = new WorldLocation(newF.getLocation());
 				newLoc.addToMe(thisOffset);
 				newF.setLocation(newLoc);
 
 				// create a new doublet
-				Doublet newD = new Doublet(doublet.getSensorCut(), newF,
+				final Doublet newD = new Doublet(doublet.getSensorCut(), newF,
 						doublet.getTargetTrack(), doublet.getHost());
 
 				res.add(newD);
@@ -480,23 +480,23 @@ public class OptimiseTest
 	public static class DummyOffsetFunction implements MinimisationFunction
 	{
 
-		private double _val1;
-		private double _val2;
+		private final double _val1;
+		private final double _val2;
 
-		public DummyOffsetFunction(double val1, double val2)
+		public DummyOffsetFunction(final double val1, final double val2)
 		{
 			_val1 = val1;
 			_val2 = val2;
 		}
 
 		@Override
-		public double function(double[] param)
+		public double function(final double[] param)
 		{
 			// ok, generate bearing
-			double brgDegs = param[0];
-			double rngM = param[1];
+			final double brgDegs = param[0];
+			final double rngM = param[1];
 
-			double res = (Math.abs(_val1 - brgDegs)) + Math.abs(_val2 - rngM);
+			final double res = (Math.abs(_val1 - brgDegs)) + Math.abs(_val2 - rngM);
 
 			// do the calc
 			return res;
@@ -511,28 +511,28 @@ public class OptimiseTest
 	 * @param secTrack the current secondary track
 	 * @return
 	 */
-	public static String getDraggables(Vector<DraggableItem> resultsList,
-			IStructuredSelection selection, TrackWrapper secTrack)
+	public static String getDraggables(final Vector<DraggableItem> resultsList,
+			final IStructuredSelection selection, final TrackWrapper secTrack)
 	{
 		String res = null;
 
 		TrackWrapper track = null;
 
-		Vector<DraggableItem> tmpList = new Vector<DraggableItem>();
+		final Vector<DraggableItem> tmpList = new Vector<DraggableItem>();
 
 		// ok, get looping
-		Iterator<?> iter = selection.iterator();
+		final Iterator<?> iter = selection.iterator();
 		while (iter.hasNext())
 		{
-			Object object = (Object) iter.next();
+			final Object object = (Object) iter.next();
 			if (object instanceof EditableWrapper)
 			{
-				EditableWrapper ew = (EditableWrapper) object;
-				Editable obj = ew.getEditable();
+				final EditableWrapper ew = (EditableWrapper) object;
+				final Editable obj = ew.getEditable();
 				if (obj instanceof TrackWrapper)
 				{
 					// is this something other than the secondary track?
-					TrackWrapper thisTrack = (TrackWrapper) obj;
+					final TrackWrapper thisTrack = (TrackWrapper) obj;
 
 					// is this our first item?
 					if (tmpList.size() == 0)

@@ -80,12 +80,12 @@ public final class depthCalc extends plainCalc
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
+  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
   {
     return primary.getDepth();
   }
   
-  public final String update(Watchable primary, Watchable secondary, HiResDate time)
+  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
   {
 		// check we have data
 		if(primary == null)
@@ -96,7 +96,7 @@ public final class depthCalc extends plainCalc
     // just check if we have an invalid depth
     if(primary.getLocation().hasValidDepth())
     {
-      double depth = calculate(primary, secondary, time);
+      final double depth = calculate(primary, secondary, time);
       res = _myPattern.format(depth);
     }
     else

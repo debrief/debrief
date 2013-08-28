@@ -171,27 +171,27 @@ public class LayerManagerView extends ViewPart
 		/**
 		 * what we are going to execute
 		 */
-		private IOperateOn _execute;
+		private final IOperateOn _execute;
 
 		/**
 		 * what we are going to undo
 		 */
-		private IOperateOn _undo;
+		private final IOperateOn _undo;
 
 		/**
 		 * what we are going to redo
 		 */
-		private IOperateOn _redo;
+		private final IOperateOn _redo;
 
 		/**
 		 * who is giving us the selection
 		 */
-		private ISelectionProvider _provider;
+		private final ISelectionProvider _provider;
 
 		/**
 		 * who we fire the update to
 		 */
-		private Layers _destination;
+		private final Layers _destination;
 
 		/**
 		 * define our operation
@@ -210,8 +210,8 @@ public class LayerManagerView extends ViewPart
 		 *          what to update on completion
 		 */
 
-		SelectionOperation(String label, IOperateOn execute, IOperateOn undo,
-				IOperateOn redo, ISelectionProvider provider, Layers destination)
+		SelectionOperation(final String label, final IOperateOn execute, final IOperateOn undo,
+				final IOperateOn redo, final ISelectionProvider provider, final Layers destination)
 		{
 			super(label);
 
@@ -229,7 +229,7 @@ public class LayerManagerView extends ViewPart
 		/**
 		 * ok, do the operation
 		 */
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// ok, take a copy of the selection - for our undo/redo operations
@@ -244,7 +244,7 @@ public class LayerManagerView extends ViewPart
 		/**
 		 * ok, redo the operation
 		 */
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			applyOperation(_redo, _theSelection, _destination);
@@ -255,7 +255,7 @@ public class LayerManagerView extends ViewPart
 		 * ok, undo the operation
 		 */
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			applyOperation(_undo, _theSelection, _destination);
@@ -291,17 +291,17 @@ public class LayerManagerView extends ViewPart
 	class NameSorter extends ViewerSorter
 	{
 		@SuppressWarnings("unchecked")
-		public int compare(Viewer viewer, Object e1, Object e2)
+		public int compare(final Viewer viewer, final Object e1, final Object e2)
 		{
 			int res = 0;
-			EditableWrapper p1 = (EditableWrapper) e1;
-			EditableWrapper p2 = (EditableWrapper) e2;
+			final EditableWrapper p1 = (EditableWrapper) e1;
+			final EditableWrapper p2 = (EditableWrapper) e2;
 
 			// just see if we have sorted editables
 			if ((p1 instanceof Comparable) && (p2 instanceof Comparable))
 			{
-				Comparable<Object> w1 = (Comparable<Object>) p1;
-				Comparable<Object> w2 = (Comparable<Object>) p2;
+				final Comparable<Object> w1 = (Comparable<Object>) p1;
+				final Comparable<Object> w2 = (Comparable<Object>) p2;
 				res = w1.compareTo(w2);
 			}
 			else
@@ -310,12 +310,12 @@ public class LayerManagerView extends ViewPart
 				if ((p1.getEditable() instanceof Watchable)
 						&& (p2.getEditable() instanceof Watchable))
 				{
-					Watchable wa = (Watchable) p1.getEditable();
-					Watchable wb = (Watchable) p2.getEditable();
+					final Watchable wa = (Watchable) p1.getEditable();
+					final Watchable wb = (Watchable) p2.getEditable();
 
 					// hmm, just check we have times
-					HiResDate ha = wa.getTime();
-					HiResDate hb = wb.getTime();
+					final HiResDate ha = wa.getTime();
+					final HiResDate hb = wb.getTime();
 
 					if ((ha != null) && (hb != null))
 						res = wa.getTime().compareTo(wb.getTime());
@@ -326,14 +326,14 @@ public class LayerManagerView extends ViewPart
 				else if ((p1.getEditable() instanceof Comparable)
 						&& (p2.getEditable() instanceof Comparable))
 				{
-					String name1 = p1.getEditable().toString();
-					String name2 = p2.getEditable().toString();
+					final String name1 = p1.getEditable().toString();
+					final String name2 = p2.getEditable().toString();
 					res = name1.compareTo(name2);
 				}
 				else
 				{
-					String p1Name = p1.getEditable().getName();
-					String p2Name = p2.getEditable().getName();
+					final String p1Name = p1.getEditable().getName();
+					final String p2Name = p2.getEditable().getName();
 					res = p1Name.compareTo(p2Name);
 				}
 			}
@@ -366,17 +366,17 @@ public class LayerManagerView extends ViewPart
 
 	private static class MyTreeViewer extends TreeViewer
 	{
-		public MyTreeViewer(Tree parent)
+		public MyTreeViewer(final Tree parent)
 		{
 			super(parent);
 		}
 
-		public MyTreeViewer(Composite parent, int style)
+		public MyTreeViewer(final Composite parent, final int style)
 		{
 			super(parent, style);
 		}
 
-		public Widget findEditable(Editable item)
+		public Widget findEditable(final Editable item)
 		{
 			return super.findItem(item);
 		}
@@ -386,7 +386,7 @@ public class LayerManagerView extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 
 		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
@@ -400,32 +400,34 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setInput(getViewSite());
 		_treeViewer.setComparer(new IElementComparer()
 		{
-			public boolean equals(Object a, Object b)
+			public boolean equals(final Object a, final Object b)
 			{
+				Object obj1 = a;
+				Object obj2 = b;
 				// do our special case for comparing plottables
-				if (a instanceof EditableWrapper)
+				if (obj1 instanceof EditableWrapper)
 				{
-					EditableWrapper pw = (EditableWrapper) a;
-					a = pw.getEditable();
+					final EditableWrapper pw = (EditableWrapper) obj1;
+					obj1 = pw.getEditable();
 				}
 
-				if (b instanceof EditableWrapper)
+				if (obj2 instanceof EditableWrapper)
 				{
-					EditableWrapper pw = (EditableWrapper) b;
-					b = pw.getEditable();
+					final EditableWrapper pw = (EditableWrapper) obj2;
+					obj2 = pw.getEditable();
 				}
 
-				return a == b;
+				return obj1 == obj2;
 			}
 
-			public int hashCode(Object element)
+			public int hashCode(final Object element)
 			{
 				int res = 0;
 
 				if (element instanceof EditableWrapper)
 				{
-					EditableWrapper pw = (EditableWrapper) element;
-					Editable pl = pw.getEditable();
+					final EditableWrapper pw = (EditableWrapper) element;
+					final Editable pl = pw.getEditable();
 					if (pl != null)
 						res += pw.getEditable().hashCode();
 				}
@@ -444,7 +446,7 @@ public class LayerManagerView extends ViewPart
 				_dragDropSupport.getTypes(), _dragDropSupport);
 
 		// and format the tree
-		Tree tree = _treeViewer.getTree();
+		final Tree tree = _treeViewer.getTree();
 		tree.setHeaderVisible(true);
 		formatTree(tree);
 
@@ -466,17 +468,17 @@ public class LayerManagerView extends ViewPart
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
 
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				// right, see what it is
-				ISelection sel = event.getSelection();
+				final ISelection sel = event.getSelection();
 				if (sel instanceof StructuredSelection)
 				{
-					StructuredSelection ss = (StructuredSelection) sel;
-					Object datum = ss.getFirstElement();
+					final StructuredSelection ss = (StructuredSelection) sel;
+					final Object datum = ss.getFirstElement();
 					if (datum instanceof EditableWrapper)
 					{
-						EditableWrapper pw = (EditableWrapper) datum;
+						final EditableWrapper pw = (EditableWrapper) datum;
 						editableSelected(sel, pw);
 					}
 				}
@@ -488,12 +490,12 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.addSelectionChangedListener(new ISelectionChangedListener()
 		{
 
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
-				ISelection isel = event.getSelection();
+				final ISelection isel = event.getSelection();
 				if (isel instanceof StructuredSelection)
 				{
-					StructuredSelection ss = (StructuredSelection) isel;
+					final StructuredSelection ss = (StructuredSelection) isel;
 
 					// right, see if this is an item we can make primary
 					_makePrimary.setEnabled(isValidPrimary(ss));
@@ -520,7 +522,7 @@ public class LayerManagerView extends ViewPart
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 
@@ -544,8 +546,8 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						processNewLayers(part);
 					}
@@ -553,8 +555,8 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						processNewLayers(part);
 					}
@@ -562,8 +564,8 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// is this our set of layers?
 						if (part == _myLayers)
@@ -582,13 +584,13 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
 						if (part != _treeViewer)
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
+							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.addSelectionChangedListener(_selectionChangeListener);
 						}
 					}
@@ -596,13 +598,13 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
 						if (part != _treeViewer)
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
+							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.removeSelectionChangedListener(_selectionChangeListener);
 						}
 					}
@@ -611,8 +613,8 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// cool, remember about it.
 						_theTrackDataListener = (TrackManager) part;
@@ -621,8 +623,8 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// ok, ditch it.
 						_theTrackDataListener = null;
@@ -640,13 +642,13 @@ public class LayerManagerView extends ViewPart
 	 * @param ss
 	 * @return
 	 */
-	protected boolean isValidPrimary(StructuredSelection ss)
+	protected boolean isValidPrimary(final StructuredSelection ss)
 	{
 		boolean res = false;
 		if (ss.size() == 1)
 		{
-			EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
-			Editable pl = pw.getEditable();
+			final EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
+			final Editable pl = pw.getEditable();
 
 			// hey, first see if it's even a candidate
 			if (pl instanceof WatchableList)
@@ -669,13 +671,13 @@ public class LayerManagerView extends ViewPart
 	 * @param ss
 	 * @return
 	 */
-	protected boolean isValidSecondary(StructuredSelection ss)
+	protected boolean isValidSecondary(final StructuredSelection ss)
 	{
 		boolean res = false;
 		if (ss.size() >= 1)
 		{
-			EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
-			Editable pl = pw.getEditable();
+			final EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
+			final Editable pl = pw.getEditable();
 			if (pl instanceof WatchableList)
 			{
 				// hey, it's a maybe.
@@ -692,12 +694,12 @@ public class LayerManagerView extends ViewPart
 				}
 				else
 				{
-					WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
+					final WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
 					if (secs != null)
 					{
 						for (int i = 0; i < secs.length; i++)
 						{
-							WatchableList thisList = secs[i];
+							final WatchableList thisList = secs[i];
 							if (thisList == pl)
 							{
 								res = false;
@@ -711,41 +713,41 @@ public class LayerManagerView extends ViewPart
 		return res;
 	}
 
-	private void formatTree(Tree tree)
+	private void formatTree(final Tree tree)
 	{
 		// define the columns
-		TreeColumn nameCol = new TreeColumn(tree, SWT.NONE);
+		final TreeColumn nameCol = new TreeColumn(tree, SWT.NONE);
 		nameCol.setText(NAME_COLUMN_NAME);
 		nameCol.setWidth(180);
-		TreeColumn visibleCol = new TreeColumn(tree, SWT.NONE);
+		final TreeColumn visibleCol = new TreeColumn(tree, SWT.NONE);
 		visibleCol.setText(VISIBILITY_COLUMN_NAME);
 		visibleCol.setWidth(50);
 	}
 
 	private void hookContextMenu()
 	{
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		final MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener()
 		{
-			public void menuAboutToShow(IMenuManager manager)
+			public void menuAboutToShow(final IMenuManager manager)
 			{
 				LayerManagerView.this.fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(_treeViewer.getControl());
+		final Menu menu = menuMgr.createContextMenu(_treeViewer.getControl());
 		_treeViewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(menuMgr, _treeViewer);
 	}
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(_followSelectionToggle);
 		manager.add(new Separator());
@@ -765,10 +767,10 @@ public class LayerManagerView extends ViewPart
 				"org.mwc.debrief.help.LayerMgr", null, this));
 	}
 
-	void fillContextMenu(IMenuManager manager)
+	void fillContextMenu(final IMenuManager manager)
 	{
 		// get the selected item
-		StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+		final StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
 
 		// right, we only worry about primary, secondary, hide, reveal if something
 		// is selected
@@ -799,19 +801,19 @@ public class LayerManagerView extends ViewPart
 		// build up a list of menu items
 
 		// create some lists to store our selected items
-		Editable[] eList = new Editable[sel.size()];
-		Layer[] parentLayers = new Layer[sel.size()];
-		Layer[] updateLayers = new Layer[sel.size()];
+		final Editable[] eList = new Editable[sel.size()];
+		final Layer[] parentLayers = new Layer[sel.size()];
+		final Layer[] updateLayers = new Layer[sel.size()];
 
 		// right, now populate them
-		Object[] oList = sel.toArray();
+		final Object[] oList = sel.toArray();
 		for (int i = 0; i < oList.length; i++)
 		{
-			EditableWrapper wrapper = (EditableWrapper) oList[i];
+			final EditableWrapper wrapper = (EditableWrapper) oList[i];
 			eList[i] = wrapper.getEditable();
 
 			// sort out the parent layer
-			EditableWrapper theParent = wrapper.getParent();
+			final EditableWrapper theParent = wrapper.getParent();
 
 			// hmm, did we find one?
 			if (theParent != null)
@@ -830,7 +832,7 @@ public class LayerManagerView extends ViewPart
 
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(_followSelectionToggle);
 		manager.add(_makePrimary);
@@ -894,18 +896,18 @@ public class LayerManagerView extends ViewPart
 			public void run()
 			{
 				// ask the user
-				InputDialog id = new InputDialog(null, "Create new layer",
+				final InputDialog id = new InputDialog(null, "Create new layer",
 						"Layer name:", "", null);
-				int res = id.open();
+				final int res = id.open();
 
 				// was ok pressed?
 				if (res == InputDialog.OK)
 				{
 					// yup, create the layer
-					String newName = id.getValue();
+					final String newName = id.getValue();
 
 					// yes, create the layer
-					BaseLayer bl = new BaseLayer();
+					final BaseLayer bl = new BaseLayer();
 					bl.setName(newName);
 
 					// and add it
@@ -922,15 +924,15 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				AbstractOperation doIt = new SelectionOperation("Make primary",
+				final AbstractOperation doIt = new SelectionOperation("Make primary",
 						new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -939,7 +941,7 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
@@ -951,12 +953,12 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -968,7 +970,7 @@ public class LayerManagerView extends ViewPart
 
 				applyOperationToSelection(new IOperateOn()
 				{
-					public void doItTo(Editable item)
+					public void doItTo(final Editable item)
 					{
 					}
 				});
@@ -986,15 +988,15 @@ public class LayerManagerView extends ViewPart
 			public void run()
 			{
 
-				AbstractOperation doIt = new SelectionOperation("Make secondary",
+				final AbstractOperation doIt = new SelectionOperation("Make secondary",
 						new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -1003,12 +1005,12 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -1017,12 +1019,12 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -1045,15 +1047,15 @@ public class LayerManagerView extends ViewPart
 			public void run()
 			{
 
-				AbstractOperation doIt = new SelectionOperation("Add as secondary",
+				final AbstractOperation doIt = new SelectionOperation("Add as secondary",
 						new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -1062,12 +1064,12 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -1076,12 +1078,12 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
 								{
-									WatchableList list = (WatchableList) item;
+									final WatchableList list = (WatchableList) item;
 
 									// make it the primary
 									if (_theTrackDataListener != null)
@@ -1103,22 +1105,22 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				AbstractOperation doIt = new SelectionOperation("Hide item",
+				final AbstractOperation doIt = new SelectionOperation("Hide item",
 						new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								setPlottableVisible(item, false);
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								setPlottableVisible(item, true);
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								setPlottableVisible(item, false);
 							}
@@ -1135,22 +1137,22 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				AbstractOperation doIt = new SelectionOperation("reveal item",
+				final AbstractOperation doIt = new SelectionOperation("reveal item",
 						new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								setPlottableVisible(item, true);
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								setPlottableVisible(item, false);
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Editable item)
+							public void doItTo(final Editable item)
 							{
 								setPlottableVisible(item, true);
 							}
@@ -1164,11 +1166,11 @@ public class LayerManagerView extends ViewPart
 				.getImageDescriptor("icons/reveal.gif"));
 	}
 
-	protected static void setPlottableVisible(Editable item, boolean on)
+	protected static void setPlottableVisible(final Editable item, final boolean on)
 	{
 		if (item instanceof Plottable)
 		{
-			Plottable pl = (Plottable) item;
+			final Plottable pl = (Plottable) item;
 			pl.setVisible(on);
 		}
 	}
@@ -1177,7 +1179,7 @@ public class LayerManagerView extends ViewPart
 	{
 		_treeViewer.addDoubleClickListener(new IDoubleClickListener()
 		{
-			public void doubleClick(DoubleClickEvent event)
+			public void doubleClick(final DoubleClickEvent event)
 			{
 
 				CorePlugin.openView(IPageLayout.ID_PROP_SHEET);
@@ -1193,7 +1195,7 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.getControl().setFocus();
 	}
 
-	void processNewLayers(Object part)
+	void processNewLayers(final Object part)
 	{
 		// just check we're not already looking at it
 		if (part != _myLayers)
@@ -1208,22 +1210,22 @@ public class LayerManagerView extends ViewPart
 					_myLayersListener = new Layers.DataListener2()
 					{
 
-						public void dataModified(Layers theData, Layer changedLayer)
+						public void dataModified(final Layers theData, final Layer changedLayer)
 						{
 						}
 
-						public void dataExtended(Layers theData)
+						public void dataExtended(final Layers theData)
 						{
 							dataExtended(theData, null, null);
 						}
 
-						public void dataReformatted(Layers theData, Layer changedLayer)
+						public void dataReformatted(final Layers theData, final Layer changedLayer)
 						{
 							handleReformattedLayer(changedLayer);
 						}
 
-						public void dataExtended(Layers theData, Plottable newItem,
-								Layer parentLayer)
+						public void dataExtended(final Layers theData, final Plottable newItem,
+								final Layer parentLayer)
 						{
 							processNewData(theData, newItem, parentLayer);
 						}
@@ -1250,17 +1252,17 @@ public class LayerManagerView extends ViewPart
 	 * @param item
 	 *          the item to add (together with its children)
 	 */
-	private void addItemAndChildrenToList(Vector<Object> list, TreeItem item)
+	private void addItemAndChildrenToList(final Vector<Object> list, final TreeItem item)
 	{
-		Object myData = item.getData();
+		final Object myData = item.getData();
 		if (myData != null)
 			list.add(item.getData());
-		TreeItem[] children = item.getItems();
+		final TreeItem[] children = item.getItems();
 		if (children.length > 0)
 		{
 			for (int i = 0; i < children.length; i++)
 			{
-				TreeItem thisChild = children[i];
+				final TreeItem thisChild = children[i];
 				addItemAndChildrenToList(list, thisChild);
 			}
 		}
@@ -1271,7 +1273,7 @@ public class LayerManagerView extends ViewPart
 			{
 				@SuppressWarnings(
 				{ "unchecked", "rawtypes" })
-				public int compare(Layer arg0, Layer arg1)
+				public int compare(final Layer arg0, final Layer arg1)
 				{
 					int res = 1;
 
@@ -1280,7 +1282,7 @@ public class LayerManagerView extends ViewPart
 
 					if (arg0 instanceof Comparable)
 					{
-						Comparable c0 = arg0;
+						final Comparable c0 = arg0;
 						res = c0.compareTo(arg1);
 					}
 
@@ -1297,7 +1299,7 @@ public class LayerManagerView extends ViewPart
 	 * @param changedLayer
 	 *          the layer which has changed
 	 */
-	protected void handleReformattedLayer(Layer changedLayer)
+	protected void handleReformattedLayer(final Layer changedLayer)
 	{
 		// right - store this layer (if we have one)
 		if (changedLayer != null)
@@ -1312,7 +1314,7 @@ public class LayerManagerView extends ViewPart
 			_alreadyDeferring = true;
 
 			// right. we're not already doing some processing
-			Display dis = Display.getDefault();
+			final Display dis = Display.getDefault();
 			dis.asyncExec(new Runnable()
 			{
 				public void run()
@@ -1330,18 +1332,18 @@ public class LayerManagerView extends ViewPart
 		{
 			// right, we'll be building up a list of objects to refresh (all of the
 			// objects in the indicated layer)
-			Vector<Object> newList = new Vector<Object>(0, 1);
+			final Vector<Object> newList = new Vector<Object>(0, 1);
 			Widget changed = null;
 
 			if (_pendingLayers.size() > 0)
 			{
-				for (Iterator<Layer> iter = _pendingLayers.iterator(); iter.hasNext();)
+				for (final Iterator<Layer> iter = _pendingLayers.iterator(); iter.hasNext();)
 				{
-					Layer changedLayer = (Layer) iter.next();
+					final Layer changedLayer = (Layer) iter.next();
 
 					changed = _treeViewer.findEditable(changedLayer);
 					// see if we can find the element related to the indicated layer
-					TreeItem thisItem = (TreeItem) changed;
+					final TreeItem thisItem = (TreeItem) changed;
 
 					// add the item and its children to the list
 					addItemAndChildrenToList(newList, thisItem);
@@ -1353,11 +1355,11 @@ public class LayerManagerView extends ViewPart
 				// better get on with it.
 				changed = _treeViewer.findEditable(_myLayers);
 
-				Tree theTree = (Tree) changed;
-				TreeItem[] children = theTree.getItems();
+				final Tree theTree = (Tree) changed;
+				final TreeItem[] children = theTree.getItems();
 				for (int i = 0; i < children.length; i++)
 				{
-					TreeItem thisItem = children[i];
+					final TreeItem thisItem = children[i];
 					addItemAndChildrenToList(newList, thisItem);
 				}
 			}
@@ -1368,11 +1370,11 @@ public class LayerManagerView extends ViewPart
 			_myLabelProvider.resetCacheFor(newList);
 
 			// and do the update
-			Object[] itemsToUpdate = newList.toArray();
+			final Object[] itemsToUpdate = newList.toArray();
 			_treeViewer.update(itemsToUpdate, new String[]
 			{ VISIBILITY_COLUMN_NAME });
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 
 		}
@@ -1392,7 +1394,7 @@ public class LayerManagerView extends ViewPart
 			{
 				public void run()
 				{
-					TreePath[] paths = _treeViewer.getExpandedTreePaths();
+					final TreePath[] paths = _treeViewer.getExpandedTreePaths();
 
 					// ok, fire the change in the UI thread
 					_treeViewer.setInput(theData);
@@ -1404,11 +1406,11 @@ public class LayerManagerView extends ViewPart
 					if (newItem != null)
 					{
 						// wrap the plottable
-						EditableWrapper parentWrapper = new EditableWrapper(parentLayer,
+						final EditableWrapper parentWrapper = new EditableWrapper(parentLayer,
 								null, theData);
-						EditableWrapper wrapped = new EditableWrapper(newItem,
+						final EditableWrapper wrapped = new EditableWrapper(newItem,
 								parentWrapper, theData);
-						ISelection selected = new StructuredSelection(wrapped);
+						final ISelection selected = new StructuredSelection(wrapped);
 
 						// and select it
 						editableSelected(selected, wrapped);
@@ -1425,22 +1427,22 @@ public class LayerManagerView extends ViewPart
 	}
 
 	@SuppressWarnings("rawtypes")
-	static void applyOperation(IOperateOn operation,
-			IStructuredSelection selection, Layers myLayers)
+	static void applyOperation(final IOperateOn operation,
+			final IStructuredSelection selection, final Layers myLayers)
 	{
 
-		Iterator iterator = selection.iterator();
+		final Iterator iterator = selection.iterator();
 		boolean madeChange = false;
 		Layer parentLayer = null;
 		boolean multiLayer = false;
 
 		while (iterator.hasNext())
 		{
-			Object obj = iterator.next();
+			final Object obj = iterator.next();
 
-			EditableWrapper thisP = (EditableWrapper) obj;
-			Editable res = thisP.getEditable();
-			Editable thisOne = (Editable) res;
+			final EditableWrapper thisP = (EditableWrapper) obj;
+			final Editable res = thisP.getEditable();
+			final Editable thisOne = (Editable) res;
 			Layer thisParentLayer = null;
 
 			// ok - do the business
@@ -1494,20 +1496,20 @@ public class LayerManagerView extends ViewPart
 	 * @param operation
 	 *          the thingy we're doing
 	 */
-	void applyOperationToSelection(IOperateOn operation)
+	void applyOperationToSelection(final IOperateOn operation)
 	{
-		IStructuredSelection selection = (IStructuredSelection) _treeViewer
+		final IStructuredSelection selection = (IStructuredSelection) _treeViewer
 				.getSelection();
 		applyOperation(operation, selection, _myLayers);
 
 	}
 
-	private static void triggerChartUpdate(Layer changedLayer, Layers myLayers)
+	private static void triggerChartUpdate(final Layer changedLayer, final Layers myLayers)
 	{
 		myLayers.fireReformatted(changedLayer);
 	}
 
-	public void editableSelected(ISelection sel, EditableWrapper pw)
+	public void editableSelected(final ISelection sel, final EditableWrapper pw)
 	{
 
 		if (_followSelectionToggle.isChecked())
@@ -1520,26 +1522,26 @@ public class LayerManagerView extends ViewPart
 				// just check that this is something we can work with
 				if (sel instanceof StructuredSelection)
 				{
-					StructuredSelection str = (StructuredSelection) sel;
+					final StructuredSelection str = (StructuredSelection) sel;
 
 					// hey, is there a payload?
 					if (str.getFirstElement() != null)
 					{
 						// sure is. we only support single selections, so get the first
 						// element
-						Object first = str.getFirstElement();
+						final Object first = str.getFirstElement();
 						if (first instanceof EditableWrapper)
 						{
-							EditableWrapper ew = (EditableWrapper) first;
+							final EditableWrapper ew = (EditableWrapper) first;
 
 							// is it already loaded by the lazy tree manager?
-							Widget res = _treeViewer.findEditable(ew.getEditable());
+							final Widget res = _treeViewer.findEditable(ew.getEditable());
 
 							if (res == null)
 							{
 								// nope, laod that whole data object
 								EditableWrapper thisP = ew.getParent();
-								ArrayList<EditableWrapper> al = new ArrayList<EditableWrapper>();
+								final ArrayList<EditableWrapper> al = new ArrayList<EditableWrapper>();
 
 								// we may have a chain of parents (though it's unlikely). Never
 								// the less, store them in reverse order, top-level first
@@ -1551,21 +1553,21 @@ public class LayerManagerView extends ViewPart
 
 								// ok, now we have to open all these items, starting at the
 								// highest level parent
-								Iterator<EditableWrapper> iter = al.iterator();
+								final Iterator<EditableWrapper> iter = al.iterator();
 								while (iter.hasNext())
 								{
-									EditableWrapper editableWrapper = (EditableWrapper) iter
+									final EditableWrapper editableWrapper = (EditableWrapper) iter
 											.next();
 
 									// ok, get the content
-									ViewContentProvider contentP = (ViewContentProvider) _treeViewer
+									final ViewContentProvider contentP = (ViewContentProvider) _treeViewer
 											.getContentProvider();
 
 									// find the wrapped children of this object
-									Object[] contents = contentP.getChildren(editableWrapper);
+									final Object[] contents = contentP.getChildren(editableWrapper);
 
 									// loop through, expanding them
-									for (Object content : contents)
+									for (final Object content : contents)
 									{
 										// expand the particular child. Note we go down through all the layers, since the target
 										// object may be several layers deep

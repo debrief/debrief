@@ -12,8 +12,8 @@ public final class SavePlotXML extends SavePlotAsXML
   ///////////////////////////////////
   // constructor
   //////////////////////////////////
-  public SavePlotXML(ToolParent theParent,
-                  Session theSession){
+  public SavePlotXML(final ToolParent theParent,
+                  final Session theSession){
     super(theParent, theSession, "Save Plot", "images/save.gif");
 
   }
@@ -25,7 +25,7 @@ public final class SavePlotXML extends SavePlotAsXML
   public final void execute()
   {
     // do we have a filename already?
-    String fn = getSession().getFileName();
+    final String fn = getSession().getFileName();
 
     if(fn != null)
     {

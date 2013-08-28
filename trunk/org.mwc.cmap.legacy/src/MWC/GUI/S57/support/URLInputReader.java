@@ -38,7 +38,7 @@ public class URLInputReader extends StreamInputReader {
     /**
      * Construct a URLInputReader from a URL.
      */
-    public URLInputReader(java.net.URL url) throws IOException {
+    public URLInputReader(final java.net.URL url) throws IOException {
         if (Debug.debugging("binaryfile")) {
             Debug.output("URLInputReader created from URL ");
         }

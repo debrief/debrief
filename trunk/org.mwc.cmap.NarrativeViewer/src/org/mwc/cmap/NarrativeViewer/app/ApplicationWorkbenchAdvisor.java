@@ -8,7 +8,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	private static final String PERSPECTIVE_ID = "narrative.viewer.perspective";
 
-	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
+	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(final IWorkbenchWindowConfigurer configurer) {
 		return new ApplicationWorkbenchWindowAdvisor(configurer);
 	}
 

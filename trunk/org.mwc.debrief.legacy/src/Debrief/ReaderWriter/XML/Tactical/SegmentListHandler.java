@@ -30,14 +30,14 @@ abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.
 
     addHandler(new RelativeTMASegmentHandler(theLayers)
     {
-      public void addSegment(TrackSegment segment)
+      public void addSegment(final TrackSegment segment)
       {
       	addThisSegment(segment);
       }
     });
     addHandler(new AbsoluteTMASegmentHandler()
     {
-      public void addSegment(TrackSegment segment)
+      public void addSegment(final TrackSegment segment)
       {
       	addThisSegment(segment);
       }
@@ -45,7 +45,7 @@ abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.
 
     addHandler(new TrackSegmentHandler()
     {
-      public void addSegment(TrackSegment segment)
+      public void addSegment(final TrackSegment segment)
       {
       	addThisSegment(segment);
       }
@@ -53,7 +53,7 @@ abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.
   }
 
   // this is one of ours, so get on with it!
-  protected final void handleOurselves(String name, Attributes attributes)
+  protected final void handleOurselves(final String name, final Attributes attributes)
   {
     _list = new SegmentList();
 

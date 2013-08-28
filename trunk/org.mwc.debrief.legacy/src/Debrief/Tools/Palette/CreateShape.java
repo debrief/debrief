@@ -96,12 +96,12 @@ abstract public class CreateShape extends PlainTool
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public CreateShape(ToolParent theParent,
-                     PropertiesPanel thePanel,
-                     Layers theData,
-                     MWC.GUI.PlainChart theChart,
-                     String theName,
-                     String theImage)
+  public CreateShape(final ToolParent theParent,
+                     final PropertiesPanel thePanel,
+                     final Layers theData,
+                     final MWC.GUI.PlainChart theChart,
+                     final String theName,
+                     final String theImage)
   {
     super(theParent, theName, theImage);
 
@@ -118,16 +118,16 @@ abstract public class CreateShape extends PlainTool
   public final Action getData()
   {
     Action res = null;
-    WorldArea wa = _theChart.getDataArea();
+    final WorldArea wa = _theChart.getDataArea();
 
     // see if we have an area defined
     if(wa != null)
     {
 
       // get centre of area (at zero depth)
-      WorldLocation centre = wa.getCentreAtSurface();
+      final WorldLocation centre = wa.getCentreAtSurface();
 
-      ShapeWrapper theWrapper = getShape(centre);
+      final ShapeWrapper theWrapper = getShape(centre);
 
       Layer theLayer = _theData.findLayer("Misc");
       if(theLayer == null)
@@ -172,10 +172,10 @@ abstract public class CreateShape extends PlainTool
     final protected Layers _theLayers;
 
 
-    public CreateShapeAction(PropertiesPanel thePanel,
-                               Layer theLayer,
-                               ShapeWrapper theShape,
-                               Layers theLayers)
+    public CreateShapeAction(final PropertiesPanel thePanel,
+                               final Layer theLayer,
+                               final ShapeWrapper theShape,
+                               final Layers theLayers)
     {
       _thePanel = thePanel;
       _theLayer = theLayer;

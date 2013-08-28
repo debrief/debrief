@@ -21,18 +21,18 @@ public abstract class AbstractGridEditorOperation extends AbstractOperation {
 
 	protected abstract EnvironmentState computeBeforeExecutionState() throws ExecutionException;
 
-	public AbstractGridEditorOperation(String label, OperationEnvironment environment) {
+	public AbstractGridEditorOperation(final String label, final OperationEnvironment environment) {
 		super(label);
 		addContext(environment.getUndoContext());
 		myEnvironment = environment;
 	}
 
 	@Override
-	public final IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+	public final IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 		if (myStateBeforeFirstRun == null) {
 			myStateBeforeFirstRun = computeBeforeExecutionState();
 		}
-		EnvironmentState afterExecute = doExecute(monitor, info);
+		final EnvironmentState afterExecute = doExecute(monitor, info);
 		if (myStateAfterFirstRun == null) {
 			myStateAfterFirstRun = afterExecute;
 		}
@@ -40,7 +40,7 @@ public abstract class AbstractGridEditorOperation extends AbstractOperation {
 	}
 
 	@Override
-	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+	public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 		if (myStateBeforeFirstRun == null) {
 			throw new IllegalStateException("I haven't been executed yet or already failed");
 		}
@@ -55,7 +55,7 @@ public abstract class AbstractGridEditorOperation extends AbstractOperation {
 	}
 
 	@Override
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+	public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 		if (myStateAfterFirstRun == null || myStateAfterFirstRun.isCompatible(getOperationEnvironment())) {
 			throw new IllegalStateException("I told you I can't redo");
 		}

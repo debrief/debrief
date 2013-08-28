@@ -31,7 +31,7 @@ public class BriefFormatLocation implements PlainFormatLocation
    * @param val            the latitude in degrees
    * @param includeDecimal whether to plot decimal seconds
    */
-  static public String toStringLat(double val, boolean includeDecimal)
+  static public String toStringLat(final double val, final boolean includeDecimal)
   {
     _workingHolder.setData(val, true);
 
@@ -67,7 +67,7 @@ public class BriefFormatLocation implements PlainFormatLocation
    * @param val            the longitude in degrees
    * @param includeDecimal whether to plot decimal seconds
    */
-  static public String toStringLong(double val, boolean includeDecimal)
+  static public String toStringLong(final double val, final boolean includeDecimal)
   {
     _workingHolder.setData(val, false);
 
@@ -91,9 +91,9 @@ public class BriefFormatLocation implements PlainFormatLocation
   /**
    * return the supplied location as a string
    */
-  static public String toString(WorldLocation loc)
+  static public String toString(final WorldLocation loc)
   {
-    String res = toStringLat(loc.getLat(), true) + " " + toStringLong(loc.getLong(), true);
+    final String res = toStringLat(loc.getLat(), true) + " " + toStringLong(loc.getLong(), true);
 
     return res;
   }
@@ -108,17 +108,17 @@ public class BriefFormatLocation implements PlainFormatLocation
     public double sec;
     public char hem;
 
-    public brokenDown(double val, boolean isLat)
+    public brokenDown(final double val, final boolean isLat)
     {
       setData(val, isLat);
     }
 
-    public void setData(double val, boolean isLat)
+    public void setData(final double val, final boolean isLat)
     {
       hem = doHem(val, isLat);
-      val = Math.abs(val);
-      deg = (int) (val);
-      double degVal = Math.rint((val - deg) * SCALE) / SCALE;
+      final double theVal = Math.abs(val);
+      deg = (int) (theVal);
+      double degVal = Math.rint((theVal - deg) * SCALE) / SCALE;
 
       // special case - if we're saying that there are 60 minutes, we really
       // mean 1 degree and 59 minutes. trap it.
@@ -158,7 +158,7 @@ public class BriefFormatLocation implements PlainFormatLocation
       }
     }
 
-    protected char doHem(double val, boolean isLat)
+    protected char doHem(final double val, final boolean isLat)
     {
       char res;
       if (val > 0)
@@ -188,7 +188,7 @@ public class BriefFormatLocation implements PlainFormatLocation
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public FormatLocationTest(String val)
+    public FormatLocationTest(final String val)
     {
       super(val);
     }
@@ -199,7 +199,7 @@ public class BriefFormatLocation implements PlainFormatLocation
     	assertNotNull("failed to create degree symbol", DEGREE_SYMBOL);
     	assertEquals("degree symbol wrong length", 1, DEGREE_SYMBOL.length());
     	
-      WorldLocation la = new WorldLocation(0d, 0d, 0d);
+      final WorldLocation la = new WorldLocation(0d, 0d, 0d);
       String res1 = " 00" + DEGREE_SYMBOL + "00\'00.00\" 000" + DEGREE_SYMBOL + "00\'00.00\"";
       super.assertEquals("first test", res1, BriefFormatLocation.toString(la));
       la.setLat(-12.345);
@@ -218,9 +218,9 @@ public class BriefFormatLocation implements PlainFormatLocation
     }
   }
 
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
-    WorldLocation la = new WorldLocation(0, 0, 0);
+    final WorldLocation la = new WorldLocation(0, 0, 0);
     System.out.println("first:" + BriefFormatLocation.toString(la));
     la.setLat(-12.345);
     la.setLong(22.432);
@@ -234,7 +234,7 @@ public class BriefFormatLocation implements PlainFormatLocation
 
   }
 
-	public String convertToString(WorldLocation theLocation)
+	public String convertToString(final WorldLocation theLocation)
 	{
 		return toString(theLocation);
 	}

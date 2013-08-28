@@ -44,7 +44,7 @@ public class RepeaterButton extends JButton
   {
     timer = new Timer(50, new ActionListener()
     {
-      public void actionPerformed(ActionEvent evt)
+      public void actionPerformed(final ActionEvent evt)
       {
       }
     })
@@ -61,9 +61,9 @@ public class RepeaterButton extends JButton
        * the fire method.
        * @see EventListenerList
        */
-      protected void fireActionPerformed(ActionEvent e)
+      protected void fireActionPerformed(final ActionEvent e)
       {
-        ActionEvent e2 = new ActionEvent(RepeaterButton.this, e.getID(), e.getActionCommand());
+        final ActionEvent e2 = new ActionEvent(RepeaterButton.this, e.getID(), e.getActionCommand());
         super.fireActionPerformed(e2);
       }
     };
@@ -76,7 +76,7 @@ public class RepeaterButton extends JButton
    * @param icon The icon for the button.
    */
 
-  public RepeaterButton(Icon icon)
+  public RepeaterButton(final Icon icon)
   {
     super(icon);
     _init();
@@ -86,11 +86,11 @@ public class RepeaterButton extends JButton
   /** copy of the code used for creating buttons elsewhere in Debrief code,
    * which loads an icon from the app's resources
    */
-  public RepeaterButton(String name,
-                        String theIcon)
+  public RepeaterButton(final String name,
+                        final String theIcon)
   {
     // load the icon first
-    java.lang.ClassLoader loader = getClass().getClassLoader();
+    final java.lang.ClassLoader loader = getClass().getClassLoader();
     java.net.URL myURL = null;
     if(loader != null)
     {
@@ -109,11 +109,11 @@ public class RepeaterButton extends JButton
     setToolTipText(name);
     setMargin(new Insets(0,0,0,0));
     addMouseListener(new MouseAdapter(){
-      public void mouseEntered(MouseEvent e)
+      public void mouseEntered(final MouseEvent e)
       {
         setBorderPainted(true);
       }
-      public void mouseExited(MouseEvent e)
+      public void mouseExited(final MouseEvent e)
       {
         setBorderPainted(false);
       }
@@ -127,7 +127,7 @@ public class RepeaterButton extends JButton
    * @param text The text for the button.
    */
 
-  public RepeaterButton(String text)
+  public RepeaterButton(final String text)
   {
     super(text);
     _init();
@@ -140,7 +140,7 @@ public class RepeaterButton extends JButton
    * @param icon The icon for the button.
    */
 
-  public RepeaterButton(String text, Icon icon)
+  public RepeaterButton(final String text, final Icon icon)
   {
     super(text, icon);
     _init();
@@ -152,7 +152,7 @@ public class RepeaterButton extends JButton
    * press to begin generating action events.
    */
 
-  public void setInitialDelay(int msec)
+  public void setInitialDelay(final int msec)
   {
     timer.setInitialDelay(msec);
   }
@@ -173,7 +173,7 @@ public class RepeaterButton extends JButton
    * successive action events.
    */
 
-  public void setRepeatDelay(int msec)
+  public void setRepeatDelay(final int msec)
   {
     timer.setDelay(msec);
   }
@@ -193,7 +193,7 @@ public class RepeaterButton extends JButton
    * @param listener The listener to add.
    */
 
-  public void addActionListener(ActionListener listener)
+  public void addActionListener(final ActionListener listener)
   {
     super.addActionListener(listener);
     timer.addActionListener(listener);
@@ -205,7 +205,7 @@ public class RepeaterButton extends JButton
    * @param listener The listener to remove.
    */
 
-  public void removeActionListener(ActionListener listener)
+  public void removeActionListener(final ActionListener listener)
   {
     super.removeActionListener(listener);
     timer.removeActionListener(listener);
@@ -215,7 +215,7 @@ public class RepeaterButton extends JButton
 
   protected void processMouseEvent(final java.awt.event.MouseEvent evt)
   {
-    int id = evt.getID();
+    final int id = evt.getID();
 
     switch(id)
     {

@@ -75,7 +75,7 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
    * @param theLabel  the label for the plot button
    * @param theData   the data we are going to plot
    */
-  public DebriefWriteVRML(MWC.GUI.ToolParent theParent, String theLabel, MWC.GUI.Layers theData)
+  public DebriefWriteVRML(final MWC.GUI.ToolParent theParent, final String theLabel, final MWC.GUI.Layers theData)
   {
     super(theParent, theLabel, theData);
   }
@@ -87,30 +87,30 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
    * @param out     the stream to write to
    * @throws java.io.IOException file-related troubles
    */
-  protected final void plotData(MWC.GUI.Layers theData, java.io.BufferedWriter out)
+  protected final void plotData(final MWC.GUI.Layers theData, final java.io.BufferedWriter out)
     throws java.io.IOException
   {
 
-    java.text.DateFormat df = new java.text.SimpleDateFormat("ddHHmm");
+    final java.text.DateFormat df = new java.text.SimpleDateFormat("ddHHmm");
     df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     // work through the layers
     int num = _theData.size();
     for (int i = 0; i < num; i++)
     {
-      Layer l = (Layer) _theData.elementAt(i);
-      Enumeration<Editable> iter = l.elements();
+      final Layer l = (Layer) _theData.elementAt(i);
+      final Enumeration<Editable> iter = l.elements();
       while (iter.hasMoreElements())
       {
-        Object oj = iter.nextElement();
+        final Object oj = iter.nextElement();
         if (oj instanceof Debrief.Wrappers.FixWrapper)
         {
-          Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
-          WorldLocation pos = fw.getLocation();
+          final Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
+          final WorldLocation pos = fw.getLocation();
 
           if (fw.getSymbolShowing())
           {
-            String lbl = fw.getName();
+            final String lbl = fw.getName();
             writeBox(out,
                      pos.getLong(), pos.getLat(), pos.getDepth(),
                      fw.getColor(), lbl);
@@ -118,7 +118,7 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
 
           if (fw.getLabelShowing())
           {
-            String str = DebriefFormatDateTime.toStringHiRes(fw.getTime());
+            final String str = DebriefFormatDateTime.toStringHiRes(fw.getTime());
             writeText(out, pos.getLong(), pos.getLat(), pos.getDepth(), str, fw.getColor());
           }
 
@@ -132,12 +132,12 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
     num = _theData.size();
     for (int i = 0; i < num; i++)
     {
-      Layer l = (Layer) _theData.elementAt(i);
-      Enumeration<Editable> iter = l.elements();
+      final Layer l = (Layer) _theData.elementAt(i);
+      final Enumeration<Editable> iter = l.elements();
       int len = 0;
       while (iter.hasMoreElements())
       {
-        Object oj = iter.nextElement();
+        final Object oj = iter.nextElement();
 
         if (oj instanceof MWC.GenericData.WatchableList)
         {
@@ -150,16 +150,16 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
             len = 0;
           }
 
-          MWC.GenericData.WatchableList tw = (MWC.GenericData.WatchableList) oj;
-          java.awt.Color col = tw.getColor();
+          final MWC.GenericData.WatchableList tw = (MWC.GenericData.WatchableList) oj;
+          final java.awt.Color col = tw.getColor();
           writeLineHeader(out, col);
         }
 
         if (oj instanceof Debrief.Wrappers.FixWrapper)
         {
           len++;
-          Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
-          WorldLocation pos = fw.getLocation();
+          final Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
+          final WorldLocation pos = fw.getLocation();
 
           writeLineEntry(out, pos.getLong(), pos.getLat(), pos.getDepth());
         }

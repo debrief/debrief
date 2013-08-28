@@ -60,9 +60,9 @@ public interface PlotHighlighter extends Editable {
 		 * @param watch
 		 *            the current data point
 		 */
-		public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-				java.awt.Graphics dest, MWC.GenericData.WatchableList list,
-				MWC.GenericData.Watchable watch, final boolean isPrimary) {
+		public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
+				final java.awt.Graphics dest, final MWC.GenericData.WatchableList list,
+				final MWC.GenericData.Watchable watch, final boolean isPrimary) {
 			// check that our graphics context is still valid -
 			// we can't, so we will just have to trap any exceptions it raises
 			try {
@@ -70,19 +70,19 @@ public interface PlotHighlighter extends Editable {
 				// set the highlight colour
 				dest.setColor(_myColor);
 				// get the current area of the watchable
-				WorldArea wa = watch.getBounds();
+				final WorldArea wa = watch.getBounds();
 				// convert to screen coordinates
-				Point tl = proj.toScreen(wa.getTopLeft());
+				final Point tl = proj.toScreen(wa.getTopLeft());
 
-				int tlx = tl.x;
-				int tly = tl.y;
+				final int tlx = tl.x;
+				final int tly = tl.y;
 
-				Point br = proj.toScreen(wa.getBottomRight());
+				final Point br = proj.toScreen(wa.getBottomRight());
 				// get the width
-				int x = tlx - _mySize;
-				int y = tly - _mySize;
-				int wid = (br.x - tlx) + _mySize * 2;
-				int ht = (br.y - tly) + _mySize * 2;
+				final int x = tlx - _mySize;
+				final int y = tly - _mySize;
+				final int wid = (br.x - tlx) + _mySize * 2;
+				final int ht = (br.y - tly) + _mySize * 2;
 
 				// hmm - implemented plotting the cursor differently if we're
 				// looking at interpolated data
@@ -110,7 +110,7 @@ public interface PlotHighlighter extends Editable {
 					oldStroke = null;
 				}
 
-			} catch (IllegalStateException e) {
+			} catch (final IllegalStateException e) {
 				MWC.Utilities.Errors.Trace.trace(e);
 			}
 
@@ -220,7 +220,7 @@ public interface PlotHighlighter extends Editable {
 							prop("Color", "Color to paint highlight"),
 							prop("Size", "size to paint highlight (pixels)"), };
 					return res;
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					MWC.Utilities.Errors.Trace.trace(e);
 					return super.getPropertyDescriptors();
 				}

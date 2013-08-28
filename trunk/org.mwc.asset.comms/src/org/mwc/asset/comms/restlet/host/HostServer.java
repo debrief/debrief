@@ -16,9 +16,9 @@ abstract public class HostServer extends Application implements HostProvider
 	 */
 	abstract public ASSETHost getHost();
 
-	public static Component go(Restlet host) throws Exception
+	public static Component go(final Restlet host) throws Exception
 	{
-		Component component = new Component();
+		final Component component = new Component();
 		component.getClients().add(Protocol.FILE);
 		component.getServers().add(Protocol.HTTP, 8080);
 		component.getDefaultHost().attach(host);
@@ -27,7 +27,7 @@ abstract public class HostServer extends Application implements HostProvider
 		return component;
 	}
 
-	public static void finish(Component component) throws Exception
+	public static void finish(final Component component) throws Exception
 	{
 		component.stop();
 	}
@@ -38,9 +38,9 @@ abstract public class HostServer extends Application implements HostProvider
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception
+	public static void main(final String[] args) throws Exception
 	{
-		Restlet host = new HostServer()
+		final Restlet host = new HostServer()
 		{
 
 			ASSETHost host = new MockHost();
@@ -57,7 +57,7 @@ abstract public class HostServer extends Application implements HostProvider
 	@Override
 	public Restlet createInboundRoot()
 	{
-		Router router = new Router(getContext());
+		final Router router = new Router(getContext());
 		getConnectorService().getClientProtocols().add(Protocol.FILE);
 
 		router.attach("/v1/scenario", ScenariosHandler.class);

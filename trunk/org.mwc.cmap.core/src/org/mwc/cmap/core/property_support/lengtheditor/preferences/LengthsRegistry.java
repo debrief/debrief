@@ -22,9 +22,9 @@ public class LengthsRegistry {
 
 	private String myFileName;
 
-	private List<String> myNames = new ArrayList<String>();
+	private final List<String> myNames = new ArrayList<String>();
 
-	private List<Double> myLengths = new ArrayList<Double>();
+	private final List<Double> myLengths = new ArrayList<Double>();
 
 	public LengthsRegistry() {
 		setFileName(CorePlugin.getDefault().getPreferenceStore().getString(FILE_NAME));
@@ -65,7 +65,7 @@ public class LengthsRegistry {
 		}
 
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(getFileName()));
+			final BufferedReader br = new BufferedReader(new FileReader(getFileName()));
 			try {
 				String nextLine = null;
 				// skip header
@@ -79,10 +79,10 @@ public class LengthsRegistry {
 				} finally {
 					br.close();
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_ErrorOnReading, e);
 			}
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_FileNotFound, null);
 		}
 
@@ -92,24 +92,24 @@ public class LengthsRegistry {
 		return true;
 	}
 
-	private void parseLine(String nextLine) {
-		String[] split = nextLine.split(DELIMITER);
+	private void parseLine(final String nextLine) {
+		final String[] split = nextLine.split(DELIMITER);
 		if (split.length != 2) {
 			return;
 		}
 
-		String f = split[0];
-		String s = split[1];
+		final String f = split[0];
+		final String s = split[1];
 		try {
-			Double value = Double.valueOf(s);
+			final Double value = Double.valueOf(s);
 			myNames.add(f);
 			myLengths.add(value);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// skip
 		}
 	}
 
-	public void setFileName(String fileName) {
+	public void setFileName(final String fileName) {
 		myFileName = fileName;
 	}
 

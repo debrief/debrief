@@ -438,7 +438,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	 *            plotting destination
 	 */
 	public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-			CanvasType canvas) {
+			final CanvasType canvas) {
 		// check we have a valid new DTG
 		if (newDTG == null)
 			return;
@@ -520,10 +520,11 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 		// we now have our lists, lets plot them
 		// Get the graphics
-		if (canvas == null)
-			canvas = _theChart.getCanvas();
+		CanvasType theCanvas = canvas;
+		if (theCanvas == null)
+			theCanvas = _theChart.getCanvas();
 
-		final Graphics dest = canvas.getGraphicsTemp();
+		final Graphics dest = theCanvas.getGraphicsTemp();
 
 		// check we were able to get our destination plotting canvas
 		// and drop out if we haven't - it's no surprise if we
@@ -534,12 +535,12 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 		// over-ride the line thickness to ensure it's only 1 pixel wide
 		if (dest instanceof Graphics2D) {
-			Graphics2D g2 = (Graphics2D) dest;
+			final Graphics2D g2 = (Graphics2D) dest;
 			g2.setStroke(new BasicStroke(MARKER_THICKNESS));
 		}
 
 		// set the XOR painting mode
-		dest.setXORMode(canvas.getBackgroundColor());
+		dest.setXORMode(theCanvas.getBackgroundColor());
 		final PlainProjection proj = _theChart.getCanvas().getProjection();
 
 		// remove the old primary highlight
@@ -723,7 +724,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 				// prop("Size", "size to paint highlight (pixels"),
 				};
 				return res;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				MWC.Utilities.Errors.Trace.trace(e);
 				return super.getPropertyDescriptors();
 			}

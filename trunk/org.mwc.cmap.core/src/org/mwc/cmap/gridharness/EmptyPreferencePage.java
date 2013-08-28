@@ -17,6 +17,6 @@ public class EmptyPreferencePage extends FieldEditorPreferencePage implements IW
 		//
 	}
 
-	public void init(IWorkbench workbench) {
+	public void init(final IWorkbench workbench) {
 	}
 }

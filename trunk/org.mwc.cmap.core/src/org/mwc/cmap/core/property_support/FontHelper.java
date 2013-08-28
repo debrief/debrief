@@ -40,22 +40,22 @@ public class FontHelper extends EditorHelper
 	public static class FontDataDialogCellEditor extends DialogCellEditor
 	{
 
-		public FontDataDialogCellEditor(Composite parent)
+		public FontDataDialogCellEditor(final Composite parent)
 		{
 			super(parent);
 		}
 
-		protected Object openDialogBox(Control cellEditorWindow)
+		protected Object openDialogBox(final Control cellEditorWindow)
 		{
 			Font res = null;
-			FontDialog ftDialog = new FontDialog(cellEditorWindow.getShell());
-			Font thisFont = (Font) getValue();
+			final FontDialog ftDialog = new FontDialog(cellEditorWindow.getShell());
+			final Font thisFont = (Font) getValue();
 			if (thisFont != null)
 			{
-				FontData[] list = thisFont.getFontData();
+				final FontData[] list = thisFont.getFontData();
 				ftDialog.setFontList(list);
 			}
-			FontData fData = ftDialog.open();
+			final FontData fData = ftDialog.open();
 			if (fData != null)
 			{
 				res = new Font(Display.getCurrent(), fData);
@@ -72,31 +72,31 @@ public class FontHelper extends EditorHelper
 		super(java.awt.Font.class);
 	}
 
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
-		CellEditor editor = new FontDataDialogCellEditor(parent);
+		final CellEditor editor = new FontDataDialogCellEditor(parent);
 		return editor;
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		// ok, convert the AWT color to SWT
-		java.awt.Font col = (java.awt.Font) value;
+		final java.awt.Font col = (java.awt.Font) value;
 		return convertFontFromAWT(col);
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		// ok, convert the AWT color to SWT
-		Font font = (Font) value;
+		final Font font = (Font) value;
 		return convertFontFromSWT(font);
 	}
 
-	public static java.awt.Font convertFontFromSWT(org.eclipse.swt.graphics.Font swtFont)
+	public static java.awt.Font convertFontFromSWT(final org.eclipse.swt.graphics.Font swtFont)
 	{
 		// ok, convert the AWT color to SWT
 		java.awt.Font res = null;
-		FontData fd = swtFont.getFontData()[0];
+		final FontData fd = swtFont.getFontData()[0];
 
 		if (_awtFonts == null)
 			_awtFonts = new HashMap<FontData, java.awt.Font>();
@@ -121,7 +121,7 @@ public class FontHelper extends EditorHelper
 	 * @param javaFont
 	 * @return
 	 */
-	public static org.eclipse.swt.graphics.Font convertFontFromAWT(java.awt.Font javaFont)
+	public static org.eclipse.swt.graphics.Font convertFontFromAWT(final java.awt.Font javaFont)
 	{
 
 		// check we have our registry
@@ -147,8 +147,8 @@ public class FontHelper extends EditorHelper
 			{
 				// bugger, we'll have to create it
 
-				int size = javaFont.getSize();
-				int style = javaFont.getStyle();
+				final int size = javaFont.getSize();
+				final int style = javaFont.getStyle();
 				String name = javaFont.getName();
 
 				// WORKAROUND
@@ -158,7 +158,7 @@ public class FontHelper extends EditorHelper
 					name = "Arial";
 
 				// create an SWT font data entity to describe this font
-				FontData newF = new FontData(name, size, style);
+				final FontData newF = new FontData(name, size, style);
 				
 				// and store the font in the registry
 				_fontRegistry.put(fontName, new FontData[]
@@ -177,23 +177,23 @@ public class FontHelper extends EditorHelper
 		return thisFont;
 	}
 
-	public static org.eclipse.swt.graphics.Font getFont(FontData fd)
+	public static org.eclipse.swt.graphics.Font getFont(final FontData fd)
 	{
-		org.eclipse.swt.graphics.Font res = null;
+		final org.eclipse.swt.graphics.Font res = null;
 
 		return res;
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				Font font = (Font) element;
-				FontData[] datas = font.getFontData();
+				final Font font = (Font) element;
+				final FontData[] datas = font.getFontData();
 
-				FontData data = datas[0];
+				final FontData data = datas[0];
 
 				// sort out the font family
 				String res = data.getName();
@@ -211,7 +211,7 @@ public class FontHelper extends EditorHelper
 				return res;
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}

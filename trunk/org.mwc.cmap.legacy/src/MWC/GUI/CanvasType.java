@@ -503,7 +503,7 @@ public interface CanvasType {
      *
      * @param dest parameter for paintMe
      */
-    public void paintMe(CanvasType dest)
+    public void paintMe(final CanvasType dest)
     {
       // do nothing
     }
@@ -525,7 +525,7 @@ public interface CanvasType {
      * @param theProj parameter for resizedEvent
      *
      */
-    public void resizedEvent(MWC.Algorithms.PlainProjection theProj, java.awt.Dimension newScreenArea)
+    public void resizedEvent(final MWC.Algorithms.PlainProjection theProj, final java.awt.Dimension newScreenArea)
     {
       // do nothing, since we're not really interested
     }

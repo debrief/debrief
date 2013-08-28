@@ -50,7 +50,7 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 		public HashMap<SensorWrapper, SensorSeries> getIndex();
 	}
 
-	private BasicStroke THICK_STROKE = new BasicStroke(4);
+	private final BasicStroke THICK_STROKE = new BasicStroke(4);
 	int _seriesNum = -1;
 	TacticalSeries _series = null;
 	boolean _isSensor;
@@ -59,15 +59,15 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 	final private FusionHelper _myHelper;
 	private Paint _trackColor;
 
-	public FusionPlotRenderer(FusionHelper helper)
+	public FusionPlotRenderer(final FusionHelper helper)
 	{
 		super();
 		_myHelper = helper;
 	}
 
 	@Override
-	public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea,
-			XYPlot plot, XYDataset data, PlotRenderingInfo info)
+	public XYItemRendererState initialise(final Graphics2D g2, final Rectangle2D dataArea,
+			final XYPlot plot, final XYDataset data, final PlotRenderingInfo info)
 	{
 		// clear the counter, so we know we start counting again
 		_seriesNum = -1;
@@ -76,7 +76,7 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 	}
 
 	@Override
-	public Boolean getSeriesShapesVisible(int series)
+	public Boolean getSeriesShapesVisible(final int series)
 	{
 		return  _series.getVisible();
 	}
@@ -84,16 +84,16 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 	/** note: this method has been generated to correct the mistaken JFreeChart
 	 * implementation that breaks whtn in PlotOrientation.Horizontal.
 	 */
-	protected void addEntity(EntityCollection entities, Shape area,
-			XYDataset dataset, int series, int item, double entityX,
-			double entityY) {
+	protected void addEntity(final EntityCollection entities, final Shape area,
+			final XYDataset dataset, final int series, final int item, final double entityX,
+			final double entityY) {
 		if (!getItemCreateEntity(series, item)) {
 			return;
 		}
 		Shape hotspot = area;
 		if (hotspot == null) {
-			double r = getDefaultEntityRadius();
-			double w = r * 2;
+			final double r = getDefaultEntityRadius();
+			final double w = r * 2;
 			// NOTE: the JFreeChart problem is in the next line, it tries
 			// to switch the X & Y when in horizontal mode, but the X and Y
 			// values have already been transposed.
@@ -101,7 +101,7 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 		}
 
 		String tip = null;
-		XYToolTipGenerator generator = getToolTipGenerator(series, item);
+		final XYToolTipGenerator generator = getToolTipGenerator(series, item);
 		if (generator != null) {
 			tip = generator.generateToolTip(dataset, series, item);
 		}
@@ -109,13 +109,13 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 		if (getURLGenerator() != null) {
 			url = getURLGenerator().generateURL(dataset, series, item);
 		}
-		XYItemEntity entity = new XYItemEntity(hotspot, dataset, series,
+		final XYItemEntity entity = new XYItemEntity(hotspot, dataset, series,
 				item, tip, url);
 		entities.add(entity);
 	}
 	
 	@Override
-	public Paint getItemPaint(int row, int column)
+	public Paint getItemPaint(final int row, final int column)
 	{
 		if (_trackColor == null)
 			_trackColor = super.getItemPaint(row, column);
@@ -123,7 +123,7 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 	}
 
 	@Override
-	public Stroke getItemStroke(int row, int column)
+	public Stroke getItemStroke(final int row, final int column)
 	{
 		Stroke res;
 		if (!_isSensor)
@@ -135,7 +135,7 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 		return res;
 	}
 
-	public boolean getItemLineVisible(int series, int item)
+	public boolean getItemLineVisible(final int series, final int item)
 	{
 		boolean res = true;
 		res = _thisItem.connectToPrevious();
@@ -144,15 +144,15 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 	}
 
 	@Override
-	public void drawItem(Graphics2D g2, XYItemRendererState state,
-			Rectangle2D dataArea, PlotRenderingInfo info, XYPlot plot,
-			ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset, int series,
-			int item, CrosshairState crosshairState, int pass)
+	public void drawItem(final Graphics2D g2, final XYItemRendererState state,
+			final Rectangle2D dataArea, final PlotRenderingInfo info, final XYPlot plot,
+			final ValueAxis domainAxis, final ValueAxis rangeAxis, final XYDataset dataset, final int series,
+			final int item, final CrosshairState crosshairState, final int pass)
 	{
 		// is this a new series?
 		if (series != _seriesNum)
 		{
-			TimeSeriesCollection tData = (TimeSeriesCollection) dataset;
+			final TimeSeriesCollection tData = (TimeSeriesCollection) dataset;
 			_seriesNum = series;
 			_series = (TacticalSeries) tData.getSeries(series);
 			_isSensor = (_series instanceof SensorSeries);

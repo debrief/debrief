@@ -54,7 +54,7 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
 	}
 
-	public void init(IWorkbench workbench)
+	public void init(final IWorkbench workbench)
 	{
 	}
 
@@ -72,7 +72,7 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
 
 	private void addFileEditor()
 	{
-		Composite parent = getFieldEditorParent();
+		final Composite parent = getFieldEditorParent();
 		myFileEditor = new FileFieldEditor(LengthsRegistry.FILE_NAME,
 				Messages.LengthsLookupPreferencesPage_FileLabel, true,
 				FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent)
@@ -93,18 +93,18 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
 
 	private void addReloadButton()
 	{
-		Composite parent = getFieldEditorParent();
-		Button reloadButton = new Button(parent, SWT.PUSH);
+		final Composite parent = getFieldEditorParent();
+		final Button reloadButton = new Button(parent, SWT.PUSH);
 		reloadButton.setText(Messages.LengthsLookupPreferencesPage_UpdateNow);
 		reloadButton.addSelectionListener(new SelectionListener()
 		{
 
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				reloadDataFromFile();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 				// nothing
 			}
@@ -126,14 +126,14 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
 
 	private void addOpenFileHyperlink()
 	{
-		Composite parent = getFieldEditorParent();
+		final Composite parent = getFieldEditorParent();
 
-		Link link = new Link(parent, SWT.NONE);
+		final Link link = new Link(parent, SWT.NONE);
 		link.setText(Messages.LengthsLookupPreferencesPage_OpenFileLabel);
 		link.addListener(SWT.Selection, new Listener()
 		{
 
-			public void handleEvent(Event event)
+			public void handleEvent(final Event event)
 			{
 				openSystemEditor();
 			}
@@ -151,14 +151,14 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
 
 	private void addOpenHelpHyperlink()
 	{
-		Composite parent = getFieldEditorParent();
+		final Composite parent = getFieldEditorParent();
 
-		Button helpBtn = new Button(parent, SWT.NONE);
+		final Button helpBtn = new Button(parent, SWT.NONE);
 		helpBtn.setText("Find out more about sensor offsets");
 		helpBtn.addListener(SWT.Selection, new Listener()
 		{
 
-			public void handleEvent(Event event)
+			public void handleEvent(final Event event)
 			{
 				PlatformUI.getWorkbench().getHelpSystem().displayHelp(CONTEXT_ID);
 			}
@@ -179,7 +179,7 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
 	 */
 	private void openSystemEditor()
 	{
-		String fileName = getFileName();
+		final String fileName = getFileName();
 		if ((fileName == null)||(fileName.length() == 0))
 		{
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Edit Array Offsets file",
@@ -188,12 +188,12 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
 		}
 		else
 		{
-			File file = new File(fileName);
+			final File file = new File(fileName);
 			try
 			{
 				Desktop.getDesktop().open(file);
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				CorePlugin.logError(Status.ERROR,
 						Messages.LengthsLookupPreferencesPage_ErrorOnOpenFileEditor, e);

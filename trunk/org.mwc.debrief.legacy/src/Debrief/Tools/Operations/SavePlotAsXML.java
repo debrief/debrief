@@ -20,16 +20,16 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public SavePlotAsXML(ToolParent theParent,
-                       Session theSession)
+  public SavePlotAsXML(final ToolParent theParent,
+                       final Session theSession)
   {
     this(theParent, theSession, "Save Plot As...", "images/saveas.gif");
   }
 
-  public SavePlotAsXML(ToolParent theParent,
-                       Session theSession,
-                       String theTitle,
-                       String theImage)
+  public SavePlotAsXML(final ToolParent theParent,
+                       final Session theSession,
+                       final String theTitle,
+                       final String theImage)
   {
     super(theParent, theTitle, "*.xml", theImage);
 
@@ -39,7 +39,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
     // see if we have an old directory to retrieve
     if (_lastDirectory.equals(""))
     {
-      String val = getParent().getProperty("XML_Directory");
+      final String val = getParent().getProperty("XML_Directory");
       if (val != null)
         _lastDirectory = val;
     }
@@ -55,7 +55,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
    * @param fileName
    * @return
    */
-  protected final Action doSave(String fileName)
+  protected final Action doSave(final String fileName)
   {
     Action res = null;
 
@@ -64,21 +64,22 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
 
 
     // check the output filename
-    final int idx = fileName.toLowerCase().indexOf(".xml");
+    String theFileName = fileName;
+    final int idx = theFileName.toLowerCase().indexOf(".xml");
     if (idx == -1)
     {
-      fileName += ".xml";
+      theFileName += ".xml";
     }
 
     // the name of the temp filename, if we need one.
     String tmpFileName = null;
 
     // the name of the file which we actually store to
-    String outputFileName = fileName;
+    String outputFileName = theFileName;
 
 
     // does this file exist
-    File targetFile = new File(fileName);
+    final File targetFile = new File(theFileName);
     if (targetFile.exists())
     {
       // yes, the file already exists.  Write to a temp filename
@@ -104,7 +105,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
     try
     {
       // open the file
-      OutputStream os = new FileOutputStream(outputFileName);
+      final OutputStream os = new FileOutputStream(outputFileName);
 
       try
       {
@@ -114,7 +115,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
         // ok - remember it went ok
         saveWorked = true;
       }
-      catch (java.lang.OutOfMemoryError me)
+      catch (final java.lang.OutOfMemoryError me)
       {
         MWC.Utilities.Errors.Trace.trace(me, " Ran out of memory whilst saving plot, try adding -Xmx256m to the command line");
       }
@@ -123,7 +124,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
       // the temp file when necessary
       os.close();
     }
-    catch (IOException e)
+    catch (final IOException e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -135,12 +136,12 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
       if (tmpFileName != null)
       {
         // yes.  delete the original file
-        File oldFile = new File(fileName);
+        final File oldFile = new File(theFileName);
         oldFile.delete();
 
         // and rename our new file
-        File tmpFile = new File(tmpFileName);
-        boolean renameChanged = tmpFile.renameTo(oldFile);
+        final File tmpFile = new File(tmpFileName);
+        final boolean renameChanged = tmpFile.renameTo(oldFile);
         
         if(!renameChanged)
         {
@@ -150,23 +151,23 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
       }
 
       // inform the session of it's filename
-      _theSession.setFileName(fileName);
+      _theSession.setFileName(theFileName);
 
       // store the action
       res = new SavePlotAction(_theSession.getName());
 
       // put the filename into the MRU
-      Debrief.GUI.Frames.Application.addToMru(fileName);
+      Debrief.GUI.Frames.Application.addToMru(theFileName);
 
     }
     else
     {
       // the save failed - try to delete the working file
-      File scrapFile = new File(outputFileName);
+      final File scrapFile = new File(outputFileName);
 
       if (scrapFile.exists())
       {
-        boolean deleted = scrapFile.delete();
+        final boolean deleted = scrapFile.delete();
         System.out.println("deleted:" + deleted);
       }
     }
@@ -190,7 +191,7 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
      */
     final String _theSessionName;
 
-    public SavePlotAction(String theName)
+    public SavePlotAction(final String theName)
     {
       _theSessionName = theName;
     }
@@ -231,13 +232,13 @@ public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
   }
 
 
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
-    String fName = "c:\\test2.txt";
-    File fD = new File(fName);
+    final String fName = "c:\\test2.txt";
+    final File fD = new File(fName);
     //    File f2 = new File("c:\\test2.txt");
     //    fD.renameTo(f2);
-    boolean deleted = fD.delete();
+    final boolean deleted = fD.delete();
     System.out.println("res:" + deleted);
 
   }

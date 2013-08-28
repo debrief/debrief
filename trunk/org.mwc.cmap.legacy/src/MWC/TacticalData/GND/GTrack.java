@@ -54,7 +54,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 
 	private ArrayList<Editable> _myList;
 
-	public GTrack(GDataset data)
+	public GTrack(final GDataset data)
 	{
 		_data = data;
 	}
@@ -89,18 +89,18 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	 *          array index
 	 * @return
 	 */
-	public Fix getFixAt(int i)
+	public Fix getFixAt(final int i)
 	{
-		Fix newF = new Fix();
+		final Fix newF = new Fix();
 		if (_data.getTimes() != null)
 			newF.setTime(new HiResDate(_data.getTimes()[i]));
-		double lat = _data.getDataset(GDataset.LAT)[i];
-		double lon = _data.getDataset(GDataset.LON)[i];
+		final double lat = _data.getDataset(GDataset.LAT)[i];
+		final double lon = _data.getDataset(GDataset.LON)[i];
 		double depth = 0;
 		if (_data.getDataset(GDataset.ELEVATION) != null)
 			depth = _data.getDataset(GDataset.ELEVATION)[i];
 
-		WorldLocation loc = new WorldLocation(lat, lon, -depth);
+		final WorldLocation loc = new WorldLocation(lat, lon, -depth);
 		newF.setLocation(loc);
 
 		return newF;
@@ -113,21 +113,21 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	}
 
 	@Override
-	public Watchable[] getNearestTo(HiResDate DTG)
+	public Watchable[] getNearestTo(final HiResDate DTG)
 	{
 		return new Watchable[]
 		{};
 	}
 
 	@Override
-	public void filterListTo(HiResDate start, HiResDate end)
+	public void filterListTo(final HiResDate start, final HiResDate end)
 	{
 		_startDate = start;
 		_endDate = end;
 	}
 
 	@Override
-	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
+	public Collection<Editable> getItemsBetween(final HiResDate start, final HiResDate end)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -138,12 +138,12 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	{
 		if (_myBounds == null)
 		{
-			double[] lats = _data.getDataset("lat");
-			double[] longs = _data.getDataset("lon");
+			final double[] lats = _data.getDataset("lat");
+			final double[] longs = _data.getDataset("lon");
 
 			for (int i = 0; i < lats.length; i++)
 			{
-				WorldLocation newLoc = new WorldLocation(lats[i], longs[i], 0);
+				final WorldLocation newLoc = new WorldLocation(lats[i], longs[i], 0);
 				if (_myBounds == null)
 					_myBounds = new WorldArea(newLoc, newLoc);
 				else
@@ -155,13 +155,13 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	}
 
 	@Override
-	public double rangeFrom(WorldLocation other)
+	public double rangeFrom(final WorldLocation other)
 	{
 		return Plottable.INVALID_RANGE;
 	}
 
 	@Override
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
 		return this.getName().compareTo(arg0.getName());
 	}
@@ -187,14 +187,14 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	}
 
 	@Override
-	public void append(Layer other)
+	public void append(final Layer other)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		if (!getVisible())
 			return;
@@ -202,19 +202,19 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 		// ok, loop through the points
 		dest.setColor(super.getColor());
 
-		double[] lats = _data.getDataset("lat");
-		double[] lons = _data.getDataset("lon");
-		Date[] dates = _data.getTimes();
+		final double[] lats = _data.getDataset("lat");
+		final double[] lons = _data.getDataset("lon");
+		final Date[] dates = _data.getTimes();
 
-		int[] xP = new int[lats.length];
-		int[] yP = new int[lats.length];
+		final int[] xP = new int[lats.length];
+		final int[] yP = new int[lats.length];
 
 		boolean namePlotted = false;
 		int ctr = 0;
 		for (int i = 0; i < lats.length; i++)
 		{
-			WorldLocation thisLoc = new WorldLocation(lats[i], lons[i], 0);
-			Point pt = dest.toScreen(thisLoc);
+			final WorldLocation thisLoc = new WorldLocation(lats[i], lons[i], 0);
+			final Point pt = dest.toScreen(thisLoc);
 
 			boolean plotIt = true;
 
@@ -223,7 +223,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 			{
 				if (dates != null)
 				{
-					Date thisD = dates[i];
+					final Date thisD = dates[i];
 					if (thisD.getTime() < _startDate.getDate().getTime()
 							|| thisD.getTime() > _endDate.getDate().getTime())
 						plotIt = false;
@@ -252,7 +252,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	}
 
 	@Override
-	public void setName(String val)
+	public void setName(final String val)
 	{
 		// TODO Auto-generated method stub
 
@@ -273,14 +273,14 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	}
 
 	@Override
-	public void add(Editable point)
+	public void add(final Editable point)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void removeElement(Editable point)
+	public void removeElement(final Editable point)
 	{
 		// TODO Auto-generated method stub
 
@@ -301,17 +301,17 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 			{
 				final int thisIndex = j;
 				final Editable fw;
-				GDataItem.Setter setter = new GDataItem.Setter()
+				final GDataItem.Setter setter = new GDataItem.Setter()
 				{
-					public void setValue(String name, Object value)
+					public void setValue(final String name, final Object value)
 					{
 						// SPECIAL CASE: is this the location?
 						if (name.equals(GDataItem.LOCATION))
 						{
-							WorldLocation loc = (WorldLocation) value;
-							double lat = loc.getLat();
-							double lon = loc.getLong();
-							double depth = loc.getDepth();
+							final WorldLocation loc = (WorldLocation) value;
+							final double lat = loc.getLat();
+							final double lon = loc.getLong();
+							final double depth = loc.getDepth();
 
 							// store the lat/lon
 							_data.getDataset(GDataset.LAT)[thisIndex] = lat;
@@ -328,16 +328,16 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 						}
 					}
 				};
-				ArrayList<String> fieldList = _data.getDataTypes();
-				HashMap<String, Object> fields = new HashMap<String, Object>();
-				Iterator<String> iter = fieldList.iterator();
+				final ArrayList<String> fieldList = _data.getDataTypes();
+				final HashMap<String, Object> fields = new HashMap<String, Object>();
+				final Iterator<String> iter = fieldList.iterator();
 				while (iter.hasNext())
 				{
-					String thisF = iter.next();
+					final String thisF = iter.next();
 					// special case, is this the time field?
 					if (thisF.equals("time"))
 					{
-						Date thisD = _data.getTimes()[thisIndex];
+						final Date thisD = _data.getTimes()[thisIndex];
 						fields.put(thisF, thisD);
 					}
 					else
@@ -375,7 +375,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	}
 
 	@Override
-	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	public TimeStampedDataItem makeCopy(final TimeStampedDataItem item)
 	{
 		if (false == item instanceof GDataItem)
 		{
@@ -383,8 +383,8 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 					"I am expecting a position, don't know how to copy " + item);
 		}
 
-		GDataItem master = (GDataItem) item;
-		TimeStampedDataItem res = master.makeCopy();
+		final GDataItem master = (GDataItem) item;
+		final TimeStampedDataItem res = master.makeCopy();
 
 		return res;
 	}
@@ -402,7 +402,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	}
 
 	@Override
-	public void doSave(String message)
+	public void doSave(final String message)
 	{
 		_data.doSave(message);
 	}

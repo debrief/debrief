@@ -27,22 +27,22 @@ abstract public class FontHandler extends MWCXMLReader
     super("font");
 
     addAttributeHandler(new HandleAttribute("Family")
-    { public void setValue(String name, String val)
+    { public void setValue(final String name, final String val)
       {
         _family = val;
       }});
     addAttributeHandler(new HandleAttribute("Size")
-    { public void setValue(String name, String val)
+    { public void setValue(final String name, final String val)
       {
         _size = Integer.valueOf(val).intValue();
       }});
     addAttributeHandler(new HandleAttribute("Italic")
-    { public void setValue(String name, String val)
+    { public void setValue(final String name, final String val)
       {
         _isItalic = Boolean.valueOf(val).booleanValue();
       }});
     addAttributeHandler(new HandleAttribute("Bold")
-    { public void setValue(String name, String val)
+    { public void setValue(final String name, final String val)
       {
         _isBold = Boolean.valueOf(val).booleanValue();
       }});
@@ -75,10 +75,10 @@ abstract public class FontHandler extends MWCXMLReader
   abstract public void setFont(java.awt.Font res);
 
 
-  public static void exportFont(java.awt.Font font, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportFont(final java.awt.Font font, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
-    org.w3c.dom.Element eLoc = doc.createElement("font");
+    final org.w3c.dom.Element eLoc = doc.createElement("font");
     // set the attributes
     eLoc.setAttribute("Family", font.getName());
     eLoc.setAttribute("Size", writeThis(font.getSize()));

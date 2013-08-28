@@ -50,22 +50,22 @@ public class CreateVPFCoast extends PlainCreate
    */
   public static final String COAST_PATH_DEFAULT = "c://vp//vmaplv0";
 
-  public CreateVPFCoast(MWC.GUI.ToolParent theParent,
-                        MWC.GUI.Properties.PropertiesPanel thePanel,
-                        MWC.GUI.Layer theLayer,
-                        MWC.GUI.Layers theData,
-                        MWC.GUI.PlainChart theChart,
-                        String theName,
-                        String thePath)
+  public CreateVPFCoast(final MWC.GUI.ToolParent theParent,
+                        final MWC.GUI.Properties.PropertiesPanel thePanel,
+                        final MWC.GUI.Layer theLayer,
+                        final MWC.GUI.Layers theData,
+                        final MWC.GUI.PlainChart theChart,
+                        final String theName,
+                        final String thePath)
   {
     super(theParent, thePanel, theLayer, theData, theChart, theName, thePath);
   }
 
-	public CreateVPFCoast(MWC.GUI.ToolParent theParent,
-                        MWC.GUI.Properties.PropertiesPanel thePanel,
-                        MWC.GUI.Layer theLayer,
-                        MWC.GUI.Layers theData,
-                        MWC.GUI.PlainChart theChart)
+	public CreateVPFCoast(final MWC.GUI.ToolParent theParent,
+                        final MWC.GUI.Properties.PropertiesPanel thePanel,
+                        final MWC.GUI.Layer theLayer,
+                        final MWC.GUI.Layers theData,
+                        final MWC.GUI.PlainChart theChart)
 	{
 		this(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast.gif");
 	}
@@ -78,7 +78,7 @@ public class CreateVPFCoast extends PlainCreate
     return res;
   }
 
-  protected MWC.GUI.Plottable getMyLayer(String path)
+  protected MWC.GUI.Plottable getMyLayer(final String path)
   {
     MWC.GUI.Plottable res = null;
     try
@@ -86,19 +86,19 @@ public class CreateVPFCoast extends PlainCreate
       // create the coverage layer for the coastline
       res = LibraryLayer.createReferenceLayer(path);
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e, "Unable to create VPF coastline");
     }
     return res;
   }
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
 	{
     MWC.GUI.Plottable cl = null;
 
     // try and retrieve the path to the coast line directory
-    String path = getMyPath();
+    final String path = getMyPath();
 
     // try to build the layer
     cl = getMyLayer(path);

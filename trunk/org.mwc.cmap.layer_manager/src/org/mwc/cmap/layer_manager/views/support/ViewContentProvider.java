@@ -30,12 +30,12 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	/**
 	 * @param view
 	 */
-	public ViewContentProvider(LayerManagerView view)
+	public ViewContentProvider(final LayerManagerView view)
 	{
 		_myViewProvider = view;
 	}
 
-	public void inputChanged(Viewer v, Object oldInput, Object newInput)
+	public void inputChanged(final Viewer v, final Object oldInput, final Object newInput)
 	{
 	}
 
@@ -43,7 +43,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	{
 	}
 
-	public Object[] getElements(Object parent)
+	public Object[] getElements(final Object parent)
 	{
 		Object[] res = null;
 		if (parent.equals(_myViewProvider.getViewSite()))
@@ -55,13 +55,13 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 			if (parent instanceof Layers)
 			{
 				// cool - run through the layers
-				Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
-				Layers theLayers = (Layers) parent;
-				Enumeration<Editable> numer = theLayers.elements();
+				final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
+				final Layers theLayers = (Layers) parent;
+				final Enumeration<Editable> numer = theLayers.elements();
 				while (numer.hasMoreElements())
 				{
-					Layer thisL = (Layer) numer.nextElement();
-					EditableWrapper wrapper = new EditableWrapper(thisL, null, theLayers);
+					final Layer thisL = (Layer) numer.nextElement();
+					final EditableWrapper wrapper = new EditableWrapper(thisL, null, theLayers);
 					list.add(wrapper);
 				}
 				res = list.toArray();
@@ -71,52 +71,52 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 		return res;
 	}
 
-	public Object getParent(Object child)
+	public Object getParent(final Object child)
 	{
 		Object res = null;
 		if (child instanceof EditableWrapper)
 		{
-			EditableWrapper thisP = (EditableWrapper) child;
-			EditableWrapper parent = thisP.getParent();
+			final EditableWrapper thisP = (EditableWrapper) child;
+			final EditableWrapper parent = thisP.getParent();
 			res = parent;
 		}
 		return res;
 	}
 
-	public Object[] getChildren(Object parent)
+	public Object[] getChildren(final Object parent)
 	{
 		Object[] res = new Object[0];
 		if (parent instanceof EditableWrapper)
 		{
-			EditableWrapper pl = (EditableWrapper) parent;
+			final EditableWrapper pl = (EditableWrapper) parent;
 			if (pl.hasChildren())
 			{
-				Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
+				final Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
 
-				Layer thisL = (Layer) pl.getEditable();
+				final Layer thisL = (Layer) pl.getEditable();
 				
 				// right, do they have their own order?
 				if(thisL.hasOrderedChildren())
 				{
 					int index = 0;
-					Enumeration<Editable> numer = thisL.elements();
+					final Enumeration<Editable> numer = thisL.elements();
 					while (numer.hasMoreElements())
 					{
-						Editable thisP = (Editable) numer.nextElement();
-						EditableWrapper pw = new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl.getLayers(), index);
+						final Editable thisP = (Editable) numer.nextElement();
+						final EditableWrapper pw = new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl.getLayers(), index);
 						list.add(pw);
 						index++;
 					}
 				}
 				else
 				{
-					Enumeration<Editable> numer = thisL.elements();
+					final Enumeration<Editable> numer = thisL.elements();
 					if(numer != null)
 					{
 						while (numer.hasMoreElements())
 						{
-							Editable thisP = (Editable) numer.nextElement();
-							EditableWrapper pw = new EditableWrapper(thisP, pl, pl.getLayers());
+							final Editable thisP = (Editable) numer.nextElement();
+							final EditableWrapper pw = new EditableWrapper(thisP, pl, pl.getLayers());
 							list.add(pw);
 						}
 					}
@@ -128,12 +128,12 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 		return res;
 	}
 
-	public boolean hasChildren(Object parent)
+	public boolean hasChildren(final Object parent)
 	{
 		boolean res = false;
 		if (parent instanceof EditableWrapper)
 		{
-			EditableWrapper pw = (EditableWrapper) parent;
+			final EditableWrapper pw = (EditableWrapper) parent;
 			res = pw.hasChildren();
 		}
 

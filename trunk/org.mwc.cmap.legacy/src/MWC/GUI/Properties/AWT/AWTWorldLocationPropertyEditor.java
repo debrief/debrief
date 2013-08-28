@@ -78,7 +78,7 @@ public class AWTWorldLocationPropertyEditor extends
 
   public java.awt.Component getCustomEditor()
   {
-		Panel btnHolder = new Panel();
+		final Panel btnHolder = new Panel();
 		
     _theHolder = new Panel();
     _theHolder.setLayout(new BorderLayout());
@@ -95,7 +95,7 @@ public class AWTWorldLocationPropertyEditor extends
     return _theHolder;
   }
 
-  public void actionPerformed(ActionEvent p1)
+  public void actionPerformed(final ActionEvent p1)
   {
 		if(p1.getSource() == _selectBtn)
 		{
@@ -123,11 +123,11 @@ public class AWTWorldLocationPropertyEditor extends
     }
   }
 	
-  public void cursorDblClicked(PlainChart theChart, 
-                               WorldLocation theLocation, 
-                               Point thePoint)
+  public void cursorDblClicked(final PlainChart theChart, 
+                               final WorldLocation theLocation, 
+                               final Point thePoint)
   {    
-    double dp = _myVal.getDepth();
+    final double dp = _myVal.getDepth();
     _myVal = theLocation;
     _myVal.setDepth(dp);
     resetData();

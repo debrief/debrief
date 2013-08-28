@@ -13,16 +13,16 @@ public class ScatteredXYSeries extends XYSeries {
 	private transient Method myUpdateBoundsForAddedItemMethod;
 
 	@SuppressWarnings("rawtypes")
-	public ScatteredXYSeries(Comparable key) {
+	public ScatteredXYSeries(final Comparable key) {
 		super(key, false, true);
 	}
 
-	public void insertAt(int index, XYDataItem item) {
+	public void insertAt(final int index, final XYDataItem item) {
 		insertAt(index, item, true);
 	}
 
 	@Override
-	public void setMaximumItemCount(int maximum) {
+	public void setMaximumItemCount(final int maximum) {
 		if (maximum < Integer.MAX_VALUE) {
 			throw new UnsupportedOperationException("I am unlimited by nature");
 		}
@@ -30,7 +30,7 @@ public class ScatteredXYSeries extends XYSeries {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void insertAt(int index, XYDataItem item, boolean notify) {
+	public void insertAt(final int index, final XYDataItem item, final boolean notify) {
 		if (index == getItemCount()) {
 			//super class handles this case already 
 			add(item, notify);
@@ -53,7 +53,7 @@ public class ScatteredXYSeries extends XYSeries {
 	 * 
 	 * We will do it via reflection.
 	 */
-	protected final void callUpdateBoundsForAddedItem(XYDataItem item) {
+	protected final void callUpdateBoundsForAddedItem(final XYDataItem item) {
 		try {
 			if (myUpdateBoundsForAddedItemMethod == null) {
 				myUpdateBoundsForAddedItemMethod = XYSeries.class.getDeclaredMethod("updateBoundsForAddedItem", XYDataItem.class);
@@ -62,11 +62,11 @@ public class ScatteredXYSeries extends XYSeries {
 				myUpdateBoundsForAddedItemMethod.setAccessible(true);
 				myUpdateBoundsForAddedItemMethod.invoke(this, item);
 			}
-		} catch (NoSuchMethodException e) {
+		} catch (final NoSuchMethodException e) {
 			throw new IllegalStateException(e);
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			throw new IllegalStateException(e);
-		} catch (InvocationTargetException e) {
+		} catch (final InvocationTargetException e) {
 			throw new IllegalStateException(e);
 		}
 	}

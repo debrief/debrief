@@ -17,7 +17,7 @@ public class GridEditorActionContext extends ActionContext {
 
 	private final GridEditorUndoSupport myUndoSupport;
 
-	public GridEditorActionContext(GridEditorUndoSupport undoSupport) {
+	public GridEditorActionContext(final GridEditorUndoSupport undoSupport) {
 		super(null);
 		myUndoSupport = undoSupport;
 	}
@@ -26,7 +26,7 @@ public class GridEditorActionContext extends ActionContext {
 		return myUndoSupport;
 	}
 
-	public void setChartInput(ChartDataManager chartInput) {
+	public void setChartInput(final ChartDataManager chartInput) {
 		myChartInput = chartInput;
 		myListener.chartInputChanged();
 	}
@@ -39,7 +39,7 @@ public class GridEditorActionContext extends ActionContext {
 		return myChartInput == null ? null : myChartInput.getDescriptor();
 	}
 
-	public void setListener(Listener listener) {
+	public void setListener(final Listener listener) {
 		myListener = listener;
 		if (myListener == null) {
 			myListener = Listener.NULL;
@@ -47,7 +47,7 @@ public class GridEditorActionContext extends ActionContext {
 	}
 
 	@Override
-	public void setSelection(ISelection selection) {
+	public void setSelection(final ISelection selection) {
 		if (selection != null && false == selection instanceof IStructuredSelection) {
 			throw new IllegalStateException("Selection of table viewers is always structured : " + selection);
 		}
@@ -66,7 +66,7 @@ public class GridEditorActionContext extends ActionContext {
 	}
 
 	@Override
-	public void setInput(Object input) {
+	public void setInput(final Object input) {
 		if (input != null && false == input instanceof GriddableSeries) {
 			throw new IllegalStateException("We are expecting that table input is always GriddableSeries : " + input);
 		}

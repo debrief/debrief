@@ -77,7 +77,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 	 * 
 	 * @param dataProvider
 	 */
-	public SnailHighlighter(TrackDataProvider dataProvider)
+	public SnailHighlighter(final TrackDataProvider dataProvider)
 	{
 		_dataProvider = dataProvider;
 
@@ -110,7 +110,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 	/**
 	 * set the snail stretch factor
 	 */
-	public void setVectorStretch(double val)
+	public void setVectorStretch(final double val)
 	{
 		_mySnailPlotter.setVectorStretch(val);
 	}
@@ -131,7 +131,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 	 * @param dest
 	 * @param dtg
 	 */
-	public void paintThisLayer(Layer theLayer, CanvasType dest, HiResDate newDTG)
+	public void paintThisLayer(final Layer theLayer, final CanvasType dest, final HiResDate newDTG)
 	{
 		// right, none of that fannying around painting the whole layer.
 
@@ -161,15 +161,15 @@ public class SnailHighlighter implements TemporalLayerPainter
 			if (list instanceof Layer)
 			{
 				final Layer ly = (Layer) list;
-				int thickness = ly.getLineThickness();
+				final int thickness = ly.getLineThickness();
 				dest.setLineWidth(thickness);
 			}
 
 			// ok, clear the nearest items
-			Watchable[] wList = list.getNearestTo(newDTG);
+			final Watchable[] wList = list.getNearestTo(newDTG);
 			for (int i = 0; i < wList.length; i++)
 			{
-				Watchable watch = wList[i];
+				final Watchable watch = wList[i];
 				if (watch != null)
 				{
 					// plot it
@@ -180,9 +180,9 @@ public class SnailHighlighter implements TemporalLayerPainter
 		}
 	}
 
-	private void highlightIt(PlainProjection projection, CanvasType dest,
-			WatchableList list, Watchable watch, HiResDate newDTG,
-			Color backgroundColor)
+	private void highlightIt(final PlainProjection projection, final CanvasType dest,
+			final WatchableList list, final Watchable watch, final HiResDate newDTG,
+			final Color backgroundColor)
 	{
 		// set the highlight colour
 		dest.setColor(Color.white);

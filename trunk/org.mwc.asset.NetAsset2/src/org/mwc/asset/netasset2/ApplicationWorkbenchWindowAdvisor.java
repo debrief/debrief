@@ -30,25 +30,25 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	private PartMonitor _myPartMonitor;
 	private PClient _presenter;
 
-	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer)
+	public ApplicationWorkbenchWindowAdvisor(final IWorkbenchWindowConfigurer configurer)
 	{
 		super(configurer);
 
 		try
 		{
-			MClient model = new MClient();
+			final MClient model = new MClient();
 			_presenter = new PClient(model);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			Activator.logError(Status.ERROR, "Failed to create network model", e);
 		}
 
-		Logger logger = new Logger()
+		final Logger logger = new Logger()
 		{
 
 			@Override
-			public void log(int level, String category, String message, Throwable ex)
+			public void log(final int level, final String category, final String message, final Throwable ex)
 			{
 				Activator.logError(Status.INFO, message, ex);
 			}
@@ -57,14 +57,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		Log.set(Log.LEVEL_INFO);
 	}
 
-	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer)
+	public ActionBarAdvisor createActionBarAdvisor(final IActionBarConfigurer configurer)
 	{
 		return new ApplicationActionBarAdvisor(configurer);
 	}
 
 	public void preWindowOpen()
 	{
-		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
+		final IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(800, 700));
 		configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(false);
@@ -97,11 +97,12 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	{
 		// ok, cycle through the open views and check if we're after any of them
 		@SuppressWarnings("deprecation")
+		final
 		IViewPart[] views = Activator.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getViews();
 		for (int i = 0; i < views.length; i++)
 		{
-			IViewPart iViewPart = views[i];
+			final IViewPart iViewPart = views[i];
 			_myPartMonitor.partOpened(iViewPart);
 		}
 
@@ -118,8 +119,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		_myPartMonitor.addPartListener(IVTime.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
 						_presenter.addTimer((IVTime) instance);
 					}
@@ -127,8 +128,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		_myPartMonitor.addPartListener(IVTimeControl.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
 						_presenter.addTimeController((IVTimeControl) instance);
 					}
@@ -136,8 +137,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		_myPartMonitor.addPartListener(IVConnect.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
 						_presenter.addConnector((IVConnect) instance);
 					}
@@ -145,8 +146,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		_myPartMonitor.addPartListener(IVPartControl.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
 						_presenter.addPartController((IVPartControl) instance);
 					}
@@ -154,8 +155,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		_myPartMonitor.addPartListener(IVPartMovement.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
 						_presenter.addPartUpdater((IVPartMovement) instance);
 					}
@@ -163,8 +164,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		_myPartMonitor.addPartListener(ParticipantDetectedListener.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
 						_presenter.addPartDetector((ParticipantDetectedListener) instance);
 					}

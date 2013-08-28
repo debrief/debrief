@@ -33,7 +33,7 @@ public class Date2ValueManager implements ChartDataManager {
 
 	private DataPointsDragTracker myDragTracker;
 
-	public Date2ValueManager(GriddableItemDescriptor descriptor, GriddableItemChartComponent valuesComponent) {
+	public Date2ValueManager(final GriddableItemDescriptor descriptor, final GriddableItemChartComponent valuesComponent) {
 		myDescriptor = descriptor;
 		myValuesComponent = valuesComponent;
 		myTitle = descriptor.getTitle();
@@ -52,55 +52,55 @@ public class Date2ValueManager implements ChartDataManager {
 		return myTitle;
 	}
 
-	public void setInput(GriddableSeries input) {
+	public void setInput(final GriddableSeries input) {
 		myInput = input;
-		for (TimeStampedDataItem nextItem : input.getItems()) {
-			double nextValue = myValuesComponent.getDoubleValue(nextItem);
+		for (final TimeStampedDataItem nextItem : input.getItems()) {
+			final double nextValue = myValuesComponent.getDoubleValue(nextItem);
 			myDuplicatesWorkaround.addDomainItem(nextItem, nextValue);
 		}
 	}
 
 	public ValueAxis createXAxis() {
-		DateAxis result = new DateAxis(null);
+		final DateAxis result = new DateAxis(null);
 		result.setTimeZone(TimeSeriesWithDuplicates.getDefaultTimeZone());
 		return result;
 	}
 
 	public ValueAxis createYAxis() {
-		NumberAxis result = new NumberAxis(null);
+		final NumberAxis result = new NumberAxis(null);
 		result.setAutoRangeIncludesZero(false);
 		return result;
 	}
 
-	public void handleItemAdded(int index, TimeStampedDataItem addedItem) {
+	public void handleItemAdded(final int index, final TimeStampedDataItem addedItem) {
 		myDuplicatesWorkaround.addDomainItem(addedItem, myValuesComponent.getDoubleValue(addedItem));
 	}
 
-	public void handleItemChanged(TimeStampedDataItem changedItem) {
+	public void handleItemChanged(final TimeStampedDataItem changedItem) {
 		myDuplicatesWorkaround.updateDomainItem(changedItem, myValuesComponent.getDoubleValue(changedItem));
 	}
 
-	public void handleItemDeleted(int oldIndex, TimeStampedDataItem deletedItem) {
+	public void handleItemDeleted(final int oldIndex, final TimeStampedDataItem deletedItem) {
 		myDuplicatesWorkaround.removeDomainItem(deletedItem);
 	}
 
-	public void attach(JFreeChartComposite chartPanel) {
+	public void attach(final JFreeChartComposite chartPanel) {
 		final GridEditorUndoSupport undoSupport = chartPanel.getActionContext().getUndoSupport();
 		if (undoSupport != null) {
 			myDragTracker = new DataPointsDragTracker(chartPanel, true) {
 
 				@Override
-				protected void dragCompleted(BackedChartItem item, double finalX, double finalY) {
-					OperationEnvironment environment = new OperationEnvironment(undoSupport.getUndoContext(), myInput, item.getDomainItem(), myDescriptor);
-					Date finalTime = new Date((long) finalX);
-					SetTimeStampOperation setTime = new SetTimeStampOperation(environment, new HiResDate(finalTime));
-					SetDescriptorValueOperation setValue = new SetDescriptorValueOperation(environment, finalY);
-					CompositeOperation update = new CompositeOperation("Applying changes from chart", undoSupport.getUndoContext());
+				protected void dragCompleted(final BackedChartItem item, final double finalX, final double finalY) {
+					final OperationEnvironment environment = new OperationEnvironment(undoSupport.getUndoContext(), myInput, item.getDomainItem(), myDescriptor);
+					final Date finalTime = new Date((long) finalX);
+					final SetTimeStampOperation setTime = new SetTimeStampOperation(environment, new HiResDate(finalTime));
+					final SetDescriptorValueOperation setValue = new SetDescriptorValueOperation(environment, finalY);
+					final CompositeOperation update = new CompositeOperation("Applying changes from chart", undoSupport.getUndoContext());
 					update.add(setTime);
 					update.add(setValue);
 					try {
 						undoSupport.getOperationHistory().execute(update, null, null);
-					} catch (ExecutionException e) {
+					} catch (final ExecutionException e) {
 						throw new RuntimeException("[Chart]Can't set the timestamp of :" + finalTime + //
 								" and/or value: " + finalY + //
 								" for item " + item.getDomainItem(), e);
@@ -111,7 +111,7 @@ public class Date2ValueManager implements ChartDataManager {
 		}
 	}
 
-	public void detach(JFreeChartComposite chartPanel) {
+	public void detach(final JFreeChartComposite chartPanel) {
 		if (myDragTracker != null) {
 			chartPanel.removeChartMouseListener(myDragTracker);
 			myDragTracker = null;

@@ -16,7 +16,7 @@ public class DebriefChartModifiedActionWrapper extends AbstractOperation
 	 * 
 	 * @param theAction
 	 */
-	public DebriefChartModifiedActionWrapper(Action theAction)
+	public DebriefChartModifiedActionWrapper(final Action theAction)
 	{
 		super(theAction.toString());
 		
@@ -30,14 +30,14 @@ public class DebriefChartModifiedActionWrapper extends AbstractOperation
 	// eclipse action bits
 	//////////////////////////////////////////////////////////////
 	
-	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+	public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException
 	{
 		_myAction.execute();
 		
 		return Status.OK_STATUS;
 	}
 
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+	public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException
 	{
 		if(_myAction.isRedoable())
 			_myAction.execute();
@@ -45,7 +45,7 @@ public class DebriefChartModifiedActionWrapper extends AbstractOperation
 		return Status.OK_STATUS;
 	}
 
-	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+	public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException
 	{
 		if(_myAction.isUndoable())
 			_myAction.undo();

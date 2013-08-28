@@ -38,7 +38,7 @@ final class SnailDrawTrack
 		public final int startGreen;
 		public final int startBlue;
 
-		public PhasedColorDef(final Color mainCol, final Color backColor, int numShades)
+		public PhasedColorDef(final Color mainCol, final Color backColor, final int numShades)
 		{
 
       // get the colour of the track
@@ -108,12 +108,12 @@ final class SnailDrawTrack
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-  public final java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-                                         java.awt.Graphics dest,
-                                         Watchable watch,
-                                         SnailPainter parent,
-                                         HiResDate dtg,
-                                         Color backColor)
+  public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+                                         final java.awt.Graphics dest,
+                                         final Watchable watch,
+                                         final SnailPainter parent,
+                                         final HiResDate dtg,
+                                         final Color backColor)
   {
 
     //dest.setPaintMode();
@@ -124,13 +124,13 @@ final class SnailDrawTrack
 
     // get the fix and the track
     final FixWrapper theFix = (FixWrapper)watch;
-    TrackWrapper trk = theFix.getTrackWrapper();
+    final TrackWrapper trk = theFix.getTrackWrapper();
 
     // declare the Vector of track points we are using
     final Collection<Editable> dotPoints;
 
     // do we have these points already?
-    Collection<Editable> myList = _fixLists.get(theFix);
+    final Collection<Editable> myList = _fixLists.get(theFix);
 
     // did we find it?
     if(myList != null)
@@ -173,7 +173,7 @@ final class SnailDrawTrack
     {
       if(dotPoints.size()>0)
       {
-      	PhasedColorDef def = new PhasedColorDef(trk.getColor(), backColor,dotPoints.size()+1 );
+      	final PhasedColorDef def = new PhasedColorDef(trk.getColor(), backColor,dotPoints.size()+1 );
       	float red, green, blue;
       	red = def.startRed;
       	green = def.startGreen;
@@ -182,7 +182,7 @@ final class SnailDrawTrack
         // remember the last location
         Point lastLoc=null;
 
-        Iterator<Editable> iter = dotPoints.iterator();
+        final Iterator<Editable> iter = dotPoints.iterator();
         while(iter.hasNext())
         {
 
@@ -209,13 +209,13 @@ final class SnailDrawTrack
           dest.setColor(newCol);
 
           // get this fix
-          FixWrapper gw = (FixWrapper)iter.next();
+          final FixWrapper gw = (FixWrapper)iter.next();
 
           // get the location
-          WorldLocation loc = gw.getLocation();
+          final WorldLocation loc = gw.getLocation();
 
           // get the screen location
-          Point screenP = new Point(proj.toScreen(loc));
+          final Point screenP = new Point(proj.toScreen(loc));
 
           // initialise the area, if we have to
           if(thisR == null)
@@ -255,10 +255,10 @@ final class SnailDrawTrack
             dest.setFont(gw.getFont());
 
             // get the text itself, again for the metrics
-            String msg = gw.getName();
+            final String msg = gw.getName();
 
             // wrap our Graphics object in a canvas, so we can paint to it
-            CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
+            final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
 
             // and get the label to paint itself
             gw.paintLabel(cad, newCol);
@@ -267,13 +267,13 @@ final class SnailDrawTrack
             cad.endDraw(null);
 
             // somehow we need to include this extended area
-            FontMetrics fm = dest.getFontMetrics();
+            final FontMetrics fm = dest.getFontMetrics();
 
             //
-            int sWid = fm.stringWidth(msg);
+            final int sWid = fm.stringWidth(msg);
 
             // shift from the start of the string (using a copy of the point)
-            Point newP = new Point(screenP);
+            final Point newP = new Point(screenP);
             newP.translate(sWid, 0);
 
             // and add to the limits rectangle

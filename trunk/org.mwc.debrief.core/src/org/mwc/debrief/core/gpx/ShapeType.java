@@ -94,7 +94,7 @@ public abstract class ShapeType {
      *     {@link ColourType }
      *     
      */
-    public void setColour(ColourType value) {
+    public void setColour(final ColourType value) {
         this.colour = value;
     }
 
@@ -118,7 +118,7 @@ public abstract class ShapeType {
      *     {@link ColourType }
      *     
      */
-    public void setFontcolour(ColourType value) {
+    public void setFontcolour(final ColourType value) {
         this.fontcolour = value;
     }
 
@@ -142,7 +142,7 @@ public abstract class ShapeType {
      *     {@link TimeRangeType }
      *     
      */
-    public void setTimeRange(TimeRangeType value) {
+    public void setTimeRange(final TimeRangeType value) {
         this.timeRange = value;
     }
 
@@ -166,7 +166,7 @@ public abstract class ShapeType {
      *     {@link FontType }
      *     
      */
-    public void setFont(FontType value) {
+    public void setFont(final FontType value) {
         this.font = value;
     }
 
@@ -190,7 +190,7 @@ public abstract class ShapeType {
      *     {@link String }
      *     
      */
-    public void setLabel(String value) {
+    public void setLabel(final String value) {
         this.label = value;
     }
 
@@ -214,7 +214,7 @@ public abstract class ShapeType {
      *     {@link LabelLocationType }
      *     
      */
-    public void setLabelLocation(LabelLocationType value) {
+    public void setLabelLocation(final LabelLocationType value) {
         this.labelLocation = value;
     }
 
@@ -238,7 +238,7 @@ public abstract class ShapeType {
      *     {@link Boolean }
      *     
      */
-    public void setLabelVisible(Boolean value) {
+    public void setLabelVisible(final Boolean value) {
         this.labelVisible = value;
     }
 
@@ -262,7 +262,7 @@ public abstract class ShapeType {
      *     {@link BigInteger }
      *     
      */
-    public void setLineStyle(BigInteger value) {
+    public void setLineStyle(final BigInteger value) {
         this.lineStyle = value;
     }
 
@@ -286,7 +286,7 @@ public abstract class ShapeType {
      *     {@link BigInteger }
      *     
      */
-    public void setLineThickness(BigInteger value) {
+    public void setLineThickness(final BigInteger value) {
         this.lineThickness = value;
     }
 
@@ -310,7 +310,7 @@ public abstract class ShapeType {
      *     {@link Boolean }
      *     
      */
-    public void setVisible(Boolean value) {
+    public void setVisible(final Boolean value) {
         this.visible = value;
     }
 

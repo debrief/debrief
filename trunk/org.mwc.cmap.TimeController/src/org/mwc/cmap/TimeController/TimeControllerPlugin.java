@@ -26,14 +26,14 @@ public class TimeControllerPlugin extends AbstractUIPlugin {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(final BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
@@ -50,11 +50,11 @@ public class TimeControllerPlugin extends AbstractUIPlugin {
 	 * Returns the string from the plugin's resource bundle,
 	 * or 'key' if not found.
 	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = TimeControllerPlugin.getDefault().getResourceBundle();
+	public static String getResourceString(final String key) {
+		final ResourceBundle bundle = TimeControllerPlugin.getDefault().getResourceBundle();
 		try {
 			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
+		} catch (final MissingResourceException e) {
 			return key;
 		}
 	}
@@ -66,7 +66,7 @@ public class TimeControllerPlugin extends AbstractUIPlugin {
 		try {
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle.getBundle("org.mwc.cmap.TimeController.TimeControllerPluginResources");
-		} catch (MissingResourceException x) {
+		} catch (final MissingResourceException x) {
 			resourceBundle = null;
 		}
 		return resourceBundle;
@@ -79,17 +79,17 @@ public class TimeControllerPlugin extends AbstractUIPlugin {
 	 * @param path the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
+	public static ImageDescriptor getImageDescriptor(final String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.TimeController", path);
 	}
 	
 	/** hey, not just the descriptor, return the actual image
 	 * 
 	 */
-	public static Image getImage(String path)
+	public static Image getImage(final String path)
 	{
 		Image res = null;
-		ImageDescriptor desk = getImageDescriptor(path);
+		final ImageDescriptor desk = getImageDescriptor(path);
 		if(desk != null)
 			res = desk.createImage();
 		

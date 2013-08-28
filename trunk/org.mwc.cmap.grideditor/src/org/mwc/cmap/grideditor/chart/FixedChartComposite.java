@@ -149,13 +149,13 @@ public class FixedChartComposite extends Composite implements
 	private JFreeChart chart;
 
 	/** The canvas to display the chart. */
-	private Canvas canvas;
+	private final Canvas canvas;
 
 	/** Storage for registered (chart) mouse listeners. */
-	private EventListenerList chartMouseListeners;
+	private final EventListenerList chartMouseListeners;
 
 	/** A flag that controls whether or not the off-screen buffer is used. */
-	private boolean useBuffer;
+	private final boolean useBuffer;
 
 	/** A flag that indicates that the buffer should be refreshed. */
 	private boolean refreshBuffer;
@@ -175,28 +175,28 @@ public class FixedChartComposite extends Composite implements
 	/**
 	 * The minimum width for drawing a chart (uses scaling for smaller widths).
 	 */
-	private int minimumDrawWidth;
+	private final int minimumDrawWidth;
 
 	/**
 	 * The minimum height for drawing a chart (uses scaling for smaller heights).
 	 */
-	private int minimumDrawHeight;
+	private final int minimumDrawHeight;
 
 	/**
 	 * The maximum width for drawing a chart (uses scaling for bigger widths).
 	 */
-	private int maximumDrawWidth;
+	private final int maximumDrawWidth;
 
 	/**
 	 * The maximum height for drawing a chart (uses scaling for bigger heights).
 	 */
-	private int maximumDrawHeight;
+	private final int maximumDrawHeight;
 
 	/** The popup menu for the frame. */
 	private Menu popup;
 
 	/** The drawing info collected the last time the chart was drawn. */
-	private ChartRenderingInfo info;
+	private final ChartRenderingInfo info;
 
 	/** The chart anchor point. */
 	private Point2D anchor;
@@ -229,7 +229,7 @@ public class FixedChartComposite extends Composite implements
 	/** Controls if the zoom rectangle is drawn as an outline or filled. */
 	// TODO private boolean fillZoomRectangle = true;
 	/** The minimum distance required to drag the mouse to trigger a zoom. */
-	private int zoomTriggerDistance;
+	private final int zoomTriggerDistance;
 
 	/** A flag that controls whether or not horizontal tracing is enabled. */
 	private boolean horizontalAxisTrace = false;
@@ -292,7 +292,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param style
 	 *          The style of the composite.
 	 */
-	public FixedChartComposite(Composite comp, int style)
+	public FixedChartComposite(final Composite comp, final int style)
 	{
 		this(comp, style, null, DEFAULT_WIDTH, DEFAULT_HEIGHT,
 				DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT,
@@ -315,7 +315,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param chart
 	 *          the chart.
 	 */
-	public FixedChartComposite(Composite comp, int style, JFreeChart chart)
+	public FixedChartComposite(final Composite comp, final int style, final JFreeChart chart)
 	{
 		this(comp, style, chart, DEFAULT_WIDTH, DEFAULT_HEIGHT,
 				DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT,
@@ -340,8 +340,8 @@ public class FixedChartComposite extends Composite implements
 	 * @param useBuffer
 	 *          a flag controlling whether or not an off-screen buffer is used.
 	 */
-	public FixedChartComposite(Composite comp, int style, JFreeChart chart,
-			boolean useBuffer)
+	public FixedChartComposite(final Composite comp, final int style, final JFreeChart chart,
+			final boolean useBuffer)
 	{
 
 		this(comp, style, chart, DEFAULT_WIDTH, DEFAULT_HEIGHT,
@@ -380,9 +380,9 @@ public class FixedChartComposite extends Composite implements
 	 *          a flag indicating whether or not tooltips should be enabled for
 	 *          the chart.
 	 */
-	public FixedChartComposite(Composite comp, int style, JFreeChart chart,
-			boolean properties, boolean save, boolean print, boolean zoom,
-			boolean tooltips)
+	public FixedChartComposite(final Composite comp, final int style, final JFreeChart chart,
+			final boolean properties, final boolean save, final boolean print, final boolean zoom,
+			final boolean tooltips)
 	{
 		this(comp, style, chart, DEFAULT_WIDTH, DEFAULT_HEIGHT,
 				DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT,
@@ -430,11 +430,11 @@ public class FixedChartComposite extends Composite implements
 	 *          a flag indicating whether or not tooltips should be enabled for
 	 *          the chart.
 	 */
-	public FixedChartComposite(Composite comp, int style, JFreeChart jfreechart,
-			int width, int height, int minimumDrawW, int minimumDrawH,
-			int maximumDrawW, int maximumDrawH, boolean usingBuffer,
-			boolean properties, boolean save, boolean print, boolean zoom,
-			boolean tooltips)
+	public FixedChartComposite(final Composite comp, final int style, final JFreeChart jfreechart,
+			final int width, final int height, final int minimumDrawW, final int minimumDrawH,
+			final int maximumDrawW, final int maximumDrawH, final boolean usingBuffer,
+			final boolean properties, final boolean save, final boolean print, final boolean zoom,
+			final boolean tooltips)
 	{
 		super(comp, style);
 		setChart(jfreechart);
@@ -502,7 +502,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param anchor
 	 *          the anchor point (<code>null</code> permitted).
 	 */
-	protected void setAnchor(Point2D anchor)
+	protected void setAnchor(final Point2D anchor)
 	{
 		this.anchor = anchor;
 	}
@@ -523,7 +523,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param chart
 	 *          the chart (<code>null</code> permitted).
 	 */
-	public void setChart(JFreeChart chart)
+	public void setChart(final JFreeChart chart)
 	{
 		// stop listening for changes to the existing chart
 		if (this.chart != null)
@@ -538,12 +538,12 @@ public class FixedChartComposite extends Composite implements
 		{
 			this.chart.addChangeListener(this);
 			this.chart.addProgressListener(this);
-			Plot plot = chart.getPlot();
+			final Plot plot = chart.getPlot();
 			this.domainZoomable = false;
 			this.rangeZoomable = false;
 			if (plot instanceof Zoomable)
 			{
-				Zoomable z = (Zoomable) plot;
+				final Zoomable z = (Zoomable) plot;
 				this.domainZoomable = z.isDomainZoomable();
 				this.rangeZoomable = z.isRangeZoomable();
 				this.orientation = z.getOrientation();
@@ -589,14 +589,14 @@ public class FixedChartComposite extends Composite implements
 	 * @param flag
 	 *          <code>true</code> enables zooming if possible.
 	 */
-	public void setDomainZoomable(boolean flag)
+	public void setDomainZoomable(final boolean flag)
 	{
 		if (flag)
 		{
-			Plot plot = this.chart.getPlot();
+			final Plot plot = this.chart.getPlot();
 			if (plot instanceof Zoomable)
 			{
-				Zoomable z = (Zoomable) plot;
+				final Zoomable z = (Zoomable) plot;
 				this.domainZoomable = flag && (z.isDomainZoomable());
 			}
 		}
@@ -623,14 +623,14 @@ public class FixedChartComposite extends Composite implements
 	 * @param flag
 	 *          <code>true</code> enables zooming.
 	 */
-	public void setRangeZoomable(boolean flag)
+	public void setRangeZoomable(final boolean flag)
 	{
 		if (flag)
 		{
-			Plot plot = this.chart.getPlot();
+			final Plot plot = this.chart.getPlot();
 			if (plot instanceof Zoomable)
 			{
-				Zoomable z = (Zoomable) plot;
+				final Zoomable z = (Zoomable) plot;
 				this.rangeZoomable = flag && (z.isRangeZoomable());
 			}
 		}
@@ -660,7 +660,7 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @see #getZoomInFactor()
 	 */
-	public void setZoomInFactor(double factor)
+	public void setZoomInFactor(final double factor)
 	{
 		this.zoomInFactor = factor;
 	}
@@ -685,7 +685,7 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @see #getZoomOutFactor()
 	 */
-	public void setZoomOutFactor(double factor)
+	public void setZoomOutFactor(final double factor)
 	{
 		this.zoomOutFactor = factor;
 	}
@@ -696,7 +696,7 @@ public class FixedChartComposite extends Composite implements
 	 */
 	private void attemptEditChartProperties()
 	{
-		SWTChartEditor editor = new SWTChartEditor(this.canvas.getDisplay(),
+		final SWTChartEditor editor = new SWTChartEditor(this.canvas.getDisplay(),
 				this.chart);
 		// ChartEditorManager.getChartEditor(canvas.getDisplay(), this.chart);
 		editor.open();
@@ -719,7 +719,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param enforce
 	 *          the new flag value.
 	 */
-	public void setEnforceFileExtensions(boolean enforce)
+	public void setEnforceFileExtensions(final boolean enforce)
 	{
 		this.enforceFileExtensions = enforce;
 	}
@@ -733,8 +733,8 @@ public class FixedChartComposite extends Composite implements
 	 */
 	public void doSaveAs() throws IOException
 	{
-		FileDialog fileDialog = new FileDialog(this.canvas.getShell(), SWT.SAVE);
-		String[] extensions =
+		final FileDialog fileDialog = new FileDialog(this.canvas.getShell(), SWT.SAVE);
+		final String[] extensions =
 		{ "*.png" };
 		fileDialog.setFilterExtensions(extensions);
 		String filename = fileDialog.open();
@@ -766,12 +766,12 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return A point within the rectangle.
 	 */
-	private org.eclipse.swt.graphics.Point getPointInRectangle(int x, int y,
-			Rectangle area)
-	{
-		x = Math.max(area.x, Math.min(x, area.x + area.width));
-		y = Math.max(area.y, Math.min(y, area.y + area.height));
-		return new org.eclipse.swt.graphics.Point(x, y);
+	private org.eclipse.swt.graphics.Point getPointInRectangle(final int x, final int y,
+			final Rectangle area)
+	{		
+		final int x1 = Math.max(area.x, Math.min(x, area.x + area.width));
+		final int y1 = Math.max(area.y, Math.min(y, area.y + area.height));
+		return new org.eclipse.swt.graphics.Point(x1, y1);
 	}
 
 	/**
@@ -782,7 +782,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param y
 	 *          the y value (in screen coordinates).
 	 */
-	public void zoomInBoth(double x, double y)
+	public void zoomInBoth(final double x, final double y)
 	{
 		zoomInDomain(x, y);
 		zoomInRange(x, y);
@@ -798,12 +798,12 @@ public class FixedChartComposite extends Composite implements
 	 * @param y
 	 *          the y-coordinate (in screen coordinates).
 	 */
-	public void zoomInDomain(double x, double y)
+	public void zoomInDomain(final double x, final double y)
 	{
-		Plot p = this.chart.getPlot();
+		final Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable)
 		{
-			Zoomable plot = (Zoomable) p;
+			final Zoomable plot = (Zoomable) p;
 			plot.zoomDomainAxes(this.zoomInFactor, this.info.getPlotInfo(),
 					translateScreenToJava2D(new Point((int) x, (int) y)));
 		}
@@ -819,12 +819,12 @@ public class FixedChartComposite extends Composite implements
 	 * @param y
 	 *          the y coordinate (in screen coordinates).
 	 */
-	public void zoomInRange(double x, double y)
+	public void zoomInRange(final double x, final double y)
 	{
-		Plot p = this.chart.getPlot();
+		final Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable)
 		{
-			Zoomable z = (Zoomable) p;
+			final Zoomable z = (Zoomable) p;
 			z.zoomRangeAxes(this.zoomInFactor, this.info.getPlotInfo(),
 					translateScreenToJava2D(new Point((int) x, (int) y)));
 		}
@@ -838,7 +838,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param y
 	 *          the y value (in screen coordinates).
 	 */
-	public void zoomOutBoth(double x, double y)
+	public void zoomOutBoth(final double x, final double y)
 	{
 		zoomOutDomain(x, y);
 		zoomOutRange(x, y);
@@ -854,12 +854,12 @@ public class FixedChartComposite extends Composite implements
 	 * @param y
 	 *          the y-coordinate (in screen coordinates).
 	 */
-	public void zoomOutDomain(double x, double y)
+	public void zoomOutDomain(final double x, final double y)
 	{
-		Plot p = this.chart.getPlot();
+		final Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable)
 		{
-			Zoomable z = (Zoomable) p;
+			final Zoomable z = (Zoomable) p;
 			z.zoomDomainAxes(this.zoomOutFactor, this.info.getPlotInfo(),
 					translateScreenToJava2D(new Point((int) x, (int) y)));
 		}
@@ -875,12 +875,12 @@ public class FixedChartComposite extends Composite implements
 	 * @param y
 	 *          the y-coordinate (in screen coordinates).
 	 */
-	public void zoomOutRange(double x, double y)
+	public void zoomOutRange(final double x, final double y)
 	{
-		Plot p = this.chart.getPlot();
+		final Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable)
 		{
-			Zoomable z = (Zoomable) p;
+			final Zoomable z = (Zoomable) p;
 			z.zoomRangeAxes(this.zoomOutFactor, this.info.getPlotInfo(),
 					translateScreenToJava2D(new Point((int) x, (int) y)));
 		}
@@ -892,32 +892,32 @@ public class FixedChartComposite extends Composite implements
 	 * @param selection
 	 *          the selected region.
 	 */
-	public void zoom(Rectangle selection)
+	public void zoom(final Rectangle selection)
 	{
 
 		// get the origin of the zoom selection in the Java2D space used for
 		// drawing the chart (that is, before any scaling to fit the panel)
-		Point2D selectOrigin = translateScreenToJava2D(new Point(selection.x,
+		final Point2D selectOrigin = translateScreenToJava2D(new Point(selection.x,
 				selection.y));
-		PlotRenderingInfo plotInfo = this.info.getPlotInfo();
-		Rectangle scaledDataArea = getScreenDataArea(
+		final PlotRenderingInfo plotInfo = this.info.getPlotInfo();
+		final Rectangle scaledDataArea = getScreenDataArea(
 				(selection.x + selection.width / 2),
 				(selection.y + selection.height / 2));
 		if ((selection.height > 0) && (selection.width > 0))
 		{
 
-			double hLower = (selection.x - scaledDataArea.x)
+			final double hLower = (selection.x - scaledDataArea.x)
 					/ (double) scaledDataArea.width;
-			double hUpper = (selection.x + selection.width - scaledDataArea.x)
+			final double hUpper = (selection.x + selection.width - scaledDataArea.x)
 					/ (double) scaledDataArea.width;
-			double vLower = (scaledDataArea.y + scaledDataArea.height - selection.y - selection.height)
+			final double vLower = (scaledDataArea.y + scaledDataArea.height - selection.y - selection.height)
 					/ (double) scaledDataArea.height;
-			double vUpper = (scaledDataArea.y + scaledDataArea.height - selection.y)
+			final double vUpper = (scaledDataArea.y + scaledDataArea.height - selection.y)
 					/ (double) scaledDataArea.height;
-			Plot p = this.chart.getPlot();
+			final Plot p = this.chart.getPlot();
 			if (p instanceof Zoomable)
 			{
-				Zoomable z = (Zoomable) p;
+				final Zoomable z = (Zoomable) p;
 				if (z.getOrientation() == PlotOrientation.HORIZONTAL)
 				{
 					z.zoomDomainAxes(vLower, vUpper, plotInfo, selectOrigin);
@@ -940,13 +940,13 @@ public class FixedChartComposite extends Composite implements
 	 * @param event
 	 *          details of the chart change event.
 	 */
-	public void chartChanged(ChartChangeEvent event)
+	public void chartChanged(final ChartChangeEvent event)
 	{
 		this.refreshBuffer = true;
-		Plot plot = this.chart.getPlot();
+		final Plot plot = this.chart.getPlot();
 		if (plot instanceof Zoomable)
 		{
-			Zoomable z = (Zoomable) plot;
+			final Zoomable z = (Zoomable) plot;
 			this.orientation = z.getOrientation();
 		}
 
@@ -964,7 +964,7 @@ public class FixedChartComposite extends Composite implements
 	 */
 	public void forceRedraw()
 	{
-		Event ev = new Event();
+		final Event ev = new Event();
 		ev.gc = new GC(this.canvas);
 		ev.x = 0;
 		ev.y = 0;
@@ -981,7 +981,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param listener
 	 *          the listener (<code>null</code> not permitted).
 	 */
-	public void addChartMouseListener(ChartMouseListener listener)
+	public void addChartMouseListener(final ChartMouseListener listener)
 	{
 		this.chartMouseListeners.add(ChartMouseListener.class, listener);
 	}
@@ -993,7 +993,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param listener
 	 *          the listener.
 	 */
-	public void removeChartMouseListener(ChartMouseListener listener)
+	public void removeChartMouseListener(final ChartMouseListener listener)
 	{
 		this.chartMouseListeners.remove(ChartMouseListener.class, listener);
 	}
@@ -1004,7 +1004,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param event
 	 *          the event.
 	 */
-	public void chartProgress(ChartProgressEvent event)
+	public void chartProgress(final ChartProgressEvent event)
 	{
 		// does nothing - override if necessary
 	}
@@ -1023,12 +1023,12 @@ public class FixedChartComposite extends Composite implements
 	 */
 	public void restoreAutoDomainBounds()
 	{
-		Plot p = this.chart.getPlot();
+		final Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable)
 		{
-			Zoomable z = (Zoomable) p;
+			final Zoomable z = (Zoomable) p;
 			// we need to guard against this.zoomPoint being null
-			org.eclipse.swt.graphics.Point zp = (this.zoomPoint != null ? this.zoomPoint
+			final org.eclipse.swt.graphics.Point zp = (this.zoomPoint != null ? this.zoomPoint
 					: new org.eclipse.swt.graphics.Point(0, 0));
 			z.zoomDomainAxes(0.0, this.info.getPlotInfo(), SWTUtils.toAwtPoint(zp));
 		}
@@ -1039,12 +1039,12 @@ public class FixedChartComposite extends Composite implements
 	 */
 	public void restoreAutoRangeBounds()
 	{
-		Plot p = this.chart.getPlot();
+		final Plot p = this.chart.getPlot();
 		if (p instanceof ValueAxisPlot)
 		{
-			Zoomable z = (Zoomable) p;
+			final Zoomable z = (Zoomable) p;
 			// we need to guard against this.zoomPoint being null
-			org.eclipse.swt.graphics.Point zp = (this.zoomPoint != null ? this.zoomPoint
+			final org.eclipse.swt.graphics.Point zp = (this.zoomPoint != null ? this.zoomPoint
 					: new org.eclipse.swt.graphics.Point(0, 0));
 			z.zoomRangeAxes(0.0, this.info.getPlotInfo(), SWTUtils.toAwtPoint(zp));
 		}
@@ -1059,13 +1059,13 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return A new scaled rectangle.
 	 */
-	public Rectangle scale(Rectangle2D rect)
+	public Rectangle scale(final Rectangle2D rect)
 	{
-		Rectangle insets = this.getClientArea();
-		int x = (int) Math.round(rect.getX() * getScaleX()) + insets.x;
-		int y = (int) Math.round(rect.getY() * this.getScaleY()) + insets.y;
-		int w = (int) Math.round(rect.getWidth() * this.getScaleX());
-		int h = (int) Math.round(rect.getHeight() * this.getScaleY());
+		final Rectangle insets = this.getClientArea();
+		final int x = (int) Math.round(rect.getX() * getScaleX()) + insets.x;
+		final int y = (int) Math.round(rect.getY() * this.getScaleY()) + insets.y;
+		final int w = (int) Math.round(rect.getWidth() * this.getScaleX());
+		final int h = (int) Math.round(rect.getHeight() * this.getScaleY());
 		return new Rectangle(x, y, w, h);
 	}
 
@@ -1077,12 +1077,12 @@ public class FixedChartComposite extends Composite implements
 	 */
 	public Rectangle getScreenDataArea()
 	{
-		Rectangle2D dataArea = this.info.getPlotInfo().getDataArea();
-		Rectangle clientArea = this.getClientArea();
-		int x = (int) (dataArea.getX() * this.scaleX + clientArea.x);
-		int y = (int) (dataArea.getY() * this.scaleY + clientArea.y);
-		int w = (int) (dataArea.getWidth() * this.scaleX);
-		int h = (int) (dataArea.getHeight() * this.scaleY);
+		final Rectangle2D dataArea = this.info.getPlotInfo().getDataArea();
+		final Rectangle clientArea = this.getClientArea();
+		final int x = (int) (dataArea.getX() * this.scaleX + clientArea.x);
+		final int y = (int) (dataArea.getY() * this.scaleY + clientArea.y);
+		final int w = (int) (dataArea.getWidth() * this.scaleX);
+		final int h = (int) (dataArea.getHeight() * this.scaleY);
 		return new Rectangle(x, y, w, h);
 	}
 
@@ -1097,9 +1097,9 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return The scaled data area.
 	 */
-	public Rectangle getScreenDataArea(int x, int y)
+	public Rectangle getScreenDataArea(final int x, final int y)
 	{
-		PlotRenderingInfo plotInfo = this.info.getPlotInfo();
+		final PlotRenderingInfo plotInfo = this.info.getPlotInfo();
 		Rectangle result;
 		if (plotInfo.getSubplotCount() == 0)
 			result = getScreenDataArea();
@@ -1107,8 +1107,8 @@ public class FixedChartComposite extends Composite implements
 		{
 			// get the origin of the zoom selection in the Java2D space used for
 			// drawing the chart (that is, before any scaling to fit the panel)
-			Point2D selectOrigin = translateScreenToJava2D(new Point(x, y));
-			int subplotIndex = plotInfo.getSubplotIndex(selectOrigin);
+			final Point2D selectOrigin = translateScreenToJava2D(new Point(x, y));
+			final int subplotIndex = plotInfo.getSubplotIndex(selectOrigin);
 			if (subplotIndex == -1)
 			{
 				return null;
@@ -1126,11 +1126,11 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return The screen location.
 	 */
-	public Point translateJava2DToScreen(Point2D java2DPoint)
+	public Point translateJava2DToScreen(final Point2D java2DPoint)
 	{
-		Rectangle insets = this.getClientArea();
-		int x = (int) (java2DPoint.getX() * this.scaleX + insets.x);
-		int y = (int) (java2DPoint.getY() * this.scaleY + insets.y);
+		final Rectangle insets = this.getClientArea();
+		final int x = (int) (java2DPoint.getX() * this.scaleX + insets.x);
+		final int y = (int) (java2DPoint.getY() * this.scaleY + insets.y);
 		return new Point(x, y);
 	}
 
@@ -1142,11 +1142,11 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return The Java2D coordinates.
 	 */
-	public Point translateScreenToJavaSWT(Point screenPoint)
+	public Point translateScreenToJavaSWT(final Point screenPoint)
 	{
-		Rectangle insets = this.getClientArea();
-		int x = (int) ((screenPoint.x - insets.x) / this.scaleX);
-		int y = (int) ((screenPoint.y - insets.y) / this.scaleY);
+		final Rectangle insets = this.getClientArea();
+		final int x = (int) ((screenPoint.x - insets.x) / this.scaleX);
+		final int y = (int) ((screenPoint.y - insets.y) / this.scaleY);
 		return new Point(x, y);
 	}
 
@@ -1158,11 +1158,11 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return The Java2D coordinates.
 	 */
-	public Point2D translateScreenToJava2D(Point screenPoint)
+	public Point2D translateScreenToJava2D(final Point screenPoint)
 	{
-		Rectangle insets = this.getClientArea();
-		int x = (int) ((screenPoint.x - insets.x) / this.scaleX);
-		int y = (int) ((screenPoint.y - insets.y) / this.scaleY);
+		final Rectangle insets = this.getClientArea();
+		final int x = (int) ((screenPoint.x - insets.x) / this.scaleX);
+		final int y = (int) ((screenPoint.y - insets.y) / this.scaleY);
 		return new Point2D.Double(x, y);
 	}
 
@@ -1184,7 +1184,7 @@ public class FixedChartComposite extends Composite implements
 	 *          <code>true</code> enables trace lines for the mouse pointer on the
 	 *          horizontal axis.
 	 */
-	public void setHorizontalAxisTrace(boolean flag)
+	public void setHorizontalAxisTrace(final boolean flag)
 	{
 		this.horizontalAxisTrace = flag;
 	}
@@ -1207,7 +1207,7 @@ public class FixedChartComposite extends Composite implements
 	 *          <code>true</code> enables trace lines for the mouse pointer on the
 	 *          vertical axis.
 	 */
-	public void setVerticalAxisTrace(boolean flag)
+	public void setVerticalAxisTrace(final boolean flag)
 	{
 		this.verticalAxisTrace = flag;
 	}
@@ -1216,7 +1216,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param displayToolTips
 	 *          the displayToolTips to set
 	 */
-	public void setDisplayToolTips(boolean displayToolTips)
+	public void setDisplayToolTips(final boolean displayToolTips)
 	{
 		this.displayToolTips = displayToolTips;
 	}
@@ -1229,16 +1229,16 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return A tool tip or <code>null</code> if no tooltip is available.
 	 */
-	public String getToolTipText(org.eclipse.swt.events.MouseEvent e)
+	public String getToolTipText(final org.eclipse.swt.events.MouseEvent e)
 	{
 		String result = null;
 		if (this.info != null)
 		{
-			EntityCollection entities = this.info.getEntityCollection();
+			final EntityCollection entities = this.info.getEntityCollection();
 			if (entities != null)
 			{
-				Rectangle insets = getClientArea();
-				ChartEntity entity = entities.getEntity(
+				final Rectangle insets = getClientArea();
+				final ChartEntity entity = entities.getEntity(
 						(int) ((e.x - insets.x) / this.scaleX),
 						(int) ((e.y - insets.y) / this.scaleY));
 				if (entity != null)
@@ -1260,18 +1260,18 @@ public class FixedChartComposite extends Composite implements
 	 * @param y
 	 *          vertical position of the popup.
 	 */
-	protected void displayPopupMenu(int x, int y)
+	protected void displayPopupMenu(final int x, final int y)
 	{
 		if (this.popup != null)
 		{
 			// go through each zoom menu item and decide whether or not to
 			// enable it...
-			Plot plot = this.chart.getPlot();
+			final Plot plot = this.chart.getPlot();
 			boolean isDomainZoomable = false;
 			boolean isRangeZoomable = false;
 			if (plot instanceof Zoomable)
 			{
-				Zoomable z = (Zoomable) plot;
+				final Zoomable z = (Zoomable) plot;
 				isDomainZoomable = z.isDomainZoomable();
 				isRangeZoomable = z.isRangeZoomable();
 			}
@@ -1328,9 +1328,9 @@ public class FixedChartComposite extends Composite implements
 	public void createChartPrintJob()
 	{
 		// FIXME try to replace swing print stuff by swt
-		PrinterJob job = PrinterJob.getPrinterJob();
-		PageFormat pf = job.defaultPage();
-		PageFormat pf2 = job.pageDialog(pf);
+		final PrinterJob job = PrinterJob.getPrinterJob();
+		final PageFormat pf = job.defaultPage();
+		final PageFormat pf2 = job.pageDialog(pf);
 		if (pf2 != pf)
 		{
 			job.setPrintable(this, pf2);
@@ -1340,9 +1340,9 @@ public class FixedChartComposite extends Composite implements
 				{
 					job.print();
 				}
-				catch (PrinterException e)
+				catch (final PrinterException e)
 				{
-					MessageBox messageBox = new MessageBox(this.canvas.getShell(), SWT.OK
+					final MessageBox messageBox = new MessageBox(this.canvas.getShell(), SWT.OK
 							| SWT.ICON_ERROR);
 					messageBox.setMessage(e.getMessage());
 					messageBox.open();
@@ -1365,16 +1365,16 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @return The popup menu.
 	 */
-	protected Menu createPopupMenu(boolean properties, boolean save,
-			boolean print, boolean zoom)
+	protected Menu createPopupMenu(final boolean properties, final boolean save,
+			final boolean print, final boolean zoom)
 	{
 
-		Menu result = new Menu(this);
+		final Menu result = new Menu(this);
 		boolean separator = false;
 
 		if (properties)
 		{
-			MenuItem propertiesItem = new MenuItem(result, SWT.PUSH);
+			final MenuItem propertiesItem = new MenuItem(result, SWT.PUSH);
 			propertiesItem.setText(localizationResources.getString("Properties..."));
 			propertiesItem.setData(PROPERTIES_COMMAND);
 			propertiesItem.addSelectionListener(this);
@@ -1387,7 +1387,7 @@ public class FixedChartComposite extends Composite implements
 				new MenuItem(result, SWT.SEPARATOR);
 				separator = false;
 			}
-			MenuItem saveItem = new MenuItem(result, SWT.NONE);
+			final MenuItem saveItem = new MenuItem(result, SWT.NONE);
 			saveItem.setText(localizationResources.getString("Save_as..."));
 			saveItem.setData(SAVE_COMMAND);
 			saveItem.addSelectionListener(this);
@@ -1400,7 +1400,7 @@ public class FixedChartComposite extends Composite implements
 				new MenuItem(result, SWT.SEPARATOR);
 				separator = false;
 			}
-			MenuItem printItem = new MenuItem(result, SWT.NONE);
+			final MenuItem printItem = new MenuItem(result, SWT.NONE);
 			printItem.setText(localizationResources.getString("Print..."));
 			printItem.setData(PRINT_COMMAND);
 			printItem.addSelectionListener(this);
@@ -1414,8 +1414,8 @@ public class FixedChartComposite extends Composite implements
 				separator = false;
 			}
 
-			Menu zoomInMenu = new Menu(result);
-			MenuItem zoomInMenuItem = new MenuItem(result, SWT.CASCADE);
+			final Menu zoomInMenu = new Menu(result);
+			final MenuItem zoomInMenuItem = new MenuItem(result, SWT.CASCADE);
 			zoomInMenuItem.setText(localizationResources.getString("Zoom_In"));
 			zoomInMenuItem.setMenu(zoomInMenu);
 
@@ -1439,8 +1439,8 @@ public class FixedChartComposite extends Composite implements
 			this.zoomInRangeMenuItem.setData(ZOOM_IN_RANGE_COMMAND);
 			this.zoomInRangeMenuItem.addSelectionListener(this);
 
-			Menu zoomOutMenu = new Menu(result);
-			MenuItem zoomOutMenuItem = new MenuItem(result, SWT.CASCADE);
+			final Menu zoomOutMenu = new Menu(result);
+			final MenuItem zoomOutMenuItem = new MenuItem(result, SWT.CASCADE);
 			zoomOutMenuItem.setText(localizationResources.getString("Zoom_Out"));
 			zoomOutMenuItem.setMenu(zoomOutMenu);
 
@@ -1464,8 +1464,8 @@ public class FixedChartComposite extends Composite implements
 			this.zoomOutRangeMenuItem.setData(ZOOM_OUT_RANGE_COMMAND);
 			this.zoomOutRangeMenuItem.addSelectionListener(this);
 
-			Menu autoRangeMenu = new Menu(result);
-			MenuItem autoRangeMenuItem = new MenuItem(result, SWT.CASCADE);
+			final Menu autoRangeMenu = new Menu(result);
+			final MenuItem autoRangeMenuItem = new MenuItem(result, SWT.CASCADE);
 			autoRangeMenuItem.setText(localizationResources.getString("Auto_Range"));
 			autoRangeMenuItem.setMenu(autoRangeMenu);
 
@@ -1498,7 +1498,7 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 	 */
-	public void widgetDefaultSelected(SelectionEvent e)
+	public void widgetDefaultSelected(final SelectionEvent e)
 	{
 		widgetSelected(e);
 	}
@@ -1508,9 +1508,9 @@ public class FixedChartComposite extends Composite implements
 	 * 
 	 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 	 */
-	public void widgetSelected(SelectionEvent e)
+	public void widgetSelected(final SelectionEvent e)
 	{
-		String command = (String) ((MenuItem) e.getSource()).getData();
+		final String command = (String) ((MenuItem) e.getSource()).getData();
 		if (command.equals(PROPERTIES_COMMAND))
 		{
 			attemptEditChartProperties();
@@ -1521,7 +1521,7 @@ public class FixedChartComposite extends Composite implements
 			{
 				doSaveAs();
 			}
-			catch (IOException ex)
+			catch (final IOException ex)
 			{
 				ex.printStackTrace();
 			}
@@ -1588,7 +1588,7 @@ public class FixedChartComposite extends Composite implements
 	 * @throws PrinterException
 	 *           if there is a problem.
 	 */
-	public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
+	public int print(final Graphics graphics, final PageFormat pageFormat, final int pageIndex)
 			throws PrinterException
 	{
 		if (pageIndex != 0)
@@ -1613,7 +1613,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param listener
 	 *          The SWT listener to attach to the canvas.
 	 */
-	public void addSWTListener(EventListener listener)
+	public void addSWTListener(final EventListener listener)
 	{
 		if (listener instanceof ControlListener)
 		{
@@ -1671,7 +1671,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param event
 	 *          the mouse event.
 	 */
-	public void mouseDoubleClick(MouseEvent event)
+	public void mouseDoubleClick(final MouseEvent event)
 	{
 		// do nothing, override if necessary
 	}
@@ -1682,15 +1682,15 @@ public class FixedChartComposite extends Composite implements
 	 * @param event
 	 *          the event.
 	 */
-	public void mouseDown(MouseEvent event)
+	public void mouseDown(final MouseEvent event)
 	{
 
-		Rectangle scaledDataArea = getScreenDataArea(event.x, event.y);
+		final Rectangle scaledDataArea = getScreenDataArea(event.x, event.y);
 		if (scaledDataArea == null)
 			return;
 		this.zoomPoint = getPointInRectangle(event.x, event.y, scaledDataArea);
-		int x = (int) ((event.x - getClientArea().x) / this.scaleX);
-		int y = (int) ((event.y - getClientArea().y) / this.scaleY);
+		final int x = (int) ((event.x - getClientArea().x) / this.scaleX);
+		final int y = (int) ((event.y - getClientArea().y) / this.scaleY);
 
 		this.anchor = new Point2D.Double(x, y);
 		this.chart.setNotify(true); // force a redraw
@@ -1700,7 +1700,7 @@ public class FixedChartComposite extends Composite implements
 		ChartEntity entity = null;
 		if (this.info != null)
 		{
-			EntityCollection entities = this.info.getEntityCollection();
+			final EntityCollection entities = this.info.getEntityCollection();
 			if (entities != null)
 			{
 				// [MG] -- the code below from original
@@ -1718,7 +1718,7 @@ public class FixedChartComposite extends Composite implements
 			}
 		}
 
-		Object[] listeners = this.chartMouseListeners
+		final Object[] listeners = this.chartMouseListeners
 				.getListeners(ChartMouseListener.class);
 		if (listeners.length == 0)
 		{
@@ -1726,8 +1726,8 @@ public class FixedChartComposite extends Composite implements
 		}
 
 		// pass mouse down event if some ChartMouseListener are listening
-		java.awt.event.MouseEvent mouseEvent = SWTUtils.toAwtMouseEvent(event);
-		ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), mouseEvent,
+		final java.awt.event.MouseEvent mouseEvent = SWTUtils.toAwtMouseEvent(event);
+		final ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), mouseEvent,
 				entity);
 		for (int i = listeners.length - 1; i >= 0; i -= 1)
 		{
@@ -1741,20 +1741,20 @@ public class FixedChartComposite extends Composite implements
 	 * @param event
 	 *          the event.
 	 */
-	public void mouseUp(MouseEvent event)
+	public void mouseUp(final MouseEvent event)
 	{
 
 		boolean hZoom, vZoom;
 		if (this.zoomRectangle == null)
 		{
-			Rectangle screenDataArea = getScreenDataArea(event.x, event.y);
+			final Rectangle screenDataArea = getScreenDataArea(event.x, event.y);
 			if (screenDataArea != null)
 			{
 				this.zoomPoint = getPointInRectangle(event.x, event.y, screenDataArea);
 			}
 			if (this.popup != null && event.button == 3)
 			{
-				org.eclipse.swt.graphics.Point pt = this.canvas.toDisplay(event.x,
+				final org.eclipse.swt.graphics.Point pt = this.canvas.toDisplay(event.x,
 						event.y);
 				displayPopupMenu(pt.x, pt.y);
 			}
@@ -1773,9 +1773,9 @@ public class FixedChartComposite extends Composite implements
 				hZoom = this.domainZoomable;
 				vZoom = this.rangeZoomable;
 			}
-			boolean zoomTrigger1 = hZoom
+			final boolean zoomTrigger1 = hZoom
 					&& Math.abs(this.zoomRectangle.width) >= this.zoomTriggerDistance;
-			boolean zoomTrigger2 = vZoom
+			final boolean zoomTrigger2 = vZoom
 					&& Math.abs(this.zoomRectangle.height) >= this.zoomTriggerDistance;
 			if (zoomTrigger1 || zoomTrigger2)
 			{
@@ -1800,7 +1800,7 @@ public class FixedChartComposite extends Composite implements
 	 * @param event
 	 *          the mouse event.
 	 */
-	public void mouseMove(MouseEvent event)
+	public void mouseMove(final MouseEvent event)
 	{
 
 		// handle axis trace
@@ -1814,7 +1814,7 @@ public class FixedChartComposite extends Composite implements
 		// handle tool tips in a simple way
 		if (this.displayToolTips)
 		{
-			String s = getToolTipText(event);
+			final String s = getToolTipText(event);
 			if (s == null && this.canvas.getToolTipText() != null || s != null
 					&& !s.equals(this.canvas.getToolTipText()))
 				this.canvas.setToolTipText(s);
@@ -1824,9 +1824,9 @@ public class FixedChartComposite extends Composite implements
 		boolean hZoom, vZoom;
 		if (this.zoomPoint != null)
 		{
-			Rectangle scaledDataArea = getScreenDataArea(this.zoomPoint.x,
+			final Rectangle scaledDataArea = getScreenDataArea(this.zoomPoint.x,
 					this.zoomPoint.y);
-			org.eclipse.swt.graphics.Point movingPoint = getPointInRectangle(event.x,
+			final org.eclipse.swt.graphics.Point movingPoint = getPointInRectangle(event.x,
 					event.y, scaledDataArea);
 			if (this.orientation == PlotOrientation.HORIZONTAL)
 			{
@@ -1851,7 +1851,7 @@ public class FixedChartComposite extends Composite implements
 			}
 			else if (vZoom)
 			{
-				int ymax = Math.max(movingPoint.y, scaledDataArea.y);
+				final int ymax = Math.max(movingPoint.y, scaledDataArea.y);
 				this.zoomRectangle = new Rectangle(scaledDataArea.x, this.zoomPoint.y,
 						scaledDataArea.width, ymax - this.zoomPoint.y);
 			}
@@ -1866,7 +1866,7 @@ public class FixedChartComposite extends Composite implements
 
 		if (this.info != null)
 		{
-			EntityCollection entities = this.info.getEntityCollection();
+			final EntityCollection entities = this.info.getEntityCollection();
 			if (entities != null)
 			{
 				// [MG] -- the code below from original
@@ -1881,7 +1881,7 @@ public class FixedChartComposite extends Composite implements
 			}
 		}
 
-		Object[] listeners = this.chartMouseListeners
+		final Object[] listeners = this.chartMouseListeners
 				.getListeners(ChartMouseListener.class);
 		if (listeners.length == 0)
 		{
@@ -1889,8 +1889,8 @@ public class FixedChartComposite extends Composite implements
 		}
 
 		// pass mouse move event if some ChartMouseListener are listening
-		java.awt.event.MouseEvent mouseEvent = SWTUtils.toAwtMouseEvent(event);
-		ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), mouseEvent,
+		final java.awt.event.MouseEvent mouseEvent = SWTUtils.toAwtMouseEvent(event);
+		final ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), mouseEvent,
 				entity);
 		for (int i = listeners.length - 1; i >= 0; i -= 1)
 		{
@@ -1904,11 +1904,11 @@ public class FixedChartComposite extends Composite implements
 	 * @param e
 	 *          the paint event.
 	 */
-	public void paintControl(PaintEvent e)
+	public void paintControl(final PaintEvent e)
 	{
 		// first determine the size of the chart rendering area...
 		// TODO workout insets for SWT
-		Rectangle available = getBounds();
+		final Rectangle available = getBounds();
 		// skip if chart is null
 		if (this.chart == null)
 		{
@@ -1916,7 +1916,7 @@ public class FixedChartComposite extends Composite implements
 					available.width, available.height);
 			return;
 		}
-		SWTGraphics2D sg2 = new SWTGraphics2D(e.gc);
+		final SWTGraphics2D sg2 = new SWTGraphics2D(e.gc);
 
 		// work out if scaling is required...
 		boolean scale = false;
@@ -1975,7 +1975,7 @@ public class FixedChartComposite extends Composite implements
 			if (this.refreshBuffer)
 			{
 				// Performs the actual drawing here ...
-				GC gci = new GC(this.chartBuffer);
+				final GC gci = new GC(this.chartBuffer);
 				// anti-aliasing
 				if (this.chart.getAntiAlias())
 				{
@@ -1985,7 +1985,7 @@ public class FixedChartComposite extends Composite implements
 				{
 					gci.setTextAntialias(SWT.ON);
 				}
-				SWTGraphics2D sg2d = new SWTGraphics2D(gci);
+				final SWTGraphics2D sg2d = new SWTGraphics2D(gci);
 				if (scale)
 				{
 					sg2d.scale(this.scaleX, this.scaleY);
@@ -2020,7 +2020,7 @@ public class FixedChartComposite extends Composite implements
 			this.chart.draw(sg2, new Rectangle2D.Double(0, 0, getBounds().width,
 					getBounds().height), getAnchor(), this.info);
 		}
-		Rectangle area = getScreenDataArea();
+		final Rectangle area = getScreenDataArea();
 		// TODO see if we need to apply some line color and style to the
 		// axis traces
 		if (this.horizontalAxisTrace && area.x < this.verticalTraceLineX

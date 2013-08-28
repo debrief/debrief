@@ -11,17 +11,17 @@ public class CellEditorTraverseHandler implements TraverseListener {
 
 	private final Object myActuallyEdited;
 
-	public CellEditorTraverseHandler(EditableTarget activateOnTab, Object actuallyEdited) {
+	public CellEditorTraverseHandler(final EditableTarget activateOnTab, final Object actuallyEdited) {
 		myActivateOnTab = activateOnTab;
 		myActuallyEdited = actuallyEdited;
 	}
 
-	public void keyTraversed(TraverseEvent e) {
+	public void keyTraversed(final TraverseEvent e) {
 		if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
-			ColumnViewer viewer = myActivateOnTab.getColumnViewer();
-			Object element = myActivateOnTab.getElementToEdit(myActuallyEdited);
+			final ColumnViewer viewer = myActivateOnTab.getColumnViewer();
+			final Object element = myActivateOnTab.getElementToEdit(myActuallyEdited);
 			if (element != null) {
-				int columnIndex = myActivateOnTab.getColumnIndex();
+				final int columnIndex = myActivateOnTab.getColumnIndex();
 				viewer.editElement(element, columnIndex);
 			}
 		}

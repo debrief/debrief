@@ -84,48 +84,48 @@ public class WormInHoleOffset
 		/**
 		 * @return
 		 */
-		private WorldVector getVector(double courseDegs, double distM)
+		private WorldVector getVector(final double courseDegs, final double distM)
 		{
 			return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(courseDegs),
 					new WorldDistance(distM, WorldDistance.METRES), null);
 		}
 
-		private void outputSensorTrack(SensorWrapper sensor)
+		private void outputSensorTrack(final SensorWrapper sensor)
 		{
-			Enumeration<Editable> numer = sensor.elements();
+			final Enumeration<Editable> numer = sensor.elements();
 			while (numer.hasMoreElements())
 			{
-				SensorContactWrapper thisF = (SensorContactWrapper) numer.nextElement();
-				WorldLocation thisLoc = thisF.getLocation();
+				final SensorContactWrapper thisF = (SensorContactWrapper) numer.nextElement();
+				final WorldLocation thisLoc = thisF.getLocation();
 				System.out.println(MWC.Algorithms.Conversions.Degs2m(thisLoc.getLong())
 						+ ", " + MWC.Algorithms.Conversions.Degs2m(thisLoc.getLat()));
 			}
 		}
 
-		private void outputTrack(TrackWrapper track)
+		private void outputTrack(final TrackWrapper track)
 		{
-			Enumeration<Editable> numer = track.getPositions();
+			final Enumeration<Editable> numer = track.getPositions();
 			while (numer.hasMoreElements())
 			{
-				FixWrapper thisF = (FixWrapper) numer.nextElement();
-				WorldLocation theLoc = thisF.getLocation();
+				final FixWrapper thisF = (FixWrapper) numer.nextElement();
+				final WorldLocation theLoc = thisF.getLocation();
 				writeLoc(theLoc);
 			}
 		}
 
 		public void testData() throws InterruptedException
 		{
-			TrackWrapper track = getDummyTrack();
+			final TrackWrapper track = getDummyTrack();
 
 			assertNotNull("track generated", track);
 			assertEquals("correct points", 5, track.numFixes());
 
 			// get the sensor
-			SensorWrapper sw = (SensorWrapper) track.getSensors().elements()
+			final SensorWrapper sw = (SensorWrapper) track.getSensors().elements()
 					.nextElement();
 
 			// find the position of the last fix
-			SensorContactWrapper scw = (SensorContactWrapper) sw.getNearestTo(sw
+			final SensorContactWrapper scw = (SensorContactWrapper) sw.getNearestTo(sw
 					.getEndDTG())[0];
 
 			assertNotNull("fix found", scw);
@@ -154,7 +154,7 @@ public class WormInHoleOffset
 
 		public void testData2()
 		{
-			TrackWrapper track = getDummyTrack();
+			final TrackWrapper track = getDummyTrack();
 			assertEquals("correct points", 5, track.numFixes());
 
 			// ok, show us the track
@@ -268,8 +268,8 @@ public class WormInHoleOffset
 	 * @param arrayOffset
 	 * @return
 	 */
-	public static FixWrapper getWormOffsetFor(TrackWrapper track, HiResDate dtg,
-			WorldDistance arrayOffset)
+	public static FixWrapper getWormOffsetFor(final TrackWrapper track, final HiResDate dtg,
+			final WorldDistance arrayOffset)
 	{
 
 		FixWrapper res = null;
@@ -281,19 +281,19 @@ public class WormInHoleOffset
 			return res;
 
 		// get the position at the time, we need it to sort out the speed
-		FixWrapper currFix = (FixWrapper) track.getNearestTo(dtg)[0];
+		final FixWrapper currFix = (FixWrapper) track.getNearestTo(dtg)[0];
 
 		// start off by bracketing the time. work back along the track legs until we
 		// find the two positions either side
 		// of the time we're looking for
-		Enumeration<Editable> enumer = track.getPositions();
+		final Enumeration<Editable> enumer = track.getPositions();
 
-		Vector<FixWrapper> backTrack = new Vector<FixWrapper>();
+		final Vector<FixWrapper> backTrack = new Vector<FixWrapper>();
 		FixWrapper nextPoint = null;
 
 		while (enumer.hasMoreElements())
 		{
-			FixWrapper thisP = (FixWrapper) enumer.nextElement();
+			final FixWrapper thisP = (FixWrapper) enumer.nextElement();
 
 			if ((backTrack.size() == 0) && (thisP.getDateTimeGroup().equals(dtg)))
 			{
@@ -327,22 +327,22 @@ public class WormInHoleOffset
 
 			for (int i = backTrack.size() - 1; i >= 0; i--)
 			{
-				FixWrapper thisI = backTrack.elementAt(i);
+				final FixWrapper thisI = backTrack.elementAt(i);
 
-				double thisLen = nextPoint.getLocation()
+				final double thisLen = nextPoint.getLocation()
 						.subtract(thisI.getFixLocation()).getRange();
-				double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
+				final double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
 
 				// is this longer than our stub?
 				if (thisLenM >= offsetM)
 				{
 					// so just interpolate along the path
-					double posDelta = offsetM / thisLenM;
-					long nextMicros = nextPoint.getDTG().getMicros();
-					long lastMicros = thisI.getDTG().getMicros();
+					final double posDelta = offsetM / thisLenM;
+					final long nextMicros = nextPoint.getDTG().getMicros();
+					final long lastMicros = thisI.getDTG().getMicros();
 					double timeDelta = (nextMicros - lastMicros);
 					timeDelta *= posDelta;
-					double timeOffset = nextMicros - timeDelta;
+					final double timeOffset = nextMicros - timeDelta;
 
 					res = FixWrapper.interpolateFix(thisI, nextPoint, new HiResDate(0,
 							(long) timeOffset));
@@ -387,7 +387,7 @@ public class WormInHoleOffset
 	 * @param theLoc
 	 * @return
 	 */
-	private static String loc2String(WorldLocation theLoc)
+	private static String loc2String(final WorldLocation theLoc)
 	{
 		return MWC.Algorithms.Conversions.Degs2m(theLoc.getLong()) + ", "
 				+ MWC.Algorithms.Conversions.Degs2m(theLoc.getLat());
@@ -399,7 +399,7 @@ public class WormInHoleOffset
 	 * @param msg
 	 * @param theLoc
 	 */
-	private static void writeLoc(String msg, WorldLocation theLoc)
+	private static void writeLoc(final String msg, final WorldLocation theLoc)
 	{
 		if (msg != null)
 			System.out.print(msg + "|");
@@ -411,7 +411,7 @@ public class WormInHoleOffset
 	 * 
 	 * @param theLoc
 	 */
-	private static void writeLoc(WorldLocation theLoc)
+	private static void writeLoc(final WorldLocation theLoc)
 	{
 		writeLoc(null, theLoc);
 	}

@@ -53,7 +53,7 @@ public final class ImportTMA_Pos implements PlainLineImporter
 	/**
 	 * read in this string and return a Label
 	 */
-	public final Object readThisLine(String theLine)
+	public final Object readThisLine(final String theLine)
 	{
 
 		// ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H
@@ -63,7 +63,7 @@ public final class ImportTMA_Pos implements PlainLineImporter
 		// speed, depth (m), label string
 
 		// get a stream from the string
-		StringTokenizer st = new StringTokenizer(theLine);
+		final StringTokenizer st = new StringTokenizer(theLine);
 
 		// declare local variables
 		String theLabel;
@@ -84,8 +84,8 @@ public final class ImportTMA_Pos implements PlainLineImporter
 		st.nextToken();
 
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -110,12 +110,12 @@ public final class ImportTMA_Pos implements PlainLineImporter
 		 * now, we may have trouble here, since there may not be a space between the
 		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
 		 */
-		String vDiff = st.nextToken();
+		final String vDiff = st.nextToken();
 		if (vDiff.length() > 3)
 		{
 			// hmm, they are combined
 			latHem = vDiff.charAt(0);
-			String secondPart = vDiff.substring(1, vDiff.length());
+			final String secondPart = vDiff.substring(1, vDiff.length());
 			longDeg = Double.valueOf(secondPart);
 		}
 		else
@@ -175,10 +175,10 @@ public final class ImportTMA_Pos implements PlainLineImporter
 
 		theColor = ImportReplay.replayColorFor(theSymbology);
 
-		String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
+		final String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
 
 		// create the contact object
-		TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
+		final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
 				theDtg, origin, course, speed, depth, theColor, theLabel, theEllipse,
 				theStyle);
 
@@ -200,10 +200,10 @@ public final class ImportTMA_Pos implements PlainLineImporter
 	 *          the thing we are going to export
 	 * @return the shape in String form
 	 */
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
 		// result value
-		String line = ";; Export of sensor data not implemented";
+		final String line = ";; Export of sensor data not implemented";
 		return line;
 
 	}
@@ -215,7 +215,7 @@ public final class ImportTMA_Pos implements PlainLineImporter
 	 *          the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 
@@ -252,23 +252,23 @@ public final class ImportTMA_Pos implements PlainLineImporter
 			final String testLine = ";TMA_POS: 030211 120312 CARPET S@ 22 11 10.63 N 21 41 52.37 W TRACK_060 045.0  4000 2000 050 12.4 100 Trial label";
 
 			// ok, create the importer
-			ImportTMA_Pos importer = new ImportTMA_Pos();
+			final ImportTMA_Pos importer = new ImportTMA_Pos();
 
 			// see if we can read this type
-			String theType = importer.getYourType();
+			final String theType = importer.getYourType();
 			assertEquals("returned correct type", theType, ";TMA_POS:");
 
 			// now read the line
-			Object res = importer.readThisLine(testLine);
+			final Object res = importer.readThisLine(testLine);
 			assertNotNull("managed to read item", res);
 
 			// check it's of the correct type
 			assertEquals("of correct class",
 					"class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
-			TMAContactWrapper tc = (TMAContactWrapper) res;
+			final TMAContactWrapper tc = (TMAContactWrapper) res;
 
 			// check the values we've used
-			HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
+			final HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
 			assertEquals("correct date", theDate, tc.getDTG());
 			assertEquals("Correct track", "CARPET", tc.getTrackName());
 			assertEquals("correct color", Color.white, tc.getColor());
@@ -299,23 +299,23 @@ public final class ImportTMA_Pos implements PlainLineImporter
 			final String testLine = ";TMA_POS: 030211 120312 CARPET S@ 22 11 10.63 N 21 41 52.37 W TRACK_060 NULL 050 12.4 100 Trial label";
 
 			// ok, create the importer
-			ImportTMA_Pos importer = new ImportTMA_Pos();
+			final ImportTMA_Pos importer = new ImportTMA_Pos();
 
 			// see if we can read this type
-			String theType = importer.getYourType();
+			final String theType = importer.getYourType();
 			assertEquals("returned correct type", theType, ";TMA_POS:");
 
 			// now read the line
-			Object res = importer.readThisLine(testLine);
+			final Object res = importer.readThisLine(testLine);
 			assertNotNull("managed to read item", res);
 
 			// check it's of the correct type
 			assertEquals("of correct class",
 					"class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
-			TMAContactWrapper tc = (TMAContactWrapper) res;
+			final TMAContactWrapper tc = (TMAContactWrapper) res;
 
 			// check the values we've used
-			HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
+			final HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
 			assertEquals("correct date", theDate, tc.getDTG());
 			assertEquals("Correct track", "CARPET", tc.getTrackName());
 			assertEquals("correct color", Color.white, tc.getColor());
@@ -339,9 +339,9 @@ public final class ImportTMA_Pos implements PlainLineImporter
 		}
 	}
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
-		testImportTMA_POS tm = new testImportTMA_POS("scrap");
+		final testImportTMA_POS tm = new testImportTMA_POS("scrap");
 		tm.testImport();
 		tm.testImportNoEllipse();
 	}

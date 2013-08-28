@@ -32,15 +32,15 @@ public class RightClickPasteAdaptor
 	// constructor
 	// ////////////////////////////////
 
-	static public void getDropdownListFor(IMenuManager manager, Editable destination,
-			Layer[] updateLayer, Layer[] parentLayer, Layers theLayers, Clipboard _clipboard)
+	static public void getDropdownListFor(final IMenuManager manager, final Editable destination,
+			final Layer[] updateLayer, final Layer[] parentLayer, final Layers theLayers, final Clipboard _clipboard)
 	{
 
 		// is the plottable a layer
 		if ((destination instanceof MWC.GUI.Layer) || (destination == null))
 		{
-			EditableTransfer transfer = EditableTransfer.getInstance();
-			Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
+			final EditableTransfer transfer = EditableTransfer.getInstance();
+			final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
 
 			// see if there is currently a plottable on the clipboard
 			if (tr != null)
@@ -48,14 +48,14 @@ public class RightClickPasteAdaptor
 				try
 				{
 					// extract the plottable
-					Editable[] theDataList = (Editable[]) tr;
+					final Editable[] theDataList = (Editable[]) tr;
 					PasteItem paster = null;
 
 					// see if all of the selected items are layers - or not
 					boolean allLayers = true;
 					for (int i = 0; i < theDataList.length; i++)
 					{
-						Editable editable = theDataList[i];
+						final Editable editable = theDataList[i];
 						if(!(editable instanceof Layer))
 						{
 							allLayers = false;
@@ -96,7 +96,7 @@ public class RightClickPasteAdaptor
 						manager.add(paster);
 					}
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					MWC.Utilities.Errors.Trace.trace(e);
 				}
@@ -122,8 +122,8 @@ public class RightClickPasteAdaptor
 
 		protected Layers _theLayers;
 
-		public PasteItem(Editable[] items, Clipboard clipboard, Layer theDestination,
-				Layers theLayers)
+		public PasteItem(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
+				final Layers theLayers)
 		{
 			// remember stuff
 			// try to take a fresh clone of the data item
@@ -143,22 +143,22 @@ public class RightClickPasteAdaptor
 		 */
 		public void run()
 		{
-			AbstractOperation myOperation = new AbstractOperation(getText())
+			final AbstractOperation myOperation = new AbstractOperation(getText())
 			{
-				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					// and let redo do the rest
 					return redo(monitor, info);
 				}
 
-				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					// paste the new data in it's Destination
 					for (int i = 0; i < _data.length; i++)
 					{
-						Editable editable = _data[i];
+						final Editable editable = _data[i];
 						_theDestination.add(editable);
 					}
 
@@ -171,13 +171,13 @@ public class RightClickPasteAdaptor
 					return Status.OK_STATUS;
 				}
 
-				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					// paste the new data in it's Destination
 					for (int i = 0; i < _data.length; i++)
 					{
-						Editable editable = _data[i];
+						final Editable editable = _data[i];
 						_theDestination.removeElement(editable);
 					}
 
@@ -185,7 +185,7 @@ public class RightClickPasteAdaptor
 					_theLayers.fireExtended();
 					
 					// put the contents back in the clipbard
-					EditableTransfer transfer = EditableTransfer.getInstance();
+					final EditableTransfer transfer = EditableTransfer.getInstance();
 					_myClipboard.setContents(_data,new Transfer[]{transfer});
 					
 					return Status.OK_STATUS;
@@ -218,8 +218,8 @@ public class RightClickPasteAdaptor
 	public static class PasteLayer extends PasteItem
 	{
 
-		public PasteLayer(Editable[] items, Clipboard clipboard, Layer theDestination,
-				Layers theLayers)
+		public PasteLayer(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
+				final Layers theLayers)
 		{
 			super(items , clipboard, theDestination, theLayers);
 		}
@@ -240,21 +240,21 @@ public class RightClickPasteAdaptor
 		 */
 		public void run()
 		{
-			AbstractOperation myOperation = new AbstractOperation(getText())
+			final AbstractOperation myOperation = new AbstractOperation(getText())
 			{
-				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					for (int i = 0; i < _data.length; i++)
 					{
-						Editable thisItem = _data[i];
+						final Editable thisItem = _data[i];
 
 						// copy in the new data
 						// do we have a destination layer?
 						if (_theDestination != null)
 						{
 							// extract the layer
-							Layer newLayer = (Layer) thisItem;
+							final Layer newLayer = (Layer) thisItem;
 
 							// add it to the target layer
 							_theDestination.add(newLayer);
@@ -262,7 +262,7 @@ public class RightClickPasteAdaptor
 						else
 						{
 							// extract the layer
-							Layer newLayer = (Layer) thisItem;
+							final Layer newLayer = (Layer) thisItem;
 
 							// add it to the top level
 							_theLayers.addThisLayer(newLayer);
@@ -278,18 +278,18 @@ public class RightClickPasteAdaptor
 					return Status.OK_STATUS;
 				}
 
-				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					return execute(monitor,info);
 				}
 
-				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					for (int i = 0; i < _data.length; i++)
 					{
-						Editable thisItem = _data[i];
+						final Editable thisItem = _data[i];
 						// remove the item from it's new parent
 						// do we have a destination layer?
 						if (_theDestination != null)
@@ -307,7 +307,7 @@ public class RightClickPasteAdaptor
 					}
 					
 					// put the contents back in the clipbard
-					EditableTransfer transfer = EditableTransfer.getInstance();
+					final EditableTransfer transfer = EditableTransfer.getInstance();
 					_myClipboard.setContents(_data,new Transfer[]{transfer});
 
 					return Status.OK_STATUS;

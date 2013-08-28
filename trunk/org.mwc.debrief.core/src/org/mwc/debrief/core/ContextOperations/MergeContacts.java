@@ -45,7 +45,7 @@ public class MergeContacts implements RightClickContextItemGenerator
 			for (int i = 0; i < subjects.length; i++)
 			{
 				boolean goForIt = false;
-				Editable thisE = subjects[i];
+				final Editable thisE = subjects[i];
 				if (thisE instanceof SensorWrapper)
 				{
 					goForIt = true;					
@@ -79,10 +79,10 @@ public class MergeContacts implements RightClickContextItemGenerator
 			final Editable editable = subjects[0];
 			final String title = "Merge sensors into " + editable.getName();
 			// create this operation
-			Action doMerge = new Action(title){
+			final Action doMerge = new Action(title){
 				public void run()
 				{
-					IUndoableOperation theAction = new MergeSensorsOperation(title, editable, theLayers, parentLayers, subjects);
+					final IUndoableOperation theAction = new MergeSensorsOperation(title, editable, theLayers, parentLayers, subjects);
 						
 					CorePlugin.run(theAction );
 				}};
@@ -99,11 +99,11 @@ public class MergeContacts implements RightClickContextItemGenerator
 		private final Layers _layers;
 		private final Layer[] _parents;
 		private final Editable[] _subjects;
-		private Editable _target;
+		private final Editable _target;
 
 
-		public MergeSensorsOperation(String title, Editable editable, Layers theLayers, Layer[] parentLayers,
-				Editable[] subjects)
+		public MergeSensorsOperation(final String title, final Editable editable, final Layers theLayers, final Layer[] parentLayers,
+				final Editable[] subjects)
 		{
 			super(title);
 			_target = editable;
@@ -112,10 +112,10 @@ public class MergeContacts implements RightClickContextItemGenerator
 			_subjects = subjects;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			int res = SensorWrapper.mergeSensors(_target, _layers, _parents[0], _subjects);
+			final int res = SensorWrapper.mergeSensors(_target, _layers, _parents[0], _subjects);
 			if(res == IStatus.OK)
 				fireModified();
 			return Status.OK_STATUS;
@@ -141,7 +141,7 @@ public class MergeContacts implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			CorePlugin.logError(Status.INFO, "Undo not permitted for merge operation", null);

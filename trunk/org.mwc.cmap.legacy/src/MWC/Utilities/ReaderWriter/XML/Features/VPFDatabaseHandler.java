@@ -41,20 +41,20 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 		addAttributeHandler(new HandleBooleanAttribute("Visible")
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_isVisible = value;
 			}
 		});
 		addHandler(new VPFLibraryHandler()
 		{
-			public void addLibrary(String name, boolean visible,
-					java.util.Vector<CoverageLayer> coverages)
+			public void addLibrary(final String name, final boolean visible,
+					final java.util.Vector<CoverageLayer> coverages)
 			{
 				addThisLibrary(name, visible, coverages);
 			}
 
-			public com.bbn.openmap.layer.vpf.LibrarySelectionTable getLST(String name)
+			public com.bbn.openmap.layer.vpf.LibrarySelectionTable getLST(final String name)
 			{
 				LibrarySelectionTable res = null;
 
@@ -85,8 +85,8 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 		}
 	}
 
-	public void addThisLibrary(String name, boolean visible,
-			java.util.Vector<CoverageLayer> coverages)
+	public void addThisLibrary(final String name, final boolean visible,
+			final java.util.Vector<CoverageLayer> coverages)
 	{
 		checkDatabase();
 
@@ -95,7 +95,7 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 		{
 
 			// do we know about this library?
-			LibraryLayer lib = _myDatabase.getLibrary(name);
+			final LibraryLayer lib = _myDatabase.getLibrary(name);
 
 			if (lib == null)
 			{
@@ -113,10 +113,10 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 			{
 
 				// now add the coverages to the library
-				java.util.Enumeration<CoverageLayer> enumer = coverages.elements();
+				final java.util.Enumeration<CoverageLayer> enumer = coverages.elements();
 				while (enumer.hasMoreElements())
 				{
-					CoverageLayer cl = enumer.nextElement();
+					final CoverageLayer cl = enumer.nextElement();
 					lib.add(cl);
 				}
 			}
@@ -150,28 +150,28 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 	abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
-	public void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
-		MWC.GUI.VPF.VPFDatabase ll = (MWC.GUI.VPF.VPFDatabase) plottable;
-		Element coast = doc.createElement(_myType);
+		final MWC.GUI.VPF.VPFDatabase ll = (MWC.GUI.VPF.VPFDatabase) plottable;
+		final Element coast = doc.createElement(_myType);
 
 		// do the visibility
 		coast.setAttribute("Visible", writeThis(ll.getVisible()));
 
 		// now pass throuth the coverages, outputting each one
-		java.util.Enumeration<Editable> enumer = ll.elements();
+		final java.util.Enumeration<Editable> enumer = ll.elements();
 		while (enumer.hasMoreElements())
 		{
-			LibraryLayer cl = (LibraryLayer) enumer.nextElement();
+			final LibraryLayer cl = (LibraryLayer) enumer.nextElement();
 			VPFLibraryHandler.exportThisPlottable(cl, coast, doc);
 		}
 
 		parent.appendChild(coast);
 	}
 
-	public static void initialise(ToolParent toolParent)
+	public static void initialise(final ToolParent toolParent)
 	{
 		_myParent = toolParent;
 	}

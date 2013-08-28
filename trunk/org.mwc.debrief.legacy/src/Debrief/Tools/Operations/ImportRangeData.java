@@ -75,9 +75,9 @@ public final class ImportRangeData extends PlainTool {
    * session to import the file into, if the session val is null
    * @param theSessionVal the Session to add the file to (or null, see above)
    */
-  public ImportRangeData(ToolParent theParent,
-												 MWC.GUI.Properties.PropertiesPanel thePanel,
-												 Layers theData){
+  public ImportRangeData(final ToolParent theParent,
+												 final MWC.GUI.Properties.PropertiesPanel thePanel,
+												 final Layers theData){
     super(theParent, "Import Rng Data", "images/import_range.gif");
     // store the Session                              
 		_thePanel = thePanel;

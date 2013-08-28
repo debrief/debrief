@@ -42,7 +42,7 @@ abstract public class PolygonHandler extends ShapeHandler implements
 
 		addHandler(new WorldPathHandler()
 		{
-			public void setPath(WorldPath path)
+			public void setPath(final WorldPath path)
 			{
 				_polygon = path;
 			}
@@ -50,14 +50,14 @@ abstract public class PolygonHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleBooleanAttribute(FILLED_STR)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_filled = new Boolean(value);
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(LABEL_NODES)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_labelNodes = new Boolean(value);
 			}
@@ -65,7 +65,7 @@ abstract public class PolygonHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleBooleanAttribute(CLOSED_STR)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_closed = new Boolean(value);
 			}
@@ -73,19 +73,19 @@ abstract public class PolygonHandler extends ShapeHandler implements
 	}
 
 	// this is one of ours, so get on with it!
-	protected final void handleOurselves(String name, Attributes attributes)
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
 		super.handleOurselves(name, attributes);
 	}
 
 	public final MWC.GUI.Shapes.PlainShape getShape()
 	{
-		Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-		PolygonShape poly = new PolygonShape(nodes);
-		Collection<WorldLocation> iter = _polygon.getPoints();
-		for (Iterator<WorldLocation> iterator = iter.iterator(); iterator.hasNext();)
+		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+		final PolygonShape poly = new PolygonShape(nodes);
+		final Collection<WorldLocation> iter = _polygon.getPoints();
+		for (final Iterator<WorldLocation> iterator = iter.iterator(); iterator.hasNext();)
 		{
-			WorldLocation worldLocation = (WorldLocation) iterator.next();
+			final WorldLocation worldLocation = (WorldLocation) iterator.next();
 			nodes.add(new PolygonNode("" + (nodes.size() + 1), worldLocation, poly));
 		}
 		if (_filled != null)
@@ -100,32 +100,32 @@ abstract public class PolygonHandler extends ShapeHandler implements
 
 	protected ShapeWrapper getWrapper()
 	{
-		PolygonShape shape = (PolygonShape) getShape();
+		final PolygonShape shape = (PolygonShape) getShape();
 		shape.setColor(_col);
-		Debrief.Wrappers.PolygonWrapper sw = new Debrief.Wrappers.PolygonWrapper(
+		final Debrief.Wrappers.PolygonWrapper sw = new Debrief.Wrappers.PolygonWrapper(
 				this._label, shape, _col, null);
 		sw.setName(_label);
 		sw.setColor(_col);
 		return sw;
 	}
 
-	public final void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public final void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// output the shape related stuff first
-		org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+		final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
 		super.exportThisPlottable(plottable, ePlottable, doc);
 
 		// now our circle related stuff
 
 		// get the circle
-		Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
-		MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+		final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+		final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
 		if (ps instanceof MWC.GUI.Shapes.PolygonShape)
 		{
 			// export the attributes
-			MWC.GUI.Shapes.PolygonShape cs = (MWC.GUI.Shapes.PolygonShape) ps;
+			final MWC.GUI.Shapes.PolygonShape cs = (MWC.GUI.Shapes.PolygonShape) ps;
 			ePlottable.setAttribute(FILLED_STR, writeThis(cs.getFilled()));
 			ePlottable.setAttribute(CLOSED_STR, writeThis(cs.getClosed()));
 			ePlottable.setAttribute(LABEL_NODES, writeThis(cs.getShowNodeLabels()));

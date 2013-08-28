@@ -59,9 +59,9 @@ public class PlottableSelection implements Transferable, ClipboardOwner
   // member variables
   ////////////////////////////////////////////////////////////
   public static DataFlavor PlottableFlavor;
-  private DataFlavor[] _flavors = {PlottableFlavor};
+  private final DataFlavor[] _flavors = {PlottableFlavor};
   private Editable _thePlottable = null;
-  private boolean _isCopy;
+  private final boolean _isCopy;
 
   static
   {
@@ -70,7 +70,7 @@ public class PlottableSelection implements Transferable, ClipboardOwner
       PlottableFlavor = new DataFlavor(Class.forName("MWC.GUI.Plottable"),
                                        "Plottable");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -79,8 +79,8 @@ public class PlottableSelection implements Transferable, ClipboardOwner
   ////////////////////////////////////////////////////////////
   // constructor, receives a plottable
   ////////////////////////////////////////////////////////////
-  public PlottableSelection(Editable val,
-                            boolean isCopy)
+  public PlottableSelection(final Editable val,
+                            final boolean isCopy)
   {
     _thePlottable = val;
     _isCopy = isCopy;
@@ -102,13 +102,13 @@ public class PlottableSelection implements Transferable, ClipboardOwner
   }
 
   // check if this is supported
-  public boolean isDataFlavorSupported(DataFlavor p1)
+  public boolean isDataFlavorSupported(final DataFlavor p1)
   {
     return p1.equals(PlottableFlavor);
   }
 
   // retrieve the data
-  public Object getTransferData(DataFlavor p1) throws UnsupportedFlavorException
+  public Object getTransferData(final DataFlavor p1) throws UnsupportedFlavorException
   {
     if (p1.equals(PlottableFlavor))
     {
@@ -119,7 +119,7 @@ public class PlottableSelection implements Transferable, ClipboardOwner
   }
 
   // don't bother!
-  public void lostOwnership(Clipboard p1, Transferable p2)
+  public void lostOwnership(final Clipboard p1, final Transferable p2)
   {
   }
 }

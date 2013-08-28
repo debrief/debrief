@@ -33,19 +33,19 @@ public class RangeValues
 	 * @throws IOException
 	 *           if the file can't be found
 	 */
-	public void load(String path) throws NumberFormatException, IOException,
+	public void load(final String path) throws NumberFormatException, IOException,
 			MultiPathModel.DataFormatException
 	{
-		Vector<Double> times = new Vector<Double>();
-		Vector<Double> values = new Vector<Double>();
+		final Vector<Double> times = new Vector<Double>();
+		final Vector<Double> values = new Vector<Double>();
 
-		BufferedReader bufRdr = new BufferedReader(new FileReader(path));
+		final BufferedReader bufRdr = new BufferedReader(new FileReader(path));
 		String line = null;
 
 		// read each line of text file
 		while ((line = bufRdr.readLine()) != null)
 		{
-			StringTokenizer st = new StringTokenizer(line, ",");
+			final StringTokenizer st = new StringTokenizer(line, ",");
 			double thisTime = 0, thisRange = 0;
 			if (st.hasMoreTokens())
 			{
@@ -87,9 +87,9 @@ public class RangeValues
 	 * @param millis
 	 * @return
 	 */
-	public double valueAt(long millis)
+	public double valueAt(final long millis)
 	{
-		double secs = millis / 1000d;
+		final double secs = millis / 1000d;
 		return _interp.interpolate(secs);
 	}
 	
@@ -100,9 +100,9 @@ public class RangeValues
 	 * @param timeVal
 	 * @return
 	 */
-	public boolean hasValueAt(long timeVal)
+	public boolean hasValueAt(final long timeVal)
 	{
-		double secs = timeVal / 1000d;
+		final double secs = timeVal / 1000d;
 		return ((_times[0] <= secs) && (_times[_times.length - 1] >= secs));
 	}
 
@@ -116,7 +116,7 @@ public class RangeValues
 
 		public void testMe()
 		{
-			RangeValues times = new RangeValues();
+			final RangeValues times = new RangeValues();
 
 			assertEquals("not got data", null, times._times);
 			assertEquals("not got data", null, times._ranges);
@@ -127,15 +127,15 @@ public class RangeValues
 				times.load("src/org/mwc/debrief/multipath/model2/test_times_bad.csv");
 				fail("should not have found file");
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				// ok - this should have been thrown
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}
@@ -146,15 +146,15 @@ public class RangeValues
 			{
 				times.load(TEST_RANGES_FILE);
 			}
-			catch (NumberFormatException e)
+			catch (final NumberFormatException e)
 			{
 				fail("wrong number format");
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				fail("unable to read lines");
 			}
-			catch (DataFormatException e)
+			catch (final DataFormatException e)
 			{
 				fail("bad data");
 			}

@@ -36,7 +36,7 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		
 		// sort out export to WMF
@@ -49,7 +49,7 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(final BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
@@ -66,11 +66,11 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	 * Returns the string from the plugin's resource bundle,
 	 * or 'key' if not found.
 	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = PlotViewerPlugin.getDefault().getResourceBundle();
+	public static String getResourceString(final String key) {
+		final ResourceBundle bundle = PlotViewerPlugin.getDefault().getResourceBundle();
 		try {
 			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
+		} catch (final MissingResourceException e) {
 			return key;
 		}
 	}
@@ -82,7 +82,7 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 		try {
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle.getBundle("org.mwc.cmap.plotViewer.PlotViewerPluginResources");
-		} catch (MissingResourceException x) {
+		} catch (final MissingResourceException x) {
 			resourceBundle = null;
 		}
 		return resourceBundle;
@@ -95,7 +95,7 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	 * @param path the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
+	public static ImageDescriptor getImageDescriptor(final String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.plotViewer", path);
 	}
 	
@@ -105,7 +105,7 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	 * 
 	 * @param mode
 	 */
-	public static void setCurrentMode(SWTChart.PlotMouseDragger mode)
+	public static void setCurrentMode(final SWTChart.PlotMouseDragger mode)
 	{
 		_currentMode = mode;
 	}

@@ -42,10 +42,10 @@ public class DataSupport
 	 * 
 	 * @return A chart.
 	 */
-	public static JFreeChart createChart(XYDataset dataset)
+	public static JFreeChart createChart(final XYDataset dataset)
 	{
 
-		JFreeChart chart = ChartFactory.createTimeSeriesChart("Bearing Management", // title
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Bearing Management", // title
 				"Time", // x-axis label
 				"Bearing", // y-axis label
 				dataset, // data
@@ -56,7 +56,7 @@ public class DataSupport
 
 		chart.setBackgroundPaint(Color.white);
 
-		XYPlot plot = (XYPlot) chart.getPlot();
+		final XYPlot plot = (XYPlot) chart.getPlot();
 		plot.setBackgroundPaint(Color.lightGray);
 		plot.setAxisOffset(new RectangleInsets(0, 0, 0, 0));
 		plot.setDomainGridlinePaint(Color.white);
@@ -66,16 +66,16 @@ public class DataSupport
 		
 		plot.setOrientation(PlotOrientation.HORIZONTAL);
 
-		XYItemRenderer r = plot.getRenderer();
+		final XYItemRenderer r = plot.getRenderer();
 		if (r instanceof XYLineAndShapeRenderer)
 		{
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
+			final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
 			renderer.setBaseShapesVisible(true);
 			renderer.setBaseShapesFilled(true);
 		}
 
 
-		DateAxis axis = (DateAxis) plot.getDomainAxis();
+		final DateAxis axis = (DateAxis) plot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm.ss"));
 
 		return chart;
@@ -84,7 +84,7 @@ public class DataSupport
 
 	abstract public static class TacticalSeries extends TimeSeries
 	{
-		public TacticalSeries(String name)
+		public TacticalSeries(final String name)
 		{
 			super(name);
 		}
@@ -103,9 +103,9 @@ public class DataSupport
 	public static class TrackSeries extends TacticalSeries
 	{
 
-		private WatchableList _myTrack;
+		private final WatchableList _myTrack;
 
-		public TrackSeries(String name, WatchableList subject)
+		public TrackSeries(final String name, final WatchableList subject)
 		{
 			super(name);
 			_myTrack = subject;
@@ -137,7 +137,7 @@ public class DataSupport
 	{
 		final protected SensorWrapper _subject;
 
-		public SensorSeries(String name, SensorWrapper subject)
+		public SensorSeries(final String name, final SensorWrapper subject)
 		{
 			super(name);
 			_subject = subject;
@@ -172,22 +172,22 @@ public class DataSupport
 
 	public static long stepInterval()
 	{
-		long[] intervals =
+		final long[] intervals =
 		{ 1000, 5000, 60000, 300000 };
-		int index = (int) (Math.random() * 4);
+		final int index = (int) (Math.random() * 4);
 		return intervals[index];
 	}
 
 	public static long delay()
 	{
-		long delay = (int) (Math.random() * 210) * 60000
+		final long delay = (int) (Math.random() * 210) * 60000
 				+ (int) (Math.random() * 5 * 1000);
 		return delay;
 	}
 
 	public static long duration()
 	{
-		long delay = (int) (Math.random() * 90) * 60000
+		final long delay = (int) (Math.random() * 90) * 60000
 				+ (int) (Math.random() * 500 * 1000);
 		return delay;
 	}
@@ -253,28 +253,28 @@ public class DataSupport
 	// return dataset;
 	// }
 
-	public static void tracksFor(TrackWrapper primary,
-			WatchableList[] secondaries, TimeSeriesCollection newData)
+	public static void tracksFor(final TrackWrapper primary,
+			final WatchableList[] secondaries, final TimeSeriesCollection newData)
 	{
 		if (secondaries != null)
 		{
 			for (int i = 0; i < secondaries.length; i++)
 			{
-				WatchableList thisS = secondaries[i];
-				TrackSeries thisT = new TrackSeries(thisS.getName(), thisS);
-				Enumeration<Editable> priPts = primary.getPositions();
+				final WatchableList thisS = secondaries[i];
+				final TrackSeries thisT = new TrackSeries(thisS.getName(), thisS);
+				final Enumeration<Editable> priPts = primary.getPositions();
 				_previousVal = Double.NaN;
 				while (priPts.hasMoreElements())
 				{
-					FixWrapper thisP = (FixWrapper) priPts.nextElement();
-					Watchable[] nearest = thisS.getNearestTo(thisP.getDTG());
+					final FixWrapper thisP = (FixWrapper) priPts.nextElement();
+					final Watchable[] nearest = thisS.getNearestTo(thisP.getDTG());
 					if (nearest != null)
 						if (nearest.length > 0)
 						{
-							Watchable thisLoc = nearest[0];
-							WorldVector offset = thisLoc.getLocation().subtract(
+							final Watchable thisLoc = nearest[0];
+							final WorldVector offset = thisLoc.getLocation().subtract(
 									thisP.getLocation());
-							double thisVal = MWC.Algorithms.Conversions.Rads2Degs(offset
+							final double thisVal = MWC.Algorithms.Conversions.Rads2Degs(offset
 									.getBearing());
 
 							thisT.add(create(thisP.getTime(), thisVal, thisP.getColor()));
@@ -287,32 +287,32 @@ public class DataSupport
 
 	}
 
-	public static void sensorDataFor(TrackWrapper primary,
-			TimeSeriesCollection newData, HashMap<SensorWrapper, SensorSeries> index)
+	public static void sensorDataFor(final TrackWrapper primary,
+			final TimeSeriesCollection newData, final HashMap<SensorWrapper, SensorSeries> index)
 	{
 
 		index.clear();
 
-		Enumeration<Editable> sensors = primary.getSensors().elements();
+		final Enumeration<Editable> sensors = primary.getSensors().elements();
 		while (sensors.hasMoreElements())
 		{
-			SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
-			SensorSeries series = new SensorSeries(sensor.getName(), sensor);
-			Enumeration<Editable> cuts = sensor.elements();
+			final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+			final SensorSeries series = new SensorSeries(sensor.getName(), sensor);
+			final Enumeration<Editable> cuts = sensor.elements();
 			_previousVal = Double.NaN;
 
 			index.put(sensor, series);
 			while (cuts.hasMoreElements())
 			{
-				SensorContactWrapper scw = (SensorContactWrapper) cuts.nextElement();
-				double thisVal = scw.getBearing();
+				final SensorContactWrapper scw = (SensorContactWrapper) cuts.nextElement();
+				final double thisVal = scw.getBearing();
 
 				// wrap this in a try/catch - in case there are multiple entries
 				try
 				{
 					series.add(create(scw.getTime(), thisVal, scw.getColor()));
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					// no probs, just ignore the new value
 				}
@@ -323,26 +323,26 @@ public class DataSupport
 		}
 	}
 
-	private static ColouredDataItem create(HiResDate hiResDate, double thisVal,
-			Color color)
+	private static ColouredDataItem create(final HiResDate hiResDate, 
+			final double thisVal, final Color color)
 	{
-
-		if (thisVal < 0)
-			thisVal += 360;
+		double val = thisVal;
+		if (val < 0)
+			val += 360;
 
 		// aaah, but is it a jump?
 		boolean connectToPrevious = true;
 		if (_previousVal != Double.NaN)
 		{
-			double delta = Math.abs(thisVal - _previousVal);
+			final double delta = Math.abs(val - _previousVal);
 			if (delta > 100)
 			{
 				connectToPrevious = false;
 			}
 		}
-		_previousVal = thisVal;
-		ColouredDataItem cd = new ColouredDataItem(new FixedMillisecond(hiResDate
-				.getDate().getTime()), thisVal, color, connectToPrevious, null);
+		_previousVal = val;
+		final ColouredDataItem cd = new ColouredDataItem(new FixedMillisecond(hiResDate
+				.getDate().getTime()), val, color, connectToPrevious, null);
 
 		return cd;
 	}

@@ -12,7 +12,7 @@ public class FormatRNDateTime
 {
   static private SimpleDateFormat _df = null;
 
-  static public String toString(long theVal)
+  static public String toString(final long theVal)
   {
 		return toStringLikeThis(theVal, 
 														"ddHHmm.ss");
@@ -20,22 +20,22 @@ public class FormatRNDateTime
   
   
   
-	static public String toMediumString(long theVal)
+	static public String toMediumString(final long theVal)
 	{
 		return toStringLikeThis(theVal, 
 														"ddHHmm");
 	}
   
-	static public String toShortString(long theVal)
+	static public String toShortString(final long theVal)
 	{
 		return toStringLikeThis(theVal, 
 														"HHmm");
 	}
 	
-	static public String toStringLikeThis(long theVal,
-																				String thePattern)
+	static public String toStringLikeThis(final long theVal,
+																				final String thePattern)
 	{
-    java.util.Date theTime = new java.util.Date(theVal);
+    final java.util.Date theTime = new java.util.Date(theVal);
     String res;
 
     if(_df == null)

@@ -58,8 +58,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	 * @return new property descriptor
 	 * @return
 	 */
-	final protected static PropertyDescriptor longProp(String name,
-			String description, Object subject, Class<?> editorClass)
+	final protected static PropertyDescriptor longProp(final String name,
+			final String description, final Object subject, final Class<?> editorClass)
 	{
 		PropertyDescriptor res = null;
 		res = prop(name, description, subject);
@@ -78,8 +78,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	 *          object being edited
 	 * @return new property descriptor
 	 */
-	final protected static PropertyDescriptor prop(String name,
-			String description, Object subject)
+	final protected static PropertyDescriptor prop(final String name,
+			final String description, final Object subject)
 	{
 		PropertyDescriptor res = null;
 		try
@@ -120,8 +120,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	 * @param pageName
 	 * @param helpContext
 	 */
-	public CoreEditableWizardPage(ISelection selection, String pageName,
-			String title, String description, String helpContext)
+	public CoreEditableWizardPage(final ISelection selection, final String pageName,
+			final String title, final String description, final String helpContext)
 	{
 		this(selection, pageName, title, description, null, helpContext);
 	}
@@ -130,8 +130,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	
 	protected Preferences getPrefs()
 	{
-		String index = getIndex();
-		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(index);
+		final String index = getIndex();
+		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(index);
 		return prefs;
 	}
 
@@ -147,8 +147,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	 * @param pageName
 	 * @param helpContext
 	 */
-	public CoreEditableWizardPage(ISelection selection, String pageName,
-			String title, String description, String imageName, String helpContext)
+	public CoreEditableWizardPage(final ISelection selection, final String pageName,
+			final String title, final String description, final String imageName, final String helpContext)
 	{
 		this(selection, pageName, title, description, imageName, helpContext, true);
 	}
@@ -159,9 +159,9 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	 * @param pageName
 	 * @param helpContext
 	 */
-	public CoreEditableWizardPage(ISelection selection, String pageName,
-			String title, String description, String imageName, String helpContext,
-			boolean optional)
+	public CoreEditableWizardPage(final ISelection selection, final String pageName,
+			final String title, final String description, final String imageName, final String helpContext,
+			final boolean optional)
 	{
 		super(pageName);
 		_optional = optional;
@@ -192,7 +192,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 				
 		 if (_helpContext != null)
 		 {
-		 Action help = CorePlugin.createOpenHelpAction(_helpContext, null,
+		 final Action help = CorePlugin.createOpenHelpAction(_helpContext, null,
 		 PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
 		 .getViews()[0]);
 		 help.run();
@@ -203,7 +203,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
-	final public void createControl(Composite parent)
+	final public void createControl(final Composite parent)
 	{
 		final Composite container = new Composite(parent, SWT.NULL);
 		final GridLayout layout = new GridLayout();
@@ -226,7 +226,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 			_enabledBtn.addSelectionListener(new SelectionAdapter()
 			{
 				@Override
-				public void widgetSelected(SelectionEvent e)
+				public void widgetSelected(final SelectionEvent e)
 				{
 					enabledChanged();
 					dialogChanged();
@@ -267,7 +267,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	 * @param listener
 	 * 
 	 */
-	public void addModifiedListener(ModifyListener listener)
+	public void addModifiedListener(final ModifyListener listener)
 	{
 		_txtModifiedListener = listener;
 	}
@@ -408,8 +408,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	 * @param descriptors
 	 *          the set of editable properties for this object
 	 */
-	final protected void populateEditors(Composite container, Editable myItem,
-			PropertyDescriptor[] descriptors)
+	final protected void populateEditors(final Composite container, final Editable myItem,
+			final PropertyDescriptor[] descriptors)
 	{
 		// build up the list of editors
 		_myEditors = new Vector<Control>(0, 1);
@@ -438,14 +438,14 @@ abstract public class CoreEditableWizardPage extends WizardPage
 					// get the current value, so we can initialise the editor
 					try
 					{
-						Object currentVal = thisD.getReadMethod().invoke(myItem);
+						final Object currentVal = thisD.getReadMethod().invoke(myItem);
 						// ok, put the property name in the editor, so we can
 						// easily get it when we're doing validation
 
 						// do we need to convert the value to text?
 						if (newEditor instanceof Text)
 						{
-							Text txtEditor = (Text) newEditor;
+							final Text txtEditor = (Text) newEditor;
 							String currentStr = currentVal.toString();
 							
 							// just check if this is 0.0, in which case
@@ -469,8 +469,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 							// boolean
 							if (currentVal instanceof Boolean)
 							{
-								Button btn = (Button) newEditor;
-								Boolean bVal = (Boolean) currentVal;
+								final Button btn = (Button) newEditor;
+								final Boolean bVal = (Boolean) currentVal;
 								btn.setSelection(bVal.booleanValue());
 							}
 							newEditor.setData(currentVal);
@@ -483,7 +483,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 						newEditor.redraw();
 
 					}
-					catch (Exception e)
+					catch (final Exception e)
 					{
 						CorePlugin.logError(Status.ERROR,
 								"Whilst reading existing value of object:" + myItem, e);
@@ -495,7 +495,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 					// listen out for changes on this control,
 					newEditor.addListener(SWT.Selection, new Listener()
 					{
-						public void handleEvent(Event event)
+						public void handleEvent(final Event event)
 						{
 							dialogChanged();
 						}
@@ -515,7 +515,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 		}
 	}
 
-	final protected void updateStatus(String message)
+	final protected void updateStatus(final String message)
 	{
 		setErrorMessage(message);
 		setPageComplete(message == null);

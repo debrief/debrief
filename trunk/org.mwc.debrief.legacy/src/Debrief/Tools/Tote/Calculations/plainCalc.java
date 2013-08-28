@@ -73,17 +73,17 @@ abstract public class plainCalc implements toteCalculation
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public plainCalc(NumberFormat pattern,
-                   String myTitle,
-                   String myUnits)
+  public plainCalc(final NumberFormat pattern,
+                   final String myTitle,
+                   final String myUnits)
   {
     _myPattern = pattern;
     _myTitle = myTitle;
     _myUnits = myUnits;
   }
   
-  public plainCalc(String myTitle,
-                   String myUnits)
+  public plainCalc(final String myTitle,
+                   final String myUnits)
   {
     this(new DecimalFormat("000"), myTitle, myUnits);
   }
@@ -100,12 +100,12 @@ abstract public class plainCalc implements toteCalculation
     return _myTitle;
   }
   
-  public final void setPattern(NumberFormat format)
+  public final void setPattern(final NumberFormat format)
   {
     _myPattern = format;
   }
 
-  public void setUnits(String units)
+  public void setUnits(final String units)
   {
     this._myUnits = units;
   }

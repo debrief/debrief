@@ -201,7 +201,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	 * 
 	 * @param orderedChildren
 	 */
-	public BaseLayer(boolean orderedChildren)
+	public BaseLayer(final boolean orderedChildren)
 	{
 		_orderedChildren = orderedChildren;
 
@@ -222,18 +222,18 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		return true;
 	}
 	
-	public void append(Layer other)
+	public void append(final Layer other)
 	{
 		if (other instanceof BaseLayer)
 		{
-			BaseLayer bl = (BaseLayer) other;
+			final BaseLayer bl = (BaseLayer) other;
 			super.append(bl);
 		}
 	}
 
 	@Override
 	@FireReformatted
-	public void setName(String theName)
+	public void setName(final String theName)
 	{
 		super.setName(theName);
 		
@@ -259,7 +259,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	 * specify whether this layer is a candidate for being buffered by the
 	 * graphics engine
 	 */
-	public void setBuffered(boolean bufferMe)
+	public void setBuffered(final boolean bufferMe)
 	{
 		this._bufferMe = bufferMe;
 	}
@@ -280,10 +280,10 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	/**
 	 * paint this list to the canvas
 	 */
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// ok, sort out the thickness
-		float oldThick = dest.getLineWidth();
+		final float oldThick = dest.getLineWidth();
 		dest.setLineWidth(_lineWidth);
 
 		// get the plottables to do the painting
@@ -306,7 +306,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	/**
 	 * the line thickness (convenience wrapper around width)
 	 */
-	public void setLineThickness(int val)
+	public void setLineThickness(final int val)
 	{
 		_lineWidth = val;
 	}
@@ -323,7 +323,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	/**
 	 * set the visible flag for this layer
 	 */
-	public void setVisible(boolean visible)
+	public void setVisible(final boolean visible)
 	{
 		super.setVisible(visible);
 
@@ -343,12 +343,12 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		doHideChildren(false);
 	}
 
-	private void doHideChildren(boolean b)
+	private void doHideChildren(final boolean b)
 	{
-		Enumeration<Editable> iter = this.elements();
+		final Enumeration<Editable> iter = this.elements();
 		while (iter.hasMoreElements())
 		{
-			Plottable thisE = (Plottable) iter.nextElement();
+			final Plottable thisE = (Plottable) iter.nextElement();
 			thisE.setVisible(!b);
 		}
 	}
@@ -359,20 +359,20 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 				.exportThis(";;Layer: " + getName());
 
 		// go through the layer, exporting each plottable, if it will.
-		Enumeration<Editable> enumer = this.elements();
+		final Enumeration<Editable> enumer = this.elements();
 		while (enumer.hasMoreElements())
 		{
-			Editable pl = (Editable) enumer.nextElement();
+			final Editable pl = (Editable) enumer.nextElement();
 			if (pl instanceof Exportable)
 			{
-				Exportable e = (Exportable) pl;
+				final Exportable e = (Exportable) pl;
 				e.exportThis();
 			}
 		}
 	}
 	
-  public void firePropertyChange(String propertyChanged, Object oldValue,
-			Object newValue)
+  public void firePropertyChange(final String propertyChanged, final Object oldValue,
+			final Object newValue)
 	{
   	_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
 	}
@@ -384,7 +384,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	public class LayerInfo extends Editable.EditorType
 	{
 
-		public LayerInfo(BaseLayer data)
+		public LayerInfo(final BaseLayer data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -393,7 +393,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("Visible", "the Layer visibility", VISIBILITY),
 						prop("Name", "the name of the Layer", FORMAT),
@@ -407,7 +407,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -417,8 +417,8 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		public MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			Class c = BaseLayer.class;
-			MethodDescriptor mds[] =
+			final Class c = BaseLayer.class;
+			final MethodDescriptor mds[] =
 			{ method(c, "exportShape", null, "Export Shape"),
 					method(c, "hideChildren", null, "Hide all children"),
 					method(c, "revealChildren", null, "Reveal all children") };
@@ -434,7 +434,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public BaseLayerTest(String val)
+		public BaseLayerTest(final String val)
 		{
 			super(val);
 		}
@@ -465,27 +465,27 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 
 
 	@Override
-	public void addPropertyChangeListener(String property,
-			PropertyChangeListener listener)
+	public void addPropertyChangeListener(final String property,
+			final PropertyChangeListener listener)
 	{
 		_pSupport.addPropertyChangeListener(property, listener);
 	}
 
 	@Override
-	public void addPropertyChangeListener(PropertyChangeListener listener)
+	public void addPropertyChangeListener(final PropertyChangeListener listener)
 	{
 		_pSupport.addPropertyChangeListener(listener);
 	}
 
 	@Override
-	public void removePropertyChangeListener(PropertyChangeListener listener)
+	public void removePropertyChangeListener(final PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(listener);
 	}
 
 	@Override
-	public void removePropertyChangeListener(String property,
-			PropertyChangeListener listener)
+	public void removePropertyChangeListener(final String property,
+			final PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(property, listener);
 	}

@@ -31,14 +31,14 @@ abstract public class CoastlineHandler extends MWCXMLReader  implements Plottabl
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
@@ -49,7 +49,7 @@ abstract public class CoastlineHandler extends MWCXMLReader  implements Plottabl
   public void elementClosed()
   {
     // create a coastline from this data
-    MWC.GUI.Chart.Painters.CoastPainter csp = new MWC.GUI.Chart.Painters.CoastPainter();
+    final MWC.GUI.Chart.Painters.CoastPainter csp = new MWC.GUI.Chart.Painters.CoastPainter();
     csp.setColor(_theColor);
     csp.setVisible(_isVisible);
 
@@ -63,12 +63,12 @@ abstract public class CoastlineHandler extends MWCXMLReader  implements Plottabl
   abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
 
-  public void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
 
-    MWC.GUI.Chart.Painters.CoastPainter csp = (MWC.GUI.Chart.Painters.CoastPainter) plottable;
-    Element coast = doc.createElement("coastline");
+    final MWC.GUI.Chart.Painters.CoastPainter csp = (MWC.GUI.Chart.Painters.CoastPainter) plottable;
+    final Element coast = doc.createElement("coastline");
 
     // do the visibility
     coast.setAttribute("Visible", writeThis(csp.getVisible()));

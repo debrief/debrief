@@ -41,49 +41,49 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("AutoMode")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _AutoMode = value;
       }
     });
     addAttributeHandler(new HandleAttribute("ScaleMax")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _ScaleMax = Long.valueOf(value).longValue();
       }
     });
     addAttributeHandler(new HandleAttribute("ScaleStep")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _ScaleStep = Long.valueOf(value).longValue();
       }
     });
     addAttributeHandler(new HandleAttribute("Location")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _LabelLocation = value;
       }
     });
     addAttributeHandler(new HandleAttribute("DisplayUnits")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _displayUnits = value;
       }
     });
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
@@ -96,7 +96,7 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
   public void elementClosed()
   {
     // create a Scale from this data
-    MWC.GUI.Chart.Painters.ScalePainter csp = new MWC.GUI.Chart.Painters.ScalePainter();
+    final MWC.GUI.Chart.Painters.ScalePainter csp = new MWC.GUI.Chart.Painters.ScalePainter();
     csp.setColor(_theColor);
     csp.setVisible(_isVisible);
     csp.setAutoMode(_AutoMode);
@@ -123,11 +123,11 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
   abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
 
-  public void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
-    MWC.GUI.Chart.Painters.ScalePainter csp = (MWC.GUI.Chart.Painters.ScalePainter) plottable;
-    Element scale = doc.createElement("scale");
+    final MWC.GUI.Chart.Painters.ScalePainter csp = (MWC.GUI.Chart.Painters.ScalePainter) plottable;
+    final Element scale = doc.createElement("scale");
 
     // do the visibility
     scale.setAttribute("Visible", writeThis(csp.getVisible()));
@@ -141,7 +141,7 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
 
     // and the scale location
     _dp.setValue(csp.getLocation());
-    String tmp = _dp.getAsAbbreviatedText();
+    final String tmp = _dp.getAsAbbreviatedText();
     scale.setAttribute("Location", tmp);
 
     // do the colour

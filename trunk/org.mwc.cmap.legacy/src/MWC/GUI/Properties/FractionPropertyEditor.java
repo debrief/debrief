@@ -56,7 +56,7 @@ public class FractionPropertyEditor extends PropertyEditorSupport
 
   protected Double _myFrac;
 
-  private String stringTags[] =
+  private final String stringTags[] =
   {
                      "1/100",
                      "1/50",
@@ -68,7 +68,7 @@ public class FractionPropertyEditor extends PropertyEditorSupport
                      "50",
                      "100"};
 
-  private double vals[] =
+  private final double vals[] =
   {
                  0.01,
                  0.02,
@@ -95,7 +95,7 @@ public class FractionPropertyEditor extends PropertyEditorSupport
 
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Double)
     {
@@ -103,7 +103,7 @@ public class FractionPropertyEditor extends PropertyEditorSupport
     }
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
 
@@ -116,11 +116,11 @@ public class FractionPropertyEditor extends PropertyEditorSupport
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
     for(int i=0;i<stringTags.length;i++)
     {
-      String thisS = stringTags[i];
+      final String thisS = stringTags[i];
       if(thisS.equals(val))
       {
         _myFrac = new Double(vals[i]);
@@ -132,10 +132,10 @@ public class FractionPropertyEditor extends PropertyEditorSupport
   public String getAsText()
   {
     String res = null;
-    double current = _myFrac.doubleValue();
+    final double current = _myFrac.doubleValue();
     for(int i=0;i<vals.length;i++)
     {
-      double v = vals[i];
+      final double v = vals[i];
       if(v == current)
       {
         res = stringTags[i];

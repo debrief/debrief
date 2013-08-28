@@ -105,7 +105,7 @@ public class relBearingCalc extends plainCalc
 		super(new DecimalFormat("000.0"), "Rel Brg", "degs");
 	}
 
-	public relBearingCalc(NumberFormat pattern, String myTitle, String myUnits)
+	public relBearingCalc(final NumberFormat pattern, final String myTitle, final String myUnits)
 	{
 		super(pattern, myTitle, myUnits);
 	}
@@ -122,7 +122,7 @@ public class relBearingCalc extends plainCalc
 	 */
 	public static boolean useUKFormat()
 	{
-		String theVal = Application.getThisProperty(REL_BEARING_FORMAT);
+		final String theVal = Application.getThisProperty(REL_BEARING_FORMAT);
 
 		if (theVal != null)
 		{
@@ -143,8 +143,8 @@ public class relBearingCalc extends plainCalc
 		return UK_FORMAT.booleanValue();
 	}
 
-	public double calculate(Watchable primary, Watchable secondary,
-			HiResDate thisTime)
+	public double calculate(final Watchable primary, final Watchable secondary,
+			final HiResDate thisTime)
 	{
 		double res = 0.0;
 		if ((secondary != null) && (primary != null) && (secondary != primary))
@@ -199,14 +199,14 @@ public class relBearingCalc extends plainCalc
 	 *          secondary watchable
 	 * @return string representation of calculated value
 	 */
-	public String update(Watchable primary, Watchable secondary, HiResDate time)
+	public String update(final Watchable primary, final Watchable secondary, final HiResDate time)
 	{
 		String res = null;
 		if ((primary != null) && (secondary != null) && (primary != secondary))
 		{
 
 			// get the value
-			double theValue = calculate(primary, secondary, time);
+			final double theValue = calculate(primary, secondary, time);
 			
 			// and convert to string
 			if (useUKFormat())

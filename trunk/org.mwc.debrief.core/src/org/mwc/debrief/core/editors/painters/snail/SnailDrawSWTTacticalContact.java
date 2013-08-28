@@ -87,7 +87,7 @@ public abstract class SnailDrawSWTTacticalContact implements drawSWTHighLight,
 						// they're centred from
 						if (scw instanceof TMAContactWrapper)
 						{
-							TMAContactWrapper tma = (TMAContactWrapper) scw;
+							final TMAContactWrapper tma = (TMAContactWrapper) scw;
 							tma.locateEllipseCentre(hostTrack);
 
 						}
@@ -110,7 +110,7 @@ public abstract class SnailDrawSWTTacticalContact implements drawSWTHighLight,
 							Color thisCol = scw.getColor();
 
 							// do we want to fade the cut data?
-							boolean doFade = parent.getSnailProperties().getFadePoints();
+							final boolean doFade = parent.getSnailProperties().getFadePoints();
 
 							if (doFade)
 							{

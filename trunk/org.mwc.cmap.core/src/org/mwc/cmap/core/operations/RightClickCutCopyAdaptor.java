@@ -36,7 +36,7 @@ public class RightClickCutCopyAdaptor
 	 * 
 	 * @author ian.mayo
 	 */
-	public static class EditableTransfer extends ByteArrayTransfer
+	public final static class EditableTransfer extends ByteArrayTransfer
 	{
 
 		private static final String MYTYPENAME = "CMAP_EDITABLE";
@@ -74,26 +74,26 @@ public class RightClickCutCopyAdaptor
 		 * @param object
 		 * @param transferData
 		 */
-		public void javaToNative(Object object, TransferData transferData)
+		public void javaToNative(final Object object, final TransferData transferData)
 		{
 			if (object == null || !(object instanceof Editable[]))
 				return;
 
 			if (isSupportedType(transferData))
 			{
-				Editable[] myItem = (Editable[]) object;
+				final Editable[] myItem = (Editable[]) object;
 				try
 				{
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					ObjectOutputStream writeOut = new ObjectOutputStream(out);
+					final ByteArrayOutputStream out = new ByteArrayOutputStream();
+					final ObjectOutputStream writeOut = new ObjectOutputStream(out);
 					writeOut.writeObject(myItem);
-					byte[] buffer = out.toByteArray();
+					final byte[] buffer = out.toByteArray();
 					writeOut.close();
 
 					super.javaToNative(buffer, transferData);
 
 				}
-				catch (IOException e)
+				catch (final IOException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Problem converting object to clipboard format: " + object, e);
@@ -107,31 +107,31 @@ public class RightClickCutCopyAdaptor
 		 * @param transferData
 		 * @return
 		 */
-		public Object nativeToJava(TransferData transferData)
+		public Object nativeToJava(final TransferData transferData)
 		{
 
 			if (isSupportedType(transferData))
 			{
 
-				byte[] buffer = (byte[]) super.nativeToJava(transferData);
+				final byte[] buffer = (byte[]) super.nativeToJava(transferData);
 				if (buffer == null)
 					return null;
 
 				Editable[] myData = null;
 				try
 				{
-					ByteArrayInputStream in = new ByteArrayInputStream(buffer);
-					ObjectInputStream readIn = new ObjectInputStream(in);
+					final ByteArrayInputStream in = new ByteArrayInputStream(buffer);
+					final ObjectInputStream readIn = new ObjectInputStream(in);
 					myData = (Editable[]) readIn.readObject();
 					readIn.close();
 				}
-				catch (IOException ex)
+				catch (final IOException ex)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Problem converting object to clipboard format", null);
 					return null;
 				}
-				catch (ClassNotFoundException e)
+				catch (final ClassNotFoundException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Whilst converting from native to java, can't find this class:"
@@ -167,16 +167,16 @@ public class RightClickCutCopyAdaptor
 	// /////////////////////////////////
 	// member functions
 	// ////////////////////////////////
-	static public void getDropdownListFor(IMenuManager manager,
-			Editable[] editables, Layer[] updateLayers, Layer[] parentLayers,
-			Layers theLayers, Clipboard _clipboard)
+	static public void getDropdownListFor(final IMenuManager manager,
+			final Editable[] editables, final Layer[] updateLayers, final Layer[] parentLayers,
+			final Layers theLayers, final Clipboard _clipboard)
 	{
 		// do we have any editables?
 		if (editables.length == 0)
 			return;
 
 		// get the editable item
-		Editable data = editables[0];
+		final Editable data = editables[0];
 
 		CutItem cutter = null;
 		CopyItem copier = null;
@@ -239,8 +239,8 @@ public class RightClickCutCopyAdaptor
 
 		protected Layer[] _updateLayer;
 
-		public CutItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
-				Layers theLayers, Layer[] updateLayer)
+		public CutItem(final Editable[] data, final Clipboard clipboard, final Layer[] theParent,
+				final Layers theLayers, final Layer[] updateLayer)
 		{
 			// remember parameters
 			_data = data;
@@ -267,7 +267,7 @@ public class RightClickCutCopyAdaptor
 		protected void rememberPreviousContents()
 		{
 			// copy in the new data
-			EditableTransfer transfer = EditableTransfer.getInstance();
+			final EditableTransfer transfer = EditableTransfer.getInstance();
 			_oldContents = _myClipboard.getContents(transfer);
 		}
 
@@ -278,7 +278,7 @@ public class RightClickCutCopyAdaptor
 			if (_oldContents != null)
 			{
 				// copy in the new data
-				EditableTransfer transfer = EditableTransfer.getInstance();
+				final EditableTransfer transfer = EditableTransfer.getInstance();
 				_myClipboard.setContents(new Object[]
 				{ _oldContents }, new Transfer[]
 				{ transfer });
@@ -292,23 +292,23 @@ public class RightClickCutCopyAdaptor
 		 */
 		public void run()
 		{
-			AbstractOperation myOperation = new AbstractOperation(getText())
+			final AbstractOperation myOperation = new AbstractOperation(getText())
 			{
-				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					doCut();
 					return Status.OK_STATUS;
 				}
 
-				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					doCut();
 					return Status.OK_STATUS;
 				}
 
-				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					// ok, place our items back in their layers
@@ -318,8 +318,8 @@ public class RightClickCutCopyAdaptor
 
 					for (int i = 0; i < _data.length; i++)
 					{
-						Editable thisE = _data[i];
-						Layer parentLayer = _theParent[i];
+						final Editable thisE = _data[i];
+						final Layer parentLayer = _theParent[i];
 
 						// is the parent the data object itself?
 						if (parentLayer == null)
@@ -369,21 +369,21 @@ public class RightClickCutCopyAdaptor
 				 */
 				private void doCut()
 				{
-					Vector<Layer> changedLayers = new Vector<Layer>();
+					final Vector<Layer> changedLayers = new Vector<Layer>();
 
 					// remember the previous contents
 					rememberPreviousContents();
 
 					// copy in the new data
-					EditableTransfer transfer = EditableTransfer.getInstance();
+					final EditableTransfer transfer = EditableTransfer.getInstance();
 					_myClipboard.setContents(new Object[]
 					{ _data }, new Transfer[]
 					{ transfer });
 
 					for (int i = 0; i < _data.length; i++)
 					{
-						Editable thisE = _data[i];
-						Layer parentLayer = _theParent[i];
+						final Editable thisE = _data[i];
+						final Layer parentLayer = _theParent[i];
 
 						// is the parent the data object itself?
 						if (parentLayer == null)
@@ -439,8 +439,8 @@ public class RightClickCutCopyAdaptor
 	{
 		private final String _originalName;
 
-		public CopyItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
-				Layers theLayers, Layer[] updateLayer)
+		public CopyItem(final Editable[] data, final Clipboard clipboard, final Layer[] theParent,
+				final Layers theLayers, final Layer[] updateLayer)
 		{
 			super(data, clipboard, theParent, theLayers, updateLayer);
 
@@ -464,9 +464,9 @@ public class RightClickCutCopyAdaptor
 
 		public void run()
 		{
-			AbstractOperation myOperation = new AbstractOperation(getText())
+			final AbstractOperation myOperation = new AbstractOperation(getText())
 			{
-				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 
@@ -479,7 +479,7 @@ public class RightClickCutCopyAdaptor
 					return Status.OK_STATUS;
 				}
 
-				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 
@@ -488,7 +488,7 @@ public class RightClickCutCopyAdaptor
 					return Status.OK_STATUS;
 				}
 
-				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					// just restore the previous clipboard contents
@@ -514,7 +514,7 @@ public class RightClickCutCopyAdaptor
 					// operations can be performed
 
 					// copy in the new data
-					EditableTransfer transfer = EditableTransfer.getInstance();
+					final EditableTransfer transfer = EditableTransfer.getInstance();
 					_myClipboard.setContents(new Object[]
 					{ _data }, new Transfer[]
 					{ transfer });
@@ -536,7 +536,7 @@ public class RightClickCutCopyAdaptor
 			// operations can be performed
 
 			// copy in the new data
-			EditableTransfer transfer = EditableTransfer.getInstance();
+			final EditableTransfer transfer = EditableTransfer.getInstance();
 			_myClipboard.setContents(new Object[]
 			{ _data }, new Transfer[]
 			{ transfer });
@@ -546,19 +546,19 @@ public class RightClickCutCopyAdaptor
 	/**
 	 * create duplicates of this series of items
 	 */
-	static public Editable[] cloneThese(Editable[] items)
+	static public Editable[] cloneThese(final Editable[] items)
 	{
-		Editable[] res = new Editable[items.length];
+		final Editable[] res = new Editable[items.length];
 		for (int i = 0; i < items.length; i++)
 		{
-			Editable thisOne = items[i];
-			Editable clonedItem = cloneThis(thisOne);
+			final Editable thisOne = items[i];
+			final Editable clonedItem = cloneThis(thisOne);
 			res[i] = clonedItem;
 
 			// see if we can rename it
 			if (clonedItem instanceof Layer)
 			{
-				Layer thisL = (Layer) clonedItem;
+				final Layer thisL = (Layer) clonedItem;
 				thisL.setName("Copy of " + clonedItem.getName());
 			}
 		}
@@ -571,29 +571,29 @@ public class RightClickCutCopyAdaptor
 	 * @param item
 	 * @return
 	 */
-	static public Editable cloneThis(Editable item)
+	static public Editable cloneThis(final Editable item)
 	{
 		Editable res = null;
 		try
 		{
-			java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
-			java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
+			final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
+			final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
 			oos.writeObject(item);
 			// get closure
 			oos.close();
 			bas.close();
 
 			// now get the item
-			byte[] bt = bas.toByteArray();
+			final byte[] bt = bas.toByteArray();
 
 			// and read it back in as a new item
-			java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
+			final java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
 
 			// create the reader
-			java.io.ObjectInputStream iis = new ObjectInputStream(bis);
+			final java.io.ObjectInputStream iis = new ObjectInputStream(bis);
 
 			// and read it in
-			Object oj = iis.readObject();
+			final Object oj = iis.readObject();
 
 			// get more closure
 			bis.close();
@@ -604,7 +604,7 @@ public class RightClickCutCopyAdaptor
 				res = (Editable) oj;
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -619,12 +619,12 @@ public class RightClickCutCopyAdaptor
 
 		private void doUndo()
 		{
-			IOperationHistory history = CorePlugin.getHistory();
+			final IOperationHistory history = CorePlugin.getHistory();
 			try
 			{
 				history.undo(CorePlugin.CMAP_CONTEXT, null, null);
 			}
-			catch (ExecutionException e)
+			catch (final ExecutionException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Problem with undo for test", e);
 				assertTrue("threw assertion", e == null);
@@ -634,11 +634,11 @@ public class RightClickCutCopyAdaptor
 		private boolean isPositionThere(final TrackWrapper tw, final FixWrapper fw2)
 		{
 			boolean itemFound;
-			Enumeration<Editable> enumer = tw.getPositions();
+			final Enumeration<Editable> enumer = tw.getPositions();
 			itemFound = false;
 			while (enumer.hasMoreElements())
 			{
-				Editable ee = enumer.nextElement();
+				final Editable ee = enumer.nextElement();
 				if (ee.equals(fw2))
 				{
 					itemFound = true;
@@ -652,15 +652,15 @@ public class RightClickCutCopyAdaptor
 				final SensorContactWrapper scwa1)
 		{
 			boolean itemFound;
-			Enumeration<Editable> enumer = tw.getSensors().elements();
+			final Enumeration<Editable> enumer = tw.getSensors().elements();
 			itemFound = false;
 			while (enumer.hasMoreElements())
 			{
-				SensorWrapper ee = (SensorWrapper) enumer.nextElement();
-				Enumeration<Editable> contacts = ee.elements();
+				final SensorWrapper ee = (SensorWrapper) enumer.nextElement();
+				final Enumeration<Editable> contacts = ee.elements();
 				while (contacts.hasMoreElements())
 				{
-					Editable thisC = contacts.nextElement();
+					final Editable thisC = contacts.nextElement();
 					if (thisC.equals(scwa1))
 					{
 						itemFound = true;
@@ -675,15 +675,15 @@ public class RightClickCutCopyAdaptor
 				final TMAContactWrapper scwa1)
 		{
 			boolean itemFound;
-			Enumeration<Editable> enumer = tw.getSolutions().elements();
+			final Enumeration<Editable> enumer = tw.getSolutions().elements();
 			itemFound = false;
 			while (enumer.hasMoreElements())
 			{
-				TMAWrapper ee = (TMAWrapper) enumer.nextElement();
-				Enumeration<Editable> contacts = ee.elements();
+				final TMAWrapper ee = (TMAWrapper) enumer.nextElement();
+				final Enumeration<Editable> contacts = ee.elements();
 				while (contacts.hasMoreElements())
 				{
-					Editable thisC = contacts.nextElement();
+					final Editable thisC = contacts.nextElement();
 					if (thisC.equals(scwa1))
 					{
 						itemFound = true;
@@ -697,8 +697,8 @@ public class RightClickCutCopyAdaptor
 		private static class MyCutItem extends CutItem
 		{
 
-			public MyCutItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
-					Layers theLayers, Layer[] updateLayer)
+			public MyCutItem(final Editable[] data, final Clipboard clipboard, final Layer[] theParent,
+					final Layers theLayers, final Layer[] updateLayer)
 			{
 				super(data, clipboard, theParent, theLayers, updateLayer);
 			}
@@ -743,46 +743,46 @@ public class RightClickCutCopyAdaptor
 			tw.addFix(fw4);
 			tw.addFix(fw5);
 			// also give it some sensor data
-			SensorWrapper swa = new SensorWrapper("title one");
-			SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+			final SensorWrapper swa = new SensorWrapper("title one");
+			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
 					new HiResDate(150, 0), null, null, null, null, null, 0, null);
-			SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
+			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
 					new HiResDate(180, 0), null, null, null, null, null, 0, null);
-			SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
+			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
 					new HiResDate(250, 0), null, null, null, null, null, 0, null);
 			swa.add(scwa1);
 			swa.add(scwa2);
 			swa.add(scwa3);
 			tw.add(swa);
-			SensorWrapper sw = new SensorWrapper("title two");
-			SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
+			final SensorWrapper sw = new SensorWrapper("title two");
+			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
 					new HiResDate(260, 0), null, null, null, null, null, 0, null);
-			SensorContactWrapper scw2 = new SensorContactWrapper("eee",
+			final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
 					new HiResDate(280, 0), null, null, null, null, null, 0, null);
-			SensorContactWrapper scw3 = new SensorContactWrapper("fff",
+			final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
 					new HiResDate(350, 0), null, null, null, null, null, 0, null);
 			sw.add(scw1);
 			sw.add(scw2);
 			sw.add(scw3);
 			tw.add(sw);
 
-			TMAWrapper mwa = new TMAWrapper("bb");
-			TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
+			final TMAWrapper mwa = new TMAWrapper("bb");
+			final TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
 					new HiResDate(130), null, 0, 0, 0, null, null, null, null);
-			TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb",
+			final TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb",
 					new HiResDate(190), null, 0, 0, 0, null, null, null, null);
-			TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb",
+			final TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb",
 					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
 			mwa.add(tcwa1);
 			mwa.add(tcwa2);
 			mwa.add(tcwa3);
 			tw.add(mwa);
-			TMAWrapper mw = new TMAWrapper("cc");
-			TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb",
+			final TMAWrapper mw = new TMAWrapper("cc");
+			final TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb",
 					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
-			TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb",
+			final TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb",
 					new HiResDate(330), null, 0, 0, 0, null, null, null, null);
-			TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb",
+			final TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb",
 					new HiResDate(390), null, 0, 0, 0, null, null, null, null);
 			mw.add(tcw1);
 			mw.add(tcw2);
@@ -790,12 +790,12 @@ public class RightClickCutCopyAdaptor
 			tw.add(mw);
 
 			// now fiddle with it
-			Layers updateLayers = new Layers();
+			final Layers updateLayers = new Layers();
 			updateLayers.addThisLayer(tw);
 			final Clipboard clipboard = new Clipboard(Display.getDefault());
 			Layer[] parentLayer = new Layer[]
 			{ tw };
-			CutItem ci = new MyCutItem(new Editable[]
+			final CutItem ci = new MyCutItem(new Editable[]
 			{ fw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			// check our item's in there
 			assertTrue("item there before op", isPositionThere(tw, fw2));
@@ -812,7 +812,7 @@ public class RightClickCutCopyAdaptor
 			// now let's try two items
 			parentLayer = new Layer[]
 			{ tw, tw };
-			CutItem c2 = new MyCutItem(new Editable[]
+			final CutItem c2 = new MyCutItem(new Editable[]
 			{ fw2, fw4 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isPositionThere(tw, fw2));
 			assertTrue("item there before op", isPositionThere(tw, fw3));
@@ -952,8 +952,8 @@ public class RightClickCutCopyAdaptor
 
 		protected Layer[] _updateLayer;
 
-		public DeleteItem(Editable[] data, Layer[] theParent, Layers theLayers,
-				Layer[] updateLayer)
+		public DeleteItem(final Editable[] data, final Layer[] theParent, final Layers theLayers,
+				final Layer[] updateLayer)
 		{
 			// remember parameters
 			_data = data;
@@ -980,16 +980,16 @@ public class RightClickCutCopyAdaptor
 		 */
 		public void run()
 		{
-			AbstractOperation myOperation = new AbstractOperation(getText())
+			final AbstractOperation myOperation = new AbstractOperation(getText())
 			{
-				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					doCut();
 					return Status.OK_STATUS;
 				}
 
-				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					return Status.OK_STATUS;
@@ -1002,12 +1002,12 @@ public class RightClickCutCopyAdaptor
 				 */
 				private void doCut()
 				{
-					Vector<Layer> changedLayers = new Vector<Layer>();
+					final Vector<Layer> changedLayers = new Vector<Layer>();
 
 					for (int i = 0; i < _data.length; i++)
 					{
-						Editable thisE = _data[i];
-						Layer parentLayer = _theParent[i];
+						final Editable thisE = _data[i];
+						final Layer parentLayer = _theParent[i];
 
 						// is the parent the data object itself?
 						if (parentLayer == null)
@@ -1051,7 +1051,7 @@ public class RightClickCutCopyAdaptor
 				}
 
 				@Override
-				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 						throws ExecutionException
 				{
 					return null;

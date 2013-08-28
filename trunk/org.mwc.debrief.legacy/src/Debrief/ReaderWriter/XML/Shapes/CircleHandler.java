@@ -34,7 +34,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
     this(MY_TYPE);
   }
 
-  public CircleHandler(String theType)
+  public CircleHandler(final String theType)
   {
 
     // inform our parent what type of class we are
@@ -43,7 +43,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
 
     addHandler(new LocationHandler(CENTRE)
     {
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _centre = res;
       }
@@ -53,7 +53,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
 		{
 			
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_radiusDist  = res;
 			}
@@ -61,13 +61,13 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
 
     addAttributeHandler(new HandleAttribute(RADIUS)
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         try
         {
           _radius = readThisDouble(val);
         }
-        catch (java.text.ParseException pe)
+        catch (final java.text.ParseException pe)
         {
           MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + val);
         }
@@ -78,7 +78,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
 
     addAttributeHandler(new HandleBooleanAttribute(FILLED)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _filled = new Boolean(value);
       }
@@ -87,7 +87,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
   }
 
   // this is one of ours, so get on with it!
-  protected void handleOurselves(String name, Attributes attributes)
+  protected void handleOurselves(final String name, final Attributes attributes)
   {
     _radius = 0.0;
     _centre = null;
@@ -113,20 +113,20 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
     return ls;
   }
 
-  public void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     // output the shape related stuff first
-    org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+    final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
     super.exportThisPlottable(plottable, ePlottable, doc);
 
     // now our circle related stuff
 
     // get the circle
-    Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
-    MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+    final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+    final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
     // export the attributes
-    MWC.GUI.Shapes.CircleShape cs = (MWC.GUI.Shapes.CircleShape) ps;
+    final MWC.GUI.Shapes.CircleShape cs = (MWC.GUI.Shapes.CircleShape) ps;
     exportCircleAttributes(ePlottable, cs, doc);
 
     // add ourselves to the output
@@ -134,8 +134,8 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
   }
 
   // export the circle  specific components
-  protected void exportCircleAttributes(org.w3c.dom.Element ePlottable, MWC.GUI.Shapes.CircleShape cs,
-                                        org.w3c.dom.Document doc)
+  protected void exportCircleAttributes(final org.w3c.dom.Element ePlottable, final MWC.GUI.Shapes.CircleShape cs,
+                                        final org.w3c.dom.Document doc)
   {
     ePlottable.setAttribute(FILLED, writeThis(cs.getFilled()));
     LocationHandler.exportLocation(cs.getCentre(), CENTRE, ePlottable, doc);

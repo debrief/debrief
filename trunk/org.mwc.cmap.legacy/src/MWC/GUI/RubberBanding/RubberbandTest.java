@@ -38,9 +38,9 @@ class RubberbandTestPanel extends RubberbandPanel
 
     rbChoice.addItemListener(new ItemListener()
     {
-      public void itemStateChanged(ItemEvent event)
+      public void itemStateChanged(final ItemEvent event)
       {
-        int index = rbChoice.getSelectedIndex();
+        final int index = rbChoice.getSelectedIndex();
         switch (index)
         {
           case 0:
@@ -57,24 +57,24 @@ class RubberbandTestPanel extends RubberbandPanel
     });
     colorChoice.addItemListener(new ItemListener()
     {
-      public void itemStateChanged(ItemEvent event)
+      public void itemStateChanged(final ItemEvent event)
       {
         setForeground(colorChoice.getColor());
       }
     });
   }
 
-  public void rubberbandEnded(Rubberband rb)
+  public void rubberbandEnded(final Rubberband rb)
   {
-    Graphics g = getGraphics();
+    final Graphics g = getGraphics();
 
     if (g != null)
     {
-      Point anchor = rb.getAnchor(), end = rb.getEnd();
-      int w = Math.abs(anchor.x - end.x);
-      int h = Math.abs(anchor.y - end.y);
+      final Point anchor = rb.getAnchor(), end = rb.getEnd();
+      final int w = Math.abs(anchor.x - end.x);
+      final int h = Math.abs(anchor.y - end.y);
 
-      Rectangle rt = new Rectangle(anchor);
+      final Rectangle rt = new Rectangle(anchor);
       rt.add(end);
 
       g.setColor(getForeground());
@@ -91,7 +91,7 @@ class RubberbandTestPanel extends RubberbandPanel
     }
   }
 
-  public void update(Graphics g)
+  public void update(final Graphics g)
   {
     paint(g);
   }
@@ -104,13 +104,13 @@ class ColorChoice extends Choice
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String colorNames[] = {
+	private final String colorNames[] = {
     "black", "blue", "cyan", "darkGray",
     "gray", "green", "lightgray", "magenta",
     "orange", "pink", "red", "white",
     "yellow"};
 
-  private Color colors[] = {Color.black, Color.blue,
+  private final Color colors[] = {Color.black, Color.blue,
                             Color.cyan, Color.darkGray,
                             Color.gray, Color.green,
                             Color.lightGray, Color.magenta,
@@ -131,7 +131,7 @@ class ColorChoice extends Choice
     return colors[getSelectedIndex()];
   }
 
-  public void setColor(Color color)
+  public void setColor(final Color color)
   {
     for (int i = 0; i < colors.length; ++i)
     {

@@ -27,21 +27,21 @@ abstract public class VectorHandler extends ShapeHandler implements
 
 		addHandler(new LocationHandler(TL)
 		{
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_start = res;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(BEARING)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_bearing = Double.valueOf(val);
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(ARROW_AT_END)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_arrowAtEnd = value;
 			}
@@ -50,7 +50,7 @@ abstract public class VectorHandler extends ShapeHandler implements
 		{
 			
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_distance = res;
 			}
@@ -59,7 +59,7 @@ abstract public class VectorHandler extends ShapeHandler implements
 
 	public final MWC.GUI.Shapes.PlainShape getShape()
 	{
-		MWC.GUI.Shapes.LineShape ls = new MWC.GUI.Shapes.VectorShape(_start,
+		final MWC.GUI.Shapes.LineShape ls = new MWC.GUI.Shapes.VectorShape(_start,
 				_bearing, _distance);
 		ls.setArrowAtEnd(_arrowAtEnd);
 		return ls;
@@ -76,22 +76,22 @@ abstract public class VectorHandler extends ShapeHandler implements
 		_arrowAtEnd = false;
 	}
 
-	public final void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public final void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// output the shape related stuff first
-		org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+		final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
 		// export the common attributes
 		super.exportThisPlottable(plottable, ePlottable, doc);
 
 		// and the vector bits
-		Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
-		MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+		final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+		final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
 		if (ps instanceof MWC.GUI.Shapes.VectorShape)
 		{
 			// export the attributes
-			MWC.GUI.Shapes.VectorShape cs = (MWC.GUI.Shapes.VectorShape) ps;
+			final MWC.GUI.Shapes.VectorShape cs = (MWC.GUI.Shapes.VectorShape) ps;
 			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
 					cs.getLine_Start(), TL, ePlottable, doc);
 			WorldDistanceHandler.exportDistance(DISTANCE, cs.getDistance(), ePlottable, doc);

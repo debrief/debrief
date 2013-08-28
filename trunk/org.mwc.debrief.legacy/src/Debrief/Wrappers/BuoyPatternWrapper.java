@@ -704,17 +704,17 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 		}
-		catch (java.lang.NoSuchMethodException nm)
+		catch (final java.lang.NoSuchMethodException nm)
 		{
 			MWC.Utilities.Errors.Trace.trace(nm, "Buoy setter unable to find method:"
 					+ methodName);
 		}
-		catch (java.lang.reflect.InvocationTargetException te)
+		catch (final java.lang.reflect.InvocationTargetException te)
 		{
 			MWC.Utilities.Errors.Trace.trace(te, "Buoy setter unable execute method:"
 					+ methodName);
 		}
-		catch (java.lang.IllegalAccessException ie)
+		catch (final java.lang.IllegalAccessException ie)
 		{
 			MWC.Utilities.Errors.Trace.trace(ie, "Buoy setter illegally accessing method:"
 					+ methodName);
@@ -1084,7 +1084,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 
 		private boolean _visible = true;
 
-		private HiResDate _theTime;
+		private final HiResDate _theTime;
 
 		private BuoyPatternWrapper _thePattern = null;
 
@@ -1255,7 +1255,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				// find out which property fell over
 				MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Arc Builder");

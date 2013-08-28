@@ -57,11 +57,11 @@ public class DatumSym extends PlainSymbol {
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
     return res;
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
@@ -72,14 +72,14 @@ public class DatumSym extends PlainSymbol {
    * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
    */
   public Vector<Vector<Point2D>> getCoordinates() {
-  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
+  	final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
 
     // first do the cross
 
-    Vector<Point2D> line1 = new Vector<Point2D>(0,1);
-    Vector<Point2D> line2 = new Vector<Point2D>(0,1);
+    final Vector<Point2D> line1 = new Vector<Point2D>(0,1);
+    final Vector<Point2D> line2 = new Vector<Point2D>(0,1);
 
-    int wid = (int)(2 * getScaleVal());
+    final int wid = (int)(2 * getScaleVal());
     line1.add(new Point(-wid, 0));
     line1.add(new Point(wid, 0));
     line2.add(new Point(0, -wid));
@@ -89,17 +89,17 @@ public class DatumSym extends PlainSymbol {
     res.add(line2);
 
     // now the circle
-    Vector<Point2D> circle = new Vector<Point2D>(0,1);
+    final Vector<Point2D> circle = new Vector<Point2D>(0,1);
 
     // work our way around the circle, adding the pts
 
-    int NUM_SEGMENTS = 30;
+    final int NUM_SEGMENTS = 30;
     for (int i=0; i<=NUM_SEGMENTS; i++)
     {
       // produce the current bearing
-      double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
+      final double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
 
-      Point2D newP = new Point2D.Double(Math.sin(this_brg) * wid, Math.cos(this_brg) * wid);
+      final Point2D newP = new Point2D.Double(Math.sin(this_brg) * wid, Math.cos(this_brg) * wid);
 
       circle.add(newP);
     }
@@ -110,16 +110,16 @@ public class DatumSym extends PlainSymbol {
     return res;
   }
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(6 * getScaleVal());
-    int wid_2 = (int)(wid/2d);
+    final int wid = (int)(6 * getScaleVal());
+    final int wid_2 = (int)(wid/2d);
 
     // now the outer circle
     dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);

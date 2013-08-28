@@ -81,7 +81,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
   static final MWC.GUI.Properties.LocationPropertyEditor lp
     = new MWC.GUI.Properties.LocationPropertyEditor();
 
-  public PatternHandler(MWC.GUI.Layers theLayers)
+  public PatternHandler(final MWC.GUI.Layers theLayers)
   {
     // inform our parent what type of class we are
     super("pattern");
@@ -91,7 +91,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color res)
+      public void setColour(final java.awt.Color res)
       {
         _myPattern.setColor(res);
         _myPattern.setBuoyColor(res);
@@ -99,42 +99,42 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     });
     addHandler(new Debrief.ReaderWriter.XML.Shapes.LabelHandler()
     {
-      public void addPlottable(MWC.GUI.Plottable plottable)
+      public void addPlottable(final MWC.GUI.Plottable plottable)
       {
         addThis(plottable);
       }
     });
     addHandler(new FontHandler()
     {
-      public void setFont(java.awt.Font font)
+      public void setFont(final java.awt.Font font)
       {
         _myPattern.setFont(font);
       }
     });
     addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _myPattern.setName(fromXML(val));
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean val)
+      public void setValue(final String name, final boolean val)
       {
         _myPattern.setVisible(val);
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("NameVisible")
     {
-      public void setValue(String name, boolean val)
+      public void setValue(final String name, final boolean val)
       {
         _myPattern.setNameVisible(val);
       }
     });
     addAttributeHandler(new HandleAttribute("NameLocation")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         lp.setAsText(val);
         _myPattern.setNameLocation((Integer) lp.getValue());
@@ -142,7 +142,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     });
     addHandler(new TimeRangeHandler()
     {
-      public void setTimeRange(HiResDate start, HiResDate end)
+      public void setTimeRange(final HiResDate start, final HiResDate end)
       {
         _myPattern.setStartDTG(start);
         _myPattern.setEndDTG(end);
@@ -150,20 +150,20 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     });
     addAttributeHandler(new HandleAttribute("BuoySymbolType")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _myPattern.setBuoySymbolType(val);
       }
     });
     addAttributeHandler(new HandleAttribute("BuoySymbolSize")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         try
         {
           _myPattern.setBuoySymbolSize(readThisDouble(val));
         }
-        catch (java.text.ParseException pe)
+        catch (final java.text.ParseException pe)
         {
           MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + val);
         }
@@ -174,7 +174,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
   }
 
   // this is one of ours, so get on with it!
-  protected final void handleOurselves(String name, Attributes attributes)
+  protected final void handleOurselves(final String name, final Attributes attributes)
   {
     _myPattern = new Debrief.Wrappers.BuoyPatternWrapper();
 
@@ -182,13 +182,13 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 
   }
 
-  void addThis(MWC.GUI.Plottable val)
+  void addThis(final MWC.GUI.Plottable val)
   {
     _myPattern.add(val);
     // if this is a LabelWrapper, we need to set it's parent
     if (val instanceof LabelWrapper)
     {
-      LabelWrapper lw = (LabelWrapper) val;
+      final LabelWrapper lw = (LabelWrapper) val;
       lw.setParent(_myPattern);
     }
   }
@@ -201,8 +201,8 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     _myPattern = null;
   }
 
-  public static void exportTrack(Debrief.Wrappers.BuoyPatternWrapper pattern, org.w3c.dom.Element parent,
-                                 org.w3c.dom.Document doc)
+  public static void exportTrack(final Debrief.Wrappers.BuoyPatternWrapper pattern, final org.w3c.dom.Element parent,
+                                 final org.w3c.dom.Document doc)
   {
 
     /*
@@ -215,7 +215,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     >
     */
 
-    Element fld = doc.createElement("pattern");
+    final Element fld = doc.createElement("pattern");
     fld.setAttribute("Name", pattern.getName());
     fld.setAttribute("Visible", writeThis(pattern.getVisible()));
     fld.setAttribute("NameVisible", writeThis(pattern.getNameVisible()));
@@ -232,17 +232,17 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     }
 
     // and the font
-    java.awt.Font theFont = pattern.getFont();
+    final java.awt.Font theFont = pattern.getFont();
     if (theFont != null)
     {
       FontHandler.exportFont(theFont, fld, doc);
     }
 
     // now the points
-    java.util.Enumeration<Editable> iter = pattern.elements();
+    final java.util.Enumeration<Editable> iter = pattern.elements();
     while (iter.hasMoreElements())
     {
-      MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
+      final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
       // make use of the static method in the DebriefLayerHandler which handles all sorts of plottables
       Debrief.ReaderWriter.XML.DebriefLayerHandler.exportThisDebriefItem(pl, fld, doc);
     }

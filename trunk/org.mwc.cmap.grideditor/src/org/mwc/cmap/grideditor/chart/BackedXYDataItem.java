@@ -10,7 +10,7 @@ public class BackedXYDataItem extends XYDataItem implements BackedChartItem {
 
 	private final TimeStampedDataItem myDomainItem;
 
-	public BackedXYDataItem(double x, double y, TimeStampedDataItem domainItem) {
+	public BackedXYDataItem(final double x, final double y, final TimeStampedDataItem domainItem) {
 		super(x, y);
 		myDomainItem = domainItem;
 	}

@@ -11,7 +11,7 @@ public class GridEditorUndoSupport {
 
 	private final IOperationHistory myOperationHistory;
 
-	public GridEditorUndoSupport(IOperationHistory operationHistory) {
+	public GridEditorUndoSupport(final IOperationHistory operationHistory) {
 		myOperationHistory = operationHistory;
 		myUndoContext = createNullContext();
 	}
@@ -19,7 +19,7 @@ public class GridEditorUndoSupport {
 	/**
 	 * @return <code>true</code> if undo context has been changed
 	 */
-	public boolean setTableInput(GriddableSeries mainInput) {
+	public boolean setTableInput(final GriddableSeries mainInput) {
 		if (myUndoContext != null && myUndoContext.getObject() == mainInput) {
 			return false;
 		}

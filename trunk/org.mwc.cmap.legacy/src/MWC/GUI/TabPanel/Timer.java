@@ -63,7 +63,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @param d
 	 *          the delay in milliseconds
 	 */
-	public Timer(int d)
+	public Timer(final int d)
 	{
 		this(d, false);
 	}
@@ -76,7 +76,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @param r
 	 *          if true, reset and repeat after generating the event
 	 */
-	public Timer(boolean r)
+	public Timer(final boolean r)
 	{
 		this(1000, r);
 	}
@@ -91,7 +91,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @param r
 	 *          if true, reset and repeat after generating the event
 	 */
-	public Timer(int d, boolean r)
+	public Timer(final int d, final boolean r)
 	{
 		delay = d;
 		repeat = r;
@@ -103,7 +103,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @deprecated
 	 * @see symantec.itools.util.Timer#Timer(int, boolean)
 	 */
-	public Timer(Component t)
+	public Timer(final Component t)
 	{
 		this(1000);
 	}
@@ -112,7 +112,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @deprecated
 	 * @see symantec.itools.util.Timer#Timer(int, boolean)
 	 */
-	public Timer(Component t, int d)
+	public Timer(final Component t, final int d)
 	{
 		this(d, false);
 	}
@@ -121,7 +121,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @deprecated
 	 * @see symantec.itools.util.Timer#Timer(int, boolean)
 	 */
-	public Timer(Component t, int d, boolean r)
+	public Timer(final Component t, final int d, final boolean r)
 	{
 		this(d, r);
 	}
@@ -130,7 +130,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @deprecated
 	 * @see symantec.itools.util.Timer#Timer(int, boolean)
 	 */
-	public Timer(Component t, int d, boolean r, int e)
+	public Timer(final Component t, final int d, final boolean r, final int e)
 	{
 		this(d, r);
 	}
@@ -146,10 +146,10 @@ public class Timer implements Runnable, java.io.Serializable
 	 *              if the specified property value is unacceptable
 	 * @see #getDelay()
 	 */
-	public void setDelay(int d) throws PropertyVetoException
+	public void setDelay(final int d) throws PropertyVetoException
 	{
-		Integer newValue = new Integer(d);
-		Integer oldValue = new Integer(delay);
+		final Integer newValue = new Integer(d);
+		final Integer oldValue = new Integer(delay);
 
 		vetos.fireVetoableChange("delay", oldValue, newValue);
 
@@ -180,10 +180,10 @@ public class Timer implements Runnable, java.io.Serializable
 	 *              if the specified property value is unacceptable
 	 * @see #isRepeat
 	 */
-	public void setRepeat(boolean f) throws PropertyVetoException
+	public void setRepeat(final boolean f) throws PropertyVetoException
 	{
-		Boolean newValue = new Boolean(f);
-		Boolean oldValue = new Boolean(repeat);
+		final Boolean newValue = new Boolean(f);
+		final Boolean oldValue = new Boolean(repeat);
 
 		vetos.fireVetoableChange("repeat", oldValue, newValue);
 
@@ -286,7 +286,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @see #stop
 	 * @see #run
 	 */
-	public void start(int d) throws PropertyVetoException
+	public void start(final int d) throws PropertyVetoException
 	{
 		setDelay(d);
 
@@ -306,7 +306,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @see #stop
 	 * @see #run
 	 */
-	public void start(boolean r) throws PropertyVetoException
+	public void start(final boolean r) throws PropertyVetoException
 	{
 		setRepeat(r);
 
@@ -328,7 +328,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @see #stop
 	 * @see #run
 	 */
-	public void start(int d, boolean r) throws PropertyVetoException
+	public void start(final int d, final boolean r) throws PropertyVetoException
 	{
 		setDelay(d);
 		setRepeat(r);
@@ -385,7 +385,7 @@ public class Timer implements Runnable, java.io.Serializable
 					thread.suspend();
 			}
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 		}
 	}
@@ -399,9 +399,9 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @exception PropertyVetoException
 	 *              if the specified property value is unacceptable
 	 */
-	public void setActionCommand(String command) throws PropertyVetoException
+	public void setActionCommand(final String command) throws PropertyVetoException
 	{
-		String oldValue = actionCommand;
+		final String oldValue = actionCommand;
 
 		vetos.fireVetoableChange("actionCommand", oldValue, command);
 		actionCommand = command;
@@ -425,7 +425,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @param l
 	 *          the action listener
 	 */
-	public void addActionListener(ActionListener l)
+	public void addActionListener(final ActionListener l)
 	{
 		actionListener = AWTEventMulticaster.add(actionListener, l);
 	}
@@ -437,7 +437,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 * @param l
 	 *          the action listener
 	 */
-	public void removeActionListener(ActionListener l)
+	public void removeActionListener(final ActionListener l)
 	{
 		actionListener = AWTEventMulticaster.remove(actionListener, l);
 	}
@@ -461,7 +461,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 *          the listener to add
 	 * @see #removePropertyChangeListener
 	 */
-	public void addPropertyChangeListener(PropertyChangeListener listener)
+	public void addPropertyChangeListener(final PropertyChangeListener listener)
 	{
 		changes.addPropertyChangeListener(listener);
 	}
@@ -473,7 +473,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 *          the listener to remove
 	 * @see #addPropertyChangeListener
 	 */
-	public void removePropertyChangeListener(PropertyChangeListener listener)
+	public void removePropertyChangeListener(final PropertyChangeListener listener)
 	{
 		changes.removePropertyChangeListener(listener);
 	}
@@ -485,7 +485,7 @@ public class Timer implements Runnable, java.io.Serializable
 	 *          the listener to add
 	 * @see #removeVetoableChangeListener
 	 */
-	public void addVetoableChangeListener(VetoableChangeListener listener)
+	public void addVetoableChangeListener(final VetoableChangeListener listener)
 	{
 		vetos.addVetoableChangeListener(listener);
 	}
@@ -497,12 +497,12 @@ public class Timer implements Runnable, java.io.Serializable
 	 *          the listener to remove
 	 * @see #addVetoableChangeListener
 	 */
-	public void removeVetoableChangeListener(VetoableChangeListener listener)
+	public void removeVetoableChangeListener(final VetoableChangeListener listener)
 	{
 		vetos.removeVetoableChangeListener(listener);
 	}
 
-	private void readObject(java.io.ObjectInputStream in)
+	private void readObject(final java.io.ObjectInputStream in)
 			throws java.io.IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();
@@ -521,6 +521,6 @@ public class Timer implements Runnable, java.io.Serializable
 	protected String actionCommand;
 	protected ActionListener actionListener = null;
 	transient protected Thread thread;
-	private VetoableChangeSupport vetos = new VetoableChangeSupport(this);
-	private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+	private final VetoableChangeSupport vetos = new VetoableChangeSupport(this);
+	private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
 }

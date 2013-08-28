@@ -42,17 +42,17 @@ public class ExportDopplerShift extends TimeControllerOperation
 	}
 
 	@Override
-	public void executeExport(WatchableList primaryTrack,
-			WatchableList[] secondaryTracks, TimePeriod period)
+	public void executeExport(final WatchableList primaryTrack,
+			final WatchableList[] secondaryTracks, final TimePeriod period)
 	{
 
-		DopplerShiftExporter ff = new DopplerShiftExporter();
+		final DopplerShiftExporter ff = new DopplerShiftExporter();
 		String theData = null;
 		try
 		{
 			theData = ff.export(primaryTrack, secondaryTracks, period);
 		}
-		catch (ExportException e1)
+		catch (final ExportException e1)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst exporting doppler shift data",
 					e1);
@@ -67,15 +67,15 @@ public class ExportDopplerShift extends TimeControllerOperation
 			// sort out the destination file name
 			String filePath = null;
 
-			SimplePageListWizard wizard = new SimplePageListWizard();
-			DirectorySelectorWizardPage exportPage = new DirectorySelectorWizardPage(
+			final SimplePageListWizard wizard = new SimplePageListWizard();
+			final DirectorySelectorWizardPage exportPage = new DirectorySelectorWizardPage(
 					"ExportDoppler",
 					ACTION_NAME,
 					"Please select the directory where Debrief will \nplace the exported Doppler shift file.",
 					"org.mwc.debrief.core", "images/DopplerEffect.png",HELP_CONTEXT);
 			wizard.addWizard(exportPage);
 			wizard.setHelpAvailable(true);
-			WizardDialog dialog = new WizardDialog(Display.getCurrent()
+			final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 					.getActiveShell(), wizard);
 			dialog.create();
 			dialog.open();
@@ -99,17 +99,17 @@ public class ExportDopplerShift extends TimeControllerOperation
 				BufferedWriter out = null;
 				try
 				{
-					FileWriter fOut = new FileWriter(fileName);
+					final FileWriter fOut = new FileWriter(fileName);
 					out = new BufferedWriter(fOut);
 					out.write(theData);
 					out.flush();
 				}
-				catch (FileNotFoundException e)
+				catch (final FileNotFoundException e)
 				{
 					DebriefPlugin.logError(Status.ERROR, "Unable to find output file:"
 							+ fileName, e);
 				}
-				catch (IOException e)
+				catch (final IOException e)
 				{
 					DebriefPlugin.logError(Status.ERROR, "Whilst writing to output file:"
 							+ fileName, e);
@@ -123,7 +123,7 @@ public class ExportDopplerShift extends TimeControllerOperation
 							out.close();
 						}
 					}
-					catch (IOException e)
+					catch (final IOException e)
 					{
 						DebriefPlugin.logError(Status.ERROR, "Whilst closing output file:"
 								+ fileName, e);

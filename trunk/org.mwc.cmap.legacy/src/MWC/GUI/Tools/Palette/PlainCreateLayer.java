@@ -84,12 +84,12 @@ abstract public class PlainCreateLayer extends PlainTool
 	 * @param thePanel panel
 	 * @param theData the layer we are adding the item to
 	 */
-	public PlainCreateLayer(ToolParent theParent,
-										PropertiesPanel thePanel,
-                    Layers theData,
-										PlainChart theChart,
-										String theName,
-										String theImage)
+	public PlainCreateLayer(final ToolParent theParent,
+										final PropertiesPanel thePanel,
+                    final Layers theData,
+										final PlainChart theChart,
+										final String theName,
+										final String theImage)
 	{
 		super(theParent, theName, theImage);
 
@@ -123,7 +123,7 @@ abstract public class PlainCreateLayer extends PlainTool
     Action res = null;
 
     // ask the child class to create itself
-		Layer theLayer = createItem(_theChart);
+		final Layer theLayer = createItem(_theChart);
 
     // did it work?
     if(theLayer != null)
@@ -149,9 +149,9 @@ abstract public class PlainCreateLayer extends PlainTool
     final protected Layers _theData1;
 
 
-		public CreateLabelAction(PropertiesPanel thePanel,
-															 Layer theLayer,
-                               Layers theData)
+		public CreateLabelAction(final PropertiesPanel thePanel,
+															 final Layer theLayer,
+                               final Layers theData)
 		{
 			_thePanel1 = thePanel;
 			_theLayer = theLayer;

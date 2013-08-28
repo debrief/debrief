@@ -25,24 +25,24 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 	private boolean myDidExecuted;
 
-	public CompositeOperation(String label, IUndoContext enclosingUndoContext) {
+	public CompositeOperation(final String label, final IUndoContext enclosingUndoContext) {
 		super(label);
 		addContext(enclosingUndoContext);
 	}
 
-	public void add(IUndoableOperation operation) {
+	public void add(final IUndoableOperation operation) {
 		checkNotExecuted();
 		myOperations.add(operation);
 	}
 
-	public void remove(IUndoableOperation operation) {
+	public void remove(final IUndoableOperation operation) {
 		checkNotExecuted();
 		myOperations.remove(operation);
 	}
 
 	@Override
 	public boolean canExecute() {
-		for (IUndoableOperation next : myOperations) {
+		for (final IUndoableOperation next : myOperations) {
 			if (!next.canExecute()) {
 				return false;
 			}
@@ -52,7 +52,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 	@Override
 	public boolean canRedo() {
-		for (IUndoableOperation next : myOperations) {
+		for (final IUndoableOperation next : myOperations) {
 			if (!next.canRedo()) {
 				return false;
 			}
@@ -64,7 +64,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 	public boolean canUndo() {
 		//reversed order, as for undo()
 		for (int i = myOperations.size() - 1; i >= 0; i--) {
-			IUndoableOperation next = myOperations.get(i);
+			final IUndoableOperation next = myOperations.get(i);
 			if (!next.canUndo()) {
 				return false;
 			}
@@ -77,34 +77,35 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 	}
 
 	@Override
-	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+	public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 		return doExecute(monitor, info, true);
 	}
 
 	@Override
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+	public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 		return doExecute(monitor, info, false);
 	}
 
 	@Override
-	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+	public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 		final List<IStatus> result = new java.util.ArrayList<IStatus>(size());
-
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
+		IProgressMonitor theMonitor = monitor;
+		
+		if (theMonitor == null) {
+			theMonitor = new NullProgressMonitor();
 		}
 
 		ExecutionException caughtException = null;
-		monitor.beginTask(getLabel(), size());
+		theMonitor.beginTask(getLabel(), size());
 		try {
 
-			for (ListIterator<IUndoableOperation> iter = myOperations.listIterator(size()); iter.hasPrevious();) {
-				IUndoableOperation prev = iter.previous();
+			for (final ListIterator<IUndoableOperation> iter = myOperations.listIterator(size()); iter.hasPrevious();) {
+				final IUndoableOperation prev = iter.previous();
 				IStatus status = null;
 
 				try {
-					status = prev.undo(new SubProgressMonitor(monitor, 1), info);
-				} catch (ExecutionException e) {
+					status = prev.undo(new SubProgressMonitor(theMonitor, 1), info);
+				} catch (final ExecutionException e) {
 					caughtException = e;
 				}
 
@@ -112,9 +113,9 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 					result.add(status);
 				}
 
-				boolean childFailed = (caughtException != null) || status.matches(IStatus.ERROR | IStatus.CANCEL);
+				final boolean childFailed = (caughtException != null) || status.matches(IStatus.ERROR | IStatus.CANCEL);
 				// monitor cancellation doesn't matter if this was the first child
-				if (childFailed || (monitor.isCanceled() && iter.hasPrevious())) {
+				if (childFailed || (theMonitor.isCanceled() && iter.hasPrevious())) {
 					if (childFailed) {
 						// back-track over the operation that failed, assuming that it
 						//    already rolled itself back by whatever means available
@@ -126,7 +127,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 					while (iter.hasNext()) {
 						// unwind the child operations
-						IUndoableOperation next = iter.next();
+						final IUndoableOperation next = iter.next();
 						if (!next.canRedo()) {
 							// oops!  Can't continue unwinding.  Oh, well
 							GridEditorPlugin.getInstance().getLog().log(new Status( //
@@ -138,7 +139,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 						try {
 							next.redo(new NullProgressMonitor(), info);
-						} catch (ExecutionException inner) {
+						} catch (final ExecutionException inner) {
 							GridEditorPlugin.getInstance().getLog().log(new Status( //
 									IStatus.ERROR, //
 									GridEditorPlugin.getInstance().getPluginId(), //
@@ -156,14 +157,14 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 				}
 			}
 		} finally {
-			monitor.done();
+			theMonitor.done();
 		}
 		return aggregateStatuses(result);
 	}
 
 	@Override
 	public void dispose() {
-		for (IUndoableOperation next : myOperations) {
+		for (final IUndoableOperation next : myOperations) {
 			next.dispose();
 		}
 	}
@@ -174,27 +175,28 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 		}
 	}
 
-	private IStatus doExecute(IProgressMonitor monitor, IAdaptable info, boolean firstRunNotRedo) throws ExecutionException {
+	private IStatus doExecute(final IProgressMonitor monitor, final IAdaptable info, final boolean firstRunNotRedo) throws ExecutionException {
 		final List<IStatus> result = new java.util.ArrayList<IStatus>(size());
-
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
+		IProgressMonitor theMonitor = monitor;
+		
+		if (theMonitor == null) {
+			theMonitor = new NullProgressMonitor();
 		}
 
 		ExecutionException caughtException = null;
-		monitor.beginTask(getLabel(), size());
+		theMonitor.beginTask(getLabel(), size());
 		try {
-			for (ListIterator<IUndoableOperation> iter = myOperations.listIterator(); iter.hasNext();) {
-				IUndoableOperation next = iter.next();
+			for (final ListIterator<IUndoableOperation> iter = myOperations.listIterator(); iter.hasNext();) {
+				final IUndoableOperation next = iter.next();
 				IStatus status = null;
 
 				try {
 					if (firstRunNotRedo) {
-						status = next.execute(new SubProgressMonitor(monitor, 1), info);
+						status = next.execute(new SubProgressMonitor(theMonitor, 1), info);
 					} else {
-						status = next.redo(new SubProgressMonitor(monitor, 1), info);
+						status = next.redo(new SubProgressMonitor(theMonitor, 1), info);
 					}
-				} catch (ExecutionException e) {
+				} catch (final ExecutionException e) {
 					caughtException = e;
 				}
 
@@ -204,9 +206,9 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 					statusMatchVal = status.matches(IStatus.ERROR | IStatus.CANCEL);
 				}
 				
-				boolean childFailed = (caughtException != null) || statusMatchVal;
+				final boolean childFailed = (caughtException != null) || statusMatchVal;
 				// monitor cancellation doesn't matter if this was the last child
-				if (childFailed || (monitor.isCanceled() && iter.hasNext())) {
+				if (childFailed || (theMonitor.isCanceled() && iter.hasNext())) {
 					if (childFailed) {
 						// back-track over the operation that failed, assuming that it
 						//    already rolled itself back by whatever means available
@@ -218,7 +220,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 					while (iter.hasPrevious()) {
 						// unwind the child operations
-						IUndoableOperation prev = iter.previous();
+						final IUndoableOperation prev = iter.previous();
 						if (!next.canUndo()) {
 							// oops!  Can't continue unwinding.  Oh, well
 							GridEditorPlugin.getInstance().getLog().log(new Status( //
@@ -232,7 +234,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 
 						try {
 							prev.redo(new NullProgressMonitor(), info);
-						} catch (ExecutionException inner) {
+						} catch (final ExecutionException inner) {
 							GridEditorPlugin.getInstance().getLog().log(new Status( //
 									IStatus.ERROR, //
 									GridEditorPlugin.getInstance().getPluginId(), //
@@ -251,12 +253,12 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 				}
 			}
 		} finally {
-			monitor.done();
+			theMonitor.done();
 		}
 		return aggregateStatuses(result);
 	}
 
-	private IStatus aggregateStatuses(List<? extends IStatus> statuses) {
+	private IStatus aggregateStatuses(final List<? extends IStatus> statuses) {
 		final IStatus result;
 
 		if (statuses.isEmpty()) {
@@ -265,7 +267,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 			result = statuses.get(0);
 		} else {
 			// find the most severe status, to use its plug-in, code, and message
-			IStatus[] children = statuses.toArray(new IStatus[statuses.size()]);
+			final IStatus[] children = statuses.toArray(new IStatus[statuses.size()]);
 
 			IStatus worst = children[0];
 			for (int i = 1; i < children.length; i++) {

@@ -28,9 +28,9 @@ public class BoundedInteger
   ///////////////////////////////////
   // constructor
   //////////////////////////////////
-	public BoundedInteger(int current,
-												int min,
-												int max)
+	public BoundedInteger(final int current,
+												final int min,
+												final int max)
 	{
 		_current = current;
 		_min = min;
@@ -51,14 +51,14 @@ public class BoundedInteger
 	public int getMin(){ return _min; }
 	public int getMax(){ return _max; }
 
-	public void setCurrent(int val){ _current = val;}
+	public void setCurrent(final int val){ _current = val;}
 	
-	public boolean equals(Object o)
+	public boolean equals(final Object o)
 	{
 		boolean res = false;
 		if(o instanceof BoundedInteger)
 		{
-			BoundedInteger other = (BoundedInteger)o;
+			final BoundedInteger other = (BoundedInteger)o;
 			res = (other.getCurrent() == this.getCurrent());
 		}
 		

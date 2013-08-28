@@ -73,15 +73,16 @@ public abstract class SteppingBoundedIntegerEditor extends PropertyEditorSupport
 	/** store the new value
 	 */
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
+	  Object obj = p1;
 		// try to catch if we are receiving a null (uninitialised) value
-		if(p1 == null)
-			p1 = new SteppingBoundedInteger(1, 1, 10, 1);
+		if(obj == null)
+			obj = new SteppingBoundedInteger(1, 1, 10, 1);
 		
-    if(p1 instanceof SteppingBoundedInteger)
+    if(obj instanceof SteppingBoundedInteger)
     {
-      SteppingBoundedInteger val = (SteppingBoundedInteger)p1;
+      final SteppingBoundedInteger val = (SteppingBoundedInteger)obj;
 			// take duplicate of bounded integer value - so that we are not editing
 			// the original one
       _myVal = new SteppingBoundedInteger(val.getCurrent(), 

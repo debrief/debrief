@@ -21,7 +21,7 @@ public class SelectColorPage extends CoreEditableWizardPage
 			return _myColor;
 		}
 
-		public void setColor(Color color)
+		public void setColor(final Color color)
 		{
 			this._myColor = color;
 		}
@@ -52,11 +52,11 @@ public class SelectColorPage extends CoreEditableWizardPage
 	public static String NAME = "Get Color";
 	DataItem _myWrapper;
 	private Color _startColor;
-	private String _fieldExplanation;
+	private final String _fieldExplanation;
 
-	public SelectColorPage(ISelection selection, Color startColor,
-			String pageTitle, String pageExplanation, String fieldExplanation,
-			String imagePath, String helpContext)
+	public SelectColorPage(final ISelection selection, final Color startColor,
+			final String pageTitle, final String pageExplanation, final String fieldExplanation,
+			final String imagePath, final String helpContext)
 	{
 		super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
 				false);
@@ -71,9 +71,9 @@ public class SelectColorPage extends CoreEditableWizardPage
 
 		if (prefs != null)
 		{
-			int red = prefs.getInt(COLOR_RED, 255);
-			int green = prefs.getInt(COLOR_GREEN, 0);
-			int blue = prefs.getInt(COLOR_BLUE, 0);
+			final int red = prefs.getInt(COLOR_RED, 255);
+			final int green = prefs.getInt(COLOR_GREEN, 0);
+			final int blue = prefs.getInt(COLOR_BLUE, 0);
 			_startColor = new Color(red, green, blue);
 		}
 	}
@@ -82,7 +82,7 @@ public class SelectColorPage extends CoreEditableWizardPage
 	public void dispose()
 	{
 		// try to store some defaults
-		Preferences prefs = getPrefs();
+		final Preferences prefs = getPrefs();
 
 		prefs.putInt(COLOR_RED, _myWrapper.getColor().getRed());
 		prefs.putInt(COLOR_BLUE, _myWrapper.getColor().getBlue());
@@ -98,7 +98,7 @@ public class SelectColorPage extends CoreEditableWizardPage
 
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors =
+		final PropertyDescriptor[] descriptors =
 		{ prop("Color", _fieldExplanation, getEditable()) };
 		return descriptors;
 	}

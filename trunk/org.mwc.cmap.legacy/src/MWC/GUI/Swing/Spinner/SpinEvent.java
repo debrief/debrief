@@ -27,8 +27,8 @@ public class SpinEvent extends EventObject {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-		private String command;
-    private JComponent component;
+		private final String command;
+    private final JComponent component;
 
 
     /**
@@ -38,7 +38,7 @@ public class SpinEvent extends EventObject {
      * @param cmd The action command of the Spinner causing the event.
      * @param comp The component that the Spinner is 'spinning'.
      */
-    public SpinEvent(Object src, String cmd, JComponent comp) {
+    public SpinEvent(final Object src, final String cmd, final JComponent comp) {
 	super(src);
 	this.command = cmd;
 	this.component = comp;

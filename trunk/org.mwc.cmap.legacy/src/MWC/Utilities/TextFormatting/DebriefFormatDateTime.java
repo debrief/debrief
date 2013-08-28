@@ -61,11 +61,11 @@ public class DebriefFormatDateTime
 		}
 	}
 
-	static public String toString(long theVal)
+	static public String toString(final long theVal)
 	{
 		initialisePatterns();
 
-		java.util.Date theTime = new java.util.Date(theVal);
+		final java.util.Date theTime = new java.util.Date(theVal);
 		String res;
 
 		// first determine which pattern to use.
@@ -91,7 +91,7 @@ public class DebriefFormatDateTime
 	 * @param dtg
 	 * @return
 	 */
-	public static String formatMicros(HiResDate dtg)
+	public static String formatMicros(final HiResDate dtg)
 	{
 		// check our declarations
 		initialisePatterns();
@@ -106,19 +106,19 @@ public class DebriefFormatDateTime
 	 *          - can't imagine. What-ever could this parameter be called for?
 	 * @return formatted string
 	 */
-	public static String toStringHiRes(HiResDate time, String formatStr)
+	public static String toStringHiRes(final HiResDate time, final String formatStr)
 	{
 		String res;
 
 		// hmm, see if we are actually working in micros
-		long micros = time.getMicros();
+		final long micros = time.getMicros();
 		if (micros % 1000 > 0)
 		{
 			res = toStringHiRes(time);
 		}
 		else
 		{
-			DateFormat myDF = new SimpleDateFormat(formatStr);
+			final DateFormat myDF = new SimpleDateFormat(formatStr);
 			myDF.setTimeZone(TimeZone.getTimeZone("GMT"));
 			res = myDF.format(time.getDate());
 		}
@@ -135,7 +135,7 @@ public class DebriefFormatDateTime
 	 *          - can't imagine. What-ever could this parameter be called for?
 	 * @return formatted string
 	 */
-	public static String toStringHiRes(HiResDate time)
+	public static String toStringHiRes(final HiResDate time)
 	{
 		// check our declarations
 		initialisePatterns();
@@ -143,9 +143,9 @@ public class DebriefFormatDateTime
 		// so, have a look at the data
 		long micros = time.getMicros();
 
-		long wholeSeconds = micros / 1000000;
+		final long wholeSeconds = micros / 1000000;
 
-		StringBuffer res = new StringBuffer();
+		final StringBuffer res = new StringBuffer();
 		res.append(toString(wholeSeconds * 1000));
 
 		// do we have micros?
@@ -162,7 +162,7 @@ public class DebriefFormatDateTime
 			{
 				// yes, convert the value to millis
 
-				long millis = micros = (micros % 1000000) / 1000;
+				final long millis = micros = (micros % 1000000) / 1000;
 
 				res.append(".");
 				res.append(_millis.format(millis));
@@ -180,10 +180,10 @@ public class DebriefFormatDateTime
 	/**
 	 * parse a date string using our format
 	 */
-	public static HiResDate parseThis(String dateToken, String timeToken)
+	public static HiResDate parseThis(final String dateToken, final String timeToken)
 	{
 		// do we have millis?
-		int decPoint = timeToken.indexOf(".");
+		final int decPoint = timeToken.indexOf(".");
 		String milliStr, timeStr;
 		if (decPoint > 0)
 		{
@@ -199,10 +199,10 @@ public class DebriefFormatDateTime
 		
 		// sort out if we have to padd
 		// check the date for missing leading zeros
-		dateToken = String.format("%06d", Integer.parseInt(dateToken));
+		final String theDateToken = String.format("%06d", Integer.parseInt(dateToken));
 		timeStr = String.format("%06d", Integer.parseInt(timeStr));
 
-		String composite = dateToken + " " + timeStr + milliStr;
+		final String composite = theDateToken + " " + timeStr + milliStr;
 
 //		if (milliStr.length() > 0)
 //			composite += milliStr;
@@ -213,7 +213,7 @@ public class DebriefFormatDateTime
 	/**
 	 * parse a date string using our format
 	 */
-	public static HiResDate parseThis(String rawText)
+	public static HiResDate parseThis(final String rawText)
 	{
 		// make sure our two and four-digit date bits are initialised
 		initialisePatterns();
@@ -222,39 +222,39 @@ public class DebriefFormatDateTime
 		HiResDate res = null;
 
 		// right, start off by trimming spaces off the date
-		rawText = rawText.trim();
+		final String theRawText = rawText.trim();
 
 		// right. Special check to see if this is an incorrectly represented null
 		// date (-1)
-		if (rawText.equals(NULL_DATE_STRING) || rawText.equals(INVALID_DATE_STRING))
+		if (theRawText.equals(NULL_DATE_STRING) || theRawText.equals(INVALID_DATE_STRING))
 		{
-			System.err.println("Invalid date read from xml file: " + rawText);
+			System.err.println("Invalid date read from xml file: " + theRawText);
 			res = null;
 		}
 		else
 		{
 
-			String secondPart = rawText;
+			String secondPart = theRawText;
 			String subSecondPart = null;
 
 			// start off by seeing if we have sub-millisecond date
-			int subSecondIndex = rawText.indexOf('.');
+			final int subSecondIndex = theRawText.indexOf('.');
 			if (subSecondIndex > 0)
 			{
 				// so, there is a separator - extract the text before the separator
-				secondPart = rawText.substring(0, subSecondIndex);
+				secondPart = theRawText.substring(0, subSecondIndex);
 
 				// just check that the '.' isn't the last character
-				if (subSecondIndex < rawText.length() - 1)
+				if (subSecondIndex < theRawText.length() - 1)
 				{
 					// yes, we do have digits after the separator
-					subSecondPart = rawText.substring(subSecondIndex + 1);
+					subSecondPart = theRawText.substring(subSecondIndex + 1);
 				}
 			}
 
 			// next determine if we have a 4-figure year value (in which case the
 			// space will be in column 9
-			int spaceIndex = secondPart.indexOf(" ");
+			final int spaceIndex = secondPart.indexOf(" ");
 
 			try
 			{
@@ -267,7 +267,7 @@ public class DebriefFormatDateTime
 					date = TWO_DIGIT_YEAR_FORMAT.parse(secondPart);
 				}
 			}
-			catch (ParseException e1)
+			catch (final ParseException e1)
 			{
 				MWC.Utilities.Errors.Trace.trace(e1, "Whilst reading this date:"
 						+ secondPart);
@@ -281,7 +281,7 @@ public class DebriefFormatDateTime
 				// get the value
 				micros = Integer.parseInt(subSecondPart);
 
-				int subSecLen = subSecondPart.length();
+				final int subSecLen = subSecondPart.length();
 
 				// are we within the acceptable data resolution?
 				if (subSecLen <= 6)
@@ -292,7 +292,7 @@ public class DebriefFormatDateTime
 				{
 					System.err
 							.println("Debrief is only capable of reading data to microsecond resolution (dtg:"
-									+ rawText + ")");
+									+ theRawText + ")");
 					micros = -1;
 				}
 			}
@@ -312,7 +312,7 @@ public class DebriefFormatDateTime
 	{
 		static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-		public DebriefFormatTest(String val)
+		public DebriefFormatTest(final String val)
 		{
 			super(val);
 		}

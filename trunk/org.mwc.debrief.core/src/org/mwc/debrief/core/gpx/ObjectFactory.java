@@ -239,7 +239,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "org.mwc.debrief.core", name = "fixExtension")
-    public JAXBElement<FixExtensionType> createFixExtension(FixExtensionType value) {
+    public JAXBElement<FixExtensionType> createFixExtension(final FixExtensionType value) {
         return new JAXBElement<FixExtensionType>(_FixExtension_QNAME, FixExtensionType.class, null, value);
     }
 
@@ -248,7 +248,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "org.mwc.debrief.core", name = "trackExtension")
-    public JAXBElement<TrackExtensionType> createTrackExtension(TrackExtensionType value) {
+    public JAXBElement<TrackExtensionType> createTrackExtension(final TrackExtensionType value) {
         return new JAXBElement<TrackExtensionType>(_TrackExtension_QNAME, TrackExtensionType.class, null, value);
     }
 
@@ -257,7 +257,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "org.mwc.debrief.core", name = "plot")
-    public JAXBElement<PlotType> createPlot(PlotType value) {
+    public JAXBElement<PlotType> createPlot(final PlotType value) {
         return new JAXBElement<PlotType>(_Plot_QNAME, PlotType.class, null, value);
     }
 

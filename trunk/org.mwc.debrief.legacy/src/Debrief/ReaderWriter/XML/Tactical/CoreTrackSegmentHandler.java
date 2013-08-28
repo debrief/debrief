@@ -35,7 +35,7 @@ abstract public class CoreTrackSegmentHandler extends
 	private String _name;
 	private int _lineStyle = CanvasType.SOLID;
 
-	public CoreTrackSegmentHandler(String name)
+	public CoreTrackSegmentHandler(final String name)
 	{
 		// inform our parent what type of class we are
 		super(name);
@@ -44,7 +44,7 @@ abstract public class CoreTrackSegmentHandler extends
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
 		{
 			@Override
-			public void setValue(String name, boolean val)
+			public void setValue(final String name, final boolean val)
 			{
 				_visible = val;
 			}
@@ -52,18 +52,18 @@ abstract public class CoreTrackSegmentHandler extends
 		addAttributeHandler(new HandleAttribute(LINE_STYLE)
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
-				LineStylePropertyEditor lp = new LineStylePropertyEditor();
+				final LineStylePropertyEditor lp = new LineStylePropertyEditor();
 				lp.setAsText(val);
-				Integer iVal =(Integer) lp.getValue(); 
+				final Integer iVal =(Integer) lp.getValue(); 
 				_lineStyle = iVal.intValue();
 			}
 		});
 		addAttributeHandler(new HandleAttribute(NAME)
 		{
 			@Override
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_name = val;
 			}
@@ -71,7 +71,7 @@ abstract public class CoreTrackSegmentHandler extends
 		
 		addHandler(new FixHandler()
 		{
-			public void addPlottable(Plottable plottable)
+			public void addPlottable(final Plottable plottable)
 			{
 				_fixes.add((FixWrapper) plottable);
 			}
@@ -80,7 +80,7 @@ abstract public class CoreTrackSegmentHandler extends
 	}
 
 	// this is one of ours, so get on with it!
-	protected final void handleOurselves(String name, Attributes attributes)
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
 		_fixes = new Vector<FixWrapper>();
 		super.handleOurselves(name, attributes);
@@ -95,21 +95,21 @@ abstract public class CoreTrackSegmentHandler extends
 		segment.setName(_name);
 		segment.setLineStyle(_lineStyle);
 		// give it the fixes
-		for (Iterator<FixWrapper> iterator = _fixes.iterator(); iterator.hasNext();)
+		for (final Iterator<FixWrapper> iterator = _fixes.iterator(); iterator.hasNext();)
 		{
-			FixWrapper fix = (FixWrapper) iterator.next();
+			final FixWrapper fix = (FixWrapper) iterator.next();
 			segment.addFixSilent(fix);
 		}
 		addSegment(segment);
 		segment = null;
 	}
 	
-	public static Element exportThisSegment(org.w3c.dom.Document doc,
-			TrackSegment seg, String segmentName)
+	public static Element exportThisSegment(final org.w3c.dom.Document doc,
+			final TrackSegment seg, final String segmentName)
 	{
 		final Element segE = doc.createElement(segmentName);
 
-		LineStylePropertyEditor ls = new LineStylePropertyEditor();
+		final LineStylePropertyEditor ls = new LineStylePropertyEditor();
 		ls.setValue(seg.getLineStyle());
 		
 		// sort out the attributes

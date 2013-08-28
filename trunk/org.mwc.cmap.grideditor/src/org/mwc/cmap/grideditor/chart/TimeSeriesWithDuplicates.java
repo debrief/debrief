@@ -54,7 +54,7 @@ class TimeSeriesWithDuplicates {
 
 	private final TimeSeriesCollection myDataSet;
 
-	public TimeSeriesWithDuplicates(String seriesKey) {
+	public TimeSeriesWithDuplicates(final String seriesKey) {
 		myDataSet = new TimeSeriesCollection(getDefaultTimeZone());
 		myTimeSeries = new TimeSeries(seriesKey);
 		myDataSet.addSeries(myTimeSeries);
@@ -67,9 +67,9 @@ class TimeSeriesWithDuplicates {
 		return myDataSet;
 	}
 
-	public void addDomainItem(TimeStampedDataItem addedItem, double itemValue) {
-		BackedTimeSeriesDataItem newChartItem = createChartItem(addedItem, itemValue);
-		BackedTimeSeriesDataItem existing = searchForExistingDuplicate(newChartItem);
+	public void addDomainItem(final TimeStampedDataItem addedItem, final double itemValue) {
+		final BackedTimeSeriesDataItem newChartItem = createChartItem(addedItem, itemValue);
+		final BackedTimeSeriesDataItem existing = searchForExistingDuplicate(newChartItem);
 		if (existing == null) {
 			//safe to add then 
 			addToSeries(newChartItem);
@@ -78,24 +78,24 @@ class TimeSeriesWithDuplicates {
 		}
 	}
 
-	public void removeDomainItem(TimeStampedDataItem removedItem) {
+	public void removeDomainItem(final TimeStampedDataItem removedItem) {
 		//NOTE: we can't be sure that removedItem's time is correct
 		if (isDuplicate(removedItem)) {
 			removeDuplicate(removedItem);
 		} else {
-			BackedTimeSeriesDataItem existing = myDomain2Existing.get(removedItem);
+			final BackedTimeSeriesDataItem existing = myDomain2Existing.get(removedItem);
 			if (existing == null) {
 				//wow
 				return;
 			}
 			assert existing.getDomainItem() == removedItem;
-			List<TimeStampedDataItem> duplicates = findRegisteredDuplicatesFor(existing);
+			final List<TimeStampedDataItem> duplicates = findRegisteredDuplicatesFor(existing);
 			myTimeSeries.delete(existing.getPeriod());
 			if (!duplicates.isEmpty()) {
-				TimeStampedDataItem luckyDomainItem = duplicates.get(0);
-				BackedTimeSeriesDataItem toBeAddedToSeries = myDomainDuplicate2Existing.get(luckyDomainItem);
-				for (TimeStampedDataItem next : duplicates) {
-					BackedTimeSeriesDataItem precreatedChartItem = myDomainDuplicate2Deferred.get(luckyDomainItem);
+				final TimeStampedDataItem luckyDomainItem = duplicates.get(0);
+				final BackedTimeSeriesDataItem toBeAddedToSeries = myDomainDuplicate2Existing.get(luckyDomainItem);
+				for (final TimeStampedDataItem next : duplicates) {
+					final BackedTimeSeriesDataItem precreatedChartItem = myDomainDuplicate2Deferred.get(luckyDomainItem);
 					removeDuplicate(next);
 					if (next == luckyDomainItem) {
 						addToSeries(precreatedChartItem);
@@ -108,10 +108,10 @@ class TimeSeriesWithDuplicates {
 		}
 	}
 
-	public void updateDomainItem(TimeStampedDataItem changedItem, double currentValue) {
+	public void updateDomainItem(final TimeStampedDataItem changedItem, final double currentValue) {
 		if (isDuplicate(changedItem)) {
-			BackedTimeSeriesDataItem deferred = getDeferredFor(changedItem);
-			Date oldTime = deferred.getPeriod().getTime();
+			final BackedTimeSeriesDataItem deferred = getDeferredFor(changedItem);
+			final Date oldTime = deferred.getPeriod().getTime();
 			if (oldTime.equals(changedItem.getDTG().getDate())) {
 				//only value have changed, its still duplicate
 				return;
@@ -123,12 +123,12 @@ class TimeSeriesWithDuplicates {
 			return;
 		}
 
-		BackedTimeSeriesDataItem existing = myDomain2Existing.get(changedItem);
+		final BackedTimeSeriesDataItem existing = myDomain2Existing.get(changedItem);
 		if (existing == null) {
 			//wow
 			return;
 		}
-		Date oldTime = existing.getPeriod().getTime();
+		final Date oldTime = existing.getPeriod().getTime();
 		if (oldTime.equals(changedItem.getDTG().getDate())) {
 			myTimeSeries.update(existing.getPeriod(), currentValue);
 			//time haven't changed, so duplciates state is the same
@@ -141,18 +141,18 @@ class TimeSeriesWithDuplicates {
 		addDomainItem(changedItem, currentValue);
 	}
 
-	private void addDuplicate(BackedTimeSeriesDataItem duplicate, BackedTimeSeriesDataItem original) {
+	private void addDuplicate(final BackedTimeSeriesDataItem duplicate, final BackedTimeSeriesDataItem original) {
 		myDomainDuplicate2Existing.put(duplicate.getDomainItem(), original);
 		myDomainDuplicate2Deferred.put(duplicate.getDomainItem(), duplicate);
 	}
 	
-	private void addToSeries(BackedTimeSeriesDataItem toBeAdded){
+	private void addToSeries(final BackedTimeSeriesDataItem toBeAdded){
 		assert !isDuplicate(toBeAdded.getDomainItem());
 		myDomain2Existing.put(toBeAdded.getDomainItem(), toBeAdded);
 		myTimeSeries.add(toBeAdded);
 	}
 
-	private void removeDuplicate(TimeStampedDataItem domainItem) {
+	private void removeDuplicate(final TimeStampedDataItem domainItem) {
 		myDomainDuplicate2Deferred.remove(domainItem);
 		myDomainDuplicate2Existing.remove(domainItem);
 	}
@@ -160,9 +160,9 @@ class TimeSeriesWithDuplicates {
 	/**
 	 * Linear for duplicates count, we assuming that there duplicates are rare
 	 */
-	private List<TimeStampedDataItem> findRegisteredDuplicatesFor(BackedTimeSeriesDataItem original) {
+	private List<TimeStampedDataItem> findRegisteredDuplicatesFor(final BackedTimeSeriesDataItem original) {
 		List<TimeStampedDataItem> result = null;
-		for (Map.Entry<TimeStampedDataItem, BackedTimeSeriesDataItem> next : myDomainDuplicate2Existing.entrySet()) {
+		for (final Map.Entry<TimeStampedDataItem, BackedTimeSeriesDataItem> next : myDomainDuplicate2Existing.entrySet()) {
 			if (next.getValue() == original) {
 				if (result == null) {
 					result = new ArrayList<TimeStampedDataItem>();
@@ -173,38 +173,38 @@ class TimeSeriesWithDuplicates {
 		return result == null ? Collections.<TimeStampedDataItem> emptyList() : result;
 	}
 
-	private boolean isDuplicate(TimeStampedDataItem domainItem) {
+	private boolean isDuplicate(final TimeStampedDataItem domainItem) {
 		return myDomainDuplicate2Deferred.containsKey(domainItem);
 	}
 
-	private BackedTimeSeriesDataItem getDeferredFor(TimeStampedDataItem domainItem) {
+	private BackedTimeSeriesDataItem getDeferredFor(final TimeStampedDataItem domainItem) {
 		return myDomainDuplicate2Deferred.get(domainItem);
 	}
 
-	private BackedTimeSeriesDataItem searchForExistingDuplicate(BackedTimeSeriesDataItem chartItem) {
+	private BackedTimeSeriesDataItem searchForExistingDuplicate(final BackedTimeSeriesDataItem chartItem) {
 		//we should consider the possibility that chartItem is duplicate for some existing period 
 		//(because duplicates are not supported by TimeSeries)
 		//but we don't want to call binarySearch for EVERY domain item added (or being constructed on setInput) 
 		//so, we will check for most frequent case when we can state for sure that there are no duplicates
-		int seriesSize = myTimeSeries.getItemCount();
+		final int seriesSize = myTimeSeries.getItemCount();
 		if (seriesSize == 0) {
 			return null;
 		}
-		TimeSeriesDataItem lastChartItem = myTimeSeries.getDataItem(seriesSize - 1);
+		final TimeSeriesDataItem lastChartItem = myTimeSeries.getDataItem(seriesSize - 1);
 		if (lastChartItem.compareTo(chartItem) < 0) {
 			//thats hopefully most frequent case
 			return null; //because series is sorted
 		}
 		//ok, bad luck, hopefully rare case, but we have to check anyway by binarySearch
-		int existingIndex = myTimeSeries.getIndex(chartItem.getPeriod());
+		final int existingIndex = myTimeSeries.getIndex(chartItem.getPeriod());
 		if (existingIndex < 0) {
 			return null;
 		}
 		return (BackedTimeSeriesDataItem) myTimeSeries.getDataItem(existingIndex);
 	}
 
-	private BackedTimeSeriesDataItem createChartItem(TimeStampedDataItem domainItem, double value) {
-		Date time = domainItem.getDTG().getDate();
+	private BackedTimeSeriesDataItem createChartItem(final TimeStampedDataItem domainItem, final double value) {
+		final Date time = domainItem.getDTG().getDate();
 		return new BackedTimeSeriesDataItem(new FixedMillisecond(time), value, domainItem);
 	}
 

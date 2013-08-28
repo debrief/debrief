@@ -74,16 +74,16 @@ abstract public class Save extends PlainTool
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public Save(ToolParent theParent,
-              String theName,
-              String theSuffix){
+  public Save(final ToolParent theParent,
+              final String theName,
+              final String theSuffix){
     this(theParent, theName, theSuffix, "images/save.gif");
   }
 
-  public Save(ToolParent theParent,
-              String theName,
-              String theSuffix,
-              String theImage)
+  public Save(final ToolParent theParent,
+              final String theName,
+              final String theSuffix,
+              final String theImage)
   {
     super(theParent, theName, theImage);
 
@@ -109,13 +109,13 @@ abstract public class Save extends PlainTool
     Action res = null;
 
     // get the filename of the file to import
-    File theFile = getFile();
+    final File theFile = getFile();
 
     if(theFile != null)
     {
       _lastDirectory = theFile.getParent();
 
-      String fn = theFile.getPath();
+      final String fn = theFile.getPath();
       res = doSave(fn);
     }
 
@@ -133,7 +133,7 @@ abstract public class Save extends PlainTool
      */
     protected String _theSessionName;
 
-    public SavePlotAction(String theName){
+    public SavePlotAction(final String theName){
       _theSessionName = theName;
     }
 

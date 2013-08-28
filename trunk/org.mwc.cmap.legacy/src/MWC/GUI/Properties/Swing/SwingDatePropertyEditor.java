@@ -130,16 +130,16 @@ public class SwingDatePropertyEditor extends
   {
     _theHolder = new JPanel();
 
-    java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
+    final java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
     bl1.setVgap(0);
     bl1.setHgap(0);
-    java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
+    final java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
     bl2.setVgap(0);
     bl2.setHgap(0);
 
-    JPanel lPanel = new JPanel();
+    final JPanel lPanel = new JPanel();
     lPanel.setLayout(bl1);
-    JPanel rPanel = new JPanel();
+    final JPanel rPanel = new JPanel();
     rPanel.setLayout(bl2);
 
     _theHolder.setLayout(new java.awt.GridLayout(0, 2));
@@ -163,10 +163,10 @@ public class SwingDatePropertyEditor extends
     if (HiResDate.inHiResProcessingMode())
     {
       // ok, add a button to allow the user to enter DTG data
-      JButton editMicros = new JButton("Micros");
+      final JButton editMicros = new JButton("Micros");
       editMicros.addActionListener(new ActionListener()
       {
-        public void actionPerformed(ActionEvent e)
+        public void actionPerformed(final ActionEvent e)
         {
           editMicrosPressed();
         }
@@ -188,7 +188,7 @@ public class SwingDatePropertyEditor extends
   void editMicrosPressed()
   {
     //To change body of created methods use File | Settings | File Templates.
-    Integer res = DialogFactory.getInteger("Edit microseconds", "Enter microseconds",(int) _theMicros);
+    final Integer res = DialogFactory.getInteger("Edit microseconds", "Enter microseconds",(int) _theMicros);
 
     // did user enter anything?
     if(res != null)
@@ -220,7 +220,7 @@ public class SwingDatePropertyEditor extends
   /**
    * set the date text in string form
    */
-  protected void setDateText(String val)
+  protected void setDateText(final String val)
   {
     if (_theHolder != null)
     {
@@ -231,7 +231,7 @@ public class SwingDatePropertyEditor extends
   /**
    * set the time text in string form
    */
-  protected void setTimeText(String val)
+  protected void setTimeText(final String val)
   {
     if (_theHolder != null)
     {
@@ -244,7 +244,7 @@ public class SwingDatePropertyEditor extends
    *
    * @param val
    */
-  protected void setMicroText(long val)
+  protected void setMicroText(final long val)
   {
     // output the number of microseconds
     _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
@@ -258,12 +258,12 @@ public class SwingDatePropertyEditor extends
   /**
    * Invoked when a component gains the keyboard focus.
    */
-  public void focusGained(FocusEvent e)
+  public void focusGained(final FocusEvent e)
   {
-    java.awt.Component c = e.getComponent();
+    final java.awt.Component c = e.getComponent();
     if (c instanceof JTextField)
     {
-      JTextField jt = (JTextField) c;
+      final JTextField jt = (JTextField) c;
       jt.setSelectionStart(0);
       jt.setSelectionEnd(jt.getText().length());
     }
@@ -272,7 +272,7 @@ public class SwingDatePropertyEditor extends
   /**
    * Invoked when a component loses the keyboard focus.
    */
-  public void focusLost(FocusEvent e)
+  public void focusLost(final FocusEvent e)
   {
   }
 }

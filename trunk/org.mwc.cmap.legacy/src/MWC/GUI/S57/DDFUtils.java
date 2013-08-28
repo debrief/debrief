@@ -34,8 +34,8 @@ public class DDFUtils {
     /* record. */
     /** ********************************************************************* */
 
-    public static int scanVariable(byte[] pszRecord, int nMaxChars,
-                                   char nDelimChar) {
+    public static int scanVariable(final byte[] pszRecord, final int nMaxChars,
+                                   final char nDelimChar) {
         int i;
         for (i = 0; i < nMaxChars - 1 && pszRecord[i] != nDelimChar; i++) {
         }
@@ -49,9 +49,9 @@ public class DDFUtils {
     /* it as a new string (with CPLStrdup()). */
     /** ********************************************************************* */
 
-    public static String fetchVariable(byte[] pszRecord, int nMaxChars,
-                                       char nDelimChar1, char nDelimChar2,
-                                       MutableInt pnConsumedChars) {
+    public static String fetchVariable(final byte[] pszRecord, final int nMaxChars,
+                                       final char nDelimChar1, final char nDelimChar2,
+                                       final MutableInt pnConsumedChars) {
         int i;
 
         for (i = 0; i < nMaxChars - 1 && pszRecord[i] != nDelimChar1
@@ -64,7 +64,7 @@ public class DDFUtils {
             pnConsumedChars.value++;
         }
 
-        byte[] pszReturnBytes = new byte[i];
+        final byte[] pszReturnBytes = new byte[i];
         System.arraycopy(pszRecord, 0, pszReturnBytes, 0, i);
 
         return new String(pszReturnBytes);

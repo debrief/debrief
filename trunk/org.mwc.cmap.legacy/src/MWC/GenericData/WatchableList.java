@@ -217,10 +217,10 @@ public interface WatchableList
 		 * 
 		 * @param tester
 		 */
-		public final void doTest(junit.framework.TestCase tester)
+		public final void doTest(final junit.framework.TestCase tester)
 		{
 			// test without dates
-			WatchableList noDates = getNullDates();
+			final WatchableList noDates = getNullDates();
 
 			// test filter list to
 			noDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
@@ -244,7 +244,7 @@ public interface WatchableList
 			TestCase.assertEquals("no end DTG", null, noDates.getEndDTG());
 
 			// test start date only
-			WatchableList startOnly = getStartDateOnly(new HiResDate(2500));
+			final WatchableList startOnly = getStartDateOnly(new HiResDate(2500));
 
 			// test filter list to
 			startOnly.filterListTo(new HiResDate(2000), new HiResDate(3000));
@@ -282,7 +282,7 @@ public interface WatchableList
 			TestCase.assertEquals("no end DTG", null, startOnly.getEndDTG());
 
 			// test with dates
-			WatchableList withDates = getBothDates(new HiResDate(2500),
+			final WatchableList withDates = getBothDates(new HiResDate(2500),
 					new HiResDate(2700));
 
 			// test filter list to

@@ -59,9 +59,9 @@ import MWC.GUI.Tools.PlainTool;
    * @param theLabel the label to put on the button
    * @param theSubject the GUI component we are going to watch
    */
-  public ShowVideo(ToolParent theParent,
-              MWC.GUI.Properties.PropertiesPanel thePanel,
-              java.awt.Component theSubject){
+  public ShowVideo(final ToolParent theParent,
+              final MWC.GUI.Properties.PropertiesPanel thePanel,
+              final java.awt.Component theSubject){
 
     super(theParent, "Record video", "images/camera.gif");
 
@@ -81,14 +81,14 @@ import MWC.GUI.Tools.PlainTool;
   public Action getData()
   {
 
-    Action res = null;
+    final Action res = null;
 
-    java.awt.Component comp = new MWC.GUI.Video.SwingGrabControl(_theSubject, getParent(), _theProperties);
+    final java.awt.Component comp = new MWC.GUI.Video.SwingGrabControl(_theSubject, getParent(), _theProperties);
 
     // see if this is a swing editor - if so we will add our panel as a floatable toolbar
     if(_theProperties instanceof MWC.GUI.Properties.Swing.SwingPropertiesPanel)
     {
-      MWC.GUI.Properties.Swing.SwingPropertiesPanel swPanel =
+      final MWC.GUI.Properties.Swing.SwingPropertiesPanel swPanel =
         (MWC.GUI.Properties.Swing.SwingPropertiesPanel)_theProperties;
       swPanel.addThisPanel(comp);
     }

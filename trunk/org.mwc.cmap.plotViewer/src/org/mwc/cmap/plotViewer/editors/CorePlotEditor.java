@@ -155,7 +155,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void addThisLayer(Layer theLayer)
+			public void addThisLayer(final Layer theLayer)
 			{
 				Layer wrappedLayer = null;
 
@@ -163,11 +163,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 				// GT-plotting, we will wrap it, and actually add the wrapped layer
 				if (theLayer instanceof ExternallyManagedDataLayer)
 				{
-					ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
+					final ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(
 							MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
 					{
-						GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
+						final GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
 								dl.getFilename());
 
 						gt.setVisible(dl.getVisible());
@@ -187,7 +187,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 						else
 						{
 							// ok, it's a normal shapefile: load it.
-							GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
+							final GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
 									dl.getFilename());
 							gt.setVisible(dl.getVisible());
 							_myGeoHandler.addGeoToolsLayer(gt);
@@ -202,19 +202,19 @@ public abstract class CorePlotEditor extends EditorPart implements
 			}
 
 			@Override
-			public void removeThisLayer(Layer theLayer)
+			public void removeThisLayer(final Layer theLayer)
 			{
 				if (theLayer instanceof GeoToolsLayer)
 				{
 					// get the content
-					GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
-					GeoToolsLayer gt = (GeoToolsLayer) theLayer;
+					final GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
+					final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
 					gt.clearMap();
 
 					if (gp.numLayers() == 0)
 					{
 						// ok - we've got to force the data rea
-						WorldArea area = _myChart.getCanvas().getProjection().getDataArea();
+						final WorldArea area = _myChart.getCanvas().getProjection().getDataArea();
 						_myChart.getCanvas().getProjection().setDataArea(area);
 					}
 
@@ -230,24 +230,24 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_listenForMods = new DataListener2()
 		{
 
-			public void dataModified(Layers theData, Layer changedLayer)
+			public void dataModified(final Layers theData, final Layer changedLayer)
 			{
 				fireDirty();
 			}
 
-			public void dataExtended(Layers theData)
+			public void dataExtended(final Layers theData)
 			{
 				layersExtended();
 				fireDirty();
 			}
 
-			public void dataReformatted(Layers theData, Layer changedLayer)
+			public void dataReformatted(final Layers theData, final Layer changedLayer)
 			{
 				fireDirty();
 			}
 
 			@Override
-			public void dataExtended(Layers theData, Plottable newItem, Layer parent)
+			public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
 			{
 				layersExtended();
 				fireDirty();
@@ -261,11 +261,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// and listen for new times
 		_timeListener = new PropertyChangeListener()
 		{
-			public void propertyChange(PropertyChangeEvent arg0)
+			public void propertyChange(final PropertyChangeEvent arg0)
 			{
 
 				// right, retrieve the time
-				HiResDate newDTG = (HiResDate) arg0.getNewValue();
+				final HiResDate newDTG = (HiResDate) arg0.getNewValue();
 				timeChanged(newDTG);
 
 				// now make a note that the current DTG has changed
@@ -298,7 +298,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_timeListener = null;
 	}
 
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		// hey, create the chart
 		_myChart = createTheChart(parent);
@@ -330,12 +330,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 			 */
 			private static final long serialVersionUID = 1L;
 
-			protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
+			protected void addEditor(final Plottable res, final EditorType e, final Layer parentLayer)
 			{
 				selectPlottable(res, parentLayer);
 			}
 
-			protected void handleItemNotFound(PlainProjection projection)
+			protected void handleItemNotFound(final PlainProjection projection)
 			{
 				putBackdropIntoProperties();
 			}
@@ -344,9 +344,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 		getSite().setSelectionProvider(this);
 
 		// and over-ride the undo button
-		IAction undoAction = new UndoActionHandler(getEditorSite(),
+		final IAction undoAction = new UndoActionHandler(getEditorSite(),
 				CorePlugin.CMAP_CONTEXT);
-		IAction redoAction = new RedoActionHandler(getEditorSite(),
+		final IAction redoAction = new RedoActionHandler(getEditorSite(),
 				CorePlugin.CMAP_CONTEXT);
 
 		getEditorSite().getActionBars().setGlobalActionHandler(
@@ -356,16 +356,16 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		// put in the plot-copy support
 
-		IAction _copyClipboardAction = new Action()
+		final IAction _copyClipboardAction = new Action()
 		{
-			public void runWithEvent(Event event)
+			public void runWithEvent(final Event event)
 			{
-				ExportWMF ew = new ExportWMF(true, false);
+				final ExportWMF ew = new ExportWMF(true, false);
 				ew.run(null);
 			}
 		};
 
-		IActionBars actionBars = getEditorSite().getActionBars();
+		final IActionBars actionBars = getEditorSite().getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
 				_copyClipboardAction);
 
@@ -383,10 +383,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_myPartMonitor.addPartListener(CorePlotEditor.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
-						boolean isMe = checkIfImTheSameAs(instance);
+						final boolean isMe = checkIfImTheSameAs(instance);
 						if (isMe)
 							_currentSelection = null;
 					}
@@ -401,12 +401,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object instance,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object instance,
+							final IWorkbenchPart parentPart)
 					{
 						if (type == PartMonitor.ACTIVATED)
 						{
-							boolean isMe = checkIfImTheSameAs(instance);
+							final boolean isMe = checkIfImTheSameAs(instance);
 							if (isMe)
 							{
 								// tell the cursor track that we're it's bitch.
@@ -418,7 +418,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 				});
 	}
 
-	boolean checkIfImTheSameAs(Object target1)
+	boolean checkIfImTheSameAs(final Object target1)
 	{
 		boolean res = false;
 		// is it me?
@@ -442,15 +442,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * @param parentLayer
 	 *          - the item's parent layer. Used to decide which layers to update.
 	 */
-	public void selectPlottable(Plottable target1, Layer parentLayer)
+	public void selectPlottable(final Plottable target1, final Layer parentLayer)
 	{
 		CorePlugin.logError(Status.INFO,
 				"Double-click processed, opening property editor for:" + target1, null);
-		EditableWrapper parentP = new EditableWrapper(parentLayer, null, getChart()
+		final EditableWrapper parentP = new EditableWrapper(parentLayer, null, getChart()
 				.getLayers());
-		EditableWrapper wrapped = new EditableWrapper(target1, parentP, getChart()
+		final EditableWrapper wrapped = new EditableWrapper(target1, parentP, getChart()
 				.getLayers());
-		ISelection selected = new StructuredSelection(wrapped);
+		final ISelection selected = new StructuredSelection(wrapped);
 		fireSelectionChanged(selected);
 	}
 
@@ -460,9 +460,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 */
 	final void putBackdropIntoProperties()
 	{
-		SWTCanvas can = (SWTCanvas) getChart().getCanvas();
-		EditableWrapper wrapped = new EditableWrapper(can, getChart().getLayers());
-		ISelection sel = new StructuredSelection(wrapped);
+		final SWTCanvas can = (SWTCanvas) getChart().getCanvas();
+		final EditableWrapper wrapped = new EditableWrapper(can, getChart().getLayers());
+		final ISelection sel = new StructuredSelection(wrapped);
 		fireSelectionChanged(sel);
 
 	}
@@ -473,9 +473,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * @param parent
 	 *          the parent object to stick it into
 	 */
-	protected SWTChart createTheChart(Composite parent)
+	protected SWTChart createTheChart(final Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
+		final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
 		{
 
 			/**
@@ -483,7 +483,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public void chartFireSelectionChanged(ISelection sel)
+			public void chartFireSelectionChanged(final ISelection sel)
 			{
 				fireSelectionChanged(sel);
 			}
@@ -496,15 +496,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 */
 	private void configureFileDropSupport()
 	{
-		int dropOperation = DND.DROP_COPY;
-		Transfer[] dropTypes =
+		final int dropOperation = DND.DROP_COPY;
+		final Transfer[] dropTypes =
 		{ FileTransfer.getInstance() };
 
 		target = new DropTarget(_myChart.getCanvasControl(), dropOperation);
 		target.setTransfer(dropTypes);
 		target.addDropListener(new DropTargetListener()
 		{
-			public void dragEnter(DropTargetEvent event)
+			public void dragEnter(final DropTargetEvent event)
 			{
 				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
 				{
@@ -515,23 +515,23 @@ public abstract class CorePlotEditor extends EditorPart implements
 				}
 			}
 
-			public void dragLeave(DropTargetEvent event)
+			public void dragLeave(final DropTargetEvent event)
 			{
 			}
 
-			public void dragOperationChanged(DropTargetEvent event)
+			public void dragOperationChanged(final DropTargetEvent event)
 			{
 			}
 
-			public void dragOver(DropTargetEvent event)
+			public void dragOver(final DropTargetEvent event)
 			{
 			}
 
-			public void dropAccept(DropTargetEvent event)
+			public void dropAccept(final DropTargetEvent event)
 			{
 			}
 
-			public void drop(DropTargetEvent event)
+			public void drop(final DropTargetEvent event)
 			{
 				String[] fileNames = null;
 				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
@@ -554,7 +554,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * @param fileNames
 	 *          list of filenames
 	 */
-	protected void filesDropped(String[] fileNames)
+	protected void filesDropped(final String[] fileNames)
 	{
 		System.out.println("Files dropped");
 	}
@@ -566,7 +566,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		// ok, set the drag mode to whatever our common "mode" is.
 		// - start off by getting the current mode
-		PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
+		final PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
 
 		// has one been set?
 		if (curMode != null)
@@ -579,7 +579,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	@SuppressWarnings(
 	{ "rawtypes" })
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 
@@ -604,7 +604,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		return res;
 	}
 
-	protected void timeChanged(HiResDate newDTG)
+	protected void timeChanged(final HiResDate newDTG)
 	{
 	}
 
@@ -624,7 +624,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		return getChart().getCanvas().getProjection().getDataArea();
 	}
 
-	public void setViewport(WorldArea target)
+	public void setViewport(final WorldArea target)
 	{
 		getChart().getCanvas().getProjection().setDataArea(target);
 	}
@@ -634,7 +634,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		return getChart().getCanvas().getProjection();
 	}
 
-	public void setProjection(PlainProjection proj)
+	public void setProjection(final PlainProjection proj)
 	{
 		// do we have a chart yet?
 		if (_myChart == null)
@@ -662,7 +662,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener
 	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	public void addSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
 			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
@@ -699,7 +699,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener
 	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
-	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
 	}
@@ -711,12 +711,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface
 	 * .viewers.ISelection)
 	 */
-	public void setSelection(ISelection selection)
+	public void setSelection(final ISelection selection)
 	{
 		_currentSelection = selection;
 	}
 
-	public void fireSelectionChanged(ISelection sel)
+	public void fireSelectionChanged(final ISelection sel)
 	{
 		// just double-check that we're not already processing this
 		if (sel != _currentSelection)
@@ -724,11 +724,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 			_currentSelection = sel;
 			if (_selectionListeners != null)
 			{
-				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
-				for (Iterator<ISelectionChangedListener> stepper = _selectionListeners
+				final SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
+				for (final Iterator<ISelectionChangedListener> stepper = _selectionListeners
 						.iterator(); stepper.hasNext();)
 				{
-					ISelectionChangedListener thisL = stepper.next();
+					final ISelectionChangedListener thisL = stepper.next();
 					if (thisL != null)
 					{
 						thisL.selectionChanged(sEvent);
@@ -763,10 +763,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 				public void run()
 				{
 					firePropertyChange(PROP_DIRTY);
-					PropertySheet propertiesView = (PropertySheet) CorePlugin.findView(IPageLayout.ID_PROP_SHEET);
+					final PropertySheet propertiesView = (PropertySheet) CorePlugin.findView(IPageLayout.ID_PROP_SHEET);
 					if (propertiesView != null) 
 					{
-						PropertySheetPage propertySheetPage = (PropertySheetPage) propertiesView.getCurrentPage();
+						final PropertySheetPage propertySheetPage = (PropertySheetPage) propertiesView.getCurrentPage();
 						if (propertySheetPage != null && !propertySheetPage.getControl().isDisposed()) 
 		                { 
 		                    propertySheetPage.refresh(); 
@@ -814,7 +814,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	/**
 	 * @param theColor
 	 */
-	public void setBackgroundColor(Color theColor)
+	public void setBackgroundColor(final Color theColor)
 	{
 		if (_myChart == null)
 			_pendingCanvasBackgroundColor = theColor;

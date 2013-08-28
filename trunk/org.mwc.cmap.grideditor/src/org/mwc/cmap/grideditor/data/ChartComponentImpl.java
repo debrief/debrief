@@ -21,7 +21,7 @@ class ChartComponentImpl implements GriddableItemChartComponent
 	 * Intentionally package local, only {@link ChartComponentFactory} is allowed
 	 * to create new instance.
 	 */
-	ChartComponentImpl(GriddableItemDescriptor descriptor)
+	ChartComponentImpl(final GriddableItemDescriptor descriptor)
 	{
 		myDescriptor = descriptor;
 	}
@@ -31,12 +31,12 @@ class ChartComponentImpl implements GriddableItemChartComponent
 		return myDescriptor;
 	}
 
-	public double getDoubleValue(TimeStampedDataItem dataItem)
+	public double getDoubleValue(final TimeStampedDataItem dataItem)
 	{
 		Number value;
 		if (myDescriptor.getType().isPrimitive())
 		{
-			Object boxedPrimitive = BeanUtil.getItemValue(dataItem, myDescriptor);
+			final Object boxedPrimitive = BeanUtil.getItemValue(dataItem, myDescriptor);
 			// should be safe -- any boxed primitive is a Number
 			value = (Number) boxedPrimitive;
 		}

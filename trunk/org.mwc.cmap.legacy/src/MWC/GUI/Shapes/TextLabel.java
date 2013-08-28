@@ -242,7 +242,7 @@ public class TextLabel extends PlainShape implements Editable
 	/**
 	 * constructor which is used when we have a single, fixed centre
 	 */
-	public TextLabel(WorldLocation theLocation, String theString)
+	public TextLabel(final WorldLocation theLocation, final String theString)
 	{
 		super(0, 1, "Text");
 
@@ -257,7 +257,7 @@ public class TextLabel extends PlainShape implements Editable
 	 * constructor which is used when we the shape may want to update it's anchor
 	 * point
 	 */
-	public TextLabel(PlainShape theShape, String theString)
+	public TextLabel(final PlainShape theShape, final String theString)
 	{
 		super(0, 1, "Text");
 
@@ -281,7 +281,7 @@ public class TextLabel extends PlainShape implements Editable
 	// member functions
 	// ////////////////////////////////////////////////
 
-	public void setRelativeLocation(Integer val)
+	public void setRelativeLocation(final Integer val)
 	{
 		_theRelativeLocation = val.intValue();
 	}
@@ -291,7 +291,7 @@ public class TextLabel extends PlainShape implements Editable
 		return new Integer(_theRelativeLocation);
 	}
 
-	public void setString(String theString)
+	public void setString(final String theString)
 	{
 		_theString = theString;
 
@@ -310,7 +310,7 @@ public class TextLabel extends PlainShape implements Editable
 		return _theFont;
 	}
 
-	public void setFont(Font theFont)
+	public void setFont(final Font theFont)
 	{
 		_theFont = theFont;
 
@@ -323,7 +323,7 @@ public class TextLabel extends PlainShape implements Editable
 		_myWidth = UNKNOWN_WIDTH;
 	}
 
-	private static int getNumberOfLinesIn(String baseLine)
+	private static int getNumberOfLinesIn(final String baseLine)
 	{
 		int _numLines = 1;
 		int start = 0;
@@ -341,7 +341,7 @@ public class TextLabel extends PlainShape implements Editable
 		return _numLines;
 	}
 
-	private static String getLongestLineIn(String baseLine)
+	private static String getLongestLineIn(final String baseLine)
 	{
 		String longestLine = null;
 
@@ -349,8 +349,8 @@ public class TextLabel extends PlainShape implements Editable
 
 		// break it up into a Vector of substrings,
 		// one substring for each line.
-		StringTokenizer t = new StringTokenizer(baseLine, "\n");
-		int num_lines = t.countTokens();
+		final StringTokenizer t = new StringTokenizer(baseLine, "\n");
+		final int num_lines = t.countTokens();
 		for (int i = 0; i < num_lines; i++)
 		{
 			sub = t.nextToken().trim();
@@ -378,18 +378,18 @@ public class TextLabel extends PlainShape implements Editable
 	 * @param theStr
 	 * @param theFont
 	 */
-	private void paintMultiLine(CanvasType dest, String theStr, Font theFont,
-			Point thePoint)
+	private void paintMultiLine(final CanvasType dest, final String theStr, final Font theFont,
+			final Point thePoint)
 	{
 		int _numLines = 0;
-		Vector<String> _subStrings = new Vector<String>();
+		final Vector<String> _subStrings = new Vector<String>();
 
 		// break it up into a Vector of substrings,
 		// one substring for each line.
 
 		// break it up into a Vector of substrings,
 		// one substring for each line.
-		StringTokenizer t = new StringTokenizer(theStr, "\n");
+		final StringTokenizer t = new StringTokenizer(theStr, "\n");
 		_numLines = t.countTokens();
 		for (int i = 0; i < _numLines; i++)
 		{
@@ -410,7 +410,7 @@ public class TextLabel extends PlainShape implements Editable
 		int ypos = thePoint.y;
 		int xpos = thePoint.x;
 
-		int HorizonalAlignment = JLabel.CENTER;
+		final int HorizonalAlignment = JLabel.CENTER;
 
 		switch (HorizonalAlignment)
 		{
@@ -423,11 +423,11 @@ public class TextLabel extends PlainShape implements Editable
 			{
 				for (int i = 0; i < _numLines; i++)
 				{
-					String subString = (String) _subStrings.elementAt(i);
+					final String subString = (String) _subStrings.elementAt(i);
 
 					// Calculate the width of this portion of the string
 					// and use it to figure out the left-right centering.
-					int lineWidth = dest.getStringWidth(getFont(), subString);
+					final int lineWidth = dest.getStringWidth(getFont(), subString);
 					// System.out.println("wid of|" + subString + "| is:" + lineWidth);
 
 					xpos = thePoint.x;// - (lineWidth) / 2;
@@ -457,7 +457,7 @@ public class TextLabel extends PlainShape implements Editable
 			{
 				for (int i = 0; i < _numLines; i++)
 				{
-					String subString = (String) _subStrings.elementAt(i);
+					final String subString = (String) _subStrings.elementAt(i);
 					dest.drawText(subString, 0, ypos);
 					ypos += lineHeight;
 				}
@@ -503,7 +503,7 @@ public class TextLabel extends PlainShape implements Editable
 
 	}
 
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// check if we're visible
 		if (!getVisible())
@@ -522,24 +522,24 @@ public class TextLabel extends PlainShape implements Editable
 		final java.awt.Point theOrigin = dest.toScreen(_theLocation);
 
 		// sort out the color
-		Color myColor = getColor();
+		final Color myColor = getColor();
 		dest.setColor(myColor);
 
 		// determine the height of the font in screen coordinates
-		int lineHeight = dest.getStringHeight(getFont());
-		int numLines = getNumberOfLinesIn(getString());
+		final int lineHeight = dest.getStringHeight(getFont());
+		final int numLines = getNumberOfLinesIn(getString());
 		int blockHeight = lineHeight * numLines;
 		blockHeight += (int) (((double) lineHeight * 0.2d) * (numLines - 1));
-		String longestLine = getLongestLineIn(getString().trim());
+		final String longestLine = getLongestLineIn(getString().trim());
 
 		// note, we cache the string width, to reduce computation
 		if (_myWidth == UNKNOWN_WIDTH)
 			_myWidth = dest.getStringWidth(getFont(), longestLine);
 
-		Point offset = getOffset(_myWidth, lineHeight, blockHeight);
+		final Point offset = getOffset(_myWidth, lineHeight, blockHeight);
 
 		// offset the central location
-		Point newP = new Point(theOrigin);
+		final Point newP = new Point(theOrigin);
 		newP.translate(offset.x, offset.y);
 
 		if (_theFont != null)
@@ -555,7 +555,7 @@ public class TextLabel extends PlainShape implements Editable
 	}
 
 	// allow an external class to set a border around the anchor
-	public void setFixedOffset(java.awt.Dimension offset)
+	public void setFixedOffset(final java.awt.Dimension offset)
 	{
 		_theFixedOffset = offset;
 	}
@@ -564,7 +564,7 @@ public class TextLabel extends PlainShape implements Editable
 	 * calculate the offset to use to put us the indicated height and width away
 	 * from the anchor point
 	 */
-	public Point getOffset(int wid, int lineHeight, int blockHeight)
+	public Point getOffset(final int wid, final int lineHeight, final int blockHeight)
 	{
 		Point res = null;
 
@@ -572,8 +572,8 @@ public class TextLabel extends PlainShape implements Editable
 		// " line ht is:" + lineHeight + " block ht is:" + blockHeight +
 		// " offset ht:" + _theFixedOffset.height);
 
-		int verticalBalance = lineHeight - 3;
-		int horizBalance = 2;
+		final int verticalBalance = lineHeight - 3;
+		final int horizBalance = 2;
 
 		// where are we to be positioned
 		switch (_theRelativeLocation)
@@ -609,7 +609,7 @@ public class TextLabel extends PlainShape implements Editable
 		return res;
 	}
 
-	public void setLocation(MWC.GenericData.WorldLocation loc)
+	public void setLocation(final MWC.GenericData.WorldLocation loc)
 	{
 		_theLocation = loc;
 	}
@@ -628,7 +628,7 @@ public class TextLabel extends PlainShape implements Editable
 	 * get the range from the indicated world location - making this abstract
 	 * allows for individual shapes to have 'hit-spots' in various locations.
 	 */
-	public double rangeFrom(WorldLocation point)
+	public double rangeFrom(final WorldLocation point)
 	{
 		return _theLocation.rangeFrom(point);
 	}
@@ -656,7 +656,7 @@ public class TextLabel extends PlainShape implements Editable
 	 * 
 	 * @param vector
 	 */
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		setLocation(getLocation().add(vector));
 	}

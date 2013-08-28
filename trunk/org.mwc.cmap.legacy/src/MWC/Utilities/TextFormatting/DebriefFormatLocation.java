@@ -16,16 +16,16 @@ public class DebriefFormatLocation implements PlainFormatLocation
   static DecimalFormat df2 = new DecimalFormat("00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
   static DecimalFormat df3 = new DecimalFormat("000", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
 
-  static public String toString(WorldLocation loc)
+  static public String toString(final WorldLocation loc)
   {
 
-    double _lat = loc.getLat();
-    double _long = loc.getLong();
+    final double _lat = loc.getLat();
+    final double _long = loc.getLong();
 
-    brokenDown latD = new brokenDown(_lat, true);
-    brokenDown longD = new brokenDown(_long, false);
+    final brokenDown latD = new brokenDown(_lat, true);
+    final brokenDown longD = new brokenDown(_long, false);
 
-    StringBuffer res = new StringBuffer();
+    final StringBuffer res = new StringBuffer();
     res.append(df2.format(latD.deg));
     res.append(" ");
     res.append(df2.format(latD.min));
@@ -52,13 +52,13 @@ public class DebriefFormatLocation implements PlainFormatLocation
     public double sec;
     public char hem;
 
-    public brokenDown(double val, boolean isLat)
+    public brokenDown(final double val, final boolean isLat)
     {
       hem = doHem(val, isLat);
-      val = Math.abs(val);
-      deg = (int) (val);
-      min = (int) ((val - deg) * 60.0);
-      sec = ((val - deg) - ((double) min / 60.0)) * 3600;
+      final double theVal = Math.abs(val);
+      deg = (int) (theVal);
+      min = (int) ((theVal - deg) * 60.0);
+      sec = ((theVal - deg) - ((double) min / 60.0)) * 3600;
       
       // just catch rounding problem
       if(sec > 59.99999)
@@ -68,7 +68,7 @@ public class DebriefFormatLocation implements PlainFormatLocation
       }
     }
 
-    protected char doHem(double val, boolean isLat)
+    protected char doHem(final double val, final boolean isLat)
     {
       char res;
       if (val > 0)
@@ -91,7 +91,7 @@ public class DebriefFormatLocation implements PlainFormatLocation
 
   }
 
-	public String convertToString(WorldLocation theLocation)
+	public String convertToString(final WorldLocation theLocation)
 	{
 		return toString(theLocation);
 	}

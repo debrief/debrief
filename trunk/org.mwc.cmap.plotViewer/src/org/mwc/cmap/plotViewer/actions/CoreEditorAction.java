@@ -34,7 +34,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	 * @see org.eclipse.ui.IEditorActionDelegate#setActiveEditor(org.eclipse.jface.action.IAction,
 	 *      org.eclipse.ui.IEditorPart)
 	 */
-	public void setActiveEditor(IAction action, IEditorPart targetEditor)
+	public void setActiveEditor(final IAction action, final IEditorPart targetEditor)
 	{
 		if (targetEditor == null)
 			return;
@@ -58,10 +58,10 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 		if (_myEditor == null)
 		{
 			// nope, better generate it
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-			IEditorPart editor = page.getActiveEditor();
+			final IWorkbench wb = PlatformUI.getWorkbench();
+			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			final IWorkbenchPage page = win.getActivePage();
+			final IEditorPart editor = page.getActiveEditor();
 			setActiveEditor(null, editor);
 		}
 
@@ -72,7 +72,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	protected PlainChart getChart()
 	{
 		PlainChart res = null;
-		IChartBasedEditor editor = getEditor();
+		final IChartBasedEditor editor = getEditor();
 		if (editor != null)
 			res = editor.getChart();
 		return res;
@@ -88,7 +88,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	 * 
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
-	public final void run(IAction action)
+	public final void run(final IAction action)
 	{
 		// right - we get called when radio buttons get de-selected. We only want to
 		// fire
@@ -107,7 +107,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 		// go for it.
 
 		// check we're looking at our type of editor
-		PlainChart chrt = getChart();
+		final PlainChart chrt = getChart();
 		if (chrt == null)
 		{
 			// report to user that they do need to have a plot editor open...
@@ -132,7 +132,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
 	 *      org.eclipse.jface.viewers.ISelection)
 	 */
-	public void selectionChanged(IAction action, ISelection selection)
+	public void selectionChanged(final IAction action, final ISelection selection)
 	{
 		// TODO Auto-generated method stub
 
@@ -144,7 +144,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 
 	}
 
-	public void init(IWorkbenchWindow window)
+	public void init(final IWorkbenchWindow window)
 	{
 		// TODO Auto-generated method stub
 	}

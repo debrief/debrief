@@ -48,7 +48,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	GanttEvent _earliestEvent = null;
 	GanttEvent _latestEvent = null;
 	
-	public NebulaGanttPainter(Composite parent)
+	public NebulaGanttPainter(final Composite parent)
 	{
 		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings(),
 				null /* color manager */, 
@@ -57,16 +57,16 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 		_chart.getGanttComposite().addMouseListener(new MouseListener() {
 			
 			@Override
-			public void mouseUp(MouseEvent e) {}
+			public void mouseUp(final MouseEvent e) {}
 			
 			@Override
-			public void mouseDown(MouseEvent e) {}
+			public void mouseDown(final MouseEvent e) {}
 			
 			@Override
-			public void mouseDoubleClick(MouseEvent e) 
+			public void mouseDoubleClick(final MouseEvent e) 
 			{
 				//TODO: do not do anything if an event was double-clicked
-				Date clickedAt = _chart.getGanttComposite().getDateAt(e.x).getTime();
+				final Date clickedAt = _chart.getGanttComposite().getDateAt(e.x).getTime();
 				if (_earliestEvent.getStartDate().getTime().compareTo(clickedAt) > 0)
 				{
 					// it is too early
@@ -86,20 +86,20 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
     	{
     		@Override
     		@SuppressWarnings("rawtypes")
-    		public void eventSelected(GanttEvent event, List allSelectedEvents,
-    				MouseEvent me) 
+    		public void eventSelected(final GanttEvent event, final List allSelectedEvents,
+    				final MouseEvent me) 
     		{
     			super.eventSelected(event, allSelectedEvents, me);
-    			IEventEntry eventEntry = findEventEntry(event);
+    			final IEventEntry eventEntry = findEventEntry(event);
     			if (eventEntry != null)
     				eventIsSelected(eventEntry.getSource());
     		}  
     		
     		@Override
-    		public void eventDoubleClicked(GanttEvent event, MouseEvent me) 
+    		public void eventDoubleClicked(final GanttEvent event, final MouseEvent me) 
     		{    		
     			super.eventDoubleClicked(event, me);
-    			IEventEntry eventEntry = findEventEntry(event);
+    			final IEventEntry eventEntry = findEventEntry(event);
     			if (eventEntry != null)
     				eventIsDoubleClicked(eventEntry.getSource());	
     		}
@@ -108,12 +108,12 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	}
 	
 	@Override
-	public void drawBar(IEventEntry modelEntry) 
+	public void drawBar(final IEventEntry modelEntry) 
 	{
 		if (!modelEntry.isVisible())
 			return;
 			
-		GanttEvent evt = new GanttEvent(_chart, modelEntry.getName(), 
+		final GanttEvent evt = new GanttEvent(_chart, modelEntry.getName(), 
 				modelEntry.getStart(), modelEntry.getEnd(), 0);
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
@@ -123,8 +123,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 			evt.setScope(true);
 			evt.setTextFont(new Font(null, "Arial", 12, SWT.BOLD ));
 			evt.setStatusColor(modelEntry.getColor());
-			GanttGroup group = new GanttGroup(_chart);
-			for (IEventEntry entry: modelEntry.getChildren())
+			final GanttGroup group = new GanttGroup(_chart);
+			for (final IEventEntry entry: modelEntry.getChildren())
 			{
 				if (entry instanceof TimeSpot)
 				{
@@ -142,11 +142,11 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	}
 
 	@Override
-	public void drawSpot(IEventEntry modelEntry) 
+	public void drawSpot(final IEventEntry modelEntry) 
 	{		
 		if (!modelEntry.isVisible())
 			return;
-		GanttImage evt = new GanttImage(_chart, "", modelEntry.getStart(),
+		final GanttImage evt = new GanttImage(_chart, "", modelEntry.getStart(),
 				Activator.getImageDescriptor("icons/sample.gif").createImage());
 		evt.setAdvancedTooltip(new AdvancedTooltip("", modelEntry.getToolTipText()));
 		if (modelEntry.getColor() !=null)
@@ -154,7 +154,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 		addEvent(evt, modelEntry);
 	}
 	
-	private void addEvent(GanttEvent evt, IEventEntry modelEntry)
+	private void addEvent(final GanttEvent evt, final IEventEntry modelEntry)
 	{
 		_eventEntries.put(modelEntry, evt);
 		if (_earliestEvent == null)
@@ -194,9 +194,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	}
 
 	@Override
-	public void selectTimeBar(Editable editable) 
+	public void selectTimeBar(final Editable editable) 
 	{
-		for (Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
+		for (final Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
 		{
 			if (entry.getKey().getSource().equals(editable))
 			{
@@ -226,7 +226,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	}
 
 	@Override
-	public void drawDebriefTime(Date oldTime, Date currTime) 
+	public void drawDebriefTime(final Date oldTime, final Date currTime) 
 	{
 		final GanttComposite parent = _chart.getGanttComposite();
 		
@@ -236,7 +236,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 	    eraseDebriefTime(oldTime);
 	    
-	    GC gc = new GC(parent);
+	    final GC gc = new GC(parent);
 		gc.setLineStyle(ITimeBarsPainter.TIME_LINE_STYLE);
 		gc.setLineWidth(ITimeBarsPainter.TIME_LINE_WIDTH);
 		gc.setForeground(ITimeBarsPainter.TIME_LINE_COLOR);
@@ -247,7 +247,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	   
 	}
 	
-	private void eraseDebriefTime(Date timeVal)
+	private void eraseDebriefTime(final Date timeVal)
 	{
 		if (timeVal == null)
 			return;
@@ -266,14 +266,14 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	}
 
 	@Override
-	public void addListener(ITimeBarsPainterListener listener) 
+	public void addListener(final ITimeBarsPainterListener listener) 
 	{
 		if (!_listeners.contains(listener))		
 			_listeners.add(listener);		
 	}
 
 	@Override
-	public void removeListener(ITimeBarsPainterListener listener) 
+	public void removeListener(final ITimeBarsPainterListener listener) 
 	{
 		_listeners.remove(listener);		
 	}	
@@ -312,9 +312,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 		}
 	}
 	
-	private IEventEntry findEventEntry(GanttEvent event)
+	private IEventEntry findEventEntry(final GanttEvent event)
 	{
-		for (Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
+		for (final Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
 		{
 			if (entry.getValue().equals(event))
 			{
@@ -324,9 +324,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 		return null;
 	}
 	
-	private GanttEvent findGanttEvent(Object source)
+	private GanttEvent findGanttEvent(final Object source)
 	{
-		for (Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
+		for (final Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
 		{
 			if (entry.getKey().getSource().equals(source))
 			{
@@ -338,9 +338,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) 
+	public void propertyChange(final PropertyChangeEvent evt) 
 	{		
-		GanttEvent event = findGanttEvent(evt.getSource());
+		final GanttEvent event = findGanttEvent(evt.getSource());
 		if (event != null)
 		{
 			if (new Boolean(true).equals(evt.getNewValue()))
@@ -360,7 +360,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	{
 		final GanttComposite composite = _chart.getGanttComposite();
 		
-       	Rectangle visibleBounds = composite.getBounds();
+       	final Rectangle visibleBounds = composite.getBounds();
 		int fullBounds_width = composite.getFullImage().getBounds().width;
 		
 		int idx = 0;
@@ -459,10 +459,10 @@ class GanttChartSettings extends DefaultSettings
 class GanttPaintManager extends AbstractPaintManager
 {
 	@Override
-	public void drawImage(GanttComposite ganttComposite, ISettings settings,
-			IColorManager colorManager, GanttEvent event, GC gc, Image image,
-			boolean threeDee, int dayWidth, int xLoc, int yStart,
-			Rectangle fullBounds) {
+	public void drawImage(final GanttComposite ganttComposite, final ISettings settings,
+			final IColorManager colorManager, final GanttEvent event, final GC gc, final Image image,
+			final boolean threeDee, final int dayWidth, final int xLoc, final int yStart,
+			final Rectangle fullBounds) {
 		int y = yStart;
         int x = xLoc;
 
@@ -479,7 +479,7 @@ class GanttPaintManager extends AbstractPaintManager
         final Rectangle bounds = image.getBounds();
         if (settings.scaleImageToDayWidth() && bounds.width > dayWidth) {
             // shrink image
-            ImageData id = image.getImageData();
+            final ImageData id = image.getImageData();
             final int diff = id.width - dayWidth;
             id.width -= diff;
             id.height -= diff;

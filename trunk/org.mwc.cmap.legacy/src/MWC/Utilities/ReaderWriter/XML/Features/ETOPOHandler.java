@@ -23,7 +23,7 @@ public class ETOPOHandler extends MWCXMLReader
 
   java.awt.Color _theColor;
   boolean _isVisible;
-  private Layers _theLayers;
+  private final Layers _theLayers;
   Integer _scaleLocation;
   boolean _showLand;
   int _lineThickness = 1;
@@ -35,7 +35,7 @@ public class ETOPOHandler extends MWCXMLReader
           = new MWC.GUI.Chart.Painters.ETOPOPainter.KeyLocationPropertyEditor();
 
 
-  public ETOPOHandler(Layers theLayers)
+  public ETOPOHandler(final Layers theLayers)
   {
     // inform our parent what type of class we are
     super("etopo");
@@ -44,28 +44,28 @@ public class ETOPOHandler extends MWCXMLReader
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("ShowLand")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _showLand = value;
       }
     });
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
     });
     addAttributeHandler(new HandleAttribute("ScaleLocation")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         lp.setAsText(val);
         _scaleLocation = (Integer)lp.getValue();
@@ -73,7 +73,7 @@ public class ETOPOHandler extends MWCXMLReader
     });
     addAttributeHandler(new HandleIntegerAttribute("LineThickness")
     {
-      public void setValue(String name, int val)
+      public void setValue(final String name, final int val)
       {
         _lineThickness = val;
       }
@@ -84,7 +84,7 @@ public class ETOPOHandler extends MWCXMLReader
   public void elementClosed()
   {
     // create a Grid from this data
-    ETOPOPainter painter = new ETOPOPainter(CreateTOPO.getETOPOPath(), _theLayers);
+    final ETOPOPainter painter = new ETOPOPainter(CreateTOPO.getETOPOPath(), _theLayers);
     painter.setColor(_theColor);
     painter.setVisible(_isVisible);
     painter.setShowLand(_showLand);
@@ -102,11 +102,11 @@ public class ETOPOHandler extends MWCXMLReader
     _lineThickness = 1;
   }
 
-  public static void exportThisPlottable(MWC.GUI.Plottable plottable, Element parent, Document doc)
+  public static void exportThisPlottable(final MWC.GUI.Plottable plottable, final Element parent, final Document doc)
   {
 
-    MWC.GUI.Chart.Painters.ETOPOPainter csp = (MWC.GUI.Chart.Painters.ETOPOPainter) plottable;
-    Element etopo = doc.createElement("etopo");
+    final MWC.GUI.Chart.Painters.ETOPOPainter csp = (MWC.GUI.Chart.Painters.ETOPOPainter) plottable;
+    final Element etopo = doc.createElement("etopo");
 
     // do the visibility
     etopo.setAttribute("Visible", writeThis(csp.getVisible()));

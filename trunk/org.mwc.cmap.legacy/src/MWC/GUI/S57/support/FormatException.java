@@ -50,7 +50,7 @@ public class FormatException extends Exception {
      * 
      * @param s the detail message
      */
-    public FormatException(String s) {
+    public FormatException(final String s) {
         super(s);
         rootCause = null;
     }
@@ -62,7 +62,7 @@ public class FormatException extends Exception {
      * @param s the detail message
      * @param rootCause the root cause (not null)
      */
-    public FormatException(String s, Throwable rootCause) {
+    public FormatException(final String s, final Throwable rootCause) {
         super(s + ": " + rootCause.getLocalizedMessage());
         this.rootCause = rootCause;
     }
@@ -94,7 +94,7 @@ public class FormatException extends Exception {
      * 
      * @param ps the stream to print to
      */
-    public void printStackTrace(PrintStream ps) {
+    public void printStackTrace(final PrintStream ps) {
         super.printStackTrace(ps);
         if (rootCause != null) {
             ps.println("With Root Cause:");
@@ -108,7 +108,7 @@ public class FormatException extends Exception {
      * 
      * @param pw the writer to print to
      */
-    public void printStackTrace(PrintWriter pw) {
+    public void printStackTrace(final PrintWriter pw) {
         super.printStackTrace(pw);
         if (rootCause != null) {
             pw.println("With Root Cause:");

@@ -72,7 +72,7 @@ public class RectangleType
      *     {@link LocationType }
      *     
      */
-    public void setTl(LocationType value) {
+    public void setTl(final LocationType value) {
         this.tl = value;
     }
 
@@ -96,7 +96,7 @@ public class RectangleType
      *     {@link LocationType }
      *     
      */
-    public void setBr(LocationType value) {
+    public void setBr(final LocationType value) {
         this.br = value;
     }
 
@@ -120,7 +120,7 @@ public class RectangleType
      *     {@link Boolean }
      *     
      */
-    public void setFilled(Boolean value) {
+    public void setFilled(final Boolean value) {
         this.filled = value;
     }
 

@@ -207,7 +207,7 @@ public final class SwingSession extends Session implements MyMetalToolBarUI.Tool
     {
       _theView = new SwingMouseAnalysisView(_theParent, this);
     }
-    catch (java.lang.NoClassDefFoundError er)
+    catch (final java.lang.NoClassDefFoundError er)
     {
       MWC.Utilities.Errors.Trace.trace(er, "Failed to load mouse-wheel libraries.  Will continue");
       _theView = new SwingAnalysisView(_theParent, this);
@@ -303,7 +303,7 @@ public final class SwingSession extends Session implements MyMetalToolBarUI.Tool
     {
       super.finalize();
     }
-    catch (Throwable e)
+    catch (final Throwable e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }

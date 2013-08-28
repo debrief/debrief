@@ -14,7 +14,7 @@ public abstract class AbstractLocationInterpolator implements ItemsInterpolator 
 
 	private final DimensionAccess myLongitude;
 
-	public AbstractLocationInterpolator(GriddableItemDescriptor descriptor, TimeStampedDataItem... dataItems) {
+	public AbstractLocationInterpolator(final GriddableItemDescriptor descriptor, final TimeStampedDataItem... dataItems) {
 		myLatitude = new LatitudeAccess(descriptor);
 		myLongitude = new LongitudeAccess(descriptor);
 		if (dataItems.length < 2) {
@@ -30,7 +30,7 @@ public abstract class AbstractLocationInterpolator implements ItemsInterpolator 
 		return myLongitude;
 	}
 
-	protected static final double extractMillis(TimeStampedDataItem item) {
+	protected static final double extractMillis(final TimeStampedDataItem item) {
 		return item.getDTG().getDate().getTime();
 	}
 
@@ -98,12 +98,12 @@ public abstract class AbstractLocationInterpolator implements ItemsInterpolator 
 
 		private final GriddableItemDescriptor myDescriptor;
 
-		public DimensionAccess(GriddableItemDescriptor descriptor) {
+		public DimensionAccess(final GriddableItemDescriptor descriptor) {
 			myDescriptor = descriptor;
 		}
 
-		public double getDimensionValue(TimeStampedDataItem item) {
-			WorldLocation location = BeanUtil.getItemValue(item, myDescriptor, WorldLocation.class);
+		public double getDimensionValue(final TimeStampedDataItem item) {
+			final WorldLocation location = BeanUtil.getItemValue(item, myDescriptor, WorldLocation.class);
 			return location == null ? 0 : getDimension(location);
 		}
 
@@ -112,24 +112,24 @@ public abstract class AbstractLocationInterpolator implements ItemsInterpolator 
 
 	private static class LatitudeAccess extends DimensionAccess {
 
-		public LatitudeAccess(GriddableItemDescriptor descriptor) {
+		public LatitudeAccess(final GriddableItemDescriptor descriptor) {
 			super(descriptor);
 		}
 
 		@Override
-		protected double getDimension(WorldLocation location) {
+		protected double getDimension(final WorldLocation location) {
 			return location.getLat();
 		}
 	}
 
 	private static class LongitudeAccess extends DimensionAccess {
 
-		public LongitudeAccess(GriddableItemDescriptor descriptor) {
+		public LongitudeAccess(final GriddableItemDescriptor descriptor) {
 			super(descriptor);
 		}
 
 		@Override
-		protected double getDimension(WorldLocation location) {
+		protected double getDimension(final WorldLocation location) {
 			return location.getLong();
 		}
 	}

@@ -133,12 +133,12 @@ public class EFileChooser extends JFileChooser
 		{
 			String action_;
 
-			DeleteKeyListener(String action)
+			DeleteKeyListener(final String action)
 			{
 				action_ = action;
 			}
 
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				if (action_.equals("ONE"))
 				{
@@ -160,7 +160,7 @@ public class EFileChooser extends JFileChooser
 		{
 			String dir;
 
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(final ItemEvent e)
 			{
 				if (e.getStateChange() == ItemEvent.SELECTED)
 				{
@@ -172,7 +172,7 @@ public class EFileChooser extends JFileChooser
 			{
 				dir = (String) combo.getSelectedItem();
 				EFileChooser.this.setCurrentDirectory(new File(dir));
-				JLabel label = new JLabel(dir);
+				final JLabel label = new JLabel(dir);
 				label.setFont(combo.getFont());
 				if (label.getPreferredSize().width > combo.getSize().width)
 				{
@@ -199,8 +199,8 @@ public class EFileChooser extends JFileChooser
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public Component getListCellRendererComponent(JList list, Object value,
-					int index, boolean isSelected, boolean cellHasFocus)
+			public Component getListCellRendererComponent(final JList list, final Object value,
+					final int index, final boolean isSelected, final boolean cellHasFocus)
 			{
 				setFont(list.getFont());
 				setText((value == null) ? "" : value.toString());
@@ -239,9 +239,9 @@ public class EFileChooser extends JFileChooser
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private JTextArea textArea = new JTextArea();
-		private JScrollPane scroller = new JScrollPane(textArea);
-		private char[] buff = new char[500];
+		private final JTextArea textArea = new JTextArea();
+		private final JScrollPane scroller = new JScrollPane(textArea);
+		private final char[] buff = new char[500];
 		private Color bg;
 
 		TextPreviewer()
@@ -258,13 +258,13 @@ public class EFileChooser extends JFileChooser
 				setLayout(new BorderLayout());
 				add(scroller, BorderLayout.CENTER);
 			}
-			catch (NullPointerException np)
+			catch (final NullPointerException np)
 			{
 				// layout can throw exceptions sometimes: ignore
 			}
 		}
 
-		public void initTextArea(File file)
+		public void initTextArea(final File file)
 		{
 			textArea.setText(contentsOfFile(file));
 			textArea.setCaretPosition(0);
@@ -275,7 +275,7 @@ public class EFileChooser extends JFileChooser
 			textArea.setText("");
 		}
 
-		private String contentsOfFile(File file)
+		private String contentsOfFile(final File file)
 		{
 			if (file == null)
 			{
@@ -290,13 +290,13 @@ public class EFileChooser extends JFileChooser
 			try
 			{
 				reader = new FileReader(file);
-				int nch = reader.read(buff, 0, buff.length);
+				final int nch = reader.read(buff, 0, buff.length);
 				if (nch != -1)
 				{
 					s = new String(buff, 0, nch);
 				}
 			}
-			catch (IOException iox)
+			catch (final IOException iox)
 			{
 				s = "";
 			}
@@ -305,7 +305,7 @@ public class EFileChooser extends JFileChooser
 				if (reader != null)
 					reader.close();
 			}
-			catch (Exception ex)
+			catch (final Exception ex)
 			{
 				// ignore
 			}
@@ -318,7 +318,7 @@ public class EFileChooser extends JFileChooser
 	// CONSTRUCTORS //
 
 	@SuppressWarnings("unchecked")
-	public EFileChooser(String applicationName)
+	public EFileChooser(final String applicationName)
 	{
 		// look for existing directory history from last session
 		dirFile = System.getProperty("user.home")
@@ -334,7 +334,7 @@ public class EFileChooser extends JFileChooser
 				ois.close();
 				fis.close();
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				System.err.println("Trouble reading EFileChooser directories: " + e);
 				MWC.Utilities.Errors.Trace.trace(e);
@@ -349,21 +349,21 @@ public class EFileChooser extends JFileChooser
 		setPreferredSize(new Dimension(500, 350));
 		previewAndHistoryPanel = new PreviewAndHistoryPanel();
 		findPanel = new FindAccessory(this, null);
-		JPanel choicePanel = new JPanel(new BorderLayout());
-		JTabbedPane choicePane = new JTabbedPane();
+		final JPanel choicePanel = new JPanel(new BorderLayout());
+		final JTabbedPane choicePane = new JTabbedPane();
 		choicePane.addTab("Navigation", previewAndHistoryPanel);
 		choicePane.addTab("Find Files", findPanel);
 		choicePanel.add(choicePane, BorderLayout.CENTER);
 		setAccessory(choicePanel);
 		addPropertyChangeListener(new PropertyChangeListener()
 		{
-			public void propertyChange(PropertyChangeEvent e)
+			public void propertyChange(final PropertyChangeEvent e)
 			{
 				if (e.getPropertyName().equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY))
 				{
 					findPanel.updateFindDirectory();
 					previewer.clear();
-					File dir = (File) e.getNewValue();
+					final File dir = (File) e.getNewValue();
 					if (dir == null)
 					{
 						return;
@@ -372,12 +372,12 @@ public class EFileChooser extends JFileChooser
 					{
 						return;
 					}
-					String pathname = dir.getAbsolutePath();
+					final String pathname = dir.getAbsolutePath();
 					int i;
 					boolean found = false;
 					for (i = 0; i < comboModel.size(); i++)
 					{
-						String dirname = comboModel.elementAt(i);
+						final String dirname = comboModel.elementAt(i);
 						if (dirname.equals(pathname))
 						{
 							found = true;
@@ -392,7 +392,7 @@ public class EFileChooser extends JFileChooser
 				if (e.getPropertyName().equals(
 						JFileChooser.SELECTED_FILE_CHANGED_PROPERTY))
 				{
-					File f = (File) e.getNewValue();
+					final File f = (File) e.getNewValue();
 					showFileContents(f);
 					insertDirectory(f);
 				}
@@ -405,7 +405,7 @@ public class EFileChooser extends JFileChooser
 		this("APP");
 	}
 
-	protected void showFileContents(File f)
+	protected void showFileContents(final File f)
 	{
 		previewer.initTextArea(f);
 	}
@@ -414,14 +414,14 @@ public class EFileChooser extends JFileChooser
 	{
 		try
 		{
-			FileOutputStream fos = new FileOutputStream(dirFile);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			final FileOutputStream fos = new FileOutputStream(dirFile);
+			final ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(comboModel);
 			oos.flush();
 			oos.close();
 			fos.close();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			System.err.println("Trouble saving EFileChooser directories: " + e);
 			MWC.Utilities.Errors.Trace.trace(e);
@@ -429,7 +429,7 @@ public class EFileChooser extends JFileChooser
 
 	}
 
-	void insertDirectory(File file)
+	void insertDirectory(final File file)
 	{
 		if (file == null)
 		{
@@ -439,9 +439,9 @@ public class EFileChooser extends JFileChooser
 		{
 			return;
 		}
-		String pathname = file.getAbsolutePath();
-		int pos = pathname.lastIndexOf(System.getProperty("file.separator"));
-		String dir = pathname.substring(0, pos);
+		final String pathname = file.getAbsolutePath();
+		final int pos = pathname.lastIndexOf(System.getProperty("file.separator"));
+		final String dir = pathname.substring(0, pos);
 		if (comboModel.contains(dir))
 		{
 			return;
@@ -457,14 +457,14 @@ public class EFileChooser extends JFileChooser
 
 	// --- Demo app ------------------------------------------------------------
 
-	public static void main(String[] argv)
+	public static void main(final String[] argv)
 	{
 		final EFileChooser fileChooser = new EFileChooser("DEMO");
 
 		final JFrame frame = new JFrame("EFileChooser Demo");
 		frame.addWindowListener(new WindowAdapter()
 		{
-			public void windowClosing(java.awt.event.WindowEvent A)
+			public void windowClosing(final java.awt.event.WindowEvent A)
 			{
 				EFileChooser.saveDirectoryEntries();
 				frame.setVisible(false);
@@ -472,21 +472,21 @@ public class EFileChooser extends JFileChooser
 				System.exit(0);
 			}
 		});
-		Container c = frame.getContentPane();
-		JPanel buttonP = new JPanel();
-		JButton openB = new JButton("Open File");
+		final Container c = frame.getContentPane();
+		final JPanel buttonP = new JPanel();
+		final JButton openB = new JButton("Open File");
 		final JTextField textField = new JTextField(20);
 		textField.setEditable(false);
 		openB.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				fileChooser
 						.setCurrentDirectory(new File(System.getProperty("user.dir")));
-				int result = fileChooser.showOpenDialog(frame);
+				final int result = fileChooser.showOpenDialog(frame);
 				if (result == JFileChooser.APPROVE_OPTION)
 				{
-					File f = fileChooser.getSelectedFile();
+					final File f = fileChooser.getSelectedFile();
 					if (f == null)
 					{
 						return;
@@ -499,10 +499,10 @@ public class EFileChooser extends JFileChooser
 				}
 			}
 		});
-		JButton exitB = new JButton("Exit Demo");
+		final JButton exitB = new JButton("Exit Demo");
 		exitB.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(final ActionEvent e)
 			{
 				EFileChooser.saveDirectoryEntries();
 				frame.setVisible(false);
@@ -537,7 +537,7 @@ public class EFileChooser extends JFileChooser
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public MyComboBox(Vector<String> items)
+		public MyComboBox(final Vector<String> items)
 		{
 			super(items);
 			setUI(new MyComboBoxUI());
@@ -575,7 +575,7 @@ public class EFileChooser extends JFileChooser
 			protected JComboBox comboBox_;
 			protected boolean hasEntered_;
 
-			MyComboPopup(JComboBox combo)
+			MyComboPopup(final JComboBox combo)
 			{
 				super(combo);
 				list_ = list;
@@ -598,13 +598,13 @@ public class EFileChooser extends JFileChooser
 				return new MyListMouseHandler();
 			}
 
-			protected MouseEvent convertMouseEvent(MouseEvent e)
+			protected MouseEvent convertMouseEvent(final MouseEvent e)
 			{
 				return super.convertMouseEvent(e);
 			}
 
-			protected void updateListBoxSelectionForEvent(MouseEvent anEvent,
-					boolean shouldScroll)
+			protected void updateListBoxSelectionForEvent(final MouseEvent anEvent,
+					final boolean shouldScroll)
 			{
 				super.updateListBoxSelectionForEvent(anEvent, shouldScroll);
 			}
@@ -614,7 +614,7 @@ public class EFileChooser extends JFileChooser
 				super.stopAutoScrolling();
 			}
 
-			protected void delegateFocus(MouseEvent e)
+			protected void delegateFocus(final MouseEvent e)
 			{
 				super.delegateFocus(e);
 			}
@@ -632,9 +632,9 @@ public class EFileChooser extends JFileChooser
 			class MyInvocationMouseHandler extends MouseAdapter
 			{
 
-				public void mousePressed(MouseEvent e)
+				public void mousePressed(final MouseEvent e)
 				{
-					boolean isLeft = SwingUtilities.isLeftMouseButton(e);
+					final boolean isLeft = SwingUtilities.isLeftMouseButton(e);
 
 					// @@IM - ignore it, if it is the right mouse button!
 					// this did only work for right-mouse buttons!
@@ -648,23 +648,23 @@ public class EFileChooser extends JFileChooser
 					togglePopup();
 				}
 
-				public void mouseReleased(MouseEvent e)
+				public void mouseReleased(final MouseEvent e)
 				{
-					int oldSelectedIndex = comboBox_.getSelectedIndex();
-					Component source = (Component) e.getSource();
-					Dimension size = source.getSize();
-					Rectangle bounds = new Rectangle(0, 0, size.width - 1,
+					final int oldSelectedIndex = comboBox_.getSelectedIndex();
+					final Component source = (Component) e.getSource();
+					final Dimension size = source.getSize();
+					final Rectangle bounds = new Rectangle(0, 0, size.width - 1,
 							size.height - 1);
 					if (!bounds.contains(e.getPoint()))
 					{
-						MouseEvent newEvent = convertMouseEvent(e);
-						Point location = newEvent.getPoint();
-						Rectangle r = new Rectangle();
+						final MouseEvent newEvent = convertMouseEvent(e);
+						final Point location = newEvent.getPoint();
+						final Rectangle r = new Rectangle();
 						list_.computeVisibleRect(r);
 						if (r.contains(location))
 						{
 							updateListBoxSelectionForEvent(newEvent, false);
-							int index = list_.getSelectedIndex();
+							final int index = list_.getSelectedIndex();
 							comboBox_.setSelectedIndex(index);
 							if (index == oldSelectedIndex)
 							{
@@ -685,7 +685,7 @@ public class EFileChooser extends JFileChooser
 			protected class MyListMouseHandler extends MouseAdapter
 			{
 
-				public void mouseReleased(MouseEvent e)
+				public void mouseReleased(final MouseEvent e)
 				{
 					comboItemListener.selectNewDirectory();
 					comboBox_.setSelectedIndex(list_.getSelectedIndex());
@@ -808,7 +808,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * Construct a search panel with start and stop actions, option panes and a
 	 * results list pane that can display up to DEFAULT_MAX_SEARCH_HITS items.
 	 */
-	public FindAccessory(String titleForBorder)
+	public FindAccessory(final String titleForBorder)
 	{
 		super();
 
@@ -842,7 +842,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @param parent
 	 *          JFileChooser containing this accessory
 	 */
-	public FindAccessory(JFileChooser parent)
+	public FindAccessory(final JFileChooser parent)
 	{
 		this(ACCESSORY_NAME);
 		chooser = parent;
@@ -863,7 +863,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 *          TitleBorder or null if we should use a LineBorder(Color.black)
 	 *          instead
 	 */
-	public FindAccessory(JFileChooser parent, String titleForBorder)
+	public FindAccessory(final JFileChooser parent, final String titleForBorder)
 	{
 		this(titleForBorder);
 		chooser = parent;
@@ -882,7 +882,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 *          Max number of items for results list. Find stops when max number
 	 *          of items found.
 	 */
-	public FindAccessory(JFileChooser c, int max)
+	public FindAccessory(final JFileChooser c, final int max)
 	{
 		this(c);
 		setMaxFindHits(max);
@@ -895,7 +895,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @param max
 	 *          Max capacity of results list.
 	 */
-	public void setMaxFindHits(int max)
+	public void setMaxFindHits(final int max)
 	{
 		maxMatches = max;
 	}
@@ -920,9 +920,9 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @param e
 	 *          PropertyChangeEvent from parent JFileChooser.
 	 */
-	public void propertyChange(PropertyChangeEvent e)
+	public void propertyChange(final PropertyChangeEvent e)
 	{
-		String prop = e.getPropertyName();
+		final String prop = e.getPropertyName();
 		if (prop.equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY))
 		{
 			updateFindDirectory();
@@ -937,9 +937,9 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @param e
 	 *          ActionEvent from parent JFileChooser.
 	 */
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(final ActionEvent e)
 	{
-		String command = e.getActionCommand();
+		final String command = e.getActionCommand();
 		if (command == null)
 			return; // Can this happen? Probably not. Call me paranoid.
 		if (command.equals(JFileChooser.APPROVE_SELECTION))
@@ -960,7 +960,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 			return;
 		if (pathPanel == null)
 			return;
-		File f = chooser.getCurrentDirectory();
+		final File f = chooser.getCurrentDirectory();
 		pathPanel.setFindDirectory(f);
 	}
 
@@ -972,7 +972,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @param f
 	 *          File to select in parent JFileChooser
 	 */
-	public void goTo(File f)
+	public void goTo(final File f)
 	{
 		if (f == null)
 			return;
@@ -986,14 +986,14 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 
 		// Make sure that parent file chooser will show the type of file
 		// specified
-		javax.swing.filechooser.FileFilter filter = chooser.getFileFilter();
+		final javax.swing.filechooser.FileFilter filter = chooser.getFileFilter();
 		if (filter != null)
 		{
 			if (!filter.accept(f))
 			{
 				// The current filter will not display the specified file.
 				// Set the file filter to the built-in accept-all filter (*.*)
-				javax.swing.filechooser.FileFilter all = chooser
+				final javax.swing.filechooser.FileFilter all = chooser
 						.getAcceptAllFileFilter();
 				chooser.setFileFilter(all);
 			}
@@ -1002,7 +1002,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		// Tell parent file chooser to display contents of parentFolder.
 		// Prior to Java 1.2.2 setSelectedFile() did not set the current
 		// directory the folder containing the file to be selected.
-		File parentFolder = f.getParentFile();
+		final File parentFolder = f.getParentFile();
 		if (parentFolder != null)
 			chooser.setCurrentDirectory(parentFolder);
 
@@ -1076,7 +1076,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 			actionStop.setEnabled(true);
 			runFind(chooser.getCurrentDirectory(), newFind());
 		}
-		catch (InterruptedException e)
+		catch (final InterruptedException e)
 		{
 		}
 		finally
@@ -1104,7 +1104,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @throws InterruptedException
 	 *           if thread is interrupted
 	 */
-	protected void runFind(File base, FindFilter[] filters)
+	protected void runFind(final File base, final FindFilter[] filters)
 			throws InterruptedException
 	{
 		if (base == null)
@@ -1122,7 +1122,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		else
 			folder = base.getParentFile();
 
-		File[] files = folder.listFiles();
+		final File[] files = folder.listFiles();
 		for (int i = 0; i < files.length; i++)
 		{
 			total++;
@@ -1152,7 +1152,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 *          array of selection criteria
 	 * @return true if specified file matches each filter's selection criteria
 	 */
-	protected boolean accept(File file, FindFilter[] filters)
+	protected boolean accept(final File file, final FindFilter[] filters)
 	{
 		if (file == null)
 			return false;
@@ -1182,8 +1182,8 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 *          expected maximum value of current
 	 * @return true to continue search, false to abort
 	 */
-	public boolean reportProgress(FindFilter filter, File file, long current,
-			long total1)
+	public boolean reportProgress(final FindFilter filter, final File file, final long current,
+			final long total1)
 	{
 		return !killFind;
 	}
@@ -1222,7 +1222,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @param c
 	 *          parent JFileChooser
 	 */
-	protected void register(JFileChooser c)
+	protected void register(final JFileChooser c)
 	{
 		if (c == null)
 			return;
@@ -1237,7 +1237,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	 * @param c
 	 *          parent JFileChooser
 	 */
-	protected void unregister(JFileChooser c)
+	protected void unregister(final JFileChooser c)
 	{
 		if (c == null)
 			return;
@@ -1257,7 +1257,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 	/**
 	 * Invoked by FindAction objects to start and stop searches.
 	 */
-	public void action(String command)
+	public void action(final String command)
 	{
 		if (command == null)
 			return;
@@ -1287,7 +1287,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * @param icon
 		 *          button icon
 		 */
-		FindAction(String text, Icon icon)
+		FindAction(final String text, final Icon icon)
 		{
 			super(text, icon);
 		}
@@ -1298,7 +1298,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * @param e
 		 *          action event
 		 */
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(final ActionEvent e)
 		{
 			action(e.getActionCommand());
 		}
@@ -1330,7 +1330,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		/**
 		 * Display the full path of the specified folder.
 		 */
-		public void setFindDirectory(File f)
+		public void setFindDirectory(final File f)
 		{
 			if (searchDirectory == null)
 				return;
@@ -1361,12 +1361,12 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * Construct a simple search control panel with buttons for starting and
 		 * stopping a search and a simple display for search progress.
 		 */
-		FindControls(FindAction find, FindAction stop, boolean recurse)
+		FindControls(final FindAction find, final FindAction stop, final boolean recurse)
 		{
 			super();
 			setLayout(new BorderLayout());
 
-			JToolBar tools = new JToolBar();
+			final JToolBar tools = new JToolBar();
 			tools.setFloatable(false);
 			tools.add(actionStart = new FindAction(ACTION_START, null));
 			tools.add(actionStop = new FindAction(ACTION_STOP, null));
@@ -1391,7 +1391,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * @param total1
 		 *          number of items investigated
 		 */
-		public void showProgress(int matches1, int total1)
+		public void showProgress(final int matches1, final int total1)
 		{
 			if (progress == null)
 				return;
@@ -1459,7 +1459,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * @param f
 		 *          file to add to results list
 		 */
-		public void addFoundFile(File f)
+		public void addFoundFile(final File f)
 		{
 			if (resultsPanel != null)
 				resultsPanel.append(f);
@@ -1490,29 +1490,29 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 
 			// Fix the width of the scrolling results panel so the layout
 			// managers don't try to make it too wide for JFileChooser
-			Dimension dim = resultsScroller.getSize();
+			final Dimension dim = resultsScroller.getSize();
 			resultsScroller.setMaximumSize(dim);
 			resultsScroller.setPreferredSize(dim);
 
 			// Return an array of FindFilters
-			Vector<FindFilter> filters = new Vector<FindFilter>();
+			final Vector<FindFilter> filters = new Vector<FindFilter>();
 			for (int i = 0; i < getTabCount(); i++)
 			{
 				try
 				{
-					FindFilterFactory fac = (FindFilterFactory) getComponentAt(i);
-					FindFilter f = fac.createFindFilter();
+					final FindFilterFactory fac = (FindFilterFactory) getComponentAt(i);
+					final FindFilter f = fac.createFindFilter();
 					if (f != null)
 						filters.addElement(f);
 				}
-				catch (Throwable e)
+				catch (final Throwable e)
 				{
 					// The FindResults pane does not implement FindFilterFactory
 				}
 			}
 			if (filters.size() == 0)
 				return null;
-			FindFilter[] filterArray = new FindFilter[filters.size()];
+			final FindFilter[] filterArray = new FindFilter[filters.size()];
 			for (int i = 0; i < filterArray.length; i++)
 			{
 				filterArray[i] = filters.elementAt(i);
@@ -1551,19 +1551,19 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 			add(fileList, BorderLayout.CENTER);
 
 			// Double click listener
-			MouseListener mouseListener = new MouseAdapter()
+			final MouseListener mouseListener = new MouseAdapter()
 			{
-				public void mouseClicked(MouseEvent e)
+				public void mouseClicked(final MouseEvent e)
 				{
 					if (e.getClickCount() == 2)
 					{
 						try
 						{
-							int index = fileList.locationToIndex(e.getPoint());
-							File f = (File) model.elementAt(index);
+							final int index = fileList.locationToIndex(e.getPoint());
+							final File f = (File) model.elementAt(index);
 							goTo(f);
 						}
-						catch (Throwable err)
+						catch (final Throwable err)
 						{
 						}
 					}
@@ -1578,7 +1578,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * @param f
 		 *          file found
 		 */
-		public void append(File f)
+		public void append(final File f)
 		{
 			if (f == null)
 				return;
@@ -1614,25 +1614,26 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 				setOpaque(true);
 			}
 
-			public Component getListCellRendererComponent(JList list, Object value,
-					int index, boolean isSelected, boolean cellHasFocus)
+			public Component getListCellRendererComponent(final JList list, final Object value,
+					final int index, final boolean isSelected, final boolean cellHasFocus)
 			{
-				if (index == -1)
+				int idx = index;
+				if (idx == -1)
 				{
 					// This shouldn't happen since we won't be using this
 					// renderer in a combo box
-					int selected = list.getSelectedIndex();
+					final int selected = list.getSelectedIndex();
 					if (selected == -1)
 						return this;
 					else
-						index = selected;
+						idx = selected;
 				}
 
 				setBorder(new EmptyBorder(1, 2, 1, 2));
 				setFont(new Font("Helvetica", Font.PLAIN, 10));
 
 				// show absolute path of file
-				File file = (File) model.elementAt(index);
+				final File file = (File) model.elementAt(idx);
 				setText(file.getAbsolutePath());
 
 				// selection characteristics
@@ -1732,26 +1733,26 @@ class FindByDate extends JPanel implements FindFilterFactory
 		super();
 		setLayout(new BorderLayout());
 
-		Font font = new Font("Helvetica", Font.PLAIN, 10);
+		final Font font = new Font("Helvetica", Font.PLAIN, 10);
 
 		// Grid Layout
-		JPanel p = new JPanel();
+		final JPanel p = new JPanel();
 		p.setLayout(new GridLayout(0, 2, 2, 2));
 
 		// Date selection criteria
-		JLabel modified = new JLabel(MODIFIED_LABEL, SwingConstants.LEFT);
+		final JLabel modified = new JLabel(MODIFIED_LABEL, SwingConstants.LEFT);
 		modified.setFont(font);
 		modified.setForeground(Color.black);
 		p.add(modified);
 
 		// format note
-		JLabel format = new JLabel(FORMAT_LABEL, SwingConstants.LEFT);
+		final JLabel format = new JLabel(FORMAT_LABEL, SwingConstants.LEFT);
 		format.setFont(font);
 		format.setForeground(Color.black);
 		p.add(format);
 
 		// between
-		JLabel betweenLabel = new JLabel(FROM_DATE_LABEL, SwingConstants.RIGHT);
+		final JLabel betweenLabel = new JLabel(FROM_DATE_LABEL, SwingConstants.RIGHT);
 		betweenLabel.setFont(font);
 		betweenLabel.setForeground(Color.black);
 		p.add(betweenLabel);
@@ -1764,7 +1765,7 @@ class FindByDate extends JPanel implements FindFilterFactory
 		p.add(fromDateField);
 
 		// and
-		JLabel andLabel = new JLabel(TO_DATE_LABEL, SwingConstants.RIGHT);
+		final JLabel andLabel = new JLabel(TO_DATE_LABEL, SwingConstants.RIGHT);
 		andLabel.setFont(font);
 		andLabel.setForeground(Color.black);
 		p.add(andLabel);
@@ -1800,22 +1801,22 @@ class FindByDate extends JPanel implements FindFilterFactory
 	 * 
 	 * @return milliseconds since January 1, 1970
 	 */
-	protected long startDateToTime(String s)
+	protected long startDateToTime(final String s)
 	{
 		if (s == null)
 			return -1;
-		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+		final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 		Date d = formatter.parse(s, new ParsePosition(0));
 		if (d == null)
 		{
 			if (s.equalsIgnoreCase(TODAY))
 			{
-				String today = formatter.format(new Date());
+				final String today = formatter.format(new Date());
 				d = formatter.parse(today, new ParsePosition(0));
 			}
 			else if (s.equalsIgnoreCase(YESTERDAY))
 			{
-				String yesterday = formatter.format(new Date(new Date().getTime() - 24
+				final String yesterday = formatter.format(new Date(new Date().getTime() - 24
 						* 60 * 60 * 1000));
 				d = formatter.parse(yesterday, new ParsePosition(0));
 			}
@@ -1836,11 +1837,11 @@ class FindByDate extends JPanel implements FindFilterFactory
 	 * 
 	 * @return milliseconds since January 1, 1970
 	 */
-	protected long endDateToTime(String s)
+	protected long endDateToTime(final String s)
 	{
 		if (s == null)
 			return -1;
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+		final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
 
 		long time = -1;
 		Date d = dateFormatter.parse(s, new ParsePosition(0));
@@ -1848,14 +1849,14 @@ class FindByDate extends JPanel implements FindFilterFactory
 		{
 			if (s.equalsIgnoreCase(TODAY))
 			{
-				String today = dateFormatter.format(new Date());
+				final String today = dateFormatter.format(new Date());
 				d = dateFormatter.parse(today, new ParsePosition(0));
 				if (d != null)
 					time = d.getTime() + (24L * 3600L * 1000L);
 			}
 			else if (s.equalsIgnoreCase(YESTERDAY))
 			{
-				String yesterday = dateFormatter.format(new Date(new Date().getTime()
+				final String yesterday = dateFormatter.format(new Date(new Date().getTime()
 						- 24 * 60 * 60 * 1000));
 				d = dateFormatter.parse(yesterday, new ParsePosition(0));
 				if (d != null)
@@ -1890,18 +1891,18 @@ class FindByDate extends JPanel implements FindFilterFactory
 		protected long startTime = -1;
 		protected long endTime = -1;
 
-		DateFilter(long from, long to)
+		DateFilter(final long from, final long to)
 		{
 			startTime = from;
 			endTime = to;
 		}
 
-		public boolean accept(File f, FindProgressCallback callback)
+		public boolean accept(final File f, final FindProgressCallback callback)
 		{
 			if (f == null)
 				return false;
 
-			long t = f.lastModified();
+			final long t = f.lastModified();
 
 			if (startTime >= 0)
 			{
@@ -1951,7 +1952,7 @@ class FindByName extends JPanel implements FindFilterFactory
 		setLayout(new BorderLayout());
 
 		// Grid Layout
-		JPanel p = new JPanel();
+		final JPanel p = new JPanel();
 		p.setLayout(new GridLayout(0, 2, 2, 2));
 
 		// Name
@@ -1990,14 +1991,14 @@ class FindByName extends JPanel implements FindFilterFactory
 		protected int howToMatch = -1;
 		protected boolean ignoreCase = true;
 
-		NameFilter(String name, int how, boolean ignore)
+		NameFilter(final String name, final int how, final boolean ignore)
 		{
 			match = name;
 			howToMatch = how;
 			ignoreCase = ignore;
 		}
 
-		public boolean accept(File f, FindProgressCallback callback)
+		public boolean accept(final File f, final FindProgressCallback callback)
 		{
 			if (f == null)
 				return false;
@@ -2007,7 +2008,7 @@ class FindByName extends JPanel implements FindFilterFactory
 			if (howToMatch < 0)
 				return true;
 
-			String filename = f.getName();
+			final String filename = f.getName();
 
 			if (howToMatch == NAME_CONTAINS_INDEX)
 			{
@@ -2116,11 +2117,11 @@ class FindByContent extends JPanel implements FindFilterFactory
 		super();
 		setLayout(new BorderLayout());
 
-		JPanel p = new JPanel();
+		final JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
 		// Name
-		JLabel l = new JLabel("File contains...", SwingConstants.LEFT);
+		final JLabel l = new JLabel("File contains...", SwingConstants.LEFT);
 		l.setForeground(Color.black);
 		l.setFont(new Font("Helvetica", Font.PLAIN, 10));
 		p.add(l);
@@ -2153,13 +2154,13 @@ class FindByContent extends JPanel implements FindFilterFactory
 		protected String content = null;
 		protected boolean ignoreCase = true;
 
-		ContentFilter(String s, boolean ignore)
+		ContentFilter(final String s, final boolean ignore)
 		{
 			content = s;
 			ignoreCase = ignore;
 		}
 
-		public boolean accept(File f, FindProgressCallback callback)
+		public boolean accept(final File f, final FindProgressCallback callback)
 		{
 			if (f == null)
 				return false;
@@ -2172,14 +2173,14 @@ class FindByContent extends JPanel implements FindFilterFactory
 			BufferedInputStream in = null;
 			try
 			{
-				long fileLength = f.length();
+				final long fileLength = f.length();
 				in = new BufferedInputStream(new FileInputStream(f));
 				byte[] contentBytes = null;
 				if (ignoreCase)
 					contentBytes = content.toLowerCase().getBytes();
 				else
 					contentBytes = content.getBytes();
-				LocatorStream locator = new LocatorStream(contentBytes);
+				final LocatorStream locator = new LocatorStream(contentBytes);
 				long counter = 0;
 				int callbackCounter = 20; // Only call back every 20 bytes
 				int c = -1;
@@ -2211,11 +2212,11 @@ class FindByContent extends JPanel implements FindFilterFactory
 				
 				locator.close(); 
 			}
-			catch (LocatedException e)
+			catch (final LocatedException e)
 			{
 				result = true;
 			}
-			catch (Throwable e)
+			catch (final Throwable e)
 			{
 			}
 
@@ -2224,7 +2225,7 @@ class FindByContent extends JPanel implements FindFilterFactory
 				if (in != null)
 					in.close();
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 			}
 			return result;
@@ -2240,12 +2241,12 @@ class FindByContent extends JPanel implements FindFilterFactory
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public LocatedException(String msg)
+			public LocatedException(final String msg)
 			{
 				super(msg);
 			}
 
-			public LocatedException(long location)
+			public LocatedException(final long location)
 			{
 				super(String.valueOf(location));
 			}
@@ -2261,12 +2262,12 @@ class FindByContent extends JPanel implements FindFilterFactory
 			protected Vector<MatchStream> matchMakers = new Vector<MatchStream>();
 			protected long mark = 0;
 
-			LocatorStream(byte[] b)
+			LocatorStream(final byte[] b)
 			{
 				locate = b;
 			}
 
-			public void write(int b) throws IOException
+			public void write(final int b) throws IOException
 			{
 				if (locate == null)
 					throw new IOException("NULL locator array");
@@ -2277,17 +2278,17 @@ class FindByContent extends JPanel implements FindFilterFactory
 
 				for (int i = matchMakers.size() - 1; i >= 0; i--)
 				{
-					MatchStream m = matchMakers.elementAt(i);
+					final MatchStream m = matchMakers.elementAt(i);
 					try
 					{
 						m.write(b);
 					}
-					catch (MatchMadeException e)
+					catch (final MatchMadeException e)
 					{
 						foundAt = m.getMark();
 						matchMakers.removeElementAt(i);
 					}
-					catch (IOException e)
+					catch (final IOException e)
 					{
 						// Match not made. Remove current matchMaker stream.
 						matchMakers.removeElementAt(i);
@@ -2296,7 +2297,7 @@ class FindByContent extends JPanel implements FindFilterFactory
 
 				if (b == locate[0])
 				{
-					MatchStream m = new MatchStream(locate, mark);
+					final MatchStream m = new MatchStream(locate, mark);
 					m.write(b); // This will be accepted
 					matchMakers.addElement(m);
 				}
@@ -2318,12 +2319,12 @@ class FindByContent extends JPanel implements FindFilterFactory
 				 */
 				private static final long serialVersionUID = 1L;
 
-				public MatchMadeException(String msg)
+				public MatchMadeException(final String msg)
 				{
 					super(msg);
 				}
 
-				public MatchMadeException(long mark)
+				public MatchMadeException(final long mark)
 				{
 					super(String.valueOf(mark));
 				}
@@ -2342,13 +2343,13 @@ class FindByContent extends JPanel implements FindFilterFactory
 				protected byte[] match = null;
 				protected boolean matchMade = false;
 
-				MatchStream(byte[] b, long m)
+				MatchStream(final byte[] b, final long m)
 				{
 					mark1 = m;
 					match = b;
 				}
 
-				public void write(int b) throws IOException
+				public void write(final int b) throws IOException
 				{
 					if (matchMade)
 						return;

@@ -16,35 +16,35 @@ public class SexagesimalSupport
 
 	public static final double MAX_LONGITUDE_ABS = 180;
 
-	public static boolean isValid(double minutes, double seconds)
+	public static boolean isValid(final double minutes, final double seconds)
 	{
 		return isValidMinutes(minutes) && isValidSeconds(seconds);
 	}
 
-	private static boolean isValidSeconds(double seconds)
+	private static boolean isValidSeconds(final double seconds)
 	{
 		return (seconds >= 0 && seconds < SECONDS_IN_MINUTE);
 	}
 
-	private static boolean isValidMinutes(double minutes)
+	private static boolean isValidMinutes(final double minutes)
 	{
 		return (minutes >= 0 && minutes < MINUTES_IN_DEGREE);
 	}
 
-	public static boolean isValidLongitude(double degree, double minutes,
-			double seconds)
+	public static boolean isValidLongitude(final double degree, final double minutes,
+			final double seconds)
 	{
 		return isValid(minutes, seconds) && Math.abs(degree) <= MAX_LONGITUDE_ABS;
 	}
 
-	public static boolean isValidLatitude(double degree, double minutes,
-			double seconds)
+	public static boolean isValidLatitude(final double degree, final double minutes,
+			final double seconds)
 	{
 		return isValid(minutes, seconds) && Math.abs(degree) <= MAX_LATITUDE_ABS;
 	}
 
-	public static double combineToDegrees(double degree, double minutes,
-			double seconds, int hemi)
+	public static double combineToDegrees(final double degree, final double minutes,
+			final double seconds, final int hemi)
 	{
 		if (!isValidMinutes(minutes))
 		{
@@ -63,10 +63,10 @@ public class SexagesimalSupport
 	{
 
 		@Override
-		public String format(Sexagesimal value, boolean forLongitudeNotLatitude)
+		public String format(final Sexagesimal value, final boolean forLongitudeNotLatitude)
 		{
-			StringBuffer result = new StringBuffer();
-			NumberFormat degreesFormat = forLongitudeNotLatitude ? DDD : XX;
+			final StringBuffer result = new StringBuffer();
+			final NumberFormat degreesFormat = forLongitudeNotLatitude ? DDD : XX;
 			result.append(degreesFormat.format(Math.abs(value.getDegrees())));
 			result.append('\u00B0');
 			result.append(XX_XXX.format(value.getMinutes()));
@@ -76,41 +76,43 @@ public class SexagesimalSupport
 		}
 
 		@Override
-		public String getNebulaPattern(boolean forLongitudeNotLatitude)
+		public String getNebulaPattern(final boolean forLongitudeNotLatitude)
 		{
-			String forLatitude = "##\u00B0##.###\u2032U";
+			final String forLatitude = "##\u00B0##.###\u2032U";
 			// longitude may have 3 digits for degree
 			return forLongitudeNotLatitude ? "#" + forLatitude : forLatitude;
 		}
 
 		@Override
-		public Sexagesimal parse(String text, boolean forLongitudeNotLatitude)
+		public Sexagesimal parse(final String text, final boolean forLongitudeNotLatitude)
 				throws ParseException
 		{
-			text = text.trim();
-			int hemi = getHemisphereSignum(text, forLongitudeNotLatitude);
-			text = text.substring(0, text.length() - 1).trim();
+			String theText = text;
+			theText = theText.trim();
+			final int hemi = getHemisphereSignum(theText, forLongitudeNotLatitude);
+			theText = theText.substring(0, theText.length() - 1).trim();
 
-			String[] subdivisions = text.trim().split("[\u2032\u2033\u00B0]");
+			final String[] subdivisions = theText.trim().split("[\u2032\u2033\u00B0]");
 			if (subdivisions.length != 2)
 			{
 				throw new ParseException("2 parts expected, actually: "
-						+ subdivisions.length + " for: " + text, -1);
+						+ subdivisions.length + " for: " + theText, -1);
 			}
-			int degrees = DDD.parse(subdivisions[0]).intValue();
-			double minutes = XX_XXX.parse(subdivisions[1]).doubleValue();
-			double seconds = 0;
+			final int degrees = DDD.parse(subdivisions[0]).intValue();
+			final double minutes = XX_XXX.parse(subdivisions[1]).doubleValue();
+			final double seconds = 0;
 			return new Sexagesimal(degrees, minutes, seconds, hemi);
 		}
 
 		@Override
-		public Sexagesimal parseDouble(double combinedDegrees)
+		public Sexagesimal parseDouble(final double combinedDegrees)
 		{
-			int hemi = combinedDegrees < 0 ? -1 : 1;
-			combinedDegrees = Math.abs(combinedDegrees);
-			int degrees = (int) Math.floor(combinedDegrees);
-			double minutes = (combinedDegrees - degrees) * MINUTES_IN_DEGREE;
-			double seconds = 0;
+			double theCombinedDegrees = combinedDegrees;
+			final int hemi = theCombinedDegrees < 0 ? -1 : 1;
+			theCombinedDegrees = Math.abs(theCombinedDegrees);
+			final int degrees = (int) Math.floor(theCombinedDegrees);
+			final double minutes = (theCombinedDegrees - degrees) * MINUTES_IN_DEGREE;
+			final double seconds = 0;
 			return new Sexagesimal(degrees, minutes, seconds, hemi);
 		}
 
@@ -124,10 +126,10 @@ public class SexagesimalSupport
 	{
 
 		@Override
-		public String format(Sexagesimal value, boolean forLongitudeNotLatitude)
+		public String format(final Sexagesimal value, final boolean forLongitudeNotLatitude)
 		{
-			StringBuffer result = new StringBuffer();
-			NumberFormat degreesFormat = forLongitudeNotLatitude ? DDD : XX;
+			final StringBuffer result = new StringBuffer();
+			final NumberFormat degreesFormat = forLongitudeNotLatitude ? DDD : XX;
 			result.append(degreesFormat.format(Math.abs(value.getDegrees())));
 			result.append('\u00B0');
 			result.append(XX.format(value.getMinutes()));
@@ -139,43 +141,45 @@ public class SexagesimalSupport
 		}
 
 		@Override
-		public String getNebulaPattern(boolean forLongitudeNotLatitude)
+		public String getNebulaPattern(final boolean forLongitudeNotLatitude)
 		{
-			String forLatitude = "##\u00B0##\u2032##.###\u2033U";
+			final String forLatitude = "##\u00B0##\u2032##.###\u2033U";
 			// longitude may have 3 digits for degree
 			return forLongitudeNotLatitude ? "#" + forLatitude : forLatitude;
 		}
 
 		@Override
-		public Sexagesimal parse(String text, boolean forLongitudeNotLatitude)
+		public Sexagesimal parse(final String text, final boolean forLongitudeNotLatitude)
 				throws ParseException
 		{
-			text = text.trim();
-			int hemi = getHemisphereSignum(text, forLongitudeNotLatitude);
-			text = text.substring(0, text.length() - 1).trim();
+			String theText = text;
+			theText = theText.trim();
+			final int hemi = getHemisphereSignum(theText, forLongitudeNotLatitude);
+			theText = theText.substring(0, theText.length() - 1).trim();
 
-			String[] subdivisions = text.trim().split("(\\u2032|\\u2033|\\u00B0)");
+			final String[] subdivisions = theText.trim().split("(\\u2032|\\u2033|\\u00B0)");
 			if (subdivisions.length != 3)
 			{
 				throw new ParseException("3 parts expected, actually: "
-						+ subdivisions.length + " for: " + text, -1);
+						+ subdivisions.length + " for: " + theText, -1);
 			}
-			int degrees = DDD.parse(subdivisions[0]).intValue();
-			int minutes = XX.parse(subdivisions[1]).intValue();
-			double seconds = XX_XXX.parse(subdivisions[2]).doubleValue();
+			final int degrees = DDD.parse(subdivisions[0]).intValue();
+			final int minutes = XX.parse(subdivisions[1]).intValue();
+			final double seconds = XX_XXX.parse(subdivisions[2]).doubleValue();
 			return new Sexagesimal(degrees, minutes, seconds, hemi);
 		}
 
 		@Override
-		public Sexagesimal parseDouble(double combinedDegrees)
+		public Sexagesimal parseDouble(final double combinedDegrees)
 		{
-			int hemi = combinedDegrees < 0 ? -1 : 1;
-			combinedDegrees = Math.abs(combinedDegrees);
-			int degrees = (int) Math.floor(combinedDegrees);
-			double notRoundedMinutes = (combinedDegrees - degrees)
+			double theCombinedDegrees = combinedDegrees;
+			final int hemi = theCombinedDegrees < 0 ? -1 : 1;
+			theCombinedDegrees = Math.abs(theCombinedDegrees);
+			final int degrees = (int) Math.floor(theCombinedDegrees);
+			final double notRoundedMinutes = (theCombinedDegrees - degrees)
 					* MINUTES_IN_DEGREE;
-			double minutes = Math.floor(notRoundedMinutes);
-			double seconds = (notRoundedMinutes - minutes) * SECONDS_IN_MINUTE;
+			final double minutes = Math.floor(notRoundedMinutes);
+			final double seconds = (notRoundedMinutes - minutes) * SECONDS_IN_MINUTE;
 			return new Sexagesimal(degrees, minutes, seconds, hemi);
 		}
 

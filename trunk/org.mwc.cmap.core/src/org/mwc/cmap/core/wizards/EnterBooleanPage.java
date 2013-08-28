@@ -29,7 +29,7 @@ public class EnterBooleanPage extends CoreEditableWizardPage
 			return newVal;
 		}
 		
-		public void setValue(Boolean val)
+		public void setValue(final Boolean val)
 		{
 			newVal = val;
 		}
@@ -44,10 +44,10 @@ public class EnterBooleanPage extends CoreEditableWizardPage
 
 	public static String NAME = "Get Name";
 	DataItem _myWrapper;
-	private String _fieldExplanation;
-	private Boolean _startValue;
+	private final String _fieldExplanation;
+	private final Boolean _startValue;
   
-  public EnterBooleanPage(ISelection selection, Boolean startVal, String pageTitle, String pageExplanation, String fieldExplanation, String imagePath, String helpContext) {
+  public EnterBooleanPage(final ISelection selection, final Boolean startVal, final String pageTitle, final String pageExplanation, final String fieldExplanation, final String imagePath, final String helpContext) {
 		super(selection, NAME, pageTitle,
 				pageExplanation, imagePath,helpContext, false);
 		_startValue = startVal;
@@ -61,7 +61,7 @@ public class EnterBooleanPage extends CoreEditableWizardPage
   
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors = {
+		final PropertyDescriptor[] descriptors = {
 				prop("Value", _fieldExplanation, getEditable())
 		};
 		return descriptors;

@@ -103,14 +103,14 @@ public class SwingSteppingBoundedIntegerEditor extends MWC.GUI.Properties.Steppi
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public static void main (String[] args)
+  public static void main (final String[] args)
   {
-    JFrame tester = new JFrame("test stepping editor");
+    final JFrame tester = new JFrame("test stepping editor");
     tester.setSize(300, 300);
-    SwingSteppingBoundedIntegerEditor jr = new SwingSteppingBoundedIntegerEditor();
-    SteppingBoundedInteger sb = new SteppingBoundedInteger(120, 0, 180, 10);
+    final SwingSteppingBoundedIntegerEditor jr = new SwingSteppingBoundedIntegerEditor();
+    final SteppingBoundedInteger sb = new SteppingBoundedInteger(120, 0, 180, 10);
     jr.setValue(sb);
-    java.awt.Component jc = jr.getCustomEditor();
+    final java.awt.Component jc = jr.getCustomEditor();
     tester.getContentPane().add("Center", jc);
     tester.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     tester.setVisible(true);
@@ -153,7 +153,7 @@ public class SwingSteppingBoundedIntegerEditor extends MWC.GUI.Properties.Steppi
 		{
       // remember the new value to be set.  As we set the sliders, there's a strong
       // chance that this current value will get over-written
-      int newValue = _myVal.getCurrent();
+      final int newValue = _myVal.getCurrent();
 
 			// put the text into the fields
 			_theSlider.setMinimum(_myVal.getMin());
@@ -167,7 +167,7 @@ public class SwingSteppingBoundedIntegerEditor extends MWC.GUI.Properties.Steppi
   }
 
 
-	public void stateChanged(javax.swing.event.ChangeEvent p1)
+	public void stateChanged(final javax.swing.event.ChangeEvent p1)
 	{
 		_myVal.setCurrent(_theSlider.getValue());
 		_theCurrent.setText("" + _myVal.getCurrent());

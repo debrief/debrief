@@ -82,7 +82,7 @@ public class ProjectionType {
      *     {@link LocationType }
      *     
      */
-    public void setTl(LocationType value) {
+    public void setTl(final LocationType value) {
         this.tl = value;
     }
 
@@ -106,7 +106,7 @@ public class ProjectionType {
      *     {@link LocationType }
      *     
      */
-    public void setBr(LocationType value) {
+    public void setBr(final LocationType value) {
         this.br = value;
     }
 
@@ -134,7 +134,7 @@ public class ProjectionType {
      *     {@link Double }
      *     
      */
-    public void setBorder(Double value) {
+    public void setBorder(final Double value) {
         this.border = value;
     }
 
@@ -162,7 +162,7 @@ public class ProjectionType {
      *     {@link Boolean }
      *     
      */
-    public void setPrimaryOrigin(Boolean value) {
+    public void setPrimaryOrigin(final Boolean value) {
         this.primaryOrigin = value;
     }
 
@@ -190,7 +190,7 @@ public class ProjectionType {
      *     {@link Boolean }
      *     
      */
-    public void setPrimaryOriented(Boolean value) {
+    public void setPrimaryOriented(final Boolean value) {
         this.primaryOriented = value;
     }
 
@@ -218,7 +218,7 @@ public class ProjectionType {
      *     {@link Boolean }
      *     
      */
-    public void setRelative(Boolean value) {
+    public void setRelative(final Boolean value) {
         this.relative = value;
     }
 
@@ -242,7 +242,7 @@ public class ProjectionType {
      *     {@link String }
      *     
      */
-    public void setType(String value) {
+    public void setType(final String value) {
         this.type = value;
     }
 

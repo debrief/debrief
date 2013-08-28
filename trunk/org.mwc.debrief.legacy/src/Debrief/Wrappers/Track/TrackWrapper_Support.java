@@ -84,14 +84,14 @@ public class TrackWrapper_Support
 		protected  TrackWrapper _myTrack;
 
 		@Override
-		public void addPropertyChangeListener(PropertyChangeListener listener)
+		public void addPropertyChangeListener(final PropertyChangeListener listener)
 		{
 			_pSupport.addPropertyChangeListener(listener);
 		}
 
 		@Override
-		public void addPropertyChangeListener(String property,
-				PropertyChangeListener listener)
+		public void addPropertyChangeListener(final String property,
+				final PropertyChangeListener listener)
 		{
 			_pSupport.addPropertyChangeListener(property, listener);
 		}
@@ -103,8 +103,8 @@ public class TrackWrapper_Support
 		}
 
 		@Override
-		public void firePropertyChange(String propertyChanged, Object oldValue,
-				Object newValue)
+		public void firePropertyChange(final String propertyChanged, final Object oldValue,
+				final Object newValue)
 		{
 			_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
 		}
@@ -137,19 +137,19 @@ public class TrackWrapper_Support
 		}
 
 		@Override
-		public void removePropertyChangeListener(PropertyChangeListener listener)
+		public void removePropertyChangeListener(final PropertyChangeListener listener)
 		{
 			_pSupport.removePropertyChangeListener(listener);
 		}
 
 		@Override
-		public void removePropertyChangeListener(String property,
-				PropertyChangeListener listener)
+		public void removePropertyChangeListener(final String property,
+				final PropertyChangeListener listener)
 		{
 			_pSupport.removePropertyChangeListener(property, listener);
 		}
 
-		public void setWrapper(TrackWrapper wrapper)
+		public void setWrapper(final TrackWrapper wrapper)
 		{
 			_myTrack = wrapper;
 		}
@@ -283,19 +283,19 @@ public class TrackWrapper_Support
 		}
 
 		@Override
-		public void add(Editable item)
+		public void add(final Editable item)
 		{
 			System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO SEGMENT LIST");
 		}
 
-		public void addSegment(TrackSegment segment)
+		public void addSegment(final TrackSegment segment)
 		{
 			segment.setWrapper(_myTrack);
 
 			if (this.size() == 1)
 			{
 				// aah, currently, it's name's probably wrong sort out it's date
-				TrackSegment first = (TrackSegment) getData().iterator().next();
+				final TrackSegment first = (TrackSegment) getData().iterator().next();
 				first.sortOutDate(null);
 			}
 
@@ -304,13 +304,13 @@ public class TrackWrapper_Support
 			// if we've just got the one, set it's name to positions
 			if (this.size() == 1)
 			{
-				TrackSegment first = (TrackSegment) getData().iterator().next();
+				final TrackSegment first = (TrackSegment) getData().iterator().next();
 				first.setName("Positions");
 			}
 		}
 
 		@Override
-		public void append(Layer other)
+		public void append(final Layer other)
 		{
 			System.err.println("SHOULD NOT BE ADDING LAYER TO SEGMENTS LIST");
 		}
@@ -324,11 +324,11 @@ public class TrackWrapper_Support
 		@FireExtended
 		public void mergeAllSegments()
 		{
-			Collection<Editable> segs = getData();
+			final Collection<Editable> segs = getData();
 			TrackSegment first = null;
-			for (Iterator<Editable> iterator = segs.iterator(); iterator.hasNext();)
+			for (final Iterator<Editable> iterator = segs.iterator(); iterator.hasNext();)
 			{
-				TrackSegment segment = (TrackSegment) iterator.next();
+				final TrackSegment segment = (TrackSegment) iterator.next();
 
 				if (first == null)
 				{
@@ -338,7 +338,7 @@ public class TrackWrapper_Support
 					// of a tma segment
 					if (segment instanceof CoreTMASegment)
 					{
-						CoreTMASegment tma = (CoreTMASegment) segment;
+						final CoreTMASegment tma = (CoreTMASegment) segment;
 						first = new TrackSegment(tma);
 					}
 					else
@@ -369,22 +369,22 @@ public class TrackWrapper_Support
 		@FireReformatted
 		public void revealAllPositions()
 		{
-			Enumeration<Editable> theEnum = elements();
+			final Enumeration<Editable> theEnum = elements();
 			while (theEnum.hasMoreElements())
 			{
-				TrackSegment seg = (TrackSegment) theEnum.nextElement();
-				Enumeration<Editable> ele = seg.elements();
+				final TrackSegment seg = (TrackSegment) theEnum.nextElement();
+				final Enumeration<Editable> ele = seg.elements();
 				while (ele.hasMoreElements())
 				{
-					Editable editable = ele.nextElement();
-					FixWrapper fix = (FixWrapper) editable;
+					final Editable editable = ele.nextElement();
+					final FixWrapper fix = (FixWrapper) editable;
 					fix.setVisible(true);
 				}
 			}
 		}
 
 		@Override
-		public void setWrapper(TrackWrapper wrapper)
+		public void setWrapper(final TrackWrapper wrapper)
 		{
 			// is it different?
 			if (wrapper == _myTrack)
@@ -394,10 +394,10 @@ public class TrackWrapper_Support
 			super.setWrapper(wrapper);
 
 			// update our segments
-			Collection<Editable> items = getData();
-			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+			final Collection<Editable> items = getData();
+			for (final Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
 			{
-				TrackSegment seg = (TrackSegment) iterator.next();
+				final TrackSegment seg = (TrackSegment) iterator.next();
 				seg.setWrapper(_myTrack);
 			}
 		}

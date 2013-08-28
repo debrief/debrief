@@ -36,41 +36,41 @@ public class LineMapper implements DebriefJaxbContextAware
 {
 	private JAXBContext debriefContext;
 
-	private final LayerType getLayer(PlotType plotType)
+	private final LayerType getLayer(final PlotType plotType)
 	{
 		try
 		{
-			SessionType sessionType = plotType.getSession();
-			LayersType layersType = sessionType.getLayers();
+			final SessionType sessionType = plotType.getSession();
+			final LayersType layersType = sessionType.getLayers();
 
 			return layersType.getLayer();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			return null;
 		}
 	}
 
-	public ShapeWrapper fromGpx(GpxType gpx)
+	public ShapeWrapper fromGpx(final GpxType gpx)
 	{
-		ExtensionsType extensions = gpx.getExtensions();
+		final ExtensionsType extensions = gpx.getExtensions();
 		if (extensions != null)
 		{
-			List<Object> any = extensions.getAny();
+			final List<Object> any = extensions.getAny();
 			Unmarshaller unmarshaller;
 			try
 			{
 				unmarshaller = debriefContext.createUnmarshaller();
-				Object object = unmarshaller.unmarshal((Node) any.get(0));
-				PlotType plotExtension = (PlotType) JAXBIntrospector.getValue(object);
-				LayerType layerType = getLayer(plotExtension);
+				final Object object = unmarshaller.unmarshal((Node) any.get(0));
+				final PlotType plotExtension = (PlotType) JAXBIntrospector.getValue(object);
+				final LayerType layerType = getLayer(plotExtension);
 				if (layerType != null)
 				{
 					mapLine(layerType);
 				}
 				System.out.println();
 			}
-			catch (JAXBException e)
+			catch (final JAXBException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Error while mapping Line from GPX", e);
 			}
@@ -78,20 +78,20 @@ public class LineMapper implements DebriefJaxbContextAware
 		return null;
 	}
 
-	private ShapeWrapper mapLine(LayerType layerType)
+	private ShapeWrapper mapLine(final LayerType layerType)
 	{
-		LineType lineType = layerType.getLine();
+		final LineType lineType = layerType.getLine();
 		if (lineType != null)
 		{
-			ColourType colourType = lineType.getColour();
-			ShortLocation topLeft = lineType.getTl().getShortLocation();
-			WorldLocation tlWl = new WorldLocation(topLeft.getLat(), topLeft.getLong(), topLeft.getDepth());
-			ShortLocation bottomRight = lineType.getBr().getShortLocation();
-			WorldLocation btWl = new WorldLocation(bottomRight.getLat(), bottomRight.getLong(), bottomRight.getDepth());
+			final ColourType colourType = lineType.getColour();
+			final ShortLocation topLeft = lineType.getTl().getShortLocation();
+			final WorldLocation tlWl = new WorldLocation(topLeft.getLat(), topLeft.getLong(), topLeft.getDepth());
+			final ShortLocation bottomRight = lineType.getBr().getShortLocation();
+			final WorldLocation btWl = new WorldLocation(bottomRight.getLat(), bottomRight.getLong(), bottomRight.getDepth());
 
-			MWC.GUI.Shapes.LineShape line = new MWC.GUI.Shapes.LineShape(tlWl, btWl);
+			final MWC.GUI.Shapes.LineShape line = new MWC.GUI.Shapes.LineShape(tlWl, btWl);
 
-			BigInteger lineThickness = lineType.getLineThickness();
+			final BigInteger lineThickness = lineType.getLineThickness();
 			if (lineThickness != null)
 			{
 				line.setLineWidth(lineThickness.intValue());
@@ -99,7 +99,7 @@ public class LineMapper implements DebriefJaxbContextAware
 			line.setVisible(lineType.isVisible());
 			line.setArrowAtEnd(lineType.isArrowAtEnd());
 
-			ShapeWrapper sw = new ShapeWrapper(lineType.getLabel(), line, GpxUtil.resolveColor(colourType), null);
+			final ShapeWrapper sw = new ShapeWrapper(lineType.getLabel(), line, GpxUtil.resolveColor(colourType), null);
 			sw.setLabel(lineType.getLabel());
 			sw.setLabelVisible(lineType.isLabelVisible());
 
@@ -111,7 +111,7 @@ public class LineMapper implements DebriefJaxbContextAware
 	}
 
 	@Override
-	public void setJaxbContext(JAXBContext ctx)
+	public void setJaxbContext(final JAXBContext ctx)
 	{
 		debriefContext = ctx;
 	}

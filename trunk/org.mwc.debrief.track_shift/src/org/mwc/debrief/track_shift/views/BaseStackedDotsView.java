@@ -194,7 +194,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * @param needFreq
 	 *          if the agorithm needs frequency data
 	 */
-	protected BaseStackedDotsView(boolean needBrg, boolean needFreq)
+	protected BaseStackedDotsView(final boolean needBrg, final boolean needFreq)
 	{
 		_myHelper = new StackedDotHelper();
 
@@ -226,7 +226,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	protected void fillLocalToolBar(IToolBarManager toolBarManager)
+	protected void fillLocalToolBar(final IToolBarManager toolBarManager)
 	{
 		// fit to window
 		toolBarManager.add(_onlyVisible);
@@ -238,10 +238,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// and a separator
 		toolBarManager.add(new Separator());
 
-		Vector<Action> actions = DragSegment.getDragModes();
-		for (Iterator<Action> iterator = actions.iterator(); iterator.hasNext();)
+		final Vector<Action> actions = DragSegment.getDragModes();
+		for (final Iterator<Action> iterator = actions.iterator(); iterator.hasNext();)
 		{
-			Action action = iterator.next();
+			final Action action = iterator.next();
 			toolBarManager.add(action);
 		}
 	}
@@ -251,7 +251,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * it.
 	 */
 	@Override
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 
 		// right, we need an SWT.EMBEDDED object to act as a holder
@@ -271,21 +271,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_mySelListener = new ISelectionChangedListener()
 		{
 			@Override
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
-				ISelection sel = event.getSelection();
-				Vector<DraggableItem> dragees = new Vector<DraggableItem>();
+				final ISelection sel = event.getSelection();
+				final Vector<DraggableItem> dragees = new Vector<DraggableItem>();
 				if (sel instanceof StructuredSelection)
 				{
-					StructuredSelection str = (StructuredSelection) sel;
-					Iterator<?> iter = str.iterator();
+					final StructuredSelection str = (StructuredSelection) sel;
+					final Iterator<?> iter = str.iterator();
 					while (iter.hasNext())
 					{
-						Object object = (Object) iter.next();
+						final Object object = (Object) iter.next();
 						if (object instanceof EditableWrapper)
 						{
-							EditableWrapper ew = (EditableWrapper) object;
-							Editable item = ew.getEditable();
+							final EditableWrapper ew = (EditableWrapper) object;
+							final Editable item = ew.getEditable();
 							if (item instanceof DraggableItem)
 							{
 
@@ -316,7 +316,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * @return the chart, in it's own panel
 	 */
 	@SuppressWarnings("deprecation")
-	protected void createStackedPlot(Frame plotControl)
+	protected void createStackedPlot(final Frame plotControl)
 	{
 
 		// first create the x (time) axis
@@ -338,17 +338,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
 
 		// now try to do add a zero marker on the error bar
-		Paint thePaint = Color.LIGHT_GRAY;
-		Stroke theStroke = new BasicStroke(2);
+		final Paint thePaint = Color.LIGHT_GRAY;
+		final Stroke theStroke = new BasicStroke(2);
 		final ValueMarker zeroMarker = new ValueMarker(0.0, thePaint, theStroke);
 		_dotPlot.addRangeMarker(zeroMarker);
 
 		_linePlot = new XYPlot();
-		NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
+		final NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
 		_linePlot.setRangeAxis(absBrgAxis);
 		absBrgAxis.setAutoRangeIncludesZero(false);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(null,
+		final DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(null,
 				null, _linePlot);
 		lineRend.setPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
@@ -385,7 +385,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// put the plot into a chart
 		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
 
-		LegendItemSource[] sources =
+		final LegendItemSource[] sources =
 		{ _linePlot };
 		_myChart.getLegend().setSources(sources);
 
@@ -395,7 +395,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		_myChart.addProgressListener(new ChartProgressListener()
 		{
-			public void chartProgress(ChartProgressEvent cpe)
+			public void chartProgress(final ChartProgressEvent cpe)
 			{
 				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
 					return;
@@ -405,19 +405,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 					return;
 
 				// double-check our label is still in the right place
-				double xVal = _linePlot.getRangeAxis().getLowerBound();
-				double yVal = _linePlot.getDomainAxis().getUpperBound();
+				final double xVal = _linePlot.getRangeAxis().getLowerBound();
+				final double yVal = _linePlot.getDomainAxis().getUpperBound();
 				annot.setX(yVal);
 				annot.setY(xVal);
 
 				// and write the text
-				String numA = MWC.Utilities.TextFormatting.GeneralFormat
+				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
-				Date newDate = new Date((long) _linePlot.getDomainCrosshairValue());
+				final Date newDate = new Date((long) _linePlot.getDomainCrosshairValue());
 				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
-				String dateVal = _df.format(newDate);
-				String theMessage = " [" + dateVal + "," + numA + "]";
+				final String dateVal = _df.format(newDate);
+				final String theMessage = " [" + dateVal + "," + numA + "]";
 				annot.setText(theMessage);
 
 				_linePlot.removeAnnotation(annot);
@@ -431,12 +431,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		plotControl.addMouseMotionListener(new MouseMotionListener()
 		{
 
-			public void mouseDragged(MouseEvent e)
+			public void mouseDragged(final MouseEvent e)
 			{
 				// ignore
 			}
 
-			public void mouseMoved(MouseEvent e)
+			public void mouseMoved(final MouseEvent e)
 			{
 				// Point pt = e.getPoint();
 				// // suspend this development. we need to sort out which plot
@@ -514,7 +514,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	}
 
-	protected void fillLocalPullDown(IMenuManager manager)
+	protected void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(_centreYAxis);
 		manager.add(_onlyVisible);
@@ -534,7 +534,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			public void run()
 			{
 				super.run();
-				boolean val = _autoResize.isChecked();
+				final boolean val = _autoResize.isChecked();
 				if (_showLinePlot.isChecked())
 				{
 					// ok - redraw the plot we may have changed the axis
@@ -674,16 +674,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	protected void doMagic()
 	{
 		// right, find the layer manager
-		IViewPart mgr = this.getViewSite().getPage()
+		final IViewPart mgr = this.getViewSite().getPage()
 				.findView(CorePlugin.LAYER_MANAGER);
-		ISelectionProvider selProvider = (ISelectionProvider) mgr
+		final ISelectionProvider selProvider = (ISelectionProvider) mgr
 				.getAdapter(ISelectionProvider.class);
-		IStructuredSelection sel = (IStructuredSelection) selProvider
+		final IStructuredSelection sel = (IStructuredSelection) selProvider
 				.getSelection();
 
 		// ok, see if we've got something of value
-		Vector<DraggableItem> dragees = new Vector<DraggableItem>();
-		String troubles = OptimiseTest.getDraggables(dragees, sel,
+		final Vector<DraggableItem> dragees = new Vector<DraggableItem>();
+		final String troubles = OptimiseTest.getDraggables(dragees, sel,
 				_myHelper.getSecondaryTrack());
 
 		if (troubles != null)
@@ -693,23 +693,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		}
 
 		// cool sort out the list of sensor locations for these tracks
-		TreeSet<Doublet> doublets = _myHelper.getDoublets(_onlyVisible.isChecked(),
+		final TreeSet<Doublet> doublets = _myHelper.getDoublets(_onlyVisible.isChecked(),
 				true, false);
 
 		// Create instance of Minimisation
-		Minimisation min = new Minimisation();
-		MinimisationFunction funct = new TryOffsetFunction(doublets);
+		final Minimisation min = new Minimisation();
+		final MinimisationFunction funct = new TryOffsetFunction(doublets);
 
 		// initial estimates
-		double[] start =
+		final double[] start =
 		{ 180, 2000 };
 
 		// initial step sizes
-		double[] step =
+		final double[] step =
 		{ 90, 400 };
 
 		// convergence tolerance
-		double ftol = 1e-10;
+		final double ftol = 1e-10;
 
 		// set the min/max bearing
 		min.addConstraint(0, -1, 0d);
@@ -723,33 +723,33 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		min.nelderMead(funct, start, step, ftol, 10000);
 
 		// get the results out
-		double[] param = min.getParamValues();
+		final double[] param = min.getParamValues();
 
-		double bearing = param[0];
-		double range = param[1];
+		final double bearing = param[0];
+		final double range = param[1];
 
 		// produce a world-vector
-		WorldVector vec = new WorldVector(
+		final WorldVector vec = new WorldVector(
 				MWC.Algorithms.Conversions.Degs2Rads(bearing),
 				MWC.Algorithms.Conversions.m2Degs(range), 0);
 
 		// get the secondary track
-		TrackWrapper secTrack = _myHelper.getSecondaryTrack();
+		final TrackWrapper secTrack = _myHelper.getSecondaryTrack();
 
-		DragOperation shiftIt = new DragOperation()
+		final DragOperation shiftIt = new DragOperation()
 		{
-			public void apply(DraggableItem item, WorldVector offset)
+			public void apply(final DraggableItem item, final WorldVector offset)
 			{
 				item.shift(offset);
 			}
 		};
 
 		// put it into our action
-		DragFeatureAction dta = new DragFeatureAction(vec, secTrack,
+		final DragFeatureAction dta = new DragFeatureAction(vec, secTrack,
 				_ourLayersSubject, secTrack, shiftIt);
 
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject,
+		final DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject,
 				secTrack);
 
 		// and add it to the clipboard
@@ -771,7 +771,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	{
 	}
 
-	public void logError(int statusCode, String string, Exception object)
+	public void logError(final int statusCode, final String string, final Exception object)
 	{
 		// somehow, put the message into the UI
 		_myChart.setTitle(string);
@@ -791,7 +791,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	/**
 	 * the track has been moved, update the dots
 	 */
-	void updateStackedDots(boolean updateDoublets)
+	void updateStackedDots(final boolean updateDoublets)
 	{
 
 		// update the current datasets
@@ -831,7 +831,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		if (updateDoublets)
 		{
 			// trigger recalculation of date axis ticks
-			CachedTickDateAxis date = (CachedTickDateAxis) _combined.getDomainAxis();
+			final CachedTickDateAxis date = (CachedTickDateAxis) _combined.getDomainAxis();
 			date.clearTicks();
 
 			if (_showDotPlot.isChecked())
@@ -862,10 +862,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						ISelectionProvider prov = (ISelectionProvider) part;
+						final ISelectionProvider prov = (ISelectionProvider) part;
 
 						// am I already listning to this
 						if (_selProviders.contains(prov))
@@ -882,10 +882,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.CLOSED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						ISelectionProvider prov = (ISelectionProvider) part;
+						final ISelectionProvider prov = (ISelectionProvider) part;
 
 						// am I already listning to this
 						if (_selProviders.contains(prov))
@@ -906,8 +906,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// is it a new one?
 						if (part != _theTrackDataListener)
@@ -934,8 +934,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// ok, ditch it.
 						_theTrackDataListener = null;
@@ -946,8 +946,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(TrackDataProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						// cool, remember about it.
 						final TrackDataProvider dataP = (TrackDataProvider) part;
@@ -957,7 +957,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						{
 							_myShiftListener = new TrackShiftListener()
 							{
-								public void trackShifted(TrackWrapper subject)
+								public void trackShifted(final TrackWrapper subject)
 								{
 									// the tracks have moved, we haven't changed
 									// the tracks or
@@ -969,8 +969,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							_myTrackDataListener = new TrackDataListener()
 							{
 
-								public void tracksUpdated(WatchableList primary,
-										WatchableList[] secondaries)
+								public void tracksUpdated(final WatchableList primary,
+										final WatchableList[] secondaries)
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
 											_onlyVisible.isChecked(), _holder, logger, getType(),
@@ -1018,8 +1018,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						final TrackDataProvider tdp = (TrackDataProvider) part;
 						tdp.removeTrackShiftListener(_myShiftListener);
@@ -1038,8 +1038,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						final Layers theLayers = (Layers) part;
 
@@ -1048,15 +1048,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						{
 							_layersListener = new Layers.DataListener()
 							{
-								public void dataExtended(Layers theData)
+								public void dataExtended(final Layers theData)
 								{
 								}
 
-								public void dataModified(Layers theData, Layer changedLayer)
+								public void dataModified(final Layers theData, final Layer changedLayer)
 								{
 								}
 
-								public void dataReformatted(Layers theData, Layer changedLayer)
+								public void dataReformatted(final Layers theData, final Layer changedLayer)
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
 											_onlyVisible.isChecked(), _holder, logger, getType(),
@@ -1086,8 +1086,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
 						final Layers theLayers = (Layers) part;
 
@@ -1129,15 +1129,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	}
 
 	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
 		super.init(site, memento);
 
 		if (memento != null)
 		{
 
-			Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
-			Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
+			final Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
+			final Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
 			if (showLineVal != null)
 			{
 				_showLinePlot.setChecked(showLineVal);
@@ -1150,7 +1150,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	}
 
 	@Override
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		super.saveState(memento);
 

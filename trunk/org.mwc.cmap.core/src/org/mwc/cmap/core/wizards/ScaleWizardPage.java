@@ -21,7 +21,7 @@ public class ScaleWizardPage extends CoreEditableWizardPage
 	 * 
 	 * @param pageName
 	 */
-	public ScaleWizardPage(ISelection selection)
+	public ScaleWizardPage(final ISelection selection)
 	{
 		super(selection, "scalePage", "Add Scale to Plot",
 				"This page adds a scale to your plot", "images/scale_wizard.gif", null);

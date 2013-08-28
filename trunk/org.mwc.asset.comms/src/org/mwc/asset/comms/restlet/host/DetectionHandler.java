@@ -7,9 +7,9 @@ public class DetectionHandler extends ASSETResource implements
 		DetectionResource
 {
 
-	public void accept(DetectionEvent event)
+	public void accept(final DetectionEvent event)
 	{
-		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
+		final ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
 		host.getGuest().newParticipantDetection(getScenarioId(),
 				getParticipantId(), event);
 	}

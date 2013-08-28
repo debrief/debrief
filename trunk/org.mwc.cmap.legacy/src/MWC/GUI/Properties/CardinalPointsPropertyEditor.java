@@ -84,7 +84,7 @@ public class CardinalPointsPropertyEditor extends PropertyEditorSupport implemen
     return _myHeading;
   }
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Integer)
     {
@@ -92,29 +92,29 @@ public class CardinalPointsPropertyEditor extends PropertyEditorSupport implemen
     }
     else if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
     else if(p1 instanceof Double)
     {
-    	Double hrg = (Double) p1;
+    	final Double hrg = (Double) p1;
     	_myHeading = hrg.intValue();
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
   	if(val != null)
   	{
-  		String[] toks = val.split(" ");
-  		Integer intVal = Integer.parseInt(toks[0]);
+  		final String[] toks = val.split(" ");
+  		final Integer intVal = Integer.parseInt(toks[0]);
   		_myHeading = intVal;
   	}
   }
 
   public String getAsText()
   {
-    String res = "" + _myHeading+ " \u00B0";
+    final String res = "" + _myHeading+ " \u00B0";
     return res;
   }
 }

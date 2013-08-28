@@ -37,14 +37,14 @@ abstract public class S57Handler extends MWCXMLReader implements PlottableExport
 		this(MY_TYPE);
 	}
 
-	public S57Handler(String theType)
+	public S57Handler(final String theType)
 	{
 		// inform our parent what type of class we are
 		super(theType);
 
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_isVisible = value;
 			}
@@ -52,14 +52,14 @@ abstract public class S57Handler extends MWCXMLReader implements PlottableExport
 
 		addAttributeHandler(new HandleAttribute("Name")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_myName = val;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(SOURCE_FILE)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_sourceFile = val;
 			}
@@ -70,13 +70,13 @@ abstract public class S57Handler extends MWCXMLReader implements PlottableExport
 	public void elementClosed()
 	{
 		// create a Grid from this data
-		MWC.GUI.S57.S57Layer csp = getGrid();
+		final MWC.GUI.S57.S57Layer csp = getGrid();
 		csp.setVisible(_isVisible);
 
 		// check the source file exists
 		if (_sourceFile != null)
 		{
-			File tstFile = new File(_sourceFile);
+			final File tstFile = new File(_sourceFile);
 			if (tstFile.exists())
 				csp.setSourceFile(_sourceFile);
 		}
@@ -109,12 +109,12 @@ abstract public class S57Handler extends MWCXMLReader implements PlottableExport
 	 * @param parent
 	 * @param doc
 	 */
-	public void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
-		S57Layer theGrid = (S57Layer) plottable;
-		Element gridElement = doc.createElement(MY_TYPE);
+		final S57Layer theGrid = (S57Layer) plottable;
+		final Element gridElement = doc.createElement(MY_TYPE);
 
 		exportLayer(gridElement, theGrid, doc);
 
@@ -131,7 +131,7 @@ abstract public class S57Handler extends MWCXMLReader implements PlottableExport
 	 * @param doc
 	 *          the document it's all going into
 	 */
-	private static void exportLayer(Element gridElement, S57Layer theS57, Document doc)
+	private static void exportLayer(final Element gridElement, final S57Layer theS57, final Document doc)
 	{
 		// do the visibility
 		gridElement.setAttribute(VISIBLE, writeThis(theS57.getVisible()));

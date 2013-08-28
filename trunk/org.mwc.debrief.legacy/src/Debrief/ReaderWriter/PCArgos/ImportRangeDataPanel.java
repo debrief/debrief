@@ -52,8 +52,8 @@ abstract public class ImportRangeDataPanel
 	// /////////////////////////////////
 	// constructor
 	// ////////////////////////////////
-	public ImportRangeDataPanel(Layers theData, String lastDirectory,
-			PropertiesPanel thePanel)
+	public ImportRangeDataPanel(final Layers theData, final String lastDirectory,
+			final PropertiesPanel thePanel)
 	{
 		_thePanel = thePanel;
 		_theData = theData;
@@ -99,13 +99,13 @@ abstract public class ImportRangeDataPanel
 
 			// create the input streams
 			is = new FileInputStream(_theFilename);
-			BufferedInputStream bs = new BufferedInputStream(is);
+			final BufferedInputStream bs = new BufferedInputStream(is);
 
 			// see which type of importer to use
 			if (_theFilename.toUpperCase().endsWith("RAO"))
 			{
 				// call the importer, and pass it our parameters and layers
-				ImportPCArgos ic = new ImportPCArgos();
+				final ImportPCArgos ic = new ImportPCArgos();
 
 				// trigger the import
 				ic
@@ -115,7 +115,7 @@ abstract public class ImportRangeDataPanel
 			else if (_theFilename.toUpperCase().endsWith("PRN"))
 			{
 				// call the importer, and pass it our parameters and layers
-				ImportPMRF ic = new ImportPMRF();
+				final ImportPMRF ic = new ImportPMRF();
 
 				// trigger the import
 				ic
@@ -130,7 +130,7 @@ abstract public class ImportRangeDataPanel
 			}
 
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -142,7 +142,7 @@ abstract public class ImportRangeDataPanel
 				if (is != null)
 					is.close();
 			}
-			catch (java.io.IOException ex)
+			catch (final java.io.IOException ex)
 			{
 				MWC.Utilities.Errors.Trace.trace(ex, "Closing REPLAY file");
 			}

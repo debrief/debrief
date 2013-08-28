@@ -50,17 +50,17 @@ public class PClient implements ScenarioSteppedListener
 {
 	private final IMClient _model;
 	private LightScenario _listeningTo;
-	private CombinedListener _partListener;
-	private Vector<IVTime> _timeListeners;
-	private Vector<IVTimeControl> _timeControllers;
-	private Vector<IVPartControl> _partControllers;
-	private Vector<IVPartMovement> _partMovers;
-	private Vector<ParticipantDetectedListener> _partDetectors;
-	private Vector<IVConnect> _connectors;
+	private final CombinedListener _partListener;
+	private final Vector<IVTime> _timeListeners;
+	private final Vector<IVTimeControl> _timeControllers;
+	private final Vector<IVPartControl> _partControllers;
+	private final Vector<IVPartMovement> _partMovers;
+	private final Vector<ParticipantDetectedListener> _partDetectors;
+	private final Vector<IVConnect> _connectors;
 
 	private AServer _selfHostServer;
 
-	public PClient(IMClient model)
+	public PClient(final IMClient model)
 	{
 		_model = model;
 		_partListener = new CombinedListener();
@@ -85,7 +85,7 @@ public class PClient implements ScenarioSteppedListener
 		}
 
 		@Override
-		public void newDecision(String description, DemandedStatus dem_status)
+		public void newDecision(final String description, final DemandedStatus dem_status)
 		{
 		}
 
@@ -93,7 +93,7 @@ public class PClient implements ScenarioSteppedListener
 		public void newDetections(final DetectionList detections)
 		{
 			// now loop through any participant listeners
-			Iterator<ParticipantDetectedListener> iter = _partDetectors.iterator();
+			final Iterator<ParticipantDetectedListener> iter = _partDetectors.iterator();
 			while (iter.hasNext())
 			{
 				final ParticipantDetectedListener ivPart = iter.next();
@@ -112,7 +112,7 @@ public class PClient implements ScenarioSteppedListener
 		public void moved(final Status newStatus)
 		{
 			// now loop through any participant listeners
-			Iterator<IVPartMovement> iter = _partMovers.iterator();
+			final Iterator<IVPartMovement> iter = _partMovers.iterator();
 			while (iter.hasNext())
 			{
 				final IVPartMovement ivPart = iter.next();
@@ -128,7 +128,7 @@ public class PClient implements ScenarioSteppedListener
 		}
 
 		@Override
-		public void restart(ScenarioType scenario)
+		public void restart(final ScenarioType scenario)
 		{
 		}
 
@@ -136,10 +136,10 @@ public class PClient implements ScenarioSteppedListener
 
 	protected void participantSelected(final LightParticipant part)
 	{
-		NewDemStatus newDemStatusListener = new NewDemStatus()
+		final NewDemStatus newDemStatusListener = new NewDemStatus()
 		{
 			@Override
-			public void demanded(double course, double speed, double depth)
+			public void demanded(final double course, final double speed, final double depth)
 			{
 				if (_listeningTo != null)
 				{
@@ -149,7 +149,7 @@ public class PClient implements ScenarioSteppedListener
 		};
 
 		// now loop through any participant listeners
-		Iterator<IVPartControl> iter = _partControllers.iterator();
+		final Iterator<IVPartControl> iter = _partControllers.iterator();
 		while (iter.hasNext())
 		{
 			final IVPartControl ivPart = iter.next();
@@ -158,7 +158,7 @@ public class PClient implements ScenarioSteppedListener
 			ivPart.setDemStatusListener(newDemStatusListener);
 		}
 
-		Iterator<IVPartMovement> iter2 = _partMovers.iterator();
+		final Iterator<IVPartMovement> iter2 = _partMovers.iterator();
 		while (iter2.hasNext())
 		{
 			final IVPartMovement ivPart = iter2.next();
@@ -191,17 +191,17 @@ public class PClient implements ScenarioSteppedListener
 		_model.listenScen(scenario.name, this);
 
 		// enable the timer controls
-		Iterator<IVTimeControl> iter = _timeControllers.iterator();
+		final Iterator<IVTimeControl> iter = _timeControllers.iterator();
 		while (iter.hasNext())
 		{
-			IVTimeControl ivTime = iter.next();
+			final IVTimeControl ivTime = iter.next();
 			ivTime.setEnabled(true);
 		}
 
-		Iterator<IVConnect> iter2 = _connectors.iterator();
+		final Iterator<IVConnect> iter2 = _connectors.iterator();
 		while (iter2.hasNext())
 		{
-			IVConnect ivConnect = (IVConnect) iter2.next();
+			final IVConnect ivConnect = (IVConnect) iter2.next();
 			ivConnect.disableScenarios();
 			ivConnect.disableServers();
 			ivConnect.enableParticipants();
@@ -211,7 +211,7 @@ public class PClient implements ScenarioSteppedListener
 
 	}
 
-	protected void serverSelected(InetAddress val)
+	protected void serverSelected(final InetAddress val)
 	{
 		// ok, connect
 		try
@@ -219,16 +219,16 @@ public class PClient implements ScenarioSteppedListener
 			_model.connect(val.getHostAddress());
 
 			// ok, disable the server list, to stop user re-connecting
-			Iterator<IVConnect> iter = _connectors.iterator();
+			final Iterator<IVConnect> iter = _connectors.iterator();
 			while (iter.hasNext())
 			{
-				IVConnect ivPart = iter.next();
+				final IVConnect ivPart = iter.next();
 				ivPart.disableServers();
 			}
 
-			AHandler<Vector<LightScenario>> handler = new AHandler<Vector<LightScenario>>()
+			final AHandler<Vector<LightScenario>> handler = new AHandler<Vector<LightScenario>>()
 			{
-				public void onSuccess(Vector<LightScenario> results)
+				public void onSuccess(final Vector<LightScenario> results)
 				{
 					showScenarios(results);
 				}
@@ -236,7 +236,7 @@ public class PClient implements ScenarioSteppedListener
 			// and get the servers
 			_model.getScenarioList(handler);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -249,10 +249,10 @@ public class PClient implements ScenarioSteppedListener
 		System.out.println("received sceanrios");
 
 		// ok, disable the server list, to stop user re-connecting
-		Iterator<IVConnect> iter = _connectors.iterator();
+		final Iterator<IVConnect> iter = _connectors.iterator();
 		while (iter.hasNext())
 		{
-			IVConnect ivPart = iter.next();
+			final IVConnect ivPart = iter.next();
 			ivPart.setScenarios(results);
 
 			// and enable them
@@ -263,13 +263,13 @@ public class PClient implements ScenarioSteppedListener
 	protected void pinged()
 	{
 		// ok, get any servers
-		List<InetAddress> adds = _model.discoverHosts();
+		final List<InetAddress> adds = _model.discoverHosts();
 
 		// ok, disable the server list, to stop user re-connecting
-		Iterator<IVConnect> iter = _connectors.iterator();
+		final Iterator<IVConnect> iter = _connectors.iterator();
 		while (iter.hasNext())
 		{
-			IVConnect ivPart = iter.next();
+			final IVConnect ivPart = iter.next();
 			
 			if (adds != null)
 			{
@@ -280,18 +280,18 @@ public class PClient implements ScenarioSteppedListener
 	}
 
 	@Override
-	public void step(ScenarioType scenario, long newTime)
+	public void step(final ScenarioType scenario, final long newTime)
 	{
-		Iterator<IVTime> iter = _timeListeners.iterator();
+		final Iterator<IVTime> iter = _timeListeners.iterator();
 		while (iter.hasNext())
 		{
-			IVTime ivTime = (IVTime) iter.next();
+			final IVTime ivTime = (IVTime) iter.next();
 			ivTime.newTime(newTime);
 		}
 	}
 
 	@Override
-	public void restart(ScenarioType scenario)
+	public void restart(final ScenarioType scenario)
 	{
 		// TODO
 	}
@@ -313,7 +313,7 @@ public class PClient implements ScenarioSteppedListener
 	{
 		if (_listeningTo != null)
 		{
-			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.TERMINATE);
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.TERMINATE);
 			_model.controlScen(sc);
 		}
 	}
@@ -322,7 +322,7 @@ public class PClient implements ScenarioSteppedListener
 	{
 		if (_listeningTo != null)
 		{
-			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PLAY);
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PLAY);
 			_model.controlScen(sc);
 		}
 	}
@@ -331,7 +331,7 @@ public class PClient implements ScenarioSteppedListener
 	{
 		if (_listeningTo != null)
 		{
-			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PAUSE);
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PAUSE);
 			_model.controlScen(sc);
 		}
 	}
@@ -344,7 +344,7 @@ public class PClient implements ScenarioSteppedListener
 		timer.addStepListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				doStep();
 			}
@@ -352,7 +352,7 @@ public class PClient implements ScenarioSteppedListener
 		timer.addStopListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				doStop();
 			}
@@ -360,7 +360,7 @@ public class PClient implements ScenarioSteppedListener
 		timer.addFasterListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				doFaster();
 			}
@@ -368,7 +368,7 @@ public class PClient implements ScenarioSteppedListener
 		timer.addSlowerListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				doSlower();
 			}
@@ -377,11 +377,11 @@ public class PClient implements ScenarioSteppedListener
 		timer.addPlayListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				// right, what's the current value?
-				Button src = (Button) e.getSource();
-				String label = src.getText();
+				final Button src = (Button) e.getSource();
+				final String label = src.getText();
 				if (label.equals("Play"))
 				{
 					doPlay();
@@ -400,7 +400,7 @@ public class PClient implements ScenarioSteppedListener
 	{
 		if (_listeningTo != null)
 		{
-			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.SLOWER);
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.SLOWER);
 			_model.controlScen(sc);
 		}
 
@@ -410,7 +410,7 @@ public class PClient implements ScenarioSteppedListener
 	{
 		if (_listeningTo != null)
 		{
-			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.FASTER);
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.FASTER);
 			_model.controlScen(sc);
 		}
 
@@ -422,25 +422,25 @@ public class PClient implements ScenarioSteppedListener
 			_timeListeners.add(listener);
 	}
 
-	public void addPartController(IVPartControl listener)
+	public void addPartController(final IVPartControl listener)
 	{
 		if (!_partControllers.contains(listener))
 			_partControllers.add(listener);
 	}
 
-	public void addPartDetector(ParticipantDetectedListener listener)
+	public void addPartDetector(final ParticipantDetectedListener listener)
 	{
 		if (!_partDetectors.contains(listener))
 			_partDetectors.add(listener);
 	}
 
-	public void addPartUpdater(IVPartMovement instance)
+	public void addPartUpdater(final IVPartMovement instance)
 	{
 		if (!_partDetectors.contains(instance))
 			_partMovers.add(instance);
 	}
 
-	public void addConnector(IVConnect view)
+	public void addConnector(final IVConnect view)
 	{
 		if (!_connectors.contains(view))
 			_connectors.add(view);
@@ -460,7 +460,7 @@ public class PClient implements ScenarioSteppedListener
 
 		view.addSelfHostListener(new IVConnect.BooleanHandler()
 		{
-			public void change(boolean val)
+			public void change(final boolean val)
 			{
 				selfHostChanged(val);
 			}
@@ -489,7 +489,7 @@ public class PClient implements ScenarioSteppedListener
 		view.addServerListener(new ServerSelected()
 		{
 			@Override
-			public void selected(InetAddress val)
+			public void selected(final InetAddress val)
 			{
 				serverSelected(val);
 			}
@@ -499,7 +499,7 @@ public class PClient implements ScenarioSteppedListener
 		view.addScenarioListener(new ScenarioSelected()
 		{
 			@Override
-			public void selected(LightScenario scenario)
+			public void selected(final LightScenario scenario)
 			{
 				scenarioSelected(scenario);
 			}
@@ -508,7 +508,7 @@ public class PClient implements ScenarioSteppedListener
 		view.addParticipantListener(new ParticipantSelected()
 		{
 			@Override
-			public void selected(LightParticipant participant)
+			public void selected(final LightParticipant participant)
 			{
 				participantSelected(participant);
 			}
@@ -518,7 +518,7 @@ public class PClient implements ScenarioSteppedListener
 		{
 
 			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+			public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput)
 			{
 			}
 
@@ -528,9 +528,10 @@ public class PClient implements ScenarioSteppedListener
 			}
 
 			@Override
-			public Object[] getElements(Object inputElement)
+			public Object[] getElements(final Object inputElement)
 			{
 				@SuppressWarnings("unchecked")
+				final
 				Vector<LightParticipant> res = (Vector<LightParticipant>) inputElement;
 				return res.toArray();
 			}
@@ -538,11 +539,11 @@ public class PClient implements ScenarioSteppedListener
 
 		view.setPartLabelProvider(new ITableLabelProvider()
 		{
-			public void removeListener(ILabelProviderListener listener)
+			public void removeListener(final ILabelProviderListener listener)
 			{
 			}
 
-			public boolean isLabelProperty(Object element, String property)
+			public boolean isLabelProperty(final Object element, final String property)
 			{
 				return false;
 			}
@@ -551,13 +552,13 @@ public class PClient implements ScenarioSteppedListener
 			{
 			}
 
-			public void addListener(ILabelProviderListener listener)
+			public void addListener(final ILabelProviderListener listener)
 			{
 			}
 
-			public String getColumnText(Object element, int columnIndex)
+			public String getColumnText(final Object element, final int columnIndex)
 			{
-				LightParticipant pt = (LightParticipant) element;
+				final LightParticipant pt = (LightParticipant) element;
 				String res;
 				switch (columnIndex)
 				{
@@ -577,14 +578,14 @@ public class PClient implements ScenarioSteppedListener
 				return res;
 			}
 
-			public Image getColumnImage(Object element, int columnIndex)
+			public Image getColumnImage(final Object element, final int columnIndex)
 			{
 				return null;
 			}
 		});
 	}
 
-	protected void selfHostChanged(boolean val)
+	protected void selfHostChanged(final boolean val)
 	{
 
 		try
@@ -593,7 +594,7 @@ public class PClient implements ScenarioSteppedListener
 			{
 				_selfHostServer = new AServer();
 				// ok, give the server some data
-				MultiScenarioLister lister = new MultiScenarioLister()
+				final MultiScenarioLister lister = new MultiScenarioLister()
 				{
 
 					@Override
@@ -614,7 +615,7 @@ public class PClient implements ScenarioSteppedListener
 				_selfHostServer.stop();
 
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -628,16 +629,16 @@ public class PClient implements ScenarioSteppedListener
 		if (_connectors.size() > 0)
 		{
 			conny = _connectors.firstElement();
-			String address = conny.getString("Connect to ASSET Server",
+			final String address = conny.getString("Connect to ASSET Server",
 					"Please type in IP address");
 			if (address != null)
 			{
 				try
 				{
-					InetAddress in = InetAddress.getByName(address);
+					final InetAddress in = InetAddress.getByName(address);
 					serverSelected(in);
 				}
-				catch (UnknownHostException e)
+				catch (final UnknownHostException e)
 				{
 					Activator.logError(org.eclipse.core.runtime.Status.ERROR,
 							"Whilst connecting to ASSET server", e);
@@ -657,27 +658,27 @@ public class PClient implements ScenarioSteppedListener
 			_model.stopListenScen(_listeningTo.name);
 
 			// also disable the relevant bits
-			Iterator<IVConnect> iter = _connectors.iterator();
+			final Iterator<IVConnect> iter = _connectors.iterator();
 			while (iter.hasNext())
 			{
-				IVConnect ivConnect = (IVConnect) iter.next();
+				final IVConnect ivConnect = (IVConnect) iter.next();
 				ivConnect.disableParticipants();
 				ivConnect.enableServers();
 				ivConnect.enableScenarios();
 				ivConnect.disableDisconnect();
 			}
 
-			Iterator<IVTimeControl> iter2 = _timeControllers.iterator();
+			final Iterator<IVTimeControl> iter2 = _timeControllers.iterator();
 			while (iter2.hasNext())
 			{
-				IVTimeControl ivTime = iter2.next();
+				final IVTimeControl ivTime = iter2.next();
 				ivTime.setEnabled(false);
 			}
 
-			Iterator<IVPartControl> iter3 = _partControllers.iterator();
+			final Iterator<IVPartControl> iter3 = _partControllers.iterator();
 			while (iter3.hasNext())
 			{
-				IVPartControl ivPart = (IVPartControl) iter3.next();
+				final IVPartControl ivPart = (IVPartControl) iter3.next();
 				ivPart.setEnabled(false);
 			}
 

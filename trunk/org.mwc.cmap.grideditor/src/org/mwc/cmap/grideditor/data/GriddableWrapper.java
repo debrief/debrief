@@ -58,29 +58,29 @@ public class GriddableWrapper implements GriddableSeries
 		return _onlyVisItems;
 	}
 
-	public void setOnlyShowVisibleItems(boolean onlyVisItems)
+	public void setOnlyShowVisibleItems(final boolean onlyVisItems)
 	{
 		_onlyVisItems = onlyVisItems;
 	}
 
-	public GriddableWrapper(EditableWrapper item)
+	public GriddableWrapper(final EditableWrapper item)
 	{
 		_item = item;
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener)
+	public void addPropertyChangeListener(final PropertyChangeListener listener)
 	{
 		if (_item.getEditable() instanceof SupportsPropertyListeners)
 		{
-			SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+			final SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 					.getEditable();
 			pw.addPropertyChangeListener(listener);
 		}
 	}
 
-	public void deleteItem(TimeStampedDataItem subject)
+	public void deleteItem(final TimeStampedDataItem subject)
 	{
-		GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
+		final GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
 		gs.removeElement((Editable) subject);
 
 		// tell everybody something's changed
@@ -94,10 +94,10 @@ public class GriddableWrapper implements GriddableSeries
 	 * @param subject
 	 * 
 	 */
-	public void fireExtended(String propertyName, TimeStampedDataItem subject)
+	public void fireExtended(final String propertyName, final TimeStampedDataItem subject)
 	{
 		// start off with a plain modified event (to inform ourselves)
-		SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+		final SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 				.getEditable();
 		// ok, inform any listeners
 		pw.firePropertyChange(propertyName, null, subject);
@@ -107,11 +107,11 @@ public class GriddableWrapper implements GriddableSeries
 			_item.getLayers().fireExtended(null, _item.getTopLevelLayer());
 	}
 
-	public void fireModified(TimeStampedDataItem subject)
+	public void fireModified(final TimeStampedDataItem subject)
 	{
 		if (_item.getEditable() instanceof SupportsPropertyListeners)
 		{
-			SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+			final SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 					.getEditable();
 			// ok, inform any listeners
 			pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null, subject);
@@ -125,7 +125,7 @@ public class GriddableWrapper implements GriddableSeries
 		// _item.getLayers().fireModified(_item.getTopLevelLayer());
 	}
 
-	public void fireReformatted(TimeStampedDataItem subject)
+	public void fireReformatted(final TimeStampedDataItem subject)
 	{
 		cachedFireReformatted(_item.getLayers(), _item.getTopLevelLayer());
 	}
@@ -133,7 +133,7 @@ public class GriddableWrapper implements GriddableSeries
 	private void cachedFireReformatted(final Layers layers, final Layer topLayer)
 	{
 		// create the runnable
-		Runnable runme = new Runnable()
+		final Runnable runme = new Runnable()
 		{
 			public void run()
 			{
@@ -150,7 +150,7 @@ public class GriddableWrapper implements GriddableSeries
 	private void cachedFireModified(final Layers layers, final Layer topLayer)
 	{
 		// create the runnable
-		Runnable runme = new Runnable()
+		final Runnable runme = new Runnable()
 		{
 			public void run()
 			{
@@ -168,37 +168,37 @@ public class GriddableWrapper implements GriddableSeries
 	{
 		if (_myAttributes == null)
 		{
-			Vector<GriddableItemDescriptor> items = new Vector<GriddableItemDescriptor>();
-			GriddableSeriesMarker series = (GriddableSeriesMarker) _item
+			final Vector<GriddableItemDescriptor> items = new Vector<GriddableItemDescriptor>();
+			final GriddableSeriesMarker series = (GriddableSeriesMarker) _item
 					.getEditable();
 
-			Editable sampleItem = series.getSampleGriddable();
+			final Editable sampleItem = series.getSampleGriddable();
 			// just check we've got some sample data
 			if (sampleItem == null)
 				return _myAttributes;
 
-			EditorType info = sampleItem.getInfo();
+			final EditorType info = sampleItem.getInfo();
 			if (info instanceof Griddable)
 			{
-				IPropertyDescriptor[] props = _item.getGriddablePropertyDescriptors();
+				final IPropertyDescriptor[] props = _item.getGriddablePropertyDescriptors();
 
 				if (props != null)
 				{
 					// wrap them
 					for (int i = 0; i < props.length; i++)
 					{
-						IDebriefProperty desc = (IDebriefProperty) props[i];
+						final IDebriefProperty desc = (IDebriefProperty) props[i];
 
-						Object dataObject = desc.getRawValue();
-						Class<?> dataClass = dataObject.getClass();
+						final Object dataObject = desc.getRawValue();
+						final Class<?> dataClass = dataObject.getClass();
 						GriddableItemDescriptor gd;
 
 						// aah, is this a 'special' class?
 						if (dataClass == WorldLocation.class)
 						{
-							WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
-							WorldLocation sample = new WorldLocation(1, 1, 1);
-							String sampleLocationText = worldLocationHelper.getLabelFor(
+							final WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
+							final WorldLocation sample = new WorldLocation(1, 1, 1);
+							final String sampleLocationText = worldLocationHelper.getLabelFor(
 									sample).getText(sample);
 
 							gd = new GriddableItemDescriptorExtension("Location", "Location",
@@ -228,25 +228,25 @@ public class GriddableWrapper implements GriddableSeries
 	public List<TimeStampedDataItem> getItems()
 	{
 		List<TimeStampedDataItem> list = null;
-		Editable obj = _item.getEditable();
+		final Editable obj = _item.getEditable();
 		if (obj instanceof Layer)
 		{
 			list = new Vector<TimeStampedDataItem>();
-			Layer layer = (Layer) obj;
-			Enumeration<Editable> enumer = layer.elements();
+			final Layer layer = (Layer) obj;
+			final Enumeration<Editable> enumer = layer.elements();
 			// does it have any children?
 			if (enumer != null)
 			{
 				while (enumer.hasMoreElements())
 				{
-					Editable ed = enumer.nextElement();
+					final Editable ed = enumer.nextElement();
 
 					if (_onlyVisItems)
 					{
 						// right, this should be a plottable - just check
 						if (ed instanceof Plottable)
 						{
-							Plottable pl = (Plottable) ed;
+							final Plottable pl = (Plottable) ed;
 							if (pl.getVisible())
 							{
 								list.add(0, (TimeStampedDataItem) ed);
@@ -279,33 +279,33 @@ public class GriddableWrapper implements GriddableSeries
 		return _item;
 	}
 
-	public void insertItem(TimeStampedDataItem subject)
+	public void insertItem(final TimeStampedDataItem subject)
 	{
-		GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
+		final GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
 		gs.add((Editable) subject);
 
 		// tell everybody something's changed
 		fireExtended(GriddableSeries.PROPERTY_ADDED, subject);
 	}
 
-	public void insertItemAt(TimeStampedDataItem subject, int index)
+	public void insertItemAt(final TimeStampedDataItem subject, final int index)
 	{
 		// we don't need to worry about the order of the item,
 		// since they're chronologically ordered anyway
 		insertItem(subject);
 	}
 
-	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	public TimeStampedDataItem makeCopy(final TimeStampedDataItem item)
 	{
-		GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
+		final GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
 		return gs.makeCopy(item);
 	}
 
-	public void removePropertyChangeListener(PropertyChangeListener listener)
+	public void removePropertyChangeListener(final PropertyChangeListener listener)
 	{
 		if (_item.getEditable() instanceof SupportsPropertyListeners)
 		{
-			SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+			final SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 					.getEditable();
 			pw.removePropertyChangeListener(listener);
 		}

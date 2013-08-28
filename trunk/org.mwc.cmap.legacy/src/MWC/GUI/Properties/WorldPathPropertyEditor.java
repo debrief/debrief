@@ -26,7 +26,7 @@ abstract public class WorldPathPropertyEditor  extends
   abstract public java.awt.Component getCustomEditor();
   abstract protected void resetData();
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof WorldPath)
     {
@@ -47,17 +47,17 @@ abstract public class WorldPathPropertyEditor  extends
     return _myPath;
   }
 
-	public void setChart(MWC.GUI.PlainChart theChart)
+	public void setChart(final MWC.GUI.PlainChart theChart)
   {
     _myChart = theChart;
   }
 
-  public void setPanel(PropertiesPanel thePanel)
+  public void setPanel(final PropertiesPanel thePanel)
   {
     _thePanel = thePanel;
   }
 
-  public void setParent(ToolParent theParent)
+  public void setParent(final ToolParent theParent)
   {
     _theParent = theParent;
   }

@@ -35,7 +35,7 @@ public class GtActivator extends AbstractUIPlugin
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void start(BundleContext context) throws Exception
+	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
 		plugin = this;
@@ -55,12 +55,12 @@ public class GtActivator extends AbstractUIPlugin
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logError(int severity, String message, Throwable exception)
+	public static void logError(final int severity, final String message, final Throwable exception)
 	{
-		GtActivator singleton = getDefault();
+		final GtActivator singleton = getDefault();
 		if (singleton != null)
 		{
-			Status stat = new Status(severity, "org.mwc.cmap.gt2plot", Status.OK,
+			final Status stat = new Status(severity, "org.mwc.cmap.gt2plot", Status.OK,
 					message, exception);
 			singleton.getLog().log(stat);
 		}
@@ -77,7 +77,7 @@ public class GtActivator extends AbstractUIPlugin
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void stop(BundleContext context) throws Exception
+	public void stop(final BundleContext context) throws Exception
 	{
 		plugin = null;
 		super.stop(context);
@@ -101,7 +101,7 @@ public class GtActivator extends AbstractUIPlugin
 	 *          the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path)
+	public static ImageDescriptor getImageDescriptor(final String path)
 	{
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}

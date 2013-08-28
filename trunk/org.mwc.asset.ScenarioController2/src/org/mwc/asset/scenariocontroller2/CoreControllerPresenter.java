@@ -73,21 +73,21 @@ public abstract class CoreControllerPresenter
 		void setScenarioName(String name);
 	}
 
-	protected String getFirstNodeName(String SourceXMLFilePath) throws Exception
+	protected String getFirstNodeName(final String SourceXMLFilePath) throws Exception
 	{
 		/* Check whether file is XML or not */
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setValidating(false);
 		factory.setNamespaceAware(true);
 		try
 		{
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse(SourceXMLFilePath);
+			final DocumentBuilder builder = factory.newDocumentBuilder();
+			final Document document = builder.parse(SourceXMLFilePath);
 
-			NodeList nl = document.getElementsByTagName("*");
+			final NodeList nl = document.getElementsByTagName("*");
 			return nl.item(0).getNodeName();
 		}
-		catch (IOException ioe)
+		catch (final IOException ioe)
 		{
 			CorePlugin.logError(Status.ERROR, "Whilst getting first node in " + SourceXMLFilePath, ioe);
 			return null;
@@ -95,11 +95,11 @@ public abstract class CoreControllerPresenter
 
 	}
 
-	protected boolean isRelativePath(File tgtDir)
+	protected boolean isRelativePath(final File tgtDir)
 	{
 		boolean res = true;
 
-		String thePath = tgtDir.getPath();
+		final String thePath = tgtDir.getPath();
 
 		// use series of tests to check whether this is a relative path
 		if (thePath.length() == 0)
@@ -141,14 +141,14 @@ public abstract class CoreControllerPresenter
 
 	protected final ScenarioDisplay _coreDisplay;
 
-	public CoreControllerPresenter(ScenarioDisplay display)
+	public CoreControllerPresenter(final ScenarioDisplay display)
 	{
 		_coreDisplay = display;
 
 		// ok, sort out the file drop handler
 		_coreDisplay.addFileDropListener(new FilesDroppedListener()
 		{
-			public void filesDropped(String[] files)
+			public void filesDropped(final String[] files)
 			{
 				handleTheseFiles(files);
 			}

@@ -132,14 +132,14 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
 
 
     _theSlider = new javax.swing.JSlider();
-    JPanel _theTextContainer = new JPanel();
-    JPanel jPanel1 = new JPanel();
+    final JPanel _theTextContainer = new JPanel();
+    final JPanel jPanel1 = new JPanel();
     jPanel1.setLayout(new FlowLayout());
-    JLabel _dateLabel = new JLabel();
+    final JLabel _dateLabel = new JLabel();
     _dateField = new javax.swing.JTextField(7);
     _dateField.setText("00/00/00");
     _dateField.setToolTipText("Format: " + _dateF.toPattern());
-    JLabel _timeLabel = new JLabel();
+    final JLabel _timeLabel = new JLabel();
     _timeField = new javax.swing.JTextField(6);
     _timeField.setText("00:00:00");
     _timeField.setToolTipText("Format:" + _timeF.toPattern());
@@ -325,7 +325,7 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
    *
    * @param dtg the current DTG
    */
-  private void setSliderValue(HiResDate dtg)
+  private void setSliderValue(final HiResDate dtg)
   {
     // and set it
     final int newVal = convertToSliderUnits(dtg);
@@ -363,7 +363,7 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
       val = new HiResDate(0, theDate + theTime + theMicros);
 
     }
-    catch (ParseException e)
+    catch (final ParseException e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -427,7 +427,7 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
    * @param dtg the DTG we are converting
    * @return the slider position to use
    */
-  private int convertToSliderUnits(HiResDate dtg)
+  private int convertToSliderUnits(final HiResDate dtg)
   {
     int res = 0;
 
@@ -466,7 +466,7 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
     val *= SCALE_FACTOR;
 
     // calculate offset from min date
-    HiResDate res = new HiResDate(0, _startDTG.getMicros() + val);
+    final HiResDate res = new HiResDate(0, _startDTG.getMicros() + val);
 
     // done.
     return res;

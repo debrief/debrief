@@ -95,7 +95,7 @@ public class PaneLayout implements LayoutManager2
    *  relative sizes of the components by clicking and dragging
    *  on this area. Default is 0.
    */
-  public void setGap(int gap) {
+  public void setGap(final int gap) {
     this.gap = gap;
   }
 
@@ -111,7 +111,7 @@ public class PaneLayout implements LayoutManager2
    *  paneConstraints.splitComponent is ignored
    *  the components are not redrawn until layoutContainer is called
    */
-  public void setConstraints(Component child,PaneConstraints constraints) {
+  public void setConstraints(final Component child,final PaneConstraints constraints) {
     //System.err.println("PaneLayout.setConstraints " + constraints);
     setComponentConstraints(child,constraints);
     lastDeletion = null;
@@ -121,13 +121,13 @@ public class PaneLayout implements LayoutManager2
    * (Internal) implementation of setConstraints
    * returns false if component is not found
    */
-  private boolean setComponentConstraints(Component child,PaneConstraints constraints) {
+  private boolean setComponentConstraints(final Component child,final PaneConstraints constraints) {
     if (rootNode == null) {
       //System.err.println("PaneLayout.setComponentConstraints: setting root node to " + constraints.name);
       rootNode = new PaneNode(constraints.name,child,PaneConstraints.ROOT);
     }
     else {
-      PaneNode node = rootNode.getParentNode(child,null);
+      final PaneNode node = rootNode.getParentNode(child,null);
       if (node != null) {
         node.setConstraints(child,constraints);
         //System.err.println("PaneLayout.setComponentConstraints:");
@@ -142,16 +142,16 @@ public class PaneLayout implements LayoutManager2
   /**
    * returns the PaneConstraints for the specified component
    */
-  public PaneConstraints getConstraints(Component comp) {
+  public PaneConstraints getConstraints(final Component comp) {
     PaneConstraints constraints = null;
     if (rootNode != null) {
-      PaneNode node = rootNode.getParentNode(comp,null);
+      final PaneNode node = rootNode.getParentNode(comp,null);
       if (node != null) {
         if (node.childComponent == comp)
           constraints = new PaneConstraints(node.name,node.name,"Root",0.5f);  //NORES
          else {
-           float proportion = node.heightDivide * node.widthDivide;
-           String splitComponentName = node.childNodeA.getNodeAComponent();
+           final float proportion = node.heightDivide * node.widthDivide;
+           final String splitComponentName = node.childNodeA.getNodeAComponent();
            String name = node.childNodeB.getNodeAComponent();
            if (node.childNodeA.childComponent == comp)
              name = node.childNodeB.name;
@@ -189,7 +189,7 @@ public class PaneLayout implements LayoutManager2
    * Removes the specified node from the layout - although not from the container itself
    * a LayoutManager Interface method
    */
-  public void removeLayoutComponent(Component comp) {
+  public void removeLayoutComponent(final Component comp) {
     if (comp == null) {
       lastDeletion = null;
       return;
@@ -199,7 +199,7 @@ public class PaneLayout implements LayoutManager2
       if (rootNode.childComponent == comp)
         rootNode = null;
       else {
-        PaneNode parent = rootNode.getImmediateParent(comp);
+        final PaneNode parent = rootNode.getImmediateParent(comp);
         if (parent != null) {
           //System.err.println(parent.childNodeA.name + "-" +parent.childNodeB.name);
           lastDeletion = parent.removeChild(comp);
@@ -215,9 +215,9 @@ public class PaneLayout implements LayoutManager2
    * @param parent the component which needs to be laid out
    * @see #getMinimumSize
    */
-  public Dimension preferredLayoutSize(Container parent) {
+  public Dimension preferredLayoutSize(final Container parent) {
     if (rootNode != null) {
-      Dimension d = rootNode.getPreferredSize(gap);
+      final Dimension d = rootNode.getPreferredSize(gap);
       //System.err.println("PaneLayout.preferredLayoutSize returns:" + d);
       return  d;
     }
@@ -232,7 +232,7 @@ public class PaneLayout implements LayoutManager2
    * @param parent the component which needs to be laid out
    * @see #getPreferredSize
    */
-  public Dimension minimumLayoutSize(Container parent) {
+  public Dimension minimumLayoutSize(final Container parent) {
     return preferredLayoutSize(parent);
   }
 
@@ -242,11 +242,11 @@ public class PaneLayout implements LayoutManager2
    * @param parent the specified component being laid out
    * @see Container
    */
-  public void layoutContainer(Container parent) {
+  public void layoutContainer(final Container parent) {
     //System.err.println("PaneLayout.layoutContainer");
     if (rootNode != null) {
-      Dimension d = parent.getSize();
-      Rectangle location = new Rectangle(0, 0, d.width, d.height);
+      final Dimension d = parent.getSize();
+      final Rectangle location = new Rectangle(0, 0, d.width, d.height);
       rootNode.assertLocation(location,gap);
     }
   }
@@ -256,10 +256,10 @@ public class PaneLayout implements LayoutManager2
    * called by the UI Designer's PaneLayoutAssistant after components have been
    * moved or deleted
    */
-  public String[] getAddOrder(Container parent) {
-    Component[] componentArray = parent.getComponents();  //just to get the correct size array
-    String[] componentNames = new String[componentArray.length];
-    Point subscript = new Point(0,0);  // wrap int in an object whose value the called methods can tweak
+  public String[] getAddOrder(final Container parent) {
+    final Component[] componentArray = parent.getComponents();  //just to get the correct size array
+    final String[] componentNames = new String[componentArray.length];
+    final Point subscript = new Point(0,0);  // wrap int in an object whose value the called methods can tweak
     if (rootNode != null) {
       if (rootNode.childComponent == null)
         rootNode.getComponents(subscript,componentNames,true);
@@ -272,9 +272,9 @@ public class PaneLayout implements LayoutManager2
   /**
    * (Internal) Adds a child to the layout into a default position
    */
-  void addChild(Component c, float proportion) {
+  void addChild(final Component c, final float proportion) {
     addCount++;
-    String name = "component" + addCount;  //NORES
+    final String name = "component" + addCount;  //NORES
     //System.err.println("PanelLayout.addChild naming component " + name);
     if (rootNode == null)
       rootNode = new PaneNode(name, c, PaneConstraints.TOP);
@@ -287,7 +287,7 @@ public class PaneLayout implements LayoutManager2
    * (SplitPanel specific) Move the divider the amount specified
    *  One paramter will be zero
    */
-  public void dragDivider(int x, int y) {
+  public void dragDivider(final int x, final int y) {
     if (lastSelected != null) {
       //System.err.println("Drag" + lastSelected.childNodeA.location + lastSelected.childNodeB.location  + lastSelected.location);
       lastSelected.drag(x,y);
@@ -309,7 +309,7 @@ public class PaneLayout implements LayoutManager2
    * (SplitPanel specific) determines which divider contains the supplied point
    *  and returns that dividers rectangle
    */
-  public Rectangle getDividerRect(int x, int y) {
+  public Rectangle getDividerRect(final int x, final int y) {
     if (rootNode != null)
       lastSelected = rootNode.hitTest(x,y,gap*2);
     if (lastSelected != null) {
@@ -329,7 +329,7 @@ public class PaneLayout implements LayoutManager2
    * (Internal) Adds a child into the layout by splitting the specified component (assumed to
    * be already present) in the manner specified (ie horizontal or vertical)
    */
-  void addChild(String name,String splitComponentName, String position, Component newComponent, float proportion) {
+  void addChild(final String name,final String splitComponentName, final String position, final Component newComponent, final float proportion) {
     if (rootNode == null) {
       //System.err.println("adding " + name + " as the root node");
       rootNode = new PaneNode(name, newComponent, PaneConstraints.TOP);
@@ -357,8 +357,8 @@ public class PaneLayout implements LayoutManager2
   //     rootNode.select(shift,x,y,gap);
   // }
 
-  public void addLayoutComponent(String name, Component comp) {
-    PaneConstraints pc = new PaneConstraints(name, "", "", 0.5f);
+  public void addLayoutComponent(final String name, final Component comp) {
+    final PaneConstraints pc = new PaneConstraints(name, "", "", 0.5f);
     addLayoutComponent(comp,pc);
   }
 
@@ -369,7 +369,7 @@ public class PaneLayout implements LayoutManager2
   /**
    * add the specified component using the supplied PaneConstraints
    */
-  public void addLayoutComponent(Component newComponent, Object constraints) {
+  public void addLayoutComponent(final Component newComponent, final Object constraints) {
     //try {
     //   String s=null;
     //   s.substring(0);
@@ -387,7 +387,7 @@ public class PaneLayout implements LayoutManager2
         return;
       }
       else {
-        PaneConstraints paneConstraints = (PaneConstraints) constraints  ;
+        final PaneConstraints paneConstraints = (PaneConstraints) constraints  ;
         //System.err.println("adding " + paneConstraints.name);
         addChild(paneConstraints.name,paneConstraints.splitComponentName,paneConstraints.position,newComponent,paneConstraints.proportion);
         lastComponentAdded = paneConstraints.name;
@@ -400,19 +400,19 @@ public class PaneLayout implements LayoutManager2
     //System.err.println("added" + getConstraints(newComponent));
   }
 
-  public Dimension maximumLayoutSize(Container parm1) {
+  public Dimension maximumLayoutSize(final Container parm1) {
     return new Dimension(500,500);
   }
 
-  public float getLayoutAlignmentX(Container parm1) {
+  public float getLayoutAlignmentX(final Container parm1) {
      return 0.5f;
   }
 
-  public float getLayoutAlignmentY(Container parm1) {
+  public float getLayoutAlignmentY(final Container parm1) {
     return 0.5f;
   }
 
-  public void invalidateLayout(Container parm1) {
+  public void invalidateLayout(final Container parm1) {
   }
 
   /**
@@ -422,12 +422,12 @@ public class PaneLayout implements LayoutManager2
    * The UI designer does this (removeLayoutComponent immediately followed by AddLayoutComponent)
    * because the preferred method, setConstraints, is not part of the LayoutManager2 interface
    */
-  boolean justDeleted(Component newComponent, PaneConstraints constraints) {
+  boolean justDeleted(final Component newComponent, final PaneConstraints constraints) {
     if (lastDeletion == null)
       return false;
     if (lastDeletion.childComponent == newComponent) {
       if (lastDeletion.childNodeA == null) {
-        PaneNode node = lastDeletion.childNodeB;
+        final PaneNode node = lastDeletion.childNodeB;
         if (node == null) {
           //System.err.println("justDeleted: node is null");
           return false;
@@ -436,7 +436,7 @@ public class PaneLayout implements LayoutManager2
         if (constraints.splitComponentName.equals(node.getNodeAComponent()) ||
              !lastDeletion.name.equals(constraints.name)) {
           //System.err.println("lastDeletion restored as nodeB " +constraints.name);
-          PaneNode newNode = new PaneNode(node.childNodeA,node.childNodeB,"",0.5f);
+          final PaneNode newNode = new PaneNode(node.childNodeA,node.childNodeB,"",0.5f);
           newNode.widthDivide = node.widthDivide;
           newNode.heightDivide = node.heightDivide;
           newNode.name = node.name;
@@ -455,11 +455,11 @@ public class PaneLayout implements LayoutManager2
       }
       else {
         //System.err.println("lastDeletion restored as nodeA " +constraints.name);
-        PaneNode node = lastDeletion.childNodeA;
+        final PaneNode node = lastDeletion.childNodeA;
         //System.err.println(constraints.splitComponentName +"," + node.getNodeAComponent());
         // verify that split component constraint did not change
         //if (constraints.splitComponentName.equals(node.getNodeAComponent())) {
-          PaneNode newNode = new PaneNode(node.childNodeA,node.childNodeB,"",0.5f);
+          final PaneNode newNode = new PaneNode(node.childNodeA,node.childNodeB,"",0.5f);
           newNode.widthDivide = node.widthDivide;
           newNode.heightDivide = node.heightDivide;
           newNode.name = node.name;
@@ -516,7 +516,7 @@ class PaneNode
   // Is the node selected?
   //boolean selected = false;
 
-  public PaneNode(String childName,Component child, String position) {
+  public PaneNode(final String childName,final Component child, final String position) {
     childComponent = child;
     name = childName;
     widthDivide = 1.0f;
@@ -525,7 +525,7 @@ class PaneNode
     reverse = position.equals(PaneConstraints.TOP) || position.equals(PaneConstraints.LEFT);  //NORES
   }
 
-  public PaneNode(PaneNode childA, PaneNode childB, String position, float proportion) {
+  public PaneNode(final PaneNode childA, final PaneNode childB, final String position, final float proportion) {
     childNodeA = childA;
     childNodeB = childB;
     if (position.equals(PaneConstraints.TOP) || position.equals(PaneConstraints.BOTTOM)) {
@@ -550,7 +550,7 @@ class PaneNode
     //Diagnostic.println("childNodeB:" + childNodeB);           //NORES
   }
 
-  public void setConstraints(Component child,PaneConstraints constraints) {
+  public void setConstraints(final Component child,final PaneConstraints constraints) {
     if (childComponent != null)
       return;
     if (constraints.position.equals(PaneConstraints.TOP) ||
@@ -580,7 +580,10 @@ class PaneNode
     }
   }
 
-  public void addChild(String childName, Component child, String position, float proportion) {
+  public void addChild(final String childName, final Component child, 
+		  final String position, final float proportion) {
+	String thePosition = position;
+	float theProportion = proportion;
     // Only two cases: either
     // a) node contains a single component => split it
     // b) node contains two sub nodes => pass the component on
@@ -595,19 +598,19 @@ class PaneNode
       // ii)  Put new node into the other child slot
       childNodeB = new PaneNode(childName,child, PaneConstraints.ROOT);
       // iii) Split as instructed
-      proportion = 1.0f - proportion;
-      if (position.equals(PaneConstraints.RIGHT) || position.equals(PaneConstraints.BOTTOM))
+      theProportion = 1.0f - theProportion;
+      if (thePosition.equals(PaneConstraints.RIGHT) || thePosition.equals(PaneConstraints.BOTTOM))
          reverse = false;
       else
         reverse = true;
-      if (position.equals(PaneConstraints.LEFT) || position.equals(PaneConstraints.RIGHT)) {
-        widthDivide = proportion;
+      if (thePosition.equals(PaneConstraints.LEFT) || thePosition.equals(PaneConstraints.RIGHT)) {
+        widthDivide = theProportion;
         heightDivide = 1.0f;
         horizontal = false;
       }
       else {
         widthDivide = 1.0f;
-        heightDivide = proportion;
+        heightDivide = theProportion;
         horizontal = true;
       }
       //Diagnostic.println("addChild "+splitHorizontal+"  widthD:"+widthDivide+" heightD:"+heightDivide);
@@ -615,14 +618,14 @@ class PaneNode
     else {
       // Option b). Pass the component in to the second node
       if (horizontal)
-        position = PaneConstraints.RIGHT;
+        thePosition = PaneConstraints.RIGHT;
       else
-        position = PaneConstraints.BOTTOM;
-      childNodeB.addChild(childName,child, position, proportion);
+        thePosition = PaneConstraints.BOTTOM;
+      childNodeB.addChild(childName,child, thePosition, theProportion);
     }
   }
 
-  public boolean addChildSplit(String childName,String splitComponent, String position, Component newComponent, float proportion) {
+  public boolean addChildSplit(final String childName,final String splitComponent, final String position, final Component newComponent, final float proportion) {
     // Split this one?
     if (childComponent != null) {
       if (name != null)
@@ -643,7 +646,7 @@ class PaneNode
     return false;
   }
 
-  public Dimension getPreferredSize(int gap) {
+  public Dimension getPreferredSize(final int gap) {
     // is This one split?
     Dimension d = null;
     try {
@@ -653,8 +656,8 @@ class PaneNode
         return d;
       }
 
-      Dimension a = childNodeA.getPreferredSize(gap);
-      Dimension b = childNodeB.getPreferredSize(gap);
+      final Dimension a = childNodeA.getPreferredSize(gap);
+      final Dimension b = childNodeB.getPreferredSize(gap);
 
       float divisor = widthDivide;
       if (!horizontal) {
@@ -680,7 +683,7 @@ class PaneNode
       }
       //System.err.println("PaneNode  has preferred size of:" + d + " divisor=" + divisor + " " +heightDivide +" " + widthDivide);
     }
-    catch(Exception e) {
+    catch(final Exception e) {
       MWC.Utilities.Errors.Trace.trace(e);
     }
     return d;
@@ -704,7 +707,7 @@ class PaneNode
   /**
    * returns the node that points to the child leaf
    */
-  public PaneNode getImmediateParent(Component child) {
+  public PaneNode getImmediateParent(final Component child) {
     if (childComponent != null) {
       if (childComponent == child) {
         return this;
@@ -718,13 +721,13 @@ class PaneNode
       if (childNodeB.childComponent == child)
         return this;
     // Check ChildNodeA
-    PaneNode  rc = childNodeA.getImmediateParent(child);
+    final PaneNode  rc = childNodeA.getImmediateParent(child);
     if (rc != null)
       return rc;
     else
       return childNodeB.getImmediateParent(child);
   }
-  void getComponents(Point subscript,String[] componentArray,boolean parentIsNodeB){
+  void getComponents(final Point subscript,final String[] componentArray,final boolean parentIsNodeB){
     if (childComponent == null) {
       if (parentIsNodeB){
         componentArray[subscript.x] = childNodeA.getNodeAComponent();
@@ -746,7 +749,7 @@ class PaneNode
    * returns the lowest node that points to both the component and the component
    * that it is split from
    */
-  public PaneNode getParentNode(Component child,PaneNode lastBNode) {
+  public PaneNode getParentNode(final Component child,final PaneNode lastBNode) {
     // End the recursion if we have a leaf (ie childComponent != null)
     if (childComponent != null) {
       if (childComponent == child) {
@@ -765,7 +768,7 @@ class PaneNode
         if (childNodeB.childComponent == child)
           return this;
     // Check ChildNodeA
-    PaneNode  resultA = childNodeA.getParentNode(child,lastBNode);
+    final PaneNode  resultA = childNodeA.getParentNode(child,lastBNode);
     if (resultA != null)
       return resultA;
     else
@@ -776,7 +779,7 @@ class PaneNode
    * This method removes a given node.
    * must already be positioned on the parent of the node to be removed
    */
-  public PaneNode removeChild(Component child) {
+  public PaneNode removeChild(final Component child) {
     PaneNode rc = null;
     // Check ChildNodeA
     if (childNodeA.childComponent == child) {
@@ -799,7 +802,7 @@ class PaneNode
     return rc;
   }
 
-  Rectangle getDividerRect(int gap) {
+  Rectangle getDividerRect(final int gap) {
     if (childComponent == null) {
       if (heightDivide == 1.0f) {
         if (reverse)
@@ -858,7 +861,7 @@ class PaneNode
   }
    */
 
-  void drag(int x, int y) {
+  void drag(final int x, final int y) {
      if (childComponent == null) {
       //if (selected) {
         if (heightDivide == 1.0f) {
@@ -896,7 +899,7 @@ class PaneNode
     }
   }
 
-  PaneNode hitTest(int x, int y, int gap) {
+  PaneNode hitTest(final int x, final int y, final int gap) {
     // Make sure this is a node, not a leaf
     if (location != null && childComponent == null) {
       int offset;
@@ -922,7 +925,7 @@ class PaneNode
     return null;
   }
 
-  void assertLocation(Rectangle locationInit,int gap) {
+  void assertLocation(final Rectangle locationInit,final int gap) {
     location.x = locationInit.x;
     location.y = locationInit.y;
     location.width = locationInit.width;
@@ -937,8 +940,8 @@ class PaneNode
       }
     }
     else {
-      Rectangle childALocation = new Rectangle();
-      Rectangle childBLocation = new Rectangle();
+      final Rectangle childALocation = new Rectangle();
+      final Rectangle childBLocation = new Rectangle();
 
       calculateLocations(location, childALocation, childBLocation, gap);
 
@@ -947,7 +950,7 @@ class PaneNode
     }
   }
 
-  void absorbChildNode(PaneNode child) {
+  void absorbChildNode(final PaneNode child) {
     //child is going away - immediate parent is adjusted so it looks just like child
     if (child.childComponent != null) {
       childComponent = child.childComponent;
@@ -964,13 +967,13 @@ class PaneNode
     }
   }
 
-  void calculateLocations(Rectangle location1,
-                          Rectangle childALocation,
-                          Rectangle childBLocation,
-                          int Border) {
+  void calculateLocations(final Rectangle location1,
+                          final Rectangle childALocation,
+                          final Rectangle childBLocation,
+                          final int border) {
     //Diagnostic.println("CALC horizontal:"+horizontal+" widthD:"+widthDivide+" heightD:"+heightDivide+" loc:"+location);
     //Diagnostic.println("  xOffset:"+xOffset+"  yOffset:"+yOffset);
-    Border = Border + Border;
+    final int theBorder = border + border;
 
     if (heightDivide == 1.0f) {
       float proportion = widthDivide;
@@ -978,16 +981,16 @@ class PaneNode
         proportion = 1.0f - proportion;
 
       // Work out the location of the two children
-      xOffset = (int)((float)(location1.width -Border)* proportion);
+      xOffset = (int)((float)(location1.width -theBorder)* proportion);
 
       childALocation.x = location1.x;
       childALocation.y = location1.y;
       childALocation.width = xOffset ;
       childALocation.height = location1.height;
 
-      childBLocation.x = location1.x + xOffset + Border ;
+      childBLocation.x = location1.x + xOffset + theBorder ;
       childBLocation.y = location1.y;
-      childBLocation.width = location1.width - xOffset - Border  ;
+      childBLocation.width = location1.width - xOffset - theBorder  ;
       childBLocation.height = location1.height;
 
     }
@@ -996,21 +999,21 @@ class PaneNode
       if (reverse)
         proportion = 1.0f - proportion;
       // Work out the location of the two children
-      yOffset = (int)((float)(location1.height -Border) * proportion);
+      yOffset = (int)((float)(location1.height -theBorder) * proportion);
       childALocation.x = location1.x;
       childALocation.y = location1.y;
       childALocation.width = location1.width;
       childALocation.height = yOffset ;
 
       childBLocation.x = location1.x ;
-      childBLocation.y = location1.y + yOffset + Border;
+      childBLocation.y = location1.y + yOffset + theBorder;
       childBLocation.width = location1.width;
-      childBLocation.height =  location1.height - yOffset - Border;
+      childBLocation.height =  location1.height - yOffset - theBorder;
 
     }
     if (reverse) {
       //System.err.println("reverse");
-      Rectangle temp =  new Rectangle(childALocation.x,childALocation.y,
+      final Rectangle temp =  new Rectangle(childALocation.x,childALocation.y,
                                       childALocation.width,childALocation.height);
       childALocation.x = childBLocation.x;
       childALocation.y = childBLocation.y;

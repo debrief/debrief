@@ -9,7 +9,7 @@ public class ColumnDescriptor
 
 	private boolean myIsVisible;
 
-	public ColumnDescriptor(String name, int index, boolean visible)
+	public ColumnDescriptor(final String name, final int index, final boolean visible)
 	{
 		myName = name;
 		myIndex = index;
@@ -31,7 +31,7 @@ public class ColumnDescriptor
 		return myIsVisible;
 	}
 
-	public void setVisible(boolean visible)
+	public void setVisible(final boolean visible)
 	{
 		myIsVisible = visible;
 	}

@@ -9,10 +9,10 @@ public class ScenarioStateHandler extends ASSETResource implements
 {
 
 	@Put
-	public void store(String newState)
+	public void store(final String newState)
 	{
-		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
-		ASSETHost host = hostP.getHost();
+		final ASSETHost.HostProvider hostP = (HostProvider) getApplication();
+		final ASSETHost host = hostP.getHost();
 		host.setScenarioStatus(getScenarioId(),newState);
 	}
 }

@@ -10,7 +10,7 @@ public interface ItemsInterpolatorFactory {
 
 	public static final ItemsInterpolatorFactory DEFAULT = new ItemsInterpolatorFactory() {
 
-		public ItemsInterpolator createItemsInterpolator(GriddableItemDescriptor descriptor, TimeStampedDataItem... baseItems) {
+		public ItemsInterpolator createItemsInterpolator(final GriddableItemDescriptor descriptor, final TimeStampedDataItem... baseItems) {
 			if (!AbstractItemsInterpolator.canInterpolate(descriptor)) {
 				return null;
 			}

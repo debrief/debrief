@@ -10,7 +10,7 @@ public class LineWidthPropertyEditor extends AbstractPropertyEditor
   ////////////////////////////////////////////////////
   // member objects
   ////////////////////////////////////////////////////
-  private String _stringTags[] =
+  private final String _stringTags[] =
   {
                      "Hairwidth",
                      "1 pixels",

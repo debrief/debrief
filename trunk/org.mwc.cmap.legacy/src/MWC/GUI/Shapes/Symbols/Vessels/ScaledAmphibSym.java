@@ -30,7 +30,7 @@ public class ScaledAmphibSym extends WorldScaledSym
 
 	protected Vector<double[][]> getCoords()
 	{
-		Vector<double[][]> hullLines = new Vector<double[][]>();
+		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
 		double[][] hullForm;
 

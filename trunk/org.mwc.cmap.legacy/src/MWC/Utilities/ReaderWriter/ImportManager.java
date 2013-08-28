@@ -148,7 +148,7 @@ public class ImportManager
   /**
    * find the current exporter, and export the item
    */
-  static public void exportThis(Plottable item)
+  static public void exportThis(final Plottable item)
   {
     if (theManager == null)
     {
@@ -169,7 +169,7 @@ public class ImportManager
 //      cl.setContents(ss, ss);
 
       // just use the first exporter, for now
-      PlainImporter pi = (PlainImporter) theManager._theImporters.elementAt(0);
+      final PlainImporter pi = (PlainImporter) theManager._theImporters.elementAt(0);
       
       // get the export ready
       pi.startExport(item);
@@ -187,7 +187,7 @@ public class ImportManager
   /**
    * find the current exporter, and export the item
    */
-  static public void exportThis(String item)
+  static public void exportThis(final String item)
   {
     if (theManager == null)
     {
@@ -197,7 +197,7 @@ public class ImportManager
     if (theManager._theImporters != null)
     {
       // just use the first exporter, for now
-      PlainImporter pi = (PlainImporter) theManager._theImporters.elementAt(0);
+      final PlainImporter pi = (PlainImporter) theManager._theImporters.elementAt(0);
       pi.exportThis(item);
     }
 
@@ -211,13 +211,13 @@ public class ImportManager
    *                determine the type from the suffix
    * @param theData the Destination for the data read in
    */
-  public static void importThis(String fName,
-                                Layers theData)
+  public static void importThis(final String fName,
+                                final Layers theData)
   {
 
 
     System.out.println("importing: " + fName);
-    importThisThread it = new importThisThread(fName, theData);
+    final importThisThread it = new importThisThread(fName, theData);
 
     it.start();
 
@@ -228,7 +228,7 @@ public class ImportManager
       {
         Thread.sleep(200);
       }
-      catch (java.lang.InterruptedException e)
+      catch (final java.lang.InterruptedException e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
@@ -243,9 +243,9 @@ public class ImportManager
    * @param theData   the Stream to read the data from
    * @param theCaller the Destination for the data read in
    */
-  public static void importThese(java.io.File[] _theFiles,
-                                 Layers theData,
-                                 ImportCaller theCaller)
+  public static void importThese(final java.io.File[] _theFiles,
+                                 final Layers theData,
+                                 final ImportCaller theCaller)
   {
 
     if (_theFiles == null)
@@ -255,13 +255,13 @@ public class ImportManager
     // loop through
     for (int i = 0; i < _theFiles.length; i++)
     {
-      java.io.File fl = _theFiles[i];
+      final java.io.File fl = _theFiles[i];
 
       // have we got file?
       if ((fl != null) &&
         (!fl.getName().equals("nullnull")))
       {
-        importThisThread it = new importThisThread(fl.getPath(), theData);
+        final importThisThread it = new importThisThread(fl.getPath(), theData);
 
         it.start();
 
@@ -272,7 +272,7 @@ public class ImportManager
           {
             Thread.sleep(200);
           }
-          catch (java.lang.InterruptedException e)
+          catch (final java.lang.InterruptedException e)
           {
             MWC.Utilities.Errors.Trace.trace(e);
           }
@@ -298,8 +298,8 @@ public class ImportManager
     protected String fName;
     protected Layers theData;
 
-    importThisThread(String _fName,
-                     Layers _theData)
+    importThisThread(final String _fName,
+                     final Layers _theData)
     {
       fName = _fName;
       theData = _theData;
@@ -314,11 +314,11 @@ public class ImportManager
       }
 
       // look through types of import handler
-      Enumeration<PlainImporter> enumer = theManager._theImporters.elements();
+      final Enumeration<PlainImporter> enumer = theManager._theImporters.elements();
 
       while (enumer.hasMoreElements())
       {
-        PlainImporter thisImporter = (PlainImporter) enumer.nextElement();
+        final PlainImporter thisImporter = (PlainImporter) enumer.nextElement();
 
         // is this handler correct type?
         if (thisImporter.canImportThisFile(fName))
@@ -339,7 +339,7 @@ public class ImportManager
   }
 
 
-  static void importThisOne(PlainImporter theImporter, String fName, Layers theData)
+  static void importThisOne(final PlainImporter theImporter, final String fName, final Layers theData)
   {
     try
     {
@@ -347,7 +347,7 @@ public class ImportManager
       if (fName != null)
       {
         // get the file
-        File theFile = new File(fName);
+        final File theFile = new File(fName);
 
         // first check if the file exists
         if(!theFile.exists())
@@ -364,8 +364,8 @@ public class ImportManager
         }
 
         // hey, create the input stream
-        java.io.InputStream is = new java.io.FileInputStream(theFile);
-        java.io.BufferedInputStream bs = new java.io.BufferedInputStream(is);
+        final java.io.InputStream is = new java.io.FileInputStream(theFile);
+        final java.io.BufferedInputStream bs = new java.io.BufferedInputStream(is);
 
         // now get the import to continue with it's struggle!
         theImporter.importThis(fName, bs, theData);
@@ -376,18 +376,18 @@ public class ImportManager
       }
 
     }
-    catch (java.io.FileNotFoundException fe)
+    catch (final java.io.FileNotFoundException fe)
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open File", "Sorry file not found:" + fName);
     }
-    catch (java.io.IOException ie)
+    catch (final java.io.IOException ie)
     {
       MWC.Utilities.Errors.Trace.trace(ie, "Failed to close file: " + fName);
     }
 
   }
 
-  static public void addImporter(PlainImporter newImporter)
+  static public void addImporter(final PlainImporter newImporter)
   {
     if (theManager == null)
     {
@@ -397,7 +397,7 @@ public class ImportManager
     theManager.addThisImporter(newImporter);
   }
 
-  public void addThisImporter(PlainImporter newImporter)
+  public void addThisImporter(final PlainImporter newImporter)
   {
     _theImporters.addElement(newImporter);
   }
@@ -432,8 +432,8 @@ public class ImportManager
     /**
      * constructor, get ready to pass the data to the child
      */
-    public BaseImportCaller(java.io.File[] fileNames,
-                            Layers theData)
+    public BaseImportCaller(final java.io.File[] fileNames,
+                            final Layers theData)
     {
       _fileNames = fileNames;
       _theData = theData;

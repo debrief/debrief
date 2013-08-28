@@ -104,7 +104,7 @@ public class DialogFactory
   static SwingFile _swinger = new SwingFile();
   static AWTFile _awter = new AWTFile();
 
-  static public void useSwing(boolean val)
+  static public void useSwing(final boolean val)
   {
     _useSwing = val;
   }
@@ -114,9 +114,9 @@ public class DialogFactory
    *
    * @return the filename as a string, or null if cancelled
    */
-  static public java.io.File[] getOpenFileName(String filter,
-                                               String description,
-                                               String directory)
+  static public java.io.File[] getOpenFileName(final String filter,
+                                               final String description,
+                                               final String directory)
   {
 
     java.io.File[] res = null;
@@ -141,9 +141,9 @@ public class DialogFactory
    * @param directory   the initial directory to open up in
    * @return the filename as a string, or null if cancelled
    */
-  static public java.io.File getNewFile(String filter,
-                                        String description,
-                                        String directory)
+  static public java.io.File getNewFile(final String filter,
+                                        final String description,
+                                        final String directory)
   {
     if (_useSwing)
       return _swinger.getNewFile(filter,
@@ -155,17 +155,17 @@ public class DialogFactory
                                directory);
   }
 
-  static public void showMessage(String title, String msg)
+  static public void showMessage(final String title, final String msg)
   {
     // create duff frame, that message dialog can appear
     // in centre of
-    Frame tmp = new Frame();
+    final Frame tmp = new Frame();
     // and put the frame in the centre of the screen
-    Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
+    final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
     tmp.setLocation(sz.width / 2,
                     sz.height / 2);
     // open the dialog
-    MessageDialog md = new MessageDialog(tmp,
+    final MessageDialog md = new MessageDialog(tmp,
                                          null,
                                          title,
                                          msg,
@@ -175,7 +175,7 @@ public class DialogFactory
   }
 
 
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
     showMessage("test", "duff");
     System.exit(0);
@@ -197,16 +197,16 @@ public class DialogFactory
    *
    * @return the integer in an Integer object, or a null value
    */
-  static public Integer getInteger(String title,
-                                   String message,
-                                   int defaultVal)
+  static public Integer getInteger(final String title,
+                                   final String message,
+                                   final int defaultVal)
   {
     Integer res = null;
 
-    javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
+    final javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
     myMessage.setInputValue("" + defaultVal);
 
-    String s = JOptionPane.showInputDialog(message, new String("" + defaultVal));
+    final String s = JOptionPane.showInputDialog(message, new String("" + defaultVal));
 
     if (s == null)
     {
@@ -218,7 +218,7 @@ public class DialogFactory
       {
         res = Integer.valueOf(s);
       }
-      catch (java.lang.NumberFormatException e)
+      catch (final java.lang.NumberFormatException e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
         showMessage("Integer entry", "Sorry, invalid integer entered");
@@ -233,16 +233,16 @@ public class DialogFactory
    *
    * @return the integer in an Integer object, or a null value
    */
-  static public Double getDouble(String title,
-                                 String message,
-                                 int defaultVal)
+  static public Double getDouble(final String title,
+                                 final String message,
+                                 final int defaultVal)
   {
     Double res = null;
 
-    javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
+    final javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
     myMessage.setInitialSelectionValue("" + defaultVal);
 
-    String s = JOptionPane.showInputDialog(message);
+    final String s = JOptionPane.showInputDialog(message);
 
     if (s == null)
     {
@@ -256,7 +256,7 @@ public class DialogFactory
         {
           res = Double.valueOf(s);
         }
-        catch (java.lang.NumberFormatException e)
+        catch (final java.lang.NumberFormatException e)
         {
           MWC.Utilities.Errors.Trace.trace(e);
           showMessage("Integer entry", "Sorry, invalid double entered");

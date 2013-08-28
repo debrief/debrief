@@ -186,14 +186,14 @@ public class MultiPathPresenter
 	 * @param display
 	 * @param model
 	 */
-	public MultiPathPresenter(Display display)
+	public MultiPathPresenter(final Display display)
 	{
 		_display = display;
 		_model = new MultiPathModel();
 
 	}
 
-	protected void loadSVP(String path)
+	protected void loadSVP(final String path)
 	{
 		try
 		{
@@ -209,26 +209,26 @@ public class MultiPathPresenter
 			_svpPath = path;
 
 			// display the filename
-			File file = new File(path);
-			String fName = file.getName();
+			final File file = new File(path);
+			final String fName = file.getName();
 			_display.setSVPName(fName);
 			
 			// and set the depth slider max value
-			double maxDepth = _svp.getMaxDepth();
+			final double maxDepth = _svp.getMaxDepth();
 			_display.setSliderMax((int)maxDepth);
 
 		}
-		catch (NumberFormatException e)
+		catch (final NumberFormatException e)
 		{
 			CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
 			_svp = null;
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
 			_svp = null;
 		}
-		catch (DataFormatException e)
+		catch (final DataFormatException e)
 		{
 			_display.showError("Does not look like SVP data");
 		}
@@ -285,16 +285,16 @@ public class MultiPathPresenter
 
 	}
 
-	protected TimeSeries getCalculatedProfile(int val)
+	protected TimeSeries getCalculatedProfile(final int val)
 	{
 		TimeSeries res = null;
-		TrackDataProvider tv = getTracks();
+		final TrackDataProvider tv = getTracks();
 		
 		// check we've actually got some tracks
 		if (tv != null)
 		{
-			WatchableList primary = tv.getPrimaryTrack();
-			WatchableList secondary = tv.getSecondaryTracks()[0];
+			final WatchableList primary = tv.getPrimaryTrack();
+			final WatchableList secondary = tv.getSecondaryTracks()[0];
 			if ((primary != null) && (secondary != null))
 			{
 				res = _model.getCalculatedProfileFor(primary, secondary, _svp, _times,
@@ -304,7 +304,7 @@ public class MultiPathPresenter
 		return res;
 	}
 
-	protected void updateCalc(int val)
+	protected void updateCalc(final int val)
 	{
 
 		// do we have our measured series?
@@ -324,9 +324,9 @@ public class MultiPathPresenter
 		{
 			calculated = getCalculatedProfile(val);
 		}
-		catch (CalculationException e)
+		catch (final CalculationException e)
 		{
-			String trouble = e.getMessage();
+			final String trouble = e.getMessage();
 			_display.setSliderText(trouble);
 		}
 
@@ -376,7 +376,7 @@ public class MultiPathPresenter
 		return tv;
 	}
 
-	public void saveState(IMemento memento)
+	public void saveState(final IMemento memento)
 	{
 		// store the filenames
 		if (_svpPath != null)
@@ -392,13 +392,13 @@ public class MultiPathPresenter
 	 * initialise ourselves from the memento
 	 * 
 	 */
-	public void init(IMemento memento)
+	public void init(final IMemento memento)
 	{
 		if (memento != null)
 		{
 			_svpPath = memento.getString(SVP_FILE);
 			_intervalPath = memento.getString(INTERVAL_FILE);
-			Integer depth = memento.getInteger(DEPTH_VAL);
+			final Integer depth = memento.getInteger(DEPTH_VAL);
 			if (depth != null)
 				_curDepth = depth;
 		}
@@ -409,7 +409,7 @@ public class MultiPathPresenter
 	 * 
 	 * @param path
 	 */
-	protected void loadIntervals(String path)
+	protected void loadIntervals(final String path)
 	{
 		try
 		{
@@ -427,22 +427,22 @@ public class MultiPathPresenter
 			_measuredSeries = null;
 
 			// get the filename
-			File file = new File(path);
-			String fName = file.getName();
+			final File file = new File(path);
+			final String fName = file.getName();
 			_display.setIntervalName(fName);
 
 		}
-		catch (NumberFormatException e)
+		catch (final NumberFormatException e)
 		{
 			CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
 			_times = null;
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
 			_times = null;
 		}
-		catch (DataFormatException e)
+		catch (final DataFormatException e)
 		{
 			_display.showError("Does not look like interval data");
 		}
@@ -461,7 +461,7 @@ public class MultiPathPresenter
 		_dragHandler = new ValueHandler()
 		{
 			@Override
-			public void newValue(int val)
+			public void newValue(final int val)
 			{
 				updateCalc(val);
 			}
@@ -470,7 +470,7 @@ public class MultiPathPresenter
 
 		_display.addSVPListener(new FileHandler()
 		{
-			public void newFile(String path)
+			public void newFile(final String path)
 			{
 				loadSVP(path);
 			}
@@ -478,7 +478,7 @@ public class MultiPathPresenter
 
 		_display.addTimeDeltaListener(new FileHandler()
 		{
-			public void newFile(String path)
+			public void newFile(final String path)
 			{
 				loadIntervals(path);
 			}
@@ -486,12 +486,12 @@ public class MultiPathPresenter
 
 		_display.addMagicListener(new SelectionListener()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				doMagic();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 				// TODO Auto-generated method stub
 
@@ -516,36 +516,36 @@ public class MultiPathPresenter
 	protected void doMagic()
 	{
 		// Create instace of class holding function to be minimised
-		MinimisationFunction funct = createMiracle();
+		final MinimisationFunction funct = createMiracle();
 
 		// Create instance of Minimisation
-		Minimisation min = new Minimisation();
+		final Minimisation min = new Minimisation();
 
 		// initial estimates
-		double[] start =
+		final double[] start =
 		{ 100 };
 
 		// initial step sizes
-		double[] step =
+		final double[] step =
 		{ 60 };
 
 		// convergence tolerance
-		double ftol = 1e-8;
+		final double ftol = 1e-8;
 
 		// set the minimum depth
 		min.addConstraint(0, -1, 0d);
 		
 		// and the maximum depth
-		double maxDepth = _svp.getMaxDepth();
+		final double maxDepth = _svp.getMaxDepth();
 		min.addConstraint(0, 1, maxDepth);
 
 		// Nelder and Mead minimisation procedure
 		min.nelderMead(funct, start, step, ftol, 500);
 
 		// get the results out
-		double[] param = min.getParamValues();
+		final double[] param = min.getParamValues();
 
-		double depth = param[0];
+		final double depth = param[0];
 
 		CorePlugin.logError(Status.INFO, "Optimised multipath depth is " + depth,
 				null);
@@ -560,9 +560,9 @@ public class MultiPathPresenter
 	protected MinimisationFunction createMiracle()
 	{
 		// get the tracks
-		TrackDataProvider tv = getTracks();
-		WatchableList primary = tv.getPrimaryTrack();
-		WatchableList secondary = tv.getSecondaryTracks()[0];
+		final TrackDataProvider tv = getTracks();
+		final WatchableList primary = tv.getPrimaryTrack();
+		final WatchableList secondary = tv.getSecondaryTracks()[0];
 
 		return new MultiPathModel.MiracleFunction(primary, secondary, _svp, _times);
 	}

@@ -21,11 +21,11 @@ public class InsertWheel extends CoreInsertShape
 	 *          the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
-		WorldDistance outerRadius = new WorldDistance(12000, WorldDistance.YARDS);
+		final WorldDistance outerRadius = new WorldDistance(12000, WorldDistance.YARDS);
 		// generate the shape
-		PlainShape res = new WheelShape(centre, new WorldDistance(4000,
+		final PlainShape res = new WheelShape(centre, new WorldDistance(4000,
 				WorldDistance.YARDS), outerRadius);
 		return res;
 	}

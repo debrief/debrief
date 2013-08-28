@@ -29,31 +29,31 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
     super("");
   }
 
-  public void importThis(String fName,
-                         InputStream is)
+  public void importThis(final String fName,
+                         final InputStream is)
   {
     // null implementation!
   }
 
-  public boolean canHandleThis(String type)
+  public boolean canHandleThis(final String type)
   {
     // hey! we can't really handle anything!
     return false;
   }
 
-  protected void handleOurselves(String name, AttributeList atts)
+  protected void handleOurselves(final String name, final AttributeList atts)
   {
     // stuff it
   }
 
 
-  private void doImport(org.xml.sax.InputSource is,
-                        XMLHandler theHandler)
+  private void doImport(final org.xml.sax.InputSource is,
+                        final XMLHandler theHandler)
   {
 
     try{
       // Create SAX 2 parser...
-      Parser xr = org.xml.sax.helpers.ParserFactory.makeParser("com.sun.xml.parser.Parser");
+      final Parser xr = org.xml.sax.helpers.ParserFactory.makeParser("com.sun.xml.parser.Parser");
 
       // put our plot handler into the chain
       theHandler.handleThis(xr, this);
@@ -61,23 +61,23 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
       // start parsing
       xr.parse(is);
     }
-    catch(java.lang.InstantiationException ie)
+    catch(final java.lang.InstantiationException ie)
     {
       MWC.Utilities.Errors.Trace.trace(ie, "Could not create XML parser");
     }
-    catch(org.xml.sax.SAXParseException se)
+    catch(final org.xml.sax.SAXParseException se)
     {
-      int line = se.getLineNumber();
-      int col = se.getColumnNumber();
-      String msg = "Trouble reading input file at line:" + line +", column:" + col;
+      final int line = se.getLineNumber();
+      final int col = se.getColumnNumber();
+      final String msg = "Trouble reading input file at line:" + line +", column:" + col;
       MWC.Utilities.Errors.Trace.trace(se, msg);
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", msg);
     }
-    catch(org.xml.sax.SAXException se)
+    catch(final org.xml.sax.SAXException se)
     {
       MWC.Utilities.Errors.Trace.trace(se, "Unknown trouble with SAX handling");
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e, "Errors parsing XML document");
     }
@@ -90,10 +90,10 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
   /** do an import using the indicated handler
    *
    */
-  static public void importThis(XMLHandler theHandler,
-                         java.io.InputStream is)
+  static public void importThis(final XMLHandler theHandler,
+                         final java.io.InputStream is)
   {
-    XMLReaderWriter xr = new XMLReaderWriter();
+    final XMLReaderWriter xr = new XMLReaderWriter();
 
     xr.doImport(new InputSource(is), theHandler);
   }
@@ -101,9 +101,9 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
 
   /** handle the import of XML data into an existing session
    */
-  public void importThis(String fName,
-                         java.io.InputStream is,
-                         MWC.GUI.Layers theData)
+  public void importThis(final String fName,
+                         final java.io.InputStream is,
+                         final MWC.GUI.Layers theData)
   {
     if(theData == null)
     {
@@ -128,11 +128,11 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
 
   /** read in this whole file
    */
-  public boolean canImportThisFile(String theFile)
+  public boolean canImportThisFile(final String theFile)
   {
     boolean res = false;
     String theSuffix=null;
-    int pos = theFile.lastIndexOf(".");
+    final int pos = theFile.lastIndexOf(".");
     theSuffix = theFile.substring(pos, theFile.length()).toUpperCase();
 
     if(theSuffix.equals(".XML"))
@@ -143,14 +143,14 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
 
   /** export this item using this format
    */
-  public void exportThis(MWC.GUI.Plottable item)
+  public void exportThis(final MWC.GUI.Plottable item)
   {
   	
   }
 
   /** export this item using this format
    */
-  public void exportThis(String comment)
+  public void exportThis(final String comment)
   {
 
   }
@@ -158,18 +158,18 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
 
   /** signal problem importing data
    */
-  public void readError(String fName, int line, String msg, String thisLine)
+  public void readError(final String fName, final int line, final String msg, final String thisLine)
   {
 
   }
 
-	public void endExport(Plottable item)
+	public void endExport(final Plottable item)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void startExport(Plottable item)
+	public void startExport(final Plottable item)
 	{
 		// TODO Auto-generated method stub
 		

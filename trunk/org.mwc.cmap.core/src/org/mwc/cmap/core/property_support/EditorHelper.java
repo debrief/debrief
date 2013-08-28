@@ -21,13 +21,13 @@ public abstract class EditorHelper
 	final protected Class _myTargetClass;
 
 	@SuppressWarnings("rawtypes")
-	public EditorHelper(Class targetClass)
+	public EditorHelper(final Class targetClass)
 	{
 		_myTargetClass = targetClass;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public boolean editsThis(Class target)
+	public boolean editsThis(final Class target)
 	{
 		return (target == _myTargetClass);
 	}
@@ -54,17 +54,17 @@ public abstract class EditorHelper
 		final Text res = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		res.addModifyListener(new ModifyListener()
 		{
-			public void modifyText(ModifyEvent e)
+			public void modifyText(final ModifyEvent e)
 			{
 				// inform our parent property that we've changed
 				if (property != null)
 					property.setValue(res.getText());
 
 				// also tell any listeners
-				Listener[] listeners = res.getListeners(SWT.Selection);
+				final Listener[] listeners = res.getListeners(SWT.Selection);
 				for (int i = 0; i < listeners.length; i++)
 				{
-					Listener listener = listeners[i];
+					final Listener listener = listeners[i];
 					listener.handleEvent(new Event());
 				}
 
@@ -73,17 +73,17 @@ public abstract class EditorHelper
 		return res;
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(final Object value)
 	{
 		return value;
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
 		return value;
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
 		return null;
 	}

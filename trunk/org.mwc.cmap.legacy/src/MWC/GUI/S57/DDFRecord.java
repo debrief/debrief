@@ -48,7 +48,7 @@ public class DDFRecord implements DDFConstants {
 
     protected boolean bIsClone = false;
 
-    public DDFRecord(DDFModule poModuleIn) {
+    public DDFRecord(final DDFModule poModuleIn) {
         poModule = poModuleIn;
         nReuseHeader = false;
         nFieldOffset = -1;
@@ -94,12 +94,12 @@ public class DDFRecord implements DDFConstants {
      * written.
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer("DDFRecord:\n");
+        final StringBuffer buf = new StringBuffer("DDFRecord:\n");
         buf.append("    ReuseHeader = " + nReuseHeader + "\n");
         buf.append("    DataSize = " + nDataSize + "\n");
 
         if (paoFields != null) {
-            for (Iterator<DDFField> it = paoFields.iterator(); it.hasNext();) {
+            for (final Iterator<DDFField> it = paoFields.iterator(); it.hasNext();) {
                 buf.append((DDFField) it.next());
             }
         }
@@ -138,8 +138,8 @@ public class DDFRecord implements DDFConstants {
         /* record. */
         /* -------------------------------------------------------------------- */
 
-        byte[] tempData = new byte[nDataSize - nFieldOffset];
-        int nReadBytes = poModule.read(tempData, 0, tempData.length);
+        final byte[] tempData = new byte[nDataSize - nFieldOffset];
+        final int nReadBytes = poModule.read(tempData, 0, tempData.length);
         System.arraycopy(pachData, nFieldOffset, tempData, 0, tempData.length);
 
         if (nReadBytes != (int) (nDataSize - nFieldOffset) && nReadBytes == -1) {
@@ -187,9 +187,9 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         /* Read the 24 byte leader. */
         /* -------------------------------------------------------------------- */
-        byte[] achLeader = new byte[DDF_LEADER_SIZE];
+        final byte[] achLeader = new byte[DDF_LEADER_SIZE];
 
-        int nReadBytes = poModule.read(achLeader, 0, DDF_LEADER_SIZE);
+        final int nReadBytes = poModule.read(achLeader, 0, DDF_LEADER_SIZE);
         if (nReadBytes == -1) {
             return false;
         } else if (nReadBytes != (int) DDF_LEADER_SIZE) {
@@ -205,11 +205,11 @@ public class DDFRecord implements DDFConstants {
         byte _leaderIden;
 
         try {
-            String recLength = new String(achLeader, 0, 5);
-            String fieldAreaStart = new String(achLeader, 12, 5);
+            final String recLength = new String(achLeader, 0, 5);
+            final String fieldAreaStart = new String(achLeader, 12, 5);
             _recLength = Integer.valueOf(recLength).intValue();
             _fieldAreaStart = Integer.valueOf(fieldAreaStart).intValue();
-        } catch (NumberFormatException nfe) {
+        } catch (final NumberFormatException nfe) {
 
             // Turns out, this usually indicates the end of the header
             // information,
@@ -328,7 +328,7 @@ public class DDFRecord implements DDFConstants {
             /* -------------------------------------------------------------------- */
             /* Find the corresponding field in the module directory. */
             /* -------------------------------------------------------------------- */
-            DDFFieldDefinition poFieldDefn = poModule.findFieldDefn(szTag);
+            final DDFFieldDefinition poFieldDefn = poModule.findFieldDefn(szTag);
 
             if (poFieldDefn == null) {
                 Debug.error("DDFRecord: Undefined field " + szTag
@@ -343,7 +343,7 @@ public class DDFRecord implements DDFConstants {
                 /* -------------------------------------------------------------------- */
                 /* Assign info the DDFField. */
                 /* -------------------------------------------------------------------- */
-                byte[] tempData = new byte[nFieldLength];
+                final byte[] tempData = new byte[nFieldLength];
                 System.arraycopy(pachData, _fieldAreaStart + nFieldPos
                         - DDF_LEADER_SIZE, tempData, 0, tempData.length);
 
@@ -374,14 +374,15 @@ public class DDFRecord implements DDFConstants {
      *         an internal object, and should not be freed. It remains
      *         valid until the next record read.
      */
-    public DDFField findField(String pszName, int iFieldIndex) {
-        for (Iterator<DDFField> it = paoFields.iterator(); it.hasNext();) {
-            DDFField ddff = (DDFField) it.next();
+    public DDFField findField(final String pszName, final int iFieldIndex) {
+    	int index = iFieldIndex;
+        for (final Iterator<DDFField> it = paoFields.iterator(); it.hasNext();) {
+            final DDFField ddff = (DDFField) it.next();
             if (pszName.equalsIgnoreCase(ddff.getFieldDefn().getName())) {
-                if (iFieldIndex == 0) {
+                if (index == 0) {
                     return ddff;
                 } else {
-                    iFieldIndex--;
+                    index--;
                 }
             }
         }
@@ -397,10 +398,10 @@ public class DDFRecord implements DDFConstants {
      * @return A DDFField pointer, or null if the index is out of
      *         range.
      */
-    public DDFField getField(int i) {
+    public DDFField getField(final int i) {
         try {
             return (DDFField) paoFields.elementAt(i);
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
+        } catch (final ArrayIndexOutOfBoundsException aioobe) {
             return null;
         }
     }
@@ -429,8 +430,8 @@ public class DDFRecord implements DDFConstants {
      * @return The value of the subfield, or zero if it failed for
      *         some reason.
      */
-    public int getIntSubfield(String pszField, int iFieldIndex,
-                              String pszSubfield, int iSubfieldIndex) {
+    public int getIntSubfield(final String pszField, final int iFieldIndex,
+                              final String pszSubfield, final int iSubfieldIndex) {
         DDFField poField;
 
         /* -------------------------------------------------------------------- */
@@ -445,7 +446,7 @@ public class DDFRecord implements DDFConstants {
         /* Get the subfield definition */
         /* -------------------------------------------------------------------- */
 
-        DDFSubfieldDefinition poSFDefn = poField.getFieldDefn()
+        final DDFSubfieldDefinition poSFDefn = poField.getFieldDefn()
                 .findSubfieldDefn(pszSubfield);
 
         if (poSFDefn == null) {
@@ -455,9 +456,9 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         /* Get a pointer to the data. */
         /* -------------------------------------------------------------------- */
-        MutableInt nBytesRemaining = new MutableInt();
+        final MutableInt nBytesRemaining = new MutableInt();
 
-        byte[] pachData1 = poField.getSubfieldData(poSFDefn,
+        final byte[] pachData1 = poField.getSubfieldData(poSFDefn,
                 nBytesRemaining,
                 iSubfieldIndex);
 
@@ -483,8 +484,8 @@ public class DDFRecord implements DDFConstants {
      * @return The value of the subfield, or zero if it failed for
      *         some reason.
      */
-    public double getFloatSubfield(String pszField, int iFieldIndex,
-                                   String pszSubfield, int iSubfieldIndex) {
+    public double getFloatSubfield(final String pszField, final int iFieldIndex,
+                                   final String pszSubfield, final int iSubfieldIndex) {
         DDFField poField;
 
         /* -------------------------------------------------------------------- */
@@ -498,7 +499,7 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         /* Get the subfield definition */
         /* -------------------------------------------------------------------- */
-        DDFSubfieldDefinition poSFDefn = poField.getFieldDefn()
+        final DDFSubfieldDefinition poSFDefn = poField.getFieldDefn()
                 .findSubfieldDefn(pszSubfield);
 
         if (poSFDefn == null) {
@@ -508,9 +509,9 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         /* Get a pointer to the data. */
         /* -------------------------------------------------------------------- */
-        MutableInt nBytesRemaining = new MutableInt();
+        final MutableInt nBytesRemaining = new MutableInt();
 
-        byte[] pachData1 = poField.getSubfieldData(poSFDefn,
+        final byte[] pachData1 = poField.getSubfieldData(poSFDefn,
                 nBytesRemaining,
                 iSubfieldIndex);
 
@@ -536,8 +537,8 @@ public class DDFRecord implements DDFConstants {
      *         and should not be modified or freed by the application.
      */
 
-    String getStringSubfield(String pszField, int iFieldIndex,
-                             String pszSubfield, int iSubfieldIndex) {
+    String getStringSubfield(final String pszField, final int iFieldIndex,
+                             final String pszSubfield, final int iSubfieldIndex) {
 
         DDFField poField;
 
@@ -552,7 +553,7 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         /* Get the subfield definition */
         /* -------------------------------------------------------------------- */
-        DDFSubfieldDefinition poSFDefn = poField.getFieldDefn()
+        final DDFSubfieldDefinition poSFDefn = poField.getFieldDefn()
                 .findSubfieldDefn(pszSubfield);
 
         if (poSFDefn == null) {
@@ -562,9 +563,9 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         /* Get a pointer to the data. */
         /* -------------------------------------------------------------------- */
-        MutableInt nBytesRemaining = new MutableInt();
+        final MutableInt nBytesRemaining = new MutableInt();
 
-        byte[] pachData1 = poField.getSubfieldData(poSFDefn,
+        final byte[] pachData1 = poField.getSubfieldData(poSFDefn,
                 nBytesRemaining,
                 iSubfieldIndex);
 

@@ -535,7 +535,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 					res = Long.parseLong(appThreshold);
 					// convert to millis
 					res *= 1000;
-				} catch (Exception e)
+				} catch (final Exception e)
 				{
 					MWC.Utilities.Errors.Trace.trace(e,
 							"Retrieving step threshold from properties");
@@ -963,7 +963,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 
 				return res;
 
-			} catch (IntrospectionException e)
+			} catch (final IntrospectionException e)
 			{
 				System.err.println("Problem generating property editors (see below)");
 				e.printStackTrace();
@@ -1066,16 +1066,16 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 		final testMe tm = new testMe("testing");
 		tm.testWatchables();
 
-		JFrame jf = new JFrame("here");
-		Layers theData = new Layers();
-		SwingChart sc = new SwingChart(theData);
-		RectangleShape rect = new RectangleShape(new WorldLocation(50.679199,
+		final JFrame jf = new JFrame("here");
+		final Layers theData = new Layers();
+		final SwingChart sc = new SwingChart(theData);
+		final RectangleShape rect = new RectangleShape(new WorldLocation(50.679199,
 				-1.0351547, 0), new WorldLocation(50.4545845, -0.6318624, 0));
-		ShapeWrapper sw = new ShapeWrapper("here", rect, Color.blue, null);
+		final ShapeWrapper sw = new ShapeWrapper("here", rect, Color.blue, null);
 		sw.setLabelVisible(false);
-		LabelWrapper lw = new LabelWrapper("there\nand here\nand there again",
+		final LabelWrapper lw = new LabelWrapper("there\nand here\nand there again",
 				new WorldLocation(50.6114132, -0.7973965, 0), Color.red);
-		Layer misc = new BaseLayer();
+		final Layer misc = new BaseLayer();
 		lw.setLabelLocation(new Integer(
 				MWC.GUI.Properties.LocationPropertyEditor.TOP));
 		misc.setName("misc");
@@ -1086,7 +1086,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 		jf.getContentPane().setLayout(new BorderLayout());
 		jf.getContentPane().add("Center", sc.getPanel());
 
-		SwingPropertiesPanel props = new SwingPropertiesPanel(sc, null, null, null);
+		final SwingPropertiesPanel props = new SwingPropertiesPanel(sc, null, null, null);
 		props.addEditor(lw.getInfo(), misc);
 		jf.getContentPane().add("West", props);
 
@@ -1096,19 +1096,19 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 
 	}
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		// ok, shift it
-		WorldLocation oldCentre = getLocation();
-		WorldLocation newCentre = oldCentre.add(vector);
+		final WorldLocation oldCentre = getLocation();
+		final WorldLocation newCentre = oldCentre.add(vector);
 		setLocation(newCentre);
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
 	{
 		// calculate the distance
-		WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
+		final WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
 				WorldDistance.DEGS);
 
 		// see if we're closer

@@ -102,8 +102,8 @@ public final class FieldBuilder extends PatternBuilderType
 	// ////////////////////////////////////////
 	// Constructor
 	// ////////////////////////////////////////
-	public FieldBuilder(WorldLocation centre,
-			MWC.GUI.Properties.PropertiesPanel thePanel, MWC.GUI.Layers theData)
+	public FieldBuilder(final WorldLocation centre,
+			final MWC.GUI.Properties.PropertiesPanel thePanel, final MWC.GUI.Layers theData)
 	{
 		super(centre, thePanel, theData);
 
@@ -130,18 +130,18 @@ public final class FieldBuilder extends PatternBuilderType
 	 * this method is called by the 'Create' function, and it fills in the buoys
 	 * into the correct pattern
 	 */
-	protected final void addBuoys(Debrief.Wrappers.BuoyPatternWrapper pattern)
+	protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern)
 	{
 		WorldLocation lastPoint = getKingpin();
-		double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
-		double row_spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_rowSpacing);
-		double buoy_spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_buoySpacing);
-		WorldVector along_step = new MWC.GenericData.WorldVector(orient_rads,
+		final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+		final double row_spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_rowSpacing);
+		final double buoy_spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_buoySpacing);
+		final WorldVector along_step = new MWC.GenericData.WorldVector(orient_rads,
 				buoy_spacing_degs, 0);
-		WorldVector reverse_along_step = new MWC.GenericData.WorldVector(
+		final WorldVector reverse_along_step = new MWC.GenericData.WorldVector(
 				orient_rads + MWC.Algorithms.Conversions.Degs2Rads(180.0),
 				buoy_spacing_degs, 0);
-		WorldVector across_step = new MWC.GenericData.WorldVector(orient_rads
+		final WorldVector across_step = new MWC.GenericData.WorldVector(orient_rads
 				+ MWC.Algorithms.Conversions.Degs2Rads(90.0), row_spacing_degs, 0);
 
 		// sort out in which direction we perform our offsets
@@ -159,17 +159,17 @@ public final class FieldBuilder extends PatternBuilderType
 		}
 
 		//
-		double half_step = buoy_spacing_degs / 2.0;
-		WorldVector normal_offset = new MWC.GenericData.WorldVector(normal_row,
+		final double half_step = buoy_spacing_degs / 2.0;
+		final WorldVector normal_offset = new MWC.GenericData.WorldVector(normal_row,
 				half_step, 0.0);
-		WorldVector back_offset = new MWC.GenericData.WorldVector(back_row,
+		final WorldVector back_offset = new MWC.GenericData.WorldVector(back_row,
 				half_step, 0.0);
 
 		// how many buoys in total?
-		int num_buoys = getNumberOfBuoys().intValue();
+		final int num_buoys = getNumberOfBuoys().intValue();
 
 		// how many buoys in each row?
-		int buoys_per_row = num_buoys / _numRows;
+		final int buoys_per_row = num_buoys / _numRows;
 
 		// are we in offset row?
 		boolean in_offset_row = false;
@@ -183,7 +183,7 @@ public final class FieldBuilder extends PatternBuilderType
 		for (int i = 0; i < num_buoys; i++)
 		{
 			// create the new symbol
-			Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("F"
+			final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("F"
 					+ (i + 1), lastPoint, java.awt.Color.red);
 
 			// get the parent to do the formatting
@@ -245,7 +245,7 @@ public final class FieldBuilder extends PatternBuilderType
 		return _orientation;
 	}
 
-	public final void setPatternOrientation(double val)
+	public final void setPatternOrientation(final double val)
 	{
 		_orientation = val;
 	}
@@ -255,7 +255,7 @@ public final class FieldBuilder extends PatternBuilderType
 		return new WorldDistance(_rowSpacing, WorldDistance.NM);
 	}
 
-	public final void setPatternRowSpacing(WorldDistance val)
+	public final void setPatternRowSpacing(final WorldDistance val)
 	{
 		_rowSpacing = val.getValueIn(WorldDistance.NM);
 	}
@@ -265,7 +265,7 @@ public final class FieldBuilder extends PatternBuilderType
 		return new WorldDistance(_buoySpacing, WorldDistance.NM);
 	}
 
-	public final void setPatternBuoySpacing(WorldDistance val)
+	public final void setPatternBuoySpacing(final WorldDistance val)
 	{
 		_buoySpacing = val.getValueIn(WorldDistance.NM);
 	}
@@ -275,7 +275,7 @@ public final class FieldBuilder extends PatternBuilderType
 		return _fieldOffset;
 	}
 
-	public final void setFieldDirection(Integer val)
+	public final void setFieldDirection(final Integer val)
 	{
 		_fieldOffset = val;
 	}
@@ -285,7 +285,7 @@ public final class FieldBuilder extends PatternBuilderType
 		return new Integer(_numRows);
 	}
 
-	public final void setNumberOfRows(Integer val)
+	public final void setNumberOfRows(final Integer val)
 	{
 		_numRows = val.intValue();
 	}
@@ -295,7 +295,7 @@ public final class FieldBuilder extends PatternBuilderType
 		return _fieldOffset;
 	}
 
-	public final void setPatternOffsetDirection(Integer val)
+	public final void setPatternOffsetDirection(final Integer val)
 	{
 		_fieldOffset = val;
 	}
@@ -325,7 +325,7 @@ public final class FieldBuilder extends PatternBuilderType
 	public final class FieldInfo extends MWC.GUI.Editable.EditorType
 	{
 
-		public FieldInfo(FieldBuilder data, String theName)
+		public FieldInfo(final FieldBuilder data, final String theName)
 		{
 			super(data, theName, "Field:");
 		}
@@ -346,7 +346,7 @@ public final class FieldBuilder extends PatternBuilderType
 		{
 			try
 			{
-				PropertyDescriptor[] myRes =
+				final PropertyDescriptor[] myRes =
 				{
 						prop("SymbolType", "the type of symbol plotted for this label"),
 						prop("SymbolSize", "the scale of the symbol"),
@@ -377,7 +377,7 @@ public final class FieldBuilder extends PatternBuilderType
 				return myRes;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				// find out which property fell over
 				MWC.Utilities.Errors.Trace
@@ -400,7 +400,7 @@ public final class FieldBuilder extends PatternBuilderType
 
 		public final String[] getTags()
 		{
-			String tags[] =
+			final String tags[] =
 			{ "Left", "Right", "Centre" };
 			return tags;
 		}
@@ -410,7 +410,7 @@ public final class FieldBuilder extends PatternBuilderType
 			return _myLocation;
 		}
 
-		public final void setValue(Object p1)
+		public final void setValue(final Object p1)
 		{
 			if (p1 instanceof Integer)
 			{
@@ -418,12 +418,12 @@ public final class FieldBuilder extends PatternBuilderType
 			}
 			if (p1 instanceof String)
 			{
-				String val = (String) p1;
+				final String val = (String) p1;
 				setAsText(val);
 			}
 		}
 
-		public final void setAsText(String val)
+		public final void setAsText(final String val)
 		{
 
 			if (val.equals("Left"))
@@ -455,14 +455,14 @@ public final class FieldBuilder extends PatternBuilderType
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public TestMe(String val)
+		public TestMe(final String val)
 		{
 			super(val);
 		}
 
 		public final void testMyParams()
 		{
-			MWC.GUI.Editable ed = new FieldBuilder(null, null, null);
+			final MWC.GUI.Editable ed = new FieldBuilder(null, null, null);
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 		}
 	}

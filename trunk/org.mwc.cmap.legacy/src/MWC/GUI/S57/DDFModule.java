@@ -66,7 +66,7 @@ public class DDFModule implements DDFConstants {
         fpDDF = null;
     }
 
-    public DDFModule(String ddfName) throws IOException {
+    public DDFModule(final String ddfName) throws IOException {
         open(ddfName);
     }
 
@@ -79,7 +79,7 @@ public class DDFModule implements DDFConstants {
         if (fpDDF != null) {
             try {
                 fpDDF.close();
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 Debug.error("DDFModule IOException when closing DDFModule file");
             }
             fpDDF = null;
@@ -108,7 +108,7 @@ public class DDFModule implements DDFConstants {
      * 
      * @param pszFilename The name of the file to open.
      */
-    public BinaryFile open(String pszFilename) throws IOException {
+    public BinaryFile open(final String pszFilename) throws IOException {
 
         fileName = pszFilename;
 
@@ -200,7 +200,7 @@ public class DDFModule implements DDFConstants {
         byte[] pachRecord = new byte[_recLength];
 
         System.arraycopy(achLeader, 0, pachRecord, 0, achLeader.length);
-        int numNewRead = pachRecord.length - achLeader.length;
+        final int numNewRead = pachRecord.length - achLeader.length;
 
         if (fpDDF.read(pachRecord, achLeader.length, numNewRead) != numNewRead) {
             if (Debug.debugging("iso8211")) {
@@ -212,7 +212,7 @@ public class DDFModule implements DDFConstants {
         }
 
         /* First make a pass counting the directory entries. */
-        int nFieldEntryWidth = _sizeFieldLength + _sizeFieldPos + _sizeFieldTag;
+        final int nFieldEntryWidth = _sizeFieldLength + _sizeFieldPos + _sizeFieldTag;
 
         int nFieldDefnCount = 0;
         for (i = DDF_LEADER_SIZE; i < _recLength; i += nFieldEntryWidth) {
@@ -230,7 +230,7 @@ public class DDFModule implements DDFConstants {
                 Debug.output("DDFModule.open: Reading field " + i);
             }
 
-            byte[] szTag = new byte[128];
+            final byte[] szTag = new byte[128];
             int nEntryOffset = DDF_LEADER_SIZE + i * nFieldEntryWidth;
             int nFieldLength, nFieldPos;
 
@@ -242,7 +242,7 @@ public class DDFModule implements DDFConstants {
             nEntryOffset += _sizeFieldLength;
             nFieldPos = Integer.parseInt(new String(pachRecord, nEntryOffset, _sizeFieldPos));
 
-            byte[] subPachRecord = new byte[nFieldLength];
+            final byte[] subPachRecord = new byte[nFieldLength];
             System.arraycopy(pachRecord,
                     _fieldAreaStart + nFieldPos,
                     subPachRecord,
@@ -271,7 +271,7 @@ public class DDFModule implements DDFConstants {
      * definitions read from the header.
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer("DDFModule:\n");
+        final StringBuffer buf = new StringBuffer("DDFModule:\n");
         buf.append("    _recLength = " + _recLength + "\n");
         buf.append("    _interchangeLevel = " + _interchangeLevel + "\n");
         buf.append("    _leaderIden = " + (char) _leaderIden + "\n");
@@ -289,7 +289,7 @@ public class DDFModule implements DDFConstants {
     }
 
     public String dump() {
-        StringBuffer buf = new StringBuffer(toString());
+        final StringBuffer buf = new StringBuffer(toString());
 
         DDFRecord poRecord1;
         int iRecord = 0;
@@ -297,7 +297,7 @@ public class DDFModule implements DDFConstants {
             buf.append("  Record " + (iRecord++) + "(" + poRecord1.getDataSize()
                     + " bytes)\n");
 
-            for (Iterator<DDFField> it = poRecord1.iterator(); it.hasNext(); buf.append(((DDFField) it.next()).toString())) {
+            for (final Iterator<DDFField> it = poRecord1.iterator(); it.hasNext(); buf.append(((DDFField) it.next()).toString())) {
             }
         }
         return buf.toString();
@@ -317,11 +317,11 @@ public class DDFModule implements DDFConstants {
      *         The return object remains owned by the DDFModule, and
      *         should not be deleted by application code.
      */
-    public DDFFieldDefinition findFieldDefn(String pszFieldName) {
+    public DDFFieldDefinition findFieldDefn(final String pszFieldName) {
 
-        for (Iterator<DDFFieldDefinition> it = paoFieldDefns.iterator(); it.hasNext();) {
-            DDFFieldDefinition ddffd = (DDFFieldDefinition) it.next();
-            String pszThisName = ddffd.getName();
+        for (final Iterator<DDFFieldDefinition> it = paoFieldDefns.iterator(); it.hasNext();) {
+            final DDFFieldDefinition ddffd = (DDFFieldDefinition) it.next();
+            final String pszThisName = ddffd.getName();
 
             if (Debug.debugging("iso8211detail")) {
                 Debug.output("DDFModule.findFieldDefn(" + pszFieldName + ":"
@@ -372,7 +372,7 @@ public class DDFModule implements DDFConstants {
      * @param length the number of bytes to read.
      * @return the number of bytes read.
      */
-    public int read(byte[] toData, int offset, int length) {
+    public int read(final byte[] toData, final int offset, final int length) {
         if (fpDDF == null) {
             reopen();
         }
@@ -380,9 +380,9 @@ public class DDFModule implements DDFConstants {
         if (fpDDF != null) {
             try {
                 return fpDDF.read(toData, offset, length);
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 Debug.error("DDFModule.read(): IOException caught");
-            } catch (ArrayIndexOutOfBoundsException aioobe) {
+            } catch (final ArrayIndexOutOfBoundsException aioobe) {
                 Debug.error("DDFModule.read(): "
                         + aioobe.getMessage()
                         + " reading from "
@@ -412,7 +412,7 @@ public class DDFModule implements DDFConstants {
         if (fpDDF != null) {
             try {
                 return fpDDF.read();
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 Debug.error("DDFModule.read(): IOException caught");
             }
         }
@@ -427,7 +427,7 @@ public class DDFModule implements DDFConstants {
      * 
      * @param pos the byte position to reposition the file pointer to.
      */
-    public void seek(long pos) throws IOException {
+    public void seek(final long pos) throws IOException {
         if (fpDDF == null) {
             reopen();
         }
@@ -446,7 +446,7 @@ public class DDFModule implements DDFConstants {
      * @return the returned field pointer or null if the index is out
      *         of range.
      */
-    public DDFFieldDefinition getField(int i) {
+    public DDFFieldDefinition getField(final int i) {
         if (i >= 0 || i < paoFieldDefns.size()) {
             return (DDFFieldDefinition) paoFieldDefns.elementAt(i);
         }
@@ -465,16 +465,17 @@ public class DDFModule implements DDFConstants {
      *        should return to the first data record. Otherwise it is
      *        an absolute byte offset in the file.
      */
-    public void rewind(long nOffset) throws IOException {
-        if (nOffset == -1) {
-            nOffset = nFirstRecordOffset;
+    public void rewind(final long nOffset) throws IOException {
+    	long offset = nOffset;
+        if (offset == -1) {
+            offset = nFirstRecordOffset;
         }
 
         if (fpDDF != null) {
-            fpDDF.seek(nOffset);
+            fpDDF.seek(offset);
 
             // Don't know what this has to do with anything...
-            if (nOffset == nFirstRecordOffset && poRecord != null) {
+            if (offset == nFirstRecordOffset && poRecord != null) {
                 poRecord.clear();
             }
         }
@@ -486,7 +487,7 @@ public class DDFModule implements DDFConstants {
             if (fpDDF == null) {
                 fpDDF = new BinaryBufferedFile(fileName);
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
 
         }
     }

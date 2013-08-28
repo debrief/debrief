@@ -108,7 +108,7 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
  * @param theLabel the label to put on the button
  * @param theData the data to plot
  */
-  public WriteVRML(ToolParent theParent, String theLabel, Layers theData){
+  public WriteVRML(final ToolParent theParent, final String theLabel, final Layers theData){
     super(theParent, theLabel, "images/write_vr.gif");
 
 		_theData = theData;
@@ -118,18 +118,18 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 	private static java.text.NumberFormat _doubleFormat =
 							new java.text.DecimalFormat("0.000");
 
-	private String convertDegs(double val)
+	private String convertDegs(final double val)
 	{
 		// scale
-		val = val * _xy_scale;
-		return _doubleFormat.format(val);
+		final double value = val * _xy_scale;
+		return _doubleFormat.format(value);
 	}
 
-	private String convertDepth(double metres)
+	private String convertDepth(final double metres)
 	{
-		metres = -metres * _depth_scale;
+		final double mtrs = -metres * _depth_scale;
 
-		return _doubleFormat.format(metres);   // convertDegs(metres);
+		return _doubleFormat.format(mtrs);   // convertDegs(metres);
 	}
 
   /////////////////////////////////////////////////////////////
@@ -149,24 +149,24 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
   public Action getData()
   {
     // the result object
-    Action res = null;
+    final Action res = null;
 
 		try{
 			// create the output file
-			File of = new File("out.wrl");
-			BufferedWriter out = new BufferedWriter(new FileWriter(of));
+			final File of = new File("out.wrl");
+			final BufferedWriter out = new BufferedWriter(new FileWriter(of));
 
 
 			// put the header
 			writeHeader(out);
 
 			// find the data limits
-			int num = _theData.size();
+			final int num = _theData.size();
 			WorldArea bounds = null;
 			for(int i=0;i<num; i++)
 			{
-				Layer l = (Layer)_theData.elementAt(i);
-				WorldArea thisA = l.getBounds();
+				final Layer l = (Layer)_theData.elementAt(i);
+				final WorldArea thisA = l.getBounds();
 				if(bounds == null)
 				{
 					bounds = thisA;
@@ -180,12 +180,12 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 				return res;
 			
 			// set the scaling limits
-			double max_dim = Math.max(bounds.getHeight(), bounds.getWidth());
+			final double max_dim = Math.max(bounds.getHeight(), bounds.getWidth());
 
 			// sort out the scale to be applied (to convert degs to scale)
 			_xy_scale = num_segs / max_dim;
 
-			double depth_range = bounds.getDepthRange();
+			final double depth_range = bounds.getDepthRange();
 			if(depth_range == 0)
 			{
 				// there is no depth data in track, don't progress any further
@@ -213,7 +213,7 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 			out.close();
 
 		}
-		catch(Exception e)
+		catch(final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -227,11 +227,11 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
  * @param bounds the outer limits
  * @throws IOException any problem writing to the file
  */
-	protected void writeAxes(java.io.BufferedWriter out, WorldArea bounds) throws IOException
+	protected void writeAxes(final java.io.BufferedWriter out, final WorldArea bounds) throws IOException
 	{
 		// calculate the scales to use
-		String wid = convertDegs(bounds.getWidth());
-		String ht = convertDegs(bounds.getHeight());
+		final String wid = convertDegs(bounds.getWidth());
+		final String ht = convertDegs(bounds.getHeight());
 		/** note that we apply the depth_stretch to the max depth
 		 */
 		String depth = convertDepth(Math.abs(bounds.getDepthRange() / _depth_stretch));
@@ -242,9 +242,9 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 		depth = _doubleFormat.format(dv);
 
 		// determine the centre point
-		WorldLocation centre = bounds.getCentre();
-		String x = convertDegs(centre.getLong());
-		String y = convertDegs(centre.getLat());
+		final WorldLocation centre = bounds.getCentre();
+		final String x = convertDegs(centre.getLong());
+		final String y = convertDegs(centre.getLat());
 		String z = convertDepth(centre.getDepth());
 		dv = Double.valueOf(z).doubleValue();
 		dv = Math.abs(dv);
@@ -301,12 +301,12 @@ Shape{ appearance Appearance {
  * @param theCol the colour to use
  * @throws IOException if there is a file access problem
  */
-	protected void writeLineHeader(java.io.BufferedWriter out, java.awt.Color theCol) throws IOException
+	protected void writeLineHeader(final java.io.BufferedWriter out, final java.awt.Color theCol) throws IOException
 	{
 
-		double red = theCol.getRed() / 255.0;
-		double green = theCol.getGreen() / 255.0;
-		double blue = theCol.getBlue() / 255.0;
+		final double red = theCol.getRed() / 255.0;
+		final double green = theCol.getGreen() / 255.0;
+		final double blue = theCol.getBlue() / 255.0;
 
 		out.write(" Shape { "); out.newLine();
 		out.write(" appearance Appearance { "); out.newLine();
@@ -328,10 +328,10 @@ Shape{ appearance Appearance {
  * @param zVal z coordinate
  * @throws IOException if there is a file access problem
  */
-	protected void writeLineEntry(BufferedWriter out,
-																double xVal,
-																double yVal,
-																double zVal) throws IOException
+	protected void writeLineEntry(final BufferedWriter out,
+																final double xVal,
+																final double yVal,
+																final double zVal) throws IOException
 	{
 		out.write(" " + convertDegs(xVal) + " " + convertDegs(yVal) + " " + convertDepth(zVal) + ","); out.newLine();
 	}
@@ -341,8 +341,8 @@ Shape{ appearance Appearance {
  * @param length how many points were in the line (to produce the indexes)
  * @throws IOException file-related troubles
  */
-	protected void writeLineFooter(BufferedWriter out,
-																 long length) throws IOException
+	protected void writeLineFooter(final BufferedWriter out,
+																 final long length) throws IOException
 	{
 		out.write("  ]  "); out.newLine();
 		out.write("  } "); out.newLine();
@@ -382,7 +382,7 @@ Shape{ appearance Appearance {
  * @param out the stream we are writing to
  * @throws IOException file-related troubles
  */
-	protected void writeHeader(java.io.BufferedWriter out) throws IOException
+	protected void writeHeader(final java.io.BufferedWriter out) throws IOException
 	{
 		out.write("#VRML V2.0 utf8"); out.newLine();
 		out.write("WorldInfo {"); out.newLine();
@@ -404,19 +404,19 @@ Shape{ appearance Appearance {
  * @param theLbl the label attached to the box
  * @throws IOException file troubles
  */
-	protected void writeBox(BufferedWriter out,
-													double xVal,
-													double yVal,
-													double zVal,
-													java.awt.Color theColor,
-													String theLbl) throws IOException
+	protected void writeBox(final BufferedWriter out,
+													final double xVal,
+													final double yVal,
+													final double zVal,
+													final java.awt.Color theColor,
+													final String theLbl) throws IOException
 	{
-		double red = theColor.getRed() / 255.0;
-		double green = theColor.getGreen() / 255.0;
-		double blue = theColor.getBlue() / 255.0;
+		final double red = theColor.getRed() / 255.0;
+		final double green = theColor.getGreen() / 255.0;
+		final double blue = theColor.getBlue() / 255.0;
 
-		String dt = convertDepth(zVal);
-		double dtText = Double.valueOf(dt).doubleValue() + 10;
+		final String dt = convertDepth(zVal);
+		final double dtText = Double.valueOf(dt).doubleValue() + 10;
 
 		out.write("Transform {");  out.newLine();
 		out.write("translation " + convertDegs(xVal) + " " + convertDegs(yVal) + " " + dt); out.newLine();
@@ -456,16 +456,16 @@ Viewpoint {
  * @param theColor the colour to write
  * @throws IOException file related troubles
  */
-		protected void writeText(BufferedWriter out,
-													double xVal,
-													double yVal,
-													double zVal,
-													String theStr,
-													java.awt.Color theColor) throws IOException
+		protected void writeText(final BufferedWriter out,
+													final double xVal,
+													final double yVal,
+													final double zVal,
+													final String theStr,
+													final java.awt.Color theColor) throws IOException
 	{
-		double red = theColor.getRed() / 255.0;
-		double green = theColor.getGreen() / 255.0;
-		double blue = theColor.getBlue() / 255.0;
+		final double red = theColor.getRed() / 255.0;
+		final double green = theColor.getGreen() / 255.0;
+		final double blue = theColor.getBlue() / 255.0;
 
 		out.write("Transform {");  out.newLine();
 		out.write("translation " + convertDegs(xVal) + " " + convertDegs(yVal) + " " + convertDepth(zVal)); out.newLine();

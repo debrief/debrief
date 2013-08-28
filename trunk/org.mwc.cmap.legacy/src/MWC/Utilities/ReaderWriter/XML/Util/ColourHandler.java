@@ -38,7 +38,7 @@ abstract public class ColourHandler extends MWCXMLReader
 	 * @param name
 	 *          the name of the attribute we are handling
 	 */
-	public ColourHandler(String name)
+	public ColourHandler(final String name)
 	{
 		// pass our attribute name up the line
 		super(name);
@@ -49,17 +49,17 @@ abstract public class ColourHandler extends MWCXMLReader
 
 	// this is one of ours, so get on with it!
 	@Override
-	protected void handleOurselves(String name, Attributes attributes)
+	protected void handleOurselves(final String name, final Attributes attributes)
 	{
 		// initialise data
 		_r = _g = _b = 0;
 
-		int len = attributes.getLength();
+		final int len = attributes.getLength();
 		for (int i = 0; i < len; i++)
 		{
 
-			String nm = attributes.getLocalName(i);
-			String val = attributes.getValue(i);
+			final String nm = attributes.getLocalName(i);
+			final String val = attributes.getValue(i);
 			if (nm.equals("Value"))
 			{
 				_setColour(val);
@@ -105,7 +105,7 @@ abstract public class ColourHandler extends MWCXMLReader
 		}
 	}
 
-	private void _setColour(String val)
+	private void _setColour(final String val)
 	{
 		// try to convert this string to a colour
 		if (val.equals("CUSTOM"))
@@ -120,10 +120,10 @@ abstract public class ColourHandler extends MWCXMLReader
 		checkColours();
 
 		// step through the colours, to see if we find one which matches
-		java.util.Enumeration<String> enumer = _myColours.keys();
+		final java.util.Enumeration<String> enumer = _myColours.keys();
 		while (enumer.hasMoreElements())
 		{
-			String thisK = enumer.nextElement();
+			final String thisK = enumer.nextElement();
 			if (thisK.equals(val))
 			{
 				_res = _myColours.get(val);
@@ -132,7 +132,7 @@ abstract public class ColourHandler extends MWCXMLReader
 		}
 	}
 
-	public Color resolveColor(String val)
+	public Color resolveColor(final String val)
 	{
 		// try to convert this string to a colour
 		if (val.equals("CUSTOM"))
@@ -147,10 +147,10 @@ abstract public class ColourHandler extends MWCXMLReader
 		checkColours();
 
 		// step through the colours, to see if we find one which matches
-		java.util.Enumeration<String> enumer = _myColours.keys();
+		final java.util.Enumeration<String> enumer = _myColours.keys();
 		while (enumer.hasMoreElements())
 		{
-			String thisK = enumer.nextElement();
+			final String thisK = enumer.nextElement();
 			if (thisK.equals(val))
 			{
 				return _myColours.get(val);
@@ -182,7 +182,7 @@ abstract public class ColourHandler extends MWCXMLReader
 	/**
 	 * custom exporter, for when we are not using the expected attribute name
 	 */
-	public static void exportColour(java.awt.Color color, org.w3c.dom.Element parent, org.w3c.dom.Document doc, String name)
+	public static void exportColour(final java.awt.Color color, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc, final String name)
 	{
 
 		if (color == null)
@@ -194,12 +194,12 @@ abstract public class ColourHandler extends MWCXMLReader
 		checkColours();
 
 		// see if this is one of our export values
-		java.util.Enumeration<String> enumer = _myColours.keys();
+		final java.util.Enumeration<String> enumer = _myColours.keys();
 		String ourKey = null;
 		while (enumer.hasMoreElements())
 		{
-			Object thisKey = enumer.nextElement();
-			java.awt.Color thisCol = _myColours.get(thisKey);
+			final Object thisKey = enumer.nextElement();
+			final java.awt.Color thisCol = _myColours.get(thisKey);
 			if (thisCol.equals(color))
 			{
 				// found it!
@@ -208,7 +208,7 @@ abstract public class ColourHandler extends MWCXMLReader
 			}
 		}
 
-		org.w3c.dom.Element eLoc = doc.createElement(name);
+		final org.w3c.dom.Element eLoc = doc.createElement(name);
 		if (ourKey != null)
 		{
 			eLoc.setAttribute("Value", ourKey);
@@ -230,10 +230,10 @@ abstract public class ColourHandler extends MWCXMLReader
 	 * @param val
 	 * @return
 	 */
-	public static Color fromString(String val)
+	public static Color fromString(final String val)
 	{
 		Color res = null;
-		String[] items = val.split(",");
+		final String[] items = val.split(",");
 		if (items.length == 3)
 		{
 			res = new Color(Integer.parseInt(items[0]), Integer.parseInt(items[1]), Integer.parseInt(items[2]));
@@ -247,7 +247,7 @@ abstract public class ColourHandler extends MWCXMLReader
 	 * @param val
 	 * @return
 	 */
-	public static String toString(Color val)
+	public static String toString(final Color val)
 	{
 		return "" + val.getRed() + "," + val.getGreen() + "," + val.getBlue();
 	}
@@ -255,7 +255,7 @@ abstract public class ColourHandler extends MWCXMLReader
 	/**
 	 * standard exporter, using our proper attribute name
 	 */
-	public static void exportColour(java.awt.Color color, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportColour(final java.awt.Color color, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		if (color != null)
 		{

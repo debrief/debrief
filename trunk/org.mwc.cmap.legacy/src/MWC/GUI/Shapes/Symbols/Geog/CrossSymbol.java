@@ -84,12 +84,12 @@ public class CrossSymbol extends PlainSymbol {
    * @return
    */
   public Vector<Vector<Point2D>> getCoordinates() {
-  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
+  	final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
 
-  	Vector<Point2D> line1 = new Vector<Point2D>(0,1);
-  	Vector<Point2D> line2 = new Vector<Point2D>(0,1);
+  	final Vector<Point2D> line1 = new Vector<Point2D>(0,1);
+  	final Vector<Point2D> line2 = new Vector<Point2D>(0,1);
 
-    int wid = (int)(2 * getScaleVal());
+    final int wid = (int)(2 * getScaleVal());
     line1.add(new Point(-wid, 0));
     line1.add(new Point(wid, 0));
     line2.add(new Point(0, -wid));
@@ -106,21 +106,21 @@ public class CrossSymbol extends PlainSymbol {
     return new java.awt.Dimension((int)(2 * 2 * getScaleVal()),(int)(2 * 2 * getScaleVal()));
   }
 
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
 
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(2 * getScaleVal());
+    final int wid = (int)(2 * getScaleVal());
 
     // draw our cross
     dest.drawLine(centre.x - wid, centre.y,  centre.x + wid,  centre.y);

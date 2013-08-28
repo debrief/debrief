@@ -46,42 +46,42 @@ abstract public class GridHandler extends MWCXMLReader implements
 		this(MY_TYPE);
 	}
 
-	public GridHandler(String theType)
+	public GridHandler(final String theType)
   {
     // inform our parent what type of class we are
     super(theType);
 
     addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(PLOT_LABELS)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _plotLabels = value;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute(DELTA)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
       	_deltaDegs = value;
       }
     });
     addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _myName  = val;
       }
     });
     addAttributeHandler(new HandleAttribute(UNITS)
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _myUnits = value;
       }
@@ -89,7 +89,7 @@ abstract public class GridHandler extends MWCXMLReader implements
 
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
@@ -97,7 +97,7 @@ abstract public class GridHandler extends MWCXMLReader implements
 
     addHandler(new FontHandler(){
 			@Override
-			public void setFont(Font res)
+			public void setFont(final Font res)
 			{
 				_myFont = res;
 			}});
@@ -105,7 +105,7 @@ abstract public class GridHandler extends MWCXMLReader implements
     addHandler(new WorldDistanceHandler(DELTA){
 		
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_delta = res;
 			}
@@ -115,7 +115,7 @@ abstract public class GridHandler extends MWCXMLReader implements
 	public void elementClosed()
 	{
 		// create a Grid from this data
-		MWC.GUI.Chart.Painters.GridPainter csp = getGrid();
+		final MWC.GUI.Chart.Painters.GridPainter csp = getGrid();
 		csp.setColor(_theColor);
 		csp.setVisible(_isVisible);
 		
@@ -182,12 +182,12 @@ abstract public class GridHandler extends MWCXMLReader implements
 	 * @param parent
 	 * @param doc
 	 */
-	public void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
-		MWC.GUI.Chart.Painters.GridPainter theGrid = (MWC.GUI.Chart.Painters.GridPainter) plottable;
-		Element gridElement = doc.createElement(MY_TYPE);
+		final MWC.GUI.Chart.Painters.GridPainter theGrid = (MWC.GUI.Chart.Painters.GridPainter) plottable;
+		final Element gridElement = doc.createElement(MY_TYPE);
 
 		exportGridAttributes(gridElement, theGrid, doc);
 
@@ -204,8 +204,8 @@ abstract public class GridHandler extends MWCXMLReader implements
 	 * @param doc
 	 *          the document it's all going into
 	 */
-	protected static void exportGridAttributes(Element gridElement,
-			MWC.GUI.Chart.Painters.GridPainter theGrid, Document doc)
+	protected static void exportGridAttributes(final Element gridElement,
+			final MWC.GUI.Chart.Painters.GridPainter theGrid, final Document doc)
 	{
 		// do the visibility
 		gridElement.setAttribute(VISIBLE, writeThis(theGrid.getVisible()));

@@ -26,106 +26,107 @@ final public class Conversions
   // member functions
   ////////////////////////////////////////////////////////////
 
-  final public static double Rads2Degs(double val)
+  final public static double Rads2Degs(final double val)
   {
     return val * RADIAN_CONV;
   }
 
-  final public static double Degs2Rads(double val)
+  final public static double Degs2Rads(final double val)
   {
     return val / RADIAN_CONV;
   }
 
-  final public static double Degs2Yds(double val)
+  final public static double Degs2Yds(final double val)
   {
     return Nm2Yds(Degs2Nm(val));
   }
 
-  final public static double Yds2Degs(double val)
+  final public static double Yds2Degs(final double val)
   {
     return Nm2Degs(Yds2Nm(val));
   }
 
-  final public static double Kts2Yps(double val)
+  final public static double Kts2Yps(final double val)
   {
     return val * YDS_NM_CONV / 3600;
   }
 
-  final public static double Kts2Mps(double val)
+  final public static double Kts2Mps(final double val)
   {
     return val * KTS_MPS_CONV;
   }
 
-  final public static double Mps2Kts(double val)
+  final public static double Mps2Kts(final double val)
   {
     return val / KTS_MPS_CONV;
   }
 
-  final public static double Yps2Kts(double val)
+  final public static double Yps2Kts(final double val)
   {
     return val / YDS_NM_CONV * 3600;
   }
 
-  final public static double Nm2Yds(double val)
+  final public static double Nm2Yds(final double val)
   {
     return val * YDS_NM_CONV;
   }
 
-  final public static double Yds2Nm(double val)
+  final public static double Yds2Nm(final double val)
   {
     return val / YDS_NM_CONV;
   }
 
-  final public static double Nm2Degs(double val)
+  final public static double Nm2Degs(final double val)
   {
     return val / 60;
   }
 
-  final public static double Degs2Nm(double val)
+  final public static double Degs2Nm(final double val)
   {
     return val * 60;
   }
 
-  final public static double Degs2m(double val)
+  final public static double Degs2m(final double val)
   {
     return val * DEGS_M_CONV;
   }
 
-  final public static double m2Degs(double val)
+  final public static double m2Degs(final double val)
   {
     return val / DEGS_M_CONV;
   }
 
-  final public static double Degs2Km(double val)
+  final public static double Degs2Km(final double val)
   {
     return val * DEGS_KM_CONV;
   }
 
-  final public static double ft2m(double val)
+  final public static double ft2m(final double val)
   {
     return val * FT_M_CONV;
   }
 
 
-  final public static double m2ft(double val)
+  final public static double m2ft(final double val)
   {
     return val / FT_M_CONV;
   }
 
-  final public static double miles2metres(double val)
+  final public static double miles2metres(final double val)
   {
     return val * MILES_M_CONV;
   }
 
 
-  final public static double clipRadians(double val)
+  final public static double clipRadians(final double val)
   {
-    while (val > 2 * Math.PI)
-      val = val - 2 * Math.PI;
-    while (val < 0)
-      val = val + 2 * Math.PI;
+	double theVal = val;
+    while (theVal > 2 * Math.PI)
+      theVal = theVal - 2 * Math.PI;
+    while (theVal < 0)
+      theVal = theVal + 2 * Math.PI;
 
-    return val;
+    return theVal;
   }
   
 	/** convert the range to the supplied units
@@ -134,7 +135,7 @@ final public class Conversions
 	 * @param theUnits target units
 	 * @return converted value
 	 */
-	public static final double convertRange(double range, String theUnits)
+	public static final double convertRange(final double range, final String theUnits)
 	{
 		double theRng = 0;
 		// do the units conversion
@@ -183,14 +184,14 @@ final public class Conversions
   {
     static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-    public ConversionsTest(String val)
+    public ConversionsTest(final String val)
     {
       super(val);
     }
 
     public void testValues()
     {
-      double degs = 1;
+      final double degs = 1;
       assertEquals("degs 2 nm", 60, Conversions.Degs2Nm(degs), 0.01);
       assertEquals("degs 2 km", 111.12, Conversions.Degs2Km(degs), 0.01);
       assertEquals("degs 2 m", 111120.000, Conversions.Degs2m(degs), 0.01);

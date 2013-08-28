@@ -24,8 +24,8 @@ public class SWTCoastPainter extends CoastPainter
 	 */
 	protected InputStream getCoastLineInput()
 	{
-		ToolParent parent = CorePlugin.getToolParent();
-		String location = parent.getProperty(CoastlineSourcePrefsPage.PreferenceConstants.COASTLINE_FILE);
+		final ToolParent parent = CorePlugin.getToolParent();
+		final String location = parent.getProperty(CoastlineSourcePrefsPage.PreferenceConstants.COASTLINE_FILE);
 
 		System.out.println("loading coastline from:" + location);
 		
@@ -35,7 +35,7 @@ public class SWTCoastPainter extends CoastPainter
 		{
 			res = new FileInputStream(location);
 		}
-		catch (FileNotFoundException e)
+		catch (final FileNotFoundException e)
 		{
 			DebriefPlugin.logError(Status.ERROR, "Whilst loading coastline", e);
 		}

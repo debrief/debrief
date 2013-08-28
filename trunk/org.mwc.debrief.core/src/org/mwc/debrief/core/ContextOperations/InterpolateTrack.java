@@ -40,7 +40,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		if (subjects.length == 1)
 		{
 			// is it a track?
-			Editable thisE = subjects[0];
+			final Editable thisE = subjects[0];
 			if (thisE instanceof TrackWrapper)
 			{
 				goForIt = true;
@@ -56,28 +56,28 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			parent.add(new Separator());
 
 			// and the new drop-down list of interpolation frequencies
-			MenuManager newMenu = new MenuManager(title);
+			final MenuManager newMenu = new MenuManager(title);
 			parent.add(newMenu);
 
 			// ok, loop through the time steps, creating an
 			// action for each one
 			final TimeStepPropertyEditor pe = new TimeStepPropertyEditor();
-			String[] tags = pe.getTags();
+			final String[] tags = pe.getTags();
 			for (int i = 0; i < tags.length; i++)
 			{
 				final String thisLabel = tags[i];
 				pe.setAsText(thisLabel);
-				Long thisIntLong = (Long) pe.getValue();
+				final Long thisIntLong = (Long) pe.getValue();
 				final long thisIntervalMillis = thisIntLong.longValue();
 
 				// yes, create the action
-				Action convertToTrack = new Action("At " + thisLabel + " interval")
+				final Action convertToTrack = new Action("At " + thisLabel + " interval")
 				{
 					public void run()
 					{
 						// ok, go for it.
 						// sort it out as an operation
-						IUndoableOperation convertToTrack1 = new InterpolateTrackOperation(title,
+						final IUndoableOperation convertToTrack1 = new InterpolateTrackOperation(title,
 								theLayers, (TrackWrapper) subjects[0], thisLabel, thisIntervalMillis);
 
 						// ok, stick it on the buffer
@@ -97,7 +97,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		/**
 		 * the parent to update on completion
 		 */
-		private Layers _layers;
+		private final Layers _layers;
 
 		/**
 		 * list of new fixes we're creating
@@ -107,15 +107,15 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		/**
 		 * the track we're interpolating
 		 */
-		private TrackWrapper _track;
+		private final TrackWrapper _track;
 
 		/**
 		 * the step to interpolate against
 		 */
-		private long _thisIntervalMicros;
+		private final long _thisIntervalMicros;
 
-		public InterpolateTrackOperation(String title, Layers layers, TrackWrapper track,
-				String thisLabel, long thisIntervalMicros)
+		public InterpolateTrackOperation(final String title, final Layers layers, final TrackWrapper track,
+				final String thisLabel, final long thisIntervalMicros)
 		{
 			super("At " + thisLabel + " interval");
 			_layers = layers;
@@ -123,11 +123,11 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			_thisIntervalMicros = thisIntervalMicros;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			long startTime = _track.getStartDTG().getMicros();
-			long endTime = _track.getEndDTG().getMicros();
+			final long startTime = _track.getStartDTG().getMicros();
+			final long endTime = _track.getEndDTG().getMicros();
 
 			// switch on track interpolation
 			_track.setInterpolatePoints(true);
@@ -138,13 +138,13 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 				if (_newFixes == null)
 					_newFixes = new Vector<FixWrapper>(0, 1);
 
-				Watchable[] matches = _track.getNearestTo(new HiResDate(0, thisTime));
+				final Watchable[] matches = _track.getNearestTo(new HiResDate(0, thisTime));
 				if (matches.length > 0)
 				{
-					FixWrapper interpFix = (FixWrapper) matches[0];
+					final FixWrapper interpFix = (FixWrapper) matches[0];
 
 					// make it an normal FixWrapper, not an interpolated one
-					FixWrapper newFix = new FixWrapper(interpFix.getFix());
+					final FixWrapper newFix = new FixWrapper(interpFix.getFix());
 					
 					// tidy the interpolated fix name
 					newFix.resetName();
@@ -160,9 +160,9 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		//		_track.clearPositions();
 				
 				// right, now add the fixes
-				for (Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
+				for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
 				{
-					FixWrapper fix = (FixWrapper) iter.next();
+					final FixWrapper fix = (FixWrapper) iter.next();
 					_track.add(fix);
 				}
 			}
@@ -176,13 +176,13 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			return Status.OK_STATUS;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// forget about the new tracks
-			for (Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
+			for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
 			{
-				FixWrapper trk = (FixWrapper) iter.next();
+				final FixWrapper trk = (FixWrapper) iter.next();
 				_track.removeElement(trk);
 			}
 
@@ -211,25 +211,25 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 
 		public final void testInterpolate()
 		{
-			Layers theLayers = new Layers();
-			TrackWrapper track = new TrackWrapper();
+			final Layers theLayers = new Layers();
+			final TrackWrapper track = new TrackWrapper();
 			track.setName("Trk");
 			theLayers.addThisLayer(track);
 			
 			for(int i=0;i<3;i++)
 			{
-				WorldLocation thisLoc = new WorldLocation(0,i,0,'N',0,0,0,'W', 0);
-				Calendar cal = Calendar.getInstance();
+				final WorldLocation thisLoc = new WorldLocation(0,i,0,'N',0,0,0,'W', 0);
+				final Calendar cal = Calendar.getInstance();
 				cal.setTimeInMillis(0);
 				cal.set(2005, 6, 6, 12, i * 5,0);			
-				Fix newFix = new Fix(new HiResDate(cal.getTime()), thisLoc, 0, 0);
+				final Fix newFix = new Fix(new HiResDate(cal.getTime()), thisLoc, 0, 0);
 			
-				FixWrapper sw = new FixWrapper(newFix);
+				final FixWrapper sw = new FixWrapper(newFix);
 				track.add(sw);
 			}
 			
 			// ok, now do the interpolation
-			InterpolateTrackOperation ct = new InterpolateTrackOperation("convert it", theLayers, track,
+			final InterpolateTrackOperation ct = new InterpolateTrackOperation("convert it", theLayers, track,
 					"1 min", 60 * 1000 * 1000);
 			
 			// check we're starting with the right number of items
@@ -240,7 +240,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			{
 				ct.execute(null, null);
 			}
-			catch (ExecutionException e)
+			catch (final ExecutionException e)
 			{
 				fail("Exception thrown");
 			}

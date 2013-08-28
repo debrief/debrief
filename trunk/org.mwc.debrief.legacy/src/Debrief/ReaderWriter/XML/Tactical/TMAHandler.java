@@ -34,7 +34,7 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color res)
+      public void setColour(final java.awt.Color res)
       {
         _mySolutionTrack.setColor(res);
       }
@@ -42,49 +42,49 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     addHandler(new TMAContactHandler()
     {
-      public void addSolution(MWC.GUI.Plottable contact)
+      public void addSolution(final MWC.GUI.Plottable contact)
       {
         addThisContact(contact);
       }
     });
     addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _mySolutionTrack.setName(fromXML(val));
       }
     });
     addAttributeHandler(new HandleAttribute("TrackName")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _mySolutionTrack.setTrackName(val);
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean val)
+      public void setValue(final String name, final boolean val)
       {
         _mySolutionTrack.setVisible(val);
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(SHOW_BEARING_LINES)
     {
-      public void setValue(String name, boolean val)
+      public void setValue(final String name, final boolean val)
       {
         _mySolutionTrack.setUnderlyingBearingLineVisibility(val);
       }
     });
         addAttributeHandler(new HandleBooleanAttribute(SHOW_LABELS)
     {
-      public void setValue(String name, boolean val)
+      public void setValue(final String name, final boolean val)
       {
         _mySolutionTrack.setShowLabels(val);
       }
     });
     addAttributeHandler(new HandleIntegerAttribute("LineThickness")
     {
-      public void setValue(String name, int val)
+      public void setValue(final String name, final int val)
       {
         _mySolutionTrack.setLineThickness(val);
       }
@@ -93,7 +93,7 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
   }
 
   // this is one of ours, so get on with it!
-  protected final void handleOurselves(String name, Attributes attributes)
+  protected final void handleOurselves(final String name, final Attributes attributes)
   {
     _mySolutionTrack = new Debrief.Wrappers.TMAWrapper("");
 
@@ -101,13 +101,13 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
   }
 
-  void addThisContact(MWC.GUI.Plottable val)
+  void addThisContact(final MWC.GUI.Plottable val)
   {
     // store in our list
     _mySolutionTrack.add(val);
 
     // and tell it that we are it's sensors
-    Debrief.Wrappers.TMAContactWrapper scw = (Debrief.Wrappers.TMAContactWrapper) val;
+    final Debrief.Wrappers.TMAContactWrapper scw = (Debrief.Wrappers.TMAContactWrapper) val;
     scw.setTMATrack(_mySolutionTrack);
   }
 
@@ -121,7 +121,7 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
   abstract public void addContact(Debrief.Wrappers.TMAWrapper data);
 
-  public static void exportSolutionTrack(Debrief.Wrappers.TMAWrapper sensor, Element parent, Document doc)
+  public static void exportSolutionTrack(final Debrief.Wrappers.TMAWrapper sensor, final Element parent, final Document doc)
   {
 
     /*
@@ -137,7 +137,7 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       Symbol CDATA "SQUARE"
     >
     */
-    Element trk = doc.createElement(MY_NAME);
+    final Element trk = doc.createElement(MY_NAME);
     trk.setAttribute("Name", toXML(sensor.getName()));
     trk.setAttribute("Visible", writeThis(sensor.getVisible()));
     trk.setAttribute("TrackName", sensor.getTrackName());
@@ -147,13 +147,13 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     ColourHandler.exportColour(sensor.getColor(), trk, doc);
 
     // now the points
-    java.util.Enumeration<Editable> iter = sensor.elements();
+    final java.util.Enumeration<Editable> iter = sensor.elements();
     while (iter.hasMoreElements())
     {
-      MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
+      final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
       if (pl instanceof Debrief.Wrappers.TMAContactWrapper)
       {
-        Debrief.Wrappers.TMAContactWrapper fw = (Debrief.Wrappers.TMAContactWrapper) pl;
+        final Debrief.Wrappers.TMAContactWrapper fw = (Debrief.Wrappers.TMAContactWrapper) pl;
         TMAContactHandler.exportSolution(fw, trk, doc);
       }
 

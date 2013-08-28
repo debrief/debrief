@@ -57,7 +57,7 @@ public class VesselMonitor extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 
 		// Composite myLayout = new Composite(parent, SWT.NONE);
@@ -84,17 +84,17 @@ public class VesselMonitor extends ViewPart
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(_trackParticipant);
 	}
@@ -127,7 +127,7 @@ public class VesselMonitor extends ViewPart
 	{
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				newItemSelected(event);
 			}
@@ -140,18 +140,18 @@ public class VesselMonitor extends ViewPart
 		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 					{
-						ISelectionProvider iS = (ISelectionProvider) part;
+						final ISelectionProvider iS = (ISelectionProvider) part;
 						iS.addSelectionChangedListener(_selectionChangeListener);
 					}
 				});
 		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.DEACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 					{
-						ISelectionProvider iS = (ISelectionProvider) part;
+						final ISelectionProvider iS = (ISelectionProvider) part;
 						iS.removeSelectionChangedListener(_selectionChangeListener);
 					}
 				});
@@ -160,27 +160,27 @@ public class VesselMonitor extends ViewPart
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 	}
 
-	protected void newItemSelected(SelectionChangedEvent event)
+	protected void newItemSelected(final SelectionChangedEvent event)
 	{
 
 		if (_trackParticipant.isChecked())
 		{
 			// right, let's have a look at it.
-			ISelection theSelection = event.getSelection();
+			final ISelection theSelection = event.getSelection();
 
 			// get the first element
 			if (theSelection instanceof StructuredSelection)
 			{
-				StructuredSelection sel = (StructuredSelection) theSelection;
-				Object first = sel.getFirstElement();
+				final StructuredSelection sel = (StructuredSelection) theSelection;
+				final Object first = sel.getFirstElement();
 				// hmm, is it adaptable?
 				if (first instanceof EditableWrapper)
 				{
-					EditableWrapper ew = (EditableWrapper) first;
-					Editable ed = ew.getEditable();
+					final EditableWrapper ew = (EditableWrapper) first;
+					final Editable ed = ew.getEditable();
 					if (ed instanceof ScenarioParticipantWrapper)
 					{
-						ScenarioParticipantWrapper sw = (ScenarioParticipantWrapper) ed;
+						final ScenarioParticipantWrapper sw = (ScenarioParticipantWrapper) ed;
 
 						updateParticipant(sw.getParticipant());
 					}
@@ -195,7 +195,7 @@ public class VesselMonitor extends ViewPart
 	 * @param part
 	 *          the new participant
 	 */
-	private void updateParticipant(ParticipantType part)
+	private void updateParticipant(final ParticipantType part)
 	{
 		// is this already our participant
 		if (_myPart != part)
@@ -262,24 +262,24 @@ public class VesselMonitor extends ViewPart
 	{
 		_moveListener = new ParticipantMovedListener()
 		{
-			public void moved(Status newStatus)
+			public void moved(final Status newStatus)
 			{
 				updateStatus(newStatus);
 			}
 
-			public void restart(ScenarioType scenario)
+			public void restart(final ScenarioType scenario)
 			{
 			}
 		};
 
 		_decisionListener = new ParticipantDecidedListener()
 		{
-			public void newDecision(String description, DemandedStatus dem_status)
+			public void newDecision(final String description, final DemandedStatus dem_status)
 			{
 				updateDecision(description, dem_status);
 			}
 
-			public void restart(ScenarioType scenario)
+			public void restart(final ScenarioType scenario)
 			{
 			}
 		};
@@ -299,9 +299,9 @@ public class VesselMonitor extends ViewPart
 						_dashModel.setIgnoreDemandedDirection(false);
 						_dashModel.setIgnoreDemandedSpeed(false);
 						
-						ASSET.Models.Movement.SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
-						WorldSpeed demSpeed = new WorldSpeed(sds.getSpeed(), WorldSpeed.M_sec);
-						double speed =Math.min(demSpeed.getValueIn(WorldSpeed.Kts), AutoScaler.RANGE);
+						final ASSET.Models.Movement.SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
+						final WorldSpeed demSpeed = new WorldSpeed(sds.getSpeed(), WorldSpeed.M_sec);
+						final double speed =Math.min(demSpeed.getValueIn(WorldSpeed.Kts), AutoScaler.RANGE);
 						double height = sds.getHeight();
 						
 						height = Math.min(height,AutoScaler.RANGE);
@@ -333,7 +333,7 @@ public class VesselMonitor extends ViewPart
 					_dashModel.setVesselStatus(newStatus.statusString());
 
 					// do the other bits...
-					WorldSpeed ws = newStatus.getSpeed();
+					final WorldSpeed ws = newStatus.getSpeed();
 					_dashModel.setActualDirection((int) newStatus.getCourse());
 					_dashModel.setSpeedUnits("Kts");
 					double theDepth = newStatus.getLocation().getDepth();

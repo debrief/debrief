@@ -16,14 +16,14 @@ public class PartRCPView extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		_view = new VPart(parent, SWT.NONE);
 	}
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object getAdapter(Class adapter)
+	public Object getAdapter(final Class adapter)
 	{
 		Object res = null;
 

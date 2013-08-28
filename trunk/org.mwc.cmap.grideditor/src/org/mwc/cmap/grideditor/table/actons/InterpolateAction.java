@@ -35,7 +35,7 @@ public class InterpolateAction extends AbstractViewerAction
 	}
 
 	@Override
-	protected void updateActionAppearance(IUndoableOperation operation)
+	protected void updateActionAppearance(final IUndoableOperation operation)
 	{
 		super.updateActionAppearance(operation);
 		setText(operation == null ? DEFAULT_ACTION_TEXT : DEFAULT_ACTION_TEXT + " "
@@ -45,7 +45,7 @@ public class InterpolateAction extends AbstractViewerAction
 
 	@Override
 	public IUndoableOperation createUndoableOperation(
-			GridEditorActionContext actionContext)
+			final GridEditorActionContext actionContext)
 	{
 		final IUndoContext undoContext = actionContext.getUndoSupport()
 				.getUndoContext();
@@ -63,10 +63,10 @@ public class InterpolateAction extends AbstractViewerAction
 		}
 		// contains the set of items that need to be changed (that is, that are in
 		// between base points)
-		LinkedList<TimeStampedDataItem> operationSet = new LinkedList<TimeStampedDataItem>();
+		final LinkedList<TimeStampedDataItem> operationSet = new LinkedList<TimeStampedDataItem>();
 		// consider user have selected start at first, then end and finally middle,
 		// we have to reorder
-		List<TimeStampedDataItem> reordered = new ArrayList<TimeStampedDataItem>(
+		final List<TimeStampedDataItem> reordered = new ArrayList<TimeStampedDataItem>(
 				actionContext.getStructuredSelection().size());
 		orderAccordingTheSeries(filterSelection(actionContext
 				.getStructuredSelection()), series, reordered, operationSet);
@@ -82,7 +82,7 @@ public class InterpolateAction extends AbstractViewerAction
 		{
 			interpolatorFactory = ItemsInterpolatorFactory.DEFAULT;
 		}
-		ItemsInterpolator interpolator = interpolatorFactory
+		final ItemsInterpolator interpolator = interpolatorFactory
 				.createItemsInterpolator(descriptor, reordered
 						.toArray(new TimeStampedDataItem[reordered.size()]));
 		if (interpolator == null)
@@ -90,24 +90,24 @@ public class InterpolateAction extends AbstractViewerAction
 			return null;
 		}
 
-		InterpolateOperation result = new InterpolateOperation(undoContext,
+		final InterpolateOperation result = new InterpolateOperation(undoContext,
 				descriptor);
-		for (TimeStampedDataItem next : operationSet)
+		for (final TimeStampedDataItem next : operationSet)
 		{
 			if (!interpolator.canInterpolate(next))
 			{
 				return null;
 			}
-			Object nextValue = interpolator.getInterpolatedValue(next);
-			OperationEnvironment nextContext = new OperationEnvironment(undoContext,
+			final Object nextValue = interpolator.getInterpolatedValue(next);
+			final OperationEnvironment nextContext = new OperationEnvironment(undoContext,
 					series, next, descriptor);
 			result.add(new SetDescriptorValueOperation(nextContext, nextValue));
 		}
 		return result;
 	}
 
-	private boolean isKnownDescriptor(GriddableSeries series,
-			GriddableItemDescriptor descriptor)
+	private boolean isKnownDescriptor(final GriddableSeries series,
+			final GriddableItemDescriptor descriptor)
 	{
 		if (series == null || descriptor == null)
 		{
@@ -117,11 +117,11 @@ public class InterpolateAction extends AbstractViewerAction
 	}
 
 	private static List<TimeStampedDataItem> filterSelection(
-			IStructuredSelection selection)
+			final IStructuredSelection selection)
 	{
-		List<TimeStampedDataItem> result = new ArrayList<TimeStampedDataItem>(
+		final List<TimeStampedDataItem> result = new ArrayList<TimeStampedDataItem>(
 				selection.size());
-		for (Object next : selection.toList())
+		for (final Object next : selection.toList())
 		{
 			if (next instanceof TimeStampedDataItem)
 			{
@@ -132,20 +132,20 @@ public class InterpolateAction extends AbstractViewerAction
 	}
 
 	private static void orderAccordingTheSeries(
-			List<TimeStampedDataItem> inputList, GriddableSeries series,
-			List<TimeStampedDataItem> reorderedResult,
-			List<TimeStampedDataItem> inBetweenOutput)
+			final List<TimeStampedDataItem> inputList, final GriddableSeries series,
+			final List<TimeStampedDataItem> reorderedResult,
+			final List<TimeStampedDataItem> inBetweenOutput)
 	{
 		reorderedResult.clear();
 
 		// we are using IdentityHashMap as a set
 		final Object SOMETHING = 42;
-		IdentityHashMap<TimeStampedDataItem, Object> remainings = new IdentityHashMap<TimeStampedDataItem, Object>();
-		for (TimeStampedDataItem next : inputList)
+		final IdentityHashMap<TimeStampedDataItem, Object> remainings = new IdentityHashMap<TimeStampedDataItem, Object>();
+		for (final TimeStampedDataItem next : inputList)
 		{
 			remainings.put(next, SOMETHING);
 		}
-		for (TimeStampedDataItem next : series.getItems())
+		for (final TimeStampedDataItem next : series.getItems())
 		{
 			if (remainings.containsKey(next))
 			{
@@ -171,8 +171,8 @@ public class InterpolateAction extends AbstractViewerAction
 
 		private final GriddableItemDescriptor myDescriptor;
 
-		public InterpolateOperation(IUndoContext wholeOperationUndoContext,
-				GriddableItemDescriptor descriptor)
+		public InterpolateOperation(final IUndoContext wholeOperationUndoContext,
+				final GriddableItemDescriptor descriptor)
 		{
 			super("Interpolating " + descriptor.getTitle(), wholeOperationUndoContext);
 			myDescriptor = descriptor;

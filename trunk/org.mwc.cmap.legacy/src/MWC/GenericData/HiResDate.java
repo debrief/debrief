@@ -45,22 +45,22 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 	 * @param millis
 	 * @param micros
 	 */
-	public HiResDate(long millis, long micros)
+	public HiResDate(final long millis, final long micros)
 	{
 		this._micros = millis * 1000 + micros;
 	}
 
-	public HiResDate(long millis)
+	public HiResDate(final long millis)
 	{
 		this(millis, 0);
 	}
 
-	public HiResDate(Date val)
+	public HiResDate(final Date val)
 	{
 		this(val.getTime());
 	}
 
-	public HiResDate(HiResDate other)
+	public HiResDate(final HiResDate other)
 	{
 		_micros = other._micros;
 	}
@@ -91,7 +91,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 	{
 		if (_hiResProcessing == null)
 		{
-			String hiRes = System.getProperty(HiResDate.HI_RES_PROPERTY_NAME);
+			final String hiRes = System.getProperty(HiResDate.HI_RES_PROPERTY_NAME);
 			if (hiRes == null)
 			{
 				_hiResProcessing = Boolean.FALSE;
@@ -115,32 +115,32 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 		return new Date(_micros / 1000);
 	}
 
-	public boolean greaterThan(HiResDate other)
+	public boolean greaterThan(final HiResDate other)
 	{
 		return getMicros() > other.getMicros();
 	}
 
-	public boolean greaterThanOrEqualTo(HiResDate other)
+	public boolean greaterThanOrEqualTo(final HiResDate other)
 	{
 		return getMicros() >= other.getMicros();
 	}
 
-	public boolean lessThan(HiResDate other)
+	public boolean lessThan(final HiResDate other)
 	{
 		return getMicros() < other.getMicros();
 	}
 
-	public boolean lessThanOrEqualTo(HiResDate other)
+	public boolean lessThanOrEqualTo(final HiResDate other)
 	{
 		return getMicros() <= other.getMicros();
 	}
 
-	public boolean equals(Object other)
+	public boolean equals(final Object other)
 	{
 		boolean res = false;
 		if (other instanceof HiResDate)
 		{
-			HiResDate otherD = (HiResDate) other;
+			final HiResDate otherD = (HiResDate) other;
 			res = (getMicros() == otherD.getMicros());
 		}
 		return res;
@@ -153,7 +153,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 	 *          other date
 	 * @return whether we're later than it
 	 */
-	public int compareTo(HiResDate other)
+	public int compareTo(final HiResDate other)
 	{
 		int res = 0;
 		if (this.greaterThan(other))

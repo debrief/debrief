@@ -57,10 +57,10 @@ public class FileDropSupport implements DropTargetListener
   //////////////////////////////////////////
 
 
-  public void addComponent(java.awt.Component comp)
+  public void addComponent(final java.awt.Component comp)
   {
     // set ourselves as a drag and drop listener for this component
-    DropTarget dropTarget = new DropTarget(comp, DnDConstants.ACTION_COPY, this);
+    final DropTarget dropTarget = new DropTarget(comp, DnDConstants.ACTION_COPY, this);
 
     if(targets == null)
       targets = new HashMap<Component, DropTarget>();
@@ -76,10 +76,10 @@ public class FileDropSupport implements DropTargetListener
   /** remove the indicated component
    *
    */
-  public void removeComponent(java.awt.Component comp)
+  public void removeComponent(final java.awt.Component comp)
   {
     // get this target
-    DropTarget thisOne = (DropTarget) targets.get(comp);
+    final DropTarget thisOne = (DropTarget) targets.get(comp);
 
     // remove this listener
     if(thisOne != null)
@@ -95,7 +95,7 @@ public class FileDropSupport implements DropTargetListener
    * @param listener the listener, which will be told of receive events
    * @param suffixes the file suffix to accept (including the dot)
    */
-  public void setFileDropListener(FileDropListener listener, String suffixes) {
+  public void setFileDropListener(final FileDropListener listener, final String suffixes) {
     _suffixes = suffixes.toUpperCase();
     _listener = listener;
   }
@@ -103,10 +103,11 @@ public class FileDropSupport implements DropTargetListener
   /** remove the class listener for file drop events
    *
    */
-  public void removeFileDropListener(FileDropListener listener)
+  
+  public void removeFileDropListener(final FileDropListener listener)
   {
     if(_listener == listener)
-      listener = null;
+      _listener = null;
   }
 
   private void checkThis(final java.awt.dnd.DropTargetDragEvent p1)
@@ -129,7 +130,7 @@ public class FileDropSupport implements DropTargetListener
     checkThis(p1);
   }
 
-  protected void fileReceived(java.util.Vector<File> theFiles, java.awt.Point thePoint)
+  protected void fileReceived(final java.util.Vector<File> theFiles, final java.awt.Point thePoint)
   {
     if(_listener != null)
       _listener.FilesReceived(theFiles);
@@ -138,9 +139,9 @@ public class FileDropSupport implements DropTargetListener
   @SuppressWarnings("unchecked")
 	public void drop(final java.awt.dnd.DropTargetDropEvent p1) {
     // fire this drop event to all targets
-    Transferable tra = p1.getTransferable();
+    final Transferable tra = p1.getTransferable();
 
-    Vector<File> res = new Vector<File>(0,1);
+    final Vector<File> res = new Vector<File>(0,1);
 
     // find out if string data is being dropped
     if(tra.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
@@ -148,11 +149,11 @@ public class FileDropSupport implements DropTargetListener
       p1.acceptDrop(DnDConstants.ACTION_COPY);
       try
       {
-        List<java.io.File> lt = (List<java.io.File>)tra.getTransferData(DataFlavor.javaFileListFlavor);
-        Iterator<java.io.File> enumer=lt.iterator();
+        final List<java.io.File> lt = (List<java.io.File>)tra.getTransferData(DataFlavor.javaFileListFlavor);
+        final Iterator<java.io.File> enumer=lt.iterator();
         while(enumer.hasNext())
         {
-          java.io.File file = (java.io.File)enumer.next();
+          final java.io.File file = (java.io.File)enumer.next();
           if(isValid(file.getName()))
           {
             res.addElement(file);
@@ -170,7 +171,7 @@ public class FileDropSupport implements DropTargetListener
         }
 
       }
-      catch(Exception e)
+      catch(final Exception e)
       {
         e.printStackTrace();
       }
@@ -181,9 +182,9 @@ public class FileDropSupport implements DropTargetListener
 
       try
       {
-        String lt = (String)tra.getTransferData(DataFlavor.stringFlavor);
+        final String lt = (String)tra.getTransferData(DataFlavor.stringFlavor);
 
-        java.io.File file = new java.io.File(lt);
+        final java.io.File file = new java.io.File(lt);
         if(isValid(file.getName()))
         {
           res.addElement(file);
@@ -200,11 +201,11 @@ public class FileDropSupport implements DropTargetListener
         }
 
       }
-      catch (UnsupportedFlavorException e)
+      catch (final UnsupportedFlavorException e)
       {
         System.out.println("NOT SUPPORTED");
       }
-      catch (IOException e)
+      catch (final IOException e)
       {
       }
     }
@@ -215,15 +216,15 @@ public class FileDropSupport implements DropTargetListener
 
   }
 
-  private boolean isValid(String name)
+  private boolean isValid(final String name)
   {
     // check the suffix
     String theSuffix=null;
-    int pos = name.lastIndexOf(".");
+    final int pos = name.lastIndexOf(".");
     theSuffix = name.substring(pos, name.length()).toUpperCase();
 
     // check if this matches
-    int index = _suffixes.indexOf(theSuffix);
+    final int index = _suffixes.indexOf(theSuffix);
     if(index != -1)
       return true;
     else

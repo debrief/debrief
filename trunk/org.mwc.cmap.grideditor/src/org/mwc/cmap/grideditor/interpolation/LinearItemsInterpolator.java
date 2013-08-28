@@ -16,7 +16,7 @@ class LinearItemsInterpolator extends AbstractItemsInterpolator {
 	 * 		if descriptor is not interpolate-able,
 	 * @see LinearItemsInterpolator#canInterpolate(GriddableItemDescriptor)
 	 */
-	public LinearItemsInterpolator(TimeStampedDataItem startPoint, TimeStampedDataItem endPoint, GriddableItemDescriptor descriptor) {
+	public LinearItemsInterpolator(final TimeStampedDataItem startPoint, final TimeStampedDataItem endPoint, final GriddableItemDescriptor descriptor) {
 		super(descriptor);
 		myWorker = createWorker(startPoint, endPoint, descriptor);
 	}
@@ -25,29 +25,29 @@ class LinearItemsInterpolator extends AbstractItemsInterpolator {
 	 * @return <code>false</code> if and only if the start and end points had
 	 * 	the same time-stamp
 	 */
-	public boolean canInterpolate(TimeStampedDataItem item) {
+	public boolean canInterpolate(final TimeStampedDataItem item) {
 		return myWorker != null;
 	}
 
-	public Object getInterpolatedValue(TimeStampedDataItem item) {
+	public Object getInterpolatedValue(final TimeStampedDataItem item) {
 		if (!canInterpolate(item)) {
 			throw new IllegalStateException("I told you I can't interpolate item: " + item);
 		}
 
-		double millis = extractBaseValue(item);
-		double interpolatedResult = Double.valueOf(myWorker.interp(millis));
+		final double millis = extractBaseValue(item);
+		final double interpolatedResult = Double.valueOf(myWorker.interp(millis));
 		return getSafeInterpolatedValue(item, getDescriptor(), interpolatedResult);
 	}
 
-	private static LinearInterpolator createWorker(TimeStampedDataItem startPoint, TimeStampedDataItem endPoint, GriddableItemDescriptor descriptor) {
-		double startMillis = extractBaseValue(startPoint);
-		double endMillis = extractBaseValue(endPoint);
+	private static LinearInterpolator createWorker(final TimeStampedDataItem startPoint, final TimeStampedDataItem endPoint, final GriddableItemDescriptor descriptor) {
+		final double startMillis = extractBaseValue(startPoint);
+		final double endMillis = extractBaseValue(endPoint);
 		if (startMillis == endMillis) {
 			return null;
 		}
 
-		double startValue = getDoubleValue(startPoint, descriptor);
-		double endValue = getDoubleValue(endPoint, descriptor);
+		final double startValue = getDoubleValue(startPoint, descriptor);
+		final double endValue = getDoubleValue(endPoint, descriptor);
 
 		return new LinearInterpolator(endValue, startValue, endMillis, startMillis);
 	}

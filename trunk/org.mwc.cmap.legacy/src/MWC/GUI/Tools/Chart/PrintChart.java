@@ -64,7 +64,7 @@ public class PrintChart extends PlainTool {
    * @param theApp the parent application, so we can set cursors
    * @param theChart the chart we are to resize
    */
-  public PrintChart(ToolParent theParent,PlainChart theChart){
+  public PrintChart(final ToolParent theParent,final PlainChart theChart){
     super(theParent, "Print Chart","images/fit_to_win.gif");
   }
 
@@ -74,7 +74,7 @@ public class PrintChart extends PlainTool {
   public Action getData()
   {
     // get the current data area
-    java.awt.print.PrinterJob jp = java.awt.print.PrinterJob.getPrinterJob();
+    final java.awt.print.PrinterJob jp = java.awt.print.PrinterJob.getPrinterJob();
     jp.setJobName("Debrief Plot");
     if(jp.printDialog())
     {
@@ -82,7 +82,7 @@ public class PrintChart extends PlainTool {
       {
         jp.print();
       }
-      catch(java.awt.print.PrinterException e)
+      catch(final java.awt.print.PrinterException e)
       {
 
       }

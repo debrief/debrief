@@ -118,7 +118,7 @@ public class WheelShape extends PlainShape implements Editable
 	public class WheelInfo extends Editable.EditorType
 	{
 
-		public WheelInfo(WheelShape data, String theName)
+		public WheelInfo(final WheelShape data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -128,7 +128,7 @@ public class WheelShape extends PlainShape implements Editable
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{
 						prop("RadiusInner", "the Inner radius of the wheel (yds)"),
 						prop("SpokeSize", "the arc covered by each spoke (degs)"),
@@ -141,7 +141,7 @@ public class WheelShape extends PlainShape implements Editable
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -155,7 +155,7 @@ public class WheelShape extends PlainShape implements Editable
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public WheelTest(String val)
+		public WheelTest(final String val)
 		{
 			super(val);
 		}
@@ -229,8 +229,8 @@ public class WheelShape extends PlainShape implements Editable
 	 * @param theColor
 	 *          the colour to plot the wheel
 	 */
-	public WheelShape(WorldLocation theCentre, double theInnerRadius,
-			double theOuterRadius)
+	public WheelShape(final WorldLocation theCentre, final double theInnerRadius,
+			final double theOuterRadius)
 	{
 		this(theCentre, new WorldDistance(theInnerRadius, WorldDistance.YARDS),
 				new WorldDistance(theOuterRadius, WorldDistance.YARDS));
@@ -248,8 +248,8 @@ public class WheelShape extends PlainShape implements Editable
 	 * @param theColor
 	 *          the colour to plot the wheel
 	 */
-	public WheelShape(WorldLocation theCentre, WorldDistance theInnerRadius,
-			WorldDistance theOuterRadius)
+	public WheelShape(final WorldLocation theCentre, final WorldDistance theInnerRadius,
+			final WorldDistance theOuterRadius)
 	{
 		super(0, 1, "Wheel");
 
@@ -380,7 +380,7 @@ public class WheelShape extends PlainShape implements Editable
 		return _orientation;
 	}
 
-	public void setOrientation(Integer orientation) {
+	public void setOrientation(final Integer orientation) {
 		this._orientation = orientation;
 	}
 
@@ -391,7 +391,7 @@ public class WheelShape extends PlainShape implements Editable
 	 *          the destination
 	 */
 	@Override
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// are we visible?
 		if (!getVisible())
@@ -400,32 +400,32 @@ public class WheelShape extends PlainShape implements Editable
 		if (this.getColor() != null)
 			dest.setColor(this.getColor());
 
-		double spoke_separation = _theSpokeSize;
-		int arcs = 180;
+		final double spoke_separation = _theSpokeSize;
+		final int arcs = 180;
 
 		dest.setColor(getColor());
 
-		MWC.Algorithms.PlainProjection _proj = dest.getProjection();
+		final MWC.Algorithms.PlainProjection _proj = dest.getProjection();
 
 		// sort out the centre in screen coords
-		Point centre = new Point(_proj.toScreen(_theCentre));
+		final Point centre = new Point(_proj.toScreen(_theCentre));
 
 		// sort out the range in screen coords
-		WorldLocation outerEdge = _theCentre.add(new WorldVector(
+		final WorldLocation outerEdge = _theCentre.add(new WorldVector(
 				MWC.Algorithms.Conversions.Degs2Rads(0), _theOuterRadius
 						.getValueIn(WorldDistance.DEGS), 0));
-		WorldLocation innerEdge = _theCentre.add(new WorldVector(
+		final WorldLocation innerEdge = _theCentre.add(new WorldVector(
 				MWC.Algorithms.Conversions.Degs2Rads(0), _theInnerRadius
 						.getValueIn(WorldDistance.DEGS), 0));
-		Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
-		Point screenInnerEdge = new Point(_proj.toScreen(innerEdge));
+		final Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
+		final Point screenInnerEdge = new Point(_proj.toScreen(innerEdge));
 		int dx = screenOuterEdge.x - centre.x;
 		int dy = screenOuterEdge.y - centre.y;
-		int outerRadius = (int) Math.sqrt(dx * dx + dy * dy);
+		final int outerRadius = (int) Math.sqrt(dx * dx + dy * dy);
 
 		dx = screenInnerEdge.x - centre.x;
 		dy = screenInnerEdge.y - centre.y;
-		int innerRadius = (int) Math.sqrt(dx * dx + dy * dy);
+		final int innerRadius = (int) Math.sqrt(dx * dx + dy * dy);
 
 		// check that the axis is in the correct direction (we may be in relative
 		// projection)
@@ -437,10 +437,10 @@ public class WheelShape extends PlainShape implements Editable
 		double thisSpoke = 0; // on the axis
 		double spokeRads1 = 0;
 		double spokeRads2 = 0;
-		Point edge1 = new Point();
-		Point edge2 = new Point();
-		Point inner1 = new Point();
-		Point inner2 = new Point();
+		final Point edge1 = new Point();
+		final Point edge2 = new Point();
+		final Point inner1 = new Point();
+		final Point inner2 = new Point();
 
 		inner1.setLocation(centre);
 		inner2.setLocation(centre);
@@ -480,9 +480,9 @@ public class WheelShape extends PlainShape implements Editable
 		}
 
 		// now the inner and outer range rings
-		double ring_separation = outerRadius - innerRadius;
+		final double ring_separation = outerRadius - innerRadius;
 		int thisRadius = innerRadius;
-		Point origin = new Point();
+		final Point origin = new Point();
 
 		// draw the ovals
 		for (int i = 0; i < 2; i++)
@@ -506,9 +506,9 @@ public class WheelShape extends PlainShape implements Editable
 	 * allows for individual shapes to have 'hit-spots' in various locations.
 	 */
 	@Override
-	public double rangeFrom(WorldLocation point)
+	public double rangeFrom(final WorldLocation point)
 	{
-		double res = _theCentre.rangeFrom(point);
+		final double res = _theCentre.rangeFrom(point);
 
 		return res;
 	}
@@ -516,7 +516,7 @@ public class WheelShape extends PlainShape implements Editable
 	/**
 	 * set the centre location of the Wheel
 	 */
-	public void setCentre(WorldLocation centre)
+	public void setCentre(final WorldLocation centre)
 	{
 		// inform our listeners
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, _theCentre, centre);
@@ -530,7 +530,7 @@ public class WheelShape extends PlainShape implements Editable
 
 	}
 
-	public void setEmptyInner(boolean emptyInner)
+	public void setEmptyInner(final boolean emptyInner)
 	{
 		_emptyInner = emptyInner;
 	}
@@ -541,7 +541,7 @@ public class WheelShape extends PlainShape implements Editable
 	 * @param val
 	 *          the new radius (in degrees)
 	 */
-	public void setRadiusInner(WorldDistance val)
+	public void setRadiusInner(final WorldDistance val)
 	{
 		_theInnerRadius = val;
 		// and calc the new summary data
@@ -558,7 +558,7 @@ public class WheelShape extends PlainShape implements Editable
 	 * @param val
 	 *          the new radius (in degrees)
 	 */
-	public void setRadiusOuter(WorldDistance val)
+	public void setRadiusOuter(final WorldDistance val)
 	{
 		_theOuterRadius = val;
 
@@ -574,7 +574,7 @@ public class WheelShape extends PlainShape implements Editable
 	 * @param spokeSize
 	 *          The _theSpokeSize to set.
 	 */
-	public void setSpokeSize(SteppingBoundedInteger spokeSize)
+	public void setSpokeSize(final SteppingBoundedInteger spokeSize)
 	{
 		_theSpokeSize = spokeSize.getCurrent();
 
@@ -589,15 +589,15 @@ public class WheelShape extends PlainShape implements Editable
 	// ////////////////////////////////////////
 	// convenience functions which pass calls back to parent
 	// ////////////////////////////////////////
-	public void setWheelColor(Color val)
+	public void setWheelColor(final Color val)
 	{
 		super.setColor(val);
 	}
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
-		WorldLocation oldCentre = getCentre();
-		WorldLocation newCentre = oldCentre.add(vector);
+		final WorldLocation oldCentre = getCentre();
+		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
 
 		// and calc the new summary data

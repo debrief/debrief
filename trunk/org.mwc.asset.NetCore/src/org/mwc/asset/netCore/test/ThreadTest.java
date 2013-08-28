@@ -8,7 +8,7 @@ import com.esotericsoftware.kryonet.Server;
 
 public class ThreadTest
 {
-	public static void main(String[] args) throws IOException,
+	public static void main(final String[] args) throws IOException,
 			InterruptedException
 	{
 		Server s = new Server();
@@ -16,11 +16,11 @@ public class ThreadTest
 		s.bind(1927);
 		printThreads("server started");
 
-		Client c = new Client();
+		final Client c = new Client();
 		c.start();
 		c.connect(5000, "LOCALHOST", 1927);
 		printThreads("client connected");
-		Server s1 = s;
+		final Server s1 = s;
 		s.stop();
 		printThreads("server stopped");
 
@@ -43,11 +43,11 @@ public class ThreadTest
 		printThreads("both stopped");
 	}
 
-	private static void printThreads(String message) throws InterruptedException
+	private static void printThreads(final String message) throws InterruptedException
 	{
 		// tick:
 		Thread.sleep(2000L);
-		Thread[] threads = new Thread[Thread.activeCount()];
+		final Thread[] threads = new Thread[Thread.activeCount()];
 		Thread.enumerate(threads);
 		System.out.println(message + " :  " + Arrays.asList(threads));
 	}

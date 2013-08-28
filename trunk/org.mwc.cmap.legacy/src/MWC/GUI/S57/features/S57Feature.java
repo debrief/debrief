@@ -19,7 +19,7 @@ public abstract class S57Feature implements Plottable
 
 	final private Double _minScale;
 
-	public S57Feature(String name, Double minScale)
+	public S57Feature(final String name, final Double minScale)
 	{
 		_myName = name;
 		_minScale = minScale;
@@ -41,12 +41,12 @@ public abstract class S57Feature implements Plottable
 	/**
 	 * @param dest
 	 */
-	final public void paint(CanvasType dest)
+	final public void paint(final CanvasType dest)
 	{
 		// are we visible
 		if (_visible)
 		{
-			boolean inScale = true;
+			final boolean inScale = true;
 
 			if (_minScale != null)
 			{
@@ -72,12 +72,12 @@ public abstract class S57Feature implements Plottable
 		return _visible;
 	}
 
-	public double rangeFrom(WorldLocation other)
+	public double rangeFrom(final WorldLocation other)
 	{
 		return 0;
 	}
 
-	public void setVisible(boolean val)
+	public void setVisible(final boolean val)
 	{
 		_visible = val;
 	}
@@ -106,7 +106,7 @@ public abstract class S57Feature implements Plottable
 		return true;
 	}
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
 		return 0;
 	}

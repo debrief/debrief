@@ -32,7 +32,7 @@ public class TimeBar implements IEventEntry
 	Object _source;
 	List<IEventEntry> _children = new ArrayList<IEventEntry>();
 	
-	public TimeBar(WatchableList bar)
+	public TimeBar(final WatchableList bar)
 	{
 		//_start.setTime(bar.getStartDTG().getDate());
 		_start.setTimeInMillis(bar.getStartDTG().getMicros());
@@ -42,17 +42,17 @@ public class TimeBar implements IEventEntry
 		_color = bar.getColor();
 	}
 	
-	public TimeBar(NarrativeWrapper narrative)
+	public TimeBar(final NarrativeWrapper narrative)
 	{
 		_eventName = "Narratives";
 		_start.setTime(narrative.getTimePeriod().getStartDTG().getDate());
 		_end.setTime(narrative.getTimePeriod().getEndDTG().getDate());
 		_source = narrative;
 		
-		Enumeration<Editable> numer = narrative.elements();
+		final Enumeration<Editable> numer = narrative.elements();
 		while (numer.hasMoreElements())
 		{
-			Editable next = numer.nextElement();
+			final Editable next = numer.nextElement();
 			if (next instanceof NarrativeEntry)
 			{
 				_children.add(new TimeSpot((NarrativeEntry) next));
@@ -60,51 +60,51 @@ public class TimeBar implements IEventEntry
 		}
 	}
 	
-	public TimeBar(TacticalDataWrapper sensorOrSolution)
+	public TimeBar(final TacticalDataWrapper sensorOrSolution)
 	{
 		_source = sensorOrSolution;
 		_eventName = sensorOrSolution.getName();
-		HiResDate startDate = sensorOrSolution.getStartDTG(); 
+		final HiResDate startDate = sensorOrSolution.getStartDTG(); 
 		if( startDate != null)
 			_start.setTime(startDate.getDate());
-		HiResDate endDate = sensorOrSolution.getEndDTG(); 
+		final HiResDate endDate = sensorOrSolution.getEndDTG(); 
 		if( endDate != null)
 			_end.setTime(endDate.getDate());
 	}	
 	
-	public TimeBar(TrackWrapper track)
+	public TimeBar(final TrackWrapper track)
 	{
 		this((WatchableList) track);
-		SegmentList segments = track.getSegments();		
+		final SegmentList segments = track.getSegments();		
 		_children.add(new TimeBar(segments));
 		
-		BaseLayer sensors = track.getSensors();
+		final BaseLayer sensors = track.getSensors();
 		Enumeration<Editable> enumer = sensors.elements();
 		while(enumer.hasMoreElements())
 		{
-			Editable sensor = enumer.nextElement();
+			final Editable sensor = enumer.nextElement();
 			if (sensor instanceof TacticalDataWrapper)
 				_children.add(new TimeBar((TacticalDataWrapper) sensor));
 		}
 		
-		BaseLayer solutions = track.getSolutions();
+		final BaseLayer solutions = track.getSolutions();
 		enumer = solutions.elements();
 		while(enumer.hasMoreElements())
 		{
-			Editable solution = enumer.nextElement();
+			final Editable solution = enumer.nextElement();
 			if (solution instanceof TacticalDataWrapper)
 				_children.add(new TimeBar((TacticalDataWrapper) solution));
 		}
 	}
 	
-	public TimeBar(SegmentList segments)
+	public TimeBar(final SegmentList segments)
 	{
 		_source = segments;
 		_eventName = segments.getName();
-		HiResDate startDate = segments.getWrapper().getStartDTG(); 
+		final HiResDate startDate = segments.getWrapper().getStartDTG(); 
 		if( startDate != null)
 			_start.setTime(startDate.getDate());
-		HiResDate endDate = segments.getWrapper().getEndDTG(); 
+		final HiResDate endDate = segments.getWrapper().getEndDTG(); 
 		if( endDate != null)
 			_end.setTime(endDate.getDate());
 		_color = segments.getWrapper().getColor();

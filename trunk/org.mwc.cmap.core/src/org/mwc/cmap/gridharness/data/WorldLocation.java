@@ -15,7 +15,7 @@ public class WorldLocation {
 		this(0, 0);
 	}
 
-	public WorldLocation(double latitude, double longitude) {
+	public WorldLocation(final double latitude, final double longitude) {
 		myLatitude = latitude;
 		myLongitude = longitude;
 	}
@@ -30,9 +30,9 @@ public class WorldLocation {
 
 	@Override
 	public String toString() {
-		SexagesimalFormat format = CorePlugin.getDefault().getLocationFormat();
-		Sexagesimal latitude = format.parseDouble(getLatitude());
-		Sexagesimal longitude = format.parseDouble(getLongitude());
+		final SexagesimalFormat format = CorePlugin.getDefault().getLocationFormat();
+		final Sexagesimal latitude = format.parseDouble(getLatitude());
+		final Sexagesimal longitude = format.parseDouble(getLongitude());
 		return format.format(latitude, false) + " " + format.format(longitude, true);
 	}
 

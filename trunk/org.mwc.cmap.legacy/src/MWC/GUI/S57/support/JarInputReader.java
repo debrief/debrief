@@ -47,7 +47,7 @@ public class JarInputReader extends StreamInputReader {
      * entry name. The entry name should be a path to the entry from
      * the internal root of the jar file.
      */
-    public JarInputReader(String jarFilePath, String jarEntryName)
+    public JarInputReader(final String jarFilePath, final String jarEntryName)
             throws IOException {
 
         if (Debug.debugging("binaryfile")) {
@@ -74,7 +74,7 @@ public class JarInputReader extends StreamInputReader {
         jarFile = null;
 
         jarFile = new JarFile(URLDecoder.decode(jarFileName, "UTF-8"));
-        JarEntry entry = jarFile.getJarEntry(jarEntryName);
+        final JarEntry entry = jarFile.getJarEntry(jarEntryName);
         inputStream = jarFile.getInputStream(entry);
         if (inputStream == null) {
             Debug.error("JarInputReader: Problem getting input stream for "

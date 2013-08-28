@@ -65,7 +65,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		 *          the units for the value
 		 * @return an object representing the new data value
 		 */
-		public Object createResultsObject(double dist, int units)
+		public Object createResultsObject(final double dist, final int units)
 		{
 			return new WorldDistance(dist, units);
 		}
@@ -75,7 +75,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		 * 
 		 * @param value
 		 */
-		public void storeMe(Object value)
+		public void storeMe(final Object value)
 		{
 			_myVal = (WorldDistance) value;
 		}
@@ -100,7 +100,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		 */
 		WorldDistance _myVal;
 
-		public WorldDistanceCellEditor(Composite parent)
+		public WorldDistanceCellEditor(final Composite parent)
 		{
 			super(parent, "Distance", "Units", new DistanceModel());
 		}
@@ -120,21 +120,21 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new ValueWithUnitsCellEditor2(parent, "Distance", "Units", new DistanceModel());
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
 				return element.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -144,7 +144,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 	}
 
 	@Override
-	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
+	public Control getEditorControlFor(final Composite parent, final IDebriefProperty property)
 	{
 		return new ValueWithUnitsControl(parent, "Distance", "Units", new DistanceModel(), property);
 	}

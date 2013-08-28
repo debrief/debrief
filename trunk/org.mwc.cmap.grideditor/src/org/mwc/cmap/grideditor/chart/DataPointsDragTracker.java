@@ -32,21 +32,21 @@ public abstract class DataPointsDragTracker implements
 	protected abstract void dragCompleted(BackedChartItem item, double finalX,
 			double finalY);
 
-	public DataPointsDragTracker(JFreeChartComposite chartPanel,
-			boolean allowYOnly)
+	public DataPointsDragTracker(final JFreeChartComposite chartPanel,
+			final boolean allowYOnly)
 	{
 		myChartPanel = chartPanel;
 		myAllowVerticalMovesOnly = allowYOnly;
 		myDragSubject = new DragSubject();
 	}
 
-	public void chartMouseClicked(ChartMouseEvent event)
+	public void chartMouseClicked(final ChartMouseEvent event)
 	{
 		myDragSubject.setSubject(event.getEntity());
 		myChartPanel.redrawCanvas();
 	}
 
-	public void chartMouseMoved(ChartMouseEvent event)
+	public void chartMouseMoved(final ChartMouseEvent event)
 	{
 		if (!myDragSubject.isEmpty())
 		{
@@ -58,15 +58,15 @@ public abstract class DataPointsDragTracker implements
 
 			// [IM] don't bother with sorting out the client area offset
 			// - we've stopped using it in the FixedChartComposite calling method
-			int screenX = event.getTrigger().getX();
-			int screenY = event.getTrigger().getY();
+			final int screenX = event.getTrigger().getX();
+			final int screenY = event.getTrigger().getY();
 
 			// deliberately switch axes for following line, now that we've switched
 			// the axes to put time
 			// down the LH side.
-			Point2D point2d = new Point2D.Double(screenY, screenX);
-			XYPlot xyplot = myChartPanel.getChart().getXYPlot();
-			ChartRenderingInfo renderingInfo = myChartPanel.getChartRenderingInfo();
+			final Point2D point2d = new Point2D.Double(screenY, screenX);
+			final XYPlot xyplot = myChartPanel.getChart().getXYPlot();
+			final ChartRenderingInfo renderingInfo = myChartPanel.getChartRenderingInfo();
 			Rectangle2D dataArea = renderingInfo.getPlotInfo().getDataArea();
 
 			// WORKAROUND: when the grid graph gets really wide, the labels on the
@@ -75,17 +75,17 @@ public abstract class DataPointsDragTracker implements
 			// So, get the width values from the getScreenDataArea method - which
 			// does reflect the scaling applied to the y axis.
 			// - and all works well now.
-			Rectangle dataArea2 = myChartPanel.getScreenDataArea();
+			final Rectangle dataArea2 = myChartPanel.getScreenDataArea();
 			dataArea = new Rectangle2D.Double(dataArea2.x, dataArea.getY(),
 					dataArea2.width, dataArea.getHeight());
 
-			ValueAxis domainAxis = xyplot.getDomainAxis();
-			RectangleEdge domainEdge = xyplot.getDomainAxisEdge();
-			ValueAxis valueAxis = xyplot.getRangeAxis();
-			RectangleEdge valueEdge = xyplot.getRangeAxisEdge();
+			final ValueAxis domainAxis = xyplot.getDomainAxis();
+			final RectangleEdge domainEdge = xyplot.getDomainAxisEdge();
+			final ValueAxis valueAxis = xyplot.getRangeAxis();
+			final RectangleEdge valueEdge = xyplot.getRangeAxisEdge();
 			double domainX = domainAxis.java2DToValue(point2d.getX(), dataArea,
 					domainEdge);
-			double domainY = valueAxis.java2DToValue(point2d.getY(), dataArea,
+			final double domainY = valueAxis.java2DToValue(point2d.getY(), dataArea,
 					valueEdge);
 
 			if (myAllowVerticalMovesOnly)
@@ -99,17 +99,17 @@ public abstract class DataPointsDragTracker implements
 		}
 	}
 
-	public void chartMouseReleased(ChartMouseEvent event)
+	public void chartMouseReleased(final ChartMouseEvent event)
 	{
 		if (!myDragSubject.isEmpty() && myDragSubject.getLastDomainPoint() != null)
 		{
 			try
 			{
-				Point2D finalPoint = myDragSubject.getLastDomainPoint();
+				final Point2D finalPoint = myDragSubject.getLastDomainPoint();
 				dragCompleted(myDragSubject.getDraggedItem(), finalPoint.getX(),
 						finalPoint.getY());
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -128,7 +128,7 @@ public abstract class DataPointsDragTracker implements
 		{
 			return null;
 		}
-		XYItemRenderer renderer = myChartPanel.getChart().getXYPlot()
+		final XYItemRenderer renderer = myChartPanel.getChart().getXYPlot()
 				.getRenderer(0);
 		return renderer instanceof RendererWithDynamicFeedback ? (RendererWithDynamicFeedback) renderer
 				: null;
@@ -143,7 +143,7 @@ public abstract class DataPointsDragTracker implements
 
 		private Point2D.Double myLastDomainPoint;
 
-		public void setSubject(ChartEntity chartEntity)
+		public void setSubject(final ChartEntity chartEntity)
 		{
 			clear();
 			if (chartEntity instanceof XYItemEntity)
@@ -156,7 +156,7 @@ public abstract class DataPointsDragTracker implements
 				}
 			}
 
-			RendererWithDynamicFeedback renderer = getFeedbackRenderer();
+			final RendererWithDynamicFeedback renderer = getFeedbackRenderer();
 			if (renderer != null)
 			{
 				renderer.setFeedbackSubject(myDraggedEntity);
@@ -164,14 +164,14 @@ public abstract class DataPointsDragTracker implements
 			}
 		}
 
-		public void setProposedValues(double x, double y)
+		public void setProposedValues(final double x, final double y)
 		{
 			if (isEmpty())
 			{
 				return;
 			}
 
-			RendererWithDynamicFeedback renderer = getFeedbackRenderer();
+			final RendererWithDynamicFeedback renderer = getFeedbackRenderer();
 			if (renderer == null)
 			{
 				return;
@@ -213,15 +213,15 @@ public abstract class DataPointsDragTracker implements
 		}
 
 		@SuppressWarnings("rawtypes")
-		private BackedChartItem extractBackedChartItem(XYItemEntity xyEntity)
+		private BackedChartItem extractBackedChartItem(final XYItemEntity xyEntity)
 		{
-			Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
+			final Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
 					xyEntity.getSeriesIndex());
 			if (xyEntity.getDataset() instanceof XYSeriesCollection)
 			{
-				XYSeries series = ((XYSeriesCollection) xyEntity.getDataset())
+				final XYSeries series = ((XYSeriesCollection) xyEntity.getDataset())
 						.getSeries(seriesKey);
-				XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
+				final XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
 				if (dataItem instanceof BackedChartItem)
 				{
 					return (BackedChartItem) dataItem;
@@ -229,9 +229,9 @@ public abstract class DataPointsDragTracker implements
 			}
 			else if (xyEntity.getDataset() instanceof TimeSeriesCollection)
 			{
-				TimeSeries series = ((TimeSeriesCollection) xyEntity.getDataset())
+				final TimeSeries series = ((TimeSeriesCollection) xyEntity.getDataset())
 						.getSeries(seriesKey);
-				TimeSeriesDataItem dataItem = series.getDataItem(xyEntity.getItem());
+				final TimeSeriesDataItem dataItem = series.getDataItem(xyEntity.getItem());
 				if (dataItem instanceof BackedChartItem)
 				{
 					return (BackedChartItem) dataItem;

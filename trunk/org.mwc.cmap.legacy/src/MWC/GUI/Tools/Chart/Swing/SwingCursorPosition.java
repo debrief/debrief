@@ -56,8 +56,8 @@ public class SwingCursorPosition extends CursorPosition
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public SwingCursorPosition(PlainChart theChart,
-													 java.awt.Component theLabel){
+  public SwingCursorPosition(final PlainChart theChart,
+													 final java.awt.Component theLabel){
 		super(theChart);
 		_myOutput = (javax.swing.JLabel) theLabel;
   }
@@ -65,7 +65,7 @@ public class SwingCursorPosition extends CursorPosition
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-	public void setText(String val)
+	public void setText(final String val)
 	{
 		_myOutput.setText(val);
 	}

@@ -85,11 +85,11 @@ public class AWTBooleanPropertyEditor extends
     return _theHolder;
   }
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Boolean)
     {
-      Boolean val = (Boolean)p1;
+      final Boolean val = (Boolean)p1;
       _myVal = val.booleanValue();
     }
     else
@@ -103,7 +103,7 @@ public class AWTBooleanPropertyEditor extends
 
   public Object getValue()
   {
-    Boolean val = new Boolean(_theBox.getState());
+    final Boolean val = new Boolean(_theBox.getState());
     return val;
   }
 

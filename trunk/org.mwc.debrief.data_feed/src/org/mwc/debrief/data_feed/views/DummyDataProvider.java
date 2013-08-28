@@ -16,7 +16,7 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 	/**
 	 * the automatic timer we are using
 	 */
-	private MWC.Utilities.Timer.Timer _theTimer;
+	private final MWC.Utilities.Timer.Timer _theTimer;
 
 	/**
 	 * the feed we're listening to
@@ -46,7 +46,7 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 	/**
 	 * @param host
 	 */
-	public void connect(LiveFeedViewer host)
+	public void connect(final LiveFeedViewer host)
 	{
 		_myHost = host;
 
@@ -64,7 +64,7 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 	/**
 	 * @param host
 	 */
-	public void disconnect(LiveFeedViewer host)
+	public void disconnect(final LiveFeedViewer host)
 	{
 		_myHost.showMessage("Disconnecting");
 
@@ -101,7 +101,7 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 		_theTimer.stop();
 	}
 
-	public void onTime(ActionEvent event)
+	public void onTime(final ActionEvent event)
 	{
 		
 		// this section has been commented out, in respect of the changed

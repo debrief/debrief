@@ -57,7 +57,7 @@ abstract public class ChartBoundsHandler extends
 		addHandler(new LocationHandler(TOP_LEFT)
 		{
 			@Override
-			public void setLocation(WorldLocation res)
+			public void setLocation(final WorldLocation res)
 			{
 				_tl = res;
 			}
@@ -65,7 +65,7 @@ abstract public class ChartBoundsHandler extends
 		addHandler(new LocationHandler(BOTTOM_RIGHT)
 		{
 			@Override
-			public void setLocation(WorldLocation res)
+			public void setLocation(final WorldLocation res)
 			{
 				_br = res;
 			}
@@ -73,7 +73,7 @@ abstract public class ChartBoundsHandler extends
 
 		addHandler(new FontHandler()
 		{
-			public void setFont(java.awt.Font font)
+			public void setFont(final java.awt.Font font)
 			{
 				_font = font;
 			}
@@ -81,7 +81,7 @@ abstract public class ChartBoundsHandler extends
 
 		addAttributeHandler(new HandleAttribute(LABEL_TEXT)
 		{
-			public void setValue(String name, String value)
+			public void setValue(final String name, final String value)
 			{
 				_label = fromXML(value);
 			}
@@ -90,7 +90,7 @@ abstract public class ChartBoundsHandler extends
 		addHandler(new ColourHandler()
 		{
 			@Override
-			public void setColour(Color res)
+			public void setColour(final Color res)
 			{
 				_col = res;
 			}
@@ -98,7 +98,7 @@ abstract public class ChartBoundsHandler extends
 
 		addAttributeHandler(new HandleAttribute(LABEL_LOCATION)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				lp.setAsText(val);
 				_theLocation = (Integer) lp.getValue();
@@ -107,7 +107,7 @@ abstract public class ChartBoundsHandler extends
 
 		addAttributeHandler(new HandleAttribute(FILE_NAME)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				_filename = val;
 			}
@@ -115,7 +115,7 @@ abstract public class ChartBoundsHandler extends
 
 		addAttributeHandler(new HandleBooleanAttribute(SHAPE_VISIBLE)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_isVisible = value;
 			}
@@ -123,7 +123,7 @@ abstract public class ChartBoundsHandler extends
 
 		addAttributeHandler(new HandleBooleanAttribute(LABEL_VISIBLE)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_labelVisible = value;
 			}
@@ -134,7 +134,7 @@ abstract public class ChartBoundsHandler extends
 	public void elementClosed()
 	{
 
-		MWC.GUI.Shapes.ChartBoundsWrapper sw = new MWC.GUI.Shapes.ChartBoundsWrapper(
+		final MWC.GUI.Shapes.ChartBoundsWrapper sw = new MWC.GUI.Shapes.ChartBoundsWrapper(
 				_label, _tl, _br, _col, _filename);
 
 		if (_theLocation != null)
@@ -155,14 +155,14 @@ abstract public class ChartBoundsHandler extends
 
 	abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
-	public void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
 		// output the shape related stuff first
-		org.w3c.dom.Element theShape = doc.createElement(CHART_REFERENCE);
+		final org.w3c.dom.Element theShape = doc.createElement(CHART_REFERENCE);
 
-		MWC.GUI.Shapes.ChartBoundsWrapper sw = (MWC.GUI.Shapes.ChartBoundsWrapper) plottable;
+		final MWC.GUI.Shapes.ChartBoundsWrapper sw = (MWC.GUI.Shapes.ChartBoundsWrapper) plottable;
 
 		// put the parameters into the parent
 		theShape.setAttribute(LABEL_TEXT, toXML(sw.getName()));

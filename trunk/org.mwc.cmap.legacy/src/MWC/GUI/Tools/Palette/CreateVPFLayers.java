@@ -73,11 +73,11 @@ public class CreateVPFLayers extends PlainCreate
 //  public static final String VPF_PATH_DEFAULT = "f://dnc13";
   public static final String VPF_PATH_DEFAULT = "f://vpf/vmap_af";
 
-	public CreateVPFLayers(MWC.GUI.ToolParent theParent,
-										MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
-										MWC.GUI.Layers theData,
-										MWC.GUI.PlainChart theChart)
+	public CreateVPFLayers(final MWC.GUI.ToolParent theParent,
+										final MWC.GUI.Properties.PropertiesPanel thePanel,
+										final MWC.GUI.Layer theLayer,
+										final MWC.GUI.Layers theData,
+										final MWC.GUI.PlainChart theChart)
 	{
 		super(theParent, thePanel, theLayer, theData, theChart, "VPF Layers", "images/vpf.gif");
 		
@@ -90,17 +90,17 @@ public class CreateVPFLayers extends PlainCreate
 	 * 
 	 * @param theParent
 	 */
-	public static void initialise(ToolParent theParent)
+	public static void initialise(final ToolParent theParent)
 	{
 		_myParent = theParent;
 	}
 
-  public MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+  public MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
   {
     return createMyLibrary(true);
   }
 
-  public static VPFDatabase createMyLibrary(String[] thePaths, boolean autoPopulate)
+  public static VPFDatabase createMyLibrary(final String[] thePaths, final boolean autoPopulate)
   {
     VPFDatabase database = null;
 
@@ -110,7 +110,7 @@ public class CreateVPFLayers extends PlainCreate
     return database;
   }
 
-	public static VPFDatabase createMyLibrary(boolean autoPopulate)
+	public static VPFDatabase createMyLibrary(final boolean autoPopulate)
 	{
     // create the parent layer which will hold the VPF libraries which we know about
     VPFDatabase database = null;
@@ -132,8 +132,8 @@ public class CreateVPFLayers extends PlainCreate
       paths.put("VPF_PATH_DEFAULT", VPF_PATH_DEFAULT);
   	}
 
-    String [] demo = new String[paths.size()];
-    String [] the_paths = paths.values().toArray(demo);
+    final String [] demo = new String[paths.size()];
+    final String [] the_paths = paths.values().toArray(demo);
 
     database = createMyLibrary(the_paths, autoPopulate);
 

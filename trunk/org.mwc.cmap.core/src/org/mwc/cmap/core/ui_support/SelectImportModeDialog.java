@@ -22,7 +22,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
  * to input a String
  */
 public class SelectImportModeDialog extends Dialog implements SelectionListener {
-  private String message;
+  private final String message;
   private String input;
   
   private boolean _rememberIt;
@@ -34,7 +34,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
    * 
    * @param parent the parent
    */
-  public SelectImportModeDialog(Shell parent, String trackName) {
+  public SelectImportModeDialog(final Shell parent, final String trackName) {
     // Pass the default styles here
     this(parent, trackName, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
   }
@@ -45,7 +45,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
    * @param parent the parent
    * @param style the style
    */
-  public SelectImportModeDialog(Shell parent, String trackName, int style) {
+  public SelectImportModeDialog(final Shell parent, final String trackName, final int style) {
     // Let users override the default styles
     super(parent, style);
     setText("Select track mode");
@@ -69,7 +69,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
    * 
    * @param input the new input
    */
-  public void setInput(String input) {
+  public void setInput(final String input) {
     this.input = input;
   }
 
@@ -80,12 +80,12 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
    */
   public String open() {
     // Create the dialog window
-    Shell shell = new Shell(getParent(), getStyle());
+    final Shell shell = new Shell(getParent(), getStyle());
     shell.setText(getText());
     createContents(shell);
     shell.pack();
     shell.open();
-    Display display = getParent().getDisplay();
+    final Display display = getParent().getDisplay();
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch()) {
         display.sleep();
@@ -96,7 +96,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     return _mode;
   }
 
-  private static void storeModePreference(String mode)
+  private static void storeModePreference(final String mode)
 	{
   	CorePlugin.getToolParent().setProperty(ImportReplay.TRACK_IMPORT_MODE, mode);
 	}
@@ -113,7 +113,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     shell.setLayout(new GridLayout(1, true));
 
     // Show the message
-    Label label = new Label(shell, SWT.NONE);
+    final Label label = new Label(shell, SWT.NONE);
     label.setText(message);
     GridData data = new GridData();
     data.horizontalSpan = 2;
@@ -121,7 +121,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
 
     // Display the radio button list
 
-    Button[] radios = new Button[2];
+    final Button[] radios = new Button[2];
 
     radios[0] = new Button(shell, SWT.RADIO);
     radios[0].setText("Dead Reckoning (DR) - positions are calculated using recorded course and speed");
@@ -139,29 +139,29 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     rememberBtn.setText("Automatically use this mode next time");
     rememberBtn.addSelectionListener(new SelectionListener(){
 		
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				_rememberIt = rememberBtn.getSelection();
 			}
 		
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 			}
 		});
     
-    Composite holder = new Composite(shell, SWT.NONE);
+    final Composite holder = new Composite(shell, SWT.NONE);
     holder.setLayout(new GridLayout(2, true));
     
 
     // Create the OK button and add a handler
     // so that pressing it will set input
     // to the entered value
-    Button ok = new Button(holder, SWT.PUSH);
+    final Button ok = new Button(holder, SWT.PUSH);
     ok.setText("OK");
     data = new GridData(GridData.FILL_HORIZONTAL);
     ok.setLayoutData(data);
     ok.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent event) {
+      public void widgetSelected(final SelectionEvent event) {
         // so, do they want us to remember the value?
         if(_rememberIt)
         {
@@ -175,12 +175,12 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
 
     // Create the cancel button and add a handler
     // so that pressing it will set input to null
-    Button cancel = new Button(holder, SWT.PUSH);
+    final Button cancel = new Button(holder, SWT.PUSH);
     cancel.setText("Cancel");
     data = new GridData(GridData.FILL_HORIZONTAL);
     cancel.setLayoutData(data);
     cancel.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent event) {
+      public void widgetSelected(final SelectionEvent event) {
         // clear the selection
       	_mode = null;
         shell.close();
@@ -193,14 +193,14 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     shell.setDefaultButton(ok);
   }
 
-	public void widgetDefaultSelected(SelectionEvent e)
+	public void widgetDefaultSelected(final SelectionEvent e)
 	{
 
 	}
 
-	public void widgetSelected(SelectionEvent e)
+	public void widgetSelected(final SelectionEvent e)
 	{
-		Button btn = (Button) e.widget;
+		final Button btn = (Button) e.widget;
 		_mode = (String) btn.getData();
 	}
 }

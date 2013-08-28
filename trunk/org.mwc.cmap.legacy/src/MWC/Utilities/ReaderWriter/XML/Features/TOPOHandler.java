@@ -24,7 +24,7 @@ public class TOPOHandler extends MWCXMLReader
 
   java.awt.Color _theColor;
   boolean _isVisible;
-  private Layers _theLayers;
+  private final Layers _theLayers;
   Integer _scaleLocation;
   Boolean _showLand = null;
   String _contourDepths = null;
@@ -39,7 +39,7 @@ public class TOPOHandler extends MWCXMLReader
           = new ETOPOPainter.KeyLocationPropertyEditor();
 
 
-  public TOPOHandler(Layers theLayers)
+  public TOPOHandler(final Layers theLayers)
   {
     // inform our parent what type of class we are
     super("topo");
@@ -48,42 +48,42 @@ public class TOPOHandler extends MWCXMLReader
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("ShowLand")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _showLand = new Boolean(value);
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("ShowBathy")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _showBathy =  new Boolean(value);
       }
     });
     addAttributeHandler(new HandleBooleanAttribute("ShowContours")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _showContours = new Boolean(value);
       }
     });
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
     });
     addAttributeHandler(new HandleAttribute("ScaleLocation")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         lp.setAsText(val);
         _scaleLocation = (Integer)lp.getValue();
@@ -92,7 +92,7 @@ public class TOPOHandler extends MWCXMLReader
 
     addAttributeHandler(new HandleAttribute("ContourDepths")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _contourDepths = val;
       }
@@ -103,7 +103,7 @@ public class TOPOHandler extends MWCXMLReader
   public void elementClosed()
   {
 
-    String topoPath = CreateTOPO.getETOPOPath();
+    final String topoPath = CreateTOPO.getETOPOPath();
 
     if(topoPath == null)
     {
@@ -112,7 +112,7 @@ public class TOPOHandler extends MWCXMLReader
     }
 
     // create a Grid from this data
-    ETOPO_2_Minute painter = new ETOPO_2_Minute(topoPath);
+    final ETOPO_2_Minute painter = new ETOPO_2_Minute(topoPath);
     painter.setColor(_theColor);
     
     painter.setVisible(_isVisible);
@@ -140,11 +140,11 @@ public class TOPOHandler extends MWCXMLReader
     _showBathy = null;
   }
 
-  public static void exportThisPlottable(MWC.GUI.Plottable plottable, Element parent, Document doc)
+  public static void exportThisPlottable(final MWC.GUI.Plottable plottable, final Element parent, final Document doc)
   {
 
-    ETOPO_2_Minute csp = (ETOPO_2_Minute) plottable;
-    Element etopo = doc.createElement("topo");
+    final ETOPO_2_Minute csp = (ETOPO_2_Minute) plottable;
+    final Element etopo = doc.createElement("topo");
 
     // do the visibility
     etopo.setAttribute("Visible", writeThis(csp.getVisible()));

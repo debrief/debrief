@@ -167,11 +167,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// SPECIAL CASE: if we have a world scaled symbol, provide
 				// editors for
 				// the symbol size
-				TrackWrapper item = (TrackWrapper) this.getData();
+				final TrackWrapper item = (TrackWrapper) this.getData();
 				if (item._theSnailShape instanceof WorldScaledSym)
 				{
 					// yes = better create height/width editors
-					PropertyDescriptor[] res2 = new PropertyDescriptor[res.length + 2];
+					final PropertyDescriptor[] res2 = new PropertyDescriptor[res.length + 2];
 					System.arraycopy(res, 0, res2, 2, res.length);
 					res2[0] = expertProp("SymbolLength", "Length of symbol", FORMAT);
 					res2[1] = expertProp("SymbolWidth", "Width of symbol", FORMAT);
@@ -210,8 +210,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param subjects
 	 *          the items to insert.
 	 */
-	public static void groupTracks(TrackWrapper target, Layers theLayers,
-			Layer[] parents, Editable[] subjects)
+	public static void groupTracks(final TrackWrapper target, final Layers theLayers,
+			final Layer[] parents, final Editable[] subjects)
 	{
 		// ok, loop through the subjects, adding them onto the target
 		for (int i = 0; i < subjects.length; i++)
@@ -253,7 +253,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						{
 							if (obj instanceof TrackSegment)
 							{
-								TrackSegment ts = (TrackSegment) obj;
+								final TrackSegment ts = (TrackSegment) obj;
 
 								// reset the name if we need to
 								if (ts.getName().startsWith("Posi"))
@@ -307,7 +307,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the actual selected items
 	 * @return sufficient information to undo the merge
 	 */
-	public static int mergeTracks(final Editable target, Layers theLayers,
+	public static int mergeTracks(final Editable target, final Layers theLayers,
 			final Layer[] parents, final Editable[] subjects)
 	{
 		// where we dump the new data points
@@ -315,20 +315,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// first, check they don't overlap.
 		// start off by collecting the periods
-		TimePeriod[] _periods = new TimePeriod.BaseTimePeriod[subjects.length];
+		final TimePeriod[] _periods = new TimePeriod.BaseTimePeriod[subjects.length];
 		for (int i = 0; i < subjects.length; i++)
 		{
-			Editable editable = subjects[i];
+			final Editable editable = subjects[i];
 			TimePeriod thisPeriod = null;
 			if (editable instanceof TrackWrapper)
 			{
-				TrackWrapper tw = (TrackWrapper) editable;
+				final TrackWrapper tw = (TrackWrapper) editable;
 				thisPeriod = new TimePeriod.BaseTimePeriod(tw.getStartDTG(),
 						tw.getEndDTG());
 			}
 			else if (editable instanceof TrackSegment)
 			{
-				TrackSegment ts = (TrackSegment) editable;
+				final TrackSegment ts = (TrackSegment) editable;
 				thisPeriod = new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
 			}
 			_periods[i] = thisPeriod;
@@ -337,10 +337,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		String failedMsg = null;
 		for (int i = 0; i < _periods.length; i++)
 		{
-			TimePeriod timePeriod = _periods[i];
+			final TimePeriod timePeriod = _periods[i];
 			for (int j = 0; j < _periods.length; j++)
 			{
-				TimePeriod timePeriod2 = _periods[j];
+				final TimePeriod timePeriod2 = _periods[j];
 				// check it's not us
 				if (timePeriod2 != timePeriod)
 				{
@@ -371,8 +371,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// the merged tracks probably contain manoeuvres
 		if (target instanceof CoreTMASegment)
 		{
-			CoreTMASegment tma = (CoreTMASegment) target;
-			TrackSegment newSegment = new TrackSegment(tma);
+			final CoreTMASegment tma = (CoreTMASegment) target;
+			final TrackSegment newSegment = new TrackSegment(tma);
 
 			// now do some fancy footwork to remove the target from the wrapper,
 			// and
@@ -593,7 +593,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		_locationListener = new PropertyChangeListener()
 		{
 			@Override
-			public void propertyChange(PropertyChangeEvent arg0)
+			public void propertyChange(final PropertyChangeEvent arg0)
 			{
 				fixMoved();
 			}
@@ -685,7 +685,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else if (point instanceof TrackSegment)
 		{
-			TrackSegment seg = (TrackSegment) point;
+			final TrackSegment seg = (TrackSegment) point;
 			seg.setWrapper(this);
 			_thePositions.addSegment((TrackSegment) point);
 			done = true;
@@ -865,7 +865,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param res
 	 *          the previously split track sections
 	 */
-	public void combineSections(Vector<TrackSegment> res)
+	public void combineSections(final Vector<TrackSegment> res)
 	{
 		// ok, remember the first
 		final TrackSegment keeper = res.firstElement();
@@ -1038,8 +1038,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
@@ -1062,7 +1062,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public void addToMe(WorldVector delta)
+					public void addToMe(final WorldVector delta)
 					{
 						super.addToMe(delta);
 						thisF.setFixLocation(this);
@@ -1077,8 +1077,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
@@ -1100,8 +1100,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
-	public void findNearestSegmentHotspotFor(WorldLocation cursorLoc,
-			Point cursorPt, LocationConstruct currentNearest)
+	public void findNearestSegmentHotspotFor(final WorldLocation cursorLoc,
+			final Point cursorPt, final LocationConstruct currentNearest)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist;
@@ -1169,8 +1169,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          ownship
 	 * @return the location
 	 */
-	public FixWrapper getBacktraceTo(HiResDate searchTime,
-			ArrayLength sensorOffset, boolean wormInHole)
+	public FixWrapper getBacktraceTo(final HiResDate searchTime,
+			final ArrayLength sensorOffset, final boolean wormInHole)
 	{
 		FixWrapper res = null;
 
@@ -1181,7 +1181,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else
 		{
 
-			boolean parentInterpolated = getInterpolatePoints();
+			final boolean parentInterpolated = getInterpolatePoints();
 			setInterpolatePoints(true);
 
 			final MWC.GenericData.Watchable[] list = getNearestTo(searchTime);
@@ -1205,9 +1205,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				if (sensorOffset != null)
 				{
 					// get the current heading
-					double hdg = wa.getCourse();
+					final double hdg = wa.getCourse();
 					// and calculate where it leaves us
-					WorldVector vector = new WorldVector(hdg, sensorOffset, null);
+					final WorldVector vector = new WorldVector(hdg, sensorOffset, null);
 
 					// now apply this vector to the origin
 					res.setLocation(new WorldLocation(res.getLocation().add(vector)));
@@ -1326,7 +1326,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getEndDTG()
 	{
 		HiResDate dtg = null;
-		TimePeriod res = getTimePeriod();
+		final TimePeriod res = getTimePeriod();
 		if (res != null)
 		{
 			dtg = res.getEndDTG();
@@ -1361,7 +1361,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @return and interpolated point
 	 */
 	private final FixWrapper getInterpolatedFix(final FixWrapper previous,
-			final FixWrapper next, HiResDate requestedDTG)
+			final FixWrapper next, final HiResDate requestedDTG)
 	{
 		FixWrapper res = null;
 
@@ -1784,8 +1784,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return new TrackWrapper_Support.IteratorWrapper(res.iterator());
 	}
 
-	private SortedSet<Editable> getPositionsBetween(FixWrapper starter2,
-			FixWrapper finisher2)
+	private SortedSet<Editable> getPositionsBetween(final FixWrapper starter2,
+			final FixWrapper finisher2)
 	{
 		// first get them all as one list
 		final SortedSet<Editable> pts = getRawPositions();
@@ -1879,7 +1879,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getStartDTG()
 	{
 		HiResDate res = null;
-		TimePeriod period = getTimePeriod();
+		final TimePeriod period = getTimePeriod();
 		if (period != null)
 		{
 			res = period.getStartDTG();
@@ -1913,7 +1913,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WorldDistance res = null;
 		if (_theSnailShape instanceof WorldScaledSym)
 		{
-			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
 			res = sym.getLength();
 		}
 		return res;
@@ -1932,7 +1932,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WorldDistance res = null;
 		if (_theSnailShape instanceof WorldScaledSym)
 		{
-			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
 			res = sym.getWidth();
 		}
 		return res;
@@ -1942,10 +1942,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		TimePeriod res = null;
 
-		Enumeration<Editable> segs = _thePositions.elements();
+		final Enumeration<Editable> segs = _thePositions.elements();
 		while (segs.hasMoreElements())
 		{
-			TrackSegment seg = (TrackSegment) segs.nextElement();
+			final TrackSegment seg = (TrackSegment) segs.nextElement();
 
 			// do we have a dtg?
 			if ((seg.startDTG() != null) && (seg.endDTG() != null))
@@ -2101,10 +2101,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WorldLocation lastLocation = null;
 		FixWrapper lastFix = null;
 
-		Enumeration<Editable> segments = _thePositions.elements();
+		final Enumeration<Editable> segments = _thePositions.elements();
 		while (segments.hasMoreElements())
 		{
-			TrackSegment seg = (TrackSegment) segments.nextElement();
+			final TrackSegment seg = (TrackSegment) segments.nextElement();
 
 			// how shall we plot this segment?
 			final int thisLineStyle;
@@ -2123,7 +2123,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
 			// RELATIVE MODE
-			boolean isRelative = seg.getPlotRelative();
+			final boolean isRelative = seg.getPlotRelative();
 			WorldLocation tmaLastLoc = null;
 			long tmaLastDTG = 0;
 
@@ -2171,7 +2171,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// ok, are we in relative?
 				if (isRelative)
 				{
-					long thisTime = fw.getDateTimeGroup().getDate().getTime();
+					final long thisTime = fw.getDateTimeGroup().getDate().getTime();
 
 					// ok, is this our first location?
 					if (tmaLastLoc == null)
@@ -2182,16 +2182,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					else
 					{
 						// calculate a new vector
-						long timeDelta = thisTime - tmaLastDTG;
+						final long timeDelta = thisTime - tmaLastDTG;
 						if (lastFix != null)
 						{
-							double speedKts = lastFix.getSpeed();
-							double courseRads = lastFix.getCourse();
-							double depthM = lastFix.getDepth();
+							final double speedKts = lastFix.getSpeed();
+							final double courseRads = lastFix.getCourse();
+							final double depthM = lastFix.getDepth();
 							// use the value of depth as read in from the
 							// file
 							tmaLastLoc.setDepth(depthM);
-							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+							final WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
 									courseRads);
 							tmaLastLoc.addToMe(thisVec);
 							lastLocation = tmaLastLoc;
@@ -2350,11 +2350,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			if (labelColor == null)
 			{
 				// nope - do we have any legs?
-				Enumeration<Editable> numer = this.getPositions();
+				final Enumeration<Editable> numer = this.getPositions();
 				if (numer.hasMoreElements())
 				{
 					// ok, use the colour of the first point
-					FixWrapper pos = (FixWrapper) numer.nextElement();
+					final FixWrapper pos = (FixWrapper) numer.nextElement();
 					labelColor = pos.getColor();
 				}
 			}
@@ -2368,7 +2368,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	private void paintMultipleSegmentLabel(final CanvasType dest)
 	{
-		Enumeration<Editable> posis = _thePositions.elements();
+		final Enumeration<Editable> posis = _thePositions.elements();
 		while (posis.hasMoreElements())
 		{
 			final TrackSegment thisE = (TrackSegment) posis.nextElement();
@@ -2388,13 +2388,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
 			}
 
-			WorldLocation theLoc = thisE.getTrackStart();
-			String oldTxt = _theLabel.getString();
+			final WorldLocation theLoc = thisE.getTrackStart();
+			final String oldTxt = _theLabel.getString();
 			_theLabel.setString(thisE.getName());
 			// just see if this is a planning segment, with its own colors
 			if (thisE instanceof PlanningSegment)
 			{
-				PlanningSegment ps = (PlanningSegment) thisE;
+				final PlanningSegment ps = (PlanningSegment) thisE;
 				_theLabel.setColor(ps.getColor());
 			}
 			else
@@ -2486,7 +2486,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// ///////////////////////////////////////////
 		// let the fixes draw themselves in
 		// ///////////////////////////////////////////
-		boolean plotted_anything = paintFixes(dest);
+		final boolean plotted_anything = paintFixes(dest);
 
 		// and draw the track label
 		// still, we only plot the track label if we have plotted any
@@ -2517,7 +2517,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param fw
 	 */
 	protected void paintThisFix(final CanvasType dest,
-			WorldLocation lastLocation, final FixWrapper fw)
+			final WorldLocation lastLocation, final FixWrapper fw)
 	{
 		fw.paintMe(dest, lastLocation, fw.getColor());
 	}
@@ -2553,7 +2553,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param lineStyle
 	 */
 	private void paintSetOfPositions(final CanvasType dest, final Color thisCol,
-			int lineStyle)
+			final int lineStyle)
 	{
 		if (_ptCtr > 0)
 		{
@@ -2607,7 +2607,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_mySensors.removeElement(point);
 
 			// tell the sensor wrapper to forget about us
-			TacticalDataWrapper sw = (TacticalDataWrapper) point;
+			final TacticalDataWrapper sw = (TacticalDataWrapper) point;
 			sw.setHost(null);
 		}
 		else if (point instanceof TMAWrapper)
@@ -2615,7 +2615,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_mySolutions.removeElement(point);
 
 			// tell the sensor wrapper to forget about us
-			TacticalDataWrapper sw = (TacticalDataWrapper) point;
+			final TacticalDataWrapper sw = (TacticalDataWrapper) point;
 			sw.setHost(null);
 		}
 		else if (point instanceof SensorContactWrapper)
@@ -2634,20 +2634,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_thePositions.removeElement(point);
 
 			// and clear the parent item
-			TrackSegment ts = (TrackSegment) point;
+			final TrackSegment ts = (TrackSegment) point;
 			ts.setWrapper(null);
 		}
 		else if (point == _mySensors)
 		{
 			// ahh, the user is trying to delete all the solution, cycle through
 			// them
-			Enumeration<Editable> iter = _mySensors.elements();
+			final Enumeration<Editable> iter = _mySensors.elements();
 			while (iter.hasMoreElements())
 			{
-				Editable editable = iter.nextElement();
+				final Editable editable = iter.nextElement();
 
 				// tell the sensor wrapper to forget about us
-				TacticalDataWrapper sw = (TacticalDataWrapper) editable;
+				final TacticalDataWrapper sw = (TacticalDataWrapper) editable;
 				sw.setHost(null);
 
 			}
@@ -2660,13 +2660,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			// ahh, the user is trying to delete all the solution, cycle through
 			// them
-			Enumeration<Editable> iter = _mySolutions.elements();
+			final Enumeration<Editable> iter = _mySolutions.elements();
 			while (iter.hasMoreElements())
 			{
-				Editable editable = iter.nextElement();
+				final Editable editable = iter.nextElement();
 
 				// tell the sensor wrapper to forget about us
-				TacticalDataWrapper sw = (TacticalDataWrapper) editable;
+				final TacticalDataWrapper sw = (TacticalDataWrapper) editable;
 				sw.setHost(null);
 
 			}
@@ -2687,7 +2687,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// and stop listening to it (if it's a fix)
 				if (point instanceof FixWrapper)
 				{
-					FixWrapper fw = (FixWrapper) point;
+					final FixWrapper fw = (FixWrapper) point;
 					fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
 							_locationListener);
 				}
@@ -2853,7 +2853,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
-	public final void setInterpolatePoints(boolean val)
+	public final void setInterpolatePoints(final boolean val)
 	{
 		_interpolatePoints = val;
 	}
@@ -2892,7 +2892,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @param val
 	 */
-	public void setLineStyle(int val)
+	public void setLineStyle(final int val)
 	{
 		_lineStyle = val;
 	}
@@ -2910,7 +2910,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @param linkPositions
 	 */
-	public void setLinkPositions(boolean linkPositions)
+	public void setLinkPositions(final boolean linkPositions)
 	{
 		_linkPositions = linkPositions;
 	}
@@ -2961,7 +2961,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		_theLabel.setVisible(val);
 	}
 
-	public void setPlotArrayCentre(boolean plotArrayCentre)
+	public void setPlotArrayCentre(final boolean plotArrayCentre)
 	{
 		_plotArrayCentre = plotArrayCentre;
 	}
@@ -3013,21 +3013,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else
 		{
 
-			SegmentList segments = _thePositions;
-			Enumeration<Editable> theEnum = segments.elements();
+			final SegmentList segments = _thePositions;
+			final Enumeration<Editable> theEnum = segments.elements();
 			while (theEnum.hasMoreElements())
 			{
-				TrackSegment seg = (TrackSegment) theEnum.nextElement();
+				final TrackSegment seg = (TrackSegment) theEnum.nextElement();
 				seg.decimate(theVal, this, startTime);
 			}
 
 			// start off with the sensor data
 			if (_mySensors != null)
 			{
-				for (Enumeration<Editable> iterator = _mySensors.elements(); iterator
+				for (final Enumeration<Editable> iterator = _mySensors.elements(); iterator
 						.hasMoreElements();)
 				{
-					SensorWrapper thisS = (SensorWrapper) iterator.nextElement();
+					final SensorWrapper thisS = (SensorWrapper) iterator.nextElement();
 					thisS.decimate(theVal, startTime);
 				}
 			}
@@ -3035,10 +3035,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// now the solutions
 			if (_mySolutions != null)
 			{
-				for (Enumeration<Editable> iterator = _mySolutions.elements(); iterator
+				for (final Enumeration<Editable> iterator = _mySolutions.elements(); iterator
 						.hasMoreElements();)
 				{
-					TMAWrapper thisT = (TMAWrapper) iterator.nextElement();
+					final TMAWrapper thisT = (TMAWrapper) iterator.nextElement();
 					thisT.decimate(theVal, startTime);
 				}
 			}
@@ -3046,7 +3046,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
-	public final void setSymbolColor(Color col)
+	public final void setSymbolColor(final Color col)
 	{
 		_theSnailShape.setColor(col);
 	}
@@ -3080,11 +3080,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		setFixes(setSymbols, theVal);
 	}
 
-	public void setSymbolLength(WorldDistance symbolLength)
+	public void setSymbolLength(final WorldDistance symbolLength)
 	{
 		if (_theSnailShape instanceof WorldScaledSym)
 		{
-			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
 			sym.setLength(symbolLength);
 		}
 	}
@@ -3110,11 +3110,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
-	public void setSymbolWidth(WorldDistance symbolWidth)
+	public void setSymbolWidth(final WorldDistance symbolWidth)
 	{
 		if (_theSnailShape instanceof WorldScaledSym)
 		{
-			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
 			sym.setHeight(symbolWidth);
 		}
 	}
@@ -3145,7 +3145,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void shift(WorldLocation feature, WorldVector vector)
+	public void shift(final WorldLocation feature, final WorldVector vector)
 	{
 		feature.addToMe(vector);
 
@@ -3155,7 +3155,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		this.shiftTrack(elements(), vector);
 	}
@@ -3163,24 +3163,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * move the whole of the track be the provided offset
 	 */
-	public final void shiftTrack(Enumeration<Editable> theEnum,
+	public final void shiftTrack(final Enumeration<Editable> theEnum,
 			final WorldVector offset)
 	{
+		Enumeration<Editable> enumA = theEnum;
 		// keep track of if the track contains something that doesn't get
 		// dragged
 		boolean handledData = false;
 
-		if (theEnum == null)
+		if (enumA == null)
 		{
-			theEnum = elements();
+			enumA = elements();
 		}
 
-		while (theEnum.hasMoreElements())
+		while (enumA.hasMoreElements())
 		{
-			final Object thisO = theEnum.nextElement();
+			final Object thisO = enumA.nextElement();
 			if (thisO instanceof TrackSegment)
 			{
-				TrackSegment seg = (TrackSegment) thisO;
+				final TrackSegment seg = (TrackSegment) thisO;
 				seg.shift(offset);
 
 				// ok - job well done
@@ -3189,11 +3190,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 			else if (thisO instanceof SegmentList)
 			{
-				SegmentList list = (SegmentList) thisO;
-				Collection<Editable> items = list.getData();
-				for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+				final SegmentList list = (SegmentList) thisO;
+				final Collection<Editable> items = list.getData();
+				for (final Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
 				{
-					TrackSegment segment = (TrackSegment) iterator.next();
+					final TrackSegment segment = (TrackSegment) iterator.next();
 					segment.shift(offset);
 				}
 				handledData = true;
@@ -3242,7 +3243,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// ok, did we handle the data?
 		if (!handledData)
 		{
-			System.err.println("TrackWrapper problem; not able to shift:" + theEnum);
+			System.err.println("TrackWrapper problem; not able to shift:" + enumA);
 		}
 	}
 
@@ -3252,14 +3253,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private void sortOutRelativePositions()
 	{
-		Enumeration<Editable> segments = _thePositions.elements();
+		final Enumeration<Editable> segments = _thePositions.elements();
 		while (segments.hasMoreElements())
 		{
-			TrackSegment seg = (TrackSegment) segments.nextElement();
+			final TrackSegment seg = (TrackSegment) segments.nextElement();
 
 			// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
 			// RELATIVE MODE
-			boolean isRelative = seg.getPlotRelative();
+			final boolean isRelative = seg.getPlotRelative();
 			WorldLocation tmaLastLoc = null;
 			long tmaLastDTG = 0;
 
@@ -3284,7 +3285,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// ok, are we in relative?
 				if (isRelative)
 				{
-					long thisTime = fw.getDateTimeGroup().getDate().getTime();
+					final long thisTime = fw.getDateTimeGroup().getDate().getTime();
 
 					// ok, is this our first location?
 					if (tmaLastLoc == null)
@@ -3294,15 +3295,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					else
 					{
 						// calculate a new vector
-						long timeDelta = thisTime - tmaLastDTG;
+						final long timeDelta = thisTime - tmaLastDTG;
 						if (lastFix != null)
 						{
-							double speedKts = lastFix.getSpeed();
-							double courseRads = lastFix.getCourse();
-							double depthM = lastFix.getDepth();
+							final double speedKts = lastFix.getSpeed();
+							final double courseRads = lastFix.getCourse();
+							final double depthM = lastFix.getDepth();
 							// use the value of depth as read in from the file
 							tmaLastLoc.setDepth(depthM);
-							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+							final WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
 									courseRads);
 							tmaLastLoc.addToMe(thisVec);
 						}
@@ -3327,9 +3328,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @return a list of the new track segments (used for subsequent undo
 	 *         operations)
 	 */
-	public Vector<TrackSegment> splitTrack(FixWrapper splitPoint,
-			boolean splitBeforePoint)
+	public Vector<TrackSegment> splitTrack(final FixWrapper splitPoint,
+			final boolean splitBeforePoint)
 	{
+		FixWrapper splitPnt = splitPoint;
 		Vector<TrackSegment> res = null;
 		TrackSegment relevantSegment = null;
 
@@ -3349,7 +3351,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (segments.hasMoreElements())
 			{
 				final TrackSegment seg = (TrackSegment) segments.nextElement();
-				if (seg.getData().contains(splitPoint))
+				if (seg.getData().contains(splitPnt))
 				{
 					relevantSegment = seg;
 					break;
@@ -3368,23 +3370,23 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// one
 		if (!splitBeforePoint)
 		{
-			Collection<Editable> items = relevantSegment.getData();
-			Iterator<Editable> theI = items.iterator();
+			final Collection<Editable> items = relevantSegment.getData();
+			final Iterator<Editable> theI = items.iterator();
 			Editable previous = null;
 			while (theI.hasNext())
 			{
-				Editable thisE = theI.next();
+				final Editable thisE = theI.next();
 
 				// have we chosen to remember the previous item?
 				if (previous != null)
 				{
 					// yes, this must be the one we're after
-					splitPoint = (FixWrapper) thisE;
+					splitPnt = (FixWrapper) thisE;
 					break;
 				}
 
 				// is this the one we're looking for?
-				if (thisE == splitPoint)
+				if (thisE == splitPnt)
 				{
 					// yup, remember it - we want to use the next value
 					previous = thisE;
@@ -3393,8 +3395,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		// yup, do our first split
-		final SortedSet<Editable> p1 = relevantSegment.headSet(splitPoint);
-		final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPoint);
+		final SortedSet<Editable> p1 = relevantSegment.headSet(splitPnt);
+		final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPnt);
 
 		// get our results ready
 		final TrackSegment ts1, ts2;
@@ -3405,21 +3407,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// tma segments, not track segments
 		if (relevantSegment instanceof RelativeTMASegment)
 		{
-			RelativeTMASegment theTMA = (RelativeTMASegment) relevantSegment;
+			final RelativeTMASegment theTMA = (RelativeTMASegment) relevantSegment;
 
 			// aah, sort out if we are splitting before or after.
 
 			// find out the offset at the split point, so we can initiate it for
 			// the
 			// second part of the track
-			WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(
-					splitPoint.getDateTimeGroup())[0].getLocation();
-			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
+			final WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(
+					splitPnt.getDateTimeGroup())[0].getLocation();
+			final WorldVector secondOffset = splitPnt.getLocation().subtract(refTrackLoc);
 
 			// put the lists back into plottable layers
-			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1,
+			final RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1,
 					theTMA.getOffset());
-			RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
+			final RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
 
 			// update the freq's
 			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
@@ -3434,22 +3436,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else if (relevantSegment instanceof AbsoluteTMASegment)
 		{
-			AbsoluteTMASegment theTMA = (AbsoluteTMASegment) relevantSegment;
+			final AbsoluteTMASegment theTMA = (AbsoluteTMASegment) relevantSegment;
 
 			// aah, sort out if we are splitting before or after.
 
 			// find out the offset at the split point, so we can initiate it for
 			// the
 			// second part of the track
-			Watchable[] matches = this.getNearestTo(splitPoint.getDateTimeGroup());
-			WorldLocation origin = matches[0].getLocation();
+			final Watchable[] matches = this.getNearestTo(splitPnt.getDateTimeGroup());
+			final WorldLocation origin = matches[0].getLocation();
 
-			FixWrapper t1Start = (FixWrapper) p1.first();
+			final FixWrapper t1Start = (FixWrapper) p1.first();
 
 			// put the lists back into plottable layers
-			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
+			final AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
 					t1Start.getLocation(), null, null);
-			AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null,
+			final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null,
 					null);
 
 			// update the freq's
@@ -3533,21 +3535,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			else
 			{
 				// calculate the course
-				WorldVector wv = currFw.getLocation().subtract(prevFw.getLocation());
+				final WorldVector wv = currFw.getLocation().subtract(prevFw.getLocation());
 				prevFw.getFix().setCourse(wv.getBearing());
 
 				// calculate the speed
 				// get distance in meters
-				WorldDistance wd = new WorldDistance(wv);
-				double distance = wd.getValueIn(WorldDistance.METRES);
+				final WorldDistance wd = new WorldDistance(wv);
+				final double distance = wd.getValueIn(WorldDistance.METRES);
 				// get time difference in seconds
-				long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime()
+				final long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime()
 						.getMicros()) / 1000000;
 
 				// get speed in meters per second and convert it to knots
-				WorldSpeed speed = new WorldSpeed(distance / timeDifference,
+				final WorldSpeed speed = new WorldSpeed(distance / timeDifference,
 						WorldSpeed.M_sec);
-				double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts,
+				final double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts,
 						speed.getValue());
 				prevFw.setSpeed(knots);
 

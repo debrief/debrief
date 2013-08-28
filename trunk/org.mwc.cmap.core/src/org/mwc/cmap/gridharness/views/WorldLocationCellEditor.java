@@ -28,14 +28,14 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 
 	private FormattedText myLongitude;
 
-	public WorldLocationCellEditor(Composite parent) {
+	public WorldLocationCellEditor(final Composite parent) {
 		super(parent);
 	}
 
 	@Override
-	protected Control createControl(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		RowLayout rows = new RowLayout();
+	protected Control createControl(final Composite parent) {
+		final Composite panel = new Composite(parent, SWT.NONE);
+		final RowLayout rows = new RowLayout();
 		rows.marginLeft = rows.marginRight = 0;
 		rows.marginTop = rows.marginBottom = 0;
 		rows.fill = false;
@@ -49,18 +49,18 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 		myLatitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(false)));
 		myLongitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(true)));
 
-		KeyAdapter enterEscapeKeyHandler = new KeyAdapter() {
+		final KeyAdapter enterEscapeKeyHandler = new KeyAdapter() {
 
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(final KeyEvent e) {
 				//Text cell editor hooks keyPressed to call keyReleased as well
 				WorldLocationCellEditor.this.keyReleaseOccured(e);
 			}
 		};
 
-		TraverseListener enterEscapeTraverseHandler = new TraverseListener() {
+		final TraverseListener enterEscapeTraverseHandler = new TraverseListener() {
 
-			public void keyTraversed(TraverseEvent e) {
+			public void keyTraversed(final TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
 					e.doit = false;
 					return;
@@ -75,7 +75,7 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 		new MultiControlFocusHandler(myLatitude.getControl(), myLongitude.getControl()) {
 
 			@Override
-			protected void focusReallyLost(FocusEvent e) {
+			protected void focusReallyLost(final FocusEvent e) {
 				WorldLocationCellEditor.this.focusLost();
 			}
 		};
@@ -97,28 +97,28 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 		if (!myLatitude.isValid() || !myLongitude.isValid()) {
 			return null;
 		}
-		String latitudeString = (String) myLatitude.getFormatter().getDisplayString();
-		String longitudeString = (String) myLongitude.getFormatter().getDisplayString();
+		final String latitudeString = (String) myLatitude.getFormatter().getDisplayString();
+		final String longitudeString = (String) myLongitude.getFormatter().getDisplayString();
 
 		Sexagesimal latitude;
 		Sexagesimal longitude;
 		try {
 			latitude = getFormat().parse(latitudeString, false);
 			longitude = getFormat().parse(longitudeString, true);
-		} catch (ParseException e) {
+		} catch (final ParseException e) {
 			//thats ok, formatter does not know the hemisphere characters
 			return null;
 		}
 
-		WorldLocation location = new WorldLocation(latitude.getCombinedDegrees(), longitude.getCombinedDegrees(),0);
+		final WorldLocation location = new WorldLocation(latitude.getCombinedDegrees(), longitude.getCombinedDegrees(),0);
 		return location;
 	}
 
 	@Override
-	protected void doSetValue(Object value) {
-		WorldLocation location = (WorldLocation) value;
-		Sexagesimal latitude = getFormat().parseDouble(location.getLat());
-		Sexagesimal longitude = getFormat().parseDouble(location.getLong());
+	protected void doSetValue(final Object value) {
+		final WorldLocation location = (WorldLocation) value;
+		final Sexagesimal latitude = getFormat().parseDouble(location.getLat());
+		final Sexagesimal longitude = getFormat().parseDouble(location.getLong());
 
 		myLatitude.setValue(getFormat().format(latitude, false));
 		myLongitude.setValue(getFormat().format(longitude, true));
@@ -131,12 +131,12 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 
 	private static class IgnoreTabsMaskFormatter extends MaskFormatter {
 
-		public IgnoreTabsMaskFormatter(String mask) {
+		public IgnoreTabsMaskFormatter(final String mask) {
 			super(mask);
 		}
 
 		@Override
-		public void verifyText(VerifyEvent e) {
+		public void verifyText(final VerifyEvent e) {
 			if (ignore) {
 				return;
 			}

@@ -66,7 +66,7 @@ abstract public class SWTGUIHandler extends
 
 		addHandler(new ToteHandler()
 		{
-			public void setPrimarySecondary(boolean isPrimary, String trackName)
+			public void setPrimarySecondary(final boolean isPrimary, final String trackName)
 			{
 				// cool, sort out which tracks are on the tote
 				if (isPrimary)
@@ -84,7 +84,7 @@ abstract public class SWTGUIHandler extends
 
 		addHandler(new ComponentHandler()
 		{
-			public void addComponent(ComponentDetails details)
+			public void addComponent(final ComponentDetails details)
 			{
 				addThisComponent(details, thePlot);
 			}
@@ -92,7 +92,7 @@ abstract public class SWTGUIHandler extends
 
 		addHandler(new BackgroundHandler()
 		{
-			public void setBackgroundColor(Color theColor)
+			public void setBackgroundColor(final Color theColor)
 			{
 				thePlot.setBackgroundColor(theColor);
 			}
@@ -129,12 +129,12 @@ abstract public class SWTGUIHandler extends
 	abstract public void assignTracks(String primaryTrack,
 			Vector<String> secondaryTracks);
 
-	void addThisComponent(ComponentDetails details, PlotEditor thePlot)
+	void addThisComponent(final ComponentDetails details, final PlotEditor thePlot)
 	{
 		// sort out this component
-		String cType = details.type;
+		final String cType = details.type;
 
-		ComponentCreator cc = (ComponentCreator) _myCreators.get(cType);
+		final ComponentCreator cc = (ComponentCreator) _myCreators.get(cType);
 		if (cc != null)
 		{
 			// ok, get the bits ready
@@ -160,16 +160,16 @@ abstract public class SWTGUIHandler extends
 	// the constructors for our components
 	// ///////////////////////////////////////////////////////////////////////
 
-	public static void exportThis(PlotEditor thePlot, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
+	public static void exportThis(final PlotEditor thePlot, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc)
 	{
 		// create ourselves
-		Element gui = doc.createElement("gui");
+		final Element gui = doc.createElement("gui");
 
 		// //////////////////////////////////////////////
 		// first the tote
 		// //////////////////////////////////////////////
-		TrackDataProvider theTracks = (TrackDataProvider) thePlot
+		final TrackDataProvider theTracks = (TrackDataProvider) thePlot
 				.getAdapter(TrackDataProvider.class);
 		ToteHandler.exportTote(theTracks, gui, doc);
 
@@ -180,15 +180,15 @@ abstract public class SWTGUIHandler extends
 			_myStepperHandler = new StepperHandler();
 
 		// get the object representing the stepper
-		TimeControlPreferences controller = (TimeControlPreferences) thePlot
+		final TimeControlPreferences controller = (TimeControlPreferences) thePlot
 				.getAdapter(TimeControlPreferences.class);
-		LayerPainterManager painter = (LayerPainterManager) thePlot
+		final LayerPainterManager painter = (LayerPainterManager) thePlot
 				.getAdapter(LayerPainterManager.class);
-		TimeProvider timeProvider = (TimeProvider) thePlot
+		final TimeProvider timeProvider = (TimeProvider) thePlot
 				.getAdapter(TimeProvider.class);
 		if (controller != null)
 		{
-			ComponentDetails stepperD = _myStepperHandler.exportThis(controller,
+			final ComponentDetails stepperD = _myStepperHandler.exportThis(controller,
 					painter, timeProvider, doc);
 			stepperD.exportTo("Stepper", gui, doc);
 		}

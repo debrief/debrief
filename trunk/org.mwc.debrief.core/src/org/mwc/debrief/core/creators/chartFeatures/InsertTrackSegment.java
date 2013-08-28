@@ -41,7 +41,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	private static final String NEW_LAYER_COMMAND = "[New Track...]";
 	private final Layer _parentLayer;
 
-	public InsertTrackSegment(Layer parent)
+	public InsertTrackSegment(final Layer parent)
 	{
 		// tell the parent we produce a top-level layer
 		super(false);
@@ -62,19 +62,19 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	 * @param theChart
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		PlanningSegment res = null;
 
 		// create input box dialog
-		InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
+		final InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
 				"New track", "What is the name of this leg", "name here", null);
 
 		// did he cancel?
 		if (inp.open() == InputDialog.OK)
 		{
 			// get the results
-			String txt = inp.getValue();
+			final String txt = inp.getValue();
 			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
 					new WorldDistance(5, WorldDistance.KM), Color.RED);
 		}
@@ -98,15 +98,15 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		final PlainChart theChart = getChart();
 
 		// get the non-track layers
-		Layers theLayers = theChart.getLayers();
+		final Layers theLayers = theChart.getLayers();
 		final String[] ourLayers = trimmedTracks(theLayers);
 
 		// popup the layers in a question dialog
-		IStructuredContentProvider theVals = new ArrayContentProvider();
-		ILabelProvider theLabels = new LabelProvider();
+		final IStructuredContentProvider theVals = new ArrayContentProvider();
+		final ILabelProvider theLabels = new LabelProvider();
 
 		// collate the dialog
-		ListDialog list = new ListDialog(Display.getCurrent().getActiveShell());
+		final ListDialog list = new ListDialog(Display.getCurrent().getActiveShell());
 		list.setContentProvider(theVals);
 		list.setLabelProvider(theLabels);
 		list.setInput(ourLayers);
@@ -115,13 +115,13 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		list.setHelpAvailable(false);
 
 		// open it
-		int selection = list.open();
+		final int selection = list.open();
 
 		// did user say yes?
 		if (selection != ListDialog.CANCEL)
 		{
 			// yup, store it's name
-			Object[] val = list.getResult();
+			final Object[] val = list.getResult();
 			res = val[0].toString();
 
 			// hmm, is it our add layer command?
@@ -138,7 +138,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 				if (inp.open() == InputDialog.OK)
 				{
 					// get the results
-					String txt = inp.getValue();
+					final String txt = inp.getValue();
 
 					// check there's something there
 					if (txt.length() > 0)
@@ -148,8 +148,8 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 						HiResDate startDate = null;
 
 //						 ok, also get a start time
-						DateFormat df = new SimpleDateFormat("yyMMdd HHmmss");
-						String dateToday = df.format(new Date());
+						final DateFormat df = new SimpleDateFormat("yyMMdd HHmmss");
+						final String dateToday = df.format(new Date());
 						inp = new InputDialog(Display.getCurrent().getActiveShell(),
 								"New track", "Enter start DTG  (yyMMdd HHmmss)",
 								dateToday, null);
@@ -158,15 +158,15 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 						// presses cancel
 						while ((startDate == null) && (inp.open() == InputDialog.OK))
 						{
-							String startDateTxt = inp.getValue();
+							final String startDateTxt = inp.getValue();
 							startDate = DebriefFormatDateTime.parseThis(startDateTxt);
 							if (startDate != null)
 							{
 								// get the centre of the visible area
-								WorldLocation wc = getCentre(theChart);
+								final WorldLocation wc = getCentre(theChart);
 								
 								// create new track
-								TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
+								final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
 
 								// store the name
 								tw.setName(txt);
@@ -198,13 +198,13 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	 *          the list to search through
 	 * @return Tracks
 	 */
-	private String[] trimmedTracks(Layers theLayers)
+	private String[] trimmedTracks(final Layers theLayers)
 	{
-		Vector<String> res = new Vector<String>(0, 1);
-		Enumeration<Editable> enumer = theLayers.elements();
+		final Vector<String> res = new Vector<String>(0, 1);
+		final Enumeration<Editable> enumer = theLayers.elements();
 		while (enumer.hasMoreElements())
 		{
-			Layer thisLayer = (Layer) enumer.nextElement();
+			final Layer thisLayer = (Layer) enumer.nextElement();
 			if (thisLayer instanceof CompositeTrackWrapper)
 			{
 				res.add(thisLayer.getName());
@@ -213,7 +213,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 
 		res.add(NEW_LAYER_COMMAND);
 
-		String[] sampleArray = new String[]
+		final String[] sampleArray = new String[]
 		{ "aa" };
 		return res.toArray(sampleArray);
 	}

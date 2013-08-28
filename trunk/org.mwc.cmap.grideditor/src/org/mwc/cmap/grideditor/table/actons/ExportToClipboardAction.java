@@ -16,7 +16,7 @@ public class ExportToClipboardAction extends Action
 
 	private final ImageDescriptor exportImage;
 
-	public ExportToClipboardAction(GridEditorTable tableUI)
+	public ExportToClipboardAction(final GridEditorTable tableUI)
 	{
 		super(ACTION_TEXT, AS_PUSH_BUTTON);
 		myTableUI = tableUI;
@@ -29,15 +29,15 @@ public class ExportToClipboardAction extends Action
 	@Override
 	public void run()
 	{
-		int colCount = myTableUI.getTableViewer().getTable().getColumnCount();
+		final int colCount = myTableUI.getTableViewer().getTable().getColumnCount();
 		final String newline = System.getProperty("line.separator");
 
-		StringBuffer outS = new StringBuffer();
+		final StringBuffer outS = new StringBuffer();
 
 		// headings
 		for (int j = 1; j < colCount; j++)
 		{
-			GriddableItemDescriptor descriptor = myTableUI.getTableModel()
+			final GriddableItemDescriptor descriptor = myTableUI.getTableModel()
 					.getColumnData(j).getDescriptor();
 			String name = "Time";
 			if (descriptor != null)
@@ -49,10 +49,10 @@ public class ExportToClipboardAction extends Action
 		outS.append(newline);
 
 		// ok, try to get teh data
-		TableItem[] data = myTableUI.getTableViewer().getTable().getItems();
+		final TableItem[] data = myTableUI.getTableViewer().getTable().getItems();
 		for (int i = data.length - 1; i >= 0; i--)
 		{
-			TableItem tableItem = data[i];
+			final TableItem tableItem = data[i];
 
 			for (int j = 1; j < colCount; j++)
 			{
@@ -68,7 +68,7 @@ public class ExportToClipboardAction extends Action
 
 	public void refreshWithTableUI()
 	{
-		boolean isVis = myTableUI.isOnlyShowVisible();
+		final boolean isVis = myTableUI.isOnlyShowVisible();
 		setChecked(isVis);
 		setImageDescriptor(exportImage);
 	}

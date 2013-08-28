@@ -73,11 +73,11 @@ public class CreateETOPO_unused extends PlainCreateLayer
   /** constructor, taking normal PlainCreate parameters
    *
    */
-	public CreateETOPO_unused(MWC.GUI.ToolParent theParent,
-										MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
-										MWC.GUI.Layers theData,
-										MWC.GUI.PlainChart theChart)
+	public CreateETOPO_unused(final MWC.GUI.ToolParent theParent,
+										final MWC.GUI.Properties.PropertiesPanel thePanel,
+										final MWC.GUI.Layer theLayer,
+										final MWC.GUI.Layers theData,
+										final MWC.GUI.PlainChart theChart)
 	{
 		super(theParent, thePanel, theData, theChart, "ETOPO Gridded Bathy", "images/etopo.gif");
 
@@ -104,7 +104,7 @@ public class CreateETOPO_unused extends PlainCreateLayer
    * of it's BackgroundLayer marker interface
    *
    */
-	protected Layer createItem(MWC.GUI.PlainChart theChart)
+	protected Layer createItem(final MWC.GUI.PlainChart theChart)
 	{
 		return loadBathyData(super.getLayers());
 	}
@@ -112,9 +112,9 @@ public class CreateETOPO_unused extends PlainCreateLayer
   /** static class which allows other layers to load data
    *
    */
-  public static Layer loadBathyData(Layers theLayers)
+  public static Layer loadBathyData(final Layers theLayers)
   {
-    String newPath = getETOPOPath();
+    final String newPath = getETOPOPath();
 
     return new MWC.GUI.Chart.Painters.ETOPOPainter(newPath, theLayers);
   }

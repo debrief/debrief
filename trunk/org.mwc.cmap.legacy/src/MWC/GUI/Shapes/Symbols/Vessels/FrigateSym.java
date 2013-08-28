@@ -49,14 +49,14 @@ public class FrigateSym extends ScreenScaledSym
 	public java.awt.Dimension getBounds()
 	{
 		// sort out the size of the symbol at the current scale factor
-		java.awt.Dimension res = new java.awt.Dimension(
+		final java.awt.Dimension res = new java.awt.Dimension(
 				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
 		return res;
 	}
 
 	protected Vector<double[][]> getCoords()
 	{
-		Vector<double[][]> hullLines = new Vector<double[][]>();
+		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
 		// start with hull
 		hullLines.add(new double[][]

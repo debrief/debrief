@@ -117,7 +117,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
    */
   protected Vector<NamedColor> createColors()
   {
-    Vector<NamedColor> theColors = new Vector<NamedColor>();
+    final Vector<NamedColor> theColors = new Vector<NamedColor>();
     theColors.addElement(new NamedColor("Red", Color.red));
     theColors.addElement(new NamedColor("Blue", Color.blue));
     theColors.addElement(new NamedColor("Green", Color.green));
@@ -145,7 +145,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
    *
    * @param p1 colour to use
    */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if (p1 instanceof Color)
     {
@@ -161,10 +161,10 @@ public class ColorPropertyEditor extends PropertyEditorSupport
   protected NamedColor getNamedColor()
   {
     NamedColor res = null;
-    Enumeration<NamedColor> enumer = _theColors.elements();
+    final Enumeration<NamedColor> enumer = _theColors.elements();
     while (enumer.hasMoreElements())
     {
-      NamedColor cl = (NamedColor) enumer.nextElement();
+      final NamedColor cl = (NamedColor) enumer.nextElement();
 
       if (cl.color.equals(_theColor))
       {
@@ -204,7 +204,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
     String res = null;
 
     // try to get the name of the current colour
-    NamedColor val = getNamedColor();
+    final NamedColor val = getNamedColor();
     // did we find it
     if (val != null)
       res = val.name;
@@ -219,11 +219,11 @@ public class ColorPropertyEditor extends PropertyEditorSupport
    */
   public String[] getTags()
   {
-    int num = _theColors.size();
-    String res[] = new String[num];
+    final int num = _theColors.size();
+    final String res[] = new String[num];
     for (int i = 0; i < num; i++)
     {
-      NamedColor cl = (NamedColor) _theColors.elementAt(i);
+      final NamedColor cl = (NamedColor) _theColors.elementAt(i);
       res[i] = cl.name;
     }
 
@@ -235,12 +235,12 @@ public class ColorPropertyEditor extends PropertyEditorSupport
    *
    * @param p1 new value as String
    */
-  public void setAsText(String p1)
+  public void setAsText(final String p1)
   {
-    Enumeration<NamedColor> enumer = _theColors.elements();
+    final Enumeration<NamedColor> enumer = _theColors.elements();
     while (enumer.hasMoreElements())
     {
-      NamedColor cl = (NamedColor) enumer.nextElement();
+      final NamedColor cl = (NamedColor) enumer.nextElement();
       if (cl.name.equals(p1))
       {
         setValue(cl.color);
@@ -284,8 +284,8 @@ public class ColorPropertyEditor extends PropertyEditorSupport
      * @param theName  name to use
      * @param theColor colour to use
      */
-    public NamedColor(String theName,
-                      Color theColor)
+    public NamedColor(final String theName,
+                      final Color theColor)
     {
       name = theName;
       color = theColor;

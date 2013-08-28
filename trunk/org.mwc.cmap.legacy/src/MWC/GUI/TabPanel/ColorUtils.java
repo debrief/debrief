@@ -37,7 +37,7 @@ public class ColorUtils
      * @exception IllegalArgumentException
      * if the specified percentage value is unacceptable
 	 */
-	public static Color darken( int r, int g, int b, double percent ) throws IllegalArgumentException
+	public static Color darken( final int r, final int g, final int b, final double percent ) throws IllegalArgumentException
 	{
 		GeneralUtils.checkValidPercent(percent);
 
@@ -54,7 +54,7 @@ public class ColorUtils
      * @exception IllegalArgumentException
      * if the specified percentage value is unacceptable
 	 */
-	public static Color darken( Color c, double percent ) throws IllegalArgumentException
+	public static Color darken( final Color c, final double percent ) throws IllegalArgumentException
 	{
 		GeneralUtils.checkValidPercent(percent);
 
@@ -75,7 +75,7 @@ public class ColorUtils
      * @exception IllegalArgumentException
      * if the specified percentage value is unacceptable
 	 */
-	public static Color lighten( int r, int g, int b, double percent ) throws IllegalArgumentException
+	public static Color lighten( final int r, final int g, final int b, final double percent ) throws IllegalArgumentException
 	{
 		GeneralUtils.checkValidPercent(percent);
 
@@ -94,7 +94,7 @@ public class ColorUtils
      * @exception IllegalArgumentException
      * if the specified percentage value is unacceptable
 	 */
-	public static Color lighten( Color c, double percent ) throws IllegalArgumentException
+	public static Color lighten( final Color c, final double percent ) throws IllegalArgumentException
 	{
 		GeneralUtils.checkValidPercent(percent);
 
@@ -114,7 +114,7 @@ public class ColorUtils
      * @exception IllegalArgumentException
      * if the specified percentage value is unacceptable
 	 */
-	public static Color fade( Color from, Color to, double percent ) throws IllegalArgumentException
+	public static Color fade( final Color from, final Color to, final double percent ) throws IllegalArgumentException
 	{
 		GeneralUtils.checkValidPercent(percent);
 
@@ -152,7 +152,7 @@ public class ColorUtils
 	 * @return the percent light of the specified color.  This value will be
 	 * >= 0 && <= 1.
 	 */
-	public static double lightness(Color c)
+	public static double lightness(final Color c)
 	{
 		if(c == null)
 			return 0;
@@ -172,12 +172,12 @@ public class ColorUtils
 	 * it will return null.
 	 * @return the newly calculated hilight color.
 	 */
-	public static Color calculateHilightColor(Color c)
+	public static Color calculateHilightColor(final Color c)
 	{
 		if(c == null)
 			return null;
 
-		double lightness = lightness(c);
+		final double lightness = lightness(c);
 
 		if (lightness >= 0.90)
 		{
@@ -199,12 +199,12 @@ public class ColorUtils
 	 * it will return null.
 	 * @return the newly calculated shadow color.
 	 */
-	public static Color calculateShadowColor(Color c)
+	public static Color calculateShadowColor(final Color c)
 	{
 		if(c == null)
 			return null;
 
-		double lightness = lightness(c);
+		final double lightness = lightness(c);
 
 		if (lightness >= 0.90)
 		{

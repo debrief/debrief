@@ -48,7 +48,7 @@ public class DDFSubfield {
     /**
      * Create a subfield with a definition and a value.
      */
-    public DDFSubfield(DDFSubfieldDefinition ddfsd, Object value) {
+    public DDFSubfield(final DDFSubfieldDefinition ddfsd, final Object value) {
         setDefn(ddfsd);
         setValue(value);
     }
@@ -59,11 +59,11 @@ public class DDFSubfield {
      * tell the DDFSubfield what kind of object to create for the
      * data.
      */
-    public DDFSubfield(DDFSubfieldDefinition poSFDefn, byte[] pachFieldData,
-            int nBytesRemaining) {
+    public DDFSubfield(final DDFSubfieldDefinition poSFDefn, final byte[] pachFieldData,
+            final int nBytesRemaining) {
         defn = poSFDefn;
-        MutableInt nBytesConsumed = new MutableInt();
-        DDFDataType ddfdt = poSFDefn.getType();
+        final MutableInt nBytesConsumed = new MutableInt();
+        final DDFDataType ddfdt = poSFDefn.getType();
 
         if (ddfdt == DDFDataType.DDFInt) {
             setValue(new Integer(defn.extractIntData(pachFieldData,
@@ -87,7 +87,7 @@ public class DDFSubfield {
         return byteSize;
     }
 
-    public void setDefn(DDFSubfieldDefinition ddsfd) {
+    public void setDefn(final DDFSubfieldDefinition ddsfd) {
         defn = ddsfd;
     }
 
@@ -98,7 +98,7 @@ public class DDFSubfield {
     /**
      * Set the value of the subfield.
      */
-    public void setValue(Object o) {
+    public void setValue(final Object o) {
         value = o;
     }
 
@@ -114,7 +114,7 @@ public class DDFSubfield {
      * is 0 or isn't a number.
      */
     public int intValue() {
-        Object obj = getValue();
+        final Object obj = getValue();
         if (obj instanceof Number) {
             return ((Number) obj).intValue();
         }
@@ -126,7 +126,7 @@ public class DDFSubfield {
      * value is 0 or isn't a number.
      */
     public float floatValue() {
-        Object obj = getValue();
+        final Object obj = getValue();
         if (obj instanceof Number) {
             return ((Number) obj).floatValue();
         }
@@ -134,7 +134,7 @@ public class DDFSubfield {
     }
 
     public String stringValue() {
-        Object obj = getValue();
+        final Object obj = getValue();
 
         if (obj != null) {
             return obj.toString();

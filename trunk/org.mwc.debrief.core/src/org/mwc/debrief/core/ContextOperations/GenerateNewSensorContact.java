@@ -46,8 +46,8 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 		final private SensorWrapper _sensorWrapper;
 		final private SensorContactWrapper _contact;
 
-		public AddSensorCut(Layers layers, SensorWrapper sensorWrapper,
-				SensorContactWrapper contact)
+		public AddSensorCut(final Layers layers, final SensorWrapper sensorWrapper,
+				final SensorContactWrapper contact)
 		{
 			super("Create sensor cut");
 			_sensorWrapper = sensorWrapper;
@@ -56,7 +56,7 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_sensorWrapper.add(_contact);
@@ -80,7 +80,7 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_sensorWrapper.removeElement(_contact);
@@ -111,14 +111,14 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 			final IEditorPart editor = page.getActiveEditor();
 			if (editor != null)
 			{
-				Object objTime = editor.getAdapter(TimeProvider.class);
+				final Object objTime = editor.getAdapter(TimeProvider.class);
 				if (objTime != null)
 				{
-					TimeProvider timer = (TimeProvider)objTime;
+					final TimeProvider timer = (TimeProvider)objTime;
 					final HiResDate tNow = timer.getTime();
 
 					// ok, do I know how to create a TMA segment from this?
-					Editable onlyOne = subjects[0];
+					final Editable onlyOne = subjects[0];
 					if (onlyOne instanceof SensorWrapper)
 					{
 						final SensorWrapper tw = (SensorWrapper) onlyOne;
@@ -129,7 +129,7 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 							public void run()
 							{
 								// get the supporting data
-								NewContactWizard wizard = new NewContactWizard(tNow, null, tw);
+								final NewContactWizard wizard = new NewContactWizard(tNow, null, tw);
 								runOperation(theLayers, wizard);
 							}
 						};
@@ -151,9 +151,9 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 	 * @param wizard
 	 * @param helpContext
 	 */
-	private void runOperation(final Layers theLayers, NewContactWizard wizard)
+	private void runOperation(final Layers theLayers, final NewContactWizard wizard)
 	{
-		WizardDialog dialog = new WizardDialog(Display.getCurrent()
+		final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		TrayDialog.setDialogHelpAvailable(true);
 		dialog.setHelpAvailable(true);
@@ -163,12 +163,12 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
-			SensorWrapper senWrapper = wizard.getSensorWrapper();
+			final SensorWrapper senWrapper = wizard.getSensorWrapper();
 
-			SensorContactWrapper newCut = wizard.getContact();
+			final SensorContactWrapper newCut = wizard.getContact();
 			// ok, go for it.
 			// sort it out as an operation
-			IUndoableOperation addTheCut = new AddSensorCut(theLayers, senWrapper,
+			final IUndoableOperation addTheCut = new AddSensorCut(theLayers, senWrapper,
 					newCut);
 
 			// ok, stick it on the buffer
@@ -182,7 +182,7 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 	 * 
 	 * @param operation
 	 */
-	protected void runIt(IUndoableOperation operation)
+	protected void runIt(final IUndoableOperation operation)
 	{
 		CorePlugin.run(operation);
 	}

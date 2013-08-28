@@ -15,7 +15,7 @@ public class CloseableFrame extends Frame
 
 
 
-	public CloseableFrame(String theStr){
+	public CloseableFrame(final String theStr){
     super(theStr);
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     this.setBackground(Color.lightGray);
@@ -24,7 +24,7 @@ public class CloseableFrame extends Frame
   
   
 
-  protected void processWindowEvent(WindowEvent p1)
+  protected void processWindowEvent(final WindowEvent p1)
   {
     super.processWindowEvent(p1);
     if(p1.getID() == WindowEvent.WINDOW_CLOSING){

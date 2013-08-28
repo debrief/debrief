@@ -16,40 +16,40 @@ public class QuestionDialog extends WorkDialog
 	 */
 	private static final long serialVersionUID = 1L;
 	static private int  _defaultTextFieldSize = 20;
-	private Button      okButton;
-	private Button      cancelButton;
-	private TextField   textField;
+	private final Button      okButton;
+	private final Button      cancelButton;
+	private final TextField   textField;
 	private boolean     wasCancelled;
-	public QuestionDialog(Frame  frame, DialogClient client,
-							String title, String question,
-							String initialResponse, Image image) {
+	public QuestionDialog(final Frame  frame, final DialogClient client,
+							final String title, final String question,
+							final String initialResponse, final Image image) {
 		this(frame, client, title, question, initialResponse, 
 			_defaultTextFieldSize, image);
 	}
-	public QuestionDialog(Frame  frame, DialogClient client,
-							String title, String question,
-							Image image) {
+	public QuestionDialog(final Frame  frame, final DialogClient client,
+							final String title, final String question,
+							final Image image) {
 		this(frame, client, title,
 				question, null, _defaultTextFieldSize, image);
 	}
-	public QuestionDialog(Frame  frame, DialogClient client,
-							String title, String question, 
-							int textFieldSize, Image image) {
+	public QuestionDialog(final Frame  frame, final DialogClient client,
+							final String title, final String question, 
+							final int textFieldSize, final Image image) {
 		this(frame, client, title, 
 			question, null, textFieldSize, image);
 	}
-	public QuestionDialog(Frame  frame, DialogClient client, 
-							String title, String question,
-							String initialResponse, 
-							int textFieldSize, Image image) {
+	public QuestionDialog(final Frame  frame, final DialogClient client, 
+							final String title, final String question,
+							final String initialResponse, 
+							final int textFieldSize, final Image image) {
 		this(frame, client, title, question, initialResponse,
 			textFieldSize, image, false);
 	}
-	public QuestionDialog(Frame  frame, DialogClient client, 
-							String title, String question, 
-							String initialResponse, 
-							int textFieldSize, Image image, 
-							boolean modal) {
+	public QuestionDialog(final Frame  frame, final DialogClient client, 
+							final String title, final String question, 
+							final String initialResponse, 
+							final int textFieldSize, final Image image, 
+							final boolean modal) {
 		super(frame, client, title, modal);
 
 		QuestionPanel questionPanel;
@@ -67,7 +67,7 @@ public class QuestionDialog extends WorkDialog
 		textField = questionPanel.getTextField();
 		setWorkPanel(questionPanel);
 	}
-	public void actionPerformed(ActionEvent ae) {
+	public void actionPerformed(final ActionEvent ae) {
 		if(ae.getSource() == cancelButton) 
 			wasCancelled = true;
 		else                             
@@ -75,7 +75,7 @@ public class QuestionDialog extends WorkDialog
 
 		dispose();
 	}
-	public void setVisible(boolean b) {
+	public void setVisible(final boolean b) {
 		textField.requestFocus();
 		super.setVisible(b);
 	}
@@ -100,21 +100,21 @@ class QuestionPanel extends Postcard {
 	private TextField      field;
 	QuestionDialog dialog;
 
-	public QuestionPanel(QuestionDialog dialog, 
-							String question, Image image) {
+	public QuestionPanel(final QuestionDialog dialog, 
+							final String question, final Image image) {
 		this(dialog, question, null, 0, image);
 	}
-	public QuestionPanel(QuestionDialog dialog, String question,
-							int columns, Image image) {
+	public QuestionPanel(final QuestionDialog dialog, final String question,
+							final int columns, final Image image) {
 		this(dialog, question, null, columns, image);
 	}
-	public QuestionPanel(QuestionDialog myDialog, 
-							String question,
-							String initialResponse, int cols, 
-							Image image) {
+	public QuestionPanel(final QuestionDialog myDialog, 
+							final String question,
+							final String initialResponse, final int cols, 
+							final Image image) {
 		super(image, new Panel());
 
-		Panel panel = getPanel();
+		final Panel panel = getPanel();
 		this.dialog = myDialog;
 
 		panel.setLayout(new RowLayout());
@@ -134,7 +134,7 @@ class QuestionPanel extends Postcard {
 		}
 
 		field.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				dialog.returnInTextField();
 			}
 		});

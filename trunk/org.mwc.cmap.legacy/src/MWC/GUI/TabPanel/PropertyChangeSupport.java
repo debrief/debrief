@@ -37,7 +37,7 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport
      * Constructs a PropertyChangeSupport object.
      * @param sourceBean the bean to be given as the source for any events
      */
-    public PropertyChangeSupport(Object sourceBean)
+    public PropertyChangeSupport(final Object sourceBean)
     {
 		super(sourceBean);
 		source = sourceBean;
@@ -50,7 +50,7 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport
      * @param listener the PropertyChangeListener to be added
      * @see #removePropertyChangeListener
      */
-    public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    public synchronized void addPropertyChangeListener(final String propertyName, final PropertyChangeListener listener)
     {
     	java.util.Vector<PropertyChangeListener> listenerList;
 
@@ -79,7 +79,7 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport
      * @param listener the PropertyChangeListener to be removed
      * @see #addPropertyChangeListener
      */
-    public synchronized void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    public synchronized void removePropertyChangeListener(final String propertyName, final PropertyChangeListener listener)
     {
     	java.util.Vector<PropertyChangeListener> listenerList;
 
@@ -102,7 +102,7 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport
      * @param newValue the new value of the property
      */
     @SuppressWarnings("unchecked")
-		public void firePropertyChange(String propertyName, Object oldValue, Object newValue)
+		public void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue)
     {
     	if (oldValue != null && oldValue.equals(newValue))
     	{
@@ -126,11 +126,11 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport
 
 		listenerList = templistenerTable.get(propertyName);
 
-	    PropertyChangeEvent evt = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
+	    final PropertyChangeEvent evt = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
 
 		for (int i = 0; i < listenerList.size(); i++)
 		{
-			PropertyChangeListener target = listenerList.elementAt(i);
+			final PropertyChangeListener target = listenerList.elementAt(i);
 		    target.propertyChange(evt);
 		}
     }
@@ -150,7 +150,7 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport
      * @see #removePropertyChangeListener
      */
     protected java.util.Hashtable<String, Vector<PropertyChangeListener>> listenerTable;
-    private Object source;
+    private final Object source;
 }
 
 

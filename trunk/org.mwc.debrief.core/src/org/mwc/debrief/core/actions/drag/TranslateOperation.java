@@ -17,12 +17,12 @@ public class TranslateOperation extends CoreDragOperation implements
 {
 	private Cursor _hotspotCursor;
 
-	public TranslateOperation(TrackSegment segment)
+	public TranslateOperation(final TrackSegment segment)
 	{
 		super(segment, "centre point");
 	}
 
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 		//
 		_segment.shift(vector);

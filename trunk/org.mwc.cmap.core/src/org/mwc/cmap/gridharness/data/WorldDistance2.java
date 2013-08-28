@@ -44,12 +44,12 @@ public class WorldDistance2 extends AbstractValueInUnits {
 		super(DISTANCE_UNITS);
 	}
 
-	public WorldDistance2(WorldDistance2 copy) {
+	public WorldDistance2(final WorldDistance2 copy) {
 		this();
 		setValues(copy.getValueIn(METRES), METRES);
 	}
 
-	public WorldDistance2(double value, UnitsSet.Unit units) {
+	public WorldDistance2(final double value, final UnitsSet.Unit units) {
 		this();
 		setValues(value, units);
 	}
@@ -58,14 +58,14 @@ public class WorldDistance2 extends AbstractValueInUnits {
 		return new WorldDistance2(this);
 	}
 
-	public static WorldDistance2 wrap(WorldDistance legacyDistance) {
-		WorldDistance2 result = new WorldDistance2();
+	public static WorldDistance2 wrap(final WorldDistance legacyDistance) {
+		final WorldDistance2 result = new WorldDistance2();
 		result.setValues(legacyDistance.getValueIn(WorldDistance.METRES), METRES);
 		return result;
 	}
 
-	public static WorldDistance unwrap(WorldDistance2 distance) {
-		WorldDistance result = new WorldDistance(distance.getValueIn(METRES), WorldDistance.METRES);
+	public static WorldDistance unwrap(final WorldDistance2 distance) {
+		final WorldDistance result = new WorldDistance(distance.getValueIn(METRES), WorldDistance.METRES);
 		return result;
 	}
 
@@ -76,14 +76,14 @@ public class WorldDistance2 extends AbstractValueInUnits {
 	/**
 	 * perform a units conversion
 	 */
-	static public double convert(UnitsSet.Unit from, UnitsSet.Unit to, double val) {
+	static public double convert(final UnitsSet.Unit from, final UnitsSet.Unit to, final double val) {
 		return DISTANCE_UNITS.convert(from, to, val);
 	}
 
 	/**
 	 * get the string representing this set of units
 	 */
-	static public String getLabelFor(UnitsSet.Unit units) {
+	static public String getLabelFor(final UnitsSet.Unit units) {
 		return units.getLabel();
 	}
 
@@ -95,7 +95,7 @@ public class WorldDistance2 extends AbstractValueInUnits {
 	 * the value in this units. This calling sequence will work without
 	 * syntactical changes.
 	 */
-	static public UnitsSet.Unit getUnitIndexFor(String units) {
+	static public UnitsSet.Unit getUnitIndexFor(final String units) {
 		return DISTANCE_UNITS.findUnit(units);
 	}
 
@@ -110,7 +110,7 @@ public class WorldDistance2 extends AbstractValueInUnits {
 	 * method to find the smallest set of units which will show the indicated
 	 * value as a whole or 1/2 value
 	 */
-	static public UnitsSet.Unit selectUnitsFor(double millis) {
+	static public UnitsSet.Unit selectUnitsFor(final double millis) {
 		return DISTANCE_UNITS.selectUnitsFor(millis);
 	}
 

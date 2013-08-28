@@ -29,7 +29,7 @@ abstract public class WorldPathHandler extends MWCXMLReader {
 
     addHandler(new LocationHandler(POINT)
     {
-      public void setLocation(WorldLocation res)
+      public void setLocation(final WorldLocation res)
       {
         addThis(res);
       }
@@ -37,7 +37,7 @@ abstract public class WorldPathHandler extends MWCXMLReader {
 
   }
 
-  public void addThis(WorldLocation res)
+  public void addThis(final WorldLocation res)
   {
     if(_myPath == null)
       _myPath = new WorldPath();
@@ -53,32 +53,32 @@ abstract public class WorldPathHandler extends MWCXMLReader {
 
   abstract public void setPath(WorldPath path);
 
-  public static void exportThis(Vector<PolygonNode> nodes, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportThis(final Vector<PolygonNode> nodes, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eLoc = doc.createElement(_myType);
+    final org.w3c.dom.Element eLoc = doc.createElement(_myType);
 
     // step through the list
-    Iterator<PolygonNode> it = nodes.iterator();
+    final Iterator<PolygonNode> it = nodes.iterator();
 
     while(it.hasNext())
     {
-      WorldLocation wl = (WorldLocation)it.next().getLocation();
+      final WorldLocation wl = (WorldLocation)it.next().getLocation();
       LocationHandler.exportLocation(wl, POINT, eLoc, doc);
     }
     parent.appendChild(eLoc);
   }
 
 
-  public static void exportThis(WorldPath path, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportThis(final WorldPath path, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eLoc = doc.createElement(_myType);
+    final org.w3c.dom.Element eLoc = doc.createElement(_myType);
 
     // step through the list
-    Iterator<WorldLocation> it = path.getPoints().iterator();
+    final Iterator<WorldLocation> it = path.getPoints().iterator();
 
     while(it.hasNext())
     {
-      WorldLocation wl = (WorldLocation)it.next();
+      final WorldLocation wl = (WorldLocation)it.next();
       LocationHandler.exportLocation(wl, POINT, eLoc, doc);
     }
     parent.appendChild(eLoc);

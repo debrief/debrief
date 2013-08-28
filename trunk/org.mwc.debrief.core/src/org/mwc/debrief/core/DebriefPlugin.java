@@ -68,7 +68,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 *          the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path)
+	public static ImageDescriptor getImageDescriptor(final String path)
 	{
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_NAME,
 				path);
@@ -78,7 +78,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
 	 */
-	public static String getResourceString(String key)
+	public static String getResourceString(final String key)
 	{
 		final ResourceBundle bundle = DebriefPlugin.getDefault()
 				.getResourceBundle();
@@ -103,7 +103,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logError(int severity, String message, Throwable exception)
+	public static void logError(final int severity, final String message, final Throwable exception)
 	{
 		final Status stat = new Status(severity, PLUGIN_NAME,
 				IStatus.OK, message, exception);
@@ -169,7 +169,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 * This method is called upon plug-in activation
 	 */
 	@Override
-	public void start(BundleContext context) throws Exception
+	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
 
@@ -206,12 +206,12 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		CoreViewLabelProvider.addImageHelper(_myImageHelper  );
 
 //		 provide helper for triggering 'new-leg' operation
-		GiveMeALeg triggerNewLeg = new GiveMeALeg(){
+		final GiveMeALeg triggerNewLeg = new GiveMeALeg(){
 
 			@Override
-			public void createLegFor(Layer parent)
+			public void createLegFor(final Layer parent)
 			{
-				InsertTrackSegment ts= new InsertTrackSegment(parent);
+				final InsertTrackSegment ts= new InsertTrackSegment(parent);
 				ts.run(null);
 			}};
 		
@@ -224,7 +224,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 * This method is called when the plug-in is stopped
 	 */
 	@Override
-	public void stop(BundleContext context) throws Exception
+	public void stop(final BundleContext context) throws Exception
 	{
 		super.stop(context);
 		plugin = null;

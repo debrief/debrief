@@ -36,7 +36,7 @@ abstract public class EllipseHandler extends ShapeHandler implements
 
 		addHandler(new LocationHandler("centre")
 		{
-			public void setLocation(MWC.GenericData.WorldLocation res)
+			public void setLocation(final MWC.GenericData.WorldLocation res)
 			{
 				_centre = res;
 			}
@@ -46,7 +46,7 @@ abstract public class EllipseHandler extends ShapeHandler implements
 		{
 
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_maxDist = res;
 			}
@@ -55,7 +55,7 @@ abstract public class EllipseHandler extends ShapeHandler implements
 		{
 
 			@Override
-			public void setWorldDistance(WorldDistance res)
+			public void setWorldDistance(final WorldDistance res)
 			{
 				_minDist = res;
 			}
@@ -63,13 +63,13 @@ abstract public class EllipseHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleAttribute("Maxima")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				try
 				{
 					_maxima = readThisDouble(val);
 				}
-				catch (java.text.ParseException pe)
+				catch (final java.text.ParseException pe)
 				{
 					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
 							+ " value is:" + val);
@@ -78,13 +78,13 @@ abstract public class EllipseHandler extends ShapeHandler implements
 		});
 		addAttributeHandler(new HandleAttribute("Minima")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				try
 				{
 					_minima = readThisDouble(val);
 				}
-				catch (java.text.ParseException pe)
+				catch (final java.text.ParseException pe)
 				{
 					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
 							+ " value is:" + val);
@@ -93,13 +93,13 @@ abstract public class EllipseHandler extends ShapeHandler implements
 		});
 		addAttributeHandler(new HandleAttribute("Orient")
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
 				try
 				{
 					_orient = readThisDouble(val);
 				}
-				catch (java.text.ParseException pe)
+				catch (final java.text.ParseException pe)
 				{
 					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name
 							+ " value is:" + val);
@@ -109,7 +109,7 @@ abstract public class EllipseHandler extends ShapeHandler implements
 
 		addAttributeHandler(new HandleBooleanAttribute("Filled")
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_filled = new Boolean(value);
 			}
@@ -118,7 +118,7 @@ abstract public class EllipseHandler extends ShapeHandler implements
 	}
 
 	// this is one of ours, so get on with it!
-	protected final void handleOurselves(String name, Attributes attributes)
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
 		_maxima = _minima = _orient = 0.0;
 		super.handleOurselves(name, attributes);
@@ -133,8 +133,8 @@ abstract public class EllipseHandler extends ShapeHandler implements
 		}
 		else
 		{
-			double max_degs = MWC.Algorithms.Conversions.Yds2Degs(_maxima * 1000);
-			double min_degs = MWC.Algorithms.Conversions.Yds2Degs(_minima * 1000);
+			final double max_degs = MWC.Algorithms.Conversions.Yds2Degs(_maxima * 1000);
+			final double min_degs = MWC.Algorithms.Conversions.Yds2Degs(_minima * 1000);
 			ls = new MWC.GUI.Shapes.EllipseShape(_centre, _orient, new WorldDistance(
 					max_degs, WorldDistance.DEGS), new WorldDistance(min_degs,
 					WorldDistance.DEGS));
@@ -155,23 +155,23 @@ abstract public class EllipseHandler extends ShapeHandler implements
 		_orient = _maxima = _minima = 0.0;
 	}
 
-	public final void exportThisPlottable(MWC.GUI.Plottable plottable,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public final void exportThisPlottable(final MWC.GUI.Plottable plottable,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// output the shape related stuff first
-		org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+		final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
 		super.exportThisPlottable(plottable, ePlottable, doc);
 
 		// now our circle related stuff
 
 		// get the circle
-		Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
-		MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+		final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper) plottable;
+		final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
 		if (ps instanceof MWC.GUI.Shapes.EllipseShape)
 		{
 			// export the attributes
-			MWC.GUI.Shapes.EllipseShape cs = (MWC.GUI.Shapes.EllipseShape) ps;
+			final MWC.GUI.Shapes.EllipseShape cs = (MWC.GUI.Shapes.EllipseShape) ps;
 			LocationHandler.exportLocation(cs.getCentre(), "centre", ePlottable, doc);
 			ePlottable.setAttribute("Orient", writeThis(cs.getOrientation()));
 			ePlottable.setAttribute("Filled", writeThis(cs.getFilled()));

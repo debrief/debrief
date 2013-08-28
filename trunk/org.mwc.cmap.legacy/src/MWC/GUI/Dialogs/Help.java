@@ -50,6 +50,6 @@ package MWC.GUI.Dialogs;
 
 public class Help {
 /** @param ID is the context of the information to display*/
-  public void showHelpID(long ID){
+  public void showHelpID(final long ID){
   }
 }

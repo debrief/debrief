@@ -17,13 +17,13 @@ class QuestionDialogLauncher extends Panel
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Applet applet;
+	private final Applet applet;
   private QuestionDialog questionDialog;
-  private Checkbox modal = new Checkbox("modal");
+  private final Checkbox modal = new Checkbox("modal");
 
   private Button questionDialogButton;
 
-  public QuestionDialogLauncher(Applet applet)
+  public QuestionDialogLauncher(final Applet applet)
   {
     this.applet = applet;
 
@@ -34,9 +34,9 @@ class QuestionDialogLauncher extends Panel
     questionDialogButton.addActionListener(this);
   }
 
-  public void actionPerformed(ActionEvent event)
+  public void actionPerformed(final ActionEvent event)
   {
-    Image image = applet.getImage(applet.getCodeBase(),
+    final Image image = applet.getImage(applet.getCodeBase(),
                                   "gifs/book.gif");
     if (questionDialog == null)
     {
@@ -55,7 +55,7 @@ class QuestionDialogLauncher extends Panel
     questionDialog.setVisible(true);
   }
 
-  public void dialogDismissed(Dialog d)
+  public void dialogDismissed(final Dialog d)
   {
     if (questionDialog.wasCancelled())
       applet.showStatus("CANCELLED");
@@ -65,7 +65,7 @@ class QuestionDialogLauncher extends Panel
                         questionDialog.getTextField().getText());
   }
 
-  public void dialogCancelled(Dialog d)
+  public void dialogCancelled(final Dialog d)
   {
     applet.showStatus("Dialog Cancelled");
   }

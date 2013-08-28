@@ -40,21 +40,21 @@ public class RendererWithDynamicFeedback extends XYLineAndShapeRenderer {
 
 	private Paint myFeedbackNodePaint = Color.darkGray;
 
-	private Stroke myFeedbackStroke = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 5.0f, 5.0f }, 0.0f);
+	private final Stroke myFeedbackStroke = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 5.0f, 5.0f }, 0.0f);
 
-	public void setFeedbackEdgePaint(Paint feedbackEdgePaint) {
+	public void setFeedbackEdgePaint(final Paint feedbackEdgePaint) {
 		myFeedbackEdgePaint = feedbackEdgePaint;
 	}
 
-	public void setFeedbackNodePaint(Paint feedbackNodePaint) {
+	public void setFeedbackNodePaint(final Paint feedbackNodePaint) {
 		myFeedbackNodePaint = feedbackNodePaint;
 	}
 
-	public void setFeedbackSubject(int row, int column) {
+	public void setFeedbackSubject(final int row, final int column) {
 		myFeedBackRowAndColumn = new Point(row, column);
 	}
 
-	public void setFeedbackSubject(XYItemEntity entity) {
+	public void setFeedbackSubject(final XYItemEntity entity) {
 		if (entity == null) {
 			myFeedBackRowAndColumn = null;
 		} else {
@@ -62,23 +62,23 @@ public class RendererWithDynamicFeedback extends XYLineAndShapeRenderer {
 		}
 	}
 
-	public void setFeedBackValue(Point2D.Double feedBackValue) {
+	public void setFeedBackValue(final Point2D.Double feedBackValue) {
 		myFeedBackValue = feedBackValue;
 	}
 
 	@Override
-	public void drawItem(Graphics2D g2, //
-			XYItemRendererState state, //
-			Rectangle2D dataArea, //
-			PlotRenderingInfo info, //
-			XYPlot plot, //
-			ValueAxis domainAxis, //
-			ValueAxis rangeAxis, //
-			XYDataset dataset, //
-			int series,//
-			int item, //
-			CrosshairState crosshairState, //
-			int pass) {
+	public void drawItem(final Graphics2D g2, //
+			final XYItemRendererState state, //
+			final Rectangle2D dataArea, //
+			final PlotRenderingInfo info, //
+			final XYPlot plot, //
+			final ValueAxis domainAxis, //
+			final ValueAxis rangeAxis, //
+			final XYDataset dataset, //
+			final int series,//
+			final int item, //
+			final CrosshairState crosshairState, //
+			final int pass) {
 
 		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairState, pass);
 
@@ -87,25 +87,25 @@ public class RendererWithDynamicFeedback extends XYLineAndShapeRenderer {
 		}
 	}
 
-	private boolean hasFeedbackFor(int series, int item) {
+	private boolean hasFeedbackFor(final int series, final int item) {
 		return myFeedBackRowAndColumn != null && myFeedBackValue != null && myFeedBackRowAndColumn.x == series && myFeedBackRowAndColumn.y == item;
 	}
 
 	/**
 	 * We are extensively using implementation of the super.drawItem() here.
 	 */
-	protected void drawItemFeedback(Graphics2D g2, //
-			XYItemRendererState state, //
-			Rectangle2D dataArea, //
-			PlotRenderingInfo info, //
-			XYPlot plot, //
-			ValueAxis domainAxis, //
-			ValueAxis rangeAxis, //
-			XYDataset dataset, //
-			int series,//
-			int item, //
-			CrosshairState crosshairState, //
-			int pass) {
+	protected void drawItemFeedback(final Graphics2D g2, //
+			final XYItemRendererState state, //
+			final Rectangle2D dataArea, //
+			final PlotRenderingInfo info, //
+			final XYPlot plot, //
+			final ValueAxis domainAxis, //
+			final ValueAxis rangeAxis, //
+			final XYDataset dataset, //
+			final int series,//
+			final int item, //
+			final CrosshairState crosshairState, //
+			final int pass) {
 
 		// do nothing if item is not visible
 		if (!getItemVisible(series, item)) {
@@ -132,22 +132,22 @@ public class RendererWithDynamicFeedback extends XYLineAndShapeRenderer {
 	/**
 	 * @see drawSecondaryPass
 	 */
-	private void drawFeedBackNode(Graphics2D g2, XYPlot plot, XYDataset dataset, int pass, //
-			int series, int item, ValueAxis domainAxis, Rectangle2D dataArea, ValueAxis rangeAxis, //
-			CrosshairState crosshairState, EntityCollection entities) {
+	private void drawFeedBackNode(final Graphics2D g2, final XYPlot plot, final XYDataset dataset, final int pass, //
+			final int series, final int item, final ValueAxis domainAxis, final Rectangle2D dataArea, final ValueAxis rangeAxis, //
+			final CrosshairState crosshairState, final EntityCollection entities) {
 
 		// get the data point...
-		double x1 = myFeedBackValue != null ? myFeedBackValue.x : dataset.getXValue(series, item);
-		double y1 = myFeedBackValue != null ? myFeedBackValue.y : dataset.getYValue(series, item);
+		final double x1 = myFeedBackValue != null ? myFeedBackValue.x : dataset.getXValue(series, item);
+		final double y1 = myFeedBackValue != null ? myFeedBackValue.y : dataset.getYValue(series, item);
 		if (Double.isNaN(y1) || Double.isNaN(x1)) {
 			return;
 		}
 
-		PlotOrientation orientation = plot.getOrientation();
-		RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
-		RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
-		double transX1 = domainAxis.valueToJava2D(x1, dataArea, xAxisLocation);
-		double transY1 = rangeAxis.valueToJava2D(y1, dataArea, yAxisLocation);
+		final PlotOrientation orientation = plot.getOrientation();
+		final RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
+		final RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
+		final double transX1 = domainAxis.valueToJava2D(x1, dataArea, xAxisLocation);
+		final double transY1 = rangeAxis.valueToJava2D(y1, dataArea, yAxisLocation);
 
 		if (getItemShapeVisible(series, item)) {
 			Shape shape = getItemShape(series, item);
@@ -171,29 +171,29 @@ public class RendererWithDynamicFeedback extends XYLineAndShapeRenderer {
 		drawFeedbackItemLabel(g2, orientation, dataset, series, item, xx, yy, (y1 < 0.0));
 	}
 
-	private void drawFeedbackItemLabel(Graphics2D g2, PlotOrientation orientation, XYDataset dataset, int series, int item, double xx, double yy, boolean b) {
+	private void drawFeedbackItemLabel(final Graphics2D g2, final PlotOrientation orientation, final XYDataset dataset, final int series, final int item, final double xx, final double yy, final boolean b) {
 		// no labels for now
 	}
 
 	/**
 	 * @see XYLineAndShapeRenderer#drawPrimaryLine
 	 */
-	protected void drawFeedBackPrimaryLine(XYItemRendererState state, Graphics2D g2, XYPlot plot, XYDataset dataset, int pass, //
-			int series, int item, ValueAxis domainAxis, ValueAxis rangeAxis, Rectangle2D dataArea) {
+	protected void drawFeedBackPrimaryLine(final XYItemRendererState state, final Graphics2D g2, final XYPlot plot, final XYDataset dataset, final int pass, //
+			final int series, final int item, final ValueAxis domainAxis, final ValueAxis rangeAxis, final Rectangle2D dataArea) {
 
 		if (item != 0) {
-			double x1 = myFeedBackValue != null ? myFeedBackValue.x : dataset.getXValue(series, item);
-			double y1 = myFeedBackValue != null ? myFeedBackValue.y : dataset.getYValue(series, item);
-			double x0 = dataset.getXValue(series, item - 1);
-			double y0 = dataset.getYValue(series, item - 1);
+			final double x1 = myFeedBackValue != null ? myFeedBackValue.x : dataset.getXValue(series, item);
+			final double y1 = myFeedBackValue != null ? myFeedBackValue.y : dataset.getYValue(series, item);
+			final double x0 = dataset.getXValue(series, item - 1);
+			final double y0 = dataset.getYValue(series, item - 1);
 			drawFeedbackEdge(x0, y0, x1, y1, state, g2, plot, domainAxis, rangeAxis, dataArea);
 		}
 
 		if (item < dataset.getItemCount(series) - 1) {
-			double x0 = myFeedBackValue != null ? myFeedBackValue.x : dataset.getXValue(series, item);
-			double y0 = myFeedBackValue != null ? myFeedBackValue.y : dataset.getYValue(series, item);
-			double x1 = dataset.getXValue(series, item + 1);
-			double y1 = dataset.getYValue(series, item + 1);
+			final double x0 = myFeedBackValue != null ? myFeedBackValue.x : dataset.getXValue(series, item);
+			final double y0 = myFeedBackValue != null ? myFeedBackValue.y : dataset.getYValue(series, item);
+			final double x1 = dataset.getXValue(series, item + 1);
+			final double y1 = dataset.getYValue(series, item + 1);
 			drawFeedbackEdge(x0, y0, x1, y1, state, g2, plot, domainAxis, rangeAxis, dataArea);
 		}
 	}
@@ -202,26 +202,26 @@ public class RendererWithDynamicFeedback extends XYLineAndShapeRenderer {
 	 * All parameters are domain coordinates that have to be translated to
 	 * Java2D points.
 	 */
-	private void drawFeedbackEdge(double x0, double y0, double x1, double y1, XYItemRendererState state, Graphics2D g2, XYPlot plot, ValueAxis domainAxis, ValueAxis rangeAxis, Rectangle2D dataArea) {
+	private void drawFeedbackEdge(final double x0, final double y0, final double x1, final double y1, final XYItemRendererState state, final Graphics2D g2, final XYPlot plot, final ValueAxis domainAxis, final ValueAxis rangeAxis, final Rectangle2D dataArea) {
 		if (Double.isNaN(y0) || Double.isNaN(x0) || Double.isNaN(y1) || Double.isNaN(x1)) {
 			return;
 		}
 
-		RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
-		RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
+		final RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
+		final RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
 
-		double transX0 = domainAxis.valueToJava2D(x0, dataArea, xAxisLocation);
-		double transY0 = rangeAxis.valueToJava2D(y0, dataArea, yAxisLocation);
+		final double transX0 = domainAxis.valueToJava2D(x0, dataArea, xAxisLocation);
+		final double transY0 = rangeAxis.valueToJava2D(y0, dataArea, yAxisLocation);
 
-		double transX1 = domainAxis.valueToJava2D(x1, dataArea, xAxisLocation);
-		double transY1 = rangeAxis.valueToJava2D(y1, dataArea, yAxisLocation);
+		final double transX1 = domainAxis.valueToJava2D(x1, dataArea, xAxisLocation);
+		final double transY1 = rangeAxis.valueToJava2D(y1, dataArea, yAxisLocation);
 
 		// only draw if we have good values
 		if (Double.isNaN(transX0) || Double.isNaN(transY0) || Double.isNaN(transX1) || Double.isNaN(transY1)) {
 			return;
 		}
 
-		PlotOrientation orientation = plot.getOrientation();
+		final PlotOrientation orientation = plot.getOrientation();
 		if (orientation == PlotOrientation.HORIZONTAL) {
 			state.workingLine.setLine(transY0, transX0, transY1, transX1);
 		} else if (orientation == PlotOrientation.VERTICAL) {

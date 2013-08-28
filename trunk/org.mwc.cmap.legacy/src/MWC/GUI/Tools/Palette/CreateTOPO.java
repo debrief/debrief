@@ -101,9 +101,9 @@ public class CreateTOPO extends PlainCreateLayer
 	 * constructor, taking normal PlainCreate parameters
 	 * 
 	 */
-	public CreateTOPO(MWC.GUI.ToolParent theParent,
-			MWC.GUI.Properties.PropertiesPanel thePanel, Layers theData,
-			MWC.GUI.PlainChart theChart)
+	public CreateTOPO(final MWC.GUI.ToolParent theParent,
+			final MWC.GUI.Properties.PropertiesPanel thePanel, final Layers theData,
+			final MWC.GUI.PlainChart theChart)
 	{
 		super(theParent, thePanel, theData, theChart, "TOPO Gridded Bathy",
 				"images/etopo.gif");
@@ -116,7 +116,7 @@ public class CreateTOPO extends PlainCreateLayer
 	 * 
 	 * @param theParent
 	 */
-	public static void initialise(ToolParent theParent)
+	public static void initialise(final ToolParent theParent)
 	{
 		_myParent = theParent;
 	}
@@ -152,7 +152,7 @@ public class CreateTOPO extends PlainCreateLayer
 	 * because of it's BackgroundLayer marker interface
 	 * 
 	 */
-	protected Layer createItem(MWC.GUI.PlainChart theChart)
+	protected Layer createItem(final MWC.GUI.PlainChart theChart)
 	{
 		// todo: overcome problem caused by loading ETOPO twice
 
@@ -165,13 +165,13 @@ public class CreateTOPO extends PlainCreateLayer
 	 */
 	public static boolean check2MinBathyData()
 	{
-		String newPath = getETOPOPath();
+		final String newPath = getETOPOPath();
 
 		boolean res = false;
 
 		// just see if we've already got a complete path
-		File tstFile = new File(newPath);
-		boolean foundIt = tstFile.isFile();
+		final File tstFile = new File(newPath);
+		final boolean foundIt = tstFile.isFile();
 
 		// hmm, we've either got a full path, or just the directory and we need
 		// to append the file itself
@@ -189,13 +189,13 @@ public class CreateTOPO extends PlainCreateLayer
 	 */
 	public static Layer load2MinBathyData()
 	{
-		String newPath = getETOPOPath();
+		final String newPath = getETOPOPath();
 
 		Layer res = null;
 
 		// just see if we've already got a complete path
-		File tstFile = new File(newPath);
-		boolean foundIt = tstFile.isFile();
+		final File tstFile = new File(newPath);
+		final boolean foundIt = tstFile.isFile();
 
 		// hmm, we've either got a full path, or just the directory and we need
 		// to append the file itself
@@ -220,9 +220,9 @@ public class CreateTOPO extends PlainCreateLayer
 	 * static class which allows other layers to load data
 	 * 
 	 */
-	public static Layer loadBathyData(Layers theLayers)
+	public static Layer loadBathyData(final Layers theLayers)
 	{
-		String newPath = getETOPOPath();
+		final String newPath = getETOPOPath();
 
 		Layer res = null;
 

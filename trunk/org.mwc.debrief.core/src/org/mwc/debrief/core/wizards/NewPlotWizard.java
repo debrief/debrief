@@ -100,8 +100,8 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	 * file.
 	 */
 
-	void doFinish(String containerName, String fileName,
-			IProgressMonitor monitor) throws CoreException {
+	void doFinish(final String containerName, final String fileName,
+			final IProgressMonitor monitor) throws CoreException {
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
 		final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
@@ -145,7 +145,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	 * 
 	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
 	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection1) {
+	public void init(final IWorkbench workbench, final IStructuredSelection selection1) {
 		this.selection = selection1;
 	}
 
@@ -215,7 +215,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 		final String containerName = _fileWizard.getContainerName();
 		final String fileName = _fileWizard.getFileName();
 		final IRunnableWithProgress op = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor)
+			public void run(final IProgressMonitor monitor)
 					throws InvocationTargetException {
 				try {
 					doFinish(containerName, fileName, monitor);
@@ -239,7 +239,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 		return true;
 	}
 
-	private void throwCoreException(String message) throws CoreException {
+	private void throwCoreException(final String message) throws CoreException {
 		final IStatus status = new Status(IStatus.ERROR,
 				"org.mwc.debrief.core", IStatus.OK, message, null);
 		throw new CoreException(status);

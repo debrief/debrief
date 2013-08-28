@@ -32,12 +32,12 @@ class MessageDialogLauncher extends Panel
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Applet applet;
+	private final Applet applet;
   private Button messageDialogButton;
   private MessageDialog messageDialog;
-  private Checkbox modal = new Checkbox("modal");
+  private final Checkbox modal = new Checkbox("modal");
 
-  public MessageDialogLauncher(Applet applet)
+  public MessageDialogLauncher(final Applet applet)
   {
     this.applet = applet;
 
@@ -49,9 +49,9 @@ class MessageDialogLauncher extends Panel
     messageDialogButton.addActionListener(this);
   }
 
-  public void actionPerformed(ActionEvent event)
+  public void actionPerformed(final ActionEvent event)
   {
-    Image image = applet.getImage(applet.getCodeBase(),
+    final Image image = applet.getImage(applet.getCodeBase(),
                                   "gifs/information.gif");
     if (messageDialog == null)
     {
@@ -70,12 +70,12 @@ class MessageDialogLauncher extends Panel
     messageDialog.setVisible(true);
   }
 
-  public void dialogDismissed(Dialog d)
+  public void dialogDismissed(final Dialog d)
   {
     applet.showStatus("MessageDialog Dismissed");
   }
 
-  public void dialogCancelled(Dialog d)
+  public void dialogCancelled(final Dialog d)
   {
     applet.showStatus("Message Dialog Cancelled");
   }

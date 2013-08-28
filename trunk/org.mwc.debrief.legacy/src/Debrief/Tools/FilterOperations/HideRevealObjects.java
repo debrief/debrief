@@ -74,7 +74,7 @@ public final class HideRevealObjects implements FilterOperation
   /** constructor
    * @param theLayers the layers object to be updated on our completion
    */
-  public HideRevealObjects(Layers theLayers)
+  public HideRevealObjects(final Layers theLayers)
   {
     _theLayers = theLayers;
   }
@@ -101,10 +101,10 @@ public final class HideRevealObjects implements FilterOperation
     boolean res = false;
 
     // create the selections
-    String[] list= new String[]{"Hide", "Reveal"};
+    final String[] list= new String[]{"Hide", "Reveal"};
 
     // find out which one the user wants to edit
-    Object val = JOptionPane.showInputDialog(null,
+    final Object val = JOptionPane.showInputDialog(null,
                                              "Do you wish to hide or reveal the selected objects?",
                                              "Hide/Reveal objects",
                                              JOptionPane.QUESTION_MESSAGE,
@@ -112,7 +112,7 @@ public final class HideRevealObjects implements FilterOperation
                                              list,
                                              null);
 
-    String selected = (String)val;
+    final String selected = (String)val;
     if(selected.equals("Hide"))
     {
       res = true;
@@ -123,12 +123,12 @@ public final class HideRevealObjects implements FilterOperation
     return res;
   }
 
-  public final void setPeriod(HiResDate startDTG, HiResDate finishDTG)
+  public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG)
   {
     // ignore, since we don't mind
   }
 
-  public final void setTracks(java.util.Vector<WatchableList> selectedTracks)
+  public final void setTracks(final java.util.Vector<WatchableList> selectedTracks)
   {
     // store the objects
     _theObjects = selectedTracks;
@@ -139,7 +139,7 @@ public final class HideRevealObjects implements FilterOperation
    * @param startTime the new start time
    * @param endTime the new end time
    */
-  public void resetMe(HiResDate startTime, HiResDate endTime)
+  public void resetMe(final HiResDate startTime, final HiResDate endTime)
   {
   }
 
@@ -160,17 +160,17 @@ public final class HideRevealObjects implements FilterOperation
     }
 
     // find out what we're doing
-    boolean hideIt = getHideReveal();
+    final boolean hideIt = getHideReveal();
 
     // make our symbols and labels visible
-    Enumeration<WatchableList> iter = _theObjects.elements();
+    final Enumeration<WatchableList> iter = _theObjects.elements();
     while(iter.hasMoreElements())
     {
-      WatchableList wl = (WatchableList)iter.nextElement();
+      final WatchableList wl = (WatchableList)iter.nextElement();
 
       if(wl instanceof Plottable)
       {
-        Plottable thisP = (Plottable)wl;
+        final Plottable thisP = (Plottable)wl;
 
         if(res == null)
         {
@@ -196,7 +196,7 @@ public final class HideRevealObjects implements FilterOperation
     return null;
   }
 
-  public final void actionPerformed(java.awt.event.ActionEvent p1)
+  public final void actionPerformed(final java.awt.event.ActionEvent p1)
   {
   }
 
@@ -213,7 +213,7 @@ public final class HideRevealObjects implements FilterOperation
     private final boolean _hideIt;
     private final Layers _theLayers1;
 
-    public HideRevealAction(boolean hideIt, Layers theLayers)
+    public HideRevealAction(final boolean hideIt, final Layers theLayers)
     {
       _hideIt = hideIt;
       _theLayers1 = theLayers;
@@ -223,12 +223,12 @@ public final class HideRevealObjects implements FilterOperation
     /** add an update to a new object
      *
      */
-    public final void changeThisObject(Plottable val)
+    public final void changeThisObject(final Plottable val)
     {
-      boolean oldVal = val.getVisible();
+      final boolean oldVal = val.getVisible();
 
       // remember the object and it's old value
-      ItemEdit ie = new ItemEdit(val, oldVal);
+      final ItemEdit ie = new ItemEdit(val, oldVal);
 
       // and store it
       _valuesChanged.add(ie);
@@ -261,11 +261,11 @@ public final class HideRevealObjects implements FilterOperation
      */
     public final void undo()
     {
-      Iterator<ItemEdit> it = _valuesChanged.iterator();
+      final Iterator<ItemEdit> it = _valuesChanged.iterator();
       while(it.hasNext())
       {
-        ItemEdit ie = (ItemEdit)it.next();
-        Plottable theO = (Plottable)ie._object;
+        final ItemEdit ie = (ItemEdit)it.next();
+        final Plottable theO = (Plottable)ie._object;
         theO.setVisible(ie._oldValue);
       }
 
@@ -276,11 +276,11 @@ public final class HideRevealObjects implements FilterOperation
      */
     public final void execute()
     {
-      Iterator<ItemEdit> it = _valuesChanged.iterator();
+      final Iterator<ItemEdit> it = _valuesChanged.iterator();
       while(it.hasNext())
       {
-        ItemEdit ie = (ItemEdit)it.next();
-        Plottable theO = (Plottable)ie._object;
+        final ItemEdit ie = (ItemEdit)it.next();
+        final Plottable theO = (Plottable)ie._object;
         theO.setVisible(!_hideIt);
       }
 
@@ -295,7 +295,7 @@ public final class HideRevealObjects implements FilterOperation
       public final Object _object;
       public final boolean _oldValue;
 
-      public ItemEdit(Object object, boolean oldValue)
+      public ItemEdit(final Object object, final boolean oldValue)
       {
         _object = object;
         _oldValue = oldValue;

@@ -160,7 +160,7 @@ abstract public class DatePropertyEditor extends
   /**
    * store the new value
    */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     // check the formats are in the correct time zone
     _dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -175,7 +175,7 @@ abstract public class DatePropertyEditor extends
       // check it's a date
       if (p1 instanceof HiResDate)
       {
-        HiResDate val = (HiResDate) p1;
+        final HiResDate val = (HiResDate) p1;
 
         // extract the date portion
         _myVal = val.getDate();
@@ -211,8 +211,8 @@ abstract public class DatePropertyEditor extends
     HiResDate res = null;
 
     // see if we still have null values
-    String dateVal = getDateText();
-    String timeVal = getTimeText();
+    final String dateVal = getDateText();
+    final String timeVal = getTimeText();
 
     long theTime = 0;
 
@@ -227,7 +227,7 @@ abstract public class DatePropertyEditor extends
       // also add any micros
       theTime += _theMicros;
     }
-    catch (ParseException e)
+    catch (final ParseException e)
     {
       theTime = 0;
     }

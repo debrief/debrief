@@ -24,7 +24,7 @@ public class Observation implements TimeStampedDataItem {
 	public Observation() {
 	}
 
-	public Observation(HiResDate dtg, double bearing, WorldDistance2 range) {
+	public Observation(final HiResDate dtg, final double bearing, final WorldDistance2 range) {
 		_myTime = dtg;
 		_bearing = bearing;
 		_range = range;
@@ -42,7 +42,7 @@ public class Observation implements TimeStampedDataItem {
 		return _myTime;
 	}
 
-	public void setTime(HiResDate time) {
+	public void setTime(final HiResDate time) {
 		_myTime = time;
 	}
 
@@ -50,7 +50,7 @@ public class Observation implements TimeStampedDataItem {
 		return _bearing;
 	}
 
-	public void setBearing(double _bearing) {
+	public void setBearing(final double _bearing) {
 		this._bearing = _bearing;
 	}
 
@@ -58,11 +58,11 @@ public class Observation implements TimeStampedDataItem {
 		return _range;
 	}
 
-	public void setRange(WorldDistance2 _range) {
+	public void setRange(final WorldDistance2 _range) {
 		this._range = _range;
 	}
 
-	public void setDTG(HiResDate newTime) {
+	public void setDTG(final HiResDate newTime) {
 		this._myTime = newTime;
 	}
 

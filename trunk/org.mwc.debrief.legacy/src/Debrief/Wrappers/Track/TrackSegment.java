@@ -56,12 +56,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		public void testSpline()
 		{
 			// generate the location spline
-			double[] times = new double[]{3d,4d,8d,9d};
-			double[] lats = new double[]{1d,1d,3d,4d};
-			double[] longs = new double[]{1d,2d,4d,4d};
+			final double[] times = new double[]{3d,4d,8d,9d};
+			final double[] lats = new double[]{1d,1d,3d,4d};
+			final double[] longs = new double[]{1d,2d,4d,4d};
 
-			CubicSpline latSpline = new CubicSpline(times, lats);
-			CubicSpline longSpline = new CubicSpline(times, longs);
+			final CubicSpline latSpline = new CubicSpline(times, lats);
+			final CubicSpline longSpline = new CubicSpline(times, longs);
 
 			for (int t=0;t<4;t++)
 			{
@@ -71,7 +71,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 			for (long t=50;t<80;t++)
 			{
-				double tNow = t/10d;
+				final double tNow = t/10d;
 				final double thisLat = latSpline.interpolate(tNow);
 				final double thisLong = longSpline.interpolate(tNow);
 				System.out.println(thisLong + ", " + thisLat + ", " + tNow);
@@ -80,28 +80,28 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		
 		public void testLast()
 		{
-			TrackSegment ts0 = new TrackSegment();
-			FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
+			final TrackSegment ts0 = new TrackSegment();
+			final FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
 					new WorldLocation(1, -1, 3), 1, 2));
-			FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(20000),
+			final FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(20000),
 					new WorldLocation(1, 0, 3), 1, 2));
-			FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(30000),
+			final FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(30000),
 					new WorldLocation(1, 1, 3), 1, 2));
-			FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(40000),
+			final FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(40000),
 					new WorldLocation(1, 2, 3), 1, 2));
 			ts0.addFix(newFix1);
 			ts0.addFix(newFix2);
 			ts0.addFix(newFix3);
 			ts0.addFix(newFix4);
 
-			TrackSegment ts1 = new TrackSegment();
-			FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(150000),
+			final TrackSegment ts1 = new TrackSegment();
+			final FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(150000),
 					new WorldLocation(3, 4, 3), 1, 2));
-			FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(160000),
+			final FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(160000),
 					new WorldLocation(4, 4, 3), 1, 2));
-			FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(170000),
+			final FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(170000),
 					new WorldLocation(5, 4, 3), 1, 2));
-			FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(180000),
+			final FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(180000),
 					new WorldLocation(6, 4, 3), 1, 2));
 			ts1.addFix(newFix5);
 			ts1.addFix(newFix6);
@@ -112,11 +112,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			assertEquals("got lots of points", 10, newS.size());
 			
 			// have a look at the generated points
-			Enumeration<Editable> pts = newS.elements();
+			final Enumeration<Editable> pts = newS.elements();
 			while (pts.hasMoreElements())
 			{
-				Editable editable = (Editable) pts.nextElement();
-				FixWrapper fix = (FixWrapper) editable;
+				final Editable editable = (Editable) pts.nextElement();
+				final FixWrapper fix = (FixWrapper) editable;
 				System.out.println(fix.getLocation().getLat() + ", " + fix.getLocation().getLong() + " , " + fix.getDateTimeGroup().getDate().getTime());
 			}
 			System.out.println("========");
@@ -125,7 +125,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			newFix6.setDateTimeGroup(new HiResDate(15000));
 
 			// try the mini algorithm first
-			FixWrapper[] items = getLastElementsFrom(ts1, 2);
+			final FixWrapper[] items = getLastElementsFrom(ts1, 2);
 			assertTrue("times should not be the same ",
 					items[0].getDateTimeGroup() != items[1].getDateTimeGroup());
 
@@ -134,7 +134,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				newS = new TrackSegment(ts0, ts1);
 				assertEquals("got lots of points", 10, newS.size());
 			}
-			catch (RuntimeException re)
+			catch (final RuntimeException re)
 			{
 				fail("runtime exception thrown!!!");
 			}
@@ -221,19 +221,19 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 *          how many elements to use
 	 * @return the subset
 	 */
-	private static FixWrapper[] getFirstElementsFrom(TrackSegment trackTwo,
-			int num)
+	private static FixWrapper[] getFirstElementsFrom(final TrackSegment trackTwo,
+			final int num)
 	{
-		FixWrapper[] res = new FixWrapper[num];
+		final FixWrapper[] res = new FixWrapper[num];
 
 		HiResDate lastDate = null;
 		int ctr = 0;
 
-		Enumeration<Editable> items = trackTwo.elements();
+		final Enumeration<Editable> items = trackTwo.elements();
 		for (int i = 0; i < trackTwo.size(); i++)
 		{
-			FixWrapper next = (FixWrapper) items.nextElement();
-			HiResDate thisDate = next.getDateTimeGroup();
+			final FixWrapper next = (FixWrapper) items.nextElement();
+			final HiResDate thisDate = next.getDateTimeGroup();
 			if (lastDate != null)
 			{
 				// ok, is this a new date
@@ -263,22 +263,22 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 *          how many elements to use
 	 * @return the subset
 	 */
-	private static FixWrapper[] getLastElementsFrom(TrackSegment trackOne, int num)
+	private static FixWrapper[] getLastElementsFrom(final TrackSegment trackOne, final int num)
 	{
-		FixWrapper[] res = new FixWrapper[num];
+		final FixWrapper[] res = new FixWrapper[num];
 
 		// right, careful here, we can't use points at the same time
-		Object[] data = trackOne.getData().toArray();
-		int theLen = data.length;
+		final Object[] data = trackOne.getData().toArray();
+		final int theLen = data.length;
 		HiResDate lastDate = null;
 		int ctr = 0;
 		for (int i = theLen - 1; i >= 0; i--)
 		{
-			FixWrapper fix = (FixWrapper) data[i];
+			final FixWrapper fix = (FixWrapper) data[i];
 			if (lastDate != null)
 			{
 				// is this the same date?
-				HiResDate thisDate = fix.getDateTimeGroup();
+				final HiResDate thisDate = fix.getDateTimeGroup();
 				if (thisDate.equals(lastDate))
 				{
 					// ok, can't use it - skip to next cycle
@@ -305,7 +305,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 * @param toolParent
 	 */
-	public static void initialise(ToolParent toolParent)
+	public static void initialise(final ToolParent toolParent)
 	{
 		_myParent = toolParent;
 	}
@@ -345,17 +345,17 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 * @param tma
 	 */
-	public TrackSegment(CoreTMASegment tma)
+	public TrackSegment(final CoreTMASegment tma)
 	{
 		setName(tma.getName());
 		setVisible(tma.getVisible());
 		setWrapper(tma.getWrapper());
 
 		// add the elements from the target
-		Enumeration<Editable> points = tma.elements();
+		final Enumeration<Editable> points = tma.elements();
 		while (points.hasMoreElements())
 		{
-			Editable next = points.nextElement();
+			final Editable next = points.nextElement();
 			add(next);
 		}
 	}
@@ -379,10 +379,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * @param trackOne
 	 * @param trackTwo
 	 */
-	public TrackSegment(TrackSegment trackOne, TrackSegment trackTwo)
+	public TrackSegment(final TrackSegment trackOne, final TrackSegment trackTwo)
 	{
 		// remember if it's DR or OTG
-		boolean isDR = trackOne.getPlotRelative();
+		final boolean isDR = trackOne.getPlotRelative();
 
 		this.setPlotRelative(isDR);
 
@@ -392,13 +392,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 
 		// now the num to use
-		int oneUse = 2;
-		int twoUse = 2;
+		final int oneUse = 2;
+		final int twoUse = 2;
 
 		// generate the data for the splines
-		FixWrapper[] oneElements = getLastElementsFrom(trackOne, oneUse);
-		FixWrapper[] twoElements = getFirstElementsFrom(trackTwo, twoUse);
-		FixWrapper[] allElements = new FixWrapper[oneUse + twoUse];
+		final FixWrapper[] oneElements = getLastElementsFrom(trackOne, oneUse);
+		final FixWrapper[] twoElements = getFirstElementsFrom(trackTwo, twoUse);
+		final FixWrapper[] allElements = new FixWrapper[oneUse + twoUse];
 		System.arraycopy(oneElements, 0, allElements, 0, oneUse);
 		System.arraycopy(twoElements, 0, allElements, oneUse, twoUse);
 		
@@ -412,7 +412,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// extra diagnostics
 			for (int i = 0; i < allElements.length; i++)
 			{
-				FixWrapper fixWrapper = allElements[i];
+				final FixWrapper fixWrapper = allElements[i];
 				_myParent.logError(
 						ToolParent.INFO,
 						"item: "
@@ -427,22 +427,22 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 
 		// generate the location spline
-		double[] times = new double[allElements.length];
-		double[] lats = new double[allElements.length];
-		double[] longs = new double[allElements.length];
-		double[] depths = new double[allElements.length];
+		final double[] times = new double[allElements.length];
+		final double[] lats = new double[allElements.length];
+		final double[] longs = new double[allElements.length];
+		final double[] depths = new double[allElements.length];
 		for (int i = 0; i < allElements.length; i++)
 		{
-			FixWrapper fw = allElements[i];
+			final FixWrapper fw = allElements[i];
 			times[i] = fw.getDTG().getDate().getTime();
 			lats[i] = fw.getLocation().getLat();
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
 		}
 
-		CubicSpline latSpline = new CubicSpline(times, lats);
-		CubicSpline longSpline = new CubicSpline(times, longs);
-		CubicSpline depthSpline = new CubicSpline(times, depths);
+		final CubicSpline latSpline = new CubicSpline(times, lats);
+		final CubicSpline longSpline = new CubicSpline(times, longs);
+		final CubicSpline depthSpline = new CubicSpline(times, depths);
 
 		// what's the interval?
 		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
@@ -466,8 +466,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 
 		// sort out the start & end times of the infill segment
-		long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
-		long tEnd = trackTwo.startDTG().getDate().getTime();
+		final long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
+		final long tEnd = trackTwo.startDTG().getDate().getTime();
 
 		
 		// remember the last point on the first track, in case we're generating
@@ -495,14 +495,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		{
 
 			// debug. get a human-readable date
-			HiResDate tmpD = new HiResDate(tNow);
+			final HiResDate tmpD = new HiResDate(tNow);
 
 			final double thisLat = latSpline.interpolate(tNow);
 			final double thisLong = longSpline.interpolate(tNow);
 			final double thisDepth = depthSpline.interpolate(tNow);
 
 			// create the new location
-			WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
+			final WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
 
 			// diagnostics
@@ -515,7 +515,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 						null);
 			}
 
-			WorldVector offset = newLocation.subtract(origin.getLocation());
+			final WorldVector offset = newLocation.subtract(origin.getLocation());
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
 			// start off with the course
 			double thisCourseRads = offset.getBearing();
@@ -547,13 +547,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				thisCourseRads += Math.PI * 2;
 
 			// convert the speed
-			WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
+			final WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
 
 			// create the fix
-			Fix newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
+			final Fix newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
 					theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
 			
-			FixWrapper fw = new FixWrapper(newFix);
+			final FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
 			
 			// and sort out the time lable
@@ -579,7 +579,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		// into the last entry - in order to get a smooth graph.
 
 		// sort out our name
-		String name = "infill_"
+		final String name = "infill_"
 				+ FormatRNDateTime.toShortString(new Date().getTime());
 		this.setName(name);
 
@@ -636,20 +636,20 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// pointing to
 			// the first point of this new track
 			// - sort it out
-			FixWrapper first = (FixWrapper) enumer.nextElement();
-			FixWrapper myLast = (FixWrapper) this.last();
-			WorldVector offset = first.getLocation().subtract(myLast.getLocation());
+			final FixWrapper first = (FixWrapper) enumer.nextElement();
+			final FixWrapper myLast = (FixWrapper) this.last();
+			final WorldVector offset = first.getLocation().subtract(myLast.getLocation());
 
-			double courseRads = offset.getBearing();
-			double timeSecs = (first.getTime().getDate().getTime() - myLast.getTime()
+			final double courseRads = offset.getBearing();
+			final double timeSecs = (first.getTime().getDate().getTime() - myLast.getTime()
 					.getDate().getTime()) / 1000;
 			// start off with the course
 
 			// and now the speed
-			double distYds = new WorldDistance(offset.getRange(), WorldDistance.DEGS)
+			final double distYds = new WorldDistance(offset.getRange(), WorldDistance.DEGS)
 					.getValueIn(WorldDistance.YARDS);
-			double spdYps = distYds / timeSecs;
-			double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
+			final double spdYps = distYds / timeSecs;
+			final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
 
 			myLast.setCourse(courseRads);
 			myLast.setSpeed(thisSpeedKts);
@@ -697,11 +697,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 * @param theVal
 	 */
-	public void decimate(HiResDate theVal, TrackWrapper parentTrack,
-			long startTime)
+	public void decimate(final HiResDate theVal, final TrackWrapper parentTrack,
+			final long startTime)
 	{
-		Vector<FixWrapper> newItems = new Vector<FixWrapper>();
-		boolean oldInterpolateState = parentTrack.getInterpolatePoints();
+		final Vector<FixWrapper> newItems = new Vector<FixWrapper>();
+		final boolean oldInterpolateState = parentTrack.getInterpolatePoints();
 
 		// switch on interpolation
 		parentTrack.setInterpolatePoints(true);
@@ -716,10 +716,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		this.removeAllElements();
 
 		// store the new positions
-		for (Iterator<FixWrapper> iterator = newItems.iterator(); iterator
+		for (final Iterator<FixWrapper> iterator = newItems.iterator(); iterator
 				.hasNext();)
 		{
-			FixWrapper fix = iterator.next();
+			final FixWrapper fix = iterator.next();
 			this.addFix(fix);
 		}
 
@@ -727,18 +727,18 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		parentTrack.setInterpolatePoints(oldInterpolateState);
 	}
 
-	private void decimateAbsolute(HiResDate theVal, TrackWrapper parentTrack,
-			long startTime, Vector<FixWrapper> newItems)
+	private void decimateAbsolute(final HiResDate theVal, final TrackWrapper parentTrack,
+			final long startTime, final Vector<FixWrapper> newItems)
 	{
 		// right - sort out what time period we're working through
 		for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
 				.getMicros())
 		{
 			// store the new position
-			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
+			final Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
 			if (matches.length > 0)
 			{
-				FixWrapper newF = (FixWrapper) matches[0];
+				final FixWrapper newF = (FixWrapper) matches[0];
 
 				// do we correct the name?
 				if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
@@ -755,10 +755,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	private void decimateRelative(HiResDate theVal, TrackWrapper parentTrack,
-			long startTime, Vector<FixWrapper> newItems)
+	private void decimateRelative(final HiResDate theVal, final TrackWrapper parentTrack,
+			final long startTime, final Vector<FixWrapper> newItems)
 	{
 		long tNow = 0;
+		long theStartTime = startTime; 
 
 		// get the time interval
 		final long interval = theVal.getMicros();
@@ -769,26 +770,26 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		// set the start time to be the later of our start time and the provided
 		// time
-		startTime = Math.max(startTime, myStart);
+		theStartTime = Math.max(theStartTime, myStart);
 
 		if (this instanceof CoreTMASegment)
 		{
-			CoreTMASegment tma = (CoreTMASegment) this;
+			final CoreTMASegment tma = (CoreTMASegment) this;
 
 			// hey, it's a TMA segment - on steady course/speed. cool
-			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
-			double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
+			final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
+			final double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
 
 			// find the new start location - after we've slipped
-			WorldLocation myStartLocation = new WorldLocation(tma.getTrackStart());
+			final WorldLocation myStartLocation = new WorldLocation(tma.getTrackStart());
 
 			// right - sort out what time period we're working through
-			for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+			for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow += theVal
 					.getMicros())
 			{
-				Fix theFix = new Fix(new HiResDate(0, tNow), new WorldLocation(
+				final Fix theFix = new Fix(new HiResDate(0, tNow), new WorldLocation(
 						myStartLocation), courseRads, speedYps);
-				FixWrapper newFix = new FixWrapper(theFix);
+				final FixWrapper newFix = new FixWrapper(theFix);
 				newFix.setSymbolShowing(true);
 				
 				// also give it a name
@@ -802,19 +803,19 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// reflect the new relationship
 			if (tma instanceof RelativeTMASegment)
 			{
-				FixWrapper myStarter = (FixWrapper) tma.first();
-				FixWrapper myEnder = (FixWrapper) tma.last();
-				HiResDate startDTG = new HiResDate(0, startTime);
-				FixWrapper newStarter = FixWrapper.interpolateFix(myStarter, myEnder,
+				final FixWrapper myStarter = (FixWrapper) tma.first();
+				final FixWrapper myEnder = (FixWrapper) tma.last();
+				final HiResDate startDTG = new HiResDate(0, theStartTime);
+				final FixWrapper newStarter = FixWrapper.interpolateFix(myStarter, myEnder,
 						startDTG);
-				WorldLocation newStartLoc = newStarter.getLocation();
+				final WorldLocation newStartLoc = newStarter.getLocation();
 
-				RelativeTMASegment rel = (RelativeTMASegment) tma;
-				Watchable[] newHost = rel.getReferenceTrack().getNearestTo(startDTG);
+				final RelativeTMASegment rel = (RelativeTMASegment) tma;
+				final Watchable[] newHost = rel.getReferenceTrack().getNearestTo(startDTG);
 				if (newHost.length > 0)
 				{
-					WorldLocation newOrigin = newHost[0].getLocation();
-					WorldVector newOffset = newStartLoc.subtract(newOrigin);
+					final WorldLocation newOrigin = newHost[0].getLocation();
+					final WorldVector newOffset = newStartLoc.subtract(newOrigin);
 					rel.setOffset(newOffset);
 				}
 
@@ -839,12 +840,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			tNow = 0;
 
 			// right - sort out what time period we're working through
-			for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+			for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow += theVal
 					.getMicros())
 			{
 
 				// find hte new datum
-				Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
+				final Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
 				if (matches.length > 0)
 				{
 					// remember the last position - we;re going to be
@@ -858,15 +859,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					if (lastPositionStored != null)
 					{
 						// start off with the course
-						WorldVector offset = currentPosition.getLocation().subtract(
+						final WorldVector offset = currentPosition.getLocation().subtract(
 								lastPositionStored.getLocation());
 						lastPositionStored.getFix().setCourse(offset.getBearing());
 
 						// and now the speed
-						double distYds = new WorldDistance(offset.getRange(),
+						final double distYds = new WorldDistance(offset.getRange(),
 								WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
-						double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
-						double spdYps = distYds / timeSecs;
+						final double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
+						final double spdYps = distYds / timeSecs;
 						lastPositionStored.getFix().setSpeed(spdYps);
 
 						// do we correct the name?
@@ -888,7 +889,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	}
 
 	@Override
-	public void doSave(String message)
+	public void doSave(final String message)
 	{
 		throw new RuntimeException(
 				"should not have called manual save for Track Segment");
@@ -937,7 +938,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	@Override
 	public void findNearestHotSpotIn(final Point cursorPos,
 			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
-			final Layer parentLayer, Layers theData)
+			final Layer parentLayer, final Layers theData)
 	{
 	}
 
@@ -965,12 +966,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	@Override
 	public Editable getSampleGriddable()
 	{
-		HiResDate theTime = new HiResDate(10000000);
-		WorldLocation theLocation = new WorldLocation(1, 1, 1);
-		double courseRads = 3;
-		double speedKts = 5;
-		Fix newFix = new Fix(theTime, theLocation, courseRads, speedKts);
-		FixWrapper res = new FixWrapper(newFix);
+		final HiResDate theTime = new HiResDate(10000000);
+		final WorldLocation theLocation = new WorldLocation(1, 1, 1);
+		final double courseRads = 3;
+		final double speedKts = 5;
+		final Fix newFix = new Fix(theTime, theLocation, courseRads, speedKts);
+		final FixWrapper res = new FixWrapper(newFix);
 		return res;
 	}
 
@@ -986,22 +987,22 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	}
 
 	@Override
-	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	public TimeStampedDataItem makeCopy(final TimeStampedDataItem item)
 	{
 		if (false == item instanceof FixWrapper)
 		{
 			throw new IllegalArgumentException(
 					"I am expecting a position, don't know how to copy " + item);
 		}
-		FixWrapper template = (FixWrapper) item;
-		FixWrapper result = new FixWrapper(template.getFix().makeCopy());
+		final FixWrapper template = (FixWrapper) item;
+		final FixWrapper result = new FixWrapper(template.getFix().makeCopy());
 		result.setLabelShowing(template.getLabelShowing());
 		result.setLineShowing(template.getLineShowing());
 		result.setSymbolShowing(template.getSymbolShowing());
 		result.setArrowShowing(template.getArrowShowing());
 		result.setLabelLocation(template.getLabelLocation());
 
-		Color col = template.getActualColor();
+		final Color col = template.getActualColor();
 		if (col != null)
 			result.setColor(col);
 
@@ -1054,7 +1055,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		double res = Plottable.INVALID_RANGE;
 
 		// have we got data?
-		WorldLocation firstLoc = this.getTrackStart();
+		final WorldLocation firstLoc = this.getTrackStart();
 
 		// do we have a start point?
 		if (firstLoc != null)
@@ -1063,13 +1064,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			res = firstLoc.rangeFrom(other);
 
 			// and try for the track end
-			Plottable lastP = this.last();
+			final Plottable lastP = this.last();
 			// do we have an end point?
 			if (lastP != null)
 			{
-				FixWrapper lastF = (FixWrapper) lastP;
-				WorldLocation lastLoc = lastF.getLocation();
-				double otherRng = lastLoc.rangeFrom(other);
+				final FixWrapper lastF = (FixWrapper) lastP;
+				final WorldLocation lastLoc = lastF.getLocation();
+				final double otherRng = lastLoc.rangeFrom(other);
 				res = Math.min(otherRng, res);
 			}
 		}
@@ -1089,11 +1090,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	@FireReformatted
 	public void revealAllPositions()
 	{
-		Enumeration<Editable> theEnum = elements();
+		final Enumeration<Editable> theEnum = elements();
 		while (theEnum.hasMoreElements())
 		{
-			Editable editable = theEnum.nextElement();
-			FixWrapper fix = (FixWrapper) editable;
+			final Editable editable = theEnum.nextElement();
+			final FixWrapper fix = (FixWrapper) editable;
 			fix.setVisible(true);
 		}
 	}
@@ -1134,7 +1135,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 * @param lineStyle
 	 */
-	public void setLineStyle(int lineStyle)
+	public void setLineStyle(final int lineStyle)
 	{
 		_lineStyle = lineStyle;
 	}
@@ -1195,15 +1196,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	/**
 	 * move the whole of the track be the provided offset
 	 */
-	public final void shiftTrack(Enumeration<Editable> theEnum,
+	public final void shiftTrack(final Enumeration<Editable> theEnum,
 			final WorldVector offset)
 	{
-		if (theEnum == null)
-			theEnum = elements();
+		Enumeration<Editable> enumA = theEnum;
+		if (enumA == null)
+			enumA = elements();
 
-		while (theEnum.hasMoreElements())
+		while (enumA.hasMoreElements())
 		{
-			final Object thisO = theEnum.nextElement();
+			final Object thisO = enumA.nextElement();
 			if (thisO instanceof FixWrapper)
 			{
 				final FixWrapper fw = (FixWrapper) thisO;
@@ -1222,14 +1224,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	protected void sortOutDate(HiResDate startDTG)
+	protected void sortOutDate(final HiResDate startDTG)
 	{
+		HiResDate theStartDTG = startDTG;
 		if (getData().size() > 0)
 		{
-			if (startDTG == null)
-				startDTG = startDTG();
+			if (theStartDTG == null)
+				theStartDTG = startDTG();
 
-			setName(FormatRNDateTime.toString(startDTG.getDate().getTime()));
+			setName(FormatRNDateTime.toString(theStartDTG.getDate().getTime()));
 		}
 	}
 
@@ -1287,7 +1290,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	public Layer wrapMe()
 	{
 		// right, put the segment into a TrackWrapper
-		TrackWrapper newTrack = new TrackWrapper();
+		final TrackWrapper newTrack = new TrackWrapper();
 		newTrack.setName(this.getName());
 		newTrack.setColor(Color.red);
 		newTrack.add(this);

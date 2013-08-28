@@ -101,7 +101,7 @@ public abstract class PlainImporterBase implements PlainImporter
 	/**
 	 * general command used to import a whole file of a specific type
 	 */
-	public void importThis(String fName, java.io.InputStream is, Layers theData)
+	public void importThis(final String fName, final java.io.InputStream is, final Layers theData)
 	{
 		_theLayers = theData;
 		importThis(fName, is);
@@ -117,9 +117,9 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * 
 	 * @return the new layer
 	 */
-	public Layer createLayer(String theName)
+	public Layer createLayer(final String theName)
 	{
-		Layer res = new BaseLayer();
+		final Layer res = new BaseLayer();
 		res.setName(theName);
 		return res;
 	}
@@ -127,7 +127,7 @@ public abstract class PlainImporterBase implements PlainImporter
 	/**
 	 * add the specified layer to our data
 	 */
-	public void addLayer(Layer theLayer)
+	public void addLayer(final Layer theLayer)
 	{
 		// add it to the manager
 		_theLayers.addThisLayer(theLayer);
@@ -138,9 +138,9 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * 
 	 * @return the requested layer, or null if not found
 	 */
-	public Layer getLayerFor(String theName)
+	public Layer getLayerFor(final String theName)
 	{
-		Layer theLayer = _theLayers.findLayer(theName);
+		final Layer theLayer = _theLayers.findLayer(theName);
 
 		return theLayer;
 	}
@@ -149,7 +149,7 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * add the provided data item to the indicated layer, creating the layer if
 	 * necessary
 	 */
-	public void addToLayer(Plottable theItem, Layer theLayer)
+	public void addToLayer(final Plottable theItem, final Layer theLayer)
 	{
 		// add this item to the layer
 		theLayer.add(theItem);
@@ -158,7 +158,7 @@ public abstract class PlainImporterBase implements PlainImporter
 	/**
 	 * signal problem importing data
 	 */
-	public void readError(String fName, int line, String msg, String thisLine)
+	public void readError(final String fName, final int line, final String msg, final String thisLine)
 	{
 		String res = "Problem reading in " + fName + " at line " + line;
 		res = res + ", " + msg + ":" + thisLine;
@@ -168,7 +168,7 @@ public abstract class PlainImporterBase implements PlainImporter
 	/**
 	 * provide setter function for the layers object
 	 */
-	public void setLayers(Layers theData)
+	public void setLayers(final Layers theData)
 	{
 		_theLayers = theData;
 	}
@@ -181,17 +181,17 @@ public abstract class PlainImporterBase implements PlainImporter
 		return _theLayers;
 	}
 
-	public int countLinesFor(String fName)
+	public int countLinesFor(final String fName)
 	{
 		int counter = 0;
 		try
 		{
 
 			// see if we can find the required file
-			File findIt = new File(fName);
+			final File findIt = new File(fName);
 			if (findIt.exists())
 			{
-				java.io.InputStream is = new java.io.FileInputStream(fName);
+				final java.io.InputStream is = new java.io.FileInputStream(fName);
 				counter = countLinesInStream(is);
 				is.close();
 			}
@@ -200,7 +200,7 @@ public abstract class PlainImporterBase implements PlainImporter
 				System.err.println("Can't find input file:" + fName);
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -212,11 +212,11 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * @return
 	 * @throws IOException
 	 */
-	public int countLinesInStream(java.io.InputStream is) throws IOException
+	public int countLinesInStream(final java.io.InputStream is) throws IOException
 	{
 		int counter = 0;
-		java.io.InputStreamReader ir = new java.io.InputStreamReader(is);
-		java.io.BufferedReader br = new java.io.BufferedReader(ir);
+		final java.io.InputStreamReader ir = new java.io.InputStreamReader(is);
+		final java.io.BufferedReader br = new java.io.BufferedReader(ir);
 		String line = br.readLine();
 		while (line != null)
 		{
@@ -233,7 +233,7 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * 
 	 * @param item
 	 */
-	public void startExport(Plottable item)
+	public void startExport(final Plottable item)
 	{
 		// clear the output buffer
 		_beingExported = null;
@@ -244,18 +244,18 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * 
 	 * @param item
 	 */
-	public void endExport(Plottable item)
+	public void endExport(final Plottable item)
 	{
 		// check the export worked
 		if (_beingExported != null)
 		{
 
 			// get the clipboard;
-			java.awt.datatransfer.Clipboard cl = Toolkit.getDefaultToolkit()
+			final java.awt.datatransfer.Clipboard cl = Toolkit.getDefaultToolkit()
 					.getSystemClipboard();
 
 			// create the string to write
-			java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection(
+			final java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection(
 					_beingExported.toString());
 
 			// dump it on there.
@@ -268,7 +268,7 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * 
 	 * @param txt
 	 */
-	protected void addThisToExport(String txt)
+	protected void addThisToExport(final String txt)
 	{
 		// initialise the export string?
 		if (_beingExported == null)

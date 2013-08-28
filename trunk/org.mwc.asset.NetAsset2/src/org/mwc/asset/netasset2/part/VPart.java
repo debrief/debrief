@@ -28,15 +28,15 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 	DecimalFormat df0 = new DecimalFormat("0");
 
 	private static final String PENDING = "[Pending]";
-	private Group grpState;
-	private Text demCourse;
-	private Label actCourse;
-	private Text demSpeed;
-	private Label actSpeed;
-	private Text demDepth;
-	private Label actDepth;
-	private Button newState;
-	private Label partName;
+	private final Group grpState;
+	private final Text demCourse;
+	private final Label actCourse;
+	private final Text demSpeed;
+	private final Label actSpeed;
+	private final Text demDepth;
+	private final Label actDepth;
+	private final Button newState;
+	private final Label partName;
 	private NewDemStatus _listener;
 
 	/**
@@ -45,21 +45,21 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 	 * @param parent
 	 * @param style
 	 */
-	public VPart(Composite parent, int style)
+	public VPart(final Composite parent, final int style)
 	{
 		super(parent, style);
 		setLayout(new FormLayout());
 
-		KeyListener enterListener = new KeyListener()
+		final KeyListener enterListener = new KeyListener()
 		{
 
 			@Override
-			public void keyPressed(KeyEvent e)
+			public void keyPressed(final KeyEvent e)
 			{
 			}
 
 			@Override
-			public void keyReleased(KeyEvent e)
+			public void keyReleased(final KeyEvent e)
 			{
 				if (e.keyCode == 13)
 				{
@@ -69,7 +69,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		};
 
 		partName = new Label(this, SWT.NONE);
-		FormData fd_partName = new FormData();
+		final FormData fd_partName = new FormData();
 		fd_partName.bottom = new FormAttachment(0, 19);
 		fd_partName.right = new FormAttachment(0, 222);
 		fd_partName.top = new FormAttachment(0);
@@ -79,7 +79,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		partName.setText(PENDING);
 
 		grpState = new Group(this, SWT.NONE);
-		FormData fd_grpState = new FormData();
+		final FormData fd_grpState = new FormData();
 		fd_grpState.bottom = new FormAttachment(0, 206);
 		fd_grpState.right = new FormAttachment(0, 232);
 		fd_grpState.top = new FormAttachment(0, 25);
@@ -88,19 +88,19 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		grpState.setText("State");
 		grpState.setLayout(new GridLayout(3, false));
 
-		Label lblProperty = new Label(grpState, SWT.NONE);
+		final Label lblProperty = new Label(grpState, SWT.NONE);
 		lblProperty.setText("   ");
 
-		Label lblDemanded = new Label(grpState, SWT.NONE);
+		final Label lblDemanded = new Label(grpState, SWT.NONE);
 		lblDemanded.setText("Demanded");
 
-		Label lblActual = new Label(grpState, SWT.NONE);
+		final Label lblActual = new Label(grpState, SWT.NONE);
 		lblActual.setText("Actual");
 
-		Label lblCourse = new Label(grpState, SWT.NONE);
+		final Label lblCourse = new Label(grpState, SWT.NONE);
 		lblCourse.setText("Course");
 
-		Composite demC = new Composite(grpState, SWT.NONE);
+		final Composite demC = new Composite(grpState, SWT.NONE);
 
 		demCourse = new Text(demC, SWT.NONE);
 		demCourse.setLocation(0, 5);
@@ -109,25 +109,25 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		demCourse.setEnabled(false);
 		demCourse.addKeyListener(enterListener);
 
-		Button incCrse = new Button(demC, SWT.FLAT | SWT.CENTER);
+		final Button incCrse = new Button(demC, SWT.FLAT | SWT.CENTER);
 		incCrse.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incCrse.setBounds(40, 0, 15, 15);
 		incCrse.setText("+");
 		incCrse.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				crseChange(5);
 			}
 		});
 
-		Button decCrse = new Button(demC, SWT.FLAT | SWT.CENTER);
+		final Button decCrse = new Button(demC, SWT.FLAT | SWT.CENTER);
 		decCrse.setText("-");
 		decCrse.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		decCrse.setBounds(40, 16, 15, 15);
 		decCrse.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				crseChange(-5);
 			}
@@ -136,10 +136,10 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		actCourse = new Label(grpState, SWT.NONE);
 		actCourse.setText("000 00");
 
-		Label lblSpeed = new Label(grpState, SWT.NONE);
+		final Label lblSpeed = new Label(grpState, SWT.NONE);
 		lblSpeed.setText("Speed");
 
-		Composite demS = new Composite(grpState, SWT.NONE);
+		final Composite demS = new Composite(grpState, SWT.NONE);
 
 		demSpeed = new Text(demS, SWT.NONE);
 		demSpeed.setLocation(0, 5);
@@ -148,25 +148,25 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		demSpeed.setEnabled(false);
 		demSpeed.addKeyListener(enterListener);
 
-		Button incSpd = new Button(demS, SWT.FLAT | SWT.CENTER);
+		final Button incSpd = new Button(demS, SWT.FLAT | SWT.CENTER);
 		incSpd.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incSpd.setBounds(40, 0, 15, 15);
 		incSpd.setText("+");
 		incSpd.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				spdChange(2);
 			}
 		});
 
-		Button decSpd = new Button(demS, SWT.FLAT | SWT.CENTER);
+		final Button decSpd = new Button(demS, SWT.FLAT | SWT.CENTER);
 		decSpd.setText("-");
 		decSpd.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		decSpd.setBounds(40, 16, 15, 15);
 		decSpd.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				spdChange(-2);
 			}
@@ -175,10 +175,10 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		actSpeed = new Label(grpState, SWT.NONE);
 		actSpeed.setText("000 00");
 
-		Label lblDepth = new Label(grpState, SWT.NONE);
+		final Label lblDepth = new Label(grpState, SWT.NONE);
 		lblDepth.setText("Depth");
 
-		Composite demD = new Composite(grpState, SWT.NONE);
+		final Composite demD = new Composite(grpState, SWT.NONE);
 
 		demDepth = new Text(demD, SWT.NONE);
 		demDepth.setLocation(0, 5);
@@ -187,27 +187,27 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		demDepth.setEnabled(false);
 		demDepth.addKeyListener(enterListener);
 
-		Button incDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
+		final Button incDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
 		incDepth
 				.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incDepth.setBounds(40, 0, 15, 15);
 		incDepth.setText("+");
 		incDepth.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				depthChange(2);
 			}
 		});
 
-		Button decDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
+		final Button decDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
 		decDepth.setText("-");
 		decDepth
 				.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		decDepth.setBounds(40, 16, 15, 15);
 		decDepth.addSelectionListener(new SelectionAdapter()
 		{
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				depthChange(-2);
 			}
@@ -216,10 +216,10 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		actDepth = new Label(grpState, SWT.NONE);
 		actDepth.setText("000 00");
 
-		Label label = new Label(grpState, SWT.NONE);
+		final Label label = new Label(grpState, SWT.NONE);
 		label.setText("  ");
 
-		Label label_1 = new Label(grpState, SWT.NONE);
+		final Label label_1 = new Label(grpState, SWT.NONE);
 		label_1.setText("  ");
 
 		newState = new Button(grpState, SWT.FLAT);
@@ -228,13 +228,13 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		{
 
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				fireDemStatus();
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 			}
 		});
@@ -242,7 +242,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		// super.setEnabled(false);
 	}
 
-	protected void crseChange(float delta)
+	protected void crseChange(final float delta)
 	{
 		// get teh course
 		Float cF = Float.parseFloat(demCourse.getText());
@@ -258,7 +258,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		fireDemStatus();
 	}
 
-	protected void spdChange(float delta)
+	protected void spdChange(final float delta)
 	{
 		// get teh course
 		Float cF = Float.parseFloat(demSpeed.getText());
@@ -272,7 +272,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		fireDemStatus();
 	}
 
-	protected void depthChange(float delta)
+	protected void depthChange(final float delta)
 	{
 		// get teh course
 		Float cF = Float.parseFloat(demDepth.getText());
@@ -405,7 +405,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 	}
 
 	@Override
-	public void setDemStatusListener(NewDemStatus newDemStatus)
+	public void setDemStatusListener(final NewDemStatus newDemStatus)
 	{
 		_listener = newDemStatus;
 	}

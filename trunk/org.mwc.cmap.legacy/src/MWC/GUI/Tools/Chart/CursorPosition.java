@@ -71,7 +71,7 @@ abstract public class CursorPosition implements PlainChart.ChartCursorMovedListe
 /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public CursorPosition(PlainChart theChart){
+  public CursorPosition(final PlainChart theChart){
     theChart.addCursorMovedListener(this);
   }
   
@@ -80,10 +80,10 @@ abstract public class CursorPosition implements PlainChart.ChartCursorMovedListe
   ////////////////////////////////////////////////////////////
 
 
-  public void cursorMoved(WorldLocation thePos, boolean dragging, Layers theData)
+  public void cursorMoved(final WorldLocation thePos, final boolean dragging, final Layers theData)
   {
     
-    String res = MWC.Utilities.TextFormatting.BriefFormatLocation.toString(thePos);
+    final String res = MWC.Utilities.TextFormatting.BriefFormatLocation.toString(thePos);
     setText(res);
   }
 	

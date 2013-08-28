@@ -23,7 +23,7 @@ offers the capability to find properties based on a substring to match.
 */
 public class ApplicationProperties {
   private final File propertiesFile;
-  private Properties appProperties;
+  private final Properties appProperties;
   private String introHeader;
 
 
@@ -37,11 +37,11 @@ public class ApplicationProperties {
   @param fileName - the absolute file path and name.
   @throws IOException - if there are problems during the loading of the file.
   */
-  public ApplicationProperties(String fileName) throws IOException {
+  public ApplicationProperties(final String fileName) throws IOException {
     this(fileName, true);
   } // constructor
 
-  public ApplicationProperties(String fileName, String header) throws IOException{
+  public ApplicationProperties(final String fileName, final String header) throws IOException{
     this(fileName, true);
     introHeader = header;
   }
@@ -56,7 +56,7 @@ public class ApplicationProperties {
                    the file.
   @throws IOException - if there are problems during the loading of the file.
   */
-  public ApplicationProperties(String fileName, boolean loadNow) throws IOException {
+  public ApplicationProperties(final String fileName, final boolean loadNow) throws IOException {
     // set the class variables
     propertiesFile = new File(fileName);
     if (!propertiesFile.exists()) {
@@ -81,7 +81,7 @@ public class ApplicationProperties {
   @param propertyName - the property name to retrieve
   @return String - the property's value
   */
-  public String getProperty(String propertyName) {
+  public String getProperty(final String propertyName) {
     return appProperties.getProperty(propertyName);
   }
 
@@ -96,11 +96,11 @@ public class ApplicationProperties {
           String.
   */
   @SuppressWarnings({ "rawtypes" })
-	public Map<String, String> /*String propertyName, String value*/ getPropertiesLike(String propertyNameToMatch) {
-    Map<String, String> retMap = new HashMap<String, String>();
-    Enumeration allPropertyNames = appProperties.propertyNames();
+	public Map<String, String> /*String propertyName, String value*/ getPropertiesLike(final String propertyNameToMatch) {
+    final Map<String, String> retMap = new HashMap<String, String>();
+    final Enumeration allPropertyNames = appProperties.propertyNames();
     while (allPropertyNames.hasMoreElements()) {
-      String propertyName = (String)allPropertyNames.nextElement();
+      final String propertyName = (String)allPropertyNames.nextElement();
       if (propertyName.indexOf(propertyNameToMatch) > -1) {
         retMap.put(propertyName, appProperties.getProperty(propertyName));
       } // if
@@ -116,7 +116,7 @@ public class ApplicationProperties {
   @param propertyName - the property name to set
   @param propertyValue - the property's value
   */
-  public void setProperty(String propertyName, String propertyValue) {
+  public void setProperty(final String propertyName, final String propertyValue) {
     appProperties.setProperty(propertyName, propertyValue);
   } // setProperty
 
@@ -126,7 +126,7 @@ public class ApplicationProperties {
   @param propertyName - the name to look for
   @return boolean - the success or failure of the search
   */
-  public boolean containsPropertyName(String propertyName) {
+  public boolean containsPropertyName(final String propertyName) {
     return appProperties.containsKey(propertyName);
   } // containsPropertyName
 
@@ -136,7 +136,7 @@ public class ApplicationProperties {
   @param propertyValue - the value to look for
   @return boolean - the success or failure of the search
   */
-  public boolean containsPropertyValue(String propertyValue) {
+  public boolean containsPropertyValue(final String propertyValue) {
     return appProperties.containsValue(propertyValue);
   } // containsPropertyValue
 
@@ -144,7 +144,7 @@ public class ApplicationProperties {
   Removes the given property.  Removal will not be persisted until
   storeProperties() is called.
   */
-  public void removeProperty(String propertyName) {
+  public void removeProperty(final String propertyName) {
     appProperties.remove(propertyName);
   }
 
@@ -156,7 +156,7 @@ public class ApplicationProperties {
   call <code>storeProperties()</code> prior to performing the reload.
   */
   public void loadProperties() throws IOException {
-    FileInputStream propertiesStream = new FileInputStream(propertiesFile);
+    final FileInputStream propertiesStream = new FileInputStream(propertiesFile);
     appProperties.load(propertiesStream);
   } // loadProperties
 
@@ -167,10 +167,10 @@ public class ApplicationProperties {
   public void storeProperties() throws IOException {
     try
     {
-      FileOutputStream outStream = new FileOutputStream(propertiesFile);
+      final FileOutputStream outStream = new FileOutputStream(propertiesFile);
       appProperties.store(outStream, propertiesFile.toString() + introHeader);
     }
-    catch(java.io.FileNotFoundException fe)
+    catch(final java.io.FileNotFoundException fe)
     {
       System.out.println("** Please check that properties file is not read-only");
     }

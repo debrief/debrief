@@ -8,23 +8,23 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 
 public class Util {
-    public static void waitForImage(Component component, 
-                                    Image image) {
-        MediaTracker tracker = new MediaTracker(component);
+    public static void waitForImage(final Component component, 
+                                    final Image image) {
+        final MediaTracker tracker = new MediaTracker(component);
         try {
             tracker.addImage(image, 0);
             tracker.waitForID(0);
         }
-        catch(InterruptedException e) { MWC.Utilities.Errors.Trace.trace(e); }
+        catch(final InterruptedException e) { MWC.Utilities.Errors.Trace.trace(e); }
     }
-    public static void wallPaper(Component component, 
-                            Graphics  g, 
-                            Image     image) {
-        Dimension compsize = component.getSize();
+    public static void wallPaper(final Component component, 
+                            final Graphics  g, 
+                            final Image     image) {
+        final Dimension compsize = component.getSize();
         Util.waitForImage(component, image);
 
-        int patchW = image.getWidth(component);
-        int patchH = image.getHeight(component);
+        final int patchW = image.getWidth(component);
+        final int patchH = image.getHeight(component);
 
         for(int r=0; r < compsize.width; r += patchW) {
             for(int c=0; c < compsize.height; c += patchH) {
@@ -32,7 +32,8 @@ public class Util {
 			}
         }
     }
-	public static Frame getFrame(Component c) {
+	public static Frame getFrame(final Component comp) {
+		Component c = comp;
         if(c instanceof Frame)
             return (Frame)c;
 

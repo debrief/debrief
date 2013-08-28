@@ -26,10 +26,10 @@ final public class SteppingBoundedInteger extends java.beans.PropertyEditorSuppo
   // constructor
   //////////////////////////////////
   /** Creates new SteppingBoundedInteger */
-  public SteppingBoundedInteger(int current,
-                                int min,
-                                int max,
-                                int step)
+  public SteppingBoundedInteger(final int current,
+                                final int min,
+                                final int max,
+                                final int step)
   {
 		_current = current;
 		_min = min;
@@ -50,14 +50,14 @@ final public class SteppingBoundedInteger extends java.beans.PropertyEditorSuppo
   }
 
 
-	public void setCurrent(int val){ _current = val;}
+	public void setCurrent(final int val){ _current = val;}
 	
-	public boolean equals(Object o)
+	public boolean equals(final Object o)
 	{
 		boolean res = false;
 		if(o instanceof SteppingBoundedInteger)
 		{
-			SteppingBoundedInteger other = (SteppingBoundedInteger)o;
+			final SteppingBoundedInteger other = (SteppingBoundedInteger)o;
 			res = (other.getCurrent() == this.getCurrent());
 		}
 		

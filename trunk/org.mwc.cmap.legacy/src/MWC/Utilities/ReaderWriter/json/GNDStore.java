@@ -34,7 +34,7 @@ public class GNDStore
 	private final String _url;
 	private final String _dbName;
 
-	public GNDStore(String url, String databaseName)
+	public GNDStore(final String url, final String databaseName)
 	{
 		_url = url;
 		_dbName = databaseName;
@@ -44,44 +44,45 @@ public class GNDStore
 			IOException
 	{
 		String res = null;
-		String ONE_TRACK = "_design/" + _dbName +  "/_view/track_listing?limit=1";
-		String theURL = _url + "/" + _dbName + "/" + ONE_TRACK;
-		String theList = Http.get(theURL).text();
-		ObjectMapper mapper = new ObjectMapper();
-		Map<?, ?> root = mapper.readValue(theList, Map.class);
+		final String ONE_TRACK = "_design/" + _dbName +  "/_view/track_listing?limit=1";
+		final String theURL = _url + "/" + _dbName + "/" + ONE_TRACK;
+		final String theList = Http.get(theURL).text();
+		final ObjectMapper mapper = new ObjectMapper();
+		final Map<?, ?> root = mapper.readValue(theList, Map.class);
 
 		@SuppressWarnings("unchecked")
+		final
 		ArrayList<LinkedHashMap<String, String>> rows = (ArrayList<LinkedHashMap<String, String>>) root
 				.get("rows");
 		if (rows.size() > 0)
 		{
-			LinkedHashMap<String, String> first = rows.get(0);
+			final LinkedHashMap<String, String> first = rows.get(0);
 			res = first.get("id");
 		}
 
 		return res;
 	}
 
-	public void put(JsonNode doc) throws JsonGenerationException,
+	public void put(final JsonNode doc) throws JsonGenerationException,
 			JsonMappingException, IOException
 	{
-		String THE_URL = _url + "/" + _dbName;
-		String theDoc = GNDDocHandler.asString(doc);
+		final String THE_URL = _url + "/" + _dbName;
+		final String theDoc = GNDDocHandler.asString(doc);
 
-		Post post = Http.post(THE_URL, theDoc).header("Content-type",
+		final Post post = Http.post(THE_URL, theDoc).header("Content-type",
 				"application/json");
 		System.out.println("post res:" + post.responseCode() + " "
 				+ post.responseMessage());
 
 	}
 
-	public GNDDocHandler.GNDDocument get(String name) throws JsonParseException,
+	public GNDDocHandler.GNDDocument get(final String name) throws JsonParseException,
 			JsonMappingException, IOException, ParseException
 	{
-		Get get = Http.get(_url + "/" + _dbName + "/" + name);
+		final Get get = Http.get(_url + "/" + _dbName + "/" + name);
 
-		String content = get.text();
-		GNDDocument doc = new GNDDocument(content);
+		final String content = get.text();
+		final GNDDocument doc = new GNDDocument(content);
 
 		// do the get
 		return doc;
@@ -92,22 +93,22 @@ public class GNDStore
 		public void testGet() throws JsonParseException, JsonMappingException,
 				IOException, ParseException
 		{
-			String url = "http://gnd.iriscouch.com";
-			String db = "tracks";
+			final String url = "http://gnd.iriscouch.com";
+			final String db = "tracks";
 
-			GNDStore store = new GNDStore(url, db);
+			final GNDStore store = new GNDStore(url, db);
 
-			String anId = store.getAnId();
+			final String anId = store.getAnId();
 			assertNotNull("found an id", anId);
-			GNDDocument doc = store.get(anId);
+			final GNDDocument doc = store.get(anId);
 			assertNotNull(doc);
-			String theName = doc.getName();
+			final String theName = doc.getName();
 			assertNotNull("name found", theName);
 
 			// and the track?
-			Track trk = doc.getTrack();
+			final Track trk = doc.getTrack();
 			assertNotNull("track found", trk);
-			Enumeration<Fix> fixes = trk.getFixes();
+			final Enumeration<Fix> fixes = trk.getFixes();
 			assertNotNull("has some fixes", fixes.hasMoreElements());
 		}
 
@@ -116,12 +117,12 @@ public class GNDStore
 				JsonMappingException, IOException
 		{
 			// get a track
-			Track trk = GNDDocHandler.TestJSON.getTestTrack("tester");
-			String url = "http://gnd.iriscouch.com";
-			String db = "tracks";
+			final Track trk = GNDDocHandler.TestJSON.getTestTrack("tester");
+			final String url = "http://gnd.iriscouch.com";
+			final String db = "tracks";
 
-			GNDStore store = new GNDStore(url, db);
-			JsonNode theDoc = new GNDDocHandler().toJson(trk.getName(), trk,
+			final GNDStore store = new GNDStore(url, db);
+			final JsonNode theDoc = new GNDDocHandler().toJson(trk.getName(), trk,
 					"tst_platform2", "test_plat_type", "test_sensor", "test_sensor_type",
 					"test_trial");
 			// store.put(theDoc);
@@ -130,28 +131,28 @@ public class GNDStore
 		public void testBulkPost1() throws JsonGenerationException,
 				JsonMappingException, IOException
 		{
-			ArrayList<ObjectNode> tracks = new ArrayList<ObjectNode>();
+			final ArrayList<ObjectNode> tracks = new ArrayList<ObjectNode>();
 
 			for (int i = 0; i < 10; i++)
 			{
 				// get a track
-				Track trk = GNDDocHandler.TestJSON.getTestTrack("test_-" + i);
+				final Track trk = GNDDocHandler.TestJSON.getTestTrack("test_-" + i);
 
-				ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk,
+				final ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk,
 						"tst_platform2", "test_plat_type", "test_sensor",
 						"test_sensor_type", "test_put_1");
 				tracks.add(js);
 			}
-			String url = "http://gnd.iriscouch.com";
-			String db = "tracks";
-			GNDStore store = new GNDStore(url, db);
+			final String url = "http://gnd.iriscouch.com";
+			final String db = "tracks";
+			final GNDStore store = new GNDStore(url, db);
 
 			System.out.println("before put:" + new Date());
 
-			for (Iterator<ObjectNode> iterator = tracks.iterator(); iterator
+			for (final Iterator<ObjectNode> iterator = tracks.iterator(); iterator
 					.hasNext();)
 			{
-				ObjectNode objectNode = (ObjectNode) iterator.next();
+				final ObjectNode objectNode = (ObjectNode) iterator.next();
 				store.put(objectNode);
 			}
 
@@ -161,19 +162,19 @@ public class GNDStore
 		public void testBulkPost2() throws JsonGenerationException,
 				JsonMappingException, IOException
 		{
-			ArrayList<JsonNode> nodes = new ArrayList<JsonNode>();
+			final ArrayList<JsonNode> nodes = new ArrayList<JsonNode>();
 			for (int i = 0; i < 10; i++)
 			{
 				// get a track
-				Track trk = GNDDocHandler.TestJSON.getTestTrack("test2-" + i);
-				ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk,
+				final Track trk = GNDDocHandler.TestJSON.getTestTrack("test2-" + i);
+				final ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk,
 						"tst_platform2", "test_plat_type", "test_sensor",
 						"test_sensor_type", "test_bulk_put");
 				nodes.add(js);
 			}
-			String url = "http://gnd.iriscouch.com";
-			String db = "tracks";
-			GNDStore store = new GNDStore(url, db);
+			final String url = "http://gnd.iriscouch.com";
+			final String db = "tracks";
+			final GNDStore store = new GNDStore(url, db);
 
 			System.out.println("before bulk put:" + new Date());
 
@@ -185,19 +186,19 @@ public class GNDStore
 
 	}
 
-	public void bulkPut(ArrayList<JsonNode> theTracks, int batchSize)
+	public void bulkPut(final ArrayList<JsonNode> theTracks, final int batchSize)
 			throws IOException
 	{
 		// hmm, how many tracks are there?
-		int len = theTracks.size();
+		final int len = theTracks.size();
 
 		for (int i = 0; i < len; i += batchSize)
 		{
 
 			// ok, collate the bulk submit object
-			ObjectMapper mapper = new ObjectMapper();
-			ObjectNode root = mapper.createObjectNode();
-			ArrayNode trackArray = mapper.createArrayNode();
+			final ObjectMapper mapper = new ObjectMapper();
+			final ObjectNode root = mapper.createObjectNode();
+			final ArrayNode trackArray = mapper.createArrayNode();
 
 			for (int j = i; j < i + batchSize && j < len; j++)
 			{
@@ -208,30 +209,30 @@ public class GNDStore
 			root.put("docs", trackArray);
 
 			// ok, now formulate the URL
-			String THE_URL = _url + "/" + _dbName + "/_bulk_docs";
-			String theDoc = GNDDocHandler.asString(root);
+			final String THE_URL = _url + "/" + _dbName + "/_bulk_docs";
+			final String theDoc = GNDDocHandler.asString(root);
 
 			System.out.println("ABOUT TO PUT:" + theDoc.length() + " chars");
 
-			Post post = Http.post(THE_URL, theDoc).header("Content-type",
+			final Post post = Http.post(THE_URL, theDoc).header("Content-type",
 					"application/json");
 
 			if (post.responseCode() == 201)
 			{
 				System.out.println("PUT complete");
-				JsonParser jp = mapper.getJsonFactory().createJsonParser(post.text());
-				ArrayNode docs = (ArrayNode) mapper.readTree(jp);
+				final JsonParser jp = mapper.getJsonFactory().createJsonParser(post.text());
+				final ArrayNode docs = (ArrayNode) mapper.readTree(jp);
 				for (int k = 0; k < docs.size(); k++)
 				{
-					JsonNode thisD = docs.get(k);
-					TextNode reason = (TextNode) thisD.get("reason");
+					final JsonNode thisD = docs.get(k);
+					final TextNode reason = (TextNode) thisD.get("reason");
 					if (reason != null)
 						MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
 								"Upload failed:" + reason.asText(), null);
 					else
 					{
 						
-						String logMsg = "Post successful, added document:" +  thisD.get("id");
+						final String logMsg = "Post successful, added document:" +  thisD.get("id");
 						MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.INFO,
 								logMsg, null);
 					}

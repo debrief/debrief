@@ -20,7 +20,7 @@ public final class PainterManager implements StepperListener, Editable
   ///////////////////////////////////
   // constructor
   //////////////////////////////////
-	public PainterManager(StepControl stepper)
+	public PainterManager(final StepControl stepper)
 	{
     _thePainters = new Vector<StepperListener>(0,1);
 
@@ -46,12 +46,12 @@ public final class PainterManager implements StepperListener, Editable
     _myEditor = null;
   }
 
-  public final void addPropertyChangeListener(java.beans.PropertyChangeListener listener)
+  public final void addPropertyChangeListener(final java.beans.PropertyChangeListener listener)
   {
     _pSupport.addPropertyChangeListener(listener);
   }
 
-  public final void removePropertyChangeListener(java.beans.PropertyChangeListener listener)
+  public final void removePropertyChangeListener(final java.beans.PropertyChangeListener listener)
   {
     _pSupport.removePropertyChangeListener(listener);
   }
@@ -61,7 +61,7 @@ public final class PainterManager implements StepperListener, Editable
     _pSupport.firePropertyChange("Painter Change", null, null);
   }
 
-	public final void addPainter(StepperListener listener)
+	public final void addPainter(final StepperListener listener)
 	{
 		_thePainters.addElement(listener);
     firePropertyChange();
@@ -205,7 +205,7 @@ public final class PainterManager implements StepperListener, Editable
         };
         return res;
       }
-      catch(Exception e)
+      catch(final Exception e)
       {
         e.printStackTrace();
         return super.getPropertyDescriptors();

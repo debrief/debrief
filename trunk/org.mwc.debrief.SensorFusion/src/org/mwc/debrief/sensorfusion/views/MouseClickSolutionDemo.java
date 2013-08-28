@@ -32,10 +32,10 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 	 * @param title
 	 *            the frame title.
 	 */
-	public MouseClickSolutionDemo(String title) {
+	public MouseClickSolutionDemo(final String title) {
 		super(title);
 
-		TimeSeries s1 = new TimeSeries("Series to click");
+		final TimeSeries s1 = new TimeSeries("Series to click");
 		s1.add(new Month(2, 2001), 181.8);
 		s1.add(new Month(3, 2001), 167.3);
 		s1.add(new Month(4, 2001), 153.8);
@@ -46,7 +46,7 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 		s1.add(new Month(9, 2001), 142.7);
 		s1.add(new Month(10, 2001), 123.2);
 
-		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		final TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(s1);
 
 		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
@@ -62,15 +62,15 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 		//FIX IS HERE
 		fixProblem(chart);
 
-		ChartPanel chartPanel = new ChartPanel(chart);
+		final ChartPanel chartPanel = new ChartPanel(chart);
 
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 
 		chartPanel.addChartMouseListener(new ChartMouseListener() {
-			public void chartMouseMoved(ChartMouseEvent arg0) {
+			public void chartMouseMoved(final ChartMouseEvent arg0) {
 			}
 
-			public void chartMouseClicked(ChartMouseEvent arg0) {
+			public void chartMouseClicked(final ChartMouseEvent arg0) {
 				System.out.println("clicked on:" + arg0.getEntity());
 
 				if (arg0.getTrigger().isAltDown()) {
@@ -86,17 +86,17 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 		setContentPane(chartPanel);
 	}
 
-	private void fixProblem(JFreeChart chart) {
+	private void fixProblem(final JFreeChart chart) {
 		if (chart.getPlot() instanceof XYPlot) {
-			XYPlot plot = (XYPlot) chart.getPlot();
+			final XYPlot plot = (XYPlot) chart.getPlot();
 			fixProblem(plot);
 		}
 	}
 
-	private void fixProblem(XYPlot plot) {
+	private void fixProblem(final XYPlot plot) {
 		for (int i = 0; i < plot.getRendererCount(); i++) {
-			XYItemRenderer renderer = plot.getRenderer(i);
-			XYItemRenderer fixed = XYLineAndShapeRendererFix
+			final XYItemRenderer renderer = plot.getRenderer(i);
+			final XYItemRenderer fixed = XYLineAndShapeRendererFix
 					.newFixedVersion(renderer);
 			if (renderer != fixed) {
 				plot.setRenderer(i, fixed);
@@ -110,8 +110,8 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 	 * @param args
 	 *            ignored.
 	 */
-	public static void main(String[] args) {
-		MouseClickSolutionDemo demo = new MouseClickSolutionDemo(
+	public static void main(final String[] args) {
+		final MouseClickSolutionDemo demo = new MouseClickSolutionDemo(
 				"Time Series Demo 1");
 		demo.pack();
 		RefineryUtilities.centerFrameOnScreen(demo);
@@ -125,7 +125,7 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public static XYItemRenderer newFixedVersion(XYItemRenderer renderer) {
+		public static XYItemRenderer newFixedVersion(final XYItemRenderer renderer) {
 			if (false == renderer instanceof XYLineAndShapeRenderer) {
 				return renderer;
 			}
@@ -140,8 +140,8 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 								+ ", you need to make similar fix yourself");
 				return renderer;
 			}
-			XYLineAndShapeRenderer broken = (XYLineAndShapeRenderer) renderer;
-			XYLineAndShapeRendererFix fixed = new XYLineAndShapeRendererFix(
+			final XYLineAndShapeRenderer broken = (XYLineAndShapeRenderer) renderer;
+			final XYLineAndShapeRendererFix fixed = new XYLineAndShapeRendererFix(
 					broken.getBaseLinesVisible(), broken.getBaseShapesVisible());
 
 			// those are only fields set in ChartFactory#createTimeSeriesChart
@@ -153,26 +153,26 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 			return fixed;
 		}
 
-		public XYLineAndShapeRendererFix(boolean lines, boolean shapes) {
+		public XYLineAndShapeRendererFix(final boolean lines, final boolean shapes) {
 			super(lines, shapes);
 		}
 
 		@Override
-		protected void addEntity(EntityCollection entities, Shape area,
-				XYDataset dataset, int series, int item, double entityX,
-				double entityY) {
+		protected void addEntity(final EntityCollection entities, final Shape area,
+				final XYDataset dataset, final int series, final int item, final double entityX,
+				final double entityY) {
 			if (!getItemCreateEntity(series, item)) {
 				return;
 			}
 			Shape hotspot = area;
 			if (hotspot == null) {
-				double r = getDefaultEntityRadius();
-				double w = r * 4;
+				final double r = getDefaultEntityRadius();
+				final double w = r * 4;
 				hotspot = new Ellipse2D.Double(entityX - r, entityY - r, w, w);
 			}
 
 			String tip = null;
-			XYToolTipGenerator generator = getToolTipGenerator(series, item);
+			final XYToolTipGenerator generator = getToolTipGenerator(series, item);
 			if (generator != null) {
 				tip = generator.generateToolTip(dataset, series, item);
 			}
@@ -180,7 +180,7 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 			if (getURLGenerator() != null) {
 				url = getURLGenerator().generateURL(dataset, series, item);
 			}
-			XYItemEntity entity = new XYItemEntity(hotspot, dataset, series,
+			final XYItemEntity entity = new XYItemEntity(hotspot, dataset, series,
 					item, tip, url);
 			entities.add(entity);
 		}

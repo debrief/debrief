@@ -60,17 +60,17 @@ public class RubberbandDrag extends Rubberband
   ////////////////////////////////////////////////////////////
 	public RubberbandDrag() {
 	}
-  public RubberbandDrag(Component component) {
+  public RubberbandDrag(final Component component) {
       super(component);
   }  
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  public void drawLast(Graphics graphics) {
+  public void drawLast(final Graphics graphics) {
 
       graphics.drawRect(lastPt.x-3, lastPt.y-3, 7, 7);
   }
-  public void drawNext(Graphics graphics) {
+  public void drawNext(final Graphics graphics) {
 
       graphics.drawRect(stretchedPt.x-3, stretchedPt.y-3, 7, 7);
   }

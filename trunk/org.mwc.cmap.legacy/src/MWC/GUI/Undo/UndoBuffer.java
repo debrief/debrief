@@ -73,7 +73,7 @@ public class UndoBuffer extends Observable
   /////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
-  private Vector<Action> theActions;
+  private final Vector<Action> theActions;
   private int presentAction;
   static protected final int undo = 1;
   static protected final int redo = 2;
@@ -100,7 +100,7 @@ public class UndoBuffer extends Observable
 
   /** add a new action to the buffer
    */
-  public void add(Action newAction)
+  public void add(final Action newAction)
   {
     if(newAction != null)
 
@@ -128,7 +128,7 @@ public class UndoBuffer extends Observable
 
     // check that we are not at the start of the list
     if(presentAction >= 0){
-      Action act = theActions.elementAt(presentAction);
+      final Action act = theActions.elementAt(presentAction);
 
       // check we have found it correctly
       if(act != null){
@@ -150,7 +150,7 @@ public class UndoBuffer extends Observable
   public void redo(){
     // check that we are not at the start of the list
     if(presentAction < theActions.size()-1){
-      Action act = theActions.elementAt(presentAction+1);
+      final Action act = theActions.elementAt(presentAction+1);
 
       // check we have found it correctly
       if(act != null){
@@ -170,7 +170,7 @@ public class UndoBuffer extends Observable
    * @return a String describing the next thing which may be undone
    */
   public String undoLabel(){
-    String res=null;
+    final String res=null;
 
     return res;
   }
@@ -179,19 +179,19 @@ public class UndoBuffer extends Observable
    * @return a String describing the next thing which may be redone
    */
   public String redoLabel(){
-    String res=null;
+    final String res=null;
 
     return res;
   }
 
 
-  public String getText(Observable source, Object data)
+  public String getText(final Observable source, final Object data)
   {
     String res=null;
 
     // find out whether this is undo or redo
-    Integer val = (Integer)data;
-    int type = val.intValue();
+    final Integer val = (Integer)data;
+    final int type = val.intValue();
     switch(type){
     case undo:
       res = undoLabel();

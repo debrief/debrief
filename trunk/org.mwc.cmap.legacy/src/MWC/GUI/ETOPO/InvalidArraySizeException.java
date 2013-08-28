@@ -36,7 +36,7 @@ public class InvalidArraySizeException extends RuntimeException {
      * @param requested The required size of the array
      * @param given The supplied array size
      */
-    public InvalidArraySizeException(int requested, int given)
+    public InvalidArraySizeException(final int requested, final int given)
     {
         super("Required " + requested + " was given " + given);
     }
@@ -50,7 +50,7 @@ public class InvalidArraySizeException extends RuntimeException {
      * @param requested The required size of the array
      * @param given The supplied array size
      */
-    public InvalidArraySizeException(String msg, int requested, int given)
+    public InvalidArraySizeException(final String msg, final int requested, final int given)
     {
         super(msg + ". Required " + requested + " was given " + given);
     }

@@ -85,8 +85,8 @@ public interface HasDraggableComponents
 
 		// private WorldLocation _hotSpot;
 
-		public void setData(HasDraggableComponents p, WorldDistance dist, WorldLocation hotSpot,
-				Layer topLayer, WorldLocation draggableComponent)
+		public void setData(final HasDraggableComponents p, final WorldDistance dist, final WorldLocation hotSpot,
+				final Layer topLayer, final WorldLocation draggableComponent)
 		{
 			_object = p;
 			_distance = new WorldDistance(dist);
@@ -95,8 +95,8 @@ public interface HasDraggableComponents
 			// _hotSpot = hotSpot;
 		}
 
-		public void checkMe(HasDraggableComponents p, WorldDistance dist, WorldLocation hotSpot,
-				Layer topLayer, WorldLocation draggableComponent)
+		public void checkMe(final HasDraggableComponents p, final WorldDistance dist, final WorldLocation hotSpot,
+				final Layer topLayer, final WorldLocation draggableComponent)
 		{
 			if (!populated())
 			{

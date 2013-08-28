@@ -91,7 +91,7 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
    * @param paths        A list of paths which contain VPF data
    * @param autoPopulate Whether the layers we create should populate themselves by investigating their coverage information
    */
-  public VPFDatabase(String[] paths, boolean autoPopulate)
+  public VPFDatabase(final String[] paths, final boolean autoPopulate)
   {
     // construct me
     super.setName("VPF");
@@ -103,17 +103,17 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
     //    _myLST = new LibrarySelectionTable();
 
     // a hashmap to store databases we know about
-    java.util.HashMap<String, LibrarySelectionTable> _myDatabases = new java.util.HashMap<String, LibrarySelectionTable>();
+    final java.util.HashMap<String, LibrarySelectionTable> _myDatabases = new java.util.HashMap<String, LibrarySelectionTable>();
 
     // add the paths
     for (int i = 0; i < paths.length; i++)
     {
       try
       {
-        String thisPath = paths[i];
+        final String thisPath = paths[i];
 
         // first let's check if this file exists
-        java.io.File newFile = new java.io.File(thisPath);
+        final java.io.File newFile = new java.io.File(thisPath);
 
         if (!newFile.exists())
         {
@@ -124,11 +124,11 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
         {
 
           // we need to find out which database this is part of, so put it into an LST first
-          LibrarySelectionTable tmpL = new LibrarySelectionTable(newFile);
+          final LibrarySelectionTable tmpL = new LibrarySelectionTable(newFile);
 
-          String thisName = tmpL.getDatabaseName().toUpperCase();
+          final String thisName = tmpL.getDatabaseName().toUpperCase();
 
-          LibrarySelectionTable thisLibrary = _myDatabases.get(thisName);
+          final LibrarySelectionTable thisLibrary = _myDatabases.get(thisName);
 
           // do we have it already?
           if (thisLibrary == null)
@@ -143,7 +143,7 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
           }
         }
       }
-      catch (com.bbn.openmap.io.FormatException fe)
+      catch (final com.bbn.openmap.io.FormatException fe)
       {
         MWC.Utilities.Errors.Trace.trace(fe, "Add VPF data path:" + paths[i]);
       }
@@ -152,14 +152,14 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
     // so, we now have a list of library selection tables, one for each database we are handling
 
     // create a library for each library we know of
-    Iterator<LibrarySelectionTable> enumer = _myDatabases.values().iterator();
+    final Iterator<LibrarySelectionTable> enumer = _myDatabases.values().iterator();
     while (enumer.hasNext())
     {
       // get the table
-      LibrarySelectionTable thisLib = enumer.next();
+      final LibrarySelectionTable thisLib = enumer.next();
 
       // create the layer to manage this
-      LibraryLayer layer = new LibraryLayer(thisLib, thisLib.getDatabaseName(), _myWarehouse, autoPopulate);
+      final LibraryLayer layer = new LibraryLayer(thisLib, thisLib.getDatabaseName(), _myWarehouse, autoPopulate);
 
 
       // and remember it
@@ -172,10 +172,10 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
   /**
    * accessor to get the LST for the library in question
    */
-  public LibrarySelectionTable getLST(String library)
+  public LibrarySelectionTable getLST(final String library)
   {
     LibrarySelectionTable res = null;
-    LibraryLayer lib = this.getLibrary(library);
+    final LibraryLayer lib = this.getLibrary(library);
     if (lib != null)
       res = lib.getLST();
     return res;
@@ -202,13 +202,13 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
   /**
    * accessor to get a named library
    */
-  public LibraryLayer getLibrary(String theName)
+  public LibraryLayer getLibrary(final String theName)
   {
     LibraryLayer res = null;
-    Enumeration<Editable> enumer = this.elements();
+    final Enumeration<Editable> enumer = this.elements();
     while (enumer.hasMoreElements())
     {
-      LibraryLayer ll = (LibraryLayer) enumer.nextElement();
+      final LibraryLayer ll = (LibraryLayer) enumer.nextElement();
       if (ll.getName().toUpperCase().equals(theName.toUpperCase()))
       {
         res = ll;

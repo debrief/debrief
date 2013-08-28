@@ -91,7 +91,7 @@ public class FlatEarth implements EarthModel
   /**
    * working world location, used to reduce amount of object creation
    */
-  private WorldLocation _workingLocation = new WorldLocation(0,0,0);
+  private final WorldLocation _workingLocation = new WorldLocation(0,0,0);
 
   //////////////////////////////////////////////////
   // constructor
@@ -102,7 +102,7 @@ public class FlatEarth implements EarthModel
    * is the same instance of an object each time
    *
    */
-	public WorldLocation add(WorldLocation start, WorldVector delta)
+	public WorldLocation add(final WorldLocation start, final WorldVector delta)
 	{
 		if((delta.getRange() == 0) && (delta.getDepth() == 0) )
 			return start;
@@ -111,29 +111,29 @@ public class FlatEarth implements EarthModel
   	// admiralty manual of navigation
 
   	// 0. convert our position, course and distance values in degrees to radians
-  	double LAT = Conversions.Degs2Rads(start.getLat());
-  	double LONG = Conversions.Degs2Rads(start.getLong());
-  	double COURSE = delta.getBearing();
+  	final double LAT = Conversions.Degs2Rads(start.getLat());
+  	final double LONG = Conversions.Degs2Rads(start.getLong());
+  	final double COURSE = delta.getBearing();
 
   	// produce a range in radians
-  	double DISTANCE = Conversions.Degs2Rads(delta.getRange());
+  	final double DISTANCE = Conversions.Degs2Rads(delta.getRange());
 
   	// 1.	find the departure
-  	double DEPARTURE = DISTANCE * Math.sin(COURSE);
+  	final double DEPARTURE = DISTANCE * Math.sin(COURSE);
 
   	// 2. find the delta.lat
-  	double DELTA_LAT = DISTANCE * Math.cos(COURSE);
+  	final double DELTA_LAT = DISTANCE * Math.cos(COURSE);
 
   	// 3. find the mean latitude
-  	double MEAN_LAT = LAT + (DELTA_LAT/2.0);
+  	final double MEAN_LAT = LAT + (DELTA_LAT/2.0);
 
   	// 4. find the delta.long
-  	double DELTA_LONG = DEPARTURE / Math.cos(MEAN_LAT);
+  	final double DELTA_LONG = DEPARTURE / Math.cos(MEAN_LAT);
 
 
   	// 5. produce the new position
-  	double NEW_LAT = LAT + DELTA_LAT;
-  	double NEW_LONG = LONG + DELTA_LONG;
+  	final double NEW_LAT = LAT + DELTA_LAT;
+  	final double NEW_LONG = LONG + DELTA_LONG;
 
     // use our internal object for calculation, to reduce object creation
     _workingLocation.setLat(Conversions.Rads2Degs(NEW_LAT));
@@ -152,9 +152,9 @@ public class FlatEarth implements EarthModel
    *
    * @return the returned double
    */
-  public double bearingBetween(WorldLocation from, WorldLocation to)
+  public double bearingBetween(final WorldLocation from, final WorldLocation to)
   {
-		WorldVector res = from.subtract(to);
+		final WorldVector res = from.subtract(to);
 
     return res.getBearing();
   }
@@ -166,15 +166,15 @@ public class FlatEarth implements EarthModel
    *
    * @return the returned double
    */
-  public double rangeBetween(WorldLocation from, WorldLocation to)
+  public double rangeBetween(final WorldLocation from, final WorldLocation to)
   {
-		WorldVector res = subtract(from, to);
+		final WorldVector res = subtract(from, to);
 		return res.getRange();
 	}
 
 
-  public WorldVector subtract(WorldLocation from,
-                              WorldLocation to)
+  public WorldVector subtract(final WorldLocation from,
+                              final WorldLocation to)
   {
     WorldVector res = new WorldVector(0,0,0);
     res = subtract(from, to, res);
@@ -188,7 +188,7 @@ public class FlatEarth implements EarthModel
    *
    * @return the returned WorldVector
    */
-  public WorldVector subtract(WorldLocation from, WorldLocation to, WorldVector res)
+  public WorldVector subtract(final WorldLocation from, final WorldLocation to, final WorldVector res)
 	{
 
 		// the algorithm used here is from Short Sailing Calculations in the
@@ -199,23 +199,23 @@ public class FlatEarth implements EarthModel
 	  	return new WorldVector(0,0,0);
 
 	  // 0. convert our position, course and distance values in degrees to radians
-	  double LAT2 = Conversions.Degs2Rads(to.getLat());
-	  double LONG2 = Conversions.Degs2Rads(to.getLong());
-	  double LAT1 = Conversions.Degs2Rads(from.getLat());
-	  double LONG1 = Conversions.Degs2Rads(from.getLong());
+	  final double LAT2 = Conversions.Degs2Rads(to.getLat());
+	  final double LONG2 = Conversions.Degs2Rads(to.getLong());
+	  final double LAT1 = Conversions.Degs2Rads(from.getLat());
+	  final double LONG1 = Conversions.Degs2Rads(from.getLong());
 
 	  // 1.	find the deltas
-	  double DELTA_LONG = LONG2 - LONG1;
-	  double DELTA_LAT  = LAT2  - LAT1;
+	  final double DELTA_LONG = LONG2 - LONG1;
+	  final double DELTA_LAT  = LAT2  - LAT1;
 
 	  // 2. find the mean latitude
-	  double MEAN_LAT = LAT1 + (DELTA_LAT) / 2.0;
+	  final double MEAN_LAT = LAT1 + (DELTA_LAT) / 2.0;
 
 	  // 3.	find the departure
-	  double DEPARTURE = DELTA_LONG * Math.cos(MEAN_LAT);
+	  final double DEPARTURE = DELTA_LONG * Math.cos(MEAN_LAT);
 
 	  // 4.	find the course
-	  double COURSE = Math.atan2( DEPARTURE, DELTA_LAT );
+	  final double COURSE = Math.atan2( DEPARTURE, DELTA_LAT );
 
 	  // 5.	find the distance. There is a check here in case the delta_lat is zero,
 	  // if this is the case then the dir is either e or w, so just use the delta_lat
@@ -227,7 +227,7 @@ public class FlatEarth implements EarthModel
 
 	  // 6. Hooray, now produce the result from our course and distance
 	  // measurements
-	  double dist = Conversions.Rads2Degs(Math.abs(DISTANCE));
+	  final double dist = Conversions.Rads2Degs(Math.abs(DISTANCE));
 
     // put the results back into the parameter supplied
     res.setValues(COURSE, dist, to.getDepth() - from.getDepth());

@@ -21,7 +21,7 @@ public class CoastWizardPage extends CoreEditableWizardPage
 	 * 
 	 * @param pageName
 	 */
-	public CoastWizardPage(ISelection selection)
+	public CoastWizardPage(final ISelection selection)
 	{
 		super(selection, "coastPage", "Add Coastline to Plot",
 				"This page adds a low resolution coastline to your plot",

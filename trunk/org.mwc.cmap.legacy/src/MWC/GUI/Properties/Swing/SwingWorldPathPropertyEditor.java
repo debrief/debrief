@@ -28,12 +28,12 @@ public class SwingWorldPathPropertyEditor extends MWC.GUI.Properties.WorldPathPr
 
   public java.awt.Component getCustomEditor()
   {
-    JButton editBtn =new JButton("Edit");
+    final JButton editBtn =new JButton("Edit");
     editBtn.setToolTipText("Click to edit the points in the " + getMyType());
     editBtn.setMargin(new Insets(0,0,0,0));
     editBtn.addActionListener(new ActionListener()
     {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         openEditor();
       }
@@ -43,7 +43,7 @@ public class SwingWorldPathPropertyEditor extends MWC.GUI.Properties.WorldPathPr
     if(_myLabel == null)
         _myLabel = new javax.swing.JLabel("blank");
 
-    JPanel thePanel = new JPanel();
+    final JPanel thePanel = new JPanel();
     thePanel.setLayout(new BorderLayout());
     thePanel.add("East", editBtn);
     thePanel.add("Center", _myLabel);
@@ -58,7 +58,7 @@ public class SwingWorldPathPropertyEditor extends MWC.GUI.Properties.WorldPathPr
 
   protected void openEditor()
   {
-    WorldPathDetailEditor wpd  = new WorldPathDetailEditor(super._myPath, super._myChart, super._thePanel, super._theParent, getMyType());
+    final WorldPathDetailEditor wpd  = new WorldPathDetailEditor(super._myPath, super._myChart, super._thePanel, super._theParent, getMyType());
     wpd.addPropertyChangeListener(this);
     super._thePanel.add(wpd);
   }
@@ -77,7 +77,7 @@ public class SwingWorldPathPropertyEditor extends MWC.GUI.Properties.WorldPathPr
    *   	and the property that has changed.
    */
 
-  public void propertyChange(PropertyChangeEvent evt)
+  public void propertyChange(final PropertyChangeEvent evt)
   {
     // update the label
     resetData();

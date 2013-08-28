@@ -69,84 +69,84 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
     this(MY_TYPE);
   }
 
-  public Grid4WHandler(String theType)
+  public Grid4WHandler(final String theType)
   {
     // inform our parent what type of class we are
     super(theType);
 
     addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(PLOT_LABELS)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _plotLabels = value;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(US_STANDARD)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _usStandard = value;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute(XDELTA)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _xDelta = value;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute(YDELTA)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _yDelta = value;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute(ORIENTATION)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _orientation = value;
       }
     });
     addHandler(new LocationHandler(ORIGIN)
     {
-      public void setLocation(WorldLocation value)
+      public void setLocation(final WorldLocation value)
       {
         _origin = value;
       }
     });
     addAttributeHandler(new HandleAttribute(XMIN)
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _xMin  = val;
       }
     });
     addAttributeHandler(new HandleAttribute(XMAX)
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _xMax  = val;
       }
     });
     addAttributeHandler(new HandleIntegerAttribute(YMIN)
     {
-      public void setValue(String name, int val)
+      public void setValue(final String name, final int val)
       {
         _yMin  = val;
       }
     });
     addAttributeHandler(new HandleIntegerAttribute(YMAX)
     {
-      public void setValue(String name, int val)
+      public void setValue(final String name, final int val)
       {
         _yMax  = val;
       }
@@ -156,21 +156,21 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
     
     addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _myName  = val;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(FILL_GRID)
     {
-      public void setValue(String name, boolean val)
+      public void setValue(final String name, final boolean val)
       {
         _fillGrid = val;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(PLOT_LINES)
     {
-      public void setValue(String name, boolean val)
+      public void setValue(final String name, final boolean val)
       {
         _plotLines = val;
       }
@@ -178,7 +178,7 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
 
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
@@ -186,13 +186,13 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
     addHandler(new FontHandler(){
 
 			@Override
-			public void setFont(Font res)
+			public void setFont(final Font res)
 			{
 				_font = res;
 			}});
     addHandler(new ColourHandler(FILL_COLOR)
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _fillColor = color;
       }
@@ -203,7 +203,7 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
   public void elementClosed()
   {
     // create a Grid from this data
-    MWC.GUI.Chart.Painters.Grid4WPainter csp = new Grid4WPainter(_origin);
+    final MWC.GUI.Chart.Painters.Grid4WPainter csp = new Grid4WPainter(_origin);
     csp.setColor(_theColor);
     csp.setVisible(_isVisible);
     csp.setPlotLabels(_plotLabels);
@@ -258,11 +258,11 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
    * @param parent
    * @param doc
    */
-  public void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
-    MWC.GUI.Chart.Painters.Grid4WPainter theGrid = (MWC.GUI.Chart.Painters.Grid4WPainter) plottable;
-    Element gridElement = doc.createElement(MY_TYPE);
+    final MWC.GUI.Chart.Painters.Grid4WPainter theGrid = (MWC.GUI.Chart.Painters.Grid4WPainter) plottable;
+    final Element gridElement = doc.createElement(MY_TYPE);
 
     exportGridAttributes(gridElement, theGrid, doc);
 
@@ -276,8 +276,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
    * @param theGrid     the grid to export
    * @param doc         the document it's all going into
    */
-  protected static void exportGridAttributes(Element gridElement, MWC.GUI.Chart.Painters.Grid4WPainter theGrid,
-                                             Document doc)
+  protected static void exportGridAttributes(final Element gridElement, final MWC.GUI.Chart.Painters.Grid4WPainter theGrid,
+                                             final Document doc)
   {
     // do the visibility
     gridElement.setAttribute(VISIBLE, writeThis(theGrid.getVisible()));

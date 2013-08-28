@@ -386,9 +386,9 @@ public class ImportReplay extends PlainImporterBase
 	/**
 	 * format a date using our format
 	 */
-	public static String formatThis(HiResDate val)
+	public static String formatThis(final HiResDate val)
 	{
-		String res = DebriefFormatDateTime.toStringHiRes(val);
+		final String res = DebriefFormatDateTime.toStringHiRes(val);
 		return res;
 	}
 
@@ -397,7 +397,7 @@ public class ImportReplay extends PlainImporterBase
 	 * 
 	 * @param theParent
 	 */
-	public static void initialise(ToolParent theParent)
+	public static void initialise(final ToolParent theParent)
 	{
 		_myParent = theParent;
 	}
@@ -447,7 +447,7 @@ public class ImportReplay extends PlainImporterBase
 		final Color thisColor = replayColorFor(rf.theSymbology);
 
 		// create the wrapper for this annotation
-		FixWrapper thisWrapper = new FixWrapper(rf.theFix);
+		final FixWrapper thisWrapper = new FixWrapper(rf.theFix);
 						
 		// overwrite the label, if there's one there
 		if(rf.label != null)
@@ -477,7 +477,7 @@ public class ImportReplay extends PlainImporterBase
 			{
 				if (_myParent instanceof ProvidesModeSelector) 
 				{
-					ProvidesModeSelector selector = (ProvidesModeSelector) _myParent;
+					final ProvidesModeSelector selector = (ProvidesModeSelector) _myParent;
 					importMode = selector.getSelectedImportMode(theTrack);
 				}
 			}
@@ -511,7 +511,7 @@ public class ImportReplay extends PlainImporterBase
 			trkWrapper.setSymbolColor(thisColor);
 
 			// set the sym type for the track
-			String theSymType = replayTrackSymbolFor(rf.theSymbology);
+			final String theSymType = replayTrackSymbolFor(rf.theSymbology);
 			trkWrapper.setSymbolType(theSymType);
 
 			// store the track-specific data
@@ -544,7 +544,7 @@ public class ImportReplay extends PlainImporterBase
 		SensorWrapper thisSensor = null;
 
 		// do we have a sensor capable of handling this contact?
-		String sensorName = sw.getSensorName();
+		final String sensorName = sw.getSensorName();
 		String trackName = sw.getTrackName();
 		Object val = getLayerFor(trackName);
 
@@ -559,15 +559,15 @@ public class ImportReplay extends PlainImporterBase
 			return res;
 
 		// so, we've found a track - see if it holds this sensor
-		TrackWrapper theTrack = (TrackWrapper) val;
-		Enumeration<Editable> iter = theTrack.getSensors().elements();
+		final TrackWrapper theTrack = (TrackWrapper) val;
+		final Enumeration<Editable> iter = theTrack.getSensors().elements();
 
 		// step through this track' sensors
 		if (iter != null) 
 		{
 			while (iter.hasMoreElements()) 
 			{
-				SensorWrapper sensorw = (SensorWrapper) iter.nextElement();
+				final SensorWrapper sensorw = (SensorWrapper) iter.nextElement();
 
 				// is this our sensor?
 				if (sensorw.getName().equals(sensorName)) 
@@ -620,7 +620,7 @@ public class ImportReplay extends PlainImporterBase
 		TMAWrapper thisWrapper = null;
 
 		// do we have a sensor capable of handling this contact?
-		String solutionName = sw.getSolutionName();
+		final String solutionName = sw.getSolutionName();
 
 		String trackName = sw.getTrackName();
 		Object val = getLayerFor(trackName);
@@ -636,15 +636,15 @@ public class ImportReplay extends PlainImporterBase
 			return res;
 
 		// so, we've found a track - see if it holds this solution
-		TrackWrapper theTrack = (TrackWrapper) val;
-		Enumeration<Editable> iter = theTrack.getSolutions().elements();
+		final TrackWrapper theTrack = (TrackWrapper) val;
+		final Enumeration<Editable> iter = theTrack.getSolutions().elements();
 
 		// step through this track's solutions
 		if (iter != null) 
 		{
 			while (iter.hasMoreElements()) 
 			{
-				TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
+				final TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
 
 				// is this our sensor?
 				if (sensorw.getName().equals(solutionName)) 
@@ -697,7 +697,7 @@ public class ImportReplay extends PlainImporterBase
 	 * @param theLine
 	 *          the line to parse
 	 */
-	public HiResDate readLine(String theLine) throws java.io.IOException
+	public HiResDate readLine(final String theLine) throws java.io.IOException
 	{
 		HiResDate res = null;
 		
@@ -706,29 +706,29 @@ public class ImportReplay extends PlainImporterBase
 			return null;
 		
 		// ok, trim any leading/trailing whitespace
-		theLine = theLine.trim();
+		final String line = theLine.trim();
 			
 		// what type of item is this?
-		final PlainLineImporter thisOne = getImporterFor(theLine);
+		final PlainLineImporter thisOne = getImporterFor(line);
 
 		// check that we have found an importer
 		if (thisOne == null)
 		{
 			// just check it wasn't a comment
-			if (theLine.startsWith(";;"))
+			if (line.startsWith(";;"))
 			{
 					// don't bother, it's just a comment
 			}
 			else
 			{
 				MWC.Utilities.Errors.Trace
-						.trace("Annotation type not recognised for:" + theLine);
+						.trace("Annotation type not recognised for:" + line);
 			}
 			return null;
 		}
 
 		// now read it in.
-		Object thisObject = thisOne.readThisLine(theLine);
+		final Object thisObject = thisOne.readThisLine(line);
 
 		// see if we are going to do any special processing
 
@@ -747,7 +747,7 @@ public class ImportReplay extends PlainImporterBase
 		}
 		else if (thisObject instanceof NarrativeEntry)
 		{
-			NarrativeEntry entry = (NarrativeEntry) thisObject;
+			final NarrativeEntry entry = (NarrativeEntry) thisObject;
 
 			// remember the dtg
 			res = entry.getDTG();
@@ -771,12 +771,12 @@ public class ImportReplay extends PlainImporterBase
 		{
 
 			// create the wrapper for this annotation
-			PlainWrapper thisWrapper = (PlainWrapper) thisObject;
+			final PlainWrapper thisWrapper = (PlainWrapper) thisObject;
 
 			// remember the dtg
 			if (thisWrapper instanceof Watchable)
 			{
-				Watchable wat = (Watchable) thisWrapper;
+				final Watchable wat = (Watchable) thisWrapper;
 				res = wat.getTime();
 			}
 
@@ -799,15 +799,15 @@ public class ImportReplay extends PlainImporterBase
 	/**
 	 * import data from this stream
 	 */
-	public final void importThis(String fName, java.io.InputStream is)
+	public final void importThis(final String fName, final java.io.InputStream is)
 	{
 		// declare linecounter
 		int lineCounter = 0;
 
-		int numLines = countLinesFor(fName);
+		final int numLines = countLinesFor(fName);
 
-		Reader reader = new InputStreamReader(is);
-		BufferedReader br = new ReaderMonitor(reader, numLines, fName);
+		final Reader reader = new InputStreamReader(is);
+		final BufferedReader br = new ReaderMonitor(reader, numLines, fName);
 		String thisLine = null;
 		try
 		{
@@ -818,7 +818,7 @@ public class ImportReplay extends PlainImporterBase
 
 				thisLine = br.readLine();
 
-				long start = System.currentTimeMillis();
+				final long start = System.currentTimeMillis();
 
 				// loop through the lines
 				while (thisLine != null)
@@ -841,26 +841,26 @@ public class ImportReplay extends PlainImporterBase
 					_myFormatters[k].formatLayers(getLayers());
 				}
 
-				long end = System.currentTimeMillis();
+				final long end = System.currentTimeMillis();
 				System.out.print(" |Elapsed:" + (end - start) + " ");
 
 			}
 		}
-		catch (java.lang.NumberFormatException e)
+		catch (final java.lang.NumberFormatException e)
 		{
 			// produce the error message
 			MWC.Utilities.Errors.Trace.trace(e);
 			// show the message dialog
 			super.readError(fName, lineCounter, "Number format error", thisLine);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			// produce the error message
 			MWC.Utilities.Errors.Trace.trace(e);
 			// show the message dialog
 			super.readError(fName, lineCounter, "Unknown read error:" + e, thisLine);
 		}
-		catch (java.util.NoSuchElementException e)
+		catch (final java.util.NoSuchElementException e)
 		{
 			// produce the error message
 			MWC.Utilities.Errors.Trace.trace(e);
@@ -869,7 +869,7 @@ public class ImportReplay extends PlainImporterBase
 		}
 	}
 
-	private PlainLineImporter getImporterFor(String theLine)
+	private PlainLineImporter getImporterFor(final String theLine)
 	{
 
 		PlainLineImporter res = null;
@@ -878,19 +878,19 @@ public class ImportReplay extends PlainImporterBase
 		if (theLine.charAt(0) == ';')
 		{
 			// look through types of import handler
-			Enumeration<PlainLineImporter> iter = _theImporters.elements();
+			final Enumeration<PlainLineImporter> iter = _theImporters.elements();
 
 			// get the type for this comment
-			StringTokenizer st = new StringTokenizer(theLine);
-			String type = st.nextToken();
+			final StringTokenizer st = new StringTokenizer(theLine);
+			final String type = st.nextToken();
 
 			// cycle through my types
 			while (iter.hasMoreElements())
 			{
-				PlainLineImporter thisImporter = iter.nextElement();
+				final PlainLineImporter thisImporter = iter.nextElement();
 
 				// get the handler correct type?
-				String thisType = thisImporter.getYourType();
+				final String thisType = thisImporter.getYourType();
 
 				if (thisType == null)
 				{
@@ -918,7 +918,7 @@ public class ImportReplay extends PlainImporterBase
 	/**
 	 * convert the item to text, add it to the block we're building up
 	 */
-	public final void exportThis(Plottable item)
+	public final void exportThis(final Plottable item)
 	{
 
 		// check it's real
@@ -931,12 +931,12 @@ public class ImportReplay extends PlainImporterBase
 		if ((item instanceof Layer) && !(item instanceof ExportLayerAsSingleItem))
 		{
 			// ok, work through the layer
-			Layer tw = (Layer) item;
+			final Layer tw = (Layer) item;
 			// ha-ha! export the points one at a time
-			java.util.Enumeration<Editable> iter = tw.elements();
+			final java.util.Enumeration<Editable> iter = tw.elements();
 			while (iter.hasMoreElements())
 			{
-				Plottable pt = (Plottable) iter.nextElement();
+				final Plottable pt = (Plottable) iter.nextElement();
 				exportThis(pt);
 			}
 			// ta-da! done.
@@ -946,17 +946,17 @@ public class ImportReplay extends PlainImporterBase
 			// check we have some importers
 			if (_theImporters != null)
 			{
-				Enumeration<PlainLineImporter> iter = _theImporters.elements();
+				final Enumeration<PlainLineImporter> iter = _theImporters.elements();
 
 				// step though our importers, to see if any will 'do the deal;
 				while (iter.hasMoreElements())
 				{
-					PlainLineImporter thisImporter = iter.nextElement();
+					final PlainLineImporter thisImporter = iter.nextElement();
 
 					if (thisImporter.canExportThis(item))
 					{
 						// export it, add it to the data we're building up
-						String thisLine = thisImporter.exportThis(item);
+						final String thisLine = thisImporter.exportThis(item);
 						addThisToExport(thisLine);
 
 						// ok, we can drop out of the loop
@@ -967,11 +967,11 @@ public class ImportReplay extends PlainImporterBase
 		}
 	}
 
-	public final boolean canImportThisFile(String theFile)
+	public final boolean canImportThisFile(final String theFile)
 	{
 		boolean res = false;
 		String theSuffix = null;
-		int pos = theFile.lastIndexOf(".");
+		final int pos = theFile.lastIndexOf(".");
 		theSuffix = theFile.substring(pos, theFile.length());
 
 		for (int i = 0; i < _myTypes.length; i++)
@@ -996,10 +996,10 @@ public class ImportReplay extends PlainImporterBase
 		_sensorNames = new Vector<SensorWrapper>();
 	}
 
-	static public int replayLineStyleFor(String theSym)
+	static public int replayLineStyleFor(final String theSym)
 	{
 		int res = 0;
-		String theStyle = theSym.substring(0, 1);
+		final String theStyle = theSym.substring(0, 1);
 
 		if (theStyle.equals("@"))
 		{
@@ -1029,10 +1029,10 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 
-	public final static String replayTrackSymbolFor(String theSym)
+	public final static String replayTrackSymbolFor(final String theSym)
 	{
 		String res = null;
-		String colorVal = theSym.substring(0, 1);
+		final String colorVal = theSym.substring(0, 1);
 
 		res = SymbolFactory.createSymbolFromId(colorVal);
 
@@ -1043,33 +1043,33 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 
-	static public Color replayColorFor(int index)
+	static public Color replayColorFor(final int index)
 	{
 		Color res = null;
 
 		// check we have the colours
 		initialiseColours();
 
-		int theIndex = index % colors.size();
+		final int theIndex = index % colors.size();
 
 		res = colors.elementAt(theIndex).color;
 
 		return res;
 	}
 
-	static public Color replayColorFor(String theSym)
+	static public Color replayColorFor(final String theSym)
 	{
 		Color res = null;
-		String colorVal = theSym.substring(1, 2);
+		final String colorVal = theSym.substring(1, 2);
 
 		// check we have the colours
 		initialiseColours();
 
 		// step through our list of colours
-		java.util.Enumeration<doublet> iter = colors.elements();
+		final java.util.Enumeration<doublet> iter = colors.elements();
 		while (iter.hasMoreElements())
 		{
-			doublet db = iter.nextElement();
+			final doublet db = iter.nextElement();
 			if (db.label.equals(colorVal))
 			{
 				res = db.color;
@@ -1084,15 +1084,15 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 
-	static public String replaySymbolFor(Color theCol, String theSymbol)
+	static public String replaySymbolFor(final Color theCol, final String theSymbol)
 	{
 		String res = null;
 
 		// step through our list of colours
-		java.util.Enumeration<doublet> iter = colors.elements();
+		final java.util.Enumeration<doublet> iter = colors.elements();
 		while (iter.hasMoreElements())
 		{
-			doublet db = iter.nextElement();
+			final doublet db = iter.nextElement();
 			if (db.color.equals(theCol))
 			{
 				res = db.label;
@@ -1120,13 +1120,13 @@ public class ImportReplay extends PlainImporterBase
 
 	}
 
-	public final void exportThis(String val)
+	public final void exportThis(final String val)
 	{
 		if (val != null)
 		{
-			java.awt.datatransfer.Clipboard cl = java.awt.Toolkit.getDefaultToolkit()
+			final java.awt.datatransfer.Clipboard cl = java.awt.Toolkit.getDefaultToolkit()
 					.getSystemClipboard();
-			java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection(
+			final java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection(
 					val);
 			cl.setContents(ss, ss);
 		}
@@ -1138,7 +1138,7 @@ public class ImportReplay extends PlainImporterBase
 
 		public final Color color;
 
-		public doublet(String theLabel, Color theColor)
+		public doublet(final String theLabel, final Color theColor)
 		{
 			label = theLabel;
 			color = theColor;
@@ -1167,17 +1167,17 @@ public class ImportReplay extends PlainImporterBase
 
 		boolean allFilesFinished = false;
 
-		public testImport(String val)
+		public testImport(final String val)
 		{
 			super(val);
-			String fileRoot = "src";
+			final String fileRoot = "src";
 
 			// 
 			assertNotNull("Check data directory is configured", fileRoot);
 			fileName = fileRoot + File.separator + fileName;
 
 			// and check the file exists
-			java.io.File iFile = new File(fileName);
+			final java.io.File iFile = new File(fileName);
 			assertTrue("Test file not found", iFile.exists());
 		}
 
@@ -1190,19 +1190,19 @@ public class ImportReplay extends PlainImporterBase
 			ImportReplay.initialise(new ToolParent()
 			{
 
-				public void addActionToBuffer(Action theAction)
+				public void addActionToBuffer(final Action theAction)
 				{
 					// TODO Auto-generated method stub
 
 				}
 
-				public Map<String, String> getPropertiesLike(String pattern)
+				public Map<String, String> getPropertiesLike(final String pattern)
 				{
 					// TODO Auto-generated method stub
 					return null;
 				}
 
-				public String getProperty(String name)
+				public String getProperty(final String name)
 				{
 					return ImportReplay.IMPORT_AS_OTG;
 				}
@@ -1213,19 +1213,19 @@ public class ImportReplay extends PlainImporterBase
 
 				}
 
-				public void setCursor(int theCursor)
+				public void setCursor(final int theCursor)
 				{
 					// TODO Auto-generated method stub
 
 				}
 
-				public void setProperty(String name, String value)
+				public void setProperty(final String name, final String value)
 				{
 					// TODO Auto-generated method stub
 
 				}
 
-				public void logError(int status, String text, Exception e)
+				public void logError(final int status, final String text, final Exception e)
 				{
 					// TODO Auto-generated method stub
 
@@ -1239,10 +1239,10 @@ public class ImportReplay extends PlainImporterBase
 			{
 
 				// first try to get the URL of the image
-				java.lang.ClassLoader loader = getClass().getClassLoader();
+				final java.lang.ClassLoader loader = getClass().getClassLoader();
 				if (loader != null)
 				{
-					java.net.URL imLoc = loader.getResource(fileName);
+					final java.net.URL imLoc = loader.getResource(fileName);
 					if (imLoc != null)
 					{
 						testFile = new java.io.File(imLoc.getFile());
@@ -1258,8 +1258,8 @@ public class ImportReplay extends PlainImporterBase
 			assertTrue("Failed to find file:" + fileName, testFile.exists());
 
 			// ok, now try to read it in
-			MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
-			File[] _theFiles = new File[]
+			final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
+			final File[] _theFiles = new File[]
 			{ testFile };
 
 			// add the REP importer
@@ -1267,17 +1267,17 @@ public class ImportReplay extends PlainImporterBase
 					.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
 
 			// get our thread to import this
-			MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+			final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
 					_theFiles, _theLayers)
 			{
 				// handle the completion of each file
-				public void fileFinished(File fName, Layers newData)
+				public void fileFinished(final File fName, final Layers newData)
 				{
 					fileFinished = true;
 				}
 
 				// handle completion of the full import process
-				public void allFilesFinished(File[] fNames, Layers newData)
+				public void allFilesFinished(final File[] fNames, final Layers newData)
 				{
 					allFilesFinished = true;
 				}
@@ -1293,7 +1293,7 @@ public class ImportReplay extends PlainImporterBase
 				{
 					Thread.sleep(100);
 				}
-				catch (java.lang.InterruptedException e)
+				catch (final java.lang.InterruptedException e)
 				{
 				}
 			}
@@ -1305,7 +1305,7 @@ public class ImportReplay extends PlainImporterBase
 			assertEquals("Count of layers", 2, _theLayers.size());
 
 			// area of coverage
-			MWC.GenericData.WorldArea area = _theLayers.elementAt(0).getBounds();
+			final MWC.GenericData.WorldArea area = _theLayers.elementAt(0).getBounds();
 			super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
 					11.92276, 0.001);
 			super.assertEquals("tl long of first layer", area.getTopLeft().getLong(),
@@ -1323,10 +1323,10 @@ public class ImportReplay extends PlainImporterBase
 		}
 	}
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
 		System.setProperty("dataDir", "d:\\dev\\debrief\\src\\java\\Debrief");
-		testImport ti = new testImport("some name");
+		final testImport ti = new testImport("some name");
 		ti.testReadREP();
 		System.exit(0);
 	}

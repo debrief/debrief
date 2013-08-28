@@ -38,7 +38,7 @@ public class ZoomIn extends CoreDragAction
 
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
-				final Layers theLayers, SWTCanvas theCanvas)
+				final Layers theLayers, final SWTCanvas theCanvas)
 		{
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
@@ -49,29 +49,29 @@ public class ZoomIn extends CoreDragAction
 
 				Tracker _dragTracker = new Tracker((Composite) _myCanvas.getCanvas(),
 						SWT.RESIZE);
-				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
+				final Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
 						deltaY);
 				_dragTracker.setRectangles(new Rectangle[] { rect });
-				boolean dragResult = _dragTracker.open();
+				final boolean dragResult = _dragTracker.open();
 				if (dragResult)
 				{
-					Rectangle[] rects = _dragTracker.getRectangles();
-					Rectangle res = rects[0];
+					final Rectangle[] rects = _dragTracker.getRectangles();
+					final Rectangle res = rects[0];
 					// get world area
-					java.awt.Point tl = new java.awt.Point(res.x, res.y);
-					java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
+					final java.awt.Point tl = new java.awt.Point(res.x, res.y);
+					final java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
 							+ res.height);
 
 					if (res.width > JITTER || res.height > JITTER)
 					{
 
-						WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
+						final WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
 								.toWorld(tl));
-						WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
+						final WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
 								.toWorld(br));
-						WorldArea area = new WorldArea(locA, locB);
+						final WorldArea area = new WorldArea(locA, locB);
 
-						WorldArea oldArea = _myCanvas.getProjection().getDataArea();
+						final WorldArea oldArea = _myCanvas.getProjection().getDataArea();
 						Action theAction = null;
 						// if the drag was from TL to BR
 						if (deltaX <= 0 && deltaY <=0 )
@@ -88,13 +88,13 @@ public class ZoomIn extends CoreDragAction
 								deltaX = 1;
 							if (deltaY == 0)
 								deltaY = 1;
-							double scale = deltaX*deltaY;
+							final double scale = deltaX*deltaY;
 							theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(
 									_myChart, oldArea, scale);
 						}
 
 						// and wrap it
-						DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
+						final DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
 								theLayers, null);
 
 						// and add it to the clipboard
@@ -111,13 +111,13 @@ public class ZoomIn extends CoreDragAction
 		}
 
 		@Override
-		public void doMouseUp(Point point, int keyState)
+		public void doMouseUp(final Point point, final int keyState)
 		{
 			_startPoint = null;
 		}
 
 		@Override
-		public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart)
+		public void mouseDown(final Point point, final SWTCanvas canvas, final PlainChart theChart)
 		{
 			_startPoint = point;
 			_myCanvas = canvas;

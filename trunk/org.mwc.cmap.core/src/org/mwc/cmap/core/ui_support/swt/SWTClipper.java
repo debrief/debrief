@@ -66,7 +66,7 @@ public class SWTClipper {
    *  @param p2   end point of line
    *  @param rect rectangle to clip to (assuming width and height are positive)
    */
-  public static void drawLine(GC g, Point p1, Point p2, Rectangle rect)
+  public static void drawLine(final GC g, final Point p1, final Point p2, final Rectangle rect)
   {
     drawLine(g, p1.x, p1.y, p2.x, p2.y, rect);
   }
@@ -80,10 +80,10 @@ public class SWTClipper {
    *  @param y2   y coordinate of end point of line
    *  @param rect rectangle to clip to (assuming width and height are positive)
    */
-  public static void drawLine(GC g,
-			      int x1, int y1,
-			      int x2, int y2,
-			      Rectangle rect)
+  public static void drawLine(final GC g,
+			      final int x1, final int y1,
+			      final int x2, final int y2,
+			      final Rectangle rect)
   {
     drawLine(g,
 	     x1, y1, 
@@ -102,10 +102,10 @@ public class SWTClipper {
    *  @param ymin &quot;lower&quot; side of rectangle
    *  @param ymax &quot;upper&quot; side of rectangle
    */
-  public static void drawLine(GC g,
-			      Point p1, Point p2, 
-			      int xmin, int xmax,
-			      int ymin, int ymax)
+  public static void drawLine(final GC g,
+			      final Point p1, final Point p2, 
+			      final int xmin, final int xmax,
+			      final int ymin, final int ymax)
   {
     drawLine(g,
 	     p1.x, p1.y, 
@@ -126,11 +126,11 @@ public class SWTClipper {
    *  @param ymin &quot;lower&quot; side of rectangle
    *  @param ymax &quot;upper&quot; side of rectangle
    */
-  public static void drawLine(GC theDest,
-			      int x1,   int y1,
-			      int x2,   int y2,
-			      int xmin, int xmax,
-			      int ymin, int ymax)
+  public static void drawLine(final GC theDest,
+			      final int x1,   final int y1,
+			      final int x2,   final int y2,
+			      final int xmin, final int xmax,
+			      final int ymin, final int ymax)
   {
     int mask1 = 0;		// position mask for first point
     int mask2 = 0;		// position mask for second point
@@ -195,13 +195,13 @@ public class SWTClipper {
    *  @param ymin &quot;lower&quot; side of rectangle
    *  @param ymax &quot;upper&quot; side of rectangle
    */
-  protected static void drawLine(GC theDest,
-				 int x1,   int y1, int mask1, 
-				 int x2,   int y2, int mask2,
-				 int xmin, int xmax,
-				 int ymin, int ymax)
+  protected static void drawLine(final GC theDest,
+				 final int x1,   final int y1, final int mask1, 
+				 final int x2,   final int y2, final int mask2,
+				 final int xmin, final int xmax,
+				 final int ymin, final int ymax)
   {
-    int mask = mask1 | mask2;
+    final int mask = mask1 | mask2;
     
     if ((mask & OUTSIDE) == 0) {
       // fine. everything's internal
@@ -215,7 +215,7 @@ public class SWTClipper {
     }
     else {
       // need clipping
-      Point[] p = getClipped(x1, y1, mask1, x2, y2, mask2,
+      final Point[] p = getClipped(x1, y1, mask1, x2, y2, mask2,
 			     xmin, xmax, ymin, ymax);
       if (p != null) {
 	// has calculated clipping ccords
@@ -232,10 +232,10 @@ public class SWTClipper {
    *  @param nPoints number of points
    *  @param rect rectangle to clip to (assuming width and height are positive)
    */
-  public static void drawPolyline(GC g,
-				  int[] x, int[] y,
-				  int nPoints,
-				  Rectangle rect)
+  public static void drawPolyline(final GC g,
+				  final int[] x, final int[] y,
+				  final int nPoints,
+				  final Rectangle rect)
   {
     drawPolyline(g,
 		 x, y, nPoints,
@@ -255,16 +255,16 @@ public class SWTClipper {
    *  @param ymin &quot;lower&quot; side of rectangle
    *  @param ymax &quot;upper&quot; side of rectangle
    */
-  public static void drawPolyline(GC g,
-				  int[] x, int[] y,
-				  int nPoints,
-				  int xmin, int xmax,
-				  int ymin, int ymax)
+  public static void drawPolyline(final GC g,
+				  final int[] x, final int[] y,
+				  final int nPoints,
+				  final int xmin, final int xmax,
+				  final int ymin, final int ymax)
   {
     if (nPoints <= 0) {
       return;
     }
-    int[] masks = new int[nPoints];
+    final int[] masks = new int[nPoints];
     int mask = 0;
 
     for (int p = 0;   p < nPoints;   ++p) {
@@ -321,10 +321,10 @@ public class SWTClipper {
    *  @param  ymax   upper right y of rectangle
    *  @return <code>null</code> (does not clip) or array of two points
    */
-  public static Point[] getClipped(int x1,   int y1, 
-				   int x2,   int y2, 
-				   int xmin, int xmax,
-				   int ymin, int ymax)
+  public static Point[] getClipped(final int x1,   final int y1, 
+				   final int x2,   final int y2, 
+				   final int xmin, final int xmax,
+				   final int ymin, final int ymax)
   {
     int mask1 = 0;		// position mask for first point
     int mask2 = 0;		// position mask for second point
@@ -369,11 +369,11 @@ public class SWTClipper {
     }
 
 
-    int mask = mask1 | mask2;
+    final int mask = mask1 | mask2;
     
     if ((mask & OUTSIDE) == 0) {
       // fine. everything's internal
-      Point[] ret = new Point[2];
+      final Point[] ret = new Point[2];
       ret[0] = new Point(x1, y1);
       ret[1] = new Point(x2, y2);
       return ret;
@@ -407,12 +407,12 @@ public class SWTClipper {
    *  @param  ymax   upper right y of rectangle
    *  @return <code>null</code> (does not clip) or array of two points
    */
-  protected static Point[] getClipped(double x1, double y1, int mask1,
-				      double x2, double y2, int mask2,
-				      double xmin, double xmax,
-				      double ymin, double ymax)
+  protected static Point[] getClipped(final double x1, final double y1, final int mask1,
+				      final double x2, final double y2, final int mask2,
+				      final double xmin, final double xmax,
+				      final double ymin, final double ymax)
   {
-    int mask = mask1 ^ mask2;
+    final int mask = mask1 ^ mask2;
     Point p1 = null;
 
     /*
@@ -426,7 +426,7 @@ public class SWTClipper {
       p1 = new Point((int)(x1+0.5), (int)(y1+0.5));
       if (mask == 0) {
 	// both masks are the same, so the second point is inside, too
-	Point[] ret = new Point[2];
+	final Point[] ret = new Point[2];
 	ret[0] = p1;
 	ret[1] = new Point((int)(x2+0.5), (int)(y2+0.5));
 	return ret;
@@ -444,13 +444,13 @@ public class SWTClipper {
     if ((mask & LEFT) != 0) {
       //      System.out.println("Trying left");
       // try to calculate intersection with left line
-      Point p = intersect(x1, y1, x2, y2, xmin, ymin, xmin, ymax);
+      final Point p = intersect(x1, y1, x2, y2, xmin, ymin, xmin, ymax);
       if (p != null) {
 	if (p1 == null) {
 	  p1 = p;
 	}
 	else {
-	  Point[] ret = new Point[2];
+	  final Point[] ret = new Point[2];
 	  ret[0] = p1;
 	  ret[1] = p;
 	  return ret;
@@ -460,13 +460,13 @@ public class SWTClipper {
     if ((mask & RIGHT) != 0) {
       //      System.out.println("Trying right");
       // try to calculate intersection with right line
-      Point p = intersect(x1, y1, x2, y2, xmax, ymin, xmax, ymax);
+      final Point p = intersect(x1, y1, x2, y2, xmax, ymin, xmax, ymax);
       if (p != null) {
 	if (p1 == null) {
 	  p1 = p;
 	}
 	else {
-	  Point[] ret = new Point[2];
+	  final Point[] ret = new Point[2];
 	  ret[0] = p1;
 	  ret[1] = p;
 	  return ret;
@@ -479,9 +479,9 @@ public class SWTClipper {
       if ((mask & ABOVE) != 0) {
 	//      System.out.println("Trying top");
 	// try to calculate intersection with upper line
-	Point p = intersect(x1, y1, x2, y2, xmin, ymax, xmax, ymax);
+	final Point p = intersect(x1, y1, x2, y2, xmin, ymax, xmax, ymax);
 	if (p != null) {
-          Point[] ret = new Point[2];
+          final Point[] ret = new Point[2];
           ret[0] = p1;
           ret[1] = p;
           return ret;
@@ -490,9 +490,9 @@ public class SWTClipper {
       if ((mask & BELOW) != 0) {
 	//      System.out.println("Trying bottom");
 	// try to calculate intersection with lower line
-	Point p = intersect(x1, y1, x2, y2, xmin, ymin, xmax, ymin);
+	final Point p = intersect(x1, y1, x2, y2, xmin, ymin, xmax, ymin);
 	if (p != null) {
-          Point[] ret = new Point[2];
+          final Point[] ret = new Point[2];
           ret[0] = p1;
           ret[1] = p;
           return ret;
@@ -503,13 +503,13 @@ public class SWTClipper {
       if ((mask & BELOW) != 0) {
 	//      System.out.println("Trying bottom");
 	// try to calculate intersection with lower line
-	Point p = intersect(x1, y1, x2, y2, xmin, ymin, xmax, ymin);
+	final Point p = intersect(x1, y1, x2, y2, xmin, ymin, xmax, ymin);
 	if (p != null) {
 	  if (p1 == null) {
 	    p1 = p;
 	  }
 	  else {
-	    Point[] ret = new Point[2];
+	    final Point[] ret = new Point[2];
 	    ret[0] = p1;
 	    ret[1] = p;
 	    return ret;
@@ -519,13 +519,13 @@ public class SWTClipper {
       if ((mask & ABOVE) != 0) {
 	//      System.out.println("Trying top");
 	// try to calculate intersection with upper line
-	Point p = intersect(x1, y1, x2, y2, xmin, ymax, xmax, ymax);
+	final Point p = intersect(x1, y1, x2, y2, xmin, ymax, xmax, ymax);
 	if (p != null) {
 	  if (p1 == null) {
 	    p1 = p;
 	  }
 	  else {
-	    Point[] ret = new Point[2];
+	    final Point[] ret = new Point[2];
 	    ret[0] = p1;
 	    ret[1] = p;
 	    return ret;
@@ -550,16 +550,16 @@ public class SWTClipper {
    *  @param  y22  ending y of 2nd line
    *  @return intersection point or <code>null</code>
    */
-  private static Point intersect(double x11, double y11,
-				 double x12, double y12,
-				 double x21, double y21,
-				 double x22, double y22)
+  private static Point intersect(final double x11, final double y11,
+				 final double x12, final double y12,
+				 final double x21, final double y21,
+				 final double x22, final double y22)
   {
-    double dx1 = x12 - x11;
-    double dy1 = y12 - y11;
-    double dx2 = x22 - x21;
-    double dy2 = y22 - y21;
-    double det = (dx2*dy1-dy2*dx1);
+    final double dx1 = x12 - x11;
+    final double dy1 = y12 - y11;
+    final double dx2 = x22 - x21;
+    final double dy2 = y22 - y21;
+    final double det = (dx2*dy1-dy2*dx1);
 
     /*    
     System.out.println("intersect");
@@ -574,10 +574,10 @@ public class SWTClipper {
     */
 
     if (det != 0.0) {
-      double mu = ((x11 - x21)*dy1 - (y11 - y21)*dx1)/det;
+      final double mu = ((x11 - x21)*dy1 - (y11 - y21)*dx1)/det;
       //      System.out.println("mu = "+mu);
       if (mu >= 0.0  &&  mu <= 1.0) {
-	Point p = new Point((int)(x21 + mu*dx2 + 0.5),
+	final Point p = new Point((int)(x21 + mu*dx2 + 0.5),
 			    (int)(y21 + mu*dy2 + 0.5));
 	//	System.out.println("p = "+p);
 	return p;

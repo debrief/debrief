@@ -117,22 +117,24 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		/**
 		 * Return the interpolated value in the supplied domain.
 		 */
-		public double interp(double startVariable, double endVariable)
+		public double interp(final double startVariable, final double endVariable)
 		{
+			double start = startVariable;
+			double end = endVariable;
 			// do a quick sanity to check to verify if we're an angle passing through
 			// zero
 			// if we don't do this check then it will try to do it the 'short-way'
 			// through 180 degs
-			if (Math.abs(endVariable - startVariable) > 180)
+			if (Math.abs(end - start) > 180)
 			{
-				if (startVariable > 180)
-					startVariable -= 360;
-				if (endVariable > 180)
-					endVariable -= 360;
+				if (start > 180)
+					start -= 360;
+				if (end > 180)
+					end -= 360;
 			}
 
-			final double gradient = (endVariable - startVariable) / (_timeDelta);
-			return startVariable + (_desiredTime - _startTime) * gradient;
+			final double gradient = (end - start) / (_timeDelta);
+			return start + (_desiredTime - _startTime) * gradient;
 		}
 	}
 
@@ -421,11 +423,11 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * 
 	 * @param theVal
 	 *          the step interval to use
-	 * @param startTime
+	 * @param theStartTime
 	 *          the start time (micros), to control where the resamples fall ('on
 	 *          the minute')
 	 */
-	public void decimate(final HiResDate theVal, long startTime)
+	public void decimate(final HiResDate theVal, final long startTime)
 	{
 		final Vector<PlottableWrapperWithTimeAndOverrideableColor> newItems = new Vector<PlottableWrapperWithTimeAndOverrideableColor>();
 
@@ -438,7 +440,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
 		// set the start time to be the later of our start time and the provided
 		// time
-		startTime = Math.max(startTime, myStart);
+		final long theStartTime = Math.max(startTime, myStart);
 
 		// long startTime = this.getStartDTG().getMicros();
 		final long endTime = this.getEndDTG().getMicros();
@@ -466,7 +468,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			return;
 
 		// right - sort out what time period we're working through
-		for (long tNow = startTime; tNow <= endTime; tNow += theVal.getMicros())
+		for (long tNow = theStartTime; tNow <= endTime; tNow += theVal.getMicros())
 		{
 			if (_next == null)
 			{

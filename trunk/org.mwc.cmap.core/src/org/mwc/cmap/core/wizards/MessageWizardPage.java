@@ -11,10 +11,10 @@ import org.mwc.cmap.core.CorePlugin;
 
 public class MessageWizardPage extends WizardPage
 {
-	private String _message;
+	private final String _message;
 
-	public MessageWizardPage(String pageName, String pageTitle,
-			String pageDescription, String message, String imagePath)
+	public MessageWizardPage(final String pageName, final String pageTitle,
+			final String pageDescription, final String message, final String imagePath)
 	{
 		super(pageName);
 		setTitle(pageTitle);
@@ -35,11 +35,11 @@ public class MessageWizardPage extends WizardPage
 
 	}
 
-	public void createControl(Composite parent)
+	public void createControl(final Composite parent)
 	{
-		Composite composite = new Composite(parent, SWT.NONE);
+		final Composite composite = new Composite(parent, SWT.NONE);
 		setControl(composite);
-		Label txt = new Label(composite, SWT.WRAP);
+		final Label txt = new Label(composite, SWT.WRAP);
 		txt.setText(_message);
 		txt.setSize(600, 200);
 	}

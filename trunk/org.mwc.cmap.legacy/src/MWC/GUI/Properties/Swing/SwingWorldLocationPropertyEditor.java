@@ -104,7 +104,7 @@ public class SwingWorldLocationPropertyEditor extends
 
   public java.awt.Component getCustomEditor()
   {
-		JPanel btnHolder = new JPanel();
+		final JPanel btnHolder = new JPanel();
 
     _theHolder = new JPanel();
     _theHolder.setLayout(new java.awt.BorderLayout());
@@ -132,7 +132,7 @@ public class SwingWorldLocationPropertyEditor extends
     return _theHolder;
   }
 
-  public void actionPerformed(ActionEvent p1)
+  public void actionPerformed(final ActionEvent p1)
   {
 		if(p1.getSource() == _selectBtn)
 		{
@@ -162,11 +162,11 @@ public class SwingWorldLocationPropertyEditor extends
     }
   }
 
-  public void cursorDblClicked(PlainChart theChart,
-                               WorldLocation theLocation,
-                               java.awt.Point thePoint)
+  public void cursorDblClicked(final PlainChart theChart,
+                               final WorldLocation theLocation,
+                               final java.awt.Point thePoint)
   {
-    double dp = _myVal.getDepth();
+    final double dp = _myVal.getDepth();
     _myVal = theLocation;
     _myVal.setDepth(dp);
     resetData();

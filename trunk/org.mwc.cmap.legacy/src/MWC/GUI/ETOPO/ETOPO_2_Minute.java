@@ -220,7 +220,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 			String thePath = null;
 
 			// just do a check to see if we have just the file or the whole path
-			File testF = new File(_thePath);
+			final File testF = new File(_thePath);
 			if (testF.isFile())
 			{
 				thePath = _thePath;
@@ -236,7 +236,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 				{
 					ra = new RandomAccessFile(thePath, "r");
 				}
-				catch (IOException e)
+				catch (final IOException e)
 				{
 					if (_reportedMissingData)
 					{
@@ -259,8 +259,8 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	}
 
 	/* returns a color based on slope and elevation */
-	public static int getETOPOColor(short elevation, double lowerLimit,
-			double upperLimit, boolean showLand,
+	public static int getETOPOColor(final short elevation, final double lowerLimit,
+			final double upperLimit, final boolean showLand,
 			final SpatialRasterPainter.ColorConverter converter)
 	{
 		int res = 0;
@@ -277,9 +277,9 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 			if (val > upperLimit)
 				val = upperLimit;
 
-			double proportion = val / upperLimit;
+			final double proportion = val / upperLimit;
 
-			double color_val = proportion * 125;
+			final double color_val = proportion * 125;
 
 			// limit the colour val to the minimum value
 			int green_tone = 255 - (int) color_val;
@@ -301,9 +301,9 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 			if (val < lowerLimit)
 				val = lowerLimit;
 
-			double proportion = val / lowerLimit;
+			final double proportion = val / lowerLimit;
 
-			double color_val = proportion * ETOPOWrapper.BLUE_MULTIPLIER;
+			final double color_val = proportion * ETOPOWrapper.BLUE_MULTIPLIER;
 
 			// limit the colour val to the minimum value
 			int blue_tone = 255 - (int) color_val;
@@ -311,7 +311,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 			// just check we've got a valid colour
 			blue_tone = Math.min(250, blue_tone);
 
-			int green = (int) ETOPOWrapper.GREEN_BASE_VALUE
+			final int green = (int) ETOPOWrapper.GREEN_BASE_VALUE
 					+ (int) (blue_tone * ETOPOWrapper.GREEN_MULTIPLIER);
 
 			res = converter
@@ -380,7 +380,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 				// rescale as appropriate
 				res = rescaleValue(res);
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				e.printStackTrace(); // To change body of catch statement use
 				// Options |
@@ -605,7 +605,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 								EditorType.FORMAT) };
 				return res;
 			}
-			catch (java.beans.IntrospectionException e)
+			catch (final java.beans.IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -626,11 +626,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 		{
 			super(val);
 
-			String pathFromProp = System.getProperty("etopoDir");
+			final String pathFromProp = System.getProperty("etopoDir");
 			if (pathFromProp == null)
 			{
 				// are we in OS?
-				String sys = System.getProperty("os.name");
+				final String sys = System.getProperty("os.name");
 				if ("Mac OS X".equals(sys))
 					_etopoPath = "../deploy/";
 				else

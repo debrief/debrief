@@ -9,21 +9,21 @@ import org.mwc.cmap.grideditor.table.GridEditorTable;
 
 public class TablePopupMenuBuilder {
 
-	private MenuManager myMenuManager;
+	private final MenuManager myMenuManager;
 
 	private final GridEditorActionGroup myActionGroup;
 
-	public TablePopupMenuBuilder(GridEditorTable tableUI, GridEditorActionGroup actionGroup) {
+	public TablePopupMenuBuilder(final GridEditorTable tableUI, final GridEditorActionGroup actionGroup) {
 		myActionGroup = actionGroup;
 		myMenuManager = new MenuManager();
 		myMenuManager.setRemoveAllWhenShown(true);
 		myMenuManager.addMenuListener(new IMenuListener() {
 
-			public void menuAboutToShow(IMenuManager manager) {
+			public void menuAboutToShow(final IMenuManager manager) {
 				myActionGroup.fillContextMenu(manager);
 			}
 		});
-		Table table = tableUI.getTableViewer().getTable();
+		final Table table = tableUI.getTableViewer().getTable();
 		table.setMenu(myMenuManager.createContextMenu(table));
 	}
 }

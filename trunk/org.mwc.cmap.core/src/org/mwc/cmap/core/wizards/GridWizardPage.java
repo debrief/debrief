@@ -70,13 +70,13 @@ public class GridWizardPage extends CoreEditableWizardPage
 		}
 
 		@Override
-		public void setAsText(String val)
+		public void setAsText(final String val)
 		{
 			setValue(val);
 		}
 
 		@Override
-		public void setValue(Object p1)
+		public void setValue(final Object p1)
 		{
 			if (p1 instanceof WorldDistance)
 			{
@@ -102,7 +102,7 @@ public class GridWizardPage extends CoreEditableWizardPage
 	 * 
 	 * @param pageName
 	 */
-	public GridWizardPage(ISelection selection)
+	public GridWizardPage(final ISelection selection)
 	{
 		super(selection, "gridPage", "Add Grid to Plot",
 				"This page adds a grid to your plot", "images/grid_wizard.gif", null);

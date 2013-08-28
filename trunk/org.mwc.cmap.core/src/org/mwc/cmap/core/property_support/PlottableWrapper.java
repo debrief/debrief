@@ -20,7 +20,7 @@ public class PlottableWrapper extends EditableWrapper
 	 * @param parent
 	 * @param layers
 	 */
-	public PlottableWrapper(Plottable plottable, PlottableWrapper parent, Layers layers)
+	public PlottableWrapper(final Plottable plottable, final PlottableWrapper parent, final Layers layers)
 	{
 		super(plottable, layers);
 		_parent = parent;
@@ -66,13 +66,13 @@ public class PlottableWrapper extends EditableWrapper
 		return _parent;
 	}
 
-	public boolean equals(Object arg0)
+	public boolean equals(final Object arg0)
 	{
 		Editable targetPlottable = null;
 		boolean res = false;
 		if (arg0 instanceof PlottableWrapper)
 		{
-			PlottableWrapper pw = (PlottableWrapper) arg0;
+			final PlottableWrapper pw = (PlottableWrapper) arg0;
 			targetPlottable = pw.getPlottable();
 		}
 		else

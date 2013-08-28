@@ -85,12 +85,12 @@ public class AWTToolbarButton extends Button implements ActionListener
   /////////////////////////////////////////////////////////
   /** convenience constructor, calls normal one
    */
-  public AWTToolbarButton(Tool theTool){
+  public AWTToolbarButton(final Tool theTool){
     this(theTool.getLabel(), theTool);
     
   }
   
-  public AWTToolbarButton(String theLabel, Tool theTool){
+  public AWTToolbarButton(final String theLabel, final Tool theTool){
     super(theLabel);
     _theTool = theTool;
     this.addActionListener(this);
@@ -102,7 +102,7 @@ public class AWTToolbarButton extends Button implements ActionListener
   
   /** callback function for a button being pressed
    */
-  public void actionPerformed(java.awt.event.ActionEvent e){
+  public void actionPerformed(final java.awt.event.ActionEvent e){
     /** check that we have a tool declared
      */
     if(_theTool != null)

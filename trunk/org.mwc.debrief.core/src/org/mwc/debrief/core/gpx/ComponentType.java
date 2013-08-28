@@ -104,7 +104,7 @@ public class ComponentType {
      *     {@link String }
      *     
      */
-    public void setType(String value) {
+    public void setType(final String value) {
         this.type = value;
     }
 
@@ -156,7 +156,7 @@ public class ComponentType {
          *     {@link String }
          *     
          */
-        public void setName(String value) {
+        public void setName(final String value) {
             this.name = value;
         }
 
@@ -180,7 +180,7 @@ public class ComponentType {
          *     {@link String }
          *     
          */
-        public void setValue(String value) {
+        public void setValue(final String value) {
             this.value = value;
         }
 

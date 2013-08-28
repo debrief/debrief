@@ -113,8 +113,8 @@ public class rangeCalc extends plainCalc
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	public double calculate(Watchable primary, Watchable secondary,
-			HiResDate thisTime)
+	public double calculate(final Watchable primary, final Watchable secondary,
+			final HiResDate thisTime)
 	{
 		double range = 0.0;
 		double theRng = 0.0;
@@ -124,7 +124,7 @@ public class rangeCalc extends plainCalc
 
 			// we output the range value according to the currently selected range
 			// units
-			String theUnits = getUnits();
+			final String theUnits = getUnits();
 
 			theRng = convertRange(range, theUnits);
 
@@ -138,7 +138,7 @@ public class rangeCalc extends plainCalc
 	 * @param theUnits target units
 	 * @return converted value
 	 */
-	public static final double convertRange(double range, String theUnits)
+	public static final double convertRange(final double range, final String theUnits)
 	{
 		double theRng = 0;
 		// do the units conversion
@@ -183,8 +183,8 @@ public class rangeCalc extends plainCalc
 		return false;
 	}
 
-	public String update(Watchable primary, Watchable secondary,
-			HiResDate time)
+	public String update(final Watchable primary, final Watchable secondary,
+			final HiResDate time)
 	{
 		String res = null;
 
@@ -217,7 +217,7 @@ public class rangeCalc extends plainCalc
 	 * 
 	 * @param theParent
 	 */
-	public static void init(ToolParent theParent)
+	public static void init(final ToolParent theParent)
 	{
 		_prefsProvider = theParent;
 	}

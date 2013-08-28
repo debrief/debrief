@@ -248,25 +248,25 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	// ////////////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////////////
-	public PlainChart(Layers theLayers)
+	public PlainChart(final Layers theLayers)
 	{
 		// create a common listener for both types of change
 		_dataReformattedListener = new DataListenerAdaptor()
 		{
 
-			public void dataReformatted(Layers theData, Layer changedLayer)
+			public void dataReformatted(final Layers theData, final Layer changedLayer)
 			{
 				if (!_suspendUpdates)
 					update(changedLayer);
 			}
 
-			public void dataModified(Layers theData, Layer changedLayer)
+			public void dataModified(final Layers theData, final Layer changedLayer)
 			{
 				if (!_suspendUpdates)
 					update(changedLayer);
 			}
 
-			public void dataExtended(Layers theData)
+			public void dataExtended(final Layers theData)
 			{
 				if (!_suspendUpdates)
 				{
@@ -286,7 +286,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			 * @param newItem
 			 * @param parent
 			 */
-			public void dataExtended(Layers theData, Plottable newItem, Layer parent)
+			public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
 			{
 				if (!_suspendUpdates)
 				{
@@ -308,7 +308,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	}
 
-	public void setLayers(Layers theLayers)
+	public void setLayers(final Layers theLayers)
 	{
 		// hmm, do we have an exising set of layers?
 		if (_theLayers != null)
@@ -389,7 +389,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		 */
 
 		// see if we are still initialising our chart
-		Dimension sz = getScreenSize();
+		final Dimension sz = getScreenSize();
 		if ((sz.width != 0) && (sz.height != 0))
 		{
 			_theSize = sz;
@@ -405,7 +405,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	 * @param suspendUpdates
 	 *          yes/no
 	 */
-	public void setSuspendUpdates(boolean suspendUpdates)
+	public void setSuspendUpdates(final boolean suspendUpdates)
 	{
 		_dataReformattedListener.setSuspendUpdates(suspendUpdates);
 	}
@@ -413,7 +413,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	// ////////////////////////////////////////////////////////
 	// methods for handling requests from our canvas
 	// ////////////////////////////////////////////////////////
-	public void paintMe(CanvasType dest)
+	public void paintMe(final CanvasType dest)
 	{
 		// do a repaint, instruct the layers to paint
 		_theLayers.paint(dest);
@@ -421,11 +421,11 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	public WorldArea getDataArea()
 	{
-		WorldArea res = _theLayers.getBounds();
+		final WorldArea res = _theLayers.getBounds();
 		return res;
 	}
 
-	public void resizedEvent(MWC.Algorithms.PlainProjection theProj, Dimension newScreenArea)
+	public void resizedEvent(final MWC.Algorithms.PlainProjection theProj, final Dimension newScreenArea)
 	{
 		// don't really bother doing anything here - since the canvas repaints
 		// itself
@@ -473,12 +473,12 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * add an area listener
 	 */
-	public void setAlternateChartDragListener(ChartDragListener theListener)
+	public void setAlternateChartDragListener(final ChartDragListener theListener)
 	{
 		// stop the old listener from listening
 		if (_theAlternateChartDragListener != null)
 		{
-			Rubberband oldBand = _theAlternateChartDragListener.getRubberband();
+			final Rubberband oldBand = _theAlternateChartDragListener.getRubberband();
 			if (oldBand != null)
 			{
 				oldBand.removeFromComponent(this.getPanel());
@@ -490,7 +490,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		_theAlternateChartDragListener = theListener;
 
 		// set it's rubberband to active, if we have one
-		Rubberband newBand = _theAlternateChartDragListener.getRubberband();
+		final Rubberband newBand = _theAlternateChartDragListener.getRubberband();
 		if (newBand != null)
 		{
 			newBand.setActive(true);
@@ -500,13 +500,13 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * add an area listener
 	 */
-	public void setChartDragListener(ChartDragListener theListener)
+	public void setChartDragListener(final ChartDragListener theListener)
 	{
 
 		// stop the old listener from listening
 		if (_theChartDragListener != null)
 		{
-			Rubberband oldBand = _theChartDragListener.getRubberband();
+			final Rubberband oldBand = _theChartDragListener.getRubberband();
 			if (oldBand != null)
 			{
 				oldBand.removeFromComponent(this.getPanel());
@@ -531,7 +531,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * remove an area listener
 	 */
-	public void removeChartDragListener(ChartDragListener theListener)
+	public void removeChartDragListener(final ChartDragListener theListener)
 	{
 		_theChartDragListener = null;
 	}
@@ -560,7 +560,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * add a cursor movement listener
 	 */
-	public void addCursorMovedListener(ChartCursorMovedListener theListener)
+	public void addCursorMovedListener(final ChartCursorMovedListener theListener)
 	{
 		_movementListeners.addElement(theListener);
 	}
@@ -568,7 +568,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * remove a cursor movement listener
 	 */
-	public void removeCursorMovedListener(ChartCursorMovedListener theListener)
+	public void removeCursorMovedListener(final ChartCursorMovedListener theListener)
 	{
 		_movementListeners.removeElement(theListener);
 	}
@@ -585,7 +585,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * add a cursor movement listener
 	 */
-	public void addCursorDblClickedListener(ChartDoubleClickListener theListener)
+	public void addCursorDblClickedListener(final ChartDoubleClickListener theListener)
 	{
 		_theDblClickListeners.addElement(theListener);
 	}
@@ -593,7 +593,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * remove a cursor movement listener
 	 */
-	public void removeCursorDblClickedListener(ChartDoubleClickListener theListener)
+	public void removeCursorDblClickedListener(final ChartDoubleClickListener theListener)
 	{
 		_theDblClickListeners.removeElement(theListener);
 	}
@@ -613,7 +613,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * add a cursor movement listener
 	 */
-	public void addLeftClickListener(ChartClickListener theListener)
+	public void addLeftClickListener(final ChartClickListener theListener)
 	{
 		_theLeftClickListener = theListener;
 	}
@@ -621,7 +621,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * remove a cursor movement listener
 	 */
-	public void removeLeftClickListener(ChartClickListener theListener)
+	public void removeLeftClickListener(final ChartClickListener theListener)
 	{
 		_theLeftClickListener = theListener;
 	}
@@ -629,7 +629,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * add a cursor movement listener
 	 */
-	public void addRightClickListener(ChartClickListener theListener)
+	public void addRightClickListener(final ChartClickListener theListener)
 	{
 		_theRightClickListener = theListener;
 	}
@@ -637,7 +637,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * remove a cursor movement listener
 	 */
-	public void removeRightClickListener(ChartClickListener theListener)
+	public void removeRightClickListener(final ChartClickListener theListener)
 	{
 		_theRightClickListener = theListener;
 	}
@@ -645,16 +645,16 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	// //////////////////////////////////////////////////////////
 	// mouse events
 	// //////////////////////////////////////////////////////////
-	public void mouseClicked(MouseEvent p1)
+	public void mouseClicked(final MouseEvent p1)
 	{
 		// get the world location for this point
-		WorldLocation val = getCanvas().toWorld(p1.getPoint());
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
 
 		// is it duff? - drop out if it is
 		if (val == null)
 			return;
 
-		WorldLocation wl = new WorldLocation(val);
+		final WorldLocation wl = new WorldLocation(val);
 
 		if (p1.getClickCount() == 2)
 		{
@@ -662,7 +662,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			{
 
 				// get the top one off the stack
-				ChartDoubleClickListener lc = (ChartDoubleClickListener) _theDblClickListeners
+				final ChartDoubleClickListener lc = (ChartDoubleClickListener) _theDblClickListeners
 						.lastElement();
 				lc.cursorDblClicked(this, wl, p1.getPoint());
 			}
@@ -693,18 +693,18 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	}
 
-	public void mousePressed(MouseEvent p1)
+	public void mousePressed(final MouseEvent p1)
 	{
 		// see if it was a right-click
 		if ((p1.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			return;
 
 		// see if we have a valid position
-		WorldLocation val = getCanvas().toWorld(p1.getPoint());
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
 		// do we have a valid position?
 		if (val != null)
 		{
-			WorldLocation theLoc = new WorldLocation(val);
+			final WorldLocation theLoc = new WorldLocation(val);
 
 			Rubberband theRubber = null;
 
@@ -736,18 +736,18 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	}
 
-	public void mouseReleased(MouseEvent p1)
+	public void mouseReleased(final MouseEvent p1)
 	{
 		// see if it was a right-click
 		if ((p1.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			return;
 
-		WorldLocation val = getCanvas().toWorld(p1.getPoint());
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
 
 		// do we have a valid position?
 		if (val != null)
 		{
-			WorldLocation theLoc = new WorldLocation(val);
+			final WorldLocation theLoc = new WorldLocation(val);
 
 			Rubberband theRubber = null;
 
@@ -778,27 +778,27 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		}
 	}
 
-	public void mouseEntered(MouseEvent p1)
+	public void mouseEntered(final MouseEvent p1)
 	{
 	}
 
-	public void mouseExited(MouseEvent p1)
+	public void mouseExited(final MouseEvent p1)
 	{
 	}
 
-	public void mouseDragged(MouseEvent p1)
+	public void mouseDragged(final MouseEvent p1)
 	{
 		// see if it was a right-click
 		if ((p1.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			return;
 
 		// get the location, we'll prob want it anyway
-		WorldLocation val = getCanvas().toWorld(p1.getPoint());
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
 
 		// do we have a valid position?
 		if (val != null)
 		{
-			WorldLocation theLoc = new WorldLocation(val);
+			final WorldLocation theLoc = new WorldLocation(val);
 
 			// see which mouse was being dragged
 			if ((p1.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
@@ -814,10 +814,10 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			{
 				if (_movementListeners != null)
 				{
-					Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
+					final Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
 					while (enumer.hasMoreElements())
 					{
-						ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();
+						final ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();
 						// check that we have managed to create a
 						// location
 						if (theLoc != null)
@@ -837,7 +837,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		} // whether we have a valid position
 	}
 
-	public void mouseMoved(MouseEvent p1)
+	public void mouseMoved(final MouseEvent p1)
 	{
 		mouseMoved(p1.getPoint());
 	}
@@ -848,20 +848,20 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	 * @param x
 	 * @param y
 	 */
-	public void mouseMoved(Point thePoint)
+	public void mouseMoved(final Point thePoint)
 	{
 		if (_movementListeners != null)
 		{
-			Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
+			final Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
 			while (enumer.hasMoreElements())
 			{
-				ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();
-				WorldLocation val = getCanvas().toWorld(thePoint);
+				final ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();
+				final WorldLocation val = getCanvas().toWorld(thePoint);
 				// check that we have managed to create a
 				// location
 				if (val != null)
 				{
-					WorldLocation lp = new WorldLocation(getCanvas().toWorld(thePoint));
+					final WorldLocation lp = new WorldLocation(getCanvas().toWorld(thePoint));
 					cl.cursorMoved(lp, false, _theLayers);
 				}
 			}
@@ -890,7 +890,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	}
 
-	public void save(ObjectOutputStream os)
+	public void save(final ObjectOutputStream os)
 	{
 		// create the output stream
 		try
@@ -904,13 +904,13 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			// os.writeObject(this._movementListeners);
 			// os.writeObject(this._myRubber);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
 	}
 
-	public void restore(ObjectInputStream is)
+	public void restore(final ObjectInputStream is)
 	{
 		try
 		{
@@ -918,7 +918,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			_theLayers = (Layers) is.readObject();
 
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}

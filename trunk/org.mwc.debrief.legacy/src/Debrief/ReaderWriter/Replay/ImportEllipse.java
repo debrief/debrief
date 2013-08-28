@@ -100,11 +100,11 @@ final class ImportEllipse implements PlainLineImporter
 	/**
 	 * read in this string and return a Label
 	 */
-	public final Object readThisLine(String theLine)
+	public final Object readThisLine(final String theLine)
 	{
 
 		// get a stream from the string
-		StringTokenizer st = new StringTokenizer(theLine);
+		final StringTokenizer st = new StringTokenizer(theLine);
 
 		// declare local variables
 		WorldLocation theLoc;
@@ -143,12 +143,12 @@ final class ImportEllipse implements PlainLineImporter
 		 * now, we may have trouble here, since there may not be a space between the
 		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
 		 */
-		String vDiff = st.nextToken();
+		final String vDiff = st.nextToken();
 		if (vDiff.length() > 3)
 		{
 			// hmm, they are combined
 			latHem = vDiff.charAt(0);
-			String secondPart = vDiff.substring(1, vDiff.length());
+			final String secondPart = vDiff.substring(1, vDiff.length());
 			longDeg = Double.valueOf(secondPart);
 		}
 		else
@@ -174,12 +174,12 @@ final class ImportEllipse implements PlainLineImporter
 				longMin, longSec, longHem, 0);
 
 		// create the circle object
-		PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(maxima,
+		final PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(maxima,
 				WorldDistance.DEGS), new WorldDistance(minima, WorldDistance.DEGS));
 		sp.setColor(ImportReplay.replayColorFor(theSymbology));
 
 		// and put it into a shape
-		ShapeWrapper sw = new ShapeWrapper(theText, sp, ImportReplay
+		final ShapeWrapper sw = new ShapeWrapper(theText, sp, ImportReplay
 				.replayColorFor(theSymbology), theDate);
 
 		return sw;
@@ -200,11 +200,11 @@ final class ImportEllipse implements PlainLineImporter
 	 * @param theWrapper
 	 *          the Shape we are exporting
 	 */
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
-		ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 
-		EllipseShape ellipse = (EllipseShape) theShape.getShape();
+		final EllipseShape ellipse = (EllipseShape) theShape.getShape();
 
 		// result value
 		String line;
@@ -246,14 +246,14 @@ final class ImportEllipse implements PlainLineImporter
 	 *          the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 
 		if (val instanceof ShapeWrapper)
 		{
-			ShapeWrapper sw = (ShapeWrapper) val;
-			PlainShape ps = sw.getShape();
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
 			res = (ps instanceof EllipseShape);
 		}
 

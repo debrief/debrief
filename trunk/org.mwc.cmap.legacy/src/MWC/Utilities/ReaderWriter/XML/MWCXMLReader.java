@@ -100,7 +100,7 @@ public class MWCXMLReader extends DefaultHandler {
 					// //
 					ha.setValue(ha.myName, val);
 					// //
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					MWC.Utilities.Errors.Trace.trace(e,
 							"Trouble handling attribute: " + ha.myName
 									+ " for:" + _myType);
@@ -169,16 +169,15 @@ public class MWCXMLReader extends DefaultHandler {
 	 */
 
 	@Override
-	public void startElement(final String nameSpace, String localName,
+	public void startElement(final String nameSpace, final String localName,
 			final String qName, final Attributes attributes)
 			throws SAXException {
 		boolean handled = false;
-
-		localName = qName;
+		final String theLocalName = qName;
 		// check we are handling a session
-		if (canHandleThis(localName)) {
+		if (canHandleThis(theLocalName)) {
 			// hooray it's one of ours!
-			handleOurselves(localName, attributes);
+			handleOurselves(theLocalName, attributes);
 			handled = true;
 		} else
 		// see if we have a handler for this object
@@ -186,8 +185,8 @@ public class MWCXMLReader extends DefaultHandler {
 			final Enumeration<MWCXMLReader> enumer = _myHandlers.elements();
 			while (enumer.hasMoreElements()) {
 				final MWCXMLReader hand = (MWCXMLReader) enumer.nextElement();
-				if (hand.canHandleThis(localName)) {
-					hand.startElement(nameSpace, localName, qName, attributes);
+				if (hand.canHandleThis(theLocalName)) {
+					hand.startElement(nameSpace, theLocalName, qName, attributes);
 
 					// //////////////
 					// wrap this, it's hard to diagnose errors which appear here
@@ -195,9 +194,9 @@ public class MWCXMLReader extends DefaultHandler {
 
 					try {
 						hand.handleThis(_theParser, this);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						MWC.Utilities.Errors.Trace.trace(e,
-								"Trouble handling attribute:" + localName);
+								"Trouble handling attribute:" + theLocalName);
 					}
 
 					// //////////////
@@ -213,9 +212,9 @@ public class MWCXMLReader extends DefaultHandler {
 			// are we reporting not-handled errors?
 			if (_reportNotHandled) {
 				MWC.Utilities.Errors.Trace.trace(
-						"MWCXMLReader failed to find handler for:" + localName
+						"MWCXMLReader failed to find handler for:" + theLocalName
 								+ " when handling:" + _myType, false);
-				throw new java.lang.RuntimeException("\"" + localName + "\""
+				throw new java.lang.RuntimeException("\"" + theLocalName + "\""
 						+ HANDLER_NOT_FOUND_MESSAGE);
 			}
 		}
@@ -227,17 +226,17 @@ public class MWCXMLReader extends DefaultHandler {
 	 */
 	@Override
 	public final void endElement(final java.lang.String namespaceURI,
-			java.lang.String localName, final java.lang.String qName)
+			final java.lang.String localName, final java.lang.String qName)
 			throws SAXException {
-		localName = qName;
+		final java.lang.String theLocalName = qName;
 		// check if it is us which have finished, if so, drop back to our parent
-		if (localName.equals(this._myType)) {
+		if (theLocalName.equals(this._myType)) {
 
 			try {
 				elementClosed();
-			} catch (NullPointerException se) {
+			} catch (final NullPointerException se) {
 				// output a hopefully useful message
-				final String msg = "Trouble parsing element: " + localName;
+				final String msg = "Trouble parsing element: " + theLocalName;
 				MWC.Utilities.Errors.Trace.trace(se, msg);
 
 				// and continue back up the stack
@@ -296,7 +295,7 @@ public class MWCXMLReader extends DefaultHandler {
 			try {
 				final double val = Double.parseDouble(value);// longFormat.parse(value).doubleValue();
 				setValue(name, val);
-			} catch (java.lang.NumberFormatException pe) {
+			} catch (final java.lang.NumberFormatException pe) {
 				MWC.Utilities.Errors.Trace.trace(pe,
 						"Reader: Whilst reading in " + name + " value of :"
 								+ value);
@@ -360,7 +359,7 @@ public class MWCXMLReader extends DefaultHandler {
 			try {
 				final long time = getXMLDateFormatter().parse(value).getTime();
 				setValue(name, time);
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				MWC.Utilities.Errors.Trace.trace(e,
 						"Failed to parse Date value of:" + value + " for:"
 								+ name);
@@ -409,12 +408,12 @@ public class MWCXMLReader extends DefaultHandler {
 	}
 
 	static public String writeThis(final HiResDate val) {
-		String res = DebriefFormatDateTime.toStringHiRes(val);
+		final String res = DebriefFormatDateTime.toStringHiRes(val);
 		return res;
 	}
 
 	static public String writeThis(final Duration val) {
-		String res = val.toString();
+		final String res = val.toString();
 		return res;
 	}
 

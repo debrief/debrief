@@ -21,7 +21,7 @@ public abstract class AbstractViewerAction extends Action {
 		setEnabled(false);
 	}
 
-	public final void refreshWithActionContext(GridEditorActionContext actionContext) {
+	public final void refreshWithActionContext(final GridEditorActionContext actionContext) {
 		myUndoSupport = actionContext.getUndoSupport();
 		myOperation =  createUndoableOperation(actionContext);
 		updateActionAppearance(myOperation);
@@ -34,20 +34,20 @@ public abstract class AbstractViewerAction extends Action {
 		}
 		try {
 			myUndoSupport.getOperationHistory().execute(myOperation, null, null);
-		} catch (ExecutionException e) {
+		} catch (final ExecutionException e) {
 			handleExecutionException(e);
 		}
 	}
 	
-	protected void updateActionAppearance(IUndoableOperation operation) {
+	protected void updateActionAppearance(final IUndoableOperation operation) {
 		setEnabled(myOperation != null && myOperation.canExecute());
 	}
 
-	protected void handleExecutionException(ExecutionException e) {
+	protected void handleExecutionException(final ExecutionException e) {
 		throw new RuntimeException("Operation failed " + myOperation.getLabel(), e);
 	}
 
-	protected static final ImageDescriptor loadImageDescriptor(String key) {
+	protected static final ImageDescriptor loadImageDescriptor(final String key) {
 		return GridEditorPlugin.getInstance().getImageRegistry().getDescriptor(key);
 	}
 

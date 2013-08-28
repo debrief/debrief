@@ -17,7 +17,7 @@ abstract public class CMAPOperation extends AbstractOperation
 	 * 
 	 * @param title
 	 */
-	public CMAPOperation(String title)
+	public CMAPOperation(final String title)
 	{
 		super(title);
 		
@@ -31,7 +31,7 @@ abstract public class CMAPOperation extends AbstractOperation
 	 * @return
 	 * @throws ExecutionException
 	 */
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+	public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException
 	{
 		return execute(monitor, info);
 	}

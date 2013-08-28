@@ -26,7 +26,7 @@ public interface EnvironmentState {
 
 	public static final EnvironmentState ALWAYS_COMPATIBLE = new EnvironmentState() {
 
-		public boolean isCompatible(OperationEnvironment environment) {
+		public boolean isCompatible(final OperationEnvironment environment) {
 			return true;
 		}
 	};
@@ -38,11 +38,11 @@ public interface EnvironmentState {
 
 		private final int myItemsCountBefore;
 
-		public SeriesOfKnownSize(OperationEnvironment environment) {
+		public SeriesOfKnownSize(final OperationEnvironment environment) {
 			myItemsCountBefore = environment.getSeries().getItems().size();
 		}
 
-		public boolean isCompatible(OperationEnvironment environment) {
+		public boolean isCompatible(final OperationEnvironment environment) {
 			return myItemsCountBefore == environment.getSeries().getItems().size();
 		}
 	}
@@ -57,23 +57,23 @@ public interface EnvironmentState {
 
 		private final TimeStampedDataItem myItem;
 
-		public ItemAtKnownPosition(OperationEnvironment environment, int expectedPosition) throws ExecutionException {
+		public ItemAtKnownPosition(final OperationEnvironment environment, final int expectedPosition) throws ExecutionException {
 			this(environment.getSeries().getItems().get(expectedPosition), expectedPosition);
 			if (myItem != environment.getSubject()) {
 				throw new ExecutionException("Can't find subject element at position: " + myActualPosition);
 			}
 		}
 
-		public ItemAtKnownPosition(OperationEnvironment environment) {
+		public ItemAtKnownPosition(final OperationEnvironment environment) {
 			this(environment.getSubject(), environment.getSeries().getItems().indexOf(environment.getSubject()));
 		}
 
-		private ItemAtKnownPosition(TimeStampedDataItem item, int position) {
+		private ItemAtKnownPosition(final TimeStampedDataItem item, final int position) {
 			myItem = item;
 			myActualPosition = position;
 		}
 
-		public boolean isCompatible(OperationEnvironment environment) {
+		public boolean isCompatible(final OperationEnvironment environment) {
 			return myActualPosition == environment.getSeries().getItems().indexOf(myItem);
 		}
 		

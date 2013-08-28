@@ -83,8 +83,8 @@ public class FileUtils
     * @throws OSSException - error message
     */
    public static void moveFile(
-      File flCurrent, 
-      File flDestination
+      final File flCurrent, 
+      final File flDestination
    ) throws IOException
    {
       // Make sure that the source exist, it might be already moved from 
@@ -150,8 +150,8 @@ public class FileUtils
     * @throws OSSException - error message
     */  
    public static void copyFile(
-      File flCurrent,
-      File flDestination
+      final File flCurrent,
+      final File flDestination
    ) throws IOException
    {
      // Make sure the directory exists and if not create it
@@ -193,7 +193,7 @@ public class FileUtils
       {
          finInput = new FileInputStream(flCurrent);
       }
-      catch (IOException ioExec)
+      catch (final IOException ioExec)
       {
          if (finInput != null)
          {
@@ -201,7 +201,7 @@ public class FileUtils
             {
                finInput.close();
             }
-            catch (Throwable thr)
+            catch (final Throwable thr)
             {
               
             }
@@ -220,14 +220,14 @@ public class FileUtils
     * @throws IOException - error message
     */
    public static void renameToTemporaryName(
-      File   flFileToRename,
-      String strPrefix
+      final File   flFileToRename,
+      final String strPrefix
    ) throws IOException
    {
       assert strPrefix != null : "Prefix cannot be null.";
       
       String       strParent;
-      StringBuffer sbBuffer = new StringBuffer();
+      final StringBuffer sbBuffer = new StringBuffer();
       File         flTemp;
       int          iIndex = 0;
       
@@ -270,7 +270,7 @@ public class FileUtils
     * @return boolean - sucess flag
     */
    public static boolean deleteDirectoryContent(
-      String strDir
+      final String strDir
    )
    {
       return ((strDir != null) && (strDir.length() > 0)) 
@@ -285,14 +285,14 @@ public class FileUtils
     * @return boolean - sucess flag
     */
    public static boolean deleteDirectoryContent(
-      File fDir
+      final File fDir
    )
    {
       boolean bRetval = false;
 
       if (fDir != null && fDir.isDirectory()) 
       {
-         File[] files = fDir.listFiles();
+         final File[] files = fDir.listFiles();
    
          if (files != null)
          {
@@ -335,7 +335,7 @@ public class FileUtils
     * @return boolean - true if directory was successfully deleted
     */
    public static boolean deleteDir(
-      String strDir
+      final String strDir
    ) 
    {
       return ((strDir != null) && (strDir.length() > 0)) 
@@ -350,7 +350,7 @@ public class FileUtils
     * @return boolean - true if directory was successfully deleted
     */
    public static boolean deleteDir(
-      File fDir
+      final File fDir
    ) 
    {
       boolean bRetval = false;
@@ -374,8 +374,8 @@ public class FileUtils
     * @throws IOException - error in function
     */
    public boolean isFileBinaryEqual(
-      File first,
-      File second
+      final File first,
+      final File second
    ) throws IOException
    {
       // TODO: Test: Missing test
@@ -468,8 +468,8 @@ public class FileUtils
     * @throws OSSMultiException - double error in function
     */
    public static void copyStreamToFile(
-      InputStream input,
-      File        output
+      final InputStream input,
+      final File        output
    ) throws IOException
    {
       FileOutputStream foutOutput = null;
@@ -479,7 +479,7 @@ public class FileUtils
       {
          foutOutput = new FileOutputStream(output);
       }
-      catch (IOException ioExec)
+      catch (final IOException ioExec)
       {
          if (foutOutput != null)
          {
@@ -487,7 +487,7 @@ public class FileUtils
             {
                foutOutput.close();
             }
-            catch (IOException ioExec2)
+            catch (final IOException ioExec2)
             {
                
             }
@@ -511,8 +511,8 @@ public class FileUtils
     * @throws OSSMultiException - double error in function
     */
    public static void copyStreamToStream(
-      InputStream input,
-      OutputStream output
+      final InputStream input,
+      final OutputStream output
    ) throws IOException
    {
       InputStream is = null;
@@ -558,7 +558,7 @@ public class FileUtils
                {
                   os.close();
                }
-               catch (IOException exec)
+               catch (final IOException exec)
                {
                   exec1 = exec;
                }
@@ -572,7 +572,7 @@ public class FileUtils
                {
                   is.close();
                }
-               catch (IOException exec)
+               catch (final IOException exec)
                {
                   exec2 = exec;
                }

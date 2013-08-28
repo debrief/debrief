@@ -58,7 +58,7 @@ public class DTGBiSlider
 	 * @param parent
 	 * @param style
 	 */
-	public DTGBiSlider(Composite parentControl, DoFineControl fineControl)
+	public DTGBiSlider(final Composite parentControl, final DoFineControl fineControl)
 	{
 
 		// sort out some demo dates
@@ -66,22 +66,22 @@ public class DTGBiSlider
 		final long nowMillis = System.currentTimeMillis();
 		calendar.setTimeInMillis(nowMillis);
 		calendar.add(Calendar.YEAR, -1);
-		Date yearAgo = calendar.getTime();
+		final Date yearAgo = calendar.getTime();
 
 		calendar.setTimeInMillis(nowMillis);
 		calendar.add(Calendar.MONTH, -3);
-		Date threeMonthesAgo = calendar.getTime();
+		final Date threeMonthesAgo = calendar.getTime();
 
 		calendar.setTimeInMillis(nowMillis);
 		calendar.add(Calendar.MONTH, +4);
-		Date fourMonthesFromNow = calendar.getTime();
+		final Date fourMonthesFromNow = calendar.getTime();
 
 		calendar.setTimeInMillis(nowMillis);
 		calendar.add(Calendar.YEAR, +1);
-		Date yearFromNow = calendar.getTime();
+		final Date yearFromNow = calendar.getTime();
 
 		// sort out the data model
-		CalendarDateSuite suite = new CalendarDateSuite();
+		final CalendarDateSuite suite = new CalendarDateSuite();
 		_dateModel = suite.createDataModel(yearAgo, yearFromNow, threeMonthesAgo,
 				fourMonthesFromNow);
 		// _dateModel.setSegmentCount(3);
@@ -100,11 +100,11 @@ public class DTGBiSlider
 		// update the UI labels
 		_uiModel.setLabelProvider(new BiSliderLabelProvider()
 		{
-			public String getLabel(double value)
+			public String getLabel(final double value)
 			{
 				// ok, convert to date
-				long millis = (long) value;
-				String res = FormatRNDateTime.toMediumString(millis);
+				final long millis = (long) value;
+				final String res = FormatRNDateTime.toMediumString(millis);
 				return res;
 			}
 		});
@@ -114,8 +114,8 @@ public class DTGBiSlider
 		{
 			private boolean myInCompositeUpdate;
 
-			public void dataModelChanged(BiSliderDataModel dataModel,
-					boolean moreChangesExpectedInNearFuture)
+			public void dataModelChanged(final BiSliderDataModel dataModel,
+					final boolean moreChangesExpectedInNearFuture)
 			{
 				// see if we're already procesing something
 				if (moreChangesExpectedInNearFuture && myInCompositeUpdate)
@@ -146,14 +146,14 @@ public class DTGBiSlider
 		return _mySlider;
 	}
 
-	public void updateOuterRanges(TimePeriod period)
+	public void updateOuterRanges(final TimePeriod period)
 	{
 
 		_minVal = period.getStartDTG();
 		_maxVal = period.getEndDTG();
 
-		Date firstDate = _minVal.getDate();
-		Date lastDate = _maxVal.getDate();
+		final Date firstDate = _minVal.getDate();
+		final Date lastDate = _maxVal.getDate();
 
 		// look out for special case where dates are equal
 		if (!firstDate.equals(lastDate))
@@ -173,11 +173,11 @@ public class DTGBiSlider
 		// repaint();
 	}
 
-	public void updateSelectedRanges(HiResDate minSelectedDate,
-			HiResDate maxSelectedDate)
+	public void updateSelectedRanges(final HiResDate minSelectedDate,
+			final HiResDate maxSelectedDate)
 	{
-		Date firstDate = minSelectedDate.getDate();
-		Date lastDate = maxSelectedDate.getDate();
+		final Date firstDate = minSelectedDate.getDate();
+		final Date lastDate = maxSelectedDate.getDate();
 		_dateModel.setUserMinimum(firstDate);
 		_dateModel.setUserMaximum(lastDate);
 	}
@@ -188,14 +188,14 @@ public class DTGBiSlider
 	protected void outputValues()
 	{
 		// ok - determine the times
-		HiResDate lowDTG = new HiResDate(_dateModel.getUserMinimumDate());
-		HiResDate highDTG = new HiResDate(_dateModel.getUserMaximumDate());
+		final HiResDate lowDTG = new HiResDate(_dateModel.getUserMinimumDate());
+		final HiResDate highDTG = new HiResDate(_dateModel.getUserMaximumDate());
 
 		// and send out the update
 		rangeChanged(new TimePeriod.BaseTimePeriod(lowDTG, highDTG));
 	}
 
-	public void rangeChanged(TimePeriod period)
+	public void rangeChanged(final TimePeriod period)
 	{
 		// ok, anybody can over-ride this call if they want to - to inform
 		// themselves what's happening
@@ -213,12 +213,12 @@ public class DTGBiSlider
 	 * @param size
 	 *          The _stepSize to set (millis)
 	 */
-	public void setStepSize(long size)
+	public void setStepSize(final long size)
 	{
 		_stepSize = size;
 	}
 
-	public void setSegmentSize(long size)
+	public void setSegmentSize(final long size)
 	{
 		_dateModel.setSegmentLength(size);
 	}
@@ -230,7 +230,7 @@ public class DTGBiSlider
 	 */
 	public TimePeriod getPeriod()
 	{
-		TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate(
+		final TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate(
 				_dateModel.getUserMinimumDate()), new HiResDate(
 				_dateModel.getUserMaximumDate()));
 

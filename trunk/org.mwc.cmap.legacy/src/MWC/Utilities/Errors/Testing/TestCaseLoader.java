@@ -39,18 +39,18 @@ public class TestCaseLoader {
         boolean isOfTheCorrectType = false;
         if (TestCase.class.isAssignableFrom(testCaseClass)) {
             try {
-                Field testAllIgnoreThisField = testCaseClass.getDeclaredField("TEST_ALL_TEST_TYPE");
+                final Field testAllIgnoreThisField = testCaseClass.getDeclaredField("TEST_ALL_TEST_TYPE");
                 final int EXPECTED_MODIFIERS = Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL;
-                int mods = testAllIgnoreThisField.getModifiers();
+                final int mods = testAllIgnoreThisField.getModifiers();
                 if (((mods & EXPECTED_MODIFIERS) != EXPECTED_MODIFIERS) ||
                     (testAllIgnoreThisField.getType() != String.class)) {
                     System.out.println("WRONG TYPE for TEST_ALL_TYPE");
                     throw new IllegalArgumentException ("TEST_ALL_TEST_TYPE should be static public final String");
                 }
-                String testType = (String)testAllIgnoreThisField.get(testCaseClass);
+                final String testType = (String)testAllIgnoreThisField.get(testCaseClass);
                 isOfTheCorrectType = requiredType.equals (testType);
-            } catch (NoSuchFieldException e) {
-            } catch (IllegalAccessException e) {
+            } catch (final NoSuchFieldException e) {
+            } catch (final IllegalAccessException e) {
                 throw new IllegalArgumentException ("The field " + testCaseClass.getName () + ".TEST_ALL_TEST_TYPE is not accessible.");
             }
         }
@@ -65,16 +65,16 @@ public class TestCaseLoader {
      */
     public void loadTestCases (final Iterator<?> classNamesIterator) {
         while (classNamesIterator.hasNext ()) {
-            String className = (String)classNamesIterator.next ();
+            final String className = (String)classNamesIterator.next ();
             try {
-                Class<?> candidateClass = Class.forName (className);
+                final Class<?> candidateClass = Class.forName (className);
                 addClassIfTestCase (candidateClass);
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 System.err.println ("Cannot load class: " + className);
-            } catch (java.lang.VerifyError ex) {
+            } catch (final java.lang.VerifyError ex) {
               System.err.println ("Cannot load class: " + className);
               ex.printStackTrace();
-            }catch(java.lang.NoClassDefFoundError ef)
+            }catch(final java.lang.NoClassDefFoundError ef)
             {
               System.err.println ("Cannot load class: " + className);
               ef.printStackTrace();

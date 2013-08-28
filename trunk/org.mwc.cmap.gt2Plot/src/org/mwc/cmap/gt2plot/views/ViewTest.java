@@ -82,7 +82,7 @@ public class ViewTest extends ViewPart
 
 	private Action action1;
 
-	private MapContent map;
+	private final MapContent map;
 
 	private AffineTransform worldToScreen;
 
@@ -100,46 +100,46 @@ public class ViewTest extends ViewPart
 		map.setTitle("simple map content");
 
 		// hey, try for an image aswell
-		String path = "/Users/ian/Desktop/ukrasterchart/2_BRITISH_ISLES.tif";
-		File chartFile = new File(path);
+		final String path = "/Users/ian/Desktop/ukrasterchart/2_BRITISH_ISLES.tif";
+		final File chartFile = new File(path);
 		if (!chartFile.exists())
 			System.err.println("CANNOT FILE THE CHART FILE!!!");
 
-		WorldImageFormat format = new WorldImageFormat();
-		AbstractGridCoverage2DReader tiffReader = format.getReader(chartFile);
+		final WorldImageFormat format = new WorldImageFormat();
+		final AbstractGridCoverage2DReader tiffReader = format.getReader(chartFile);
 		if (tiffReader != null)
 		{
-			StyleFactoryImpl sf = new StyleFactoryImpl();
-			RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
-			Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
+			final StyleFactoryImpl sf = new StyleFactoryImpl();
+			final RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
+			final Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
 
-			GeneralParameterValue[] params = null;
+			final GeneralParameterValue[] params = null;
 
-			GridReaderLayer res = new GridReaderLayer(tiffReader, defaultStyle,
+			final GridReaderLayer res = new GridReaderLayer(tiffReader, defaultStyle,
 					params);
 			map.addLayer(res);
 		}
 
 		try
 		{
-			URL url = GtActivator.getDefault().getBundle()
+			final URL url = GtActivator.getDefault().getBundle()
 					.getEntry("data/50m_admin_0_countries.shp");
-			String filePath = FileLocator.resolve(url).getFile();
-			File file = new File(filePath);
+			final String filePath = FileLocator.resolve(url).getFile();
+			final File file = new File(filePath);
 			if (!file.exists())
 				System.err.println("can't find file!!!");
-			FileDataStore store = FileDataStoreFinder.getDataStore(file);
+			final FileDataStore store = FileDataStoreFinder.getDataStore(file);
 			if (store != null)
 			{
-				SimpleFeatureSource featureSource = store.getFeatureSource();
+				final SimpleFeatureSource featureSource = store.getFeatureSource();
 
-				Style style = SLD.createSimpleStyle(featureSource.getSchema());
-				Layer layer = new FeatureLayer(featureSource, style);
+				final Style style = SLD.createSimpleStyle(featureSource.getSchema());
+				final Layer layer = new FeatureLayer(featureSource, style);
 				map.addLayer(layer);
 			}
 
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 
 		}
@@ -150,13 +150,13 @@ public class ViewTest extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		canvas = new Canvas(parent, SWT.NONE);
 		canvas.addPaintListener(new PaintListener()
 		{
 
-			public void paintControl(PaintEvent e)
+			public void paintControl(final PaintEvent e)
 			{
 				paintMe(e);
 			}
@@ -167,42 +167,43 @@ public class ViewTest extends ViewPart
 	}
 
 	@SuppressWarnings("unchecked")
-	private void paintMe(PaintEvent e)
+	private void paintMe(final PaintEvent e)
 	{
-		int width = e.gc.getClipping().width;
-		int height = e.gc.getClipping().height;
+		final int width = e.gc.getClipping().width;
+		final int height = e.gc.getClipping().height;
 
 		if (map != null)
 		{
 			// sort out the transforms
-			org.eclipse.swt.graphics.Rectangle paintArea = new org.eclipse.swt.graphics.Rectangle(
+			final org.eclipse.swt.graphics.Rectangle paintArea = new org.eclipse.swt.graphics.Rectangle(
 					0, 0, width, height);
-			ReferencedEnvelope mapArea = map.getViewport().getBounds();
+			final ReferencedEnvelope mapArea = map.getViewport().getBounds();
 			setTransforms(mapArea, paintArea);
 
-			StreamingRenderer renderer = new StreamingRenderer();
+			final StreamingRenderer renderer = new StreamingRenderer();
 			renderer.setMapContent(map);
 
-			RenderingHints hints = new RenderingHints(
+			final RenderingHints hints = new RenderingHints(
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			renderer.setJava2DHints(hints);
 
 			@SuppressWarnings("rawtypes")
+			final
 			Map rendererParams = new HashMap();
 			rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
 
 			renderer.setRendererHints(rendererParams);
 
-			org.eclipse.swt.graphics.Rectangle curPaintArea = e.gc.getClipping();
-			BufferedImage baseImage = new BufferedImage(curPaintArea.width + 1,
+			final org.eclipse.swt.graphics.Rectangle curPaintArea = e.gc.getClipping();
+			final BufferedImage baseImage = new BufferedImage(curPaintArea.width + 1,
 					curPaintArea.height + 1, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g2d = baseImage.createGraphics();
+			final Graphics2D g2d = baseImage.createGraphics();
 			g2d.fillRect(0, 0, curPaintArea.width + 1, curPaintArea.height + 1);
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
 
 			// renderer.setContext(context);
-			java.awt.Rectangle awtRectangle = Utils.toAwtRectangle(curPaintArea);
+			final java.awt.Rectangle awtRectangle = Utils.toAwtRectangle(curPaintArea);
 			final ReferencedEnvelope mapAOI = map.getViewport().getBounds();
 			renderer.paint(g2d, awtRectangle, mapAOI, getWorldToScreenTransform());
 			// swtImage.dispose();
@@ -221,7 +222,7 @@ public class ViewTest extends ViewPart
 			e.gc.drawImage(swtImage, 0, 0);
 		}
 
-		double y2 = Math.random() * 120d;
+		final double y2 = Math.random() * 120d;
 		e.gc.drawLine(20, 40, 80, (int) y2);
 	};
 
@@ -236,12 +237,12 @@ public class ViewTest extends ViewPart
 	 *          the image height.
 	 * @return swt image.
 	 */
-	private ImageData awtToSwt(BufferedImage bufferedImage, int width, int height)
+	private ImageData awtToSwt(final BufferedImage bufferedImage, final int width, final int height)
 	{
 		final int[] awtPixels = new int[width * height];
-		ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
+		final ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
 		swtImageData.transparentPixel = TRANSPARENT_COLOR;
-		int step = swtImageData.depth / 8;
+		final int step = swtImageData.depth / 8;
 		final byte[] data = swtImageData.data;
 		bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
 		for (int i = 0; i < height; i++)
@@ -249,7 +250,7 @@ public class ViewTest extends ViewPart
 			int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
 			for (int j = 0; j < width; j++)
 			{
-				int rgb = awtPixels[j + i * width];
+				final int rgb = awtPixels[j + i * width];
 				for (int k = swtImageData.depth - 8; k >= 0; k -= 8)
 				{
 					data[idx++] = (byte) ((rgb >> k) & 0xFF);
@@ -293,14 +294,14 @@ public class ViewTest extends ViewPart
 			// FIXME content.setCoordinateReferenceSystem(DefaultGeographicCRS.WGS84);
 		}
 
-		java.awt.Rectangle awtPaintArea = Utils.toAwtRectangle(paintArea);
-		double xscale = awtPaintArea.getWidth() / refEnv.getWidth();
-		double yscale = awtPaintArea.getHeight() / refEnv.getHeight();
+		final java.awt.Rectangle awtPaintArea = Utils.toAwtRectangle(paintArea);
+		final double xscale = awtPaintArea.getWidth() / refEnv.getWidth();
+		final double yscale = awtPaintArea.getHeight() / refEnv.getHeight();
 
-		double scale = Math.min(xscale, yscale);
+		final double scale = Math.min(xscale, yscale);
 
-		double xoff = refEnv.getMedian(0) * scale - awtPaintArea.getCenterX();
-		double yoff = refEnv.getMedian(1) * scale + awtPaintArea.getCenterY();
+		final double xoff = refEnv.getMedian(0) * scale - awtPaintArea.getCenterX();
+		final double yoff = refEnv.getMedian(1) * scale + awtPaintArea.getCenterY();
 
 		worldToScreen = new AffineTransform(scale, 0, 0, -scale, -xoff, yoff);
 		try
@@ -308,7 +309,7 @@ public class ViewTest extends ViewPart
 			worldToScreen.createInverse();
 
 		}
-		catch (NoninvertibleTransformException ex)
+		catch (final NoninvertibleTransformException ex)
 		{
 			ex.printStackTrace();
 		}
@@ -345,33 +346,33 @@ public class ViewTest extends ViewPart
 	protected transient ImageData _myImageTemplate = null;
 
 	protected org.eclipse.swt.graphics.Image createSWTImage(
-			ImageData myImageTemplate)
+			final ImageData myImageTemplate)
 	{
 		_myImageTemplate.transparentPixel = _myImageTemplate.palette
 				.getPixel(new RGB(255, 255, 255));
-		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
+		final org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
 				Display.getCurrent(), _myImageTemplate);
 		return image;
 	}
 
-	static ImageData convertToSWT(BufferedImage bufferedImage)
+	static ImageData convertToSWT(final BufferedImage bufferedImage)
 	{
 		if (bufferedImage.getColorModel() instanceof DirectColorModel)
 		{
-			DirectColorModel colorModel = (DirectColorModel) bufferedImage
+			final DirectColorModel colorModel = (DirectColorModel) bufferedImage
 					.getColorModel();
-			PaletteData palette = new PaletteData(colorModel.getRedMask(),
+			final PaletteData palette = new PaletteData(colorModel.getRedMask(),
 					colorModel.getGreenMask(), colorModel.getBlueMask());
-			ImageData data = new ImageData(bufferedImage.getWidth(),
+			final ImageData data = new ImageData(bufferedImage.getWidth(),
 					bufferedImage.getHeight(), colorModel.getPixelSize(), palette);
-			WritableRaster raster = bufferedImage.getRaster();
-			int[] pixelArray = new int[3];
+			final WritableRaster raster = bufferedImage.getRaster();
+			final int[] pixelArray = new int[3];
 			for (int y = 0; y < data.height; y++)
 			{
 				for (int x = 0; x < data.width; x++)
 				{
 					raster.getPixel(x, y, pixelArray);
-					int pixel = palette.getPixel(new RGB(pixelArray[0], pixelArray[1],
+					final int pixel = palette.getPixel(new RGB(pixelArray[0], pixelArray[1],
 							pixelArray[2]));
 					data.setPixel(x, y, pixel);
 				}
@@ -380,26 +381,26 @@ public class ViewTest extends ViewPart
 		}
 		else if (bufferedImage.getColorModel() instanceof IndexColorModel)
 		{
-			IndexColorModel colorModel = (IndexColorModel) bufferedImage
+			final IndexColorModel colorModel = (IndexColorModel) bufferedImage
 					.getColorModel();
-			int size = colorModel.getMapSize();
-			byte[] reds = new byte[size];
-			byte[] greens = new byte[size];
-			byte[] blues = new byte[size];
+			final int size = colorModel.getMapSize();
+			final byte[] reds = new byte[size];
+			final byte[] greens = new byte[size];
+			final byte[] blues = new byte[size];
 			colorModel.getReds(reds);
 			colorModel.getGreens(greens);
 			colorModel.getBlues(blues);
-			RGB[] rgbs = new RGB[size];
+			final RGB[] rgbs = new RGB[size];
 			for (int i = 0; i < rgbs.length; i++)
 			{
 				rgbs[i] = new RGB(reds[i] & 0xFF, greens[i] & 0xFF, blues[i] & 0xFF);
 			}
-			PaletteData palette = new PaletteData(rgbs);
-			ImageData data = new ImageData(bufferedImage.getWidth(),
+			final PaletteData palette = new PaletteData(rgbs);
+			final ImageData data = new ImageData(bufferedImage.getWidth(),
 					bufferedImage.getHeight(), colorModel.getPixelSize(), palette);
 			data.transparentPixel = colorModel.getTransparentPixel();
-			WritableRaster raster = bufferedImage.getRaster();
-			int[] pixelArray = new int[1];
+			final WritableRaster raster = bufferedImage.getRaster();
+			final int[] pixelArray = new int[1];
 			for (int y = 0; y < data.height; y++)
 			{
 				for (int x = 0; x < data.width; x++)
@@ -415,17 +416,17 @@ public class ViewTest extends ViewPart
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(action1);
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(action1);
 	}

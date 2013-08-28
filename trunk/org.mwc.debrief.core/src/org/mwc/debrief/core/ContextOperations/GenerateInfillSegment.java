@@ -45,7 +45,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 		if (subjects.length > 1)
 		{
 			// track the parents
-			Layer firstParent = parentLayers[0];
+			final Layer firstParent = parentLayers[0];
 
 			// is it a track?
 			if (firstParent instanceof TrackWrapper)
@@ -59,7 +59,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 					boolean canDo = true;
 					for (int i = 0; i < subjects.length; i++)
 					{
-						Editable editable = subjects[i];
+						final Editable editable = subjects[i];
 						if (!(editable instanceof TrackSegment))
 						{
 							canDo = false;
@@ -80,11 +80,11 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 						final String finalTitle = title;
 
 						// create this operation
-						Action doMerge = new Action(title)
+						final Action doMerge = new Action(title)
 						{
 							public void run()
 							{
-								IUndoableOperation theAction = new GenerateInfillOperation(
+								final IUndoableOperation theAction = new GenerateInfillOperation(
 										finalTitle, subjects, theLayers, parentTrack);
 
 								CorePlugin.run(theAction);
@@ -107,13 +107,13 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 		 */
 		private final Layers _layers;
 		private final Layer _parentTrack;
-		private Vector<TrackSegment> _infills;
+		private final Vector<TrackSegment> _infills;
 		private final Editable[] _segments;
 		
 		int segCtr = 1;
 
-		public GenerateInfillOperation(String title, Editable[] segments,
-				Layers theLayers, Layer parentTrack)
+		public GenerateInfillOperation(final String title, final Editable[] segments,
+				final Layers theLayers, final Layer parentTrack)
 		{
 			super(title);
 			_segments = segments;
@@ -122,7 +122,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			_infills = new Vector<TrackSegment>();
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			IStatus res = null;
@@ -131,8 +131,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			for (int i = 0; i < _segments.length - 1; i++)
 			{
 				// get the juicy pair we're looking at
-				TrackSegment trackOne = (TrackSegment) _segments[i];
-				TrackSegment trackTwo = (TrackSegment) _segments[i + 1];
+				final TrackSegment trackOne = (TrackSegment) _segments[i];
+				final TrackSegment trackTwo = (TrackSegment) _segments[i + 1];
 
 				// join them
 				res = fillSegments(trackOne, trackTwo);
@@ -159,7 +159,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 		 * @param trackTwo
 		 * @return null for ok, status message for fail
 		 */
-		private IStatus fillSegments(TrackSegment trackOne, TrackSegment trackTwo)
+		private IStatus fillSegments(final TrackSegment trackOne, final TrackSegment trackTwo)
 		{
 			IStatus res = null;
 			// now do the more detailed checks
@@ -177,7 +177,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			{
 				// cool, go for it
 				// generate the new track segment
-				TrackSegment newSeg = new TrackSegment(trackOne, trackTwo);
+				final TrackSegment newSeg = new TrackSegment(trackOne, trackTwo);
 
 				// aah, but, no but, are there points in the segment
 				if (newSeg.getData().size() > 0)
@@ -189,7 +189,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			return res;
 		}
 
-		private void storeSegment(TrackSegment newSeg)
+		private void storeSegment(final TrackSegment newSeg)
 		{
 			// correct the name
 			newSeg.setName(newSeg.getName() + "_" + segCtr++);
@@ -219,13 +219,13 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			Iterator<TrackSegment> iter = _infills.iterator();
+			final Iterator<TrackSegment> iter = _infills.iterator();
 			while (iter.hasNext())
 			{
-				TrackSegment thisSeg = iter.next();
+				final TrackSegment thisSeg = iter.next();
 
 				// right, just delete our new track segments
 				_parentTrack.removeElement(thisSeg);

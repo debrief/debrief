@@ -25,20 +25,20 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
   private static final String UNITS = "Units";
   private static final String VALUE = "Value";
 
-  public WorldDistanceHandler(String myType)
+  public WorldDistanceHandler(final String myType)
   {
     super(myType);
 
     addAttributeHandler(new HandleAttribute(UNITS)
     {
-      public void setValue(String name, String val)
+      public void setValue(final String name, final String val)
       {
         _units = val;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute(VALUE)
     {
-      public void setValue(String name, double val)
+      public void setValue(final String name, final double val)
       {
         _value = val;
       }
@@ -56,8 +56,8 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
   public void elementClosed()
   {
     // produce a value using these units
-    int theUnits = MWC.GenericData.WorldDistance.getUnitIndexFor(_units);
-    WorldDistance res = new WorldDistance(_value, theUnits);
+    final int theUnits = MWC.GenericData.WorldDistance.getUnitIndexFor(_units);
+    final WorldDistance res = new WorldDistance(_value, theUnits);
 
     setWorldDistance(res);
 
@@ -69,16 +69,17 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
   }
 
 
-  public  static WorldDistance extractWorldDistance(Element topL, String name)
+  public  static WorldDistance extractWorldDistance(final Element topL, final String name)
   {
+	Element theTopL = topL;
     WorldDistance myDist = null;
-    NodeList list = topL.getElementsByTagName(name);
+    final NodeList list = theTopL.getElementsByTagName(name);
     if (list.getLength() > 0)
     {
-      topL = (Element) list.item(0);
-      String unitsVal = topL.getAttribute(UNITS);
-      int units = WorldDistance.getUnitIndexFor(unitsVal);
-      double value = Integer.parseInt(topL.getAttribute(VALUE));
+      theTopL = (Element) list.item(0);
+      final String unitsVal = theTopL.getAttribute(UNITS);
+      final int units = WorldDistance.getUnitIndexFor(unitsVal);
+      final double value = Integer.parseInt(theTopL.getAttribute(VALUE));
 
       myDist = new WorldDistance(value, units);
     }
@@ -89,16 +90,16 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
   abstract public void setWorldDistance(WorldDistance res);
 
 
-  public static void exportDistance(WorldDistance distance, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportDistance(final WorldDistance distance, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     exportDistance("WorldDistance", distance, parent, doc);
   }
 
-  public static void exportDistance(String myType, WorldDistance distance, org.w3c.dom.Element parent,
-                                    org.w3c.dom.Document doc)
+  public static void exportDistance(final String myType, final WorldDistance distance, final org.w3c.dom.Element parent,
+                                    final org.w3c.dom.Document doc)
   {
   	// create the object
-    org.w3c.dom.Element eLoc = doc.createElement(myType);
+    final org.w3c.dom.Element eLoc = doc.createElement(myType);
     
     // store the fields
     eLoc.setAttribute(VALUE, writeThisLong(distance.getValue()));

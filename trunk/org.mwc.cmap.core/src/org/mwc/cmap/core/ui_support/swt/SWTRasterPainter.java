@@ -44,9 +44,9 @@ public class SWTRasterPainter extends PainterComponent
 	 * @param b
 	 * @return
 	 */
-	public static int toSWTColor(int r, int g, int b)
+	public static int toSWTColor(final int r, final int g, final int b)
 	{
-		int res = b * 256 * 256 + g * 256 + r;
+		final int res = b * 256 * 256 + g * 256 + r;
 		return res;
 	}
 
@@ -61,7 +61,7 @@ public class SWTRasterPainter extends PainterComponent
 		if ((_myImageBuffer == null)
 				|| ((_myImageBuffer.width != width) || (_myImageBuffer.height != height)))
 		{
-			PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+			final PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
 			_myImageBuffer = new ImageData(width, height, 24, palette);
 			
 			// also create a buffer for generating a metafile - so that we 
@@ -86,7 +86,7 @@ public class SWTRasterPainter extends PainterComponent
 		if(dest instanceof SWTCanvasAdapter)
 		{			
 			// cast the canvas - so that we can do an SWT draw image operation
-			SWTCanvasAdapter canvas = (SWTCanvasAdapter) dest;
+			final SWTCanvasAdapter canvas = (SWTCanvasAdapter) dest;
 
 			// create our new image
 			Image image = new Image(Display.getCurrent(), _myImageBuffer);
@@ -101,7 +101,7 @@ public class SWTRasterPainter extends PainterComponent
 		else if(dest instanceof MetafileCanvas)
 		{
 			// cast the canvas - so that we can do an SWT draw image operation
-			MetafileCanvas canvas = (MetafileCanvas) dest;
+			final MetafileCanvas canvas = (MetafileCanvas) dest;
 			
 			final MemoryImageSource mis = new MemoryImageSource(width, height,
 					_metafileBuffer, 0, width);
@@ -137,8 +137,8 @@ public class SWTRasterPainter extends PainterComponent
 	 * @param min_height
 	 * @param max_height
 	 */
-	protected void updatePixelColors(SpatialRasterPainter parent,
-			final int width, final int height, int min_height, int max_height, CanvasType dest)
+	protected void updatePixelColors(final SpatialRasterPainter parent,
+			final int width, final int height, final int min_height, final int max_height, final CanvasType dest)
 	{
 		ColorConverter theConverter;
 		
@@ -157,10 +157,10 @@ public class SWTRasterPainter extends PainterComponent
 			for (int j = 0; j < width; j++)
 			{
 				// retrieve this depth
-				int thisD = _depthData[j][i];
+				final int thisD = _depthData[j][i];
 				
 				// convert the color
-				int thisCol = parent.getColor(thisD, min_height, max_height, theConverter);
+				final int thisCol = parent.getColor(thisD, min_height, max_height, theConverter);
 				
 				// and place into the image
 				_myImageBuffer.setPixel(j, i, thisCol);
@@ -177,7 +177,7 @@ public class SWTRasterPainter extends PainterComponent
 	 * @param blue
 	 * @return SWT integer value for our color
 	 */
-	public int convertColor(int red, int green, int blue)
+	public int convertColor(final int red, final int green, final int blue)
 	{
 		return toSWTColor(red, green, blue);
 	}

@@ -20,20 +20,20 @@ public class WorldLocationHelper extends EditorHelper {
 	}
 
 	@Override
-	public CellEditor getCellEditorFor(Composite parent) {
+	public CellEditor getCellEditorFor(final Composite parent) {
 		return new WorldLocationCellEditor(parent);
 	}
 
 	@Override
-	public ILabelProvider getLabelFor(Object currentValue) {
+	public ILabelProvider getLabelFor(final Object currentValue) {
 		return new LabelProvider() {
 
 			@Override
-			public String getText(Object element) {
-				SexagesimalFormat format = CorePlugin.getDefault().getLocationFormat();
-				WorldLocation location = (WorldLocation) element;
-				Sexagesimal latitude = format.parseDouble(location.getLat());
-				Sexagesimal longitude = format.parseDouble(location.getLong());
+			public String getText(final Object element) {
+				final SexagesimalFormat format = CorePlugin.getDefault().getLocationFormat();
+				final WorldLocation location = (WorldLocation) element;
+				final Sexagesimal latitude = format.parseDouble(location.getLat());
+				final Sexagesimal longitude = format.parseDouble(location.getLong());
 				return format.format(latitude, false) + " " + format.format(longitude, true);
 			}
 		};

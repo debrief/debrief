@@ -20,10 +20,10 @@ public class InsertCircle extends CoreInsertShape
 	 * @param centre the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		// generate the shape
-		PlainShape res = new CircleShape(centre,  new WorldDistance(4000, WorldDistance.YARDS));
+		final PlainShape res = new CircleShape(centre,  new WorldDistance(4000, WorldDistance.YARDS));
 		return res;
 	}	
 	

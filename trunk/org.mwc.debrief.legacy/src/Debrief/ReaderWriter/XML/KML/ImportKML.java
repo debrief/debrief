@@ -63,9 +63,9 @@ public class ImportKML
 	 * @param theDate
 	 * @param theLoc
 	 */
-	private static void addFix(Layers target, String trackName,
-			HiResDate theDate, WorldLocation theLoc, double courseDegs,
-			double speedKts)
+	private static void addFix(final Layers target, final String trackName,
+			final HiResDate theDate, final WorldLocation theLoc, final double courseDegs,
+			final double speedKts)
 	{
 		// is this our current layer?
 		if (lastLayer != null)
@@ -87,11 +87,11 @@ public class ImportKML
 			}
 		}
 
-		double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
-		double speedYPS = new WorldSpeed(speedKts, WorldSpeed.Kts)
+		final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
+		final double speedYPS = new WorldSpeed(speedKts, WorldSpeed.Kts)
 				.getValueIn(WorldSpeed.ft_sec) / 3d;
 
-		FixWrapper newFix = new FixWrapper(new Fix(theDate, theLoc, courseRads,
+		final FixWrapper newFix = new FixWrapper(new Fix(theDate, theLoc, courseRads,
 				speedYPS));
 		
 		// and reset the time value
@@ -106,22 +106,22 @@ public class ImportKML
 	 * @param target
 	 * @param trackName
 	 */
-	private static void createTrack(Layers target, String trackName)
+	private static void createTrack(final Layers target, final String trackName)
 	{
 		lastLayer = new TrackWrapper();
 		lastLayer.setName(trackName);
 
 		// sort out a color
-		Color theCol = ImportReplay.replayColorFor(colorCounter++);
+		final Color theCol = ImportReplay.replayColorFor(colorCounter++);
 		lastLayer.setColor(theCol);
 
 		target.addThisLayer(lastLayer);
 	}
 
-	public static void doZipImport(Layers theLayers, InputStream inputStream,
-			String fileName)
+	public static void doZipImport(final Layers theLayers, final InputStream inputStream,
+			final String fileName)
 	{
-		ZipInputStream zis = new ZipInputStream(inputStream);
+		final ZipInputStream zis = new ZipInputStream(inputStream);
 
 		ZipEntry entry;
 		try
@@ -129,15 +129,15 @@ public class ImportKML
 			while ((entry = zis.getNextEntry()) != null)
 			{
 				// is this one of ours?
-				String theName = entry.getName();
+				final String theName = entry.getName();
 
 				if (theName.endsWith(".kml"))
 				{
 					// cool, here it is - process it
 
 					// extract the data into a stream
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					BufferedOutputStream fout = new BufferedOutputStream(bos);
+					final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					final BufferedOutputStream fout = new BufferedOutputStream(bos);
 					for (int c = zis.read(); c != -1; c = zis.read())
 					{
 						fout.write(c);
@@ -147,47 +147,47 @@ public class ImportKML
 					bos.close();
 
 					// now create a byte input stream from the byte output stream
-					ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+					final ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
 
 					// and create it
 					doImport(theLayers, bis, theName);
 				}
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
 
 	}
 
-	public static void doImport(Layers theLayers, InputStream inputStream,
-			String fileName)
+	public static void doImport(final Layers theLayers, final InputStream inputStream,
+			final String fileName)
 	{
 		try
 		{
 
 			// get the main part of the file - we use it for the track name
-			String prefix = tidyFileName(fileName);
+			final String prefix = tidyFileName(fileName);
 
 			// get the bits ready to do the document parsing
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			// then we have to create document-loader:
 			DocumentBuilder loader;
 
 			// read the file into a string
-			String theStr = inputStreamAsString(inputStream);// readFileAsString(thePath);
+			final String theStr = inputStreamAsString(inputStream);// readFileAsString(thePath);
 
 			// now ditch any non-compatible chars (such as the degree symbol)
-			String tidyStr = stripNonValidXMLCharacters(theStr);
+			final String tidyStr = stripNonValidXMLCharacters(theStr);
 
 			// wrap the string in a source
-			InputSource s = new InputSource(new StringReader(tidyStr));
+			final InputSource s = new InputSource(new StringReader(tidyStr));
 
 			loader = factory.newDocumentBuilder();
 
 			// get parsing
-			Document doc = loader.parse(s);
+			final Document doc = loader.parse(s);
 
 			// normalise the DOM - to make it a little more stable/predictable
 			doc.getDocumentElement().normalize();
@@ -198,47 +198,47 @@ public class ImportKML
 			parser.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 			// find the placemarks
-			NodeList nodeList = doc.getElementsByTagName("Placemark");
+			final NodeList nodeList = doc.getElementsByTagName("Placemark");
 
 			// right, work through them
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
 				// ok - we have a placemark, see if it's got useful data
-				Node thisNode = nodeList.item(i);
-				Element thisP = (Element) thisNode;
+				final Node thisNode = nodeList.item(i);
+				final Element thisP = (Element) thisNode;
 
 				// look for the indicator for our child nodes
-				NodeList theGeom = thisP.getElementsByTagName("MultiGeometry");
+				final NodeList theGeom = thisP.getElementsByTagName("MultiGeometry");
 				if (theGeom.getLength() > 0)
 				{
 					// yup, it's one of ours.
 					// sort it out.
-					String theName = thisP.getElementsByTagName("name").item(0)
+					final String theName = thisP.getElementsByTagName("name").item(0)
 							.getTextContent();
-					String[] nameTokens = theName.split("-");
+					final String[] nameTokens = theName.split("-");
 
 					// get the first part of the track id
-					String trackIdTxt = nameTokens[0].trim();
-					int trackID = Integer.parseInt(trackIdTxt);
+					final String trackIdTxt = nameTokens[0].trim();
+					final int trackID = Integer.parseInt(trackIdTxt);
 
 					// now for the time
-					String timeTxt = thisP.getElementsByTagName("when").item(0)
+					final String timeTxt = thisP.getElementsByTagName("when").item(0)
 							.getTextContent();
-					Date theD = parser.parse(timeTxt);
+					final Date theD = parser.parse(timeTxt);
 
 					// and the location
-					String coordsTxt = thisP.getElementsByTagName("coordinates").item(0)
+					final String coordsTxt = thisP.getElementsByTagName("coordinates").item(0)
 							.getTextContent();
 					// and now parse the string
-					String[] coords = coordsTxt.split(",");
-					double longVal = Double.parseDouble(coords[0]);
-					double latVal = Double.parseDouble(coords[1]);
-					double altitudeVal = Double.parseDouble(coords[2]);
+					final String[] coords = coordsTxt.split(",");
+					final double longVal = Double.parseDouble(coords[0]);
+					final double latVal = Double.parseDouble(coords[1]);
+					final double altitudeVal = Double.parseDouble(coords[2]);
 
 					// lastly, the course/speed
 					double courseDegs;
 					double speedKts;
-					String descriptionTxt = thisP.getElementsByTagName("description")
+					final String descriptionTxt = thisP.getElementsByTagName("description")
 							.item(0).getTextContent();
 
 					courseDegs = courseFrom(descriptionTxt);
@@ -251,7 +251,7 @@ public class ImportKML
 				else
 				{
 					// see if it's from a GPS tracker
-					NodeList lineString = thisP.getElementsByTagName("LineString");
+					final NodeList lineString = thisP.getElementsByTagName("LineString");
 					if (lineString != null)
 					{
 						// yup, suspect it's from a NokiaSportsTracker file
@@ -268,20 +268,20 @@ public class ImportKML
 						{
 							theDate = nokiaDateFormat.parse(trimmedFile);
 						}
-						catch (Exception e)
+						catch (final Exception e)
 						{
 							e.printStackTrace();
 						}
 
-						Element theString = (Element) lineString.item(0);
+						final Element theString = (Element) lineString.item(0);
 						if (theString != null)
 						{
-							NodeList theCoords = theString
+							final NodeList theCoords = theString
 									.getElementsByTagName("coordinates");
 							if (theCoords != null)
 							{
-								Node theCoordStr = theCoords.item(0);
-								String contents = theCoordStr.getTextContent();
+								final Node theCoordStr = theCoords.item(0);
+								final String contents = theCoordStr.getTextContent();
 								parseTheseCoords(contents, theLayers, theDate);
 							}
 						}
@@ -291,19 +291,19 @@ public class ImportKML
 			}
 
 		}
-		catch (ParserConfigurationException e)
+		catch (final ParserConfigurationException e)
 		{
 			e.printStackTrace();
 		}
-		catch (SAXException e)
+		catch (final SAXException e)
 		{
 			e.printStackTrace();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
-		catch (ParseException e)
+		catch (final ParseException e)
 		{
 			e.printStackTrace();
 		}
@@ -319,18 +319,18 @@ public class ImportKML
 	 * @param theLayers where we're going to stick the data
 	 * @param startDate the start date for the track
 	 */
-	private static void parseTheseCoords(String contents, Layers theLayers,
-			Date startDate)
+	private static void parseTheseCoords(final String contents, final Layers theLayers,
+			final Date startDate)
 	{
-		StringTokenizer token = new StringTokenizer(contents, ",\n", false);
+		final StringTokenizer token = new StringTokenizer(contents, ",\n", false);
 
 		Date newDate = new Date(startDate.getTime());
 
 		while (token.hasMoreElements())
 		{
-			String longV = token.nextToken();
-			String latV = token.nextToken();
-			String altitude = token.nextToken();
+			final String longV = token.nextToken();
+			final String latV = token.nextToken();
+			final String altitude = token.nextToken();
 			
 			// just check that we have altitude data
 			double theAlt = 0;
@@ -353,18 +353,18 @@ public class ImportKML
 	 * @param descriptionTxt
 	 * @return
 	 */
-	private static double courseFrom(String descriptionTxt)
+	private static double courseFrom(final String descriptionTxt)
 	{
 		double res = 0;
 		// STRING LOOKS LIKE
 		// <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
 		// 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
 		// knots<br>Date: September 12, 2009]]>
-		int startI = descriptionTxt.indexOf("Course");
-		int endI = descriptionTxt.indexOf("<br>Speed");
+		final int startI = descriptionTxt.indexOf("Course");
+		final int endI = descriptionTxt.indexOf("<br>Speed");
 		if ((startI > 0) && (endI > 0))
 		{
-			String subStr = descriptionTxt.substring(startI + 7, endI - 1);
+			final String subStr = descriptionTxt.substring(startI + 7, endI - 1);
 			res = Double.valueOf(subStr.trim());
 		}
 		return res;
@@ -376,18 +376,18 @@ public class ImportKML
 	 * @param descriptionTxt
 	 * @return
 	 */
-	private static double speedFrom(String descriptionTxt)
+	private static double speedFrom(final String descriptionTxt)
 	{
 		double res = 0;
 		// STRING LOOKS LIKE
 		// <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
 		// 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
 		// knots<br>Date: September 12, 2009]]>
-		int startI = descriptionTxt.indexOf("Speed");
-		int endI = descriptionTxt.indexOf("knots");
+		final int startI = descriptionTxt.indexOf("Speed");
+		final int endI = descriptionTxt.indexOf("knots");
 		if ((startI > 0) && (endI > 0))
 		{
-			String subStr = descriptionTxt.substring(startI + 6, endI - 1);
+			final String subStr = descriptionTxt.substring(startI + 6, endI - 1);
 			res = Double.valueOf(subStr.trim());
 		}
 		return res;
@@ -404,9 +404,9 @@ public class ImportKML
 	 *          The String whose non-valid characters we want to remove.
 	 * @return The in String, stripped of non-valid characters.
 	 */
-	private static String stripNonValidXMLCharacters(String in)
+	private static String stripNonValidXMLCharacters(final String in)
 	{
-		StringBuffer out = new StringBuffer(); // Used to hold the output.
+		final StringBuffer out = new StringBuffer(); // Used to hold the output.
 		char current; // Used to reference the current character.
 
 		if (in == null || ("".equals(in)))
@@ -424,12 +424,12 @@ public class ImportKML
 		return out.toString();
 	}
 
-	private static String inputStreamAsString(InputStream stream)
+	private static String inputStreamAsString(final InputStream stream)
 			throws IOException
 	{
-		InputStreamReader isr = new InputStreamReader(stream);
-		BufferedReader br = new BufferedReader(isr);
-		StringBuilder sb = new StringBuilder();
+		final InputStreamReader isr = new InputStreamReader(stream);
+		final BufferedReader br = new BufferedReader(isr);
+		final StringBuilder sb = new StringBuilder();
 		String line = null;
 
 		while ((line = br.readLine()) != null)
@@ -461,11 +461,11 @@ public class ImportKML
 		}
 
 		// start off by ditching the path
-		File holder = new File(fileName);
+		final File holder = new File(fileName);
 		String res = holder.getName();
 
 		// now ditch the file suffix
-		int pos = res.lastIndexOf('.');
+		final int pos = res.lastIndexOf('.');
 		if (pos > 0 && pos < res.length() - 1)
 		{
 			res = res.substring(0, pos);

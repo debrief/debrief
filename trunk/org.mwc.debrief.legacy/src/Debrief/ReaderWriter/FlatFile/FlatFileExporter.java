@@ -82,7 +82,7 @@ public class FlatFileExporter
 			}
 		}
 
-		private String getTestData(String fName)
+		private String getTestData(final String fName)
 		{
 			String res = null;
 			try
@@ -136,11 +136,11 @@ public class FlatFileExporter
 
 		public void testGetNearestCut()
 		{
-			SensorWrapper sa = new SensorWrapper("sensor-A");
+			final SensorWrapper sa = new SensorWrapper("sensor-A");
 			for (int i = 1; i < 5; i++)
 			{
 				// primary.getName(),,
-				SensorContactWrapper sca = new SensorContactWrapper();
+				final SensorContactWrapper sca = new SensorContactWrapper();
 				sca.setDTG(new HiResDate(i * 10));
 				sca.setLabel("" + i * 10);
 				sa.add(sca);
@@ -164,36 +164,36 @@ public class FlatFileExporter
 		public void testAgainstSample2() throws IOException
 		{
 			// collate the data
-			TrackWrapper primary = new TrackWrapper();
-			TrackWrapper secondary = new TrackWrapper();
+			final TrackWrapper primary = new TrackWrapper();
+			final TrackWrapper secondary = new TrackWrapper();
 
 			for (int i = 0; i < 20; i++)
 			{
-				double lat = 2 + i / 3600;
-				double lon = 3 + i / 3700;
-				double depth = 19 + i / 10;
-				WorldLocation wa = new WorldLocation(lat, -lon, depth);
-				WorldLocation wb = new WorldLocation(-lat, lon, depth + 25);
-				Fix fa = new Fix(new HiResDate(10000 + i * 1000), wa, 45, 12);
-				Fix fb = new Fix(new HiResDate(10004 + i * 1000), wb, 45, 12);
-				FixWrapper fwa = new FixWrapper(fa);
-				FixWrapper fwb = new FixWrapper(fb);
+				final double lat = 2 + i / 3600;
+				final double lon = 3 + i / 3700;
+				final double depth = 19 + i / 10;
+				final WorldLocation wa = new WorldLocation(lat, -lon, depth);
+				final WorldLocation wb = new WorldLocation(-lat, lon, depth + 25);
+				final Fix fa = new Fix(new HiResDate(10000 + i * 1000), wa, 45, 12);
+				final Fix fb = new Fix(new HiResDate(10004 + i * 1000), wb, 45, 12);
+				final FixWrapper fwa = new FixWrapper(fa);
+				final FixWrapper fwb = new FixWrapper(fb);
 				primary.addFix(fwa);
 				secondary.addFix(fwb);
 			}
 
-			SensorWrapper sa = new SensorWrapper("sensor-A");
+			final SensorWrapper sa = new SensorWrapper("sensor-A");
 			sa.setHost(primary);
 			sa.setVisible(true);
 			primary.add(sa);
-			SensorWrapper sb = new SensorWrapper("sensor-B");
+			final SensorWrapper sb = new SensorWrapper("sensor-B");
 			sb.setHost(primary);
 			sb.setVisible(true);
 			primary.add(sb);
 			for (int i = 0; i < 15; i++)
 			{
 				// primary.getName(),,
-				SensorContactWrapper sca = new SensorContactWrapper();
+				final SensorContactWrapper sca = new SensorContactWrapper();
 				sca.setBearing(i * 3);
 				sca.setSensor(sa);
 				sca.setDTG(new HiResDate(11000 + i * 950));
@@ -203,26 +203,26 @@ public class FlatFileExporter
 			for (int i = 0; i < 15; i++)
 			{
 				// primary.getName(),,
-				SensorContactWrapper sca = new SensorContactWrapper();
+				final SensorContactWrapper sca = new SensorContactWrapper();
 				sca.setBearing(i * 1.6);
 				sca.setSensor(sa);
 				sca.setDTG(new HiResDate(10900 + i * 930));
 				sb.add(sca);
 			}
 
-			WatchableList[] secList = new WatchableList[]
+			final WatchableList[] secList = new WatchableList[]
 			{ secondary };
-			HiResDate start = new HiResDate(10000);
-			HiResDate end = new HiResDate(50000);
-			TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
-			String s1Type = "s1_type";
-			String s2Type = "s2_TYPE";
-			String protMarking = "PROT_MARKING";
-			String serName = "SER_NAME";
+			final HiResDate start = new HiResDate(10000);
+			final HiResDate end = new HiResDate(50000);
+			final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+			final String s1Type = "s1_type";
+			final String s2Type = "s2_TYPE";
+			final String protMarking = "PROT_MARKING";
+			final String serName = "SER_NAME";
 
 			// do the export
 			final FlatFileExporter fa = new FlatFileExporter();
-			String res = fa.export(primary, secList, period, s1Type, s2Type, null,
+			final String res = fa.export(primary, secList, period, s1Type, s2Type, null,
 					null, null, null, INITIAL_VERSION, protMarking, serName, 1600d);
 
 			// get the test data
@@ -367,10 +367,10 @@ public class FlatFileExporter
 	 * @param args
 	 * @return
 	 */
-	final static String collateLine2(String... args)
+	final static String collateLine2(final String... args)
 	{
 		StringBuffer res = null;
-		for (String d : args)
+		for (final String d : args)
 		{
 			if (res == null)
 			{
@@ -462,9 +462,9 @@ public class FlatFileExporter
 	 */
 	public String export(final WatchableList primaryTrack,
 			final WatchableList[] secondaryTracks, final TimePeriod period,
-			final String sensor1Type, String sensor2Type, Double s1fwd, Double s1aft,
-			Double s2fwd, Double s2aft, String fileVersion, String protMarking,
-			final String serialName, Double speedOfSoundMS)
+			final String sensor1Type, final String sensor2Type, final Double s1fwd, final Double s1aft,
+			final Double s2fwd, final Double s2aft, final String fileVersion, final String protMarking,
+			final String serialName, final Double speedOfSoundMS)
 	{
 		String res = null;
 
@@ -549,7 +549,7 @@ public class FlatFileExporter
 	 */
 	private String getBody(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
-			final String sensorType, String fileVersion)
+			final String sensorType, final String fileVersion)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
@@ -758,7 +758,7 @@ public class FlatFileExporter
 			final String SENSOR_NAME, final String SENSOR_2_NAME,
 			final String TGT_NAME, final Date startDate, final Date endDate,
 			final int NUM_RECORDS, final int X_ORIGIN_YDS, final int Y_ORIGIN_YDS,
-			final String fileVersion, final String protMarking, String missionName)
+			final String fileVersion, final String protMarking, final String missionName)
 	{
 
 		// STRAND Scenario Report 1.01
@@ -872,7 +872,7 @@ public class FlatFileExporter
 					else
 					{
 						// yes, see which is nearer
-						long prevDelta = targetDate - res.getDTG().getDate().getTime();
+						final long prevDelta = targetDate - res.getDTG().getDate().getTime();
 						if (prevDelta < thisOffset)
 						{
 							// we're already looking at the nearest one
@@ -895,7 +895,7 @@ public class FlatFileExporter
 		return res;
 	}
 
-	private String testExport(String fileVersion) throws ParseException
+	private String testExport(final String fileVersion) throws ParseException
 	{
 		final String StartTime = "04:45:00	20/04/2009";
 		final Date startDate = dateFrom(StartTime);
@@ -929,9 +929,9 @@ public class FlatFileExporter
 	 */
 	private String getBody2(final TrackWrapper primaryTrack,
 			final TrackWrapper msdTrack, final TimePeriod period,
-			final String sensorType1, final String sensorType2, String fileVersion,
-			SensorWrapper sensor1, SensorWrapper sensor2, Double s1fwd, Double s1aft,
-			Double s2fwd, Double s2aft, Double speedOfSoundMS)
+			final String sensorType1, final String sensorType2, final String fileVersion,
+			final SensorWrapper sensor1, final SensorWrapper sensor2, final Double s1fwd, final Double s1aft,
+			final Double s2fwd, final Double s2aft, final Double speedOfSoundMS)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
@@ -952,7 +952,7 @@ public class FlatFileExporter
 		WorldLocation origin = null;
 
 		// have a look at the depth
-		String strS1fwd = dp4.format(s1fwd);
+		final String strS1fwd = dp4.format(s1fwd);
 		String strS1aft = "0";
 		if (sensorType1.startsWith("T"))
 		{
@@ -971,9 +971,9 @@ public class FlatFileExporter
 			}
 		}
 
-		Collection<Editable> matches = primaryTrack.getItemsBetween(
+		final Collection<Editable> matches = primaryTrack.getItemsBetween(
 				period.getStartDTG(), period.getEndDTG());
-		Iterator<Editable> iter = matches.iterator();
+		final Iterator<Editable> iter = matches.iterator();
 		while (iter.hasNext())
 		{
 			final FixWrapper priFix = (FixWrapper) iter.next();
@@ -997,11 +997,11 @@ public class FlatFileExporter
 				origin = priFix.getLocation();
 
 			// start off with the first sensor
-			FixWrapper sensorFix = primaryTrack.getBacktraceTo(thisDTG,
+			final FixWrapper sensorFix = primaryTrack.getBacktraceTo(thisDTG,
 					sensor1.getSensorOffset(), sensor1.getWormInHole());
 			sensor1Loc = sensorFix.getLocation();
 
-			double s1doppler = Doublet.getDopplerShift(speedOfSoundMS,
+			final double s1doppler = Doublet.getDopplerShift(speedOfSoundMS,
 					sensorFix.getFix(), msdFix.getFix());
 			double s2doppler = 0;
 
@@ -1076,8 +1076,8 @@ public class FlatFileExporter
 			final int senStat1 = typeFor(sensor1, sensorType1, cutS1);
 
 			double theBearing1 = 0;
-			double senSpd1 = sensorFix.getSpeed();
-			double sen1Heading = sensorFix.getCourseDegs();
+			final double senSpd1 = sensorFix.getSpeed();
+			final double sen1Heading = sensorFix.getCourseDegs();
 			if (cutS1 != null)
 			{
 				theBearing1 = cutS1.getBearing();
@@ -1194,8 +1194,8 @@ public class FlatFileExporter
 		return buffer.toString();
 	}
 
-	private static int typeFor(SensorWrapper sensor, String sensorType,
-			SensorContactWrapper cut)
+	private static int typeFor(final SensorWrapper sensor, final String sensorType,
+			final SensorContactWrapper cut)
 	{
 		int res = 0;
 
@@ -1220,13 +1220,14 @@ public class FlatFileExporter
 		return res;
 	}
 
-	private double trimDegs(double brgVal)
+	private double trimDegs(final double brgVal)
 	{
-		if (brgVal > 360)
-			brgVal -= 360;
-		if (brgVal < 0)
-			brgVal += 360;
-		return brgVal;
+		double theBrgVal = brgVal;
+		if (theBrgVal > 360)
+			theBrgVal -= 360;
+		if (theBrgVal < 0)
+			theBrgVal += 360;
+		return theBrgVal;
 	}
 
 }

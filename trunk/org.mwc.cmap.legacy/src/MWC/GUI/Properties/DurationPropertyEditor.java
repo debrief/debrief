@@ -106,7 +106,7 @@ abstract public class DurationPropertyEditor extends
 
 	/** store the new value (in minutes)
 	 */
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     // reset value
     _myVal = null;
@@ -142,21 +142,21 @@ abstract public class DurationPropertyEditor extends
 		Duration val=null;
 		try{
       // get the distance
-      double duration = getDuration();
+      final double duration = getDuration();
 
       // get the units scale factor
-      int units = getUnits();
+      final int units = getUnits();
 
       // scale the distance to our output units (minutes)
       val = new Duration(duration, units);
 
 
 		}
-		catch(NumberFormatException e)
+		catch(final NumberFormatException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
-    catch(java.text.ParseException pe)
+    catch(final java.text.ParseException pe)
     {
       MWC.Utilities.Errors.Trace.trace(pe);
     }
@@ -178,7 +178,7 @@ abstract public class DurationPropertyEditor extends
     else
     {
       // get the best units
-      int units = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+      final int units = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
       setUnits(units);
 			setDuration(_myVal.getValueIn(units));
     }
@@ -203,7 +203,7 @@ abstract public class DurationPropertyEditor extends
   /** the the number of columns to use in the editor
    * @param num the number of columns to show in the text field
    */
-  public void setColumns(int num)
+  public void setColumns(final int num)
   {
     _numColumns = num;
   }

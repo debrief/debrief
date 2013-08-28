@@ -73,17 +73,17 @@ public final class RangeHighlighter implements PlotHighlighter
 	 * @param watch
 	 *          the current data point
 	 */
-	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-			java.awt.Graphics dest, MWC.GenericData.WatchableList list,
-			MWC.GenericData.Watchable watch, final boolean isPrimary)
+	public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
+			final java.awt.Graphics dest, final MWC.GenericData.WatchableList list,
+			final MWC.GenericData.Watchable watch, final boolean isPrimary)
 	{
 		// are we concerend about primary track?
 		if (isJustPlotPrimary() && isPrimary)
 		{
-			WorldLocation center = watch.getLocation();
-			int header = (int) MWC.Algorithms.Conversions
+			final WorldLocation center = watch.getLocation();
+			final int header = (int) MWC.Algorithms.Conversions
 					.Rads2Degs(watch.getCourse());
-			CanvasAdaptor can = new CanvasAdaptor(proj, dest);
+			final CanvasAdaptor can = new CanvasAdaptor(proj, dest);
 
 			drawRangeRings(center, _radius, header, _arcs, _rings, _spoke_separation,
 					can);
@@ -273,7 +273,7 @@ public final class RangeHighlighter implements PlotHighlighter
 			// draw in the arc itself
 			if(dest instanceof ExtendedCanvasType)
 			{
-				ExtendedCanvasType ed = (ExtendedCanvasType) dest;
+				final ExtendedCanvasType ed = (ExtendedCanvasType) dest;
 				ed.semiFillArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
 						startAngle, angle);
 			}
@@ -409,7 +409,7 @@ public final class RangeHighlighter implements PlotHighlighter
 	 * 
 	 * @param justPlotPrimary
 	 */
-	public void setJustPlotPrimary(boolean justPlotPrimary)
+	public void setJustPlotPrimary(final boolean justPlotPrimary)
 	{
 		_justPlotPrimary = justPlotPrimary;
 	}
@@ -477,7 +477,7 @@ public final class RangeHighlighter implements PlotHighlighter
 						prop("CentreRectangle", "Draw simple rectangle around point"), };
 				return res;
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				MWC.Utilities.Errors.Trace.trace(e);
 				return super.getPropertyDescriptors();

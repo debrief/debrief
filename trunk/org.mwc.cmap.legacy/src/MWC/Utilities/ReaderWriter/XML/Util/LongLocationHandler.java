@@ -35,17 +35,17 @@ abstract public class LongLocationHandler extends MWCXMLReader
   }
 
   // this is one of ours, so get on with it!
-  protected void handleOurselves(String name, Attributes attributes)
+  protected void handleOurselves(final String name, final Attributes attributes)
   {
     // initialise data
     _latMin = _latSec = _longMin = _longSec = _depth = 0.0f;
     _latDeg = _longDeg = 0;
 
-    int len = attributes.getLength();
+    final int len = attributes.getLength();
     for(int i=0; i<len;i++){
 
-      String nm = attributes.getLocalName(i);
-      String val = attributes.getValue(i);
+      final String nm = attributes.getLocalName(i);
+      final String val = attributes.getValue(i);
       if(nm.equals("LatDeg"))
         _latDeg = Integer.valueOf(val).intValue();
       else if(nm.equals("LatMin"))
@@ -83,7 +83,7 @@ abstract public class LongLocationHandler extends MWCXMLReader
     }
 
 
-    MWC.GenericData.WorldLocation res =
+    final MWC.GenericData.WorldLocation res =
       new MWC.GenericData.WorldLocation(_latDeg, (int)_latMin, (double)_latSec, _latHem,
                                         _longDeg, (int)_longMin, (double)_longSec, _longHem,
                                         _depth);

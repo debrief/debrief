@@ -11,9 +11,9 @@ public class StatusHandler extends ASSETResource implements
 {
 
 	@Post
-	public void accept(Status status)
+	public void accept(final Status status)
 	{
-		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
+		final ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
 		host.getGuest().newParticipantState(getScenarioId(), getParticipantId(), status);
 	}
 }

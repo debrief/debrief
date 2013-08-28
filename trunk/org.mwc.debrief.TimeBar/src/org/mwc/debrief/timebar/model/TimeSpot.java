@@ -21,7 +21,7 @@ public class TimeSpot implements IEventEntry
 	GanttCheckpoint _presentation;
 	Color _color = null;
 	
-	public TimeSpot(WatchableList spot)
+	public TimeSpot(final WatchableList spot)
 	{
 		_source = spot;
 		_name = spot.getName();
@@ -29,7 +29,7 @@ public class TimeSpot implements IEventEntry
 		_color = spot.getColor();
 	}
 	
-	public TimeSpot(Watchable spot)
+	public TimeSpot(final Watchable spot)
 	{
 		_source = spot;
 		_name = spot.getName();
@@ -37,7 +37,7 @@ public class TimeSpot implements IEventEntry
 		_color = spot.getColor();
 	}
 	
-	public TimeSpot(NarrativeEntry entry)
+	public TimeSpot(final NarrativeEntry entry)
 	{
 		_source = entry;
 		_name = entry.getName();
@@ -59,7 +59,7 @@ public class TimeSpot implements IEventEntry
 	@Override
 	public Calendar getEnd() 
 	{
-		Calendar end = _time;
+		final Calendar end = _time;
 		end.add(Calendar.HOUR, 1);
 		return end;
 	}
@@ -99,8 +99,8 @@ public class TimeSpot implements IEventEntry
 	{
 		if (_source instanceof NarrativeEntry)
 		{
-			StringBuffer res = new StringBuffer();
-			NarrativeEntry entry = (NarrativeEntry) _source;
+			final StringBuffer res = new StringBuffer();
+			final NarrativeEntry entry = (NarrativeEntry) _source;
 			res.append(entry.getDTGString());
 			res.append("\n");
 			if (entry.getSource() != null)

@@ -70,8 +70,8 @@ public abstract class TimeControllerOperation
 	 * @param operationName
 	 *          what we put on the menu and the dialog
 	 */
-	protected TimeControllerOperation(String operationName,
-			boolean requireSensor, boolean singleSensor, boolean doubleSensor,  boolean  requiresSensorData)
+	protected TimeControllerOperation(final String operationName,
+			final boolean requireSensor, final boolean singleSensor, final boolean doubleSensor,  final boolean  requiresSensorData)
 	{
 		_operationName = operationName;
 		_requireSensor = requireSensor;
@@ -119,12 +119,12 @@ public abstract class TimeControllerOperation
 			return;
 		}
 
-		TrackWrapper primaryTrack = (TrackWrapper) primary;
+		final TrackWrapper primaryTrack = (TrackWrapper) primary;
 
 		if (_requireSensor)
 		{
 
-			Enumeration<Editable> enumer = primaryTrack.getSensors().elements();
+			final Enumeration<Editable> enumer = primaryTrack.getSensors().elements();
 			if (enumer == null)
 			{
 				showMessage("Sorry, primary selection must be have sensor data");
@@ -173,7 +173,7 @@ public abstract class TimeControllerOperation
 		if (_singleSensor)
 		{
 			// right, check there's one visible sensor
-			SensorWrapper theSensor = FlatFileExporter.getSubjectSensor((TrackWrapper) primaryTrack);
+			final SensorWrapper theSensor = FlatFileExporter.getSubjectSensor((TrackWrapper) primaryTrack);
 
 			if (theSensor == null)
 			{
@@ -186,14 +186,14 @@ public abstract class TimeControllerOperation
 		{
 			// loop through the sensors
 			// loop through collecting cuts from visible sensors
-			Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
-			Collection <Editable> theCuts = new Vector<Editable>();
+			final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
+			final Collection <Editable> theCuts = new Vector<Editable>();
 			while (sensors.hasMoreElements())
 			{
-				SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
+				final SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
 				if (thisS.getVisible())
 				{
-					Collection<Editable> theseCuts = thisS.getItemsBetween(period.getStartDTG(), period.getEndDTG());
+					final Collection<Editable> theseCuts = thisS.getItemsBetween(period.getStartDTG(), period.getEndDTG());
 					if(theseCuts != null)
 					theCuts.addAll(theseCuts);
 				}

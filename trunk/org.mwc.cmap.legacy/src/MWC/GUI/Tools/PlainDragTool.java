@@ -106,19 +106,19 @@ abstract public class PlainDragTool extends
   // constructor
   //////////////////////////////////////////////////
 
-  public PlainDragTool(PlainChart theChart,
-                         ToolParent theParent,
-                         String theLabel,
-                         String theImage)
+  public PlainDragTool(final PlainChart theChart,
+                         final ToolParent theParent,
+                         final String theLabel,
+                         final String theImage)
   {
     this(theChart, theParent, theLabel, theImage, false);
   }
 
-  public PlainDragTool(PlainChart theChart,
-                         ToolParent theParent,
-                         String theLabel,
-                         String theImage,
-                         boolean isAlternateDragger){
+  public PlainDragTool(final PlainChart theChart,
+                         final ToolParent theParent,
+                         final String theLabel,
+                         final String theImage,
+                         final boolean isAlternateDragger){
 
     super(theParent, theLabel, theImage);
 
@@ -162,7 +162,7 @@ abstract public class PlainDragTool extends
   }
 
 
-  public void doExecute(Action theAction){
+  public void doExecute(final Action theAction){
     // start busy
     setCursor(0);
 
@@ -182,14 +182,14 @@ abstract public class PlainDragTool extends
   }
 
 
-  public void areaSelected(MWC.GenericData.WorldLocation theLocation, Point thePoint){
+  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
     _theEnd = new WorldLocation(theLocation);
     _theEndPoint = thePoint;
   }
 
   abstract public void startMotion();
 
-  public void startDrag(MWC.GenericData.WorldLocation theLocation, Point thePoint){
+  public void startDrag(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
     _theStart = new WorldLocation(theLocation);
     _theStartPoint = thePoint;
 
@@ -198,12 +198,12 @@ abstract public class PlainDragTool extends
   }
 
 
-  public void dragging(WorldLocation theLocation, Point thePoint)
+  public void dragging(final WorldLocation theLocation, final Point thePoint)
   {
     // don't do anything, really
   }
 
-  public void setCursor(int theCursor){
+  public void setCursor(final int theCursor){
     // check we have a parent
     if(_theParent != null)
     {

@@ -99,7 +99,7 @@ abstract public class PlainProjection implements Serializable,
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  protected PlainProjection(String theName)
+  protected PlainProjection(final String theName)
   {
     name = theName;
     _theDataArea = null;
@@ -124,7 +124,7 @@ abstract public class PlainProjection implements Serializable,
    *
    * @param listener the new listener
    */
-  public void addListener(java.beans.PropertyChangeListener listener)
+  public void addListener(final java.beans.PropertyChangeListener listener)
   {
     if (_pSupport == null)
       _pSupport = new PropertyChangeSupport(this);
@@ -135,7 +135,7 @@ abstract public class PlainProjection implements Serializable,
   /**
    * remove a listener
    */
-  public void removeListener(PropertyChangeListener listener)
+  public void removeListener(final PropertyChangeListener listener)
   {
     _pSupport.removePropertyChangeListener(listener);
   }
@@ -147,7 +147,7 @@ abstract public class PlainProjection implements Serializable,
    * @param oldValue   the old value
    * @param newValue   the new value
    */
-  public void firePropertyChange(String event_type, Object oldValue, Object newValue)
+  public void firePropertyChange(final String event_type, final Object oldValue, final Object newValue)
   {
     if (_pSupport != null)
     {
@@ -159,7 +159,7 @@ abstract public class PlainProjection implements Serializable,
   /**
    * allow the name to be modified
    */
-  public void setName(String val)
+  public void setName(final String val)
   {
     name = val;
   }
@@ -175,7 +175,7 @@ abstract public class PlainProjection implements Serializable,
   /**
    *
    */
-  public void setDataArea(WorldArea theArea)
+  public void setDataArea(final WorldArea theArea)
   {
     _theDataArea = theArea;
 
@@ -204,11 +204,11 @@ abstract public class PlainProjection implements Serializable,
     if (_theVisibleDataArea == null)
     {
       // we'll have to recalculate it then!
-      WorldLocation origin = this.toWorld(new Point(0, 0));
+      final WorldLocation origin = this.toWorld(new Point(0, 0));
       if (origin != null)
       {
-        WorldLocation TL = new WorldLocation(origin);
-        WorldLocation BR = new WorldLocation(toWorld(new Point((int) this.getScreenArea().getWidth(),
+        final WorldLocation TL = new WorldLocation(origin);
+        final WorldLocation BR = new WorldLocation(toWorld(new Point((int) this.getScreenArea().getWidth(),
                                                                (int) this.getScreenArea().getHeight())));
         _theVisibleDataArea = new WorldArea(TL, BR);
       }
@@ -222,7 +222,7 @@ abstract public class PlainProjection implements Serializable,
   /**
    *
    */
-  public void setScreenArea(java.awt.Dimension theArea)
+  public void setScreenArea(final java.awt.Dimension theArea)
   {
     _theScreenArea = theArea;
 
@@ -240,7 +240,7 @@ abstract public class PlainProjection implements Serializable,
     return _theScreenArea;
   }
 
-  public void setRelativeProjectionParent(RelativeProjectionParent par)
+  public void setRelativeProjectionParent(final RelativeProjectionParent par)
   {
     _relativePlotter = par;
   }
@@ -276,7 +276,7 @@ abstract public class PlainProjection implements Serializable,
    *
    * @param theBorder the border, as a proportion of the data area (e.g. 1.1)
    */
-  public void setDataBorder(double theBorder)
+  public void setDataBorder(final double theBorder)
   {
     _dataBorder = theBorder;
 
@@ -290,12 +290,12 @@ abstract public class PlainProjection implements Serializable,
    * 
    * @param theBorder the new border to use..
    */
-  public void setDataBorderNoZoom(double theBorder)
+  public void setDataBorderNoZoom(final double theBorder)
   {
   	_dataBorder = theBorder;
   }
 
-  public void setRelativeMode(boolean primaryCentred, boolean primaryOriented)
+  public void setRelativeMode(final boolean primaryCentred, final boolean primaryOriented)
   {
   	_primaryOriented = primaryOriented;
   	_primaryCentred = primaryCentred;
@@ -304,7 +304,7 @@ abstract public class PlainProjection implements Serializable,
   /**
    * produce a relative plot
    */
-  public void setPrimaryOriented(boolean val)
+  public void setPrimaryOriented(final boolean val)
   {
     _primaryOriented = val;
   }
@@ -328,7 +328,7 @@ abstract public class PlainProjection implements Serializable,
   	return _primaryCentred;
   }
   
-  public void setPrimaryCentred(boolean val)
+  public void setPrimaryCentred(final boolean val)
   {
   	_primaryCentred = val;
   }
@@ -353,7 +353,7 @@ abstract public class PlainProjection implements Serializable,
   public class PlainProjectionInfo extends Editable.EditorType
   {
 
-    public PlainProjectionInfo(PlainProjection data)
+    public PlainProjectionInfo(final PlainProjection data)
     {
       super(data, data.getName(), "");
     }
@@ -362,13 +362,13 @@ abstract public class PlainProjection implements Serializable,
     {
       try
       {
-        PropertyDescriptor[] res = {
+        final PropertyDescriptor[] res = {
           prop("DataBorder", "the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
         };
 
         return res;
       }
-      catch (IntrospectionException e)
+      catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }

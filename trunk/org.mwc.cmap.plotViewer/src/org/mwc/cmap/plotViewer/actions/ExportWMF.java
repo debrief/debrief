@@ -45,7 +45,7 @@ public class ExportWMF extends CoreEditorAction
 	 * @param toClipboard
 	 * @param toFile
 	 */
-	public ExportWMF(boolean toClipboard, boolean toFile)
+	public ExportWMF(final boolean toClipboard, final boolean toFile)
 	{
 		super();
 		_writeToClipboard = toClipboard;
@@ -57,7 +57,7 @@ public class ExportWMF extends CoreEditorAction
 	 * 
 	 * @param theParent
 	 */
-	public static void init(ToolParent theParent)
+	public static void init(final ToolParent theParent)
 	{
 		_theParent = theParent;
 	}
@@ -75,15 +75,15 @@ public class ExportWMF extends CoreEditorAction
 			return;
 		}
 
-		WriteMetafile write = new WriteMetafile(_theParent, theChart, _writeToFile)
+		final WriteMetafile write = new WriteMetafile(_theParent, theChart, _writeToFile)
 		{
 
 			/**
 			 * @param mf
 			 */
-			protected void paintToMetafile(MetafileCanvas mf)
+			protected void paintToMetafile(final MetafileCanvas mf)
 			{
-				SWTCanvas sc = (SWTCanvas) theChart.getCanvas();
+				final SWTCanvas sc = (SWTCanvas) theChart.getCanvas();
 				sc.paintPlot(mf);
 			}
 
@@ -94,7 +94,7 @@ public class ExportWMF extends CoreEditorAction
 		if (_writeToClipboard)
 		{
 			// try to get the filename
-			String fName = MetafileCanvas.getLastFileName();
+			final String fName = MetafileCanvas.getLastFileName();
 
 			if (fName != null)
 			{
@@ -104,18 +104,18 @@ public class ExportWMF extends CoreEditorAction
 				try
 				{
 					// get the dimensions
-					Dimension dim = MetafileCanvas.getLastScreenSize();
+					final Dimension dim = MetafileCanvas.getLastScreenSize();
 
-					ClipboardCopy cc = new ClipboardCopy();
+					final ClipboardCopy cc = new ClipboardCopy();
 					cc.copyWithPixelSize(fName, dim.width, dim.height, false);
 
 				}
-				catch(UnsatisfiedLinkError le)
+				catch(final UnsatisfiedLinkError le)
 				{
 					CorePlugin.logError(Status.ERROR,"Failed to find clipboard dll", le);
 					CorePlugin.showMessage("Export to WMF", "Sorry, unable to produce WMF. This is either an invalid installation dll missing, or an non-Windows PC");
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();

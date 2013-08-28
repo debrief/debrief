@@ -15,22 +15,22 @@ public class ChartBuilder {
 
 	private final ChartDataManager myManager;
 
-	public ChartBuilder(ChartDataManager dataSetManager) {
+	public ChartBuilder(final ChartDataManager dataSetManager) {
 		myManager = dataSetManager;
 	}
 
 	public JFreeChart buildChart() {
-		ValueAxis xAxis = myManager.createXAxis();
-		ValueAxis yAxis = myManager.createYAxis();
-		XYDataset data = myManager.getXYDataSet();
-		XYLineAndShapeRenderer renderer = new RendererWithDynamicFeedback();
-		XYPlot xyplot = new XYPlot(data, xAxis, yAxis, renderer);
+		final ValueAxis xAxis = myManager.createXAxis();
+		final ValueAxis yAxis = myManager.createYAxis();
+		final XYDataset data = myManager.getXYDataSet();
+		final XYLineAndShapeRenderer renderer = new RendererWithDynamicFeedback();
+		final XYPlot xyplot = new XYPlot(data, xAxis, yAxis, renderer);
 		xyplot.setOrientation(PlotOrientation.HORIZONTAL);
 		xyplot.setBackgroundPaint(Color.lightGray);
 		xyplot.setDomainGridlinePaint(Color.white);
 		xyplot.setRangeGridlinePaint(Color.white);
 		xyplot.setAxisOffset(new RectangleInsets(5, 5, 5, 5));
-		JFreeChart result = new JFreeChart(myManager.getChartTitle(), JFreeChart.DEFAULT_TITLE_FONT, xyplot, false);
+		final JFreeChart result = new JFreeChart(myManager.getChartTitle(), JFreeChart.DEFAULT_TITLE_FONT, xyplot, false);
 		ChartUtilities.applyCurrentTheme(result);
 		return result;
 	}

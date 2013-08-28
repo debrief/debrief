@@ -24,30 +24,30 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage impl
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
 	}
 
-	public void init(IWorkbench workbench) {
+	public void init(final IWorkbench workbench) {
 		//
 	}
 
 	@Override
 	protected void createFieldEditors() {
-		Composite main = new Composite(getFieldEditorParent(), SWT.NULL);
+		final Composite main = new Composite(getFieldEditorParent(), SWT.NULL);
 		main.setLayout(new GridLayout());
 		main.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 		createLocationFormatGroup(main);
 	}
 
-	private void createLocationFormatGroup(Composite parent) {
-		Composite locationFormatGroup = new Composite(parent, SWT.NULL);
+	private void createLocationFormatGroup(final Composite parent) {
+		final Composite locationFormatGroup = new Composite(parent, SWT.NULL);
 		locationFormatGroup.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
-		GridLayout layout = new GridLayout();
+		final GridLayout layout = new GridLayout();
 		locationFormatGroup.setLayout(layout);
-		String[][] choices = new String[][] {//
+		final String[][] choices = new String[][] {//
 		//
 				{ LABEL_DD_MM_MMM, "true" }, //
 				{ LABEL_DD_MM_SS_SSS, "false" }, //
 		};
 
-		RadioGroupFieldEditor formarEditor = new RadioGroupFieldEditor(//
+		final RadioGroupFieldEditor formarEditor = new RadioGroupFieldEditor(//
 				CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, //
 				"Location Format", //
 				1, choices, locationFormatGroup, true);

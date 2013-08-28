@@ -16,13 +16,13 @@ public final class D3Splash extends Window
 	private static final long serialVersionUID = 1L;
 
 	// Required for Visual Designer support
-	public D3Splash(Frame parent)
+	public D3Splash(final Frame parent)
 	{
     
     super(parent);
 
-    MediaTracker mt = new MediaTracker(this);
-    String srv = "";
+    final MediaTracker mt = new MediaTracker(this);
+    final String srv = "";
     imageD = Toolkit.getDefaultToolkit().getImage(srv + "d.gif");
     mt.addImage(imageD, 0);
     imageK = Toolkit.getDefaultToolkit().getImage(srv + "k.gif");
@@ -35,7 +35,7 @@ public final class D3Splash extends Window
     {
       mt.waitForAll();
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
@@ -61,8 +61,8 @@ public final class D3Splash extends Window
 		this.setSize( 590, 230 );
     this.setBackground(Color.lightGray);
     
-    Rectangle sz = this.getBounds();
-    Dimension ssz = Toolkit.getDefaultToolkit().getScreenSize();
+    final Rectangle sz = this.getBounds();
+    final Dimension ssz = Toolkit.getDefaultToolkit().getScreenSize();
     setLocation((ssz.width - sz.width)/2,
                 (ssz.height - sz.height)/2);
 	}
@@ -72,9 +72,9 @@ public final class D3Splash extends Window
   private Graphics offG;
   private String theStr="Loading editors....";
   
-  public final void paint(Graphics p2)
+  public final void paint(final Graphics p2)
   {
-    Dimension sz = this.getSize();
+    final Dimension sz = this.getSize();
     int x = 5;
     int y = 60;
  //   if(off == null)
@@ -91,8 +91,8 @@ public final class D3Splash extends Window
     x += crest.getWidth(this);
     if(image2 != null)
     {
-      int ht = crest.getHeight(this);
-      int ht2 = imageD.getHeight(this);
+      final int ht = crest.getHeight(this);
+      final int ht2 = imageD.getHeight(this);
       y = y + (ht - ht2)/2 + 5;
       
       offG.drawImage(imageD, x, y, this);
@@ -123,7 +123,7 @@ public final class D3Splash extends Window
       theStr = "Loading Coastline";
           
     }
-    catch(Exception e)
+    catch(final Exception e)
     {
     }
     

@@ -14,8 +14,8 @@ public final class StartTote extends PlainTool
   // constructor
   ////////////////////////////////////////////////////////////
 
-  public StartTote(ToolParent theParent,
-                   PlainChart theChart)
+  public StartTote(final ToolParent theParent,
+                   final PlainChart theChart)
   {
     super(theParent, "Step Forward", null);
     _theChart = theChart;

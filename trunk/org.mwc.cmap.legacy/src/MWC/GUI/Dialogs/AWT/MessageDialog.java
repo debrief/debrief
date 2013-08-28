@@ -14,17 +14,17 @@ public class MessageDialog extends WorkDialog
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Button       okButton;
-	private MessagePanel messagePanel;
+	private final Button       okButton;
+	private final MessagePanel messagePanel;
 
-	public MessageDialog(Frame  frame, DialogClient client, 
-						String title, String message,
-						Image  image) {
+	public MessageDialog(final Frame  frame, final DialogClient client, 
+						final String title, final String message,
+						final Image  image) {
 		this(frame, client, title, message, image, false);
 	}
-	public MessageDialog(Frame  frame, DialogClient client, 
-		String title, String       message,
-		Image  image, boolean      modal) {
+	public MessageDialog(final Frame  frame, final DialogClient client, 
+		final String title, final String       message,
+		final Image  image, final boolean      modal) {
 
 		super(frame, client, title, modal);
 
@@ -37,7 +37,7 @@ public class MessageDialog extends WorkDialog
 		okButton.requestFocus();
 		super.doLayout();
 	}
-	public void actionPerformed(ActionEvent event) {
+	public void actionPerformed(final ActionEvent event) {
 		dispose();
 	}
 }
@@ -48,14 +48,14 @@ class MessagePanel extends Postcard {
 	private static final long serialVersionUID = 1L;
 	private Label label;
 
-	public MessagePanel(String message) {
+	public MessagePanel(final String message) {
 		this(null, message);
 	}
-	public MessagePanel(Image image, String message) {
+	public MessagePanel(final Image image, final String message) {
 		super(image, new Panel());
 		getPanel().add(label = new Label(message,Label.CENTER));
 	}
-	public void setMessage(String message) {
+	public void setMessage(final String message) {
 		label.setText(message);
 	}
 }

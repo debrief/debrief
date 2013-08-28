@@ -32,14 +32,14 @@ public class DateTimeCellEditor extends CellEditor {
 
 	private Date myDeferredValue;
 
-	public DateTimeCellEditor(Composite parent) {
+	public DateTimeCellEditor(final Composite parent) {
 		super(parent);
 	}
 
 	@Override
-	protected Control createControl(Composite parent) {
+	protected Control createControl(final Composite parent) {
 		myPanel = new Composite(parent, SWT.NONE);
-		RowLayout rows = new RowLayout();
+		final RowLayout rows = new RowLayout();
 		rows.marginLeft = rows.marginRight = 0;
 		rows.marginTop = rows.marginBottom = 0;
 		rows.fill = false;
@@ -50,9 +50,9 @@ public class DateTimeCellEditor extends CellEditor {
 		myDateUI = new DateTime(myPanel, SWT.DATE | SWT.MEDIUM);
 		myTimeUI = new DateTime(myPanel, SWT.TIME | SWT.MEDIUM);
 
-		TraverseListener onEscapeCloser = new TraverseListener() {
+		final TraverseListener onEscapeCloser = new TraverseListener() {
 
-			public void keyTraversed(TraverseEvent e) {
+			public void keyTraversed(final TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
 					e.doit = false;
 					DateTimeCellEditor.this.focusLost();
@@ -67,7 +67,7 @@ public class DateTimeCellEditor extends CellEditor {
 		new MultiControlFocusHandler(myDateUI, myTimeUI) {
 
 			@Override
-			protected void focusReallyLost(FocusEvent e) {
+			protected void focusReallyLost(final FocusEvent e) {
 				if (myDateUI.isDisposed() || myTimeUI.isDisposed()) {
 					return;
 				}
@@ -87,11 +87,11 @@ public class DateTimeCellEditor extends CellEditor {
 		if (myPanel == null) {
 			return null;
 		}
-		GregorianCalendar calendar = (GregorianCalendar) CALENDAR_TEMPLATE.clone();
+		final GregorianCalendar calendar = (GregorianCalendar) CALENDAR_TEMPLATE.clone();
 		calendar.setTimeZone(DEFAULT_TIME_ZONE);
 		calendar.set(myDateUI.getYear(), myDateUI.getMonth(), myDateUI.getDay(), myTimeUI.getHours(), myTimeUI.getMinutes(), myTimeUI.getSeconds());
 		calendar.set(Calendar.MILLISECOND, 0);
-		Date result = calendar.getTime();
+		final Date result = calendar.getTime();
 		return result;
 	}
 
@@ -103,11 +103,12 @@ public class DateTimeCellEditor extends CellEditor {
 	}
 
 	@Override
-	protected void doSetValue(Object value) {
-		if (false == value instanceof Date) {
-			value = new Date();
+	protected void doSetValue(final Object value) {
+		Object theValue = value;
+		if (false == theValue instanceof Date) {
+			theValue = new Date();
 		}
-		Date date = (Date) value;
+		final Date date = (Date) theValue;
 		if (myDateUI == null) {
 			myDeferredValue = date;
 		} else {
@@ -119,8 +120,8 @@ public class DateTimeCellEditor extends CellEditor {
 		return myTimeUI;
 	}
 
-	private void pushValueToUI(Date value) {
-		GregorianCalendar calendar = (GregorianCalendar) CALENDAR_TEMPLATE.clone();
+	private void pushValueToUI(final Date value) {
+		final GregorianCalendar calendar = (GregorianCalendar) CALENDAR_TEMPLATE.clone();
 		calendar.setTime(value);
 		calendar.setTimeZone(DEFAULT_TIME_ZONE);
 		myDateUI.setYear(calendar.get(Calendar.YEAR));

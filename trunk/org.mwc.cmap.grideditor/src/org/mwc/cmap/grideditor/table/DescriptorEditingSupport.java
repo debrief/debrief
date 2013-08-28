@@ -29,7 +29,7 @@ public class DescriptorEditingSupport extends EditingSupport {
 
 	private EditableTarget myTabTraverseTarget;
 
-	public DescriptorEditingSupport(TableModel tableModel, GriddableItemDescriptor descriptor) {
+	public DescriptorEditingSupport(final TableModel tableModel, final GriddableItemDescriptor descriptor) {
 		super(tableModel.getViewer());
 		myDescriptor = descriptor;
 		myTableModel = tableModel;
@@ -39,18 +39,18 @@ public class DescriptorEditingSupport extends EditingSupport {
 		return myDescriptor;
 	}
 
-	public void setTabTraverseTarget(EditableTarget tabTraverseTarget) {
+	public void setTabTraverseTarget(final EditableTarget tabTraverseTarget) {
 		myTabTraverseTarget = tabTraverseTarget;
 	}
 
 	@Override
-	protected boolean canEdit(Object element) {
+	protected boolean canEdit(final Object element) {
 		return element instanceof TimeStampedDataItem;
 	}
 
 	@Override
-	protected CellEditor getCellEditor(Object element) {
-		CellEditor cellEditor = getDescriptor().getEditor().getCellEditorFor(getCellEditorParent());
+	protected CellEditor getCellEditor(final Object element) {
+		final CellEditor cellEditor = getDescriptor().getEditor().getCellEditorFor(getCellEditorParent());
 		if (myTabTraverseTarget != null) {
 			Control traverseSubject = null;
 			if (cellEditor instanceof MultiControlCellEditor) {
@@ -67,28 +67,29 @@ public class DescriptorEditingSupport extends EditingSupport {
 	}
 
 	@Override
-	protected Object getValue(Object element) {
+	protected Object getValue(final Object element) {
 		if (false == element instanceof TimeStampedDataItem) {
 			return null;
 		}
-		TimeStampedDataItem item = (TimeStampedDataItem) element;
-		Object rawValue = BeanUtil.getItemValue(item, getDescriptor());
+		final TimeStampedDataItem item = (TimeStampedDataItem) element;
+		final Object rawValue = BeanUtil.getItemValue(item, getDescriptor());
 		return transformToCellEditor(rawValue);
 	}
 
 	@Override
-	protected void setValue(Object element, Object value) {
+	protected void setValue(final Object element, final Object value) {
+		Object theValue = value;
 		if (element instanceof TimeStampedDataItem) {
-			TimeStampedDataItem item = (TimeStampedDataItem) element;
-			value = transformFromCellEditor(value);
-			if (value != null && !value.equals(BeanUtil.getItemValue(item, myDescriptor))) {
-				GriddableSeries series = (GriddableSeries) getViewer().getInput();
-				OperationEnvironment environment = new OperationEnvironment(getUndoContext(), series, item, myDescriptor);
-				SetDescriptorValueOperation update = new SetDescriptorValueOperation(environment, value);
+			final TimeStampedDataItem item = (TimeStampedDataItem) element;
+			theValue = transformFromCellEditor(theValue);
+			if (theValue != null && !theValue.equals(BeanUtil.getItemValue(item, myDescriptor))) {
+				final GriddableSeries series = (GriddableSeries) getViewer().getInput();
+				final OperationEnvironment environment = new OperationEnvironment(getUndoContext(), series, item, myDescriptor);
+				final SetDescriptorValueOperation update = new SetDescriptorValueOperation(environment, theValue);
 				try {
 					getOperationHistory().execute(update, null, null);
-				} catch (ExecutionException e) {
-					throw new RuntimeException("Can't set the value of :" + value + //
+				} catch (final ExecutionException e) {
+					throw new RuntimeException("Can't set the value of :" + theValue + //
 							" for descriptor " + myDescriptor.getTitle() + //
 							" of item: " + item, e);
 				}
@@ -97,15 +98,15 @@ public class DescriptorEditingSupport extends EditingSupport {
 	}
 
 	protected final Composite getCellEditorParent() {
-		TableViewer viewer = (TableViewer) getViewer();
+		final TableViewer viewer = (TableViewer) getViewer();
 		return viewer.getTable();
 	}
 
-	protected Object transformToCellEditor(Object value) {
+	protected Object transformToCellEditor(final Object value) {
 		return (myNeedCastValueToStringForCellEditor) ? String.valueOf(value) : value;
 	}
 
-	protected Object transformFromCellEditor(Object cellEditorValue) {
+	protected Object transformFromCellEditor(final Object cellEditorValue) {
 		if (!myNeedCastValueToStringForCellEditor) {
 			return cellEditorValue;
 		}
@@ -115,8 +116,8 @@ public class DescriptorEditingSupport extends EditingSupport {
 		if (!getDescriptor().getType().isPrimitive()) {
 			return cellEditorValue;
 		}
-		String stringValue = (String) cellEditorValue;
-		Class<?> descriptorType = getDescriptor().getType();
+		final String stringValue = (String) cellEditorValue;
+		final Class<?> descriptorType = getDescriptor().getType();
 		try {
 			if (double.class.equals(descriptorType)) {
 				return Double.valueOf(stringValue);
@@ -137,7 +138,7 @@ public class DescriptorEditingSupport extends EditingSupport {
 				return Byte.valueOf(stringValue);
 			}
 			throw new UnsupportedOperationException("Primitive type is not suported: " + descriptorType);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return null;
 		}
 	}

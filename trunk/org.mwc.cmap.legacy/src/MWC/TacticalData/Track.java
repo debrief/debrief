@@ -111,7 +111,7 @@ public class Track implements Serializable {
 	/**
 	 * the list of fixes we are storing
 	 */
-	private java.util.Vector<Fix> _theFixes;
+	private final java.util.Vector<Fix> _theFixes;
 
 	/**
 	 * the vessel name
@@ -145,7 +145,7 @@ public class Track implements Serializable {
 	/**
 	 * constructor receives reference to list of fixes which make up the track
 	 */
-	public Track(java.util.Vector<Fix> theFixesVal) {
+	public Track(final java.util.Vector<Fix> theFixesVal) {
 		this();
 
 		// hey, check we've received some fixes
@@ -153,8 +153,8 @@ public class Track implements Serializable {
 
 			// ok - add the fixes incrementally, so we can sort out the time
 			// limits
-			for (Iterator<Fix> iter = theFixesVal.iterator(); iter.hasNext();) {
-				Fix thisFix = (Fix) iter.next();
+			for (final Iterator<Fix> iter = theFixesVal.iterator(); iter.hasNext();) {
+				final Fix thisFix = (Fix) iter.next();
 				addFix(thisFix);
 			}
 		}
@@ -208,7 +208,7 @@ public class Track implements Serializable {
 	/**
 	 * Set
 	 */
-	public void setVesselName(String VesselName) {
+	public void setVesselName(final String VesselName) {
 		this.VesselName = VesselName;
 		setName(VesselName);
 	}
@@ -216,7 +216,7 @@ public class Track implements Serializable {
 	/**
 	 * add the fix to our list, also extend our area
 	 */
-	public void addFix(Fix theFix) {
+	public void addFix(final Fix theFix) {
 		// add to vector
 		_theFixes.addElement(theFix);
 
@@ -228,9 +228,9 @@ public class Track implements Serializable {
 		}
 
 		// extend the time period
-		HiResDate thisTime = theFix.getTime();
+		final HiResDate thisTime = theFix.getTime();
 
-		long myTime = thisTime.getMicros();
+		final long myTime = thisTime.getMicros();
 
 		if (_startDTG == TimePeriod.INVALID_DATE) {
 			_startDTG = _endDTG = thisTime;
@@ -256,7 +256,7 @@ public class Track implements Serializable {
 		return _trackName;
 	}
 
-	public void setName(String theName) {
+	public void setName(final String theName) {
 		_trackName = theName;
 	}
 

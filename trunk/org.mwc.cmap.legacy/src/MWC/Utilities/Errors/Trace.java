@@ -117,7 +117,7 @@ public class Trace extends java.lang.Object
 	 * 
 	 * @param theParent
 	 */
-	public static void initialise(ToolParent theParent)
+	public static void initialise(final ToolParent theParent)
 	{
 		_myParent = theParent;
 	}
@@ -137,7 +137,7 @@ public class Trace extends java.lang.Object
 	 * @param e
 	 *          the exception to record
 	 */
-	static public void trace(Throwable e)
+	static public void trace(final Throwable e)
 	{
 		trace(e, null);
 	}
@@ -145,7 +145,7 @@ public class Trace extends java.lang.Object
 	/**
 	 * write these details to the trace file, together with a message
 	 */
-	static public void trace(String message, boolean showWarning)
+	static public void trace(final String message, final boolean showWarning)
 	{ // do we have a logger?
 		if (_myParent != null)
 		{
@@ -162,7 +162,7 @@ public class Trace extends java.lang.Object
 			// user wants to, that-is)
 			if (showWarning && !_warningShown)
 			{
-				String msg = "Errors have occured.  An error file has been created the working directory";
+				final String msg = "Errors have occured.  An error file has been created the working directory";
 				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
 				_warningShown = true;
 			}
@@ -188,7 +188,7 @@ public class Trace extends java.lang.Object
 	/**
 	 * write these details to the trace file, together with a message
 	 */
-	static public void trace(String message)
+	static public void trace(final String message)
 	{
 		trace(message, true);
 	}
@@ -196,7 +196,7 @@ public class Trace extends java.lang.Object
 	/**
 	 * write these details to the trace file, together with a message
 	 */
-	static public void trace(Throwable e, String message)
+	static public void trace(final Throwable e, final String message)
 	{
 		if (_myParent != null)
 		{
@@ -212,7 +212,7 @@ public class Trace extends java.lang.Object
 			// just do an extra check to see if the user has been warned yet
 			if (!_warningShown)
 			{
-				String msg = "Errors have occured.  An error file has been created the working directory";
+				final String msg = "Errors have occured.  An error file has been created the working directory";
 				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
 				_warningShown = true;
 			}
@@ -240,11 +240,11 @@ public class Trace extends java.lang.Object
 	/**
 	 * create the output stream
 	 */
-	static private void createOutput(boolean showWarning)
+	static private void createOutput(final boolean showWarning)
 	{
 		_line_separator = System.getProperty("line.separator");
 
-		File f_out = new File(_outName);
+		final File f_out = new File(_outName);
 		try
 		{
 
@@ -252,7 +252,7 @@ public class Trace extends java.lang.Object
 			{
 				// this is the first time we have sent errors to the trace, inform the
 				// user
-				String msg = "Errors have occured.  An error file has been created in "
+				final String msg = "Errors have occured.  An error file has been created in "
 						+ f_out.getAbsolutePath();
 				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
 
@@ -273,7 +273,7 @@ public class Trace extends java.lang.Object
 			doHeader();
 
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			// don't bother
 			System.err

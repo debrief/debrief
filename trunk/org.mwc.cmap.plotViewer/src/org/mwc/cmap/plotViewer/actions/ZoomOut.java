@@ -17,14 +17,14 @@ public class ZoomOut extends CoreEditorAction
 {
 	protected void execute()
 	{
-		PlainChart theChart = getChart();
+		final PlainChart theChart = getChart();
 
-		WorldArea oldArea = theChart.getDataArea();
-		Action theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(theChart,
+		final WorldArea oldArea = theChart.getDataArea();
+		final Action theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(theChart,
 				oldArea, 2.0);
 
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers(), null);
+		final DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers(), null);
 
 		// and add it to the clipboard
 		CorePlugin.run(daw);

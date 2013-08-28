@@ -179,7 +179,7 @@ public class RectangleShape extends PlainShape implements Editable,
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
-	public RectangleShape(WorldLocation TL, WorldLocation BR)
+	public RectangleShape(final WorldLocation TL, final WorldLocation BR)
 	{
 		super(0, 1, "Rectangle");
 
@@ -194,25 +194,25 @@ public class RectangleShape extends PlainShape implements Editable,
 	/**
 	 * paint this shape to the destination canvas
 	 */
-	public void paint(CanvasType dest)
+	public void paint(final CanvasType dest)
 	{
 		// are we visible?
 		if (!getVisible())
 			return;
 
 		// create a transparent colour
-		Color newcol = getColor();
+		final Color newcol = getColor();
 		dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol
 				.getBlue(), TRANSPARENCY_SHADE));
-		Collection<WorldLocation> pts = getDataPoints();
-		Iterator<WorldLocation> iter = pts.iterator();
+		final Collection<WorldLocation> pts = getDataPoints();
+		final Iterator<WorldLocation> iter = pts.iterator();
 		final int STEPS = pts.size();
-		int[] xP = new int[STEPS];
-		int[] yP = new int[STEPS];
+		final int[] xP = new int[STEPS];
+		final int[] yP = new int[STEPS];
 		int ctr = 0;
 		while (iter.hasNext())
 		{
-			Point pt = dest.toScreen(iter.next());
+			final Point pt = dest.toScreen(iter.next());
 			// Rotate Rectangle around its center for degrees, specified in
 			// Orientation
 			xP[ctr] = pt.x;
@@ -242,7 +242,7 @@ public class RectangleShape extends PlainShape implements Editable,
 		return _myArea;
 	}
 
-	public void setRectangleColor(Color val)
+	public void setRectangleColor(final Color val)
 	{
 		super.setColor(val);
 	}
@@ -258,7 +258,7 @@ public class RectangleShape extends PlainShape implements Editable,
 	 */
 	private Collection<WorldLocation> getDataPoints()
 	{
-		Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+		final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
 		res.add(_myArea.getTopLeft());
 		res.add(_myArea.getTopRight());
@@ -272,7 +272,7 @@ public class RectangleShape extends PlainShape implements Editable,
 	 * get the range from the indicated world location - making this abstract
 	 * allows for individual shapes to have 'hit-spots' in various locations.
 	 */
-	public double rangeFrom(WorldLocation point)
+	public double rangeFrom(final WorldLocation point)
 	{
 		return _myArea.rangeFrom(point);
 	}
@@ -314,9 +314,9 @@ public class RectangleShape extends PlainShape implements Editable,
 	 * @param loc
 	 *          WorldLocation for the corner
 	 */
-	public void setCorner_TopLeft(WorldLocation loc)
+	public void setCorner_TopLeft(final WorldLocation loc)
 	{
-		WorldLocation br = _myArea.getBottomRight();
+		final WorldLocation br = _myArea.getBottomRight();
 		_myArea = new WorldArea(loc, br);
 
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
@@ -338,9 +338,9 @@ public class RectangleShape extends PlainShape implements Editable,
 	 * @param loc
 	 *          WorldLocation for the corner
 	 */
-	public void setCornerBottomRight(WorldLocation loc)
+	public void setCornerBottomRight(final WorldLocation loc)
 	{
-		WorldLocation tl = _myArea.getTopLeft();
+		final WorldLocation tl = _myArea.getTopLeft();
 		_myArea = new WorldArea(tl, loc);
 
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
@@ -352,7 +352,7 @@ public class RectangleShape extends PlainShape implements Editable,
 	public class RectangleInfo extends Editable.EditorType
 	{
 
-		public RectangleInfo(RectangleShape data, String theName)
+		public RectangleInfo(final RectangleShape data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -361,7 +361,7 @@ public class RectangleShape extends PlainShape implements Editable,
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("Corner_TopLeft", "the top left corner", SPATIAL),
 						prop("CornerBottomRight", "the bottom right corner", SPATIAL),
 						prop("Filled", "whether this shape is filled", FORMAT) };
@@ -369,7 +369,7 @@ public class RectangleShape extends PlainShape implements Editable,
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -383,14 +383,14 @@ public class RectangleShape extends PlainShape implements Editable,
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public RectangleTest(String val)
+		public RectangleTest(final String val)
 		{
 			super(val);
 		}
 
 		public void testMyParams()
 		{
-			WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
+			final WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
 			MWC.GUI.Editable ed = new RectangleShape(scrap, scrap);
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
@@ -401,14 +401,14 @@ public class RectangleShape extends PlainShape implements Editable,
 	 * move the whole shape by the specified distance
 	 * 
 	 */
-	public void shift(WorldVector vector)
+	public void shift(final WorldVector vector)
 	{
 
 		// get the old centre
-		WorldLocation oldCentre = _myArea.getCentre();
+		final WorldLocation oldCentre = _myArea.getCentre();
 
 		// apply the offset
-		WorldLocation newCentre = oldCentre.add(vector);
+		final WorldLocation newCentre = oldCentre.add(vector);
 
 		// ok, apply the offset to each corner
 		_myArea.setCentre(newCentre);
@@ -424,7 +424,7 @@ public class RectangleShape extends PlainShape implements Editable,
 	 * move one of the corners of the shape
 	 * 
 	 */
-	public void shift(WorldLocation feature, WorldVector vector)
+	public void shift(final WorldLocation feature, final WorldVector vector)
 	{
 		// ok, just shift it...
 		feature.addToMe(vector);
@@ -436,8 +436,8 @@ public class RectangleShape extends PlainShape implements Editable,
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer)
 	{
 
 		// right - the first two points are easy, we just pass the location directly
@@ -451,26 +451,26 @@ public class RectangleShape extends PlainShape implements Editable,
 		// we've got to wrap the locations in an object that actually updates the TL
 		// & BR corners of the
 		// rectangle
-		WorldLocation bl = new WorldLocation(_myArea.getBottomLeft())
+		final WorldLocation bl = new WorldLocation(_myArea.getBottomLeft())
 		{
 			private static final long serialVersionUID = 1L;
 
-			public void addToMe(WorldVector delta)
+			public void addToMe(final WorldVector delta)
 			{
-				WorldLocation newBL = _myArea.getBottomLeft().add(delta);
-				WorldLocation newTR = _myArea.getTopRight();
+				final WorldLocation newBL = _myArea.getBottomLeft().add(delta);
+				final WorldLocation newTR = _myArea.getTopRight();
 				_myArea = new WorldArea(newBL, newTR);
 				_myArea.normalise();
 			}
 		};
-		WorldLocation tr = new WorldLocation(_myArea.getTopRight())
+		final WorldLocation tr = new WorldLocation(_myArea.getTopRight())
 		{
 			private static final long serialVersionUID = 1L;
 
-			public void addToMe(WorldVector delta)
+			public void addToMe(final WorldVector delta)
 			{
-				WorldLocation newBL = _myArea.getBottomLeft();
-				WorldLocation newTR = _myArea.getTopRight().add(delta);
+				final WorldLocation newBL = _myArea.getBottomLeft();
+				final WorldLocation newTR = _myArea.getTopRight().add(delta);
 				_myArea = new WorldArea(newBL, newTR);
 				_myArea.normalise();
 			}

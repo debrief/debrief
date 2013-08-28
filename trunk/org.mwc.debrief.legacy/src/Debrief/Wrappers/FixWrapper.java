@@ -485,7 +485,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		// COURSE + SPEED
 		// calculate the course and speed as being the MLA of the unit
 		double newCourse = previous.getCourse() + dCourse;
-		double newSpeed = previous.getSpeed() + dSpeed;
+		final double newSpeed = previous.getSpeed() + dSpeed;
 
 		// ok, trim the course
 		if (newCourse < 0)
@@ -592,11 +592,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * @param centre
 	 */
 	public final void paintMe(final CanvasType dest, final WorldLocation centre,
-			Color theColor)
+			final Color theColor)
 	{
 
 		// take a copy of the color
-		Color safeColor = _theLocationWrapper.getColor();
+		final Color safeColor = _theLocationWrapper.getColor();
 
 		// use the provided color
 		_theLocationWrapper.setColor(theColor);
@@ -624,25 +624,25 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		if (getArrowShowing())
 		{
 			// ok, have a go at drawing an arrow...
-			double direction = (this.getFix().getCourse() + Math.PI / 2);
+			final double direction = (this.getFix().getCourse() + Math.PI / 2);
 
-			double theScale = _theLocationWrapper.getSymbolScale();
+			final double theScale = _theLocationWrapper.getSymbolScale();
 
-			double len = 30d * theScale;
-			double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
+			final double len = 30d * theScale;
+			final double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
 
 			// move the start point forward, so the centre of the triangle is over the
 			// point
-			Point p0 = dest.toScreen(centre);
-			Point p1 = new Point(p0);
+			final Point p0 = dest.toScreen(centre);
+			final Point p1 = new Point(p0);
 			p1.translate(-(int) (len / 2d * Math.cos(direction)),
 					-(int) (len / 2d * Math.sin(direction)));
 
 			// now the back corners
-			Point p2 = new Point(p1);
+			final Point p2 = new Point(p1);
 			p2.translate((int) (len * Math.cos(direction - angle)),
 					(int) (len * Math.sin(direction - angle)));
-			Point p3 = new Point(p1);
+			final Point p3 = new Point(p1);
 			p3.translate((int) (len * Math.cos(direction + angle)),
 					(int) (len * Math.sin(direction + angle)));
 
@@ -794,7 +794,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _showArrow;
 	}
 
-	public void setArrowShowing(boolean val)
+	public void setArrowShowing(final boolean val)
 	{
 		_showArrow = val;
 	}
@@ -1404,7 +1404,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * @param yesNo
 	 *          whether a user label was supplied
 	 */
-	public void setUserLabelSupplied(boolean yesNo)
+	public void setUserLabelSupplied(final boolean yesNo)
 	{
 		_userLabelSupplied = yesNo;
 	}

@@ -44,8 +44,8 @@ public class GenerateNewNarrativeEntry implements
 		final private NarrativeEntry _entry;
 		private NarrativeWrapper _parent;
 
-		public AddNarrativeEntry(Layers layers, NarrativeWrapper parent,
-				NarrativeEntry entry)
+		public AddNarrativeEntry(final Layers layers, final NarrativeWrapper parent,
+				final NarrativeEntry entry)
 		{
 			super("Create narrative entry");
 			_layers = layers;
@@ -54,7 +54,7 @@ public class GenerateNewNarrativeEntry implements
 		}
 
 		@Override
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// do we have a parent?
@@ -90,7 +90,7 @@ public class GenerateNewNarrativeEntry implements
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_parent.removeElement(_entry);
@@ -135,12 +135,12 @@ public class GenerateNewNarrativeEntry implements
 			final NarrativeWrapper theNarrative = narrative;
 
 			// create this operation
-			Action addEntry = new Action(WIZARD_TITLE)
+			final Action addEntry = new Action(WIZARD_TITLE)
 			{
 				public void run()
 				{
 					// get the supporting data
-					NewNarrativeEntryWizard wizard = new NewNarrativeEntryWizard();
+					final NewNarrativeEntryWizard wizard = new NewNarrativeEntryWizard();
 					runOperation(theLayers, theNarrative, wizard);
 				}
 			};
@@ -164,9 +164,9 @@ public class GenerateNewNarrativeEntry implements
 	 * @param helpContext
 	 */
 	private void runOperation(final Layers theLayers,
-			NarrativeWrapper theNarrative, NewNarrativeEntryWizard wizard)
+			final NarrativeWrapper theNarrative, final NewNarrativeEntryWizard wizard)
 	{
-		WizardDialog dialog = new WizardDialog(Display.getCurrent()
+		final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		TrayDialog.setDialogHelpAvailable(true);
 		dialog.setHelpAvailable(true);
@@ -176,10 +176,10 @@ public class GenerateNewNarrativeEntry implements
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
-			NarrativeEntry ne = wizard.getEntry();
+			final NarrativeEntry ne = wizard.getEntry();
 			// ok, go for it.
 			// sort it out as an operation
-			IUndoableOperation addTheCut = new AddNarrativeEntry(theLayers,
+			final IUndoableOperation addTheCut = new AddNarrativeEntry(theLayers,
 					theNarrative, ne);
 
 			// ok, stick it on the buffer
@@ -193,7 +193,7 @@ public class GenerateNewNarrativeEntry implements
 	 * 
 	 * @param operation
 	 */
-	protected void runIt(IUndoableOperation operation)
+	protected void runIt(final IUndoableOperation operation)
 	{
 		CorePlugin.run(operation);
 	}

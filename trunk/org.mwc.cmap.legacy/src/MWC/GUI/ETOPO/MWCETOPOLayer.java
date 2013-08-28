@@ -260,7 +260,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	protected boolean spacingReset = true;
 
 	/* returns the color lookup index based on elevation */
-	protected int getElevIndex(short el)
+	protected int getElevIndex(final short el)
 	{
 		for (int i = 0; i < elevLimitCnt - 1; i++)
 			if (el < elevLimit[i + 1])
@@ -269,7 +269,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	}
 
 	/* returns a color based on slope and elevation */
-	protected Color getColor(short elevation, byte slopeVal)
+	protected Color getColor(final short elevation, final byte slopeVal)
 	{
 		// build first time
 		if (slopeColors == null)
@@ -283,7 +283,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			{
 
 				// get base color (0 slope color)
-				Color base = new Color(redElev[i], greenElev[i], blueElev[i]);
+				final Color base = new Color(redElev[i], greenElev[i], blueElev[i]);
 
 				// call the "brighter" method on the base color for
 				// positive slope
@@ -312,13 +312,13 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 		}
 
 		// get the elevation band index
-		int elIdx = getElevIndex(elevation);
+		final int elIdx = getElevIndex(elevation);
 
 		// compute slope idx
-		int slopeIdx = ((int) slopeVal + 127) / 32;
+		final int slopeIdx = ((int) slopeVal + 127) / 32;
 
 		// return color
-		Color norm = slopeColors[elIdx][slopeIdx];
+		final Color norm = slopeColors[elIdx][slopeIdx];
 
 		// set alpha
 		return new Color(norm.getRed(), norm.getGreen(), norm.getBlue(), opaqueness);
@@ -345,9 +345,9 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			{
 				return prepare();
 			}
-			catch (OutOfMemoryError e)
+			catch (final OutOfMemoryError e)
 			{
-				String msg = getName() + "|MWCETOPOLayer.ETOPOWorker.construct(): " + e;
+				final String msg = getName() + "|MWCETOPOLayer.ETOPOWorker.construct(): " + e;
 				Debug.error(msg);
 				fireRequestMessage(new InfoDisplayEvent(this, msg));
 				fireStatusUpdate(LayerStatusEvent.FINISH_WORKING);
@@ -385,13 +385,13 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	 * @param pathToETOPODir
 	 *          path to the directory holding the ETOPO data
 	 */
-	public MWCETOPOLayer(String pathToETOPODir)
+	public MWCETOPOLayer(final String pathToETOPODir)
 	{
 		setDefaultValues();
 		path = pathToETOPODir;
 	}
 
-	public void setPath(String pathToETOPODir)
+	public void setPath(final String pathToETOPODir)
 	{
 		path = pathToETOPODir;
 	}
@@ -413,7 +413,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	 * @param aList
 	 *          a list of OMGraphics
 	 */
-	public synchronized void setGraphicList(OMGraphicList aList)
+	public synchronized void setGraphicList(final OMGraphicList aList)
 	{
 		omGraphics = aList;
 	}
@@ -429,7 +429,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	/**
 	 * Set all the ETOPO properties from a properties object.
 	 */
-	public void setProperties(String prefix, java.util.Properties properties)
+	public void setProperties(final String prefix, final java.util.Properties properties)
 	{
 
 		super.setProperties(prefix, properties);
@@ -454,7 +454,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	 * Called when the layer is no longer part of the map. In this case, we should
 	 * disconnect from the server if we have a link.
 	 */
-	public void removed(java.awt.Container cont)
+	public void removed(final java.awt.Container cont)
 	{
 	}
 
@@ -463,7 +463,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	 * once in a while to see if the projection has changed since it started
 	 * working. If this is set to true, the swing worker quits when it is safe.
 	 */
-	public synchronized void setCancelled(boolean set)
+	public synchronized void setCancelled(final boolean set)
 	{
 		cancelled = set;
 	}
@@ -477,8 +477,8 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	/**
 	 * Implementing the ProjectionPainter interface.
 	 */
-	public synchronized void renderDataForProjection(Projection proj,
-			java.awt.Graphics g)
+	public synchronized void renderDataForProjection(final Projection proj,
+			final java.awt.Graphics g)
 	{
 		if (proj == null)
 		{
@@ -496,7 +496,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	/**
 	 * From the ProjectionListener interface.
 	 */
-	public void projectionChanged(ProjectionEvent e)
+	public void projectionChanged(final ProjectionEvent e)
 	{
 		Debug.message("basic", getName() + "|MWCETOPOLayer.projectionChanged()");
 
@@ -523,7 +523,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	 * @param worker
 	 *          the worker that has the graphics.
 	 * */
-	protected synchronized void workerComplete(ETOPOWorker worker)
+	protected synchronized void workerComplete(final ETOPOWorker worker)
 	{
 		if (!isCancelled())
 		{
@@ -560,7 +560,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 
 		// Set deltaX constant. The deltaX is actually is smaller at latitude
 		// extremes, but
-		double deltaX = etopoSpacings[resIdx];
+		final double deltaX = etopoSpacings[resIdx];
 
 		// allocate storage for slope map
 		slopeMap = new byte[bufferWidth * bufferHeight];
@@ -570,25 +570,25 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 		{
 
 			// compute the lattitude of this
-			double lat = 90. - 180. * (double) y / (double) bufferHeight;
+			final double lat = 90. - 180. * (double) y / (double) bufferHeight;
 
 			// get cosine of the latitude. This is used because the
 			// spacing between minutes gets smaller in high latitude
 			// extremes.
-			double coslat = Math.cos(Math.toRadians(lat));
+			final double coslat = Math.cos(Math.toRadians(lat));
 
 			// for scaling the slope
-			double slopeScaler = (double) slopeAdjust * coslat / deltaX;
+			final double slopeScaler = (double) slopeAdjust * coslat / deltaX;
 
 			// indexcies
-			int idx0 = y * bufferWidth;
+			final int idx0 = y * bufferWidth;
 
 			// do each row
 			for (int x = 0; x < bufferWidth; x++)
 			{
 
 				// indexcies
-				int idx1 = idx0 + x;
+				final int idx1 = idx0 + x;
 				int idx2 = idx1 + bufferWidth;
 
 				// special case at end
@@ -596,8 +596,8 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 					idx2 = idx1;
 
 				// get altitudes
-				double d1 = (double) dataBuffer[idx1];
-				double d2 = (double) dataBuffer[idx2];
+				final double d1 = (double) dataBuffer[idx1];
+				final double d2 = (double) dataBuffer[idx2];
 
 				// compute (lookup) slope
 				double slope = slopeScaler * (d2 - d1);
@@ -609,7 +609,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 					slope = -0.99;
 
 				// scale
-				int islope = (int) (slope * 127.);
+				final int islope = (int) (slope * 127.);
 
 				// store
 				slopeMap[idx1] = (byte) islope;
@@ -634,16 +634,16 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			resIdx = 2;
 
 		// build file name
-		String fileName = new String(path + etopoFileNames[resIdx]);
+		final String fileName = new String(path + etopoFileNames[resIdx]);
 
 		try
 		{
 
 			// open file
-			File file = new File(fileName);
+			final File file = new File(fileName);
 
 			// treat as buffered binary
-			BinaryBufferedFile binFile = new BinaryBufferedFile(file);
+			final BinaryBufferedFile binFile = new BinaryBufferedFile(file);
 			binFile.byteOrder(true);
 
 			// set width/height
@@ -667,17 +667,17 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			bufferWidth = bufferWidth + 1;
 
 		}
-		catch (FileNotFoundException e)
+		catch (final FileNotFoundException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e, "MWCETOPOLayer loadBuffer(): file "
 					+ fileName + " not found");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e,
 					"MWCETOPOLayer loadBuffer(): File IO Error!\n" + e.toString());
 		}
-		catch (FormatException e)
+		catch (final FormatException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e,
 					"MWCETOPOLayer loadBuffer(): Format exception!\n" + e.toString());
@@ -720,15 +720,15 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 		{
 
 			// compute our deltas
-			int width = projection.getWidth();
-			int height = projection.getHeight();
+			final int width = projection.getWidth();
+			final int height = projection.getHeight();
 
 			// create int array to hold colors
-			int[] colors = new int[width * height];
+			final int[] colors = new int[width * height];
 
 			// compute scalers for lat/lon indicies
-			float scy = (float) bufferHeight / 180F;
-			float scx = (float) bufferWidth / 360F;
+			final float scy = (float) bufferHeight / 180F;
+			final float scx = (float) bufferWidth / 360F;
 
 			// starting and ending indices
 			int sx = 0, sy = 0, ex = width, ey = height;
@@ -738,12 +738,12 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			{
 
 				// get corners
-				LatLonPoint ul = projection.getUpperLeft();
-				LatLonPoint lr = projection.getLowerRight();
+				final LatLonPoint ul = projection.getUpperLeft();
+				final LatLonPoint lr = projection.getLowerRight();
 
 				// set start/end indicies
-				Point ulp = projection.forward(ul);
-				Point lrp = projection.forward(lr);
+				final Point ulp = projection.forward(ul);
+				final Point lrp = projection.forward(lr);
 				sx = (int) ulp.getX();
 				ex = (int) lrp.getX();
 				sy = (int) ulp.getY();
@@ -753,8 +753,8 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 
 			// get the center lat/lon (used by the HACK, see above in method
 			// description)
-			LatLonPoint center = projection.getCenter();
-			LatLonPoint llp = new LatLonPoint();
+			final LatLonPoint center = projection.getCenter();
+			final LatLonPoint llp = new LatLonPoint();
 			// build array
 			for (int y = sy; y < ey; y++)
 			{
@@ -767,7 +767,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 					projection.inverse(x, y, llp);
 
 					// get point values
-					float lat = llp.getLatitude();
+					final float lat = llp.getLatitude();
 					float lon = llp.getLongitude();
 
 					// check
@@ -775,11 +775,11 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 						lon += 360.;
 
 					// find indicies
-					int lat_idx = (int) ((90. - lat) * scy);
-					int lon_idx = (int) (lon * scx);
+					final int lat_idx = (int) ((90. - lat) * scy);
+					final int lon_idx = (int) (lon * scx);
 
 					// offset
-					int ofs = lon_idx + lat_idx * bufferWidth;
+					final int ofs = lon_idx + lat_idx * bufferWidth;
 
 					// make a color
 					int idx = 0;
@@ -788,10 +788,10 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 					{
 
 						// get elevation
-						short el = dataBuffer[ofs];
+						final short el = dataBuffer[ofs];
 
 						// slope
-						byte sl = slopeMap[ofs];
+						final byte sl = slopeMap[ofs];
 
 						// our index
 						idx = y * width + x;
@@ -825,13 +825,13 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 					}
 
 					// tried to set a bad color level
-					catch (IllegalArgumentException e)
+					catch (final IllegalArgumentException e)
 					{
 						Debug.error(e.toString() + ":" + gray);
 					}
 
 					// bad index
-					catch (ArrayIndexOutOfBoundsException e)
+					catch (final ArrayIndexOutOfBoundsException e)
 					{
 						Debug.error(e.toString() + ":" + idx);
 					}
@@ -921,7 +921,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 		}
 
 		// build graphics list
-		OMGraphicList omGraphicList = new OMGraphicList();
+		final OMGraphicList omGraphicList = new OMGraphicList();
 		omGraphicList.addOMGraphic(buildRaster());
 
 		// ///////////////////
@@ -949,11 +949,11 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	 *          the Graphics context for painting
 	 * 
 	 */
-	public void paint(java.awt.Graphics g)
+	public void paint(final java.awt.Graphics g)
 	{
 		Debug.message("etopo", getName() + "|MWCETOPOLayer.paint()");
 
-		OMGraphicList tmpGraphics = getGraphicList();
+		final OMGraphicList tmpGraphics = getGraphicList();
 
 		if (tmpGraphics != null)
 		{
@@ -979,24 +979,24 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 				Debug.output("MWCETOPOLayer: creating ETOPO Palette.");
 
 			palette = Box.createVerticalBox();
-			Box subbox0 = Box.createHorizontalBox();
-			Box subbox1 = Box.createHorizontalBox();
-			Box subbox2 = Box.createVerticalBox();
-			Box subbox3 = Box.createHorizontalBox();
+			final Box subbox0 = Box.createHorizontalBox();
+			final Box subbox1 = Box.createHorizontalBox();
+			final Box subbox2 = Box.createVerticalBox();
+			final Box subbox3 = Box.createHorizontalBox();
 
 			// The ETOPO resolution selector
-			JPanel resPanel = PaletteHelper.createPaletteJPanel("Lat/Lon Spacing");
-			String[] resStrings =
+			final JPanel resPanel = PaletteHelper.createPaletteJPanel("Lat/Lon Spacing");
+			final String[] resStrings =
 			{ "5 Minute", "10 Minute", "15 Minute" };
 
-			JComboBox resList = new JComboBox(resStrings);
+			final JComboBox resList = new JComboBox(resStrings);
 			resList.addActionListener(new ActionListener()
 			{
-				public void actionPerformed(ActionEvent e)
+				public void actionPerformed(final ActionEvent e)
 				{
-					JComboBox jcb = (JComboBox) e.getSource();
-					int newRes = jcb.getSelectedIndex();
-					int curRes = minuteSpacing / 5 - 1;
+					final JComboBox jcb = (JComboBox) e.getSource();
+					final int newRes = jcb.getSelectedIndex();
+					final int curRes = minuteSpacing / 5 - 1;
 					if (curRes != newRes)
 						spacingReset = true;
 					switch (newRes)
@@ -1019,17 +1019,17 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			resPanel.add(resList);
 
 			// The ETOPO view selector
-			JPanel viewPanel = PaletteHelper.createPaletteJPanel("View Type");
-			String[] viewStrings =
+			final JPanel viewPanel = PaletteHelper.createPaletteJPanel("View Type");
+			final String[] viewStrings =
 			{ "Grayscale Shading", "Color Shading" };
 
-			JComboBox viewList = new JComboBox(viewStrings);
+			final JComboBox viewList = new JComboBox(viewStrings);
 			viewList.addActionListener(new ActionListener()
 			{
-				public void actionPerformed(ActionEvent e)
+				public void actionPerformed(final ActionEvent e)
 				{
-					JComboBox jcb = (JComboBox) e.getSource();
-					int newView = jcb.getSelectedIndex();
+					final JComboBox jcb = (JComboBox) e.getSource();
+					final int newView = jcb.getSelectedIndex();
 					if (newView != viewType)
 						slopeReset = true;
 					switch (newView)
@@ -1049,11 +1049,11 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			viewPanel.add(viewList);
 
 			// The ETOPO Contrast Adjuster
-			JPanel contrastPanel = PaletteHelper
+			final JPanel contrastPanel = PaletteHelper
 					.createPaletteJPanel("Contrast Adjustment");
-			JSlider contrastSlide = new JSlider(JSlider.HORIZONTAL, 1/* min */,
+			final JSlider contrastSlide = new JSlider(JSlider.HORIZONTAL, 1/* min */,
 					5/* max */, 3/* inital */);
-			java.util.Hashtable<Integer, JLabel> dict = new java.util.Hashtable<Integer, JLabel>();
+			final java.util.Hashtable<Integer, JLabel> dict = new java.util.Hashtable<Integer, JLabel>();
 			dict.put(new Integer(1), new JLabel("min"));
 			dict.put(new Integer(5), new JLabel("max"));
 			contrastSlide.setLabelTable(dict);
@@ -1062,9 +1062,9 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			contrastSlide.setPaintTicks(true);
 			contrastSlide.addChangeListener(new ChangeListener()
 			{
-				public void stateChanged(ChangeEvent ce)
+				public void stateChanged(final ChangeEvent ce)
 				{
-					JSlider slider = (JSlider) ce.getSource();
+					final JSlider slider = (JSlider) ce.getSource();
 					if (slider.getValueIsAdjusting())
 					{
 						Debug.output("MWCETOPOLayer - Contrast Slider value = "
@@ -1076,14 +1076,14 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			contrastPanel.add(contrastSlide);
 
 			// The ETOPO Opaqueness
-			JPanel opaquenessPanel = PaletteHelper.createPaletteJPanel("Opaqueness");
-			JSlider opaquenessSlide = new JSlider(JSlider.HORIZONTAL, 0/* min */,
+			final JPanel opaquenessPanel = PaletteHelper.createPaletteJPanel("Opaqueness");
+			final JSlider opaquenessSlide = new JSlider(JSlider.HORIZONTAL, 0/* min */,
 					255/* max */, opaqueness/* inital */);
 			opaquenessSlide.addChangeListener(new ChangeListener()
 			{
-				public void stateChanged(ChangeEvent ce)
+				public void stateChanged(final ChangeEvent ce)
 				{
-					JSlider slider = (JSlider) ce.getSource();
+					final JSlider slider = (JSlider) ce.getSource();
 					if (slider.getValueIsAdjusting())
 					{
 						fireRequestInfoLine("MWCETOPOLayer - Opaqueness Slider value = "
@@ -1095,7 +1095,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 
 			opaquenessPanel.add(opaquenessSlide);
 
-			JButton redraw = new JButton("Redraw ETOPO Layer");
+			final JButton redraw = new JButton("Redraw ETOPO Layer");
 			redraw.addActionListener(this);
 			redraw.setActionCommand(RedrawCommand);
 
@@ -1122,7 +1122,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	/**
 	 * Used just for the redraw button.
 	 */
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(final ActionEvent e)
 	{
 		// super.actionPerformed(e);
 		if (e.getActionCommand() == RedrawCommand)

@@ -23,7 +23,7 @@ public class TAFrigateSym extends ScreenScaledSym
 
 	protected Vector<double[][]> getCoords()
 	{
-		Vector<double[][]> hullLines = new Vector<double[][]>();
+		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
 		// start with the hull
 		hullLines.add(new double[][]

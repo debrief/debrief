@@ -71,15 +71,17 @@ abstract public class BoundedIntegerEditor extends
 	/** store the new value
 	 */
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
+	  Object obj = p1;
+	  
 		// try to catch if we are receiving a null (uninitialised) value
-		if(p1 == null)
-			p1 = new BoundedInteger(1, 1, 10);
+		if(obj == null)
+			obj = new BoundedInteger(1, 1, 10);
 		
-    if(p1 instanceof BoundedInteger)
+    if(obj instanceof BoundedInteger)
     {
-      BoundedInteger val = (BoundedInteger)p1;
+      final BoundedInteger val = (BoundedInteger)obj;
 			// take duplicate of bounded integer value - so that we are not editing
 			// the original one
       _myVal = new BoundedInteger(val.getCurrent(), val.getMin(), val.getMax());

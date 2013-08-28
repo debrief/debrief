@@ -30,11 +30,11 @@ public class JaxbGpx11HelperTest
 	@Test
 	public void unmarshallTrackWithAllData()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-data.xml"), null);
+		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-data.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track
-		TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
+		final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
 		assertNotNull(track);
 		assertEquals("NELSON", track.getName());
 		assertFalse(track.getNameAtStart());
@@ -53,14 +53,14 @@ public class JaxbGpx11HelperTest
 		assertFalse(track.getVisible());
 
 		// assert segment
-		SegmentList segments = track.getSegments();
+		final SegmentList segments = track.getSegments();
 		assertNotNull(segments);
 		assertEquals("Only 1 segment is present in the gpx xml", 1, segments.size());
 
-		TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
+		final TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
 
 		// assert Fix
-		WorldLocation trackStart = segment.getTrackStart();
+		final WorldLocation trackStart = segment.getTrackStart();
 		assertNotNull("Since there is only one track it should be the start of the track ", trackStart);
 
 		assertEquals(22.1862861, trackStart.getLat(), 0.0000001);
@@ -68,7 +68,7 @@ public class JaxbGpx11HelperTest
 		assertEquals(0.000, trackStart.getDepth(), 0.0000001);
 
 		int trackPointCount = 0;
-		Enumeration<Editable> elements = segment.elements();
+		final Enumeration<Editable> elements = segment.elements();
 		while (elements.hasMoreElements())
 		{
 			trackPointCount++;
@@ -77,7 +77,7 @@ public class JaxbGpx11HelperTest
 		}
 		assertEquals("5 track points are present in the gpx xml", 5, trackPointCount);
 
-		FixWrapper fix = (FixWrapper) segment.elements().nextElement();
+		final FixWrapper fix = (FixWrapper) segment.elements().nextElement();
 		assertNotNull(fix.getTime());
 
 		assertEquals(269.700, fix.getCourse(), 0.0000001);
@@ -97,11 +97,11 @@ public class JaxbGpx11HelperTest
 	@Test
 	public void unmarshallShouldNotFailWhenOptionalDataMissing()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-missing-optional-data.xml"), null);
+		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-missing-optional-data.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track
-		TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
+		final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
 		assertNotNull(track);
 		assertEquals("NELSON", track.getName());
 		assertTrue(track.getNameAtStart());
@@ -120,14 +120,14 @@ public class JaxbGpx11HelperTest
 		assertTrue(track.getVisible());
 
 		// assert segment
-		SegmentList segments = track.getSegments();
+		final SegmentList segments = track.getSegments();
 		assertNotNull(segments);
 		assertEquals("Only 1 segment is present in the gpx xml", 1, segments.size());
 
-		TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
+		final TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
 
 		// assert Fix
-		WorldLocation trackStart = segment.getTrackStart();
+		final WorldLocation trackStart = segment.getTrackStart();
 		assertNotNull("The first track should be start of the track", trackStart);
 
 		assertEquals(22.1862861, trackStart.getLat(), 0.0000001);
@@ -135,7 +135,7 @@ public class JaxbGpx11HelperTest
 		assertEquals(0.000, trackStart.getDepth(), 0.0000001);
 
 		int trackPointCount = 0;
-		Enumeration<Editable> elements = segment.elements();
+		final Enumeration<Editable> elements = segment.elements();
 		while (elements.hasMoreElements())
 		{
 			trackPointCount++;
@@ -144,7 +144,7 @@ public class JaxbGpx11HelperTest
 		}
 		assertEquals("1 track point is present in the gpx xml", 1, trackPointCount);
 
-		FixWrapper fix = (FixWrapper) segment.elements().nextElement();
+		final FixWrapper fix = (FixWrapper) segment.elements().nextElement();
 		assertNotNull(fix.getTime());
 	}
 }

@@ -129,7 +129,7 @@ public class Mercator2 extends PlainProjection
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  public void setEllipse(Ellipse val)
+  public void setEllipse(final Ellipse val)
   {
     // store it
     _myEllipse = val;
@@ -157,9 +157,9 @@ public class Mercator2 extends PlainProjection
     _t1 = _a * Math.sin(_1_over_60);
   }
 
-  protected double length(double val)
+  protected double length(final double val)
   {
-    double lat = Conversions.Degs2Rads(val);
+    final double lat = Conversions.Degs2Rads(val);
 
     double res;
     res = _a * (_A0 * lat -
@@ -169,10 +169,10 @@ public class Mercator2 extends PlainProjection
     return res;
   }
 
-  protected double mParts(double val)
+  protected double mParts(final double val)
   {
 
-    double lat = Conversions.Degs2Rads(val);
+    final double lat = Conversions.Degs2Rads(val);
 
     double res;
 
@@ -185,15 +185,15 @@ public class Mercator2 extends PlainProjection
     return res;
   }
 
-  protected double lg(double val1,
-                      double val2)
+  protected double lg(final double val1,
+                      final double val2)
   {
-    double lat1 = Conversions.Degs2Rads(val1);
-    double lat2 = Conversions.Degs2Rads(val2);
+    final double lat1 = Conversions.Degs2Rads(val1);
+    final double lat2 = Conversions.Degs2Rads(val2);
 
     double res;
 
-    double t2 = 1 - (_e2 / 4) * (1 + 3 * Math.cos(lat1 + lat2));
+    final double t2 = 1 - (_e2 / 4) * (1 + 3 * Math.cos(lat1 + lat2));
 
     res = _t1 * t2;
 
@@ -216,17 +216,17 @@ public class Mercator2 extends PlainProjection
   }
 
 
-  public java.awt.Point toScreen(WorldLocation val)
+  public java.awt.Point toScreen(final WorldLocation val)
   {
     java.awt.Point res = null;
 
     if(_scaleVal == 0)
       return res;
 
-    WorldArea wa = getDataArea();
-    Dimension sz = getScreenArea();
+    final WorldArea wa = getDataArea();
+    final Dimension sz = getScreenArea();
 
-    double x = (val.getLong() - wa.getTopLeft().getLong()) * _scaleVal;
+    final double x = (val.getLong() - wa.getTopLeft().getLong()) * _scaleVal;
 
     double y = (mParts(val.getLat()) - _mpLowerLat) * _mp;
 
@@ -238,22 +238,22 @@ public class Mercator2 extends PlainProjection
     return res;
   }
 
-  public WorldLocation toWorld(java.awt.Point val)
+  public WorldLocation toWorld(final java.awt.Point val)
   {
     WorldLocation res = null;
 
     if(_scaleVal == 0)
       return res;
 
-    WorldArea wa = getDataArea();
-    Dimension sz = getScreenArea();
+    final WorldArea wa = getDataArea();
+    final Dimension sz = getScreenArea();
 
     // invert y axis
-    double y = sz.height - val.y;
+    final double y = sz.height - val.y;
 
-    double lng = val.x / _scaleVal + wa.getTopLeft().getLong();
+    final double lng = val.x / _scaleVal + wa.getTopLeft().getLong();
 
-    double mLat = y / _mp + _mpLowerLat;
+    final double mLat = y / _mp + _mpLowerLat;
 
     /** now steve's new bit
      */
@@ -262,7 +262,7 @@ public class Mercator2 extends PlainProjection
     boolean foundLat = false;
     while((lat2 < 80) && (foundLat == false))
     {
-      double mp = mParts(lat2);
+      final double mp = mParts(lat2);
       if(mp > mLat)
       {
         foundLat = true;
@@ -309,7 +309,7 @@ public class Mercator2 extends PlainProjection
   /**
    *
    */
-  public void setScreenArea(java.awt.Dimension theArea)
+  public void setScreenArea(final java.awt.Dimension theArea)
   {
     super.setScreenArea(theArea);
 
@@ -319,14 +319,14 @@ public class Mercator2 extends PlainProjection
   /**
    *
    */
-  public void setDataArea(WorldArea theArea)
+  public void setDataArea(final WorldArea theArea)
   {
     super.setDataArea(theArea);
 
     rescale();
   }
 
-  public void zoom(double value)
+  public void zoom(final double value)
   {
     if(value != 0.0)
     {
@@ -340,15 +340,15 @@ public class Mercator2 extends PlainProjection
 
   protected void rescale()
   {
-    WorldArea wa = super.getDataArea();
-    Dimension sz = super.getScreenArea();
+    final WorldArea wa = super.getDataArea();
+    final Dimension sz = super.getScreenArea();
 
     if((wa == null) ||
        (sz == null))
       return;
 
     // find the y scale factor
-    double dy =  getScreenArea().height / (getDataArea().getHeight());// * _dataBorder);
+    final double dy =  getScreenArea().height / (getDataArea().getHeight());// * _dataBorder);
 
     // find the maximum of these
     _scaleVal = dy;// Math.min(dx, dy);

@@ -59,8 +59,8 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 		if (_distanceUnitTags == null)
 		{
 			// get the unit types
-			UnitsPropertyEditor units = new UnitsPropertyEditor();
-			String[] tags = units.getTags();
+			final UnitsPropertyEditor units = new UnitsPropertyEditor();
+			final String[] tags = units.getTags();
 
 			_distanceUnitTags = new String[tags.length][2];
 			for (int i = 0; i < tags.length; i++)
@@ -108,7 +108,7 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 	 * 
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(IWorkbench workbench)
+	public void init(final IWorkbench workbench)
 	{
 	}
 

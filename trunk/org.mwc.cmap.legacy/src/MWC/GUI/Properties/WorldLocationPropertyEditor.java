@@ -102,7 +102,7 @@ abstract public class WorldLocationPropertyEditor extends
 
   
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof WorldLocation)
     {
@@ -123,7 +123,7 @@ abstract public class WorldLocationPropertyEditor extends
     return _myVal;
   }
 
-	public void setChart(MWC.GUI.PlainChart theChart)
+	public void setChart(final MWC.GUI.PlainChart theChart)
   {
     _theChart = theChart;
   }

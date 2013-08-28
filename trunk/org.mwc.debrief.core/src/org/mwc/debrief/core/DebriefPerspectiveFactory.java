@@ -17,13 +17,13 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 	 * @param layout
 	 */
 	@SuppressWarnings("deprecation")
-	public void createInitialLayout(IPageLayout layout)
+	public void createInitialLayout(final IPageLayout layout)
 	{
 		// Get the editor area.
-		String editorArea = layout.getEditorArea();
+		final String editorArea = layout.getEditorArea();
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f,
+		final IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f,
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
@@ -31,7 +31,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f,
+		final IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f,
 				"topLeft");
 		midLeft.addView(CorePlugin.TOTE);
 		midLeft.addPlaceholder(CorePlugin.STACKED_DOTS);
@@ -40,7 +40,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
 		
 		// Bottom left: Outline view and Property Sheet view
-		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
+		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
 			"midLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
 		bottomLeft.addPlaceholder(DebriefPlugin.MULTI_PATH);
@@ -48,7 +48,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 			
 		
 		// bottom: placeholder for the xyplot
-		IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
+		final IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);

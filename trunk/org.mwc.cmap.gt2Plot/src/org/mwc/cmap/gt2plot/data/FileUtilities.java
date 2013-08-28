@@ -41,16 +41,16 @@ import java.util.List;
  */
 public class FileUtilities {
 
-    public static void copyFile( String fromFile, String toFile ) throws IOException {
-        File in = new File(fromFile);
-        File out = new File(toFile);
+    public static void copyFile( final String fromFile, final String toFile ) throws IOException {
+        final File in = new File(fromFile);
+        final File out = new File(toFile);
         copyFile(in, out);
     }
 
-    public static void copyFile( File in, File out ) throws IOException {
-        FileInputStream fis = new FileInputStream(in);
-        FileOutputStream fos = new FileOutputStream(out);
-        byte[] buf = new byte[1024];
+    public static void copyFile( final File in, final File out ) throws IOException {
+        final FileInputStream fis = new FileInputStream(in);
+        final FileOutputStream fos = new FileOutputStream(out);
+        final byte[] buf = new byte[1024];
         int i = 0;
         while( (i = fis.read(buf)) != -1 ) {
             fos.write(buf, 0, i);
@@ -66,12 +66,12 @@ public class FileUtilities {
      * @param filehandle
      * @return true if all deletions were successful
      */
-    public static boolean deleteFileOrDir( File filehandle ) {
+    public static boolean deleteFileOrDir( final File filehandle ) {
 
         if (filehandle.isDirectory()) {
-            String[] children = filehandle.list();
+            final String[] children = filehandle.list();
             for( int i = 0; i < children.length; i++ ) {
-                boolean success = deleteFileOrDir(new File(filehandle, children[i]));
+                final boolean success = deleteFileOrDir(new File(filehandle, children[i]));
                 if (!success) {
                     return false;
                 }
@@ -79,7 +79,7 @@ public class FileUtilities {
         }
 
         // The directory is now empty so delete it
-        boolean isdel = filehandle.delete();
+        final boolean isdel = filehandle.delete();
         if (!isdel) {
             // if it didn't work, which often happens on windows systems,
             // remove on exit
@@ -95,11 +95,11 @@ public class FileUtilities {
      * @param filehandle
      * @return true if all went well
      */
-    public static boolean deleteFileOrDirOnExit( File filehandle ) {
+    public static boolean deleteFileOrDirOnExit( final File filehandle ) {
         if (filehandle.isDirectory()) {
-            String[] children = filehandle.list();
+            final String[] children = filehandle.list();
             for( int i = 0; i < children.length; i++ ) {
-                boolean success = deleteFileOrDir(new File(filehandle, children[i]));
+                final boolean success = deleteFileOrDir(new File(filehandle, children[i]));
                 if (!success) {
                     return false;
                 }
@@ -117,9 +117,9 @@ public class FileUtilities {
      * @return the read string
      * @throws IOException 
      */
-    public static String readInputStreamToString( InputStream inputStream ) throws IOException {
+    public static String readInputStreamToString( final InputStream inputStream ) throws IOException {
         // Create the byte list to hold the data
-        List<Byte> bytesList = new ArrayList<Byte>();
+        final List<Byte> bytesList = new ArrayList<Byte>();
 
         byte b = 0;
         while( (b = (byte) inputStream.read()) != -1 ) {
@@ -128,12 +128,12 @@ public class FileUtilities {
         // Close the input stream and return bytes
         inputStream.close();
 
-        byte[] bArray = new byte[bytesList.size()];
+        final byte[] bArray = new byte[bytesList.size()];
         for( int i = 0; i < bArray.length; i++ ) {
             bArray[i] = bytesList.get(i);
         }
 
-        String file = new String(bArray);
+        final String file = new String(bArray);
         return file;
     }
 
@@ -144,7 +144,7 @@ public class FileUtilities {
      * @return the read string.
      * @throws IOException 
      */
-    public static String readFile( String filePath ) throws IOException {
+    public static String readFile( final String filePath ) throws IOException {
         return readFile(new File(filePath));
     }
 
@@ -155,11 +155,11 @@ public class FileUtilities {
      * @return the read string.
      * @throws IOException 
      */
-    public static String readFile( File file ) throws IOException {
+    public static String readFile( final File file ) throws IOException {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(file));
-            StringBuilder sb = new StringBuilder(200);
+            final StringBuilder sb = new StringBuilder(200);
             String line = null;
             while( (line = br.readLine()) != null ) {
                 sb.append(line);
@@ -178,7 +178,7 @@ public class FileUtilities {
      * @return the list of lines.
      * @throws IOException 
      */
-    public static List<String> readFileToLinesList( String filePath ) throws IOException {
+    public static List<String> readFileToLinesList( final String filePath ) throws IOException {
         return readFileToLinesList(new File(filePath));
     }
 
@@ -189,9 +189,9 @@ public class FileUtilities {
      * @return the list of lines.
      * @throws IOException 
      */
-    public static List<String> readFileToLinesList( File file ) throws IOException {
+    public static List<String> readFileToLinesList( final File file ) throws IOException {
         BufferedReader br = null;
-        List<String> lines = new ArrayList<String>();
+        final List<String> lines = new ArrayList<String>();
         try {
             br = new BufferedReader(new FileReader(file));
             String line = null;
@@ -211,7 +211,7 @@ public class FileUtilities {
      * @param file the file to write to.
      * @throws IOException 
      */
-    public static void writeFile( String text, File file ) throws IOException {
+    public static void writeFile( final String text, final File file ) throws IOException {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(file));
@@ -228,7 +228,7 @@ public class FileUtilities {
      * @param outFile the path to the file to write to.
      * @throws IOException 
      */
-    public static void writeFile( List<String> lines, String filePath ) throws IOException {
+    public static void writeFile( final List<String> lines, final String filePath ) throws IOException {
         writeFile(lines, new File(filePath));
     }
 
@@ -239,11 +239,11 @@ public class FileUtilities {
      * @param file the file to write to.
      * @throws IOException 
      */
-    public static void writeFile( List<String> lines, File file ) throws IOException {
+    public static void writeFile( final List<String> lines, final File file ) throws IOException {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(file));
-            for( String line : lines ) {
+            for( final String line : lines ) {
                 bw.write(line);
                 bw.write("\n"); //$NON-NLS-1$
             }
@@ -252,7 +252,7 @@ public class FileUtilities {
         }
     }
 
-    public static String replaceBackSlashes( String path ) {
+    public static String replaceBackSlashes( final String path ) {
         return path.replaceAll("\\\\", "\\\\\\\\"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
@@ -262,9 +262,9 @@ public class FileUtilities {
      * @param file the file to trim.
      * @return the name without extention.
      */
-    public static String getNameWithoutExtention( File file ) {
+    public static String getNameWithoutExtention( final File file ) {
         String name = file.getName();
-        int lastDot = name.lastIndexOf("."); //$NON-NLS-1$
+        final int lastDot = name.lastIndexOf("."); //$NON-NLS-1$
         name = name.substring(0, lastDot);
         return name;
     }
@@ -276,9 +276,9 @@ public class FileUtilities {
      * @param newExtention the new extention.
      * @return the file with the new extention.
      */
-    public static File substituteExtention( File file, String newExtention ) {
+    public static File substituteExtention( final File file, final String newExtention ) {
         String path = file.getAbsolutePath();
-        int lastDot = path.lastIndexOf("."); //$NON-NLS-1$
+        final int lastDot = path.lastIndexOf("."); //$NON-NLS-1$
         path = path.substring(0, lastDot) + "." + newExtention; //$NON-NLS-1$
         return new File(path);
     }
@@ -291,13 +291,13 @@ public class FileUtilities {
      * @param fileName the file name to "encode".
      * @return the safe filename.
      */
-    public static String getSafeFileName(String fileName){
-        char fileSep = '/'; // ... or do this portably.
-        char escape = '%'; // ... or some other legal char.
-        int len = fileName.length();
-        StringBuilder sb = new StringBuilder(len);
+    public static String getSafeFileName(final String fileName){
+        final char fileSep = '/'; // ... or do this portably.
+        final char escape = '%'; // ... or some other legal char.
+        final int len = fileName.length();
+        final StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
-            char ch = fileName.charAt(i);
+            final char ch = fileName.charAt(i);
             if (ch < ' ' || ch >= 0x7F || ch == fileSep // add other illegal chars
                 || (ch == '.' && i == 0) // we don't want to collide with "." or ".."!
                 || ch == escape) {

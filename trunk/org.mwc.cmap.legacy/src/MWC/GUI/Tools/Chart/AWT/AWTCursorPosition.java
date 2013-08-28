@@ -53,8 +53,8 @@ public class AWTCursorPosition extends CursorPosition
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public AWTCursorPosition(PlainChart theChart,
-													 java.awt.Component theLabel){
+  public AWTCursorPosition(final PlainChart theChart,
+													 final java.awt.Component theLabel){
 		super(theChart);
 		_myOutput = (java.awt.Label) theLabel;
   }
@@ -62,7 +62,7 @@ public class AWTCursorPosition extends CursorPosition
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-	public void setText(String val)
+	public void setText(final String val)
 	{
 		_myOutput.setText(val);
 	}

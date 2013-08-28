@@ -96,10 +96,10 @@ final class ImportBearing implements PlainLineImporter
 
   /** read in this string and return a Label
    */
-  public final Object readThisLine(String theLine){
+  public final Object readThisLine(final String theLine){
 
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
     WorldLocation start, end;
@@ -121,8 +121,8 @@ final class ImportBearing implements PlainLineImporter
     theSymbology = st.nextToken();
 
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -136,12 +136,12 @@ final class ImportBearing implements PlainLineImporter
      * a space between the hemisphere character and a 3-digit
      * latitude value - so BE CAREFUL
      */
-    String vDiff = st.nextToken();
+    final String vDiff = st.nextToken();
     if(vDiff.length() > 3)
     {
       // hmm, they are combined
       latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
+      final String secondPart = vDiff.substring(1, vDiff.length());
       longDeg  = Double.valueOf(secondPart);
     }
     else
@@ -162,12 +162,12 @@ final class ImportBearing implements PlainLineImporter
 
 
     // now the end location
-    double orient =Double.valueOf(st.nextToken()).doubleValue();
-    double length = Double.valueOf(st.nextToken()).doubleValue();
+    final double orient =Double.valueOf(st.nextToken()).doubleValue();
+    final double length = Double.valueOf(st.nextToken()).doubleValue();
 
     // we have our second location, create it
     // now create the offset
-    WorldVector offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(orient),
+    final WorldVector offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(orient),
                                          MWC.Algorithms.Conversions.Yds2Degs(length), 0);
     end = start.add(offset);
 
@@ -179,14 +179,14 @@ final class ImportBearing implements PlainLineImporter
     }
 
     // create the Line object
-    PlainShape sp = new LineShape(start, end);
+    final PlainShape sp = new LineShape(start, end);
     sp.setColor(ImportReplay.replayColorFor(theSymbology));
 
-    WorldArea tmp = new WorldArea(start, end);
+    final WorldArea tmp = new WorldArea(start, end);
     tmp.normalise();
 
     // and put it into a shape
-    ShapeWrapper sw = new ShapeWrapper(theText,
+    final ShapeWrapper sw = new ShapeWrapper(theText,
                                        sp,
                                        ImportReplay.replayColorFor(theSymbology),
                                        theDate);
@@ -204,11 +204,11 @@ final class ImportBearing implements PlainLineImporter
    * @return the shape in String form
    * @param theWrapper the Shape we are exporting
    */
-  public final String exportThis(MWC.GUI.Plottable theWrapper)
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
   {
-    ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+    final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 
-    LineShape Line = (LineShape) theShape.getShape();
+    final LineShape Line = (LineShape) theShape.getShape();
 
     // result value
     String line;
@@ -227,14 +227,14 @@ final class ImportBearing implements PlainLineImporter
    * @param val the object to test
    * @return boolean saying whether you can do it
    */
-  public final boolean canExportThis(Object val)
+  public final boolean canExportThis(final Object val)
   {
     boolean res = false;
 
     if(val instanceof ShapeWrapper)
     {
-      ShapeWrapper sw = (ShapeWrapper) val;
-      PlainShape ps = sw.getShape();
+      final ShapeWrapper sw = (ShapeWrapper) val;
+      final PlainShape ps = sw.getShape();
       res = (ps instanceof LineShape);
     }
 

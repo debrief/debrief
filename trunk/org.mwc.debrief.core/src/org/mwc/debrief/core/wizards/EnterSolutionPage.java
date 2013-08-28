@@ -30,7 +30,7 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 			return _speed;
 		}
 
-		public void setSpeed(WorldSpeed speed)
+		public void setSpeed(final WorldSpeed speed)
 		{
 			_speed = speed;
 		}
@@ -40,7 +40,7 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 			return _course;
 		}
 
-		public void setCourse(double course)
+		public void setCourse(final double course)
 		{
 			_course = course;
 		}
@@ -66,8 +66,8 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 
 	Text secondNameText;
 
-	public EnterSolutionPage(ISelection selection, String pageTitle,
-			String pageDescription, String imagePath, String helpContext)
+	public EnterSolutionPage(final ISelection selection, final String pageTitle,
+			final String pageDescription, final String imagePath, final String helpContext)
 	{
 		super(selection, NAME, pageTitle, pageDescription, imagePath, helpContext,
 				false);
@@ -83,12 +83,12 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 
 		if (prefs != null)
 		{
-			double course = prefs.getDouble(COURSE, 0d);
-			String speedStr = prefs.get(SPEED, NULL_SPEED);
-			String[] parts = speedStr.split(",");
-			double val = Double.parseDouble(parts[0]);
-			int units = Integer.parseInt(parts[1]);
-			WorldSpeed  speed = new WorldSpeed(val, units);
+			final double course = prefs.getDouble(COURSE, 0d);
+			final String speedStr = prefs.get(SPEED, NULL_SPEED);
+			final String[] parts = speedStr.split(",");
+			final double val = Double.parseDouble(parts[0]);
+			final int units = Integer.parseInt(parts[1]);
+			final WorldSpeed  speed = new WorldSpeed(val, units);
 			_myWrapper.setCourse(course);
 			_myWrapper.setSpeed(speed);
 		}
@@ -99,10 +99,10 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 	{
 
 		// try to store some defaults
-		Preferences prefs = getPrefs();
+		final Preferences prefs = getPrefs();
 
 		prefs.putDouble(COURSE, _myWrapper.getCourse());
-		String spdTxt = _myWrapper.getSpeed().getValue() + ","
+		final String spdTxt = _myWrapper.getSpeed().getValue() + ","
 				+ _myWrapper.getSpeed().getUnits();
 		prefs.put(SPEED, spdTxt);
 
@@ -112,7 +112,7 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors =
+		final PropertyDescriptor[] descriptors =
 		{ prop("Course", "the initial estimate of course", getEditable()),
 				prop("Speed", "the initial estimate of speed", getEditable()) };
 		return descriptors;

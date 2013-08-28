@@ -26,22 +26,22 @@ public class OldTargetTypeHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new OldTargetTypeCellEditor(parent);
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				TargetType val = (TargetType) element;
+				final TargetType val = (TargetType) element;
 				return val.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}

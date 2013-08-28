@@ -81,7 +81,7 @@ public class JDataSource extends PushBufferDataSource {
       {
         if (started)
            stop();
-      } catch (IOException e)
+      } catch (final IOException e)
       {}
       connected = false;
     }
@@ -107,7 +107,7 @@ public class JDataSource extends PushBufferDataSource {
 	    return controls;
     }
 
-    public Object getControl(String controlType) {
+    public Object getControl(final String controlType) {
 	    return null;
     }
 

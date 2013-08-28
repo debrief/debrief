@@ -24,12 +24,12 @@ public class ShapeFileLayer extends GeoToolsLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ShapeFileLayer(String layerName, String fileName)
+	public ShapeFileLayer(final String layerName, final String fileName)
 	{
 		super(ChartBoundsWrapper.SHAPEFILE_TYPE, layerName, fileName);
 	}
 
-	protected Layer loadLayer(File openFile)
+	protected Layer loadLayer(final File openFile)
 	{
 		Layer res = null;
 
@@ -40,8 +40,8 @@ public class ShapeFileLayer extends GeoToolsLayer
 			if (openFile.exists())
 			{
 				store = FileDataStoreFinder.getDataStore(openFile);
-				SimpleFeatureSource featureSource = store.getFeatureSource();
-				Style style = Utils.createStyle(openFile, featureSource);
+				final SimpleFeatureSource featureSource = store.getFeatureSource();
+				final Style style = Utils.createStyle(openFile, featureSource);
 				res = new FeatureLayer(featureSource, style);
 			}
 			else
@@ -49,30 +49,30 @@ public class ShapeFileLayer extends GeoToolsLayer
 				System.err.println("can't find this file");
 			}
 		}
-		catch(FileNotFoundException f)
+		catch(final FileNotFoundException f)
 		{
 			CorePlugin.logError(Status.ERROR, "Can't find the shape file", f);
 			CorePlugin.showMessage("Load ShapeFile", "Sorry, can't find the requested shapefile:\n" + openFile.getName());
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Trouble loading shape file", e);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			System.err.println("Surely it will get caught!!!");
 		}
 		return res;
 	}
 
-	public static MWC.GUI.Layer read(String fileName)
+	public static MWC.GUI.Layer read(final String fileName)
 	{
 		MWC.GUI.Layer res = null;
-		File openFile = new File(fileName);
+		final File openFile = new File(fileName);
 		if (openFile != null && openFile.exists())
 		{
 			// sort out the name of the map
-			String coverageName = ChartBoundsWrapper.getCoverageName(fileName);
+			final String coverageName = ChartBoundsWrapper.getCoverageName(fileName);
 
 			// represent it as a normal shapefile
 			res = new ExternallyManagedDataLayer(ChartBoundsWrapper.SHAPEFILE_TYPE,

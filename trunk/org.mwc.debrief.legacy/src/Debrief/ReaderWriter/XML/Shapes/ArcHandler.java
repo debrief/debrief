@@ -35,7 +35,7 @@ abstract public class ArcHandler extends CircleHandler
 
     super.addAttributeHandler(new HandleBooleanAttribute(PLOT_ORIGIN)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _plotOrigin = value;
       }
@@ -43,7 +43,7 @@ abstract public class ArcHandler extends CircleHandler
 
     super.addAttributeHandler(new HandleBooleanAttribute(PLOT_SPOKES)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _plotSpokes = value;
       }
@@ -51,7 +51,7 @@ abstract public class ArcHandler extends CircleHandler
 
     super.addAttributeHandler(new HandleDoubleAttribute(CENTRE_BEARING)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _centreBearing = value;
       }
@@ -59,7 +59,7 @@ abstract public class ArcHandler extends CircleHandler
 
     super.addAttributeHandler(new HandleDoubleAttribute(ARC_WIDTH)
     {
-      public void setValue(String name, double value)
+      public void setValue(final String name, final double value)
       {
         _arcWidth = value;
       }
@@ -68,7 +68,7 @@ abstract public class ArcHandler extends CircleHandler
   }
 
   // this is one of ours, so get on with it!
-  protected final void handleOurselves(String name, Attributes attributes)
+  protected final void handleOurselves(final String name, final Attributes attributes)
   {
     _plotOrigin = true;
     _plotSpokes = false;
@@ -90,11 +90,11 @@ abstract public class ArcHandler extends CircleHandler
     }
 
   // export the circle  specific components
-  protected void exportCircleAttributes(Element ePlottable, CircleShape cs, Document doc)
+  protected void exportCircleAttributes(final Element ePlottable, final CircleShape cs, final Document doc)
   {
     super.exportCircleAttributes(ePlottable, cs, doc);
 
-    ArcShape as = (ArcShape) cs;
+    final ArcShape as = (ArcShape) cs;
 
     // and now our own arc-specific attributes
     ePlottable.setAttribute(PLOT_ORIGIN, writeThis(as.getPlotOrigin()));

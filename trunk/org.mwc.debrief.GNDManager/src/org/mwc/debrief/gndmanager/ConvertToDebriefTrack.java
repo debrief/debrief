@@ -47,7 +47,7 @@ public class ConvertToDebriefTrack implements RightClickContextItemGenerator
 		// right, work through the subjects
 		for (int i = 0; i < subjects.length; i++)
 		{
-			Editable thisE = subjects[i];
+			final Editable thisE = subjects[i];
 			if (thisE instanceof CouchTrack)
 			{
 				// cool, go for it!
@@ -68,13 +68,13 @@ public class ConvertToDebriefTrack implements RightClickContextItemGenerator
 			final TrackStoreWrapper store = (TrackStoreWrapper) parentLayers[0];
 			
 			// yes, create the action
-			Action convertToTrack = new Action(title)
+			final Action convertToTrack = new Action(title)
 			{
 				public void run()
 				{
 					// ok, go for it.
 					// sort it out as an operation
-					IUndoableOperation convertToTrack1 = new ConvertTrack(title,
+					final IUndoableOperation convertToTrack1 = new ConvertTrack(title,
 							theLayers, subjects, store);
 
 					// ok, stick it on the buffer
@@ -97,7 +97,7 @@ public class ConvertToDebriefTrack implements RightClickContextItemGenerator
 	 * 
 	 * @param operation
 	 */
-	protected void runIt(IUndoableOperation operation)
+	protected void runIt(final IUndoableOperation operation)
 	{
 		CorePlugin.run(operation);
 	}
@@ -105,13 +105,13 @@ public class ConvertToDebriefTrack implements RightClickContextItemGenerator
 	private static class ConvertTrack extends CMAPOperation
 	{
 
-		private Layers _layers;
-		private Editable[] _subjects;
+		private final Layers _layers;
+		private final Editable[] _subjects;
 
 		private Vector<TrackWrapper> _newTracks;
-		private TrackStoreWrapper _store;
+		private final TrackStoreWrapper _store;
 
-		public ConvertTrack(String title, Layers layers, Editable[] subjects, TrackStoreWrapper parentLayer)
+		public ConvertTrack(final String title, final Layers layers, final Editable[] subjects, final TrackStoreWrapper parentLayer)
 		{
 			super(title);
 			_layers = layers;
@@ -119,17 +119,17 @@ public class ConvertToDebriefTrack implements RightClickContextItemGenerator
 			_store = parentLayer;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// right, get going through the track
 			for (int i = 0; i < _subjects.length; i++)
 			{
-				Editable thisE = _subjects[i];
+				final Editable thisE = _subjects[i];
 				if (thisE instanceof CouchTrack)
 				{
-					CouchTrack track = (CouchTrack) thisE;
-					TrackWrapper tw = track.toDebriefTrack();
+					final CouchTrack track = (CouchTrack) thisE;
+					final TrackWrapper tw = track.toDebriefTrack();
 					if (tw != null)
 					{
 
@@ -153,20 +153,20 @@ public class ConvertToDebriefTrack implements RightClickContextItemGenerator
 			return Status.OK_STATUS;
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// forget about the new tracks
-			for (Iterator<TrackWrapper> iter = _newTracks.iterator(); iter.hasNext();)
+			for (final Iterator<TrackWrapper> iter = _newTracks.iterator(); iter.hasNext();)
 			{
-				TrackWrapper trk = (TrackWrapper) iter.next();
+				final TrackWrapper trk = (TrackWrapper) iter.next();
 				_layers.removeThisLayer(trk);
 			}
 
 			// and put the subjects back into the couch store
 			for (int i = 0; i < _subjects.length; i++)
 			{
-				CouchTrack thisT = (CouchTrack) _subjects[i];
+				final CouchTrack thisT = (CouchTrack) _subjects[i];
 				_store.add(thisT);
 			}
 			

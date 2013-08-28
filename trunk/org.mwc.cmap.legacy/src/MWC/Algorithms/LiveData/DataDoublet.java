@@ -12,13 +12,13 @@ public class DataDoublet
 	 * time of this observation
 	 * 
 	 */
-	private long _time;
+	private final long _time;
 
 	/**
 	 * value of this observation
 	 * 
 	 */
-	private Object _value;
+	private final Object _value;
 
 	/**
 	 * constructor for a data observation
@@ -26,7 +26,7 @@ public class DataDoublet
 	 * @param time
 	 * @param value
 	 */
-	public DataDoublet(long time, Object value)
+	public DataDoublet(final long time, final Object value)
 	{
 		_time = time;
 		_value = value;

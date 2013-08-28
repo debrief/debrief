@@ -53,19 +53,19 @@ import MWC.GenericData.WorldLocation;
 
 public class CreateLocalGrid extends PlainCreate
 {
-  public CreateLocalGrid(MWC.GUI.ToolParent theParent,
-                         MWC.GUI.Properties.PropertiesPanel thePanel,
-                         MWC.GUI.Layer theLayer,
-                         MWC.GUI.Layers theData,
-                         MWC.GUI.PlainChart theChart)
+  public CreateLocalGrid(final MWC.GUI.ToolParent theParent,
+                         final MWC.GUI.Properties.PropertiesPanel thePanel,
+                         final MWC.GUI.Layer theLayer,
+                         final MWC.GUI.Layers theData,
+                         final MWC.GUI.PlainChart theChart)
   {
     super(theParent, thePanel, theLayer, theData, theChart, "Local Grid", "images/local_grid.gif");
   }
 
-  protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+  protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
   {
-    WorldLocation theOrigin = new WorldLocation(theChart.getCanvas().getProjection().getVisibleDataArea().getCentre());
-    LocalGridPainter res = new LocalGridPainter();
+    final WorldLocation theOrigin = new WorldLocation(theChart.getCanvas().getProjection().getVisibleDataArea().getCentre());
+    final LocalGridPainter res = new LocalGridPainter();
     res.setOrigin(theOrigin);
     return res;
   }

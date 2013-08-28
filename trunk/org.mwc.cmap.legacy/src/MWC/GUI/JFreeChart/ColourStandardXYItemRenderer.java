@@ -61,7 +61,7 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 	 */
 	public ColourStandardXYItemRenderer(
 			final XYToolTipGenerator toolTipGenerator,
-			final XYURLGenerator urlGenerator, XYPlot plot)
+			final XYURLGenerator urlGenerator, final XYPlot plot)
 	{
 		super();
 		this.setBaseToolTipGenerator(toolTipGenerator);
@@ -69,14 +69,14 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 		_myPlot = plot;
 	}
 
-	public void setPlot(XYPlot thePlot)
+	public void setPlot(final XYPlot thePlot)
 	{
 		super.setPlot(thePlot);
 		_myPlot = thePlot;
 	}
 
 	@Override
-	public Paint getItemPaint(int row, int column)
+	public Paint getItemPaint(final int row, final int column)
 	{
 		Color theColor = null;
 
@@ -86,13 +86,13 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 
 		if (data instanceof TimeSeriesCollection)
 		{
-			TimeSeriesCollection tsc = (TimeSeriesCollection) data;
+			final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
 			// get the data series
-			TimeSeries bts = tsc.getSeries(row);
-			TimeSeriesDataItem tsdp = bts.getDataItem(column);
+			final TimeSeries bts = tsc.getSeries(row);
+			final TimeSeriesDataItem tsdp = bts.getDataItem(column);
 			if (tsdp instanceof AttractiveDataItem)
 			{
-				AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
+				final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
 				theColor = cdi.getColor();
 			}
 		}
@@ -113,18 +113,18 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 	 * 
 	 * @return a legend item for the series.
 	 */
-	public LegendItem getLegendItem(int series)
+	public LegendItem getLegendItem(final int series)
 	{
 
-		XYPlot plot = this.getPlot();
+		final XYPlot plot = this.getPlot();
 
-		XYDataset dataset = plot.getDataset();
-		String label = (String) dataset.getSeriesKey(series);
-		String description = label;
-		Shape shape = null;
-		Paint paint = this.getSeriesPaint(series);
-		Paint outlinePaint = paint;
-		Stroke stroke = plot.getRenderer().getSeriesStroke(series);
+		final XYDataset dataset = plot.getDataset();
+		final String label = (String) dataset.getSeriesKey(series);
+		final String description = label;
+		final Shape shape = null;
+		final Paint paint = this.getSeriesPaint(series);
+		final Paint outlinePaint = paint;
+		final Stroke stroke = plot.getRenderer().getSeriesStroke(series);
 
 		return new LegendItem(label, description, null, null, shape, paint, stroke,
 				outlinePaint);
@@ -142,7 +142,7 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 	 *          the item index.
 	 * @return yes/no
 	 */
-	protected boolean connectToPrevious(XYPlot plot, final int series,
+	protected boolean connectToPrevious(final XYPlot plot, final int series,
 			final int item)
 	{
 
@@ -152,7 +152,7 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 
 		if (data instanceof TimeSeriesCollection)
 		{
-			TimeSeriesCollection tsc = (TimeSeriesCollection) data;
+			final TimeSeriesCollection tsc = (TimeSeriesCollection) data;
 			// get the data series
 			TimeSeries bts;
 			try
@@ -163,16 +163,16 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 				tsdp = bts.getDataItem(item);
 				if (tsdp instanceof AttractiveDataItem)
 				{
-					AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
+					final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
 					res = cdi.connectToPrevious();
 				}
 			}
-			catch (IndexOutOfBoundsException ee)
+			catch (final IndexOutOfBoundsException ee)
 			{
 			//	ee.printStackTrace();
 				res = false;
 			}
-			catch (IllegalArgumentException ee)
+			catch (final IllegalArgumentException ee)
 			{
 			//	ee.printStackTrace();
 				res = false;
@@ -210,10 +210,10 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 	 * @param pass
 	 *          the pass index.
 	 */
-	public void drawItem(Graphics2D g2, XYItemRendererState state,
-			Rectangle2D dataArea, PlotRenderingInfo info, XYPlot plot,
-			ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset, int series,
-			int item, CrosshairState crosshairState, int pass)
+	public void drawItem(final Graphics2D g2, final XYItemRendererState state,
+			final Rectangle2D dataArea, final PlotRenderingInfo info, final XYPlot plot,
+			final ValueAxis domainAxis, final ValueAxis rangeAxis, final XYDataset dataset, final int series,
+			final int item, final CrosshairState crosshairState, final int pass)
 	{
 
 		// do nothing if item is not visible
@@ -222,7 +222,7 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 			return;
 		}
 
-		boolean connectToPrev = connectToPrevious(_myPlot, series, item);
+		final boolean connectToPrev = connectToPrevious(_myPlot, series, item);
 
 		// first pass draws the background (lines, for instance)
 		if (isLinePass(pass))

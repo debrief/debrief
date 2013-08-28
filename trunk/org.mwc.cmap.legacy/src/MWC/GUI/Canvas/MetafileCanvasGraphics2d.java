@@ -92,7 +92,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 
 	private static final boolean DEBUG_OUTPUT = false;
 
-	private Graphics2D _g2;
+	private final Graphics2D _g2;
 
 	/**
 	 * the last set of dimensions we plotted
@@ -116,7 +116,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	// constructor
 	// ////////////////////////////////
 
-	public MetafileCanvasGraphics2d(String directory, Graphics2D g2)
+	public MetafileCanvasGraphics2d(final String directory, final Graphics2D g2)
 	{
 		_g2 = g2;
 
@@ -126,7 +126,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		}
 	}
 
-	public MetafileCanvasGraphics2d(Graphics2D g2)
+	public MetafileCanvasGraphics2d(final Graphics2D g2)
 	{
 		this(null, g2);
 
@@ -139,16 +139,16 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	public static String getFileName()
 	{
 		String name = "d3_";
-		java.util.Date tNow = new java.util.Date();
+		final java.util.Date tNow = new java.util.Date();
 
-		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm_ss");
+		final java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm_ss");
 
 		name = name + "_" + df.format(tNow) + ".wmf";
 
 		return name;
 	}
 
-	public void endDraw(Object theVal)
+	public void endDraw(final Object theVal)
 	{
 		// and now save it
 		try
@@ -166,20 +166,20 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 					_outputFileName = _directory + File.separator + _outputFileName;
 			}
 
-			FileOutputStream fo = new FileOutputStream(_outputFileName);
+			final FileOutputStream fo = new FileOutputStream(_outputFileName);
 
 			wmf.writeWMF(fo);
 			// wmf.writePlaceableWMF(fo, 5, 5, 200, 200, 200);
 			fo.close();
 		}
-		catch (FileNotFoundException f)
+		catch (final FileNotFoundException f)
 		{
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Write WMF",
 					"Sorry, directory name may be invalid, please check properties");
 			if (DEBUG_OUTPUT)
 				MWC.Utilities.Errors.Trace.trace(f, "Directory not found");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 
 			if (DEBUG_OUTPUT)
@@ -187,7 +187,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		}
 	}
 
-	public void startDraw(Object theVal)
+	public void startDraw(final Object theVal)
 	{
 		// create the metafile
 		wmf = new WMF();
@@ -201,21 +201,21 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	{
 	}
 
-	public void drawOval(int x, int y, int width, int height)
+	public void drawOval(final int x, final int y, final int width, final int height)
 	{
 		g.drawOval(x, y, width, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawOval");
 	}
 
-	public void fillOval(int x, int y, int width, int height)
+	public void fillOval(final int x, final int y, final int width, final int height)
 	{
 		g.fillOval(x, y, width, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillOval");
 	}
 
-	public void drawText(String str, int x, int y)
+	public void drawText(final String str, final int x, final int y)
 	{
 		// @@@ IM ignore the WMFGraphics method, since it relies on JDK1.2 code
 		// (AttributedIterator)
@@ -226,10 +226,10 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 			MWC.Utilities.Errors.Trace.trace("drawText");
 	}
 
-	public void drawText(Font theFont, String str, int x, int y)
+	public void drawText(final Font theFont, final String str, final int x, final int y)
 	{
 		// remember the current font
-		Font ft = g.getFont();
+		final Font ft = g.getFont();
 
 		g.setFont(theFont);
 
@@ -244,7 +244,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 			MWC.Utilities.Errors.Trace.trace("drawText");
 	}
 
-	public void setColor(Color theCol)
+	public void setColor(final Color theCol)
 	{
 		g.setColor(theCol);
 		if (DEBUG_OUTPUT)
@@ -255,7 +255,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * set the style for the line, using our constants
 	 * 
 	 */
-	public void setLineStyle(int style)
+	public void setLineStyle(final int style)
 	{
 		g.setPenStyle(style);
 	}
@@ -264,7 +264,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * set the width of the line, in pixels
 	 * 
 	 */
-	public void setLineWidth(float width)
+	public void setLineWidth(final float width)
 	{
 		// not implemented
 		g.setPenWidth((int) width);
@@ -290,7 +290,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param nPoints
 	 *          length of list
 	 */
-	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints)
+	public void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints)
 	{
 		g.fillPolygon(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
@@ -307,7 +307,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param nPoints
 	 *          length of list
 	 */
-	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints)
+	public void drawPolygon(final int[] xPoints, final int[] yPoints, final int nPoints)
 	{
 		g.drawPolygon(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
@@ -324,28 +324,28 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param nPoints
 	 *          length of list
 	 */
-	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints)
+	public void drawPolyline(final int[] xPoints, final int[] yPoints, final int nPoints)
 	{
 		g.drawPolyline(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawPolyline");
 	}
 
-	final public void drawPolyline(int[] points)
+	final public void drawPolyline(final int[] points)
 	{
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
 	}
 
-	public boolean drawImage(Image img, int x, int y, int width, int height,
-			ImageObserver observer)
+	public boolean drawImage(final Image img, final int x, final int y, final int width, final int height,
+			final ImageObserver observer)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("draw image");
 		return g.drawImage(img, x, y, width, height, observer);
 	}
 
-	public void drawLine(int x1, int y1, int x2, int y2)
+	public void drawLine(final int x1, final int y1, final int x2, final int y2)
 	{
 		g.drawLine(x1, y1, x2, y2);
 		if (DEBUG_OUTPUT)
@@ -353,37 +353,37 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 					+ " wid:" + x2 + " ht:" + y2);
 	}
 
-	public void fillArc(int x, int y, int width, int height, int startAngle,
-			int arcAngle)
+	public void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle)
 	{
 		g.fillArc(x, y, width, height, startAngle, arcAngle);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillArc");
 	}
 
-	public void drawArc(int x, int y, int width, int height, int startAngle,
-			int arcAngle)
+	public void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle)
 	{
 		g.drawArc(x, y, width, height, startAngle, arcAngle);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawArc");
 	}
 
-	public void drawRect(int x1, int y1, int wid, int height)
+	public void drawRect(final int x1, final int y1, final int wid, final int height)
 	{
 		g.drawRect(x1, y1, wid, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawRect");
 	}
 
-	public void fillRect(int x, int y, int wid, int height)
+	public void fillRect(final int x, final int y, final int wid, final int height)
 	{
 		g.fillRect(x, y, wid, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillRect");
 	}
 
-	public int getStringHeight(Font theFont)
+	public int getStringHeight(final Font theFont)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("getStringHeight");
@@ -394,11 +394,11 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		else
 			fm = g.getFontMetrics();
 
-		int ht = fm.getHeight();
+		final int ht = fm.getHeight();
 		return ht;
 	}
 
-	public int getStringWidth(Font theFont, String theString)
+	public int getStringWidth(final Font theFont, final String theString)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("getStringWidth");
@@ -409,7 +409,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		else
 			fm = g.getFontMetrics();
 
-		int wid = fm.stringWidth(theString);
+		final int wid = fm.stringWidth(theString);
 		return wid;
 	}
 
@@ -426,17 +426,17 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		return _proj;
 	}
 
-	public void setProjection(PlainProjection val)
+	public void setProjection(final PlainProjection val)
 	{
 		_proj = val;
 	}
 
-	public Point toScreen(MWC.GenericData.WorldLocation val)
+	public Point toScreen(final MWC.GenericData.WorldLocation val)
 	{
 		return _proj.toScreen(val);
 	}
 
-	public MWC.GenericData.WorldLocation toWorld(Point val)
+	public MWC.GenericData.WorldLocation toWorld(final Point val)
 	{
 		return _proj.toWorld(val);
 	}
@@ -453,7 +453,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		return g.getBackgroundColor();
 	}
 
-	public void setBackgroundColor(Color theColor)
+	public void setBackgroundColor(final Color theColor)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("setBackgroundColor");
@@ -461,7 +461,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 
 	}
 
-	public void addPainter(CanvasType.PaintListener listener)
+	public void addPainter(final CanvasType.PaintListener listener)
 	{
 		// System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (addPainter)");
 	}
@@ -473,12 +473,12 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		return null;
 	}
 
-	public void removePainter(CanvasType.PaintListener listener)
+	public void removePainter(final CanvasType.PaintListener listener)
 	{
 		// System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
 	}
 
-	public void setTooltipHandler(CanvasType.TooltipHandler handler)
+	public void setTooltipHandler(final CanvasType.TooltipHandler handler)
 	{
 		// System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
 	}
@@ -505,7 +505,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see RenderingHints
 	 */
 	@SuppressWarnings("rawtypes")
-	public void addRenderingHints(Map hints)
+	public void addRenderingHints(final Map hints)
 	{
 		// System.out.println("addRenderingHints");
 	}
@@ -529,7 +529,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 *          <code>Clip</code>. If <code>s</code> is <code>null</code>, this
 	 *          method clears the current <code>Clip</code>.
 	 */
-	public void clip(Shape s)
+	public void clip(final Shape s)
 	{
 		g.setClip(s);
 	}
@@ -551,17 +551,17 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setClip
 	 * @see #setComposite
 	 */
-	public void draw(Shape s)
+	public void draw(final Shape s)
 	{
-		PathIterator path = s.getPathIterator(_g2.getTransform());
-		float[] coords = new float[6];
+		final PathIterator path = s.getPathIterator(_g2.getTransform());
+		final float[] coords = new float[6];
 
 		Point lastPoint = null;
 		Point newPoint = null;
 
 		while (!path.isDone())
 		{
-			int type = path.currentSegment(coords);
+			final int type = path.currentSegment(coords);
 
 			switch (type)
 			{
@@ -626,7 +626,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setComposite
 	 * @see #setClip
 	 */
-	public void drawGlyphVector(GlyphVector g1, float x, float y)
+	public void drawGlyphVector(final GlyphVector g1, final float x, final float y)
 	{
 		// System.out.println("drawGlyphVector");
 	}
@@ -655,7 +655,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #clip
 	 * @see #setClip
 	 */
-	public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y)
+	public void drawImage(final BufferedImage img, final BufferedImageOp op, final int x, final int y)
 	{
 		// System.out.println("drawImage");
 	}
@@ -686,7 +686,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #clip
 	 * @see #setClip
 	 */
-	public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs)
+	public boolean drawImage(final Image img, final AffineTransform xform, final ImageObserver obs)
 	{
 		// System.out.println("drawImage");
 		return false;
@@ -722,7 +722,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setClip
 	 * @see #drawRenderedImage
 	 */
-	public void drawRenderableImage(RenderableImage img, AffineTransform xform)
+	public void drawRenderableImage(final RenderableImage img, final AffineTransform xform)
 	{
 		// System.out.println("drawRenderableImage");
 	}
@@ -747,7 +747,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #clip
 	 * @see #setClip
 	 */
-	public void drawRenderedImage(RenderedImage img, AffineTransform xform)
+	public void drawRenderedImage(final RenderedImage img, final AffineTransform xform)
 	{
 		// System.out.println("drawRenderedImage");
 	}
@@ -773,7 +773,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setComposite
 	 * @see #setClip
 	 */
-	public void drawString(AttributedCharacterIterator iterator, float x, float y)
+	public void drawString(final AttributedCharacterIterator iterator, final float x, final float y)
 	{
 		// System.out.println("drawString att2");
 	}
@@ -799,7 +799,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setComposite
 	 * @see #setClip
 	 */
-	public void drawString(AttributedCharacterIterator iterator, int x, int y)
+	public void drawString(final AttributedCharacterIterator iterator, final int x, final int y)
 	{
 		// System.out.println("drawString att");
 	}
@@ -828,7 +828,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setComposite
 	 * @see #setClip
 	 */
-	public void drawString(String s, float x, float y)
+	public void drawString(final String s, final float x, final float y)
 	{
 		drawText(_g2.getFont(), s, (int) x, (int) y);
 	}
@@ -854,7 +854,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see Graphics#drawChars
 	 * @since JDK1.0
 	 */
-	public void drawString(String str, int x, int y)
+	public void drawString(final String str, final int x, final int y)
 	{
 		drawText(_g2.getFont(), str, x, y);
 	}
@@ -875,12 +875,12 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #clip
 	 * @see #setClip
 	 */
-	public void fill(Shape s)
+	public void fill(final Shape s)
 	{
 		// draw a rectangle with these proportions
 		if (s instanceof RectangularShape)
 		{
-			RectangularShape rect = (RectangularShape) s;
+			final RectangularShape rect = (RectangularShape) s;
 			g.fillRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(),
 					(int) rect.getHeight());
 		}
@@ -977,7 +977,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see RenderingHints
 	 * @see #setRenderingHint(RenderingHints.Key, Object)
 	 */
-	public Object getRenderingHint(RenderingHints.Key hintKey)
+	public Object getRenderingHint(final RenderingHints.Key hintKey)
 	{
 		return _g2.getRenderingHint(hintKey);
 	}
@@ -1055,7 +1055,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #clip
 	 * @see #setClip
 	 */
-	public boolean hit(Rectangle rect, Shape s, boolean onStroke)
+	public boolean hit(final Rectangle rect, final Shape s, final boolean onStroke)
 	{
 		// System.out.println("hit");
 		return false;
@@ -1080,7 +1080,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param theta
 	 *          the angle of rotation in radians
 	 */
-	public void rotate(double theta)
+	public void rotate(final double theta)
 	{
 		// System.out.println("rotate");
 	}
@@ -1107,7 +1107,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param x
 	 *          coordinates of the origin of the rotation
 	 */
-	public void rotate(double theta, double x, double y)
+	public void rotate(final double theta, final double x, final double y)
 	{
 		// System.out.println("rotate");
 	}
@@ -1134,7 +1134,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 *          operations are multiplied relative to previous rendering
 	 *          operations.
 	 */
-	public void scale(double sx, double sy)
+	public void scale(final double sx, final double sy)
 	{
 		// System.out.println("scale");
 	}
@@ -1156,7 +1156,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #getBackground
 	 * @see Graphics#clearRect
 	 */
-	public void setBackground(Color color)
+	public void setBackground(final Color color)
 	{
 		// System.out.println("setBackground");
 	}
@@ -1188,7 +1188,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see SecurityManager#checkPermission
 	 * @see AWTPermission
 	 */
-	public void setComposite(Composite comp)
+	public void setComposite(final Composite comp)
 	{
 		// System.out.println("setComposite");
 	}
@@ -1207,7 +1207,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see GradientPaint
 	 * @see TexturePaint
 	 */
-	public void setPaint(Paint paint)
+	public void setPaint(final Paint paint)
 	{
 		if (paint instanceof Color)
 		{
@@ -1231,7 +1231,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #getRenderingHint(RenderingHints.Key)
 	 * @see RenderingHints
 	 */
-	public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue)
+	public void setRenderingHint(final RenderingHints.Key hintKey, final Object hintValue)
 	{
 		// System.out.println("setRenderingHint");
 	}
@@ -1251,7 +1251,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see RenderingHints
 	 */
 	@SuppressWarnings("rawtypes")
-	public void setRenderingHints(Map hints)
+	public void setRenderingHints(final Map hints)
 	{
 		// System.out.println("setRenderingHints");
 	}
@@ -1265,11 +1265,11 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see BasicStroke
 	 * @see #getStroke
 	 */
-	public void setStroke(Stroke s)
+	public void setStroke(final Stroke s)
 	{
 		if (s instanceof BasicStroke)
 		{
-			BasicStroke bs = (BasicStroke) s;
+			final BasicStroke bs = (BasicStroke) s;
 			this.setLineWidth(bs.getLineWidth());
 
 			if (bs.getDashArray() != null)
@@ -1320,7 +1320,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #getTransform
 	 * @see AffineTransform
 	 */
-	public void setTransform(AffineTransform Tx)
+	public void setTransform(final AffineTransform Tx)
 	{
 		// System.out.println("setTransform");
 	}
@@ -1345,7 +1345,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 *          the multiplier by which coordinates are shifted in the positive Y
 	 *          axis direction as a function of their X coordinate
 	 */
-	public void shear(double shx, double shy)
+	public void shear(final double shx, final double shy)
 	{
 		// System.out.println("shear");
 	}
@@ -1368,7 +1368,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setTransform
 	 * @see AffineTransform
 	 */
-	public void transform(AffineTransform Tx)
+	public void transform(final AffineTransform Tx)
 	{
 		// System.out.println("transform");
 	}
@@ -1391,7 +1391,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param ty
 	 *          the distance to translate along the y-axis
 	 */
-	public void translate(double tx, double ty)
+	public void translate(final double tx, final double ty)
 	{
 		// is this a real translation?
 		if (tx > 0)
@@ -1418,7 +1418,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 *          the specified coordinates
 	 * @since JDK1.0
 	 */
-	public void translate(int x, int y)
+	public void translate(final int x, final int y)
 	{
 		// g.translate(x,y);
 		// System.err.println("not translate int x: " + x + " y:" + y );
@@ -1448,7 +1448,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see Graphics#setPaintMode
 	 * @see Graphics#setXORMode(Color)
 	 */
-	public void clearRect(int x, int y, int width, int height)
+	public void clearRect(final int x, final int y, final int width, final int height)
 	{
 		// System.out.println("clearRect");
 	}
@@ -1476,7 +1476,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #setClip(int, int, int, int)
 	 * @see #setClip(Shape)
 	 */
-	public void clipRect(int x, int y, int width, int height)
+	public void clipRect(final int x, final int y, final int width, final int height)
 	{
 		// System.err.println("clipRect");
 	}
@@ -1505,7 +1505,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param dy
 	 *          the vertical distance to copy the pixels.
 	 */
-	public void copyArea(int x, int y, int width, int height, int dx, int dy)
+	public void copyArea(final int x, final int y, final int width, final int height, final int dx, final int dy)
 	{
 		// System.out.println("copyArea");
 	}
@@ -1617,8 +1617,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see ImageObserver#imageUpdate(Image, int, int, int, int, int)
 	 * @since JDK1.1
 	 */
-	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2,
-			int sx1, int sy1, int sx2, int sy2, Color bgcolor, ImageObserver observer)
+	public boolean drawImage(final Image img, final int dx1, final int dy1, final int dx2, final int dy2,
+			final int sx1, final int sy1, final int sx2, final int sy2, final Color bgcolor, final ImageObserver observer)
 	{
 		// System.out.println("drawImage");
 		return false;
@@ -1682,8 +1682,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see ImageObserver#imageUpdate(Image, int, int, int, int, int)
 	 * @since JDK1.1
 	 */
-	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2,
-			int sx1, int sy1, int sx2, int sy2, ImageObserver observer)
+	public boolean drawImage(final Image img, final int dx1, final int dy1, final int dx2, final int dy2,
+			final int sx1, final int sy1, final int sx2, final int sy2, final ImageObserver observer)
 	{
 		// System.out.println("drawImage");
 		return false;
@@ -1725,8 +1725,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see ImageObserver
 	 * @see ImageObserver#imageUpdate(Image, int, int, int, int, int)
 	 */
-	public boolean drawImage(Image img, int x, int y, Color bgcolor,
-			ImageObserver observer)
+	public boolean drawImage(final Image img, final int x, final int y, final Color bgcolor,
+			final ImageObserver observer)
 	{
 		// System.out.println("drawImage");
 		return false;
@@ -1761,7 +1761,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see ImageObserver
 	 * @see ImageObserver#imageUpdate(Image, int, int, int, int, int)
 	 */
-	public boolean drawImage(Image img, int x, int y, ImageObserver observer)
+	public boolean drawImage(final Image img, final int x, final int y, final ImageObserver observer)
 	{
 		// System.out.println("drawImage");
 		return false;
@@ -1811,8 +1811,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see ImageObserver
 	 * @see ImageObserver#imageUpdate(Image, int, int, int, int, int)
 	 */
-	public boolean drawImage(Image img, int x, int y, int width, int height,
-			Color bgcolor, ImageObserver observer)
+	public boolean drawImage(final Image img, final int x, final int y, final int width, final int height,
+			final Color bgcolor, final ImageObserver observer)
 	{
 		// System.out.println("drawImage");
 		return false;
@@ -1839,8 +1839,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 *          the vertical diameter of the arc at the four corners.
 	 * @see Graphics#fillRoundRect
 	 */
-	public void drawRoundRect(int x, int y, int width, int height, int arcWidth,
-			int arcHeight)
+	public void drawRoundRect(final int x, final int y, final int width, final int height, final int arcWidth,
+			final int arcHeight)
 	{
 		// System.out.println("drawRoundRect");
 	}
@@ -1866,8 +1866,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 *          the vertical diameter of the arc at the four corners.
 	 * @see Graphics#drawRoundRect
 	 */
-	public void fillRoundRect(int x, int y, int width, int height, int arcWidth,
-			int arcHeight)
+	public void fillRoundRect(final int x, final int y, final int width, final int height, final int arcWidth,
+			final int arcHeight)
 	{
 		// System.out.println("fillRoundRect");
 	}
@@ -1947,7 +1947,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see FontMetrics
 	 * @see Graphics#getFontMetrics()
 	 */
-	public FontMetrics getFontMetrics(Font f)
+	public FontMetrics getFontMetrics(final Font f)
 	{
 		return _g2.getFontMetrics();
 	}
@@ -1968,7 +1968,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see Graphics#setClip(int, int, int, int)
 	 * @since JDK1.1
 	 */
-	public void setClip(Shape clip)
+	public void setClip(final Shape clip)
 	{
 		g.setClip(clip);
 	}
@@ -1992,7 +1992,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see Graphics#getClip
 	 * @since JDK1.1
 	 */
-	public void setClip(int x, int y, int width, int height)
+	public void setClip(final int x, final int y, final int width, final int height)
 	{
 		g.setClip(x, y, width, height);
 	}
@@ -2008,7 +2008,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see Graphics#drawBytes(byte[], int, int, int, int)
 	 * @see Graphics#drawChars(char[], int, int, int, int)
 	 */
-	public void setFont(Font font)
+	public void setFont(final Font font)
 	{
 		_g2.setFont(font);
 	}
@@ -2041,12 +2041,12 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @param c1
 	 *          the XOR alternation color
 	 */
-	public void setXORMode(Color c1)
+	public void setXORMode(final Color c1)
 	{
 		// System.out.println("setXORMode");
 	}
 
-	public void drawDirectedText(String txt, int direction, int x, int y)
+	public void drawDirectedText(final String txt, final int direction, final int x, final int y)
 	{
 		g.drawDirectedText(getFont(), direction, txt, x, y);
 	}
@@ -2054,26 +2054,26 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	// ////////////////////////////////////////////////
 	// test this class
 	// ////////////////////////////////////////////////
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
-		javax.swing.JFrame f2 = new javax.swing.JFrame("here");
+		final javax.swing.JFrame f2 = new javax.swing.JFrame("here");
 		f2.setSize(200, 200);
 		f2.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 		f2.getContentPane().add(new javax.swing.JButton("here"));
 		f2.setVisible(true);
 
-		PlainProjection proj = new MWC.Algorithms.Projections.FlatProjection();
+		final PlainProjection proj = new MWC.Algorithms.Projections.FlatProjection();
 		proj.setScreenArea(new Dimension(300, 300));
 
-		Graphics gr = f2.getContentPane().getGraphics();
-		MetafileCanvasGraphics2d m2 = new MetafileCanvasGraphics2d("c:\\",
+		final Graphics gr = f2.getContentPane().getGraphics();
+		final MetafileCanvasGraphics2d m2 = new MetafileCanvasGraphics2d("c:\\",
 				(Graphics2D) gr);
 
 		m2.setProjection(proj);
 
 		m2.startDraw(null);
 
-		int original = m2.g.getFontEscapement();
+		final int original = m2.g.getFontEscapement();
 
 		m2.drawLine(20, 50, 100, 300);
 		m2.drawText(
@@ -2143,8 +2143,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		 * @param rotation
 		 *          the clockwise rotation (in radians).
 		 */
-		public static void drawRotatedString(String text, Graphics2D g2, float x,
-				float y, double rotation)
+		public static void drawRotatedString(final String text, final Graphics2D g2, final float x,
+				final float y, final double rotation)
 		{
 
 			if ((text == null) || (text.equals("")))
@@ -2152,10 +2152,10 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 				return;
 			}
 
-			AffineTransform saved = g2.getTransform();
+			final AffineTransform saved = g2.getTransform();
 
 			// apply the rotation...
-			AffineTransform rotate = AffineTransform
+			final AffineTransform rotate = AffineTransform
 					.getRotateInstance(rotation, x, y);
 			g2.transform(rotate);
 
@@ -2164,7 +2164,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 			int oldDirection = 0;
 			if (g2 instanceof MetafileCanvasGraphics2d)
 			{
-				MetafileCanvasGraphics2d m2 = (MetafileCanvasGraphics2d) g2;
+				final MetafileCanvasGraphics2d m2 = (MetafileCanvasGraphics2d) g2;
 				oldDirection = m2.g.getFontEscapement();
 				m2.g.setFontEscapement(10 * (180 + (int) (rotation * 180 / Math.PI)));
 			}
@@ -2177,7 +2177,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 			// restore the direction, if we have to
 			if (g2 instanceof MetafileCanvasGraphics2d)
 			{
-				MetafileCanvasGraphics2d m2 = (MetafileCanvasGraphics2d) g2;
+				final MetafileCanvasGraphics2d m2 = (MetafileCanvasGraphics2d) g2;
 				m2.g.setFontEscapement(oldDirection);
 			}
 
@@ -2186,7 +2186,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	}
 
 	@Override
-	public void drawText(String str, int x, int y, float rotate) {
+	public void drawText(final String str, final int x, final int y, final float rotate) {
 		// TODO Auto-generated method stub
 		
 	}

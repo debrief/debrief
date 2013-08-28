@@ -165,13 +165,13 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     return res;
   }
 
-  public final void setPeriod(HiResDate startDTG, HiResDate finishDTG)
+  public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG)
   {
     _start_time = startDTG;
     _end_time = finishDTG;
   }
 
-  public final void setTracks(java.util.Vector<WatchableList> selectedTracks)
+  public final void setTracks(final java.util.Vector<WatchableList> selectedTracks)
   {
     _theTracks = selectedTracks;
   }
@@ -182,7 +182,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
    * @param startTime the new start time
    * @param endTime   the new end time
    */
-  public void resetMe(HiResDate startTime, HiResDate endTime)
+  public void resetMe(final HiResDate startTime, final HiResDate endTime)
   {
   }
 
@@ -197,7 +197,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     // check we have some tracks selected
     if (_theTracks != null)
     {
-      Object[] opts = new Object[_theTracks.size()];
+      final Object[] opts = new Object[_theTracks.size()];
       _theTracks.copyInto(opts);
       res = (WatchableList) JOptionPane.showInputDialog(null,
                                                         "Which is the primary track?",
@@ -225,18 +225,18 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     {
 
       // the big string we are writing into
-      StringBuffer str = new StringBuffer(2000);
+      final StringBuffer str = new StringBuffer(2000);
 
       // test string
 
       // produce the header line
       str.append("Track" + tab);
 
-      java.util.Enumeration<plainCalc> it = _theOperations.elements();
+      final java.util.Enumeration<plainCalc> it = _theOperations.elements();
       while (it.hasMoreElements())
       {
 
-        toteCalculation cl = it.nextElement();
+        final toteCalculation cl = it.nextElement();
         str.append(cl.getTitle() + "(" + cl.getUnits() + ")" + tab);
       }
 
@@ -252,33 +252,33 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
       // now produce the rows of data themselves
 
       // sort the data to the correct time period
-      java.util.Enumeration<WatchableList> er = _theTracks.elements();
+      final java.util.Enumeration<WatchableList> er = _theTracks.elements();
       while (er.hasMoreElements())
       {
-        WatchableList tw = er.nextElement();
-        Collection<Editable> ss = tw.getItemsBetween(_start_time, _end_time);
+        final WatchableList tw = er.nextElement();
+        final Collection<Editable> ss = tw.getItemsBetween(_start_time, _end_time);
 
-        Iterator<Editable> ss_it = ss.iterator();
+        final Iterator<Editable> ss_it = ss.iterator();
         while (ss_it.hasNext())
         {
           // put in the boat name
           str.append(tidyUp(tw.getName()) + tab);
 
           // and move through the fixes in the valid period
-          Watchable fw = (Watchable) ss_it.next();
+          final Watchable fw = (Watchable) ss_it.next();
 
           // find the fix on the primary track which is nearest in
           // time to this one
-          Watchable[] list = _thePrimary.getNearestTo(fw.getTime());
+          final Watchable[] list = _thePrimary.getNearestTo(fw.getTime());
 
           Watchable primary = null;
           if (list.length > 0)
             primary = list[0];
 
-          java.util.Enumeration<plainCalc> ops = _theOperations.elements();
+          final java.util.Enumeration<plainCalc> ops = _theOperations.elements();
           while (ops.hasMoreElements())
           {
-            toteCalculation cv = ops.nextElement();
+            final toteCalculation cv = ops.nextElement();
             str.append(cv.update(primary, fw, fw.getTime()) + tab);
           }
 
@@ -297,10 +297,10 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
       }
 
       // create the clipboard buffer
-      Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+      final Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
 
       // put the string in a holder
-      StringSelection sel = new java.awt.datatransfer.StringSelection(str.toString());
+      final StringSelection sel = new java.awt.datatransfer.StringSelection(str.toString());
 
       // and put it on the clipboard
       clip.setContents(sel, this);
@@ -311,10 +311,9 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     return null;
   }
 
-  private static String tidyUp(String txt)
+  private static String tidyUp(final String txt)
   {
-  	txt = txt.replace('\n', ' ');
-  	return txt;
+  	return txt.replace('\n', ' ');
   }
   
   public final String getLabel()
@@ -327,7 +326,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     return null;
   }
 
-  public final void actionPerformed(java.awt.event.ActionEvent p1)
+  public final void actionPerformed(final java.awt.event.ActionEvent p1)
   {
 
   }
@@ -342,7 +341,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
   ///////////////////////////////////////////////////////
 
 
-  public final void lostOwnership(Clipboard clipboard, Transferable contents)
+  public final void lostOwnership(final Clipboard clipboard, final Transferable contents)
   {
     // don't bother really
   }

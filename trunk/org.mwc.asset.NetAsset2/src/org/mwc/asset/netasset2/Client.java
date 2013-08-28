@@ -14,10 +14,10 @@ public class Client implements IApplication {
 	/* (non-Javadoc)
 	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
 	 */
-	public Object start(IApplicationContext context) {
-		Display display = PlatformUI.createDisplay();
+	public Object start(final IApplicationContext context) {
+		final Display display = PlatformUI.createDisplay();
 		try {
-			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
+			final int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART) {
 				return IApplication.EXIT_RESTART;
 			}

@@ -29,7 +29,7 @@ abstract public class LocalGridHandler extends GridHandler
 
     addAttributeHandler(new HandleBooleanAttribute(PLOT_ORIGIN)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _plotOrigin = value;
       }
@@ -37,7 +37,7 @@ abstract public class LocalGridHandler extends GridHandler
 
     addHandler(new LocationHandler(ORIGIN)
     {
-      public void setLocation(WorldLocation res)
+      public void setLocation(final WorldLocation res)
       {
         //To change body of implemented methods use File | Settings | File Templates.
         _myOrigin = res;
@@ -53,7 +53,7 @@ abstract public class LocalGridHandler extends GridHandler
    */
   protected GridPainter getGrid()
   {
-    LocalGridPainter local = new LocalGridPainter();
+    final LocalGridPainter local = new LocalGridPainter();
     local.setOrigin(_myOrigin);
     local.setPlotOrigin(_plotOrigin);
     _myOrigin = null;
@@ -68,11 +68,11 @@ abstract public class LocalGridHandler extends GridHandler
    * @param parent
    * @param doc
    */
-  public void exportThisPlottable(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
-    MWC.GUI.Chart.Painters.LocalGridPainter theGrid = (MWC.GUI.Chart.Painters.LocalGridPainter) plottable;
-    Element gridElement = doc.createElement(MY_TYPE);
+    final MWC.GUI.Chart.Painters.LocalGridPainter theGrid = (MWC.GUI.Chart.Painters.LocalGridPainter) plottable;
+    final Element gridElement = doc.createElement(MY_TYPE);
 
     // get the parent to export itself
     exportGridAttributes(gridElement, theGrid, doc);

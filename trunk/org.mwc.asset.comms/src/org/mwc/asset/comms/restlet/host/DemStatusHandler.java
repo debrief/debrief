@@ -11,10 +11,10 @@ public class DemStatusHandler extends ASSETResource implements
 {
 
 	@Put
-	public void store(DemandedStatus demState)
+	public void store(final DemandedStatus demState)
 	{
-		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
-		ASSETHost host = hostP.getHost();
+		final ASSETHost.HostProvider hostP = (HostProvider) getApplication();
+		final ASSETHost host = hostP.getHost();
 		host.setDemandedStatus(getScenarioId(), getParticipantId(), demState);
 	}
 }

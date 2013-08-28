@@ -52,7 +52,7 @@ public class ExportToCloud implements RightClickContextItemGenerator
 		// right, work through the subjects
 		for (int i = 0; i < subjects.length; i++)
 		{
-			Editable thisE = subjects[i];
+			final Editable thisE = subjects[i];
 			if (thisE instanceof TrackWrapper)
 			{
 				// cool, go for it!
@@ -70,13 +70,13 @@ public class ExportToCloud implements RightClickContextItemGenerator
 				title = "Export track to cloud";
 
 			// yes, create the action
-			Action exportToCloud = new Action(title)
+			final Action exportToCloud = new Action(title)
 			{
 				public void run()
 				{
 					// ok, go for it.
 					// sort it out as an operation
-					IUndoableOperation convertToTrack1 = new ConvertTrack(title, subjects);
+					final IUndoableOperation convertToTrack1 = new ConvertTrack(title, subjects);
 
 					// ok, stick it on the buffer
 					runIt(convertToTrack1);
@@ -98,7 +98,7 @@ public class ExportToCloud implements RightClickContextItemGenerator
 	 * 
 	 * @param operation
 	 */
-	protected void runIt(IUndoableOperation operation)
+	protected void runIt(final IUndoableOperation operation)
 	{
 		CorePlugin.run(operation);
 	}
@@ -106,9 +106,9 @@ public class ExportToCloud implements RightClickContextItemGenerator
 	private static class ConvertTrack extends CMAPOperation
 	{
 
-		private Editable[] _subjects;
+		private final Editable[] _subjects;
 
-		public ConvertTrack(String title, Editable[] subjects)
+		public ConvertTrack(final String title, final Editable[] subjects)
 		{
 			super(title);
 			_subjects = subjects;
@@ -120,21 +120,21 @@ public class ExportToCloud implements RightClickContextItemGenerator
 			return false;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			ObjectMapper mapper = new ObjectMapper();
-			ArrayNode docs = mapper.createArrayNode();
+			final ObjectMapper mapper = new ObjectMapper();
+			final ArrayNode docs = mapper.createArrayNode();
 
 			// right, get going through the track
 			for (int i = 0; i < _subjects.length; i++)
 			{
-				Editable thisE = _subjects[i];
+				final Editable thisE = _subjects[i];
 				if (thisE instanceof TrackWrapper)
 				{
-					TrackWrapper tw = (TrackWrapper) thisE;
+					final TrackWrapper tw = (TrackWrapper) thisE;
 
-					CouchTrack newT = new CouchTrack(tw);
+					final CouchTrack newT = new CouchTrack(tw);
 
 					docs.add(newT.getDocument());
 				}
@@ -143,41 +143,41 @@ public class ExportToCloud implements RightClickContextItemGenerator
 			if (docs.size() > 0)
 			{
 				// ok, do the push
-				ObjectNode res = mapper.createObjectNode();
+				final ObjectNode res = mapper.createObjectNode();
 				res.put("docs", docs);
 				try
 				{
-					String bulkTxt = mapper.writeValueAsString(res);
+					final String bulkTxt = mapper.writeValueAsString(res);
 
 					// ok, and push
-					String couchURL = Activator.getDefault().getPreferenceStore()
+					final String couchURL = Activator.getDefault().getPreferenceStore()
 							.getString(TrackStoreWrapper.COUCHDB_LOCATION);
 
-					String newURL = couchURL + "/tracks/_bulk_docs";
-					byte[] content = bulkTxt.getBytes();
+					final String newURL = couchURL + "/tracks/_bulk_docs";
+					final byte[] content = bulkTxt.getBytes();
 					CorePlugin.logError(Status.INFO, "CouchDb POST (upload) to: " + newURL, null);
-					Post doIt = new Post(newURL, content, 5000, 10000);
+					final Post doIt = new Post(newURL, content, 5000, 10000);
 					doIt.header("Content-Type", "application/json");
-					int result = doIt.responseCode();
+					final int result = doIt.responseCode();
 					if (result == 201)
 					{
-						byte[] resB = doIt.bytes();
-						String tmp = new String(resB);
-						JsonNode list = mapper.readValue(resB, JsonNode.class);
+						final byte[] resB = doIt.bytes();
+						final String tmp = new String(resB);
+						final JsonNode list = mapper.readValue(resB, JsonNode.class);
 						if (list.isArray())
 						{
-							ArrayNode arr = (ArrayNode) list;
+							final ArrayNode arr = (ArrayNode) list;
 
 							{
-								int len = arr.size();
+								final int len = arr.size();
 								for (int i = 0; i < len; i++)
 								{
-									JsonNode item = arr.get(i);
-									ObjectNode oo = (ObjectNode) item;
+									final JsonNode item = arr.get(i);
+									final ObjectNode oo = (ObjectNode) item;
 									
 									if(item.has("error"))
 									{
-										TextNode reason = (TextNode) item.get("reason");
+										final TextNode reason = (TextNode) item.get("reason");
 										Activator.logError(Status.ERROR, "Import to Cloud failed:" + reason.asText(), null);
 									}
 									else
@@ -196,7 +196,7 @@ public class ExportToCloud implements RightClickContextItemGenerator
 					}
 
 				}
-				catch (IOException e)
+				catch (final IOException e)
 				{
 					Activator.logError(Status.ERROR, "Failed writing to String", e);
 				}
@@ -206,7 +206,7 @@ public class ExportToCloud implements RightClickContextItemGenerator
 		}
 
 		@Override
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			// duh, ignore

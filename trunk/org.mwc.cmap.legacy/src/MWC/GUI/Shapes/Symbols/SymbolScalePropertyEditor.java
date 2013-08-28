@@ -53,13 +53,13 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
 
   protected Double _mySize;
 
-  private String stringTags[] =
+  private final String stringTags[] =
   {
                      "Small",
                      "Medium",
                      "Large"};
 
-  private double sizes[] =
+  private final double sizes[] =
   {
     SMALL,
     MEDIUM,
@@ -79,7 +79,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
 
 
 
-  public void setValue(Object p1)
+  public void setValue(final Object p1)
   {
     if(p1 instanceof Double)
     {
@@ -87,7 +87,7 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
     }
     if(p1 instanceof String)
     {
-      String val = (String) p1;
+      final String val = (String) p1;
       setAsText(val);
     }
 
@@ -100,25 +100,26 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
     }
   }
 
-  public void setAsText(String val)
+  public void setAsText(final String val)
   {
+	String theVal = val;
     // handle our two "old" values, Tiny is now small, and regular is now medium
-    if(val.equals("Tiny"))
+    if(theVal.equals("Tiny"))
     {
-      val = "Small";
+      theVal = "Small";
     }
     else
     {
-      if(val.equals("Regular"))
+      if(theVal.equals("Regular"))
       {
-        val = "Medium";
+        theVal = "Medium";
       }
     }
 
     for(int i=0;i<stringTags.length;i++)
     {
-      String thisS = stringTags[i];
-      if(thisS.equals(val))
+      final String thisS = stringTags[i];
+      if(thisS.equals(theVal))
       {
         _mySize = new Double(sizes[i]);
       }
@@ -129,10 +130,10 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
   public String getAsText()
   {
     String res = null;
-    double current = _mySize.doubleValue();
+    final double current = _mySize.doubleValue();
     for(int i=0;i<sizes.length;i++)
     {
-      double v = sizes[i];
+      final double v = sizes[i];
       if(v == current)
       {
         res = stringTags[i];

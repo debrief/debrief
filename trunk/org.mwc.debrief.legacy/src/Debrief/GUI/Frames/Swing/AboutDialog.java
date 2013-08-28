@@ -39,8 +39,8 @@ public final class AboutDialog extends javax.swing.JDialog
    * @param title the text to show in the title bar of the dialog
    * @param message the message to show
    */
-  private AboutDialog(String title,
-                      String message)
+  private AboutDialog(final String title,
+                      final String message)
   {
 
     this.setModal(true);
@@ -52,9 +52,9 @@ public final class AboutDialog extends javax.swing.JDialog
     _mainMessage.setText(message);
     pack();
     // and locate the panel
-    Dimension area = Toolkit.getDefaultToolkit().getScreenSize();
-    Dimension mySize = this.getSize();
-    Point centre = new Point(area.width / 2 - mySize.width / 2, area.height / 2 - mySize.height / 2);
+    final Dimension area = Toolkit.getDefaultToolkit().getScreenSize();
+    final Dimension mySize = this.getSize();
+    final Point centre = new Point(area.width / 2 - mySize.width / 2, area.height / 2 - mySize.height / 2);
     this.setLocation(centre);
   }
 
@@ -75,7 +75,7 @@ public final class AboutDialog extends javax.swing.JDialog
     _okBtn = new javax.swing.JButton();
     addWindowListener(new java.awt.event.WindowAdapter()
     {
-      public void windowClosing(java.awt.event.WindowEvent evt)
+      public void windowClosing(final java.awt.event.WindowEvent evt)
       {
         closeDialog(evt);
       }

@@ -11,7 +11,7 @@ public class ColumnSizeData
 
 	private int myWidth;
 
-	public ColumnSizeData(TableColumn tableColumn, int weight)
+	public ColumnSizeData(final TableColumn tableColumn, final int weight)
 	{
 		myTableColumn = tableColumn;
 		myWeight = weight;
@@ -33,7 +33,7 @@ public class ColumnSizeData
 		return myTableColumn.getWidth() != myWidth;
 	}
 
-	public void setWidth(int width)
+	public void setWidth(final int width)
 	{
 		myTableColumn.setWidth(width);
 		myWidth = width;

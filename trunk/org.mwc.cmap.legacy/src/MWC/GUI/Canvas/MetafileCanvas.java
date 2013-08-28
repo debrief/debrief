@@ -172,7 +172,7 @@ public class MetafileCanvas implements CanvasType
 	// constructor
 	// ////////////////////////////////
 
-	public MetafileCanvas(String directory)
+	public MetafileCanvas(final String directory)
 	{
 		if (directory != null)
 		{
@@ -194,16 +194,16 @@ public class MetafileCanvas implements CanvasType
 	public static String getFileName()
 	{
 		String name = "d3_";
-		java.util.Date tNow = new java.util.Date();
+		final java.util.Date tNow = new java.util.Date();
 
-		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm_ss");
+		final java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm_ss");
 
 		name = name + "_" + df.format(tNow) + ".wmf";
 
 		return name;
 	}
 
-	public void endDraw(Object theVal)
+	public void endDraw(final Object theVal)
 	{
 		// and now save it
 		try
@@ -223,20 +223,20 @@ public class MetafileCanvas implements CanvasType
 
     	System.out.println("Writing Metafile to:" + _outputFileName);
     	
-			java.io.FileOutputStream fo = new FileOutputStream(_outputFileName);
+			final java.io.FileOutputStream fo = new FileOutputStream(_outputFileName);
 
 			_cachedMetafile.writeWMF(fo);
 			// wmf.writePlaceableWMF(fo, 5, 5, 200, 200, 200);
 			fo.close();
 		}
-		catch (java.io.FileNotFoundException f)
+		catch (final java.io.FileNotFoundException f)
 		{
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Write WMF",
 					"Sorry, directory name may be invalid, please check properties");
 			if (DEBUG_OUTPUT)
 				MWC.Utilities.Errors.Trace.trace(f, "Directory not found");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 
 			if (DEBUG_OUTPUT)
@@ -244,7 +244,7 @@ public class MetafileCanvas implements CanvasType
 		}
 	}
 
-	public void startDraw(Object theVal)
+	public void startDraw(final Object theVal)
 	{
 		// create the metafile
 		_cachedMetafile = new WMF();
@@ -256,21 +256,21 @@ public class MetafileCanvas implements CanvasType
 	{
 	}
 
-	public void drawOval(int x, int y, int width, int height)
+	public void drawOval(final int x, final int y, final int width, final int height)
 	{
 		g.drawOval(x, y, width, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawOval");
 	}
 
-	public void fillOval(int x, int y, int width, int height)
+	public void fillOval(final int x, final int y, final int width, final int height)
 	{
 		g.fillOval(x, y, width, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillOval");
 	}
 
-	public void drawText(String str, int x, int y)
+	public void drawText(final String str, final int x, final int y)
 	{
 		// @@@ IM ignore the WMFGraphics method, since it relies on JDK1.2 code
 		// (AttributedIterator)
@@ -281,10 +281,10 @@ public class MetafileCanvas implements CanvasType
 			MWC.Utilities.Errors.Trace.trace("drawText");
 	}
 
-	public void drawText(java.awt.Font theFont, String str, int x, int y)
+	public void drawText(final java.awt.Font theFont, final String str, final int x, final int y)
 	{
 		// remember the current font
-		java.awt.Font ft = g.getFont();
+		final java.awt.Font ft = g.getFont();
 
 		g.setFont(theFont);
 
@@ -299,7 +299,7 @@ public class MetafileCanvas implements CanvasType
 			MWC.Utilities.Errors.Trace.trace("drawText");
 	}
 
-	public void setColor(java.awt.Color theCol)
+	public void setColor(final java.awt.Color theCol)
 	{
 		// note, we're not using an equals() operator. I ran a check to see if I
 		// needed to use .equals()
@@ -317,7 +317,7 @@ public class MetafileCanvas implements CanvasType
 	/**
 	 * set the style for the line, using our constants
 	 */
-	public void setLineStyle(int style)
+	public void setLineStyle(final int style)
 	{
 		// only update if we have to
 		if (style != _lastLineStyle)
@@ -330,7 +330,7 @@ public class MetafileCanvas implements CanvasType
 	/**
 	 * set the width of the line, in pixels
 	 */
-	public void setLineWidth(float width)
+	public void setLineWidth(final float width)
 	{
 		// only update if we have to
 		if (width != _lastPenWidth)
@@ -360,7 +360,7 @@ public class MetafileCanvas implements CanvasType
 	 * @param nPoints
 	 *          length of list
 	 */
-	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints)
+	public void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints)
 	{
 		g.fillPolygon(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
@@ -377,7 +377,7 @@ public class MetafileCanvas implements CanvasType
 	 * @param nPoints
 	 *          length of list
 	 */
-	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints)
+	public void drawPolygon(final int[] xPoints, final int[] yPoints, final int nPoints)
 	{
 		g.drawPolygon(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
@@ -394,27 +394,27 @@ public class MetafileCanvas implements CanvasType
 	 * @param nPoints
 	 *          length of list
 	 */
-	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints)
+	public void drawPolyline(final int[] xPoints, final int[] yPoints, final int nPoints)
 	{
 		g.drawPolyline(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawPolyline");
 	}
 
-	final public void drawPolyline(int[] points) {
+	final public void drawPolyline(final int[] points) {
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
 	}
     
-	public boolean drawImage(Image img, int x, int y, int width, int height,
-			ImageObserver observer)
+	public boolean drawImage(final Image img, final int x, final int y, final int width, final int height,
+			final ImageObserver observer)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("draw image");
 		return g.drawImage(img, x, y, width, height, observer);
 	}
 
-	public void drawLine(int x1, int y1, int x2, int y2)
+	public void drawLine(final int x1, final int y1, final int x2, final int y2)
 	{
 		g.drawLine(x1, y1, x2, y2);
 		if (DEBUG_OUTPUT)
@@ -422,35 +422,35 @@ public class MetafileCanvas implements CanvasType
 					+ " ht:" + y2);
 	}
 
-	public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle)
+	public void fillArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
 	{
 		g.fillArc(x, y, width, height, startAngle, arcAngle);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillArc");
 	}
 
-	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle)
+	public void drawArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
 	{
 		g.drawArc(x, y, width, height, startAngle, arcAngle);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawArc");
 	}
 
-	public void drawRect(int x1, int y1, int wid, int height)
+	public void drawRect(final int x1, final int y1, final int wid, final int height)
 	{
 		g.drawRect(x1, y1, wid, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawRect");
 	}
 
-	public void fillRect(int x, int y, int wid, int height)
+	public void fillRect(final int x, final int y, final int wid, final int height)
 	{
 		g.fillRect(x, y, wid, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillRect");
 	}
 
-	public int getStringHeight(java.awt.Font theFont)
+	public int getStringHeight(final java.awt.Font theFont)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("getStringHeight");
@@ -461,17 +461,17 @@ public class MetafileCanvas implements CanvasType
 		else
 			fm = g.getFontMetrics();
 
-		int ht = fm.getHeight();
+		final int ht = fm.getHeight();
 		return ht;
 	}
 
 	@Override
-	public void setFont(Font theFont)
+	public void setFont(final Font theFont)
 	{
 		g.setFont(theFont);
 	}
 	
-	public int getStringWidth(java.awt.Font theFont, String theString)
+	public int getStringWidth(final java.awt.Font theFont, final String theString)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("getStringWidth");
@@ -485,7 +485,7 @@ public class MetafileCanvas implements CanvasType
 		int wid = fm.stringWidth(theString);
 		
 		// have a go at stretching it by a single character
-		double newWid = (double)wid / theString.length() * (theString.length()+1);
+		final double newWid = (double)wid / theString.length() * (theString.length()+1);
 		
 		wid = (int) newWid;
 		
@@ -505,17 +505,17 @@ public class MetafileCanvas implements CanvasType
 		return _proj;
 	}
 
-	public void setProjection(MWC.Algorithms.PlainProjection val)
+	public void setProjection(final MWC.Algorithms.PlainProjection val)
 	{
 		_proj = val;
 	}
 
-	public java.awt.Point toScreen(MWC.GenericData.WorldLocation val)
+	public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val)
 	{
 		return _proj.toScreen(val);
 	}
 
-	public MWC.GenericData.WorldLocation toWorld(java.awt.Point val)
+	public MWC.GenericData.WorldLocation toWorld(final java.awt.Point val)
 	{
 		return _proj.toWorld(val);
 	}
@@ -532,7 +532,7 @@ public class MetafileCanvas implements CanvasType
 		return g.getBackgroundColor();
 	}
 
-	public void setBackgroundColor(java.awt.Color theColor)
+	public void setBackgroundColor(final java.awt.Color theColor)
 	{
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("setBackgroundColor");
@@ -540,7 +540,7 @@ public class MetafileCanvas implements CanvasType
 
 	}
 
-	public void addPainter(CanvasType.PaintListener listener)
+	public void addPainter(final CanvasType.PaintListener listener)
 	{
 		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (addPainter)");
 	}
@@ -552,12 +552,12 @@ public class MetafileCanvas implements CanvasType
 		return null;
 	}
 
-	public void removePainter(CanvasType.PaintListener listener)
+	public void removePainter(final CanvasType.PaintListener listener)
 	{
 		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
 	}
 
-	public void setTooltipHandler(CanvasType.TooltipHandler handler)
+	public void setTooltipHandler(final CanvasType.TooltipHandler handler)
 	{
 		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
 	}
@@ -589,7 +589,7 @@ public class MetafileCanvas implements CanvasType
 
 
 	@Override
-	public void drawText(String str, int x, int y, float rotate) {
+	public void drawText(final String str, final int x, final int y, final float rotate) {
 		// TODO Auto-generated method stub
 		
 	}

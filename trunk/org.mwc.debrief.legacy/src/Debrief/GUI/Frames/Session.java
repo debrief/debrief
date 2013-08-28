@@ -406,7 +406,7 @@ abstract public class Session implements Serializable, Observer
     {
       super.finalize();
     }
-    catch (Throwable e)
+    catch (final Throwable e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }

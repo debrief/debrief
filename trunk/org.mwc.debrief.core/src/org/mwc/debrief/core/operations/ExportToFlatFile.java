@@ -51,8 +51,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 	 * @param fileVersion
 	 * @param doubleSensor
 	 */
-	protected ExportToFlatFile(String title, String fileVersion,
-			boolean doubleSensor)
+	protected ExportToFlatFile(final String title, final String fileVersion,
+			final boolean doubleSensor)
 	{
 		super(title, true, !doubleSensor, doubleSensor, true);
 		_fileVersion = fileVersion;
@@ -65,8 +65,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 	}
 
 	@Override
-	public void executeExport(WatchableList primaryTrack,
-			WatchableList[] secondaryTracks, TimePeriod period)
+	public void executeExport(final WatchableList primaryTrack,
+			final WatchableList[] secondaryTracks, final TimePeriod period)
 	{
 		// sort out the destination file name
 		String filePath = null;
@@ -90,14 +90,14 @@ public class ExportToFlatFile extends TimeControllerOperation
 		String serialName = null;
 
 		// just check that at least one of the sensors has an offset
-		TrackWrapper primary = (TrackWrapper) primaryTrack;
-		BaseLayer sensors = primary.getSensors();
-		Enumeration<Editable> sList = sensors.elements();
+		final TrackWrapper primary = (TrackWrapper) primaryTrack;
+		final BaseLayer sensors = primary.getSensors();
+		final Enumeration<Editable> sList = sensors.elements();
 		boolean foundOne = false;
 		int sensorCount = 0;
 		while (sList.hasMoreElements())
 		{
-			SensorWrapper thisS = (SensorWrapper) sList.nextElement();
+			final SensorWrapper thisS = (SensorWrapper) sList.nextElement();
 
 			// is it visible?
 			if (thisS.getVisible())
@@ -112,14 +112,14 @@ public class ExportToFlatFile extends TimeControllerOperation
 		// right, special handling depending on run mode
 		if (sensorCount == 0)
 		{
-			Shell shell = Display.getCurrent().getActiveShell();
-			String title = "Export flat file";
-			Image image = null;
-			String message = "At least one primary sensor must be visible";
-			int imageType = MessageDialog.ERROR; // check the user knows what
+			final Shell shell = Display.getCurrent().getActiveShell();
+			final String title = "Export flat file";
+			final Image image = null;
+			final String message = "At least one primary sensor must be visible";
+			final int imageType = MessageDialog.ERROR; // check the user knows what
 																						// he's
 			// doing
-			MessageDialog dl = new MessageDialog(shell, title, image, message,
+			final MessageDialog dl = new MessageDialog(shell, title, image, message,
 					imageType, null, 0);
 			dl.open();
 			return;
@@ -131,9 +131,9 @@ public class ExportToFlatFile extends TimeControllerOperation
 			if (sensorCount > 1)
 			{
 
-				Shell shell = Display.getCurrent().getActiveShell();
-				String title = "Export flat file";
-				String message = "Only one of the sensors on the primary track must be visible";
+				final Shell shell = Display.getCurrent().getActiveShell();
+				final String title = "Export flat file";
+				final String message = "Only one of the sensors on the primary track must be visible";
 				// pop it up
 				MessageDialog.openError(shell, title, message);
 				return;
@@ -144,9 +144,9 @@ public class ExportToFlatFile extends TimeControllerOperation
 			// ok, we can only have two sensors visible
 			if (sensorCount > 2)
 			{
-				Shell shell = Display.getCurrent().getActiveShell();
-				String title = "Export flat file";
-				String message = "Only one or two of the sensors on the primary track must be visible";
+				final Shell shell = Display.getCurrent().getActiveShell();
+				final String title = "Export flat file";
+				final String message = "Only one or two of the sensors on the primary track must be visible";
 				// pop it up
 				MessageDialog.openError(shell, title, message);
 				return;
@@ -157,33 +157,33 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 		if (!foundOne)
 		{
-			Shell shell = Display.getCurrent().getActiveShell();
-			String title = "Export flat file";
-			Image image = null;
-			String message = "None of the sensor data has a towed array offset applied.\nDo you wish to continue?";
-			String[] labels = new String[]
+			final Shell shell = Display.getCurrent().getActiveShell();
+			final String title = "Export flat file";
+			final Image image = null;
+			final String message = "None of the sensor data has a towed array offset applied.\nDo you wish to continue?";
+			final String[] labels = new String[]
 			{ "Yes", "No" };
-			int index = 1;
-			int imageType = MessageDialog.QUESTION; // check the user knows what he's
+			final int index = 1;
+			final int imageType = MessageDialog.QUESTION; // check the user knows what he's
 																							// doing
-			MessageDialog dl = new MessageDialog(shell, title, image, message,
+			final MessageDialog dl = new MessageDialog(shell, title, image, message,
 					imageType, labels, index);
-			int res = dl.open();
+			final int res = dl.open();
 			if (res == MessageDialog.CANCEL)
 				return;
 		}
 
 		// prepare the export wizard
-		SimplePageListWizard wizard = new SimplePageListWizard();
+		final SimplePageListWizard wizard = new SimplePageListWizard();
 		wizard.addWizard(new FlatFilenameWizardPage(_fileVersion, sensorCount));
-		WizardDialog dialog = new WizardDialog(Display.getCurrent()
+		final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
 		dialog.open();
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
-			FlatFilenameWizardPage exportPage = (FlatFilenameWizardPage) wizard
+			final FlatFilenameWizardPage exportPage = (FlatFilenameWizardPage) wizard
 					.getPage(FlatFilenameWizardPage.PAGENAME);
 			if (exportPage != null)
 			{
@@ -201,8 +201,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 					s2aft = exportPage.getSensor2Aft();
 					speedOfSoundMS = exportPage.getSpeedOfSound();
 					
-					FlatFileExporter ff = new FlatFileExporter();
-					String theData = ff.export(primaryTrack, secondaryTracks, period,
+					final FlatFileExporter ff = new FlatFileExporter();
+					final String theData = ff.export(primaryTrack, secondaryTracks, period,
 							sensor1Type, sensor2Type,s1fwd,s1aft,s2fwd,s2aft,
 							_fileVersion, protMarking, serialName, speedOfSoundMS);
 
@@ -220,12 +220,12 @@ public class ExportToFlatFile extends TimeControllerOperation
 						CorePlugin.showMessage("Export to SAM",
 								"Tracks successfullly exported to SAM format");
 					}
-					catch (FileNotFoundException e)
+					catch (final FileNotFoundException e)
 					{
 						DebriefPlugin.logError(Status.ERROR, "Unable to find output file:"
 								+ fileName, e);
 					}
-					catch (IOException e)
+					catch (final IOException e)
 					{
 						DebriefPlugin.logError(Status.ERROR, "Whilst writing to output file:"
 								+ fileName, e);
@@ -237,7 +237,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 							if (out != null)
 								out.close();
 						}
-						catch (IOException e)
+						catch (final IOException e)
 						{
 							DebriefPlugin.logError(Status.ERROR, "Whilst closing output file:"
 									+ fileName, e);

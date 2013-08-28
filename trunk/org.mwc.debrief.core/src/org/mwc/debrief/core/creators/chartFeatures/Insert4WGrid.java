@@ -16,7 +16,7 @@ public class Insert4WGrid extends CoreInsertChartFeature
 	/**
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart)
+	protected Plottable getPlottable(final PlainChart theChart)
 	{
 		return new Grid4WPainter(theChart.getDataArea().getCentreAtSurface());
 	}

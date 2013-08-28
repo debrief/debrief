@@ -96,28 +96,28 @@ public class RightClickEditGridPainterAdaptor extends RightClickEdit.BaseMenuCre
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void createMenu(javax.swing.JPopupMenu menu,
-                         java.awt.Point thePoint,
-                         MWC.GUI.CanvasType theCanvas,
-                         MWC.GUI.Properties.PropertiesPanel thePanel,
-                         Layers theData)
+	public void createMenu(final javax.swing.JPopupMenu menu,
+                         final java.awt.Point thePoint,
+                         final MWC.GUI.CanvasType theCanvas,
+                         final MWC.GUI.Properties.PropertiesPanel thePanel,
+                         final Layers theData)
   {
     // also show the editors for any screen decorations
     final Layer decorations = theData.findLayer("Decorations");
     final PropertiesPanel _thePanel = thePanel;
     if (decorations != null)
     {
-      Enumeration<Editable> decs = decorations.elements();
+      final Enumeration<Editable> decs = decorations.elements();
       while (decs.hasMoreElements())
       {
-        Plottable p = (Plottable) decs.nextElement();
+        final Plottable p = (Plottable) decs.nextElement();
         final Editable.EditorType ped = p.getInfo();
         if (ped != null)
         {
-          javax.swing.JMenuItem pmi = new javax.swing.JMenuItem("Edit " + ped.getBeanDescriptor().getDisplayName());
+          final javax.swing.JMenuItem pmi = new javax.swing.JMenuItem("Edit " + ped.getBeanDescriptor().getDisplayName());
           pmi.addActionListener(new ActionListener()
           {
-            public void actionPerformed(ActionEvent e)
+            public void actionPerformed(final ActionEvent e)
             {
               _thePanel.addEditor(ped, decorations);
             }

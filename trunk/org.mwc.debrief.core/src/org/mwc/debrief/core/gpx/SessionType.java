@@ -66,7 +66,7 @@ public class SessionType {
      *     {@link LayersType }
      *     
      */
-    public void setLayers(LayersType value) {
+    public void setLayers(final LayersType value) {
         this.layers = value;
     }
 
@@ -90,7 +90,7 @@ public class SessionType {
      *     {@link ProjectionType }
      *     
      */
-    public void setProjection(ProjectionType value) {
+    public void setProjection(final ProjectionType value) {
         this.projection = value;
     }
 
@@ -114,7 +114,7 @@ public class SessionType {
      *     {@link GuiType }
      *     
      */
-    public void setGui(GuiType value) {
+    public void setGui(final GuiType value) {
         this.gui = value;
     }
 

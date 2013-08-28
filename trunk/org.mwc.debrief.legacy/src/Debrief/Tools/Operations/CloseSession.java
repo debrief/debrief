@@ -71,7 +71,7 @@ public final class CloseSession extends PlainTool
     return null;
   }
 
-  public CloseSession(Application theApplication){
+  public CloseSession(final Application theApplication){
     super(theApplication, "Close Plot", "images/close.gif");
     _theApplication = theApplication;
   }

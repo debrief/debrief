@@ -64,8 +64,8 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 * @param parentLayers
 	 * @param subjects
 	 */
-	public void generate(IMenuManager parent, Layers theLayers,
-			Layer[] parentLayers, final Editable[] subjects)
+	public void generate(final IMenuManager parent, final Layers theLayers,
+			final Layer[] parentLayers, final Editable[] subjects)
 	{
 		final Vector<SensorWrapper> sensorCandidates = new Vector<SensorWrapper>(0,
 				1);
@@ -75,7 +75,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 		// right, go through the items and have a nice look at them
 		for (int i = 0; i < subjects.length; i++)
 		{
-			Editable thisE = subjects[i];
+			final Editable thisE = subjects[i];
 
 			// is this one we can watch?
 			if (thisE instanceof SensorWrapper)
@@ -87,13 +87,13 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			{
 				// aah, this holds children - go through them. It may be the
 				// 'sensors' layer
-				SplittableLayer layer = (SplittableLayer) thisE;
-				Enumeration<Editable> children = layer.elements();
+				final SplittableLayer layer = (SplittableLayer) thisE;
+				final Enumeration<Editable> children = layer.elements();
 				if (children != null)
 				{
 					while (children.hasMoreElements())
 					{
-						Editable thisC = children.nextElement();
+						final Editable thisC = children.nextElement();
 						// is this a sensor wrapper layer?
 						if (thisC instanceof SensorWrapper)
 						{
@@ -124,7 +124,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			else
 			{
 				// ok, create the action
-				Action viewPlot = getAction(sensorCandidates, trackCandidates);
+				final Action viewPlot = getAction(sensorCandidates, trackCandidates);
 
 				// ok - set the image descriptor
 				viewPlot.setImageDescriptor(DebriefPlugin
@@ -164,11 +164,11 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			public void run()
 			{
 
-				IWorkbench wb = PlatformUI.getWorkbench();
-				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-				IWorkbenchPage page = win.getActivePage();
+				final IWorkbench wb = PlatformUI.getWorkbench();
+				final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				final IWorkbenchPage page = win.getActivePage();
 
-				IEditorPart editor = page.getActiveEditor();
+				final IEditorPart editor = page.getActiveEditor();
 
 				try
 				{
@@ -177,7 +177,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					// ///////////////////////////////////
 
 					// have a go at determining the plot id
-					TimeProvider tp = (TimeProvider) editor
+					final TimeProvider tp = (TimeProvider) editor
 							.getAdapter(TimeProvider.class);
 					String thePlotId = null;
 					if (tp != null)
@@ -186,11 +186,11 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					}
 
 					// calculate the outer range of the time periods
-					Iterator<TrackWrapper> tIter = trackCandidates.iterator();
+					final Iterator<TrackWrapper> tIter = trackCandidates.iterator();
 					TimePeriod outerPeriod = null;
 					while (tIter.hasNext())
 					{
-						TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
+						final TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
 						if (trackWrapper != null)
 						{
 							if (outerPeriod == null)
@@ -209,9 +209,9 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					final HiResDate startTime = outerPeriod.getStartDTG();
 					final HiResDate endTime = outerPeriod.getEndDTG();
 
-					TimeSeriesCollection theSeriesCollection = new TimeSeriesCollection();
+					final TimeSeriesCollection theSeriesCollection = new TimeSeriesCollection();
 
-					boolean multiTrackRun = trackCandidates.size() > 1;
+					final boolean multiTrackRun = trackCandidates.size() > 1;
 
 					// is this a multi-track run?
 					final String theTitle;
@@ -219,10 +219,10 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					if (multiTrackRun)
 					{
 						// multi-track run, go through them
-						Iterator<TrackWrapper> iter = trackCandidates.iterator();
+						final Iterator<TrackWrapper> iter = trackCandidates.iterator();
 						while (iter.hasNext())
 						{
-							TrackWrapper thisTrack = (TrackWrapper) iter.next();
+							final TrackWrapper thisTrack = (TrackWrapper) iter.next();
 
 							// do run for this track
 							addDataSeries(thisTrack, sensorCandidates, startTime, endTime,
@@ -248,12 +248,12 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					if (theSeriesCollection.getSeriesCount() >= 1)
 					{
 						// and the plot itself
-						String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
+						final String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
 						page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
 
 						// ok, try to retrieve the view
-						IViewReference plotRef = page.findViewReference(plotId, theTitle);
-						XYPlotView plotter = (XYPlotView) plotRef.getView(true);
+						final IViewReference plotRef = page.findViewReference(plotId, theTitle);
+						final XYPlotView plotter = (XYPlotView) plotRef.getView(true);
 						plotter.showPlot(theTitle, theSeriesCollection, "Range (m)", null,
 								thePlotId);
 					}
@@ -264,7 +264,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 
 					}
 				}
-				catch (PartInitException e)
+				catch (final PartInitException e)
 				{
 					e.printStackTrace();
 				}
@@ -296,16 +296,17 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 */
 	@SuppressWarnings("unused")
 	private static void addDataSeries(final TrackWrapper primaryTrack,
-			final Vector<SensorWrapper> theSensors, HiResDate start_time,
-			HiResDate end_time, TimeSeriesCollection theSeriesCollection,
-			boolean useSensorName)
+			final Vector<SensorWrapper> theSensors, final HiResDate start_time,
+			final HiResDate end_time, final TimeSeriesCollection theSeriesCollection,
+			final boolean useSensorName)
 	{
 
+		TimeSeriesCollection seriesCollection = theSeriesCollection;
 		// calculate the data variables for our tracks
 		final Enumeration<SensorWrapper> iter = theSensors.elements();
 		while (iter.hasMoreElements())
 		{
-			SensorWrapper thisSensor = (SensorWrapper) iter.nextElement();
+			final SensorWrapper thisSensor = (SensorWrapper) iter.nextElement();
 
 			// ok, now collate the data
 			String nameToUse;
@@ -313,7 +314,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				nameToUse = thisSensor.getName();
 			else
 				nameToUse = primaryTrack.getName();
-			TimeSeries thisSeries = new TimeSeries(nameToUse);
+			final TimeSeries thisSeries = new TimeSeries(nameToUse);
 
 			// SPECIAL CASE - is this an empty sensor, created just to produce this
 			// plt?
@@ -437,7 +438,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				// ////////////////////////////////////////////////////
 				// step through the track
 				//
-				Collection<Editable> primaryFixes = primaryTrack.getItemsBetween(
+				final Collection<Editable> primaryFixes = primaryTrack.getItemsBetween(
 						start_time, end_time);
 
 				// have we found any?. Hey, listen here. The "getItemsBetween" method
@@ -457,11 +458,11 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					// yes, we do have DTG data for this track - hooray!
 
 					// ok, step through the list
-					Iterator<Editable> theseFixes = primaryFixes.iterator();
+					final Iterator<Editable> theseFixes = primaryFixes.iterator();
 
 					while (theseFixes.hasNext())
 					{
-						FixWrapper thisPosition = (FixWrapper) theseFixes.next();
+						final FixWrapper thisPosition = (FixWrapper) theseFixes.next();
 						
 						
 
@@ -470,7 +471,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						if(useSensorName)
 						{
 							// try to find the nearest sensor to toNow
-							Watchable[] thisCut = thisSensor.getNearestTo(thisPosition.getDateTimeGroup());
+							final Watchable[] thisCut = thisSensor.getNearestTo(thisPosition.getDateTimeGroup());
 							if((thisCut != null) && (thisCut.length > 0))
 								thisColor = thisCut[0].getColor();
 							else
@@ -480,13 +481,13 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 							thisColor	= thisPosition.getColor();
 
 						// what's the current time?
-						HiResDate currentTime = thisPosition.getTime();
+						final HiResDate currentTime = thisPosition.getTime();
 
 						// is this fix visible?
 						if (thisPosition.getVisible())
 						{
 							// ok, now get the sensor
-							WorldLocation sensorLoc = thisSensor
+							final WorldLocation sensorLoc = thisSensor
 									.getHost()
 									.getBacktraceTo(currentTime, thisSensor.getSensorOffset(),
 											thisSensor.getWormInHole()).getLocation();
@@ -504,9 +505,9 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 								// ////////////////////////////////////////////////
 
 								WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
-								WorldLocation trackLoc = thisPosition.getLocation();
+								final WorldLocation trackLoc = thisPosition.getLocation();
 								range = trackLoc.rangeFrom(sensorLoc, range);
-								double thisVal = range.getValueIn(WorldDistance.METRES);
+								final double thisVal = range.getValueIn(WorldDistance.METRES);
 
 								// ////////////////////////////////////////////////
 								// and create the point
@@ -516,7 +517,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 								// some-how
 								// to
 								// FixedMicroSecond
-								ColouredDataItem newItem = new ColouredDataItem(
+								final ColouredDataItem newItem = new ColouredDataItem(
 										new FixedMillisecond(thisPosition.getDTG().getDate()
 												.getTime()), thisVal, thisColor, true, null);
 
@@ -535,13 +536,13 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				{
 					CorePlugin.logError(Status.OK, "created:" + thisSeries.getItemCount()
 							+ " pts", null);
-					theSeriesCollection.addSeries(thisSeries);
+					seriesCollection.addSeries(thisSeries);
 				}
 
 		} // looping through the tracks
 
-		if (theSeriesCollection.getSeriesCount() == 0)
-			theSeriesCollection = null;
+		if (seriesCollection.getSeriesCount() == 0)
+			seriesCollection = null;
 	}
 
 	public static class TestCalcs extends TestCase
@@ -551,90 +552,90 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 
 		public void testIt()
 		{
-			TrackWrapper ownship = new TrackWrapper();
+			final TrackWrapper ownship = new TrackWrapper();
 			ownship.setName("ownship");
 			for (int i = 0; i < 35; i++)
 			{
-				FixWrapper scw = getFix(i * 4000, new WorldLocation(1, i, 0), ownship);
+				final FixWrapper scw = getFix(i * 4000, new WorldLocation(1, i, 0), ownship);
 				ownship.add(scw);
 			}
 
-			SensorWrapper sw = new SensorWrapper("s1");
+			final SensorWrapper sw = new SensorWrapper("s1");
 			sw.setHost(ownship);
 			for (int i = 0; i < 5; i++)
 			{
-				SensorContactWrapper scw = getContact(i * 5000, sw);
+				final SensorContactWrapper scw = getContact(i * 5000, sw);
 				sw.add(scw);
 			}
-			SensorWrapper s2 = new SensorWrapper("s12");
+			final SensorWrapper s2 = new SensorWrapper("s12");
 			s2.setHost(ownship);
 			for (int i = 0; i < 7; i++)
 			{
-				SensorContactWrapper scw = getContact(i * 6000, s2);
+				final SensorContactWrapper scw = getContact(i * 6000, s2);
 				s2.add(scw);
 			}
 
-			TrackWrapper target = new TrackWrapper();
+			final TrackWrapper target = new TrackWrapper();
 			target.setName("target");
 
 			for (int i = 0; i < 25; i++)
 			{
-				FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), target);
+				final FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), target);
 				target.add(scw);
 			}
 
-			Vector<SensorWrapper> sensors = new Vector<SensorWrapper>();
+			final Vector<SensorWrapper> sensors = new Vector<SensorWrapper>();
 			sensors.add(sw);
 			sensors.add(s2);
-			HiResDate start_time = target.getStartDTG();
-			HiResDate end_time = target.getEndDTG();
+			final HiResDate start_time = target.getStartDTG();
+			final HiResDate end_time = target.getEndDTG();
 
-			TimeSeriesCollection data = new TimeSeriesCollection();
+			final TimeSeriesCollection data = new TimeSeriesCollection();
 			GenerateSensorRangePlot.addDataSeries(target, sensors, start_time,
 					end_time, data, true);
 
 			assertNotNull("got dataset", data);
 			assertEquals("got correct num of series", 2, data.getSeriesCount());
-			TimeSeries first = data.getSeries(0);
+			final TimeSeries first = data.getSeries(0);
 			assertNotNull("got first series", first);
 			assertEquals("got data", 5, first.getItemCount());
-			TimeSeries second = data.getSeries(1);
+			final TimeSeries second = data.getSeries(1);
 			assertNotNull("got second series", second);
 			assertEquals("got data", 7, second.getItemCount());
 		}
 
 		public void testMenu()
 		{
-			TrackWrapper ownship = new TrackWrapper();
+			final TrackWrapper ownship = new TrackWrapper();
 			ownship.setName("trackA");
 			for (int i = 0; i < 5; i++)
 			{
-				FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), ownship);
+				final FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), ownship);
 				ownship.add(scw);
 			}
 
-			SensorWrapper sw = new SensorWrapper("s1");
+			final SensorWrapper sw = new SensorWrapper("s1");
 			sw.setHost(ownship);
 			sw.setSensorOffset(new ArrayLength(200));
 			for (int i = 0; i < 5; i++)
 			{
-				SensorContactWrapper scw = getContact(i * 5000, sw);
+				final SensorContactWrapper scw = getContact(i * 5000, sw);
 				sw.add(scw);
 			}
 
-			TrackWrapper target = new TrackWrapper();
+			final TrackWrapper target = new TrackWrapper();
 			target.setName("trackB");
 
 			for (int i = 0; i < 5; i++)
 			{
-				FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), target);
+				final FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), target);
 				target.add(scw);
 			}
 
-			GenerateSensorRangePlot plot = new GenerateSensorRangePlot()
+			final GenerateSensorRangePlot plot = new GenerateSensorRangePlot()
 			{
-				protected Action getAction(Vector<SensorWrapper> candidates,
-						Vector<TrackWrapper> primary)
+				protected Action getAction(final Vector<SensorWrapper> candidates,
+						final Vector<TrackWrapper> primary)
 				{
 					_candidates = candidates;
 					_primary = primary;
@@ -643,17 +644,17 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					};
 				}
 			};
-			Editable[] subjects = new Editable[2];
+			final Editable[] subjects = new Editable[2];
 			subjects[0] = sw;
 			subjects[1] = target;
-			IMenuManager parent = new MenuManager();
+			final IMenuManager parent = new MenuManager();
 			plot.generate(parent, null, null, subjects);
 
 			assertNotNull("got menu back", parent);
-			IContributionItem firstOne = parent.getItems()[0];
+			final IContributionItem firstOne = parent.getItems()[0];
 			assertNotNull("got menu item back", firstOne);
 			assertTrue("got separator", firstOne instanceof Separator);
-			IContributionItem secondOne = parent.getItems()[1];
+			final IContributionItem secondOne = parent.getItems()[1];
 			assertNotNull("got menu item back", secondOne);
 			assertTrue("got menu item", secondOne instanceof ActionContributionItem);
 
@@ -662,18 +663,18 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			assertEquals(1, _candidates.size());
 		}
 
-		private static FixWrapper getFix(long time, WorldLocation loc,
-				TrackWrapper track)
+		private static FixWrapper getFix(final long time, final WorldLocation loc,
+				final TrackWrapper track)
 		{
-			Fix theFix = new Fix(new HiResDate(time), loc, 0, 0);
-			FixWrapper res = new FixWrapper(theFix);
+			final Fix theFix = new Fix(new HiResDate(time), loc, 0, 0);
+			final FixWrapper res = new FixWrapper(theFix);
 			res.setTrackWrapper(track);
 			return res;
 		}
 
-		private static SensorContactWrapper getContact(long time, SensorWrapper host)
+		private static SensorContactWrapper getContact(final long time, final SensorWrapper host)
 		{
-			SensorContactWrapper res = new SensorContactWrapper();
+			final SensorContactWrapper res = new SensorContactWrapper();
 			res.setDTG(new HiResDate(time));
 			res.setSensor(host);
 			return res;

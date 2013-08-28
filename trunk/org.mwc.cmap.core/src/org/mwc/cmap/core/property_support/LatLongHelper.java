@@ -56,22 +56,22 @@ public class LatLongHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite cellParent)
+	public CellEditor getCellEditorFor(final Composite cellParent)
 	{
-		DialogCellEditor res = new PasteLocationDialogCellEditor(cellParent);
+		final DialogCellEditor res = new PasteLocationDialogCellEditor(cellParent);
 
 		return res;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public boolean editsThis(Class target)
+	public boolean editsThis(final Class target)
 	{
 		return (target == WorldLocation.class);
 	}
 
-	public Object translateToSWT(Object orig)
+	public Object translateToSWT(final Object orig)
 	{
-		WorldLocation value = (WorldLocation) orig;
+		final WorldLocation value = (WorldLocation) orig;
 
 		// do we have a list?
 		if (_myLocations == null)
@@ -93,23 +93,23 @@ public class LatLongHelper extends EditorHelper
 		return res;
 	}
 
-	public Object translateFromSWT(Object value)
+	public Object translateFromSWT(final Object value)
 	{
-		LatLongPropertySource res = (LatLongPropertySource) value;
+		final LatLongPropertySource res = (LatLongPropertySource) value;
 		return res.getValue();
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				LatLongPropertySource val = (LatLongPropertySource) element;
+				final LatLongPropertySource val = (LatLongPropertySource) element;
 				return val.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -124,7 +124,7 @@ public class LatLongHelper extends EditorHelper
 	public static class LatLongPropertySource implements IPropertySource2
 	{
 
-		private PropertyChangeSupport _pSupport;
+		private final PropertyChangeSupport _pSupport;
 
 		/**
 		 * the working values
@@ -200,7 +200,7 @@ public class LatLongHelper extends EditorHelper
 
 		public static class CategorisedDescriptor extends TextPropertyDescriptor
 		{
-			public CategorisedDescriptor(String id, String title, String cat)
+			public CategorisedDescriptor(final String id, final String title, final String cat)
 			{
 				super(id, title);
 				super.setCategory(cat);
@@ -228,7 +228,7 @@ public class LatLongHelper extends EditorHelper
 							_longCats),
 					new CategorisedDescriptor(ID_DEPTH, "9. Depth", "Depth")
 					{
-						public CellEditor createPropertyEditor(Composite parent)
+						public CellEditor createPropertyEditor(final Composite parent)
 						{
 							return new WorldDistanceHelper.WorldDistanceCellEditor(parent);
 						}
@@ -237,13 +237,13 @@ public class LatLongHelper extends EditorHelper
 			};
 		}
 
-		public LatLongPropertySource(WorldLocation location)
+		public LatLongPropertySource(final WorldLocation location)
 		{
 			_originalLocation = location;// new WorldLocation(location);
 
-			DebriefFormatLocation.brokenDown bLat = new DebriefFormatLocation.brokenDown(
+			final DebriefFormatLocation.brokenDown bLat = new DebriefFormatLocation.brokenDown(
 					location.getLat(), true);
-			DebriefFormatLocation.brokenDown bLong = new DebriefFormatLocation.brokenDown(
+			final DebriefFormatLocation.brokenDown bLong = new DebriefFormatLocation.brokenDown(
 					location.getLong(), false);
 
 			_latDeg = _origLatDeg = "" + bLat.deg;
@@ -263,19 +263,19 @@ public class LatLongHelper extends EditorHelper
 
 		}
 
-		public void addPropertyChangeListener(PropertyChangeListener listener)
+		public void addPropertyChangeListener(final PropertyChangeListener listener)
 		{
 			_pSupport.addPropertyChangeListener(listener);
 		}
 
-		public void removePropertyChangeListener(PropertyChangeListener listener)
+		public void removePropertyChangeListener(final PropertyChangeListener listener)
 		{
 			_pSupport.removePropertyChangeListener(listener);
 		}
 
-		private void firePropertyChanged(String type)
+		private void firePropertyChanged(final String type)
 		{
-			PropertyChangeEvent event = new PropertyChangeEvent(this, type,
+			final PropertyChangeEvent event = new PropertyChangeEvent(this, type,
 					_originalLocation, getLocation());
 			_pSupport.firePropertyChange(event);
 		}
@@ -290,7 +290,7 @@ public class LatLongHelper extends EditorHelper
 			return descriptors;
 		}
 
-		public Object getPropertyValue(Object propName)
+		public Object getPropertyValue(final Object propName)
 		{
 			Object res = "";
 			if (ID_LAT_DEG.equals(propName))
@@ -332,7 +332,7 @@ public class LatLongHelper extends EditorHelper
 			{
 				res = getLocation();
 			}
-			catch (Exception e)
+			catch (final Exception e)
 			{
 				// fall back on the original value
 				CorePlugin.logError(Status.ERROR, "Failed to produce location", e);
@@ -349,7 +349,7 @@ public class LatLongHelper extends EditorHelper
 		/**
 		 * @see org.eclipse.ui.views.properties.IPropertySource#isPropertySet(Object)
 		 */
-		public boolean isPropertySet(Object propName)
+		public boolean isPropertySet(final Object propName)
 		{
 			boolean res = false;
 			if (ID_LAT_DEG.equals(propName))
@@ -374,7 +374,7 @@ public class LatLongHelper extends EditorHelper
 			return res;
 		}
 
-		public void resetPropertyValue(Object propName)
+		public void resetPropertyValue(final Object propName)
 		{
 			if (ID_LAT_DEG.equals(propName))
 				_latDeg = new String(_origLatDeg);
@@ -396,7 +396,7 @@ public class LatLongHelper extends EditorHelper
 				_depth = new WorldDistance(_origDepth);
 		}
 
-		public void setPropertyValue(Object propName, Object value)
+		public void setPropertyValue(final Object propName, final Object value)
 		{
 			if (ID_LAT_DEG.equals(propName))
 				_latDeg = new String((String) value);
@@ -406,7 +406,7 @@ public class LatLongHelper extends EditorHelper
 				_latSec = new String((String) value);
 			else if (ID_LAT_HEM.equals(propName))
 			{
-				int index = ((Integer) value).intValue();
+				final int index = ((Integer) value).intValue();
 				_latHem = _latCats[index];
 			}
 			else if (ID_LONG_DEG.equals(propName))
@@ -417,7 +417,7 @@ public class LatLongHelper extends EditorHelper
 				_longSec = new String((String) value);
 			else if (ID_LONG_HEM.equals(propName))
 			{
-				int index = ((Integer) value).intValue();
+				final int index = ((Integer) value).intValue();
 				_longHem = _longCats[index];
 			}
 			else if (ID_DEPTH.equals(propName))
@@ -446,18 +446,18 @@ public class LatLongHelper extends EditorHelper
 			try
 			{
 				// produce a new location from our data values
-				double dLatDeg = Double.parseDouble(_latDeg);
-				double dLatMin = Double.parseDouble(_latMin);
-				double dLatSec = Double.parseDouble(_latSec);
-				double dLongDeg = Double.parseDouble(_longDeg);
-				double dLongMin = Double.parseDouble(_longMin);
-				double dLongSec = Double.parseDouble(_longSec);
+				final double dLatDeg = Double.parseDouble(_latDeg);
+				final double dLatMin = Double.parseDouble(_latMin);
+				final double dLatSec = Double.parseDouble(_latSec);
+				final double dLongDeg = Double.parseDouble(_longDeg);
+				final double dLongMin = Double.parseDouble(_longMin);
+				final double dLongSec = Double.parseDouble(_longSec);
 
 				res = new WorldLocation(dLatDeg, dLatMin, dLatSec, _latHem.charAt(0),
 						dLongDeg, dLongMin, dLongSec, _longHem.charAt(0), depth);
 
 			}
-			catch (NumberFormatException ee)
+			catch (final NumberFormatException ee)
 			{
 				CorePlugin.logError(Status.ERROR,
 						"Failed to correctly parse double in lat helper", ee);
@@ -467,7 +467,7 @@ public class LatLongHelper extends EditorHelper
 			return res;
 		}
 
-		public boolean isPropertyResettable(Object id)
+		public boolean isPropertyResettable(final Object id)
 		{
 			// both parameters are resettable. cool.
 			return true;
@@ -487,7 +487,7 @@ public class LatLongHelper extends EditorHelper
 		 * 
 		 * @param cellParent
 		 */
-		public PasteLocationDialogCellEditor(Composite cellParent)
+		public PasteLocationDialogCellEditor(final Composite cellParent)
 		{
 			super(cellParent);
 		}
@@ -501,19 +501,19 @@ public class LatLongHelper extends EditorHelper
 		 *          the parent control we belong to
 		 * @return
 		 */
-		protected Object openDialogBox(Control cellEditorWindow)
+		protected Object openDialogBox(final Control cellEditorWindow)
 		{
 			LatLongPropertySource output = null;
 
 			// right, see what's on the clipboard
 			// right, copy the location to the clipboard
-			Clipboard clip = CorePlugin.getDefault().getClipboard();
-			Object val = clip.getContents(TextTransfer.getInstance());
+			final Clipboard clip = CorePlugin.getDefault().getClipboard();
+			final Object val = clip.getContents(TextTransfer.getInstance());
 			if (val != null)
 			{
-				String txt = (String) val;
+				final String txt = (String) val;
 				// cool, get the text
-				WorldLocation loc = CorePlugin.fromClipboard(txt);
+				final WorldLocation loc = CorePlugin.fromClipboard(txt);
 
 				if (loc != null)
 				{
@@ -551,9 +551,9 @@ public class LatLongHelper extends EditorHelper
 		 *          the parent control
 		 * @return the new button control
 		 */
-		protected Button createButton(Composite parent)
+		protected Button createButton(final Composite parent)
 		{
-			Button result = super.createButton(parent);
+			final Button result = super.createButton(parent);
 			result.setText("Paste");
 			return result;
 		}

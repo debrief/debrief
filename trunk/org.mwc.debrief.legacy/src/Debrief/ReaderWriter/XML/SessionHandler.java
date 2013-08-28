@@ -17,9 +17,9 @@ abstract public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
   private Debrief.GUI.Frames.Session _session;
   //  private MWC.Algorithms.PlainProjection _projection;
 
-  public SessionHandler(Debrief.GUI.Frames.Application theDestination,
-                        Debrief.GUI.Frames.Session theSession,
-                        String fileName)
+  public SessionHandler(final Debrief.GUI.Frames.Application theDestination,
+                        final Debrief.GUI.Frames.Session theSession,
+                        final String fileName)
   {
     // inform our parent what type of class we are
     super("session");
@@ -62,19 +62,19 @@ abstract public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
 
   abstract public void addSession(Debrief.GUI.Frames.Session data);
 
-  public static void exportThis(Debrief.GUI.Frames.Session session, org.w3c.dom.Element parent,
-                                org.w3c.dom.Document doc)
+  public static void exportThis(final Debrief.GUI.Frames.Session session, final org.w3c.dom.Element parent,
+                                final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eSession = doc.createElement("session");
+    final org.w3c.dom.Element eSession = doc.createElement("session");
 
     // now the Layers
     DebriefLayersHandler.exportThis(session, eSession, doc);
 
     // now the projection
-    Debrief.GUI.Views.PlainView pl = session.getCurrentView();
+    final Debrief.GUI.Views.PlainView pl = session.getCurrentView();
     if (pl instanceof Debrief.GUI.Views.AnalysisView)
     {
-      Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) pl;
+      final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) pl;
       ProjectionHandler.exportProjection(av.getChart().getCanvas().getProjection(), eSession, doc);
     }
 

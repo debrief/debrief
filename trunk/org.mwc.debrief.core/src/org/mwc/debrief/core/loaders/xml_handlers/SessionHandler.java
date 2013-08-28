@@ -40,8 +40,8 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";
 	private static ArrayList<LayerHandlerExtension> _extensionLoaders;
 
-	public SessionHandler(Layers _theLayers, final IControllableViewport view,
-			PlotEditor plot)
+	public SessionHandler(final Layers _theLayers, final IControllableViewport view,
+			final PlotEditor plot)
 	{
 		// inform our parent what type of class we are
 		super("session");
@@ -49,39 +49,39 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		// define our handlers
 		addHandler(new ProjectionHandler()
 		{
-			public void setProjection(PlainProjection proj)
+			public void setProjection(final PlainProjection proj)
 			{
 				view.setProjection(proj);
 			}
 		});
 		addHandler(new SWTGUIHandler(plot)
 		{
-			public void assignTracks(String primaryTrack,
-					Vector<String> secondaryTracks)
+			public void assignTracks(final String primaryTrack,
+					final Vector<String> secondaryTracks)
 			{
 				// see if we have our track data listener
 				if (view instanceof IAdaptable)
 				{
-					IAdaptable ad = (IAdaptable) view;
-					Object adaptee = ad
+					final IAdaptable ad = (IAdaptable) view;
+					final Object adaptee = ad
 							.getAdapter(org.mwc.cmap.core.DataTypes.TrackData.TrackManager.class);
 					if (adaptee != null)
 					{
-						TrackManager tl = (TrackManager) adaptee;
+						final TrackManager tl = (TrackManager) adaptee;
 						tl.assignTracks(primaryTrack, secondaryTracks);
 					}
 				}
 			}
 		});
 
-		DebriefLayersHandler layersHandler = new DebriefLayersHandler(_theLayers);
+		final DebriefLayersHandler layersHandler = new DebriefLayersHandler(_theLayers);
 
 		// ok, see if we have any extra layer handlers
-		ArrayList<LayerHandlerExtension> extraHandlers = loadLoaderExtensions(_theLayers);
-		for (Iterator<LayerHandlerExtension> iterator = extraHandlers.iterator(); iterator
+		final ArrayList<LayerHandlerExtension> extraHandlers = loadLoaderExtensions(_theLayers);
+		for (final Iterator<LayerHandlerExtension> iterator = extraHandlers.iterator(); iterator
 				.hasNext();)
 		{
-			LayerHandlerExtension thisE = (LayerHandlerExtension) iterator.next();
+			final LayerHandlerExtension thisE = (LayerHandlerExtension) iterator.next();
 
 			// just double check taht it's an MWCXMLReader object
 			if (thisE instanceof MWCXMLReader)
@@ -109,23 +109,23 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 	 * see if any extra right click handlers are defined
 	 * 
 	 */
-	private static ArrayList<LayerHandlerExtension> loadLoaderExtensions(Layers theLayers)
+	private static ArrayList<LayerHandlerExtension> loadLoaderExtensions(final Layers theLayers)
 	{
 		if (_extensionLoaders == null)
 		{
 			_extensionLoaders = new ArrayList<LayerHandlerExtension>();
 
-			IExtensionPoint point = Platform.getExtensionRegistry()
+			final IExtensionPoint point = Platform.getExtensionRegistry()
 					.getExtensionPoint(PLUGIN_ID, EXTENSION_POINT_ID);
 
-			IExtension[] extensions = point.getExtensions();
+			final IExtension[] extensions = point.getExtensions();
 			for (int i = 0; i < extensions.length; i++)
 			{
-				IExtension iExtension = extensions[i];
-				IConfigurationElement[] confE = iExtension.getConfigurationElements();
+				final IExtension iExtension = extensions[i];
+				final IConfigurationElement[] confE = iExtension.getConfigurationElements();
 				for (int j = 0; j < confE.length; j++)
 				{
-					IConfigurationElement iConfigurationElement = confE[j];
+					final IConfigurationElement iConfigurationElement = confE[j];
 					LayerHandlerExtension newInstance;
 					try
 					{
@@ -133,7 +133,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 								.createExecutableExtension("class");
 						_extensionLoaders.add(newInstance);
 					}
-					catch (CoreException e)
+					catch (final CoreException e)
 					{
 						CorePlugin.logError(Status.ERROR,
 								"Trouble whilst loading right-click handler extensions", e);
@@ -150,19 +150,19 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		// setGUIDetails(null);
 	}
 
-	public static void exportThis(PlotEditor thePlot, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
+	public static void exportThis(final PlotEditor thePlot, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc)
 	{
 		// ok, get the layers
-		Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 		exportTheseLayers(theLayers, thePlot, parent, doc);
 	}
 
-	public static void exportTheseLayers(Layers theLayers, PlotEditor thePlot,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportTheseLayers(final Layers theLayers, final PlotEditor thePlot,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
-		org.w3c.dom.Element eSession = doc.createElement("session");
+		final org.w3c.dom.Element eSession = doc.createElement("session");
 
 		// now the Layers
 		DebriefLayersHandler.exportThis(theLayers, eSession, doc, loadLoaderExtensions(theLayers));

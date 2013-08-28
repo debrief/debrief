@@ -22,18 +22,18 @@ public class ShearDragMode extends RotateDragMode
 		private WorldLocation _lastLoc;
 		private Cursor _hotspotCursor;
 
-		public ShearOperation(WorldLocation cursorLoc, WorldLocation origin,
-				CoreTMASegment segment, TrackWrapper parentTrack, Layers theLayers)
+		public ShearOperation(final WorldLocation cursorLoc, final WorldLocation origin,
+				final CoreTMASegment segment, final TrackWrapper parentTrack, final Layers theLayers)
 		{
 			super(cursorLoc, origin, segment, parentTrack, theLayers);
 		}
 
-		public void shift(WorldVector vector)
+		public void shift(final WorldVector vector)
 		{
 			// find out where the cursor currently is
 			workingLoc.addToMe(vector);
 
-			CoreTMASegment seg = (CoreTMASegment) _segment;
+			final CoreTMASegment seg = (CoreTMASegment) _segment;
 
 			// undo the previous turn
 			if (_lastLoc != null)
@@ -69,15 +69,15 @@ public class ShearDragMode extends RotateDragMode
 	}
 
 	@Override
-	protected DraggableItem getEndOperation(WorldLocation cursorLoc,
-			TrackSegment seg, FixWrapper subject, TrackWrapper parent, Layers theLayers)
+	protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
+			final TrackSegment seg, final FixWrapper subject, final TrackWrapper parent, final Layers theLayers)
 	{
 		return new ShearOperation(cursorLoc, subject.getFixLocation(),
 				(CoreTMASegment) seg, parent, theLayers);
 	}
 
 	@Override
-	protected boolean isAcceptable(TrackSegment seg)
+	protected boolean isAcceptable(final TrackSegment seg)
 	{
 		return (seg instanceof CoreTMASegment);
 	}

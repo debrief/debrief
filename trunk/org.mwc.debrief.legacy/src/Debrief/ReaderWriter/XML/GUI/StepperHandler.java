@@ -20,8 +20,8 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class StepperHandler implements GUIHandler.ComponentCreator
 {
 
-  public final void makeThis(Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
-                             Debrief.GUI.Views.AnalysisView _analysisView)
+  public final void makeThis(final Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
+                             final Debrief.GUI.Views.AnalysisView _analysisView)
   {
     String val = null;
 
@@ -32,10 +32,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     }
 
     // right. just do some quick checking to ensure we have the right data
-    AnalysisTote theTote = _analysisView.getTote();
+    final AnalysisTote theTote = _analysisView.getTote();
 
     //////////////////////////////////////////////////////////////
-    String cursor = (String) details.properties.get("Cursor");
+    final String cursor = (String) details.properties.get("Cursor");
     if (cursor != null)
     {
       // set the cursor
@@ -45,11 +45,11 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       // is this the snail cursor?
       if (cursor.equals(SnailPainter.SNAIL_NAME))
       {
-        String vector_stretch = (String) details.properties.get("VectorStretch");
+        final String vector_stretch = (String) details.properties.get("VectorStretch");
         if (vector_stretch != null)
         {
           // set the cursor
-          SnailPainter sp = (SnailPainter) theTote.getStepper().getCurrentPainter();
+          final SnailPainter sp = (SnailPainter) theTote.getStepper().getCurrentPainter();
           sp.setVectorStretch(Double.valueOf(vector_stretch).doubleValue());
         }
       }
@@ -57,7 +57,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     }
 
     //////////////////////////////////////////////////////////////
-    String dateFormat = (String) details.properties.get("DateFormat");
+    final String dateFormat = (String) details.properties.get("DateFormat");
     if (dateFormat != null)
     {
       // set the cursor
@@ -65,7 +65,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     }
 
     //////////////////////////////////////////////////////////////
-    String highlighter = (String) details.properties.get("Highlighter");
+    final String highlighter = (String) details.properties.get("Highlighter");
     if (highlighter != null)
     {
       // set the cursor
@@ -73,7 +73,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     }
 
     //////////////////////////////////////////////////////////////
-    String start_time = (String) details.properties.get("Toolbox_Start_Time");
+    final String start_time = (String) details.properties.get("Toolbox_Start_Time");
     if (start_time != null)
     {
       HiResDate startTime = null;
@@ -85,7 +85,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     }
 
     //////////////////////////////////////////////////////////////
-    String end_time = (String) details.properties.get("Toolbox_End_Time");
+    final String end_time = (String) details.properties.get("Toolbox_End_Time");
     if (end_time != null)
     {
       HiResDate endTime = null;
@@ -98,21 +98,21 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     }
 
     //////////////////////////////////////////////////////////////
-    String tZero = (String) details.properties.get("TimeZero");
+    final String tZero = (String) details.properties.get("TimeZero");
     if (tZero != null)
     {
       // get a date from this
-      HiResDate dt = DebriefFormatDateTime.parseThis(tZero);
+      final HiResDate dt = DebriefFormatDateTime.parseThis(tZero);
 
       // set the cursor
       _analysisView.getTote().getStepper().setTimeZero(dt);
     }
     //////////////////////////////////////////////////////////////
-    String currentTime = (String) details.properties.get("CurrentTime");
+    final String currentTime = (String) details.properties.get("CurrentTime");
     if (currentTime != null)
     {
       // and set the time
-      HiResDate dtg = DebriefFormatDateTime.parseThis(currentTime);
+      final HiResDate dtg = DebriefFormatDateTime.parseThis(currentTime);
 
       // did we find a valid dtg?
       if (dtg != null)
@@ -123,7 +123,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     if (val != null)
     {
       // set the auto step to this number of millis
-      int len = Integer.valueOf(val).intValue();
+      final int len = Integer.valueOf(val).intValue();
       _analysisView.getTote().getStepper().setAutoStep(len);
     }
 
@@ -135,10 +135,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       // set the large step to this number of millis
       try
       {
-        double len = MWCXMLReaderWriter.readThisDouble(val);
+        final double len = MWCXMLReaderWriter.readThisDouble(val);
         _analysisView.getTote().getStepper().setStepLarge((long) len * 1000);
       }
-      catch (java.text.ParseException pe)
+      catch (final java.text.ParseException pe)
       {
         MWC.Utilities.Errors.Trace.trace(pe, "Failed reading large step size value is:" + val);
       }
@@ -152,10 +152,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       try
       {
         // set the small step to this number of millis
-        double len = MWCXMLReaderWriter.readThisDouble(val);
+        final double len = MWCXMLReaderWriter.readThisDouble(val);
         _analysisView.getTote().getStepper().setStepSmall((long) len * 1000);
       }
-      catch (java.text.ParseException pe)
+      catch (final java.text.ParseException pe)
       {
         MWC.Utilities.Errors.Trace.trace(pe, "Failed reading small step size value is:" + val);
       }
@@ -168,10 +168,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       // set the large step to this number of millis
       try
       {
-        double len = MWCXMLReaderWriter.readThisDouble(val);
+        final double len = MWCXMLReaderWriter.readThisDouble(val);
         _analysisView.getTote().getStepper().setStepLarge((long) len);
       }
-      catch (java.text.ParseException pe)
+      catch (final java.text.ParseException pe)
       {
         MWC.Utilities.Errors.Trace.trace(pe, "Failed reading large step size value is:" + val);
       }
@@ -185,10 +185,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       try
       {
         // set the small step to this number of millis
-        double len = MWCXMLReaderWriter.readThisDouble(val);
+        final double len = MWCXMLReaderWriter.readThisDouble(val);
         _analysisView.getTote().getStepper().setStepSmall((long) len);
       }
-      catch (java.text.ParseException pe)
+      catch (final java.text.ParseException pe)
       {
         MWC.Utilities.Errors.Trace.trace(pe, "Failed reading small step size value is:" + val);
       }
@@ -205,23 +205,23 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
   }
 
 
-  public final GUIHandler.ComponentDetails exportThis(Debrief.GUI.Frames.Session session)
+  public final GUIHandler.ComponentDetails exportThis(final Debrief.GUI.Frames.Session session)
   {
     // get the stepper
-    Debrief.GUI.Views.PlainView pv = session.getCurrentView();
+    final Debrief.GUI.Views.PlainView pv = session.getCurrentView();
     if (pv instanceof Debrief.GUI.Views.AnalysisView)
     {
-      Debrief.GUI.Tote.StepControl stepper = ((Debrief.GUI.Views.AnalysisView) pv).getTote().getStepper();
+      final Debrief.GUI.Tote.StepControl stepper = ((Debrief.GUI.Views.AnalysisView) pv).getTote().getStepper();
 
       // collate the details for this component
-      GUIHandler.ComponentDetails details = new GUIHandler.ComponentDetails();
+      final GUIHandler.ComponentDetails details = new GUIHandler.ComponentDetails();
 
-      MWC.GUI.StepperListener theStepper = stepper.getCurrentPainter();
+      final MWC.GUI.StepperListener theStepper = stepper.getCurrentPainter();
 
       // is this the snail painter?
       if (theStepper instanceof SnailPainter)
       {
-        SnailPainter sp = (SnailPainter) theStepper;
+        final SnailPainter sp = (SnailPainter) theStepper;
         details.addProperty("VectorStretch", MWCXMLReader.writeThis(sp.getVectorStretch()));
       }
 
@@ -241,7 +241,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       details.addProperty("AutoStep", MWCXMLReader.writeThis(stepper.getAutoStep()));
       details.addProperty("DateFormat", stepper.getDateFormat());
       // the current DTG
-      HiResDate cTime = stepper.getCurrentTime();
+      final HiResDate cTime = stepper.getCurrentTime();
       if (cTime != null)
         details.addProperty("CurrentTime", MWCXMLReader.writeThis(cTime));
       // the T-zero, if set
@@ -249,10 +249,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
         details.addProperty("TimeZero", MWCXMLReader.writeThis(stepper.getTimeZero()));
       details.addProperty("Highlighter", stepper.getCurrentHighlighter().getName());
       // what's the time?
-      HiResDate theStartTime = stepper.getToolboxStartTime();
+      final HiResDate theStartTime = stepper.getToolboxStartTime();
       if (theStartTime != null)
         details.addProperty("Toolbox_Start_Time", DebriefFormatDateTime.toStringHiRes(theStartTime));
-      HiResDate theEndTime = stepper.getToolboxEndTime();
+      final HiResDate theEndTime = stepper.getToolboxEndTime();
       if (theEndTime != null)
         details.addProperty("Toolbox_End_Time", DebriefFormatDateTime.toStringHiRes(theEndTime));
 

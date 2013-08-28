@@ -48,7 +48,7 @@ public class View8211
 
 	protected String pszFilename = null;
 
-	public View8211(String filename, boolean fspt_repeating)
+	public View8211(final String filename, final boolean fspt_repeating)
 	{
 		pszFilename = filename;
 		bFSPTHack = fspt_repeating;
@@ -67,7 +67,7 @@ public class View8211
 
 			if (bFSPTHack)
 			{
-				DDFFieldDefinition poFSPT = oModule.findFieldDefn("FSPT");
+				final DDFFieldDefinition poFSPT = oModule.findFieldDefn("FSPT");
 
 				if (poFSPT == null)
 					Debug.error("View8211: unable to find FSPT field to set repeating flag.");
@@ -93,7 +93,7 @@ public class View8211
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
-				Iterator<DDFField> iter = poRecord.iterator();
+				final Iterator<DDFField> iter = poRecord.iterator();
 				while (iter.hasNext())
 				{
 					viewRecordField((DDFField) iter.next());
@@ -101,7 +101,7 @@ public class View8211
 			}
 
 		}
-		catch (IOException ioe)
+		catch (final IOException ioe)
 		{
 			Debug.error(ioe.getMessage());
 			ioe.printStackTrace();
@@ -111,9 +111,9 @@ public class View8211
 	/**
 	 * Dump the contents of a field instance in a record.
 	 */
-	protected void viewRecordField(DDFField poField)
+	protected void viewRecordField(final DDFField poField)
 	{
-		DDFFieldDefinition poFieldDefn = poField.getFieldDefn();
+		final DDFFieldDefinition poFieldDefn = poField.getFieldDefn();
 
 		if (poFieldDefn.getName().equals("FSPT"))
 		{
@@ -148,10 +148,10 @@ public class View8211
 			for (int iSF = 0; iSF < poFieldDefn.getSubfieldCount(); iSF++)
 			{
 
-				DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
-				int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
+				final DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
+				final int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
 				nBytesRemaining -= nBytesConsumed;
-				byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
+				final byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
 				System.arraycopy(pachFieldData, nBytesConsumed, tempData, 0, tempData.length);
 				pachFieldData = tempData;
 			}
@@ -160,19 +160,19 @@ public class View8211
 
 	private static Integer _pendingName = null;
 
-	protected int viewSubfield(DDFSubfieldDefinition poSFDefn, byte[] pachFieldData,
-			int nBytesRemaining)
+	protected int viewSubfield(final DDFSubfieldDefinition poSFDefn, final byte[] pachFieldData,
+			final int nBytesRemaining)
 	{
 
-		MutableInt nBytesConsumed = new MutableInt();
+		final MutableInt nBytesConsumed = new MutableInt();
 
-		DDFDataType ddfdt = poSFDefn.getType();
+		final DDFDataType ddfdt = poSFDefn.getType();
 
 		if (ddfdt == DDFDataType.DDFInt)
 		{
 			final int fieldVal = poSFDefn.extractIntData(pachFieldData, nBytesRemaining,
 					nBytesConsumed);
-			String string = "&nbsp;&nbsp;&nbsp;" + poSFDefn.getName() + " = " + fieldVal;
+			final String string = "&nbsp;&nbsp;&nbsp;" + poSFDefn.getName() + " = " + fieldVal;
 			if (poSFDefn.getName().equals("RCNM"))
 			{
 				_pendingName = new Integer(fieldVal);
@@ -201,12 +201,12 @@ public class View8211
 		{
 			if (poSFDefn.getName().equals("NAME"))
 			{
-				String name = poSFDefn.extractStringData(pachFieldData, nBytesRemaining,
+				final String name = poSFDefn.extractStringData(pachFieldData, nBytesRemaining,
 						nBytesConsumed);
 				int rcnm = name.charAt(0);
 				if (rcnm == 8218)
 					rcnm = 130;
-				int rcid = name.charAt(1) + name.charAt(2) * 255 + name.charAt(3) * 255 * 255
+				final int rcid = name.charAt(1) + name.charAt(2) * 255 + name.charAt(3) * 255 * 255
 						+ name.charAt(4) * 255 * 255 * 255;
 				doo("&nbsp;&nbsp;&nbsp;" + poSFDefn.getName() + " = " + " rcnm:" + rcnm
 						+ " rcid:" + rcid + "<a href='#" + rcnm + "_" + rcid + "'>here</a>");
@@ -221,27 +221,28 @@ public class View8211
 		return nBytesConsumed.value;
 	}
 
-	public static void main(String[] argv)
+	public static void main(final String[] argv)
 	{
+		String[] args = argv.clone();
 
-		if (argv.length == 0)
+		if (args.length == 0)
 		{
-			argv = new String[] { "e:\\dev\\s57\\AU411141.000" };
+			args = new String[] { "e:\\dev\\s57\\AU411141.000" };
 		}
 		Debug.init();
 
 		String pszFilename = null;
 		boolean bFSPTHack = false;
 
-		for (int iArg = 0; iArg < argv.length; iArg++)
+		for (int iArg = 0; iArg < args.length; iArg++)
 		{
-			if (argv[iArg].equals("-fspt_repeating"))
+			if (args[iArg].equals("-fspt_repeating"))
 			{
 				bFSPTHack = true;
 			}
 			else
 			{
-				pszFilename = argv[iArg];
+				pszFilename = args[iArg];
 			}
 		}
 
@@ -257,7 +258,7 @@ public class View8211
 
 	private static FileWriter _so = null;
 
-	private static void doo(String val)
+	private static void doo(final String val)
 	{
 
 		try
@@ -293,7 +294,7 @@ public class View8211
 			}
 			_so.write(val + "<br>");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

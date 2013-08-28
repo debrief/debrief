@@ -34,7 +34,7 @@ public class GridEditorTable extends Composite
 
 	private boolean myOnlyShowVisiblePoints = true;
 
-	public GridEditorTable(Composite parent, GridEditorActionGroup actionGroup)
+	public GridEditorTable(final Composite parent, final GridEditorActionGroup actionGroup)
 	{
 		super(parent, SWT.NONE);
 		setTrackingSelection(true);
@@ -53,7 +53,7 @@ public class GridEditorTable extends Composite
 		myTableViewer.addSelectionChangedListener(new ISelectionChangedListener()
 		{
 
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				myActionContext.setSelection(myTableViewer.getSelection());
 			}
@@ -66,13 +66,13 @@ public class GridEditorTable extends Composite
 
 			private int myComputedHeight = -1;
 
-			public void handleEvent(Event event)
+			public void handleEvent(final Event event)
 			{
 				if (myComputedHeight < 0)
 				{
-					DateTime shouldFit = new DateTime(myTableViewer.getTable(), SWT.DATE
+					final DateTime shouldFit = new DateTime(myTableViewer.getTable(), SWT.DATE
 							| SWT.MEDIUM);
-					Point sizeToFit = shouldFit.computeSize(SWT.DEFAULT, SWT.DEFAULT,
+					final Point sizeToFit = shouldFit.computeSize(SWT.DEFAULT, SWT.DEFAULT,
 							true);
 					shouldFit.dispose();
 					myComputedHeight = sizeToFit.y;
@@ -82,7 +82,7 @@ public class GridEditorTable extends Composite
 		});
 	}
 
-	public void setTrackingSelection(boolean isTrackingSelection)
+	public void setTrackingSelection(final boolean isTrackingSelection)
 	{
 		myIsTrackingSelection = isTrackingSelection;
 	}
@@ -97,7 +97,7 @@ public class GridEditorTable extends Composite
 		return myOnlyShowVisiblePoints;
 	}
 
-	public void setOnlyShowVisible(boolean val)
+	public void setOnlyShowVisible(final boolean val)
 	{
 		myOnlyShowVisiblePoints = val;
 
@@ -105,12 +105,12 @@ public class GridEditorTable extends Composite
 		setInput((GriddableSeries) myTableViewer.getInput());
 	}
 
-	public void setColumnHeaderSelectionListener(SelectionListener listener)
+	public void setColumnHeaderSelectionListener(final SelectionListener listener)
 	{
 		myColumnHeaderSelectionListener = listener;
 	}
 
-	public void setInput(GriddableSeries series)
+	public void setInput(final GriddableSeries series)
 	{
 
 		// have we received real data?
@@ -148,7 +148,7 @@ public class GridEditorTable extends Composite
 
 		if (myColumnHeaderSelectionListener != null)
 		{
-			for (TableColumn next : myTableViewer.getTable().getColumns())
+			for (final TableColumn next : myTableViewer.getTable().getColumns())
 			{
 				next.addSelectionListener(myColumnHeaderSelectionListener);
 			}

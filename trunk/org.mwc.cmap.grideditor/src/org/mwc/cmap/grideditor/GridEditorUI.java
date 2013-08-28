@@ -37,7 +37,7 @@ public class GridEditorUI extends Composite
 
 	private ChartRefresher myChartRefresher;
 
-	public GridEditorUI(Composite parent, GridEditorActionGroup actionGroup)
+	public GridEditorUI(final Composite parent, final GridEditorActionGroup actionGroup)
 	{
 		super(parent, SWT.NONE);
 		setLayout(new FillLayout());
@@ -51,7 +51,7 @@ public class GridEditorUI extends Composite
 		{
 
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				if (e.widget instanceof TableColumn)
 				{
@@ -82,7 +82,7 @@ public class GridEditorUI extends Composite
 		return myChart;
 	}
 
-	public void inputSeriesChanged(GriddableSeries input)
+	public void inputSeriesChanged(final GriddableSeries input)
 	{
 		if (myInput == input)
 		{
@@ -103,9 +103,9 @@ public class GridEditorUI extends Composite
 		refreshSashForm();
 	}
 
-	private void updateChart(TableColumn tableColumn)
+	private void updateChart(final TableColumn tableColumn)
 	{
-		boolean shown = showChart(tableColumn);
+		final boolean shown = showChart(tableColumn);
 		myChart.setVisible(shown);
 		refreshSashForm();
 		myChart.forceRedraw();
@@ -118,24 +118,24 @@ public class GridEditorUI extends Composite
 		mySashForm.redraw();
 	}
 
-	private boolean showChart(TableColumn tableColumn)
+	private boolean showChart(final TableColumn tableColumn)
 	{
 		if (myInput == null)
 		{
 			return false;
 		}
-		TableModel.ColumnBase column = myTable.getTableModel().findColumnData(
+		final TableModel.ColumnBase column = myTable.getTableModel().findColumnData(
 				tableColumn);
 		if (column == null)
 		{
 			return false;
 		}
-		GriddableItemDescriptor descriptor = column.getDescriptor();
+		final GriddableItemDescriptor descriptor = column.getDescriptor();
 		if (descriptor == null)
 		{
 			return false;
 		}
-		ChartDataManager chartDataManager = createChartDataManager(descriptor);
+		final ChartDataManager chartDataManager = createChartDataManager(descriptor);
 		if (chartDataManager == null)
 		{
 			return false;
@@ -148,10 +148,10 @@ public class GridEditorUI extends Composite
 	}
 
 	public ChartDataManager createChartDataManager(
-			GriddableItemDescriptor descriptor)
+			final GriddableItemDescriptor descriptor)
 	{
 		// first try adapter manager - allows redefinition for some descriptor types
-		ChartDataManager adapatee = (ChartDataManager) Platform.getAdapterManager()
+		final ChartDataManager adapatee = (ChartDataManager) Platform.getAdapterManager()
 				.getAdapter(descriptor, ChartDataManager.class);
 		if (adapatee != null)
 		{
@@ -159,7 +159,7 @@ public class GridEditorUI extends Composite
 		}
 		if (ChartComponentFactory.isChartable(descriptor))
 		{
-			GriddableItemChartComponent chartable = ChartComponentFactory
+			final GriddableItemChartComponent chartable = ChartComponentFactory
 					.newChartComponent(descriptor);
 			return new Date2ValueManager(descriptor, chartable);
 		}
@@ -182,7 +182,7 @@ public class GridEditorUI extends Composite
 
 		private GriddableSeries myData;
 
-		public ChartRefresher(GriddableSeries data, ChartDataManager chartInput)
+		public ChartRefresher(final GriddableSeries data, final ChartDataManager chartInput)
 		{
 			myData = data;
 			myChartInput = chartInput;
@@ -199,7 +199,7 @@ public class GridEditorUI extends Composite
 			}
 		}
 
-		public void propertyChange(PropertyChangeEvent evt)
+		public void propertyChange(final PropertyChangeEvent evt)
 		{
 			if (myChartInput == null)
 			{

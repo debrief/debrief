@@ -15,7 +15,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	// in the fill methods. This ensures that the actions aren't recreated
 	// when fillActionBars is called with FILL_PROXY.
 
-	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
+	public ApplicationActionBarAdvisor(final IActionBarConfigurer configurer) {
 		super(configurer);
 	}
 

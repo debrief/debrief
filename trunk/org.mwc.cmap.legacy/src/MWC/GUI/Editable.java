@@ -784,9 +784,9 @@ public interface Editable
         res = new MethodDescriptor(m);
         res.setDisplayName(displayName);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-      	String msg = "Failed to find method " + name + " for " + theClass;
+      	final String msg = "Failed to find method " + name + " for " + theClass;
         MWC.Utilities.Errors.Trace.trace(e, msg);
       }
       return res;
@@ -835,7 +835,7 @@ public interface Editable
   	 * @param _class
   	 * @throws IntrospectionException
   	 */
-		public DeprecatedPropertyDescriptor(String name, Class<?> _class)  throws IntrospectionException
+		public DeprecatedPropertyDescriptor(final String name, final Class<?> _class)  throws IntrospectionException
 		{
 			super(name, _class);
 		}
@@ -938,12 +938,12 @@ public interface Editable
           {
             newInstance = editorClass.newInstance();
           }
-          catch (InstantiationException e)
+          catch (final InstantiationException e)
           {
             e.printStackTrace(); // To change body of catch statement use File
                                   // | Settings | File Templates.
           }
-          catch (IllegalAccessException e)
+          catch (final IllegalAccessException e)
           {
             e.printStackTrace(); // To change body of catch statement use File
                                   // | Settings | File Templates.
@@ -994,15 +994,15 @@ public interface Editable
             try
             {
               // sort out the getter
-              Object[] dummyArgument = null;
+              final Object[] dummyArgument = null;
               res = getter.invoke(data, dummyArgument);
             }
-            catch (InvocationTargetException ie)
+            catch (final InvocationTargetException ie)
             {
               Assert.fail("missing getter for " + toBeTested + " called:" + getter.getName() + " property:"
                   + p.getDisplayName() + " (" + et.getClass() + ") because:" + ie.getCause());
             }
-            catch (IllegalAccessException al)
+            catch (final IllegalAccessException al)
             {
               Assert.fail("getter not visible for " + toBeTested);
             }
@@ -1013,7 +1013,7 @@ public interface Editable
               // sort out the setter
               setter.invoke(data, params);
             }
-            catch (InvocationTargetException ie)
+            catch (final InvocationTargetException ie)
             {
               // just check that we were using a valid value for the res
               if (res != null)
@@ -1027,7 +1027,7 @@ public interface Editable
                     .println("######## null value returned form getter for "
                         + p.getReadMethod().getName());
             }
-            catch (IllegalAccessException al)
+            catch (final IllegalAccessException al)
             {
               Assert.fail("setter not visible for " + toBeTested);
             }

@@ -72,7 +72,7 @@ public class LineType
      *     {@link LocationType }
      *     
      */
-    public void setTl(LocationType value) {
+    public void setTl(final LocationType value) {
         this.tl = value;
     }
 
@@ -96,7 +96,7 @@ public class LineType
      *     {@link LocationType }
      *     
      */
-    public void setBr(LocationType value) {
+    public void setBr(final LocationType value) {
         this.br = value;
     }
 
@@ -120,7 +120,7 @@ public class LineType
      *     {@link Boolean }
      *     
      */
-    public void setArrowAtEnd(Boolean value) {
+    public void setArrowAtEnd(final Boolean value) {
         this.arrowAtEnd = value;
     }
 

@@ -11,29 +11,29 @@ import MWC.GenericData.WorldLocation;
 public class AreaFeature extends LineFeature
 {
 
-	public AreaFeature(String name, Double minScale, Color defaultColor)
+	public AreaFeature(final String name, final Double minScale, final Color defaultColor)
 	{
 		super(name, minScale, defaultColor);
 	}
 
-	public void doPaint(CanvasType dest)
+	public void doPaint(final CanvasType dest)
 	{
 		dest.setColor(getColor());
-		for (Iterator<Vector<WorldLocation>> iterator = _lines.iterator(); iterator.hasNext();)
+		for (final Iterator<Vector<WorldLocation>> iterator = _lines.iterator(); iterator.hasNext();)
 		{
-			Vector<WorldLocation> thisLine = (Vector<WorldLocation>) iterator.next();
+			final Vector<WorldLocation> thisLine = (Vector<WorldLocation>) iterator.next();
 
-			int npts = thisLine.size();
-			int[] xpts = new int[npts];
-			int[] ypts = new int[npts];
+			final int npts = thisLine.size();
+			final int[] xpts = new int[npts];
+			final int[] ypts = new int[npts];
 
 			int ctr = 0;
 
-			for (Iterator<WorldLocation> iter = thisLine.iterator(); iter.hasNext();)
+			for (final Iterator<WorldLocation> iter = thisLine.iterator(); iter.hasNext();)
 			{
-				WorldLocation loc = (WorldLocation) iter.next();
+				final WorldLocation loc = (WorldLocation) iter.next();
 
-				Point pt = new Point(dest.toScreen(loc));
+				final Point pt = new Point(dest.toScreen(loc));
 				xpts[ctr] = pt.x;
 				ypts[ctr] = pt.y;
 				ctr++;

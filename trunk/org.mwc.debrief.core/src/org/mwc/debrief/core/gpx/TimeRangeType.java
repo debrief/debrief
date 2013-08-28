@@ -61,7 +61,7 @@ public class TimeRangeType {
      *     {@link String }
      *     
      */
-    public void setEnd(String value) {
+    public void setEnd(final String value) {
         this.end = value;
     }
 
@@ -85,7 +85,7 @@ public class TimeRangeType {
      *     {@link String }
      *     
      */
-    public void setStart(String value) {
+    public void setStart(final String value) {
         this.start = value;
     }
 

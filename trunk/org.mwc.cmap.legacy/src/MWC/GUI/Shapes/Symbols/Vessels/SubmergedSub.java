@@ -69,7 +69,7 @@ public class SubmergedSub extends PlainSymbol {
    */
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
     return res;
   }
 
@@ -79,7 +79,7 @@ public class SubmergedSub extends PlainSymbol {
    * @param dest parameter for paint
    *
    */
-  public void paint(CanvasType dest, WorldLocation centre)
+  public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 90.0 / 180 * Math.PI);
   }
@@ -92,59 +92,59 @@ public class SubmergedSub extends PlainSymbol {
    * @param theLocation centre for symbol
    * @param direction direction in Radians
    */
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
     dest.setColor(getColor());
 
     // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+    final java.awt.Point centre = dest.toScreen(theLocation);
 
-    int wid = (int)(2 * getScaleVal());
+    final int wid = (int)(2 * getScaleVal());
 
     // start with the centre object
     dest.fillOval(centre.x - wid/4, centre.y - wid/4, wid/2, wid/2);
 
-    double _theMaxima = getScaleVal() * 5;
-    double _theMinima = getScaleVal() * 2;
+    final double _theMaxima = getScaleVal() * 5;
+    final double _theMinima = getScaleVal() * 2;
 
     // number of line segments to draw
-    int NUM_SEGMENTS = 20;
+    final int NUM_SEGMENTS = 20;
 
     // the centre of the ellipse
     java.awt.Point lastPoint = null;
 
     // produce the orientation in radians
-    double orient = direction;
+    final double orient = direction;
 
     for (int i=0; i<=NUM_SEGMENTS; i++)
     {
       // produce the current bearing
-      double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
+      final double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
 
 
       // first produce a standard ellipse of the correct size
-      double x1 = Math.sin(this_brg) * _theMaxima;
+      final double x1 = Math.sin(this_brg) * _theMaxima;
       double y1 = Math.cos(this_brg) * _theMinima;
 
       // now produce the range out to the edge of the ellipse at
       // this point
-      double r =  Math.sqrt(Math.pow(x1,2)+Math.pow(y1,2));
+      final double r =  Math.sqrt(Math.pow(x1,2)+Math.pow(y1,2));
 
       // to prevent div/0 error in atan, make y1 small if zero
       if(y1 == 0)
         y1 = 0.0000001;
 
       // and the new bearing to the correct point on the ellipse
-      double tr = Math.atan2(y1,x1) + orient;
+      final double tr = Math.atan2(y1,x1) + orient;
 
 
       // actually add the new rotation
-      double x2 = r * Math.sin(tr);
-      double y2 = r * Math.cos(tr);
+      final double x2 = r * Math.sin(tr);
+      final double y2 = r * Math.cos(tr);
 
       // add offsets to centre point
-      java.awt.Point p2 = new java.awt.Point(centre);
+      final java.awt.Point p2 = new java.awt.Point(centre);
       p2.translate((int)x2, -(int)y2);
 
       if(lastPoint == null)
@@ -165,7 +165,7 @@ public class SubmergedSub extends PlainSymbol {
     }
 
     // also draw the stalk which represents the conning tower
-    double orient_perpendicular = orient + Math.PI/2;
+    final double orient_perpendicular = orient + Math.PI/2;
     double stalkX = Math.sin(orient_perpendicular);
     double stalkY = Math.cos(orient_perpendicular);
 

@@ -259,7 +259,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 					if (res == null)
 					{
 						// no, initialise it
-						WorldLocation startOfLine = fw.getCalculatedOrigin(_myHost);
+						final WorldLocation startOfLine = fw.getCalculatedOrigin(_myHost);
 
 						// we may not have a sensor-data origin, since the
 						// sensor may be out of the time period of the track
@@ -276,7 +276,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 					if (fw.getRange() != null)
 					{
-						WorldLocation farEnd = fw.getFarEnd(null);
+						final WorldLocation farEnd = fw.getFarEnd(null);
 						if (farEnd != null)
 						{
 							if (res == null)
@@ -332,15 +332,15 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		}
 	}
 
-	public final void append(Layer theLayer)
+	public final void append(final Layer theLayer)
 	{
 		if (theLayer instanceof SensorWrapper)
 		{
-			SensorWrapper other = (SensorWrapper) theLayer;
-			SortedSet<Editable> otherC = other._myContacts;
-			for (Iterator<Editable> iterator = otherC.iterator(); iterator.hasNext();)
+			final SensorWrapper other = (SensorWrapper) theLayer;
+			final SortedSet<Editable> otherC = other._myContacts;
+			for (final Iterator<Editable> iterator = otherC.iterator(); iterator.hasNext();)
 			{
-				SensorContactWrapper thisC = (SensorContactWrapper) iterator.next();
+				final SensorContactWrapper thisC = (SensorContactWrapper) iterator.next();
 				this.add(thisC);
 			}
 
@@ -494,7 +494,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 				while ((it.hasNext()) && (!finished))
 				{
 					final SensorContactWrapper scw = (SensorContactWrapper) it.next();
-					HiResDate thisDate = scw.getTime();
+					final HiResDate thisDate = scw.getTime();
 					if (thisDate.lessThan(DTG))
 					{
 						// before it, ignore!
@@ -566,7 +566,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * 
 	 * @param defaultColor
 	 */
-	public void setDefaultColor(Color defaultColor)
+	public void setDefaultColor(final Color defaultColor)
 	{
 		super.setColor(defaultColor);
 	}
@@ -580,7 +580,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		return _wormInHole;
 	}
 
-	public void setWormInHole(Boolean wormInHole)
+	public void setWormInHole(final Boolean wormInHole)
 	{
 		// see if this is a changed setting
 		if (wormInHole != _wormInHole)
@@ -598,7 +598,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		return _sensorOffset;
 	}
 
-	public void setSensorOffset(WorldDistance.ArrayLength sensorOffset)
+	public void setSensorOffset(final WorldDistance.ArrayLength sensorOffset)
 	{
 		_sensorOffset = sensorOffset;
 
@@ -631,7 +631,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * override the parent method - since we want to reset the origin for our
 	 * child sensor data items
 	 */
-	public void setHost(TrackWrapper host)
+	public void setHost(final TrackWrapper host)
 	{
 		super.setHost(host);
 
@@ -692,7 +692,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -896,7 +896,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 			// ah-ha! what about a contact between two fixes
 			cal.set(2001, 10, 4, 4, 4, 26);
-			HiResDate theTime = new HiResDate(cal.getTime().getTime(), 0);
+			final HiResDate theTime = new HiResDate(cal.getTime().getTime(), 0);
 			list = sensor.getNearestTo(theTime);
 			nearest = (SensorContactWrapper) list[0];
 			nearestPoint = nearest.getCalculatedOrigin(track);
@@ -994,14 +994,14 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 		public void testMultipleContacts()
 		{
-			SensorWrapper sw = new SensorWrapper("bbb");
-			SensorContactWrapper sc1 = new SensorContactWrapper("bbb", new HiResDate(
+			final SensorWrapper sw = new SensorWrapper("bbb");
+			final SensorContactWrapper sc1 = new SensorContactWrapper("bbb", new HiResDate(
 					0, 9), null, null, null, null, "first", 0, sw.getName());
-			SensorContactWrapper sc2 = new SensorContactWrapper("bbb", new HiResDate(
+			final SensorContactWrapper sc2 = new SensorContactWrapper("bbb", new HiResDate(
 					0, 12), null, null, null, null, "first", 0, sw.getName());
-			SensorContactWrapper sc3 = new SensorContactWrapper("bbb", new HiResDate(
+			final SensorContactWrapper sc3 = new SensorContactWrapper("bbb", new HiResDate(
 					0, 7), null, null, null, null, "first", 0, sw.getName());
-			SensorContactWrapper sc4 = new SensorContactWrapper("bbb", new HiResDate(
+			final SensorContactWrapper sc4 = new SensorContactWrapper("bbb", new HiResDate(
 					0, 13), null, null, null, null, "first", 0, sw.getName());
 
 			sw.add(sc1);
@@ -1031,21 +1031,21 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		Editable res = null;
 
 		// check we have an item before we edit it
-		Enumeration<Editable> eles = this.elements();
+		final Enumeration<Editable> eles = this.elements();
 		if (eles.hasMoreElements())
 			res = eles.nextElement();
 		return res;
 	}
 
-	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	public TimeStampedDataItem makeCopy(final TimeStampedDataItem item)
 	{
 		if (false == item instanceof SensorContactWrapper)
 		{
 			throw new IllegalArgumentException(
 					"I am expecting the Observation's, don't know how to copy " + item);
 		}
-		SensorContactWrapper template = (SensorContactWrapper) item;
-		SensorContactWrapper result = new SensorContactWrapper();
+		final SensorContactWrapper template = (SensorContactWrapper) item;
+		final SensorContactWrapper result = new SensorContactWrapper();
 		result.setAmbiguousBearing(template.getAmbiguousBearing());
 		result.setBearing(template.getBearing());
 		result.setColor(template.getColor());
@@ -1070,20 +1070,20 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * 
 	 */
 	protected PlottableWrapperWithTimeAndOverrideableColor createItem(
-			PlottableWrapperWithTimeAndOverrideableColor last,
-			PlottableWrapperWithTimeAndOverrideableColor next,
-			LinearInterpolator interp, long tNow)
+			final PlottableWrapperWithTimeAndOverrideableColor last,
+			final PlottableWrapperWithTimeAndOverrideableColor next,
+			final LinearInterpolator interp, final long tNow)
 	{
-		SensorContactWrapper _next = (SensorContactWrapper) next;
-		SensorContactWrapper _last = (SensorContactWrapper) last;
+		final SensorContactWrapper _next = (SensorContactWrapper) next;
+		final SensorContactWrapper _last = (SensorContactWrapper) last;
 
-		double brg = interp.interp(_last.getBearing(), _next.getBearing());
+		final double brg = interp.interp(_last.getBearing(), _next.getBearing());
 		double ambig = 0;
 		// note - don't bother checking for has ambig, just do the interpolation
 		ambig = interp.interp(_last.getAmbiguousBearing(),
 				_next.getAmbiguousBearing());
 
-		double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
+		final double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
 		// do we have range?
 		WorldDistance theRng = null;
 		if ((_last.getRange() != null) && (_next.getRange() != null))
@@ -1092,15 +1092,15 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			if (_last.getRange().getUnits() == _last.getRange().getUnits())
 			{
 				// they're in the same units, stick with it.
-				int theUnits = _last.getRange().getUnits();
-				double theVal = interp.interp(
+				final int theUnits = _last.getRange().getUnits();
+				final double theVal = interp.interp(
 						_last.getRange().getValue(), _next.getRange().getValue());
 				theRng = new WorldDistance(theVal, theUnits);
 			}
 			else
 			{
 				// they're in different units, do it all in degrees
-				double rngDegs = interp.interp(
+				final double rngDegs = interp.interp(
 						_last.getRange().getValueIn(WorldDistance.DEGS), _next.getRange()
 								.getValueIn(WorldDistance.DEGS));
 				theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
@@ -1110,15 +1110,15 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		WorldLocation origin = null;
 		if ((_last.getOrigin() != null) && (_next.getOrigin() != null))
 		{
-			double orLat = interp.interp(_last.getOrigin().getLat(), _next
+			final double orLat = interp.interp(_last.getOrigin().getLat(), _next
 					.getOrigin().getLat());
-			double orLong = interp.interp(_last.getOrigin().getLong(), _next
+			final double orLong = interp.interp(_last.getOrigin().getLong(), _next
 					.getOrigin().getLong());
 			origin = new WorldLocation(orLat, orLong, 0);
 		}
 
 		// now, go create the new data item
-		SensorContactWrapper newS = new SensorContactWrapper(_last.getTrackName(),
+		final SensorContactWrapper newS = new SensorContactWrapper(_last.getTrackName(),
 				new HiResDate(0, tNow), theRng, brg, ambig, freq, origin,
 				_last.getActualColor(), _last.getName(), _last.getLineStyle()
 						.intValue(), _last.getSensorName());
@@ -1141,14 +1141,14 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 *          the actual selected items
 	 * @return sufficient information to undo the merge
 	 */
-	public static int mergeSensors(final Editable targetE, Layers theLayers,
+	public static int mergeSensors(final Editable targetE, final Layers theLayers,
 			final Layer parent, final Editable[] subjects)
 	{
-		SensorWrapper target = (SensorWrapper) targetE;
+		final SensorWrapper target = (SensorWrapper) targetE;
 
 		for (int i = 0; i < subjects.length; i++)
 		{
-			SensorWrapper sensor = (SensorWrapper) subjects[i];
+			final SensorWrapper sensor = (SensorWrapper) subjects[i];
 			if (sensor != target)
 			{
 				// ok, append the items in this layer to the target
@@ -1173,7 +1173,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	}
 
 	@Override
-	public void doSave(String message)
+	public void doSave(final String message)
 	{
 		throw new RuntimeException("should not have called manual save for Sensor Wrapper");
 	}

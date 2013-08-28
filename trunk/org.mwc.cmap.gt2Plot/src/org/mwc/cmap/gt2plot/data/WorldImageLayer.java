@@ -44,21 +44,21 @@ public class WorldImageLayer extends GeoToolsLayer
 {
 	public final static String RASTER_FILE = "rasterExtents_ARCS_Export";
 
-	public WorldImageLayer(String layerName, String fileName)
+	public WorldImageLayer(final String layerName, final String fileName)
 	{
 		super(ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
 	}
 
-	protected Layer loadLayer(File openFile)
+	protected Layer loadLayer(final File openFile)
 	{
 		Layer res = null;
 		AbstractGridCoverage2DReader tiffReader = null;
 		try
 		{
 
-			String nameWithoutExtention = FileUtilities
+			final String nameWithoutExtention = FileUtilities
 					.getNameWithoutExtention(openFile);
-			File twfFile = new File(openFile.getParentFile(), nameWithoutExtention
+			final File twfFile = new File(openFile.getParentFile(), nameWithoutExtention
 					+ ".tfw");
 			if (twfFile.exists())
 			{
@@ -70,7 +70,7 @@ public class WorldImageLayer extends GeoToolsLayer
 			}
 
 		}
-		catch (DataSourceException e)
+		catch (final DataSourceException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,11 +81,11 @@ public class WorldImageLayer extends GeoToolsLayer
 		// AbstractGridCoverage2DReader tiffReader = format.getReader(openFile);
 		if (tiffReader != null)
 		{
-			StyleFactoryImpl sf = new StyleFactoryImpl();
-			RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
-			Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
+			final StyleFactoryImpl sf = new StyleFactoryImpl();
+			final RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
+			final Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
 
-			GeneralParameterValue[] params = null;
+			final GeneralParameterValue[] params = null;
 
 			res = new GridReaderLayer(tiffReader, defaultStyle, params);
 
@@ -125,15 +125,15 @@ public class WorldImageLayer extends GeoToolsLayer
 
 	public static class RasterExtentHelper
 	{
-		public static MWC.GUI.Layer loadRasters(String fileName, Layers parent)
+		public static MWC.GUI.Layer loadRasters(final String fileName, final Layers parent)
 		{
 			// and sort out the parent folder name
-			File theFile = new File(fileName);
-			String parentPath = theFile.getParent();
-			int slasher = parentPath.lastIndexOf(File.separator);
-			String folderName = parentPath.substring(slasher + 1);
+			final File theFile = new File(fileName);
+			final String parentPath = theFile.getParent();
+			final int slasher = parentPath.lastIndexOf(File.separator);
+			final String folderName = parentPath.substring(slasher + 1);
 
-			MWC.GUI.Layer res = new ChartFolio(false, Color.red);
+			final MWC.GUI.Layer res = new ChartFolio(false, Color.red);
 			res.setName("Chart lib:" + folderName);
 
 			loadExtentsFor(res, fileName, parent);
@@ -141,8 +141,8 @@ public class WorldImageLayer extends GeoToolsLayer
 			return res;
 		}
 
-		protected static void loadExtentsFor(MWC.GUI.Layer extents,
-				String fileName, Layers parent)
+		protected static void loadExtentsFor(final MWC.GUI.Layer extents,
+				final String fileName, final Layers parent)
 		{
 			// ok, get the extents for this file
 
@@ -150,29 +150,29 @@ public class WorldImageLayer extends GeoToolsLayer
 			FileDataStore store;
 			try
 			{
-				File openFile = new File(fileName);
+				final File openFile = new File(fileName);
 				store = FileDataStoreFinder.getDataStore(openFile);
-				SimpleFeatureSource featureSource = store.getFeatureSource();
+				final SimpleFeatureSource featureSource = store.getFeatureSource();
 
 				// sort out the parent path
 				final String parentPath = openFile.getParent();
 
 				// hey, can we parse it?
-				SimpleFeatureCollection fs = featureSource.getFeatures();
-				SimpleFeatureIterator fiter = fs.features();
+				final SimpleFeatureCollection fs = featureSource.getFeatures();
+				final SimpleFeatureIterator fiter = fs.features();
 				while (fiter.hasNext())
 				{
 					// get ready to load this feature
 					WorldArea area = null;
 					String name = null;
 
-					SimpleFeatureImpl thisF = (SimpleFeatureImpl) fiter.next();
-					Collection<? extends Property> values = thisF.getValue();
-					Iterator<? extends Property> iter = values.iterator();
+					final SimpleFeatureImpl thisF = (SimpleFeatureImpl) fiter.next();
+					final Collection<? extends Property> values = thisF.getValue();
+					final Iterator<? extends Property> iter = values.iterator();
 					while (iter.hasNext())
 					{
-						Property thisProp = iter.next();
-						String propName = thisProp.getName().toString();
+						final Property thisProp = iter.next();
+						final String propName = thisProp.getName().toString();
 
 						// is this the geometry?
 						if (propName.equals("the_geom"))
@@ -189,9 +189,9 @@ public class WorldImageLayer extends GeoToolsLayer
 					if ((area != null) && (name != null))
 					{
 						// generate the filename
-						String path = parentPath + File.separator + name + ".tif";
+						final String path = parentPath + File.separator + name + ".tif";
 
-						ChartBoundsWrapper cw = new ChartBoundsWrapper(name,
+						final ChartBoundsWrapper cw = new ChartBoundsWrapper(name,
 								area.getTopLeft(), area.getBottomRight(), Color.red, path);
 						cw.setLayers(parent);
 						cw.setLabelLocation(LocationPropertyEditor.CENTRE);
@@ -203,11 +203,11 @@ public class WorldImageLayer extends GeoToolsLayer
 				ProjSidecarGenerator.addPrj(parentPath, "EPSG:3395");
 
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				e.printStackTrace();
 			}
-			catch (FactoryException e)
+			catch (final FactoryException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -215,26 +215,26 @@ public class WorldImageLayer extends GeoToolsLayer
 
 		}
 
-		private static WorldArea getGeometry(Object value)
+		private static WorldArea getGeometry(final Object value)
 		{
 			WorldArea res = null;
 			if (value instanceof MultiPolygon)
 			{
-				MultiPolygon mp = (MultiPolygon) value;
-				Geometry bound = mp.getBoundary();
-				Coordinate[] coords = bound.getCoordinates();
+				final MultiPolygon mp = (MultiPolygon) value;
+				final Geometry bound = mp.getBoundary();
+				final Coordinate[] coords = bound.getCoordinates();
 				if (coords != null)
 				{
 
 					for (int i = 0; i < coords.length; i++)
 					{
-						Coordinate coordinate = coords[i];
+						final Coordinate coordinate = coords[i];
 						final double zDepth;
 						if (Double.isNaN(coordinate.z))
 							zDepth = 0;
 						else
 							zDepth = coordinate.z;
-						WorldLocation newL = new WorldLocation(coordinate.y, coordinate.x,
+						final WorldLocation newL = new WorldLocation(coordinate.y, coordinate.x,
 								zDepth);
 						if (res == null)
 							res = new WorldArea(newL, newL);

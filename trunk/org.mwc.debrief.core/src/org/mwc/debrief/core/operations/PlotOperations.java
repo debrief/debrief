@@ -18,7 +18,7 @@ public class PlotOperations implements ControllablePeriod
 	/**
 	 * store our list of operations
 	 */
-	private Vector<ControllablePeriod.AnOperation> myOperations;
+	private final Vector<ControllablePeriod.AnOperation> myOperations;
 
 	/**
 	 * store the time period
@@ -48,35 +48,35 @@ public class PlotOperations implements ControllablePeriod
 			return "Hide all time-related data points outside time period";
 		}
 
-		public Vector<Layer> apply(TimePeriod period, Object[] selection)
+		public Vector<Layer> apply(final TimePeriod period, final Object[] selection)
 		{
 			
-			Vector<Layer> res = new Vector<Layer>(0,1);
+			final Vector<Layer> res = new Vector<Layer>(0,1);
 			
 			// right, pass through the series
 			for (int i = 0; i < selection.length; i++)
 			{
 				Layer useThis = null;
 				
-				Object thisO = selection[i];
+				final Object thisO = selection[i];
 				// is it a watchable?
 				if (thisO instanceof WatchableList)
 				{
-					WatchableList wa = (WatchableList) thisO;
+					final WatchableList wa = (WatchableList) thisO;
 					wa.filterListTo(period.getStartDTG(), period.getEndDTG());
 					useThis = (Layer) wa;
 				}
 				else if(thisO instanceof Layer)
 				{
 					// hey, pass through this layer
-					Layer thisL = (Layer) thisO;
-					Enumeration<Editable> enumer = thisL.elements();
+					final Layer thisL = (Layer) thisO;
+					final Enumeration<Editable> enumer = thisL.elements();
 					while(enumer.hasMoreElements())
 					{
-						Plottable thisP = (Plottable) enumer.nextElement();
+						final Plottable thisP = (Plottable) enumer.nextElement();
 						if(thisP instanceof WatchableList)
 						{
-							WatchableList wl = (WatchableList) thisP;
+							final WatchableList wl = (WatchableList) thisP;
 							wl.filterListTo(period.getStartDTG(), period.getEndDTG());
 							
 							if(useThis == null)
@@ -115,29 +115,29 @@ public class PlotOperations implements ControllablePeriod
 	/**
 	 * @param operationName
 	 */
-	public Vector<Layer> performOperation(AnOperation operationName)
+	public Vector<Layer> performOperation(final AnOperation operationName)
 	{
 		// right, find the operation with the correct name
-		Vector<Layer> res = operationName.apply(getPeriod(), getTargets());
+		final Vector<Layer> res = operationName.apply(getPeriod(), getTargets());
 		return res;
 	}
 
 	/**
 	 * @param period
 	 */
-	public void setPeriod(TimePeriod period)
+	public void setPeriod(final TimePeriod period)
 	{
 		_myPeriod = period;
 	}
 
-	public Vector<Layer> performOperation(String operationName)
+	public Vector<Layer> performOperation(final String operationName)
 	{
 		Vector<Layer> res = null;
 		
 		// right, run through the ops to find a matching one
-		for (Iterator<AnOperation> iter = myOperations.iterator(); iter.hasNext();)
+		for (final Iterator<AnOperation> iter = myOperations.iterator(); iter.hasNext();)
 		{
-			AnOperation op = (AnOperation) iter.next();
+			final AnOperation op = (AnOperation) iter.next();
 			if (op.getName().equals(operationName))
 			{
 				res = performOperation(op);

@@ -53,7 +53,7 @@ public class WorldAccelerationHelper extends EditorHelper
 		 * @param units the units for the value
 		 * @return an object representing the new data value
 		 */
-		public Object createResultsObject(double dist, int units)
+		public Object createResultsObject(final double dist, final int units)
 		{
 			return new WorldAcceleration(dist, units);
 		}
@@ -62,7 +62,7 @@ public class WorldAccelerationHelper extends EditorHelper
 		 * 
 		 * @param value
 		 */
-		public void storeMe(Object value)
+		public void storeMe(final Object value)
 		{
 			_myVal = (WorldAcceleration) value;
 		}
@@ -82,21 +82,21 @@ public class WorldAccelerationHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new ValueWithUnitsCellEditor2(parent, "Acceleration", "Units", new WorldAccelerationModel());
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
 				return element.toString();
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -107,7 +107,7 @@ public class WorldAccelerationHelper extends EditorHelper
 	
 
 	@Override
-	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
+	public Control getEditorControlFor(final Composite parent, final IDebriefProperty property)
 	{
 		return new ValueWithUnitsControl(parent, "Acceleration", "Units", new WorldAccelerationModel(), property);
 	}	

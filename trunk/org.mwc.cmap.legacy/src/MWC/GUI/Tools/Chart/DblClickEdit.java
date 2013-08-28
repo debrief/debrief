@@ -115,7 +115,7 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public DblClickEdit(PropertiesPanel thePanel)
+  public DblClickEdit(final PropertiesPanel thePanel)
   {
     _thePanel = thePanel;
   }
@@ -124,9 +124,9 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public void cursorDblClicked(PlainChart theChart,
-                               MWC.GenericData.WorldLocation theLocation,
-                               java.awt.Point thePoint)
+  public void cursorDblClicked(final PlainChart theChart,
+                               final MWC.GenericData.WorldLocation theLocation,
+                               final java.awt.Point thePoint)
   {
   	this.CursorClicked(thePoint, theLocation, theChart.getCanvas(), theChart.getLayers());
   }
@@ -137,7 +137,7 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
    * @param e the editor details for the item
    * @param parentLayer the layer containing this item
    */
-  protected void addEditor(Plottable res, Editable.EditorType e, Layer parentLayer)
+  protected void addEditor(final Plottable res, final Editable.EditorType e, final Layer parentLayer)
   {
   	_thePanel.addEditor(e, parentLayer);
   }
@@ -146,7 +146,7 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
    * 
    * @param projection
    */
-  protected void handleItemNotFound(PlainProjection projection)
+  protected void handleItemNotFound(final PlainProjection projection)
   {
   	addEditor(null, projection.getInfo(), null);
   }
@@ -157,7 +157,7 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
    * @param theCanvas what got clicked upon
    * @param theData the information we're storing
    */
-	public void CursorClicked(Point thePoint, WorldLocation thePos, CanvasType theCanvas, Layers theData)
+	public void CursorClicked(final Point thePoint, final WorldLocation thePos, final CanvasType theCanvas, final Layers theData)
 	{
 
     //
@@ -166,17 +166,17 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
     Layer closestLayer = null;
 
     // find the nearest editable item
-    int num = theData.size();
+    final int num = theData.size();
     for (int i = 0; i < num; i++)
     {
-      Layer thisL = theData.elementAt(i);
+      final Layer thisL = theData.elementAt(i);
       if (thisL.getVisible())
       {
         // go through this layer
         Enumeration<Editable> enumer = null;
         if(thisL instanceof Layer.ProvidesContiguousElements)
         {
-        	Layer.ProvidesContiguousElements contig = (ProvidesContiguousElements) thisL;
+        	final Layer.ProvidesContiguousElements contig = (ProvidesContiguousElements) thisL;
         	enumer = contig.contiguousElements();
         }
         else
@@ -184,11 +184,11 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
         
         while (enumer.hasMoreElements())
         {
-          Plottable p = (Plottable) enumer.nextElement();
+          final Plottable p = (Plottable) enumer.nextElement();
           if (p.getVisible())
           {
             // how far away is it
-            double rng = p.rangeFrom(thePos);
+            final double rng = p.rangeFrom(thePos);
 
             // is it null though?
             if (rng != -1.0)
@@ -232,7 +232,7 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
     if (res != null)
     {
       // so get the editor
-      Editable.EditorType e = res.getInfo();
+      final Editable.EditorType e = res.getInfo();
       if (e != null)
       {
         addEditor(res, e, closestLayer);

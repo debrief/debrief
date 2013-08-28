@@ -44,7 +44,7 @@ public class LineItem extends ControlContribution
 	 * 
 	 * @param id
 	 */
-	public LineItem(String id, String template, String tooltip, String prefId)
+	public LineItem(final String id, final String template, final String tooltip, final String prefId)
 	{
 		super(id);
 		_prefId = prefId;
@@ -60,7 +60,7 @@ public class LineItem extends ControlContribution
 		return true;
 	}
 
-	public void setText(String val)
+	public void setText(final String val)
 	{
 		if (label == null)
 		{
@@ -104,14 +104,14 @@ public class LineItem extends ControlContribution
 		{
 			label.addMouseListener(new MouseAdapter()
 			{
-				public void mouseDoubleClick(MouseEvent e)
+				public void mouseDoubleClick(final MouseEvent e)
 				{
 					// do the parent bits
 					super.mouseDoubleClick(e);
 
 					// do our bits
-					Display dis = Display.getCurrent();
-					PreferenceDialog dial = PreferencesUtil.createPreferenceDialogOn(dis
+					final Display dis = Display.getCurrent();
+					final PreferenceDialog dial = PreferencesUtil.createPreferenceDialogOn(dis
 							.getActiveShell(), _prefId, null, null);
 					dial.open();
 				}

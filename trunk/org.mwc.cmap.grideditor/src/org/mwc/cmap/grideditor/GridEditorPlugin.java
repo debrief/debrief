@@ -36,12 +36,12 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 	private List<IAdapterFactory> myAdapterFactories;
 
 	@Override
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		ourInstance = this;
 		myPluginId = context.getBundle().getSymbolicName();
-		IAdapterFactory locationChartAdapterFactory = new LocationChartAccess();
-		IAdapterFactory locationInterpolatorAdapterFactory = new LocationInterpolatorFactory();
+		final IAdapterFactory locationChartAdapterFactory = new LocationChartAccess();
+		final IAdapterFactory locationInterpolatorAdapterFactory = new LocationInterpolatorFactory();
 		myAdapterFactories = new LinkedList<IAdapterFactory>();
 		myAdapterFactories.add(locationChartAdapterFactory);
 		myAdapterFactories.add(locationInterpolatorAdapterFactory);
@@ -50,9 +50,9 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception {
+	public void stop(final BundleContext context) throws Exception {
 		ourInstance = null;
-		for (IAdapterFactory next : myAdapterFactories) {
+		for (final IAdapterFactory next : myAdapterFactories) {
 			Platform.getAdapterManager().unregisterAdapters(next);
 		}
 		myAdapterFactories.clear();
@@ -69,7 +69,7 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 	}
 
 	@Override
-	protected void initializeImageRegistry(ImageRegistry reg) {
+	protected void initializeImageRegistry(final ImageRegistry reg) {
 		super.initializeImageRegistry(reg);
 		addImage(reg, IMG_ADD);
 		addImage(reg, IMG_REMOVE);
@@ -79,7 +79,7 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 		addImage(reg, IMG_LOCKED);
 	}
 
-	private void addImage(ImageRegistry registry, String pluginPath) {
+	private void addImage(final ImageRegistry registry, final String pluginPath) {
 		registry.put(pluginPath, ImageDescriptor.createFromURL(FileLocator.find(getBundle(), new Path(pluginPath), null)));
 	}
 

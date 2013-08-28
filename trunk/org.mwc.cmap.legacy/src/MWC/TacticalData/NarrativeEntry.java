@@ -94,7 +94,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	}
 
 	@FireReformatted
-	public final void setSource(String track)
+	public final void setSource(final String track)
 	{
 		_track = track;
 	}
@@ -105,7 +105,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	}
 
 	@FireReformatted
-	public void setEntry(String val)
+	public void setEntry(final String val)
 	{
 		_entry = val;
 	}
@@ -116,7 +116,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	}
 
 	@FireExtended
-	public void setDTG(HiResDate date)
+	public void setDTG(final HiResDate date)
 	{
 		_DTG = date;
 	}
@@ -127,7 +127,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	}
 
 	@FireReformatted
-	public void setType(String type)
+	public void setType(final String type)
 	{
 		_type = type;
 	}
@@ -254,7 +254,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 				return myRes;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -277,7 +277,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 
 		public final void testMyParams()
 		{
-			HiResDate hd = new HiResDate(new Date());
+			final HiResDate hd = new HiResDate(new Date());
 			final NarrativeEntry ne = new NarrativeEntry("aaa", "bbb", hd, "vvvv");
 			editableTesterSupport.testParams(ne, this);
 		}

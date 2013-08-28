@@ -91,7 +91,7 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
  *
  */
 
-  public LibraryLayer(LibrarySelectionTable lst, String name, DebriefFeatureWarehouse warehouse, boolean autoPopulate)
+  public LibraryLayer(final LibrarySelectionTable lst, final String name, final DebriefFeatureWarehouse warehouse, final boolean autoPopulate)
   {
 
     _myWarehouse = warehouse;
@@ -109,10 +109,10 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
       if(_myCat1 == null)
       {
         // oh, well, let's find the first non-reference library
-        String[] libs = _myLST.getLibraryNames();
+        final String[] libs = _myLST.getLibraryNames();
         for(int i=0; i<libs.length;i++)
         {
-          String thisName = libs[i];
+          final String thisName = libs[i];
           if(thisName.toLowerCase().equals("rference"))
           {
             // just ignore it, man
@@ -135,18 +135,18 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
 
       	
         // get the list of coverages in this library
-        String[] coverages = _myCat1.getCoverageNames();
+        final String[] coverages = _myCat1.getCoverageNames();
 
         // step through the coverages
         for(int i=0;i<coverages.length;i++)
         {
-          String thisCov = (String)coverages[i];
-          CoverageLayer cl = new CoverageLayer(_myLST, _myWarehouse, thisCov, _myCat1);
+          final String thisCov = (String)coverages[i];
+          final CoverageLayer cl = new CoverageLayer(_myLST, _myWarehouse, thisCov, _myCat1);
           this.add(cl);
         }
       }
     }
-    catch(com.bbn.openmap.io.FormatException fe)
+    catch(final com.bbn.openmap.io.FormatException fe)
     {
       fe.printStackTrace();
     }
@@ -160,7 +160,7 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
    * set the name of this library - this tells us which library to read from disk
    *
    */
-  public void setName(String val)
+  public void setName(final String val)
   {
     // pass the name to the parent
     super.setName(val);
@@ -182,20 +182,20 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
    * static method which returns an single painter which paints the libref feature set
    * @param path the location of the VMap data providing the reference coastline
    */
-  public static CoverageLayer.ReferenceCoverageLayer createReferenceLayer(String path)
+  public static CoverageLayer.ReferenceCoverageLayer createReferenceLayer(final String path)
   {
     // return value
     CoverageLayer.ReferenceCoverageLayer rcl = null;
     try
     {
-      LibrarySelectionTable LST = new LibrarySelectionTable(path);
-      DebriefFeatureWarehouse myWarehouse = new DebriefFeatureWarehouse();
-      FeaturePainter fp = new FeaturePainter("libref","Coastline");
+      final LibrarySelectionTable LST = new LibrarySelectionTable(path);
+      final DebriefFeatureWarehouse myWarehouse = new DebriefFeatureWarehouse();
+      final FeaturePainter fp = new FeaturePainter("libref","Coastline");
       fp.setVisible(true);
       rcl = new CoverageLayer.ReferenceCoverageLayer(LST, myWarehouse, "libref", "libref", "Coastline", fp);
       rcl.setVisible(true);
     }
-    catch(com.bbn.openmap.io.FormatException ex)
+    catch(final com.bbn.openmap.io.FormatException ex)
     {
       ex.printStackTrace();
     }
@@ -237,12 +237,12 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
    *
    * @param g parameter for paint
    */
-  public void paint(CanvasType g)
+  public void paint(final CanvasType g)
   {
     if(!getVisible())
       return;
     
-    float oldWid = g.getLineWidth();
+    final float oldWid = g.getLineWidth();
 
     g.setLineWidth(this.getLineThickness());
     

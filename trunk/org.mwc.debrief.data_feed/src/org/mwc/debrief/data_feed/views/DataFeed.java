@@ -79,7 +79,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 	 */
 	private ComboViewer _sourceList;
 
-	private ArrayList<RealTimeProvider> _dataProviders;
+	private final ArrayList<RealTimeProvider> _dataProviders;
 
 	/**
 	 * The constructor.
@@ -94,17 +94,17 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		CorePlugin.logError(Status.INFO, "Starting to load data providers", null);
 
 		_dataProviders = new ArrayList<RealTimeProvider>();
-		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
+		final IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
 				"org.mwc.debrief.data_feed", "RealTimeProvider");
 
 		// check: Any <extension> tags for our extension-point?
 		if (point != null)
 		{
-			IExtension[] extensions = point.getExtensions();
+			final IExtension[] extensions = point.getExtensions();
 
 			for (int i = 0; i < extensions.length; i++)
 			{
-				IConfigurationElement[] ces = extensions[i].getConfigurationElements();
+				final IConfigurationElement[] ces = extensions[i].getConfigurationElements();
 
 				for (int j = 0; j < ces.length; j++)
 				{
@@ -113,14 +113,14 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 					if (ces[j].getName().equals("provider"))
 					{
 						System.out.println("found new data-feed provider:" + ces[j].getName());
-						IConfigurationElement thisEl = ces[j];
+						final IConfigurationElement thisEl = ces[j];
 						RealTimeProvider cl;
 						try
 						{
 							cl = (RealTimeProvider) thisEl.createExecutableExtension("class");
 							_dataProviders.add(cl);
 						}
-						catch (CoreException e)
+						catch (final CoreException e)
 						{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -137,13 +137,13 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
-		Composite topHolder = new Composite(parent, SWT.NONE);
+		final Composite topHolder = new Composite(parent, SWT.NONE);
 		topHolder.setLayout(new RowLayout(SWT.VERTICAL));
 
-		Composite btnHolder = new Composite(topHolder, SWT.NONE);
-		RowLayout btnRow = new RowLayout();
+		final Composite btnHolder = new Composite(topHolder, SWT.NONE);
+		final RowLayout btnRow = new RowLayout();
 		btnRow.type = SWT.HORIZONTAL;
 		btnRow.wrap = false;
 		btnRow.pack = true;
@@ -151,20 +151,20 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		_sourceList = new ComboViewer(btnHolder);
 		_sourceList.setLabelProvider(new LabelProvider(){
 
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				RealTimeProvider prov = (RealTimeProvider) element;
+				final RealTimeProvider prov = (RealTimeProvider) element;
 				return prov.getName();
 			}});
 		// add them
-		for (Iterator<RealTimeProvider> iter = _dataProviders.iterator(); iter.hasNext();)
+		for (final Iterator<RealTimeProvider> iter = _dataProviders.iterator(); iter.hasNext();)
 		{
-			RealTimeProvider prov = iter.next();
+			final RealTimeProvider prov = iter.next();
 			_sourceList.add(prov);
 		}
 
 		_sourceList.addSelectionChangedListener(new ISelectionChangedListener(){
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				sourceChanged();
 			}});
@@ -173,11 +173,11 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		_connectToggle.setText("    Connect    ");
 		_connectToggle.addSelectionListener(new SelectionListener()
 		{
-			public void widgetDefaultSelected(SelectionEvent e)
+			public void widgetDefaultSelected(final SelectionEvent e)
 			{
 			}
 
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				connectPressed();
 			}
@@ -187,7 +187,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		_myState.setText("==================");
 
 		// fire our UI components
-		FillLayout fill = new FillLayout();
+		final FillLayout fill = new FillLayout();
 		fill.type = SWT.VERTICAL;
 		parent.setLayout(fill);
 		_myList = new ListViewer(parent);
@@ -203,7 +203,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 					{
 						_myLayers = (Layers) part;
 					}
@@ -214,9 +214,9 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 					{
-						Layers newLayers = (Layers) part;
+						final Layers newLayers = (Layers) part;
 						if (newLayers == _myLayers)
 							_myLayers = null;
 					}
@@ -226,17 +226,17 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 					{
 						// implementation here.
-						ControllableTime ct = (ControllableTime) part;
+						final ControllableTime ct = (ControllableTime) part;
 						_controllableTime = ct;
 					}
 				});
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.DEACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
 					{
 						// no, don't bother clearing the controllable time when the plot is
 						// de-activated,
@@ -259,7 +259,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		}
 		
 		// ok, store the new data item
-		IStructuredSelection sel = (IStructuredSelection) _sourceList.getSelection();
+		final IStructuredSelection sel = (IStructuredSelection) _sourceList.getSelection();
 		_provider = (RealTimeProvider) sel.getFirstElement();
 	}
 
@@ -283,18 +283,18 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(_liveUpdate);
 		manager.add(new Separator());
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(_liveUpdate);
 	}
@@ -324,7 +324,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 	// temporal data management
 	// //////////////////////////////
 
-	public void insertData(String data)
+	public void insertData(final String data)
 	{
 		// ok - fire the new string of data into our reader-writer
 		try
@@ -336,7 +336,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 				_importer.setLayers(_myLayers);
 
 				// and let it import itself
-				HiResDate dtg = _importer.readLine(data);
+				final HiResDate dtg = _importer.readLine(data);
 
 				if (_liveUpdate.isChecked())
 				{
@@ -350,7 +350,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "failed whilst reading from real-time data feed",
 					e);
@@ -367,7 +367,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 				if (!_myList.getControl().isDisposed())
 				{
 					// ok, generate the DTG.
-					String dtg = new Date().toString() + ":" + msg;
+					final String dtg = new Date().toString() + ":" + msg;
 
 					_myList.add(dtg);
 

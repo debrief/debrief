@@ -75,7 +75,7 @@ final public class WorldSpeed implements Serializable
 	 * @param units
 	 *          the units used for this distance
 	 */
-	public WorldSpeed(double value, int units)
+	public WorldSpeed(final double value, final int units)
 	{
 		_mySpeed = value;
 		_myUnits = units;
@@ -84,7 +84,7 @@ final public class WorldSpeed implements Serializable
 	/**
 	 * copy constructor
 	 */
-	public WorldSpeed(WorldSpeed other)
+	public WorldSpeed(final WorldSpeed other)
 	{
 		_mySpeed = other._mySpeed;
 		_myUnits = other._myUnits;
@@ -97,13 +97,13 @@ final public class WorldSpeed implements Serializable
 	/**
 	 * perform a units conversion
 	 */
-	static public double convert(int from, int to, double val)
+	static public double convert(final int from, final int to, final double val)
 	{
 		// get this scale value
 		double scaleVal = _scaleVals[from];
 
 		// convert to mins
-		double tmpVal = val / scaleVal;
+		final double tmpVal = val / scaleVal;
 
 		// get the new scale val
 		scaleVal = _scaleVals[to];
@@ -134,7 +134,7 @@ final public class WorldSpeed implements Serializable
 	/**
 	 * get the string representing this set of units
 	 */
-	static public String getLabelFor(int units)
+	static public String getLabelFor(final int units)
 	{
 		return UnitLabels[units];
 	}
@@ -142,12 +142,12 @@ final public class WorldSpeed implements Serializable
 	/**
 	 * get the index for this type of unit
 	 */
-	static public int getUnitIndexFor(String units)
+	static public int getUnitIndexFor(final String units)
 	{
 		int res = 0;
 		for (int i = 0; i < UnitLabels.length; i++)
 		{
-			String unitLabel = UnitLabels[i];
+			final String unitLabel = UnitLabels[i];
 			if (units.equals(unitLabel))
 			{
 				res = i;
@@ -160,7 +160,7 @@ final public class WorldSpeed implements Serializable
 	/**
 	 * get this actual distance, expressed in minutes
 	 */
-	public double getValueIn(int units)
+	public double getValueIn(final int units)
 	{
 		return convert(_myUnits, units, _mySpeed);
 	}
@@ -207,31 +207,31 @@ final public class WorldSpeed implements Serializable
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public SpeedTest(String val)
+		public SpeedTest(final String val)
 		{
 			super(val);
 		}
 
 		public final void testWorldDistanceUnits()
 		{
-			WorldSpeed w1 = new WorldSpeed(1, WorldSpeed.M_sec);
+			final WorldSpeed w1 = new WorldSpeed(1, WorldSpeed.M_sec);
 			assertEquals("m sec correct", w1.getValueIn(WorldSpeed.M_sec), 1d,
 					0.000001);
 
-			WorldSpeed w2 = new WorldSpeed(1, WorldSpeed.Kts);
+			final WorldSpeed w2 = new WorldSpeed(1, WorldSpeed.Kts);
 			assertEquals("correct value stored", 1, w2._mySpeed, 0.001);
 			assertEquals("correct unts stored", WorldSpeed.Kts, w2._myUnits, 0.001);
 			assertEquals("m/sec correct", w2.getValueIn(WorldSpeed.M_sec), 0.5144444,
 					0.000001);
 			assertEquals("kts correct", w2.getValueIn(WorldSpeed.Kts), 1, 0.000001);
 
-			WorldSpeed w3 = new WorldSpeed(1, WorldSpeed.ft_sec);
+			final WorldSpeed w3 = new WorldSpeed(1, WorldSpeed.ft_sec);
 			assertEquals("m/sec correct", 0.3048, w3.getValueIn(WorldSpeed.M_sec),
 					0.000001);
 			assertEquals("ft/sec correct", 1, w3.getValueIn(WorldSpeed.ft_sec),
 					0.000001);
 
-			WorldSpeed w4 = new WorldSpeed(1, WorldSpeed.ft_min);
+			final WorldSpeed w4 = new WorldSpeed(1, WorldSpeed.ft_min);
 			assertEquals("m/sec correct", 0.00508, w4.getValueIn(WorldSpeed.M_sec),
 					0.000001);
 			assertEquals("ft/sec correct", 1, w4.getValueIn(WorldSpeed.ft_min),
@@ -240,7 +240,7 @@ final public class WorldSpeed implements Serializable
 			assertEquals("Back to kts correct", w2.getValueIn(WorldSpeed.Kts), 1,
 					0.000001);
 
-			WorldSpeed w5 = new WorldSpeed(w3);
+			final WorldSpeed w5 = new WorldSpeed(w3);
 			assertEquals("Copy constructor", w5.getValueIn(WorldSpeed.ft_sec), 1,
 					0.000001);
 
@@ -252,7 +252,7 @@ final public class WorldSpeed implements Serializable
 					WorldSpeed.getLabelFor(WorldSpeed.Kts), "kts");
 
 			// test conversions
-			WorldDistance w6 = new WorldDistance(10, WorldDistance.YARDS);
+			final WorldDistance w6 = new WorldDistance(10, WorldDistance.YARDS);
 			assertEquals("valid units conversion", 30,
 					w6.getValueIn(WorldDistance.FT), 0.001);
 

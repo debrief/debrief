@@ -19,10 +19,10 @@ public class InsertLine extends CoreInsertShape
 	 * @param centre the current centre of the screen
 	 * @return a shape, based on the centre
 	 */
-	protected PlainShape getShape(WorldLocation centre)
+	protected PlainShape getShape(final WorldLocation centre)
 	{
 		// generate the shape
-		PlainShape res = new LineShape(centre,
+		final PlainShape res = new LineShape(centre,
         centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
             0.05, 0)));
 		return res;

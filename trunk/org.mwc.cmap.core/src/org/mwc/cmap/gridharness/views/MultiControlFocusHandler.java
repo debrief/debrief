@@ -25,13 +25,13 @@ public abstract class MultiControlFocusHandler implements FocusListener {
 	 */
 	protected abstract void focusReallyLost(FocusEvent e);
 
-	public MultiControlFocusHandler(Control... parts) {
-		for (Control next : parts) {
+	public MultiControlFocusHandler(final Control... parts) {
+		for (final Control next : parts) {
 			next.addFocusListener(this);
 		}
 	}
 
-	public void focusGained(FocusEvent e) {
+	public void focusGained(final FocusEvent e) {
 		if (myDeferredDeactivate != null) {
 			myDeferredDeactivate.cancel();
 		}

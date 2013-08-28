@@ -37,16 +37,16 @@ public class BaseDataHandler extends MWCXMLReader
   // constructor
   //////////////////////////////////////////////////
 
-  public BaseDataHandler(String myType)
+  public BaseDataHandler(final String myType)
   {
     super(myType);
     addAttributeHandler(new HandleAttribute(UNITS)
-    { public void setValue(String name, String val)
+    { public void setValue(final String name, final String val)
       {
         _units = val;
       }});
     addAttributeHandler(new HandleDoubleAttribute(VALUE)
-      { public void setValue(String name, double val){
+      { public void setValue(final String name, final double val){
         _value = val;      }});
   }
 

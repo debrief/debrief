@@ -32,13 +32,13 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
 
 
     addHandler(new LocationHandler(TL){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _start = res;
       }
     });
     addHandler(new LocationHandler(BR){
-      public void setLocation(MWC.GenericData.WorldLocation res)
+      public void setLocation(final MWC.GenericData.WorldLocation res)
       {
         _end = res;
       }
@@ -46,7 +46,7 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
 
     addAttributeHandler(new HandleBooleanAttribute(FILLED)
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _filled = new Boolean(value);
       }});
@@ -55,28 +55,28 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
 
   public final MWC.GUI.Shapes.PlainShape getShape()
   {
-    MWC.GUI.Shapes.RectangleShape ls = new MWC.GUI.Shapes.RectangleShape(_start, _end);
+    final MWC.GUI.Shapes.RectangleShape ls = new MWC.GUI.Shapes.RectangleShape(_start, _end);
     if(_filled != null)
       ls.setFilled(_filled.booleanValue());
     return ls;
   }
 
-  public final void exportThisPlottable(MWC.GUI.Plottable plottable,org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public final void exportThisPlottable(final MWC.GUI.Plottable plottable,final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
     // output the shape related stuff first
-    org.w3c.dom.Element ePlottable = doc.createElement(_myType);
+    final org.w3c.dom.Element ePlottable = doc.createElement(_myType);
 
     super.exportThisPlottable(plottable, ePlottable, doc);
 
     // now our circle related stuff
 
     // get the circle
-    Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper)plottable;
-    MWC.GUI.Shapes.PlainShape ps = sw.getShape();
+    final Debrief.Wrappers.ShapeWrapper sw = (Debrief.Wrappers.ShapeWrapper)plottable;
+    final MWC.GUI.Shapes.PlainShape ps = sw.getShape();
     if(ps instanceof MWC.GUI.Shapes.RectangleShape)
     {
       // export the attributes
-      MWC.GUI.Shapes.RectangleShape cs = (MWC.GUI.Shapes.RectangleShape)ps;
+      final MWC.GUI.Shapes.RectangleShape cs = (MWC.GUI.Shapes.RectangleShape)ps;
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCorner_TopLeft(), TL, ePlottable, doc);
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCornerBottomRight(), BR, ePlottable, doc);
       ePlottable.setAttribute(FILLED, writeThis(cs.getFilled()));

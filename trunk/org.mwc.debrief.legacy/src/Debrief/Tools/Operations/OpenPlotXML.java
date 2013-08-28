@@ -24,9 +24,9 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
   // constructor
   ////////////////////////////////////////////////////////////
 
-  public OpenPlotXML(ToolParent theParent,
-                  java.awt.Image theImage,
-                  Application theApplication){
+  public OpenPlotXML(final ToolParent theParent,
+                  final java.awt.Image theImage,
+                  final Application theApplication){
     super(theParent, "Open Plot", "*.xml", "Debrief Plot Files (*.xml)");
 
     // store local data
@@ -34,7 +34,7 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
     // see if we have an old directory to retrieve
     if(_lastDirectory.equals(""))
     {
-      String val = getParent().getProperty("XML_Directory");
+      final String val = getParent().getProperty("XML_Directory");
       if(val != null)
         _lastDirectory = val;
     }
@@ -47,11 +47,11 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public final Action doOpen(String filename)
+  public final Action doOpen(final String filename)
   {
     Action res = null;
 
-    java.io.File theFile = new java.io.File(filename);
+    final java.io.File theFile = new java.io.File(filename);
 
     // data is collated, now create 'action' function
     res = new OpenPlotAction(theFile,
@@ -77,8 +77,8 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
     /** constructor - produced AFTER we have read in the data, but
      * before we have added it to the Application
      */
-    public OpenPlotAction(File theFile,
-                        Application theApplication){
+    public OpenPlotAction(final File theFile,
+                        final Application theApplication){
       _theApplication = theApplication;
       _theFile = theFile;
     }
@@ -107,20 +107,21 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
     {
       // also have a pass through to set the stepper in any narratives
       // try to set the pointer to the TimeStepper in the narratives, if there are any
-      Session newSession = _theApplication.getCurrentSession();
+      final Session newSession = _theApplication.getCurrentSession();
       if(newSession != null)
       {
-        Layers theData = newSession.getData();
-        Debrief.GUI.Views.PlainView pv = newSession.getCurrentView();
+        final Layers theData = newSession.getData();
+        final Debrief.GUI.Views.PlainView pv = newSession.getCurrentView();
         if(pv instanceof Debrief.GUI.Views.AnalysisView)
         {
-          int len = theData.size();
+          final int len = theData.size();
           for(int i=0;i<len;i++)
           {
-            Layer ly = theData.elementAt(i);
+            final Layer ly = theData.elementAt(i);
             if(ly instanceof Debrief.Wrappers.NarrativeWrapper)
             {
               @SuppressWarnings("unused")
+			final
 							Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
             }  // whether this is a narrative
           } // through the layers
@@ -141,16 +142,16 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
       _theApplication.setCursor(java.awt.Cursor.WAIT_CURSOR);
 
       // collate the list of files to importe
-      java.io.File[] fList = new java.io.File[]{_theFile};
+      final java.io.File[] fList = new java.io.File[]{_theFile};
 
-      MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller =
+      final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller =
         new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(fList, null)
       {
         // handle a single file getting finished
-        public void fileFinished(java.io.File fName, Layers newData){}
+        public void fileFinished(final java.io.File fName, final Layers newData){}
 
         // handle all of the files getting finished
-        public void allFilesFinished(java.io.File[] fNames, Layers newData)
+        public void allFilesFinished(final java.io.File[] fNames, final Layers newData)
         {
           doFinished();
         }

@@ -60,25 +60,25 @@ public class FeaturePainter implements Plottable, Serializable, ExcludeFromRight
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String _featureType;
-  private String _description;
+	private final String _featureType;
+  private final String _description;
   private boolean _isOn = false;
   private java.awt.Color _myColor = java.awt.Color.white;
   /** our editor
    */
   transient private Editable.EditorType _myEditor;
 
-  public FeaturePainter(String name, String description)
+  public FeaturePainter(final String name, final String description)
   {
     _featureType = name;
     _description = description;
   }
 
 
-  public void setVisible(boolean val){ _isOn = val; }
+  public void setVisible(final boolean val){ _isOn = val; }
   public boolean getVisible(){ return _isOn; }
 
-  public void setColor(Color val)
+  public void setColor(final Color val)
   {
     _myColor = val;
   }
@@ -89,14 +89,14 @@ public class FeaturePainter implements Plottable, Serializable, ExcludeFromRight
   }
 
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
-		Plottable other = (Plottable) arg0;
+		final Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());
 	}
   /** paint this object to the specified canvas
    */
-  public void paint(CanvasType dest){}
+  public void paint(final CanvasType dest){}
 
   /** find the data area occupied by this item
    */
@@ -107,7 +107,7 @@ public class FeaturePainter implements Plottable, Serializable, ExcludeFromRight
   /** Determine how far away we are from this point.
    * or return null if it can't be calculated
    */
-  public double rangeFrom(MWC.GenericData.WorldLocation other){return -1;}
+  public double rangeFrom(final MWC.GenericData.WorldLocation other){return -1;}
 
   /** the name of this object
   * @return the name of this editable object
@@ -146,7 +146,7 @@ public class FeaturePainter implements Plottable, Serializable, ExcludeFromRight
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public FeaturePainterInfo(FeaturePainter data)
+		public FeaturePainterInfo(final FeaturePainter data)
     {
       super(data, data.getName(), "");
     }
@@ -154,13 +154,13 @@ public class FeaturePainter implements Plottable, Serializable, ExcludeFromRight
     public PropertyDescriptor[] getPropertyDescriptors()
     {
       try{
-        PropertyDescriptor[] res={
+        final PropertyDescriptor[] res={
           prop("Color", "the Color to draw this Feature"),
           prop("Visible", "whether this grid is visible"),
         };
 
         return res;
-      }catch(IntrospectionException e){
+      }catch(final IntrospectionException e){
         return super.getPropertyDescriptors();
       }
     }

@@ -33,14 +33,14 @@ public class ChartFolioHandler extends LayerHandler
 	 */
 	static ETOPOPainter.KeyLocationPropertyEditor lp = new ETOPOPainter.KeyLocationPropertyEditor();
 
-	public ChartFolioHandler(Layers theLayers)
+	public ChartFolioHandler(final Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(theLayers, MY_TYPE);
 
 		addAttributeHandler(new HandleBooleanAttribute(SHOW_NAMES)
 		{
-			public void setValue(String name, boolean value)
+			public void setValue(final String name, final boolean value)
 			{
 				_showNames = value;
 			}
@@ -48,7 +48,7 @@ public class ChartFolioHandler extends LayerHandler
 
 		addHandler(new ColourHandler()
 		{
-			public void setColour(java.awt.Color color)
+			public void setColour(final java.awt.Color color)
 			{
 				_theColor = color;
 			}
@@ -65,7 +65,7 @@ public class ChartFolioHandler extends LayerHandler
 	public void elementClosed()
 	{
 		// set our specific attributes
-		ChartFolio wrapper = (ChartFolio) _myLayer;
+		final ChartFolio wrapper = (ChartFolio) _myLayer;
 		wrapper.setShowNames(_showNames);
 		wrapper.setLineColor(_theColor);
 		
@@ -73,23 +73,23 @@ public class ChartFolioHandler extends LayerHandler
 		super.elementClosed();
 	}
 
-	public static void exportThisFolio(ChartFolio folio, Element parent,
-			Document doc)
+	public static void exportThisFolio(final ChartFolio folio, final Element parent,
+			final Document doc)
 	{
 		// check our exporters
 		checkExporters();
 
-		org.w3c.dom.Element eLayer = doc.createElement(MY_TYPE);
+		final org.w3c.dom.Element eLayer = doc.createElement(MY_TYPE);
 
 		eLayer.setAttribute("Name", folio.getName());
 		eLayer.setAttribute("Visible", writeThis(folio.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(folio.getLineThickness()));
 
 		// step through the components of the layer
-		java.util.Enumeration<Editable> enumer = folio.elements();
+		final java.util.Enumeration<Editable> enumer = folio.elements();
 		while (enumer.hasMoreElements())
 		{
-			MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer
+			final MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer
 					.nextElement();
 
 			exportThisItem(nextPlottable, eLayer, doc);

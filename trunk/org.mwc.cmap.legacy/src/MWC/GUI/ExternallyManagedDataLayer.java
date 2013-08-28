@@ -18,7 +18,7 @@ public class ExternallyManagedDataLayer extends BaseLayer
 	public class ExternalLayerInfo extends Editable.EditorType
 	{
 
-		public ExternalLayerInfo(ExternallyManagedDataLayer data)
+		public ExternalLayerInfo(final ExternallyManagedDataLayer data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -27,14 +27,14 @@ public class ExternallyManagedDataLayer extends BaseLayer
 		{
 			try
 			{
-				PropertyDescriptor[] res =
+				final PropertyDescriptor[] res =
 				{ prop("Visible", "the Layer visibility", VISIBILITY),
 						prop("Name", "the name of the Layer", FORMAT) };
 
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -58,8 +58,8 @@ public class ExternallyManagedDataLayer extends BaseLayer
 	 */
 	private final String _dataType;
 
-	public ExternallyManagedDataLayer(String dataType, String layerName,
-			String fileName)
+	public ExternallyManagedDataLayer(final String dataType, final String layerName,
+			final String fileName)
 	{
 		setName(layerName);
 		_dataType = dataType;

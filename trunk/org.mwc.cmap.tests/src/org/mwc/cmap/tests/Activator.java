@@ -22,14 +22,14 @@ public class Activator extends AbstractUIPlugin {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(final BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
 	}
@@ -48,7 +48,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @param path the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
+	public static ImageDescriptor getImageDescriptor(final String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.tests", path);
 	}
 }

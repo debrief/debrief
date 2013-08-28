@@ -76,10 +76,10 @@ final class ImportLine implements PlainLineImporter
   
   /** read in this string and return a Label
    */
-  public final Object readThisLine(String theLine){
+  public final Object readThisLine(final String theLine){
     
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
     
     // declare local variables
     WorldLocation start, end;
@@ -112,7 +112,7 @@ final class ImportLine implements PlainLineImporter
     {
       // hmm, they are combined
       latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
+      final String secondPart = vDiff.substring(1, vDiff.length());
       longDeg  = Integer.parseInt(secondPart);
     }
     else
@@ -140,14 +140,14 @@ final class ImportLine implements PlainLineImporter
     }
 		
     // create the Line object
-    PlainShape sp = new LineShape(start, end);
+    final PlainShape sp = new LineShape(start, end);
     sp.setColor(ImportReplay.replayColorFor(theSymbology));
     
-		WorldArea tmp = new WorldArea(start, end);
+		final WorldArea tmp = new WorldArea(start, end);
 		tmp.normalise();
 		
     // and put it into a shape
-    ShapeWrapper sw = new ShapeWrapper(theText, 
+    final ShapeWrapper sw = new ShapeWrapper(theText, 
                                        sp, 
                                        ImportReplay.replayColorFor(theSymbology),
 																			 null);
@@ -155,7 +155,7 @@ final class ImportLine implements PlainLineImporter
     return sw;
   }
 
-public static WorldLocation extractStart(StringTokenizer st) {
+public static WorldLocation extractStart(final StringTokenizer st) {
 	WorldLocation start;
 	double latDeg;
 	double longDeg;
@@ -173,12 +173,12 @@ public static WorldLocation extractStart(StringTokenizer st) {
      * a space between the hemisphere character and a 3-digit
      * latitude value - so BE CAREFUL
      */
-    String vDiff = st.nextToken();
+    final String vDiff = st.nextToken();
     if(vDiff.length() > 3)
     {
       // hmm, they are combined
       latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
+      final String secondPart = vDiff.substring(1, vDiff.length());
       longDeg  = Double.valueOf(secondPart);
     }
     else
@@ -208,11 +208,11 @@ public static WorldLocation extractStart(StringTokenizer st) {
 	 * @return the shape in String form
 	 * @param shape the Shape we are exporting
 	 */	
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
-		ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 		
-		LineShape Line = (LineShape) theShape.getShape();
+		final LineShape Line = (LineShape) theShape.getShape();
 		
 		// result value
 		String line;
@@ -231,14 +231,14 @@ public static WorldLocation extractStart(StringTokenizer st) {
 	 * @param val the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 		
 		if(val instanceof ShapeWrapper)
 		{
-			ShapeWrapper sw = (ShapeWrapper) val;
-			PlainShape ps = sw.getShape();
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
 			res = (ps.getClass() == LineShape.class);
 		}
 		

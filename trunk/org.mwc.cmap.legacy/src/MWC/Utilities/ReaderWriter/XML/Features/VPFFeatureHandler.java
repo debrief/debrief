@@ -34,28 +34,28 @@ abstract public class VPFFeatureHandler extends MWCXMLReader
 
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
-      public void setValue(String name, boolean value)
+      public void setValue(final String name, final boolean value)
       {
         _isVisible = value;
       }
     });
     addAttributeHandler(new HandleAttribute("Type")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _theType = value;
       }
     });
     addAttributeHandler(new HandleAttribute("Description")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _theDescription = value;
       }
     });
     addHandler(new ColourHandler()
     {
-      public void setColour(java.awt.Color color)
+      public void setColour(final java.awt.Color color)
       {
         _theColor = color;
       }
@@ -78,11 +78,11 @@ abstract public class VPFFeatureHandler extends MWCXMLReader
   abstract public void addFeature(String type, String description, java.awt.Color color, boolean isVisible);
 
 
-  public static void exportThisFeature(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportThisFeature(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
 
-    MWC.GUI.VPF.FeaturePainter fp = (MWC.GUI.VPF.FeaturePainter) plottable;
-    Element feature = doc.createElement(_myType);
+    final MWC.GUI.VPF.FeaturePainter fp = (MWC.GUI.VPF.FeaturePainter) plottable;
+    final Element feature = doc.createElement(_myType);
 
     // do the visibility
     feature.setAttribute("Visible", writeThis(fp.getVisible()));

@@ -99,8 +99,8 @@ public class ZoomIn extends PlainDragTool  implements Serializable
   //////////////////////////////////////////////////
   // constructor
   //////////////////////////////////////////////////
-  public ZoomIn(PlainChart theChart,
-                         ToolParent theParent){ 
+  public ZoomIn(final PlainChart theChart,
+                         final ToolParent theParent){ 
     super(theChart, theParent, "Zoom in", "images/zoomin.gif");
   }
   
@@ -111,11 +111,11 @@ public class ZoomIn extends PlainDragTool  implements Serializable
 
   
   
-  public void areaSelected(MWC.GenericData.WorldLocation theLocation, Point thePoint){
+  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
     super.areaSelected(theLocation, thePoint);
     
     // see if we have selected a worthwhile area
-    Rectangle rt = new Rectangle(_theStartPoint);
+    final Rectangle rt = new Rectangle(_theStartPoint);
     rt.add(_theEndPoint);
     
     if(rt.width + rt.height > 5){
@@ -147,14 +147,14 @@ public class ZoomIn extends PlainDragTool  implements Serializable
   
   public static class ZoomInAction implements Action{
     
-    private PlainChart _theChart;
-    private WorldArea _oldArea;
-    private WorldArea _newArea;
+    private final PlainChart _theChart;
+    private final WorldArea _oldArea;
+    private final WorldArea _newArea;
    
     
-    public ZoomInAction(PlainChart theChart,
-                        WorldArea oldArea,
-                        WorldArea newArea){
+    public ZoomInAction(final PlainChart theChart,
+                        final WorldArea oldArea,
+                        final WorldArea newArea){
       _theChart = theChart;
       _oldArea = oldArea;
       _newArea = newArea;

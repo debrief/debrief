@@ -30,22 +30,22 @@ public class WorldPathHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(final Composite parent)
 	{
 		return new EditPathDialogCellEditor(parent);
 	}
 
-	public ILabelProvider getLabelFor(Object currentValue)
+	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		ILabelProvider label1 = new LabelProvider()
+		final ILabelProvider label1 = new LabelProvider()
 		{
-			public String getText(Object element)
+			public String getText(final Object element)
 			{
-				WorldPath wp = (WorldPath) element;
+				final WorldPath wp = (WorldPath) element;
 				return wp.getPoints().size() + " Points";
 			}
 
-			public Image getImage(Object element)
+			public Image getImage(final Object element)
 			{
 				return null;
 			}
@@ -70,7 +70,7 @@ public class WorldPathHelper extends EditorHelper
 		 * 
 		 * @param cellParent
 		 */
-		public EditPathDialogCellEditor(Composite cellParent)
+		public EditPathDialogCellEditor(final Composite cellParent)
 		{
 			super(cellParent);
 		}
@@ -84,7 +84,7 @@ public class WorldPathHelper extends EditorHelper
 		 *          the parent control we belong to
 		 * @return
 		 */
-		protected Object openDialogBox(Control cellEditorWindow)
+		protected Object openDialogBox(final Control cellEditorWindow)
 		{
 
 			// ditch our current editor, if we have one
@@ -94,16 +94,16 @@ public class WorldPathHelper extends EditorHelper
 				_myEditor = null;
 			}
 
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
+			final IWorkbench wb = PlatformUI.getWorkbench();
+			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			final IWorkbenchPage page = win.getActivePage();
 
-			Object output = null;
+			final Object output = null;
 
-			String plotId = "org.mwc.cmap.core.editor_views.PolygonEditorView";
+			final String plotId = "org.mwc.cmap.core.editor_views.PolygonEditorView";
 			try
 			{
-				IViewPart polyEditor = page.showView(plotId);
+				final IViewPart polyEditor = page.showView(plotId);
 				if (polyEditor != null)
 				{
 					_myEditor = (PolygonEditorView) polyEditor;
@@ -111,7 +111,7 @@ public class WorldPathHelper extends EditorHelper
 				}
 
 			}
-			catch (PartInitException e)
+			catch (final PartInitException e)
 			{
 				CorePlugin.logError(Status.ERROR,
 						"Whilst creating WorldPathHelper", e);
@@ -132,23 +132,23 @@ public class WorldPathHelper extends EditorHelper
 		 *          the parent control
 		 * @return the new button control
 		 */
-		protected Button createButton(Composite parent)
+		protected Button createButton(final Composite parent)
 		{
-			Button result = super.createButton(parent);
+			final Button result = super.createButton(parent);
 			result.setText("Edit");
 			return result;
 		}
 
 		protected Object doGetValue()
 		{
-			WorldPath res = (WorldPath) super.doGetValue();
+			final WorldPath res = (WorldPath) super.doGetValue();
 			return res;
 		}
 
-		protected void doSetValue(Object value)
+		protected void doSetValue(final Object value)
 		{
-			WorldPath myData = (WorldPath) value;
-			WorldPath toStore = myData;// new WorldPath(myData);
+			final WorldPath myData = (WorldPath) value;
+			final WorldPath toStore = myData;// new WorldPath(myData);
 
 			super.doSetValue(toStore);
 		}

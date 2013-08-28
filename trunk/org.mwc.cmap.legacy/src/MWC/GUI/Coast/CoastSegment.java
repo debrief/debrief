@@ -18,7 +18,7 @@ public final class CoastSegment extends Vector<WorldLocation>
 //    super(0,1);
 //  }
 
-  public void addPoint(WorldLocation pt){
+  public void addPoint(final WorldLocation pt){
     this.addElement(pt);
 
     if(myArea == null){

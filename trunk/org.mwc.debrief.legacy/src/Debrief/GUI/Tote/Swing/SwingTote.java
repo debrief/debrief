@@ -222,7 +222,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
                    final MWC.GUI.PlainChart theChart,
                    final MWC.GUI.Undo.UndoBuffer theUndoBuffer,
                    final MyMetalToolBarUI.ToolbarOwner owner,
-                   ToolParent theParent)
+                   final ToolParent theParent)
   {
     super(theData);
 
@@ -267,7 +267,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
     setStepper(aw);
 
 
-    JPanel gennyHolder = new JPanel();
+    final JPanel gennyHolder = new JPanel();
     gennyHolder.setLayout(new BorderLayout());
 
     _autoGenerate = new JButton("Auto Generate");
@@ -371,7 +371,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
                                          trimLabels);
     _theTote.add(lh);
 
-    Enumeration<WatchableList> iter2 = _theSecondary.elements();
+    final Enumeration<WatchableList> iter2 = _theSecondary.elements();
     while (iter2.hasMoreElements())
     {
       final WatchableList w = (WatchableList) iter2.nextElement();
@@ -381,7 +381,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
     _theTote.add(new sizeableJLabel("  "));
 
     // and now the data for each row
-    Enumeration<Class<?>> iter = _theCalculationTypes.elements();
+    final Enumeration<Class<?>> iter = _theCalculationTypes.elements();
     while (iter.hasMoreElements())
     {
       final Class<?> cl = (Class<?>) iter.nextElement();
@@ -412,7 +412,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
         }
 
         // create the text label to show the calculation units
-        UnitLabel thisLabel = new UnitLabel(tc, true, false);
+        final UnitLabel thisLabel = new UnitLabel(tc, true, false);
 
         // add it to the tote
         _theTote.add(thisLabel);
@@ -420,7 +420,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
         // and remember it, so we can update it later
         _theLabels.add(thisLabel);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
@@ -462,7 +462,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       // let the parent do it's business
       super.updateToteInformation();
     }
-    catch (java.util.NoSuchElementException er)
+    catch (final java.util.NoSuchElementException er)
     {
       // don't worry about this error -
       // - I suspect it's to do with synchronisation, adding new tracks while still trying
@@ -473,7 +473,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
     for (int i = 0; i < _theLabels.size(); i++)
     {
       // get the next label
-      UnitLabel label = (UnitLabel) _theLabels.elementAt(i);
+      final UnitLabel label = (UnitLabel) _theLabels.elementAt(i);
 
       // and update the units its showing
       label.updateUnits();
@@ -655,7 +655,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
           final toteCalculation ts = (toteCalculation) cl.newInstance();
           res += ts.getTitle() + ", ";
         }
-        catch (Exception t)
+        catch (final Exception t)
         {
           t.printStackTrace();
         }
@@ -678,7 +678,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
           res += thisV + ", ";
 
         }
-        catch (Exception f)
+        catch (final Exception f)
         {
           f.printStackTrace();
         }
@@ -814,7 +814,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
      * @param smallLabel whether the font should be small
      * @param trimLabels whether to trim the text
      */
-    public UnitLabel(toteCalculation calc, final boolean smallLabel, final boolean trimLabels)
+    public UnitLabel(final toteCalculation calc, final boolean smallLabel, final boolean trimLabels)
     {
       super(calc.getUnits(), smallLabel, trimLabels);
       _myCalc = calc;

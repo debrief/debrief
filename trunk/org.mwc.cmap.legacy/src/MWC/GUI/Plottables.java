@@ -166,7 +166,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * the actual list of plottables
 	 */
 	// private TreeSet<Editable> _thePlottables;
-	private SortedSet<Editable> _thePlottables;
+	private final SortedSet<Editable> _thePlottables;
 
 	// protected com.sun.java.util.collections.Hashset _thePlottables;
 	/**
@@ -208,7 +208,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		private static final long serialVersionUID = 1L;
 
 		@SuppressWarnings("unchecked")
-		public int compare(Editable p1, Editable p2)
+		public int compare(final Editable p1, final Editable p2)
 		{
 			int res;
 
@@ -226,7 +226,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 			else if (p1 instanceof Comparable)
 			{
 				// yup, let them go for it
-				Comparable<Editable> c1 = (Comparable<Editable>) p1;
+				final Comparable<Editable> c1 = (Comparable<Editable>) p1;
 				res = c1.compareTo(p2);
 			}
 			else
@@ -259,7 +259,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * paint this list to the canvas
 	 */
-	public synchronized void paint(CanvasType dest)
+	public synchronized void paint(final CanvasType dest)
 	{
 		// see if I am visible
 		if (!getVisible())
@@ -281,21 +281,21 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 
 		synchronized (_thePlottables)
 		{
-			Iterator<Editable> enumer = _thePlottables.iterator();
+			final Iterator<Editable> enumer = _thePlottables.iterator();
 
 			while (enumer.hasNext())
 			{
-				Object next = enumer.next();
+				final Object next = enumer.next();
 				if (next instanceof Plottable)
 				{
-					Plottable thisP = (Plottable) next;
+					final Plottable thisP = (Plottable) next;
 
 					// is this plottable visible
 					if (thisP.getVisible())
 					{
 
 						// see if this plottable is within the data area
-						WorldArea wp = thisP.getBounds();
+						final WorldArea wp = thisP.getBounds();
 
 						if (wp != null)
 						{
@@ -347,13 +347,13 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		// so, step through the array, and calculate the area
 		WorldArea res = null;
 
-		Iterator<Editable> enumer = _thePlottables.iterator();
+		final Iterator<Editable> enumer = _thePlottables.iterator();
 		while (enumer.hasNext())
 		{
-			Object nextOne = enumer.next();
+			final Object nextOne = enumer.next();
 			if (nextOne instanceof Plottable)
 			{
-				Plottable thisOne = (Plottable) nextOne;
+				final Plottable thisOne = (Plottable) nextOne;
 
 				// is this item visible?
 				if (thisOne.getVisible())
@@ -396,7 +396,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * set the name of the plottable
 	 */
 	@FireReformatted
-	public void setName(String theName)
+	public void setName(final String theName)
 	{
 		_theName = theName;
 	}
@@ -428,7 +428,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * set the visible flag for this layer
 	 */
-	public void setVisible(boolean visible)
+	public void setVisible(final boolean visible)
 	{
 		_visible = visible;
 	}
@@ -437,7 +437,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * Determine how far away we are from this point. or return INVALID_RANGE if
 	 * it can't be calculated
 	 */
-	public double rangeFrom(WorldLocation other)
+	public double rangeFrom(final WorldLocation other)
 	{
 		return INVALID_RANGE;
 	}
@@ -445,7 +445,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * add the plottable to this list
 	 */
-	public void add(Editable thePlottable)
+	public void add(final Editable thePlottable)
 	{
 		// check the creation worked
 		if (thePlottable == null)
@@ -468,8 +468,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		{
 			if (thePlottable instanceof Plottable)
 			{
-				Plottable thePlot = (Plottable) thePlottable;
-				WorldArea wa = thePlot.getBounds();
+				final Plottable thePlot = (Plottable) thePlottable;
+				final WorldArea wa = thePlot.getBounds();
 				if (wa != null)
 				{
 					/*
@@ -485,14 +485,14 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * remove this area
 	 */
-	public void removeElement(Editable p)
+	public void removeElement(final Editable p)
 	{
 
 		// stop listening to it
 		stopListeningTo(p);
 
 		// double check we've got it.
-		boolean worked = _thePlottables.remove(p);
+		final boolean worked = _thePlottables.remove(p);
 
 		if (!worked)
 		{
@@ -511,7 +511,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	private void stopListeningTo(final Editable p)
 	{
-		EditorType info = p.getInfo();
+		final EditorType info = p.getInfo();
 		if (info != null)
 			info.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, this);
 	}
@@ -522,10 +522,10 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	public void removeAllElements()
 	{
 		// undo all the moved listeners
-		Iterator<Editable> iter = _thePlottables.iterator();
+		final Iterator<Editable> iter = _thePlottables.iterator();
 		while (iter.hasNext())
 		{
-			Editable editable = (Editable) iter.next();
+			final Editable editable = (Editable) iter.next();
 			stopListeningTo(editable);
 		}
 
@@ -538,19 +538,19 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * append the other list of plottables to this one
 	 */
-	public void append(PlottablesType other)
+	public void append(final PlottablesType other)
 	{
-		Enumeration<Editable> enumer = other.elements();
+		final Enumeration<Editable> enumer = other.elements();
 		while (enumer.hasMoreElements())
 		{
-			Plottable p = (Plottable) enumer.nextElement();
+			final Plottable p = (Plottable) enumer.nextElement();
 			add(p);
 		}
 	}
 
-	public int compareTo(Plottable arg0)
+	public int compareTo(final Plottable arg0)
 	{
-		Plottable other = (Plottable) arg0;
+		final Plottable other = (Plottable) arg0;
 		return getName().compareTo(other.getName());
 
 		// final int res;
@@ -585,7 +585,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * @return all items in our list greater or equal to fromElement
 	 */
-	public SortedSet<Editable> tailSet(Editable fromElement)
+	public SortedSet<Editable> tailSet(final Editable fromElement)
 	{
 		return _thePlottables.tailSet(fromElement);
 	}
@@ -593,7 +593,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * @return all items in our list less than toElement
 	 */
-	public SortedSet<Editable> headSet(Editable toElement)
+	public SortedSet<Editable> headSet(final Editable toElement)
 	{
 		return _thePlottables.headSet(toElement);
 	}
@@ -602,7 +602,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * @return all items in our list greater or equal to fromElement and less than
 	 *         toElement
 	 */
-	public SortedSet<Editable> subSet(Editable fromElement, Editable toElement)
+	public SortedSet<Editable> subSet(final Editable fromElement, final Editable toElement)
 	{
 		return _thePlottables.subSet(fromElement, toElement);
 	}
@@ -657,27 +657,27 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public Grid4WTest(String val)
+		public Grid4WTest(final String val)
 		{
 			super(val);
 		}
 
 		public void testAddRemove()
 		{
-			Plottables pl = new Plottables();
+			final Plottables pl = new Plottables();
 			Assert.assertEquals("Empty list", pl.size(), 0);
-			GridPainter cp = new GridPainter();
+			final GridPainter cp = new GridPainter();
 			pl.add(cp);
 			Assert.assertEquals("non-empty list", pl.size(), 1);
 			pl.removeElement(cp);
 			Assert.assertEquals("list", pl.size(), 0);
 
-			ScalePainter sp = new ScalePainter();
+			final ScalePainter sp = new ScalePainter();
 			pl.add(sp);
 			Assert.assertEquals("non-empty list", pl.size(), 1);
 			pl.removeElement(sp);
 			Assert.assertEquals("list empty", pl.size(), 0);
-			Grid4WPainter c4p = new Grid4WPainter(null);
+			final Grid4WPainter c4p = new Grid4WPainter(null);
 			pl.add(c4p);
 			Assert.assertEquals("non-empty list", pl.size(), 1);
 			pl.removeElement(c4p);
@@ -687,7 +687,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent arg0)
+	public void propertyChange(final PropertyChangeEvent arg0)
 	{
 		// just double check the argument
 		if (arg0.getPropertyName().equals(PlainWrapper.LOCATION_CHANGED))

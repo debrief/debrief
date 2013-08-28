@@ -376,7 +376,7 @@ abstract public class AnalysisTote implements Pane,
     updateToteMembers();
 
     // hmm, do we have a current time?
-    HiResDate cTime = getStepper().getCurrentTime();
+    final HiResDate cTime = getStepper().getCurrentTime();
     if(cTime != null)
     {
     	// yup, go for it.
@@ -416,7 +416,7 @@ abstract public class AnalysisTote implements Pane,
     updateToteMembers();
     
     // hmm, do we have a current time?
-    HiResDate cTime = getStepper().getCurrentTime();
+    final HiResDate cTime = getStepper().getCurrentTime();
     if(cTime != null)
     {
     	// yup, go for it.
@@ -494,7 +494,7 @@ abstract public class AnalysisTote implements Pane,
    * @param list             the list of items to process
    * @param onlyAssignTracks whether only TrackWrapper items should be placed on the list
    */
-  private void processWatchableList(final WatchableList list, boolean onlyAssignTracks)
+  private void processWatchableList(final WatchableList list, final boolean onlyAssignTracks)
   {
     // check this isn't the primary
     if (list != getPrimary())
@@ -544,7 +544,7 @@ abstract public class AnalysisTote implements Pane,
    *
    * @param onlyAssignTracks - as we scan through the layers, only put TrackWrappers onto the tote
    */
-  public final void assignWatchables(boolean onlyAssignTracks)
+  public final void assignWatchables(final boolean onlyAssignTracks)
   {
     // check we have some data to search
     if (_theData != null)

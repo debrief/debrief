@@ -23,7 +23,7 @@ public class UnitsSet {
 	 * @param isSIUnit
 	 * 		<code>true</code> if the main unit belongs to SI units system
 	 */
-	public UnitsSet(String mainUnitLabel, boolean isSIUnit) {
+	public UnitsSet(final String mainUnitLabel, final boolean isSIUnit) {
 		myMainUnit = new Unit(this, mainUnitLabel, 1.0d);
 		myUnits.put(mainUnitLabel, myMainUnit);
 		if (isSIUnit) {
@@ -32,12 +32,12 @@ public class UnitsSet {
 	}
 
 	public Unit[] getAllUnits() {
-		List<Unit> result = new ArrayList<Unit>(myUnits.values());
+		final List<Unit> result = new ArrayList<Unit>(myUnits.values());
 		return result.toArray(new Unit[result.size()]);
 	}
 
 	public String[] getAllUnitLabels() {
-		List<String> result = new ArrayList<String>(myUnits.keySet());
+		final List<String> result = new ArrayList<String>(myUnits.keySet());
 		return result.toArray(new String[result.size()]);
 	}
 
@@ -49,11 +49,11 @@ public class UnitsSet {
 		return mySIUnit;
 	}
 
-	public Unit findUnit(String label) {
+	public Unit findUnit(final String label) {
 		return myUnits.get(label);
 	}
 
-	public double convert(Unit from, Unit to, double val) {
+	public double convert(final Unit from, final Unit to, final double val) {
 		ensureUnitKnown(from);
 		ensureUnitKnown(to);
 
@@ -65,7 +65,7 @@ public class UnitsSet {
 		double scaleVal = from.getScaleFactor();
 
 		// convert to main unit
-		double tmpVal = val / scaleVal;
+		final double tmpVal = val / scaleVal;
 
 		// get the new scale val
 		scaleVal = to.getScaleFactor();
@@ -78,8 +78,8 @@ public class UnitsSet {
 	 * method to find the smallest set of units which will show the indicated
 	 * value as a whole or 1/2 value
 	 */
-	public Unit selectUnitsFor(double value) {
-		for (Unit nextUnit : myUnits.values()) {
+	public Unit selectUnitsFor(final double value) {
+		for (final Unit nextUnit : myUnits.values()) {
 			double newVal = convert(myMainUnit, nextUnit, value);
 
 			// double the value, so that 1/2 values are valid
@@ -94,7 +94,7 @@ public class UnitsSet {
 		return myMainUnit;
 	}
 
-	public Unit addUnit(String label, double scaleFactor, boolean isSIUnit) {
+	public Unit addUnit(final String label, final double scaleFactor, final boolean isSIUnit) {
 		ensureNotFrozen();
 		if (scaleFactor == 0) {
 			throw new IllegalArgumentException("ScaleFactor can't be 0");
@@ -103,7 +103,7 @@ public class UnitsSet {
 			throw new IllegalArgumentException("You can't change main unit: " + label);
 		}
 		//allow unit replacement for now
-		Unit unit = new Unit(this, label, scaleFactor);
+		final Unit unit = new Unit(this, label, scaleFactor);
 		myUnits.put(label, unit);
 
 		if (isSIUnit) {
@@ -113,7 +113,7 @@ public class UnitsSet {
 		return unit;
 	}
 
-	public Unit addUnit(String label, double scaleFactor) {
+	public Unit addUnit(final String label, final double scaleFactor) {
 		return addUnit(label, scaleFactor, false);
 	}
 
@@ -136,7 +136,7 @@ public class UnitsSet {
 		}
 	}
 
-	private void ensureUnitKnown(Unit unit) {
+	private void ensureUnitKnown(final Unit unit) {
 		if (unit == null) {
 			throw new NullPointerException();
 		}
@@ -153,7 +153,7 @@ public class UnitsSet {
 
 		private final double myScaleFactor;
 
-		private Unit(UnitsSet unitSet, String label, double scaleFactor) {
+		private Unit(final UnitsSet unitSet, final String label, final double scaleFactor) {
 			myUnitSet = unitSet;
 			myLabel = label;
 			myScaleFactor = scaleFactor;

@@ -306,7 +306,7 @@ public abstract class Application implements ToolParent, ActionListener,
 			_appProps = new MWC.GUI.Dialogs.ApplicationProperties("d2ksettings.prp",
 					header);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -333,7 +333,7 @@ public abstract class Application implements ToolParent, ActionListener,
 	 * allow us to override the toolparent responsibilities of the application
 	 * (particularly in CMAP);
 	 */
-	public static void initialise(ToolParent newParent)
+	public static void initialise(final ToolParent newParent)
 	{
 		_substituteParent = newParent;
 	}
@@ -459,7 +459,7 @@ public abstract class Application implements ToolParent, ActionListener,
 				Trace.trace("Faled to start help process");
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -593,7 +593,7 @@ public abstract class Application implements ToolParent, ActionListener,
 		{
 			_appProps.storeProperties();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -618,29 +618,29 @@ public abstract class Application implements ToolParent, ActionListener,
 	 * @param theSession
 	 *          autofilled
 	 */
-	public final boolean closeSession(Session theSession)
+	public final boolean closeSession(final Session theSession)
 	{
-
+		Session session = theSession;
 		// check the session is valid
-		if (theSession != null)
+		if (session != null)
 		{
 
 			boolean canClose = true;
-			canClose = theSession.close();
+			canClose = session.close();
 
 			if (canClose)
 			{
 
 				// remove the GUI from our desktop
-				closeSessionGUI(theSession);
+				closeSessionGUI(session);
 
-				theSession.closeGUI();
+				session.closeGUI();
 
 				// and close the object itself
 				// remove from Sessions list
-				_theSessions.removeElement(theSession);
+				_theSessions.removeElement(session);
 
-				theSession = null;
+				session = null;
 
 				// now show another session, if we have one
 				if (_theSessions.size() > 0)
@@ -981,7 +981,7 @@ public abstract class Application implements ToolParent, ActionListener,
 			}
 
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -1006,7 +1006,7 @@ public abstract class Application implements ToolParent, ActionListener,
 	 * @param text
 	 * @param e
 	 */
-	public void logError(int status, String text, Exception e)
+	public void logError(final int status, final String text, final Exception e)
 	{
 		if(_substituteParent != null)
 			_substituteParent.logError(status, text, e);

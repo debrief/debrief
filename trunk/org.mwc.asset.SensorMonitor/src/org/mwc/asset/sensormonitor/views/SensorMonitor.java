@@ -93,7 +93,7 @@ public class SensorMonitor extends ViewPart
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		// Composite holder = new Composite(parent,SWT.NONE);
 		// holder.setLayout(new FillLayout());
@@ -103,7 +103,7 @@ public class SensorMonitor extends ViewPart
 
 		_table.addDisposeListener(new DisposeListener()
 		{
-			public void widgetDisposed(DisposeEvent e)
+			public void widgetDisposed(final DisposeEvent e)
 			{
 				widgetClosing();
 			}
@@ -131,7 +131,7 @@ public class SensorMonitor extends ViewPart
 
 	protected void testCall()
 	{
-		TableItem t1 = new TableItem(_table, SWT.NONE);
+		final TableItem t1 = new TableItem(_table, SWT.NONE);
 		t1.setText(new String[]
 		{ "a", "b", "c" });
 	}
@@ -140,7 +140,7 @@ public class SensorMonitor extends ViewPart
 	{
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
-			public void selectionChanged(SelectionChangedEvent event)
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				newItemSelected(event);
 			}
@@ -151,20 +151,20 @@ public class SensorMonitor extends ViewPart
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						ISelectionProvider iS = (ISelectionProvider) part;
+						final ISelectionProvider iS = (ISelectionProvider) part;
 						iS.addSelectionChangedListener(_selectionChangeListener);
 					}
 				});
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
 					{
-						ISelectionProvider iS = (ISelectionProvider) part;
+						final ISelectionProvider iS = (ISelectionProvider) part;
 						iS.removeSelectionChangedListener(_selectionChangeListener);
 					}
 				});
@@ -181,12 +181,12 @@ public class SensorMonitor extends ViewPart
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getViewSite().getActionBars();
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
+	private void fillLocalPullDown(final IMenuManager manager)
 	{
 		manager.add(_keepHistory);
 		manager.add(_followSelection);
@@ -194,7 +194,7 @@ public class SensorMonitor extends ViewPart
 		manager.add(_onlyShowValidDetections);
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager)
+	private void fillLocalToolBar(final IToolBarManager manager)
 	{
 		manager.add(_keepHistory);
 		manager.add(_followSelection);
@@ -250,24 +250,24 @@ public class SensorMonitor extends ViewPart
 
 	}
 
-	protected void newItemSelected(SelectionChangedEvent event)
+	protected void newItemSelected(final SelectionChangedEvent event)
 	{
 
 		if (_followSelection.isChecked())
 		{
 			// right, let's have a look at it.
-			ISelection theSelection = event.getSelection();
+			final ISelection theSelection = event.getSelection();
 
 			// get the first element
 			if (theSelection instanceof StructuredSelection)
 			{
-				StructuredSelection sel = (StructuredSelection) theSelection;
-				Object first = sel.getFirstElement();
+				final StructuredSelection sel = (StructuredSelection) theSelection;
+				final Object first = sel.getFirstElement();
 				// hmm, is it adaptable?
 				if (first instanceof EditableWrapper)
 				{
-					EditableWrapper ew = (EditableWrapper) first;
-					Editable ed = ew.getEditable();
+					final EditableWrapper ew = (EditableWrapper) first;
+					final Editable ed = ew.getEditable();
 					if (ed instanceof SensorType)
 					{
 						updateSensor((SensorType) ed);
@@ -292,7 +292,7 @@ public class SensorMonitor extends ViewPart
 		{
 			_sensorCalcListener = new PropertyChangeListener()
 			{
-				public void propertyChange(PropertyChangeEvent evt)
+				public void propertyChange(final PropertyChangeEvent evt)
 				{
 					processNewDetection(evt);
 				}
@@ -312,10 +312,10 @@ public class SensorMonitor extends ViewPart
 				if (!_table.isDisposed())
 				{
 					// hey, clear the existing columns
-					TableColumn[] cols = _table.getColumns();
+					final TableColumn[] cols = _table.getColumns();
 					for (int i = 0; i < cols.length; i++)
 					{
-						TableColumn column = cols[i];
+						final TableColumn column = cols[i];
 						column.dispose();
 					}
 
@@ -353,9 +353,9 @@ public class SensorMonitor extends ViewPart
 		});
 	}
 
-	void generateCol(Table table, String name, int wid)
+	void generateCol(final Table table, final String name, final int wid)
 	{
-		TableColumn col = new TableColumn(table, SWT.LEFT);
+		final TableColumn col = new TableColumn(table, SWT.LEFT);
 		col.setText(name);
 		col.setWidth(wid);
 	}
@@ -366,7 +366,7 @@ public class SensorMonitor extends ViewPart
 	 * @param evt
 	 *          the event that triggered us.
 	 */
-	protected void processNewDetection(PropertyChangeEvent evt)
+	protected void processNewDetection(final PropertyChangeEvent evt)
 	{
 
 		String[] fields = null;
@@ -377,7 +377,7 @@ public class SensorMonitor extends ViewPart
 		if (evt.getNewValue() instanceof LookupSensorComponentsEvent)
 		{
 			// sort out the lookup fields
-			LookupSensorComponentsEvent ev = (LookupSensorComponentsEvent) evt
+			final LookupSensorComponentsEvent ev = (LookupSensorComponentsEvent) evt
 					.getNewValue();
 			fields = new String[]
 			{ ev.getTgtName(), ev.getStateString(), f(ev.getRP()), f(ev.getRI()),
@@ -395,7 +395,7 @@ public class SensorMonitor extends ViewPart
 		else if (evt.getNewValue() instanceof InitialSensorComponentsEvent)
 		{
 			// sort out the component fields
-			InitialSensorComponentsEvent ev = (InitialSensorComponentsEvent) evt
+			final InitialSensorComponentsEvent ev = (InitialSensorComponentsEvent) evt
 					.getNewValue();
 			fields = new String[]
 			{ ev.getTgtName(), f(ev.getLoss()), f(ev.getBkNoise()),
@@ -410,7 +410,7 @@ public class SensorMonitor extends ViewPart
 		else if (evt.getNewValue() instanceof TypedCookieSensor.TypedSensorComponentsEvent)
 		{
 			// sort out the lookup fields
-			TypedSensorComponentsEvent ev = (TypedSensorComponentsEvent) evt
+			final TypedSensorComponentsEvent ev = (TypedSensorComponentsEvent) evt
 					.getNewValue();
 			fields = new String[]
 			{ ev.getTgtName(), f(ev.getDetRange()), f(ev.getTgtRange()),
@@ -428,7 +428,7 @@ public class SensorMonitor extends ViewPart
 		if (fields != null)
 		{
 			final String[] finalFields = fields;
-			Runnable doUpdate = new Runnable()
+			final Runnable doUpdate = new Runnable()
 			{
 				public void run()
 				{
@@ -445,7 +445,7 @@ public class SensorMonitor extends ViewPart
 								_lastTime = newTime;
 							}
 						}
-						TableItem item1 = new TableItem(_table, SWT.NONE);
+						final TableItem item1 = new TableItem(_table, SWT.NONE);
 						item1.setText(finalFields);
 					}
 				}
@@ -457,7 +457,7 @@ public class SensorMonitor extends ViewPart
 		}
 	}
 
-	private String f(WorldDistance val)
+	private String f(final WorldDistance val)
 	{
 		final String res;
 		if (val != null)
@@ -468,12 +468,12 @@ public class SensorMonitor extends ViewPart
 		return res;
 	}
 
-	public void setKeepMonitoring(boolean val)
+	public void setKeepMonitoring(final boolean val)
 	{
 		_followSelection.setChecked(val);
 	}
 
-	private String f(double val)
+	private String f(final double val)
 	{
 		return GeneralFormat.formatOneDecimalPlace(val);
 	}

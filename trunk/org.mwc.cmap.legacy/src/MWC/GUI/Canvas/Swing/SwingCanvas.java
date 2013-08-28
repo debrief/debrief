@@ -625,7 +625,7 @@ public class SwingCanvas extends javax.swing.JComponent
     _theDest.drawPolyline(xPoints, yPoints, nPoints);
   }
   
-	final public void drawPolyline(int[] points) {
+	final public void drawPolyline(final int[] points) {
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
 	} 
@@ -707,12 +707,10 @@ public class SwingCanvas extends javax.swing.JComponent
   /**
    * set the width of the line, in pixels
    */
-  public final void setLineWidth(float width)
+  public final void setLineWidth(final float width)
   {
     // check we've got a valid width
-    width = Math.max(width, 0);
-
-    _lineWidth = width;
+    _lineWidth = Math.max(width, 0);
 
     // are we currently in a plot operation?
     if (_theDest != null)
@@ -1126,7 +1124,7 @@ public class SwingCanvas extends javax.swing.JComponent
         return res;
 
       }
-      catch (IntrospectionException e)
+      catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
@@ -1202,7 +1200,7 @@ public class SwingCanvas extends javax.swing.JComponent
   }
 
 @Override
-public void drawText(String str, int x, int y, float rotate) {
+public void drawText(final String str, final int x, final int y, final float rotate) {
 	// TODO Auto-generated method stub
 	
 }

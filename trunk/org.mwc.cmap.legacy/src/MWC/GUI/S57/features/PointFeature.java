@@ -18,14 +18,14 @@ import MWC.GenericData.WorldLocation;
 
 public class PointFeature extends S57Feature
 {
-	private Vector<WorldLocation> _pts;
+	private final Vector<WorldLocation> _pts;
 	private Color _myColor = Color.DARK_GRAY;
 
 	final public static Double DEFAULT_SCALE = 100000d;
 	PointPainter _myPainter;
 	
-	public PointFeature(String name, Double minScale,
-			Color defaultColor, PointPainter painter)
+	public PointFeature(final String name, final Double minScale,
+			final Color defaultColor, final PointPainter painter)
 	{
 		super(name, minScale);
 		_myColor = defaultColor;
@@ -43,7 +43,7 @@ public class PointFeature extends S57Feature
 	/**
 	 * @param color the _myColor to set
 	 */
-	public final void setColor(Color color)
+	public final void setColor(final Color color)
 	{
 		_myColor = color;
 	}
@@ -53,24 +53,24 @@ public class PointFeature extends S57Feature
 		return new PointInfo(this, getName());
 	}
 
-	public void doPaint(CanvasType dest)
+	public void doPaint(final CanvasType dest)
 	{
 		dest.setColor(_myColor);		
-		for (Iterator<WorldLocation> iter = _pts.iterator(); iter.hasNext();)
+		for (final Iterator<WorldLocation> iter = _pts.iterator(); iter.hasNext();)
 		{
-			WorldLocation loc = (WorldLocation) iter.next();
-			Point pt =  dest.toScreen(loc);
+			final WorldLocation loc = (WorldLocation) iter.next();
+			final Point pt =  dest.toScreen(loc);
 			if(_myPainter != null)
 				_myPainter.paintSymbol(dest, loc, pt);
 		}
 	}
 	
-	public void paintSymbol(Point pt)
+	public void paintSymbol(final Point pt)
 	{
 		// don't bother - let it get overridden
 	}
 	
-	public void add(Vector<WorldLocation> theList)
+	public void add(final Vector<WorldLocation> theList)
 	{
 		_pts.addAll(theList);
 	}
@@ -79,7 +79,7 @@ public class PointFeature extends S57Feature
 	public class PointInfo extends Editable.EditorType
 	{
 
-		public PointInfo(PointFeature data, String theName)
+		public PointInfo(final PointFeature data, final String theName)
 		{
 			super(data, theName, "");
 		}
@@ -88,12 +88,12 @@ public class PointFeature extends S57Feature
 		{
 			try
 			{
-				PropertyDescriptor[] res = {
+				final PropertyDescriptor[] res = {
 						prop("Color", "color to plot the points", FORMAT)
 				};
 				return res;
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -109,7 +109,7 @@ public class PointFeature extends S57Feature
 	public static class DepthPainter implements PointPainter
 	{
 		NumberFormat _nf = new DecimalFormat("0.0");
-		public void paintSymbol(CanvasType dest, WorldLocation loc, Point pt)
+		public void paintSymbol(final CanvasType dest, final WorldLocation loc, final Point pt)
 		{
 			dest.drawText(_nf.format(loc.getDepth()), pt.x, pt.y);
 		}
@@ -120,18 +120,18 @@ public class PointFeature extends S57Feature
 		private final String _myLabel;
 		private boolean _showMarker = true;
 		
-		public LabelPainter(String label)
+		public LabelPainter(final String label)
 		{
 			_myLabel = label;
 		}
 		
-		public LabelPainter(String label, boolean showMarker)
+		public LabelPainter(final String label, final boolean showMarker)
 		{
 			this(label);
 			_showMarker = showMarker;
 		}
 		
-		public void paintSymbol(CanvasType dest, WorldLocation loc, Point pt)
+		public void paintSymbol(final CanvasType dest, final WorldLocation loc, final Point pt)
 		{
 			if(_showMarker)
 			{

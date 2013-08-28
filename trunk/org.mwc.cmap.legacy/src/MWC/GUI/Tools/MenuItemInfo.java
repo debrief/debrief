@@ -74,16 +74,16 @@ public class MenuItemInfo{
   /**
    * the name of the menu we are placing this item on
    */
-  private String _menuName;
+  private final String _menuName;
   /**
    * the name appearing on the menu
    */
-  private String _menuItemName;
+  private final String _menuItemName;
 
   /**
    * the toggle group this tool belongs to
    */
-  private String _toggleGroup;
+  private final String _toggleGroup;
 
   /**
    * the tool to call when this item is selected
@@ -92,12 +92,12 @@ public class MenuItemInfo{
   /**
    * the shortcut representing this menu item
    */
-  private MenuShortcut _theShortCut;
+  private final MenuShortcut _theShortCut;
 
 	/**
    * the shortcut key to apply to this command
    */
-	private char _theMnemonic;
+	private final char _theMnemonic;
 
   /////////////////////////////////////////////////////////
   // constructor
@@ -110,12 +110,12 @@ public class MenuItemInfo{
    * @param theShortCut shortcut for this item
    * @param theMnemonic shortcut key for this command
    */
-  public MenuItemInfo(String menuName,
-                      String toggleGroup,
-                      String menuItemName,
-                      Tool theTool,
-                      MenuShortcut theShortCut,
-											char theMnemonic){
+  public MenuItemInfo(final String menuName,
+                      final String toggleGroup,
+                      final String menuItemName,
+                      final Tool theTool,
+                      final MenuShortcut theShortCut,
+											final char theMnemonic){
     _menuName     = menuName;
     _menuItemName = menuItemName;
     _toggleGroup  = toggleGroup;
@@ -133,11 +133,11 @@ public class MenuItemInfo{
    * @param theShortCut shortcut for this item
    * @param theMnemonic shortcut key for this command
    */
-  public MenuItemInfo(String menuName,
-                      String toggleGroup,
-                      Tool theTool,
-                      MenuShortcut theShortCut,
-											char theMnemonic){
+  public MenuItemInfo(final String menuName,
+                      final String toggleGroup,
+                      final Tool theTool,
+                      final MenuShortcut theShortCut,
+											final char theMnemonic){
     this(menuName, toggleGroup, menuName, theTool, theShortCut, theMnemonic);
   }
 

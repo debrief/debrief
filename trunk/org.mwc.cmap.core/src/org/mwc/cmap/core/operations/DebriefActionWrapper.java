@@ -14,14 +14,14 @@ public class DebriefActionWrapper extends CMAPOperation
 
 	final private Layers _myLayers;
 
-	private Layer _changedLayer;
+	private final Layer _changedLayer;
 
 	/**
 	 * constructor, so that we can wrap our action
 	 * 
 	 * @param theAction
 	 */
-	public DebriefActionWrapper(Action theAction, final Layers theLayers, final Layer changedLayer)
+	public DebriefActionWrapper(final Action theAction, final Layers theLayers, final Layer changedLayer)
 	{
 		super(theAction.toString());
 
@@ -35,7 +35,7 @@ public class DebriefActionWrapper extends CMAPOperation
 	 * 
 	 * @param theAction
 	 */
-	public DebriefActionWrapper(Action theAction)
+	public DebriefActionWrapper(final Action theAction)
 	{
 		this(theAction, null, null);
 	}
@@ -44,7 +44,7 @@ public class DebriefActionWrapper extends CMAPOperation
 	// eclipse action bits
 	// ////////////////////////////////////////////////////////////
 
-	public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+	public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 			throws ExecutionException
 	{
 		_myAction.execute();
@@ -56,7 +56,7 @@ public class DebriefActionWrapper extends CMAPOperation
 		return Status.OK_STATUS;
 	}
 
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+	public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
 			throws ExecutionException
 	{
 		if (_myAction.isRedoable())
@@ -73,7 +73,7 @@ public class DebriefActionWrapper extends CMAPOperation
 		return Status.OK_STATUS;
 	}
 
-	public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+	public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 			throws ExecutionException
 	{
 		if (_myAction.isUndoable())

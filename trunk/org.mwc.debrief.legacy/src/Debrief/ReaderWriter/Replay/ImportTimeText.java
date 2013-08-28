@@ -69,10 +69,10 @@ final class ImportTimeText implements PlainLineImporter
 
   /** read in this string and return a Label
    */
-  public final Object readThisLine(String theLine){
+  public final Object readThisLine(final String theLine){
 
     // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+    final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
     WorldLocation theLoc;
@@ -90,8 +90,8 @@ final class ImportTimeText implements PlainLineImporter
     theSymbology = st.nextToken();
 
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
-		String timeToken = st.nextToken();
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
 		// and extract the date
 		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -105,12 +105,12 @@ final class ImportTimeText implements PlainLineImporter
      * a space between the hemisphere character and a 3-digit
      * latitude value - so BE CAREFUL
      */
-    String vDiff = st.nextToken();
+    final String vDiff = st.nextToken();
     if(vDiff.length() > 3)
     {
       // hmm, they are combined
       latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
+      final String secondPart = vDiff.substring(1, vDiff.length());
       longDeg  = Double.valueOf(secondPart);
     }
     else
@@ -132,7 +132,7 @@ final class ImportTimeText implements PlainLineImporter
                                0);
 
     // create the fix ready to store it
-    LabelWrapper lw = new LabelWrapper(theText,
+    final LabelWrapper lw = new LabelWrapper(theText,
                                        theLoc,
                                        ImportReplay.replayColorFor(theSymbology),
 																			 theDate,
@@ -151,9 +151,9 @@ final class ImportTimeText implements PlainLineImporter
 	 * @return the shape in String form
 	 * @param theWrapper the Shape we are exporting
 	 */
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
-		LabelWrapper theLabel = (LabelWrapper) theWrapper;
+		final LabelWrapper theLabel = (LabelWrapper) theWrapper;
 
 		String line=null;
 
@@ -170,14 +170,14 @@ final class ImportTimeText implements PlainLineImporter
 	 * @param val the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
+	public final boolean canExportThis(final Object val)
 	{
 		boolean res = false;
 
 		if(val instanceof LabelWrapper)
 		{
 			// also see if there is just the start time specified
-			LabelWrapper lw = (LabelWrapper)val;
+			final LabelWrapper lw = (LabelWrapper)val;
 			if((lw.getStartDTG() != null) && (lw.getEndDTG() == null))
 			{
 				// yes, this is a label with only the start time specified,

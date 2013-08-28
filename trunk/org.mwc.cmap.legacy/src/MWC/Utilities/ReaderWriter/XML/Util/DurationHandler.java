@@ -21,16 +21,16 @@ abstract public class DurationHandler extends MWCXMLReader
   double _value;
 
 
-  public DurationHandler(String myType)
+  public DurationHandler(final String myType)
   {
     super(myType);
     addAttributeHandler(new HandleAttribute("Units")
-    { public void setValue(String name, String val)
+    { public void setValue(final String name, final String val)
       {
         _units = val;
       }});
     addAttributeHandler(new HandleDoubleAttribute("Value")
-      { public void setValue(String name, double val){
+      { public void setValue(final String name, final double val){
         _value = val;      }});
   }
 
@@ -46,8 +46,8 @@ abstract public class DurationHandler extends MWCXMLReader
   {
     // produce a value using these units
 
-    int theUnits = Duration.getUnitIndexFor(_units);
-    Duration res = new Duration(_value, theUnits);
+    final int theUnits = Duration.getUnitIndexFor(_units);
+    final Duration res = new Duration(_value, theUnits);
 
     setDuration(res);
 
@@ -60,20 +60,20 @@ abstract public class DurationHandler extends MWCXMLReader
   abstract public void setDuration(Duration res);
 
 
-  public static void exportDuration(String element_type, Duration duration,
-                                    org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public static void exportDuration(final String element_type, final Duration duration,
+                                    final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eLoc = doc.createElement(element_type);
+    final org.w3c.dom.Element eLoc = doc.createElement(element_type);
 
     // set the attributes
-    int theUnit = Duration.selectUnitsFor(duration.getValueIn(Duration.MILLISECONDS));
+    final int theUnit = Duration.selectUnitsFor(duration.getValueIn(Duration.MILLISECONDS));
 
     // and get value
-    double value = duration.getValueIn(theUnit);
+    final double value = duration.getValueIn(theUnit);
 
 
     // get the name of the units
-    String units = Duration.getLabelFor(theUnit);
+    final String units = Duration.getLabelFor(theUnit);
 
     eLoc.setAttribute("Value", writeThis(value));
     eLoc.setAttribute("Units", units);
@@ -81,8 +81,8 @@ abstract public class DurationHandler extends MWCXMLReader
     parent.appendChild(eLoc);
   }
 
-  public static void exportDuration(Duration duration, org.w3c.dom.Element parent,
-                                    org.w3c.dom.Document doc)
+  public static void exportDuration(final Duration duration, final org.w3c.dom.Element parent,
+                                    final org.w3c.dom.Document doc)
   {
     exportDuration("Duration", duration, parent, doc);
   }

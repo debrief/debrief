@@ -17,14 +17,14 @@ abstract public class PrimarySecondaryHandler extends MWC.Utilities.ReaderWriter
 {
   String _name;
 
-  public PrimarySecondaryHandler(String type)
+  public PrimarySecondaryHandler(final String type)
   {
     // inform our parent what type of class we are
     super(type);
 
     addAttributeHandler(new HandleAttribute("Name")
     {
-      public void setValue(String name, String value)
+      public void setValue(final String name, final String value)
       {
         _name = value;
       }

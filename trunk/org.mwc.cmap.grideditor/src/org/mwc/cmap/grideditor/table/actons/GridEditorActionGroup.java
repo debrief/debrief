@@ -38,8 +38,8 @@ public class GridEditorActionGroup extends ActionGroup
 
 	private ExportToClipboardAction myExportAction;
 
-	public GridEditorActionGroup(GridEditorView view,
-			GridEditorActionContext context)
+	public GridEditorActionGroup(final GridEditorView view,
+			final GridEditorActionContext context)
 	{
 		myView = view;
 		super.setContext(context);
@@ -65,7 +65,7 @@ public class GridEditorActionGroup extends ActionGroup
 	}
 
 	@Override
-	public void setContext(ActionContext context)
+	public void setContext(final ActionContext context)
 	{
 		throw new UnsupportedOperationException("I am managing my context myself");
 	}
@@ -77,10 +77,10 @@ public class GridEditorActionGroup extends ActionGroup
 	}
 
 	@Override
-	public void fillActionBars(IActionBars actionBars)
+	public void fillActionBars(final IActionBars actionBars)
 	{
 		initActions();
-		IToolBarManager toolbar = actionBars.getToolBarManager();
+		final IToolBarManager toolbar = actionBars.getToolBarManager();
 		toolbar.add(myInsertRowAction);
 		toolbar.add(myDeleteRowAction);
 		toolbar.add(myInterpolateAction);
@@ -92,7 +92,7 @@ public class GridEditorActionGroup extends ActionGroup
 	}
 
 	@Override
-	public void fillContextMenu(IMenuManager menu)
+	public void fillContextMenu(final IMenuManager menu)
 	{
 		initActions();
 		menu.add(myInsertRowAction);
@@ -106,7 +106,7 @@ public class GridEditorActionGroup extends ActionGroup
 		menu.add(new Separator());
 
 		// right, find the selection
-		StructuredSelection sel = (StructuredSelection) myView.getUI().getTable()
+		final StructuredSelection sel = (StructuredSelection) myView.getUI().getTable()
 				.getTableViewer().getSelection();
 
 		// do we have something?
@@ -114,9 +114,10 @@ public class GridEditorActionGroup extends ActionGroup
 		{
 
 			// create an array of the items being edited
-			Editable[] items = new Editable[sel.size()];
+			final Editable[] items = new Editable[sel.size()];
 			int index = 0;
 			@SuppressWarnings("rawtypes")
+			final
 			Iterator iter = sel.iterator();
 			while (iter.hasNext())
 			{
@@ -124,18 +125,18 @@ public class GridEditorActionGroup extends ActionGroup
 			}
 
 			// collate the other metadata
-			GriddableWrapper wrapper = (GriddableWrapper) myView.getUI().getTable()
+			final GriddableWrapper wrapper = (GriddableWrapper) myView.getUI().getTable()
 					.getTableViewer().getInput();
 
 			// fill the layers objects
-			Layer[] topLayers = new Layer[sel.size()];
-			Layer[] parentLayers = new Layer[sel.size()];
+			final Layer[] topLayers = new Layer[sel.size()];
+			final Layer[] parentLayers = new Layer[sel.size()];
 			for (int i = 0; i < sel.size(); i++)
 			{
 				topLayers[i] = wrapper.getWrapper().getTopLevelLayer();
 				parentLayers[i] = wrapper.getWrapper().getTopLevelLayer();
 			}
-			Layers theLayers = wrapper.getWrapper().getLayers();
+			final Layers theLayers = wrapper.getWrapper().getLayers();
 
 			// create a drop-down menu for this item
 			RightClickSupport.getDropdownListFor(menu, items, topLayers,
@@ -153,7 +154,7 @@ public class GridEditorActionGroup extends ActionGroup
 		{
 			return;
 		}
-		GridEditorTable tableUI = myView.getUI().getTable();
+		final GridEditorTable tableUI = myView.getUI().getTable();
 		myTrackSelectionAction = new TrackSelectionAction(tableUI);
 		myShowVisItemsAction = new OnlyShowVisibleAction(tableUI);
 		myInsertRowAction = new InsertRowAction();
@@ -171,7 +172,7 @@ public class GridEditorActionGroup extends ActionGroup
 		}
 		myTrackSelectionAction.refreshWithTableUI();
 		myShowVisItemsAction.refreshWithTableUI();
-		GridEditorActionContext contextImpl = getContext();
+		final GridEditorActionContext contextImpl = getContext();
 		myInsertRowAction.refreshWithActionContext(contextImpl);
 		myExportAction.refreshWithTableUI();
 		myDeleteRowAction.refreshWithActionContext(contextImpl);

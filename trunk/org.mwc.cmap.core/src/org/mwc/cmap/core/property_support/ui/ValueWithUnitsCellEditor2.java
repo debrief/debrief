@@ -29,8 +29,8 @@ public class ValueWithUnitsCellEditor2 extends CellEditor
 	 * @param dataModel
 	 *          the data model we're manipulating
 	 */
-	public ValueWithUnitsCellEditor2(Composite parent, String textTip,
-			String comboTip, ValueWithUnitsDataModel model)
+	public ValueWithUnitsCellEditor2(final Composite parent, final String textTip,
+			final String comboTip, final ValueWithUnitsDataModel model)
 	{
 		super(parent);
 
@@ -41,7 +41,7 @@ public class ValueWithUnitsCellEditor2 extends CellEditor
 	}
 
 	@Override
-	protected Control createControl(Composite parent)
+	protected Control createControl(final Composite parent)
 	{
 		if (_myControl == null)
 			_myControl = new ValueWithUnitsControl(parent);
@@ -61,7 +61,7 @@ public class ValueWithUnitsCellEditor2 extends CellEditor
 	}
 
 	@Override
-	protected void doSetValue(Object value)
+	protected void doSetValue(final Object value)
 	{
 		_myControl.setData(value);
 	}

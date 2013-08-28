@@ -132,7 +132,7 @@ public final class BasicTooltipHandler implements CanvasType.TooltipHandler
 				{
 					findNearest(thisL, nearest);
 				}
-				catch (NullPointerException e)
+				catch (final NullPointerException e)
 				{
 					// we sometimes get errors here, no need to propagate them
 					// juse ignore them
@@ -237,7 +237,7 @@ public final class BasicTooltipHandler implements CanvasType.TooltipHandler
 				final java.util.Enumeration<Editable> enumer = l.elements();
 				while (enumer.hasMoreElements())
 				{
-					Editable next = enumer.nextElement();
+					final Editable next = enumer.nextElement();
 					if (next instanceof Plottable)
 					{
 						final Plottable this_plottable = (Plottable) next;

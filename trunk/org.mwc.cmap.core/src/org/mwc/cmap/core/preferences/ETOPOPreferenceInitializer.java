@@ -24,10 +24,10 @@ public class ETOPOPreferenceInitializer extends AbstractPreferenceInitializer
 	{
 
 		// hmm, set the default location
-		Path etopoPath = new Path("data/ETOPO2.raw");
+		final Path etopoPath = new Path("data/ETOPO2.raw");
 
 		URL fileURL = null;
-		Bundle staticBundle = Platform.getBundle("org.mwc.cmap.static_resources");
+		final Bundle staticBundle = Platform.getBundle("org.mwc.cmap.static_resources");
 		if (staticBundle != null)
 		{
 			// and get the relative path compared to the Core Plugin
@@ -41,13 +41,13 @@ public class ETOPOPreferenceInitializer extends AbstractPreferenceInitializer
 			{
 				fileURL = FileLocator.toFileURL(fileURL);
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Unable to find ETOPO data-file", e);
 			}
 
 			// and store the default location
-			IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+			final IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 			store.setDefault(ETOPOPrefsPage.PreferenceConstants.ETOPO_FILE, fileURL.getFile());
 
 		}

@@ -46,16 +46,16 @@ import MWC.GUI.Chart.Painters.GridPainter;
 
 public class CreateGrid extends PlainCreate
 {
-	public CreateGrid(MWC.GUI.ToolParent theParent,
-										MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
-										MWC.GUI.Layers theData,
-										MWC.GUI.PlainChart theChart)
+	public CreateGrid(final MWC.GUI.ToolParent theParent,
+										final MWC.GUI.Properties.PropertiesPanel thePanel,
+										final MWC.GUI.Layer theLayer,
+										final MWC.GUI.Layers theData,
+										final MWC.GUI.PlainChart theChart)
 	{
 		super(theParent, thePanel, theLayer, theData, theChart, "Grid", "images/grid.gif");
 	}
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
 	{
 		return new GridPainter();
 	}

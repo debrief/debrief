@@ -20,7 +20,7 @@ public interface MessageProvider
 	{
 		public static MessageProvider Provider;
 
-		public static void setProvider(MessageProvider provider)
+		public static void setProvider(final MessageProvider provider)
 		{
 			Provider = provider;
 		}

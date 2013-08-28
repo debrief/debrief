@@ -118,13 +118,13 @@ import MWC.GUI.Canvas.AWT.AWTCanvas;
   // member variables
   ////////////////////////////////////////////////////////////
 
-  private AWTCanvas _theCanvas;
+  private final AWTCanvas _theCanvas;
   
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
 
-  public AWTChart(Layers theLayers){
+  public AWTChart(final Layers theLayers){
     super(theLayers);
     _theCanvas = new AWTCanvas();
     _theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
@@ -138,7 +138,7 @@ import MWC.GUI.Canvas.AWT.AWTCanvas;
     
     // catch any resize events
     _theCanvas.addComponentListener(new ComponentAdapter(){
-      public void componentResized(ComponentEvent e){
+      public void componentResized(final ComponentEvent e){
         canvasResized();   
       }
       });
@@ -157,7 +157,7 @@ import MWC.GUI.Canvas.AWT.AWTCanvas;
   /** repaint the indicated layer
    *
    */
-  public void update(Layer changedLayer)
+  public void update(final Layer changedLayer)
   {
     update();
   }
@@ -190,7 +190,7 @@ import MWC.GUI.Canvas.AWT.AWTCanvas;
     _theCanvas.repaint();
   }
   
-	public void repaintNow(java.awt.Rectangle rect)
+	public void repaintNow(final java.awt.Rectangle rect)
 	{
 		repaint();
 	}
