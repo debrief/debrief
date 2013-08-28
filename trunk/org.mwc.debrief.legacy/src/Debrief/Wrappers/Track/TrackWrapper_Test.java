@@ -1988,9 +1988,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 				fw3.getFixLocation());
 		assertEquals("right answer", 0,
 				Conversions.Degs2m(rangeError.getRange()), 0.0001);
-		// assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0);
-		// assertEquals("right course", res.getCourse(), fw3.getCourse(),
-		// 0);
+		 assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0.00000000001);
+		 assertEquals("right course", res.getCourse(), fw3.getCourse(),
+		 0);
 	
 	}
 
