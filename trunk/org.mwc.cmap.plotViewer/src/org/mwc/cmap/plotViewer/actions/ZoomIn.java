@@ -87,7 +87,6 @@ public class ZoomIn extends CoreDragAction
 				fc.dispose();
 				gc.dispose();
 			}
-
 		}
 
 		@Override
