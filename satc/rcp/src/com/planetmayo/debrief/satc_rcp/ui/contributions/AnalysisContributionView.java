@@ -11,6 +11,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class AnalysisContributionView extends BaseContributionView<BaseContribution>
@@ -18,22 +19,26 @@ public class AnalysisContributionView extends BaseContributionView<BaseContribut
 
 	private String title;
 	
-	public AnalysisContributionView(Composite parent,	LocationAnalysisContribution contribution)
+	public AnalysisContributionView(Composite parent,	LocationAnalysisContribution contribution, 
+			final IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		title = "Location Analysis - ";
 		initUI();
 	}
 	
-	public AnalysisContributionView(Composite parent,	SpeedAnalysisContribution contribution)
+	public AnalysisContributionView(Composite parent,	SpeedAnalysisContribution contribution, 
+			final IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		title = "Speed Analysis - ";
 		initUI();
 	}
-	public AnalysisContributionView(Composite parent,	CourseAnalysisContribution contribution)
+	
+	public AnalysisContributionView(Composite parent,	CourseAnalysisContribution contribution, 
+			final IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		title = "Course Analysis - ";
 		initUI();
 	}

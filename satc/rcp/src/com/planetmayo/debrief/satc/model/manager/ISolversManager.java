@@ -7,7 +7,11 @@ import com.planetmayo.debrief.satc.model.generator.ISolver;
 public interface ISolversManager
 {
 	
-	ISolver createDefaultSolver();
+	void addSolversManagerListener(ISolversManagerListener listener);
+	
+	void removeSolverManagerListener(ISolversManagerListener listener);
+	
+	ISolver createSolver(String name);
 	
 	List<ISolver> getAvailableSolvers();
 	

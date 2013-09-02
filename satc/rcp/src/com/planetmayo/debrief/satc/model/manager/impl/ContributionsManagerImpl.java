@@ -91,6 +91,6 @@ public class ContributionsManagerImpl implements IContributionsManager
 				}
 			});
 		}
-		return availableContributions;		
+		return new ArrayList<ContributionBuilder>(availableContributions);		
 	}	
 }

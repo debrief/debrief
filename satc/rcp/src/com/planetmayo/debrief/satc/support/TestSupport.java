@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
-import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
@@ -27,14 +25,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class TestSupport
 {
-
-	private ISolver solver;
 	private ArrayList<State> _targetSolution;
-
-	private ISolver getGenerator()
-	{
-		return solver;
-	}
 
 	public List<State> loadSolutionTrack()
 	{
@@ -414,117 +405,13 @@ public class TestSupport
 		return rows;
 	}
 
-	public void loadSampleData(boolean useLong)
+	public void loadGoodData(ISolver generator)
 	{
-		IContributions contributions = getGenerator().getContributions();
+		IContributions contributions = generator.getContributions();
 		// clear the geneartor first
-		boolean live = getGenerator().isLiveEnabled();
-		getGenerator().setLiveRunning(false);
-		getGenerator().clear();
-
-		// now load some data
-		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
-		bmc.setName("Measured bearing");
-		bmc.setAutoDetect(true);
-		RangeForecastContribution rangeF = new RangeForecastContribution();
-		rangeF.setName("Measured range");
-		ArrayList<String> rows;
-		if (useLong)
-			rows = getLongData();
-		// thePath = BearingMeasurementContributionTest.THE_PATH;
-		else
-			rows = getShortData();
-		// thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
-
-		try
-		{
-			// populate the bearing data
-			bmc.loadFrom(rows);
-			getGenerator().getContributions().addContribution(bmc);
-
-			// and populate the range data
-			rangeF.loadFrom(rows);
-			getGenerator().getContributions().addContribution(rangeF);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 121331"));
-		speed.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 122025"));
-		speed.setMinSpeed(GeoSupport.kts2MSec(12d));
-		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
-		speed.setName("Initial speed obs");
-		contributions.addContribution(speed);
-
-		// try a location forecast
-		LocationForecastContribution locF = new LocationForecastContribution();
-		locF.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 121300"));
-		locF.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 121700"));
-		locF.setLocation(new GeoPoint(0.03, -30.0));
-		locF.setLimit(3000d);
-		locF.setName("Last known location");
-		locF.setActive(false);
-		contributions.addContribution(locF);
-
-		// hey, how about a time-bounded course constraint?
-		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 121231"));
-		course.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 122525"));
-		course.setMinCourse(Math.toRadians(225));
-		course.setMaxCourse(Math.toRadians(315));
-		course.setName("Last known course");
-		contributions.addContribution(course);
-
-		// hey, how about a time-bounded course constraint?
-		SpeedForecastContribution speed2 = new SpeedForecastContribution();
-		speed2.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 122500"));
-		speed2.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 123100"));
-		speed2.setMinSpeed(GeoSupport.kts2MSec(8d));
-		speed2.setMaxSpeed(GeoSupport.kts2MSec(27d));
-		speed2.setName("Later speed obs");
-		contributions.addContribution(speed2);
-
-		// that's nothing - we can now do straight leg forecasts
-		StraightLegForecastContribution st = new StraightLegForecastContribution();
-		st.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 122100"));
-		st.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 122800"));
-		st.setName("Straight prediction");
-		contributions.addContribution(st);
-
-		// and our analysis contributions
-		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
-		speedA.setActive(false);
-		contributions.addContribution(speedA);
-		CourseAnalysisContribution courseA = new CourseAnalysisContribution();
-		courseA.setActive(false);
-		contributions.addContribution(courseA);
-		contributions.addContribution(new LocationAnalysisContribution());
-
-		// ok, and get it to go for it
-		getGenerator().setLiveRunning(live);
-		getGenerator().run();
-	}
-
-	public void loadGoodData()
-	{
-		IContributions contributions = getGenerator().getContributions();
-		// clear the geneartor first
-		boolean live = getGenerator().isLiveEnabled();
-		getGenerator().setLiveRunning(false);		
-		getGenerator().clear();
+		boolean live = generator.isLiveEnabled();
+		generator.setLiveRunning(false);		
+		generator.clear();
 
 		// now load some data
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
@@ -638,8 +525,8 @@ public class TestSupport
 		contributions.addContribution(new LocationAnalysisContribution());
 
 		// ok, and get it to go for it
-		getGenerator().setLiveRunning(live);
-		getGenerator().run();
+		generator.setLiveRunning(live);
+		generator.run();
 
 	}
 
@@ -657,10 +544,4 @@ public class TestSupport
 			e.printStackTrace();
 		}
 	}
-
-	public void setGenerator(ISolver genny)
-	{
-		solver = genny;
-	}
-
 }

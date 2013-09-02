@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
@@ -15,9 +16,10 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 public class SpeedContributionView extends BaseContributionView<SpeedForecastContribution>
 {
 
-	public SpeedContributionView(Composite parent, SpeedForecastContribution contribution)
+	public SpeedContributionView(Composite parent, SpeedForecastContribution contribution,
+			IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		initUI();
 	}
 

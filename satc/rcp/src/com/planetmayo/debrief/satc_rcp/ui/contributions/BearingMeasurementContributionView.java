@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
@@ -25,9 +26,9 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 	private Button runMDACheckbox;
 
 	public BearingMeasurementContributionView(Composite parent,
-			BearingMeasurementContribution contribution)
+			BearingMeasurementContribution contribution, final IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		initUI();
 	}
 

@@ -16,6 +16,7 @@ import org.eclipse.jface.action.AbstractGroupMarker;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
@@ -47,6 +48,8 @@ import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -82,7 +85,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private Action _showLegend;
 
-	private ISolver solver;
+	private ISolversManager _solversManager;
+	
+	private ISolver _activeSolver;
 
 	/**
 	 * level of diagnostics for user
@@ -157,6 +162,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat(
 			"hh:mm:ss");
 
+	private ISolversManagerListener solversManagerListener;
 	private IConstrainSpaceListener constrainSpaceListener;
 	private IGenerateSolutionsListener generateSolutionsListener;
 	/**
@@ -189,7 +195,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		_lastSetOfScoredLegs = null;
 		_lastSetOfSolutions = null;
 
-		_lastStates = solver.getProblemSpace().states();
+		_lastStates = _activeSolver.getProblemSpace().states();
 
 		redoChart();
 	}
@@ -221,8 +227,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		solver = SATC_Activator.getDefault().getService(ISolver.class, true);
-
+		_solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, true);
+		
 		// get the data ready
 		_myData = new XYSeriesCollection();
 
@@ -248,22 +254,22 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// tell the GeoSupport about us
 		GeoSupport.setPlotter(this, this, this);
-		constrainSpaceListener = UIListener.wrap(parent.getDisplay(),
-				IConstrainSpaceListener.class, this);
-		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),				
-				new Class<?>[] {IBruteForceSolutionsListener.class, IGASolutionsListener.class}, this,
-				new UIListener.MinimumDelay("iterationComputed", 150));
-		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
-		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
+		initListener(parent.getDisplay());
+		_solversManager.addSolversManagerListener(solversManagerListener);
+		setActiveSolver(_solversManager.getActiveSolver());
 	}
 
 	@Override
 	public void dispose()
 	{
-		solver.getBoundsManager().removeConstrainSpaceListener(
-				constrainSpaceListener);
-		solver.getSolutionGenerator()
+		if (_activeSolver != null)
+		{
+			_activeSolver.getBoundsManager().removeConstrainSpaceListener(
+					constrainSpaceListener);
+			_activeSolver.getSolutionGenerator()
 				.removeReadyListener(generateSolutionsListener);
+		}
+		_solversManager.removeSolverManagerListener(solversManagerListener);
 		super.dispose();
 	}
 
@@ -327,6 +333,48 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void setFocus()
 	{
+	}
+	
+	private void initListener(Display display)
+	{
+		solversManagerListener = new ISolversManagerListener()
+		{
+			
+			@Override
+			public void solverCreated(ISolver solver)
+			{
+			}
+			
+			@Override
+			public void activeSolverChanged(ISolver activeSolver)
+			{
+				setActiveSolver(activeSolver);
+			}
+		};
+		solversManagerListener = UIListener.wrap(display, 
+				ISolversManagerListener.class, solversManagerListener);
+		constrainSpaceListener = UIListener.wrap(display,
+				IConstrainSpaceListener.class, this);
+		generateSolutionsListener = UIListener.wrap(display,
+				new Class<?>[]
+				{ IBruteForceSolutionsListener.class, IGASolutionsListener.class },
+				this, new UIListener.MinimumDelay("iterationComputed", 150));
+	}
+	
+	private void setActiveSolver(ISolver activeSolver) 
+	{
+		if (_activeSolver != null)
+		{
+			_activeSolver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
+			_activeSolver.getSolutionGenerator().removeReadyListener(generateSolutionsListener);			
+		}
+		_activeSolver = activeSolver;
+		clear("");
+		if (_activeSolver != null)
+		{
+			_activeSolver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
+			_activeSolver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
+		}
 	}
 
 	private void showBoundedStates(Collection<BoundedState> newStates)
@@ -596,7 +644,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_debugMode.isChecked())
-			showBoundedStates(solver.getProblemSpace().states());
+			showBoundedStates(_activeSolver.getProblemSpace().states());
 	}
 
 	@Override

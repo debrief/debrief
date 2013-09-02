@@ -17,12 +17,15 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -109,12 +112,14 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.TrackStatesView";
 
-	private ISolver solver;
+	private ISolversManager _solversManager;
+	private ISolver _activeSolver;
 
 	private TableViewer viewer;
 	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
 
 	private IConstrainSpaceListener constrainSpaceListener;
+	private ISolversManagerListener solversManagerListener;
 	/**
 	 * let user indicate whether we wish to display intermediate bounded states
 	 * 
@@ -135,8 +140,8 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		solver = SATC_Activator.getDefault().getService(
-				ISolver.class, true);
+		_solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, true);
+		
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -264,23 +269,61 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 
 		makeActions();
 		contributeToActionBars();
-
-		constrainSpaceListener = UIListener.wrap(parent.getDisplay(), 
-				IConstrainSpaceListener.class, this);
-		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
+		
+		initListeners(parent.getDisplay());
+		_solversManager.addSolversManagerListener(solversManagerListener);
+		setActiveSolver(_solversManager.getActiveSolver());
+	}
+	
+	private void initListeners(Display display) 
+	{
+		solversManagerListener = new ISolversManagerListener()
+		{
+			
+			@Override
+			public void solverCreated(ISolver solver)
+			{
+			}
+			
+			@Override
+			public void activeSolverChanged(ISolver activeSolver)
+			{
+				setActiveSolver(activeSolver);
+			}
+		};
+		solversManagerListener = UIListener.wrap(display, ISolversManagerListener.class, solversManagerListener);
+		constrainSpaceListener = UIListener.wrap(display, IConstrainSpaceListener.class, this);
 	}
 
 	@Override
 	public void dispose()
 	{
-		solver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
+		_solversManager.removeSolverManagerListener(solversManagerListener);
+		if (_activeSolver != null) 
+		{
+			_activeSolver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
+		}
 		super.dispose();
+	}
+	
+	private void setActiveSolver(ISolver solver)
+	{
+		if (_activeSolver != null)
+		{
+			_activeSolver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
+		}
+		viewer.setInput(null);
+		_activeSolver = solver;
+		if (_activeSolver != null)
+		{
+			_activeSolver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);					
+		}		
 	}
 
 	@Override
 	public void statesBounded(IBoundsManager boundsManager)
 	{
-		viewer.setInput(solver.getProblemSpace().states());
+		viewer.setInput(_activeSolver.getProblemSpace().states());
 	}
 
 	@Override
@@ -308,7 +351,7 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	{
 		if (_debugMode.isChecked())
 		{
-			viewer.setInput(solver.getProblemSpace().states());
+			viewer.setInput(_activeSolver.getProblemSpace().states());
 		}
 	}
 

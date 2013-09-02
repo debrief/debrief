@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
@@ -25,9 +26,9 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 			Object.class, " m");
 
 	public RangeForecastContributionView(Composite parent,
-			RangeForecastContribution contribution)
+			RangeForecastContribution contribution, IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		initUI();
 	}
 

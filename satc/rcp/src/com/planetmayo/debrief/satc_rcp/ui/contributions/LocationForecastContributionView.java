@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
@@ -60,9 +61,9 @@ public class LocationForecastContributionView extends
 	};
 
 	public LocationForecastContributionView(Composite parent,
-			LocationForecastContribution contribution)
+			LocationForecastContribution contribution, IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		initUI();
 	}
 

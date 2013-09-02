@@ -5,24 +5,32 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.planetmayo.debrief.satc.model.Precision;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
+import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.sa.SASolutionGenerator;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 public class SwitchableSolutionGenerator implements ISolutionGenerator
-{	
+{
+	private final IContributions contributions;
+	private final IJobsManager jobsManager;
+	private final SafeProblemSpace problemSpace;
+	
 	private Set<IGenerateSolutionsListener> listeners;
 	private ISolutionGenerator currentGenerator;
 	
-	public SwitchableSolutionGenerator(ISolutionGenerator initialGenerator)
+	public SwitchableSolutionGenerator(IContributions contributions, IJobsManager jobsManager, SafeProblemSpace problemSpace)
 	{
-		if (initialGenerator == null) 
-		{
-			throw new IllegalArgumentException("initialGenerator can't be null");
-		}
+		this.contributions = contributions;
+		this.jobsManager = jobsManager;
+		this.problemSpace = problemSpace;
 		this.listeners = Collections
 				.newSetFromMap(new ConcurrentHashMap<IGenerateSolutionsListener, Boolean>());
-		currentGenerator = initialGenerator;
+		switchToBF();
 	}
 
 	@Override
@@ -87,14 +95,32 @@ public class SwitchableSolutionGenerator implements ISolutionGenerator
 		{
 			throw new IllegalArgumentException("generator can't be null");
 		}
-		Precision precision = getPrecision();
+		Precision precision = currentGenerator == null ? Precision.LOW : getPrecision();
 		for (IGenerateSolutionsListener listener : listeners)
 		{
-			currentGenerator.removeReadyListener(listener);
+			if (currentGenerator != null) 
+			{
+				currentGenerator.removeReadyListener(listener);
+			}
 			generator.addReadyListener(listener);
 		}
 		generator.setPrecision(precision);
 		currentGenerator = generator;
+	}
+	
+	public void switchToBF() 
+	{
+		switchGenerator(new BFSolutionGenerator(contributions, jobsManager, problemSpace));
+	}
+	
+	public void switchToGA() 
+	{
+		switchGenerator(new GASolutionGenerator(contributions, jobsManager, problemSpace));
+	}
+
+	public void switchToSA() 
+	{
+		switchGenerator(new SASolutionGenerator(contributions, jobsManager, problemSpace));
 	}
 	
 	public ISolutionGenerator getCurrentGenerator() 

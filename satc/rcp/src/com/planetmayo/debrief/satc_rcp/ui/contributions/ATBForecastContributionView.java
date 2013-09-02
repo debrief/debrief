@@ -6,6 +6,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
@@ -14,9 +15,10 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 public class ATBForecastContributionView extends BaseContributionView<ATBForecastContribution>
 {
 
-	public ATBForecastContributionView(Composite parent, ATBForecastContribution contribution)
+	public ATBForecastContributionView(Composite parent, ATBForecastContribution contribution, 
+			final IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		initUI();
 	}
 

@@ -10,24 +10,12 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
-import com.planetmayo.debrief.satc.model.generator.IContributions;
-import com.planetmayo.debrief.satc.model.generator.IJobsManager;
-import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.generator.impl.BoundsManager;
-import com.planetmayo.debrief.satc.model.generator.impl.Contributions;
-import com.planetmayo.debrief.satc.model.generator.impl.Solver;
-import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
-import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
-import com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator;
-import com.planetmayo.debrief.satc.model.generator.impl.sa.SASolutionGenerator;
-import com.planetmayo.debrief.satc.model.generator.jobs.RCPJobsManager;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
+import com.planetmayo.debrief.satc.model.manager.impl.SolversManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
-import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -77,27 +65,13 @@ public class SATC_Activator extends AbstractUIPlugin
 
 	private void registerServices(BundleContext context)
 	{
-		ProblemSpace problemSpace = new ProblemSpace();
-		IContributions contributions = new Contributions();	
-		IJobsManager jobsManager = new RCPJobsManager();
-		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
-		SASolutionGenerator saGenerator = new SASolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
-		BFSolutionGenerator bfGenerator = new BFSolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
-		GASolutionGenerator gaGenerator = new GASolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));		
-		ISolver solver = new Solver(contributions, problemSpace, boundsManager, new SwitchableSolutionGenerator(bfGenerator), jobsManager);
-		
+		IVehicleTypesManager vehicleTypesManager = new MockVehicleTypesManager();
 		context.registerService(IVehicleTypesManager.class,
-				new MockVehicleTypesManager(), new Hashtable<String, Object>());
+				vehicleTypesManager, new Hashtable<String, Object>());
 		context.registerService(IContributionsManager.class, 
 				new ContributionsManagerImpl(), new Hashtable<String, Object>());
-		context.registerService(ISolver.class, 
-				solver, new Hashtable<String, Object>());
-		context.registerService(BFSolutionGenerator.class, 
-				bfGenerator, new Hashtable<String, Object>());
-		context.registerService(GASolutionGenerator.class, 
-				gaGenerator, new Hashtable<String, Object>());
-		context.registerService(SASolutionGenerator.class, 
-				saGenerator, new Hashtable<String, Object>());
+		context.registerService(ISolversManager.class, 
+				new SolversManagerImpl(vehicleTypesManager), new Hashtable<String, Object>());
 	}
 
 	@Override

@@ -4,13 +4,15 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 
 public class StraightLegForecastContributionView extends BaseContributionView<StraightLegForecastContribution>
 {
 	
-	public StraightLegForecastContributionView(Composite parent, StraightLegForecastContribution contribution)
+	public StraightLegForecastContributionView(Composite parent, StraightLegForecastContribution contribution,
+			IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		initUI();
 	}
 	

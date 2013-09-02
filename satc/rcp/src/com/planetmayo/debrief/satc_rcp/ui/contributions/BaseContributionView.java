@@ -36,8 +36,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
-import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.NullToBooleanConverter;
@@ -78,15 +76,15 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
+	
+	private final IContributions contributions;
 
-	private IContributions contributions;
-
-	public BaseContributionView(final Composite parent, final T contribution)
+	public BaseContributionView(final Composite parent, final T contribution, 
+			final IContributions contributions)
 	{
 		this.controlParent = parent;
 		this.contribution = contribution;
-		contributions = SATC_Activator.getDefault().getService(ISolver.class, true)
-				.getContributions();
+		this.contributions = contributions;
 	}
 
 	protected PropertyChangeListener attachTitleChangeListener(

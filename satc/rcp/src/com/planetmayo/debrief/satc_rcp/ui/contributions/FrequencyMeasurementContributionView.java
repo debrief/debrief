@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
@@ -23,9 +24,9 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	private Button errorActiveCheckbox;	
 
 	public FrequencyMeasurementContributionView(Composite parent,
-			FrequencyMeasurementContribution contribution)
+			FrequencyMeasurementContribution contribution, IContributions contributions)
 	{
-		super(parent, contribution);
+		super(parent, contribution, contributions);
 		initUI();
 	}
 

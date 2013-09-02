@@ -21,6 +21,11 @@ import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 public interface ISolver
 {
 	/**
+	 * @returns solver name
+	 */
+  String getName();
+	
+	/**
 	 * returns contributions manager associated with solver 
 	 */
 	IContributions getContributions();

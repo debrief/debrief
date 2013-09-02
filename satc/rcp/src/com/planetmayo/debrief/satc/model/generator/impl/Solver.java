@@ -22,6 +22,8 @@ import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 public class Solver implements ISolver
 {
+	private final String name;
+	
 	private final IContributions contributions;
 	private final IBoundsManager boundsManager;
 	private final ISolutionGenerator solutionGenerator;
@@ -53,11 +55,12 @@ public class Solver implements ISolver
 	private final String[] propertiesToRestartSolutionGenerator =
 	{ BaseContribution.WEIGHT, BaseContribution.ESTIMATE };
 	
-	public Solver(IContributions contributions, ProblemSpace problemSpace,
+	public Solver(String name, IContributions contributions, ProblemSpace problemSpace,
 			IBoundsManager boundsManager,	ISolutionGenerator solutionGenerator, 
 			IJobsManager jobsManager)
 	{
 		super();
+		this.name = name;
 		this.contributions = contributions;
 		this.boundsManager = boundsManager;
 		this.solutionGenerator = solutionGenerator;
@@ -82,6 +85,12 @@ public class Solver implements ISolver
 			contributions.addPropertyListener(property, autoGenerateListener);
 		}		
 		boundsManager.addConstrainSpaceListener(autoGenerateListener);
+	}
+	
+	@Override
+	public String getName()
+	{
+		return name;
 	}
 
 	@Override

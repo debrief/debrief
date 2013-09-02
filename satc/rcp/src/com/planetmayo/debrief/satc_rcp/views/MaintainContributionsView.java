@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +47,14 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
@@ -70,8 +74,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
  * @author ian
  * 
  */
-public class MaintainContributionsView extends ViewPart implements
-		IContributionsChangedListener
+public class MaintainContributionsView extends ViewPart
 {
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
@@ -86,15 +89,6 @@ public class MaintainContributionsView extends ViewPart implements
 				BearingMeasurementContributionView.class);
 		CONTRIBUTION_PANELS.put(CourseForecastContribution.class,
 				CourseContributionView.class);
-
-		// Note: these views have been commented out, since they have no analyst
-		// involvement
-		// CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class,
-		// AnalysisContributionView.class);
-		// CONTRIBUTION_PANELS.put(CourseAnalysisContribution.class,
-		// AnalysisContributionView.class);
-		// CONTRIBUTION_PANELS.put(SpeedAnalysisContribution.class,
-		// AnalysisContributionView.class);
 		CONTRIBUTION_PANELS.put(LocationForecastContribution.class,
 				LocationForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(RangeForecastContribution.class,
@@ -105,84 +99,31 @@ public class MaintainContributionsView extends ViewPart implements
 				StraightLegForecastContributionView.class);
 	}
 
+	
+	/** UI fields */
 	private Composite main;
-
 	private Button generateSolutions;
 	private Button cancelGeneration;
-	// private Button displaySolutions;
 	private ComboViewer precisionsCombo;
 	private ComboViewer vehiclesCombo;
 	private Composite contList;
-	private Menu _addContMenu;
+	private Menu addContributionMenu;
+	private ToolItem addContributionButton;
 
-	private ISolver solver;
+
+	/** Contribution -> Contribution view mappings */	
+	private HashMap<BaseContribution, BaseContributionView<?>> contributionsControl =
+			new HashMap<BaseContribution, BaseContributionView<?>>();
+	private ISolver activeSolver;
+	
+	private ISolversManager solversManager;
 
 	/**
-	 * remember which contributions we're displaying
-	 * 
-	 */
-	private HashMap<BaseContribution, BaseContributionView<?>> _myControls = new HashMap<BaseContribution, BaseContributionView<?>>();
-
-	/**
-	 * the solution generator
-	 * 
+	 * current listeners 
 	 */
 	private IContributionsChangedListener contributionsChangedListener;
-
 	private IGenerateSolutionsListener generateSolutionsListener;
-
-	@Override
-	public void added(BaseContribution contribution)
-	{
-		// ok, create a wrapper for this
-		BaseContributionView<?> panel = null;
-		if (!CONTRIBUTION_PANELS.containsKey(contribution.getClass()))
-		{
-			return;
-		}
-		try
-		{
-			Class<?> viewClass = CONTRIBUTION_PANELS.get(contribution.getClass());
-			panel = (BaseContributionView<?>) viewClass.getConstructor(
-					Composite.class, contribution.getClass()).newInstance(contList,
-					contribution);
-			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-					| GridData.GRAB_HORIZONTAL));
-
-			// and rememeber it
-			_myControls.put(contribution, panel);
-
-			// ok, redo the layout...
-			contList.layout();
-		}
-		catch (Exception ex)
-		{
-			LogFactory.getLog().error("Failed to generate panel for " + contribution);
-		}
-	}
-
-	@Override
-	public void removed(BaseContribution contribution)
-	{
-		// get the panel
-		BaseContributionView<?> panel = _myControls.get(contribution);
-
-		// did we find it?
-		if (panel != null)
-		{
-			// and remove it
-			panel.dispose();
-
-			// and forget it
-			_myControls.remove(contribution);
-		}
-		else
-		{
-			System.err.println("failed to find UI for:" + contribution);
-		}
-
-		contList.layout(true);
-	}
+	private ISolversManagerListener solverManagerListener;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -191,53 +132,25 @@ public class MaintainContributionsView extends ViewPart implements
 				.getService(IContributionsManager.class, true);
 		IVehicleTypesManager vehicleManager = SATC_Activator.getDefault()
 				.getService(IVehicleTypesManager.class, true);
-		solver = SATC_Activator.getDefault().getService(ISolver.class, true);
+		solversManager = SATC_Activator.getDefault()
+				.getService(ISolversManager.class, true);
 
 		initUI(parent);
 		populateContributionList(contributionsManager.getAvailableContributions());
 		populatePrecisionsList(Precision.values());
 		populateVehicleTypesList(vehicleManager.getAllTypes());
-
-		contributionsChangedListener = UIListener.wrap(parent.getDisplay(),
-				IContributionsChangedListener.class, this);
-		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),
-				IGenerateSolutionsListener.class, new SteppingAdapter()
-				{
-					Control focused = null;
-
-					@Override
-					public void startingGeneration()
-					{
-						focused = parent.getDisplay().getFocusControl();
-						UIUtils.setEnabled(parent, false);
-						cancelGeneration.setVisible(true);
-						cancelGeneration.setEnabled(true);
-					}
-
-					@Override
-					public void finishedGeneration(Throwable error)
-					{
-						UIUtils.setEnabled(parent, true);
-						cancelGeneration.setVisible(false);
-
-						// we've encountered an instance during file-load where focused is
-						// null, better check it
-						if (focused != null)
-							focused.setFocus();
-					}
-				});
-		solver.getContributions().addContributionsChangedListener(
-				contributionsChangedListener);
-		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
+		
+		initListeners(parent);
+		solversManager.addSolversManagerListener(solverManagerListener);
+		
+		setActiveSolver(solversManager.getActiveSolver());
 	}
-
+	
 	@Override
 	public void dispose()
 	{
-		solver.getContributions().removeContributionsChangedListener(
-				contributionsChangedListener);
-		solver.getSolutionGenerator()
-				.removeReadyListener(generateSolutionsListener);
+		setActiveSolver(null);
+		solversManager.removeSolverManagerListener(solverManagerListener);
 		super.dispose();
 	}
 
@@ -283,23 +196,23 @@ public class MaintainContributionsView extends ViewPart implements
 		group.setLayoutData(gridData);
 		group.setText("New Contribution");
 
-		_addContMenu = new Menu(group);
+		addContributionMenu = new Menu(group);
 		final ToolBar toolBar = new ToolBar(group, SWT.NONE);
 		toolBar.setBounds(50, 50, 50, 50);
-		final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
-		item.setText("Add...");
-		item.addListener(SWT.Selection, new Listener()
+		addContributionButton = new ToolItem(toolBar, SWT.DROP_DOWN);
+		addContributionButton.setText("Add...");
+		addContributionButton.addListener(SWT.Selection, new Listener()
 		{
 			@Override
 			public void handleEvent(Event event)
 			{
 				if (event.detail == SWT.ARROW)
 				{
-					Rectangle rect = item.getBounds();
+					Rectangle rect = addContributionButton.getBounds();
 					Point pt = new Point(rect.x, rect.y + rect.height);
 					pt = toolBar.toDisplay(pt);
-					_addContMenu.setLocation(pt.x, pt.y);
-					_addContMenu.setVisible(true);
+					addContributionMenu.setLocation(pt.x, pt.y);
+					addContributionMenu.setVisible(true);
 				}
 			}
 		});
@@ -362,9 +275,11 @@ public class MaintainContributionsView extends ViewPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				solver.setAutoGenerateSolutions(generateSolutions.getSelection());
+				if (activeSolver != null)
+				{
+					activeSolver.setAutoGenerateSolutions(generateSolutions.getSelection());
+				}
 			}
-
 		});
 		generateSolutions.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
@@ -378,7 +293,10 @@ public class MaintainContributionsView extends ViewPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				solver.cancel();
+				if (activeSolver != null)
+				{
+					activeSolver.cancel();
+				}
 			}
 		});
 
@@ -414,14 +332,12 @@ public class MaintainContributionsView extends ViewPart implements
 				ISelection sel = precisionsCombo.getSelection();
 				IStructuredSelection cSel = (IStructuredSelection) sel;
 				Precision precision = (Precision) cSel.getFirstElement();
-				solver.setPrecision(precision);
+				if (activeSolver != null) 
+				{
+					activeSolver.setPrecision(precision);
+				}
 			}
 		});
-
-		// displaySolutions = new Button(group, SWT.CHECK);
-		// displaySolutions.setText("Display Solutions");
-		// displaySolutions.setLayoutData(new GridData(
-		// GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
 	}
 
 	private void initUI(Composite parent)
@@ -470,14 +386,14 @@ public class MaintainContributionsView extends ViewPart implements
 			@Override
 			public void selectionChanged(SelectionChangedEvent event)
 			{
-				if (solver != null)
+				if (activeSolver != null)
 				{
 					ISelection selection = event.getSelection();
 					if (selection instanceof StructuredSelection)
 					{
 						VehicleType type = (VehicleType) ((StructuredSelection) selection)
 								.getFirstElement();
-						solver.setVehicleType(type);
+						activeSolver.setVehicleType(type);
 					}
 				}
 			}
@@ -488,14 +404,17 @@ public class MaintainContributionsView extends ViewPart implements
 	{
 		for (final ContributionBuilder item : items)
 		{
-			MenuItem menuItem = new MenuItem(_addContMenu, SWT.PUSH);
+			MenuItem menuItem = new MenuItem(addContributionMenu, SWT.PUSH);
 			menuItem.setText(item.getDescription());
 			menuItem.addSelectionListener(new SelectionAdapter()
 			{
 				@Override
 				public void widgetSelected(SelectionEvent arg0)
 				{
-					solver.getContributions().addContribution(item.create());
+					if (activeSolver != null) 
+					{
+						activeSolver.getContributions().addContribution(item.create());
+					}
 				}
 			});
 		}
@@ -504,7 +423,6 @@ public class MaintainContributionsView extends ViewPart implements
 	public void populatePrecisionsList(Precision[] precisions)
 	{
 		precisionsCombo.setInput(precisions);
-		// and set an initial value
 		precisionsCombo.setSelection(new StructuredSelection(precisions[0]));
 	}
 
@@ -514,7 +432,166 @@ public class MaintainContributionsView extends ViewPart implements
 
 		// ok, try to set the first one
 		if (vehicles.size() > 0)
+		{
 			vehiclesCombo.setSelection(new StructuredSelection(vehicles.iterator()
 					.next()));
+		}
 	}
+	
+	private void initListeners(final Composite parent) 
+	{
+		contributionsChangedListener = UIListener.wrap(parent.getDisplay(),
+				IContributionsChangedListener.class, 
+				new IContributionsChangedListener()
+				{
+					
+					@Override
+					public void removed(BaseContribution contribution)
+					{
+						removeContribution(contribution, true);
+					}
+					
+					@Override
+					public void added(BaseContribution contribution)
+					{
+						addContribution(contribution, true);
+					}
+				}
+		);
+		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),
+				IGenerateSolutionsListener.class, new SteppingAdapter()
+				{
+					Control focused = null;
+
+					@Override
+					public void startingGeneration()
+					{
+						focused = parent.getDisplay().getFocusControl();
+						UIUtils.setEnabled(parent, false);
+						cancelGeneration.setVisible(true);
+						cancelGeneration.setEnabled(true);
+					}
+
+					@Override
+					public void finishedGeneration(Throwable error)
+					{
+						UIUtils.setEnabled(parent, true);
+						cancelGeneration.setVisible(false);
+
+						// we've encountered an instance during file-load where focused is
+						// null, better check it
+						if (focused != null)
+							focused.setFocus();
+					}
+				}
+		);	
+		solverManagerListener = UIListener.wrap(parent.getDisplay(), ISolversManagerListener.class, 
+				new ISolversManagerListener()
+				{
+					
+					@Override
+					public void solverCreated(ISolver solver)
+					{
+						
+					}
+					
+					@Override
+					public void activeSolverChanged(ISolver activeSolver)
+					{
+						setActiveSolver(activeSolver);
+					}
+				}
+		);
+	}
+	
+	protected void setActiveSolver(ISolver solver) 
+	{
+		if (activeSolver != null) 
+		{			
+			activeSolver.getContributions().
+				removeContributionsChangedListener(contributionsChangedListener);
+			activeSolver.getSolutionGenerator().
+				removeReadyListener(generateSolutionsListener);			
+		}
+		List<BaseContribution> contributions = new ArrayList<BaseContribution>(contributionsControl.keySet());
+		for (BaseContribution contribution : contributions)
+		{
+			removeContribution(contribution, false);
+		}
+		if (! contList.isDisposed())
+		{
+			contList.layout();
+		}
+		
+		activeSolver = solver;
+		boolean hasSolver = activeSolver != null;		
+		if (hasSolver) 
+		{
+			activeSolver.getContributions().
+				addContributionsChangedListener(contributionsChangedListener);
+			activeSolver.getSolutionGenerator().
+				addReadyListener(generateSolutionsListener);
+			for (BaseContribution contribution : activeSolver.getContributions()) 
+			{
+				addContribution(contribution, false);
+			}
+			contList.layout();
+			generateSolutions.setSelection(activeSolver.isAutoGenerateSolutions());
+			vehiclesCombo.setSelection(
+					new StructuredSelection(activeSolver.getVehicleType())
+			);
+			precisionsCombo.setSelection(new StructuredSelection(activeSolver.getPrecision()));
+		}
+		if (! contList.isDisposed())
+		{
+			precisionsCombo.getCombo().setEnabled(hasSolver);
+			generateSolutions.setEnabled(hasSolver);
+			vehiclesCombo.getCombo().setEnabled(hasSolver);
+			addContributionButton.setEnabled(hasSolver);
+		}
+	}
+	
+	public void addContribution(BaseContribution contribution, boolean doLayout)
+	{
+		// ok, create a wrapper for this
+		BaseContributionView<?> panel = null;
+		if (!CONTRIBUTION_PANELS.containsKey(contribution.getClass()))
+		{
+			return;
+		}
+		try
+		{
+			Class<?> viewClass = CONTRIBUTION_PANELS.get(contribution.getClass());
+			panel = (BaseContributionView<?>) viewClass.getConstructor(
+					Composite.class, contribution.getClass(), IContributions.class)
+					.newInstance(contList, contribution, activeSolver.getContributions());
+			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
+					| GridData.GRAB_HORIZONTAL));
+
+			// and rememeber it
+			contributionsControl.put(contribution, panel);
+			if (doLayout) 
+			{
+				contList.layout();
+			}
+		}
+		catch (Exception ex)
+		{
+			LogFactory.getLog().error("Failed to generate panel for " + contribution);
+		}
+	}
+
+	protected void removeContribution(BaseContribution contribution, boolean doLayout)
+	{
+		BaseContributionView<?> panel = contributionsControl.get(contribution);
+		if (panel != null)
+		{
+			panel.dispose();
+			contributionsControl.remove(contribution);
+			if (doLayout) 
+			{
+				contList.layout();
+			}
+		}
+	}	
 }
