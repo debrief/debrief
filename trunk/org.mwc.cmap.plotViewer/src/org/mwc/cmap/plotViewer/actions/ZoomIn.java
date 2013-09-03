@@ -61,6 +61,8 @@ public class ZoomIn extends CoreDragAction
 			
 		};
 
+
+
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
 				final Layers theLayers, SWTCanvas theCanvas)
@@ -89,6 +91,7 @@ public class ZoomIn extends CoreDragAction
 				fc.dispose();
 				gc.dispose();
 			}
+
 		}
 
 		@Override
@@ -120,53 +123,63 @@ public class ZoomIn extends CoreDragAction
 				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
 						+ res.height);
 
-				if (res.width > JITTER || res.height > JITTER)
-				{
+				if (res.width > JITTER || res.height > JITTER) {
 
-					WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
-							.toWorld(tl));
-					WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
-							.toWorld(br));
+					WorldLocation locA = new WorldLocation(_myCanvas
+							.getProjection().toWorld(tl));
+					WorldLocation locB = new WorldLocation(_myCanvas
+							.getProjection().toWorld(br));
 					WorldArea area = new WorldArea(locA, locB);
+
 					WorldArea oldArea = _myCanvas.getProjection().getDataArea();
 					Action theAction = null;
 
-					// find where the cursor currently is (in absolute coords, not delta coords)
+					// find where the cursor currently is (in absolute coords,
+					// not delta coords)
 					Point finalPos = Display.getCurrent().getCursorLocation();
 
-					// the finalPos we're retrieving is in screen coords, not the coords for this panel.
-					// so, get the display to give us the co-ords for inside the canvas
-					final Point  mappedFinal = Display.getCurrent().map(null, _myCanvas.getCanvas(), finalPos);
+					// the finalPos we're retrieving is in screen coords, not
+					// the coords for this panel.
+					// so, get the display to give us the co-ords for inside the
+					// canvas
+					final Point mappedFinal = Display.getCurrent().map(null,
+							_myCanvas.getCanvas(), finalPos);
 
-					// ok, now consider the overall drag operation, just in case it started with BR->TL, but
+					// ok, now consider the overall drag operation, just in case
+					// it started with BR->TL, but
 					// ended up with TL->BR.
 					final int overallX = mappedFinal.x - _startPoint.x;
 					final int overallY = mappedFinal.y - _startPoint.y;
 
 					// if the drag was from TL to BR
-					if (overallX >= 0 || overallY >= 0)
-					{
+					if (overallX >= 0 || overallY >= 0) {
 						// then zoom in
-						theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(_myChart,
-								oldArea, area);
+						theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(
+								_myChart, oldArea, area);
 					}
 					// if the drag was from BR to TL
-					else
-					{
+					else {
 						final Dimension screenSize = _myCanvas.getSize();
-						// now, we have to root the scale, since the ZoomOutAction is expecting
+
+						// now, we have to root the scale, since the
+						// ZoomOutAction is expecting
 						// a 'length', not an 'area'.
-						final double scale = Math.sqrt((screenSize.height*screenSize.width)
-								/ (res.height*res.width));
-						theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(
-								_myChart, oldArea, scale);
+						final double scale = Math
+								.sqrt((screenSize.height * screenSize.width)
+										/ (res.height * res.width));
+						theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAreaAction(
+								_myChart, oldArea, area, scale);
 					}
+
 					// and wrap it
-					DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-							layers, null);
+					DebriefActionWrapper daw = new DebriefActionWrapper(
+							theAction, layers, null);
+
 					// and add it to the clipboard
 					CorePlugin.run(daw);
+
 				}
+
 			}
 		}
 	}

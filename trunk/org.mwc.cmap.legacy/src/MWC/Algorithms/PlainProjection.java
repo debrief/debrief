@@ -260,6 +260,18 @@ abstract public class PlainProjection implements Serializable,
    */
   abstract public void zoom(double value);
 
+  /**
+   * zoom into the plot using the supplied scale factor (or fit to window)
+   * translate the view to the center of the specified area
+   *
+   * @param value the scale to zoom in on (or zero for fit to win)
+   * @param area the area to be centered at
+   */
+  public void zoom(final double value, final WorldArea area)
+  {
+	  zoom(value);
+  }
+
 
   /**
    * get the border around the data

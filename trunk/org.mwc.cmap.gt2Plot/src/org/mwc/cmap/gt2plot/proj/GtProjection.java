@@ -297,7 +297,78 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	}
 
 	@Override
-	public void setScreenArea(final Dimension theArea)
+	public void zoom(double scaleVal, final WorldArea area) {
+		if (scaleVal == 0)
+			scaleVal = 1;
+		Dimension paneArea = super.getScreenArea();
+		WorldArea dataArea = super.getDataArea();
+		if (dataArea != null)
+		{
+			if (! dataArea.contains(area.getCentre()))
+			{
+				return;
+			}
+			WorldLocation centre = area.getCentre();
+			DirectPosition2D mapPos = new DirectPosition2D(centre.getLong(),
+					centre.getLat());
+
+			DirectPosition2D mapM = new DirectPosition2D();
+			try
+			{
+				_degs2metres.transform(mapPos, mapM);
+
+				if (_view.getWorldToScreen() == null)
+					return;
+
+				double scale = _view.getWorldToScreen().getScaleX();
+				scale = Math.min(1000, scale);
+				double newScale = scale / scaleVal;
+
+				DirectPosition2D corner = new DirectPosition2D(mapM.getX() - 0.5d
+						* paneArea.width / newScale, mapM.getY() + 0.5d * paneArea.height
+						/ newScale);
+
+				Envelope2D newMapArea = new Envelope2D();
+				newMapArea.setFrameFromCenter(mapM, corner);
+
+				// convert back to friendly units
+				DirectPosition2D tlDegs = new DirectPosition2D();
+				DirectPosition2D brDegs = new DirectPosition2D();
+
+				_degs2metres.inverse().transform(newMapArea.getLowerCorner(), brDegs);
+				_degs2metres.inverse().transform(newMapArea.getUpperCorner(), tlDegs);
+
+				WorldLocation tl = new WorldLocation(brDegs.y, brDegs.x, 0d);
+				WorldLocation br = new WorldLocation(tlDegs.y, tlDegs.x, 0d);
+				WorldArea newArea = new WorldArea(tl, br);
+				newArea.normalise();
+
+				setDataArea(newArea);
+
+			}
+			catch (MismatchedDimensionException e)
+			{
+				GtActivator.logError(Status.ERROR,
+						"Unexpected problem whilst performing zoom", e);
+			}
+			catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
+			{
+				GtActivator.logError(Status.ERROR,
+						"Unable to do inverse transform in zoom", e);
+			}
+			catch (TransformException e)
+			{
+				GtActivator.logError(Status.ERROR,
+						"Unexpected problem whilst performing", e);
+			}
+
+		}
+
+
+	}
+
+	@Override
+	public void setScreenArea(Dimension theArea)
 	{
 		if (theArea.equals(super.getScreenArea()))
 			return;
@@ -572,5 +643,6 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 		}
 	}
+
 
 }

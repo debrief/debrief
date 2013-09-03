@@ -6,6 +6,8 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class ZoomOut extends PlainTool
 {
@@ -90,5 +92,53 @@ public class ZoomOut extends PlainTool
     }
   }
   
+	public static class ZoomOutAreaAction implements Action {
+
+		private PlainChart _theChart;
+		private WorldArea _oldArea;
+		private WorldArea _selectedArea;
+		private double _zoomFactor;
+
+		public ZoomOutAreaAction(final PlainChart theChart,
+				final WorldArea oldArea, final WorldArea selectedArea,
+				final double zoomFactor) {
+			_theChart = theChart;
+			_oldArea = oldArea;
+			_selectedArea = selectedArea;
+			_zoomFactor = zoomFactor;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public void undo() {
+			// set the data area for the chart to the old area
+		     _theChart.getCanvas().getProjection().setDataArea(_oldArea);
+
+		     // get the projection to refit-itself
+		     _theChart.getCanvas().getProjection().zoom(0.0);
+		}
+
+		@Override
+		public void execute() {
+			 _theChart.getCanvas().getProjection().zoom(_zoomFactor, _selectedArea);
+
+		    // get the projection to refit-itself
+		    _theChart.getCanvas().getProjection().zoom(0.0);
+		}
+
+		public String toString() {
+			return "Zoom out area operation";
+		}
+
+	}
   
 }
