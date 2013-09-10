@@ -25,9 +25,7 @@ import MWC.GenericData.WorldLocation;
  */
 public class ZoomIn extends CoreDragAction
 {
-	// TODO: since this mode does both zoom in and zoom out 
-	// depending on the drag rectangle location,
-	// maybe we should rename it?
+	
 	public static class ZoomInMode extends SWTChart.PlotMouseDragger
 	{
 		Point _startPoint;
@@ -38,7 +36,7 @@ public class ZoomIn extends CoreDragAction
 
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
-				final Layers theLayers, final SWTCanvas theCanvas)
+				final Layers theLayers, SWTCanvas theCanvas)
 		{
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
@@ -49,52 +47,34 @@ public class ZoomIn extends CoreDragAction
 
 				Tracker _dragTracker = new Tracker((Composite) _myCanvas.getCanvas(),
 						SWT.RESIZE);
-				final Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
+				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
 						deltaY);
 				_dragTracker.setRectangles(new Rectangle[] { rect });
-				final boolean dragResult = _dragTracker.open();
+				boolean dragResult = _dragTracker.open();
 				if (dragResult)
 				{
-					final Rectangle[] rects = _dragTracker.getRectangles();
-					final Rectangle res = rects[0];
+					Rectangle[] rects = _dragTracker.getRectangles();
+					Rectangle res = rects[0];
 					// get world area
-					final java.awt.Point tl = new java.awt.Point(res.x, res.y);
-					final java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
+					java.awt.Point tl = new java.awt.Point(res.x, res.y);
+					java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
 							+ res.height);
 
 					if (res.width > JITTER || res.height > JITTER)
 					{
 
-						final WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
+						WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
 								.toWorld(tl));
-						final WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
+						WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
 								.toWorld(br));
-						final WorldArea area = new WorldArea(locA, locB);
+						WorldArea area = new WorldArea(locA, locB);
 
-						final WorldArea oldArea = _myCanvas.getProjection().getDataArea();
-						Action theAction = null;
-						// if the drag was from TL to BR
-						if (deltaX <= 0 && deltaY <=0 )
-						{
-							// then zoom in
-							theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(
-									_myChart, oldArea, area);
-						}
-						// if the drag was from BR to TL
-						else 
-						{
-							// then zoom out
-							if (deltaX == 0)
-								deltaX = 1;
-							if (deltaY == 0)
-								deltaY = 1;
-							final double scale = deltaX*deltaY;
-							theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(
-									_myChart, oldArea, scale);
-						}
-
+						WorldArea oldArea = _myCanvas.getProjection().getDataArea();
+						Action theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(
+															_myChart, oldArea, area);
+						
 						// and wrap it
-						final DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
+						DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
 								theLayers, null);
 
 						// and add it to the clipboard
@@ -111,13 +91,13 @@ public class ZoomIn extends CoreDragAction
 		}
 
 		@Override
-		public void doMouseUp(final Point point, final int keyState)
+		public void doMouseUp(Point point, int keyState)
 		{
 			_startPoint = null;
 		}
 
 		@Override
-		public void mouseDown(final Point point, final SWTCanvas canvas, final PlainChart theChart)
+		public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart)
 		{
 			_startPoint = point;
 			_myCanvas = canvas;
