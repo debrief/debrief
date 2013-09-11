@@ -90,7 +90,7 @@ public class ZoomIn extends CoreDragAction
 				gc.drawRectangle(rect);
 				fc.dispose();
 				gc.dispose();
-				}
+			}
 		}
 
 		@Override
@@ -162,8 +162,8 @@ public class ZoomIn extends CoreDragAction
 						// a 'length', not an 'area'.
 						final double scale = Math.sqrt((screenSize.height*screenSize.width)
 								/ (res.height*res.width));
-						theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(
-								_myChart, oldArea, scale);
+						theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAreaAction(
+								_myChart, oldArea, area, scale);
 					}
 
 					// and wrap it
@@ -172,6 +172,7 @@ public class ZoomIn extends CoreDragAction
 
 					// and add it to the clipboard
 					CorePlugin.run(daw);
+
 				}
 			}
 		}
