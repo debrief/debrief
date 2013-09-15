@@ -146,7 +146,10 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	public final int compareTo(final Plottable o)
 	{
 		final NarrativeEntry other = (NarrativeEntry) o;
-		return _DTG.compareTo(other._DTG);
+		int result = _DTG.compareTo(other._DTG);
+		if (result == 0)
+			result = 1;
+		return result;
 	}
 
 	// ///////////////////////////////////////////
@@ -227,6 +230,17 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	{
 		return getName();
 	}
+	
+	public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof NarrativeEntry))
+            return false;
+        return super.equals(obj);
+	}
+
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class
@@ -282,5 +296,6 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 			editableTesterSupport.testParams(ne, this);
 		}
 	}
-
+	
+	
 }
