@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
@@ -162,7 +161,6 @@ public class ZoomOut extends PlainTool
 			public void testUndoRestoresArea()
 			{
 				final PlainProjection proj = _chart.getCanvas().getProjection();
-				//WorldLocation.setModel(new CompletelyFlatEarth());
 
 				final WorldLocation topLeft = new WorldLocation(0, 0, 0);
 				final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
@@ -177,31 +175,12 @@ public class ZoomOut extends PlainTool
 				proj.setScreenArea(new Dimension(100, 100));
 				final ZoomOutAreaAction action = new ZoomOutAreaAction(_chart,
 						oldArea, selectedArea, 2);
+
+				assertEquals(oldArea, proj.getDataArea());
 				action.execute();
+				assertNotSame(oldArea, proj.getDataArea());
 				action.undo();
 				assertEquals(oldArea, proj.getDataArea());
-			}
-
-			public void testZoomedAreaIsCorrect()
-			{
-				final PlainProjection proj = _chart.getCanvas().getProjection();
-				WorldLocation.setModel(new CompletelyFlatEarth());
-
-				final WorldLocation topLeft = new WorldLocation(0, 0, 0);
-				final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
-				final WorldArea oldArea = new WorldArea(topLeft, bottomRight);
-
-				final WorldLocation selTopLeft = new WorldLocation(1, 2, 0);
-				final WorldLocation selBottomRight = new WorldLocation(5, 5, 0);
-				final WorldArea selectedArea = new WorldArea(selTopLeft,
-						selBottomRight);
-
-				proj.setDataArea(oldArea);
-				proj.setScreenArea(new Dimension(100, 100));
-				final ZoomOutAreaAction action = new ZoomOutAreaAction(_chart,
-						oldArea, selectedArea, 2);
-				action.execute();
-				// TODO: check the new area coords
 			}
 
 			class MockCanvas extends MockCanvasType
@@ -210,7 +189,6 @@ public class ZoomOut extends PlainTool
 
 				public MockCanvas()
 				{
-					// TODO: GtProjection
 					_theProjection = new FlatProjection();
 				}
 

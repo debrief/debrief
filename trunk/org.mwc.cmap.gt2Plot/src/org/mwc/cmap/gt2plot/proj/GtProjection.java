@@ -29,6 +29,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
 import MWC.GenericData.WorldArea;
@@ -663,6 +664,24 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 		}
 
+		public void testZoomArea()
+		{
+			final GtProjection proj = new GtProjection();
+			WorldLocation.setModel(new CompletelyFlatEarth());
+
+			final WorldLocation oldTopLeft = new WorldLocation(0, 0, 0);
+			final WorldLocation oldBottomRight = new WorldLocation(10, 10, 0);
+			final WorldArea oldArea = new WorldArea(oldTopLeft, oldBottomRight);
+			proj.setDataArea(oldArea);
+			proj.setScreenArea(new Dimension(100, 100));
+
+			final WorldLocation topLeft = new WorldLocation(0, 0, 0);
+			final WorldLocation bottomRight = new WorldLocation(5, 5, 0);
+			final WorldArea area = new WorldArea(topLeft, bottomRight);
+			proj.zoom(2, area);
+			//TODO: create a test with simple obvious data/result
+			System.out.println(proj.getDataArea());
+		}
 	}
 
 
