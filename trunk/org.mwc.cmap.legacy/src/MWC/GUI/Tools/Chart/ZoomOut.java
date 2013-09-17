@@ -1,13 +1,23 @@
 package MWC.GUI.Tools.Chart;
 
 
+import java.awt.Component;
+import java.awt.Dimension;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
+import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Canvas.MockCanvasType;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
+
 
 public class ZoomOut extends PlainTool
 {
@@ -138,6 +148,127 @@ public class ZoomOut extends PlainTool
 		public String toString() {
 			return "Zoom out area operation";
 		}
+
+
+		static public class zoomOutAreaActionTest extends junit.framework.TestCase
+		{
+			PlainChart _chart;
+
+			public void setUp()
+			{
+				_chart = new MockChart(null);
+			}
+
+			public void testUndoRestoresArea()
+			{
+				final PlainProjection proj = _chart.getCanvas().getProjection();
+				//WorldLocation.setModel(new CompletelyFlatEarth());
+
+				final WorldLocation topLeft = new WorldLocation(0, 0, 0);
+				final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
+				final WorldArea oldArea = new WorldArea(topLeft, bottomRight);
+
+				final WorldLocation selTopLeft = new WorldLocation(1, 2, 0);
+				final WorldLocation selBottomRight = new WorldLocation(5, 5, 0);
+				final WorldArea selectedArea = new WorldArea(selTopLeft,
+						selBottomRight);
+
+				proj.setDataArea(oldArea);
+				proj.setScreenArea(new Dimension(100, 100));
+				final ZoomOutAreaAction action = new ZoomOutAreaAction(_chart,
+						oldArea, selectedArea, 2);
+				action.execute();
+				action.undo();
+				assertEquals(oldArea, proj.getDataArea());
+			}
+
+			public void testZoomedAreaIsCorrect()
+			{
+				final PlainProjection proj = _chart.getCanvas().getProjection();
+				WorldLocation.setModel(new CompletelyFlatEarth());
+
+				final WorldLocation topLeft = new WorldLocation(0, 0, 0);
+				final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
+				final WorldArea oldArea = new WorldArea(topLeft, bottomRight);
+
+				final WorldLocation selTopLeft = new WorldLocation(1, 2, 0);
+				final WorldLocation selBottomRight = new WorldLocation(5, 5, 0);
+				final WorldArea selectedArea = new WorldArea(selTopLeft,
+						selBottomRight);
+
+				proj.setDataArea(oldArea);
+				proj.setScreenArea(new Dimension(100, 100));
+				final ZoomOutAreaAction action = new ZoomOutAreaAction(_chart,
+						oldArea, selectedArea, 2);
+				action.execute();
+				// TODO: check the new area coords
+			}
+
+			class MockCanvas extends MockCanvasType
+			{
+				PlainProjection _theProjection;
+
+				public MockCanvas()
+				{
+					// TODO: GtProjection
+					_theProjection = new FlatProjection();
+				}
+
+				@Override
+				public PlainProjection getProjection()
+				{
+					return _theProjection;
+				}
+			}
+
+			class MockChart extends PlainChart
+			{
+				MockCanvasType _theCanvas;
+
+				public MockChart(Layers theLayers)
+				{
+					super(theLayers);
+					_theCanvas = new MockCanvas();
+				}
+
+				@Override
+				public void rescale() {}
+
+				@Override
+				public void update() {}
+
+				@Override
+				public void update(Layer changedLayer) {}
+
+				@Override
+				public void repaint() {}
+
+				@Override
+				public void repaintNow(java.awt.Rectangle rect) {}
+
+				@Override
+				public Dimension getScreenSize()
+				{
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public CanvasType getCanvas()
+				{
+					return _theCanvas;
+				}
+
+				@Override
+				public Component getPanel() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+			}
+
+		}
+
 
 	}
   
