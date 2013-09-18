@@ -148,7 +148,15 @@ final public class RangeBearing extends CoreDragAction
 			final java.awt.Point endPoint = new java.awt.Point(_lastRect.x
 					+ _lastRect.width, _lastRect.y + _lastRect.height);
 
-			dest.setForeground(new Color(Display.getDefault(), 111, 111, 111));
+			// this color leaks
+			//dest.setForeground(new Color(Display.getDefault(), 111, 111, 111));
+			Color oldForeground = dest.getForeground();
+			Color c = dest.getBackground();
+			int r = c.getRed() ^ 111;
+			int g = c.getGreen() ^ 111;
+			int b = c.getBlue() ^ 111;
+			Color f = new Color(Display.getDefault(), r, g, b);
+			dest.setForeground(f);
 			dest.setLineWidth(2);
 			dest.drawLine(_lastRect.x, _lastRect.y, _lastRect.x + _lastRect.width,
 					_lastRect.y + _lastRect.height);
@@ -180,11 +188,24 @@ final public class RangeBearing extends CoreDragAction
 			loc.translate(-txt.length() / 2 * fm.getAverageCharWidth(), 0);
 
 			// ok, do the write operation
-			dest.setForeground(new Color(Display.getDefault(), 200, 200, 200));
+			// this color leaks
+			//dest.setForeground(new Color(Display.getDefault(), 200, 200, 200));
+			c = dest.getBackground();
+			r = c.getRed() ^ 200;
+			g = c.getGreen() ^ 200;
+			b = c.getBlue() ^ 200;
+			Color f2 = new Color(Display.getDefault(), r, g, b);
+			dest.setForeground(f2);
+			
 			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
 			
 			// also get the RangeTracker to display the range/bearing
 			CoreTracker.write(txt);
+			// revert old foregoround color
+			dest.setForeground(oldForeground);
+			// dispose created colors
+			f.dispose();
+			f2.dispose();
 
 		}
 	}
