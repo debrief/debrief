@@ -67,12 +67,15 @@ final public class RangeBearing extends CoreDragAction
 				final GC gc = new GC(_myCanvas.getCanvas());
 
 				// This is the same as a !XOR
-				gc.setXORMode(true);
-				gc.setForeground(gc.getBackground());
+				//gc.setXORMode(true);
+				//gc.setForeground(gc.getBackground());
 
 				// Erase existing rectangle
-				if (_lastRect != null)
-					plotUpdate(gc);
+				if (_lastRect != null) {
+					//plotUpdate(gc);
+					_myCanvas.getCanvas().redraw();
+					Display.getCurrent().update();
+				}
 
 				final int dx = pt.x - _startPoint.x;
 				final int dy = pt.y - _startPoint.y;

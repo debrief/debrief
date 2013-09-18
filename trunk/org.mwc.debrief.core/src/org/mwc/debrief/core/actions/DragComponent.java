@@ -217,13 +217,15 @@ public class DragComponent extends DragFeature
 				final GC gc = new GC(_myCanvas.getCanvas());
 
 				// This is the same as a !XOR
-				gc.setXORMode(true);
-				gc.setForeground(gc.getBackground());
+				//gc.setXORMode(true);
+				//gc.setForeground(gc.getBackground());
 
 				// Erase existing track, if we have one
 				if (_lastPoint != null)
 				{
-					drawHere(gc, null);
+					//drawHere(gc, null);
+					_myCanvas.getCanvas().redraw();
+					Display.getCurrent().update();
 				}
 				else
 				{
@@ -396,19 +398,23 @@ public class DragComponent extends DragFeature
 			if (_hoverTarget != null)
 			{
 
-				final GC gc = new GC(_myCanvas.getCanvas());
+				// this gc was leaked in old code; not used anymore
+				//final GC gc = new GC(_myCanvas.getCanvas());
 
 				// This is the same as a !XOR
-				gc.setXORMode(true);
-				gc.setForeground(gc.getBackground());
+				//gc.setXORMode(true);
+				//gc.setForeground(gc.getBackground());
 
 				// Erase existing rectangle
 				if (_lastPoint != null)
 				{
 					// hmm, we've finished plotting. see if the ctrl button is
 					// down
-					if ((keyState & SWT.CTRL) == 0)
-						drawHere(gc, null);
+					if ((keyState & SWT.CTRL) == 0) {
+						//drawHere(gc, null);
+						_myCanvas.getCanvas().redraw();
+						Display.getCurrent().update();
+					}
 				}
 
 				// generate the reverse vector

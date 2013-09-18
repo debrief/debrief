@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
@@ -207,13 +208,26 @@ public class DragFeature extends CoreDragAction
 				final GC gc = new GC(_myCanvas.getCanvas());
 
 				// This is the same as a !XOR
-				gc.setXORMode(true);
-				gc.setForeground(gc.getBackground());
+				//gc.setXORMode(true);
+				//gc.setForeground(gc.getBackground());
 
 				// Erase existing track, if we have one
 				if (_lastPoint != null)
 				{
-					drawHere(gc, null);
+					//drawHere(gc, null);
+					// slowing down redrawing on Linux makes dragging more smootly
+					if (Platform.getOS().equals(Platform.OS_LINUX))
+					{
+						try
+						{
+							Thread.sleep(150);
+						} catch (InterruptedException e)
+						{
+							// ignore
+						}
+					}
+					_myCanvas.getCanvas().redraw();
+					Display.getCurrent().update();
 				}
 				else
 				{
@@ -366,19 +380,23 @@ public class DragFeature extends CoreDragAction
 				return;
 			}
 
-			final GC gc = new GC(_myCanvas.getCanvas());
+			// this gc was leaked in old code; not used anymore
+			//final GC gc = new GC(_myCanvas.getCanvas());
 
 			// This is the same as a !XOR
-			gc.setXORMode(true);
-			gc.setForeground(gc.getBackground());
+			//gc.setXORMode(true);
+			//gc.setForeground(gc.getBackground());
 
 			// Erase existing rectangle
 			if (_lastPoint != null)
 			{
 				// hmm, we've finished plotting. see if the ctrl button is
 				// down
-				if ((keyState & SWT.CTRL) == 0)
-					drawHere(gc, null);
+				if ((keyState & SWT.CTRL) == 0) {
+					//drawHere(gc, null);
+					_myCanvas.getCanvas().redraw();
+					Display.getCurrent().update();
+				}
 			}
 
 			// generate the reverse vector
