@@ -104,11 +104,11 @@ final public class RangeBearing extends CoreDragAction
 		@SuppressWarnings("deprecation")
 		final public void doMouseUp(final Point point, final int keyState)
 		{
-			final GC gc = new GC(_myCanvas.getCanvas());
+			//final GC gc = new GC(_myCanvas.getCanvas());
 
 			// This is the same as a !XOR
-			gc.setXORMode(true);
-			gc.setForeground(gc.getBackground());
+			//gc.setXORMode(true);
+			//gc.setForeground(gc.getBackground());
 
 			// Erase existing rectangle
 			if (_lastRect != null)
@@ -118,13 +118,15 @@ final public class RangeBearing extends CoreDragAction
 				if ((keyState & SWT.CTRL) == 0)
 					try
 					{
-						plotUpdate(gc);
+						//plotUpdate(gc);
+						_myCanvas.getCanvas().redraw();
+						Display.getCurrent().update();
 					} 
 					catch(final Exception e)
 					{	
 						e.printStackTrace();
 					}
-					gc.dispose();
+					//gc.dispose();
 			}
 
 			_startPoint = null;
