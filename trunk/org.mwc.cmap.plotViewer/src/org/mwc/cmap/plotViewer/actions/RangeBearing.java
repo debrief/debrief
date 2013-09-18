@@ -153,11 +153,13 @@ final public class RangeBearing extends CoreDragAction
 			// this color leaks
 			//dest.setForeground(new Color(Display.getDefault(), 111, 111, 111));
 			Color oldForeground = dest.getForeground();
-			Color c = dest.getBackground();
-			int r = c.getRed() ^ 111;
-			int g = c.getGreen() ^ 111;
-			int b = c.getBlue() ^ 111;
-			Color f = new Color(Display.getDefault(), r, g, b);
+			Color f = new Color(Display.getDefault(), 111, 111, 111);
+			dest.setXORMode(true);
+			//Color c = dest.getBackground();
+			//int r = c.getRed() ^ 111;
+			//int g = c.getGreen() ^ 111;
+			//int b = c.getBlue() ^ 111;
+			//Color f = new Color(Display.getDefault(), r, g, b);
 			dest.setForeground(f);
 			dest.setLineWidth(2);
 			dest.drawLine(_lastRect.x, _lastRect.y, _lastRect.x + _lastRect.width,
@@ -192,13 +194,15 @@ final public class RangeBearing extends CoreDragAction
 			// ok, do the write operation
 			// this color leaks
 			//dest.setForeground(new Color(Display.getDefault(), 200, 200, 200));
-			c = dest.getBackground();
-			r = c.getRed() ^ 200;
-			g = c.getGreen() ^ 200;
-			b = c.getBlue() ^ 200;
-			Color f2 = new Color(Display.getDefault(), r, g, b);
-			dest.setForeground(f2);
+			//c = dest.getBackground();
+			//r = c.getRed() ^ 200;
+			//g = c.getGreen() ^ 200;
+			//b = c.getBlue() ^ 200;
+			//Color f2 = new Color(Display.getDefault(), r, g, b);
 			
+			// use the same color as line
+			Color f2 = new Color(Display.getDefault(), 200, 200, 200);
+			dest.setForeground(f2);
 			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
 			
 			// also get the RangeTracker to display the range/bearing
@@ -208,7 +212,7 @@ final public class RangeBearing extends CoreDragAction
 			// dispose created colors
 			f.dispose();
 			f2.dispose();
-
+			dest.setXORMode(false);
 		}
 	}
 
