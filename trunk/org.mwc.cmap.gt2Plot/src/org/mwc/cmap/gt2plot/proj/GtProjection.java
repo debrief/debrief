@@ -664,7 +664,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 		}
 
-		public void testZoomArea()
+		public void testZoomArea() throws MismatchedDimensionException, TransformException
 		{
 			final GtProjection proj = new GtProjection();
 			WorldLocation.setModel(new CompletelyFlatEarth());
@@ -678,9 +678,10 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			final WorldLocation topLeft = new WorldLocation(0, 0, 0);
 			final WorldLocation bottomRight = new WorldLocation(5, 5, 0);
 			final WorldArea area = new WorldArea(topLeft, bottomRight);
+
 			proj.zoom(2, area);
-			//TODO: create a test with simple obvious data/result
-			System.out.println(proj.getDataArea());
+			assertEquals(new WorldLocation(0, 0, 0), proj.getDataArea().getTopLeft());
+			assertEquals(new WorldLocation(20, 20, 0), proj.getDataArea().getBottomRight());
 		}
 	}
 
