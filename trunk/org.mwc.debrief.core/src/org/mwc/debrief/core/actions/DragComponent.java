@@ -217,8 +217,8 @@ public class DragComponent extends DragFeature
 				final GC gc = new GC(_myCanvas.getCanvas());
 
 				// This is the same as a !XOR
-				//gc.setXORMode(true);
-				//gc.setForeground(gc.getBackground());
+				gc.setXORMode(true);
+				gc.setForeground(gc.getBackground());
 
 				// Erase existing track, if we have one
 				if (_lastPoint != null)
