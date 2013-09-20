@@ -124,7 +124,7 @@ public class FlatProjection extends PlainProjection
 		return _scaleVal;
 	}
 
-	public void offsetOrigin(boolean updateDataArea, WorldArea area)
+	public void offsetOrigin(boolean updateDataArea)
 	{
 		// ensure there's a valid (minimum) value
 		if (_scaleVal < 0.0000002)
@@ -156,13 +156,13 @@ public class FlatProjection extends PlainProjection
 			if (updateDataArea)
 			{
 				// work out the new top left
-				WorldLocation newTL = new WorldLocation(area.getTopLeft()
-								.getLat() + edgeY, area.getTopLeft().getLong() - edgeX, 0);
+				WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
+								.getLat() + edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
 
 				// and now the new bottom right
-				WorldLocation newBR = new WorldLocation(area.getBottomRight()
+				WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
 								.getLat() - edgeY,
-								area.getBottomRight().getLong() + edgeX, 0);
+								getDataArea().getBottomRight().getLong() + edgeX, 0);
 
 				// and update the data-area - note we call the parent, not the one in
 				// this class,
@@ -174,11 +174,6 @@ public class FlatProjection extends PlainProjection
 
 		_dataOrigin = getDataArea().getCentre();
 
-	}
-
-	public void offsetOrigin(boolean updateDataArea)
-	{
-		offsetOrigin(updateDataArea, getDataArea());
 	}
 
 	@Override
@@ -478,31 +473,23 @@ public class FlatProjection extends PlainProjection
 			{
 				_scaleVal = _scaleVal * value;
 
-				final Point desiredCenter = toScreen(area.getCentre());
-				final Point actualCenter = toScreen(super.getDataArea().getCentre());
-
-				final double deltaX = actualCenter.x - desiredCenter.x;
-				final double deltaY = actualCenter.y - desiredCenter.y;
+				final WorldLocation actualCenter = getDataArea().getCentre();
+				final WorldLocation desiredCenter = area.getCentre();
+				final double deltaX = actualCenter.getLat() - desiredCenter.getLat();
+				final double deltaY = actualCenter.getLong() - desiredCenter.getLong();
 
 				// we've been provided with a zoom factor, which will change the data
 			    // area covered - allow the offsetOrigin to update the data area
-				offsetOrigin(true, area);
+				offsetOrigin(true);
 
 				final WorldArea newArea = super.getDataArea();
-				final int width = Math.abs(toScreen(newArea.getBottomRight()).x
-						- toScreen(newArea.getTopLeft()).x);
-				final int height = Math
-						.abs(toScreen(newArea.getBottomRight()).y
-								- toScreen(newArea.getTopLeft()).y);
-				WorldLocation newTL = new WorldLocation(newArea.getTopLeft()
-						.getLat() + deltaX * _scaleVal, newArea.getTopLeft()
-						.getLong() + deltaY * _scaleVal, 0);
-				WorldLocation newBR = new WorldLocation(
-						newArea.getBottomRight().getLat() + deltaX * _scaleVal
-								+ width, newArea.getBottomRight().getLong()
-								+ deltaY * _scaleVal + height, 0);
+				final WorldLocation newTL = new WorldLocation(
+						newArea.getTopLeft().getLat() + deltaX*_scaleVal,
+						newArea.getTopLeft().getLong() + deltaY*_scaleVal, 0);
+				final WorldLocation newBR = new WorldLocation(
+						newArea.getBottomRight().getLat() + deltaX*_scaleVal,
+						newArea.getBottomRight().getLong() + deltaY*_scaleVal, 0);
 				super.setDataArea(new WorldArea(newTL, newBR));
-
 			}
 
 		}
@@ -528,13 +515,15 @@ public class FlatProjection extends PlainProjection
 			final WorldLocation topLeft = new WorldLocation(0, 0, 0);
 			final WorldLocation bottomRight = new WorldLocation(5, 5, 0);
 			final WorldArea area = new WorldArea(topLeft, bottomRight);
+			// after 'normalization' in WorldArea constructor
+			// topLeft is 5 (lat), 0 (lon)
+			// bottomRight is 0 (lat), 5 (lon)
 
 			proj.setScaleVal(1);
 			proj.zoom(2, area);
 
-			System.out.println(proj.getDataArea());
-			assertEquals(new WorldLocation(0, 0, 0), proj.getDataArea().getTopLeft());
-			assertEquals(new WorldLocation(20, 20, 0), proj.getDataArea().getBottomRight());
+			assertEquals(new WorldLocation(20, 0, 0), proj.getDataArea().getTopLeft());
+			assertEquals(new WorldLocation(0, 20, 0), proj.getDataArea().getBottomRight());
 		}
 	}
 
