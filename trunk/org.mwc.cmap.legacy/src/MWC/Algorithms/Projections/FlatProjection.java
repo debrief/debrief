@@ -501,9 +501,12 @@ public class FlatProjection extends PlainProjection
 
 	public static class TestFlatProj extends TestCase
 	{
-		public void testZoomArea()
+
+		FlatProjection proj;
+
+		public void setUp()
 		{
-			final FlatProjection proj = new FlatProjection();
+			proj = new FlatProjection();
 			WorldLocation.setModel(new CompletelyFlatEarth());
 
 			final WorldLocation oldTopLeft = new WorldLocation(0, 0, 0);
@@ -511,7 +514,10 @@ public class FlatProjection extends PlainProjection
 			final WorldArea oldArea = new WorldArea(oldTopLeft, oldBottomRight);
 			proj.setDataArea(oldArea);
 			proj.setScreenArea(new Dimension(10, 10));
+		}
 
+		public void testZoomAreaTopLeftCorner()
+		{
 			final WorldLocation topLeft = new WorldLocation(0, 0, 0);
 			final WorldLocation bottomRight = new WorldLocation(5, 5, 0);
 			final WorldArea area = new WorldArea(topLeft, bottomRight);
@@ -524,6 +530,19 @@ public class FlatProjection extends PlainProjection
 
 			assertEquals(new WorldLocation(20, 0, 0), proj.getDataArea().getTopLeft());
 			assertEquals(new WorldLocation(0, 20, 0), proj.getDataArea().getBottomRight());
+		}
+
+		public void testZoomAreaBottomRightCorner()
+		{
+			final WorldLocation topLeft = new WorldLocation(5, 5, 0);
+			final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
+			final WorldArea area = new WorldArea(topLeft, bottomRight);
+
+			proj.setScaleVal(1);
+			proj.zoom(2, area);
+
+			assertEquals(new WorldLocation(10, -10, 0), proj.getDataArea().getTopLeft());
+			assertEquals(new WorldLocation(-10, 10, 0), proj.getDataArea().getBottomRight());
 		}
 	}
 
