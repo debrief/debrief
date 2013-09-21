@@ -54,7 +54,7 @@ public class StraightRoute extends CoreRoute
 		// find the course (converting it to our compass-oriented coordinate system
 		if (! startP.equals(endP)) 
 		{
-			_course = Math.PI / 2 - vector.angle();
+			_course = GeoSupport.convertToCompassAngle(vector.angle());
 		} 
 		else 
 		{

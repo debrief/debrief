@@ -16,6 +16,28 @@ public class MathUtils
 		return angle;
 	}
 	
+	public static Point calculateBezierDerivative(double t, Point start, Point end, Point[] control) {
+		if (control == null || control.length == 0) 
+		{
+			return GeoSupport.createPoint(end.getX() - start.getX(), end.getY() - start.getY());
+		}	
+		else if (control.length == 1) 
+		{
+			double x = 2 * t * (start.getX() - 2 * control[0].getX() + end.getX()) + 2 * (control[0].getX() - start.getX());
+			double y = 2 * t * (start.getY() - 2 * control[0].getY() + end.getY()) + 2 * (control[0].getY() - start.getY());
+			return GeoSupport.createPoint(x, y);
+		}
+		else
+		{
+			double p0x = start.getX(), p1x = control[0].getX(), p2x = control[1].getX(), p3x = end.getX();
+			double p0y = start.getY(), p1y = control[0].getY(), p2y = control[1].getY(), p3y = end.getY();
+			double t2 = t * t;
+			double x = 3 * (t2 * (p3x - 3 * p2x + 3 * p1x - p0x) + 2 * t * (p2x - 2 * p1x + p0x) + (p1x - p0x));
+			double y = 3 * (t2 * (p3y - 3 * p2y + 3 * p1y - p0y) + 2 * t * (p2y - 2 * p1y + p0y) + (p1y - p0y));
+			return GeoSupport.createPoint(x, y);
+		}
+	}
+	
 	public static Point calculateBezier(double t, Point start, Point end, Point[] control) 
 	{
 		double invT = 1 - t;
@@ -85,4 +107,22 @@ public class MathUtils
 		double b = (point1.getY() - point2.getY());
 		return Math.sqrt(a * a + b * b);		
 	}	
+	
+	public static double calcAbsoluteValue(Point vector)	
+	{
+		double x = vector.getX();
+		double y = vector.getY();
+		return Math.sqrt(x * x + y * y);
+	}
+	
+	public static double calcAngle(Point vector)
+	{
+		double value = calcAbsoluteValue(vector);
+		double angle = Math.acos(vector.getX() / value);
+		if (vector.getY() < 0)
+		{
+			angle = 2 * Math.PI - angle;
+		}
+		return angle;
+	}
 }

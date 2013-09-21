@@ -50,6 +50,7 @@ public class AlteringRoute extends CoreRoute
 			return;
 		}
 		final long elapsed = _endTime.getTime() - _startTime.getTime();
+		final double elapsedInSeconds = (double) elapsed / 1000.;
 		for (BoundedState state : states)
 		{
 			Date currentDate = state.getTime();
@@ -60,8 +61,13 @@ public class AlteringRoute extends CoreRoute
 				
 				// create the state object without course and speed for now
 				Point currentPoint = MathUtils.calculateBezier(proportion, _startP, _endP, _controlPoints);
-				State newS = new State(currentDate, currentPoint, 0, 0);
-
+				Point derivative = MathUtils.calculateBezierDerivative(proportion, _startP, _endP, _controlPoints);
+				double derivativeAbsolute = MathUtils.calcAbsoluteValue(derivative);
+				
+				double speed = GeoSupport.deg2m(derivativeAbsolute) / elapsedInSeconds;
+				double course = GeoSupport.convertToCompassAngle(MathUtils.calcAngle(derivative));
+				
+				State newS = new State(currentDate, currentPoint, course, speed);
 				if (_myStates == null)
 					_myStates = new ArrayList<State>();
 

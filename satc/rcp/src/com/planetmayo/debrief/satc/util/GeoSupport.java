@@ -152,6 +152,11 @@ public class GeoSupport
 	{
 		return m_sec / 0.514444444;
 	}
+	
+	public static double convertToCompassAngle(double angle)
+	{
+		return MathUtils.normalizeAngle(Math.PI / 2 - angle);
+	}
 
 	public static void setPlotter(GeoPlotter plotter, IShowBoundProblemSpaceDiagnostics problemD, IShowGenerateSolutionsDiagnostics solutionD)
 	{
