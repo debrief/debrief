@@ -16,6 +16,7 @@ import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.impl.SolversManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
+import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -72,6 +73,7 @@ public class SATC_Activator extends AbstractUIPlugin
 				new ContributionsManagerImpl(), new Hashtable<String, Object>());
 		context.registerService(ISolversManager.class, 
 				new SolversManagerImpl(vehicleTypesManager), new Hashtable<String, Object>());
+		context.registerService(SpatialViewSettings.class, new SpatialViewSettings(), new Hashtable<String, Object>());
 	}
 
 	@Override

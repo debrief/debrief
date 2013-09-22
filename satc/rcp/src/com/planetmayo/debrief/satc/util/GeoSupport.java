@@ -3,17 +3,11 @@ package com.planetmayo.debrief.satc.util;
 import java.util.ArrayList;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * utility class providing geospatial support
@@ -23,43 +17,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class GeoSupport
 {
-	public static interface GeoPlotter
-	{
-
-		/**
-		 * clear the plot
-		 * 
-		 */
-		void clear(String title);
-
-		/**
-		 * plot the indicated line
-		 * 
-		 * @param title
-		 *          title of the line
-		 * @param coords
-		 *          coords to plot
-		 */
-		void showGeometry(String seriesName, Coordinate[] coords);
-
-	}
-
 	private static GeometryFactory _factory;
-
-	private static GeoPlotter _plotter;
-
-	private static boolean _writeToConsole = false;
-
-	private static IShowGenerateSolutionsDiagnostics _solutionDiagnostics;
-
-	private static IShowBoundProblemSpaceDiagnostics _problemDiagnostics;
-
-	public static void clearOutput(String title)
-	{
-		if (_plotter != null)
-			_plotter.clear(title);
-
-	}
 
 	public static double deg2m(double degs)
 	{
@@ -156,87 +114,6 @@ public class GeoSupport
 	public static double convertToCompassAngle(double angle)
 	{
 		return MathUtils.normalizeAngle(Math.PI / 2 - angle);
-	}
-
-	public static void setPlotter(GeoPlotter plotter, IShowBoundProblemSpaceDiagnostics problemD, IShowGenerateSolutionsDiagnostics solutionD)
-	{
-		_plotter = plotter;
-		_problemDiagnostics = problemD;
-		_solutionDiagnostics = solutionD;
-	}
-
-	public static IShowBoundProblemSpaceDiagnostics getProblemDiagnostics()
-	{
-		return _problemDiagnostics;
-	}
-
-	public static IShowGenerateSolutionsDiagnostics getSolutionDiagnostics()
-	{
-		return _solutionDiagnostics;
-
-	}
-
-	public static void setToConsole(boolean writeToConsole)
-	{
-		_writeToConsole = writeToConsole;
-	}
-
-	private static void showGeometry(String title, Coordinate[] coords)
-	{
-		if (_plotter != null)
-		{
-			_plotter.showGeometry(title, coords);
-		}
-	}
-
-	private static void writeGeometry(String title, Coordinate[] coords)
-	{
-		if (_writeToConsole)
-		{
-			System.out.println("== " + title + " ==");
-			for (int i = 0; i < coords.length; i++)
-			{
-				Coordinate coordinate = coords[i];
-				System.out.println(coordinate.x + ", " + coordinate.y);
-			}
-		}
-
-		// and try to show it
-		showGeometry(title, coords);
-	}
-
-	public static void writeGeometry(String title, Geometry geo)
-	{
-		if (geo == null)
-			return;
-
-		if (geo instanceof LineString)
-		{
-			LineString ring = (LineString) geo;
-			Coordinate[] coords = ring.getCoordinates();
-			writeGeometry(title, coords);
-		}
-		else if (geo instanceof Polygon)
-		{
-			Polygon poly = (Polygon) geo;
-			writeGeometry(title + " edge ", poly.getBoundary());
-		}
-		else if (geo instanceof MultiLineString)
-		{
-			MultiLineString lineS = (MultiLineString) geo;
-			int n = lineS.getNumGeometries();
-			for (int i = 0; i < n; i++)
-			{
-				Geometry thisGeo = lineS.getGeometryN(i);
-				writeGeometry(title + " geo:" + i, thisGeo);
-			}
-		}
-		else if (geo instanceof MultiPoint)
-		{
-			MultiPoint mp = (MultiPoint) geo;
-			Coordinate[] coords = mp.getCoordinates();
-			writeGeometry(title, coords);
-		}
 	}
 
 	public static String formatGeoPoint(GeoPoint geoPoint)

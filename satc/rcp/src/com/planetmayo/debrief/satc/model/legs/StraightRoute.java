@@ -61,13 +61,10 @@ public class StraightRoute extends CoreRoute
 			_course = 0;
 		}
 
-		// what is our time period
-		final long elapsed = _endTime.getTime() - _startTime.getTime();
-
-		// find the speed
+  	// find the speed
 		double lengthDeg = vector.length();
 		_length = GeoSupport.deg2m(lengthDeg);
-		_speed = _length / (elapsed / 1000);
+		_speed = _length / getElapsedTime();
 
 	}
 
@@ -79,6 +76,28 @@ public class StraightRoute extends CoreRoute
 	public double getSpeed()
 	{
 		return _speed;
+	}
+	
+	@Override
+	public double getSpeed(Date time)
+	{
+		long timeMs = time.getTime();
+		if (timeMs >= _startTime.getTime() && timeMs <= _endTime.getTime()) 
+		{		
+			return _speed;
+		}
+		return -1;
+	}
+
+	@Override
+	public double getCourse(Date time)
+	{
+		long timeMs = time.getTime();
+		if (timeMs >= _startTime.getTime() && timeMs <= _endTime.getTime()) 
+		{		
+			return _course;
+		}
+		return -1;			
 	}
 
 	/**

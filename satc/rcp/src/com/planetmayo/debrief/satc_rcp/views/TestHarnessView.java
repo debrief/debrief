@@ -52,11 +52,11 @@ import com.planetmayo.debrief.satc.model.generator.impl.sa.SASolutionGenerator;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.support.TestSupport;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamReader;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamWriter;
+import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
@@ -116,12 +116,15 @@ public class TestHarnessView extends ViewPart
 
 	private ISolver _activeSolver;
 	private ISolversManager _solversManager;
-	private ISolversManagerListener solversManagerListener;
+	private ISolversManagerListener solversManagerListener;	
 	private int solverNumber = 1;
+	
+	private SpatialViewSettings _spatialSettings;
 	
 	public TestHarnessView() 
 	{
 		_solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, false);
+		_spatialSettings = SATC_Activator.getDefault().getService(SpatialViewSettings.class, true);
 	}
 
 	@Override
@@ -238,9 +241,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-
-				GeoSupport.getProblemDiagnostics()
-						.setShowAllBounds(btn1.getSelection());
+				_spatialSettings.setShowAllBounds(btn1.getSelection());
 			}
 		});
 		final Button btn2a = new Button(group1, SWT.CHECK);
@@ -249,8 +250,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getProblemDiagnostics().setShowLegEndBounds(
-						btn2a.getSelection());
+				_spatialSettings.setShowLegEndBounds(btn2a.getSelection());
 			}
 		});
 		final Button btn2b = new Button(group1, SWT.CHECK);
@@ -259,10 +259,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getProblemDiagnostics().setTargetSolution(
-						new TestSupport().loadSolutionTrack());
-				GeoSupport.getProblemDiagnostics().setShowTargetSolution(
-						btn2b.getSelection());
+				_spatialSettings.setShowTargetSolution(btn2b.getSelection());
 			}
 		});
 		
@@ -272,7 +269,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowPoints(btn3.getSelection());
+				_spatialSettings.setShowPoints(btn3.getSelection());
 			}
 		});
 		bfGraphControls.add(btn3);
@@ -283,7 +280,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowAchievablePoints(
+				_spatialSettings.setShowAchievablePoints(
 						btn4.getSelection());
 			}
 		});
@@ -295,7 +292,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowRoutes(btn5.getSelection());
+				_spatialSettings.setShowRoutes(btn5.getSelection());
 			}
 		});
 		bfGraphControls.add(btn5);
@@ -306,7 +303,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowRoutesWithScores(
+				_spatialSettings.setShowRoutesWithScores(
 						btn6a.getSelection());
 			}
 		});
@@ -318,7 +315,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowRoutePoints(
+				_spatialSettings.setShowRoutePoints(
 						btn6b.getSelection());
 			}
 		});
@@ -330,7 +327,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowRoutePointLabels(
+				_spatialSettings.setShowRoutePointLabels(
 						btn6c.getSelection());
 			}
 		});
@@ -342,7 +339,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowIntermediateGASolutions(
+				_spatialSettings.setShowIntermediateGASolutions(
 						btn7.getSelection());
 			}
 		});
@@ -355,7 +352,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowRecommendedSolutions(
+				_spatialSettings.setShowRecommendedSolutions(
 						btn8.getSelection());
 			}
 		});

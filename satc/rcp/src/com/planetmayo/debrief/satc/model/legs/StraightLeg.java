@@ -50,7 +50,7 @@ public class StraightLeg extends CoreLeg
 		long tZero = startState.getTime().getTime();
 
 		// how long is the total run?
-		long elapsed = theRoute.getElapsedTime();
+		double elapsed = theRoute.getElapsedTime();
 
 		// allow for multiple fidelity processing
 		int ctr = 0;
@@ -85,7 +85,7 @@ public class StraightLeg extends CoreLeg
 					// is this one we're going to process?
 					if (((ctr % freq) == 0) || ctr == _states.size() - 1)
 					{
-						double scale = (1d * elapsed) / tDelta;
+						double scale = elapsed / tDelta;
 
 						// ok, project the shape forwards
 						AffineTransformation st = AffineTransformation.scaleInstance(

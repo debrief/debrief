@@ -8,7 +8,6 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.math.Vector2D;
 
@@ -49,25 +48,18 @@ public class AlteringRoute extends CoreRoute
 		{
 			return;
 		}
-		final long elapsed = _endTime.getTime() - _startTime.getTime();
-		final double elapsedInSeconds = (double) elapsed / 1000.;
+		final double elapsedInSeconds = getElapsedTime();
 		for (BoundedState state : states)
 		{
 			Date currentDate = state.getTime();
 			if (! currentDate.before(_startTime) && ! currentDate.after(_endTime)) 
 			{
-				long delta = currentDate.getTime() - _startTime.getTime();
-				double proportion = (double) delta / (double) elapsed;
+				double delta = (currentDate.getTime() - _startTime.getTime()) / 1000.;
+				double proportion = delta / elapsedInSeconds;
 				
 				// create the state object without course and speed for now
 				Point currentPoint = MathUtils.calculateBezier(proportion, _startP, _endP, _controlPoints);
-				Point derivative = MathUtils.calculateBezierDerivative(proportion, _startP, _endP, _controlPoints);
-				double derivativeAbsolute = MathUtils.calcAbsoluteValue(derivative);
-				
-				double speed = GeoSupport.deg2m(derivativeAbsolute) / elapsedInSeconds;
-				double course = GeoSupport.convertToCompassAngle(MathUtils.calcAngle(derivative));
-				
-				State newS = new State(currentDate, currentPoint, course, speed);
+				State newS = new State(currentDate, currentPoint, getCourse(currentDate), getSpeed(currentDate));
 				if (_myStates == null)
 					_myStates = new ArrayList<State>();
 
@@ -82,71 +74,57 @@ public class AlteringRoute extends CoreRoute
 		return _routeType;
 	}
 	
-	
+	@Override
+	public double getSpeed(Date time)
+	{
+		long timeMs = time.getTime();
+		if (timeMs >= _startTime.getTime() && timeMs <= _endTime.getTime()) 
+		{
+			double delta = (timeMs - _startTime.getTime()) / 1000.;
+			double elapsed = getElapsedTime();
+			Point speedVector = MathUtils.calculateBezierDerivative(delta / elapsed, _startP, _endP, _controlPoints);
+			return GeoSupport.deg2m(MathUtils.calcAbsoluteValue(speedVector)) / elapsed; 
+		}
+		return -1;
+	}
+
+	@Override
+	public double getCourse(Date time)
+	{
+		long timeMs = time.getTime();
+		if (timeMs >= _startTime.getTime() && timeMs <= _endTime.getTime()) 
+		{
+			double delta = (timeMs - _startTime.getTime()) / 1000.;
+			double elapsed = getElapsedTime();
+			Point vector = MathUtils.calculateBezierDerivative(delta / elapsed, _startP, _endP, _controlPoints);
+			return GeoSupport.convertToCompassAngle(MathUtils.calcAngle(vector)); 
+		}
+		return -1;
+	}
+
 	/**
    * constructs altering route as bezier curve:
-   *   in case when intersection point is placed between before and after straight segments 
-   *   use quadratic bezier curve with control point = intersection point of these straight lines
-   *   
-   *   in case when intersection point is placed somewhere else: extend before and after
-   *   straight segments and place control points for cubic bezier curve on before and
-   *   after extensions correspondingly     
 	 * 
 	 * @param before
 	 * @param after
 	 */
 	public void constructRoute(StraightRoute before, StraightRoute after) 
 	{
-		_routeType = AlteringRouteType.UNDEFINED;
-		double[] beforeCoeffs = MathUtils.findStraightLineCoef(before.getStartPoint(), before.getEndPoint());
-		double[] afterCoeffs = MathUtils.findStraightLineCoef(after.getStartPoint(), after.getEndPoint());
+		Point p0 = before.getStartPoint(),
+					p1 = before.getEndPoint(),
+					p2 = after.getStartPoint(),
+					p3 = after.getEndPoint();
 		
-		Point intersection = MathUtils.findIntersection(beforeCoeffs, afterCoeffs);
+		double coefBefore = before.getElapsedTime() / getElapsedTime();
+		double coefAfter = after.getElapsedTime() / getElapsedTime();
 		
-		double beforeStartDistance = MathUtils.calcFlatDistance(before.getStartPoint(), intersection);
-		double beforeEndDistance = MathUtils.calcFlatDistance(before.getEndPoint(), intersection);
-		double beforeDistance = MathUtils.calcFlatDistance(before.getStartPoint(), before.getEndPoint());
+		double c1x = p1.getX() + (p1.getX() - p0.getX()) / (3 * coefBefore);
+		double c1y = p1.getY() + (p1.getY() - p0.getY()) / (3 * coefBefore);
+		double c2x = p2.getX() + (p2.getX() - p3.getX()) / (3 * coefAfter);
+		double c2y = p2.getY() + (p2.getY() - p3.getY()) / (3 * coefAfter);		
 		
-		double afterStartDistance = MathUtils.calcFlatDistance(after.getStartPoint(), intersection);
-		double afterEndDistance = MathUtils.calcFlatDistance(after.getEndPoint(), intersection);
-		double afterDistance = MathUtils.calcFlatDistance(after.getStartPoint(), after.getEndPoint());		
-		
-		if (beforeEndDistance < beforeStartDistance && afterStartDistance < afterEndDistance &&
-				beforeStartDistance > beforeDistance && afterEndDistance > afterDistance)
-		{
-			_controlPoints = new Point[] { intersection };
-			_routeType = AlteringRouteType.QUAD_BEZIER;
-		}
-		else
-		{
-			double distance = MathUtils.calcFlatDistance(_startP, _endP);
-			
-			_controlPoints = new Point[2];
-			_controlPoints[0] = findExtendPoint(beforeCoeffs, before.getEndPoint(), distance / 2, before.getStartPoint());
-			_controlPoints[1] = findExtendPoint(afterCoeffs, after.getStartPoint(), distance / 2, after.getEndPoint());
-			_routeType = AlteringRouteType.CUBIC_BEZIER;
-		}
-	}
-	
-	/**
-	 * finds point which is placed on line y(x) = lineCoeffs[0] * x + lineCoeffs[1] after 
-	 * from point (fromPoint parameter) on specified distance (distance parameter) 
-	 * in checkPoint->fromPoint direction     
-	 */
-	private Point findExtendPoint(double[] lineCoeffs, Point fromPoint, double distance, Point checkPoint)
-	{
-		double aux1 = fromPoint.getY() - lineCoeffs[1];
-		
-		double a = lineCoeffs[0] * lineCoeffs[0] + 1;
-		double b = -2 * (aux1 * lineCoeffs[0] + fromPoint.getX());
-		double c = aux1 * aux1 + fromPoint.getX() * fromPoint.getX() - distance * distance;
-		
-		double sqrtD = Math.sqrt(b * b - 4 * a * c);
-		double x1 = (-b + sqrtD) / (2 * a);
-		double x2 = (-b - sqrtD) / (2 * a);
-		Point p1 = GeoSupport.getFactory().createPoint(new Coordinate(x1, lineCoeffs[0] * x1 + lineCoeffs[1]));
-		Point p2 = GeoSupport.getFactory().createPoint(new Coordinate(x2, lineCoeffs[0] * x2 + lineCoeffs[1]));
-		return MathUtils.calcFlatDistance(checkPoint, p1) > MathUtils.calcFlatDistance(checkPoint, p2) ? p1 : p2;
+		_controlPoints = new Point[] { GeoSupport.createPoint(c1x, c1y), GeoSupport.createPoint(c2x, c2y) };		
+		_routeType = AlteringRouteType.CUBIC_BEZIER;
 	}
 	
 	/**

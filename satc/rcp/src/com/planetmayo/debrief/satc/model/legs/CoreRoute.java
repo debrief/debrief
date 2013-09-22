@@ -8,7 +8,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.vividsolutions.jts.geom.Point;
 
-public class CoreRoute
+public abstract class CoreRoute
 {
 
 	/**
@@ -84,9 +84,9 @@ public class CoreRoute
 		return _name;
 	}
 
-	public long getElapsedTime()
+	public double getElapsedTime()
 	{
-		return (_endTime.getTime() - _startTime.getTime()) / 1000;
+		return (_endTime.getTime() - _startTime.getTime()) / 1000.0;
 	}
 
 	public Point getStartPoint()
@@ -159,5 +159,9 @@ public class CoreRoute
 	{
 		
 	}
+	
+	public abstract double getSpeed(Date time);
+	
+	public abstract double getCourse(Date time);
 
 }

@@ -4,19 +4,25 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.action.AbstractGroupMarker;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
@@ -35,8 +41,6 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
@@ -54,128 +58,68 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings;
+import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings.SpatialSettingsListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
-public class SpatialView extends ViewPart implements IConstrainSpaceListener,
-		GeoSupport.GeoPlotter, IShowBoundProblemSpaceDiagnostics,
-		IShowGenerateSolutionsDiagnostics, IBruteForceSolutionsListener,
-		IGASolutionsListener
+public class SpatialView extends ViewPart implements IConstrainSpaceListener, 
+				IGASolutionsListener, IBruteForceSolutionsListener
 {
-	private static JFreeChart _chart;
-	private static ChartComposite _chartComposite;
+	private JFreeChart _chart;
+	private ChartComposite _chartComposite;
 
-	private static XYPlot _plot;
-	private static XYLineAndShapeRenderer _renderer;
-	private Action _debugMode;
-
-	private XYSeriesCollection _myData;
+	private XYPlot _plot;
+	private XYLineAndShapeRenderer _renderer;	
+	private XYSeriesCollection _myData;	
+	
+	private Action _debugMode;	
+	private Action _resizeButton;
+	private Action _showLegend;	
+	private Action _saveCoursePlot;
+	private Action _saveSpeedPlot;
+	
 	/**
 	 * keep track of how many sets of series that we've plotted
 	 * 
 	 */
 	int _numCycles = 0;
-	private Action _resizeButton;
-
-	private Action _showLegend;
-
-	private ISolversManager _solversManager;
 	
-	private ISolver _activeSolver;
-
 	/**
-	 * level of diagnostics for user
+	 * how many routes to display
 	 * 
-	 * @see IBoundsManager.IShowBoundProblemSpaceDiagnostics
 	 */
-	private boolean _showLegEndBounds;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowBoundProblemSpaceDiagnostics
-	 */
-	private boolean _showAllBounds;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showPoints;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showAchievablePoints;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showRoutes;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showRoutesWithScores;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showRecommendedSolutions;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */	
-	private boolean _showIntermediateGASolutions;
+	private int _numRoutes = Integer.MAX_VALUE;
 
 	/**
 	 * the last set of states we plotted
 	 * 
 	 */
 	private Collection<BoundedState> _lastStates = null;
-
 	private List<LegWithRoutes> _lastSetOfScoredLegs;
-
 	private CompositeRoute[] _lastSetOfSolutions;
-	
 	private List<CompositeRoute> _currentTopRoutes;
+	private HashMap<Integer, ArrayList<String>> _scoredRouteLabels = new HashMap<Integer, ArrayList<String>>();
+	private List<State> _targetSolution;
 
-	private final HashMap<Integer, ArrayList<String>> _scoredRouteLabels = new HashMap<Integer, ArrayList<String>>();
+	private SpatialViewSettings _settings;
+	private ISolversManager _solversManager;	
+	private ISolver _activeSolver;	
 
-	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat(
-			"hh:mm:ss");
+	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat("hh:mm:ss");
 
 	private ISolversManagerListener solversManagerListener;
 	private IConstrainSpaceListener constrainSpaceListener;
 	private IGenerateSolutionsListener generateSolutionsListener;
-	/**
-	 * how many routes to display
-	 * 
-	 */
-	private int _numRoutes = Integer.MAX_VALUE;
-	private boolean _showRoutePointLabels;
-	private boolean _showRoutePoints;
-	private boolean _showTargetSolution;
-	private List<State> _targetSolution;
+	private SpatialSettingsListener spatialSettingsListener;	
 
-	@Override
 	public void clear(String title)
 	{
 		_myData.removeAllSeries();
@@ -187,25 +131,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_chart.setTitle(title);
 	}
 
-	@Override
-	public void statesBounded(IBoundsManager boundsManager)
-	{
-		// we have to clear the other values when this happens, since
-		// they're no longer valid
-		_lastSetOfScoredLegs = null;
-		_lastSetOfSolutions = null;
-
-		_lastStates = _activeSolver.getProblemSpace().states();
-
-		redoChart();
-	}
-
 	/**
 	 * Creates the Chart based on a dataset
 	 * 
 	 * @param _myData2
 	 */
-
 	private JFreeChart createChart(XYDataset _myData2)
 	{
 		// tell it to draw joined series
@@ -228,6 +158,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void createPartControl(Composite parent)
 	{
 		_solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, true);
+		_settings = SATC_Activator.getDefault().getService(SpatialViewSettings.class, true);		
 		
 		// get the data ready
 		_myData = new XYSeriesCollection();
@@ -238,9 +169,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		makeActions();
 
 		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(_saveSpeedPlot);
+		bars.getToolBarManager().add(_saveCoursePlot);
+		bars.getToolBarManager().add(new Separator());
 		bars.getToolBarManager().add(_showLegend);
 		bars.getToolBarManager().add(_debugMode);
 		bars.getToolBarManager().add(_resizeButton);
+		
 
 		bars.getMenuManager().add(new AbstractGroupMarker("num")
 		{
@@ -251,12 +186,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		bars.getMenuManager().appendToGroup("num", new RouteNumSelector());
 
 		// add some handlers to sort out how many routes to shw
-
-		// tell the GeoSupport about us
-		GeoSupport.setPlotter(this, this, this);
 		initListener(parent.getDisplay());
 		_solversManager.addSolversManagerListener(solversManagerListener);
+		_settings.addListener(spatialSettingsListener);
 		setActiveSolver(_solversManager.getActiveSolver());
+		
+		_targetSolution = new TestSupport().loadSolutionTrack();
 	}
 
 	@Override
@@ -270,6 +205,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				.removeReadyListener(generateSolutionsListener);
 		}
 		_solversManager.removeSolverManagerListener(solversManagerListener);
+		_settings.removeListener(spatialSettingsListener);
 		super.dispose();
 	}
 
@@ -319,10 +255,96 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				_chartComposite.restoreAutoBounds();
 			}
 
-		};
+		};		
 		_resizeButton
 				.setToolTipText("Track all states (including application of each Contribution)");
+		
+		_saveSpeedPlot = new Action("Save speed plot", SWT.NONE)
+		{
+
+			@Override
+			public void run()
+			{
+				if (_lastSetOfSolutions != null)
+				{
+					try 
+					{
+						savePlot(false);
+					}
+					catch (IOException ex) { }
+				}
+			}			
+		};
+		_saveCoursePlot = new Action("Save course plot", SWT.NONE)
+		{
+
+			@Override
+			public void run()
+			{
+				if (_lastSetOfSolutions != null)
+				{
+					try 
+					{
+						savePlot(true);
+					}
+					catch (IOException ex) { }
+				}
+			}			
+		};		
 	}
+	
+	
+	protected void savePlot(boolean course) throws IOException 
+	{
+		FileDialog dialog = new FileDialog(getViewSite().getShell(), SWT.SAVE);
+		dialog.setFilterExtensions(new String[]	{ "*.txt" });
+		String filename = dialog.open();
+		if (filename == null) 
+		{
+			return;
+		}
+		
+		CompositeRoute route = _lastSetOfSolutions[0];
+		List<CoreRoute> parts = new ArrayList<CoreRoute>(route.getLegs());
+		int i = 0;
+		CoreRoute currentRoute = parts.get(0);
+		
+		PrintWriter writer = new PrintWriter(filename);
+		DecimalFormat format = new DecimalFormat("0.0000");
+		
+		long startTime = parts.get(0).getStartTime().getTime();
+		long endTime = parts.get(parts.size() - 1).getEndTime().getTime();
+	
+		for (long time = startTime; time < endTime; time += 1000) 
+		{
+			double t = (time - startTime) / 1000.0;
+			Date currentDate = new Date(time);
+			double value = course ? currentRoute.getCourse(currentDate) 
+					: currentRoute.getSpeed(currentDate);
+			while (value == -1) 
+			{
+				i++;
+				currentRoute = parts.get(i);
+				value = course ? currentRoute.getCourse(currentDate) 
+						: currentRoute.getSpeed(currentDate);
+			}
+			writer.println(format.format(t) + "   " + format.format(value));
+		}
+		writer.close();		
+	}
+
+	@Override
+	public void statesBounded(IBoundsManager boundsManager)
+	{
+		// we have to clear the other values when this happens, since
+		// they're no longer valid
+		_lastSetOfScoredLegs = null;
+		_lastSetOfSolutions = null;
+
+		_lastStates = _activeSolver.getProblemSpace().states();
+
+		redoChart();
+	}	
 
 	@Override
 	public void restarted(IBoundsManager boundsManager)
@@ -359,6 +381,18 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				new Class<?>[]
 				{ IBruteForceSolutionsListener.class, IGASolutionsListener.class },
 				this, new UIListener.MinimumDelay("iterationComputed", 150));
+		spatialSettingsListener = new SpatialSettingsListener()
+		{
+			
+			@Override
+			public void onSettingsChanged()
+			{
+				redoChart();
+			}
+		};
+		spatialSettingsListener = UIListener.wrap(display, SpatialSettingsListener.class, 
+				spatialSettingsListener);
+		
 	}
 	
 	private void setActiveSolver(ISolver activeSolver) 
@@ -385,7 +419,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		}
 
 		// just double-check that we're showing any states
-		if (!_showLegEndBounds && !_showAllBounds)
+		if (!_settings.isShowLegEndBounds() && !_settings.isShowAllBounds())
 			return;
 
 		String lastSeries = "UNSET";
@@ -418,7 +452,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				if (thisSeries != lastSeries)
 				{
 					// are we storing leg ends?
-					if (_showLegEndBounds || (lastSeries == null))
+					if (_settings.isShowLegEndBounds() || (lastSeries == null))
 					{
 						showThisState = true;
 
@@ -439,7 +473,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				// if (!showThisState)
 				// {
 				// no, but are we showing mid=leg states?
-				if (_showAllBounds)
+				if (_settings.isShowAllBounds())
 				{
 					// yes - we do want mid-way stats, better add it.
 					showThisState = true;
@@ -535,18 +569,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			array[array.length - 1 - i] = temp;
 		}
 		return array;
-	}
-
-	@Override
-	public void showGeometry(String title, Coordinate[] coords)
-	{
-
-		// are we in debug mode?
-		if (!_debugMode.isChecked())
-			return;
-
-		plotTheseCoordsAsALine(title, coords);
-
 	}
 
 	private int plotTheseCoordsAsALine(String title, Coordinate[] coords)
@@ -647,47 +669,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			showBoundedStates(_activeSolver.getProblemSpace().states());
 	}
 
-	@Override
-	public void setShowAllBounds(boolean onOff)
-	{
-		_showAllBounds = onOff;
-
-		redoChart();
-	}
-
-	@Override
-	public void setShowLegEndBounds(boolean onOff)
-	{
-		_showLegEndBounds = onOff;
-
-		redoChart();
-	}
-	
-
-	@Override
-	public void setShowTargetSolution(boolean onOff)
-	{
-		_showTargetSolution = onOff;
-		
-		redoChart();
-	}
-	
-	@Override
-	public void setShowIntermediateGASolutions(boolean onOff)
-	{
-		_showIntermediateGASolutions = onOff;
-		
-		redoChart();
-	}
-
-	@Override
-	public void setShowRecommendedSolutions(boolean onOff)
-	{
-		_showRecommendedSolutions = onOff;
-
-		redoChart();
-	}
-
 	private void redoChart()
 	{
 		// clear the UI
@@ -741,7 +722,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private void plotTargetSolution(List<State> solution)
 	{
 		// ok, get the target solution data
-		if(_showTargetSolution)
+		if(_settings.isShowTargetSolution())
 		{
 			Coordinate [] coords = new Coordinate[solution.size()];
 			int ctr = 0;
@@ -763,7 +744,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private void showTopSolutions(CompositeRoute[] lastSetOfSolutions2)
 	{
 		// just draw in these solutions
-		if (_showRecommendedSolutions)
+		if (_settings.isShowRecommendedSolutions())
 		{
 			for (int i = 0; i < lastSetOfSolutions2.length; i++)
 			{
@@ -773,49 +754,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				plotTopRoutes(legs);
 			}
 		}
-	}
-
-	@Override
-	public void setShowPoints(boolean onOff)
-	{
-		_showPoints = onOff;
-
-		redoChart();
-	}
-
-	@Override
-	public void setShowAchievablePoints(boolean onOff)
-	{
-		_showAchievablePoints = onOff;
-		redoChart();
-	}
-
-	@Override
-	public void setShowRoutes(boolean onOff)
-	{
-		_showRoutes = onOff;
-		redoChart();
-	}
-
-	@Override
-	public void setShowRoutePointLabels(boolean onOff)
-	{
-		_showRoutePointLabels = onOff;
-		redoChart();
-	}
-
-	@Override
-	public void setShowRoutePoints(boolean onOff)
-	{
-		_showRoutePoints = onOff;
-		redoChart();
-	}
-
-	@Override
-	public void setShowRoutesWithScores(boolean onOff)
-	{
-		_showRoutesWithScores = onOff;
-		redoChart();
 	}
 
 	@Override
@@ -868,8 +806,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		_lastSetOfScoredLegs = theLegs;
 
 		// hey, are we showing points?
-		if (_showPoints || _showAchievablePoints || _showRoutes
-				|| _showRoutesWithScores)
+		if (_settings.isShowPoints() || _settings.isShowAchievablePoints() || _settings.isShowRoutes()
+				|| _settings.isShowRoutesWithScores())
 		{
 			ArrayList<ArrayList<Point>> allPoints = new ArrayList<ArrayList<Point>>();
 			ArrayList<ArrayList<Point>> allPossiblePoints = new ArrayList<ArrayList<Point>>();
@@ -882,7 +820,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				final LegWithRoutes thisLeg = iterator.next();
 
 				// start off with the ponts
-				if (_showPoints || _showAchievablePoints)
+				if (_settings.isShowPoints() || _settings.isShowAchievablePoints())
 				{
 					ArrayList<Point> points = new ArrayList<Point>();
 					ArrayList<Point> possiblePoints = new ArrayList<Point>();
@@ -907,13 +845,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 							if (firstRoute != null)
 							{
 								Point startPoint = firstRoute.getStartPoint();
-								if (_showPoints)
+								if (_settings.isShowPoints())
 								{
 									// ok, just add it to the list
 									points.add(startPoint);
 								}
 								// ok - do we need to check which ones have any valid points?
-								if (_showAchievablePoints)
+								if (_settings.isShowAchievablePoints())
 								{
 									boolean isPossible = false;
 
@@ -945,7 +883,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 
 				// and now for the routes
-				if (_showRoutes || _showRoutesWithScores)
+				if (_settings.isShowRoutes() || _settings.isShowRoutesWithScores())
 				{
 
 					ArrayList<LineString> possibleRoutes = new ArrayList<LineString>();
@@ -978,10 +916,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 								LineString newR = GeoSupport.getFactory().createLineString(
 										coords);
 
-								if (_showRoutes)
+								if (_settings.isShowRoutes())
 									possibleRoutes.add(newR);
 								
-								if (_showRoutesWithScores)
+								if (_settings.isShowRoutesWithScores())
 								{
 									// do we have a collection for this leg
 									ArrayList<ScoredRoute> thisLegRes = scoredRoutes.get(thisLeg);
@@ -1149,7 +1087,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				// ok, we now need to put hte series into the right slot
 				_scoredRouteLabels.put(num, theseLabels);
 
-				if (_showRoutePointLabels)
+				if (_settings.isShowRoutePointLabels())
 				{
 					_renderer.setSeriesItemLabelGenerator(num, new XYItemLabelGenerator()
 					{
@@ -1171,15 +1109,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 
 				// _renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
-				_renderer.setSeriesItemLabelsVisible(num, _showRoutePointLabels);
+				_renderer.setSeriesItemLabelsVisible(num, _settings.isShowRoutePointLabels());
 				_renderer.setSeriesLinesVisible(num, false);
 				_renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
-				_renderer.setSeriesShapesVisible(num, _showRoutePoints);
+				_renderer.setSeriesShapesVisible(num, _settings.isShowRoutePoints());
 				_renderer.setSeriesVisibleInLegend(num, false);
-
 			}
 		}
-
 	}
 
 	private void plotTopRoutes(Collection<CoreRoute> scoredRoutes)
@@ -1280,7 +1216,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void iterationComputed(List<CompositeRoute> topRoutes)
 	{
 		_currentTopRoutes = null;
-		if (_showIntermediateGASolutions)
+		if (_settings.isShowIntermediateGASolutions())
 		{
 			_currentTopRoutes = topRoutes;
 		
@@ -1318,12 +1254,4 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		}
 
 	}
-
-	@Override
-	public void setTargetSolution(
-			List<State> solution)
-	{
-		_targetSolution = solution;
-	}
-
 }

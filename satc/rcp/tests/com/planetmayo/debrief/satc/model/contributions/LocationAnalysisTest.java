@@ -277,7 +277,6 @@ public class LocationAnalysisTest extends ModelTestBase
 		//
 		LocationRange newB = lac.calcRelaxedRange(bs, vType, newDate.getTime()
 				- bs.getTime().getTime());
-		GeoSupport.writeGeometry("location region", newB.getGeometry());
 
 		// did it work?
 		// assertNotNull("Should have created location", newB);

@@ -9,14 +9,12 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
-import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
@@ -528,20 +526,5 @@ public class TestSupport
 		generator.setLiveRunning(live);
 		generator.run();
 
-	}
-
-	public void nextTest()
-	{
-		// clear the bounded states
-		LocationAnalysisTest lat = new LocationAnalysisTest();
-		try
-		{
-			GeoSupport.clearOutput("Location Analysis");
-			lat.testBoundary();
-		}
-		catch (IncompatibleStateException e)
-		{
-			e.printStackTrace();
-		}
 	}
 }
