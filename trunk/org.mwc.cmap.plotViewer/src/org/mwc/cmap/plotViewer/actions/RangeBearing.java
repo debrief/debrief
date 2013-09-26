@@ -58,17 +58,12 @@ final public class RangeBearing extends CoreDragAction
 		 */
 		SWTCanvas _myCanvas;
 
-		@SuppressWarnings("deprecation")
 		final public void doMouseDrag(final Point pt, final int JITTER, final Layers theLayers,
 				final SWTCanvas theCanvas)
 		{
 			if (_startPoint != null)
 			{
 				final GC gc = new GC(_myCanvas.getCanvas());
-
-				// This is the same as a !XOR
-				//gc.setXORMode(true);
-				//gc.setForeground(gc.getBackground());
 
 				// Erase existing rectangle
 				if (_lastRect != null) {
@@ -101,15 +96,8 @@ final public class RangeBearing extends CoreDragAction
 
 		}
 
-		@SuppressWarnings("deprecation")
 		final public void doMouseUp(final Point point, final int keyState)
 		{
-			//final GC gc = new GC(_myCanvas.getCanvas());
-
-			// This is the same as a !XOR
-			//gc.setXORMode(true);
-			//gc.setForeground(gc.getBackground());
-
 			// Erase existing rectangle
 			if (_lastRect != null)
 			{
@@ -126,7 +114,6 @@ final public class RangeBearing extends CoreDragAction
 					{	
 						e.printStackTrace();
 					}
-					//gc.dispose();
 			}
 
 			_startPoint = null;
@@ -144,22 +131,16 @@ final public class RangeBearing extends CoreDragAction
 					new java.awt.Point(point.x, point.y)));
 		}
 
+		@SuppressWarnings("deprecation")
 		final private void plotUpdate(final GC dest)
 		{
 
 			final java.awt.Point endPoint = new java.awt.Point(_lastRect.x
 					+ _lastRect.width, _lastRect.y + _lastRect.height);
 
-			// this color leaks
-			//dest.setForeground(new Color(Display.getDefault(), 111, 111, 111));
 			Color oldForeground = dest.getForeground();
-			Color f = new Color(Display.getDefault(), 111, 111, 111);
+			Color f = new Color(Display.getDefault(), 255, 255, 255);
 			dest.setXORMode(true);
-			//Color c = dest.getBackground();
-			//int r = c.getRed() ^ 111;
-			//int g = c.getGreen() ^ 111;
-			//int b = c.getBlue() ^ 111;
-			//Color f = new Color(Display.getDefault(), r, g, b);
 			dest.setForeground(f);
 			dest.setLineWidth(2);
 			dest.drawLine(_lastRect.x, _lastRect.y, _lastRect.x + _lastRect.width,
@@ -192,17 +173,8 @@ final public class RangeBearing extends CoreDragAction
 			loc.translate(-txt.length() / 2 * fm.getAverageCharWidth(), 0);
 
 			// ok, do the write operation
-			// this color leaks
-			//dest.setForeground(new Color(Display.getDefault(), 200, 200, 200));
-			//c = dest.getBackground();
-			//r = c.getRed() ^ 200;
-			//g = c.getGreen() ^ 200;
-			//b = c.getBlue() ^ 200;
-			//Color f2 = new Color(Display.getDefault(), r, g, b);
 			
 			// use the same color as line
-			Color f2 = new Color(Display.getDefault(), 200, 200, 200);
-			dest.setForeground(f2);
 			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
 			
 			// also get the RangeTracker to display the range/bearing
@@ -211,7 +183,6 @@ final public class RangeBearing extends CoreDragAction
 			dest.setForeground(oldForeground);
 			// dispose created colors
 			f.dispose();
-			f2.dispose();
 			dest.setXORMode(false);
 		}
 	}
