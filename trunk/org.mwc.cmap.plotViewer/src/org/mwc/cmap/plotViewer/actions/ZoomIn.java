@@ -86,7 +86,7 @@ public class ZoomIn extends CoreDragAction
 				res = rect;
 				
 				GC gc = new GC(_myCanvas.getCanvas());
-				Color fc = new Color(Display.getDefault(), 111, 111, 111);
+				Color fc = new Color(Display.getDefault(), 255, 255, 255);
 				gc.setForeground(fc);
 				gc.setXORMode(true);
 				gc.setLineAttributes(new LineAttributes(2, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_SOLID, null, 0, 10));

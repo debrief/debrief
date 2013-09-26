@@ -458,8 +458,7 @@ public class DragFeature extends CoreDragAction
 		 */
 		private void drawHere(final GC graphics, final WorldVector newVector)
 		{
-			org.eclipse.swt.graphics.Color fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 111, 111,111);
-			//graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
+			org.eclipse.swt.graphics.Color fc = new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 255,255);
 			graphics.setForeground(fc);
 
 			// ok, move the target to the new location...
