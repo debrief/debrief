@@ -12,11 +12,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Tracker;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
@@ -53,7 +49,6 @@ public class ZoomIn extends CoreDragAction
 
 		private KeyListener listener = new KeyAdapter()
 		{
-
 			@Override
 			public void keyPressed(KeyEvent e)
 			{
@@ -64,6 +59,7 @@ public class ZoomIn extends CoreDragAction
 			
 		};
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
 				final Layers theLayers, SWTCanvas theCanvas)

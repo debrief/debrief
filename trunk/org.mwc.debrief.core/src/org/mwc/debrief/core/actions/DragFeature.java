@@ -19,7 +19,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
-import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.plotViewer.actions.CoreDragAction;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
@@ -368,7 +367,6 @@ public class DragFeature extends CoreDragAction
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
 		public void doMouseUp(final org.eclipse.swt.graphics.Point point, final int keyState)
 		{
 			if (_hoverTarget == null)
@@ -379,13 +377,6 @@ public class DragFeature extends CoreDragAction
 				System.out.println("canvas is null!");
 				return;
 			}
-
-			// this gc was leaked in old code; not used anymore
-			//final GC gc = new GC(_myCanvas.getCanvas());
-
-			// This is the same as a !XOR
-			//gc.setXORMode(true);
-			//gc.setForeground(gc.getBackground());
 
 			// Erase existing rectangle
 			if (_lastPoint != null)

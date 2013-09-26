@@ -58,17 +58,12 @@ final public class RangeBearing extends CoreDragAction
 		 */
 		SWTCanvas _myCanvas;
 
-		@SuppressWarnings("deprecation")
 		final public void doMouseDrag(final Point pt, final int JITTER, final Layers theLayers,
 				final SWTCanvas theCanvas)
 		{
 			if (_startPoint != null)
 			{
 				final GC gc = new GC(_myCanvas.getCanvas());
-
-				// This is the same as a !XOR
-				//gc.setXORMode(true);
-				//gc.setForeground(gc.getBackground());
 
 				// Erase existing rectangle
 				if (_lastRect != null) {
@@ -101,15 +96,8 @@ final public class RangeBearing extends CoreDragAction
 
 		}
 
-		@SuppressWarnings("deprecation")
 		final public void doMouseUp(final Point point, final int keyState)
 		{
-			//final GC gc = new GC(_myCanvas.getCanvas());
-
-			// This is the same as a !XOR
-			//gc.setXORMode(true);
-			//gc.setForeground(gc.getBackground());
-
 			// Erase existing rectangle
 			if (_lastRect != null)
 			{
@@ -126,7 +114,6 @@ final public class RangeBearing extends CoreDragAction
 					{	
 						e.printStackTrace();
 					}
-					//gc.dispose();
 			}
 
 			_startPoint = null;
@@ -144,6 +131,7 @@ final public class RangeBearing extends CoreDragAction
 					new java.awt.Point(point.x, point.y)));
 		}
 
+		@SuppressWarnings("deprecation")
 		final private void plotUpdate(final GC dest)
 		{
 
