@@ -28,6 +28,8 @@ import MWC.GUI.Layers;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
+import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamReader;
@@ -112,7 +114,10 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 
 	public void elementClosed()
 	{
-		SATC_Solution solution = new SATC_Solution(_name);
+		// create the solver
+		ISolversManager solvMgr = SATC_Activator.getDefault().getService(ISolversManager.class, true);
+		ISolver newSolvr = solvMgr.createSolver(_name);
+		SATC_Solution solution = new SATC_Solution(newSolvr);
 
 		// and the preferences
 		solution.setShowLocationBounds(_showBounds);

@@ -19,6 +19,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.WorldLocation;
 
@@ -31,6 +32,7 @@ import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -38,7 +40,7 @@ import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
-public class SATC_Solution extends BaseLayer
+public class SATC_Solution extends BaseLayer implements NeedsToBeInformedOfRemove
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -101,11 +103,11 @@ public class SATC_Solution extends BaseLayer
 	 */
 	protected CompositeRoute[] _newRoutes;
 
-	public SATC_Solution(String solName)
+	public SATC_Solution(ISolver newSolution)
 	{
-		super.setName(solName);
+		super.setName(newSolution.getName());
 
-		_mySolver = createSolver();
+		_mySolver = newSolution;
 
 		// clear the solver, just to be sure
 		_mySolver.getContributions().clear();
@@ -137,11 +139,6 @@ public class SATC_Solution extends BaseLayer
 	public boolean canTakeShapes()
 	{
 		return false;
-	}
-
-	private ISolver createSolver()
-	{
-		return SATC_Activator.getDefault().getService(ISolver.class, true);
 	}
 
 	protected void fireRepaint()
@@ -409,6 +406,17 @@ public class SATC_Solution extends BaseLayer
 	public void setShowSolutions(boolean showSolutions)
 	{
 		_showSolutions = showSolutions;
+	}
+
+	@Override
+	public void beingRemoved()
+	{
+		// get the manager
+		ISolversManager mgr = SATC_Activator.getDefault().getService(ISolversManager.class, true);
+		
+		// ok, better tell the manager that we're being removed
+		// TODO: replace next line
+    //		mgr.solverRemoved(_mySolver);
 	}
 
 }
