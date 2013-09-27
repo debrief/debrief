@@ -21,6 +21,7 @@ import org.osgi.framework.BundleContext;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
@@ -77,7 +78,13 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 		// ok - it's been selected - tell the SATC manager
 		ISolversManager solver = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
-		solver.setActiveSolver(pw.getSolver());
+		ISolver newSolver = pw.getSolver();
+		
+		// aah, just double-check that it's not already the solver
+		if (solver.getActiveSolver() != newSolver)
+		{
+			solver.setActiveSolver(newSolver);
+		}
 	}
 
 	/*
@@ -180,21 +187,21 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 	{
 		plugin = null;
 		super.stop(context);
-		
+
 		// do some tidying
 		_currentLayers = null;
 		_myPartMonitor = null;
 	}
 
-	/** tell the manager to ditch the current solver
+	/**
+	 * tell the manager to ditch the current solver
 	 * 
 	 */
 	private void clearSolver()
 	{
 		if (_currentLayers != null)
 		{
-			SATC_Activator.getDefault()
-					.getService(ISolversManager.class, true)
+			SATC_Activator.getDefault().getService(ISolversManager.class, true)
 					.setActiveSolver(null);
 		}
 	}
