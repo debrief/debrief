@@ -93,7 +93,7 @@ public class SolversManagerImpl implements ISolversManager
 	}
 
 	@Override
-	public void deactivateSolver(ISolver solver)
+	public void deactivateSolverIfActive(ISolver solver)
 	{
 		if (activeSolver == solver) 
 		{

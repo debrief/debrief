@@ -33,5 +33,5 @@ public interface ISolversManager
 	 * otherwise leaves active solver unchanged  
 	 * @param solver
 	 */
-	void deactivateSolver(ISolver solver);
+	void deactivateSolverIfActive(ISolver solver);
 }
