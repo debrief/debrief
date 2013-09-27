@@ -1,9 +1,10 @@
 package com.planetmayo.debrief.satc.model.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import org.geotools.util.WeakHashSet;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -23,10 +24,9 @@ import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 public class SolversManagerImpl implements ISolversManager
 {
-	private final WeakHashSet<ISolversManagerListener> listeners = 
-			new WeakHashSet<ISolversManagerListener>(ISolversManagerListener.class);
+	private final Set<ISolversManagerListener> listeners = Collections.newSetFromMap(new WeakHashMap<ISolversManagerListener, Boolean>());
 	
-	private final WeakHashSet<ISolver> available = new WeakHashSet<ISolver>(ISolver.class);
+	private final Set<ISolver> available = Collections.newSetFromMap(new WeakHashMap<ISolver, Boolean>());
 	
 	private ISolver activeSolver;
 
