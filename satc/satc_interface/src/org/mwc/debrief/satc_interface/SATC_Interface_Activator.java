@@ -19,6 +19,7 @@ import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.osgi.framework.BundleContext;
 
 import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
@@ -36,6 +37,8 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 	private static SATC_Interface_Activator plugin;
 
 	private PartMonitor _myPartMonitor;
+
+	private transient Layers _currentLayers = null;
 
 	private ISelectionChangedListener _selectionChangeListener;
 
@@ -132,6 +135,37 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 							iS.removeSelectionChangedListener(_selectionChangeListener);
 						}
 					});
+
+			// /////////////////
+			// we also listen for the layers object changing. we clear the
+			// contributions when that happens
+			// /////////////////
+			_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+					new PartMonitor.ICallback()
+					{
+						public void eventTriggered(final String type, final Object part,
+								final IWorkbenchPart parentPart)
+						{
+							if (part != _currentLayers)
+							{
+								clearSolver();
+							}
+							_currentLayers = (Layers) part;
+						}
+					});
+			_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
+					new PartMonitor.ICallback()
+					{
+						public void eventTriggered(final String type, final Object part,
+								final IWorkbenchPart parentPart)
+						{
+							if (part == _currentLayers)
+							{
+								clearSolver();
+							}
+							_currentLayers = null;
+						}
+					});
 		}
 	}
 
@@ -146,6 +180,23 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 	{
 		plugin = null;
 		super.stop(context);
+		
+		// do some tidying
+		_currentLayers = null;
+		_myPartMonitor = null;
+	}
+
+	/** tell the manager to ditch the current solver
+	 * 
+	 */
+	private void clearSolver()
+	{
+		if (_currentLayers != null)
+		{
+			SATC_Activator.getDefault()
+					.getService(ISolversManager.class, true)
+					.setActiveSolver(null);
+		}
 	}
 
 	/**
