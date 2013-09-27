@@ -83,7 +83,7 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 				try
 				{
 					PropertyDescriptor[] res =
-					{ prop("Active", "whether to use this bearing", VISIBILITY) };
+					{ prop("Active", "whether to use this bearing", EditorType.OPTIONAL) };
 
 					return res;
 				}
