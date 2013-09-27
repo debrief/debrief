@@ -15,7 +15,23 @@ public interface ISolversManager
 	
 	List<ISolver> getAvailableSolvers();
 	
+	/** 
+	 * @return active solver or null if no solver is active
+	 */
 	ISolver getActiveSolver();
 	
+	
+	/**
+	 * Deactivates current active solver and activates specified one if it isn't null
+	 *  
+	 * @param solver
+	 */
 	void setActiveSolver(ISolver solver);
+	
+	/**
+	 * if current active solver is solver specified in parameter the method deactivates it
+	 * otherwise leaves active solver unchanged  
+	 * @param solver
+	 */
+	void deactivateSolver(ISolver solver);
 }

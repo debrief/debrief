@@ -91,4 +91,13 @@ public class SolversManagerImpl implements ISolversManager
 			listener.activeSolverChanged(activeSolver);
 		}
 	}
+
+	@Override
+	public void deactivateSolver(ISolver solver)
+	{
+		if (activeSolver == solver) 
+		{
+			setActiveSolver(null);
+		}
+	}
 }
