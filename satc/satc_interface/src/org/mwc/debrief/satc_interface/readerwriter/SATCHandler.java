@@ -9,6 +9,7 @@ package org.mwc.debrief.satc_interface.readerwriter;
  * @version 1.0
  */
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
@@ -27,6 +28,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
@@ -42,18 +44,22 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	private static final String NAME = "NAME";
 	private static final String SHOW_BOUNDS = "ShowBounds";
 	private static final String SHOW_SOLUTIONS = "ShowSolutions";
+	private static final String AUTO_SOLUTIONS = "AutoSolutions";
 
 	protected String _myContents;
 
 	private String _name;
 
 	private Layers _theLayers;
+	
+	private Color _myColor = Color.green;
 
 	private CharArrayWriter _cdataCharacters;
 
 	protected boolean _showSolutions = false;
 
 	protected boolean _showBounds = false;
+	protected boolean _autoGenerate = false;
 
 	public SATCHandler()
 	{
@@ -80,12 +86,29 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 				_showBounds = value;
 			}
 		});
+		addAttributeHandler(new HandleBooleanAttribute(AUTO_SOLUTIONS)
+		{
+			@Override
+			public void setValue(String name, boolean value)
+			{
+				_autoGenerate = value;
+			}
+		});
 		addAttributeHandler(new HandleBooleanAttribute(SHOW_SOLUTIONS)
 		{
 			@Override
 			public void setValue(String name, boolean value)
 			{
 				_showSolutions = value;
+			}
+		});
+		addHandler(new ColourHandler()
+		{
+			
+			@Override
+			public void setColour(Color res)
+			{
+				_myColor = res;
 			}
 		});
 	}
@@ -122,6 +145,8 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 		// and the preferences
 		solution.setShowLocationBounds(_showBounds);
 		solution.setShowSolutions(_showSolutions);
+		solution.setColor(_myColor);
+		solution.getSolver().setAutoGenerateSolutions(_autoGenerate);
 
 		// ok, repopulate the solver from the contents
 		if (_cdataCharacters.size() > 0)
@@ -143,6 +168,9 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			}
 		}
 
+		// ok, the solver knows it's contributions, but we've got update to Debrief one.
+		solution.selfScan();
+		
 		// put it into the solution.
 
 		// and save it.
@@ -187,6 +215,8 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 					writeThis(solution.getShowLocationBounds()));
 			newI.setAttribute(SHOW_SOLUTIONS,
 					writeThis(solution.getShowSolutions()));
+			newI.setAttribute(AUTO_SOLUTIONS, writeThis(solution.getSolver().isAutoGenerateSolutions()));
+			ColourHandler.exportColour(solution.getColor(), newI, doc);
 
 			// insert the CDATA child node
 			CDATASection cd = doc.createCDATASection(res);
