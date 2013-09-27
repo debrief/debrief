@@ -42,6 +42,7 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
@@ -202,6 +203,21 @@ public class SATC_Solution extends BaseLayer implements
 		@Override
 		public void step(State thisState)
 		{
+			// ok, convert the state to a fix
+			Fix theF = produceFix(thisState);
+			
+			// and wrap it
+			FixWrapper thisF = new FixWrapper(theF);
+			
+			// put the DTG into the label
+			thisF.resetName();
+			
+			// and store it.
+			_myTrack.addFix(thisF);
+		}
+
+		private Fix produceFix(State thisState)
+		{
 			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
 			// convert to screen
 			WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
@@ -211,11 +227,7 @@ public class SATC_Solution extends BaseLayer implements
 			HiResDate theTime = new HiResDate(thisState.getTime().getTime());
 
 			Fix theF = new Fix(theTime, wLoc, theCourse, theSpeedYps);
-			FixWrapper thisF = new FixWrapper(theF);
-			_myTrack.addFix(thisF);
-			
-			thisF.resetName();
-			
+			return theF;
 		}
 
 		public TrackWrapper getTrack()
@@ -294,6 +306,7 @@ public class SATC_Solution extends BaseLayer implements
 		_myLayers = null;
 		_mySolver = null;
 
+		
 	}
 
 	@Override
