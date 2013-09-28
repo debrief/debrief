@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
+import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.DragMode;
 import org.mwc.debrief.core.actions.DragSegment.IconProvider;
@@ -216,8 +217,7 @@ public static class RotateOperation extends CoreDragOperation implements Draggab
 		Double lastRotate = null;
 		protected TrackWrapper _parent;
 		protected Layers _layers;
-		protected Cursor _hotspotCursor;
-
+		
 		public RotateOperation(final WorldLocation cursorLoc, final WorldLocation origin,
 				final TrackSegment segment, final TrackWrapper parentTrack, final Layers theLayers)
 		{
@@ -259,12 +259,8 @@ public static class RotateOperation extends CoreDragOperation implements Draggab
 		}
 
 		public Cursor getHotspotCursor()
-		{
-			if (_hotspotCursor == null)
-				_hotspotCursor = new Cursor(Display.getDefault(), DebriefPlugin
-						.getImageDescriptor("icons/SelectFeatureHitRotate.ico")
-						.getImageData(), 4, 2);
-			return _hotspotCursor;
+		{			
+			return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_ROTATE);
 		}
 	}
 

@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
@@ -24,7 +25,6 @@ import org.mwc.cmap.plotViewer.actions.CoreDragAction;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
-import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -169,11 +169,6 @@ public class DragFeature extends CoreDragAction
 		private PlainChart _myChart;
 
 		/**
-		 * the hand cursor we show when dragging
-		 */
-		Cursor _newCursor;
-
-		/**
 		 * the layer to update when dragging is complete
 		 */
 		protected Layer _parentLayer;
@@ -235,12 +230,8 @@ public class DragFeature extends CoreDragAction
 					_lastLocation = _startLocation;
 
 					// also override the cursor, if we have to.
-					if (_newCursor != null)
-					{
-						_newCursor.dispose();
-						_newCursor = getDragCursor();
-						theCanvas.getCanvas().setCursor(_newCursor);
-					}
+					theCanvas.getCanvas().setCursor(getDragCursor());
+					
 				}
 
 				// remember where we are
@@ -331,15 +322,8 @@ public class DragFeature extends CoreDragAction
 				{
 					// ok - change what the cursor looks liks
 					// create the new cursor
-					// _newCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
-
-					if (_newCursor != null)
-						_newCursor.dispose();
-
-					_newCursor = getHotspotCursor(currentNearest._object);
-
 					// and assign it to the control
-					theCanvas.getCanvas().setCursor(_newCursor);
+					theCanvas.getCanvas().setCursor(getHotspotCursor(currentNearest._object));
 
 					highlightShown = true;
 
@@ -352,16 +336,8 @@ public class DragFeature extends CoreDragAction
 			// have we shown the 'hit' cursor?
 			if (!highlightShown)
 			{
-				// nope. do we already have a local cursor?
-				if (_newCursor != null)
-				{
-					// yup, better ditch it
-					_newCursor.dispose();
-				}
-
-				// and show our special cursor
-				_newCursor = getNormalCursor();
-				theCanvas.getCanvas().setCursor(_newCursor);
+				// show our special cursor
+				theCanvas.getCanvas().setCursor(getNormalCursor());
 
 			}
 		}
@@ -507,9 +483,7 @@ public class DragFeature extends CoreDragAction
 		@Override
 		public Cursor getNormalCursor()
 		{
-			final Cursor res = new Cursor(Display.getDefault(), DebriefPlugin
-					.getImageDescriptor("icons/SelectFeature.ico").getImageData(), 4, 2);
-			return res;
+			return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE);
 		}
 
 		public DragOperation getOperation()
@@ -643,8 +617,7 @@ public class DragFeature extends CoreDragAction
 
 	public Cursor getDragCursor()
 	{
-		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-				"icons/SelectFeatureHitDown.ico").getImageData(), 4, 2);
+		return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_DOWN);
 	}
 
 	@Override
@@ -655,8 +628,7 @@ public class DragFeature extends CoreDragAction
 
 	public Cursor getHotspotCursor(final DraggableItem hoverTarget)
 	{
-		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-				"icons/SelectFeatureHit.ico").getImageData(), 4, 2);
+		return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT);
 	}
 
 }

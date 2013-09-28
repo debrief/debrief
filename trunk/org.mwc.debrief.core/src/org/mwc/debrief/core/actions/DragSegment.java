@@ -18,6 +18,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.plotViewer.editors.chart.CoreTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
@@ -225,8 +226,7 @@ public class DragSegment extends DragFeature
 	@Override
 	public Cursor getDragCursor()
 	{
-		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-				"icons/SelectFeatureHitDown.ico").getImageData(), 4, 2);
+		return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_DOWN);
 	}
 
 	@Override

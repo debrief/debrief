@@ -375,9 +375,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	abstract public static class PlotMouseDragger
 	{
 
-		protected Cursor _downCursor;
-		protected Cursor _normalCursor;
-
 		/**
 		 * handle the mouse being dragged
 		 * 
@@ -419,10 +416,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		public Cursor getNormalCursor()
 		{
 			// ok, return the 'normal' cursor
-			if ((_normalCursor == null) || (_normalCursor.isDisposed()))
-				_normalCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-
-			return _normalCursor;
+			
+			// we haven't to dispose system cursors
+			return Display.getCurrent().getSystemCursor(SWT.CURSOR_ARROW);
 		}
 
 		/**
@@ -440,16 +436,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		public void close()
 		{
 			// ditch our objects
-			if (_downCursor != null)
-			{
-				_downCursor.dispose();
-				_downCursor = null;
-			}
-			if (_normalCursor != null)
-			{
-				_normalCursor.dispose();
-				_normalCursor = null;
-			}
+			// we haven't to dispose static Debrief cursors
 		}
 
 	}
