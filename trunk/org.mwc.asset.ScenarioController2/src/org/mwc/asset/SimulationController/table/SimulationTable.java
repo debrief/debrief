@@ -47,6 +47,9 @@ import MWC.GUI.Layer;
 public class SimulationTable
 {
 
+	private static final Image imgAscend = Activator.getImageDescriptor(Activator.IMG_ASCEND).createImage();
+	private static final Image imgDescend = Activator.getImageDescriptor(Activator.IMG_DESCEND).createImage();
+	
 	private abstract class ColumnData extends ColumnSizeData
 	{
 
@@ -261,7 +264,7 @@ public class SimulationTable
 	{
 
 		private TableColumn myTableColumn;
-
+		
 		private boolean myIsAscending = false;
 
 		@SuppressWarnings("unchecked")
@@ -343,9 +346,7 @@ public class SimulationTable
 				myTableColumn = tableColumn;
 				myIsAscending = true;
 			}
-			myTableColumn.setImage(Activator.getImageDescriptor(
-					myIsAscending ? Activator.IMG_ASCEND : Activator.IMG_DESCEND)
-					.createImage());
+			myTableColumn.setImage(myIsAscending ? imgAscend : imgDescend);
 			final boolean isCellSelected = myTableCursor.getRow() != null;
 			myTableViewer.refresh(true, true);
 			if (isCellSelected && getTable().getSelectionIndex() != -1)

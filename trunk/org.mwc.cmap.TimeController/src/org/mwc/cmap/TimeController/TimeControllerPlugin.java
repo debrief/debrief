@@ -3,7 +3,9 @@ package org.mwc.cmap.TimeController;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.ui.plugin.*;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.osgi.framework.BundleContext;
+
 import java.util.*;
 
 /**
@@ -14,6 +16,7 @@ public class TimeControllerPlugin extends AbstractUIPlugin {
 	private static TimeControllerPlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
+	private ImageRegistry _imageRegistry;
 	
 	/**
 	 * The constructor.
@@ -88,12 +91,37 @@ public class TimeControllerPlugin extends AbstractUIPlugin {
 	 */
 	public static Image getImage(final String path)
 	{
+		
+		return getImageFromRegistry(path);
+		
+	}
+	
+	private static ImageRegistry getRegistry()
+	{
+		return plugin._imageRegistry;
+	}
+	
+	public static Image getImageFromRegistry(final String path)
+	{
 		Image res = null;
-		final ImageDescriptor desk = getImageDescriptor(path);
-		if(desk != null)
-			res = desk.createImage();
-		
+
+		// do we already have an image
+		if (getRegistry() == null)
+		{
+			plugin._imageRegistry = new ImageRegistry();
+		}
+
+		// ok - do we have it already?
+		res = getRegistry().get(path);
+
+		if (res == null)
+		{
+			final ImageDescriptor desc = getImageDescriptor(path);
+			getRegistry().put(path, desc);
+			res = getRegistry().get(path);
+		}
+
+		// and return it..
 		return res;
-		
 	}
 }

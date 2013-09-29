@@ -684,6 +684,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		_theCanvas.close();
 		_theCanvas = null;
 
+		if (_swtImage != null && !_swtImage.isDisposed())
+		{
+			_swtImage.dispose();
+			_swtImage = null;
+		}
 		super.close();
 	}
 
