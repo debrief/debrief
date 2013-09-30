@@ -125,6 +125,10 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	 * 
 	 */
 	private Action _debugMode;
+	private Action _testSolverAction;
+	private Action _testSetActive;
+	
+	private ISolver _testSolver;
 
 	private void contributeToActionBars()
 	{
@@ -361,6 +365,8 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		manager.add(_testSetActive);
+		manager.add(_testSolverAction);
 		manager.add(_debugMode);
 	}
 
@@ -373,6 +379,22 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 		_debugMode.setChecked(false);
 		_debugMode
 				.setToolTipText("Track all states (including application of each Contribution)");
+		_testSetActive = new Action("Set active") {
+
+			@Override
+			public void run() {
+				_solversManager.setActiveSolver(_testSolver);
+			}			
+		};
+		_testSetActive.setEnabled(false);
+		_testSolverAction = new Action("Create Test solver") 
+		{
+			@Override
+			public void run() {
+				_testSolver = _solversManager.createSolver("Test solver from another view");
+				_testSetActive.setEnabled(true);
+			}
+		};
 	}
 
 	/**

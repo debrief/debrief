@@ -118,6 +118,7 @@ public class TestHarnessView extends ViewPart
 	private ISolversManager _solversManager;
 	private ISolversManagerListener solversManagerListener;	
 	private int solverNumber = 1;
+	private boolean _settingActiveSolver;
 	
 	private SpatialViewSettings _spatialSettings;
 	
@@ -167,6 +168,7 @@ public class TestHarnessView extends ViewPart
 	public void dispose()
 	{
 		super.dispose();
+		_solversManager.removeSolverManagerListener(solversManagerListener);
 		_context.dispose();
 	}
 	
@@ -193,16 +195,24 @@ public class TestHarnessView extends ViewPart
 				return ((ISolver) element).getName();
 			}
 		});
-		_solvers.addSelectionChangedListener(new ISelectionChangedListener()
+		_solvers.addPostSelectionChangedListener(new ISelectionChangedListener()
 		{			
 			@Override
 			public void selectionChanged(SelectionChangedEvent e)
 			{
+				if (_settingActiveSolver)
+				{
+					return;
+				}
 				StructuredSelection selection = (StructuredSelection) e.getSelection();
 				ISolver solver = (ISolver) selection.getFirstElement();
 				_solversManager.setActiveSolver(solver);
 			}
 		});
+		for (ISolver solver : _solversManager.getAvailableSolvers())
+		{
+			_solvers.add(solver);
+		}
 		
 		Button newSolver = new Button(solversGroup, SWT.PUSH);
 		newSolver.setText("New");
@@ -577,29 +587,35 @@ public class TestHarnessView extends ViewPart
 
 	private void setActiveSolver(ISolver solver)
 	{
-		_activeSolver = solver;
-		_gaBinder.clear();
-		_saBinder.clear();
-		
-		boolean enabled = solver != null; 
-		_clearAction.setEnabled(enabled);
-		_populateGoodAction.setEnabled(enabled);
-		_restartAction.setEnabled(enabled);
-		_stepAction.setEnabled(enabled);
-		_playAction.setEnabled(enabled);
-		_liveAction.setEnabled(enabled);
-		_saveAction.setEnabled(enabled);
-		_loadAction.setEnabled(enabled);
-		_useGAButton.setEnabled(false);
-		_useSAButton.setEnabled(false);
-		if (solver != null)
-		{
-			if (solver.getSolutionGenerator() instanceof SwitchableSolutionGenerator)
-			{
-				_useGAButton.setEnabled(true);
-				_useSAButton.setEnabled(true);
+		_settingActiveSolver = true;
+		try {
+			_activeSolver = solver;
+			_gaBinder.clear();
+			_saBinder.clear();
+
+			boolean enabled = solver != null;
+			_clearAction.setEnabled(enabled);
+			_populateGoodAction.setEnabled(enabled);
+			_restartAction.setEnabled(enabled);
+			_stepAction.setEnabled(enabled);
+			_playAction.setEnabled(enabled);
+			_liveAction.setEnabled(enabled);
+			_saveAction.setEnabled(enabled);
+			_loadAction.setEnabled(enabled);
+			_useGAButton.setEnabled(false);
+			_useSAButton.setEnabled(false);
+			if (solver != null) {
+				_solvers.setSelection(new StructuredSelection(solver));
+				if (solver.getSolutionGenerator() instanceof SwitchableSolutionGenerator) {
+					_useGAButton.setEnabled(true);
+					_useSAButton.setEnabled(true);
+				}
+				selectSolutionGenerator(solver.getSolutionGenerator());
 			}
-			selectSolutionGenerator(solver.getSolutionGenerator());
+		}
+		finally
+		{
+			_settingActiveSolver = false;
 		}
 	}
 	
