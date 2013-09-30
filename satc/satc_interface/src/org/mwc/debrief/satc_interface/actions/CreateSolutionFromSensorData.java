@@ -35,16 +35,19 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class CreateSolutionFromSensorData implements
 		RightClickContextItemGenerator
@@ -375,6 +378,7 @@ public class CreateSolutionFromSensorData implements
 	private abstract class CoreSolutionFromCuts extends CMAPOperation
 	{
 
+		
 		private SATC_Solution _targetSolution;
 		private final Layers _theLayers;
 		protected final ArrayList<SensorContactWrapper> _validCuts;
@@ -385,7 +389,7 @@ public class CreateSolutionFromSensorData implements
 			super(title);
 			_targetSolution = existingSolution;
 			_theLayers = theLayers;
-			_validCuts = validCuts;
+			_validCuts = validCuts;		
 		}
 
 		public String getDefaultSolutionName()
@@ -402,14 +406,20 @@ public class CreateSolutionFromSensorData implements
 		}
 
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
 		{
 
 			// ok, do we have an existing solution
 			if (_targetSolution == null)
 			{
 				String solutionName = getDefaultSolutionName();
-				_targetSolution = new SATC_Solution(solutionName);
+				
+				// create a new solution
+				
+			  final ISolversManager solvMgr = SATC_Activator.getDefault().getService(ISolversManager.class, true);
+				final ISolver newSolution = solvMgr.createSolver(solutionName);
+				
+				_targetSolution = new SATC_Solution(newSolution);
+				newSolution.setAutoGenerateSolutions(true);
 				_theLayers.addThisLayer(_targetSolution);
 
 				// ok, give it the default contributions
