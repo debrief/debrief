@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
@@ -29,7 +28,8 @@ public class Contributions implements IContributions
 	public Contributions()
 	{
 		contributions = new ConcurrentSkipListSet<BaseContribution>();
-		contributionListeners = Collections.newSetFromMap(new ConcurrentHashMap<IContributionsChangedListener, Boolean>());;
+		contributionListeners = Collections.synchronizedSet(
+				new HashSet<IContributionsChangedListener>());
 		support = new PropertyChangeSupport(this);
 	}
 
@@ -189,12 +189,21 @@ public class Contributions implements IContributions
 		}
 		return contributions.higher(current);
 	}
+	
+	private Set<IContributionsChangedListener> cloneListeners() 
+	{
+		Set<IContributionsChangedListener> currentListeners = 
+				new HashSet<IContributionsChangedListener>();
+		synchronized (contributionListeners)
+		{
+			currentListeners.addAll(contributionListeners);
+		}
+		return currentListeners;
+	}
 
 	protected void fireContributionAdded(BaseContribution contribution)
 	{
-		Set<IContributionsChangedListener> currentListeners = 
-				new HashSet<IContributionsChangedListener>(contributionListeners);
-		for (IContributionsChangedListener listener : currentListeners)
+		for (IContributionsChangedListener listener : cloneListeners())
 		{
 			listener.added(contribution);
 		}
@@ -202,9 +211,7 @@ public class Contributions implements IContributions
 
 	protected void fireContributionRemoved(BaseContribution contribution)
 	{
-		Set<IContributionsChangedListener> currentListeners = 
-				new HashSet<IContributionsChangedListener>(contributionListeners);
-		for (IContributionsChangedListener listener : currentListeners)
+		for (IContributionsChangedListener listener : cloneListeners())
 		{
 			listener.removed(contribution);
 		}

@@ -1,8 +1,8 @@
 package com.planetmayo.debrief.satc.model.generator.impl;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -28,8 +28,8 @@ public class SwitchableSolutionGenerator implements ISolutionGenerator
 		this.contributions = contributions;
 		this.jobsManager = jobsManager;
 		this.problemSpace = problemSpace;
-		this.listeners = Collections
-				.newSetFromMap(new ConcurrentHashMap<IGenerateSolutionsListener, Boolean>());
+		this.listeners = Collections.synchronizedSet(
+				new HashSet<IGenerateSolutionsListener>());
 		switchToBF();
 	}
 
@@ -96,13 +96,16 @@ public class SwitchableSolutionGenerator implements ISolutionGenerator
 			throw new IllegalArgumentException("generator can't be null");
 		}
 		Precision precision = currentGenerator == null ? Precision.LOW : getPrecision();
-		for (IGenerateSolutionsListener listener : listeners)
+		synchronized (listeners)
 		{
-			if (currentGenerator != null) 
+			for (IGenerateSolutionsListener listener : listeners)
 			{
-				currentGenerator.removeReadyListener(listener);
+				if (currentGenerator != null)
+				{
+					currentGenerator.removeReadyListener(listener);
+				}
+				generator.addReadyListener(listener);
 			}
-			generator.addReadyListener(listener);
 		}
 		generator.setPrecision(precision);
 		currentGenerator = generator;

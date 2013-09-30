@@ -2,8 +2,8 @@ package com.planetmayo.debrief.satc.model.generator.impl;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -62,7 +62,7 @@ public class BoundsManager implements IBoundsManager
 
 	public BoundsManager(IContributions contributions, ProblemSpace space)
 	{
-		_steppingListeners = Collections.newSetFromMap(new ConcurrentHashMap<IConstrainSpaceListener, Boolean>());
+		_steppingListeners = Collections.synchronizedSet(new HashSet<IConstrainSpaceListener>());
 		this._contributions = contributions;
 		this._space = space;
 	}
@@ -117,10 +117,20 @@ public class BoundsManager implements IBoundsManager
 			}
 		}
 	}
+	
+	private Set<IConstrainSpaceListener> cloneListeners() 
+	{
+		Set<IConstrainSpaceListener> listeners = new HashSet<IConstrainSpaceListener>();
+		synchronized (_steppingListeners) 
+		{
+			listeners.addAll(_steppingListeners);
+		}
+		return listeners;
+	}
 
 	protected void fireComplete()
 	{
-		for (IConstrainSpaceListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : cloneListeners())
 		{
 			listener.statesBounded(this);
 		}
@@ -128,7 +138,7 @@ public class BoundsManager implements IBoundsManager
 
 	protected void fireError(IncompatibleStateException ex)
 	{
-		for (IConstrainSpaceListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : cloneListeners())
 		{
 			listener.error(this, ex);
 		}
@@ -136,7 +146,7 @@ public class BoundsManager implements IBoundsManager
 
 	protected void fireRestarted()
 	{
-		for (IConstrainSpaceListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : cloneListeners())
 		{
 			listener.restarted(this);
 		}
@@ -144,7 +154,7 @@ public class BoundsManager implements IBoundsManager
 
 	protected void fireStepped(int thisStep, int totalSteps)
 	{
-		for (IConstrainSpaceListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : cloneListeners())
 		{
 			listener.stepped(this, thisStep, totalSteps);
 		}

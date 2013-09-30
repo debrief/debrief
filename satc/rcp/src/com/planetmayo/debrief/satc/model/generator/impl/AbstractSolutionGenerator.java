@@ -3,10 +3,10 @@ package com.planetmayo.debrief.satc.model.generator.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -53,8 +53,8 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 		this.jobsManager = jobsManager;
 		this.contributions = contributions;
 		this.problemSpaceView = problemSpace;
-		_readyListeners = Collections
-				.newSetFromMap(new ConcurrentHashMap<IGenerateSolutionsListener, Boolean>());
+		_readyListeners = Collections.synchronizedSet(
+				new HashSet<IGenerateSolutionsListener>());
 	}	
 
 	/*
@@ -83,6 +83,17 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 		_readyListeners.remove(listener);
 	}
 	
+	private Set<IGenerateSolutionsListener> cloneListeners() 
+	{
+		Set<IGenerateSolutionsListener> listeners = 
+				new HashSet<IGenerateSolutionsListener>();
+		synchronized (_readyListeners) 
+		{
+			listeners.addAll(_readyListeners);
+		}
+		return listeners;
+	}
+	
 	/**
 	 * we've sorted out the leg scores
 	 * 
@@ -91,7 +102,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	 */
 	protected void fireStartingGeneration()
 	{
-		for (IGenerateSolutionsListener listener : _readyListeners)
+		for (IGenerateSolutionsListener listener : cloneListeners())
 		{
 			listener.startingGeneration();
 		}
@@ -105,7 +116,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	 */
 	protected void fireFinishedGeneration(Throwable error)
 	{
-		for (IGenerateSolutionsListener listener : _readyListeners)
+		for (IGenerateSolutionsListener listener : cloneListeners())
 		{
 			listener.finishedGeneration(error);
 		}
@@ -119,7 +130,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	 */
 	protected void fireSolutionsReady(CompositeRoute[] routes)
 	{
-		for (IGenerateSolutionsListener listener : _readyListeners)
+		for (IGenerateSolutionsListener listener : cloneListeners())
 		{
 			listener.solutionsReady(routes);
 		}
