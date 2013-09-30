@@ -5,6 +5,7 @@ package org.mwc.debrief.core.actions.drag;
 
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
+import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 
@@ -20,7 +21,6 @@ public class StretchFanOperation extends CoreDragOperation implements DraggableI
 
 	final private Layers _layers;
 	private final TrackWrapper _parent;
-	private Cursor _hotspotCursor;
 
 	public StretchFanOperation(final TrackSegment segment, final TrackWrapper parent,
 			final Layers theLayers)
@@ -58,10 +58,6 @@ public class StretchFanOperation extends CoreDragOperation implements DraggableI
 
 	public Cursor getHotspotCursor()
 	{
-		if (_hotspotCursor == null)
-			_hotspotCursor = new Cursor(Display.getDefault(), DebriefPlugin
-					.getImageDescriptor("icons/SelectFeatureHitFanStretch.ico")
-					.getImageData(), 4, 2);
-		return _hotspotCursor;
+		return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_FAN_STRETCH);
 	}
 }

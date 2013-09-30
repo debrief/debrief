@@ -1127,6 +1127,15 @@ public class ToteView extends ViewPart
 
 		public void dispose()
 		{
+			if (_primaryFont != null) {
+				_primaryFont.dispose();
+			}
+			if (_interpolatedPrimaryFont != null) {
+				_interpolatedPrimaryFont.dispose();
+			}
+			if (_interpolatedSecondaryFont != null) {
+				_interpolatedSecondaryFont.dispose();
+			}
 		}
 
 		public boolean isLabelProperty(final Object element, final String property)

@@ -258,6 +258,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private SelectionAdapter _playListener;
 
+	//private static final Color bColor = new Color(Display.getDefault(), 0, 0, 0);
+	private static final Color bColor = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+
+	private static final Color fColor = new Color(Display.getDefault(), 33, 255, 22);
+
+	private static final Font arialFont = new Font(Display.getDefault(), "Arial", 16, SWT.NONE);
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -392,9 +399,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// _timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended",
 		// 16,
 		// SWT.NONE));
-		_timeLabel.setFont(new Font(Display.getDefault(), "Arial", 16, SWT.NONE));
-		_timeLabel.setForeground(new Color(Display.getDefault(), 33, 255, 22));
-		_timeLabel.setBackground(new Color(Display.getDefault(), 0, 0, 0));
+		_timeLabel.setFont(arialFont );
+		_timeLabel.setForeground(fColor );
+		_timeLabel.setBackground(bColor );
 
 		// next create the time slider holder
 		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
@@ -521,22 +528,22 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			public void widgetSelected(final SelectionEvent e)
 			{
 				final boolean playing = _playButton.getSelection();
-				ImageDescriptor thisD;
+				//ImageDescriptor thisD;
 				if (playing)
 				{
-					thisD = TimeControllerPlugin
-							.getImageDescriptor("icons/media_pause.png");
+					//thisD = TimeControllerPlugin
+					//		.getImageDescriptor("icons/media_pause.png");
 					startPlaying();
 					_playButton.setToolTipText(PAUSE_TEXT);
 				}
 				else
 				{
-					thisD = TimeControllerPlugin
-							.getImageDescriptor("icons/media_play.png");
+					//thisD = TimeControllerPlugin
+					//		.getImageDescriptor("icons/media_play.png");
 					stopPlaying();
 					_playButton.setToolTipText(PLAY_TEXT);
 				}
-				_playButton.setImage(thisD.createImage());
+				_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
 			}
 		};
 		_playButton.addSelectionListener(_playListener);

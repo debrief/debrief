@@ -453,4 +453,15 @@ public class ViewTest extends ViewPart
 	public void setFocus()
 	{
 	}
+
+	@Override
+	public void dispose()
+	{
+		if (swtImage != null && !swtImage.isDisposed())
+		{
+			swtImage.dispose();
+			swtImage = null;
+		}
+		super.dispose();
+	}
 }

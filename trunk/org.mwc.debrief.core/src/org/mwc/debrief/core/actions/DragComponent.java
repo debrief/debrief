@@ -17,6 +17,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
@@ -24,7 +25,6 @@ import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
-import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -187,11 +187,6 @@ public class DragComponent extends DragFeature
 		private PlainChart _myChart;
 
 		/**
-		 * the hand cursor we show when dragging
-		 */
-		Cursor _newCursor;
-
-		/**
 		 * the layer to update when dragging is complete
 		 */
 		private Layer _parentLayer;
@@ -234,13 +229,9 @@ public class DragComponent extends DragFeature
 					_lastLocation = _startLocation;
 
 					// override the icon we're using
-					if (_newCursor != null)
-					{
-						_newCursor.dispose();
-						_newCursor = getDragCursor();
-						theCanvas.getCanvas().setCursor(_newCursor);
-					}
-
+					
+					theCanvas.getCanvas().setCursor(getDragCursor());
+					
 				}
 
 				// remember where we are
@@ -351,13 +342,9 @@ public class DragComponent extends DragFeature
 				if (scrDist <= JITTER)
 				{
 					// ok - change what the cursor looks liks
-					// create the new cursor
-					_newCursor = new Cursor(Display.getDefault(), DebriefPlugin
-							.getImageDescriptor("icons/SelectPointHit.ico").getImageData(),
-							7, 3);
 
 					// and assign it to the control
-					theCanvas.getCanvas().setCursor(_newCursor);
+					theCanvas.getCanvas().setCursor(CursorRegistry.getCursor(CursorRegistry.SELECT_POINT_HIT));
 
 					highlightShown = true;
 
@@ -375,17 +362,9 @@ public class DragComponent extends DragFeature
 				_hoverComponent = null;
 				_parentLayer = null;
 
-				if (_newCursor != null)
-				{
-					_newCursor.dispose();
-					_newCursor = null;
-				}
-
 				// reset the cursor on the canvas
-				_newCursor = getNormalCursor();
-
 				// and assign it to the control
-				theCanvas.getCanvas().setCursor(_newCursor);
+				theCanvas.getCanvas().setCursor(getNormalCursor());
 			}
 		}
 
@@ -509,10 +488,7 @@ public class DragComponent extends DragFeature
 		@Override
 		public Cursor getNormalCursor()
 		{
-			final Cursor res = new Cursor(Display.getDefault(), DebriefPlugin
-					.getImageDescriptor("icons/SelectPoint.ico").getImageData(), 7, 3);
-
-			return res;
+			return CursorRegistry.getCursor(CursorRegistry.SELECT_POINT);
 		}
 
 		@Override
@@ -603,7 +579,6 @@ public class DragComponent extends DragFeature
 	}
 	public Cursor getDragCursor()
 	{
-		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-				"icons/SelectPointHitDown.ico").getImageData(), 7, 3);
+		return CursorRegistry.getCursor(CursorRegistry.SELECT_POINT_HIT_DOWN);
 	}
 }

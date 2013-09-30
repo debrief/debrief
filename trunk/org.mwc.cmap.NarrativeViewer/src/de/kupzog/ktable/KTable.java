@@ -1832,7 +1832,7 @@ public class KTable extends Canvas {
 		if ((m_ResizeColumnIndex != -1) || (getColumnForResize(e.x, e.y) >= 0)) {
 
 			if (m_defaultColumnResizeCursor == null) {
-				setCursor(new Cursor(m_Display, SWT.CURSOR_SIZEWE));
+				setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_SIZEWE));
 			} else {
 				setCursor(m_defaultColumnResizeCursor);
 			}
@@ -1840,7 +1840,7 @@ public class KTable extends Canvas {
 		} else if ((m_ResizeRowIndex != -1) || (getRowForResize(e.x, e.y) >= 0)) {
 
 			if (m_defaultRowResizeCursor == null) {
-				setCursor(new Cursor(m_Display, SWT.CURSOR_SIZENS));
+				setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_SIZENS));
 			} else {
 				setCursor(m_defaultRowResizeCursor);
 			}
