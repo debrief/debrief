@@ -27,6 +27,10 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 {
 	private static final String SA_GENERATOR_GROUP = "saGeneratorGroup";
 	
+	
+	public static final String NAME = "Simulated Annealing";
+
+	
 	private final SAParameters parameters;
 	
 	private volatile Job<Void, Void> mainJob;	

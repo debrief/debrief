@@ -41,6 +41,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 {
 	private static final String GA_GENERATOR_GROUP = "gaGeneratorGroup"; 
 	
+	public static final String NAME = "Genetic Algorithm";
+	
 	private volatile List<LegOperations> legs;
 
 	private volatile Job<Void, Void> mainJob;

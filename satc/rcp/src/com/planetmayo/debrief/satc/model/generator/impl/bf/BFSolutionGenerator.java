@@ -30,6 +30,8 @@ import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 public class BFSolutionGenerator extends AbstractSolutionGenerator
 {
 	private static final String SOLUTION_GENERATOR_JOBS_GROUP = "solutionGeneratorGroup";
+	
+	public static final String NAME = "Brute Force";
 
 	/**
 	 * the current set of legs
