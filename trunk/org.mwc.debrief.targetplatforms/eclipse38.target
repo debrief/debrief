@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+
+<target name="eclipse38" sequenceNumber="1">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="3.8.2.M20130131-0800"/>
+<unit id="org.eclipse.platform.sdk" version="3.8.2.M20130131-0800"/>
+<unit id="org.eclipse.pde.junit.runtime.addon.feature.group" version="1.0.100.v20121207-183635-7C7IEpAkHgAKgQl57GGDCAB701A1"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.8.0.v20121212-203907-7M7fA78g4_y-edvtH0ZcEC5NOFTB"/>
+<unit id="org.eclipse.rcp.source.feature.group" version="3.8.2.v20130118-180157-96BuGOZFxwOAeG8Ofmqicz0tPK"/>
+<unit id="org.eclipse.rcp.feature.group" version="3.8.2.v20130118-180157-96BuGOZFxwOAeG8Ofmqicz0tPK"/>
+<unit id="org.eclipse.platform.ide" version="3.8.2.M20130131-0800"/>
+<unit id="org.eclipse.rcp.sdk.id" version="3.8.2.M20130131-0800"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.8"/>
+</location>
+</locations>
+</target>
