@@ -11,4 +11,25 @@
   <artifactId>org.mwc.debrief.help</artifactId>
   <version>1.0.102</version>
   <packaging>eclipse-plugin</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <configuration>
+                <target>
+                  <ant target="docbook_to_eclipse" antfile="collate_docbook.xml" />
+                </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

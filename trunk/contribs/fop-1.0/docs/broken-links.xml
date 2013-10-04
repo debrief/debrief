@@ -1,0 +1,153 @@
+<broken-links>
+  <link message="/source/apache-forrest/build/plugins/org.apache.forrest.plugin.input.projectInfo (Is a directory)" uri="1.0/changes_1.0.html">
+    <referrer uri="linkmap.html"/>
+    <referrer uri="1.0/fonts.html"/>
+    <referrer uri="1.0/index.html"/>
+    <referrer uri="1.0/compiling.html"/>
+    <referrer uri="1.0/graphics.html"/>
+    <referrer uri="1.0/pdfencryption.html"/>
+    <referrer uri="1.0/events.html"/>
+    <referrer uri="1.0/pdfx.html"/>
+    <referrer uri="1.0/extensions.html"/>
+    <referrer uri="1.0/intermediate.html"/>
+    <referrer uri="1.0/pdfa.html"/>
+    <referrer uri="1.0/output.html"/>
+    <referrer uri="1.0/hyphenation.html"/>
+    <referrer uri="1.0/running.html"/>
+    <referrer uri="1.0/anttask.html"/>
+    <referrer uri="1.0/servlets.html"/>
+    <referrer uri="1.0/upgrading.html"/>
+    <referrer uri="1.0/configuration.html"/>
+    <referrer uri="1.0/metadata.html"/>
+    <referrer uri="1.0/accessibility.html"/>
+    <referrer uri="1.0/embedding.html"/>
+    <referrer uri="linkmap.xml"/>
+    <referrer uri="1.0/knownissues_overview.html"/>
+  </link>
+  <link message="/source/apache-forrest/build/plugins/org.apache.forrest.plugin.input.projectInfo (Is a directory)" uri="0.95/changes_0.95beta.html">
+    <referrer uri="linkmap.html"/>
+    <referrer uri="0.95/upgrading.html"/>
+    <referrer uri="0.95/pdfencryption.html"/>
+    <referrer uri="0.95/output.html"/>
+    <referrer uri="0.95/anttask.html"/>
+    <referrer uri="0.95/knownissues_overview.html"/>
+    <referrer uri="0.95/servlets.html"/>
+    <referrer uri="0.95/fonts.html"/>
+    <referrer uri="0.95/configuration.html"/>
+    <referrer uri="0.95/hyphenation.html"/>
+    <referrer uri="0.95/extensions.html"/>
+    <referrer uri="0.95/running.html"/>
+    <referrer uri="0.95/metadata.html"/>
+    <referrer uri="0.95/pdfx.html"/>
+    <referrer uri="0.95/pdfa.html"/>
+    <referrer uri="0.95/graphics.html"/>
+    <referrer uri="0.95/compiling.html"/>
+    <referrer uri="0.95/embedding.html"/>
+    <referrer uri="0.95/intermediate.html"/>
+    <referrer uri="0.95/index.html"/>
+    <referrer uri="linkmap.xml"/>
+  </link>
+  <link message="internal-destination or external-destination must be specified in basic-link" uri="compliance.pdf">
+    <referrer uri="compliance.html"/>
+  </link>
+  <link message="/source/apache-forrest/build/plugins/org.apache.forrest.plugin.input.projectInfo (Is a directory)" uri="0.95/releaseNotes_0.95.html">
+    <referrer uri="linkmap.html"/>
+    <referrer uri="0.95/upgrading.html"/>
+    <referrer uri="0.95/pdfencryption.html"/>
+    <referrer uri="news.html"/>
+    <referrer uri="0.95/output.html"/>
+    <referrer uri="0.95/anttask.html"/>
+    <referrer uri="0.95/knownissues_overview.html"/>
+    <referrer uri="0.95/servlets.html"/>
+    <referrer uri="0.95/fonts.html"/>
+    <referrer uri="0.95/configuration.html"/>
+    <referrer uri="0.95/hyphenation.html"/>
+    <referrer uri="0.95/extensions.html"/>
+    <referrer uri="0.95/running.html"/>
+    <referrer uri="0.95/metadata.html"/>
+    <referrer uri="0.95/pdfx.html"/>
+    <referrer uri="0.95/pdfa.html"/>
+    <referrer uri="0.95/graphics.html"/>
+    <referrer uri="0.95/compiling.html"/>
+    <referrer uri="0.95/embedding.html"/>
+    <referrer uri="0.95/intermediate.html"/>
+    <referrer uri="0.95/index.html"/>
+    <referrer uri="0.95/index.html"/>
+    <referrer uri="0.95/index.xml"/>
+    <referrer uri="linkmap.xml"/>
+  </link>
+  <link message="/source/apache-forrest/build/plugins/org.apache.forrest.plugin.input.projectInfo (Is a directory)" uri="changes.html">
+    <referrer uri="linkmap.html"/>
+    <referrer uri="download.html"/>
+    <referrer uri="status.html"/>
+    <referrer uri="faq.html"/>
+    <referrer uri="resources.html"/>
+    <referrer uri="quickstartguide.html"/>
+    <referrer uri="compliance.html"/>
+    <referrer uri="news.html"/>
+    <referrer uri="team.html"/>
+    <referrer uri="index.html"/>
+    <referrer uri="examples.html"/>
+    <referrer uri="gethelp.html"/>
+    <referrer uri="fo.html"/>
+    <referrer uri="maillist.html"/>
+    <referrer uri="knownissues.html"/>
+    <referrer uri="license.html"/>
+    <referrer uri="bugs.html"/>
+    <referrer uri="linkmap.xml"/>
+  </link>
+  <link message="/source/apache-forrest/build/plugins/org.apache.forrest.plugin.input.projectInfo (Is a directory)" uri="0.95/releaseNotes_0.95beta.html">
+    <referrer uri="news.html"/>
+  </link>
+  <link message="/source/apache-forrest/build/plugins/org.apache.forrest.plugin.input.projectInfo (Is a directory)" uri="0.95/changes_0.95.html">
+    <referrer uri="linkmap.html"/>
+    <referrer uri="0.95/upgrading.html"/>
+    <referrer uri="0.95/pdfencryption.html"/>
+    <referrer uri="0.95/output.html"/>
+    <referrer uri="0.95/anttask.html"/>
+    <referrer uri="0.95/knownissues_overview.html"/>
+    <referrer uri="0.95/servlets.html"/>
+    <referrer uri="0.95/fonts.html"/>
+    <referrer uri="0.95/configuration.html"/>
+    <referrer uri="0.95/hyphenation.html"/>
+    <referrer uri="0.95/extensions.html"/>
+    <referrer uri="0.95/running.html"/>
+    <referrer uri="0.95/metadata.html"/>
+    <referrer uri="0.95/pdfx.html"/>
+    <referrer uri="0.95/pdfa.html"/>
+    <referrer uri="0.95/graphics.html"/>
+    <referrer uri="0.95/compiling.html"/>
+    <referrer uri="0.95/embedding.html"/>
+    <referrer uri="0.95/intermediate.html"/>
+    <referrer uri="0.95/index.html"/>
+    <referrer uri="0.95/index.html"/>
+    <referrer uri="0.95/index.xml"/>
+    <referrer uri="linkmap.xml"/>
+  </link>
+  <link message="/source/apache-forrest/build/plugins/org.apache.forrest.plugin.input.projectInfo (Is a directory)" uri="1.0/releaseNotes_1.0.html">
+    <referrer uri="linkmap.html"/>
+    <referrer uri="1.0/fonts.html"/>
+    <referrer uri="news.html"/>
+    <referrer uri="1.0/index.html"/>
+    <referrer uri="1.0/compiling.html"/>
+    <referrer uri="1.0/graphics.html"/>
+    <referrer uri="1.0/pdfencryption.html"/>
+    <referrer uri="1.0/events.html"/>
+    <referrer uri="1.0/pdfx.html"/>
+    <referrer uri="1.0/extensions.html"/>
+    <referrer uri="1.0/intermediate.html"/>
+    <referrer uri="1.0/pdfa.html"/>
+    <referrer uri="1.0/output.html"/>
+    <referrer uri="1.0/hyphenation.html"/>
+    <referrer uri="1.0/running.html"/>
+    <referrer uri="1.0/anttask.html"/>
+    <referrer uri="1.0/servlets.html"/>
+    <referrer uri="1.0/upgrading.html"/>
+    <referrer uri="1.0/configuration.html"/>
+    <referrer uri="1.0/metadata.html"/>
+    <referrer uri="1.0/accessibility.html"/>
+    <referrer uri="1.0/embedding.html"/>
+    <referrer uri="linkmap.xml"/>
+    <referrer uri="1.0/knownissues_overview.html"/>
+  </link>
+</broken-links>
