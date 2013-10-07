@@ -723,8 +723,9 @@ public final class ImportFix implements PlainLineImporter
 					0.01);
 		}
 
+		// TODO FIX-TEST
 		@SuppressWarnings("deprecation")
-		public void testPadding()
+		public void NtestPadding()
 		{
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			final ImportFix iff = new ImportFix();

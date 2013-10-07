@@ -369,7 +369,6 @@ public class DragComponent extends DragFeature
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
 		final public void doMouseUp(final org.eclipse.swt.graphics.Point point,
 				final int keyState)
 		{

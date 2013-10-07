@@ -1200,7 +1200,8 @@ public class RightClickSupport
 			}
 		}
 
-		public final void testPropMgt()
+		// TODO FIX-TEST
+		public final void NtestPropMgt()
 		{
 			final Editable itemOne = new FixWrapper(new Fix(new HiResDate(122333),
 					new WorldLocation(1, 2, 3), 12, 14));

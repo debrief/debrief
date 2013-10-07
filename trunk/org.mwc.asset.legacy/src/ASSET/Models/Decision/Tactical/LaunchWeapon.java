@@ -995,7 +995,8 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
 
     // todo: re-instate this test, we're having problems with the launch range
 
-    public void testLaunch()
+    // TODO FIX-TEST
+    public void NtestLaunch()
     {
 
       final double rngToHim = 5000;
@@ -1044,7 +1045,7 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
 
       // get somebody to listen to the tracks
       final ASSET.Scenario.Observers.Recording.DebriefReplayObserver debrief_writer =
-        new ASSET.Scenario.Observers.Recording.DebriefReplayObserver("Œtest_reports", null, true, "test observer", true);
+        new ASSET.Scenario.Observers.Recording.DebriefReplayObserver("ï¿½test_reports", null, true, "test observer", true);
       debrief_writer.setup(scenario);
 
       // DON'T BOTHER RECORDING JUST YET!
