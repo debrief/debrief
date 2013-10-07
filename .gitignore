@@ -1,5 +1,5 @@
 trunk/contribs/geotools-8.0/
-trunk/contribs/fop-1.0/
+#trunk/contribs/fop-1.0/
 trunk/org.mwc.asset.help/bin/
 trunk/org.mwc.asset.legacy/bin/
 trunk/org.mwc.asset.ScenarioController2/bin/
@@ -87,3 +87,16 @@ trunk/org.mwc.debrief.test/test_reports
 trunk/org.mwc.debrief.test/test_reports/trace.txt
 trace.txt
 problems.html
+bin/
+target/
+trunk/org.mwc.cmap.LiveDataMonitor/LiveDataMonitor.jar
+trunk/org.mwc.cmap.TimeController/TimeController.jar
+trunk/org.mwc.cmap.core/cmap_core.jar
+trunk/org.mwc.cmap.layer_manager/layer_manager.jar
+trunk/org.mwc.cmap.legacy/cmap_legacy.jar
+trunk/org.mwc.cmap.tote/tote.jar
+trunk/org.mwc.cmap.xyplot/XYPlot.jar
+trunk/org.mwc.debrief.core/debrief_core.jar
+trunk/org.mwc.debrief.data_feed/data_feed.jar
+trunk/org.mwc.debrief.help/help_content.jar
+trunk/org.mwc.debrief.legacy/debrief_legacy.jar
