@@ -407,9 +407,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				// double-check our label is still in the right place
 				final double xVal = _linePlot.getRangeAxis().getLowerBound();
 				final double yVal = _linePlot.getDomainAxis().getUpperBound();
-				annot.setX(yVal);
-				annot.setY(xVal);
-
+				boolean annotChanged = false;
+				if (annot.getX() != yVal) {
+					annot.setX(yVal);
+					annotChanged = true;
+				}
+				if (annot.getY() != xVal) {
+					annot.setY(xVal);
+					annotChanged = true;
+				}
 				// and write the text
 				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
@@ -418,10 +424,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				final String dateVal = _df.format(newDate);
 				final String theMessage = " [" + dateVal + "," + numA + "]";
-				annot.setText(theMessage);
-
-				_linePlot.removeAnnotation(annot);
-				_linePlot.addAnnotation(annot);
+				if (!theMessage.equals(annot.getText())) {
+					annot.setText(theMessage);
+					annotChanged = true;
+				}
+				if (annotChanged) {
+					_linePlot.removeAnnotation(annot);
+					_linePlot.addAnnotation(annot);
+				}
 			}
 		});
 
