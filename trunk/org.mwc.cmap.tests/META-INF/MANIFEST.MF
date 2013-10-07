@@ -8,5 +8,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
  org.mwc.cmap.legacy,
- org.mwc.cmap.TimeController
+ org.mwc.cmap.TimeController,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.help.base,
+ org.apache.lucene.core,
+ org.apache.lucene.analysis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

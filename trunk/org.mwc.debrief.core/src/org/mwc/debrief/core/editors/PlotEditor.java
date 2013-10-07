@@ -751,6 +751,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					{
 						public void run()
 						{
+							if (getChart() == null || getChart().getCanvas() == null) {
+								return;
+							}
 							// ok - update our painter
 							getChart().getCanvas().updateMe();
 						}

@@ -2639,33 +2639,45 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		TestCase.assertNotNull("check we have time provider", _myTemporalDataset);
 		TestCase.assertNotNull("check we have period to control",
 				_controllablePeriod);
+		
+		Object oldDtgFormat = _myStepperProperties.getPropertyValue(TimeControlProperties.DTG_FORMAT_ID);
+			
+		try
+		{
+			_myStepperProperties.setPropertyValue(
+					TimeControlProperties.DTG_FORMAT_ID, new Integer(4));
 
-		final HiResDate tDemanded = new HiResDate(0, 818748000000000L);
-		// note - time equates to: 120600:00
+			final HiResDate tDemanded = new HiResDate(0, 818748000000000L);
+			// note - time equates to: 120600:00
 
-		// ok, try stepping forward. get the current time
-		final HiResDate tNow = _myTemporalDataset.getTime();
+			// ok, try stepping forward. get the current time
+			final HiResDate tNow = _myTemporalDataset.getTime();
 
-		// step forward one
-		final Event ev = new Event();
-		_forwardButton.notifyListeners(SWT.Selection, ev);
+			// step forward one
+			final Event ev = new Event();
+			_forwardButton.notifyListeners(SWT.Selection, ev);
 
-		// find the new time
-		final HiResDate tNew = _myTemporalDataset.getTime();
+			// find the new time
+			final HiResDate tNew = _myTemporalDataset.getTime();
 
-		TestCase.assertNotSame("time has changed", "" + tNew.getMicros(),
+			TestCase.assertNotSame("time has changed", "" + tNew.getMicros(),
 				"" + tNow.getMicros());
 
-		// ok, go back to the demanded time (in case we loaded the plot with a
-		// different saved time)
-		_controllableTime.setTime(new Integer(111), tDemanded, true);
+			// ok, go back to the demanded time (in case we loaded the plot with a
+			// different saved time)
+			_controllableTime.setTime(new Integer(111), tDemanded, true);
 
-		// have a look at the date
-		final String timeStr = _timeLabel.getText();
+			// have a look at the date
+			final String timeStr = _timeLabel.getText();
 
-		// check it's what we're expecting
-		TestCase.assertEquals("time is correct", timeStr, "120600:00");
-
+			// check it's what we're expecting
+			TestCase.assertEquals("time is correct", timeStr, "120600:00");
+		
+		} finally
+		{
+			_myStepperProperties.setPropertyValue(
+					TimeControlProperties.DTG_FORMAT_ID, oldDtgFormat);
+		}
 	}
 
 	// /////////////////////////////////////////////////
