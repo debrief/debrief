@@ -6203,7 +6203,7 @@ and so on....</programlisting></para>
           be. You'll make more detailed changes to the track location once the track is
           created.</para>
         <para>Next, you must select "Create Track Segment" from <application>Debrief</application>'s
-          Drawing Toolbar.<screenshot>
+          Drawing Toolbar, or the <guimenu>Drawing</guimenu> menu.<screenshot>
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/AddSegment.png" width="40%"/>
