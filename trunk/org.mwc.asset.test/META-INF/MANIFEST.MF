@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ASSET tests
+Bundle-SymbolicName: org.mwc.asset.test
+Bundle-Version: 1.0.0
+Bundle-Vendor: MWC
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit;bundle-version="4.0.0",
+ org.eclipse.equinox.console,
+ org.apache.felix.gogo.command,
+ org.apache.felix.gogo.runtime,
+ org.apache.felix.gogo.shell,
+ org.mwc.asset.NetAsset2;bundle-version="1.0.4",
+ org.mwc.asset.NetCore;bundle-version="1.0.2",
+ org.mwc.asset.ScenarioController2;bundle-version="1.0.26",
+ org.mwc.asset.ScenarioPlotter;bundle-version="1.0.14",
+ org.mwc.asset.SensorMonitor;bundle-version="1.0.3",
+ org.mwc.asset.VesselMonitor;bundle-version="1.0.6",
+ org.mwc.asset.core;bundle-version="1.0.21",
+ org.mwc.asset.help;bundle-version="1.0.13",
+ org.mwc.asset.legacy;bundle-version="1.0.39"
