@@ -1170,7 +1170,7 @@ public class ImportReplay extends PlainImporterBase
 		public testImport(final String val)
 		{
 			super(val);
-			final String fileRoot = "src";
+			final String fileRoot = "../org.mwc.debrief.legacy/src";
 
 			// 
 			assertNotNull("Check data directory is configured", fileRoot);
