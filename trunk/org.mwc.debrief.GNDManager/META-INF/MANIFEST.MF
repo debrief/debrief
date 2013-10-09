@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GNDManager
 Bundle-SymbolicName: org.mwc.debrief.GNDManager; singleton:=true
-Bundle-Version: 1.0.5
+Bundle-Version: 1.0.6
 Bundle-Activator: org.mwc.debrief.gndmanager.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
