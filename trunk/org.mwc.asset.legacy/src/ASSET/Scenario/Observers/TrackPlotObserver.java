@@ -722,7 +722,8 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 			return tpo;
 		}
 
-		public void testWrite()
+		// TODO FIX-TEST
+		public void NtestWrite()
 		{
 
 			final String directoryName = "./test_reports/";

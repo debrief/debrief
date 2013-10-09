@@ -1,7 +1,9 @@
 package org.mwc.cmap.tests;
 
-import org.eclipse.ui.plugin.*;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -9,6 +11,8 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends AbstractUIPlugin {
 
+	public static final String PLUGIN_ID = "org.mwc.cmap.tests";
+	
 	//The shared instance.
 	private static Activator plugin;
 	
@@ -49,6 +53,19 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(final String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.tests", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+	
+	/**
+	 * Logs an exception
+	 * 
+	 * @param e
+	 *          the exception
+	 */
+	public static void log(Exception e)
+	{
+		IStatus status = new Status(IStatus.ERROR, PLUGIN_ID,
+				e.getLocalizedMessage(), e);
+		getDefault().getLog().log(status);
 	}
 }

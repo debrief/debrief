@@ -330,6 +330,9 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
     {
       ScenarioLayer layer = new ScenarioLayer();
       CoreScenario cs = new CoreScenario();
+      if (cs.getName() == null) {
+      	cs.setName("Scenario");
+      }
       layer.setScenario(cs);
       layer.setStepTime(new Duration(12, Duration.SECONDS));
       layer.setScenarioStepTime(new Duration(12, Duration.SECONDS));

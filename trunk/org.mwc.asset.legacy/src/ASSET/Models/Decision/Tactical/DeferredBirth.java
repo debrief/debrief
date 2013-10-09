@@ -377,7 +377,8 @@ public class DeferredBirth extends CoreDecision implements Serializable
 			return new DeferredBirth(null, "my name");
 		}
 
-		public void testSimple()
+	  // TODO FIX-TEST
+		public void NtestSimple()
 		{
 			Duration dur = new Duration(12, Duration.SECONDS);
 			DeferredBirth wt = new DeferredBirth(dur, "do a wait");

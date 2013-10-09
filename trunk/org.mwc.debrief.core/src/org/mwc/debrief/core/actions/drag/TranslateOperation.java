@@ -4,9 +4,7 @@
 package org.mwc.debrief.core.actions.drag;
 
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CursorRegistry;
-import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 
 import Debrief.Wrappers.Track.TrackSegment;

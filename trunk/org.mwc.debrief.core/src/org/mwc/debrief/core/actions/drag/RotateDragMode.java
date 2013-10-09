@@ -6,9 +6,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CursorRegistry;
-import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.DragMode;
 import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 

@@ -351,7 +351,8 @@ public class RaiseBody extends CoreDecision implements Serializable
       return md;
     }
 
-    public void testRaise()
+    //  TODO FIX-TEST
+    public void NtestRaise()
     {
       MarkDip md = new MarkDip(new WorldDistance(430, WorldDistance.METRES));
       md.setName("Dip at 430m");

@@ -24,7 +24,6 @@ import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;

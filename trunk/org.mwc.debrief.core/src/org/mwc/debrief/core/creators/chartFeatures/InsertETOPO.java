@@ -3,9 +3,9 @@
  */
 package org.mwc.debrief.core.creators.chartFeatures;
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Tools.Palette.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
+import MWC.GUI.Tools.Palette.CreateTOPO;
 
 /**
  * @author ian.mayo

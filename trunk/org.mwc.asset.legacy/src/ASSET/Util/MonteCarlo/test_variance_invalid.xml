@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
 <ScenarioController xmlns="http://www.mwc.org/asset" OutputDirectory="test_reports/asset_test_output/force_prot2">
-  <ScoGenerator OutputDirectory="./" Filename="res">
+  <ScenarioGenerator OutputDirectory="./" Filename="res">
     <MultiScenarioGenerator NameTemplate="output" Number="3">
       <VarianceList>
         <Variance name="do ita1" id="//*[@Name='bravo']/Status/Speed">

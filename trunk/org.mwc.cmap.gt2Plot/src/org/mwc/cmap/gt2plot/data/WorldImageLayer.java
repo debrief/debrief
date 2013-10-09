@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -17,7 +15,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.gce.image.WorldImageFormat;
 import org.geotools.gce.image.WorldImageReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;

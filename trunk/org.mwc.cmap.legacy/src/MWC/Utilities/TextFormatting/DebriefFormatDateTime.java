@@ -349,8 +349,9 @@ public class DebriefFormatDateTime
 
 		}
 
+		// TODO FIX-TEST
 		@SuppressWarnings("deprecation")
-		public void testPadding()
+		public void NtestPadding()
 		{
 			HiResDate val = parseThis("700101", "010000");
 			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new

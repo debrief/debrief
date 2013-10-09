@@ -210,7 +210,7 @@ public final class ImportNarrative implements PlainLineImporter
     public void testImportNarrative()
     {
 
-      final String testFile = "src" +
+      final String testFile = "../org.mwc.debrief.legacy/src" +
       		"/Debrief/ReaderWriter/Replay/test_import_narrative.rep";
 
       

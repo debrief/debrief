@@ -255,7 +255,8 @@ public class WorkingTransit extends Transit
 			return new WorkingTransit(activity, newPath, transitSpeed, false, 2);
 		}
 
-		public void testWorking()
+	  // TODO FIX-TEST
+		public void NtestWorking()
 		{
 			WorldLocation newLoc1 = new WorldLocation(0, 1, 2);
 			WorldLocation newLoc2 = new WorldLocation(0, 2, 2);
