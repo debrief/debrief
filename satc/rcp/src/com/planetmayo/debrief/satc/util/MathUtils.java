@@ -92,7 +92,28 @@ public class MathUtils
 		double x = (line1[1] - line2[1]) / (line2[0] - line1[0]);
 		double y = line1[0] * x + line1[1];
 		return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
-	}	
+	}
+	
+	public static Point findIntersection(Coordinate a, Coordinate b, Coordinate c, Coordinate d)
+	{
+		double dx1 = b.x - a.x,
+		    		dy1 = b.y - a.y,
+		  			dx2 = d.x - c.x,
+  		 			dy2 = d.y - c.y;
+		double c1 = ((a.x + a.y) - (c.x + c.y)) / (dx2 + dy2);
+		double c2 = (dx1 + dy1) / (dx2 + dy2);
+		double t1;
+		if (Math.abs(dx2) > Math.abs(dy2))
+		{
+			t1 = (a.x - c.x - dx2 * c1) / (dx2 * c2 - dx1);
+		}
+		else
+		{
+			t1 = (a.y - c.y - dy2 * c1) / (dy2 * c2 - dy1);
+		}
+		Coordinate res = new Coordinate(a.x + dx1 * t1, a.y + dy1 * t1);
+		return GeoSupport.getFactory().createPoint(res);
+	}
 	
 	/**
 	 * returns distance between two points in 2D 
@@ -105,14 +126,12 @@ public class MathUtils
 	{
 		double a = (point1.getX() - point2.getX());
 		double b = (point1.getY() - point2.getY());
-		return Math.sqrt(a * a + b * b);		
+		return Math.hypot(a, b);		
 	}	
 	
 	public static double calcAbsoluteValue(Point vector)	
 	{
-		double x = vector.getX();
-		double y = vector.getY();
-		return Math.sqrt(x * x + y * y);
+		return Math.hypot(vector.getX(), vector.getY());
 	}
 	
 	public static double calcAngle(Point vector)

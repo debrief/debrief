@@ -11,11 +11,17 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.geom.util.NoninvertibleTransformationException;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class StraightLineCulling
 {	
+	private static final double EPS = 0.000001;
+	
 	private List<LocationRange> ranges;
+	private Coordinate[] line1;
+	private Coordinate[] line2;
+	
+	private Geometry constrainedStart;
+	private Geometry constrainedEnd;
 	
 	public StraightLineCulling(List<LocationRange> ranges)
 	{
@@ -24,6 +30,8 @@ public class StraightLineCulling
 	
 	public void process() 
 	{
+		line1 = line2 = null;
+		constrainedStart = constrainedEnd = null;
 		if (ranges == null || ranges.size() < 3) 
 		{
 			return;
@@ -34,12 +42,51 @@ public class StraightLineCulling
 			return;
 		}
 		CompliantLine[] crissCross = findCrissCrossLines(transformation);
-		CompliantLine a1 = processLine(crissCross[0], false, 1);
-		System.out.println(a1.getTransformedLine()[0] + " : " + a1.getTransformedLine()[1]);
-		CompliantLine a2 = processLine(crissCross[1], true, 1);
-		System.out.println(a2.getTransformedLine()[0] + " : " + a2.getTransformedLine()[1]);
+		CompliantLine result1 = checkFullCompliant(processLine(crissCross[0], false, 1));
+		CompliantLine result2 = checkFullCompliant(processLine(crissCross[1], true, 1));
+		if (result1 == null || result2 == null)
+		{
+			return;
+		}
+		line1 = normalizeCoordinates(result1.getTransformedLine());
+		line2 = normalizeCoordinates(result2.getTransformedLine());
+		Point intersection = MathUtils.findIntersection(line1[0], line1[1], line2[0], line2[1]);		
+		Geometry intersectPolygon = GeoSupport.getFactory().createPolygon(new Coordinate[] {
+				line1[0], line2[0], intersection.getCoordinate(), line1[0]
+		});
+		constrainedStart = intersectPolygon.intersection(getStartLocation());
+		
+		intersectPolygon = GeoSupport.getFactory().createPolygon(new Coordinate[] {
+				line1[1], line2[1], intersection.getCoordinate(), line1[1]
+		});		
+		constrainedEnd = getEndLocation().intersection(intersectPolygon);
 	}
 	
+	public Coordinate[] getFirstCrissCrossLine()
+	{
+		return line1;
+	}
+
+	public Coordinate[] getSecondCrissCrossLine()
+	{
+		return line2;
+	}
+	
+	public Geometry getConstrainedStart()
+	{
+		return constrainedStart;
+	}
+
+	public Geometry getConstrainedEnd()
+	{
+		return constrainedEnd;
+	}
+	
+	public boolean hasResults()
+	{
+		return constrainedStart != null && constrainedEnd != null;
+	}
+
 	private AffineTransformation transformWorldToMiddleLine() 
 	{
 		AffineTransformation transformation = new AffineTransformation();
@@ -54,12 +101,12 @@ public class StraightLineCulling
 	{
 		double xMax = Double.MIN_VALUE;
 		Coordinate dest = new Coordinate();
-		for (Coordinate startCoord : getStartArea().getCoordinates()) 
+		for (Coordinate startCoord : getStartLocation().getCoordinates()) 
 		{
 			transformation.transform(startCoord, dest);
 			xMax = Math.max(xMax, dest.x);
 		}
-		for (Coordinate endCoord : getEndArea().getCoordinates()) 
+		for (Coordinate endCoord : getEndLocation().getCoordinates()) 
 		{
 			transformation.transform(endCoord, dest);
 			if (dest.x <= xMax)
@@ -72,8 +119,8 @@ public class StraightLineCulling
 	
 	private CompliantLine[] findCrissCrossLines(AffineTransformation transformation)
 	{
-		Geometry start = transformation.transform(getStartArea());
-		Geometry end = transformation.transform(getEndArea());
+		Geometry start = transformation.transform(getStartLocation());
+		Geometry end = transformation.transform(getEndLocation());
 		
 		List<Coordinate> startGreatZero = new ArrayList<Coordinate>();
 		List<Coordinate> startLessZero = new ArrayList<Coordinate>();
@@ -114,7 +161,7 @@ public class StraightLineCulling
 			{
 				double yDiff = Math.abs(x.y - y.y);
 				double xDiff = Math.abs(x.x - y.x);
-				double sin = yDiff / Math.sqrt(yDiff * yDiff + xDiff * xDiff);
+				double sin = yDiff / Math.hypot(xDiff, yDiff);
 				if (sin > max) 
 				{
 					best[0] = x;
@@ -157,17 +204,19 @@ public class StraightLineCulling
 		boolean lastCompliant = true;
 		for (i = start; i < ranges.size() - 1 && lastCompliant; i++)
 		{			
-			Geometry geometry = getArea(i);
+			Geometry geometry = getLocation(i);
 			lastCompliant = false;
 			coordinates.clear();
-			
+
+			min = Double.MAX_VALUE;
+			max = -Double.MAX_VALUE;
 			for (Coordinate coord : geometry.getCoordinates())
 			{
 				Coordinate temp = currentModification.transform(coord, new Coordinate());
 				coordinates.add(temp);
 				max = Math.max(max, temp.y);
 				min = Math.min(min, temp.y);
-				if (min < 0 && max > 0)
+				if (min <= EPS && max >= -EPS)
 				{
 					lastCompliant = true;
 					break;
@@ -180,14 +229,14 @@ public class StraightLineCulling
 			if (min < 0)
 			{
 				nextLine = new CompliantLine(currentModification, 
-						findCompliantLine(transformedLine[0], coordinates, true));				
+						findCompliantLine(transformedLine[0], coordinates, true));
 			}
 			if (max > 0)
 			{
 				nextLine = new CompliantLine(currentModification, 
 						findCompliantLine(transformedLine[1], coordinates, false));				
 			}			
-			return processLine(nextLine, false, i + 1);
+			return processLine(nextLine, false, i);
 		}
 		return line;
 	}
@@ -200,7 +249,7 @@ public class StraightLineCulling
 		{
 			double xDiff = Math.abs(c.x - point1.x);
 			double yDiff = Math.abs(c.y - point1.y);
-			double sin = yDiff / Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+			double sin = yDiff / Math.hypot(xDiff, yDiff);
 			if (sin < min)
 			{
 				point2 = c;
@@ -213,31 +262,73 @@ public class StraightLineCulling
 		return result;
 	}
 	
+	private CompliantLine checkFullCompliant(CompliantLine line)
+	{
+		Coordinate temp = new Coordinate();
+		AffineTransformation nextTransformation = new AffineTransformation();
+		transformWorldToLine(nextTransformation, line.getLine()[0], line.getLine()[1]);
+		
+		AffineTransformation fullTransformation = new AffineTransformation(line.getWorld());
+		fullTransformation.compose(nextTransformation);
+		double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;		
+		for (LocationRange range : ranges)
+		{
+			double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE; 
+			for (Coordinate c : range.getGeometry().getCoordinates())
+			{
+				fullTransformation.transform(c, temp);
+				minX = Math.min(minX, temp.x);
+				maxX = Math.max(maxX, temp.x);
+				minY = Math.min(minY, temp.y);
+				maxY = Math.max(maxY, temp.y);				
+			}
+			if (! (minY <= EPS && maxY >= -EPS))
+			{
+				return null;
+			}
+		}
+		double delta = 0.15 * (maxX - minX);
+		return new CompliantLine(fullTransformation, new Coordinate[] {				
+				new Coordinate(minX - delta, 0),
+				new Coordinate(maxX + delta, 0)
+		});
+	}
+	
 	private void transformWorldToLine(AffineTransformation world,	Coordinate start, Coordinate end)
 	{
 		double xDiff = end.x - start.x;
 		double yDiff = end.y - start.y;
-		double length = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+		double length = Math.hypot(xDiff, xDiff);
 		world.translate(-start.x, -start.y);
 		world.rotate(-yDiff / length, xDiff / length);
 	}
+	
+	private Coordinate[] normalizeCoordinates(Coordinate[] coordinates) 
+	{
+		for (Coordinate c : coordinates)
+		{
+			c.x = Math.rint(c.x / EPS) * EPS;
+			c.y = Math.rint(c.y / EPS) * EPS;
+		}
+		return coordinates;
+	}
 
-	private Geometry getArea(int num)
+	private Geometry getLocation(int num)
 	{
 		return ranges.get(num).getGeometry();
 	}
 	
-	private Geometry getStartArea() 
+	private Geometry getStartLocation() 
 	{
 		return ranges.get(0).getGeometry();
 	}
 	
-	private Geometry getEndArea() 
+	private Geometry getEndLocation() 
 	{
 		return ranges.get(ranges.size() - 1).getGeometry();
 	}	
 	
-	private static class CompliantLine 
+	static class CompliantLine 
 	{
 		private final AffineTransformation world;		
 		private final Coordinate[] line;
@@ -280,31 +371,4 @@ public class StraightLineCulling
 			}			
 		}
 	}
-	
-	public static void main(String[] args) throws Exception
-	{
-		WKTReader reader = new WKTReader();
-
-		List<LocationRange> ranges = new ArrayList<LocationRange>();
-		
-		//ranges.add(new LocationRange(reader.read("POLYGON ((17.2 3.1, 17.6 3.2, 20.4 2.9, 21.0 -1.2, 18.5 0.4, 17.2 3.1))")));		
-		//ranges.add(new LocationRange(reader.read("POLYGON ((3.28 -3.02, 4.02 2.16, 5.66 2.42, 6.1 -0.76, 5.7 -1.84, 3.28 -3.02))")));
-		//ranges.add(new LocationRange(reader.read("POLYGON ((1.58 1.78, 0.66 4.74, 0.36 5.08, 2.12 4.3, 2.54 1.76, 1.58 1.78))")));
-		
-		ranges.add(new LocationRange(reader.read("POLYGON ((1.58 1.78, 0.66 4.74, 0.36 5.08, 2.12 4.3, 2.54 1.76, 1.58 1.78))")));		
-		ranges.add(new LocationRange(reader.read("POLYGON ((3.28 -3.02, 4.02 2.16, 5.66 2.42, 6.1 -0.76, 5.7 -1.84, 3.28 -3.02))")));
-		ranges.add(new LocationRange(reader.read("POLYGON ((17.2 3.1, 17.6 3.2, 20.4 2.9, 21.0 -1.2, 18.5 0.4, 17.2 3.1))")));
-		
-		//ranges.add(new LocationRange(reader.read("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))")));
-		//ranges.add(new LocationRange(reader.read("POLYGON ((3.28 -3.02, 4.02 2.16, 5.66 2.42, 6.1 -0.76, 5.7 -1.84, 3.28 -3.02))")));
-		//ranges.add(new LocationRange(reader.read("POLYGON ((0 3, 1 3, 1 4, 0 4, 0 3))")));		
-		
-		//ranges.add(new LocationRange(reader.read("POLYGON ((0 3, 1 3, 1 4, 0 4, 0 3))")));		
-		//ranges.add(new LocationRange(reader.read("POLYGON ((3.28 -3.02, 4.02 2.16, 5.66 2.42, 6.1 -0.76, 5.7 -1.84, 3.28 -3.02))")));
-		//ranges.add(new LocationRange(reader.read("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))")));
-		
-		StraightLineCulling culling = new StraightLineCulling(ranges);
-		culling.process();
-	}
-
 }
