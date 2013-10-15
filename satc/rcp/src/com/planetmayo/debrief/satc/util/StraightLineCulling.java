@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc.util;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -42,8 +43,8 @@ public class StraightLineCulling
 			return;
 		}
 		CompliantLine[] crissCross = findCrissCrossLines(transformation);
-		CompliantLine result1 = checkFullCompliant(processLine(crissCross[0], false, 1));
-		CompliantLine result2 = checkFullCompliant(processLine(crissCross[1], true, 1));
+		CompliantLine result1 = new LineSolver(crissCross[0], false).process();
+		CompliantLine result2 = new LineSolver(crissCross[1], true).process();
 		if (result1 == null || result2 == null)
 		{
 			return;
@@ -173,132 +174,11 @@ public class StraightLineCulling
 		return best;
 	}
 	
-	private CompliantLine processLine(CompliantLine line, boolean reflect, int start)
-	{
-		AffineTransformation currentModification = new AffineTransformation();
-		transformWorldToLine(currentModification, line.getLine()[0], line.getLine()[1]);		
-		if (reflect)
-		{
-			currentModification.reflect(1, 0);
-		}
-		Coordinate[] transformedLine = 
-		{
-				currentModification.transform(line.getLine()[0], new Coordinate()),
-				currentModification.transform(line.getLine()[1], new Coordinate()),
-		};
-		currentModification.composeBefore(line.getWorld());
-		
-		TreeSet<Coordinate> coordinates = new TreeSet<Coordinate>(
-				new Comparator<Coordinate>()
-				{
-
-					@Override
-					public int compare(Coordinate o1, Coordinate o2)
-					{
-						return (int) Math.signum(Math.abs(o1.y) - Math.abs(o2.y));
-					}					
-				}
-		);
-		int i;
-		double min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
-		boolean lastCompliant = true;
-		for (i = start; i < ranges.size() - 1 && lastCompliant; i++)
-		{			
-			Geometry geometry = getLocation(i);
-			lastCompliant = false;
-			coordinates.clear();
-
-			min = Double.MAX_VALUE;
-			max = -Double.MAX_VALUE;
-			for (Coordinate coord : geometry.getCoordinates())
-			{
-				Coordinate temp = currentModification.transform(coord, new Coordinate());
-				coordinates.add(temp);
-				max = Math.max(max, temp.y);
-				min = Math.min(min, temp.y);
-				if (min <= EPS && max >= -EPS)
-				{
-					lastCompliant = true;
-					break;
-				}
-			}	
-		}
-		if (! lastCompliant)
-		{
-			CompliantLine nextLine = null;
-			if (min < 0)
-			{
-				nextLine = new CompliantLine(currentModification, 
-						findCompliantLine(transformedLine[0], coordinates, true));
-			}
-			if (max > 0)
-			{
-				nextLine = new CompliantLine(currentModification, 
-						findCompliantLine(transformedLine[1], coordinates, false));				
-			}			
-			return processLine(nextLine, false, i);
-		}
-		return line;
-	}
-	
-	private Coordinate[] findCompliantLine(Coordinate point1, TreeSet<Coordinate> candidates, boolean order) 
-	{
-		double min = 2;
-		Coordinate point2 = null;
-		for (Coordinate c : candidates)
-		{
-			double xDiff = Math.abs(c.x - point1.x);
-			double yDiff = Math.abs(c.y - point1.y);
-			double sin = yDiff / Math.hypot(xDiff, yDiff);
-			if (sin < min)
-			{
-				point2 = c;
-				min = sin;
-			}
-		}
-		Coordinate[] result = new Coordinate[2];
-		result[0] = order ? point1 : point2;
-		result[1] = order ? point2 : point1;
-		return result;
-	}
-	
-	private CompliantLine checkFullCompliant(CompliantLine line)
-	{
-		Coordinate temp = new Coordinate();
-		AffineTransformation nextTransformation = new AffineTransformation();
-		transformWorldToLine(nextTransformation, line.getLine()[0], line.getLine()[1]);
-		
-		AffineTransformation fullTransformation = new AffineTransformation(line.getWorld());
-		fullTransformation.compose(nextTransformation);
-		double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;		
-		for (LocationRange range : ranges)
-		{
-			double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE; 
-			for (Coordinate c : range.getGeometry().getCoordinates())
-			{
-				fullTransformation.transform(c, temp);
-				minX = Math.min(minX, temp.x);
-				maxX = Math.max(maxX, temp.x);
-				minY = Math.min(minY, temp.y);
-				maxY = Math.max(maxY, temp.y);				
-			}
-			if (! (minY <= EPS && maxY >= -EPS))
-			{
-				return null;
-			}
-		}
-		double delta = 0.15 * (maxX - minX);
-		return new CompliantLine(fullTransformation, new Coordinate[] {				
-				new Coordinate(minX - delta, 0),
-				new Coordinate(maxX + delta, 0)
-		});
-	}
-	
 	private void transformWorldToLine(AffineTransformation world,	Coordinate start, Coordinate end)
 	{
 		double xDiff = end.x - start.x;
 		double yDiff = end.y - start.y;
-		double length = Math.hypot(xDiff, xDiff);
+		double length = Math.hypot(xDiff, yDiff);
 		world.translate(-start.x, -start.y);
 		world.rotate(-yDiff / length, xDiff / length);
 	}
@@ -326,7 +206,237 @@ public class StraightLineCulling
 	private Geometry getEndLocation() 
 	{
 		return ranges.get(ranges.size() - 1).getGeometry();
-	}	
+	}
+	
+	class LineSolver 
+	{
+		private final CompliantLine inputLine;
+		private final boolean reflect;
+		private final IdentityHashMap<Geometry, PolygonLocation> locations 
+						= new IdentityHashMap<Geometry, PolygonLocation>();
+		
+		private CompliantLine line;
+		private int leftBoundary;
+		private int rightBoundary;
+		private int left;
+		private int right;
+		
+		public LineSolver(CompliantLine line, boolean reflect)
+		{
+			this.inputLine = line;
+			this.reflect = reflect;
+		}
+
+		public CompliantLine process() 
+		{
+			prepareLine();
+			constraintLine();
+			extendLine();
+			return line;
+		}
+		
+		private void prepareLine() 
+		{
+			AffineTransformation currentModification = new AffineTransformation();
+			transformWorldToLine(currentModification, inputLine.getLine()[0], inputLine.getLine()[1]);		
+			if (reflect)
+			{
+				currentModification.reflect(1, 0);
+			}
+			line = new CompliantLine(
+					new AffineTransformation(inputLine.getWorld()).compose(currentModification),
+					new Coordinate[] {
+						currentModification.transform(inputLine.getLine()[0], new Coordinate()),
+						currentModification.transform(inputLine.getLine()[1], new Coordinate()),
+					}				
+			);			
+		}		
+		
+		private void constraintLine() 
+		{
+			boolean stepLeft = false;
+			leftBoundary = 0; 
+			rightBoundary = ranges.size() - 1;
+			left = leftBoundary + 1;
+			right = rightBoundary - 1;
+			while (!(left == rightBoundary && right == leftBoundary) && leftBoundary < rightBoundary) 
+			{
+				stepLeft = doStep(stepLeft);
+				if (stepLeft)
+				{
+					PolygonLocation location = getPolygonLocation(line.getWorld(), getLocation(left));
+					switch (location.getLocation())
+					{
+						case OVER:
+							line = nextCompliantLine(location.getCoordinates(), true);
+							locations.clear();
+							leftBoundary = left;
+							right = rightBoundary - 1;
+							break;
+						default:
+							locations.put(getLocation(left), location);							
+					}
+					left++;
+				}
+				else
+				{
+					PolygonLocation location = getPolygonLocation(line.getWorld(), getLocation(right));
+					switch (location.getLocation())
+					{
+						case UNDER:
+							line = nextCompliantLine(location.getCoordinates(), false);
+							locations.clear();
+							rightBoundary = right;
+							left = leftBoundary + 1;
+							break;
+						default:
+							locations.put(getLocation(right), location);							
+					}
+					right--;					
+				}
+			}
+			if (rightBoundary <= leftBoundary)
+			{
+				line = null;
+			}
+		}
+		
+		private boolean doStep(boolean stepLeft)
+		{
+			stepLeft = !stepLeft;
+			if (! stepLeft && right == leftBoundary)
+			{
+				stepLeft = true;
+			}
+			if (stepLeft && left == rightBoundary)
+			{
+				stepLeft = false;
+			}
+			return stepLeft;
+		}
+		
+		private PolygonLocation getPolygonLocation(AffineTransformation modification, Geometry geometry) 
+		{
+			if (locations.containsKey(geometry)) 
+			{
+				return locations.get(geometry);
+			}
+				
+			TreeSet<Coordinate> coordinates = new TreeSet<Coordinate>(
+					new Comparator<Coordinate>()
+					{
+
+						@Override
+						public int compare(Coordinate o1, Coordinate o2)
+						{
+							return (int) Math.signum(Math.abs(o1.y) - Math.abs(o2.y));
+						}					
+					}
+			);
+			double min = Double.MAX_VALUE;
+			double max = -Double.MAX_VALUE;
+			for (Coordinate coord : geometry.getCoordinates())
+			{
+				Coordinate temp = modification.transform(coord, new Coordinate());
+				coordinates.add(temp);
+				max = Math.max(max, temp.y);
+				min = Math.min(min, temp.y);
+				if (min <= EPS && max >= -EPS)
+				{
+					return new PolygonLocation(Location.INTERSECT, null);
+				}
+			}
+			if (min < 0) 
+			{
+				return new PolygonLocation(Location.UNDER, coordinates);		
+			}
+			return new PolygonLocation(Location.OVER, coordinates);
+		}	
+		
+		private CompliantLine nextCompliantLine(TreeSet<Coordinate> candidates, boolean isChangeLeft) 
+		{
+			double min = 2;
+			Coordinate point = isChangeLeft ? line.getLine()[1] : line.getLine()[0];
+			Coordinate point2 = null;
+			for (Coordinate c : candidates)
+			{
+				double xDiff = Math.abs(c.x - point.x);
+				double yDiff = Math.abs(c.y - point.y);
+				double sin = yDiff / Math.hypot(xDiff, yDiff);
+				if (sin < min)
+				{
+					point2 = c;
+					min = sin;
+				}
+			}
+			Coordinate[] result = new Coordinate[2];
+			result[0] = !isChangeLeft ? point : point2;
+			result[1] = !isChangeLeft ? point2 : point;
+			
+			AffineTransformation transformation = new AffineTransformation();
+			transformWorldToLine(transformation, result[0], result[1]);			
+			return new CompliantLine(
+					new AffineTransformation(transformation).composeBefore(line.getWorld()),
+					new Coordinate[] {
+						transformation.transform(result[0], new Coordinate()),
+						transformation.transform(result[1], new Coordinate())
+			});
+		}
+		
+		private void extendLine()
+		{
+			if (line == null)
+			{
+				return;
+			}
+			Coordinate temp = new Coordinate();
+			double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;		
+			for (LocationRange range : ranges)
+			{
+				double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE; 
+				for (Coordinate c : range.getGeometry().getCoordinates())
+				{
+					line.getWorld().transform(c, temp);
+					minX = Math.min(minX, temp.x);
+					maxX = Math.max(maxX, temp.x);
+					minY = Math.min(minY, temp.y);
+					maxY = Math.max(maxY, temp.y);				
+				}
+				if (! (minY <= EPS && maxY >= -EPS))
+				{
+					line = null;
+					return;
+				}
+			}
+			double delta = 0.15 * (maxX - minX);
+			line = new CompliantLine(line.getWorld(), new Coordinate[] {				
+					new Coordinate(minX - delta, 0),
+					new Coordinate(maxX + delta, 0)
+			});
+		}		
+	}
+	
+	static class PolygonLocation 
+	{
+		private final Location location;
+		private final TreeSet<Coordinate> coordinates;
+
+		public PolygonLocation(Location location, TreeSet<Coordinate> coordinates)
+		{
+			this.location = location;
+			this.coordinates = coordinates;
+		}
+
+		public Location getLocation()
+		{
+			return location;
+		}
+
+		public TreeSet<Coordinate> getCoordinates()
+		{
+			return coordinates;
+		}
+	}
 	
 	static class CompliantLine 
 	{
@@ -370,5 +480,10 @@ public class StraightLineCulling
 				throw new RuntimeException("We can't use noninvertable transformation", ex);
 			}			
 		}
+	}
+	
+	static enum Location 
+	{
+		INTERSECT, UNDER, OVER
 	}
 }
