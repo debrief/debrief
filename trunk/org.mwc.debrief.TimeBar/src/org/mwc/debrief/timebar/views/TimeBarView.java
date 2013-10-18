@@ -304,6 +304,8 @@ public class TimeBarView extends ViewPart {
 						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
 						if (provider != null && provider.equals(_timeProvider))
 							return;						
+						if(provider == null)
+							return;
 						_timeProvider = provider;
 						_timeProvider.addListener(_temporalListener, 
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
