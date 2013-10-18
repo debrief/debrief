@@ -770,12 +770,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				else
 				{
 
-					// ok - we no longer reset the range limits on a data change,
-					// since it's proving inconvenient to have to reset the sliders
-					// after some data is dropped in.
-
-		//			_slideManager.resetRange(newPeriod.getStartDTG(),
-			//				newPeriod.getEndDTG());
+					// extend the slider
+					_slideManager.resetRange(newPeriod.getStartDTG(),
+							newPeriod.getEndDTG());
+					
+					// now the slider selector bar thingy
 					Display.getDefault().asyncExec(new Runnable()
 					{
 						public void run()
@@ -786,6 +785,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							// and our range selector - first the outer
 							// ranges
 							_dtgRangeSlider.updateOuterRanges(newPeriod);
+ 
+							// ok - we no longer reset the range limits on a data change,
+							// since it's proving inconvenient to have to reset the sliders
+							// after some data is dropped in.
 
 							// ok, now the user ranges...
 				//			_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
