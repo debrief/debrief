@@ -176,4 +176,26 @@
 			
     </plugins>
   </build>
+  <profiles> 
+    <profile> 
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-surefire-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+	      <argLine>-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build> 
+    </profile> 
+  </profiles> 
 </project>
