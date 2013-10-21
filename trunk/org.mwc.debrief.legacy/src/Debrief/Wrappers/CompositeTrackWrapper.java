@@ -543,36 +543,65 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 			// now work out how far he will have travelled in a time step
 			final double distPerMinute = getMinuteDelta(seg);
-			final double distPerStep = distPerMinute * (timeStepMillis / ONE_MIN);
-			final WorldVector vec = new WorldVector(courseRads, new WorldDistance(
+			double distPerStep = distPerMinute * (timeStepMillis / ONE_MIN);
+			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
 					distPerStep, WorldDistance.METRES), null);
 			
-			
-			for (long tNow = timeMillis; tNow <= timeMillis + timeTravelledMillis; tNow += timeStepMillis)
+			long tNow = timeMillis;
+			while (tNow <= (timeMillis + timeTravelledMillis))
 			{
-				final HiResDate thisDtg = new HiResDate(tNow);
-
-				// ok, do this fix
-				final Fix thisF = new Fix(thisDtg, theOrigin, courseRads, seg.getSpeed()
-						.getValueIn(WorldSpeed.ft_sec) / 3);
-
-				// override the depth
-				thisF.getLocation().setDepth(
-						seg.getDepth().getValueIn(WorldDistance.METRES));
-
-				final FixWrapper fw = new FixWrapper(thisF);
-
-				fw.setColor(seg.getColor());
-
-				// and store it
-				seg.add(fw);
-
-				// reset the name, we're not going to use a human generated one
-				fw.resetName();
-
-				// produce a new position
-				theOrigin = theOrigin.add(vec);
+				theOrigin = addFix(seg, theOrigin, courseRads, vec, tNow);
+				double remaining = timeMillis + timeTravelledMillis - tNow;
+				if (remaining > timeStepMillis)
+				{
+					tNow += timeStepMillis;
+					if (remaining - timeStepMillis < timeStepMillis) {
+					  // calculate distance for fractional step
+						distPerStep = distPerMinute * ((remaining-timeStepMillis) / ONE_MIN);
+						vec = new WorldVector(courseRads, new WorldDistance(distPerStep,
+								WorldDistance.METRES), null);
+					}
+				} else
+				{
+					if (remaining > 0)
+					{
+						// add the last fix
+						tNow += remaining;
+						theOrigin = addFix(seg, theOrigin, courseRads, vec, tNow);
+						
+					}
+					break;
+				} 
 			}
+		}
+
+		private WorldLocation addFix(final PlanningSegment seg,
+				WorldLocation theOrigin, final double courseRads,
+				final WorldVector vec, long tNow)
+		{
+			final HiResDate thisDtg = new HiResDate(tNow);
+
+			// ok, do this fix
+			final Fix thisF = new Fix(thisDtg, theOrigin, courseRads, seg.getSpeed()
+					.getValueIn(WorldSpeed.ft_sec) / 3);
+
+			// override the depth
+			thisF.getLocation().setDepth(
+					seg.getDepth().getValueIn(WorldDistance.METRES));
+
+			final FixWrapper fw = new FixWrapper(thisF);
+
+			fw.setColor(seg.getColor());
+
+			// and store it
+			seg.add(fw);
+
+			// reset the name, we're not going to use a human generated one
+			fw.resetName();
+
+			// produce a new position
+			theOrigin = theOrigin.add(vec);
+			return theOrigin;
 		}
 
 		protected abstract double getSecsTravelled(PlanningSegment seg);
