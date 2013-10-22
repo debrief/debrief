@@ -198,29 +198,35 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 					{
 						private static final long serialVersionUID = 1L;
 
+						/** the delta that we jump our dragged angles to
+						 * 
+						 */
+						private static final double ANGLE_DELTA = 5d;
+
 						@Override
 						public void addToMe(final WorldVector delta)
 						{
 							super.addToMe(delta);
 
 							// so, what's the bearing back to the leg start?
-							double newBearing = super.bearingFrom(thisSeg.first().getBounds()
+							final double brgRads = super.bearingFrom(thisSeg.first().getBounds()
 									.getCentre());
 
-							newBearing = MWC.Algorithms.Conversions.Rads2Degs(newBearing);
-
-							// limit the bearing to the nearest 5 deg marker
-							final int m = ((int) newBearing / 10);
-							newBearing = m * 10d;
-
+							// ok, off to degrees
+							double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(brgRads);
+							
 							// trim it to being positive
-							if (newBearing < 0)
-								newBearing += 360;
+							if (brgDegs < 0)
+								brgDegs += 360;
 
+							// limit the bearing to the nearest tidy angle
+							final int m = (int) Math.round(brgDegs / ANGLE_DELTA);
+							double newBearing = m * ANGLE_DELTA;
+							
+							// done
 							thisSeg.setCourse(newBearing);
 						}
 					};
-
 					// try range
 					currentNearest
 							.checkMe(this, thisDist, null, parentLayer, fixLocation);
