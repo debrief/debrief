@@ -198,29 +198,35 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 					{
 						private static final long serialVersionUID = 1L;
 
+						/** the delta that we jump our dragged angles to
+						 * 
+						 */
+						private static final double ANGLE_DELTA = 5d;
+
 						@Override
 						public void addToMe(final WorldVector delta)
 						{
 							super.addToMe(delta);
 
 							// so, what's the bearing back to the leg start?
-							double newBearing = super.bearingFrom(thisSeg.first().getBounds()
+							final double brgRads = super.bearingFrom(thisSeg.first().getBounds()
 									.getCentre());
 
-							newBearing = MWC.Algorithms.Conversions.Rads2Degs(newBearing);
-
-							// limit the bearing to the nearest 5 deg marker
-							final int m = ((int) newBearing / 10);
-							newBearing = m * 10d;
-
+							// ok, off to degrees
+							double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(brgRads);
+							
 							// trim it to being positive
-							if (newBearing < 0)
-								newBearing += 360;
+							if (brgDegs < 0)
+								brgDegs += 360;
 
+							// limit the bearing to the nearest tidy angle
+							final int m = (int) Math.round(brgDegs / ANGLE_DELTA);
+							double newBearing = m * ANGLE_DELTA;
+							
+							// done
 							thisSeg.setCourse(newBearing);
 						}
 					};
-
 					// try range
 					currentNearest
 							.checkMe(this, thisDist, null, parentLayer, fixLocation);
@@ -543,36 +549,65 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 			// now work out how far he will have travelled in a time step
 			final double distPerMinute = getMinuteDelta(seg);
-			final double distPerStep = distPerMinute * (timeStepMillis / ONE_MIN);
-			final WorldVector vec = new WorldVector(courseRads, new WorldDistance(
+			double distPerStep = distPerMinute * (timeStepMillis / ONE_MIN);
+			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
 					distPerStep, WorldDistance.METRES), null);
 			
-			
-			for (long tNow = timeMillis; tNow <= timeMillis + timeTravelledMillis; tNow += timeStepMillis)
+			long tNow = timeMillis;
+			while (tNow <= (timeMillis + timeTravelledMillis))
 			{
-				final HiResDate thisDtg = new HiResDate(tNow);
-
-				// ok, do this fix
-				final Fix thisF = new Fix(thisDtg, theOrigin, courseRads, seg.getSpeed()
-						.getValueIn(WorldSpeed.ft_sec) / 3);
-
-				// override the depth
-				thisF.getLocation().setDepth(
-						seg.getDepth().getValueIn(WorldDistance.METRES));
-
-				final FixWrapper fw = new FixWrapper(thisF);
-
-				fw.setColor(seg.getColor());
-
-				// and store it
-				seg.add(fw);
-
-				// reset the name, we're not going to use a human generated one
-				fw.resetName();
-
-				// produce a new position
-				theOrigin = theOrigin.add(vec);
+				theOrigin = addFix(seg, theOrigin, courseRads, vec, tNow);
+				double remaining = timeMillis + timeTravelledMillis - tNow;
+				if (remaining > timeStepMillis)
+				{
+					tNow += timeStepMillis;
+					if (remaining - timeStepMillis < timeStepMillis) {
+					  // calculate distance for fractional step
+						distPerStep = distPerMinute * ((remaining-timeStepMillis) / ONE_MIN);
+						vec = new WorldVector(courseRads, new WorldDistance(distPerStep,
+								WorldDistance.METRES), null);
+					}
+				} else
+				{
+					if (remaining > 0)
+					{
+						// add the last fix
+						tNow += remaining;
+						theOrigin = addFix(seg, theOrigin, courseRads, vec, tNow);
+						
+					}
+					break;
+				} 
 			}
+		}
+
+		private WorldLocation addFix(final PlanningSegment seg,
+				WorldLocation theOrigin, final double courseRads,
+				final WorldVector vec, long tNow)
+		{
+			final HiResDate thisDtg = new HiResDate(tNow);
+
+			// ok, do this fix
+			final Fix thisF = new Fix(thisDtg, theOrigin, courseRads, seg.getSpeed()
+					.getValueIn(WorldSpeed.ft_sec) / 3);
+
+			// override the depth
+			thisF.getLocation().setDepth(
+					seg.getDepth().getValueIn(WorldDistance.METRES));
+
+			final FixWrapper fw = new FixWrapper(thisF);
+
+			fw.setColor(seg.getColor());
+
+			// and store it
+			seg.add(fw);
+
+			// reset the name, we're not going to use a human generated one
+			fw.resetName();
+
+			// produce a new position
+			theOrigin = theOrigin.add(vec);
+			return theOrigin;
 		}
 
 		protected abstract double getSecsTravelled(PlanningSegment seg);
