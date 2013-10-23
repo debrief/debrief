@@ -556,6 +556,12 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 			long tNow = timeMillis;
 			while (tNow <= (timeMillis + timeTravelledMillis))
 			{
+				if (timeStepMillis > timeTravelledMillis) {
+					double remaining = timeTravelledMillis;
+					distPerStep = distPerMinute * ((remaining) / ONE_MIN);
+					vec = new WorldVector(courseRads, new WorldDistance(distPerStep,
+							WorldDistance.METRES), null);
+				}
 				theOrigin = addFix(seg, theOrigin, courseRads, vec, tNow);
 				double remaining = timeMillis + timeTravelledMillis - tNow;
 				if (remaining > timeStepMillis)
