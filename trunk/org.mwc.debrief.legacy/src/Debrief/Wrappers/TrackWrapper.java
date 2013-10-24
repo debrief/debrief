@@ -2507,6 +2507,27 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		} // if the label is visible
 
+		// paint vector label
+		if (plotted_anything)
+		{
+			paintVectorLabel(dest);
+		}
+	}
+
+	private void paintVectorLabel(final CanvasType dest)
+	{
+		if (getVisible()) {
+			final Enumeration<Editable> posis = _thePositions.elements();
+			while (posis.hasMoreElements())
+			{
+				final TrackSegment thisE = (TrackSegment) posis.nextElement();
+				// paint only visible planning segments
+				if ( (thisE instanceof PlanningSegment) && thisE.getVisible()) {
+					PlanningSegment ps = (PlanningSegment) thisE;
+					ps.paintLabel(dest);
+				}
+			}
+		}
 	}
 
 	/**
