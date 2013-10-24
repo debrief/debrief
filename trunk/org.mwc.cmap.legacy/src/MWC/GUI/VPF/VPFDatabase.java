@@ -61,6 +61,7 @@ import java.util.Iterator;
 import MWC.GUI.Editable;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
+import com.bbn.openmap.util.Debug;
 
 
 /**
@@ -106,6 +107,7 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
     final java.util.HashMap<String, LibrarySelectionTable> _myDatabases = new java.util.HashMap<String, LibrarySelectionTable>();
 
     // add the paths
+    Debug.init();
     for (int i = 0; i < paths.length; i++)
     {
       try
