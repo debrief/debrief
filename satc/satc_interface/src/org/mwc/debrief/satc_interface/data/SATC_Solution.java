@@ -182,7 +182,7 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			TrackGenerator genny = new TrackGenerator("T-" + this.getName());
 			walkRoute(_newRoutes, genny);
-			
+
 			// we should now have a track
 			TrackWrapper newT = genny.getTrack();
 			_myLayers.addThisLayer(newT);
@@ -205,13 +205,13 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			// ok, convert the state to a fix
 			Fix theF = produceFix(thisState);
-			
+
 			// and wrap it
 			FixWrapper thisF = new FixWrapper(theF);
-			
+
 			// put the DTG into the label
 			thisF.resetName();
-			
+
 			// and store it.
 			_myTrack.addFix(thisF);
 		}
@@ -288,17 +288,13 @@ public class SATC_Solution extends BaseLayer implements
 	{
 		return _mySolver;
 	}
-	
-	
-	
 
 	@Override
 	protected void finalize() throws Throwable
 	{
 		super.finalize();
-		
-		_mySolver.getSolutionGenerator().removeReadyListener(
-				_readyListener);
+
+		_mySolver.getSolutionGenerator().removeReadyListener(_readyListener);
 		_mySolver.getContributions().removeContributionsChangedListener(
 				_contributionsListener);
 		_mySolver.getBoundsManager().removeConstrainSpaceListener(
@@ -306,7 +302,6 @@ public class SATC_Solution extends BaseLayer implements
 		_myLayers = null;
 		_mySolver = null;
 
-		
 	}
 
 	@Override
@@ -332,9 +327,23 @@ public class SATC_Solution extends BaseLayer implements
 		return _showSolutions;
 	}
 
+	@Override
+	public void removeElement(Editable p)
+	{
+		// ditch it from the parent
+		super.removeElement(p);
+
+		// get the ocntribution itself
+		ContributionWrapper cw = (ContributionWrapper) p;
+		BaseContribution comp = cw.getContribution();
+
+		// also remove it from the manager component
+		_mySolver.getContributions().removeContribution(comp);
+	}
+
 	private void listenToSolver(ISolver solver)
 	{
-		 _readyListener = new IGenerateSolutionsListener()
+		_readyListener = new IGenerateSolutionsListener()
 		{
 
 			@Override
@@ -359,7 +368,7 @@ public class SATC_Solution extends BaseLayer implements
 			}
 		};
 
-		 _contributionsListener = new IContributionsChangedListener()
+		_contributionsListener = new IContributionsChangedListener()
 		{
 
 			public void fireExtended()
@@ -411,7 +420,7 @@ public class SATC_Solution extends BaseLayer implements
 			}
 		};
 
-		 _constrainListener = new IConstrainSpaceListener()
+		_constrainListener = new IConstrainSpaceListener()
 		{
 			@Override
 			public void error(IBoundsManager boundsManager,
@@ -441,13 +450,11 @@ public class SATC_Solution extends BaseLayer implements
 			{
 			}
 		};
-		
-		solver.getSolutionGenerator().addReadyListener(
-				_readyListener);
+
+		solver.getSolutionGenerator().addReadyListener(_readyListener);
 		solver.getContributions().addContributionsChangedListener(
 				_contributionsListener);
-		solver.getBoundsManager().addConstrainSpaceListener(
-				_constrainListener);
+		solver.getBoundsManager().addConstrainSpaceListener(_constrainListener);
 	}
 
 	@Override
