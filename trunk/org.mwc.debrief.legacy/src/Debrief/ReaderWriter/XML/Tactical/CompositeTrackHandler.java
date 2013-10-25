@@ -5,6 +5,7 @@ import org.w3c.dom.Element;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
@@ -19,8 +20,8 @@ public class CompositeTrackHandler extends TrackHandler
 	private static final String LABEL_INTERVAL = "LabelIntervalMillis";
 	protected WorldLocation _origin;
 	protected HiResDate _startTime;
-	protected int _symInt;
-	protected int _labInt;
+	protected Integer _symInt;
+	protected Integer _labInt;
 
 	public CompositeTrackHandler(final Layers theLayers)
 	{
@@ -76,29 +77,35 @@ public class CompositeTrackHandler extends TrackHandler
 		comp.setOrigin(_origin);
 		comp.setStartDate(_startTime);
 
-		// and the symbol intervals
-		if (_symInt != -1)
-		{
-			comp.setSymbolFrequency(new HiResDate(_symInt));
-		}
-
-		// and the symbol intervals
-		if (_labInt != -1)
-		{
-			comp.setLabelFrequency(new HiResDate(_labInt));
-		}
-
 		// and let the parent do its bit
 		super.elementClosed();
 
 		// and trigger a recalculation
 		comp.recalculate();
 
+		// and the symbol intervals
+		if (_symInt != null)
+		{
+			if (_symInt == -1)
+				comp.setSymbolFrequency(new HiResDate(0, _symInt));
+			else
+				comp.setSymbolFrequency(new HiResDate(_symInt));
+		}
+
+		// and the symbol intervals
+		if (_labInt != null)
+		{
+			if (_labInt == -1)
+				comp.setLabelFrequency(new HiResDate(0, _labInt));
+			else
+				comp.setLabelFrequency(new HiResDate(_labInt));
+		}
+
 		// and do some resetting
 		_origin = null;
 		_startTime = null;
-		_symInt = -1;
-		_labInt = -1;
+		_symInt = null;
+		_labInt = null;
 	}
 
 	public static void exportTrack(final Debrief.Wrappers.TrackWrapper track,
@@ -116,11 +123,16 @@ public class CompositeTrackHandler extends TrackHandler
 		// we also wish to store the symbol and label frequencies - they're more
 		// effective in
 		// planning charts
-		final HiResDate symInt = track.getSymbolFrequency();
-		final HiResDate labInt = track.getLabelFrequency();
+		long symInt = track.getSymbolFrequency().getMicros();
+		long labInt = track.getLabelFrequency().getMicros();
 
-		trk.setAttribute(SYMBOL_INTERVAL, writeThis(symInt.getDate().getTime()));
-		trk.setAttribute(LABEL_INTERVAL, writeThis(labInt.getDate().getTime()));
+		if (symInt != TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
+			symInt /= 1000;
+		if (labInt != TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
+			labInt /= 1000;
+
+		trk.setAttribute(SYMBOL_INTERVAL, writeThis(symInt));
+		trk.setAttribute(LABEL_INTERVAL, writeThis(labInt));
 	}
 
 }

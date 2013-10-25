@@ -1,6 +1,8 @@
 package Debrief.Wrappers.Track;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
@@ -8,6 +10,7 @@ import java.util.Enumeration;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
@@ -21,6 +24,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class PlanningSegment extends TrackSegment implements Cloneable,
 		Editable.DoNoInspectChildren, CreateEditorForParent, TimeStampedDataItem
@@ -76,6 +80,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 						expertProp("Calculation", "How to calculate the leg length",
 								SPATIAL),
 						expertProp("Visible", "whether this layer is visible", FORMAT),
+						expertProp("VectorLabelVisible", "whether this vector label is visible", FORMAT),
 						expertProp("Depth", "The depth for this leg", SPATIAL),
 						expertProp("Course", "The course for this leg", SPATIAL),
 						expertProp("Distance", "The distance travelled along this leg",
@@ -187,6 +192,12 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 */
 	private WorldDistance _myDepth = new WorldDistance(0, WorldDistance.METRES);
 
+	/**
+	 * whether this vector label is visible
+	 * default: true
+	 * 
+	 */
+	private boolean _myVectorLabelVisible = true;
 	/**
 	 * copy constructor
 	 * 
@@ -468,5 +479,61 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		// ingore, we don't set the DTG for a planning segment
 		System.err.println("Should not set DTG for planning segment");
 	}
+
+	public boolean getVectorLabelVisible()
+	{
+		return _myVectorLabelVisible;
+	}
+
+	public void setVectorLabelVisible(boolean vectorLabelVisible)
+	{
+		this._myVectorLabelVisible = vectorLabelVisible;
+	}
+	
+	public String getVectorLabel() {
+		
+	  StringBuilder builder = new StringBuilder();
+		if (getDistance() != null) {
+			builder.append(GeneralFormat.formatOneDecimalPlace(getDistance().getValue()));
+			builder.append(getDistance().getUnitsLabel());
+			builder.append(" ");
+		}
+		builder.append((int)getCourse());
+		builder.append("°");
+		return builder.toString();
+	}
+	
+	public void paintLabel(final CanvasType dest)
+	{
+		if (getVectorLabelVisible()) {
+			String s = getVectorLabel();
+			if (first() instanceof FixWrapper && last() instanceof FixWrapper) {
+				FixWrapper first = (FixWrapper) first();
+				FixWrapper last = (FixWrapper) last();
+				Font f = first.getFont();
+				Color c = first.getColor();
+				Point startPoint = dest.toScreen(first.getLocation());
+				Point lastPoint = dest.toScreen(last.getLocation());
+				double width = startPoint.distance(lastPoint);
+				double stringWidth = dest.getStringWidth(f, s);
+				double distance = (width)/2;
+				final double direction = Math.toRadians(getCourse()-90);
+				if (width > stringWidth * 2)
+				{
+					int deltaX = (int) (distance * Math.cos(direction));
+					int deltaY = (int) (distance * Math.sin(direction));
+					dest.setColor(c);
+					dest.setFont(f);
+					float rotate = (float) (getCourse() - 90);
+					if (getCourse() > 180) {
+						rotate-=180;
+					}
+					dest.drawText(s, startPoint.x + deltaX, startPoint.y + deltaY,
+							rotate);
+				}
+			}
+		}
+	}
+
 
 }
