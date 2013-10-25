@@ -491,7 +491,16 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	}
 	
 	public String getVectorLabel() {
-		return "Crse:" + GeneralFormat.formatOneDecimalPlace(getCourse());
+		
+	  StringBuilder builder = new StringBuilder();
+		if (getDistance() != null) {
+			builder.append(GeneralFormat.formatOneDecimalPlace(getDistance().getValue()));
+			builder.append(getDistance().getUnitsLabel());
+			builder.append(" ");
+		}
+		builder.append((int)getCourse());
+		builder.append("°");
+		return builder.toString();
 	}
 	
 	public void paintLabel(final CanvasType dest)
