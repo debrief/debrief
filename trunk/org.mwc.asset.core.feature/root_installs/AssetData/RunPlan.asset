@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name="Force Protection Scenario"
-	xmlns="http://www.mwc.org/asset" StartTime="2010-01-12T12:13:14Z"
-	Created="2010-01-19T12:13:14Z" ShowActivity="false"
-	ShowStatus="true">
-	<StepTime Units="seconds" Value="15"></StepTime>
-	<StepPause Value="500" Units="millis"></StepPause>
+<Scenario Name="Force Protection Scenario" xmlns="http://www.mwc.org/asset"
+	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
+	ShowActivity="false" ShowStatus="true">
+	<StepTime Units="seconds" Value="20"></StepTime>
+	<StepPause Value="200" Units="millis"></StepPause>
 	<Environment Name="token" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
 		<VisualLookupEnvironment Name="Easy to see">
 			<VisualAttenuationDatum Haze="0.0000001" Mist="0.0000001"
-				LightHaze="0.0000001" VeryClear="0.0000001" Fog="0.0000001"
-				Clear="0.0000001"></VisualAttenuationDatum>
+				LightHaze="0.0000001" VeryClear="0.0000001" Fog="0.0000001" Clear="0.0000001"></VisualAttenuationDatum>
 			<TargetVisibilitySet>
-				<TargetVisibilityDatum Type="CARRIER" Visibility="2" />
-				<TargetVisibilityDatum Type="FRIGATE" Visibility="2"></TargetVisibilityDatum>
+				<TargetVisibilityDatum Type="CARRIER"
+					Visibility="2" />
+				<TargetVisibilityDatum Type="FRIGATE"
+					Visibility="2"></TargetVisibilityDatum>
 			</TargetVisibilitySet>
 			<TargetSeaStateSet>
 				<TargetSeaStateDatum Type="CARRIER" SeaState_5="1"
@@ -29,30 +29,42 @@
 	</Environment>
 	<Participants>
 		<Surface Name="SUBJECT">
-			<Category Type="FISHING_VESSEL" Force="RED"
-				Environment="SURFACE" />
+			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE" />
 			<SensorFit></SensorFit>
-			<Status Course="270" Fuel="100">
+			<Status Course="180" Fuel="100">
 				<Location>
-					<longLocation LongMin="0" LongSec="00" LatMin="0"
-						LongHem="W" LongDeg="30" LatSec="0.0" LatHem="N" LatDeg="0">
-					</longLocation>
+					<relativeLocation>
+						<North Value="5100" Units="m" />
+						<East Value="1200" Units="m" />
+					</relativeLocation>
+					
 				</Location>
 				<Speed Value="6" Units="kts" />
 			</Status>
 			<Waterfall Name="subject route">
-				<Move Name="leg one" Course="225">
-					<Speed Value="6.0" Units="kts" />
-					<Vector Value="6" Units="nm"></Vector>
-				</Move>
-				<Move Name="leg two" Course="180">
-					<Speed Value="9.0" Units="kts" />
-					<Vector Value="6" Units="nm"></Vector>
-				</Move>
-				<Move Name="leg three" Course="135">
-					<Speed Value="6.0" Units="kts" />
-					<Vector Value="6" Units="nm"></Vector>
-				</Move>
+				<Transit Name="" Looping="false">
+					<WorldPath>
+						<Point>
+							<relativeLocation>
+								<North Value="3600" Units="m" />
+								<East Value="1200" Units="m" />
+							</relativeLocation>
+						</Point>
+						<Point>
+							<relativeLocation>
+								<North Value="2100" Units="m" />
+								<East Value="2700" Units="m" />
+							</relativeLocation>
+						</Point>
+						<Point>
+							<relativeLocation>
+								<North Value="-3000" Units="m" />
+								<East Value="2700" Units="m" />
+							</relativeLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="6" Units="kts" />
+				</Transit>
 			</Waterfall>
 
 
@@ -77,15 +89,50 @@
 			</SensorFit>
 			<Status Course="180" Fuel="100">
 				<Location>
-					<longLocation LongMin="4" LongSec="0" LatMin="0"
-						LongHem="W" LongDeg="30" LatSec="0.0" LatHem="S" LatDeg="0">
-					</longLocation>
+					<relativeLocation>
+						<North Value="5700" Units="m" />
+						<East Value="2400" Units="m" />
+					</relativeLocation>
+					
 				</Location>
-				<Speed Value="4" Units="kts" />
+				<Speed Value="9" Units="kts" />
 			</Status>
-			<Waterfall Name="ian drive">
-				<UserControl Name="ian control" Speed="4" Depth="0.0"
-					Course="180" />
+			<Waterfall Name="sensor route">
+				<Transit Name="" Looping="false">
+					<WorldPath>
+						<Point>
+							<relativeLocation>
+								<North Value="5100" Units="m" />
+								<East Value="2400" Units="m" />
+							</relativeLocation>
+						</Point>
+						<Point>
+							<relativeLocation>
+								<North Value="3800" Units="m" />
+								<East Value="0400" Units="m" />
+							</relativeLocation>
+						</Point>
+						<Point>
+							<relativeLocation>
+								<North Value="2700" Units="m" />
+								<East Value="0400" Units="m" />
+							</relativeLocation>
+						</Point>
+						<Point>
+							<relativeLocation>
+								<North Value="2600" Units="m" />
+								<East Value="3100" Units="m" />
+							</relativeLocation>
+						</Point>
+						<Point>
+							<relativeLocation>
+								<North Value="-3000" Units="m" />
+								<East Value="3100" Units="m" />
+							</relativeLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="10" Units="kts" />
+				</Transit>
 			</Waterfall>
 
 
@@ -102,7 +149,7 @@
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 			<grid PlotLabels="true" Units="degs" Visible="true">
-				<Delta Units="nm" Value="1" />
+				<Delta Units="km" Value="1" />
 				<colour Value="DARK_GREY" />
 			</grid>
 
