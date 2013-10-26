@@ -7,7 +7,7 @@
         <groupId>org.mwc.debrief</groupId>
 	<artifactId>eclipse38</artifactId>
 	<packaging>eclipse-target-definition</packaging>
-	<name>Debrief Kepler Target Definition</name>
+	<name>Debrief Eclipse 3.8 Target Definition</name>
 
 	<parent>
 		<artifactId>parent</artifactId>
