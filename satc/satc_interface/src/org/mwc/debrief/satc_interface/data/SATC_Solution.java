@@ -24,6 +24,7 @@ import MWC.Algorithms.Conversions;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
@@ -42,7 +43,6 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
@@ -238,8 +238,13 @@ public class SATC_Solution extends BaseLayer implements
 		@Override
 		public void reset()
 		{
-			// TODO Auto-generated method stub
+			// don't worry - ignore
+		}
 
+		@Override
+		public void finish()
+		{
+			// don't worry - ignore
 		}
 
 	}
@@ -460,15 +465,16 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public void paint(CanvasType dest)
 	{
-		dest.setColor(_myColor);
 		if (getVisible())
 		{
+			dest.setColor(_myColor);
 			if (_lastStates != null)
 			{
 				if (_showLocationBounds)
 					paintThese(dest, _lastStates);
 			}
 
+			dest.setColor(_myColor);
 			if (_newRoutes != null)
 			{
 				paintThese(dest, _newRoutes);
@@ -478,6 +484,10 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void paintThese(CanvasType dest, Collection<BoundedState> states)
 	{
+		Color newCol = _myColor.darker();
+		dest.setColor(newCol);
+
+		// work through the location bounds		
 		for (Iterator<BoundedState> iterator = states.iterator(); iterator
 				.hasNext();)
 		{
@@ -486,19 +496,31 @@ public class SATC_Solution extends BaseLayer implements
 			{
 				LocationRange theLoc = thisS.getLocation();
 				Coordinate[] pts = theLoc.getGeometry().getCoordinates();
-				Point lastPt = null;
+				
+				int[] xPoints = new int[pts.length];
+				int[] yPoints = new int[pts.length];
+
+				// collate polygon
 				for (int i = 0; i < pts.length; i++)
 				{
 					Coordinate thisC = pts[i];
 					WorldLocation thisLocation = conversions.toLocation(thisC);
 					Point pt = dest.toScreen(thisLocation);
-
-					if (lastPt != null)
-					{
-						dest.drawLine(lastPt.x, lastPt.y, pt.x, pt.y);
-					}
-					lastPt = new Point(pt);
+					xPoints[i] = pt.x;
+					yPoints[i] = pt.y;
 				}
+
+				// fill in the polygons, if we can
+				if (dest instanceof ExtendedCanvasType)
+				{
+					ExtendedCanvasType extended = (ExtendedCanvasType) dest;
+					extended.semiFillPolygon(xPoints, yPoints, pts.length);
+				}
+				
+				// and a border
+				dest.setLineStyle(CanvasType.SOLID);
+				dest.setLineWidth(0.0f);
+				dest.drawPolygon(xPoints, yPoints, pts.length);
 			}
 		}
 	}
@@ -532,12 +554,15 @@ public class SATC_Solution extends BaseLayer implements
 				}
 			}
 		}
+		stepper.finish();
 	}
 
 	private static interface RouteStepper
 	{
 
 		public abstract void step(State thisState);
+
+		public abstract void finish();
 
 		public abstract void reset();
 
@@ -547,10 +572,13 @@ public class SATC_Solution extends BaseLayer implements
 	{
 		private Point lastPt = null;
 		private final CanvasType _dest;
+		private final float oldWid;
 
 		public DoPaint(CanvasType dest)
 		{
 			_dest = dest;
+			oldWid = _dest.getLineWidth();
+			_dest.setLineWidth(5.0f);
 		}
 
 		@Override
@@ -575,6 +603,12 @@ public class SATC_Solution extends BaseLayer implements
 		public void reset()
 		{
 			lastPt = null;
+		}
+
+		@Override
+		public void finish()
+		{
+			_dest.setLineWidth(oldWid);
 		}
 	}
 
