@@ -12,15 +12,18 @@ import java.util.Iterator;
 import java.util.SortedSet;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.jfree.util.ReadOnlyIterator;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.Algorithms.Conversions;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -32,6 +35,7 @@ import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -43,8 +47,10 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -180,73 +186,77 @@ public class SATC_Solution extends BaseLayer implements
 		}
 		else
 		{
-			TrackGenerator genny = new TrackGenerator("T-" + this.getName());
-			walkRoute(_newRoutes, genny);
 
-			// we should now have a track
-			TrackWrapper newT = genny.getTrack();
-			_myLayers.addThisLayer(newT);
+			for (int i = 0; i < _newRoutes.length; i++)
+			{
+				CompositeRoute thisR = _newRoutes[i];
+
+				// the output track
+				TrackWrapper newT = new TrackWrapper();
+				newT.setName(getName() + "_" + i);
+
+				Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+				while (legs.hasNext())
+				{
+					CoreRoute thisLeg = (CoreRoute) legs.next();
+					if (thisLeg instanceof StraightRoute)
+					{
+						StraightRoute straight = (StraightRoute) thisLeg;
+
+						// ok - produce a TMA leg
+						double courseDegs = Math.toDegrees(straight.getCourse());
+						WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
+								WorldSpeed.M_sec);
+						WorldLocation origin = conversions.toLocation(straight
+								.getStartPoint().getCoordinate());
+						HiResDate startTime = new HiResDate(straight.getStartTime()
+								.getTime());
+						HiResDate endTime = new HiResDate(straight.getEndTime().getTime());
+
+						AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs, speed,
+								origin, startTime, endTime);
+						abs.setName(straight.getName());
+						newT.add(abs);
+						abs.setName(straight.getName());
+					}
+					else if (thisLeg instanceof AlteringRoute)
+					{
+						AlteringRoute altering = (AlteringRoute) thisLeg;
+
+						TrackSegment segment = new TrackSegment();
+						segment.setName(altering.getName());
+
+						ArrayList<State> states = altering.getStates();
+						for (State thisS : states)
+						{
+							double theCourse = thisS.getCourse();
+							WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
+									WorldSpeed.M_sec);
+							WorldLocation theLocation = conversions.toLocation(thisS
+									.getLocation().getCoordinate());
+							HiResDate theTime = new HiResDate(thisS.getTime().getTime());
+
+							Fix theFix = new Fix(theTime, theLocation, theCourse,
+									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
+							FixWrapper newFix = new FixWrapper(theFix);
+							segment.addFix(newFix);
+						}
+
+						// make it dotted, that's our way of doing it.
+						segment.setLineStyle(CanvasType.DOTTED);
+
+						newT.add(segment);
+					}
+					else
+						DebriefPlugin.logError(Status.ERROR,
+								"Unexpected type of route encountered:" + thisLeg, null);
+				}
+
+				// and store it
+				_myLayers.addThisLayer(newT);
+
+			}
 		}
-	}
-
-	private static class TrackGenerator implements RouteStepper
-	{
-
-		private TrackWrapper _myTrack;
-
-		public TrackGenerator(String name)
-		{
-			_myTrack = new TrackWrapper();
-			_myTrack.setName(name);
-		}
-
-		@Override
-		public void step(State thisState)
-		{
-			// ok, convert the state to a fix
-			Fix theF = produceFix(thisState);
-
-			// and wrap it
-			FixWrapper thisF = new FixWrapper(theF);
-
-			// put the DTG into the label
-			thisF.resetName();
-
-			// and store it.
-			_myTrack.addFix(thisF);
-		}
-
-		private Fix produceFix(State thisState)
-		{
-			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
-			// convert to screen
-			WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
-			double theCourse = thisState.getCourse();
-			double theSpeedKts = Conversions.Mps2Kts(thisState.getSpeed());
-			double theSpeedYps = Conversions.Kts2Yps(theSpeedKts);
-			HiResDate theTime = new HiResDate(thisState.getTime().getTime());
-
-			Fix theF = new Fix(theTime, wLoc, theCourse, theSpeedYps);
-			return theF;
-		}
-
-		public TrackWrapper getTrack()
-		{
-			return _myTrack;
-		}
-
-		@Override
-		public void reset()
-		{
-			// don't worry - ignore
-		}
-
-		@Override
-		public void finish()
-		{
-			// don't worry - ignore
-		}
-
 	}
 
 	/**
@@ -487,7 +497,7 @@ public class SATC_Solution extends BaseLayer implements
 		Color newCol = _myColor.darker();
 		dest.setColor(newCol);
 
-		// work through the location bounds		
+		// work through the location bounds
 		for (Iterator<BoundedState> iterator = states.iterator(); iterator
 				.hasNext();)
 		{
@@ -496,7 +506,7 @@ public class SATC_Solution extends BaseLayer implements
 			{
 				LocationRange theLoc = thisS.getLocation();
 				Coordinate[] pts = theLoc.getGeometry().getCoordinates();
-				
+
 				int[] xPoints = new int[pts.length];
 				int[] yPoints = new int[pts.length];
 
@@ -516,7 +526,7 @@ public class SATC_Solution extends BaseLayer implements
 					ExtendedCanvasType extended = (ExtendedCanvasType) dest;
 					extended.semiFillPolygon(xPoints, yPoints, pts.length);
 				}
-				
+
 				// and a border
 				dest.setLineStyle(CanvasType.SOLID);
 				dest.setLineWidth(0.0f);
@@ -630,10 +640,6 @@ public class SATC_Solution extends BaseLayer implements
 		@SuppressWarnings("unused")
 		ISolversManager mgr = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
-
-		// ok, better tell the manager that we're being removed
-		// TODO: replace next line once the capability is in SATC
-		// mgr.solverRemoved(_mySolver);
 	}
 
 	/**
