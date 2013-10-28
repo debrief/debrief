@@ -76,7 +76,7 @@ public class StraightLegTests extends ModelTestBase
 		assertNull(leg.getStartPoints());
 		assertNull(leg.getEndPoints());
 		
-		leg.generatePoints(Precision.LOW.toMeters(), 100000);
+		leg.generatePoints(Precision.LOW.getNumPoints());
 		assertNotNull(leg.getStartPoints());
 		assertNotNull(leg.getEndPoints());
 		
@@ -95,14 +95,14 @@ public class StraightLegTests extends ModelTestBase
 	@Test(expected = RuntimeException.class)
 	public void testGeneratePointsMaxPoints() 
 	{
-		leg.generatePoints(Precision.LOW.toMeters(), 10);
+		leg.generatePoints(Precision.LOW.getNumPoints());
 	}
 	
 	@Test
 	public void testDecideAchievableRoute() 
 	{
 		GeometryFactory factory = new GeometryFactory();
-		leg.generatePoints(Precision.LOW.toMeters(), 100000);
+		leg.generatePoints(Precision.LOW.getNumPoints());
 		
 		StraightRoute route = new StraightRoute("1", factory.createPoint(new Coordinate(0, 3)), leg.getFirst().getTime(), 
 				factory.createPoint(new Coordinate(6, 2)), leg.getLast().getTime());
@@ -169,9 +169,9 @@ public class StraightLegTests extends ModelTestBase
 				new LocationRange(wkt.read("POLYGON ((0 0.3, 0.2 0.4, 0.4 0.4, 0.2 0.3, 0 0.3))"))
 		);
 		leg = new StraightLeg("1", states);
-		leg.generatePoints(Precision.HIGH.toMeters(), 100000);
+		leg.generatePoints(Precision.HIGH.getNumPoints());
 		List<Point> highPoints = leg.getStartPoints();
-		leg.generatePoints(Precision.MEDIUM.toMeters());
+		leg.generatePoints(Precision.MEDIUM.getNumPoints());
 		List<Point> medPoints = leg.getStartPoints();
 		Set<Point> highSet = new HashSet<Point>(highPoints);
 		for (Point point : medPoints)
