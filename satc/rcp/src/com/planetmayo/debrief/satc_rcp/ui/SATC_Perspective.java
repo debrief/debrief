@@ -32,6 +32,7 @@ public class SATC_Perspective implements IPerspectiveFactory {
 		layout.getViewLayout(HARNESS_VIEW).setCloseable(true);
 		layout.getViewLayout(STATES_VIEW).setCloseable(true);
 
-		
+		// ok - try to show the Debrief shotrcuts (will fail in pure SATC)
+		layout.addActionSet("org.mwc.debrief.core");		
 	}
 }
