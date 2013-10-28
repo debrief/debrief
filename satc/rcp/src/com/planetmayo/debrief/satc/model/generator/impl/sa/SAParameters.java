@@ -6,8 +6,8 @@ public class SAParameters extends ModelObject
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static final String START_TEMPRATURE = "startTemprature";
-	public static final String END_TEMPRATURE = "endTemprature";
+	public static final String START_TEMPRATURE = "startTemperature";
+	public static final String END_TEMPRATURE = "endTemperature";
 	public static final String PARALLEL_THREADS = "parallelThreads";
 	public static final String ITERATIONS_IN_THREAD = "iterationsInThread";
 	public static final String START_ON_CENTER = "startOnCenter";
@@ -46,7 +46,7 @@ public class SAParameters extends ModelObject
 	
 	private SAFunctions saFunctions;
 	
-	public double getStartTemprature()
+	public double getStartTemperature()
 	{
 		return startTemperature;
 	}

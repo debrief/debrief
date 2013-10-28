@@ -60,7 +60,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 			@Override
 			public double changeTemprature(SAParameters parameters, double T, int step)
 			{
-				return parameters.getStartTemprature() * Math.exp(-0.85 * Math.pow(step, 0.25));
+				return parameters.getStartTemperature() * Math.exp(-0.85 * Math.pow(step, 0.25));
 			}
 
 			@Override

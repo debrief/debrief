@@ -67,7 +67,7 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 				eCurrent = error(current);
 			}
 			
-			double t = parameters.getStartTemprature();
+			double t = parameters.getStartTemperature();
 			int i = 0;
 			while (t > parameters.getEndTemperature())
 			{
