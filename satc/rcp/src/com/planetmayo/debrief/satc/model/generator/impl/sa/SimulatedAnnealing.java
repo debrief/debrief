@@ -88,7 +88,6 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 					newRoute = leg.createRoute("",
 						start.newPoint(current.getStartPoint(), t),
 						end.newPoint(current.getEndPoint(), t));				
-					newRoute.generateSegments(states);
 					leg.decideAchievableRoute(newRoute);
 					if (newRoute.isPossible()) 
 					{
