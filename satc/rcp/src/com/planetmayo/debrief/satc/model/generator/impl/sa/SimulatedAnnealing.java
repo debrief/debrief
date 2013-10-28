@@ -49,6 +49,7 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 		{
 			sum += contribution.calculateErrorScoreFor(route);
 		}
+		route.setScore(sum);
 		return sum;
 	}	
 	
