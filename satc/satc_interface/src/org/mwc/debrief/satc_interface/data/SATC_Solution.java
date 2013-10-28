@@ -87,6 +87,8 @@ public class SATC_Solution extends BaseLayer implements
 				{
 						prop("ShowLocationBounds", "whether to display location bounds",
 								FORMAT),
+						prop("OnlyPlotLegEnds",
+								"whether to only plot location bounds at leg ends", FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
 						prop("Name", "the name for this solution", EditorType.FORMAT),
 						prop("Color", "the color to display this solution",
@@ -126,6 +128,8 @@ public class SATC_Solution extends BaseLayer implements
 	private Layers _myLayers = null;
 
 	private boolean _showLocationBounds = false;
+
+	private boolean _onlyPlotLegEnds = false;
 
 	private boolean _showSolutions = true;
 
@@ -297,6 +301,16 @@ public class SATC_Solution extends BaseLayer implements
 	public boolean getShowLocationBounds()
 	{
 		return _showLocationBounds;
+	}
+
+	public boolean getOnlyPlotLegEnds()
+	{
+		return _onlyPlotLegEnds;
+	}
+
+	public void setOnlyPlotLegEnds(boolean onlyPlotLegEnds)
+	{
+		this._onlyPlotLegEnds = onlyPlotLegEnds;
 	}
 
 	public ISolver getSolver()
@@ -497,13 +511,31 @@ public class SATC_Solution extends BaseLayer implements
 		Color newCol = _myColor.darker();
 		dest.setColor(newCol);
 
+		// keep track of the leg name of the previous leg - we
+		// use it to track which leg we're in.
+		String lastName = null;
+
 		// work through the location bounds
 		for (Iterator<BoundedState> iterator = states.iterator(); iterator
 				.hasNext();)
 		{
 			BoundedState thisS = iterator.next();
-			if (thisS.getLocation() != null)
+
+			// do some fancy tests for if users only want the
+			// states that appear at leg ends
+			boolean isLastOne = !iterator.hasNext();
+			boolean isDifferentLeg = thisS.getMemberOf() != lastName;
+			boolean isLegEnd = isLastOne || isDifferentLeg;
+
+			boolean plotThisOne = !_onlyPlotLegEnds // users want all of them
+					|| (_onlyPlotLegEnds && isLegEnd); // users only want
+			// leg ends, and this is one
+
+			if (plotThisOne && thisS.getLocation() != null)
 			{
+
+				lastName = thisS.getMemberOf();
+
 				LocationRange theLoc = thisS.getLocation();
 				Coordinate[] pts = theLoc.getGeometry().getCoordinates();
 
@@ -528,9 +560,13 @@ public class SATC_Solution extends BaseLayer implements
 				}
 
 				// and a border
-				dest.setLineStyle(CanvasType.SOLID);
+				if (isLegEnd)
+					dest.setLineStyle(CanvasType.SOLID);
+				else
+					dest.setLineStyle(CanvasType.DOTTED);
+
 				dest.setLineWidth(0.0f);
-				dest.drawPolygon(xPoints, yPoints, pts.length);
+				dest.drawPolygon(xPoints, yPoints, xPoints.length);
 			}
 		}
 	}
