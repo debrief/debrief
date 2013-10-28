@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Sat Oct 26 15:22:26 BST 2013" Name="Debrief Plot" PlotId="1382790961507">
+<plot Created="Mon Oct 28 17:13:43 GMT 2013" Name="Debrief Plot" PlotId="1382790961507">
 <details Text="Saved with Debrief version dated Sat Oct 26 10:39:34 BST 2013"/>
 <session>
 <layers>
@@ -1495,7 +1495,7 @@
 </fix>
 </TrackSegment>
 </track>
-<satc_solution AutoSolutions="true" NAME="New try" ShowBounds="false" ShowSolutions="true">
+<satc_solution AutoSolutions="true" NAME="New try" OnlyPlotEnds="false" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<task version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -1888,10 +1888,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="0.0571822" Long="-0.0009012"/>
+<shortLocation Depth="0.000" Lat="0.0508681" Long="-0.0121445"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="0.0141326" Long="0.0261211"/>
+<shortLocation Depth="0.000" Lat="-0.0232660" Long="0.0435304"/>
 </br>
 </projection>
 <gui>
