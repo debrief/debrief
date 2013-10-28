@@ -36,29 +36,13 @@ public class LocationCalculator implements ILocationCalculator
 				watchable.getLocation());		
 	}
 	
-	@Override
-	public double getAngle(final LineShape line, final Watchable watchable)
-	{
-		return getAngle(line.getLine_Start(), line.getLineEnd(), 
-				watchable.getLocation());		
-	}
-	
-	
-	private double getAngle(final WorldLocation start, final WorldLocation end,
-			final WorldLocation watchableLocation)
-	{
-		//TODO: implement
-		WorldVector wv = end.subtract(start);
 		
-		return 0;
-	}
-	
-	
 	private double getDistance(final WorldLocation start, final WorldLocation end,
 			final WorldLocation watchableLocation)
 	{
-		WorldDistance res =  watchableLocation.rangeFrom(start, end);
-		return res.getValueIn(_units);
+		double angleA = watchableLocation.rangeFrom(end);
+		double hypotenus = new WorldDistance(watchableLocation.subtract(end)).getValueIn(_units);
+		return hypotenus / Math.cos(angleA);
 	}
 	
 	
