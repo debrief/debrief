@@ -72,7 +72,6 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 			if (k == 0 || ! parameters.isJoinedIterations()) 
 			{
 				current = leg.createRoute("", start.startPoint(),	end.startPoint());
-				current.generateSegments(states);			
 				eCurrent = error(current);
 			}
 			
