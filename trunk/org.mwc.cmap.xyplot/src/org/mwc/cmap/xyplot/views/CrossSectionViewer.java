@@ -1,21 +1,17 @@
 package org.mwc.cmap.xyplot.views;
 
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
-import org.mwc.cmap.core.property_support.EditableWrapper;
 
-import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -23,28 +19,18 @@ import MWC.GenericData.WatchableList;
 public class CrossSectionViewer
 {
 	
-	/**
-	 *  current line annotation being selected 
-	 */
-	private LineShape _line = null;
-	
-	/**
-	 * the current layers
-	 */
-	private Layers _layers = null;
-	
 	private List<ISelectionChangedListener> _listeners = new ArrayList<ISelectionChangedListener>();
+	private List<PropertyChangeListener> _propListeners = new ArrayList<PropertyChangeListener>();
 	
 	protected CrossSectionViewer(Composite parent)
 	{
 		// TODO Auto-generated method stub
 	}
 	
-	public void drawDiagram(final Layers theLayers)
+	public void drawDiagram(final Layers theLayers, LineShape line)
 	{
-		if(_line == null || _layers == null)
+		if (theLayers == null || line == null)
 			return;
-		
 		//TODO implement
 		walkThrough(theLayers);    	
 	}
@@ -61,52 +47,20 @@ public class CrossSectionViewer
 	{
 		_listeners.remove(listener);		
 	}
-
-	public void setSelection(final ISelection sel) 
+	
+	public void addPropertyChangedListener(final PropertyChangeListener listener) 
 	{
-		// just check that this is something we can work with
-		if (sel instanceof StructuredSelection) 
-		{
-			final StructuredSelection str = (StructuredSelection) sel;
+		if (! _propListeners.contains(listener))
+			_propListeners.add(listener);			
+	}
 
-			// hey, is there a payload?
-			if (str.getFirstElement() == null)
-				return;
-		    // we only support single selections, 
-			// so get the first element
-			final Object first = str.getFirstElement();
-			if (first instanceof EditableWrapper) 
-			{
-				final EditableWrapper ew = (EditableWrapper) first;
-				final Editable eb = ew.getEditable();
-				if (eb instanceof ShapeWrapper)
-				{
-					final PlainShape shape = ((ShapeWrapper) eb).getShape();
-					if (shape instanceof LineShape && !shape.equals(_line))
-					{
-						_line = (LineShape) shape;
-						//TODO: repaint
-					}
-				}
-			}			
-		}
-	}
 	
-	public void setFocus()
-    {
-		// TODO Auto-generated method stub
-    }
-	
-	public void setSelectionToWidget(final StructuredSelection selection)
+	public void removePropertyChangedListener(
+			final PropertyChangeListener listener) 
 	{
-		final Object o = selection.getFirstElement();
-		if (!(o instanceof EditableWrapper))
-			return;
-		final EditableWrapper element = (EditableWrapper) o;
-		final Editable selectedItem = element.getEditable();
-		// TODO: set the selection
+		_propListeners.remove(listener);		
 	}
-	
+
 	private void walkThrough(final Object root)
 	{
 		Enumeration<Editable> numer; 

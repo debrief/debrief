@@ -8,23 +8,25 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-
-// This import leads to cycle in plugin dependencies
-// TODO: import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
+import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
+// This import leads to cycle in plugin dependencies
+// TODO: import org.mwc.cmap.TimeController.views.TimeController;
 
 public class CrossSectionView extends ViewPart
 {
@@ -54,6 +56,14 @@ public class CrossSectionView extends ViewPart
 	//TODO: is this needed?
 	private PropertyChangeListener _timeListener;
 	
+
+	private PropertyChangeListener _lineListener = new LineChangeListener();
+	
+	/**
+	 *  current line annotation being selected 
+	 */
+	private LineShape _line = null;
+	
 	/**
 	 * Debrief data
 	 */
@@ -81,19 +91,29 @@ public class CrossSectionView extends ViewPart
 			@Override
 			public void selectionChanged(final SelectionChangedEvent event) 
 			{
-				// TODO Auto-generated method stub
 				final ISelection sel = event.getSelection();
 				if (!(sel instanceof IStructuredSelection))
 					return;
 				final IStructuredSelection ss = (IStructuredSelection) sel;
 				final Object o = ss.getFirstElement();
-				if (o instanceof EditableWrapper) {
-					final EditableWrapper pw = (EditableWrapper) o;
-					editableSelected(sel, pw);
+				if (o instanceof EditableWrapper) 
+				{
+					// check if Line annotation is selected
+					final Editable eb = ((EditableWrapper) o).getEditable();
+					if (eb instanceof ShapeWrapper)
+					{
+						final PlainShape shape = ((ShapeWrapper) eb).getShape();
+						if (shape instanceof LineShape && !shape.equals(_line))
+						{
+							_line = (LineShape) shape;
+							_viewer.drawDiagram(_myLayers, _line);
+						}
+					}		
 				}
 			}
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
+		_viewer.addPropertyChangedListener(_lineListener);
 	}
 	
 	private void listenToMyParts()
@@ -220,20 +240,8 @@ public class CrossSectionView extends ViewPart
 	@Override
 	public void setFocus() 
 	{
-		_viewer.setFocus();		
-	}
-	
-	public void editableSelected(final ISelection sel, final EditableWrapper pw) 
-	{
-		// ahh, just check if this is a whole new layers object
-		if (pw.getEditable() instanceof Layers) 
-		{
-			processNewLayers(pw.getEditable());
-			return;
-		}
-		_viewer.setSelection(sel);
-
-	}
+		//TODO:
+	}	
 	
 	void processNewLayers(final Object part)
 	{
@@ -291,20 +299,7 @@ public class CrossSectionView extends ViewPart
 				public void run()
 				{
 					// ok, fire the change in the UI thread
-					_viewer.drawDiagram(theData);
-					// hmm, do we know about the new item? If so, better select it
-					if (newItem != null)
-					{
-						// wrap the plottable
-						final EditableWrapper parentWrapper = new EditableWrapper(parentLayer,
-								null, theData);
-						final EditableWrapper wrapped = new EditableWrapper(newItem,
-								parentWrapper, theData);
-						final ISelection selected = new StructuredSelection(wrapped);
-
-						// and select it
-						editableSelected(selected, wrapped);
-					}
+					_viewer.drawDiagram(theData, _line);
 				}
 			});
 	}	
@@ -333,6 +328,30 @@ public class CrossSectionView extends ViewPart
 					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 			_temporalListener = null;
 			_timeProvider = null;			
+		}
+	}
+	
+	protected final class LineChangeListener implements PropertyChangeListener
+	{
+		public void propertyChange(final PropertyChangeEvent event)
+		{
+			// see if it's the time or the period which
+			// has changed
+			if (event.getPropertyName().equals(
+					PlainWrapper.LOCATION_CHANGED))
+			{
+				final Runnable nextEvent = new Runnable()
+				{
+					public void run()
+					{
+						if (event.getSource().equals(_line))
+						{
+							_viewer.drawDiagram(_myLayers, _line);
+						}
+					}
+				};
+				Display.getDefault().syncExec(nextEvent);				
+			}
 		}
 	}
 	
