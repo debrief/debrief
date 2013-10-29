@@ -66,8 +66,7 @@ public class CrossSectionView extends ViewPart
 	@Override
 	public void createPartControl(final Composite parent) 
 	{
-		_viewer = new CrossSectionViewer(parent);
-		getSite().setSelectionProvider(_viewer);		
+		_viewer = new CrossSectionViewer(parent);	
 
 		_partMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
