@@ -1,42 +1,39 @@
 package org.mwc.cmap.xyplot.views;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
-import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
+import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 
-public class CrossSectionViewer implements ISelectionProvider
+public class CrossSectionViewer
 {
 	
 	/**
 	 *  current line annotation being selected 
 	 */
-	private LineShape _line;
+	private LineShape _line = null;
 	
 	/**
 	 * the current layers
 	 */
-	private Layers _layers;
+	private Layers _layers = null;
 	
-	/**
-	 * The current selection for this provider
-	 */
-    ISelection _theSelection = null;
+	private List<ISelectionChangedListener> _listeners = new ArrayList<ISelectionChangedListener>();
 	
 	protected CrossSectionViewer(Composite parent)
 	{
@@ -45,48 +42,53 @@ public class CrossSectionViewer implements ISelectionProvider
 	
 	public void drawDiagram(final Layers theLayers)
 	{
+		if(_line == null || _layers == null)
+			return;
+		
 		//TODO implement
 		walkThrough(theLayers);    	
 	}
 
-	@Override
-	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public ISelection getSelection() 
+	public void addSelectionChangedListener(final ISelectionChangedListener listener) 
 	{
-		return _theSelection;
+		if (! _listeners.contains(listener))
+			_listeners.add(listener);			
 	}
 
-	@Override
+	
 	public void removeSelectionChangedListener(
-			ISelectionChangedListener listener) {
-		// TODO Auto-generated method stub
-		
+			ISelectionChangedListener listener) 
+	{
+		_listeners.remove(listener);		
 	}
 
-	@Override
 	public void setSelection(final ISelection sel) 
 	{
-		_theSelection = sel;
 		// just check that this is something we can work with
 		if (sel instanceof StructuredSelection) 
 		{
 			final StructuredSelection str = (StructuredSelection) sel;
 
 			// hey, is there a payload?
-			if (str.getFirstElement() != null) 
+			if (str.getFirstElement() == null)
+				return;
+		    // we only support single selections, 
+			// so get the first element
+			final Object first = str.getFirstElement();
+			if (first instanceof EditableWrapper) 
 			{
-				// sure is. we only support single selections, so get the first
-				// element
-				final Object first = str.getFirstElement();
-				//TODO: compare the selection with the current line,
-				// repaint if necessary
-									
-			}
+				final EditableWrapper ew = (EditableWrapper) first;
+				final Editable eb = ew.getEditable();
+				if (eb instanceof ShapeWrapper)
+				{
+					final PlainShape shape = ((ShapeWrapper) eb).getShape();
+					if (shape instanceof LineShape && !shape.equals(_line))
+					{
+						_line = (LineShape) shape;
+						//TODO: repaint
+					}
+				}
+			}			
 		}
 	}
 	
