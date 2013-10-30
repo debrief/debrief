@@ -2,15 +2,15 @@ package com.planetmayo.debrief.satc.model;
 
 public enum Precision
 {
-	LOW("Low", 600), MEDIUM("Medium", 300), HIGH("High", 100);
+	LOW("Low", 100), MEDIUM("Medium", 200), HIGH("High", 500);
 
 	private final String label;
-	private final double meters;
+	private final int numPoints;
 
-	private Precision(String label, double meters)
+	private Precision(String label, int numPoints)
 	{
 		this.label = label;
-		this.meters = meters;
+		this.numPoints = numPoints;
 	}
 
 	public String getLabel()
@@ -18,8 +18,13 @@ public enum Precision
 		return label;
 	}
 	
-	public double toMeters() 
+	/** find out how many points should be generated when gridding 
+	 * a location bounds
+	 * 
+	 * @return
+	 */
+	public int getNumPoints() 
 	{
-		return meters;
+		return numPoints;
 	}
 }

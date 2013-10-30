@@ -5,17 +5,11 @@ import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Point;
 
 public abstract class CoreLeg
 {
-	
-	/** the maximum number of points we allow in a leg start/end state before we try to generate solutions
-	 * 
-	 */
-	private static final int MAX_PTS = 5000;
 	
 	/**
 	 * how many points there are in the start polygon
@@ -45,7 +39,7 @@ public abstract class CoreLeg
 	
 	protected List<Point> endPoints;
 	
-	protected double currentGridPrecision;
+	protected int currentGridPrecision;
 
 	protected CoreLeg(String name, List<BoundedState> states)
 	{
@@ -117,28 +111,17 @@ public abstract class CoreLeg
 		}
 	}
 	
-	/**
-	 * produce the set of constituent routes for this leg
-	 * 
-	 * @param precision
-	 *          how many grid cells to dissect the area into
-	 */
-	public void generatePoints(double gridPrecision) 
-	{
-		generatePoints(gridPrecision, MAX_PTS);
-	}
 
 	/**
 	 * produce the set of constituent routes for this leg
 	 * 
 	 * @param precision
 	 *          how many grid cells to dissect the area into
-	 * @param maxPoints 
-	 *          if we have more than maxPoints points for each area throw the exception   
 	 */
-	public void generatePoints(double gridPrecision, int maxPoints)
+	public void generatePoints(int numPoints)
 	{
-		currentGridPrecision = gridPrecision;
+		currentGridPrecision = numPoints;
+		
 		// produce the grid of cells
 		LocationRange firstLoc = getFirst().getLocation();
 		LocationRange lastLoc = getLast().getLocation();
@@ -147,23 +130,10 @@ public abstract class CoreLeg
 			throw new IllegalArgumentException(
 					"The end states must have location bounds");
 
-		final double delta = GeoSupport.m2deg(gridPrecision);
-		// right, what's the area of the start?
-		double startArea = firstLoc.getGeometry().getArea();
-		double endArea = lastLoc.getGeometry().getArea();
-
-		final int numStart = (int) (startArea / (delta * delta));
-		final int numEnd = (int) (endArea / (delta * delta));
-
-		// just check neither of our domains are too large (a typical symptom of a contribution with an invalid time state)
-		if(numStart > maxPoints)
-			throw new RuntimeException("Too many start points (" + numStart + ") for leg:" + this.getName());
-		if(numEnd > maxPoints)
-			throw new RuntimeException("Too many end points (" + numEnd + ") for leg:" + this.getName());
-
+		// ok, get gridding
 		startPoints = MakeGrid.ST_Tile(firstLoc.getGeometry(),
-				numStart, 6);
-		endPoints = MakeGrid.ST_Tile(lastLoc.getGeometry(), numEnd, 6);
+				numPoints, 6);
+		endPoints = MakeGrid.ST_Tile(lastLoc.getGeometry(), numPoints, 6);
 		
 		// just check we've been able to create some points
 		if(startPoints.size() == 0) 
@@ -172,7 +142,7 @@ public abstract class CoreLeg
 			throw new RuntimeException("Unable to generate any end points for leg:" + this.getName());
 	}
 	
-	public double getCurrentGridPrecision() 
+	public int getCurrentGridPrecision() 
 	{
 		return currentGridPrecision;
 	}
