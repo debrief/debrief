@@ -1006,6 +1006,7 @@ public class XYPlotView extends ViewPart
 			if (layers != null)
 			{
 				layers.removeDataExtendedListener(_modifiedListener);
+				layers.removeDataReformattedListener(_modifiedListener);
 				layers.removeDataModifiedListener(_modifiedListener);
 			}
 		}
