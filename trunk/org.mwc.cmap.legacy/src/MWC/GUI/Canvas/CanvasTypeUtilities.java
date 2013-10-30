@@ -33,7 +33,7 @@ public class CanvasTypeUtilities
 		{
 			// calculate the course 
 			double course = Math.toDegrees(lastLoc.subtract(firstLoc).getBearing());
-			System.out.println("course to plot is "  + (int)course);
+
 			final double direction = Math.toRadians(course-90);
 
 			// sort out the offset to use
