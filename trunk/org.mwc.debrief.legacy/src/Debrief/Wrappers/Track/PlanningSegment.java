@@ -40,10 +40,17 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	{
 
 		public ClosingSegment(final String name, final double courseDegs,
-				final WorldSpeed worldSpeed, final WorldDistance worldDistance, final Color myColor)
+				final WorldSpeed worldSpeed, final WorldDistance worldDistance,
+				final Color myColor)
 		{
 			super(name, courseDegs, worldSpeed, worldDistance, myColor);
 			this.setCalculation(PlanningLegCalcModelPropertyEditor.RANGE_SPEED);
+		}
+
+		@Override
+		public int getLineStyle()
+		{
+			return CanvasType.DOTTED;
 		}
 
 		/**
@@ -80,7 +87,8 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 						expertProp("Calculation", "How to calculate the leg length",
 								SPATIAL),
 						expertProp("Visible", "whether this layer is visible", FORMAT),
-						expertProp("VectorLabelVisible", "whether this vector label is visible", FORMAT),
+						expertProp("VectorLabelVisible",
+								"whether this vector label is visible", FORMAT),
 						expertProp("Depth", "The depth for this leg", SPATIAL),
 						expertProp("Course", "The course for this leg", SPATIAL),
 						expertProp("Distance", "The distance travelled along this leg",
@@ -165,7 +173,13 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 * the color to use for this planning segment
 	 * 
 	 */
-	private Color _myColor = Color.GREEN;
+	public final static Color DEFAULT_COLOR = Color.RED;
+
+	/**
+	 * the color to use for this planning segment
+	 * 
+	 */
+	private Color _myColor = Color.RED;
 
 	/**
 	 * the date this segment was created - used to force sort order by the order
@@ -193,11 +207,11 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	private WorldDistance _myDepth = new WorldDistance(0, WorldDistance.METRES);
 
 	/**
-	 * whether this vector label is visible
-	 * default: true
+	 * whether this vector label is visible default: true
 	 * 
 	 */
 	private boolean _myVectorLabelVisible = true;
+
 	/**
 	 * copy constructor
 	 * 
@@ -212,19 +226,20 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		_myLength = new WorldDistance(other._myLength);
 		_myPeriod = new Duration(other._myPeriod);
 		_mySpeed = new WorldSpeed(other._mySpeed);
-		_myColor =	other.getColor();
+		_myColor = other.getColor();
 		_parent = other._parent;
 		this.setName(other.getName());
 	}
 
-	public PlanningSegment(final String name, final double courseDegs, final WorldSpeed worldSpeed,
-			final WorldDistance worldDistance, final Color color)
+	public PlanningSegment(final String name, final double courseDegs,
+			final WorldSpeed worldSpeed, final WorldDistance worldDistance,
+			final Color color)
 	{
 		this.setName(name);
 		this.setCourse(courseDegs);
 		this.setSpeedSilent(worldSpeed);
 		this.setDistanceSilent(worldDistance);
- 	  this.setColor(color);
+		this.setColor(color);
 		this.recalc();
 	}
 
@@ -323,7 +338,12 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 
 	public double getCourse()
 	{
-		return _myCourseDegs;
+		// trim it to +ve domain
+		double res = _myCourseDegs;
+		if(res < 0)
+			res += 360;
+		
+		return res;
 	}
 
 	@FireExtended
@@ -391,9 +411,9 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 
 	public void setColor(final Color color)
 	{
-		if(color == null)
+		if (color == null)
 			return;
-		
+
 		_myColor = color;
 
 		// ok, loop through the elements and update the color
@@ -489,37 +509,42 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	{
 		this._myVectorLabelVisible = vectorLabelVisible;
 	}
-	
-	public String getVectorLabel() {
-		
-	  StringBuilder builder = new StringBuilder();
-		if (getDistance() != null) {
-			builder.append(GeneralFormat.formatOneDecimalPlace(getDistance().getValue()));
+
+	public String getVectorLabel()
+	{
+
+		StringBuilder builder = new StringBuilder();
+		if (getDistance() != null)
+		{
+			builder.append(GeneralFormat.formatOneDecimalPlace(getDistance()
+					.getValue()));
 			builder.append(getDistance().getUnitsLabel());
 			builder.append(" ");
 		}
-		builder.append((int)getCourse());
+		builder.append((int) getCourse());
 		builder.append("°");
 		return builder.toString();
 	}
-	
+
 	public void paintLabel(final CanvasType dest)
 	{
-		if (getVectorLabelVisible()) {
+		if (getVectorLabelVisible())
+		{
 			String textLabel = getVectorLabel();
-			if (first() instanceof FixWrapper && last() instanceof FixWrapper) {
+			if (first() instanceof FixWrapper && last() instanceof FixWrapper)
+			{
 				FixWrapper first = (FixWrapper) first();
 				FixWrapper last = (FixWrapper) last();
 				Font f = first.getFont();
 				Color c = first.getColor();
 				WorldLocation firstLoc = first.getLocation();
 				WorldLocation lastLoc = last.getLocation();
-				
+
 				// ok, now plot it
-				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc, lastLoc, 2.0);
+				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+						lastLoc, 2.0);
 			}
 		}
 	}
-
 
 }

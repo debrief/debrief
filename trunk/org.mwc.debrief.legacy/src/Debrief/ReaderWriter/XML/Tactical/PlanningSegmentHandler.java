@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Track.PlanningSegment;
+import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Properties.LineStylePropertyEditor;
@@ -141,9 +142,18 @@ abstract public class PlanningSegmentHandler extends
 
 	}
 
-	protected PlanningSegment createTrack()
+	protected PlanningSegment createSegment()
 	{
 		final PlanningSegment res = new PlanningSegment(_name, _course, _speed, _length,
+				_color);
+		res.setDuration(_duration);
+		res.setCalculation(_calcModel);
+		return res;
+	}
+	
+	protected PlanningSegment createClosingSegment()
+	{
+		final PlanningSegment res = new ClosingSegment(_name, _course, _speed, _length,
 				_color);
 		res.setDuration(_duration);
 		res.setCalculation(_calcModel);
@@ -152,7 +162,14 @@ abstract public class PlanningSegmentHandler extends
 
 	public final void elementClosed()
 	{
-		PlanningSegment segment = createTrack();
+		PlanningSegment segment ;
+
+		// see if it's a planning segment, or a closing segment
+		if(this.canHandleThis(CLOSING_SEGMENT))
+			segment = createClosingSegment();
+		else
+			segment = createSegment();
+		
 		segment.setVisible(_visible);
 		segment.setName(_name);
 		segment.setLineStyle(_lineStyle);

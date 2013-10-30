@@ -449,9 +449,12 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 	public void recalculate()
 	{
-		final Enumeration<Editable> numer = getSegments().elements();
 		WorldLocation thisOrigin = getOrigin();
+		if(thisOrigin == null)
+			return;
+		
 		HiResDate thisDate = getStartDate();
+		final Enumeration<Editable> numer = getSegments().elements();
 		while (numer.hasMoreElements())
 		{
 			final Editable editable = (Editable) numer.nextElement();
