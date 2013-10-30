@@ -243,6 +243,11 @@ public class CreateSolutionFromSensorData implements
 					theRange = scw.getRange().getValueIn(WorldDistance.DEGS);
 
 				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
+				
+				// give it the respective color
+				thisM.setColor(scw.getColor());
+				
+				// ok, store it.
 				bmc.addThis(thisM);
 			}
 			return bmc;

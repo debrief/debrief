@@ -1,6 +1,7 @@
 package org.mwc.debrief.satc_interface.data;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
@@ -33,6 +34,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.SupportsPropertyListeners;
+import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -50,6 +52,7 @@ import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -124,6 +127,12 @@ public class SATC_Solution extends BaseLayer implements
 	private ISolver _mySolver;
 
 	private Color _myColor = Color.green;
+	
+	
+	/**
+	 * the plain font we use as a base
+	 */
+	static final Font LEG_NAME_FONT = new Font("Sans Serif", Font.BOLD, 12);
 
 	private Layers _myLayers = null;
 
@@ -581,24 +590,28 @@ public class SATC_Solution extends BaseLayer implements
 	{
 		for (int i = 0; i < routes.length; i++)
 		{
-			CompositeRoute thisR = routes[i];
-			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+			CompositeRoute thisComposite = routes[i];
+			Iterator<CoreRoute> legs = thisComposite.getLegs().iterator();
 
 			while (legs.hasNext())
 			{
 				stepper.reset();
-				CoreRoute thisR2 = legs.next();
-				ArrayList<State> states = thisR2.getStates();
+				CoreRoute thisRoute = legs.next();
+				ArrayList<State> states = thisRoute.getStates();
 				if (states != null)
 				{
 					Iterator<State> stateIter = states.iterator();
 					while (stateIter.hasNext())
 					{
 						State thisState = stateIter.next();
-						stepper.step(thisState);
+						stepper.step(thisRoute, thisState);
 					}
 				}
+				
+				stepper.legComplete(thisRoute);
+				
 			}
+			
 		}
 		stepper.finish();
 	}
@@ -606,7 +619,9 @@ public class SATC_Solution extends BaseLayer implements
 	private static interface RouteStepper
 	{
 
-		public abstract void step(State thisState);
+		public abstract void step(CoreRoute thisRoute, State thisState);
+
+		public abstract void legComplete(CoreRoute thisRoute);
 
 		public abstract void finish();
 
@@ -614,12 +629,13 @@ public class SATC_Solution extends BaseLayer implements
 
 	}
 
-	private static class DoPaint implements RouteStepper
+	private class DoPaint implements RouteStepper
 	{
 		private Point lastPt = null;
 		private final CanvasType _dest;
 		private final float oldWid;
 
+		
 		public DoPaint(CanvasType dest)
 		{
 			_dest = dest;
@@ -628,7 +644,7 @@ public class SATC_Solution extends BaseLayer implements
 		}
 
 		@Override
-		public void step(State thisState)
+		public void step(CoreRoute thisRoute, State thisState)
 		{
 			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
 			// convert to screen
@@ -638,6 +654,19 @@ public class SATC_Solution extends BaseLayer implements
 
 			if (lastPt != null)
 			{
+				// is it straight? or altering
+				if(thisRoute.getType() == LegType.STRAIGHT)
+					_dest.setLineStyle(CanvasType.SOLID);
+				else
+					_dest.setLineStyle(CanvasType.DOTTED);
+				
+				
+				// does this state have a color?
+				if(thisState.getColor() != null)
+					_dest.setColor(thisState.getColor());
+				else
+					_dest.setColor(_myColor);
+				
 				// draw the line
 				_dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
 			}
@@ -655,6 +684,34 @@ public class SATC_Solution extends BaseLayer implements
 		public void finish()
 		{
 			_dest.setLineWidth(oldWid);
+			_dest.setLineStyle(CanvasType.SOLID);
+		}
+
+		@Override
+		public void legComplete(CoreRoute thisRoute)
+		{
+			// is it straight? or altering
+			if(thisRoute.getType() == LegType.STRAIGHT)
+			{
+				// get the first point
+				State firstState = thisRoute.getStates().get(0);
+				State lastState = thisRoute.getStates().get(thisRoute.getStates().size()-1);
+
+				final Color theColor;
+				
+				if(firstState.getColor() != null)
+					theColor = firstState.getColor();
+				else
+					theColor = Color.red;
+				
+				Font theFont = LEG_NAME_FONT;
+				WorldLocation firstLoc =  conversions.toLocation(firstState.getLocation().getCoordinate());
+				WorldLocation lastLoc = conversions.toLocation(lastState.getLocation().getCoordinate());
+				
+				double course = Math.toDegrees(lastLoc.subtract(firstLoc).getBearing());
+				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),theFont ,theColor, firstLoc, lastLoc, course);
+			}
+
 		}
 	}
 

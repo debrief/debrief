@@ -131,6 +131,10 @@ public class BearingMeasurementContribution extends BaseContribution
 					space.add(thisState);
 				}
 
+				// ok, override any existing color for this state, if we have one
+				if (measurement.getColor() != null)
+					thisState.setColor(measurement.getColor());
+
 				// well, if we didn't - we do now! Apply it!
 				thisState.constrainTo(lr);
 			}
@@ -161,23 +165,23 @@ public class BearingMeasurementContribution extends BaseContribution
 		double res = Math.toDegrees(rads);
 		return trimDegs(res);
 	}
-	
+
 	private double trimDegs(double degs)
 	{
 		double res = degs;
-		while(res > 180)
+		while (res > 180)
 			res -= 360;
-		while(res < -180)
+		while (res < -180)
 			res += 360;
-		
-		return res;		
+
+		return res;
 	}
-	
+
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
 		double bearingError = this.bearingError == null ? 0 : this.bearingError;
-		if (! isActive() || route.getType() == LegType.ALTERING || bearingError == 0) 
+		if (!isActive() || route.getType() == LegType.ALTERING || bearingError == 0)
 		{
 			return 0;
 		}
@@ -186,26 +190,31 @@ public class BearingMeasurementContribution extends BaseContribution
 		for (BMeasurement measurement : measurements)
 		{
 			Date dateMeasurement = measurement.getDate();
-			if (dateMeasurement.compareTo(route.getStartTime()) >= 0 && dateMeasurement.compareTo(route.getEndTime()) <= 0)
+			if (dateMeasurement.compareTo(route.getStartTime()) >= 0
+					&& dateMeasurement.compareTo(route.getEndTime()) <= 0)
 			{
 				State state = route.getStateAt(dateMeasurement);
 				if (state != null && state.getLocation() != null)
 				{
 					GeodeticCalculator calculator = new GeodeticCalculator();
-					calculator.setStartingGeographicPoint(measurement.origin.getLon(), measurement.origin.getLat());
-					calculator.setDestinationGeographicPoint(state.getLocation().getX(), state.getLocation().getY());
-					
-					double radians = MathUtils.normalizeAngle(Math.toRadians(trimDegs(calculator.getAzimuth())));					
-					res += (measurement.bearingAngle - radians) * (measurement.bearingAngle - radians);
+					calculator.setStartingGeographicPoint(measurement.origin.getLon(),
+							measurement.origin.getLat());
+					calculator.setDestinationGeographicPoint(state.getLocation().getX(),
+							state.getLocation().getY());
+
+					double radians = MathUtils.normalizeAngle(Math
+							.toRadians(trimDegs(calculator.getAzimuth())));
+					res += (measurement.bearingAngle - radians)
+							* (measurement.bearingAngle - radians);
 					count++;
 				}
 			}
 		}
 		if (count > 0)
 		{
-			res = Math.sqrt(res / count) / bearingError;			
+			res = Math.sqrt(res / count) / bearingError;
 		}
-		return res; 
+		return res;
 	}
 
 	public void addEstimate(double lat, double lon, Date date, double brg,
@@ -253,7 +262,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	{
 		return measurements.size();
 	}
-	
+
 	public ArrayList<BMeasurement> getMeasurements()
 	{
 		return measurements;
@@ -324,9 +333,10 @@ public class BearingMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			double normalizedAngle = MathUtils.normalizeAngle(Math.toRadians(Double.parseDouble(bearing)));
-			BMeasurement measure = new BMeasurement(theLoc, normalizedAngle, 
-					theDate, GeoSupport.m2deg(Double.parseDouble(range)));
+			double normalizedAngle = MathUtils.normalizeAngle(Math.toRadians(Double
+					.parseDouble(bearing)));
+			BMeasurement measure = new BMeasurement(theLoc, normalizedAngle, theDate,
+					GeoSupport.m2deg(Double.parseDouble(range)));
 
 			addThis(measure);
 
@@ -386,7 +396,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 */
 	public static class BMeasurement
 	{
-		private static final double MAX_RANGE_DEGS = 0.3;
+		private static final double MAX_RANGE_DEGS = 0.5;
 		private final GeoPoint origin;
 		private final double bearingAngle;
 		private final Date time;
@@ -397,19 +407,36 @@ public class BearingMeasurementContribution extends BaseContribution
 		 */
 		private final Double theRange;
 
+		/**
+		 * the (optional) color for this measurement
+		 * 
+		 */
+		private java.awt.Color color = null;
+
 		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
 			this.origin = loc;
 			this.bearingAngle = bearing;
 			this.time = time;
-			
-			// tidying up.  Give the maximum possible range for this bearing if the data is missing
-			if(theRange == null)
+
+			// tidying up. Give the maximum possible range for this bearing if the
+			// data is missing
+			if (theRange == null)
 				this.theRange = MAX_RANGE_DEGS;
 			else
 				this.theRange = theRange;
 		}
-		
+
+		public java.awt.Color getColor()
+		{
+			return color;
+		}
+
+		public void setColor(java.awt.Color color)
+		{
+			this.color = color;
+		}
+
 		public Date getDate()
 		{
 			return time;

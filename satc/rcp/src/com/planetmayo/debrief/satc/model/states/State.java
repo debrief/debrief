@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import java.awt.Color;
 import java.util.Date;
 
 import com.vividsolutions.jts.geom.Point;
@@ -13,6 +14,11 @@ public class State implements Comparable<State>
 	private final double _speed;
 	private final double _course;
 	private final Point _location;
+	
+	/** the (optional) color used to present this state
+	 * 
+	 */
+	private Color _color;
 
 	public State(final Date time, final Point location, final double course,
 			final double speed)
@@ -51,6 +57,16 @@ public class State implements Comparable<State>
 	public Date getTime()
 	{
 		return _time;
+	}
+
+	public void setColor(Color color)
+	{
+		_color = color;
+	}
+	
+	public Color getColor()
+	{
+		return _color;
 	}
 
 }
