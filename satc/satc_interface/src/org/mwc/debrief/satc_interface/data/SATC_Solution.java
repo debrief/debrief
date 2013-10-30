@@ -9,6 +9,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedSet;
 
@@ -35,10 +36,16 @@ import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
@@ -63,7 +70,7 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
-		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers
+		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -127,8 +134,7 @@ public class SATC_Solution extends BaseLayer implements
 	private ISolver _mySolver;
 
 	private Color _myColor = Color.green;
-	
-	
+
 	/**
 	 * the plain font we use as a base
 	 */
@@ -159,6 +165,8 @@ public class SATC_Solution extends BaseLayer implements
 	private IContributionsChangedListener _contributionsListener;
 
 	private IConstrainSpaceListener _constrainListener;
+
+	private PlainSymbol mySymbol;
 
 	public SATC_Solution(ISolver newSolution)
 	{
@@ -394,6 +402,8 @@ public class SATC_Solution extends BaseLayer implements
 			{
 				_newRoutes = routes;
 
+				// tell the layer manager that we've changed
+
 				// hey, trigger repaint
 				fireRepaint();
 			}
@@ -607,11 +617,11 @@ public class SATC_Solution extends BaseLayer implements
 						stepper.step(thisRoute, thisState);
 					}
 				}
-				
+
 				stepper.legComplete(thisRoute);
-				
+
 			}
-			
+
 		}
 		stepper.finish();
 	}
@@ -631,11 +641,11 @@ public class SATC_Solution extends BaseLayer implements
 
 	private class DoPaint implements RouteStepper
 	{
+		private static final double LEG_LABEL_CLIPPING_THRESHOLD = 1.1;
 		private Point lastPt = null;
 		private final CanvasType _dest;
 		private final float oldWid;
 
-		
 		public DoPaint(CanvasType dest)
 		{
 			_dest = dest;
@@ -655,18 +665,17 @@ public class SATC_Solution extends BaseLayer implements
 			if (lastPt != null)
 			{
 				// is it straight? or altering
-				if(thisRoute.getType() == LegType.STRAIGHT)
+				if (thisRoute.getType() == LegType.STRAIGHT)
 					_dest.setLineStyle(CanvasType.SOLID);
 				else
 					_dest.setLineStyle(CanvasType.DOTTED);
-				
-				
+
 				// does this state have a color?
-				if(thisState.getColor() != null)
+				if (thisState.getColor() != null)
 					_dest.setColor(thisState.getColor());
 				else
 					_dest.setColor(_myColor);
-				
+
 				// draw the line
 				_dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
 			}
@@ -691,25 +700,28 @@ public class SATC_Solution extends BaseLayer implements
 		public void legComplete(CoreRoute thisRoute)
 		{
 			// is it straight? or altering
-			if(thisRoute.getType() == LegType.STRAIGHT)
+			if (thisRoute.getType() == LegType.STRAIGHT)
 			{
 				// get the first point
 				State firstState = thisRoute.getStates().get(0);
-				State lastState = thisRoute.getStates().get(thisRoute.getStates().size()-1);
+				State lastState = thisRoute.getStates().get(
+						thisRoute.getStates().size() - 1);
 
 				final Color theColor;
-				
-				if(firstState.getColor() != null)
+
+				if (firstState.getColor() != null)
 					theColor = firstState.getColor();
 				else
 					theColor = Color.red;
-				
+
 				Font theFont = LEG_NAME_FONT;
-				WorldLocation firstLoc =  conversions.toLocation(firstState.getLocation().getCoordinate());
-				WorldLocation lastLoc = conversions.toLocation(lastState.getLocation().getCoordinate());
-				
-				double course = Math.toDegrees(lastLoc.subtract(firstLoc).getBearing());
-				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),theFont ,theColor, firstLoc, lastLoc, course);
+				WorldLocation firstLoc = conversions.toLocation(firstState
+						.getLocation().getCoordinate());
+				WorldLocation lastLoc = conversions.toLocation(lastState.getLocation()
+						.getCoordinate());
+
+				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
+						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD);
 			}
 
 		}
@@ -769,6 +781,233 @@ public class SATC_Solution extends BaseLayer implements
 	public void setLayers(Layers parent)
 	{
 		_myLayers = parent;
+	}
+
+	@Override
+	public HiResDate getStartDTG()
+	{
+		return new HiResDate(_mySolver.getProblemSpace().getStartDate());
+	}
+
+	@Override
+	public HiResDate getEndDTG()
+	{
+		return new HiResDate(_mySolver.getProblemSpace().getFinishDate());
+	}
+
+	@Override
+	public Watchable[] getNearestTo(HiResDate DTG)
+	{
+		ArrayList<Watchable> items = new ArrayList<Watchable>();
+
+		long time = DTG.getDate().getTime();
+
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			CompositeRoute route = _newRoutes[0];
+
+			Iterator<CoreRoute> legs = route.getLegs().iterator();
+			while (legs.hasNext())
+			{
+				CoreRoute thisLeg = (CoreRoute) legs.next();
+				Iterator<State> states = thisLeg.getStates().iterator();
+				while (states.hasNext())
+				{
+					State state = (State) states.next();
+					// does it even have a location?
+					if (state.getLocation() != null)
+					{
+						if (state.getTime().getTime() > time)
+						{
+
+							items.add(wrapThis(state));
+							return items.toArray(new Watchable[]
+							{});
+						}
+					}
+				}
+			}
+
+		}
+
+		return items.toArray(new Watchable[]
+		{});
+	}
+
+	private WrappedState wrapThis(final State state)
+	{
+		return new WrappedState(state);
+	}
+
+	@Override
+	public void filterListTo(HiResDate start, HiResDate end)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
+	{
+		Collection<Editable> items = new ArrayList<Editable>();
+		ArrayList<State> states = new ArrayList<State>();
+
+		long startT = start.getDate().getTime();
+		long finishT = end.getDate().getTime();
+
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			CompositeRoute route = _newRoutes[0];
+
+			Iterator<CoreRoute> legs = route.getLegs().iterator();
+			while (legs.hasNext())
+			{
+				CoreRoute thisLeg = (CoreRoute) legs.next();
+				Iterator<State> theStates = thisLeg.getStates().iterator();
+				while (theStates.hasNext())
+				{
+					State state = (State) theStates.next();
+
+					// does it even have a location?
+					if (state.getLocation() != null)
+					{
+						long thisTime = state.getTime().getTime();
+						if ((thisTime >= startT) && (thisTime <= finishT))
+						{
+							// check we haven't just stored a state at this time,
+							// JFReeChart plotting doesn't like it.
+							if (states.size() > 0)
+							{
+								Date lastTime = states.get(states.size() - 1).getTime();
+								if (lastTime.getTime() != thisTime)
+								{
+									states.add(state);
+								}
+							}
+							else
+								states.add(state);
+						}
+					}
+				}
+			}
+		}
+
+		// ok, wrap the states
+		Iterator<State> iter = states.iterator();
+		while (iter.hasNext())
+		{
+			State state = (State) iter.next();
+			items.add(wrapThis(state));
+		}
+
+		Collection<Editable> res = null;
+		if (items.size() > 0)
+		{
+			res = items;
+		}
+		return res;
+	}
+
+	@Override
+	public PlainSymbol getSnailShape()
+	{
+		if (mySymbol == null)
+			mySymbol = SymbolFactory.createSymbol(SymbolFactory.DEFAULT_SYMBOL_TYPE);
+
+		return mySymbol;
+	}
+
+	protected static class WrappedState implements Watchable, Editable
+	{
+
+		private final State state;
+		private WorldLocation loc;
+		private boolean isVis = true;
+
+		public WrappedState(State state)
+		{
+			this.state = state;
+		}
+
+		@Override
+		public WorldLocation getLocation()
+		{
+			if (loc == null)
+				loc = conversions.toLocation(state.getLocation().getCoordinate());
+
+			return loc;
+		}
+
+		@Override
+		public double getCourse()
+		{
+			return state.getCourse();
+		}
+
+		@Override
+		public double getSpeed()
+		{
+			return MWC.Algorithms.Conversions.Mps2Kts(state.getSpeed());
+		}
+
+		@Override
+		public double getDepth()
+		{
+			return 0;
+		}
+
+		@Override
+		public WorldArea getBounds()
+		{
+			return new WorldArea(getLocation(), getLocation());
+		}
+
+		@Override
+		public void setVisible(boolean val)
+		{
+			isVis = val;
+		}
+
+		@Override
+		public boolean getVisible()
+		{
+			return isVis;
+		}
+
+		@Override
+		public HiResDate getTime()
+		{
+			return new HiResDate(state.getTime().getTime());
+		}
+
+		@Override
+		public String getName()
+		{
+			return DebriefFormatDateTime.toString(state.getTime().getTime());
+		}
+
+		@Override
+		public Color getColor()
+		{
+			return state.getColor();
+		}
+
+		@Override
+		public boolean hasEditor()
+		{
+			return false;
+		}
+
+		@Override
+		public EditorType getInfo()
+		{
+			return null;
+		}
+
 	}
 
 }
