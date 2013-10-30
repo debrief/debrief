@@ -994,6 +994,7 @@ public class XYPlotView extends ViewPart
 					layers.addDataModifiedListener(_modifiedListener);
 					layers.addDataReformattedListener(_modifiedListener);
 					layers.addDataExtendedListener(_modifiedListener);
+					regenerateData();
 				}
 				else
 				{
