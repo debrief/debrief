@@ -2,7 +2,6 @@ package Debrief.Wrappers.Track;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
@@ -17,6 +16,7 @@ import MWC.GUI.FireExtended;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Properties.CardinalPointsPropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
@@ -506,31 +506,18 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	public void paintLabel(final CanvasType dest)
 	{
 		if (getVectorLabelVisible()) {
-			String s = getVectorLabel();
+			String textLabel = getVectorLabel();
 			if (first() instanceof FixWrapper && last() instanceof FixWrapper) {
 				FixWrapper first = (FixWrapper) first();
 				FixWrapper last = (FixWrapper) last();
 				Font f = first.getFont();
 				Color c = first.getColor();
-				Point startPoint = dest.toScreen(first.getLocation());
-				Point lastPoint = dest.toScreen(last.getLocation());
-				double width = startPoint.distance(lastPoint);
-				double stringWidth = dest.getStringWidth(f, s);
-				double distance = (width)/2;
-				final double direction = Math.toRadians(getCourse()-90);
-				if (width > stringWidth * 2)
-				{
-					int deltaX = (int) (distance * Math.cos(direction));
-					int deltaY = (int) (distance * Math.sin(direction));
-					dest.setColor(c);
-					dest.setFont(f);
-					float rotate = (float) (getCourse() - 90);
-					if (getCourse() > 180) {
-						rotate-=180;
-					}
-					dest.drawText(s, startPoint.x + deltaX, startPoint.y + deltaY,
-							rotate);
-				}
+				WorldLocation firstLoc = first.getLocation();
+				WorldLocation lastLoc = last.getLocation();
+				double course = getCourse();
+				
+				// ok, now plot it
+				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc, lastLoc, course);
 			}
 		}
 	}
