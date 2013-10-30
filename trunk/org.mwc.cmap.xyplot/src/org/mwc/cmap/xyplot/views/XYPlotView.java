@@ -600,8 +600,19 @@ public class XYPlotView extends ViewPart
 				// double-check our label is still in the right place
 				final double xVal = _thePlot.getRangeAxis().getUpperBound();
 				final double yVal = _thePlot.getDomainAxis().getLowerBound();
-				annot.setX(yVal);
-				annot.setY(xVal);
+				
+				boolean annotChanged = false;
+				if (annot.getX() != yVal)
+				{
+					annot.setX(yVal);
+					annotChanged = true;
+				}
+				if (annot.getY() != xVal)
+				{
+					annot.setY(xVal);
+					annotChanged = true;
+				}
+
 
 				// and write the text
 				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
@@ -611,12 +622,19 @@ public class XYPlotView extends ViewPart
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				final String dateVal = _df.format(newDate);
 				final String theMessage = " [" + dateVal + "," + numA + "]";
-				annot.setText(theMessage);
+				if (!theMessage.equals(annot.getText()))
+				{
+					annot.setText(theMessage);
+					annotChanged = true;
+				}
 
 				// aah, now we have to add and then remove the annotation in order
 				// for the new text value to be displayed. Watch and learn...
-				_thePlot.removeAnnotation(annot);
-				_thePlot.addAnnotation(annot);
+				if (annotChanged)
+				{
+					_thePlot.removeAnnotation(annot);
+					_thePlot.addAnnotation(annot);
+				}
 
 			}
 		});
