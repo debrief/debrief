@@ -517,7 +517,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 				double course = getCourse();
 				
 				// ok, now plot it
-				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc, lastLoc, course);
+				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc, lastLoc, course, 2.0);
 			}
 		}
 	}
