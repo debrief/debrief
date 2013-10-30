@@ -354,6 +354,7 @@ public class XYPlotView extends ViewPart
 			@Override
 			public void dataReformatted(final Layers theData, final Layer changedLayer)
 			{
+				regenerateData();
 			}
 		};
 
@@ -973,10 +974,12 @@ public class XYPlotView extends ViewPart
 				if (doListen)
 				{
 					layers.addDataModifiedListener(_modifiedListener);
+					layers.addDataReformattedListener(_modifiedListener);
 					layers.addDataExtendedListener(_modifiedListener);
 				}
 				else
 				{
+					layers.removeDataReformattedListener(_modifiedListener);
 					layers.removeDataExtendedListener(_modifiedListener);
 					layers.removeDataModifiedListener(_modifiedListener);
 				}
