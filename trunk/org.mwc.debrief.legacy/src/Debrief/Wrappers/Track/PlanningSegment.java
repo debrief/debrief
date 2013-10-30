@@ -514,10 +514,9 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 				Color c = first.getColor();
 				WorldLocation firstLoc = first.getLocation();
 				WorldLocation lastLoc = last.getLocation();
-				double course = getCourse();
 				
 				// ok, now plot it
-				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc, lastLoc, course, 2.0);
+				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc, lastLoc, 2.0);
 			}
 		}
 	}

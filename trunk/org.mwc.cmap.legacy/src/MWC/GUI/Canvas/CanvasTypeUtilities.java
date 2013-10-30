@@ -22,23 +22,25 @@ public class CanvasTypeUtilities
 	 * @param clippingThreshold how many times longer than the label the line has to be for it to be plotted
 	 */
 	public static void drawLabelOnLine(final CanvasType dest, String textLabel, Font font,
-			Color color, WorldLocation firstLoc, WorldLocation lastLoc, double course, double clippingThreshold)
+			Color color, WorldLocation firstLoc, WorldLocation lastLoc, double clippingThreshold)
 	{
 		Point startPoint = dest.toScreen(firstLoc);
 		Point lastPoint = dest.toScreen(lastLoc);
 		double width = startPoint.distance(lastPoint);
 		double stringWidth = dest.getStringWidth(font, textLabel);
 		double distance = (width)/2;
-		final double direction = Math.toRadians(course-90);
 		if (width > stringWidth * clippingThreshold)
 		{
+			// calculate the course 
+			double course = Math.toDegrees(lastLoc.subtract(firstLoc).getBearing());
+			System.out.println("course to plot is "  + (int)course);
+			final double direction = Math.toRadians(course-90);
+
+			// sort out the offset to use
 			int deltaX = (int) (distance * Math.cos(direction));
 			int deltaY = (int) (distance * Math.sin(direction));
 			dest.setColor(color);
 			dest.setFont(font);
-			
-			// calculate the course 
-			course = Math.toDegrees(firstLoc.subtract(lastLoc).getBearing());
 			
 			// put the course in the correct domain
 			if(course < 0)
