@@ -30,10 +30,12 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -225,6 +227,26 @@ public class XYPlotView extends ViewPart
 	 * somebody to listen to the time changes
 	 */
 	private PropertyChangeListener _timeListener;
+	
+	private IPartListener editorListener = new IPartListener()
+	{
+		@Override
+		public void partOpened(IWorkbenchPart part) {}
+		@Override
+		public void partDeactivated(IWorkbenchPart part) {}
+		@Override
+		public void partBroughtToTop(IWorkbenchPart part) {}
+		@Override
+		public void partActivated(IWorkbenchPart part) {}
+		
+		@Override
+		public void partClosed(IWorkbenchPart part)
+		{
+			if (part == editor) {
+				getSite().getPage().hideView(XYPlotView.this);
+			}
+		}
+	};
 
 	/**
 	 * helper - to let the user edit us
@@ -254,6 +276,8 @@ public class XYPlotView extends ViewPart
 	 * 
 	 */
 	protected DataListener _modifiedListener;
+
+	private IEditorPart editor;
 
 	/**
 	 * The constructor.
@@ -358,6 +382,7 @@ public class XYPlotView extends ViewPart
 			}
 		};
 
+		getSite().getWorkbenchWindow().getPartService().addPartListener(editorListener);
 	}
 
 	/**
@@ -656,7 +681,7 @@ public class XYPlotView extends ViewPart
 		final IWorkbench wb = PlatformUI.getWorkbench();
 		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		final IWorkbenchPage page = win.getActivePage();
-		IEditorPart editor = null;
+		editor = null;
 
 		// the page might not yet be open...
 		if (page != null)
@@ -1013,6 +1038,10 @@ public class XYPlotView extends ViewPart
 	{
 		super.dispose();
 		
+		if (editorListener != null) {
+			getSite().getWorkbenchWindow().getPartService().removePartListener(editorListener);
+			editorListener = null;
+		}
 		// closing, ditch the listenesr
 		ditchListeners();
 	}
