@@ -10,7 +10,7 @@
             class="org.mwc.cmap.xyplot.views.XYPlotView"
             icon="icons/document_chart.png"
             id="org.mwc.cmap.xyplot.views.XYPlotView"
-            name="XY Plot">
+            name="XY Plot" restorable="false">
       </view>
    </extension>
 
