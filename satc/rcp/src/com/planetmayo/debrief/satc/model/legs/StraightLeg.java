@@ -1,7 +1,9 @@
 package com.planetmayo.debrief.satc.model.legs;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Locale;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -15,7 +17,7 @@ import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 public class StraightLeg extends CoreLeg
 {
-
+	static int u = 0;		
 	/**
 	 * create a straight leg.
 	 * 
@@ -24,9 +26,30 @@ public class StraightLeg extends CoreLeg
 	 * @param states
 	 *          the set of bounded states that comprise the leg
 	 */
-	public StraightLeg(String name, List<BoundedState> states)
+	public StraightLeg(String name)
 	{
-		super(name, states);
+		super(name);
+	}
+	
+	public void saveStates() 
+	{
+		try 
+		{
+			PrintWriter writer = new PrintWriter("d:/Java/planetmayo/culling/real_" + (++u) + ".txt");
+			for (int i = 0; i < _states.size(); i++)
+			{
+				int num = i + 1;
+				for (Coordinate c : _states.get(i).getLocation().getGeometry().getCoordinates())
+				{
+					writer.printf(Locale.US, "%d A %.7f %.7f\n", num, c.x, c.y);
+				}				
+			}
+			writer.close();
+		} 
+		catch (IOException ex)
+		{
+			
+		}		
 	}
 	
 	void decideScaledPolygons(StraightRoute theRoute)

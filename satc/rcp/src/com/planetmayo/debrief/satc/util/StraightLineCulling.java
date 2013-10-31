@@ -18,6 +18,8 @@ public class StraightLineCulling
 	private static final double EPS = 0.000001;
 	
 	private List<LocationRange> ranges;
+	private List<Geometry> filtered;
+	
 	private Coordinate[] line1;
 	private Coordinate[] line2;
 	
@@ -38,6 +40,7 @@ public class StraightLineCulling
 			return;
 		}
 		AffineTransformation transformation = transformWorldToMiddleLine();
+		filterRanges();		
 		if (impossibleStartEndArea(transformation)) 
 		{
 			return;
@@ -63,6 +66,11 @@ public class StraightLineCulling
 		constrainedEnd = getEndLocation().intersection(intersectPolygon);
 	}
 	
+	public List<Geometry> getFiltered()
+	{
+		return filtered;
+	}
+
 	public Coordinate[] getFirstCrissCrossLine()
 	{
 		return line1;
@@ -88,6 +96,26 @@ public class StraightLineCulling
 		return constrainedStart != null && constrainedEnd != null;
 	}
 
+	private void filterRanges() 
+	{
+		filtered = new ArrayList<Geometry>();
+		Geometry previous = ranges.get(0).getGeometry();
+		filtered.add(previous);
+		for (LocationRange range : ranges) 
+		{
+			if (! range.getGeometry().intersects(previous)) 
+			{
+				previous = range.getGeometry();
+				filtered.add(previous);
+			}			
+		}
+		if (! filtered.contains(ranges.get(ranges.size() - 1).getGeometry())) 
+		{
+			filtered.remove(filtered.size() - 1);
+			filtered.add(ranges.get(ranges.size() - 1).getGeometry());
+		}
+	}
+	
 	private AffineTransformation transformWorldToMiddleLine() 
 	{
 		AffineTransformation transformation = new AffineTransformation();
@@ -195,17 +223,17 @@ public class StraightLineCulling
 
 	private Geometry getLocation(int num)
 	{
-		return ranges.get(num).getGeometry();
+		return filtered.get(num);
 	}
 	
 	private Geometry getStartLocation() 
 	{
-		return ranges.get(0).getGeometry();
+		return filtered.get(0);
 	}
 	
 	private Geometry getEndLocation() 
 	{
-		return ranges.get(ranges.size() - 1).getGeometry();
+		return filtered.get(filtered.size() - 1);
 	}
 	
 	class LineSolver 
@@ -256,7 +284,7 @@ public class StraightLineCulling
 		{
 			boolean stepLeft = false;
 			leftBoundary = 0; 
-			rightBoundary = ranges.size() - 1;
+			rightBoundary = filtered.size() - 1;
 			left = leftBoundary + 1;
 			right = rightBoundary - 1;
 			while (!(left == rightBoundary && right == leftBoundary) && leftBoundary < rightBoundary) 
@@ -391,10 +419,10 @@ public class StraightLineCulling
 			}
 			Coordinate temp = new Coordinate();
 			double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;		
-			for (LocationRange range : ranges)
+			for (Geometry geometry : filtered)
 			{
 				double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE; 
-				for (Coordinate c : range.getGeometry().getCoordinates())
+				for (Coordinate c : geometry.getCoordinates())
 				{
 					line.getWorld().transform(c, temp);
 					minX = Math.min(minX, temp.x);

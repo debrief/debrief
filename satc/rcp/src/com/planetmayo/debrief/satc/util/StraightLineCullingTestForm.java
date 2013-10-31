@@ -25,6 +25,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -92,11 +93,9 @@ public class StraightLineCullingTestForm extends JFrame
 	
 	private void loadFile(File file) throws IOException
 	{
-		collections.removeAllSeries();
-		Scanner scanner = new Scanner(file);
+  	Scanner scanner = new Scanner(file);
 		scanner.useLocale(Locale.US);		
 		List<List<Coordinate>> coordinates = new ArrayList<List<Coordinate>>();
-		List<XYSeries> series = new ArrayList<XYSeries>();
 		while (true)
 		{
 			try
@@ -112,11 +111,9 @@ public class StraightLineCullingTestForm extends JFrame
 					while (coordinates.size() <= num)
 					{
 						coordinates.add(new ArrayList<Coordinate>());
-						series.add(new XYSeries("polygon " + num, false));
 					}
 					Coordinate coordinate = new Coordinate(x, y);
 					coordinates.get(num).add(coordinate);
-					series.get(num).add(x, y);
 				}
 			}
 			catch (NoSuchElementException ex)
@@ -128,14 +125,17 @@ public class StraightLineCullingTestForm extends JFrame
 		{
 			Coordinate c = coordinates.get(i).get(0);
 			coordinates.get(i).add(c);
-			series.get(i).add(c.x, c.y);
-			collections.addSeries(series.get(i));
 		}
 		culling(coordinates);
 	}
 	
 	private void culling(List<List<Coordinate>> polygons)
 	{
+		DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
+		renderer.setBaseShapesVisible(false);
+		((XYPlot) chart.getPlot()).setRenderer(renderer);
+		collections.removeAllSeries();
+		
 		List<LocationRange> ranges = new ArrayList<LocationRange>(polygons.size());
 		GeometryFactory factory = new GeometryFactory();
 		for (List<Coordinate> coordinates : polygons)
@@ -146,6 +146,16 @@ public class StraightLineCullingTestForm extends JFrame
 		StraightLineCulling culling = new StraightLineCulling(ranges);
 		culling.process();
 		
+		int i = 0;
+		for (Geometry geometry : culling.getFiltered())
+		{
+			XYSeries series = new XYSeries("polygon " + (++i), false);
+			for (Coordinate c : geometry.getCoordinates())
+			{
+				series.add(c.x, c.y);
+			}
+			collections.addSeries(series);
+		}
 		if (culling.hasResults())
 		{
 			drawResultLineAndPolygon(1, culling.getFirstCrissCrossLine(), culling.getConstrainedStart());

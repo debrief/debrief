@@ -1,8 +1,5 @@
 package com.planetmayo.debrief.satc.model.legs;
 
-import java.util.List;
-
-import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.vividsolutions.jts.geom.Point;
 
@@ -17,9 +14,9 @@ public class AlteringLeg extends CoreLeg
 	 * @param states
 	 *          the set of bounded states that comprise the leg
 	 */
-	public AlteringLeg(String name, List<BoundedState> states)
+	public AlteringLeg(String name)
 	{
-		super(name, states);
+		super(name);
 	}
 
 	/**

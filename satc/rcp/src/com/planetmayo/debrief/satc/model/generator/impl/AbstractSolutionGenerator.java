@@ -209,8 +209,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 					}
 
 					// ok, now go for the straight leg
-					currentLeg = new StraightLeg(thisLegName,
-							new ArrayList<BoundedState>());
+					currentLeg = new StraightLeg(thisLegName);
 					theLegs.add(currentLeg);
 				}
 			}
@@ -232,7 +231,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 				if (currentLeg == null)
 				{
 					String thisName = "Alteration " + counter++;
-					currentLeg = new AlteringLeg(thisName, new ArrayList<BoundedState>());
+					currentLeg = new AlteringLeg(thisName);
 					theLegs.add(currentLeg);
 
 					// but, we need to start this altering leg with the previous state, if
@@ -251,6 +250,14 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 
 			// and remember it
 			previousState = thisS;
+		}
+		
+		for (CoreLeg leg : theLegs) 
+		{
+			if (leg.getType() == LegType.STRAIGHT)
+			{
+				((StraightLeg) leg).saveStates();
+			}
 		}
 		return theLegs;
 	}

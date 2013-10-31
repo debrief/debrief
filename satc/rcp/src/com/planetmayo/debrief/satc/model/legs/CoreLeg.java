@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.legs;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,9 +48,9 @@ public abstract class CoreLeg
 	
 	protected double currentGridPrecision;
 
-	protected CoreLeg(String name, List<BoundedState> states)
+	protected CoreLeg(String name)
 	{
-		_states = states;
+		_states = new ArrayList<BoundedState>();
 		_name = name;
 	}
 
