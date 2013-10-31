@@ -40,7 +40,7 @@ public class CrossSectionViewer
 		// TODO Auto-generated method stub
 	}
 	
-	public void drawDiagram(final Layers theLayers, LineShape line)
+	public void drawDiagram(final Layers theLayers, final LineShape line)
 	{
 		if (theLayers == null || line == null)
 			return;
