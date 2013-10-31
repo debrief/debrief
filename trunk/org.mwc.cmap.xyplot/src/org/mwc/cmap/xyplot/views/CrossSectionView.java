@@ -125,6 +125,7 @@ public class CrossSectionView extends ViewPart
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
+						_line = null;
 						processNewLayers(part);
 					}
 				});
@@ -134,6 +135,7 @@ public class CrossSectionView extends ViewPart
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
+						_line = null;
 						processNewLayers(part);
 					}
 				});
@@ -146,6 +148,7 @@ public class CrossSectionView extends ViewPart
 						// is this our set of layers?
 						if (part == _myLayers)
 						{
+							_line = null;
 							// stop listening to this layer
 							clearLayerListener();
 						}					
@@ -322,6 +325,7 @@ public class CrossSectionView extends ViewPart
 		super.dispose();
 		// make sure we close the listeners
 		clearLayerListener();
+		_line = null;
 		if (_timeProvider != null)
 		{
 			_timeProvider.removeListener(_temporalListener, 
