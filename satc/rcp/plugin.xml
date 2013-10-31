@@ -10,28 +10,28 @@
       </category>
       <view
             name="Maintain Contributions"
-            icon="icons/sample.gif"
+            icon="icons/maintain.png"
             category="com.planetmayo.debrief.satc"
             class="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView"
             id="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView">
       </view>
       <view
             name="Spatial View"
-            icon="icons/sample.gif"
+            icon="icons/map.png"
             category="com.planetmayo.debrief.satc"
             class="com.planetmayo.debrief.satc_rcp.views.SpatialView"
             id="com.planetmayo.debrief.satc_rcp.views.SpatialView">
       </view>
       <view
             name="Track States"
-            icon="icons/sample.gif"
+            icon="icons/list.png"
             category="com.planetmayo.debrief.satc"
             class="com.planetmayo.debrief.satc_rcp.views.TrackStatesView"
             id="com.planetmayo.debrief.satc_rcp.views.TrackStatesView">
       </view>
       <view
             name="Test Harness"
-            icon="icons/sample.gif"
+            icon="icons/harness.png"
             category="com.planetmayo.debrief.satc"
             class="com.planetmayo.debrief.satc_rcp.views.TestHarnessView"
             id="com.planetmayo.debrief.satc_rcp.views.TestHarnessView">

@@ -4,20 +4,35 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
 public class SATC_Perspective implements IPerspectiveFactory {
+	private static final String HARNESS_VIEW = "com.planetmayo.debrief.satc_rcp.views.TestHarnessView";
+	private static final String MAINTAIN_VIEW = "com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView";
+	private static final String STATES_VIEW = "com.planetmayo.debrief.satc_rcp.views.TrackStatesView";
+	private static final String SPATIAL_VIEW = "com.planetmayo.debrief.satc_rcp.views.SpatialView";
+
 	public void createInitialLayout(IPageLayout layout) {
+		// keep the editor open - once integrated it will contain the plot
+		layout.setEditorAreaVisible(true);
+		
 		// Get the editor area.
 		String editorArea = layout.getEditorArea();
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		layout.addView("com.planetmayo.debrief.satc_rcp.views.TestHarnessView", IPageLayout.LEFT, 0.4f, editorArea);
-		layout.addView("com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView", IPageLayout.BOTTOM, 0.3f, "com.planetmayo.debrief.satc_rcp.views.TestHarnessView");
+		layout.addView(HARNESS_VIEW, IPageLayout.LEFT, 0.4f, editorArea);
+		layout.addView(MAINTAIN_VIEW, IPageLayout.BOTTOM, 0.4f, HARNESS_VIEW);
 
 		// lower spatial panel
-		layout.addView("com.planetmayo.debrief.satc_rcp.views.SpatialView", IPageLayout.BOTTOM, 0.3f, editorArea);
+		layout.addView(SPATIAL_VIEW, IPageLayout.RIGHT, 0.3f, editorArea);
 
 		// upper states panel
-		layout.addView("com.planetmayo.debrief.satc_rcp.views.TrackStatesView", IPageLayout.RIGHT, 0.4f, editorArea);
+		layout.addView(STATES_VIEW, IPageLayout.TOP, 0.4f, SPATIAL_VIEW);
 		
-		layout.setEditorAreaVisible(false);
+		// make all of teh views closeable
+		layout.getViewLayout(SPATIAL_VIEW).setCloseable(true);
+		layout.getViewLayout(MAINTAIN_VIEW).setCloseable(true);
+		layout.getViewLayout(HARNESS_VIEW).setCloseable(true);
+		layout.getViewLayout(STATES_VIEW).setCloseable(true);
+
+		// ok - try to show the Debrief shotrcuts (will fail in pure SATC)
+		layout.addActionSet("org.mwc.debrief.core");		
 	}
 }

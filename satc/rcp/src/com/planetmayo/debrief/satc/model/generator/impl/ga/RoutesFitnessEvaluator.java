@@ -65,6 +65,7 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<Point>>
 			{
 				error += contribution.calculateErrorScoreFor(route);
 			}
+			route.setScore(error);
 		}
 		return error;
 	}

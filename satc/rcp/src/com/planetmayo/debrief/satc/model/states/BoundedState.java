@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import java.awt.Color;
 import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -19,6 +20,11 @@ public class BoundedState implements Comparable<BoundedState>
 	 * 
 	 */
 	private String _memberOf;
+
+	/** the (optional) default color for this state
+	 * 
+	 */
+	private Color _color;
 
 	public BoundedState(Date time)
 	{
@@ -163,6 +169,16 @@ public class BoundedState implements Comparable<BoundedState>
 	public void setCourse(CourseRange newRange)
 	{
 		_course = newRange;
+	}
+
+	public void setColor(Color color)
+	{
+		_color = color;
+	}
+	
+	public Color getColor()
+	{
+		return _color;
 	}
 
 }

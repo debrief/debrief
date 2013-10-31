@@ -6,8 +6,8 @@ public class SAParameters extends ModelObject
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static final String START_TEMPRATURE = "startTemprature";
-	public static final String END_TEMPRATURE = "endTemprature";
+	public static final String START_TEMPRATURE = "startTemperature";
+	public static final String END_TEMPRATURE = "endTemperature";
 	public static final String PARALLEL_THREADS = "parallelThreads";
 	public static final String ITERATIONS_IN_THREAD = "iterationsInThread";
 	public static final String START_ON_CENTER = "startOnCenter";
@@ -16,12 +16,12 @@ public class SAParameters extends ModelObject
 	/**
 	 * Initial temperature on each iteration
 	 */
-	private volatile double startTemprature;
+	private volatile double startTemperature;
 	
 	/**
 	 * When we should stop one iteration of our algorithm
 	 */
-	private volatile double endTemprature;
+	private volatile double endTemperature;
 	
 	/**
 	 * How many parallel threads we will use for computations
@@ -29,7 +29,7 @@ public class SAParameters extends ModelObject
 	private volatile int parallelThreads;
 	
 	/**
-	 * How many separate iterations should we do in each threads
+	 * How many times should we repeat each route calculation in each thread
 	 */
 	private volatile int iterationsInThread;
 	
@@ -44,30 +44,30 @@ public class SAParameters extends ModelObject
 	 */
 	private volatile boolean joinedIterations;
 	
-	private SAFunctions saFuntions;
+	private SAFunctions saFunctions;
 	
-	public double getStartTemprature()
+	public double getStartTemperature()
 	{
-		return startTemprature;
+		return startTemperature;
 	}
 	
-	public void setStartTemprature(double startTemprature)
+	public void setStartTemperature(double startTemperature)
 	{
-		double old = this.startTemprature;
-		this.startTemprature = startTemprature;
-		firePropertyChange(START_TEMPRATURE, old, startTemprature);
+		double old = this.startTemperature;
+		this.startTemperature = startTemperature;
+		firePropertyChange(START_TEMPRATURE, old, startTemperature);
 	}
 	
-	public double getEndTemprature()
+	public double getEndTemperature()
 	{
-		return endTemprature;
+		return endTemperature;
 	}
 	
-	public void setEndTemprature(double endTemprature)
+	public void setEndTemperature(double endTemperature)
 	{
-		double old = this.endTemprature;
-		this.endTemprature = endTemprature;
-		firePropertyChange(END_TEMPRATURE, old, endTemprature);
+		double old = this.endTemperature;
+		this.endTemperature = endTemperature;
+		firePropertyChange(END_TEMPRATURE, old, endTemperature);
 	}
 	
 	public int getParallelThreads()
@@ -118,14 +118,14 @@ public class SAParameters extends ModelObject
 		firePropertyChange(JOINED_ITERATIONS, old, joinedIterations);
 	}
 
-	public SAFunctions getSaFuntions()
+	public SAFunctions getSaFunctions()
 	{
-		return saFuntions;
+		return saFunctions;
 	}
 
-	public void setSaFuntions(SAFunctions saFuntions)
+	public void setSaFunctions(SAFunctions saFunctions)
 	{
-		this.saFuntions = saFuntions;
+		this.saFunctions = saFunctions;
 	}
 }
 

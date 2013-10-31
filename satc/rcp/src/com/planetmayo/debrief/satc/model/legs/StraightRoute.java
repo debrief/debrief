@@ -121,7 +121,8 @@ public class StraightRoute extends CoreRoute
 		while (iter.hasNext())
 		{
 			// get the next date
-			Date thisDate = iter.next().getTime();
+			BoundedState thisBoundedState = iter.next();
+			Date thisDate = thisBoundedState.getTime();
 
 			// is this after our start time?
 			if (!thisDate.before(_startTime))
@@ -139,6 +140,11 @@ public class StraightRoute extends CoreRoute
 
 					// create the state object
 					State newS = new State(thisDate, p, _course, _speed);
+					
+					// set the color, if we have them
+					if(thisBoundedState.getColor() != null)
+						newS.setColor(thisBoundedState.getColor());
+					
 
 					if (_myStates == null)
 						_myStates = new ArrayList<State>();

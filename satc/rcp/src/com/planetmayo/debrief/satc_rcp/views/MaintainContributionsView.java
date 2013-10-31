@@ -103,6 +103,7 @@ public class MaintainContributionsView extends ViewPart
 	/** UI fields */
 	private Composite main;
 	private Button generateSolutions;
+	private Button recalculate;
 	private Button cancelGeneration;
 	private ComboViewer precisionsCombo;
 	private ComboViewer vehiclesCombo;
@@ -262,10 +263,28 @@ public class MaintainContributionsView extends ViewPart
 		gridData.grabExcessHorizontalSpace = true;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		GridLayout layout = new GridLayout(3, false);
+		GridLayout layout = new GridLayout(4, false);
 		group.setLayoutData(gridData);
 		group.setLayout(layout);
 		group.setText("Preferences");
+
+		recalculate = new Button(group, SWT.DEFAULT);
+		recalculate.setText("Recalculate");
+		recalculate.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (activeSolver != null)
+				{
+					activeSolver.getBoundsManager().restart();
+					activeSolver.run();
+				}
+			}
+		});
+		recalculate.setLayoutData(new GridData(
+				GridData.HORIZONTAL_ALIGN_CENTER | GridData.VERTICAL_ALIGN_CENTER));
 
 		generateSolutions = new Button(group, SWT.CHECK);
 		generateSolutions.setText("Auto generate solutions");
@@ -282,8 +301,9 @@ public class MaintainContributionsView extends ViewPart
 			}
 		});
 		generateSolutions.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+				GridData.HORIZONTAL_ALIGN_BEGINNING	| GridData.VERTICAL_ALIGN_CENTER));
 
+		
 		cancelGeneration = new Button(group, SWT.PUSH);
 		cancelGeneration.setText("Cancel");
 		cancelGeneration.setVisible(false);
@@ -546,6 +566,7 @@ public class MaintainContributionsView extends ViewPart
 		{
 			precisionsCombo.getCombo().setEnabled(hasSolver);
 			generateSolutions.setEnabled(hasSolver);
+			recalculate.setEnabled(hasSolver);
 			vehiclesCombo.getCombo().setEnabled(hasSolver);
 			addContributionButton.setEnabled(hasSolver);
 		}

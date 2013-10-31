@@ -42,13 +42,13 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 	{
 		super(contributions, jobsManager, problemSpace);
 		parameters = new SAParameters();
-		parameters.setStartTemprature(2.0);
-		parameters.setEndTemprature(0.03);
+		parameters.setStartTemperature(2.0);
+		parameters.setEndTemperature(0.03);
 		parameters.setParallelThreads(4);
 		parameters.setIterationsInThread(2);
 		parameters.setJoinedIterations(true);
 		parameters.setStartOnCenter(true);
-		parameters.setSaFuntions(new SAFunctions()
+		parameters.setSaFunctions(new SAFunctions()
 		{
 			@Override
 			public double neighborDistance(SAParameters parameters, Random rnd, double T)
@@ -60,7 +60,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 			@Override
 			public double changeTemprature(SAParameters parameters, double T, int step)
 			{
-				return parameters.getStartTemprature() * Math.exp(-0.85 * Math.pow(step, 0.25));
+				return parameters.getStartTemperature() * Math.exp(-0.85 * Math.pow(step, 0.25));
 			}
 
 			@Override

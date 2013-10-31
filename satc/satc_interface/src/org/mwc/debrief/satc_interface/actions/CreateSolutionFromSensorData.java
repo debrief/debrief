@@ -243,6 +243,11 @@ public class CreateSolutionFromSensorData implements
 					theRange = scw.getRange().getValueIn(WorldDistance.DEGS);
 
 				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
+				
+				// give it the respective color
+				thisM.setColor(scw.getColor());
+				
+				// ok, store it.
 				bmc.addThis(thisM);
 			}
 			return bmc;
@@ -419,7 +424,7 @@ public class CreateSolutionFromSensorData implements
 				final ISolver newSolution = solvMgr.createSolver(solutionName);
 				
 				_targetSolution = new SATC_Solution(newSolution);
-				newSolution.setAutoGenerateSolutions(true);
+				newSolution.setAutoGenerateSolutions(false);
 				_theLayers.addThisLayer(_targetSolution);
 
 				// ok, give it the default contributions

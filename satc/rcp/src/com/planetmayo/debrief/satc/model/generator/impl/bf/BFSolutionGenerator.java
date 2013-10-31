@@ -258,7 +258,7 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 		List<LegWithRoutes> result = new ArrayList<LegWithRoutes>(theLegs.size());
 		for (CoreLeg leg : theLegs)
 		{
-			leg.generatePoints(_myPrecision.toMeters());
+			leg.generatePoints(_myPrecision.getNumPoints());
 			result.add(new LegWithRoutes(leg));
 		}
 		return result;

@@ -119,7 +119,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					legs = new ArrayList<LegOperations>();
 					for (CoreLeg leg : rawLegs)
 					{
-						leg.generatePoints(_myPrecision.toMeters());
+						leg.generatePoints(_myPrecision.getNumPoints());
 						legs.add(new LegOperations(leg, random));
 					}					
 					return null;
@@ -352,7 +352,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					{
 						regeneratePopulation = true;
 						CoreLeg rawLeg = leg.getLeg();
-						rawLeg.generatePoints(rawLeg.getCurrentGridPrecision() / 2);
+						rawLeg.generatePoints(rawLeg.getCurrentGridPrecision());
 						it.set(new LegOperations(rawLeg, rng));
 					}
 				}

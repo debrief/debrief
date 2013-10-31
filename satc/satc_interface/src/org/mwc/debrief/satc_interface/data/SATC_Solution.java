@@ -1,6 +1,7 @@
 package org.mwc.debrief.satc_interface.data;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
@@ -8,30 +9,43 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedSet;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.jfree.util.ReadOnlyIterator;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.Algorithms.Conversions;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.SupportsPropertyListeners;
+import MWC.GUI.Canvas.CanvasTypeUtilities;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
@@ -42,9 +56,11 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
+import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -54,7 +70,7 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
-		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers
+		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -81,6 +97,8 @@ public class SATC_Solution extends BaseLayer implements
 				{
 						prop("ShowLocationBounds", "whether to display location bounds",
 								FORMAT),
+						prop("OnlyPlotLegEnds",
+								"whether to only plot location bounds at leg ends", FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
 						prop("Name", "the name for this solution", EditorType.FORMAT),
 						prop("Color", "the color to display this solution",
@@ -117,9 +135,16 @@ public class SATC_Solution extends BaseLayer implements
 
 	private Color _myColor = Color.green;
 
+	/**
+	 * the plain font we use as a base
+	 */
+	static final Font LEG_NAME_FONT = new Font("Sans Serif", Font.BOLD, 12);
+
 	private Layers _myLayers = null;
 
 	private boolean _showLocationBounds = false;
+
+	private boolean _onlyPlotLegEnds = false;
 
 	private boolean _showSolutions = true;
 
@@ -140,6 +165,8 @@ public class SATC_Solution extends BaseLayer implements
 	private IContributionsChangedListener _contributionsListener;
 
 	private IConstrainSpaceListener _constrainListener;
+
+	private PlainSymbol mySymbol;
 
 	public SATC_Solution(ISolver newSolution)
 	{
@@ -180,68 +207,77 @@ public class SATC_Solution extends BaseLayer implements
 		}
 		else
 		{
-			TrackGenerator genny = new TrackGenerator("T-" + this.getName());
-			walkRoute(_newRoutes, genny);
-			
-			// we should now have a track
-			TrackWrapper newT = genny.getTrack();
-			_myLayers.addThisLayer(newT);
+
+			for (int i = 0; i < _newRoutes.length; i++)
+			{
+				CompositeRoute thisR = _newRoutes[i];
+
+				// the output track
+				TrackWrapper newT = new TrackWrapper();
+				newT.setName(getName() + "_" + i);
+
+				Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+				while (legs.hasNext())
+				{
+					CoreRoute thisLeg = (CoreRoute) legs.next();
+					if (thisLeg instanceof StraightRoute)
+					{
+						StraightRoute straight = (StraightRoute) thisLeg;
+
+						// ok - produce a TMA leg
+						double courseDegs = Math.toDegrees(straight.getCourse());
+						WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
+								WorldSpeed.M_sec);
+						WorldLocation origin = conversions.toLocation(straight
+								.getStartPoint().getCoordinate());
+						HiResDate startTime = new HiResDate(straight.getStartTime()
+								.getTime());
+						HiResDate endTime = new HiResDate(straight.getEndTime().getTime());
+
+						AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs, speed,
+								origin, startTime, endTime);
+						abs.setName(straight.getName());
+						newT.add(abs);
+						abs.setName(straight.getName());
+					}
+					else if (thisLeg instanceof AlteringRoute)
+					{
+						AlteringRoute altering = (AlteringRoute) thisLeg;
+
+						TrackSegment segment = new TrackSegment();
+						segment.setName(altering.getName());
+
+						ArrayList<State> states = altering.getStates();
+						for (State thisS : states)
+						{
+							double theCourse = thisS.getCourse();
+							WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
+									WorldSpeed.M_sec);
+							WorldLocation theLocation = conversions.toLocation(thisS
+									.getLocation().getCoordinate());
+							HiResDate theTime = new HiResDate(thisS.getTime().getTime());
+
+							Fix theFix = new Fix(theTime, theLocation, theCourse,
+									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
+							FixWrapper newFix = new FixWrapper(theFix);
+							segment.addFix(newFix);
+						}
+
+						// make it dotted, that's our way of doing it.
+						segment.setLineStyle(CanvasType.DOTTED);
+
+						newT.add(segment);
+					}
+					else
+						DebriefPlugin.logError(Status.ERROR,
+								"Unexpected type of route encountered:" + thisLeg, null);
+				}
+
+				// and store it
+				_myLayers.addThisLayer(newT);
+
+			}
 		}
-	}
-
-	private static class TrackGenerator implements RouteStepper
-	{
-
-		private TrackWrapper _myTrack;
-
-		public TrackGenerator(String name)
-		{
-			_myTrack = new TrackWrapper();
-			_myTrack.setName(name);
-		}
-
-		@Override
-		public void step(State thisState)
-		{
-			// ok, convert the state to a fix
-			Fix theF = produceFix(thisState);
-			
-			// and wrap it
-			FixWrapper thisF = new FixWrapper(theF);
-			
-			// put the DTG into the label
-			thisF.resetName();
-			
-			// and store it.
-			_myTrack.addFix(thisF);
-		}
-
-		private Fix produceFix(State thisState)
-		{
-			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
-			// convert to screen
-			WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
-			double theCourse = thisState.getCourse();
-			double theSpeedKts = Conversions.Mps2Kts(thisState.getSpeed());
-			double theSpeedYps = Conversions.Kts2Yps(theSpeedKts);
-			HiResDate theTime = new HiResDate(thisState.getTime().getTime());
-
-			Fix theF = new Fix(theTime, wLoc, theCourse, theSpeedYps);
-			return theF;
-		}
-
-		public TrackWrapper getTrack()
-		{
-			return _myTrack;
-		}
-
-		@Override
-		public void reset()
-		{
-			// TODO Auto-generated method stub
-
-		}
-
 	}
 
 	/**
@@ -284,21 +320,27 @@ public class SATC_Solution extends BaseLayer implements
 		return _showLocationBounds;
 	}
 
+	public boolean getOnlyPlotLegEnds()
+	{
+		return _onlyPlotLegEnds;
+	}
+
+	public void setOnlyPlotLegEnds(boolean onlyPlotLegEnds)
+	{
+		this._onlyPlotLegEnds = onlyPlotLegEnds;
+	}
+
 	public ISolver getSolver()
 	{
 		return _mySolver;
 	}
-	
-	
-	
 
 	@Override
 	protected void finalize() throws Throwable
 	{
 		super.finalize();
-		
-		_mySolver.getSolutionGenerator().removeReadyListener(
-				_readyListener);
+
+		_mySolver.getSolutionGenerator().removeReadyListener(_readyListener);
 		_mySolver.getContributions().removeContributionsChangedListener(
 				_contributionsListener);
 		_mySolver.getBoundsManager().removeConstrainSpaceListener(
@@ -306,7 +348,6 @@ public class SATC_Solution extends BaseLayer implements
 		_myLayers = null;
 		_mySolver = null;
 
-		
 	}
 
 	@Override
@@ -332,9 +373,23 @@ public class SATC_Solution extends BaseLayer implements
 		return _showSolutions;
 	}
 
+	@Override
+	public void removeElement(Editable p)
+	{
+		// ditch it from the parent
+		super.removeElement(p);
+
+		// get the ocntribution itself
+		ContributionWrapper cw = (ContributionWrapper) p;
+		BaseContribution comp = cw.getContribution();
+
+		// also remove it from the manager component
+		_mySolver.getContributions().removeContribution(comp);
+	}
+
 	private void listenToSolver(ISolver solver)
 	{
-		 _readyListener = new IGenerateSolutionsListener()
+		_readyListener = new IGenerateSolutionsListener()
 		{
 
 			@Override
@@ -346,6 +401,8 @@ public class SATC_Solution extends BaseLayer implements
 			public void solutionsReady(CompositeRoute[] routes)
 			{
 				_newRoutes = routes;
+
+				// tell the layer manager that we've changed
 
 				// hey, trigger repaint
 				fireRepaint();
@@ -359,7 +416,7 @@ public class SATC_Solution extends BaseLayer implements
 			}
 		};
 
-		 _contributionsListener = new IContributionsChangedListener()
+		_contributionsListener = new IContributionsChangedListener()
 		{
 
 			public void fireExtended()
@@ -411,7 +468,7 @@ public class SATC_Solution extends BaseLayer implements
 			}
 		};
 
-		 _constrainListener = new IConstrainSpaceListener()
+		_constrainListener = new IConstrainSpaceListener()
 		{
 			@Override
 			public void error(IBoundsManager boundsManager,
@@ -441,27 +498,26 @@ public class SATC_Solution extends BaseLayer implements
 			{
 			}
 		};
-		
-		solver.getSolutionGenerator().addReadyListener(
-				_readyListener);
+
+		solver.getSolutionGenerator().addReadyListener(_readyListener);
 		solver.getContributions().addContributionsChangedListener(
 				_contributionsListener);
-		solver.getBoundsManager().addConstrainSpaceListener(
-				_constrainListener);
+		solver.getBoundsManager().addConstrainSpaceListener(_constrainListener);
 	}
 
 	@Override
 	public void paint(CanvasType dest)
 	{
-		dest.setColor(_myColor);
 		if (getVisible())
 		{
+			dest.setColor(_myColor);
 			if (_lastStates != null)
 			{
 				if (_showLocationBounds)
 					paintThese(dest, _lastStates);
 			}
 
+			dest.setColor(_myColor);
 			if (_newRoutes != null)
 			{
 				paintThese(dest, _newRoutes);
@@ -471,27 +527,65 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void paintThese(CanvasType dest, Collection<BoundedState> states)
 	{
+		Color newCol = _myColor.darker();
+		dest.setColor(newCol);
+
+		// keep track of the leg name of the previous leg - we
+		// use it to track which leg we're in.
+		String lastName = null;
+
+		// work through the location bounds
 		for (Iterator<BoundedState> iterator = states.iterator(); iterator
 				.hasNext();)
 		{
 			BoundedState thisS = iterator.next();
-			if (thisS.getLocation() != null)
+
+			// do some fancy tests for if users only want the
+			// states that appear at leg ends
+			boolean isLastOne = !iterator.hasNext();
+			boolean isDifferentLeg = thisS.getMemberOf() != lastName;
+			boolean isLegEnd = isLastOne || isDifferentLeg;
+
+			boolean plotThisOne = !_onlyPlotLegEnds // users want all of them
+					|| (_onlyPlotLegEnds && isLegEnd); // users only want
+			// leg ends, and this is one
+
+			if (plotThisOne && thisS.getLocation() != null)
 			{
+
+				lastName = thisS.getMemberOf();
+
 				LocationRange theLoc = thisS.getLocation();
 				Coordinate[] pts = theLoc.getGeometry().getCoordinates();
-				Point lastPt = null;
+
+				int[] xPoints = new int[pts.length];
+				int[] yPoints = new int[pts.length];
+
+				// collate polygon
 				for (int i = 0; i < pts.length; i++)
 				{
 					Coordinate thisC = pts[i];
 					WorldLocation thisLocation = conversions.toLocation(thisC);
 					Point pt = dest.toScreen(thisLocation);
-
-					if (lastPt != null)
-					{
-						dest.drawLine(lastPt.x, lastPt.y, pt.x, pt.y);
-					}
-					lastPt = new Point(pt);
+					xPoints[i] = pt.x;
+					yPoints[i] = pt.y;
 				}
+
+				// fill in the polygons, if we can
+				if (dest instanceof ExtendedCanvasType)
+				{
+					ExtendedCanvasType extended = (ExtendedCanvasType) dest;
+					extended.semiFillPolygon(xPoints, yPoints, pts.length);
+				}
+
+				// and a border
+				if (isLegEnd)
+					dest.setLineStyle(CanvasType.SOLID);
+				else
+					dest.setLineStyle(CanvasType.DOTTED);
+
+				dest.setLineWidth(0.0f);
+				dest.drawPolygon(xPoints, yPoints, xPoints.length);
 			}
 		}
 	}
@@ -506,48 +600,61 @@ public class SATC_Solution extends BaseLayer implements
 	{
 		for (int i = 0; i < routes.length; i++)
 		{
-			CompositeRoute thisR = routes[i];
-			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+			CompositeRoute thisComposite = routes[i];
+			Iterator<CoreRoute> legs = thisComposite.getLegs().iterator();
 
 			while (legs.hasNext())
 			{
 				stepper.reset();
-				CoreRoute thisR2 = legs.next();
-				ArrayList<State> states = thisR2.getStates();
+				CoreRoute thisRoute = legs.next();
+				ArrayList<State> states = thisRoute.getStates();
 				if (states != null)
 				{
 					Iterator<State> stateIter = states.iterator();
 					while (stateIter.hasNext())
 					{
 						State thisState = stateIter.next();
-						stepper.step(thisState);
+						stepper.step(thisRoute, thisState);
 					}
 				}
+
+				stepper.legComplete(thisRoute);
+
 			}
+
 		}
+		stepper.finish();
 	}
 
 	private static interface RouteStepper
 	{
 
-		public abstract void step(State thisState);
+		public abstract void step(CoreRoute thisRoute, State thisState);
+
+		public abstract void legComplete(CoreRoute thisRoute);
+
+		public abstract void finish();
 
 		public abstract void reset();
 
 	}
 
-	private static class DoPaint implements RouteStepper
+	private class DoPaint implements RouteStepper
 	{
+		private static final double LEG_LABEL_CLIPPING_THRESHOLD = 1.1;
 		private Point lastPt = null;
 		private final CanvasType _dest;
+		private final float oldWid;
 
 		public DoPaint(CanvasType dest)
 		{
 			_dest = dest;
+			oldWid = _dest.getLineWidth();
+			_dest.setLineWidth(5.0f);
 		}
 
 		@Override
-		public void step(State thisState)
+		public void step(CoreRoute thisRoute, State thisState)
 		{
 			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
 			// convert to screen
@@ -557,6 +664,18 @@ public class SATC_Solution extends BaseLayer implements
 
 			if (lastPt != null)
 			{
+				// is it straight? or altering
+				if (thisRoute.getType() == LegType.STRAIGHT)
+					_dest.setLineStyle(CanvasType.SOLID);
+				else
+					_dest.setLineStyle(CanvasType.DOTTED);
+
+				// does this state have a color?
+				if (thisState.getColor() != null)
+					_dest.setColor(thisState.getColor());
+				else
+					_dest.setColor(_myColor);
+
 				// draw the line
 				_dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
 			}
@@ -568,6 +687,43 @@ public class SATC_Solution extends BaseLayer implements
 		public void reset()
 		{
 			lastPt = null;
+		}
+
+		@Override
+		public void finish()
+		{
+			_dest.setLineWidth(oldWid);
+			_dest.setLineStyle(CanvasType.SOLID);
+		}
+
+		@Override
+		public void legComplete(CoreRoute thisRoute)
+		{
+			// is it straight? or altering
+			if (thisRoute.getType() == LegType.STRAIGHT)
+			{
+				// get the first point
+				State firstState = thisRoute.getStates().get(0);
+				State lastState = thisRoute.getStates().get(
+						thisRoute.getStates().size() - 1);
+
+				final Color theColor;
+
+				if (firstState.getColor() != null)
+					theColor = firstState.getColor();
+				else
+					theColor = Color.red;
+
+				Font theFont = LEG_NAME_FONT;
+				WorldLocation firstLoc = conversions.toLocation(firstState
+						.getLocation().getCoordinate());
+				WorldLocation lastLoc = conversions.toLocation(lastState.getLocation()
+						.getCoordinate());
+
+				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
+						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD);
+			}
+
 		}
 	}
 
@@ -589,10 +745,6 @@ public class SATC_Solution extends BaseLayer implements
 		@SuppressWarnings("unused")
 		ISolversManager mgr = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
-
-		// ok, better tell the manager that we're being removed
-		// TODO: replace next line once the capability is in SATC
-		// mgr.solverRemoved(_mySolver);
 	}
 
 	/**
@@ -629,6 +781,233 @@ public class SATC_Solution extends BaseLayer implements
 	public void setLayers(Layers parent)
 	{
 		_myLayers = parent;
+	}
+
+	@Override
+	public HiResDate getStartDTG()
+	{
+		return new HiResDate(_mySolver.getProblemSpace().getStartDate());
+	}
+
+	@Override
+	public HiResDate getEndDTG()
+	{
+		return new HiResDate(_mySolver.getProblemSpace().getFinishDate());
+	}
+
+	@Override
+	public Watchable[] getNearestTo(HiResDate DTG)
+	{
+		ArrayList<Watchable> items = new ArrayList<Watchable>();
+
+		long time = DTG.getDate().getTime();
+
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			CompositeRoute route = _newRoutes[0];
+
+			Iterator<CoreRoute> legs = route.getLegs().iterator();
+			while (legs.hasNext())
+			{
+				CoreRoute thisLeg = (CoreRoute) legs.next();
+				Iterator<State> states = thisLeg.getStates().iterator();
+				while (states.hasNext())
+				{
+					State state = (State) states.next();
+					// does it even have a location?
+					if (state.getLocation() != null)
+					{
+						if (state.getTime().getTime() > time)
+						{
+
+							items.add(wrapThis(state));
+							return items.toArray(new Watchable[]
+							{});
+						}
+					}
+				}
+			}
+
+		}
+
+		return items.toArray(new Watchable[]
+		{});
+	}
+
+	private WrappedState wrapThis(final State state)
+	{
+		return new WrappedState(state);
+	}
+
+	@Override
+	public void filterListTo(HiResDate start, HiResDate end)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
+	{
+		Collection<Editable> items = new ArrayList<Editable>();
+		ArrayList<State> states = new ArrayList<State>();
+
+		long startT = start.getDate().getTime();
+		long finishT = end.getDate().getTime();
+
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			CompositeRoute route = _newRoutes[0];
+
+			Iterator<CoreRoute> legs = route.getLegs().iterator();
+			while (legs.hasNext())
+			{
+				CoreRoute thisLeg = (CoreRoute) legs.next();
+				Iterator<State> theStates = thisLeg.getStates().iterator();
+				while (theStates.hasNext())
+				{
+					State state = (State) theStates.next();
+
+					// does it even have a location?
+					if (state.getLocation() != null)
+					{
+						long thisTime = state.getTime().getTime();
+						if ((thisTime >= startT) && (thisTime <= finishT))
+						{
+							// check we haven't just stored a state at this time,
+							// JFReeChart plotting doesn't like it.
+							if (states.size() > 0)
+							{
+								Date lastTime = states.get(states.size() - 1).getTime();
+								if (lastTime.getTime() != thisTime)
+								{
+									states.add(state);
+								}
+							}
+							else
+								states.add(state);
+						}
+					}
+				}
+			}
+		}
+
+		// ok, wrap the states
+		Iterator<State> iter = states.iterator();
+		while (iter.hasNext())
+		{
+			State state = (State) iter.next();
+			items.add(wrapThis(state));
+		}
+
+		Collection<Editable> res = null;
+		if (items.size() > 0)
+		{
+			res = items;
+		}
+		return res;
+	}
+
+	@Override
+	public PlainSymbol getSnailShape()
+	{
+		if (mySymbol == null)
+			mySymbol = SymbolFactory.createSymbol(SymbolFactory.DEFAULT_SYMBOL_TYPE);
+
+		return mySymbol;
+	}
+
+	protected static class WrappedState implements Watchable, Editable
+	{
+
+		private final State state;
+		private WorldLocation loc;
+		private boolean isVis = true;
+
+		public WrappedState(State state)
+		{
+			this.state = state;
+		}
+
+		@Override
+		public WorldLocation getLocation()
+		{
+			if (loc == null)
+				loc = conversions.toLocation(state.getLocation().getCoordinate());
+
+			return loc;
+		}
+
+		@Override
+		public double getCourse()
+		{
+			return state.getCourse();
+		}
+
+		@Override
+		public double getSpeed()
+		{
+			return MWC.Algorithms.Conversions.Mps2Kts(state.getSpeed());
+		}
+
+		@Override
+		public double getDepth()
+		{
+			return 0;
+		}
+
+		@Override
+		public WorldArea getBounds()
+		{
+			return new WorldArea(getLocation(), getLocation());
+		}
+
+		@Override
+		public void setVisible(boolean val)
+		{
+			isVis = val;
+		}
+
+		@Override
+		public boolean getVisible()
+		{
+			return isVis;
+		}
+
+		@Override
+		public HiResDate getTime()
+		{
+			return new HiResDate(state.getTime().getTime());
+		}
+
+		@Override
+		public String getName()
+		{
+			return DebriefFormatDateTime.toString(state.getTime().getTime());
+		}
+
+		@Override
+		public Color getColor()
+		{
+			return state.getColor();
+		}
+
+		@Override
+		public boolean hasEditor()
+		{
+			return false;
+		}
+
+		@Override
+		public EditorType getInfo()
+		{
+			return null;
+		}
+
 	}
 
 }

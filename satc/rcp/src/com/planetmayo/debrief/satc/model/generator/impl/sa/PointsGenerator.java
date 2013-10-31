@@ -69,7 +69,7 @@ public class PointsGenerator
 	
 	private double distance(double T) 
 	{
-		return parameters.getSaFuntions().neighborDistance(parameters, rnd, T);
+		return parameters.getSaFunctions().neighborDistance(parameters, rnd, T);
 	}
 	
 	private double distance(double T, double a, double b)

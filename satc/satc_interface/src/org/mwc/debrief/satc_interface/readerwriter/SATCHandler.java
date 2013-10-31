@@ -43,6 +43,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 
 	private static final String NAME = "NAME";
 	private static final String SHOW_BOUNDS = "ShowBounds";
+	private static final String ONLY_ENDS = "OnlyPlotEnds";
 	private static final String SHOW_SOLUTIONS = "ShowSolutions";
 	private static final String AUTO_SOLUTIONS = "AutoSolutions";
 
@@ -60,6 +61,8 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 
 	protected boolean _showBounds = false;
 	protected boolean _autoGenerate = false;
+
+	protected boolean _onlyPlotEnds = false;
 
 	public SATCHandler()
 	{
@@ -84,6 +87,14 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			public void setValue(String name, boolean value)
 			{
 				_showBounds = value;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(ONLY_ENDS)
+		{
+			@Override
+			public void setValue(String name, boolean value)
+			{
+				_onlyPlotEnds  = value;
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(AUTO_SOLUTIONS)
@@ -144,6 +155,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 
 		// and the preferences
 		solution.setShowLocationBounds(_showBounds);
+		solution.setOnlyPlotLegEnds(_onlyPlotEnds);
 		solution.setShowSolutions(_showSolutions);
 		solution.setColor(_myColor);
 		solution.getSolver().setAutoGenerateSolutions(_autoGenerate);
@@ -213,6 +225,8 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			newI.setAttribute(NAME, solution.getName());
 			newI.setAttribute(SHOW_BOUNDS,
 					writeThis(solution.getShowLocationBounds()));
+			newI.setAttribute(ONLY_ENDS,
+					writeThis(solution.getOnlyPlotLegEnds()));
 			newI.setAttribute(SHOW_SOLUTIONS,
 					writeThis(solution.getShowSolutions()));
 			newI.setAttribute(AUTO_SOLUTIONS, writeThis(solution.getSolver().isAutoGenerateSolutions()));

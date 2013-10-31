@@ -1,8 +1,5 @@
 package com.planetmayo.debrief.satc.model.generator.impl.sa;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -12,7 +9,6 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 public class SimulatedAnnealing implements Callable<CoreRoute>
@@ -26,7 +22,6 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 	
 	private volatile PointsGenerator start;
 	private volatile PointsGenerator end;
-	private volatile List<BoundedState> states;
 	
 	public SimulatedAnnealing(IProgressMonitor progressMonitor, SAParameters parameters, 
 			StraightLeg leg, IContributions contributions, SafeProblemSpace problemSpace, Random rnd)
@@ -43,11 +38,8 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 	
 	protected void initialize() 
 	{
-		Collection<BoundedState> states = problemSpace.getBoundedStatesBetween(leg.getFirst().getTime(), leg.getLast().getTime());
-		
 		start = new PointsGenerator(leg.getFirst().getLocation().getGeometry(), rnd, parameters);
 		end = new PointsGenerator(leg.getLast().getLocation().getGeometry(), rnd, parameters);
-		this.states = new ArrayList<BoundedState>(states);
 	}
 	
 	protected double error(CoreRoute route) 
@@ -57,6 +49,7 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 		{
 			sum += contribution.calculateErrorScoreFor(route);
 		}
+		route.setScore(sum);
 		return sum;
 	}	
 	
@@ -72,13 +65,12 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 			if (k == 0 || ! parameters.isJoinedIterations()) 
 			{
 				current = leg.createRoute("", start.startPoint(),	end.startPoint());
-				current.generateSegments(states);			
 				eCurrent = error(current);
 			}
 			
-			double t = parameters.getStartTemprature();
+			double t = parameters.getStartTemperature();
 			int i = 0;
-			while (t > parameters.getEndTemprature())
+			while (t > parameters.getEndTemperature())
 			{
 				CoreRoute newRoute;
 				while (true) {
@@ -89,7 +81,6 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 					newRoute = leg.createRoute("",
 						start.newPoint(current.getStartPoint(), t),
 						end.newPoint(current.getEndPoint(), t));				
-					newRoute.generateSegments(states);
 					leg.decideAchievableRoute(newRoute);
 					if (newRoute.isPossible()) 
 					{
@@ -99,7 +90,7 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 				double eNew = error(newRoute);
 				if (eNew > eCurrent)
 				{
-					double h = parameters.getSaFuntions()
+					double h = parameters.getSaFunctions()
 							.probabilityToAcceptWorse(parameters, t, eCurrent, eNew);
 					if (rnd.nextDouble() < h)
 					{
@@ -118,7 +109,7 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 					}
 				}
 				i++;
-				t = parameters.getSaFuntions().changeTemprature(parameters, t, i);
+				t = parameters.getSaFunctions().changeTemprature(parameters, t, i);
 			}
 		}
 		result.setScore(min);
