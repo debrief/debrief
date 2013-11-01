@@ -21,6 +21,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
+import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -28,6 +29,8 @@ import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -82,6 +85,28 @@ public class CreateSolutionFromSensorData implements
 				while (cuts.hasMoreElements())
 				{
 					validCuts.add((SensorContactWrapper) cuts.nextElement());
+				}
+			}
+			else if (thisItem instanceof ContributionWrapper)
+			{
+				if (subjects.length == 1)
+				{
+					ContributionWrapper cw = (ContributionWrapper) thisItem;
+					BaseContribution theCont = cw.getContribution();
+					String verb1 = "";
+
+					SATC_Solution solution = (SATC_Solution) parentLayers[0];
+					String actionTitle = "Add new contribution";
+
+					parent.add(new DoIt(verb1 + "Speed Forecast for period covering "
+							+ theCont.getName(), new SpeedForecastContributionFromCuts(
+							solution, actionTitle, theLayers, theCont)));
+					parent.add(new DoIt(verb1 + "Course Forecast for period covering "
+							+ theCont.getName(), new CourseForecastContributionFromCuts(
+							solution, actionTitle, theLayers, theCont)));
+					parent.add(new DoIt(verb1 + "Straight Leg for period covering "
+							+ theCont.getName(), new StraightLegForecastContributionFromCuts(
+							solution, actionTitle, theLayers, theCont)));
 				}
 			}
 		}
@@ -146,9 +171,9 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Course Forecast for period covering " + title,
 				new CourseForecastContributionFromCuts(solution, actionTitle, layers,
 						validItems)));
-		parent.add(new DoIt(verb1 + "Straight Leg for period covering "
-				+ title, new StraightLegForecastContributionFromCuts(solution,
-				actionTitle, layers, validItems)));
+		parent.add(new DoIt(verb1 + "Straight Leg for period covering " + title,
+				new StraightLegForecastContributionFromCuts(solution, actionTitle,
+						layers, validItems)));
 	}
 
 	protected static class DoIt extends Action
@@ -208,11 +233,16 @@ public class CreateSolutionFromSensorData implements
 	private class BearingMeasurementContributionFromCuts extends
 			CoreSolutionFromCuts
 	{
+		private ArrayList<SensorContactWrapper> _validCuts;
+
 		public BearingMeasurementContributionFromCuts(
 				SATC_Solution existingSolution, String title, Layers theLayers,
 				ArrayList<SensorContactWrapper> validCuts)
 		{
-			super(existingSolution, title, theLayers, validCuts);
+			super(existingSolution, title, theLayers, new TimePeriod.BaseTimePeriod(
+					new HiResDate(validCuts.get(0).getDTG().getDate()), new HiResDate(
+							validCuts.get(validCuts.size() - 1).getDTG())));
+			_validCuts = validCuts;
 		}
 
 		protected BearingMeasurementContribution createContribution(String contName)
@@ -243,10 +273,10 @@ public class CreateSolutionFromSensorData implements
 					theRange = scw.getRange().getValueIn(WorldDistance.DEGS);
 
 				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
-				
+
 				// give it the respective color
 				thisM.setColor(scw.getColor());
-				
+
 				// ok, store it.
 				bmc.addMeasurement(thisM);
 			}
@@ -263,6 +293,12 @@ public class CreateSolutionFromSensorData implements
 				ArrayList<SensorContactWrapper> validCuts)
 		{
 			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		public SpeedForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers, BaseContribution oldCont)
+		{
+			super(existingSolution, title, theLayers, oldCont);
 		}
 
 		@Override
@@ -283,6 +319,12 @@ public class CreateSolutionFromSensorData implements
 			super(existingSolution, title, theLayers, validCuts);
 		}
 
+		public CourseForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers, BaseContribution oldCont)
+		{
+			super(existingSolution, title, theLayers, oldCont);
+		}
+
 		@Override
 		protected BaseContribution getContribution()
 		{
@@ -294,11 +336,14 @@ public class CreateSolutionFromSensorData implements
 	private class RangeForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
+		private ArrayList<SensorContactWrapper> _validCuts;
+
 		public RangeForecastContributionFromCuts(SATC_Solution existingSolution,
 				String title, Layers theLayers,
 				ArrayList<SensorContactWrapper> validCuts)
 		{
 			super(existingSolution, title, theLayers, validCuts);
+			_validCuts = validCuts;
 		}
 
 		@Override
@@ -342,6 +387,13 @@ public class CreateSolutionFromSensorData implements
 			super(existingSolution, title, theLayers, validCuts);
 		}
 
+		public StraightLegForecastContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				BaseContribution oldCont)
+		{
+			super(existingSolution, title, theLayers, oldCont);
+		}
+
 		@Override
 		protected BaseContribution getContribution()
 		{
@@ -357,7 +409,17 @@ public class CreateSolutionFromSensorData implements
 				String title, Layers theLayers,
 				ArrayList<SensorContactWrapper> validCuts)
 		{
-			super(existingSolution, title, theLayers, validCuts);
+			super(existingSolution, title, theLayers, new TimePeriod.BaseTimePeriod(
+					new HiResDate(validCuts.get(0).getDTG().getDate()), new HiResDate(
+							validCuts.get(validCuts.size() - 1).getDTG())));
+		}
+
+		public ForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers, BaseContribution oldCont)
+		{
+			super(existingSolution, title, theLayers, new TimePeriod.BaseTimePeriod(
+					new HiResDate(oldCont.getStartDate()), new HiResDate(
+							oldCont.getFinishDate())));
 		}
 
 		protected final BaseContribution createContribution(String contName)
@@ -369,9 +431,8 @@ public class CreateSolutionFromSensorData implements
 			bmc.setName(contName);
 
 			// and the dates
-			bmc.setStartDate(_validCuts.get(0).getDTG().getDate());
-			bmc.setFinishDate(_validCuts.get(_validCuts.size() - 1).getDTG()
-					.getDate());
+			bmc.setStartDate(thePeriod.getStartDTG().getDate());
+			bmc.setFinishDate(thePeriod.getEndDTG().getDate());
 
 			return bmc;
 		}
@@ -383,23 +444,34 @@ public class CreateSolutionFromSensorData implements
 	private abstract class CoreSolutionFromCuts extends CMAPOperation
 	{
 
-		
 		private SATC_Solution _targetSolution;
 		private final Layers _theLayers;
-		protected final ArrayList<SensorContactWrapper> _validCuts;
+		protected TimePeriod thePeriod;
 
 		public CoreSolutionFromCuts(SATC_Solution existingSolution, String title,
-				Layers theLayers, ArrayList<SensorContactWrapper> validCuts)
+				Layers theLayers, BaseContribution existingContribution)
 		{
 			super(title);
 			_targetSolution = existingSolution;
 			_theLayers = theLayers;
-			_validCuts = validCuts;		
+			thePeriod = new TimePeriod.BaseTimePeriod(new HiResDate(
+					existingContribution.getStartDate()), new HiResDate(
+					existingContribution.getFinishDate()));
+
+		}
+
+		public CoreSolutionFromCuts(SATC_Solution existingSolution, String title,
+				Layers theLayers, TimePeriod thePeriod)
+		{
+			super(title);
+			_targetSolution = existingSolution;
+			_theLayers = theLayers;
+			this.thePeriod = thePeriod;
 		}
 
 		public String getDefaultSolutionName()
 		{ // grab a name
-			Date firstCutDate = _validCuts.get(0).getDTG().getDate();
+			Date firstCutDate = thePeriod.getStartDTG().getDate();
 			String formattedName = FormatRNDateTime.toString(firstCutDate.getTime());
 			return formattedName;
 		}
@@ -417,12 +489,13 @@ public class CreateSolutionFromSensorData implements
 			if (_targetSolution == null)
 			{
 				String solutionName = getDefaultSolutionName();
-				
+
 				// create a new solution
-				
-			  final ISolversManager solvMgr = SATC_Activator.getDefault().getService(ISolversManager.class, true);
+
+				final ISolversManager solvMgr = SATC_Activator.getDefault().getService(
+						ISolversManager.class, true);
 				final ISolver newSolution = solvMgr.createSolver(solutionName);
-				
+
 				_targetSolution = new SATC_Solution(newSolution);
 				newSolution.setAutoGenerateSolutions(false);
 				_theLayers.addThisLayer(_targetSolution);
