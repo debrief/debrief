@@ -47,7 +47,7 @@ public class RoutesCandidateFactoryTest extends ModelTestBase
 		states.get(1).constrainTo(
 				new LocationRange(wkt.read("POLYGON ((2.63 2.56, 3.5 3.16, 4.11 3.42, 3.33 2.3, 2.63 2.56))"))
 		);
-		legs.add(new StraightLeg("1", states));
+		legs.add(new StraightLeg("1"));
 
 		states = new ArrayList<BoundedState>();		
 		states.add(new BoundedState(DateUtils.date(2012, 5, 5, 12, 20, 0)));
@@ -58,7 +58,7 @@ public class RoutesCandidateFactoryTest extends ModelTestBase
 		states.get(1).constrainTo(
 				new LocationRange(wkt.read("POLYGON ((5 1, 5.5 2, 6 2, 6 1, 5 1))"))
 		);
-		legs.add(new AlteringLeg("2", states));
+		legs.add(new AlteringLeg("2"));
 
 		operations = new ArrayList<LegOperations>();
 		Random random = new MersenneTwisterRNG();
