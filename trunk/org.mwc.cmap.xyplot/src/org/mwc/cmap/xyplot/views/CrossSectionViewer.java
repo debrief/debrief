@@ -1,18 +1,26 @@
 package org.mwc.cmap.xyplot.views;
 
+import java.awt.Frame;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
-import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -27,26 +35,80 @@ public class CrossSectionViewer
 	private List<ISelectionChangedListener> _listeners = new ArrayList<ISelectionChangedListener>();
 	private List<PropertyChangeListener> _propListeners = new ArrayList<PropertyChangeListener>();
 	
+	/**
+	 * the Swing control we insert the plot into
+	 */
+	private Frame _plotControl;
+		
+	JFreeChart _chart;
+	
 	//TODO: get the units
 	ILocationCalculator _calc = new LocationCalculator();
-	/**
-	 * "discrete" points for non-snail mode
-	 */
-	Map<HiResDate, List<Pair<Double, Double>>> _distances = new HashMap<HiResDate, List<Pair<Double,Double>>>();
-	Map<HiResDate, List<Pair<Double, Double>>> _snails = new HashMap<HiResDate, List<Pair<Double,Double>>>();
 	
-	protected CrossSectionViewer(Composite parent)
+	XYDataset _dataset;
+	
+	protected CrossSectionViewer(final Composite parent)
 	{
 		// TODO Auto-generated method stub
+		//we need an SWT.EMBEDDED object to act as a holder
+		final Composite holder = new Composite(parent, SWT.EMBEDDED);
+		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
+						| GridData.FILL_HORIZONTAL));
+
+		// now we need a Swing object to put our chart into
+		_plotControl = SWT_AWT.new_Frame(holder);
+
+		//TODO: restore Previous Plot?
+		
+		
 	}
 	
-	public void drawDiagram(final Layers theLayers, final LineShape line)
+	public void fillPlot(final Layers theLayers, final LineShape line)
 	{
 		if (theLayers == null || line == null)
 			return;
 		walkThrough(theLayers, line);
 		//TODO implement
+				
+		_chart = ChartFactory.createXYAreaChart
+				("Sample XY Chart", // Title
+				"Distances along the line", // X-Axis label
+				"depth/elevation", // Y-Axis label
+				_dataset, // Dataset,
+				PlotOrientation.HORIZONTAL,
+				true, // Show legend,
+				true, //tooltips
+				true //urs
+				);
+		
+		final ChartPanel jfreeChartPanel = new ChartPanel(_chart);
+		_plotControl.add(jfreeChartPanel);
 	}
+	
+//	private ValueAxis createTimeAxis()
+//	{
+//		// see if we are in hi-res mode. If we are, don't use a formatted
+//		// axis, just use the plain long microseconds value
+//		if (HiResDate.inHiResProcessingMode())
+//		{
+//
+//			final NumberAxis nAxis = new NumberAxis("time (secs.micros)")
+//			{
+//				private static final long serialVersionUID = 1L;
+//			};
+//			nAxis.setAutoRangeIncludesZero(false);
+//			return nAxis;
+//		}
+//		else
+//		{
+//			// create a date-formatting axis
+//			final DateAxis dAxis = new RelativeDateAxis();
+//			dAxis.setStandardTickUnits(DateAxisEditor
+//						.createStandardDateTickUnitsAsTickUnits());
+//			return dAxis;
+//		}
+//
+//	}
 
 	public void addSelectionChangedListener(final ISelectionChangedListener listener) 
 	{
@@ -101,7 +163,8 @@ public class CrossSectionViewer
 	    				
 	    				final Collection<Editable> wbs  = wlist.getItemsBetween(start_date, now);
 	    			    final Iterator<Editable> itr = wbs.iterator();
-	    			    final List<Pair<Double, Double>> distances = new ArrayList<Pair<Double,Double>>();
+		        		//TODO: set the series name
+	    			    final XYSeries series = new XYSeries("Snail name todo");
 	    		        while (itr.hasNext()) 
 	    		        {
 	    		        	final Editable ed = itr.next();
@@ -109,22 +172,23 @@ public class CrossSectionViewer
 	    		        	{
 	    		        		final Double x_coord = new Double(_calc.getDistance(line, (Watchable) ed));
 	    		        		final Double y_coord = new Double(((Watchable) ed).getDepth());
-	    		        		distances.add(new Pair(x_coord, y_coord));
-	    		        	}	    		        		
-	    		        	_snails.put(start_date, distances);
+	    		        		series.add(x_coord, y_coord);
+	    		        	}	
+	    		        	_dataset = new XYSeriesCollection(series);   	
 	    		        }	    		        
 	    			}
 	    			else
 	    			{
 	    				final Watchable[] wbs = wlist.getNearestTo(now);
-	    				final List<Pair<Double, Double>> distances = new ArrayList<Pair<Double,Double>>();
+	    				//TODO: set the series name
+	    			    final XYSeries series = new XYSeries("name todo");
 	    				for(Watchable wb: wbs)
 	    				{
 	    					final Double x_coord = new Double(_calc.getDistance(line, wb));
     		        		final Double y_coord = new Double(wb.getDepth());
-    		        		distances.add(new Pair(x_coord, y_coord));
+    		        		series.add(x_coord, y_coord);    		        		
 	    				}
-	    				_distances.put(now, distances);
+	    				_dataset = new XYSeriesCollection(series);
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
@@ -132,17 +196,6 @@ public class CrossSectionViewer
 	    }
 	}
 	
-	final class Pair<T, U> 
-	{         
-	    public final T t;
-	    public final U u;
-
-	    Pair(T t, U u) 
-	    {         
-	        this.t= t;
-	        this.u= u;
-	    }
-	}
-    
+	
 
 }

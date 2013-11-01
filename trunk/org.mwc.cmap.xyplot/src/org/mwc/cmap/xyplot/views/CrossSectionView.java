@@ -106,7 +106,7 @@ public class CrossSectionView extends ViewPart
 						if (shape instanceof LineShape && !shape.equals(_line))
 						{
 							_line = (LineShape) shape;
-							_viewer.drawDiagram(_myLayers, _line);
+							_viewer.fillPlot(_myLayers, _line);
 						}
 					}		
 				}
@@ -302,7 +302,7 @@ public class CrossSectionView extends ViewPart
 				public void run()
 				{
 					// ok, fire the change in the UI thread
-					_viewer.drawDiagram(theData, _line);
+					_viewer.fillPlot(theData, _line);
 				}
 			});
 	}	
@@ -350,7 +350,7 @@ public class CrossSectionView extends ViewPart
 					{
 						if (event.getSource().equals(_line))
 						{
-							_viewer.drawDiagram(_myLayers, _line);
+							_viewer.fillPlot(_myLayers, _line);
 						}
 					}
 				};
