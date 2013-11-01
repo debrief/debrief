@@ -217,14 +217,12 @@ public class BearingMeasurementContribution extends BaseContribution
 		return res;
 	}
 
-	public void addEstimate(double lat, double lon, Date date, double brg,
+	public void addMeasurement(double lat, double lon, Date date, double brg,
 			double range)
 	{
 		GeoPoint loc = new GeoPoint(lat, lon);
 		BMeasurement measure = new BMeasurement(loc, brg, date, range);
-		addThis(measure);
-		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(),
-				measurements.size());
+		addMeasurement(measure);
 	}
 
 	/**
@@ -232,7 +230,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * 
 	 * @param measure
 	 */
-	public void addThis(BMeasurement measure)
+	public void addMeasurement(BMeasurement measure)
 	{
 		// extend the time period accordingly
 		if (this.getStartDate() == null)
@@ -248,8 +246,9 @@ public class BearingMeasurementContribution extends BaseContribution
 			if (this.getFinishDate().getTime() < newTime)
 				this.setFinishDate(measure.time);
 		}
-
 		measurements.add(measure);
+		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(),
+				measurements.size());		
 	}
 
 	@Override
@@ -333,12 +332,11 @@ public class BearingMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			double normalizedAngle = MathUtils.normalizeAngle(Math.toRadians(Double
-					.parseDouble(bearing)));
-			BMeasurement measure = new BMeasurement(theLoc, normalizedAngle, theDate,
+			double angle = Math.toRadians(Double.parseDouble(bearing));
+			BMeasurement measure = new BMeasurement(theLoc, angle, theDate,
 					GeoSupport.m2deg(Double.parseDouble(range)));
 
-			addThis(measure);
+			addMeasurement(measure);
 
 		}
 		this.setBearingError(Math.toRadians(3d));
@@ -416,7 +414,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
 			this.origin = loc;
-			this.bearingAngle = bearing;
+			this.bearingAngle = MathUtils.normalizeAngle(bearing);
 			this.time = time;
 
 			// tidying up. Give the maximum possible range for this bearing if the

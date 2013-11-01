@@ -248,7 +248,7 @@ public class CreateSolutionFromSensorData implements
 				thisM.setColor(scw.getColor());
 				
 				// ok, store it.
-				bmc.addThis(thisM);
+				bmc.addMeasurement(thisM);
 			}
 			return bmc;
 		}
