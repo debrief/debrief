@@ -166,6 +166,9 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 								
 								// create new track
 								final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
+								
+								// initialize NameVisible (false)
+								tw.setNameVisible(false);
 
 								// store the name
 								tw.setName(txt);

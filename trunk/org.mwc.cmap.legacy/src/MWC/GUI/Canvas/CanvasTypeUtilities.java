@@ -22,13 +22,14 @@ public class CanvasTypeUtilities
 	 * @param clippingThreshold how many times longer than the label the line has to be for it to be plotted
 	 */
 	public static void drawLabelOnLine(final CanvasType dest, String textLabel, Font font,
-			Color color, WorldLocation firstLoc, WorldLocation lastLoc, double clippingThreshold)
+			Color color, WorldLocation firstLoc, WorldLocation lastLoc, double clippingThreshold, boolean above)
 	{
 		Point startPoint = dest.toScreen(firstLoc);
 		Point lastPoint = dest.toScreen(lastLoc);
 		double width = startPoint.distance(lastPoint);
+		
 		double stringWidth = dest.getStringWidth(font, textLabel);
-		double distance = (width)/2;
+		double distance = (width-stringWidth)/2;
 		if (width > stringWidth * clippingThreshold)
 		{
 			// calculate the course 
@@ -46,12 +47,9 @@ public class CanvasTypeUtilities
 			if(course < 0)
 				course += 360;
 			
-			float rotate = (float) (course - 90);
-			if (course > 180) {
-				rotate-=180;
-			}
 			dest.drawText(textLabel, startPoint.x + deltaX, startPoint.y + deltaY,
-					rotate);
+					(float) course, above);
+			//dest.drawRect(startPoint.x + deltaX, startPoint.y + deltaY, (int) stringWidth, dest.getStringHeight(font));
 		}
 	}
 
