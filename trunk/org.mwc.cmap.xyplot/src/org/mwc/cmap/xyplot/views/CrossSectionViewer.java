@@ -1,6 +1,10 @@
 package org.mwc.cmap.xyplot.views;
 
+import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Paint;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +21,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -38,40 +43,35 @@ public class CrossSectionViewer
 	/**
 	 * the Swing control we insert the plot into
 	 */
-	private Frame _plotControl;
+	private Frame _chartFrame;
 		
-	JFreeChart _chart;
+	private JFreeChart _chart;
+	
+	private XYLineAndShapeRenderer _renderer = new XYLineAndShapeRenderer();
 	
 	//TODO: get the units
-	ILocationCalculator _calc = new LocationCalculator();
+	private ILocationCalculator _calc = new LocationCalculator();
 	
-	XYDataset _dataset;
+	private XYDataset _dataset;
 	
+	/**
+	 * the chart marker
+	 */
+	private static final Shape circle = new Ellipse2D.Double(-3, -3, 6, 6);
+   	
 	protected CrossSectionViewer(final Composite parent)
 	{
-		// TODO Auto-generated method stub
-		//we need an SWT.EMBEDDED object to act as a holder
+	    //we need an SWT.EMBEDDED object to act as a holder
 		final Composite holder = new Composite(parent, SWT.EMBEDDED);
 		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
 						| GridData.FILL_HORIZONTAL));
 
 		// now we need a Swing object to put our chart into
-		_plotControl = SWT_AWT.new_Frame(holder);
+		_chartFrame = SWT_AWT.new_Frame(holder);
 
 		//TODO: restore Previous Plot?
-		
-		
-	}
-	
-	public void fillPlot(final Layers theLayers, final LineShape line)
-	{
-		if (theLayers == null || line == null)
-			return;
-		walkThrough(theLayers, line);
-		//TODO implement
-				
-		_chart = ChartFactory.createXYAreaChart
-				("Sample XY Chart", // Title
+		_chart = ChartFactory.createXYLineChart
+				("Cross Section", // Title
 				"Distances along the line", // X-Axis label
 				"depth/elevation", // Y-Axis label
 				_dataset, // Dataset,
@@ -81,35 +81,56 @@ public class CrossSectionViewer
 				true //urs
 				);
 		
+	    _chart.getXYPlot().setRenderer(_renderer);
+        
 		final ChartPanel jfreeChartPanel = new ChartPanel(_chart);
-		_plotControl.add(jfreeChartPanel);
+		_chartFrame.add(jfreeChartPanel);		
 	}
 	
-//	private ValueAxis createTimeAxis()
-//	{
-//		// see if we are in hi-res mode. If we are, don't use a formatted
-//		// axis, just use the plain long microseconds value
-//		if (HiResDate.inHiResProcessingMode())
-//		{
-//
-//			final NumberAxis nAxis = new NumberAxis("time (secs.micros)")
-//			{
-//				private static final long serialVersionUID = 1L;
-//			};
-//			nAxis.setAutoRangeIncludesZero(false);
-//			return nAxis;
-//		}
-//		else
-//		{
-//			// create a date-formatting axis
-//			final DateAxis dAxis = new RelativeDateAxis();
-//			dAxis.setStandardTickUnits(DateAxisEditor
-//						.createStandardDateTickUnitsAsTickUnits());
-//			return dAxis;
-//		}
-//
-//	}
+	public void fillPlot(final Layers theLayers, final LineShape line)
+	{
+		if (theLayers == null || line == null)
+			return;
+		walkThrough(theLayers, line);
+		_chart.getXYPlot().setDataset(_dataset);
+		printDataset(_dataset);
+	}
+	
+	private void setDiscreteRenderer(Color paint)
+	{
+		_renderer.setSeriesShape(0, circle);
+		_renderer.setSeriesPaint(0, paint);
+	   // _renderer.setSeriesPaint(0, line);
+	    _renderer.setUseFillPaint(true);
+	    _renderer.setSeriesShapesFilled(0, true);
+	    _renderer.setSeriesShapesVisible(0, true);
+	    _renderer.setUseOutlinePaint(true);
+	    //_renderer.setSeriesOutlinePaint(0, line);
+		
+	}
+	
+	private void setSnailRenderer()
+	{
+		
+	}
+	
+	private void printDataset(XYDataset xydataset)
+	{
+		Comparable comparable;
+		int indexOf;
+		for (int i = 0; i < xydataset.getSeriesCount(); i++) {
 
+			comparable = xydataset.getSeriesKey(i);
+			indexOf = xydataset.indexOf(comparable);
+			for (int j = 0; j < xydataset.getItemCount(indexOf); j++) {
+
+				double x = xydataset.getXValue(indexOf, j);
+				double y = xydataset.getYValue(indexOf, j);
+				System.out.println(x + " ; " + y);
+			}
+		}
+	}
+	
 	public void addSelectionChangedListener(final ISelectionChangedListener listener) 
 	{
 		if (! _listeners.contains(listener))
@@ -164,7 +185,7 @@ public class CrossSectionViewer
 	    				final Collection<Editable> wbs  = wlist.getItemsBetween(start_date, now);
 	    			    final Iterator<Editable> itr = wbs.iterator();
 		        		//TODO: set the series name
-	    			    final XYSeries series = new XYSeries("Snail name todo");
+	    			    final XYSeries series = new XYSeries("Watchables between [now - snail_period; now]");
 	    		        while (itr.hasNext()) 
 	    		        {
 	    		        	final Editable ed = itr.next();
@@ -181,19 +202,40 @@ public class CrossSectionViewer
 	    			{
 	    				final Watchable[] wbs = wlist.getNearestTo(now);
 	    				//TODO: set the series name
-	    			    final XYSeries series = new XYSeries("name todo");
+	    			    final XYSeries series = new XYSeries("Watchables neares to Now");
 	    				for(Watchable wb: wbs)
 	    				{
 	    					final Double x_coord = new Double(_calc.getDistance(line, wb));
     		        		final Double y_coord = new Double(wb.getDepth());
-    		        		series.add(x_coord, y_coord);    		        		
+	    					series.add(x_coord, y_coord);    		        		
 	    				}
+	    				//TODO: remove hard-coded values
+	    				series.add(0.0350068580566741, 0.0);
 	    				_dataset = new XYSeriesCollection(series);
+	    				setDiscreteRenderer(wlist.getColor());
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
 	    		walkThrough(next, line);
 	    }
+	}
+	
+	private final class MyRenderer extends XYLineAndShapeRenderer 
+	{
+		 Color _color;
+
+	     MyRenderer(boolean lines, boolean shapes, Color color) 
+	     {
+	        	
+	        super(lines, shapes);
+	        _color = color;
+	     }
+
+	        @Override
+	        public Paint getItemFillPaint(int row, int column) 
+	        {
+	            return _color;
+	        }
 	}
 	
 	
