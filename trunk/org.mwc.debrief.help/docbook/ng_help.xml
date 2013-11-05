@@ -4621,6 +4621,10 @@ and so on....</programlisting></para>
           If the location is not specified in the properties file, the
           <filename>WMF</filename> image will be created in the
           <application>Debrief</application> installation directory.</para>
+          <para>Note: exporting vector plots via the clipboard is limited to MS Windows PCs.  But,
+            an equivalent capability allows you to export the vector plot inside an RTF wrapper via
+            the clipboard for pasteing into any Word Processor (on OSX or Linux).  The shortcut for
+            this is <guibutton>&lt;shift>&lt;control>&lt;c></guibutton>. </para>
 
           <para>Also, don't forget that time-variable graphs produced by the
           Track-Time toolbox (see <xref linkend="track_toolbox" />) can be exported
