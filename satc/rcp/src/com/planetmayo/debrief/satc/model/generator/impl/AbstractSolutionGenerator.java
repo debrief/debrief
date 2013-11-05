@@ -251,14 +251,6 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 			// and remember it
 			previousState = thisS;
 		}
-		
-		for (CoreLeg leg : theLegs) 
-		{
-			if (leg.getType() == LegType.STRAIGHT)
-			{
-				((StraightLeg) leg).saveStates();
-			}
-		}
 		return theLegs;
 	}
 

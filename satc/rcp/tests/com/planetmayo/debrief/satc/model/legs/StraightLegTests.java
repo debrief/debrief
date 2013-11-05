@@ -58,7 +58,8 @@ public class StraightLegTests extends ModelTestBase
 		states.get(0).constrainTo(sr);
 		states.get(3).constrainTo(sr);
 		
-		leg = new StraightLeg("1", states);
+		leg = new StraightLeg("1");
+		leg.add(states);
 	}
 
 	
@@ -168,7 +169,8 @@ public class StraightLegTests extends ModelTestBase
 		states.get(1).constrainTo(
 				new LocationRange(wkt.read("POLYGON ((0 0.3, 0.2 0.4, 0.4 0.4, 0.2 0.3, 0 0.3))"))
 		);
-		leg = new StraightLeg("1", states);
+		leg = new StraightLeg("1");
+		leg.add(states);
 		leg.generatePoints(Precision.HIGH.getNumPoints());
 		List<Point> highPoints = leg.getStartPoints();
 		leg.generatePoints(Precision.MEDIUM.getNumPoints());

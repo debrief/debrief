@@ -1,11 +1,19 @@
 package com.planetmayo.debrief.satc.model.legs;
 
+import java.util.List;
+
+import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.vividsolutions.jts.geom.Point;
 
 public class AlteringLeg extends CoreLeg
 {
 
+	public AlteringLeg(String name)
+	{
+		super(name);
+	}
+	
 	/**
 	 * create an altering leg.
 	 * 
@@ -14,10 +22,10 @@ public class AlteringLeg extends CoreLeg
 	 * @param states
 	 *          the set of bounded states that comprise the leg
 	 */
-	public AlteringLeg(String name)
+	public AlteringLeg(String name, List<BoundedState> states)
 	{
-		super(name);
-	}
+		super(name, states);
+	}	
 
 	/**
 	 * use a simple speed/time decision to decide if it's possible to navigate a

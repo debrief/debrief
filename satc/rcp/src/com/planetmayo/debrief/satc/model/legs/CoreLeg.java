@@ -47,16 +47,27 @@ public abstract class CoreLeg
 		_states = new ArrayList<BoundedState>();
 		_name = name;
 	}
+	
+	protected CoreLeg(String name, List<BoundedState> states)
+	{
+		this(name);
+		add(states);
+	}	
 
 	/**
 	 * add this bounded state
 	 * 
 	 * @param thisS
 	 */
-	final public void add(BoundedState thisS)
+	final public void add(BoundedState state)
 	{
-		_states.add(thisS);
+		_states.add(state);
 	}
+	
+	final public void add(List<BoundedState> states)
+	{
+		_states.addAll(states);
+	}	
 
 	final public BoundedState getFirst()
 	{
