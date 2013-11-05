@@ -111,6 +111,7 @@ package MWC.GUI.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.io.File;
@@ -590,8 +591,63 @@ public class MetafileCanvas implements CanvasType
 
 	@Override
 	public void drawText(final String str, final int x, final int y, final float rotate) {
-		// TODO Auto-generated method stub
+		if (str == null || str.trim().length() == 0) {
+			return;
+		}
 		
+		FontMetrics fontMetrics = g.getFontMetrics();		
+		final int distance = (fontMetrics.stringWidth(str))/2;
+		final double direction = Math.toRadians(rotate);
+		int deltaX = (int) (distance * Math.cos(direction));
+		int deltaY = (int) (distance * Math.sin(direction));
+		
+		int newEscapement = (int) (-rotate*10);
+		int old = g.getFontEscapement();
+		g.setFontEscapement(newEscapement);
+		drawText(str, x-deltaX, y-deltaY);
+		
+		g.setFontEscapement(old);
+	}
+	
+	@Override
+	public void drawText(final String str, final int x, final int y, float rotate, boolean above) {
+		if (str == null || str.trim().length() == 0) {
+			return;
+		}
+		
+		FontMetrics fontMetrics = g.getFontMetrics();		
+		int distance = fontMetrics.getAscent() + fontMetrics.getDescent() + fontMetrics.getLeading();
+		double direction = Math.toRadians(rotate);
+		int deltaX = (int) (distance * Math.cos(direction));
+		int deltaY = (int) (distance * Math.sin(direction));
+		if (!above) {
+			deltaX = -deltaX;
+			deltaY = -deltaY;
+		}
+		
+		if (rotate > 180) {
+			rotate -= 180;
+			distance = getStringWidth(g.getFont(), str);
+
+			direction = Math.toRadians(rotate-90);
+			if (!above) {
+				deltaX =  (int) (1.3*deltaX - (distance * Math.cos(direction)));
+				deltaY =  (int) (1.3*deltaY - (distance * Math.sin(direction)));
+			} else {
+				deltaX -= (int) (0.8*distance * Math.cos(direction));
+				deltaY -= (int) (0.8*distance * Math.sin(direction));
+			}
+		}
+		rotate-=90;
+		
+		
+		int newEscapement = (int) (-rotate*10);
+		int old = g.getFontEscapement();
+		g.setFontEscapement(newEscapement);
+		drawText(str, x+deltaX, y+deltaY);
+		//drawText(str, x-deltaX, y-deltaY);
+		//drawRect(x+deltaX, y+deltaY, fontMetrics.stringWidth(str), distance);
+		g.setFontEscapement(old);
 	}
 
 

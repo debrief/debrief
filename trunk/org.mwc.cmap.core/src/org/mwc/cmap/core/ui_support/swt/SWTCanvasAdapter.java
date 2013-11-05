@@ -1007,6 +1007,75 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		}
 	}
 
+	@Override
+	public void drawText(final String theStr, final int x, final int y,
+			float rotate, boolean above)
+	{
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed())
+		{
+
+			final FontData[] fd = _theDest.getFont().getFontData();
+			final FontData fontData = fd[0];
+			
+			int deltaX = 0, deltaY = 0;
+			
+			int height = _theDest.getFontMetrics().getDescent() + _theDest.getFontMetrics().getAscent() + _theDest.getFontMetrics().getLeading();
+			
+			if (!above) {
+				double direction = Math.toRadians(rotate);
+				deltaX = -(int) (height * Math.cos(direction));
+				deltaY = -(int) (height * Math.sin(direction));
+			} else {
+				
+				height = _theDest.getFontMetrics().getLeading();
+				double direction = Math.toRadians(rotate);
+				deltaX = (int) (height * Math.cos(direction));
+				deltaY = (int) (height * Math.sin(direction));				
+			}
+			
+			if (rotate > 180) {
+				rotate -= 180;
+				final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
+						fontData.getHeight());
+				final int distance = getStringWidth(awFont, theStr);
+	
+				double direction = Math.toRadians(rotate-90);
+				if (!above) {
+					deltaX = - (int) 1.5*deltaX - (int) (distance * Math.cos(direction));
+					deltaY = - (int) 1.5*deltaY - (int) (distance * Math.sin(direction));
+				} else {
+					deltaX -= (int) (distance * Math.cos(direction));
+					deltaY -= (int) (distance * Math.sin(direction));
+				}
+			}
+			rotate -= 90;
+			
+			
+			final Transform oldTransform = new Transform(_theDest.getDevice());
+			_theDest.getTransform(oldTransform);
+
+			final Transform tr = new Transform(_theDest.getDevice());
+			
+			tr.translate(x+deltaX, y+deltaY);
+			
+			tr.rotate(rotate);
+			
+			tr.translate(-x-deltaX, -y-deltaY);
+			
+			_theDest.setTransform(tr);
+			_theDest.drawText(theStr, x+deltaX, y+deltaY, true);
+			
+			//_theDest.drawRectangle(x+deltaX, y+deltaY, 2, 2);
+			
+			_theDest.setTransform(oldTransform);
+			
+			tr.dispose();
+		}
+	}
+
 	public void drawText(final String theStr, final int x, final int y)
 	{
 

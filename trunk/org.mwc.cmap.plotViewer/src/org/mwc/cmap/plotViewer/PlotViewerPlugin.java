@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.ui_support.swt.SWTRasterPainter;
+import org.mwc.cmap.plotViewer.actions.ExportRTF;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
@@ -17,6 +18,7 @@ import MWC.GUI.Chart.Painters.SpatialRasterPainter;
  * The main plugin class to be used in the desktop.
  */
 public class PlotViewerPlugin extends AbstractUIPlugin {
+	public static final String PLUGIN_ID = "org.mwc.cmap.plotViewer";
 	//The shared instance.
 	private static PlotViewerPlugin plugin;
 	//Resource bundle.
@@ -41,6 +43,7 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 		
 		// sort out export to WMF
 		ExportWMF.init(org.mwc.cmap.core.CorePlugin.getToolParent());
+		ExportRTF.init(org.mwc.cmap.core.CorePlugin.getToolParent());
 		
 		// override the spatial raster painter - since we're working with SWT images, not JAva ones
 		SpatialRasterPainter.overridePainter(new SWTRasterPainter());

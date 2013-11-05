@@ -19,6 +19,7 @@ import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Properties.CardinalPointsPropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
+import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -542,7 +543,11 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 
 				// ok, now plot it
 				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
-						lastLoc, 2.0);
+						lastLoc, 2.0, true);
+				textLabel = getName().replace(TextLabel.NEWLINE_MARKER, " ");
+				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+						lastLoc, 2.0, false);
+				
 			}
 		}
 	}

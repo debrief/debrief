@@ -204,6 +204,15 @@ public interface CanvasType {
   public void drawText(String str, int x, int y, float rotate);
   
   /**
+   * Draw rotated text above/below
+   *
+   * @param str parameter for drawText
+   *
+   */
+  public void drawText(String str, int x, int y, float rotate, boolean above);
+  
+  
+  /**
    * setColor
    *
    * @param theCol parameter for setColor
