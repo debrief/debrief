@@ -3,10 +3,9 @@ package com.planetmayo.debrief.satc.model.generator.impl.sa;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.uncommons.maths.random.MersenneTwisterRNG;
@@ -105,7 +104,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		fireStartingGeneration();
 		if (fullRerun || legs == null)
 		{
-			generateLegs = jobsManager.schedule(new Job<Void, Void>("Generate legs") {
+			generateLegs = jobsManager.schedule(new Job<Void, Void>("Generate legs", SA_GENERATOR_GROUP) {
 
 				@Override
 				protected <E> Void run(IProgressMonitor monitor, Job<Void, E> previous)
@@ -116,7 +115,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 				}
 			});
 		}
-		mainJob = jobsManager.scheduleAfter(new Job<Void, Void>("Calculate SA") {
+		mainJob = jobsManager.scheduleAfter(new Job<Void, Void>("Calculate SA", SA_GENERATOR_GROUP) {
 
 			@Override
 			protected <E> Void run(IProgressMonitor monitor, Job<Void, E> previous)
@@ -145,63 +144,102 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 
 	protected void runSA(IProgressMonitor monitor) throws InterruptedException
 	{
-		Random rnd = new MersenneTwisterRNG();		
-		ExecutorService executor = Executors.newFixedThreadPool(parameters.getParallelThreads());
-		try 
+		Job<List<CoreRoute>, Void>[] jobs = startSAJobs(monitor);
+		List<CoreRoute> results = new ArrayList<CoreRoute>(jobs[0].getResult());
+		int length = jobs.length;
+		int legsCount = results.size();
+		for (int i = 1; i < length; i++) 
 		{
-			List<CoreRoute> routes = new ArrayList<CoreRoute>();
-			for (CoreLeg leg : legs)
+			List<CoreRoute> jobResult = jobs[i].getResult();
+			for (int j = 0; j < legsCount; j++) 
 			{
-				if (leg.getType() == LegType.STRAIGHT)
+				if (results.get(j).getScore() > jobResult.get(j).getScore()) 
 				{
-					routes.add(findRouteForLeg(monitor, (StraightLeg) leg, rnd, executor));
+					results.set(j, jobResult.get(j));
 				}
 			}
-			routes = generateAlteringRoutes(routes);
-			fireSolutionsReady(new CompositeRoute[] { new CompositeRoute(routes) });
 		}
-		finally 
-		{
-			executor.shutdownNow();
-		}
+		results = generateAlteringRoutes(results);
+		new CompositeRoute(results);
+		fireSolutionsReady(new CompositeRoute[] { new CompositeRoute(results) });
 	}
 	
-	protected CoreRoute findRouteForLeg(IProgressMonitor progressMonitor, StraightLeg leg, 
-			Random rnd, ExecutorService executor) throws InterruptedException 
+	protected Job<List<CoreRoute>, Void>[] startSAJobs(IProgressMonitor monitor) throws InterruptedException 
+	{
+		@SuppressWarnings("unchecked")
+		final Job<List<CoreRoute>, Void>[] jobs = new Job[parameters.getParallelThreads()];
+		
+		final Random rnd = new MersenneTwisterRNG();		
+		final Semaphore semaphore = new Semaphore(-parameters.getParallelThreads() + 1);
+		final AtomicBoolean hasException = new AtomicBoolean(false);
+		
+		for (int i = 0; i < parameters.getParallelThreads(); i++)
+		{
+			jobs[i] = jobsManager.schedule(new Job<List<CoreRoute>, Void>("SA job thread " + (i + 1), SA_GENERATOR_GROUP)
+			{
+				@Override
+				protected <E> List<CoreRoute> run(IProgressMonitor monitor, Job<Void, E> previous)
+						throws InterruptedException
+				{					
+					List<CoreRoute> result = new ArrayList<CoreRoute>();
+					int legIndex = 1;
+					for (CoreLeg leg : legs)
+					{
+						if (leg.getType() == LegType.STRAIGHT)
+						{
+							result.add(findRouteForLeg(monitor, (StraightLeg) leg, legIndex,
+									rnd));
+							legIndex++;
+						}
+					}
+					return result;
+				}
+
+				@Override
+				protected void onComplete()
+				{
+					if (! isFinishedCorrectly())
+					{
+						hasException.set(true);
+					}
+					semaphore.release();
+				}
+			});
+		}
+		while (! semaphore.tryAcquire(2, TimeUnit.SECONDS)) 
+		{
+			if (monitor.isCanceled() || hasException.get()) 
+			{
+				jobsManager.cancelGroup(SA_GENERATOR_GROUP);
+				throw new InterruptedException();
+			}
+		}
+		if (hasException.get()) 
+		{
+			throw new InterruptedException();			
+		}
+		return jobs;
+	}
+	
+	protected CoreRoute findRouteForLeg(IProgressMonitor progressMonitor, StraightLeg leg, int legIndex, Random rnd) throws InterruptedException 
 	{
 		SimulatedAnnealing simulator = new SimulatedAnnealing(progressMonitor, parameters, leg, 
-				contributions, problemSpaceView, rnd);
-		List<Future<CoreRoute>> results = new ArrayList<Future<CoreRoute>>(parameters.getParallelThreads());
-		for (int i = 0; i < parameters.getParallelThreads(); i++) 
+				contributions, rnd);
+		CoreRoute min = null;
+		boolean joined = parameters.isJoinedIterations();
+		progressMonitor.beginTask("Leg " + legIndex, parameters.getIterationsInThread());
+		for (int k = 0; k < parameters.getIterationsInThread(); k++)			
 		{
-			results.add(executor.submit(simulator.clone()));
-		}
-		try 
-		{
-			CoreRoute min = results.get(0).get();
-			for (Future<CoreRoute> result : results) 
+			progressMonitor.worked(1);
+			progressMonitor.subTask("Iteration " + (k + 1));
+			CoreRoute newResult = simulator.simulateAnnealing(joined ? min : null);
+			if (min == null || newResult.getScore() < min.getScore()) 
 			{
-				CoreRoute current = result.get();
-				if (current.getScore() < min.getScore())
-				{
-					min = current;
-				}
+				min = newResult;
 			}
-			return min;
 		}
-		catch (ExecutionException ex)
-		{
-			if (ex.getCause() instanceof InterruptedException) 
-			{
-				throw (InterruptedException) ex.getCause();
-			} 
-			LogFactory.getLog().error("Problem in SA thread", ex);					
-		}		
-		catch (InterruptedException ex)
-		{
-			LogFactory.getLog().error("Problem in SA thread", ex);		
-		}
-		return null;
+		progressMonitor.done();
+		return min;
 	}
 
 	@Override
