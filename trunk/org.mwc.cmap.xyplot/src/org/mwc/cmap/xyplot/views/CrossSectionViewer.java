@@ -55,6 +55,10 @@ public class CrossSectionViewer
 	
 	private List<XYSeries> _series = new ArrayList<XYSeries>();
 	
+	private XYLineAndShapeRenderer _snailRenderer = new XYLineAndShapeRenderer();
+	
+	private XYDotRenderer _discreteRenderer = new XYDotRenderer();
+	
 	/**
 	 * the chart marker
 	 */
@@ -93,45 +97,41 @@ public class CrossSectionViewer
 			return;
 		
 		_series = new ArrayList<XYSeries>();
-		walkThrough(theLayers, line);
+		//TODO: check for Snail period
+		final boolean is_snail = false;
+		walkThrough(theLayers, line, is_snail);
 		for (XYSeries series: _series)
 			_dataset.addSeries(series);
 		
+		if (is_snail)
+			_chart.getXYPlot().setRenderer(_snailRenderer);
+		else
+			_chart.getXYPlot().setRenderer(_discreteRenderer);
 		_chart.getXYPlot().setDataset(_dataset);
-		printDataset(_dataset);
+		//printDataset(_dataset);
 	}
 	
 	private void setDiscreteRenderer(final int series, final Color paint)
-	{
-		XYDotRenderer renderer = new XYDotRenderer();
-		    
-		renderer.setSeriesShape(series, rect);
+	{	    
+		_discreteRenderer.setSeriesShape(series, rect);
 		
-		//TODO: paint instead of Color.blue
-		renderer.setBasePaint(Color.blue);
-		renderer.setBaseFillPaint(Color.blue);
-		renderer.setSeriesFillPaint(series, Color.blue);
+		_discreteRenderer.setSeriesFillPaint(series, paint);
+		_discreteRenderer.setSeriesPaint(series, paint);
 		//TODO: constants
-		renderer.setDotHeight(6);
-		renderer.setDotWidth(6);	   
-	    
-		_chart.getXYPlot().setRenderer(renderer);
+		_discreteRenderer.setDotHeight(6);
+		_discreteRenderer.setDotWidth(6);	   
 	}
 	
 	private void setSnailRenderer(final int series, final Color paint) 
-	{
-		final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-		// _renderer.setBaseShapesFilled(true);
-
-		renderer.setSeriesShape(series, rect);
-		renderer.setSeriesFillPaint(series, paint);
-		// _renderer.setSeriesPaint(0, paint);
-		// _renderer.setSeriesPaint(0, line);
-		renderer.setUseFillPaint(true);
-		renderer.setSeriesShapesFilled(series, true);
-		renderer.setSeriesShapesVisible(series, true);
+	{		
+		_snailRenderer.setSeriesShape(series, rect);
 		
-		_chart.getXYPlot().setRenderer(renderer);
+		_snailRenderer.setSeriesFillPaint(series, paint);
+		_snailRenderer.setSeriesPaint(series, paint);
+
+		_snailRenderer.setUseFillPaint(true);
+		_snailRenderer.setSeriesShapesFilled(series, true);
+		_snailRenderer.setSeriesShapesVisible(series, true);		
 	}
 	
 	private void printDataset(XYDataset xydataset)
@@ -175,7 +175,7 @@ public class CrossSectionViewer
 		_propListeners.remove(listener);		
 	}
 
-	private void walkThrough(final Object root, final LineShape line)
+	private void walkThrough(final Object root, final LineShape line, final boolean is_snail)
 	{
 		Enumeration<Editable> numer; 
 	    if (root instanceof Layer)
@@ -192,9 +192,7 @@ public class CrossSectionViewer
 	    			final WatchableList wlist = (WatchableList) next;
 	    			if (!(wlist instanceof TrackWrapper))
 	    				return;
-	    			final HiResDate now = new HiResDate();
-	    			//TODO: check for Snail period
-	    			final boolean is_snail = false;
+	    			final HiResDate now = new HiResDate();	    			
 	    			if (is_snail)
 	    			{
 	    				//TODO: get the snail period
@@ -205,7 +203,7 @@ public class CrossSectionViewer
 	    				final Collection<Editable> wbs  = wlist.getItemsBetween(start_date, now);
 	    			    final Iterator<Editable> itr = wbs.iterator();
 		        		//TODO: set the series name
-	    			    final XYSeries series = new XYSeries("Watchables between [now - snail_period; now]");
+	    			    final XYSeries series = new XYSeries(wlist.getName());
 	    			    Color paint = Color.GRAY;
 	    		        while (itr.hasNext()) 
 	    		        {
@@ -216,12 +214,12 @@ public class CrossSectionViewer
 	    		        		final Double x_coord = new Double(_calc.getDistance(line, (Watchable) ed));
 	    		        		final Double y_coord = new Double(((Watchable) ed).getDepth());
 	    		        		series.add(x_coord, y_coord);
-	    		        	}	
-			    			//TODO: remove hard-coded values
-	    		        	series.add(0.0450068580566741 + _series.size(), 0.0);
-	    		        	_series.add(series);	    		        	
-			    			setSnailRenderer(_series.size()-1, paint);
-	    		        }	    		        
+	    		        	}		    			
+	    		        }	 
+	    		        //TODO: remove hard-coded values
+	    		        //series.add(0.0450068580566741 + _series.size(), 0.0);
+    		        	_series.add(series);	    		        	
+		    			setSnailRenderer(_series.size()-1, paint);
 	    			}
 	    			else
 	    			{	    				
@@ -242,7 +240,7 @@ public class CrossSectionViewer
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
-	    		walkThrough(next, line);
+	    		walkThrough(next, line, is_snail);
 	    }
 	}
 	
