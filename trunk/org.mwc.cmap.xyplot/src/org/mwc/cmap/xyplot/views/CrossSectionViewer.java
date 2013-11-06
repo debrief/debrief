@@ -2,7 +2,6 @@ package org.mwc.cmap.xyplot.views;
 
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
@@ -27,7 +26,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -35,6 +34,7 @@ import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldDistance;
 
 public class CrossSectionViewer
 {
@@ -49,8 +49,7 @@ public class CrossSectionViewer
 		
 	private JFreeChart _chart;
 	
-	//TODO: get the units
-	private ILocationCalculator _calc = new LocationCalculator();
+	private ILocationCalculator _calc = new LocationCalculator(WorldDistance.KM);
 	
 	private XYSeriesCollection _dataset = new XYSeriesCollection();
 	
@@ -75,8 +74,8 @@ public class CrossSectionViewer
 		//TODO: restore Previous Plot?
 		_chart = ChartFactory.createXYLineChart
 				("Cross Section", // Title
-				"Distances along the line", // X-Axis label
-				"depth/elevation", // Y-Axis label
+				"Distance (km)", // X-Axis label
+				"Elevation (m)", // Y-Axis label
 				_dataset, // Dataset,
 				PlotOrientation.VERTICAL,
 				true, // Show legend,
@@ -119,32 +118,30 @@ public class CrossSectionViewer
 		_chart.getXYPlot().setRenderer(renderer);
 	}
 	
-	private void setSnailRenderer(final Color paint) 
+	private void setSnailRenderer(final int series, final Color paint) 
 	{
 		final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 		// _renderer.setBaseShapesFilled(true);
 
-		renderer.setSeriesShape(0, rect);
-		renderer.setSeriesFillPaint(0, paint);
+		renderer.setSeriesShape(series, rect);
+		renderer.setSeriesFillPaint(series, paint);
 		// _renderer.setSeriesPaint(0, paint);
 		// _renderer.setSeriesPaint(0, line);
 		renderer.setUseFillPaint(true);
-		renderer.setSeriesShapesFilled(0, true);
-		renderer.setSeriesShapesVisible(0, true);
+		renderer.setSeriesShapesFilled(series, true);
+		renderer.setSeriesShapesVisible(series, true);
 		
 		_chart.getXYPlot().setRenderer(renderer);
 	}
 	
 	private void printDataset(XYDataset xydataset)
 	{
-		Comparable comparable;
 		int indexOf;
-		for (int i = 0; i < xydataset.getSeriesCount(); i++) {
-
-			comparable = xydataset.getSeriesKey(i);
-			indexOf = xydataset.indexOf(comparable);
-			for (int j = 0; j < xydataset.getItemCount(indexOf); j++) {
-
+		for (int i = 0; i < xydataset.getSeriesCount(); i++) 
+		{
+			indexOf = xydataset.indexOf(xydataset.getSeriesKey(i));
+			for (int j = 0; j < xydataset.getItemCount(indexOf); j++) 
+			{
 				double x = xydataset.getXValue(indexOf, j);
 				double y = xydataset.getYValue(indexOf, j);
 				System.out.println(x + " ; " + y);
@@ -193,7 +190,7 @@ public class CrossSectionViewer
 	    	if (next instanceof WatchableList)
 		    {
 	    			final WatchableList wlist = (WatchableList) next;
-	    			if (wlist instanceof ShapeWrapper)
+	    			if (!(wlist instanceof TrackWrapper))
 	    				return;
 	    			final HiResDate now = new HiResDate();
 	    			//TODO: check for Snail period
@@ -220,14 +217,14 @@ public class CrossSectionViewer
 	    		        		final Double y_coord = new Double(((Watchable) ed).getDepth());
 	    		        		series.add(x_coord, y_coord);
 	    		        	}	
-	    		        	_dataset = new XYSeriesCollection(series);   
-	    		        	
-	    		        	setSnailRenderer(paint);
+			    			//TODO: remove hard-coded values
+	    		        	series.add(0.0450068580566741 + _series.size(), 0.0);
+	    		        	_series.add(series);	    		        	
+			    			setSnailRenderer(_series.size()-1, paint);
 	    		        }	    		        
 	    			}
 	    			else
-	    			{
-	    				
+	    			{	    				
 	    				final Watchable[] wbs = wlist.getNearestTo(now);
 	    				//TODO: set the series name
 	    				Color paint = wlist.getColor();
@@ -241,34 +238,13 @@ public class CrossSectionViewer
 		    			//TODO: remove hard-coded values
 		    			series.add(0.0450068580566741 + _series.size(), 0.0);
 		    			_series.add(series);
-		    			//TODO: pass series idx
-		    			setDiscreteRenderer(_series.size()-1, paint);
-	    					    				
+		    			setDiscreteRenderer(_series.size()-1, paint);	    					    				
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
 	    		walkThrough(next, line);
 	    }
 	}
-	
-	private final class MyRenderer extends XYLineAndShapeRenderer 
-	{
-		 Color _color;
-
-	     MyRenderer(boolean lines, boolean shapes, Color color) 
-	     {
-	        	
-	        super(lines, shapes);
-	        _color = color;
-	     }
-
-	        @Override
-	        public Paint getItemFillPaint(int row, int column) 
-	        {
-	            return _color;
-	        }
-	}
-	
 	
 
 }

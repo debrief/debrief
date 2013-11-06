@@ -1,7 +1,5 @@
 package org.mwc.cmap.xyplot.views;
 
-import java.util.Date;
-
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.Watchable;
