@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Paint;
 import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,11 +21,13 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -47,17 +49,18 @@ public class CrossSectionViewer
 		
 	private JFreeChart _chart;
 	
-	private XYLineAndShapeRenderer _renderer = new XYLineAndShapeRenderer();
-	
 	//TODO: get the units
 	private ILocationCalculator _calc = new LocationCalculator();
 	
-	private XYDataset _dataset;
+	private XYSeriesCollection _dataset = new XYSeriesCollection();
+	
+	private List<XYSeries> _series = new ArrayList<XYSeries>();
 	
 	/**
 	 * the chart marker
 	 */
-	private static final Shape circle = new Ellipse2D.Double(-3, -3, 6, 6);
+	private static final Shape rect = new Rectangle2D.Double(-4, -4, 8, 8);
+	
    	
 	protected CrossSectionViewer(final Composite parent)
 	{
@@ -75,13 +78,11 @@ public class CrossSectionViewer
 				"Distances along the line", // X-Axis label
 				"depth/elevation", // Y-Axis label
 				_dataset, // Dataset,
-				PlotOrientation.HORIZONTAL,
+				PlotOrientation.VERTICAL,
 				true, // Show legend,
 				true, //tooltips
 				true //urs
 				);
-		
-	    _chart.getXYPlot().setRenderer(_renderer);
         
 		final ChartPanel jfreeChartPanel = new ChartPanel(_chart);
 		_chartFrame.add(jfreeChartPanel);		
@@ -91,27 +92,47 @@ public class CrossSectionViewer
 	{
 		if (theLayers == null || line == null)
 			return;
+		
+		_series = new ArrayList<XYSeries>();
 		walkThrough(theLayers, line);
+		for (XYSeries series: _series)
+			_dataset.addSeries(series);
+		
 		_chart.getXYPlot().setDataset(_dataset);
 		printDataset(_dataset);
 	}
 	
-	private void setDiscreteRenderer(Color paint)
+	private void setDiscreteRenderer(final int series, final Color paint)
 	{
-		_renderer.setSeriesShape(0, circle);
-		_renderer.setSeriesPaint(0, paint);
-	   // _renderer.setSeriesPaint(0, line);
-	    _renderer.setUseFillPaint(true);
-	    _renderer.setSeriesShapesFilled(0, true);
-	    _renderer.setSeriesShapesVisible(0, true);
-	    _renderer.setUseOutlinePaint(true);
-	    //_renderer.setSeriesOutlinePaint(0, line);
+		XYDotRenderer renderer = new XYDotRenderer();
+		    
+		renderer.setSeriesShape(series, rect);
 		
+		//TODO: paint instead of Color.blue
+		renderer.setBasePaint(Color.blue);
+		renderer.setBaseFillPaint(Color.blue);
+		renderer.setSeriesFillPaint(series, Color.blue);
+		//TODO: constants
+		renderer.setDotHeight(6);
+		renderer.setDotWidth(6);	   
+	    
+		_chart.getXYPlot().setRenderer(renderer);
 	}
 	
-	private void setSnailRenderer()
+	private void setSnailRenderer(final Color paint) 
 	{
+		final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+		// _renderer.setBaseShapesFilled(true);
+
+		renderer.setSeriesShape(0, rect);
+		renderer.setSeriesFillPaint(0, paint);
+		// _renderer.setSeriesPaint(0, paint);
+		// _renderer.setSeriesPaint(0, line);
+		renderer.setUseFillPaint(true);
+		renderer.setSeriesShapesFilled(0, true);
+		renderer.setSeriesShapesVisible(0, true);
 		
+		_chart.getXYPlot().setRenderer(renderer);
 	}
 	
 	private void printDataset(XYDataset xydataset)
@@ -172,6 +193,8 @@ public class CrossSectionViewer
 	    	if (next instanceof WatchableList)
 		    {
 	    			final WatchableList wlist = (WatchableList) next;
+	    			if (wlist instanceof ShapeWrapper)
+	    				return;
 	    			final HiResDate now = new HiResDate();
 	    			//TODO: check for Snail period
 	    			final boolean is_snail = false;
@@ -186,33 +209,41 @@ public class CrossSectionViewer
 	    			    final Iterator<Editable> itr = wbs.iterator();
 		        		//TODO: set the series name
 	    			    final XYSeries series = new XYSeries("Watchables between [now - snail_period; now]");
+	    			    Color paint = Color.GRAY;
 	    		        while (itr.hasNext()) 
 	    		        {
 	    		        	final Editable ed = itr.next();
 	    		        	if (ed instanceof Watchable) 
 	    		        	{
+	    		        		paint = ((Watchable) ed).getColor();
 	    		        		final Double x_coord = new Double(_calc.getDistance(line, (Watchable) ed));
 	    		        		final Double y_coord = new Double(((Watchable) ed).getDepth());
 	    		        		series.add(x_coord, y_coord);
 	    		        	}	
-	    		        	_dataset = new XYSeriesCollection(series);   	
+	    		        	_dataset = new XYSeriesCollection(series);   
+	    		        	
+	    		        	setSnailRenderer(paint);
 	    		        }	    		        
 	    			}
 	    			else
 	    			{
+	    				
 	    				final Watchable[] wbs = wlist.getNearestTo(now);
 	    				//TODO: set the series name
-	    			    final XYSeries series = new XYSeries("Watchables neares to Now");
+	    				Color paint = wlist.getColor();
+	    				XYSeries series = new XYSeries(wlist.getName());
 	    				for(Watchable wb: wbs)
-	    				{
-	    					final Double x_coord = new Double(_calc.getDistance(line, wb));
-    		        		final Double y_coord = new Double(wb.getDepth());
-	    					series.add(x_coord, y_coord);    		        		
-	    				}
-	    				//TODO: remove hard-coded values
-	    				series.add(0.0350068580566741, 0.0);
-	    				_dataset = new XYSeriesCollection(series);
-	    				setDiscreteRenderer(wlist.getColor());
+		    			{		    					
+		    				final Double x_coord = new Double(_calc.getDistance(line, wb));
+	    		        	final Double y_coord = new Double(wb.getDepth());
+		    				series.add(x_coord, y_coord);    		        		
+		    			}
+		    			//TODO: remove hard-coded values
+		    			series.add(0.0450068580566741 + _series.size(), 0.0);
+		    			_series.add(series);
+		    			//TODO: pass series idx
+		    			setDiscreteRenderer(_series.size()-1, paint);
+	    					    				
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
