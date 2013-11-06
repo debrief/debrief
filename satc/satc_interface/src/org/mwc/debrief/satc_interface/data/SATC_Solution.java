@@ -721,7 +721,7 @@ public class SATC_Solution extends BaseLayer implements
 						.getCoordinate());
 
 				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
-						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD);
+						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD, true);
 			}
 
 		}
