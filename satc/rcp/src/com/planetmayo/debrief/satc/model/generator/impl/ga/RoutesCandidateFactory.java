@@ -9,33 +9,47 @@ import java.util.Random;
 
 import org.uncommons.watchmaker.framework.CandidateFactory;
 
+import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.legs.StraightLeg;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.vividsolutions.jts.geom.Point;
 
-public class RoutesCandidateFactory implements CandidateFactory<List<Point>>
+public class RoutesCandidateFactory implements CandidateFactory<List<StraightRoute>>
 {
-	private List<LegOperations> legs;
+	private List<StraightLeg> straightLegs;
 	
-	public RoutesCandidateFactory(List<LegOperations> legs) 
+	public RoutesCandidateFactory(List<StraightLeg> legs) 
 	{
-		this.legs = legs;
+		this.straightLegs = new ArrayList<StraightLeg>();
+		for (StraightLeg leg : legs)
+		{
+			if (leg.getType() == LegType.STRAIGHT)
+			{
+				this.straightLegs.add(leg);
+			}
+		}
 	}
 
 	@Override
-	public List<List<Point>> generateInitialPopulation(int populationSize, Random rng)
+	public List<List<StraightRoute>> generateInitialPopulation(int populationSize, Random rng)
 	{
 		ArrayList<Points> points = new ArrayList<Points>();
-		for (LegOperations leg : legs)
+		for (StraightLeg leg : straightLegs)
 		{
-			points.add(new Points(leg.getLeg().getStartPoints()));
-			points.add(new Points(leg.getLeg().getEndPoints()));
+			points.add(new Points(leg.getStartPoints()));
+			points.add(new Points(leg.getEndPoints()));
 		}
-		List<List<Point>> population = new ArrayList<List<Point>>(populationSize);
+		List<List<StraightRoute>> population = new ArrayList<List<StraightRoute>>(populationSize);
 		for (int i = 0; i < populationSize; i++)
 		{
-			List<Point> solution = new ArrayList<Point>(points.size());
-			for (Points point : points) 
+			List<StraightRoute> solution = new ArrayList<StraightRoute>(points.size());
+			int j = 0;
+			for (StraightLeg leg : straightLegs) 
 			{
-				solution.add(point.getNext(rng));
+				Point start = points.get(j).getNext(rng);
+				Point end = points.get(j + 1).getNext(rng);				
+				solution.add((StraightRoute) leg.createRoute("", start, end));
+				j += 2;
 			}
 			population.add(solution);
 		}
@@ -43,10 +57,10 @@ public class RoutesCandidateFactory implements CandidateFactory<List<Point>>
 	}
 
 	@Override
-	public List<List<Point>> generateInitialPopulation(int populationSize, 
-			Collection<List<Point>> seedCandidates, Random rng)
+	public List<List<StraightRoute>> generateInitialPopulation(int populationSize, 
+			Collection<List<StraightRoute>> seedCandidates, Random rng)
 	{
-		ArrayList<List<Point>> population = new ArrayList<List<Point>>(seedCandidates);
+		ArrayList<List<StraightRoute>> population = new ArrayList<List<StraightRoute>>(seedCandidates);
 		if (population.size() < populationSize)
 		{
 			population.addAll(generateInitialPopulation(populationSize - population.size(), rng));
@@ -55,13 +69,14 @@ public class RoutesCandidateFactory implements CandidateFactory<List<Point>>
 	}
 
 	@Override
-	public List<Point> generateRandomCandidate(Random rng)
+	public List<StraightRoute> generateRandomCandidate(Random rng)
 	{
-		ArrayList<Point> candidate = new ArrayList<Point>();
-		for (LegOperations leg : legs) 
+		ArrayList<StraightRoute> candidate = new ArrayList<StraightRoute>();
+		for (StraightLeg leg : straightLegs) 
 		{
-			candidate.add(leg.getNextStartPoint());
-			candidate.add(leg.getNextEndPoint());
+			Point start =  leg.getStartPoints().get(rng.nextInt(leg.getStartPoints().size()));
+			Point end =  leg.getStartPoints().get(rng.nextInt(leg.getStartPoints().size()));
+			candidate.add((StraightRoute) leg.createRoute("", start, end));
 		}
 		return candidate;
 	}

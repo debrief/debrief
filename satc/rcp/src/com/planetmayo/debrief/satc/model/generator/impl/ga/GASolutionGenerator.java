@@ -2,11 +2,10 @@ package com.planetmayo.debrief.satc.model.generator.impl.ga;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Random;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.uncommons.maths.number.NumberGenerator;
+import org.uncommons.maths.random.GaussianGenerator;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.CandidateFactory;
@@ -20,7 +19,8 @@ import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.TerminationCondition;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
 import org.uncommons.watchmaker.framework.operators.ListCrossover;
-import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
+import org.uncommons.watchmaker.framework.operators.SplitEvolution;
+import org.uncommons.watchmaker.framework.selection.TournamentSelection;
 import org.uncommons.watchmaker.framework.termination.ElapsedTime;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
@@ -34,8 +34,9 @@ import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.legs.StraightLeg;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
-import com.vividsolutions.jts.geom.Point;
 
 public class GASolutionGenerator extends AbstractSolutionGenerator
 {
@@ -43,7 +44,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	
 	public static final String NAME = "Genetic Algorithm";
 	
-	private volatile List<LegOperations> legs;
+	private volatile List<StraightLeg> straightLegs;
 
 	private volatile Job<Void, Void> mainJob;
 	
@@ -53,10 +54,10 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	{
 		super(contributions, jobsManager, problemSpace);
 		parameters = new GAParameters();
-		parameters.setElitizm(70);
+		parameters.setElitizm(10);
 		parameters.setMutationProbability(0.25);
-		parameters.setPopulationSize(500);
-		parameters.setStagnationSteps(100);
+		parameters.setPopulationSize(70);
+		parameters.setStagnationSteps(250);
 		parameters.setTopRoutes(10);
 		parameters.setTimeoutBetweenIterations(0);
 		parameters.setTimeout(30000);
@@ -86,12 +87,12 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				LogFactory.getLog().error("Thread was interrupted", ex);
 			}
 		}
-		if (legs != null)
+		if (straightLegs != null)
 		{
-			if (legs != null)
+			if (straightLegs != null)
 			{
-				legs.clear();
-				legs = null;
+				straightLegs.clear();
+				straightLegs = null;
 			}
 		}
 	}
@@ -105,9 +106,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}
 		fireStartingGeneration();
 		Job<Void, Void> previous = null;
-		if (fullRerun || legs == null) 
+		if (fullRerun || straightLegs == null) 
 		{
-			final Random random = new MersenneTwisterRNG();
 			previous = jobsManager.schedule(new Job<Void, Void>("Generate Legs", GA_GENERATOR_GROUP)
 				{
 
@@ -116,11 +116,14 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 						throws InterruptedException
 					{
 					List<CoreLeg> rawLegs = getTheLegs(problemSpaceView.states(), monitor);
-					legs = new ArrayList<LegOperations>();
+					straightLegs = new ArrayList<StraightLeg>();
 					for (CoreLeg leg : rawLegs)
 					{
-						leg.generatePoints(_myPrecision.getNumPoints());
-						legs.add(new LegOperations(leg, random));
+						if (leg.getType() == LegType.STRAIGHT) 
+						{
+							leg.generatePoints(_myPrecision.getNumPoints());
+							straightLegs.add((StraightLeg) leg);
+						}
 					}					
 					return null;
 				}
@@ -155,27 +158,34 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	}
 	
 	private void runGA(final IProgressMonitor progressMonitor) throws InterruptedException
-	{		
-		List<EvolutionaryOperator<List<Point>>> operators = new ArrayList<EvolutionaryOperator<List<Point>>>();
-		operators.add(new ListCrossover<Point>(new NumberGenerator<Integer>()
-		{
-			Random rng = new MersenneTwisterRNG();
+	{	
+		Random rng = new MersenneTwisterRNG();
+		List<EvolutionaryOperator<List<StraightRoute>>> operators = new ArrayList<EvolutionaryOperator<List<StraightRoute>>>();
+		
+		SplitEvolution<List<StraightRoute>> crossovers = new SplitEvolution<List<StraightRoute>>(
+				new ListCrossover<StraightRoute>(),
+				new PointsCrossover(straightLegs, new Probability(1), new Probability(0.33), new Probability(0.33)),
+				new GaussianGenerator(0.25, .5, rng) {
 
-			@Override
-			public Integer nextValue()
-			{
-				return rng.nextInt(2) + 1;
-			}			
-		}));
-		operators.add(new PointsMutation(legs, new Probability(parameters.getMutationProbability())));
+					@Override
+					public Double nextValue()
+					{
+						return Math.max(Math.min(super.nextValue(), 0), 1);
+					}					
+				}
+		);
+		PointsMutationToVertexes mutation = new PointsMutationToVertexes(straightLegs, new Probability(0.7));
+		operators.add(crossovers);
+		operators.add(mutation);
 		
 		final GAEngine engine = new GAEngine(
-				new RoutesCandidateFactory(legs), 
-				new EvolutionPipeline<List<Point>>(operators),
-				new RoutesFitnessEvaluator(legs, contributions),
-				new RouletteWheelSelection(), 				
-				new MersenneTwisterRNG()
+				new RoutesCandidateFactory(straightLegs), 
+				new EvolutionPipeline<List<StraightRoute>>(operators),
+				new RoutesFitnessEvaluator(straightLegs, contributions),
+				new TournamentSelection(new Probability(1)), 				
+				rng
 		);
+		engine.addEvolutionObserver(mutation);
 		TerminationCondition progressMonitorCondition = new TerminationCondition()
 		{			
 			@Override
@@ -184,7 +194,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				return progressMonitor.isCanceled();
 			}
 		};
-		List<Point> solution = engine.evolve(
+		List<StraightRoute> solution = engine.evolve(
 				parameters.getPopulationSize(), 
 				parameters.getElitizm(), 
 				progressMonitorCondition,
@@ -211,18 +221,10 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		fireSolutionsReady(new CompositeRoute[] {solutionToRoute(solution, true)});
 	}
 	
-	protected CompositeRoute solutionToRoute(List<Point> solution, boolean createAltering) 
+	protected CompositeRoute solutionToRoute(List<StraightRoute> solution, boolean createAltering) 
 	{
-		List<CoreRoute> routes = new ArrayList<CoreRoute>();
-		int i = 0;
-		for (LegOperations leg : legs)
-		{
-			if (leg.getLeg().getType() == LegType.STRAIGHT) 
-			{
-				routes.add(leg.getLeg().createRoute("", solution.get(i), solution.get(i + 1)));
-			}
-			i += 2;
-		}
+		@SuppressWarnings({"rawtypes", "unchecked"})
+		List<CoreRoute> routes = (List) solution;
 		if (createAltering)
 		{
 			routes = generateAlteringRoutes(routes);
@@ -245,7 +247,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	public void setPrecision(Precision precision)
 	{
 		super.setPrecision(precision);
-		if (legs != null) 
+		if (straightLegs != null) 
 		{
 			generateSolutions(true);
 		}
@@ -262,21 +264,17 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}		
 	}
 	
-	private class GAEngine extends GenerationalEvolutionEngine<List<Point>> 
+	private class GAEngine extends GenerationalEvolutionEngine<List<StraightRoute>> 
 	{
-		private long iterations = 0;
-		private CandidateFactory<List<Point>> candidateFactory;
 		private double topRoutesScore;
 		
-		
-		public GAEngine(CandidateFactory<List<Point>> candidateFactory,
-				EvolutionaryOperator<List<Point>> evolutionScheme,
-				FitnessEvaluator<? super List<Point>> fitnessEvaluator,
-				SelectionStrategy<? super List<Point>> selectionStrategy, Random rng)
+		public GAEngine(CandidateFactory<List<StraightRoute>> candidateFactory,
+				EvolutionaryOperator<List<StraightRoute>> evolutionScheme,
+				FitnessEvaluator<? super List<StraightRoute>> fitnessEvaluator,
+				SelectionStrategy<? super List<StraightRoute>> selectionStrategy, Random rng)
 		{
 			super(candidateFactory, evolutionScheme, fitnessEvaluator, selectionStrategy,
 					rng);
-			this.candidateFactory = candidateFactory;
 		}
 		
 		public double getTopRoutesScore()
@@ -285,11 +283,11 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}
 
 		@Override
-		protected List<EvaluatedCandidate<List<Point>>> nextEvolutionStep(
-				List<EvaluatedCandidate<List<Point>>> evaluatedPopulation, int eliteCount,
+		protected List<EvaluatedCandidate<List<StraightRoute>>> nextEvolutionStep(
+				List<EvaluatedCandidate<List<StraightRoute>>> evaluatedPopulation, int eliteCount,
 				Random rng)
 		{			
-			List<EvaluatedCandidate<List<Point>>> result = super.nextEvolutionStep(evaluatedPopulation, eliteCount, rng);
+			List<EvaluatedCandidate<List<StraightRoute>>> result = super.nextEvolutionStep(evaluatedPopulation, eliteCount, rng);
 			EvolutionUtils.sortEvaluatedPopulation(result, false);
 			List<CompositeRoute> routes = new ArrayList<CompositeRoute>(parameters.getTopRoutes());
 			for (int i = 0; i < parameters.getTopRoutes(); i++) 
@@ -327,97 +325,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			{
 				topRoutesScore = topRoutesScore / topCounts;
 			}			
-			iterations++;
-			return applyIterationChanges(result, rng);
-		}	
-		
-		private List<EvaluatedCandidate<List<Point>>> applyIterationChanges(final List<EvaluatedCandidate<List<Point>>> population, Random rng) 
-		{			
-			List<EvaluatedCandidate<List<Point>>> result = population;
-			double currentBestScore = result.get(0).getFitness();
-			if (iterations % parameters.getRecalculatePointsProbs() == 0) 
-			{				
-				for (LegOperations leg : legs)
-				{
-					leg.recalculateProbabilities(10);
-				}
-			}
-			if (iterations % parameters.getCheckReachability() == 0) 
-			{
-				boolean regeneratePopulation = false;
-				for (ListIterator<LegOperations> it = legs.listIterator(); it.hasNext(); ) 
-				{
-					LegOperations leg = it.next();
-					if (leg.hasNoAchievablePoints()) 
-					{
-						regeneratePopulation = true;
-						CoreLeg rawLeg = leg.getLeg();
-						rawLeg.generatePoints(rawLeg.getCurrentGridPrecision());
-						it.set(new LegOperations(rawLeg, rng));
-					}
-				}
-				if (regeneratePopulation) 
-				{
-					List<List<Point>> newPopulation = candidateFactory.generateInitialPopulation(parameters.getPopulationSize(), rng);
-					result = evaluatePopulation(newPopulation);
-				}
-			}
-			if (currentBestScore != Double.MAX_VALUE &&  iterations % parameters.getExtendBestPoints() == 0) 
-			{
-					int i = 0;					
-					for (LegOperations leg : legs) 
-					{
-						if (leg.getLeg().getType() == LegType.STRAIGHT) 
-						{
-							for (int j = 0; j < 1; j++)
-							{
-								leg.extendStartPoint(result.get(j).getCandidate().get(i));
-								leg.extendEndPoint(result.get(j).getCandidate().get(i + 1));
-							}
-						}
-						i += 2;
-					}
-					int third = result.size() / 3;				
-					List<EvaluatedCandidate<List<Point>>> newPopulation = new ArrayList<EvaluatedCandidate<List<Point>>>();
-					newPopulation.addAll(result.subList(0, 2 * third));
-					List<List<Point>> randoms = new ArrayList<List<Point>>(third);
-					for (i = 0; i < third; i++)
-					{
-						randoms.add(candidateFactory.generateRandomCandidate(rng));
-					}				
-					newPopulation.addAll(evaluatePopulation(randoms));
-					result = newPopulation;
-					for (LegOperations leg : legs) 
-					{
-						leg.useAllPoints();
-					}
-			}
-			/*if (iterations % parameters.getExtendBestPoints() == 0 && population == result)
-			{				
-				for (LegOperations leg : legs)
-				{
-					if (leg.getLeg().getType() == LegType.STRAIGHT) 
-					{
-						leg.extendBestPoints(3, true);
-					}
-				}
-				int third = result.size() / 3;				
-				List<EvaluatedCandidate<List<Point>>> newPopulation = new ArrayList<EvaluatedCandidate<List<Point>>>();
-				newPopulation.addAll(result.subList(0, 2 * third));
-				List<List<Point>> randoms = new ArrayList<List<Point>>(third);
-				for (int i = 0; i < third; i++)
-				{
-					randoms.add(candidateFactory.generateRandomCandidate(rng));
-				}				
-				newPopulation.addAll(evaluatePopulation(randoms));
-				result = newPopulation;
-				for (LegOperations leg : legs) 
-				{
-					leg.useAllPoints();
-				}
-			}*/
-			
 			return result;
-		}
+		}	
 	}
 }

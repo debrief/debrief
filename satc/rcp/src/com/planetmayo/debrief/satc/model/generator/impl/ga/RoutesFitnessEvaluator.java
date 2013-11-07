@@ -1,23 +1,20 @@
 package com.planetmayo.debrief.satc.model.generator.impl.ga;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.uncommons.watchmaker.framework.FitnessEvaluator;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
-import com.planetmayo.debrief.satc.model.legs.CoreRoute;
-import com.planetmayo.debrief.satc.model.legs.LegType;
-import com.vividsolutions.jts.geom.Point;
+import com.planetmayo.debrief.satc.model.legs.StraightLeg;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 
-public class RoutesFitnessEvaluator implements FitnessEvaluator<List<Point>>
+public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRoute>>
 {	
-	private final List<LegOperations> legs;
+	private final List<StraightLeg> legs;
 	private final IContributions contributions;
 	
-	public RoutesFitnessEvaluator(List<LegOperations> legs, IContributions contributions)
+	public RoutesFitnessEvaluator(List<StraightLeg> legs, IContributions contributions)
 	{
 		super();
 		this.legs = legs;
@@ -25,49 +22,55 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<Point>>
 	}
 
 	@Override
-	public double getFitness(List<Point> candidate,	List<? extends List<Point>> population)
+	public double getFitness(List<StraightRoute> candidate,	List<? extends List<StraightRoute>> population)
 	{
-		List<CoreRoute> candidateRoutes = new ArrayList<CoreRoute>(legs.size());
 		int length = candidate.size();
-		Iterator<LegOperations> legsIterator = legs.iterator();
-		
 		double error = 0;
-		for (int i = 0; i < length; i += 2)
+		boolean impossible = false;
+		for (int i = 0; i < length; i++)
 		{
-			LegOperations leg = legsIterator.next();
-			// brute force algorithm doesn't use altering legs to detect achievable routes, 
-			// we won't use them too
-			if (leg.getLeg().getType() == LegType.STRAIGHT)
+			StraightRoute route = candidate.get(i);
+			StraightLeg leg = legs.get(i);
+			if (route.isPossible())
 			{
-				CoreRoute route = leg.getLeg().createRoute("", candidate.get(i),
-						candidate.get(i + 1));
-				leg.getLeg().decideAchievableRoute(route);
-				boolean possible = route.isPossible();
-				if (possible)
+				if (route.getScore() == 0.)
 				{
-					candidateRoutes.add(route);
+					leg.decideAchievableRoute(route);
+					if (route.isPossible())
+					{
+						error += calculateRouteScore(route);
+					}
+					else 
+					{
+						impossible = true;
+					}
 				}
 				else
 				{
-					error = Double.MAX_VALUE;;
+					error += route.getScore();
 				}
-				leg.collectStart(route.getStartPoint(), possible);
-				leg.collectEnd(route.getEndPoint(), possible);
 			}
-		}
-		if (error == Double.MAX_VALUE)
-		{
-			return error;
-		}
-		for (CoreRoute route : candidateRoutes)
-		{
-			for (BaseContribution contribution : contributions)
+			else
 			{
-				error += contribution.calculateErrorScoreFor(route);
+				impossible = true;
 			}
-			route.setScore(error);
+		}
+		if (impossible)
+		{
+			return Double.MAX_VALUE;
 		}
 		return error;
+	}
+	
+	public double calculateRouteScore(StraightRoute route)
+	{
+		double score = 0;
+		for (BaseContribution contribution : contributions)
+		{
+			score += contribution.calculateErrorScoreFor(route);
+		}
+		route.setScore(score);
+		return score;
 	}
 
 	@Override
