@@ -5,15 +5,52 @@ import com.vividsolutions.jts.geom.Point;
 
 public class MathUtils
 {
-	
+	private static final double TWO_PI = 2 * Math.PI;
+	/**
+	 * return angle from [0; 2*Math.PI)
+	 * @param angle
+	 * @return
+	 */
 	public static double normalizeAngle(double angle) 
 	{
 		double minus = angle < 0 ? 2 : -2;
-		while (angle < 0 || angle >= 2 * Math.PI) 
+		while (angle < 0 || angle >= TWO_PI) 
 		{
 			angle += minus * Math.PI; 
 		}
 		return angle;
+	}
+	
+	/**
+	 * returns angle from [-Math.PI; Math.PI]
+	 * @param angle
+	 * @return
+	 */
+	public static double normalizeAngle2(double angle) 
+	{
+		double res = angle;
+		while (res > Math.PI)
+			res -= TWO_PI;
+		while (res < -Math.PI)
+			res += TWO_PI;
+
+		return res;
+	}	
+	
+	
+	public static double angleDiff(double angle1, double angle2, boolean normalized) 
+	{
+		if (! normalized)
+		{
+			angle1 = normalizeAngle(angle1);
+			angle2 = normalizeAngle(angle2);
+		}
+		return Math.min(
+				Math.abs(angle1 - angle2),
+				Math.min(
+						Math.abs(angle1 - angle2 + TWO_PI),
+						Math.abs(angle1 - angle2 - TWO_PI)
+		));
 	}
 	
 	public static Point calculateBezierDerivative(double t, Point start, Point end, Point[] control) {
@@ -140,7 +177,7 @@ public class MathUtils
 		double angle = Math.acos(vector.getX() / value);
 		if (vector.getY() < 0)
 		{
-			angle = 2 * Math.PI - angle;
+			angle = TWO_PI - angle;
 		}
 		return angle;
 	}

@@ -9,7 +9,6 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -60,9 +59,8 @@ public class LocationForecastContribution extends BaseContribution
 		{
 			return;
 		}
-		Coordinate coordinate = new Coordinate(location.getLon(), location.getLat());
-		Geometry geometry = GeoSupport.doBuffer(GeoSupport.getFactory()
-				.createPoint(coordinate), GeoSupport.m2deg(limit));
+		Geometry geometry = GeoSupport.geoCircle(
+				GeoSupport.createPoint(location.getLon(), location.getLat()), limit);
 		LocationRange range = new LocationRange((Polygon) geometry);
 		for (BoundedState state : space.getBoundedStatesBetween(startDate,
 				finishDate))

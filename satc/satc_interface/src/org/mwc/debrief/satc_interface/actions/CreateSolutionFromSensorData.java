@@ -270,7 +270,7 @@ public class CreateSolutionFromSensorData implements
 				Date date = scw.getDTG().getDate();
 				Double theRange = null;
 				if (scw.getRange() != null)
-					theRange = scw.getRange().getValueIn(WorldDistance.DEGS);
+					theRange = scw.getRange().getValueIn(WorldDistance.METRES);
 
 				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
 

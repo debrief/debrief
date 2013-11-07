@@ -18,7 +18,6 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -210,26 +209,15 @@ public class RangeForecastContribution extends BaseContribution
 
 	private LinearRing getInnerRing(Point pt)
 	{
-		final LinearRing res;
-		double theRange;
-
-		// yes, ok we have an inner ring
-		theRange = GeoSupport.m2deg(getMinRange());
+		double range = getMinRange();
 
 		// do we have an inner range?
-		if (theRange == 0d)
+		if (range == 0d)
 		{
 			// no, ok, just choose an absolutely monster range
-			res = null;
+			return null;
 		}
-		else
-		{
-			// ok, now we create the inner circle
-			res = (LinearRing) GeoSupport.doBuffer(pt, theRange).getBoundary();
-
-		}
-
-		return res;
+		return GeoSupport.geoRing(pt, range);
 	}
 
 	public Double getMaxRange()
@@ -245,21 +233,15 @@ public class RangeForecastContribution extends BaseContribution
 	private LinearRing getOuterRing(Point pt)
 	{
 		// do we have a max range?
-		double theRange;
-
-		// yes, ok we have an outer ring
-		theRange = GeoSupport.m2deg(getMaxRange());
-
-		if (theRange == 0d)
+		double range = getMaxRange();
+		if (range == 0d)
 		{
 			// no, ok, just choose an absolutely monster range
-			theRange = ABSOLUTELY_HUGE_RANGE_DEGS;
+			range = ABSOLUTELY_HUGE_RANGE_DEGS;
 		}
 
-		// ok, now we create the inner circle
-		Geometry geom = GeoSupport.doBuffer(pt, theRange);
-		LinearRing res = (LinearRing) geom.getBoundary();
-		return res;
+		// ok, now we create the outer circle
+		return GeoSupport.geoRing(pt, range);
 	}
 
 	public void loadFrom(List<String> lines)

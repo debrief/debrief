@@ -5,12 +5,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.geotools.referencing.GeodeticCalculator;
+
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.math.Vector2D;
 
 /**
  * a straight line path between two points, with a given speed
@@ -47,23 +48,21 @@ public class StraightRoute extends CoreRoute
 			Date endTime)
 	{
 		super(startP, endP, startTime, endTime, name, LegType.STRAIGHT);
-
-		Vector2D vector = new Vector2D(_startP.getCoordinate(),
-				_endP.getCoordinate());
-
+		
+		GeodeticCalculator calculator = new GeodeticCalculator();
+		calculator.setStartingGeographicPoint(startP.getX(), startP.getY());
+		calculator.setDestinationGeographicPoint(endP.getX(), endP.getY());
 		// find the course (converting it to our compass-oriented coordinate system
 		if (! startP.equals(endP)) 
 		{
-			_course = GeoSupport.convertToCompassAngle(vector.angle());
+			_course = Math.toRadians(calculator.getAzimuth());
 		} 
 		else 
 		{
 			_course = 0;
 		}
-
   	// find the speed
-		double lengthDeg = vector.length();
-		_length = GeoSupport.deg2m(lengthDeg);
+		_length = calculator.getOrthodromicDistance();
 		_speed = _length / getElapsedTime();
 
 	}

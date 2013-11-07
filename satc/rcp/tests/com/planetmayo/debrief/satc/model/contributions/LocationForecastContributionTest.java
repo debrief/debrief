@@ -12,7 +12,6 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
 @SuppressWarnings("deprecation")
@@ -52,7 +51,7 @@ public class LocationForecastContributionTest extends ForecastContributionTestBa
 		ProblemSpace space = createTestSpace();
 		contribution.actUpon(space);
 		int withLocation = 0;
-		Geometry expected = GeoSupport.doBuffer( GeoSupport.getFactory().createPoint(new Coordinate(-2, 2)), 2);
+		Geometry expected = GeoSupport.geoCircle(GeoSupport.createPoint(-2, 2), 2);
 		for (BoundedState state : space.states()) 
 		{
 			if (state.getLocation() != null)

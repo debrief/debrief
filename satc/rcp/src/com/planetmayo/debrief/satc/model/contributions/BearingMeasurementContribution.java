@@ -74,7 +74,7 @@ public class BearingMeasurementContribution extends BaseContribution
 				// ok, create the polygon for this measurement
 				GeoPoint origin = measurement.origin;
 				double bearing = measurement.bearingAngle;
-				double range = measurement.theRange;
+				double range = measurement.range;
 
 				// sort out the left/right edges
 				double leftEdge = bearing - bearingError;
@@ -94,19 +94,19 @@ public class BearingMeasurementContribution extends BaseContribution
 
 				// now the top-left
 				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
-				calc.setDirection(toTrimmedDegs(leftEdge), GeoSupport.deg2m(range));
+				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(leftEdge)), range);
 				Point2D dest = calc.getDestinationGeographicPoint();
 				coords[1] = new Coordinate(dest.getX(), dest.getY());
 
 				// now the centre bearing
 				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
-				calc.setDirection(toTrimmedDegs(bearing), GeoSupport.deg2m(range));
+				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(bearing)), range);
 				dest = calc.getDestinationGeographicPoint();
 				coords[2] = new Coordinate(dest.getX(), dest.getY());
 
 				// now the top-right
 				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
-				calc.setDirection(toTrimmedDegs(rightEdge), GeoSupport.deg2m(range));
+				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(rightEdge)), range);
 				dest = calc.getDestinationGeographicPoint();
 				coords[3] = new Coordinate(dest.getX(), dest.getY());
 
@@ -160,23 +160,6 @@ public class BearingMeasurementContribution extends BaseContribution
 		}
 	}
 
-	private double toTrimmedDegs(double rads)
-	{
-		double res = Math.toDegrees(rads);
-		return trimDegs(res);
-	}
-
-	private double trimDegs(double degs)
-	{
-		double res = degs;
-		while (res > 180)
-			res -= 360;
-		while (res < -180)
-			res += 360;
-
-		return res;
-	}
-
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
@@ -203,9 +186,9 @@ public class BearingMeasurementContribution extends BaseContribution
 							state.getLocation().getY());
 
 					double radians = MathUtils.normalizeAngle(Math
-							.toRadians(trimDegs(calculator.getAzimuth())));
-					res += (measurement.bearingAngle - radians)
-							* (measurement.bearingAngle - radians);
+							.toRadians(calculator.getAzimuth()));
+					double angleDiff = MathUtils.angleDiff(measurement.bearingAngle, radians, true);
+					res += angleDiff * angleDiff;
 					count++;
 				}
 			}
@@ -334,7 +317,7 @@ public class BearingMeasurementContribution extends BaseContribution
 			GeoPoint theLoc = new GeoPoint(lat, lon);
 			double angle = Math.toRadians(Double.parseDouble(bearing));
 			BMeasurement measure = new BMeasurement(theLoc, angle, theDate,
-					GeoSupport.m2deg(Double.parseDouble(range)));
+					Double.parseDouble(range));
 
 			addMeasurement(measure);
 
@@ -394,7 +377,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 */
 	public static class BMeasurement
 	{
-		private static final double MAX_RANGE_DEGS = 0.5;
+		private static final double MAX_RANGE_METERS = 50000.;
 		private final GeoPoint origin;
 		private final double bearingAngle;
 		private final Date time;
@@ -403,7 +386,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
-		private final Double theRange;
+		private final double range;
 
 		/**
 		 * the (optional) color for this measurement
@@ -411,7 +394,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		 */
 		private java.awt.Color color = null;
 
-		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
+		public BMeasurement(GeoPoint loc, double bearing, Date time, Double range)
 		{
 			this.origin = loc;
 			this.bearingAngle = MathUtils.normalizeAngle(bearing);
@@ -419,10 +402,7 @@ public class BearingMeasurementContribution extends BaseContribution
 
 			// tidying up. Give the maximum possible range for this bearing if the
 			// data is missing
-			if (theRange == null)
-				this.theRange = MAX_RANGE_DEGS;
-			else
-				this.theRange = theRange;
+			this.range = range == null ? MAX_RANGE_METERS : range;
 		}
 
 		public java.awt.Color getColor()

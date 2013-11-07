@@ -60,7 +60,7 @@ public class XStreamIO
 		xstream.useAttributeFor(BMeasurement.class, "origin");
 		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
 		xstream.useAttributeFor(BMeasurement.class, "time");
-		xstream.useAttributeFor(BMeasurement.class, "theRange");
+		xstream.useAttributeFor(BMeasurement.class, "range");
 
 		xstream.useAttributeFor(ROrigin.class, "origin");
 		xstream.useAttributeFor(ROrigin.class, "time");
@@ -68,7 +68,7 @@ public class XStreamIO
 		xstream.useAttributeFor(FMeasurement.class, "origin");
 		xstream.useAttributeFor(FMeasurement.class, "bearingAngle");
 		xstream.useAttributeFor(FMeasurement.class, "origin");
-		xstream.useAttributeFor(FMeasurement.class, "theRange");
+		xstream.useAttributeFor(FMeasurement.class, "range");
 
 		xstream.useAttributeFor(GeoPoint.class, "lat");
 		xstream.useAttributeFor(GeoPoint.class, "lon");

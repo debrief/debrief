@@ -1,8 +1,11 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ListIterator;
+
+import org.geotools.referencing.GeodeticCalculator;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -12,6 +15,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -95,8 +99,12 @@ public class LocationAnalysisContribution extends
 	protected LocationRange calcRelaxedRange(BoundedState state,
 			VehicleType vType, long diff)
 	{
-
+		if (state.getLocation() == null)
+		{
+			return null;
+		}
 		LinearRing res = null;
+		
 
 		// ok, generate the achievable bounds for the state
 		CourseRange course = state.getCourse();
@@ -113,76 +121,43 @@ public class LocationAnalysisContribution extends
 		// ok, put the time back to +ve
 		diff = Math.abs(diff);
 
-		double maxRange = getMaxRangeDegs(speed, diff);
-		LinearRing courseR = getCourseRing(course, maxRange);
-		Polygon speedP = getSpeedRing(speed, diff);
+		Coordinate centerPoint = state.getLocation().getGeometry().getCoordinates()[0];
+		LinearRing courseR = getCourseRing(centerPoint, course, speed, diff);
+		LinearRing speedR = getSpeedRing(centerPoint, speed, diff);
 		
 		// now combine the two
 		final LineString achievable;
-		if (speedP != null)
+		if (speedR != null && courseR != null)
 		{
-			if (courseR != null)
+			// convert the course ring into a solid area
+			Polygon courseP = GeoSupport.getFactory().createPolygon(courseR);
+			Polygon speedP = GeoSupport.getFactory().createPolygon(speedR);
+
+			// now sort out the intersection between course and speed
+			Geometry trimmed = courseP.intersection(speedP);
+			Geometry geom = trimmed.convexHull();
+
+			if ((geom instanceof MultiPoint) || (geom instanceof Polygon))
 			{
-				// convert the course ring into a solid area
-				Polygon courseP = GeoSupport.getFactory().createPolygon(courseR, null);
-
-				// now sort out the intersection between course and speed
-				Geometry trimmed = courseP.intersection(speedP);
-
-				// GeoSupport.writeGeometry("trimmed", trimmed);
-
-				Geometry geom = trimmed.convexHull();
-				
-				if (!(geom instanceof LineString))
-				{
-					// is it a multi-point?
-					if (geom instanceof MultiPoint)
-					{
-						MultiPoint mp = (MultiPoint) geom;
-						// get a line string from the coordinates
-						geom = GeoSupport.getFactory()
-								.createLineString(mp.getCoordinates());
-					}
-					else if (geom instanceof Polygon)
-					{
-						// the geoms are all currently appearing as polygons, maybe this is
-						// to do with the
-						// Jan 2013 JTS update.
-						geom = GeoSupport.getFactory().createLineString(
-								geom.getCoordinates());
-					}
-				}
-				if (geom instanceof LineString)
-					achievable = (LineString) geom;
-				else
-				{
-					System.err
-							.println("LocationAnalysisContribution: we were expecting a line-string, but it hasn't arrived!");
-
-					throw new RuntimeException("We should not have encountered a non-linestring here");
-				}
+				geom = GeoSupport.getFactory().createLineString(geom.getCoordinates());
+			}
+			if (geom instanceof LineString)
+			{
+				achievable = (LineString) geom;
 			}
 			else
 			{
-				// TODO: speedP is actually two circles = we probably need to process
-				// both circles
-				achievable = (LineString) speedP.getExteriorRing();
+				System.err
+						.println("LocationAnalysisContribution: we were expecting a line-string, but it hasn't arrived!");
+
+				throw new RuntimeException(
+						"We should not have encountered a non-linestring here");
 			}
 		}
 		else
 		{
-			if (courseR != null)
-			{
-				achievable = (LineString) courseR.clone();
-			}
-			else
-			{
-				// nope, we don't have any bounds
-				achievable = null;
-			}
+			achievable = courseR == null ? speedR : courseR;
 		}
-
-		// GeoSupport.writeGeometry("Achievable_" + newDate, achievable);
 
 		// did we construct a bounds?
 		if (achievable != null)
@@ -190,98 +165,57 @@ public class LocationAnalysisContribution extends
 			// ok, apply this to the pioints of the bounded state
 			LocationRange loc = state.getLocation();
 
-			if (loc != null)
+			// move around the outer points
+			Geometry geometry = loc.getGeometry();
+			if (geometry instanceof Polygon)
 			{
-				// move around the outer points
-				Geometry geometry = loc.getGeometry();
-				if (geometry instanceof Polygon)
+				LineString ls = ((Polygon) geometry).getExteriorRing();
+				LinearRing ext = GeoSupport.getFactory().createLinearRing(
+						ls.getCoordinates());
+				Coordinate[] pts = ext.getCoordinates();
+
+				for (int i = 0; i < pts.length; i++)
 				{
-					LineString ls = ((Polygon) geometry).getExteriorRing();
-					LinearRing ext = GeoSupport.getFactory().createLinearRing(
-							ls.getCoordinates());
-					Coordinate[] pts = ext.getCoordinates();
+					Coordinate thisC = pts[i];
 
-					for (int i = 0; i < pts.length; i++)
+					// add each of these coords to that shape
+					AffineTransformation trans = new AffineTransformation();
+					trans.setToTranslation(thisC.x - centerPoint.x, thisC.y - centerPoint.y);
+					LinearRing translated = GeoSupport.getFactory().createLinearRing( 
+							trans.transform(achievable).getCoordinates()
+					);
+
+					if (res == null)
 					{
-						Coordinate thisC = pts[i];
-
-						// make a copy of the shape
-
-						// add each of these coords to that shape
-						AffineTransformation trans = new AffineTransformation();
-						trans.setToTranslation(thisC.x, thisC.y);
-
-						// actually do the move
-						Coordinate[] oldCoords = achievable.getCoordinates();
-						Coordinate[] newCoords = new Coordinate[oldCoords.length];
-						for (int j = 0; j < oldCoords.length; j++)
-						{
-							Coordinate tmpC = oldCoords[j];
-							Coordinate newC = new Coordinate(0, 0);
-							newC = trans.transform(tmpC, newC);
-							newCoords[j] = newC;
-						}
-
-						// and put it back into a linestring
-						LinearRing translated = GeoSupport.getFactory().createLinearRing(
-								newCoords);
-
-						// GeoSupport.writeGeometry("shape:" + i, translated);
-
-						if (res == null)
-						{
-							res = (LinearRing) translated;
-						}
-						else
-						{
-							// now we need to combine the two geometries
-							
-							// start off by wrapping them in polygons
-							Polygon poly1 = GeoSupport.getFactory().createPolygon(res);
-							Polygon poly2 = GeoSupport.getFactory().createPolygon(translated);
-							
-							// now generate the multi-polygon
-							Geometry combined = GeoSupport.getFactory().createMultiPolygon(new Polygon[]{poly1,poly2});
-							
-							// and the convex hull for it
-							Geometry outer = combined.convexHull();
-							res = (LinearRing) outer.getBoundary();
-						}
+						res = (LinearRing) translated;
 					}
+					else
+					{
+						// now we need to combine the two geometries
 
+						// start off by wrapping them in polygons
+						Polygon poly1 = GeoSupport.getFactory().createPolygon(res);
+						Polygon poly2 = GeoSupport.getFactory().createPolygon(translated);
+
+						// now generate the multi-polygon
+						Geometry combined = GeoSupport.getFactory().createMultiPolygon(
+								new Polygon[]
+								{ poly1, poly2 });
+
+						// and the convex hull for it
+						Geometry outer = combined.convexHull();
+						res = (LinearRing) outer.getBoundary();
+					}
 				}
 			}
 		}
 
 		// get the region
-		final LocationRange answer;
-		if (res != null)
+		if (res == null)
 		{
-			Polygon tmpPoly2 = GeoSupport.getFactory().createPolygon(res, null);
-
-			answer = new LocationRange(tmpPoly2);
+			return null;
 		}
-		else
-			answer = null;
-
-		return answer;
-
-		// ///////////////////////////////
-		//
-		// double maxDecel = vType.getMaxDecelRate();
-		// double maxAccel = vType.getMaxAccelRate();
-		//
-		// double diffSeconds = millis / 1000.0d;
-		//
-		// double minSpeed = lastStateWithRange.getSpeed().getMin() - maxDecel
-		// * diffSeconds;
-		// double maxSpeed = lastStateWithRange.getSpeed().getMax() + maxAccel
-		// * diffSeconds;
-		// if (minSpeed < 0)
-		// {
-		// minSpeed = 0;
-		// }
-		// return new SpeedRange(minSpeed, maxSpeed);
+		return new LocationRange(GeoSupport.getFactory().createPolygon(res, null));
 	}
 
 	@Override
@@ -331,10 +265,11 @@ public class LocationAnalysisContribution extends
 	// }
 	// }
 
-	public LinearRing getCourseRing(CourseRange course, double maxRng)
+	public LinearRing getCourseRing(Coordinate center, CourseRange course, SpeedRange speed, long timeMillis)
 	{
 		LinearRing res = null;
-
+		
+		double maxRange = getMaxRange(speed, timeMillis);
 		if (course != null)
 		{
 			// double the max range = to be sure we cover the possible curved arc
@@ -362,22 +297,25 @@ public class LocationAnalysisContribution extends
 				double centreC = minC + (maxC - minC) / 2d;
 
 				// start with the origin
-				coords[0] = new Coordinate(0, 0);
-
+				coords[0] = new Coordinate(center.x, center.y);
+				
+				GeodeticCalculator calculator = new GeodeticCalculator();
+				calculator.setStartingGeographicPoint(center.x, center.y);
+				
 				// now the start course
-				coords[1] = new Coordinate(Math.sin(minC) * maxRng, Math.cos(minC)
-						* maxRng);
+				calculator.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(minC)), maxRange);				
+				coords[1] = convert(calculator.getDestinationGeographicPoint());
 
 				// give us a centre course
-				coords[2] = new Coordinate(Math.sin(centreC) * (maxRng * 1.4),
-						Math.cos(centreC) * (maxRng * 1.4));
+				calculator.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(centreC)), maxRange * 1.4);				
+				coords[2] = convert(calculator.getDestinationGeographicPoint());
 
 				// now the end course
-				coords[3] = new Coordinate(Math.sin(maxC) * maxRng, Math.cos(maxC)
-						* maxRng);
+				calculator.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(maxC)), maxRange);						
+				coords[3] = convert(calculator.getDestinationGeographicPoint());
 
 				// back to the orgin
-				coords[4] = new Coordinate(0, 0);
+				coords[4] = new Coordinate(center.x, center.y);
 
 				res = GeoSupport.getFactory().createLinearRing(coords);
 			}
@@ -385,6 +323,22 @@ public class LocationAnalysisContribution extends
 
 		return res;
 	}
+	
+
+	/**
+	 * calculate the speed boundary, according to the min/max speeds.
+	 * 
+	 * @param speed
+	 *          the speed constraints
+	 * @param timeMillis
+	 *          the time since the last state
+	 * @return
+	 */
+	public LinearRing getSpeedRing(Coordinate centerPoint, SpeedRange speed, long timeMillis)	
+	{
+		Point center = GeoSupport.getFactory().createPoint(centerPoint);
+		return GeoSupport.geoRing(center, getMaxRange(speed, timeMillis));
+	}	
 
 	@Override
 	public ContributionDataType getDataType()
@@ -392,74 +346,18 @@ public class LocationAnalysisContribution extends
 		return ContributionDataType.ANALYSIS;
 	}
 
-	public double getMaxRangeDegs(SpeedRange sRange, long timeMillis)
+	private double getMaxRange(SpeedRange speed, long timeMillis)
 	{
-		final double res;
-		if (sRange != null)
-			res = GeoSupport.m2deg(sRange.getMax() * timeMillis / 1000d);
-		else
-			res = GeoSupport.m2deg(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
-
-		return res;
+		if (speed == null)
+		{
+			return RangeForecastContribution.MAX_SELECTABLE_RANGE_M;
+		}
+		return speed.getMax() * timeMillis / 1000.; 
+	}
+	
+	private Coordinate convert(Point2D point)
+	{
+		return new Coordinate(point.getX(), point.getY());
 	}
 
-	/**
-	 * calculate the speed boundary, according to the min/max speeds.
-	 * 
-	 * @param sRange
-	 *          the speed constraints
-	 * @param timeMillis
-	 *          the time since the last state
-	 * @param outer
-	 *          the outer speed boundary (max speed)
-	 * @return
-	 */
-	public Polygon getSpeedRing(SpeedRange sRange, long timeMillis)
-	{
-		Point pt = GeoSupport.getFactory().createPoint(new Coordinate(0d, 0d));
-
-		// ok, what's the maximum value?
-		double maxR = getMaxRangeDegs(sRange, timeMillis);
-
-		// and create an outer ring to represent it
-		Geometry tmpGeom = pt.buffer(maxR,2).getBoundary();
-		LinearRing outer = (LinearRing) tmpGeom;
-
-		// ok, and the minimum
-		LinearRing[] inner = null;
-
-//		// do we have a speed val?
-//		if (sRange != null)
-//		{
-//			// yes, get calculating
-//			double minR = sRange.getMin() * timeMillis / 1000d;
-//			// convert to degs
-//			minR = GeoSupport.m2deg(minR);
-//
-//			// aaah, just double check the two ranges aren't equal - it causes trouble
-//			if (minR == maxR)
-//			{
-//				minR = maxR - GeoSupport.m2deg(10);
-//			}
-//
-//			// just check we don't have a zero min speed
-//			if (minR > 0)
-//			{
-//				inner = new LinearRing[]
-//				{ (LinearRing) pt.buffer(minR).getBoundary() };
-//			}
-//			else
-//				inner = null;
-//		}
-//		else
-//		{
-//			// with a zero min speed, we don't have any holes
-//			inner = null;
-//		}
-
-		// and now a polygon to represent them both
-		Polygon res = GeoSupport.getFactory().createPolygon(outer, inner);
-
-		return res;
-	}
 }

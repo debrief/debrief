@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.vividsolutions.jts.geom.Coordinate;
 
 import static org.junit.Assert.*;
 
@@ -37,8 +36,8 @@ public class BoundedStateTest extends ModelTestBase
 		CourseRange courseRange = new CourseRange(0.1, 0.2);
 		SpeedRange speedRange = new SpeedRange(1, 2);
 		SpeedRange speedRange2 = new SpeedRange(1.5, 2.5);
-		LocationRange locationRange = new LocationRange(GeoSupport.doBuffer(
-				GeoSupport.getFactory().createPoint(new Coordinate(0, 0)), 2));
+		LocationRange locationRange = new LocationRange(
+				GeoSupport.createPoint(0, 0).buffer(2, 3));
 
 		state.constrainTo(courseRange);
 		assertEquals(courseRange, state.getCourse());
@@ -72,8 +71,7 @@ public class BoundedStateTest extends ModelTestBase
 		CourseRange courseRange = new CourseRange(0.1, 0.2);
 		SpeedRange speedRange = new SpeedRange(1, 2);
 		SpeedRange speedRange2 = new SpeedRange(1.5, 2.5);
-		LocationRange locationRange = new LocationRange(GeoSupport.doBuffer(
-				GeoSupport.getFactory().createPoint(new Coordinate(0, 0)), 2));
+		LocationRange locationRange = new LocationRange(GeoSupport.createPoint(0, 0).buffer(2, 3));
 
 		state2.constrainTo(courseRange);
 		state2.constrainTo(speedRange);

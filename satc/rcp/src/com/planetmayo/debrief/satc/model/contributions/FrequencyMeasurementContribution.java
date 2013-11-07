@@ -8,7 +8,6 @@ import java.util.List;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 
 public class FrequencyMeasurementContribution extends BaseContribution
@@ -151,7 +150,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
 			FMeasurement measure = new FMeasurement(theLoc, Math.toRadians(Double.valueOf(bearing)),
-					theDate, GeoSupport.m2deg(Double.valueOf(range)));
+					theDate, Double.valueOf(range));
 
 			addThis(measure);
 
@@ -185,14 +184,14 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		 * 
 		 */
 		@SuppressWarnings("unused")
-		private final Double theRange;
+		private final Double range;
 
-		public FMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
+		public FMeasurement(GeoPoint loc, double bearing, Date time, Double range)
 		{
 			this.origin = loc;
 			this.bearingAngle = bearing;
 			this.time = time;
-			this.theRange = theRange;
+			this.range = range;
 		}
 	}	
 }

@@ -21,23 +21,42 @@
       <bearingError>0.05235987755982988</bearingError>
       <runMDA>false</runMDA>
       <measurements>
-        <bmeasurement bearingAngle="0.02617993877991494" time="2010-01-12 12:13:29.0 UTC" theRange="0.13489208633093525">
+        <bmeasurement bearingAngle="0.02617993877991494" time="2010-01-12 12:13:29.0 UTC" range="15107.913669064748">
           <origin lat="-0.0659388888888889" lon="-30.002402777777778"/>
+          <__isActive>false</__isActive>
         </bmeasurement>
-        <bmeasurement bearingAngle="0.03839724354387525" time="2010-01-12 12:15:29.0 UTC" theRange="0.13489208633093525">
+        <bmeasurement bearingAngle="0.03839724354387525" time="2010-01-12 12:15:29.0 UTC" range="15107.913669064748">
           <origin lat="-0.06436111111111112" lon="-30.008052777777777"/>
+          <__isActive>false</__isActive>
         </bmeasurement>
-        <bmeasurement bearingAngle="0.06632251157578452" time="2010-01-12 12:17:44.0 UTC" theRange="0.13489208633093525">
+        <bmeasurement bearingAngle="0.06632251157578452" time="2010-01-12 12:17:44.0 UTC" range="15107.913669064748">
           <origin lat="-0.06436111111111112" lon="-30.015552777777778"/>
+          <__isActive>false</__isActive>
         </bmeasurement>
-        <bmeasurement bearingAngle="0.005235987755982988" time="2010-01-12 12:21:29.0 UTC" theRange="0.13489208633093525">
+        <bmeasurement bearingAngle="0.005235987755982988" time="2010-01-12 12:21:29.0 UTC" range="15107.913669064748">
           <origin lat="-0.05471111111111111" lon="-30.02088611111111"/>
+          <__isActive>false</__isActive>
         </bmeasurement>
-        <bmeasurement bearingAngle="-0.12042771838760875" time="2010-01-12 12:24:29.0 UTC" theRange="0.13489208633093525">
+        <bmeasurement bearingAngle="-0.12042771838760875" time="2010-01-12 12:24:29.0 UTC" range="15107.913669064748">
           <origin lat="-0.043222222222222224" lon="-30.02291111111111"/>
+          <__isActive>false</__isActive>
         </bmeasurement>
       </measurements>
     </bearingMeasurementContribution>
+    <straightLegForecastContribution>
+      <name>Straight prediction one</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 12:13:29.0 UTC</startDate>
+      <finishDate>2010-01-12 12:24:29.0 UTC</finishDate>
+    </straightLegForecastContribution>
+    <straightLegForecastContribution>
+      <name>Straight prediction two</name>
+      <active>false</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 12:21:29.0 UTC</startDate>
+      <finishDate>2010-01-12 12:24:29.0 UTC</finishDate>
+    </straightLegForecastContribution>
     <courseForecastContribution>
       <name>Last known course</name>
       <active>true</active>
@@ -57,20 +76,6 @@
       <minSpeed>6.173333328</minSpeed>
       <maxSpeed>12.8611111</maxSpeed>
     </speedForecastContribution>
-    <straightLegForecastContribution>
-      <name>Straight prediction one</name>
-      <active>true</active>
-      <weight>5</weight>
-      <startDate>2010-01-12 12:13:29.0 UTC</startDate>
-      <finishDate>2010-01-12 12:24:29.0 UTC</finishDate>
-    </straightLegForecastContribution>
-    <straightLegForecastContribution>
-      <name>Straight prediction two</name>
-      <active>false</active>
-      <weight>5</weight>
-      <startDate>2010-01-12 12:21:29.0 UTC</startDate>
-      <finishDate>2010-01-12 12:24:29.0 UTC</finishDate>
-    </straightLegForecastContribution>
     <courseAnalysisContribution>
       <name>Course Analysis</name>
       <active>true</active>

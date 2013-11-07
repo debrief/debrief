@@ -37,8 +37,6 @@ public class LocationAnalysisTest extends ModelTestBase
 				0.4, 0.2, 0.4);
 		space.setVehicleType(vType);
 
-		double metreLarge = GeoSupport.deg2m(0.2);
-
 		// ok, create the state
 		Date date1 = new Date(100000);
 		Date date2 = new Date(110000);
@@ -68,7 +66,7 @@ public class LocationAnalysisTest extends ModelTestBase
 		s3.constrainTo(cRange);
 
 		// and a speed
-		SpeedRange sRange = new SpeedRange(0.000001, metreLarge);
+		SpeedRange sRange = new SpeedRange(0.000001, 25000);
 		s1.constrainTo(sRange);
 		s2.constrainTo(sRange);
 		s3.constrainTo(sRange);
@@ -98,8 +96,6 @@ public class LocationAnalysisTest extends ModelTestBase
 				GeoSupport.kts2MSec(30000), Math.toRadians(0), Math.toRadians(1), 0.2,
 				0.4, 0.2, 0.4);
 		space.setVehicleType(vType);
-
-		double metreLarge = GeoSupport.deg2m(0.2);
 
 		// ok, create the state
 		Date date1 = new Date(100000);
@@ -142,7 +138,7 @@ public class LocationAnalysisTest extends ModelTestBase
 		s3.constrainTo(cRange);
 
 		// and a speed
-		SpeedRange sRange = new SpeedRange(0.000001, metreLarge);
+		SpeedRange sRange = new SpeedRange(0.000001, 25000);
 		s1.constrainTo(sRange);
 		s2.constrainTo(sRange);
 		s3.constrainTo(sRange);
@@ -259,16 +255,13 @@ public class LocationAnalysisTest extends ModelTestBase
 		bs.constrainTo(sRange);
 
 		// try the speed
-		Polygon speedRegion = lac.getSpeedRing(sRange,
+		Coordinate centerCoord = new Coordinate(0, 0);
+		LinearRing speedRegion = lac.getSpeedRing(centerCoord, sRange,
 				newDate.getTime() - oldDate.getTime());
 		assertNotNull("course not generated", speedRegion);
 		// GeoSupport.writeGeometry("Speed", speedRegion);
 
-		// ok, try the course
-		double maxRange = lac.getMaxRangeDegs(sRange,
-				newDate.getTime() - oldDate.getTime());
-
-		LinearRing courseRegion = lac.getCourseRing(cRange, maxRange);
+		LinearRing courseRegion = lac.getCourseRing(centerCoord, cRange, sRange, newDate.getTime() - oldDate.getTime());
 		assertNotNull("course not generated", courseRegion);
 		assertEquals("correct num of coords for arc", 5,
 				courseRegion.getNumPoints());

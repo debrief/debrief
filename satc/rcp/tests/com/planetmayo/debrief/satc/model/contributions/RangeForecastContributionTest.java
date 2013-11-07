@@ -9,7 +9,6 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -21,8 +20,8 @@ public class RangeForecastContributionTest extends TestCase
 	public void testPolygons() throws IncompatibleStateException
 	{
 		RangeForecastContribution sc = new RangeForecastContribution();
-		sc.setMinRange(GeoSupport.m2deg(300));
-		sc.setMaxRange(GeoSupport.m2deg(5000));
+		sc.setMinRange(300.0);
+		sc.setMaxRange(5000.0);
 
 		ProblemSpace ps = new ProblemSpace();
 		BoundedState newState = new BoundedState(new Date(2012, 3, 3));

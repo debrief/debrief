@@ -2,12 +2,16 @@ package com.planetmayo.debrief.satc.util;
 
 import java.util.ArrayList;
 
+import org.geotools.referencing.GeodeticCalculator;
+
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * utility class providing geospatial support
@@ -18,11 +22,6 @@ import com.vividsolutions.jts.geom.Point;
 public class GeoSupport
 {
 	private static GeometryFactory _factory;
-
-	public static double deg2m(double degs)
-	{
-		return degs * 111200d;
-	}
 
 	public static double[][] getCoordsFor(LocationRange loc)
 	{
@@ -56,10 +55,52 @@ public class GeoSupport
 	{
 		return getFactory().createPoint(new Coordinate(lon, lat));
 	}
-	
-	public static Geometry doBuffer(Geometry geom, double distance)
+
+	/**
+	 * creates a ring with center in specified point (lon, lat) and specified radius in meters (range) 
+	 * @param center
+	 * @param range
+	 * @param polygon
+	 * @return
+	 */
+	public static LinearRing geoRing(Point center, double range) 
 	{
-		return geom.buffer(distance, 3);
+		return (LinearRing) geoRingOrPolygon(center, range, false);
+	}
+	
+	/**
+	 * creates a circle with center in specified point (lon, lat) and specified radius in meters (range) 
+	 * @param center
+	 * @param range
+	 * @param polygon
+	 * @return
+	 */
+	public static Polygon geoCircle(Point center, double range) 
+	{
+		return (Polygon) geoRingOrPolygon(center, range, true);
+	}	
+	
+	public static Geometry geoRingOrPolygon(Point center, double range, boolean polygon)
+	{
+		GeodeticCalculator calculator = new GeodeticCalculator();
+		calculator.setStartingGeographicPoint(center.getX(), center.getY());
+		calculator.setDirection(0, range);
+		double yRadius = Math.abs(calculator.getDestinationGeographicPoint().getY() - center.getY());
+		calculator.setDirection(90, range);
+		double xRadius = Math.abs(calculator.getDestinationGeographicPoint().getX() - center.getX());
+		Coordinate[] coords = new Coordinate[37];
+		
+		double current = 0;
+		double delta = Math.PI / 18.0;
+		for (int i = 0; i < 36; i++, current += delta)
+		{
+			coords[i] = new Coordinate(
+					center.getX() + Math.cos(current) * xRadius,
+					center.getY() + Math.sin(current) * yRadius
+			);
+		}
+		coords[36] = coords[0];
+		return polygon ? _factory.createPolygon(coords) : _factory.createLinearRing(coords);		
 	}
 
 	public static Distance computeDistance(Geometry geo1, Geometry geo2)
@@ -70,11 +111,6 @@ public class GeoSupport
 	public static double kts2MSec(double kts)
 	{
 		return kts * 0.514444444;
-	}
-
-	public static double m2deg(double metres)
-	{
-		return metres / 111200d;
 	}
 
 	// /** convert a turn rate of degrees per second to radians per millisecond
