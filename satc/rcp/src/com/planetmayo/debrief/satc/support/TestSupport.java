@@ -543,8 +543,8 @@ public class TestSupport
 				coordsStr += ", ";
 			}
 			coordsStr += "[" + newLine;
-			coordsStr += coordinate.y + "," + newLine;
-			coordsStr += coordinate.x + newLine;
+			coordsStr += coordinate.x + "," + newLine;
+			coordsStr += coordinate.y + newLine;
 			coordsStr += "]" + newLine;
 		}
 
