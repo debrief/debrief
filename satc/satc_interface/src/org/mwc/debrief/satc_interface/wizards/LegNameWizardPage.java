@@ -22,37 +22,7 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 
 	public static class NameHolder implements Plottable
 	{
-		private String _name="Pending";
-		private EditorType _myEditor;
-
-//		public static class NameInfo extends EditorType
-//		{
-//
-//			// give it some old version id
-//			static final long serialVersionUID = 1L;
-//
-//			public NameInfo(final NameHolder data)
-//			{
-//				super(data, data.getName(), "");
-//			}
-//
-//			public PropertyDescriptor[] getPropertyDescriptors()
-//			{
-//				try
-//				{
-//					final PropertyDescriptor[] res =
-//					{ prop("Name", "the name for this leg", FORMAT) };
-//
-//					return res;
-//				}
-//				catch (final IntrospectionException e)
-//				{
-//					return super.getPropertyDescriptors();
-//				}
-//
-//			}
-//
-//		}
+		private String _name = "Pending";
 
 		public String getName()
 		{
@@ -74,10 +44,10 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 		public EditorType getInfo()
 		{
 			return null;
-//			if (_myEditor == null)
-//				_myEditor = new NameInfo(this);
-//
-//			return _myEditor;
+			// if (_myEditor == null)
+			// _myEditor = new NameInfo(this);
+			//
+			// return _myEditor;
 		}
 
 		@Override
@@ -124,8 +94,6 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 
 	}
 
-	
-	
 	@Override
 	public String getName()
 	{
@@ -140,7 +108,8 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 	public LegNameWizardPage(final ISelection selection)
 	{
 		super(selection, "namePage", "Set Leg Name",
-				"Use this page to specify a name for this leg", "images/scale_wizard.gif", null);
+				"Use this page to specify a name for this leg",
+				"images/scale_wizard.gif", null, false);
 	}
 
 	@Override

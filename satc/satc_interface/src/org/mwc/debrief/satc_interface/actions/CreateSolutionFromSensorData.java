@@ -16,10 +16,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
@@ -402,36 +399,28 @@ public class CreateSolutionFromSensorData implements
 
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 		{
+			// find out the period
+			TimePeriod period = super.getPeriod();
+			
+			initSolver();
+			
 			// ok, sort out the wizard
-			_wizard = new NewStraightLegWizard();
+			_wizard = new NewStraightLegWizard(this.getSolver(), period);
 			WizardDialog wd = new WizardDialog(Display.getCurrent().getActiveShell(),
 					_wizard);
 			wd.setTitle("New Straight Leg Forecast");
 			wd.open();
 			
-			int returnCode = wd.getReturnCode();
-
-			// did it finish successfully?
-			if (returnCode == Window.OK)
-			{
-				return super.execute(monitor, info);
-			}
-			else
-				return Status.CANCEL_STATUS;
+			return Status.CANCEL_STATUS;
 
 		}
 
 		@Override
-		protected String getContributionName()
-		{
-			return _wizard.getNameWizard().getName();
-		}
-
 		protected BaseContribution getContribution()
 		{
-			return new StraightLegForecastContribution();
+			// TODO Auto-generated method stub
+			return null;
 		}
-
 	}
 
 	private class StraightLegForecastContributionFromCuts extends
@@ -526,6 +515,11 @@ public class CreateSolutionFromSensorData implements
 			this.thePeriod = thePeriod;
 		}
 
+		protected TimePeriod getPeriod()
+		{
+			return thePeriod;
+		}
+		
 		public String getDefaultSolutionName()
 		{ // grab a name
 			Date firstCutDate = thePeriod.getStartDTG().getDate();
@@ -542,6 +536,24 @@ public class CreateSolutionFromSensorData implements
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 		{
 
+			initSolver();
+
+			String contName = getContributionName();
+			if (contName != null)
+			{
+				// ok = now get our specific contribution
+				BaseContribution bmc = createContribution(contName);
+
+				// and store it - if it worked
+				if (bmc != null)
+					_targetSolution.addContribution(bmc);
+			}
+
+			return Status.OK_STATUS;
+		}
+
+		protected void initSolver()
+		{
 			// ok, do we have an existing solution
 			if (_targetSolution == null)
 			{
@@ -560,19 +572,6 @@ public class CreateSolutionFromSensorData implements
 				// ok, give it the default contributions
 				initialiseSolver();
 			}
-
-			String contName = getContributionName();
-			if (contName != null)
-			{
-				// ok = now get our specific contribution
-				BaseContribution bmc = createContribution(contName);
-
-				// and store it - if it worked
-				if (bmc != null)
-					_targetSolution.addContribution(bmc);
-			}
-
-			return Status.OK_STATUS;
 		}
 
 		protected String getContributionName()
@@ -599,6 +598,11 @@ public class CreateSolutionFromSensorData implements
 			theConts.addContribution(new LocationAnalysisContribution());
 			theConts.addContribution(new SpeedAnalysisContribution());
 			theConts.addContribution(new CourseAnalysisContribution());
+		}
+
+		public ISolver getSolver()
+		{
+			return _targetSolution.getSolver();
 		}
 
 		abstract protected BaseContribution createContribution(String contName);

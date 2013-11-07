@@ -1,42 +1,20 @@
 package org.mwc.debrief.satc_interface.wizards;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWizard;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.wizards.CoastWizardPage;
-import org.mwc.cmap.core.wizards.ETOPOWizardPage;
-import org.mwc.cmap.core.wizards.GridWizardPage;
-import org.mwc.cmap.core.wizards.NewPlotFilenameWizardPage;
-import org.mwc.cmap.core.wizards.ScaleWizardPage;
-import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
+import org.mwc.debrief.satc_interface.wizards.CourseConstraintsWizardPage.CourseConstraintsObject;
+import org.mwc.debrief.satc_interface.wizards.SpeedConstraintsWizardPage.SpeedConstraintsObject;
 
-import MWC.GUI.BaseLayer;
-import MWC.GUI.Editable;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Plottables;
-import MWC.GUI.Chart.Painters.CoastPainter;
+import MWC.GenericData.TimePeriod;
+
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 
 /**
  * This is a sample new wizard. Its role is to create a new file resource in the
@@ -54,13 +32,21 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	private LegNameWizardPage _nameWizard;
 
 	private ISelection selection;
+	private final ISolver solver;
+	private TimePeriod period;
 
 	/**
 	 * Constructor for NewPlotWizard.
+	 * 
+	 * @param period
+	 * @param course
+	 * @param speed
 	 */
-	public NewStraightLegWizard()
+	public NewStraightLegWizard(ISolver solver, TimePeriod period)
 	{
 		super();
+		this.solver = solver;
+		this.period = period;
 	}
 
 	/**
@@ -71,12 +57,14 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	public void addPages()
 	{
 		_nameWizard = new LegNameWizardPage(selection);
-		_courseWizard = new CourseConstraintsWizardPage(selection);
-		_speedWizard = new SpeedConstraintsWizardPage(selection);
+		_courseWizard = new CourseConstraintsWizardPage(selection,
+				new CourseForecastContribution());
+		_speedWizard = new SpeedConstraintsWizardPage(selection,
+				new SpeedForecastContribution());
 
 		addPage(_nameWizard);
-		addPage(_speedWizard);
 		addPage(_courseWizard);
+		addPage(_speedWizard);
 	}
 
 	/**
@@ -84,56 +72,6 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	 * or just replace its contents, and open the editor on the newly created
 	 * file.
 	 */
-
-//	void doFinish(final String containerName, final String fileName,
-//			final IProgressMonitor monitor) throws CoreException
-//	{
-//		// create a sample file
-//		monitor.beginTask("Creating " + fileName, 2);
-//		final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-//		final IResource resource = root.findMember(new Path(containerName));
-//		if (!resource.exists() || !(resource instanceof IContainer))
-//		{
-//			throwCoreException("Container \"" + containerName + "\" does not exist.");
-//		}
-//		final IContainer container = (IContainer) resource;
-//		final IFile file = container.getFile(new Path(fileName));
-//		try
-//		{
-//			final InputStream stream = openContentStream();
-//			if (file.exists())
-//			{
-//				file.setContents(stream, true, true, monitor);
-//			}
-//			else
-//			{
-//				file.create(stream, true, monitor);
-//			}
-//			stream.close();
-//		}
-//		catch (final IOException e)
-//		{
-//		}
-//		monitor.worked(1);
-//		monitor.setTaskName("Opening file for editing...");
-//		getShell().getDisplay().asyncExec(new Runnable()
-//		{
-//			public void run()
-//			{
-//				final IWorkbenchPage page = PlatformUI.getWorkbench()
-//						.getActiveWorkbenchWindow().getActivePage();
-//				try
-//				{
-//					IDE.openEditor(page, file, DebriefPlugin.DEBRIEF_EDITOR);
-//				}
-//				catch (final PartInitException e)
-//				{
-//					CorePlugin.logError(Status.ERROR, "Whilst opening new file", e);
-//				}
-//			}
-//		});
-//		monitor.worked(1);
-//	}
 
 	/**
 	 * We will accept the selection in the workbench to see if we can initialize
@@ -154,10 +92,38 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	@Override
 	public boolean performFinish()
 	{
-		// ok, geneate the new straight leg constraint
+
+		StraightLegForecastContribution straight = new StraightLegForecastContribution();
+		straight.setName(_nameWizard.getName());
+		straight.setStartDate(period.getStartDTG().getDate());
+		straight.setFinishDate(period.getEndDTG().getDate());
+		solver.getContributions().addContribution(straight);
+
+		// have a course?
+		CourseConstraintsObject courseO = (CourseConstraintsObject) _courseWizard
+				.getEditable();
+		if (courseO != null)
+		{
+			CourseForecastContribution theCourse = courseO.getContribution();
+			theCourse.setStartDate(period.getStartDTG().getDate());
+			theCourse.setFinishDate(period.getEndDTG().getDate());
+			solver.getContributions().addContribution(theCourse);
+		}
+
+		// have a speed
+		SpeedConstraintsObject speedO = (SpeedConstraintsObject) _speedWizard
+				.getEditable();
+		if (courseO != null)
+		{
+			SpeedForecastContribution theSpeed = speedO.getContribution();
+			theSpeed.setStartDate(period.getStartDTG().getDate());
+			theSpeed.setFinishDate(period.getEndDTG().getDate());
+			solver.getContributions().addContribution(theSpeed);
+		}
+
 		return true;
 	}
-	
+
 	public String getName()
 	{
 		return _nameWizard.getEditable().getName();
@@ -167,11 +133,12 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	{
 		return _nameWizard;
 	}
-	
+
 	public CourseConstraintsWizardPage getCourseWizard()
 	{
 		return _courseWizard;
 	}
+
 	public SpeedConstraintsWizardPage getSpeedWizard()
 	{
 		return _speedWizard;

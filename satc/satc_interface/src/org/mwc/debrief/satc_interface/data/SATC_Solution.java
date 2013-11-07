@@ -20,6 +20,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
+import org.mwc.debrief.satc_interface.data.wrappers.StraightLegWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
 import Debrief.Wrappers.FixWrapper;
@@ -50,6 +51,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -188,6 +190,8 @@ public class SATC_Solution extends BaseLayer implements
 		ContributionWrapper thisW;
 		if (cont instanceof BearingMeasurementContribution)
 			thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
+		else if (cont instanceof StraightLegForecastContribution)
+			thisW = new StraightLegWrapper(cont);
 		else
 			thisW = new ContributionWrapper(cont);
 		super.add(thisW);
@@ -721,7 +725,8 @@ public class SATC_Solution extends BaseLayer implements
 						.getCoordinate());
 
 				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
-						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD, true);
+						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD,
+						true);
 			}
 
 		}
