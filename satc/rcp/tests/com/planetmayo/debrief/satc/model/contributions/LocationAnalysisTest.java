@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
+import org.geotools.referencing.GeodeticCalculator;
 import org.junit.Test;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
@@ -18,6 +19,7 @@ import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class LocationAnalysisTest extends ModelTestBase
@@ -221,6 +223,27 @@ public class LocationAnalysisTest extends ModelTestBase
 	}
 
 	@Test
+	public void testRingCalc()
+	{
+		Point centre = GeoSupport.createPoint(-4, 60);
+		double range = 111320;
+		LinearRing ring = GeoSupport.geoRing(centre, range);
+		GeodeticCalculator calculator = new GeodeticCalculator();
+
+		// ok, check the distances
+		Coordinate[] coords = ring.getCoordinates();
+		for (int i = 0; i < coords.length; i++)
+		{
+			Coordinate thisC = coords[i];
+			calculator.setStartingGeographicPoint(centre.getX(), centre.getY());
+			calculator.setDestinationGeographicPoint(thisC.x, thisC.y);
+			double distance = calculator.getOrthodromicDistance();
+			assertEquals("distance close to one deg at equator", 111320d, distance,
+					1000);
+		}
+	}
+
+	@Test
 	public void testBoundary() throws IncompatibleStateException
 	{
 		// ok, create the state
@@ -261,7 +284,8 @@ public class LocationAnalysisTest extends ModelTestBase
 		assertNotNull("course not generated", speedRegion);
 		// GeoSupport.writeGeometry("Speed", speedRegion);
 
-		LinearRing courseRegion = lac.getCourseRing(centerCoord, cRange, sRange, newDate.getTime() - oldDate.getTime());
+		LinearRing courseRegion = lac.getCourseRing(centerCoord, cRange, sRange,
+				newDate.getTime() - oldDate.getTime());
 		assertNotNull("course not generated", courseRegion);
 		assertEquals("correct num of coords for arc", 5,
 				courseRegion.getNumPoints());
@@ -272,7 +296,7 @@ public class LocationAnalysisTest extends ModelTestBase
 				- bs.getTime().getTime());
 
 		// did it work?
-		// assertNotNull("Should have created location", newB);
+		assertNotNull("Should have created location", newB);
 	}
 
 	private Coordinate createCoord(double x, double y)

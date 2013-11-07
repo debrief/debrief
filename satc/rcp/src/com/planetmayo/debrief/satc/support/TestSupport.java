@@ -72,8 +72,8 @@ public class TestSupport
 			String speed = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"), 
-					date + " " + time);
+			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
@@ -408,7 +408,7 @@ public class TestSupport
 		IContributions contributions = generator.getContributions();
 		// clear the geneartor first
 		boolean live = generator.isLiveEnabled();
-		generator.setLiveRunning(false);		
+		generator.setLiveRunning(false);
 		generator.clear();
 
 		// now load some data
@@ -436,34 +436,34 @@ public class TestSupport
 
 		// sort out the legs
 		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
-		st1.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 121329"));
-		st1.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 123029"));
+		st1.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 121329"));
+		st1.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 123029"));
 		st1.setName("Straight leg one");
 		contributions.addContribution(st1);
 
 		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
-		st2.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 123329"));
-		st2.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 124829"));
+		st2.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 123329"));
+		st2.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 124829"));
 		st2.setName("Straight leg two");
 		contributions.addContribution(st2);
 
 		StraightLegForecastContribution st3 = new StraightLegForecastContribution();
-		st3.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 125100"));
-		st3.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 130429"));
+		st3.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 125100"));
+		st3.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 130429"));
 		st3.setName("Straight leg three");
 		contributions.addContribution(st3);
 
 		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 121329"));
-		course.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 130429"));
+		course.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 121329"));
+		course.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 130429"));
 		course.setMinCourse(Math.toRadians(190));
 		course.setMaxCourse(Math.toRadians(315));
 		course.setEstimate(Math.toRadians(225));
@@ -471,17 +471,16 @@ public class TestSupport
 		contributions.addContribution(course);
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 121329"));
-		speed.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
-				"100112 130429"));
+		speed.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 121329"));
+		speed.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), "100112 130429"));
 		speed.setMinSpeed(GeoSupport.kts2MSec(4d));
 		speed.setMaxSpeed(GeoSupport.kts2MSec(14d));
 		speed.setEstimate(GeoSupport.kts2MSec(8d));
 		speed.setName("Initial speed forecast");
 		contributions.addContribution(speed);
 
-		
 		//
 		// // try a location forecast
 		// LocationForecastContribution locF = new LocationForecastContribution();
@@ -526,5 +525,37 @@ public class TestSupport
 		generator.setLiveRunning(live);
 		generator.run();
 
+	}
+
+	public static String asGeoJSON(String title, Coordinate[] pts)
+	{
+		String res = "";
+		final String newLine = System.getProperty("line.separator");
+
+		// sort out the feature
+		String coordsStr = "";
+		for (int i = 0; i < pts.length; i++)
+		{
+			Coordinate coordinate = pts[i];
+
+			if (i > 0) 
+			{
+				coordsStr += ", ";
+			}
+			coordsStr += "[" + newLine;
+			coordsStr += coordinate.x + "," + newLine;
+			coordsStr += coordinate.y + newLine;
+			coordsStr += "]" + newLine;
+		}
+
+		res = "{   " + " \"type\": \"FeatureCollection\"," + newLine
+				+ " \"features\": [{" + newLine + "\"type\": \"Feature\"," + newLine
+				+ " \"geometry\": {" + newLine + "   \"type\": \"LineString\","
+				+ newLine + "   \"coordinates\": [" + newLine + coordsStr + newLine
+				+ "  ]" + newLine + " }," + newLine + " \"properties\": {" + newLine
+				+ "  \"name\": \"" + title + "\"," + newLine + " }" + newLine + "}]"
+				+ newLine + "}";
+
+		return res;
 	}
 }

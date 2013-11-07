@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
@@ -23,6 +24,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
+import org.mwc.debrief.satc_interface.wizards.NewStraightLegWizard;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -159,6 +161,10 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
+		parent
+				.add(new DoIt("Open Straight Leg Wizard for period covering " + title,
+						new StraightLegWizardFromCuts(solution, actionTitle, layers,
+								validItems)));
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
 						layers, validItems)));
@@ -174,6 +180,7 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Straight Leg for period covering " + title,
 				new StraightLegForecastContributionFromCuts(solution, actionTitle,
 						layers, validItems)));
+
 	}
 
 	protected static class DoIt extends Action
@@ -377,6 +384,45 @@ public class CreateSolutionFromSensorData implements
 
 	}
 
+	private class StraightLegWizardFromCuts extends ForecastContributionFromCuts
+	{
+		private NewStraightLegWizard _wizard;
+
+		public StraightLegWizardFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			// sort out the straight leg component
+			super(existingSolution, title, theLayers, validCuts);
+
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+		{
+			// find out the period
+			TimePeriod period = super.getPeriod();
+			
+			initSolver();
+			
+			// ok, sort out the wizard
+			_wizard = new NewStraightLegWizard(this.getSolver(), period);
+			WizardDialog wd = new WizardDialog(Display.getCurrent().getActiveShell(),
+					_wizard);
+			wd.setTitle("New Straight Leg Forecast");
+			wd.open();
+			
+			return Status.CANCEL_STATUS;
+
+		}
+
+		@Override
+		protected BaseContribution getContribution()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
+
 	private class StraightLegForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
@@ -469,6 +515,11 @@ public class CreateSolutionFromSensorData implements
 			this.thePeriod = thePeriod;
 		}
 
+		protected TimePeriod getPeriod()
+		{
+			return thePeriod;
+		}
+		
 		public String getDefaultSolutionName()
 		{ // grab a name
 			Date firstCutDate = thePeriod.getStartDTG().getDate();
@@ -485,6 +536,24 @@ public class CreateSolutionFromSensorData implements
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 		{
 
+			initSolver();
+
+			String contName = getContributionName();
+			if (contName != null)
+			{
+				// ok = now get our specific contribution
+				BaseContribution bmc = createContribution(contName);
+
+				// and store it - if it worked
+				if (bmc != null)
+					_targetSolution.addContribution(bmc);
+			}
+
+			return Status.OK_STATUS;
+		}
+
+		protected void initSolver()
+		{
 			// ok, do we have an existing solution
 			if (_targetSolution == null)
 			{
@@ -503,7 +572,11 @@ public class CreateSolutionFromSensorData implements
 				// ok, give it the default contributions
 				initialiseSolver();
 			}
+		}
 
+		protected String getContributionName()
+		{
+			String res = null;
 			// grab a name
 			// create input box dialog
 			InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
@@ -514,17 +587,9 @@ public class CreateSolutionFromSensorData implements
 			if (inp.open() == InputDialog.OK)
 			{
 				// get the results
-				String contName = inp.getValue();
-
-				// ok = now get our specific contribution
-				BaseContribution bmc = createContribution(contName);
-
-				// and store it - if it worked
-				if (bmc != null)
-					_targetSolution.addContribution(bmc);
+				res = inp.getValue();
 			}
-
-			return Status.OK_STATUS;
+			return res;
 		}
 
 		private void initialiseSolver()
@@ -533,6 +598,11 @@ public class CreateSolutionFromSensorData implements
 			theConts.addContribution(new LocationAnalysisContribution());
 			theConts.addContribution(new SpeedAnalysisContribution());
 			theConts.addContribution(new CourseAnalysisContribution());
+		}
+
+		public ISolver getSolver()
+		{
+			return _targetSolution.getSolver();
 		}
 
 		abstract protected BaseContribution createContribution(String contName);

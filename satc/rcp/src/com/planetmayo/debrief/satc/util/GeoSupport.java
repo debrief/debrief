@@ -103,10 +103,6 @@ public class GeoSupport
 		return polygon ? _factory.createPolygon(coords) : _factory.createLinearRing(coords);		
 	}
 
-	public static Distance computeDistance(Geometry geo1, Geometry geo2)
-	{
-		return new DistanceHelper(geo1, geo2).calculate();
-	}
 
 	public static double kts2MSec(double kts)
 	{
