@@ -152,19 +152,6 @@ public class MathUtils
 		return GeoSupport.getFactory().createPoint(res);
 	}
 	
-	/**
-	 * returns distance between two points in 2D 
-	 * 	
-	 * @param point1
-	 * @param point2
-	 * @return
-	 */
-	public static double calcFlatDistance(Point point1, Point point2) 
-	{
-		double a = (point1.getX() - point2.getX());
-		double b = (point1.getY() - point2.getY());
-		return Math.hypot(a, b);		
-	}	
 	
 	public static double calcAbsoluteValue(Point vector)	
 	{
