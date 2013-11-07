@@ -37,8 +37,6 @@ public class RangeForecastContribution extends BaseContribution
 	 */
 	public static final double MAX_SELECTABLE_RANGE_M = 40000;
 
-	private static final double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
-
 	protected Double minRangeM = 0d;
 
 	protected Double maxRangeM = 0d;
@@ -237,7 +235,7 @@ public class RangeForecastContribution extends BaseContribution
 		if (range == 0d)
 		{
 			// no, ok, just choose an absolutely monster range
-			range = ABSOLUTELY_HUGE_RANGE_DEGS;
+			range = MAX_SELECTABLE_RANGE_M;
 		}
 
 		// ok, now we create the outer circle

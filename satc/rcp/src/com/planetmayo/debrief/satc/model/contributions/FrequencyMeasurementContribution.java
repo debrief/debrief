@@ -35,10 +35,10 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	}
 
 	public void addEstimate(double lat, double lon, Date date, double brg,
-			double range)
+			double freq)
 	{
 		GeoPoint loc = new GeoPoint(lat, lon);
-		FMeasurement measure = new FMeasurement(loc, brg, date, range);
+		FMeasurement measure = new FMeasurement(loc, brg, date, freq);
 		addThis(measure);
 		firePropertyChange(ESTIMATE, measurements.size(), measurements.size());
 	}
@@ -184,14 +184,14 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		 * 
 		 */
 		@SuppressWarnings("unused")
-		private final Double range;
+		private final Double frequency;
 
-		public FMeasurement(GeoPoint loc, double bearing, Date time, Double range)
+		public FMeasurement(GeoPoint loc, double bearing, Date time, Double frequency)
 		{
 			this.origin = loc;
 			this.bearingAngle = bearing;
 			this.time = time;
-			this.range = range;
+			this.frequency = frequency;
 		}
 	}	
 }
