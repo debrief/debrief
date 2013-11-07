@@ -68,7 +68,7 @@ public class XStreamIO
 		xstream.useAttributeFor(FMeasurement.class, "origin");
 		xstream.useAttributeFor(FMeasurement.class, "bearingAngle");
 		xstream.useAttributeFor(FMeasurement.class, "origin");
-		xstream.useAttributeFor(FMeasurement.class, "range");
+		xstream.useAttributeFor(FMeasurement.class, "frequency");
 
 		xstream.useAttributeFor(GeoPoint.class, "lat");
 		xstream.useAttributeFor(GeoPoint.class, "lon");
