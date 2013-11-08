@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.satc_interface.SATC_Interface_Activator;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
@@ -161,10 +162,11 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		parent
-				.add(new DoIt("Open Straight Leg Wizard for period covering " + title,
-						new StraightLegWizardFromCuts(solution, actionTitle, layers,
-								validItems)));
+		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period covering " + title,
+				new StraightLegWizardFromCuts(solution, actionTitle, layers,
+						validItems));
+		wizardItem.setImageDescriptor(SATC_Interface_Activator.getImageDescriptor("icons/wizard.png"));
+		parent.add(wizardItem);
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
 						layers, validItems)));
@@ -401,16 +403,31 @@ public class CreateSolutionFromSensorData implements
 		{
 			// find out the period
 			TimePeriod period = super.getPeriod();
-			
+
 			initSolver();
-			
+
 			// ok, sort out the wizard
-			_wizard = new NewStraightLegWizard(this.getSolver(), period);
+			_wizard = new NewStraightLegWizard(period);
 			WizardDialog wd = new WizardDialog(Display.getCurrent().getActiveShell(),
 					_wizard);
 			wd.setTitle("New Straight Leg Forecast");
 			wd.open();
-			
+
+			if (wd.getReturnCode() == WizardDialog.OK)
+			{
+				// ok, are there any?
+				ArrayList<BaseContribution> conts = _wizard.getContributions();
+				if (conts.size() > 0)
+				{
+					Iterator<BaseContribution> iter = conts.iterator();
+					while (iter.hasNext())
+					{
+						BaseContribution baseContribution = (BaseContribution) iter.next();
+						getSolver().addContribution(baseContribution);
+					}
+				}
+			}
+
 			return Status.CANCEL_STATUS;
 
 		}
@@ -519,7 +536,7 @@ public class CreateSolutionFromSensorData implements
 		{
 			return thePeriod;
 		}
-		
+
 		public String getDefaultSolutionName()
 		{ // grab a name
 			Date firstCutDate = thePeriod.getStartDTG().getDate();
@@ -600,9 +617,9 @@ public class CreateSolutionFromSensorData implements
 			theConts.addContribution(new CourseAnalysisContribution());
 		}
 
-		public ISolver getSolver()
+		public SATC_Solution getSolver()
 		{
-			return _targetSolution.getSolver();
+			return _targetSolution;
 		}
 
 		abstract protected BaseContribution createContribution(String contName);

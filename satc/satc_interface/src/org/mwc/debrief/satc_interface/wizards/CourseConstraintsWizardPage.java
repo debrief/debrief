@@ -165,6 +165,7 @@ public class CourseConstraintsWizardPage extends CoreEditableWizardPage
 				"Use this page to specify course constraints",
 				"images/scale_wizard.gif", null);
 		this.course = course;
+		
 	}
 
 	@Override
@@ -172,7 +173,9 @@ public class CourseConstraintsWizardPage extends CoreEditableWizardPage
 	{
 		if (_editable == null)
 		{
-			_editable = new CourseConstraintsObject(course);
+			CourseConstraintsObject theCourse = new CourseConstraintsObject(course);
+			theCourse.setName("Course Forecast");
+			_editable = theCourse;
 		}
 
 		return _editable;
@@ -187,6 +190,7 @@ public class CourseConstraintsWizardPage extends CoreEditableWizardPage
 		final PropertyDescriptor[] descriptors =
 		{ prop("MinCourse", "the minimum course", getEditable()),
 				prop("MaxCourse", "the maximum course", getEditable()),
+				prop("Name", "the name of this contribution", getEditable()),
 				prop("HasEstimate", "whether to use an estimate", getEditable()),
 				prop("Estimate", "the estimate", getEditable()) };
 		return descriptors;

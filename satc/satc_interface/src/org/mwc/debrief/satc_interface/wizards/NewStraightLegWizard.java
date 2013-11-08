@@ -1,8 +1,11 @@
 package org.mwc.debrief.satc_interface.wizards;
 
+import java.util.ArrayList;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
@@ -11,10 +14,10 @@ import org.mwc.debrief.satc_interface.wizards.SpeedConstraintsWizardPage.SpeedCo
 
 import MWC.GenericData.TimePeriod;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.ISolver;
 
 /**
  * This is a sample new wizard. Its role is to create a new file resource in the
@@ -32,8 +35,8 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	private LegNameWizardPage _nameWizard;
 
 	private ISelection selection;
-	private final ISolver solver;
 	private TimePeriod period;
+	private ArrayList<BaseContribution> _contributions;
 
 	/**
 	 * Constructor for NewPlotWizard.
@@ -42,12 +45,24 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	 * @param course
 	 * @param speed
 	 */
-	public NewStraightLegWizard(ISolver solver, TimePeriod period)
+	public NewStraightLegWizard(TimePeriod period)
 	{
 		super();
-		this.solver = solver;
 		this.period = period;
 	}
+	
+	
+
+	@Override
+	public void createPageControls(Composite pageContainer)
+	{
+		super.createPageControls(pageContainer);
+		
+		_speedWizard.setPresent(false);
+		_courseWizard.setPresent(false);
+	}
+
+
 
 	/**
 	 * Adding the page to the wizard.
@@ -85,6 +100,7 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 		this.selection = selection1;
 	}
 
+
 	/**
 	 * This method is called when 'Finish' button is pressed in the wizard. We
 	 * will create an operation and run it using wizard as execution context.
@@ -92,12 +108,13 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	@Override
 	public boolean performFinish()
 	{
-
+		_contributions = new ArrayList<BaseContribution>();
+		
 		StraightLegForecastContribution straight = new StraightLegForecastContribution();
 		straight.setName(_nameWizard.getName());
 		straight.setStartDate(period.getStartDTG().getDate());
 		straight.setFinishDate(period.getEndDTG().getDate());
-		solver.getContributions().addContribution(straight);
+		_contributions.add(straight);
 
 		// have a course?
 		CourseConstraintsObject courseO = (CourseConstraintsObject) _courseWizard
@@ -107,18 +124,18 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 			CourseForecastContribution theCourse = courseO.getContribution();
 			theCourse.setStartDate(period.getStartDTG().getDate());
 			theCourse.setFinishDate(period.getEndDTG().getDate());
-			solver.getContributions().addContribution(theCourse);
+			_contributions.add(theCourse);
 		}
 
 		// have a speed
 		SpeedConstraintsObject speedO = (SpeedConstraintsObject) _speedWizard
 				.getEditable();
-		if (courseO != null)
+		if (speedO != null)
 		{
 			SpeedForecastContribution theSpeed = speedO.getContribution();
 			theSpeed.setStartDate(period.getStartDTG().getDate());
 			theSpeed.setFinishDate(period.getEndDTG().getDate());
-			solver.getContributions().addContribution(theSpeed);
+			_contributions.add(theSpeed);
 		}
 
 		return true;
@@ -132,6 +149,11 @@ public class NewStraightLegWizard extends Wizard implements INewWizard
 	public LegNameWizardPage getNameWizard()
 	{
 		return _nameWizard;
+	}
+	
+	public ArrayList<BaseContribution> getContributions()
+	{
+		return _contributions;
 	}
 
 	public CourseConstraintsWizardPage getCourseWizard()
