@@ -38,30 +38,39 @@ public class LocationCalculator implements ILocationCalculator
 	private double getDistance(final WorldLocation start, final WorldLocation end,
 			final WorldLocation watchableLocation)
 	{
-		double angleA = watchableLocation.rangeFrom(end);
-		double hypotenus = new WorldDistance(watchableLocation.subtract(end)).getValueIn(_units);
-		return hypotenus / Math.cos(angleA);
+		final double angleA = watchableLocation.rangeFrom(end);
+		final double hypotenus = new WorldDistance(watchableLocation.subtract(end)).getValueIn(_units);
+		return hypotenus * Math.cos(Math.PI*angleA/180);
 	}
 	
 	
 	static public final class LocationTest extends junit.framework.TestCase
 	{
 		WorldLocation start, end, watch;
+		LocationCalculator calc = new LocationCalculator(WorldDistance.KM);
+		
 		@Override
 		public final void setUp()
 		{
 			// set the earth model we are expecting
 			MWC.GenericData.WorldLocation.setModel(new CompletelyFlatEarth());
 
-			start = new WorldLocation(12.3, 12.4, 12.5);
-			end = new WorldLocation(12.3, 12.4, 12.5);			
-			watch = new WorldLocation(13.3, 12.4, 12.5);
-			
+			start = new WorldLocation(0, 0, 0);
+			end = new WorldLocation(0, 61, 0);			
+			watch = new WorldLocation(0, 1, 0);			
 		}
 		
-		public void testX()
+		public void testGetDistance()
 		{
-			
+			final double lineLenKM = new WorldDistance(end.subtract(start))
+					.getValueIn(WorldDistance.KM);
+			assertEquals(6778.320000000001, lineLenKM);
+		
+			final double angleA = watch.rangeFrom(end); 
+			assertEquals(60.0, angleA);
+						
+			final double d = calc.getDistance(start, end, watch);
+			assertEquals(3333.6000000000013, d);
 		}
 		
 	}
