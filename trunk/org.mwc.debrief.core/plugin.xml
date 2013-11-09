@@ -90,10 +90,34 @@
 			extensions="tif;tiff" name="GeoTIF Image File" />
 	</extension>
 
+    <extension point="org.eclipse.ui.menus"> 
+        <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
+            <menu id="org.mwc.debrief.core.EditorFeatures" label="&amp;Chart Features"/>
+            <menu id="org.mwc.debrief.core.EditorShapes" label="&amp;Drawing"/>
+            <menu id="org.mwc.debrief.core.EditorView" label="&amp;View"/>
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView"> 
+            <separator name="viewRadio" visible="true"/> 
+            <separator name="view" visible="true"/> 
+            <separator name="sep1" visible="true"/> 
+            <separator name="additions" visible="true"/> 
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorShapes"> 
+            <separator name="shapes" visible="true"/> 
+            <separator name="sep1" visible="true"/> 
+            <separator name="additions" visible="true"/> 
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorShapes"> 
+            <separator name="features" visible="true"/> 
+            <separator name="sep1" visible="true"/> 
+            <separator name="additions" visible="true"/> 
+        </menuContribution>
+    </extension>
 
 
 	<extension point="org.eclipse.ui.actionSets">
 		<actionSet id="org.mwc.debrief.core" label="Debrief Actions">
+			<!--
 			<menu id="org.mwc.debrief.core.EditorView" label="&amp;View"
 				path="additions">
 				<groupMarker name="viewRadio" />
@@ -113,7 +137,7 @@
 				<separator name="sep1" />
 				<groupMarker name="additions" />
 			</menu>
-
+			-->
 
 			<action class="org.mwc.cmap.plotViewer.actions.ZoomIn" icon="icons/zoomin.gif"
 				id="org.mwc.debrief.core.ZoomIn" label="Zoom &amp;In"
