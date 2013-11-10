@@ -15,6 +15,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.xyplot.views.providers.CrossSectionDatasetProvider;
+import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
 
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
@@ -27,6 +29,7 @@ import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 // This import leads to cycle in plugin dependencies
 // TODO: import org.mwc.cmap.TimeController.views.TimeController;
+import MWC.GenericData.WorldDistance;
 
 public class CrossSectionView extends ViewPart
 {
@@ -71,6 +74,8 @@ public class CrossSectionView extends ViewPart
 	
 	private Layers.DataListener _myLayersListener;
 	
+	private ICrossSectionDatasetProvider _datasetProvider = 
+			new CrossSectionDatasetProvider(WorldDistance.KM);	
 	//TODO: declare actions
 
 	@Override
@@ -106,7 +111,7 @@ public class CrossSectionView extends ViewPart
 						if (shape instanceof LineShape && !shape.equals(_line))
 						{
 							_line = (LineShape) shape;
-							_viewer.fillPlot(_myLayers, _line);
+							_viewer.fillPlot(_myLayers, _line, _datasetProvider);
 						}
 					}		
 				}
@@ -302,7 +307,7 @@ public class CrossSectionView extends ViewPart
 				public void run()
 				{
 					// ok, fire the change in the UI thread
-					_viewer.fillPlot(theData, _line);
+					_viewer.fillPlot(theData, _line, _datasetProvider);
 				}
 			});
 	}	
@@ -350,7 +355,7 @@ public class CrossSectionView extends ViewPart
 					{
 						if (event.getSource().equals(_line))
 						{
-							_viewer.fillPlot(_myLayers, _line);
+							_viewer.fillPlot(_myLayers, _line, _datasetProvider);
 						}
 					}
 				};

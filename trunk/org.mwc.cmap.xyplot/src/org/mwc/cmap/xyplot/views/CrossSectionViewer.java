@@ -6,9 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -25,6 +23,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -32,13 +31,12 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
-import MWC.GenericData.WorldDistance;
+
 
 public class CrossSectionViewer
 {
-	
+		
 	private List<ISelectionChangedListener> _listeners = new ArrayList<ISelectionChangedListener>();
 	private List<PropertyChangeListener> _propListeners = new ArrayList<PropertyChangeListener>();
 	
@@ -49,7 +47,7 @@ public class CrossSectionViewer
 		
 	private JFreeChart _chart;
 	
-	private ILocationCalculator _calc = new LocationCalculator(WorldDistance.KM);
+	private ICrossSectionDatasetProvider _datasetProvider;
 	
 	private XYSeriesCollection _dataset = new XYSeriesCollection();
 	
@@ -62,7 +60,8 @@ public class CrossSectionViewer
 	/**
 	 * the chart marker
 	 */
-	private static final Shape rect = new Rectangle2D.Double(-4, -4, 8, 8);
+	private static final Shape _markerShape = new Rectangle2D.Double(-4, -4, 8, 8);
+	private static final int _markerSize = 4;
 	
    	
 	protected CrossSectionViewer(final Composite parent)
@@ -91,11 +90,12 @@ public class CrossSectionViewer
 		_chartFrame.add(jfreeChartPanel);		
 	}
 	
-	public void fillPlot(final Layers theLayers, final LineShape line)
+	public void fillPlot(final Layers theLayers, final LineShape line,
+			final ICrossSectionDatasetProvider prov)
 	{
 		if (theLayers == null || line == null)
 			return;
-		
+		_datasetProvider = prov;
 		_series = new ArrayList<XYSeries>();
 		//TODO: check for Snail period
 		final boolean is_snail = false;
@@ -113,18 +113,17 @@ public class CrossSectionViewer
 	
 	private void setDiscreteRenderer(final int series, final Color paint)
 	{	    
-		_discreteRenderer.setSeriesShape(series, rect);
+		_discreteRenderer.setSeriesShape(series, _markerShape);
 		
 		_discreteRenderer.setSeriesFillPaint(series, paint);
 		_discreteRenderer.setSeriesPaint(series, paint);
-		//TODO: constants
-		_discreteRenderer.setDotHeight(6);
-		_discreteRenderer.setDotWidth(6);	   
+		_discreteRenderer.setDotHeight(_markerSize);
+		_discreteRenderer.setDotWidth(_markerSize);	   
 	}
 	
 	private void setSnailRenderer(final int series, final Color paint) 
 	{		
-		_snailRenderer.setSeriesShape(series, rect);
+		_snailRenderer.setSeriesShape(series, _markerShape);
 		
 		_snailRenderer.setSeriesFillPaint(series, paint);
 		_snailRenderer.setSeriesPaint(series, paint);
@@ -199,49 +198,29 @@ public class CrossSectionViewer
 	    				final HiResDate snail_period = new HiResDate(now.getDate().getTime() - 5);
 	    				final long diff = now.getDate().getTime() - snail_period.getDate().getTime();
 	    				final HiResDate start_date = new HiResDate(diff);
-	    				
-	    				final Collection<Editable> wbs  = wlist.getItemsBetween(start_date, now);
-	    			    final Iterator<Editable> itr = wbs.iterator();
-		        		//TODO: set the series name
-	    			    final XYSeries series = new XYSeries(wlist.getName());
-	    			    Color paint = Color.GRAY;
-	    		        while (itr.hasNext()) 
-	    		        {
-	    		        	final Editable ed = itr.next();
-	    		        	if (ed instanceof Watchable) 
-	    		        	{
-	    		        		paint = ((Watchable) ed).getColor();
-	    		        		final Double x_coord = new Double(_calc.getDistance(line, (Watchable) ed));
-	    		        		final Double y_coord = new Double(((Watchable) ed).getDepth());
-	    		        		series.add(x_coord, y_coord);
-	    		        	}		    			
-	    		        }	 
-	    		        //TODO: remove hard-coded values
-	    		        //series.add(0.0450068580566741 + _series.size(), 0.0);
-    		        	_series.add(series);	    		        	
-		    			setSnailRenderer(_series.size()-1, paint);
+	    				final XYSeries series = _datasetProvider.getSeries(line,
+							(TrackWrapper) wlist, start_date, now);
+	    		        _series.add(series);	    		        	
+		    			setSnailRenderer(_series.size()-1, wlist.getColor());
 	    			}
 	    			else
 	    			{	    				
-	    				final Watchable[] wbs = wlist.getNearestTo(now);
-	    				//TODO: set the series name
-	    				Color paint = wlist.getColor();
-	    				XYSeries series = new XYSeries(wlist.getName());
-	    				for(Watchable wb: wbs)
-		    			{		    					
-		    				final Double x_coord = new Double(_calc.getDistance(line, wb));
-	    		        	final Double y_coord = new Double(wb.getDepth());
-		    				series.add(x_coord, y_coord);    		        		
-		    			}
+	    				final XYSeries series = _datasetProvider.getSeries(line,
+								(TrackWrapper) wlist, now);
 		    			//TODO: remove hard-coded values
 		    			series.add(0.0450068580566741 + _series.size(), 0.0);
 		    			_series.add(series);
-		    			setDiscreteRenderer(_series.size()-1, paint);	    					    				
+		    			setDiscreteRenderer(_series.size()-1, wlist.getColor());	    					    				
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
 	    		walkThrough(next, line, is_snail);
 	    }
+	}
+	
+	static public final class CrossSectionViewerTest extends junit.framework.TestCase
+	{
+		
 	}
 	
 
