@@ -3,15 +3,21 @@
  */
 package org.mwc.debrief.core.creators.shapes;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * @author ian.mayo
  *
  */
-public class AutoSelectTarget implements IWorkbenchWindowActionDelegate
+public class AutoSelectTarget extends AbstractHandler implements IWorkbenchWindowActionDelegate
 {
 	
 	private static boolean _ticked = true; 
@@ -57,4 +63,13 @@ public class AutoSelectTarget implements IWorkbenchWindowActionDelegate
 	{
 	}
 
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException
+	{
+
+		Command command = event.getCommand();
+		boolean oldValue = HandlerUtil.toggleCommandState(command);
+		_ticked = !_ticked;
+		return null;
+	}
 }
