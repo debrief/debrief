@@ -1,21 +1,35 @@
 package org.mwc.cmap.xyplot.views.providers;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
+import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.mwc.cmap.xyplot.views.ILocationCalculator;
 import org.mwc.cmap.xyplot.views.LocationCalculator;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
 
 public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 {
 	private ILocationCalculator _calc;
+	
+	public CrossSectionDatasetProvider()
+	{
+		this(WorldDistance.KM);
+	}
 	
 	public CrossSectionDatasetProvider(final int units)
 	{
@@ -26,20 +40,9 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 	public XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
 			final HiResDate startT, final 	HiResDate endT) 
 	{
-		final Collection<Editable> wbs  = wlist.getItemsBetween(startT, endT);
-	    final Iterator<Editable> itr = wbs.iterator();
-	    final XYSeries series = new XYSeries(wlist.getName());
-        while (itr.hasNext()) 
-        {
-        	final Editable ed = itr.next();
-        	if (ed instanceof Watchable) 
-        	{
-        		final Double x_coord = new Double(_calc.getDistance(line, (Watchable) ed));
-        		final Double y_coord = new Double(((Watchable) ed).getDepth());
-        		series.add(x_coord, y_coord);
-        	}		    			
-        }	 
-		return series;
+		final Collection<Editable> editables  = wlist.getItemsBetween(startT, endT);
+		Watchable[] wbs = (Watchable[]) editables.toArray(new Watchable[editables.size()]);
+		return getSeries(line, wlist.getName(), wbs);
 	}
 
 	@Override
@@ -47,7 +50,12 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 			final HiResDate timeT) 
 	{
 		final Watchable[] wbs = wlist.getNearestTo(timeT);
-		final XYSeries series = new XYSeries(wlist.getName());
+		return getSeries(line, wlist.getName(), wbs);
+	}
+	
+	private XYSeries getSeries(final LineShape line, String seriesName,  Watchable[] wbs)
+	{
+		final XYSeries series = new XYSeries(seriesName);
 		for(final Watchable wb: wbs)
 		{		    					
 			final Double x_coord = new Double(_calc.getDistance(line, wb));
@@ -55,6 +63,72 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 			series.add(x_coord, y_coord);    		        		
 		}
 		return series;
+	}
+	
+	static public final class CrossSectionDatasetProviderTest extends junit.framework.TestCase
+	{
+		DateFormat _dateFormat = new SimpleDateFormat("dd-mm-yyyy HH:mm");
+		HiResDate[] _times;
+		int TIME_ARRAY_SIZE = 7;
+		
+		TrackWrapper _track;
+		LineShape _line;
+		
+		CrossSectionDatasetProvider _testable = new CrossSectionDatasetProvider();
+		
+		public void setUp() throws ParseException
+		{
+			WorldLocation start = new WorldLocation(0, 0, 0);
+			WorldLocation end = new WorldLocation(0, 1, 0);
+			_line = new LineShape(start, end);
+			
+			_times = new HiResDate[TIME_ARRAY_SIZE];
+			for (int i=0; i<TIME_ARRAY_SIZE; i++)
+			{
+				final Date dateVal = _dateFormat.parse("09-09-2013 10:" + i*10);
+				_times[i] = new HiResDate(dateVal); 
+			}
+			
+			_track = new TrackWrapper();
+			int j = 0;
+			for (double i=0.0; i<=1.2; i+=0.2)
+			{
+				final WorldLocation loc = new WorldLocation(0, i, 0);
+				final Fix fix = new Fix(_times[j], loc, 2, 2);
+				_track.addFix(new FixWrapper(fix));
+				j++;
+			}
+		}
+		
+		public void testDiscreteSeries() throws ParseException
+		{			
+			for (int i=0; i<TIME_ARRAY_SIZE; i++)
+			{
+				final XYSeries series = _testable.getSeries(_line, _track, _times[i]);
+				assertEquals(1, series.getItemCount());
+				final XYDataItem item = series.getDataItem(0);
+				assertNotNull(item.getXValue());
+				assertEquals(0.0, item.getYValue()); //depth is 0
+			}
+		}
+		
+		public void testSnailSeries() throws ParseException
+		{	
+			for (int i=0; i<TIME_ARRAY_SIZE-1; i++)
+			{
+				final XYSeries series = _testable.getSeries(_line, _track, _times[i], _times[i+1]);
+				assertEquals(2, series.getItemCount());
+				for (int j=0; j<2; j++)
+				{
+					final XYDataItem item = series.getDataItem(j);
+					assertNotNull(item.getXValue());
+					assertEquals(0.0, item.getYValue()); //depth is 0
+				}
+			}
+		}
+		
+		//TODO: tests with holes in data
+		
 	}
 
 }
