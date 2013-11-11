@@ -1284,13 +1284,13 @@
        <command
              defaultHandler="org.mwc.cmap.plotViewer.actions.ExportWMF"
              id="org.mwc.cmap.plotViewer.actions.ExportWMF"
-             name="&amp;Export WMF">
+             name="Export WMF">
        </command>
        
        <command
              defaultHandler="org.mwc.debrief.core.operations.ExportGPX"
              id="org.mwc.debrief.core.operations.ExportGPX"
-             name="&amp;Export GPX">
+             name="Export GPX">
        </command>
        
     </extension>
