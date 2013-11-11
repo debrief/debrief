@@ -58,6 +58,11 @@ public class CrossSectionViewer
 	private XYDotRenderer _discreteRenderer = new XYDotRenderer();
 	
 	/**
+	 * The current time we are looking at
+	 */
+	protected HiResDate _currentTime = null;
+	
+	/**
 	 * the chart marker
 	 */
 	private static final Shape _markerShape = new Rectangle2D.Double(-4, -4, 8, 8);
@@ -90,16 +95,24 @@ public class CrossSectionViewer
 		_chartFrame.add(jfreeChartPanel);		
 	}
 	
+	public void newTime(final HiResDate newDTG)
+	{
+		_currentTime = newDTG;
+	}
+	
 	public void fillPlot(final Layers theLayers, final LineShape line,
 			final ICrossSectionDatasetProvider prov)
 	{
 		if (theLayers == null || line == null)
 			return;
 		_datasetProvider = prov;
-		_series = new ArrayList<XYSeries>();
+		_series.clear();
+		_dataset.removeAllSeries();
 		//TODO: check for Snail period
 		final boolean is_snail = false;
-		walkThrough(theLayers, line, is_snail);
+		if (_currentTime != null)
+			walkThrough(theLayers, line, is_snail);
+		
 		for (XYSeries series: _series)
 			_dataset.addSeries(series);
 		
@@ -175,7 +188,7 @@ public class CrossSectionViewer
 	}
 
 	private void walkThrough(final Object root, final LineShape line, final boolean is_snail)
-	{
+	{		
 		Enumeration<Editable> numer; 
 	    if (root instanceof Layer)
 	    	numer = ((Layer) root).elements();
@@ -191,22 +204,22 @@ public class CrossSectionViewer
 	    			final WatchableList wlist = (WatchableList) next;
 	    			if (!(wlist instanceof TrackWrapper))
 	    				return;
-	    			final HiResDate now = new HiResDate();	    			
+	    			   			
 	    			if (is_snail)
 	    			{
 	    				//TODO: get the snail period
-	    				final HiResDate snail_period = new HiResDate(now.getDate().getTime() - 5);
-	    				final long diff = now.getDate().getTime() - snail_period.getDate().getTime();
+	    				final HiResDate snail_period = new HiResDate(_currentTime.getDate().getTime() - 5);
+	    				final long diff = _currentTime.getDate().getTime() - snail_period.getDate().getTime();
 	    				final HiResDate start_date = new HiResDate(diff);
 	    				final XYSeries series = _datasetProvider.getSeries(line,
-							(TrackWrapper) wlist, start_date, now);
+							(TrackWrapper) wlist, start_date, _currentTime);
 	    		        _series.add(series);	    		        	
 		    			setSnailRenderer(_series.size()-1, wlist.getColor());
 	    			}
 	    			else
 	    			{	    				
 	    				final XYSeries series = _datasetProvider.getSeries(line,
-								(TrackWrapper) wlist, now);
+								(TrackWrapper) wlist, _currentTime);
 		    			//TODO: remove hard-coded values
 		    			series.add(0.0450068580566741 + _series.size(), 0.0);
 		    			_series.add(series);
@@ -220,7 +233,8 @@ public class CrossSectionViewer
 	
 	static public final class CrossSectionViewerTest extends junit.framework.TestCase
 	{
-		
+		//TODO: test for null current time
+		//TODO: test for time stepping
 	}
 	
 
