@@ -19,7 +19,48 @@
       </contexts>
    </extension>
    
+   <extension
+          point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.debrief.gndmanager.ui.InsertTrackStore"
+             id="org.mwc.debrief.gndmanager.ui.InsertTrackStore"
+             name="Trac&amp;k Store">
+       </command>
+   </extension>
    
+   <!--
+   This command is for future. Ifyou want enable the Cloud Data menu, 
+   replace org.mwc.debrief.PlotEditorFUTURE with org.mwc.debrief.PlotEditor
+   -->
+   <extension point="org.eclipse.ui.menus">
+        <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
+            <menu id="org.mwc.debrief.gnd.Data" label="&amp;Cloud Data"/>
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.gnd.Data"> 
+            <separator name="features" visible="true"/> 
+            <separator name="sep1" visible="true"/> 
+            <separator name="additions" visible="true"/> 
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.gnd.Data?after=features"> 
+            <command
+              commandId="org.mwc.debrief.gndmanager.ui.InsertTrackStore"
+              icon="icons/CloudApp.png"
+              label="Drag &amp;TMA Segment"
+              style="push"
+              id="org.mwc.debrief.gndmanager.ui.InsertTrackStore">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditorFUTURE">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+        </menuContribution>
+   </extension>
+   <!--
    <extension point="org.eclipse.ui.actionSets">
 		<actionSet id="org.mwc.debrief.gnd" label="Debrief Cloud Actions">
 			<menu id="org.mwc.debrief.gnd.Data" label="&amp;Cloud Data"
@@ -36,8 +77,7 @@
 				
 		</actionSet>
 	</extension>
-   
-   
+   -->
    
      <extension
         point="org.eclipse.ui.preferencePages">

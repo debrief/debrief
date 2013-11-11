@@ -87,7 +87,9 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
 		
 		// ok - make sure the debrief action sets are visible
-		layout.addActionSet("org.mwc.debrief.core");
+		// The actionSets ext point has been moved to commands/menus
+		// See https://www.assembla.com/spaces/Debrief/tickets/517
+		// layout.addActionSet("org.mwc.debrief.core");
 	}
 
 	
