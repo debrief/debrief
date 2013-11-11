@@ -3,6 +3,7 @@ package org.mwc.cmap.xyplot.views;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -10,8 +11,15 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -49,17 +57,10 @@ public class CrossSectionView extends ViewPart
 	/**
 	 * listen out for new times
 	 */
-	private PropertyChangeListener _temporalListener = new NewTimeListener();
-	
-	TimeProvider _timeProvider;
-	
-	/**
-	 * somebody to listen to the time changes
-	 */
-	//TODO: is this needed?
 	private PropertyChangeListener _timeListener;
 	
-
+	private TimeProvider _timeProvider;
+		
 	private PropertyChangeListener _lineListener = new LineChangeListener();
 	
 	/**
@@ -88,6 +89,7 @@ public class CrossSectionView extends ViewPart
 		
 		 
 		listenToMyParts();
+		setupFiringChangesToChart();
 		//TODO: makeActions();
 		//TODO: contributeToActionBars();
 		
@@ -243,6 +245,50 @@ public class CrossSectionView extends ViewPart
 		_partMonitor.fireActivePart(getSite().getWorkbenchWindow()
 				.getActivePage());
 	}
+	
+	private void setupFiringChangesToChart()
+	{
+
+		// see if we've alreay been configured
+		if (_timeListener != null)
+			return;
+
+		// get the document being edited
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		final IWorkbenchPage page = win.getActivePage();
+		IEditorPart editor = null;
+
+		// the page might not yet be open...
+		if (page != null)
+		{
+			editor = page.getActiveEditor();
+			// do we have an active editor?
+			if (editor == null)
+			{
+				// see if there are any editors at all open
+				//TODO: search the required editor by TimeProvider id ?
+			}
+		}
+
+		if (editor != null)
+		{
+			// get it's time-provider interface
+			_timeProvider = (TimeProvider) editor.getAdapter(TimeProvider.class);
+		}
+		else
+			CorePlugin.logError(Status.WARNING, "Failed to identify time provider",
+					null);
+
+		if (_timeProvider != null)
+		{
+			// create our listener
+			_timeListener = new NewTimeListener();
+			// add our listener to the time object
+			_timeProvider.addListener(_timeListener, 
+					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		}
+	}
 
 
 	@Override
@@ -333,9 +379,9 @@ public class CrossSectionView extends ViewPart
 		_line = null;
 		if (_timeProvider != null)
 		{
-			_timeProvider.removeListener(_temporalListener, 
+			_timeProvider.removeListener(_timeListener, 
 					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-			_temporalListener = null;
+			_timeListener = null;
 			_timeProvider = null;			
 		}
 	}
@@ -375,12 +421,12 @@ public class CrossSectionView extends ViewPart
 			{
 				// ok, use the new time
 				final HiResDate newDTG = (HiResDate) event.getNewValue();
-				final HiResDate oldDTG = (HiResDate) event.getOldValue();
 				final Runnable nextEvent = new Runnable()
 				{
 					public void run()
 					{
-						// TODO: implement
+						_viewer.newTime(newDTG);
+						_viewer.fillPlot(_myLayers, _line, _datasetProvider);
 					}
 				};
 				Display.getDefault().syncExec(nextEvent);				
