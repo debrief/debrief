@@ -7,8 +7,12 @@
 	</extension>
 
 	<extension point="org.eclipse.ui.editors">
-		<editor name="Debrief Plot Editor" icon="icons/debrief_icon.gif"
-			class="org.mwc.debrief.core.editors.PlotEditor" id="org.mwc.debrief.PlotEditor">
+		<editor
+        class="org.mwc.debrief.core.editors.PlotEditor"
+        contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
+        icon="icons/debrief_icon.gif"
+        id="org.mwc.debrief.PlotEditor"
+        name="Debrief Plot Editor">
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot">
 			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
@@ -90,10 +94,1210 @@
 			extensions="tif;tiff" name="GeoTIF Image File" />
 	</extension>
 
-
-
+    <extension point="org.eclipse.ui.menus">
+        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
+       		<toolbar id="org.mwc.debrief.core.EditorView">
+       		  <separator name="viewRadio" visible="true"/> 
+              <separator name="view" visible="true"/> 
+			  <separator name="sep1" visible="true"/>
+			  <separator name="additions"  visible="true"/> 
+       		</toolbar>
+       		<toolbar id="org.mwc.debrief.core.EditorShapes">
+       		  <separator name="shapes" visible="true"/> 
+              <separator name="sep2" visible="true"/>
+			  <separator name="additions" visible="true"/>   
+       		</toolbar>
+       		<toolbar id="org.mwc.debrief.core.EditorFeatures">
+       		  <separator name="features" visible="true"/> 
+              <separator name="sep3" visible="true"/>
+			  <separator name="additions" visible="true"/>   
+       		</toolbar>
+        </menuContribution>
+        
+        <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
+            <menu id="org.mwc.debrief.core.EditorFeatures" label="&amp;Chart Features"/>
+            <menu id="org.mwc.debrief.core.EditorShapes" label="&amp;Drawing"/>
+            <menu id="org.mwc.debrief.core.EditorView" label="&amp;View"/>
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView"> 
+            <separator name="viewRadio" visible="true"/> 
+            <separator name="view" visible="true"/> 
+            <separator name="sep4" visible="true"/> 
+            <separator name="additions" visible="true"/> 
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorShapes"> 
+            <separator name="shapes" visible="true"/> 
+            <separator name="sep5" visible="true"/> 
+            <separator name="additions" visible="true"/> 
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorFeatures"> 
+            <separator name="features" visible="true"/> 
+            <separator name="sep6" visible="true"/> 
+            <separator name="additions" visible="true"/> 
+        </menuContribution>
+        
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=viewRadio"> 
+            <command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/SelectSegment.png"
+              label="Drag &amp;TMA Segment"
+              style="radio"
+              id="org.mwc.debrief.core.DragSegment">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="DragSegment">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+            <command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/SelectSegment.png"
+              label="Drag &amp;TMA Segment"
+              style="radio"
+              id="org.mwc.debrief.core.DragSegment">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="DragSegment">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/SelectComponent.png"
+              label="Drag &amp;Component"
+              style="radio"
+              id="org.mwc.debrief.core.DragComponent">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="DragComponent">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+            <command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/SelectFeature.png"
+              label="&amp;Drag Whole Feature"
+              style="radio"
+              id="org.mwc.debrief.core.DragFeature">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="DragFeature">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/rng_brg.gif"
+              label="Measure range &amp;bearing"
+              style="radio"
+              id="org.mwc.debrief.core.RangeBearing">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="RangeBearing">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+            <command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/hand.png"
+              label="&amp;Pan"
+              style="radio"
+              id="org.mwc.debrief.core.Pan">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="Pan">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/zoomin.gif"
+              label="Zoom &amp;In"
+              style="radio"
+              id="org.mwc.debrief.core.ZoomIn">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="ZoomIn">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+        </menuContribution>
+        
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio"> 
+           <command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/SelectSegment.png"
+              label="Drag &amp;TMA Segment"
+              style="radio"
+              id="org.mwc.debrief.core.DragSegment">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="DragSegment">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/SelectComponent.png"
+              label="Drag &amp;Component"
+              style="radio"
+              id="org.mwc.debrief.core.DragComponent">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="DragComponent">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/SelectFeature.png"
+              label="&amp;Drag Whole Feature"
+              style="radio"
+              id="org.mwc.debrief.core.DragFeature">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="DragFeature">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/rng_brg.gif"
+              label="Measure range &amp;bearing"
+              style="radio"
+              id="org.mwc.debrief.core.RangeBearing">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="RangeBearing">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+           </command>
+           
+           <command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/hand.png"
+              label="&amp;Pan"
+              style="radio"
+              id="org.mwc.debrief.core.Pan">
+           	  <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="Pan">
+              </parameter>
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+           </command>
+           
+           <command
+              commandId="org.mwc.debrief.core.RadioHandler"
+              icon="icons/zoomin.gif"
+              style="radio"
+              id="org.mwc.debrief.core.ZoomIn">
+              <parameter
+                 name="org.eclipse.ui.commands.radioStateParameter"
+                 value="ZoomIn">
+              </parameter>
+              <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+           </command>
+        </menuContribution>
+        
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=view"> 
+            <command
+              commandId="org.mwc.debrief.core.ZoomOut"
+              icon="icons/zoomout.gif"
+              style="push"
+              id="org.mwc.debrief.core.ZoomOut">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+        </menuContribution>
+        
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=additions"> 
+          	<command
+              commandId="org.mwc.debrief.core.FitToWindow"
+              icon="icons/fit_to_win.gif"
+              style="push"
+              id="org.mwc.debrief.core.FitToWindow">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.Redraw"
+              icon="icons/repaint.gif"
+              style="push"
+              id="org.mwc.debrief.core.Redraw">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+        </menuContribution>
+        
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=view"> 
+            <separator
+                  name="org.mwc.debrief.core.separator8">
+            </separator>
+            <command
+              commandId="org.mwc.debrief.core.ZoomOut"
+              icon="icons/zoomout.gif"
+              style="push"
+              id="org.mwc.debrief.core.ZoomOut">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+         </menuContribution>
+         
+         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=additions">
+          	<command
+              commandId="org.mwc.debrief.core.FitToWindow"
+              icon="icons/fit_to_win.gif"
+              style="push"
+              id="org.mwc.debrief.core.FitToWindow">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.Redraw"
+              icon="icons/repaint.gif"
+              style="push"
+              id="org.mwc.debrief.core.Redraw">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorFeatures?after=features"> 
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
+              icon="icons/scale.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertScale">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
+              icon="icons/grid4w.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
+              icon="icons/grid.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertGrid">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
+              icon="icons/local_grid.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
+              icon="icons/coast.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
+              icon="icons/etopo.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
+              icon="icons/library.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
+              icon="icons/vpf.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+		</menuContribution>
+		
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorShapes?after=shapes"> 
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
+              icon="icons/auto_layer.gif"
+              style="toggle"
+              id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+              icon="icons/track_segment.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
+              icon="icons/vector.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertVector">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
+              icon="icons/line.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLine">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
+              icon="icons/label.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLabel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+              icon="icons/rectangle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertEllipse"
+              icon="icons/ellipse.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertEllipse">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertPolygon"
+              icon="icons/polygon.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.Insertploygon">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
+              icon="icons/furthest_circles.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
+              icon="icons/range_rings.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertRangeRings">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
+              icon="icons/wheel.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertWheel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
+              icon="icons/circle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertCircle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
+              icon="icons/arc.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertArc">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+        </menuContribution>
+        
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorShapes?after=shapes"> 
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
+              icon="icons/auto_layer.gif"
+              style="toggle"
+              id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+              icon="icons/track_segment.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
+              icon="icons/vector.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertVector">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
+              icon="icons/line.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLine">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
+              icon="icons/label.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLabel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+              icon="icons/rectangle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertEllipse"
+              icon="icons/ellipse.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertEllipse">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertPolygon"
+              icon="icons/polygon.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.Insertploygon">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
+              icon="icons/furthest_circles.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
+              icon="icons/range_rings.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertRangeRings">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
+              icon="icons/wheel.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertWheel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
+              icon="icons/circle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertCircle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
+              icon="icons/arc.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertArc">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+        </menuContribution>
+        
+        <menuContribution locationURI="menu:file?after=additions"> 
+          <command
+              commandId="org.mwc.debrief.core.operations.ExportGPX"
+              icon="icons/export_gpx.png"
+              style="push"
+              id="org.mwc.debrief.core.operations.ExportGPX">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
+          	  </visibleWhen>
+          </command>
+          <command
+              commandId="org.mwc.cmap.plotViewer.actions.ExportWMF"
+              icon="icons/photo_scenery.png"
+              style="push"
+              id="org.mwc.cmap.plotViewer.actions.ExportWMF">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
+          	  </visibleWhen>
+          </command>
+          
+          <command
+              commandId="org.mwc.debrief.core.exportAsRTF"
+              icon="icons/Ex_2word_256_1.gif"
+              style="push"
+              id="org.mwc.debrief.core.exportAsRTF">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
+          	  </visibleWhen>
+          </command>
+          
+        </menuContribution>
+    </extension>
+    
+    <extension
+           point="org.eclipse.core.expressions.definitions">
+        <definition
+              id="org.mwc.debrief.activePlotEditor">
+           <with
+                 variable="activeEditorId">
+              <equals
+                    value="org.mwc.debrief.PlotEditor">
+              </equals>
+           </with>
+        </definition>
+     </extension>
+    
+    <extension
+          point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.debrief.core.actions.ExportAsRTFHandler"
+             id="org.mwc.debrief.core.exportAsRTF"
+             name="Export image as WMF embedded in RTF">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
+             name="&amp;Scale">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
+             id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
+             name="&amp;4W Grid">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
+             name="&amp;Grid">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
+             name="&amp;Local Grid">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
+             name="&amp;CoastLine">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
+             name="&amp;ETOPO">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
+             name="C&amp;hart Library">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
+             name="&amp;WPF Layers">
+       </command>
+       
+       
+       <command
+             defaultHandler="org.mwc.cmap.plotViewer.actions.ZoomOut"
+             id="org.mwc.debrief.core.ZoomOut"
+             name="Zoom &amp;Out">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.cmap.plotViewer.actions.FitToWindow"
+             id="org.mwc.debrief.core.FitToWindow"
+             name="&amp;Fit to window">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.cmap.plotViewer.actions.Redraw"
+             id="org.mwc.debrief.core.Redraw"
+             name="&amp;Redraw">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.actions.RadioHandler"
+             id="org.mwc.debrief.core.RadioHandler"
+             name="Radio">
+           	<commandParameter
+         		id="org.eclipse.ui.commands.radioStateParameter"
+         		name="Radio Name"
+         		optional="false">
+   			</commandParameter>
+   			<state
+         		class="org.eclipse.ui.handlers.RadioState:ZoomIn"
+         		id="org.eclipse.ui.commands.radioState">
+   			</state>
+       </command>
+       
+       <command
+      	 defaultHandler="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
+      	 id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
+      	 name="&amp;Manually select target layer">
+   		 <state
+         	class="org.eclipse.ui.handlers.RegistryToggleState:true"
+         	id="org.eclipse.ui.commands.toggleState">
+   		 </state>
+	   </command>
+	   
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertArc"
+             id="org.mwc.debrief.core.creators.shapes.InsertArc"
+             name="&amp;Arc">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertCircle"
+             id="org.mwc.debrief.core.creators.shapes.InsertCircle"
+             name="&amp;Circle">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertWheel"
+             id="org.mwc.debrief.core.creators.shapes.InsertWheel"
+             name="&amp;Wheel">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
+             id="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
+             name="&amp;Range Rings">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
+             id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
+             name="&amp;Furthest On Circles">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertPolygon"
+             id="org.mwc.debrief.core.creators.shapes.InsertPolygon"
+             name="&amp;Polygon">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertEllipse"
+             id="org.mwc.debrief.core.creators.shapes.InsertEllipse"
+             name="&amp;Ellipse">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+             id="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+             name="Recta&amp;ngle">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertLabel"
+             id="org.mwc.debrief.core.creators.shapes.InsertLabel"
+             name="La&amp;bel">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertLine"
+             id="org.mwc.debrief.core.creators.shapes.InsertLine"
+             name="&amp;Line">
+       </command>
+       
+	   <command
+             defaultHandler="org.mwc.debrief.core.creators.shapes.InsertVector"
+             id="org.mwc.debrief.core.creators.shapes.InsertVector"
+             name="&amp;Vector">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+             id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+             name="&amp;Track Segment">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.cmap.plotViewer.actions.ExportWMF"
+             id="org.mwc.cmap.plotViewer.actions.ExportWMF"
+             name="Export WMF">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.operations.ExportGPX"
+             id="org.mwc.debrief.core.operations.ExportGPX"
+             name="Export GPX">
+       </command>
+       
+    </extension>
+    <!--
 	<extension point="org.eclipse.ui.actionSets">
 		<actionSet id="org.mwc.debrief.core" label="Debrief Actions">
+			
 			<menu id="org.mwc.debrief.core.EditorView" label="&amp;View"
 				path="additions">
 				<groupMarker name="viewRadio" />
@@ -113,12 +1317,13 @@
 				<separator name="sep1" />
 				<groupMarker name="additions" />
 			</menu>
-
+			
 
 			<action class="org.mwc.cmap.plotViewer.actions.ZoomIn" icon="icons/zoomin.gif"
 				id="org.mwc.debrief.core.ZoomIn" label="Zoom &amp;In"
 				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
 				state="true" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+			
 			<action class="org.mwc.cmap.plotViewer.actions.Pan" icon="icons/hand.png"
 				id="org.mwc.debrief.core.Pan" label="&amp;Pan"
 				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
@@ -127,23 +1332,10 @@
 				icon="icons/rng_brg.gif" id="org.mwc.debrief.core.RangeBearing"
 				label="Measure range &amp;bearing" menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
 				style="radio" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+			
+			
 
-			<action class="org.mwc.debrief.core.actions.DragFeature" icon="icons/SelectFeature.png"
-				id="org.mwc.debrief.core.DragFeature" label="&amp;Drag Whole Feature"
-				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
-				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
-
-			<action class="org.mwc.debrief.core.actions.DragComponent"
-				icon="icons/SelectComponent.png" id="org.mwc.debrief.core.DragComponent"
-				label="Drag &amp;Component" menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
-				style="radio" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
-
-
-			<action class="org.mwc.debrief.core.actions.DragSegment" icon="icons/SelectSegment.png"
-				id="org.mwc.debrief.core.DragSegment" label="Drag &amp;TMA Segment"
-				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
-				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
-
+			
 			<action class="org.mwc.cmap.plotViewer.actions.ZoomOut" icon="icons/zoomout.gif"
 				id="org.mwc.debrief.core.ZoomOut" label="Zoom &amp;Out"
 				menubarPath="org.mwc.debrief.core.EditorView/view" style="push"
@@ -156,7 +1348,7 @@
 				id="org.mwc.debrief.core.Redraw" label="&amp;Redraw"
 				menubarPath="org.mwc.debrief.core.EditorView/additions" style="push"
 				toolbarPath="org.mwc.debrief.core.EditorView/additions" />
-
+			
 			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
 				icon="icons/vpf.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
 				label="&amp;VPF Layers" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
@@ -199,7 +1391,7 @@
 				label="&amp;Scale" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
 				style="push" />
 
-
+			
 			<action class="org.mwc.debrief.core.creators.shapes.InsertArc"
 				icon="icons/arc.gif" id="org.mwc.debrief.core.creators.shapes.InsertArc"
 				label="&amp;Arc" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
@@ -280,7 +1472,6 @@
 				state="true" style="toggle" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 
 
-
 			<action class="org.mwc.cmap.plotViewer.actions.ExportWMF"
 				icon="icons/photo_scenery.png" id="org.mwc.debrief.core.ExportWMF"
 				label="&amp;Export WMF" menubarPath="file/additions" style="push" />
@@ -290,6 +1481,7 @@
 				label="&amp;Export to GPX" menubarPath="file/additions" style="push" />
 		</actionSet>
 	</extension>
+	-->
 
 
 	<extension point="org.eclipse.ui.newWizards">
@@ -362,15 +1554,6 @@
 	</extension>
     
     <extension
-          point="org.eclipse.ui.commands">
-       <command
-             defaultHandler="org.mwc.debrief.core.actions.ExportAsRTFHandler"
-             id="org.mwc.debrief.core.exportAsRTF"
-             name="Export image as WMF embedded in RTF">
-       </command>
-    </extension>
-    
-    <extension
           point="org.eclipse.ui.bindings">
        <key
              commandId="org.mwc.debrief.core.exportAsRTF"
@@ -378,7 +1561,5 @@
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="SHIFT+CTRL+C"/>
     </extension>
-
-    
 
 </plugin>
