@@ -189,7 +189,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 	/**
 	 * the filename to use to read the coastline data
 	 */
-	final public static String FILENAME = "world.dat";
+	final public static String FILENAME = "World.dat";
 
 	/**
 	 * the property name storing the location of the hi-res coastline file
