@@ -14,7 +14,7 @@
        <context
           id="org.mwc.cmap.plotEditorContext"
           name="Debrief Plot Editor Context"
-          parentId="org.eclipse.ui.contexts.dialogAndWindow">
+          parentId="org.eclipse.ui.contexts.window">
        </context>
     </extension>
 

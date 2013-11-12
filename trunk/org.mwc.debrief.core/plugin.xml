@@ -276,6 +276,7 @@
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/SelectSegment.png"
               label="Drag &amp;TMA Segment"
+              tooltip="Drag TMA Segment"
               style="radio"
               id="org.mwc.debrief.core.DragSegment">
            	  <parameter
@@ -297,6 +298,7 @@
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/SelectComponent.png"
               label="Drag &amp;Component"
+              tooltip="Drag Component"
               style="radio"
               id="org.mwc.debrief.core.DragComponent">
            	  <parameter
@@ -318,6 +320,7 @@
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/SelectFeature.png"
               label="&amp;Drag Whole Feature"
+              tooltip="Drag Whole Feature"
               style="radio"
               id="org.mwc.debrief.core.DragFeature">
            	  <parameter
@@ -339,6 +342,7 @@
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/rng_brg.gif"
               label="Measure range &amp;bearing"
+              tooltip="Measure range bearing"
               style="radio"
               id="org.mwc.debrief.core.RangeBearing">
            	  <parameter
@@ -360,6 +364,7 @@
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/hand.png"
               label="&amp;Pan"
+              tooltip="Pan"
               style="radio"
               id="org.mwc.debrief.core.Pan">
            	  <parameter
@@ -381,6 +386,7 @@
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/zoomin.gif"
               style="radio"
+              tooltip="Zoom In"
               id="org.mwc.debrief.core.ZoomIn">
               <parameter
                  name="org.eclipse.ui.commands.radioStateParameter"
@@ -1275,7 +1281,6 @@
              id="org.mwc.debrief.core.operations.ExportGPX"
              name="Export GPX">
        </command>
-       
     </extension>
     <!--
 	<extension point="org.eclipse.ui.actionSets">
@@ -1544,5 +1549,5 @@
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="SHIFT+CTRL+C"/>
     </extension>
-
+    
 </plugin>
