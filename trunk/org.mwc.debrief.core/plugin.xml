@@ -96,18 +96,24 @@
 
     <extension point="org.eclipse.ui.menus">
         <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
-       		<toolbar id="org.mwc.debrief.core.EditorView">
+       		<toolbar
+               id="org.mwc.debrief.core.EditorView"
+               label="View Mode">
        		  <separator name="viewRadio" visible="true"/> 
               <separator name="view" visible="true"/> 
 			  <separator name="sep1" visible="true"/>
 			  <separator name="additions"  visible="true"/> 
        		</toolbar>
-       		<toolbar id="org.mwc.debrief.core.EditorShapes">
+       		<toolbar
+               id="org.mwc.debrief.core.EditorShapes"
+               label="Insert Shapes">
        		  <separator name="shapes" visible="true"/> 
               <separator name="sep2" visible="true"/>
 			  <separator name="additions" visible="true"/>   
        		</toolbar>
-       		<toolbar id="org.mwc.debrief.core.EditorFeatures">
+       		<toolbar
+               id="org.mwc.debrief.core.EditorFeatures"
+               label="Add Features">
        		  <separator name="features" visible="true"/> 
               <separator name="sep3" visible="true"/>
 			  <separator name="additions" visible="true"/>   
@@ -411,13 +417,13 @@
            </command>
         </menuContribution>
         
-        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=view"> 
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=additions"> 
             <command
               commandId="org.mwc.debrief.core.ZoomOut"
               icon="icons/zoomout.gif"
               style="push"
               id="org.mwc.debrief.core.ZoomOut">
-           	  <visibleWhen
+              <visibleWhen
                  checkEnabled="false">
                      <with
                          variable="activeEditorId">
@@ -425,12 +431,8 @@
                              value="org.mwc.debrief.PlotEditor">
                           </equals>
                      </with>
-          	  </visibleWhen>
-          	</command>
-          	
-        </menuContribution>
-        
-        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=additions"> 
+              </visibleWhen>
+            </command>
           	<command
               commandId="org.mwc.debrief.core.FitToWindow"
               icon="icons/fit_to_win.gif"
