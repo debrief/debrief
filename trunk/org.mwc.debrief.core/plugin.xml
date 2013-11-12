@@ -163,26 +163,6 @@
                      </with>
           	  </visibleWhen>
           	</command>
-            <command
-              commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/SelectSegment.png"
-              label="Drag &amp;TMA Segment"
-              style="radio"
-              id="org.mwc.debrief.core.DragSegment">
-           	  <parameter
-                 name="org.eclipse.ui.commands.radioStateParameter"
-                 value="DragSegment">
-              </parameter>
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
           	
           	<command
               commandId="org.mwc.debrief.core.RadioHandler"
