@@ -2,6 +2,7 @@ package org.mwc.cmap.xyplot.views;
 
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
@@ -14,6 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IMemento;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -33,7 +35,12 @@ import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
+
+//FIXME: do not redraw axises, redraw  the data
+//TODO: Init axises: get the max and the min values
 public class CrossSectionViewer
 {
 		
@@ -68,6 +75,16 @@ public class CrossSectionViewer
 	private static final Shape _markerShape = new Rectangle2D.Double(-4, -4, 8, 8);
 	private static final int _markerSize = 4;
 	
+	/**
+	 * Memento parameters
+	 */
+	private static interface PLOT_ATTRIBUTES
+	{
+		final String DATA = "XYPlot_Data";
+		final String TIME = "Current_Time";
+		final String IS_SNAIL = "Is_Snail";
+	}
+	
    	
 	protected CrossSectionViewer(final Composite parent)
 	{
@@ -79,7 +96,6 @@ public class CrossSectionViewer
 		// now we need a Swing object to put our chart into
 		_chartFrame = SWT_AWT.new_Frame(holder);
 
-		//TODO: restore Previous Plot?
 		_chart = ChartFactory.createXYLineChart
 				("Cross Section", // Title
 				"Distance (km)", // X-Axis label
@@ -220,8 +236,6 @@ public class CrossSectionViewer
 	    			{	    				
 	    				final XYSeries series = _datasetProvider.getSeries(line,
 								(TrackWrapper) wlist, _currentTime);
-		    			//TODO: remove hard-coded values
-		    			series.add(0.0450068580566741 + _series.size(), 0.0);
 		    			_series.add(series);
 		    			setDiscreteRenderer(_series.size()-1, wlist.getColor());	    					    				
 	    			}
@@ -230,6 +244,53 @@ public class CrossSectionViewer
 	    		walkThrough(next, line, is_snail);
 	    }
 	}
+	
+	public void saveState(final IMemento memento)
+	{
+		//TODO: get is snail
+		boolean is_snail = false;
+		memento.putBoolean(PLOT_ATTRIBUTES.IS_SNAIL, is_snail);		
+		//TODO: time format
+		memento.putString(PLOT_ATTRIBUTES.TIME, _currentTime.toString());
+		
+		final XStream xs = new XStream(new DomDriver());
+		String str = xs.toXML(_dataset);
+		memento.putString(PLOT_ATTRIBUTES.DATA, str);
+		
+		if (is_snail)
+		{
+			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
+			{
+				Paint color = _snailRenderer.getSeriesPaint(i);
+				//TODO: save color
+			}
+		}
+		else
+		{
+			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
+			{
+				Paint color = _discreteRenderer.getSeriesPaint(i);
+				//TODO: save color
+			}
+		}
+	}
+	
+	public void restoreState(final IMemento memento)
+	{
+		//TODO: implement
+		final XStream xs = new XStream(new DomDriver());
+
+		// and the data
+		final String dataStr = memento.getString(PLOT_ATTRIBUTES.DATA);
+
+		// hmm, is there anything in it?
+		if (dataStr == null)
+			return;
+
+		_dataset = (XYSeriesCollection) xs.fromXML(dataStr);
+
+	}
+	
 	
 	static public final class CrossSectionViewerTest extends junit.framework.TestCase
 	{

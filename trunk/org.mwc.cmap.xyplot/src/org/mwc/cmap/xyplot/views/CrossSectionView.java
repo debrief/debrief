@@ -12,11 +12,13 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
@@ -37,7 +39,6 @@ import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 // This import leads to cycle in plugin dependencies
 // TODO: import org.mwc.cmap.TimeController.views.TimeController;
-import MWC.GenericData.WorldDistance;
 
 public class CrossSectionView extends ViewPart
 {
@@ -76,7 +77,12 @@ public class CrossSectionView extends ViewPart
 	private Layers.DataListener _myLayersListener;
 	
 	private ICrossSectionDatasetProvider _datasetProvider = 
-			new CrossSectionDatasetProvider(WorldDistance.KM);	
+			new CrossSectionDatasetProvider();	
+	
+	/**
+	 * store the plot information when we're reloading a plot in a fresh session
+	 */
+	private IMemento _memento = null;
 	//TODO: declare actions
 
 	@Override
@@ -121,6 +127,22 @@ public class CrossSectionView extends ViewPart
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
 		_viewer.addPropertyChangedListener(_lineListener);
+		// have we got our data? 
+		if (_memento != null)
+		{
+			// restore it
+			//_viewer.restoreState(_memento);
+		}
+	}
+
+	@Override
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException
+	{
+		super.init(site, memento);
+		if (memento != null)
+		{
+			_memento = memento;
+		}
 	}
 	
 	private void listenToMyParts()
@@ -342,7 +364,7 @@ public class CrossSectionView extends ViewPart
 	
 	void processReformattedLayer(final Layers theData, final Layer changedLayer)
 	{
-		//TODO: _viewer.drawDiagram(theData);
+		_viewer.fillPlot(theData, _line, _datasetProvider);
 	}
 	
 	void processNewData(final Layers theData, final Editable newItem,
@@ -384,6 +406,14 @@ public class CrossSectionView extends ViewPart
 			_timeListener = null;
 			_timeProvider = null;			
 		}
+	}
+	
+	@Override
+	public void saveState(final IMemento memento)
+	{
+		// let our parent go for it first
+		super.saveState(memento);
+		_viewer.saveState(memento);
 	}
 	
 	protected final class LineChangeListener implements PropertyChangeListener
