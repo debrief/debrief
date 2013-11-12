@@ -97,12 +97,11 @@
     <extension point="org.eclipse.ui.menus">
         <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
        		<toolbar
-               id="org.mwc.debrief.core.EditorView"
-               label="View Mode">
-       		  <separator name="viewRadio" visible="true"/> 
-              <separator name="view" visible="true"/> 
-			  <separator name="sep1" visible="true"/>
-			  <separator name="additions"  visible="true"/> 
+               id="org.mwc.debrief.core.EditorFeatures"
+               label="Add Features">
+       		  <separator name="features" visible="true"/> 
+              <separator name="sep3" visible="true"/>
+			  <separator name="additions" visible="true"/>   
        		</toolbar>
        		<toolbar
                id="org.mwc.debrief.core.EditorShapes"
@@ -112,12 +111,14 @@
 			  <separator name="additions" visible="true"/>   
        		</toolbar>
        		<toolbar
-               id="org.mwc.debrief.core.EditorFeatures"
-               label="Add Features">
-       		  <separator name="features" visible="true"/> 
-              <separator name="sep3" visible="true"/>
-			  <separator name="additions" visible="true"/>   
+               id="org.mwc.debrief.core.EditorView"
+               label="View Mode">
+       		  <separator name="viewRadio" visible="true"/> 
+              <separator name="view" visible="true"/> 
+			  <separator name="sep1" visible="true"/>
+			  <separator name="additions"  visible="true"/> 
        		</toolbar>
+       		
         </menuContribution>
         
         <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
