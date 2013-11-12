@@ -28,7 +28,7 @@
       </affiliation>
     </author>
     <edition>Documentation for Debrief NG</edition>
-    <pubdate>Summer 2012</pubdate>
+    <pubdate>Winter 2013</pubdate>
     <abstract>
       <title>Contact details</title>
       <para>Should you wish to learn more about <application>Debrief</application> please contact
@@ -37,7 +37,7 @@
         <title>Debrief Project Sponsor</title>
         <para>
           <address>
-            <personname>Lt Cdr Bob Mannion</personname>
+            <personname>Lt Cdr Dave Whitehouse</personname>
             <personname>SO2 UW OA</personname>
             <otheraddr>Maritime Warfare Centre</otheraddr>
             <street>Marlborough Building, HMS Collingwood</street>
@@ -578,9 +578,9 @@
                     </imageobject>
                   </inlinemediaobject></para></entry>
 
-                <entry xml:id="project_sponsor"><para>Debrief
-                project sponsor. <address>
-<personname>Lt Cdr Bob Mannion RN</personname>
+                <entry xml:id="project_sponsor"><para>Debrief project sponsor.
+                    <address>
+<personname>Lt Cdr David Whitehouse RN</personname>
 <otheraddr>Maritime Warfare Centre</otheraddr>
 <street>Marlborough Building, HMS Collingwood</street>
 <city>Fareham, HANTS</city>
