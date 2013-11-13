@@ -19,6 +19,7 @@ import org.eclipse.ui.IMemento;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -39,8 +40,6 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 
-//FIXME: do not redraw axises, redraw  the data
-//TODO: Init axises: get the max and the min values
 public class CrossSectionViewer
 {
 		
@@ -107,6 +106,12 @@ public class CrossSectionViewer
 				true //urs
 				);
         
+		// Fix the axises start at zero
+		final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis(); 
+		yAxis.setLowerBound(0);
+		final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
+		xAxis.setLowerBound(0);
+		
 		final ChartPanel jfreeChartPanel = new ChartPanel(_chart);
 		_chartFrame.add(jfreeChartPanel);		
 	}
@@ -129,8 +134,26 @@ public class CrossSectionViewer
 		if (_currentTime != null)
 			walkThrough(theLayers, line, is_snail);
 		
+		double maxX = 0;
+		double maxY = 0;
 		for (XYSeries series: _series)
+		{
+			final double x = series.getMaxX(); 
+			if (maxX < x)
+				maxX = x;
+			final double y = series.getMaxY(); 
+			if (maxY < y)
+				maxY = y;
 			_dataset.addSeries(series);
+		}
+		
+		final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis(); 
+		if (yAxis.getUpperBound() < maxY)
+			yAxis.setUpperBound(maxY + 5);
+		
+		final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
+		if (xAxis.getUpperBound() < maxX)
+			xAxis.setUpperBound(maxX + 5);
 		
 		if (is_snail)
 			_chart.getXYPlot().setRenderer(_snailRenderer);
