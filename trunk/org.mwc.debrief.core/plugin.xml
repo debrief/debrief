@@ -1548,6 +1548,68 @@
              contextId="org.mwc.cmap.plotEditorContext"
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="SHIFT+CTRL+C"/>
+             
+       <key
+             commandId="org.mwc.debrief.core.RadioHandler"
+             contextId="org.mwc.cmap.plotEditorContext"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M3+1">
+          <parameter 
+             id="org.eclipse.ui.commands.radioStateParameter"
+             value="DragSegment">
+          </parameter>
+       </key>
+       
+       <key
+             commandId="org.mwc.debrief.core.RadioHandler"
+             contextId="org.mwc.cmap.plotEditorContext"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M3+2">
+          <parameter 
+             id="org.eclipse.ui.commands.radioStateParameter"
+             value="DragComponent">
+          </parameter>
+       </key>
+       <key
+             commandId="org.mwc.debrief.core.RadioHandler"
+             contextId="org.mwc.cmap.plotEditorContext"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M3+3">
+          <parameter 
+             id="org.eclipse.ui.commands.radioStateParameter"
+             value="DragFeature">
+          </parameter>
+       </key>
+       <key
+             commandId="org.mwc.debrief.core.RadioHandler"
+             contextId="org.mwc.cmap.plotEditorContext"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M3+4">
+          <parameter 
+             id="org.eclipse.ui.commands.radioStateParameter"
+             value="RangeBearing">
+          </parameter>
+       </key>
+       <key
+             commandId="org.mwc.debrief.core.RadioHandler"
+             contextId="org.mwc.cmap.plotEditorContext"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M3+5">
+          <parameter 
+             id="org.eclipse.ui.commands.radioStateParameter"
+             value="Pan">
+          </parameter>
+       </key>
+       <key
+             commandId="org.mwc.debrief.core.RadioHandler"
+             contextId="org.mwc.cmap.plotEditorContext"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M3+6">
+          <parameter 
+             id="org.eclipse.ui.commands.radioStateParameter"
+             value="ZoomIn">
+          </parameter>
+       </key>
     </extension>
-    
+
 </plugin>
