@@ -6,10 +6,14 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
@@ -26,6 +30,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
 
 import Debrief.Wrappers.TrackWrapper;
@@ -66,7 +71,9 @@ public class CrossSectionViewer
 	/**
 	 * The current time we are looking at
 	 */
-	protected HiResDate _currentTime = null;
+	private HiResDate _currentTime = null;
+	
+	private DateFormat _dateFormat = new SimpleDateFormat("dd-mm-yyyy HH:mm:ss");
 	
 	/**
 	 * the chart marker
@@ -273,8 +280,8 @@ public class CrossSectionViewer
 		//TODO: get is snail
 		boolean is_snail = false;
 		memento.putBoolean(PLOT_ATTRIBUTES.IS_SNAIL, is_snail);		
-		//TODO: time format
-		memento.putString(PLOT_ATTRIBUTES.TIME, _currentTime.toString());
+		memento.putString(PLOT_ATTRIBUTES.TIME, 
+				_dateFormat.format(_currentTime.getDate()));
 		
 		final XStream xs = new XStream(new DomDriver());
 		String str = xs.toXML(_dataset);
@@ -285,7 +292,7 @@ public class CrossSectionViewer
 			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
 			{
 				Paint color = _snailRenderer.getSeriesPaint(i);
-				//TODO: save color
+				saveColor(memento, i, (Color) color);
 			}
 		}
 		else
@@ -293,25 +300,57 @@ public class CrossSectionViewer
 			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
 			{
 				Paint color = _discreteRenderer.getSeriesPaint(i);
-				//TODO: save color
+				saveColor(memento, i, (Color) color);
 			}
 		}
 	}
 	
+	private void saveColor(final IMemento memento, final int series, final Color color)
+	{
+		memento.putInteger("SERIES_" + series + "_COLOR", color.getRGB());
+	}
+	
 	public void restoreState(final IMemento memento)
 	{
-		//TODO: implement
 		final XStream xs = new XStream(new DomDriver());
-
-		// and the data
 		final String dataStr = memento.getString(PLOT_ATTRIBUTES.DATA);
 
-		// hmm, is there anything in it?
 		if (dataStr == null)
 			return;
-
+		
 		_dataset = (XYSeriesCollection) xs.fromXML(dataStr);
-
+		
+		final Boolean is_snail = memento.getBoolean(PLOT_ATTRIBUTES.IS_SNAIL);
+		if (is_snail)
+		{
+			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
+			{
+				final int RGB = memento.getInteger("SERIES_" + i + "_COLOR");
+				setSnailRenderer(i, new Color(RGB));
+			}
+			_chart.getXYPlot().setRenderer(_snailRenderer);
+		}
+		else
+		{
+			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
+			{
+				final int RGB = memento.getInteger("SERIES_" + i + "_COLOR");
+				setDiscreteRenderer(i, new Color(RGB));
+			}
+			_chart.getXYPlot().setRenderer(_discreteRenderer);
+		}
+		_chart.getXYPlot().setDataset(_dataset);
+		
+		final String timeStr = memento.getString(PLOT_ATTRIBUTES.TIME);
+		
+		try 
+		{
+			_currentTime = new HiResDate(_dateFormat.parse(timeStr));
+		} catch (ParseException e) 
+		{
+			CorePlugin.logError(Status.ERROR, 
+					"Failed to read time in saved XY Plot data", e);
+		}
 	}
 	
 	

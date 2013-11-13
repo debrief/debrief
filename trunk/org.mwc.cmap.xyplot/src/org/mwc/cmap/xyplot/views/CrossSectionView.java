@@ -131,7 +131,7 @@ public class CrossSectionView extends ViewPart
 		if (_memento != null)
 		{
 			// restore it
-			//_viewer.restoreState(_memento);
+			_viewer.restoreState(_memento);
 		}
 	}
 
