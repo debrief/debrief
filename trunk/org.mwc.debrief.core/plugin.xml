@@ -1182,10 +1182,20 @@
          		name="Radio Name"
          		optional="false">
    			</commandParameter>
-   			<state
-         		class="org.eclipse.ui.handlers.RadioState:ZoomIn"
-         		id="org.eclipse.ui.commands.radioState">
-   			</state>
+   			<state 
+      			id="org.eclipse.ui.commands.radioState"> 
+   				<class 
+         			class="org.eclipse.ui.handlers.RadioState"> 
+      				<parameter 
+            			name="default" 
+            			value="ZoomIn"> 
+      				</parameter> 
+      				<parameter 
+            			name="persisted" 
+            			value="false"> 
+      				</parameter> 
+   				</class> 
+			</state>
        </command>
        
        <command
