@@ -68,6 +68,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -122,7 +123,8 @@ public class SATC_Solution extends BaseLayer implements
 			final Class<SATC_Solution> c = SATC_Solution.class;
 
 			final MethodDescriptor[] mds =
-			{ method(c, "convertToTrack", null, "Convert to track") };
+			{ method(c, "convertToLegs", null, "Convert to Composite Track (legs)"),
+					method(c, "convertToTrack", null, "Convert to Standalone Track") };
 
 			return mds;
 		}
@@ -212,7 +214,6 @@ public class SATC_Solution extends BaseLayer implements
 		}
 		else
 		{
-
 			for (int i = 0; i < _newRoutes.length; i++)
 			{
 				CompositeRoute thisR = _newRoutes[i];
@@ -221,66 +222,31 @@ public class SATC_Solution extends BaseLayer implements
 				TrackWrapper newT = new TrackWrapper();
 				newT.setName(getName() + "_" + i);
 
+				// loop through the legs
 				Iterator<CoreRoute> legs = thisR.getLegs().iterator();
 				while (legs.hasNext())
 				{
 					CoreRoute thisLeg = (CoreRoute) legs.next();
-					if (thisLeg instanceof StraightRoute)
+
+					// ok, loop through the states
+					Iterator<State> iter = thisLeg.getStates().iterator();
+					while (iter.hasNext())
 					{
-						StraightRoute straight = (StraightRoute) thisLeg;
-
-						// ok - produce a TMA leg
-						double courseDegs = Math.toDegrees(straight.getCourse());
-						WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
-								WorldSpeed.M_sec);
-						WorldLocation origin = conversions.toLocation(straight
-								.getStartPoint().getCoordinate());
-						HiResDate startTime = new HiResDate(straight.getStartTime()
-								.getTime());
-						HiResDate endTime = new HiResDate(straight.getEndTime().getTime());
-
-						AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs, speed,
-								origin, startTime, endTime);
-						abs.setName(straight.getName());
-						newT.add(abs);
-						abs.setName(straight.getName());
+						State state = (State) iter.next();
+						WorldLocation theLoc = conversions.toLocation(state.getLocation()
+								.getCoordinate());
+						double theCourse = state.getCourse();
+						double theSpeed = new WorldSpeed(state.getSpeed(), WorldSpeed.M_sec)
+								.getValueIn(WorldSpeed.ft_sec / 3);
+						Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
+								theLoc, theCourse, theSpeed);
+						FixWrapper newFW = new FixWrapper(newF);
+						newT.addFix(newFW);
 					}
-					else if (thisLeg instanceof AlteringRoute)
-					{
-						AlteringRoute altering = (AlteringRoute) thisLeg;
-
-						TrackSegment segment = new TrackSegment();
-						segment.setName(altering.getName());
-
-						ArrayList<State> states = altering.getStates();
-						for (State thisS : states)
-						{
-							double theCourse = thisS.getCourse();
-							WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
-									WorldSpeed.M_sec);
-							WorldLocation theLocation = conversions.toLocation(thisS
-									.getLocation().getCoordinate());
-							HiResDate theTime = new HiResDate(thisS.getTime().getTime());
-
-							Fix theFix = new Fix(theTime, theLocation, theCourse,
-									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
-							FixWrapper newFix = new FixWrapper(theFix);
-							segment.addFix(newFix);
-						}
-
-						// make it dotted, that's our way of doing it.
-						segment.setLineStyle(CanvasType.DOTTED);
-
-						newT.add(segment);
-					}
-					else
-						DebriefPlugin.logError(Status.ERROR,
-								"Unexpected type of route encountered:" + thisLeg, null);
 				}
 
 				// and store it
 				_myLayers.addThisLayer(newT);
-
 			}
 		}
 	}
@@ -734,7 +700,8 @@ public class SATC_Solution extends BaseLayer implements
 				final String vectorDescription = String.format("%.1f", new WorldSpeed(
 						straight.getSpeed(), WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts))
 						+ " kts "
-						+ String.format("%.0f", Math.toDegrees(MathUtils.normalizeAngle(straight.getCourse())))
+						+ String.format("%.0f",
+								Math.toDegrees(MathUtils.normalizeAngle(straight.getCourse())))
 						+ "\u00B0";
 
 				CanvasTypeUtilities.drawLabelOnLine(_dest, vectorDescription, theFont,
@@ -936,6 +903,93 @@ public class SATC_Solution extends BaseLayer implements
 			mySymbol = SymbolFactory.createSymbol(SymbolFactory.DEFAULT_SYMBOL_TYPE);
 
 		return mySymbol;
+	}
+
+	/**
+	 * convert this solution into a formal track
+	 * 
+	 */
+	public void convertToLegs()
+	{
+		// check if we have any solutions
+		if ((_newRoutes == null) || (_newRoutes.length == 0))
+		{
+			CorePlugin.errorDialog("Convert solution to track",
+					"Sorry, this solution contains no generated routes");
+		}
+		else
+		{
+
+			for (int i = 0; i < _newRoutes.length; i++)
+			{
+				CompositeRoute thisR = _newRoutes[i];
+
+				// the output track
+				TrackWrapper newT = new TrackWrapper();
+				newT.setName(getName() + "_" + i);
+
+				Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+				while (legs.hasNext())
+				{
+					CoreRoute thisLeg = (CoreRoute) legs.next();
+					if (thisLeg instanceof StraightRoute)
+					{
+						StraightRoute straight = (StraightRoute) thisLeg;
+
+						// ok - produce a TMA leg
+						double courseDegs = Math.toDegrees(straight.getCourse());
+						WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
+								WorldSpeed.M_sec);
+						WorldLocation origin = conversions.toLocation(straight
+								.getStartPoint().getCoordinate());
+						HiResDate startTime = new HiResDate(straight.getStartTime()
+								.getTime());
+						HiResDate endTime = new HiResDate(straight.getEndTime().getTime());
+
+						AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs, speed,
+								origin, startTime, endTime);
+						abs.setName(straight.getName());
+						newT.add(abs);
+						abs.setName(straight.getName());
+					}
+					else if (thisLeg instanceof AlteringRoute)
+					{
+						AlteringRoute altering = (AlteringRoute) thisLeg;
+
+						TrackSegment segment = new TrackSegment();
+						segment.setName(altering.getName());
+
+						ArrayList<State> states = altering.getStates();
+						for (State thisS : states)
+						{
+							double theCourse = thisS.getCourse();
+							WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
+									WorldSpeed.M_sec);
+							WorldLocation theLocation = conversions.toLocation(thisS
+									.getLocation().getCoordinate());
+							HiResDate theTime = new HiResDate(thisS.getTime().getTime());
+
+							Fix theFix = new Fix(theTime, theLocation, theCourse,
+									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
+							FixWrapper newFix = new FixWrapper(theFix);
+							segment.addFix(newFix);
+						}
+
+						// make it dotted, that's our way of doing it.
+						segment.setLineStyle(CanvasType.DOTTED);
+
+						newT.add(segment);
+					}
+					else
+						DebriefPlugin.logError(Status.ERROR,
+								"Unexpected type of route encountered:" + thisLeg, null);
+				}
+
+				// and store it
+				_myLayers.addThisLayer(newT);
+
+			}
+		}
 	}
 
 	protected static class WrappedState implements Watchable, Editable
