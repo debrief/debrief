@@ -228,31 +228,54 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		return res;
 	}
 
-	@Override
-	public void zoom(final double scaleVal)
+	private DirectPosition2D getDirectPositionOf(final WorldLocation x)
+			throws MismatchedDimensionException, TransformException
 	{
-		double theScaleVal = scaleVal;
-		if (theScaleVal == 0)
-			theScaleVal = 1;
+		final DirectPosition2D mapPos = new DirectPosition2D(x.getLong(),
+															x.getLat());
+		final DirectPosition2D mapM = new DirectPosition2D();
+		_degs2metres.transform(mapPos, mapM);
+		return mapM;
+	}
+
+	private WorldArea convertToWorldArea(final Envelope2D newMapArea)
+			throws MismatchedDimensionException,
+			org.opengis.referencing.operation.NoninvertibleTransformException,
+			TransformException
+	{
+		// convert back to friendly units
+		final DirectPosition2D tlDegs = new DirectPosition2D();
+		final DirectPosition2D brDegs = new DirectPosition2D();
+
+		_degs2metres.inverse().transform(newMapArea.getLowerCorner(), brDegs);
+		_degs2metres.inverse().transform(newMapArea.getUpperCorner(), tlDegs);
+
+		final WorldLocation tl = new WorldLocation(brDegs.y, brDegs.x, 0d);
+		final WorldLocation br = new WorldLocation(tlDegs.y, tlDegs.x, 0d);
+		return new WorldArea(tl, br);
+	}
+
+	@Override
+	public void zoom(double scaleVal)
+	{
+		if (scaleVal == 0)
+			scaleVal = 1;
 		final Dimension paneArea = super.getScreenArea();
 		final WorldArea dataArea = super.getDataArea();
 		if (dataArea != null)
 		{
 			final WorldLocation centre = super.getDataArea().getCentre();
-			final DirectPosition2D mapPos = new DirectPosition2D(centre.getLong(),
-					centre.getLat());
 
-			final DirectPosition2D mapM = new DirectPosition2D();
 			try
 			{
-				_degs2metres.transform(mapPos, mapM);
+				final DirectPosition2D mapM = getDirectPositionOf(centre);
 
 				if (_view.getWorldToScreen() == null)
 					return;
 
 				double scale = _view.getWorldToScreen().getScaleX();
 				scale = Math.min(1000, scale);
-				final double newScale = scale / theScaleVal;
+				double newScale = scale / scaleVal;
 
 				final DirectPosition2D corner = new DirectPosition2D(mapM.getX() - 0.5d
 						* paneArea.width / newScale, mapM.getY() + 0.5d * paneArea.height
@@ -261,16 +284,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 				final Envelope2D newMapArea = new Envelope2D();
 				newMapArea.setFrameFromCenter(mapM, corner);
 
-				// convert back to friendly units
-				final DirectPosition2D tlDegs = new DirectPosition2D();
-				final DirectPosition2D brDegs = new DirectPosition2D();
-
-				_degs2metres.inverse().transform(newMapArea.getLowerCorner(), brDegs);
-				_degs2metres.inverse().transform(newMapArea.getUpperCorner(), tlDegs);
-
-				final WorldLocation tl = new WorldLocation(brDegs.y, brDegs.x, 0d);
-				final WorldLocation br = new WorldLocation(tlDegs.y, tlDegs.x, 0d);
-				final WorldArea newArea = new WorldArea(tl, br);
+				final WorldArea newArea = convertToWorldArea(newMapArea);
 				newArea.normalise();
 
 				setDataArea(newArea);
@@ -297,7 +311,84 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	}
 
 	@Override
-	public void setScreenArea(final Dimension theArea)
+	public void zoom(final double scaleVal, final WorldArea area)
+	{
+		if (area == null)
+		{
+			zoom(scaleVal);
+			return;
+		}
+
+		final WorldArea dataArea = super.getDataArea();
+		if (dataArea == null)
+		{
+			return;
+		}
+
+		final Dimension paneArea = super.getScreenArea();
+
+		try
+		{
+			if (_view.getWorldToScreen() == null)
+				return;
+
+			final DirectPosition2D desiredCenter = getDirectPositionOf(area
+					.getCentre());
+			final DirectPosition2D actualCenter = getDirectPositionOf(super
+					.getDataArea().getCentre());
+			final double deltaX = actualCenter.getX() - desiredCenter.getX();
+			final double deltaY = actualCenter.getY() - desiredCenter.getY();
+
+			double scale = _view.getWorldToScreen().getScaleX();
+			scale = Math.min(1000, scale);
+			double newScale = scale;
+
+			if (scaleVal != 0)
+				newScale = scale / scaleVal;
+
+			final DirectPosition2D corner = new DirectPosition2D(desiredCenter.getX() - 0.5d
+						* paneArea.width / newScale, desiredCenter.getY() + 0.5d * paneArea.height
+						/ newScale);
+
+			final Envelope2D newMapArea = new Envelope2D();
+			//scale
+			newMapArea.setFrameFromCenter(desiredCenter, corner);
+
+			final double height = newMapArea.getHeight();
+			final double width = newMapArea.getWidth();
+			//translate
+			newMapArea.setFrameFromDiagonal(
+					newMapArea.getBounds().x + deltaX*scaleVal,
+					newMapArea.getBounds().y + deltaY*scaleVal,
+					newMapArea.getBounds().x + width + deltaX*scaleVal,
+					newMapArea.getBounds().y + height + deltaY*scaleVal);
+
+			final WorldArea newArea = convertToWorldArea(newMapArea);
+			newArea.normalise();
+
+			setDataArea(newArea);
+
+		}
+		catch (MismatchedDimensionException e)
+		{
+			GtActivator.logError(Status.ERROR,
+						"Unexpected problem whilst performing zoom", e);
+		}
+		catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
+		{
+				GtActivator.logError(Status.ERROR,
+						"Unable to do inverse transform in zoom", e);
+		}
+		catch (TransformException e)
+		{
+				GtActivator.logError(Status.ERROR,
+						"Unexpected problem whilst performing", e);
+		}
+
+	}
+
+	@Override
+	public void setScreenArea(Dimension theArea)
 	{
 		if (theArea.equals(super.getScreenArea()))
 			return;
@@ -571,6 +662,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 							.transform(new DirectPosition2D(45, 0), null));
 
 		}
+
 	}
+
 
 }
