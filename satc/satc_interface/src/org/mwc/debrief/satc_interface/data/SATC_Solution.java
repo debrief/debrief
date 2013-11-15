@@ -68,6 +68,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -706,6 +707,8 @@ public class SATC_Solution extends BaseLayer implements
 			// is it straight? or altering
 			if (thisRoute.getType() == LegType.STRAIGHT)
 			{
+				StraightRoute straight = (StraightRoute) thisRoute;
+
 				// get the first point
 				State firstState = thisRoute.getStates().get(0);
 				State lastState = thisRoute.getStates().get(
@@ -727,6 +730,15 @@ public class SATC_Solution extends BaseLayer implements
 				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
 						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD,
 						true);
+
+				final String vectorDescription = String.format("%.1f", new WorldSpeed(
+						straight.getSpeed(), WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts))
+						+ " kts "
+						+ String.format("%.0f", Math.toDegrees(MathUtils.normalizeAngle(straight.getCourse())))
+						+ "\u00B0";
+
+				CanvasTypeUtilities.drawLabelOnLine(_dest, vectorDescription, theFont,
+						theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD, false);
 			}
 
 		}
