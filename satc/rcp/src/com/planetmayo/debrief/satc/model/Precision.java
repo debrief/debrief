@@ -2,7 +2,7 @@ package com.planetmayo.debrief.satc.model;
 
 public enum Precision
 {
-	LOW("Low", 100), MEDIUM("Medium", 200), HIGH("High", 500);
+	LOW("Low", 100), MEDIUM("Medium", 200), HIGH("High", 300);
 
 	private final String label;
 	private final int numPoints;
