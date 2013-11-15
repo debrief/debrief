@@ -13,8 +13,6 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -271,7 +269,7 @@ abstract public class PlainProjection implements Serializable,
    */
   public void zoom(final double value, final WorldArea area)
   {
-	  throw new NotImplementedException();
+	  throw new RuntimeException("'zoom(final double value, final WorldArea area)' is not implemented yet.");
   }
 
 
