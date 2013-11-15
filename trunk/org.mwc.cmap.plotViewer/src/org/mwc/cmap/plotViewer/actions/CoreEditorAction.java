@@ -4,10 +4,8 @@
 package org.mwc.cmap.plotViewer.actions;
 
 import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.State;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,9 +18,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.handlers.RadioState;
-import org.eclipse.ui.handlers.RegistryToggleState;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.PlainChart;

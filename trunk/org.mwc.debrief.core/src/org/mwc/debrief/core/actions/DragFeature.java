@@ -15,6 +15,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.CursorRegistry;
@@ -22,6 +23,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.plotViewer.actions.CoreDragAction;
+import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
@@ -190,6 +192,10 @@ public class DragFeature extends CoreDragAction
 				final Layers theLayers, final SWTCanvas theCanvas)
 		{
 			// if the chart's editor is not active
+			IWorkbenchPart activePart = CorePlugin.getActivePart();
+			if (activePart instanceof IChartBasedEditor && !activePart.equals(_myEditor)) {
+				setActiveEditor(null, (IEditorPart) activePart);
+			}
 			if (!CorePlugin.isActivePart((IWorkbenchPart)_myEditor))
 				return;
 						
