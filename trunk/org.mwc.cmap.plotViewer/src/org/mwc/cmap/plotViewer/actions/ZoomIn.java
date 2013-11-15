@@ -79,8 +79,8 @@ public class ZoomIn extends CoreDragAction
 
 				this.JITTER = JITTER;
 				this.layers = theLayers;
-				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
-						deltaY);
+				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, -deltaX,
+						-deltaY);
 				res = rect;
 				GC gc = new GC(_myCanvas.getCanvas());
 				Color fc = new Color(Display.getDefault(), 255, 255, 255);
@@ -122,7 +122,7 @@ public class ZoomIn extends CoreDragAction
 				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
 						+ res.height);
 
-				if (res.width > JITTER || res.height > JITTER)
+				if (Math.abs(res.width) > JITTER || Math.abs(res.height) > JITTER)
 				{
 
 					WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
