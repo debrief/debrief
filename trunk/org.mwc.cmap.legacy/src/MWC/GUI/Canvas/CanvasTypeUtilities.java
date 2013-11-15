@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Point;
 
 import MWC.GUI.CanvasType;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public class CanvasTypeUtilities
@@ -38,18 +39,22 @@ public class CanvasTypeUtilities
 			final double direction = Math.toRadians(course-90);
 
 			// sort out the offset to use
-			int deltaX = (int) (distance * Math.cos(direction));
-			int deltaY = (int) (distance * Math.sin(direction));
+			double dis = -stringWidth/2;
+			int deltaX = (int) (dis * Math.cos(direction));
+			int deltaY = (int) (dis * Math.sin(direction));
 			dest.setColor(color);
 			dest.setFont(font);
 			
 			// put the course in the correct domain
 			if(course < 0)
 				course += 360;
-			
-			dest.drawText(textLabel, startPoint.x + deltaX, startPoint.y + deltaY,
+			WorldLocation _centre = new WorldArea(firstLoc, lastLoc).getCentre();
+			Point centrePoint = dest.toScreen(_centre);
+				
+			dest.drawText(textLabel, centrePoint.x + deltaX, centrePoint.y + deltaY,
 					(float) course, above);
-			//dest.drawRect(startPoint.x + deltaX, startPoint.y + deltaY, (int) stringWidth, dest.getStringHeight(font));
+			//dest.drawRect(centrePoint.x, centrePoint.y, (int) stringWidth, dest.getStringHeight(font));
+			//dest.drawRect(centrePoint.x, centrePoint.y, 2, 2);
 		}
 	}
 
