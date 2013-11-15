@@ -101,15 +101,17 @@ public class CreateSolutionFromSensorData implements
 					SATC_Solution solution = (SATC_Solution) parentLayers[0];
 					String actionTitle = "Add new contribution";
 
-					parent.add(new DoIt(verb1 + "Speed Forecast for period covering "
-							+ theCont.getName(), new SpeedForecastContributionFromCuts(
+					parent.add(new DoIt(verb1 + "Speed Forecast for period ["
+							+ theCont.getName() + "]", new SpeedForecastContributionFromCuts(
 							solution, actionTitle, theLayers, theCont)));
-					parent.add(new DoIt(verb1 + "Course Forecast for period covering "
-							+ theCont.getName(), new CourseForecastContributionFromCuts(
-							solution, actionTitle, theLayers, theCont)));
-					parent.add(new DoIt(verb1 + "Straight Leg for period covering "
-							+ theCont.getName(), new StraightLegForecastContributionFromCuts(
-							solution, actionTitle, theLayers, theCont)));
+					parent.add(new DoIt(verb1 + "Course Forecast for period ["
+							+ theCont.getName() + "]",
+							new CourseForecastContributionFromCuts(solution, actionTitle,
+									theLayers, theCont)));
+					parent.add(new DoIt(verb1 + "Straight Leg for period ["
+							+ theCont.getName() + "]",
+							new StraightLegForecastContributionFromCuts(solution,
+									actionTitle, theLayers, theCont)));
 				}
 			}
 		}
@@ -162,24 +164,25 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period covering " + title,
-				new StraightLegWizardFromCuts(solution, actionTitle, layers,
-						validItems));
-		wizardItem.setImageDescriptor(SATC_Interface_Activator.getImageDescriptor("icons/wizard.png"));
+		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period covering "
+				+ title, new StraightLegWizardFromCuts(solution, actionTitle, layers,
+				validItems));
+		wizardItem.setImageDescriptor(SATC_Interface_Activator
+				.getImageDescriptor("icons/wizard.png"));
 		parent.add(wizardItem);
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
 						layers, validItems)));
-		parent.add(new DoIt(verb1 + "Speed Forecast for period covering " + title,
+		parent.add(new DoIt(verb1 + "Speed Forecast for period [" + title + "]",
 				new SpeedForecastContributionFromCuts(solution, actionTitle, layers,
 						validItems)));
-		parent.add(new DoIt(verb1 + "Range Forecast for period covering " + title,
+		parent.add(new DoIt(verb1 + "Range Forecast for period [" + title + "]",
 				new RangeForecastContributionFromCuts(solution, actionTitle, layers,
 						validItems)));
-		parent.add(new DoIt(verb1 + "Course Forecast for period covering " + title,
+		parent.add(new DoIt(verb1 + "Course Forecast for period [" + title + "]",
 				new CourseForecastContributionFromCuts(solution, actionTitle, layers,
 						validItems)));
-		parent.add(new DoIt(verb1 + "Straight Leg for period covering " + title,
+		parent.add(new DoIt(verb1 + "Straight Leg for period [" + title + "]",
 				new StraightLegForecastContributionFromCuts(solution, actionTitle,
 						layers, validItems)));
 
@@ -435,7 +438,6 @@ public class CreateSolutionFromSensorData implements
 		@Override
 		protected BaseContribution getContribution()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 	}
