@@ -124,7 +124,7 @@ public class FlatProjection extends PlainProjection
 		return _scaleVal;
 	}
 
-	public void offsetOrigin(boolean updateDataArea)
+	public void offsetOrigin(final boolean updateDataArea)
 	{
 		// ensure there's a valid (minimum) value
 		if (_scaleVal < 0.0000002)
@@ -156,11 +156,11 @@ public class FlatProjection extends PlainProjection
 			if (updateDataArea)
 			{
 				// work out the new top left
-				WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
+				final WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
 								.getLat() + edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
 
 				// and now the new bottom right
-				WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
+				final WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
 								.getLat() - edgeY,
 								getDataArea().getBottomRight().getLong() + edgeX, 0);
 
