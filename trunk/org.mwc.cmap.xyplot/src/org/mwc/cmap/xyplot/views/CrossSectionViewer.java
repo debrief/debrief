@@ -81,6 +81,8 @@ public class CrossSectionViewer
 	private static final Shape _markerShape = new Rectangle2D.Double(-4, -4, 8, 8);
 	private static final int _markerSize = 4;
 	
+	private long _timePeriod = 0;
+	
 	/**
 	 * Memento parameters
 	 */
@@ -123,6 +125,11 @@ public class CrossSectionViewer
 		_chartFrame.add(jfreeChartPanel);		
 	}
 	
+	protected boolean isSnail()
+	{
+		return _timePeriod != 0;
+	}
+	
 	public void newTime(final HiResDate newDTG)
 	{
 		_currentTime = newDTG;
@@ -131,15 +138,22 @@ public class CrossSectionViewer
 	public void fillPlot(final Layers theLayers, final LineShape line,
 			final ICrossSectionDatasetProvider prov)
 	{
+		fillPlot(theLayers, line, prov, _timePeriod);
+	}
+	
+	public void fillPlot(final Layers theLayers, final LineShape line,
+			final ICrossSectionDatasetProvider prov,
+			final long timePeriod)
+	{
 		if (theLayers == null || line == null)
 			return;
 		_datasetProvider = prov;
+		_timePeriod = timePeriod;
 		_series.clear();
 		_dataset.removeAllSeries();
-		//TODO: check for Snail period
-		final boolean is_snail = false;
+	
 		if (_currentTime != null)
-			walkThrough(theLayers, line, is_snail);
+			walkThrough(theLayers, line);
 		
 		double maxX = 0;
 		double maxY = 0;
@@ -162,7 +176,7 @@ public class CrossSectionViewer
 		if (xAxis.getUpperBound() < maxX)
 			xAxis.setUpperBound(maxX + 5);
 		
-		if (is_snail)
+		if (isSnail())
 			_chart.getXYPlot().setRenderer(_snailRenderer);
 		else
 			_chart.getXYPlot().setRenderer(_discreteRenderer);
@@ -215,7 +229,7 @@ public class CrossSectionViewer
 
 	
 	public void removeSelectionChangedListener(
-			ISelectionChangedListener listener) 
+			final ISelectionChangedListener listener) 
 	{
 		_listeners.remove(listener);		
 	}
@@ -233,7 +247,7 @@ public class CrossSectionViewer
 		_propListeners.remove(listener);		
 	}
 
-	private void walkThrough(final Object root, final LineShape line, final boolean is_snail)
+	private void walkThrough(final Object root, final LineShape line)
 	{		
 		Enumeration<Editable> numer; 
 	    if (root instanceof Layer)
@@ -251,14 +265,12 @@ public class CrossSectionViewer
 	    			if (!(wlist instanceof TrackWrapper))
 	    				return;
 	    			   			
-	    			if (is_snail)
+	    			if (isSnail())
 	    			{
-	    				//TODO: get the snail period
-	    				final HiResDate snail_period = new HiResDate(_currentTime.getDate().getTime() - 5);
-	    				final long diff = _currentTime.getDate().getTime() - snail_period.getDate().getTime();
-	    				final HiResDate start_date = new HiResDate(diff);
+	    				final HiResDate startDTG = new HiResDate(_currentTime
+	    						.getDate().getTime() - _timePeriod);
 	    				final XYSeries series = _datasetProvider.getSeries(line,
-							(TrackWrapper) wlist, start_date, _currentTime);
+	    						(TrackWrapper) wlist, startDTG, _currentTime);
 	    		        _series.add(series);	    		        	
 		    			setSnailRenderer(_series.size()-1, wlist.getColor());
 	    			}
@@ -271,15 +283,16 @@ public class CrossSectionViewer
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
-	    		walkThrough(next, line, is_snail);
+	    		walkThrough(next, line);
 	    }
 	}
 	
 	public void saveState(final IMemento memento)
 	{
-		//TODO: get is snail
-		boolean is_snail = false;
-		memento.putBoolean(PLOT_ATTRIBUTES.IS_SNAIL, is_snail);		
+		//TODO: save snail period?
+		final boolean is_snail = isSnail();
+		memento.putBoolean(PLOT_ATTRIBUTES.IS_SNAIL, is_snail);	
+		//TODO: check if _currentTime is null
 		memento.putString(PLOT_ATTRIBUTES.TIME, 
 				_dateFormat.format(_currentTime.getDate()));
 		
@@ -321,6 +334,7 @@ public class CrossSectionViewer
 		_dataset = (XYSeriesCollection) xs.fromXML(dataStr);
 		
 		final Boolean is_snail = memento.getBoolean(PLOT_ATTRIBUTES.IS_SNAIL);
+		//TODO: restore snail period?
 		if (is_snail)
 		{
 			for (int i = 0; i < _dataset.getSeriesCount(); i++) 

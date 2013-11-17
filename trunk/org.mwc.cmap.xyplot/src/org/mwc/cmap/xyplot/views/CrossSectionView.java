@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -11,6 +12,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
@@ -27,6 +29,8 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.xyplot.views.providers.CrossSectionDatasetProvider;
 import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
+import org.mwc.cmap.xyplot.views.snail.ISnailPeriodChangedListener;
+import org.mwc.cmap.xyplot.views.snail.SnailPeriodTracker;
 
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
@@ -37,10 +41,9 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
-// This import leads to cycle in plugin dependencies
-// TODO: import org.mwc.cmap.TimeController.views.TimeController;
 
-public class CrossSectionView extends ViewPart
+
+public class CrossSectionView extends ViewPart implements ISnailPeriodChangedListener
 {
 	
 	CrossSectionViewer _viewer;
@@ -83,7 +86,11 @@ public class CrossSectionView extends ViewPart
 	 * store the plot information when we're reloading a plot in a fresh session
 	 */
 	private IMemento _memento = null;
-	//TODO: declare actions
+
+	/**
+	 * Toolbar drop down for specifying time period
+	 */
+	private SnailPeriodTracker _snailMode = new SnailPeriodTracker();
 
 	@Override
 	public void createPartControl(final Composite parent) 
@@ -96,8 +103,7 @@ public class CrossSectionView extends ViewPart
 		 
 		listenToMyParts();
 		setupFiringChangesToChart();
-		//TODO: makeActions();
-		//TODO: contributeToActionBars();
+		contributeToActionBars();
 		
 		_selectionChangeListener = new ISelectionChangedListener() 
 		{
@@ -127,14 +133,28 @@ public class CrossSectionView extends ViewPart
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
 		_viewer.addPropertyChangedListener(_lineListener);
+		
+		_snailMode.addSnailPeriodChangedListener(this);
+		
 		// have we got our data? 
 		if (_memento != null)
 		{
-			// restore it
-			_viewer.restoreState(_memento);
+			// TODO: restore it
+			//_viewer.restoreState(_memento);
 		}
 	}
-
+	
+	private void contributeToActionBars()
+	{
+		final IActionBars bars = getViewSite().getActionBars();
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+	
+	private void fillLocalToolBar(final IToolBarManager manager)
+	{
+		manager.add(_snailMode);
+	}
+	
 	@Override
 	public void init(final IViewSite site, final IMemento memento) throws PartInitException
 	{
@@ -183,57 +203,8 @@ public class CrossSectionView extends ViewPart
 						}					
 					}
 
-				});
-		
-		// Listen to time provider
-//		_partMonitor.addPartListener(TimeController.class, PartMonitor.ACTIVATED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(final String type, final Object part,
-//							final IWorkbenchPart parentPart)
-//					{
-//						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
-//						if (provider != null && provider.equals(_timeProvider))
-//							return;						
-//						_timeProvider = provider;
-//						_timeProvider.addListener(_temporalListener, 
-//								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-//					}
-//			});
-//		_partMonitor.addPartListener(TimeController.class, PartMonitor.OPENED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(final String type, final Object part,
-//							final IWorkbenchPart parentPart)
-//					{
-//						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
-//						if (provider != null && provider.equals(_timeProvider))
-//							return;						
-//						_timeProvider = provider;
-//						_timeProvider.addListener(_temporalListener, 
-//								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-//					}
-//			});
-//		
-//		_partMonitor.addPartListener(TimeController.class, PartMonitor.CLOSED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(final String type, final Object part,
-//							final IWorkbenchPart parentPart)
-//					{
-//						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
-//						if (provider != null && provider.equals(_timeProvider))
-//						{
-//							_timeProvider.removeListener(_temporalListener, 
-//									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-//						}
-//					}
-//
-//				});
-		
-		
-		
-		
+				});		
+			
 		_partMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
@@ -365,6 +336,12 @@ public class CrossSectionView extends ViewPart
 	void processReformattedLayer(final Layers theData, final Layer changedLayer)
 	{
 		_viewer.fillPlot(theData, _line, _datasetProvider);
+	}
+	
+	@Override
+	public void snailPeriodChanged(final long timePeriod)
+	{
+		_viewer.fillPlot(_myLayers, _line, _datasetProvider, timePeriod);
 	}
 	
 	void processNewData(final Layers theData, final Editable newItem,
