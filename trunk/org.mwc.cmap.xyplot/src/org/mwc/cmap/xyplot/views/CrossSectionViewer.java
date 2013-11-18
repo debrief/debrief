@@ -268,7 +268,7 @@ public class CrossSectionViewer
 	    			if (isSnail())
 	    			{
 	    				final HiResDate startDTG = new HiResDate(_currentTime
-	    						.getDate().getTime() - _timePeriod);
+	    						.getDate().getTime() - _timePeriod * 1000);	    				
 	    				final XYSeries series = _datasetProvider.getSeries(line,
 	    						(TrackWrapper) wlist, startDTG, _currentTime);
 	    		        _series.add(series);	    		        	
