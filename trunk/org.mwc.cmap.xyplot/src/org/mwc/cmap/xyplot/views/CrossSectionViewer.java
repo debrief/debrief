@@ -90,6 +90,7 @@ public class CrossSectionViewer
 	{
 		final String DATA = "XYPlot_Data";
 		final String TIME = "Current_Time";
+		final String TIME_PERIOD = "Time_Period";
 		final String IS_SNAIL = "Is_Snail";
 	}
 	
@@ -289,11 +290,12 @@ public class CrossSectionViewer
 	
 	public void saveState(final IMemento memento)
 	{
-		//TODO: save snail period?
 		final boolean is_snail = isSnail();
 		memento.putBoolean(PLOT_ATTRIBUTES.IS_SNAIL, is_snail);	
-		//TODO: check if _currentTime is null
-		memento.putString(PLOT_ATTRIBUTES.TIME, 
+		memento.putFloat(PLOT_ATTRIBUTES.TIME_PERIOD, (float)_timePeriod);
+	
+		if (_currentTime != null)
+			memento.putString(PLOT_ATTRIBUTES.TIME, 
 				_dateFormat.format(_currentTime.getDate()));
 		
 		final XStream xs = new XStream(new DomDriver());
@@ -334,9 +336,11 @@ public class CrossSectionViewer
 		_dataset = (XYSeriesCollection) xs.fromXML(dataStr);
 		
 		final Boolean is_snail = memento.getBoolean(PLOT_ATTRIBUTES.IS_SNAIL);
-		//TODO: restore snail period?
 		if (is_snail)
 		{
+			
+			_timePeriod = memento.getFloat(PLOT_ATTRIBUTES.TIME_PERIOD).longValue();
+			
 			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
 			{
 				final int RGB = memento.getInteger("SERIES_" + i + "_COLOR");
@@ -359,12 +363,18 @@ public class CrossSectionViewer
 		
 		try 
 		{
-			_currentTime = new HiResDate(_dateFormat.parse(timeStr));
+			if (timeStr != null)
+				_currentTime = new HiResDate(_dateFormat.parse(timeStr));
 		} catch (ParseException e) 
 		{
 			CorePlugin.logError(Status.ERROR, 
 					"Failed to read time in saved XY Plot data", e);
 		}
+	}
+	
+	protected long getPeriod()
+	{
+		return _timePeriod;
 	}
 	
 	
