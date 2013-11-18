@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
@@ -112,9 +111,24 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 			}
 		}
 		
-		public void testSnailSeries() throws ParseException
+		public void testSnailSeries2() throws ParseException
 		{	
 			for (int i=0; i<TIME_ARRAY_SIZE-1; i++)
+			{
+				final XYSeries series = _testable.getSeries(_line, _track, _times[i], _times[i+1]);
+				assertEquals(2, series.getItemCount());
+				for (int j=0; j<2; j++)
+				{
+					final XYDataItem item = series.getDataItem(j);
+					assertNotNull(item.getXValue());
+					assertEquals(0.0, item.getYValue()); //depth is 0
+				}
+			}
+		}
+		
+		public void testSnailSeries() throws ParseException
+		{	
+			for (int i=0; i<TIME_ARRAY_SIZE-2; i++)
 			{
 				final XYSeries series = _testable.getSeries(_line, _track, _times[i], _times[i+1]);
 				assertEquals(2, series.getItemCount());
