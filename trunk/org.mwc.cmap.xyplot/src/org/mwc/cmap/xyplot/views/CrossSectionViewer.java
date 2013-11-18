@@ -78,7 +78,7 @@ public class CrossSectionViewer
 	/**
 	 * the chart marker
 	 */
-	private static final Shape _markerShape = new Rectangle2D.Double(-4, -4, 8, 8);
+	private static final Shape _markerShape = new Rectangle2D.Double(-2, -2, 2, 2);
 	private static final int _markerSize = 4;
 	
 	private long _timePeriod = 0;
@@ -145,10 +145,10 @@ public class CrossSectionViewer
 			final ICrossSectionDatasetProvider prov,
 			final long timePeriod)
 	{
+		_timePeriod = timePeriod;
 		if (theLayers == null || line == null)
 			return;
-		_datasetProvider = prov;
-		_timePeriod = timePeriod;
+		_datasetProvider = prov;		
 		_series.clear();
 		_dataset.removeAllSeries();
 	
@@ -203,7 +203,7 @@ public class CrossSectionViewer
 
 		_snailRenderer.setUseFillPaint(true);
 		_snailRenderer.setSeriesShapesFilled(series, true);
-		_snailRenderer.setSeriesShapesVisible(series, true);		
+		_snailRenderer.setSeriesShapesVisible(series, true);	  
 	}
 	
 	private void printDataset(XYDataset xydataset)
@@ -268,7 +268,7 @@ public class CrossSectionViewer
 	    			if (isSnail())
 	    			{
 	    				final HiResDate startDTG = new HiResDate(_currentTime
-	    						.getDate().getTime() - _timePeriod * 1000);	    				
+	    						.getDate().getTime() - _timePeriod);	    				
 	    				final XYSeries series = _datasetProvider.getSeries(line,
 	    						(TrackWrapper) wlist, startDTG, _currentTime);
 	    		        _series.add(series);	    		        	

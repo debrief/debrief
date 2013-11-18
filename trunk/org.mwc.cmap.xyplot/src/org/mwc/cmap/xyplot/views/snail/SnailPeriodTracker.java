@@ -31,16 +31,16 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 		final String TWO_HOURS = "2 hours";
 	}
 	
-	public static Map<String, Integer> PERIODS_IN_SEC = new HashMap<String, Integer>();
+	public static Map<String, Integer> PERIODS_IN_MILLISEC = new HashMap<String, Integer>();
 
 	public SnailPeriodTracker() 
 	{		
-		PERIODS_IN_SEC.put(TIME_PERIODS.ZERO, 0);
-		PERIODS_IN_SEC.put(TIME_PERIODS.FIVE_MIN, 5 * 60);
-		PERIODS_IN_SEC.put(TIME_PERIODS.TEN_MIN, 10 * 60);
-		PERIODS_IN_SEC.put(TIME_PERIODS.THIRTY_MIN, 30 * 60);
-		PERIODS_IN_SEC.put(TIME_PERIODS.HOUR, 60 * 60);
-		PERIODS_IN_SEC.put(TIME_PERIODS.TWO_HOURS, 120 * 60);
+		PERIODS_IN_MILLISEC.put(TIME_PERIODS.ZERO, 0);
+		PERIODS_IN_MILLISEC.put(TIME_PERIODS.FIVE_MIN, 5 * 60 * 1000);
+		PERIODS_IN_MILLISEC.put(TIME_PERIODS.TEN_MIN, 10 * 60 * 1000);
+		PERIODS_IN_MILLISEC.put(TIME_PERIODS.THIRTY_MIN, 30 * 60 * 1000);
+		PERIODS_IN_MILLISEC.put(TIME_PERIODS.HOUR, 60 * 60 * 1000);
+		PERIODS_IN_MILLISEC.put(TIME_PERIODS.TWO_HOURS, 120 * 60 * 1000);
 	}
 	
 	
@@ -64,7 +64,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	            | SWT.DROP_DOWN);
 	    _reader.setLayoutData(glReader);
 	    
-	    for (String value: PERIODS_IN_SEC.keySet())
+	    for (String value: PERIODS_IN_MILLISEC.keySet())
 	    	_reader.add(value);
 	    _reader.setText(TIME_PERIODS.ZERO);
 	    
@@ -75,7 +75,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	    		super.widgetSelected(e);
 	    		for (ISnailPeriodChangedListener listener: _listeners)
 	    		{
-	    			final long period = PERIODS_IN_SEC.get(_reader.getText()).longValue();
+	    			final long period = PERIODS_IN_MILLISEC.get(_reader.getText()).longValue();
 	    			listener.snailPeriodChanged(period);
 	    		}
 	    	}
