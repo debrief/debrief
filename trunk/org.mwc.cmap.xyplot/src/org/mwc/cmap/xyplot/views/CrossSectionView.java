@@ -139,9 +139,10 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		// have we got our data? 
 		if (_memento != null)
 		{
-			// TODO: restore it
-			//_viewer.restoreState(_memento);
-		}
+			// restore it
+			_viewer.restoreState(_memento);
+			_snailMode.setPeriod(_viewer.getPeriod());
+		} 
 	}
 	
 	private void contributeToActionBars()

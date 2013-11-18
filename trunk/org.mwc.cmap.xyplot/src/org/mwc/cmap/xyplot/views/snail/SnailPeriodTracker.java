@@ -2,8 +2,10 @@ package org.mwc.cmap.xyplot.views.snail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -19,6 +21,7 @@ import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 public class SnailPeriodTracker extends WorkbenchWindowControlContribution 
 {
 	private Combo _reader;
+	private long _period;
 	private List<ISnailPeriodChangedListener> _listeners = new ArrayList<ISnailPeriodChangedListener>();
 	
 	public static interface TIME_PERIODS
@@ -34,13 +37,20 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	public static Map<String, Integer> PERIODS_IN_MILLISEC = new HashMap<String, Integer>();
 
 	public SnailPeriodTracker() 
-	{		
+	{
+		this(0);
+	}
+	
+	public SnailPeriodTracker(long period) 
+	{	
+		_period = period;
+		
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.ZERO, 0);
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.FIVE_MIN, 5 * 60 * 1000);
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.TEN_MIN, 10 * 60 * 1000);
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.THIRTY_MIN, 30 * 60 * 1000);
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.HOUR, 60 * 60 * 1000);
-		PERIODS_IN_MILLISEC.put(TIME_PERIODS.TWO_HOURS, 120 * 60 * 1000);
+		PERIODS_IN_MILLISEC.put(TIME_PERIODS.TWO_HOURS, 120 * 60 * 1000);		
 	}
 	
 	
@@ -66,7 +76,8 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	    
 	    for (String value: PERIODS_IN_MILLISEC.keySet())
 	    	_reader.add(value);
-	    _reader.setText(TIME_PERIODS.ZERO);
+	    
+	    _reader.setText(getPeriod(_period));
 	    
 	    _reader.addSelectionListener(new SelectionAdapter(){
 	    	@Override
@@ -102,6 +113,25 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 			final ISnailPeriodChangedListener listener) 
 	{
 		_listeners.remove(listener);		
+	}
+	
+	public void setPeriod(final long period)
+	{
+		_period = period;
+	}
+	
+	String getPeriod(final long period)
+	{
+		final Iterator<Entry<String, Integer>> iter = PERIODS_IN_MILLISEC.entrySet().iterator();
+		while(iter.hasNext())
+		{
+			final Entry<String, Integer> next = iter.next();
+			if (next.getValue().longValue() == period)
+			{
+				return next.getKey();
+			}
+		}
+		return TIME_PERIODS.ZERO;
 	}
 
 
