@@ -1068,7 +1068,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			_theDest.setTransform(tr);
 			_theDest.drawText(theStr, x+deltaX, y+deltaY, true);
 			
-			//_theDest.drawRectangle(x+deltaX, y+deltaY, 2, 2);
+			//final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
+			//		fontData.getHeight());
+			//_theDest.drawRectangle(x, y, getStringWidth(awFont, theStr), height);
 			
 			_theDest.setTransform(oldTransform);
 			
