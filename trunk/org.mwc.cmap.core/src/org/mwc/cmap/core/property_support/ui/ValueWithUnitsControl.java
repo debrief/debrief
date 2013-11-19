@@ -146,6 +146,16 @@ final public class ValueWithUnitsControl extends Composite implements
 		_myCombo.select(0);
 	}
 
+	
+	
+	@Override
+	public void setEnabled(boolean enabled)
+	{
+		super.setEnabled(enabled);
+		_myCombo.setEnabled(enabled);
+		_myText.setEnabled(enabled);
+	}
+
 	/**
 	 * set ourselves to this value
 	 * 
