@@ -15,6 +15,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables.IteratorWrapper;
+import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -25,6 +26,40 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class BMC_Wrapper extends ContributionWrapper implements Layer
 {
+	
+	public class BMC_Info extends Editable.EditorType implements Serializable
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public BMC_Info(BMC_Wrapper data)
+		{
+			super(data, data.getName(), "");
+		}
+
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{ 
+						prop("Error", "the size of bearing error to allow", EditorType.SPATIAL),
+						prop("Name", "name of this contribution", EditorType.FORMAT)
+						
+				};
+
+				return res;
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
 
 	/**
 	 * 
@@ -190,6 +225,34 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 	{
 		return (BearingMeasurementContribution) super.getContribution();
 	}
+	
+	
+
+	@Override
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	@Override
+	public EditorType getInfo()
+	{
+		if(_myEditor == null)
+			_myEditor = new BMC_Info(this);
+		return _myEditor;
+	}
+	
+	public BoundedInteger getError()
+	{
+		BearingMeasurementContribution bm = (BearingMeasurementContribution) super.getContribution();
+		return  new BoundedInteger( (int) Math.toDegrees(bm.getBearingError()),1,20);
+	}
+
+	public void setError(BoundedInteger error)
+	{
+		BearingMeasurementContribution bm = (BearingMeasurementContribution) super.getContribution();
+		bm.setBearingError(Math.toRadians(error.getCurrent()));
+	}
 
 	@Override
 	public void exportShape()
@@ -204,7 +267,10 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 	@Override
 	public void setName(String val)
 	{
+		super.getContribution().setName(val);
 	}
+	
+	
 
 	@Override
 	public boolean hasOrderedChildren()
