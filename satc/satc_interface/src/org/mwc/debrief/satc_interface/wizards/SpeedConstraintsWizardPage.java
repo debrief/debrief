@@ -13,6 +13,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -25,33 +26,35 @@ public class SpeedConstraintsWizardPage extends CoreEditableWizardPage
 
 	public static class SpeedConstraintsObject implements Plottable
 	{
-		private SpeedForecastContribution course;
+		private final SpeedForecastContribution _speed;
 
 		private boolean hasEstimate;
 
-		public SpeedConstraintsObject(SpeedForecastContribution course)
+		public SpeedConstraintsObject(SpeedForecastContribution speed)
 		{
-			this.course = course;
+			this._speed = speed;
 		}
 
+	  
+		
 		public WorldSpeed getMinSpeed()
 		{
-			return new WorldSpeed(course.getMinSpeed(), WorldSpeed.M_sec);
+			return new WorldSpeed(GeoSupport.MSec2kts( _speed.getMinSpeed()), WorldSpeed.Kts);
 		}
 
 		public void setMinSpeed(WorldSpeed speed)
 		{
-			course.setMinSpeed(speed.getValueIn(WorldSpeed.M_sec));
+			_speed.setMinSpeed(speed.getValueIn(WorldSpeed.M_sec));
 		}
 
 		public WorldSpeed getMaxSpeed()
 		{
-			return new WorldSpeed(course.getMaxSpeed(), WorldSpeed.M_sec);
+			return new WorldSpeed(GeoSupport.MSec2kts(_speed.getMaxSpeed()), WorldSpeed.Kts);
 		}
 
 		public void setMaxSpeed(WorldSpeed speed)
 		{
-			course.setMinSpeed(speed.getValueIn(WorldSpeed.M_sec));
+			_speed.setMinSpeed(speed.getValueIn(WorldSpeed.M_sec));
 		}
 
 		public boolean isHasEstimate()
@@ -66,27 +69,27 @@ public class SpeedConstraintsWizardPage extends CoreEditableWizardPage
 
 		public WorldSpeed getEstimate()
 		{
-			Double theEstimate = course.getEstimate();
+			Double theEstimate = _speed.getEstimate();
 			if (theEstimate != null)
-				return new WorldSpeed(theEstimate, WorldSpeed.M_sec);
+				return new WorldSpeed(GeoSupport.MSec2kts(theEstimate), WorldSpeed.Kts);
 			else
-				return new WorldSpeed(0, WorldSpeed.M_sec);
+				return new WorldSpeed(0, WorldSpeed.Kts);
 		}
 
 		public void setEstimate(WorldSpeed estimate)
 		{
-			course.setEstimate(estimate.getValueIn(WorldSpeed.M_sec));
+			_speed.setEstimate(estimate.getValueIn(WorldSpeed.M_sec));
 		}
 
 		@Override
 		public String getName()
 		{
-			return course.getName();
+			return _speed.getName();
 		}
 
 		public void setName(String name)
 		{
-			course.setName(name);
+			_speed.setName(name);
 		}
 
 		@Override
@@ -137,7 +140,7 @@ public class SpeedConstraintsWizardPage extends CoreEditableWizardPage
 
 		public SpeedForecastContribution getContribution()
 		{
-			return course;
+			return _speed;
 		}
 
 	}
@@ -152,8 +155,8 @@ public class SpeedConstraintsWizardPage extends CoreEditableWizardPage
 	public SpeedConstraintsWizardPage(final ISelection selection,
 			SpeedForecastContribution speed)
 	{
-		super(selection, "coursePage", "Add Course Constraints",
-				"Use this page to specify course constraints",
+		super(selection, "speedPage", "Add Speed Constraints",
+				"If you wish to provide a speed constraint for this straight leg, specify it below",
 				"images/scale_wizard.gif", null);
 		this.speed = speed;
 	}
@@ -165,8 +168,8 @@ public class SpeedConstraintsWizardPage extends CoreEditableWizardPage
 		{
 			SpeedConstraintsObject theSpeed = new SpeedConstraintsObject(speed);
 			theSpeed.setName("Speed estimate");
-			theSpeed.setMaxSpeed(new WorldSpeed(2, WorldSpeed.Kts));
-			theSpeed.setMinSpeed(new WorldSpeed(20, WorldSpeed.Kts));
+			theSpeed.setMinSpeed(new WorldSpeed(2, WorldSpeed.Kts));
+			theSpeed.setMaxSpeed(new WorldSpeed(20, WorldSpeed.Kts));
 			theSpeed.setEstimate(new WorldSpeed(10, WorldSpeed.Kts));
 			_editable = theSpeed;
 		}
@@ -181,11 +184,11 @@ public class SpeedConstraintsWizardPage extends CoreEditableWizardPage
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
 		final PropertyDescriptor[] descriptors =
-		{ prop("MinSpeed", "the minimum course", getEditable()),
-				prop("MaxSpeed", "the maximum course", getEditable()),
+		{ prop("MinSpeed", "the minimum speed", getEditable()),
+				prop("MaxSpeed", "the maximum speed", getEditable()),
 				prop("Name", "the name for this contribution", getEditable()),
 				prop("HasEstimate", "whether to use an estimate", getEditable()),
-				prop("Estimate", "the estimate", getEditable()) };
+				prop("Estimate", "the estimate of speed", getEditable()) };
 		return descriptors;
 	}
 

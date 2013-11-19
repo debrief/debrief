@@ -108,7 +108,7 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 	public LegNameWizardPage(final ISelection selection)
 	{
 		super(selection, "namePage", "Set Leg Name",
-				"Use this page to specify a name for this leg",
+				"Please provide a name for this leg",
 				"images/scale_wizard.gif", null, false);
 	}
 

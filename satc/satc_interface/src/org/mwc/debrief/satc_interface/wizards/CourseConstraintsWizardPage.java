@@ -162,7 +162,7 @@ public class CourseConstraintsWizardPage extends CoreEditableWizardPage
 			CourseForecastContribution course)
 	{
 		super(selection, "coursePage", "Add Course Constraints",
-				"Use this page to specify course constraints",
+				"If you wish to provide a course constraint for this straight leg, specify it below",
 				"images/scale_wizard.gif", null);
 		this.course = course;
 		
