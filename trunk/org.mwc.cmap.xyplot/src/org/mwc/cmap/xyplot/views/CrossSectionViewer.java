@@ -61,8 +61,6 @@ public class CrossSectionViewer
 	
 	private XYSeriesCollection _dataset = new XYSeriesCollection();
 	
-	private List<XYSeries> _series = new ArrayList<XYSeries>();
-	
 	private XYLineAndShapeRenderer _snailRenderer = new XYLineAndShapeRenderer();
 	
 	private XYDotRenderer _discreteRenderer = new XYDotRenderer();
@@ -152,7 +150,6 @@ public class CrossSectionViewer
 		if (theLayers == null || line == null)
 			return;
 		_datasetProvider = prov;		
-		_series.clear();
 		_dataset.removeAllSeries();
 	
 		if (_currentTime != null)
@@ -160,15 +157,16 @@ public class CrossSectionViewer
 		
 		double maxX = 0;
 		double maxY = 0;
-		for (XYSeries series: _series)
+		
+		for (int i = 0; i < _dataset.getSeriesCount(); i++) 
 		{
+			final XYSeries series = _dataset.getSeries(_dataset.getSeriesKey(i));
 			final double x = series.getMaxX(); 
 			if (maxX < x)
 				maxX = x;
 			final double y = series.getMaxY(); 
 			if (maxY < y)
 				maxY = y;
-			_dataset.addSeries(series);
 		}
 		
 		final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis(); 
@@ -259,15 +257,15 @@ public class CrossSectionViewer
 	    						.getDate().getTime() - _timePeriod);	    				
 	    				final XYSeries series = _datasetProvider.getSeries(line,
 	    						(TrackWrapper) wlist, startDTG, _currentTime);
-	    		        _series.add(series);	    		        	
-		    			setSnailRenderer(_series.size()-1, wlist.getColor());
+	    		        _dataset.addSeries(series);
+		    			setSnailRenderer(_dataset.getSeriesCount()-1, wlist.getColor());
 	    			}
 	    			else
 	    			{	    				
 	    				final XYSeries series = _datasetProvider.getSeries(line,
 								(TrackWrapper) wlist, _currentTime);
-		    			_series.add(series);
-		    			setDiscreteRenderer(_series.size()-1, wlist.getColor());	    					    				
+	    				_dataset.addSeries(series);
+		    			setDiscreteRenderer(_dataset.getSeriesCount()-1, wlist.getColor());	    					    				
 	    			}
 		    }		    
 	    	if (!(next instanceof WatchableList))
@@ -382,6 +380,7 @@ public class CrossSectionViewer
 	{
 		//TODO: test for null current time
 		//TODO: test for time stepping
+		//To write such test we'd need some Mock framework
 	}
 	
 
