@@ -68,7 +68,6 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -744,20 +743,30 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			BaseContribution baseC = (BaseContribution) iterator.next();
 			ContributionWrapper wrapped = null;
-			if (baseC instanceof BearingMeasurementContribution)
+			
+			// we don't add analysis contributions
+			if (!baseC.getDataType().equals(ContributionDataType.ANALYSIS))
 			{
-				BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
-				wrapped = new BMC_Wrapper(bmc);
-			}
-			else
-			{
-				// we don't add analysis contributions - they're in there already
-				if (!baseC.getDataType().equals(ContributionDataType.ANALYSIS))
-					wrapped = new ContributionWrapper(baseC);
-			}
+				if (baseC instanceof BearingMeasurementContribution)
+				{
+					BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
+					wrapped = new BMC_Wrapper(bmc);
+				}
+				else
+				{
+					if (baseC instanceof StraightLegForecastContribution)
+					{
+						wrapped = new StraightLegWrapper(baseC);
+					}
+					else
+					{
+						// we don't add analysis contributions - they're in there already
+						wrapped = new ContributionWrapper(baseC);
+					}
+				}
 
-			this.add(wrapped);
-
+				this.add(wrapped);
+			}
 		}
 	}
 

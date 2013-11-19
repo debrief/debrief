@@ -21,7 +21,12 @@ public class StraightLegWrapper extends ContributionWrapper
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ prop("Name", "the Name of this leg", FORMAT) };
+				{ 
+						prop("Name", "the Name of this leg", FORMAT),
+						prop("_Start", "the start date of this leg", FORMAT),
+						prop("End", "the finish date of this leg", FORMAT),
+						
+						};
 
 				return res;
 			}

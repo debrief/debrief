@@ -15,10 +15,6 @@ public class ContributionWrapper implements Plottable
 	
 	protected EditorType _myEditor;
 
-	
-	HiResDate _start;
-	HiResDate _end;
-
 	public ContributionWrapper(BaseContribution contribution)
 	{
 		_myCont = contribution;
@@ -28,27 +24,25 @@ public class ContributionWrapper implements Plottable
 	{
 		return _myCont;
 	}
-	
-	
 
-	public HiResDate getStart()
+	public HiResDate get_Start()
 	{
-		return _start;
+		return new HiResDate(_myCont.getStartDate().getTime());
 	}
 
-	public void setStart(HiResDate start)
+	public void set_Start(HiResDate start)
 	{
-		this._start = start;
+		_myCont.setStartDate(start.getDate());
 	}
 
 	public HiResDate getEnd()
 	{
-		return _end;
+		return new HiResDate(_myCont.getFinishDate().getTime());
 	}
 
 	public void setEnd(HiResDate end)
 	{
-		this._end = end;
+		_myCont.setFinishDate(end.getDate());
 	}
 
 	@Override
@@ -80,11 +74,23 @@ public class ContributionWrapper implements Plottable
 		return null;
 	}
 
+	/** we implement our own sorting so that contributions are grouped in chronological order
+	 * 
+	 */
 	@Override
 	public int compareTo(Plottable arg0)
 	{
 		ContributionWrapper him = (ContributionWrapper) arg0;
-		return this.getContribution().compareTo(him.getContribution());
+		int res = this.getContribution().getStartDate().compareTo(him.getContribution().getStartDate());
+		
+		// are they the same time?
+		if(res == 0)
+		{
+			// yes, ok - user their natural ordering instead
+			res = this.getContribution().compareTo(him.getContribution());
+		}
+		
+		return res;
 	}
 
 	@Override
