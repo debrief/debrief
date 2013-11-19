@@ -20,6 +20,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
+import org.mwc.debrief.satc_interface.data.wrappers.CourseForecastWrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.StraightLegWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
@@ -51,6 +52,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
@@ -103,6 +105,7 @@ public class SATC_Solution extends BaseLayer implements
 						prop("OnlyPlotLegEnds",
 								"whether to only plot location bounds at leg ends", FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
+						prop("AutoRecalc", "auto-recalc on changes", FORMAT),
 						prop("Name", "the name for this solution", EditorType.FORMAT),
 						prop("Color", "the color to display this solution",
 								EditorType.FORMAT),
@@ -123,7 +126,8 @@ public class SATC_Solution extends BaseLayer implements
 
 			final MethodDescriptor[] mds =
 			{ method(c, "convertToLegs", null, "Convert to Composite Track (legs)"),
-					method(c, "convertToTrack", null, "Convert to Standalone Track") };
+					method(c, "convertToTrack", null, "Convert to Standalone Track"),
+					method(c, "recalculate", null, "Recalculate solutions") };
 
 			return mds;
 		}
@@ -194,6 +198,8 @@ public class SATC_Solution extends BaseLayer implements
 			thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
 		else if (cont instanceof StraightLegForecastContribution)
 			thisW = new StraightLegWrapper(cont);
+		else if (cont instanceof CourseForecastContribution)
+			thisW = new CourseForecastWrapper((CourseForecastContribution) cont);
 		else
 			thisW = new ContributionWrapper(cont);
 		super.add(thisW);
@@ -275,6 +281,11 @@ public class SATC_Solution extends BaseLayer implements
 		return _myEditor;
 	}
 
+	public void recalculate()
+	{
+		_mySolver.run();
+	}
+
 	public Color getColor()
 	{
 		return _myColor;
@@ -303,6 +314,16 @@ public class SATC_Solution extends BaseLayer implements
 	public ISolver getSolver()
 	{
 		return _mySolver;
+	}
+
+	public boolean isAutoRecalc()
+	{
+		return _mySolver.isAutoGenerateSolutions();
+	}
+
+	public void setAutoRecalc(boolean autoRecalc)
+	{
+		_mySolver.setAutoGenerateSolutions(autoRecalc);
 	}
 
 	@Override
@@ -743,7 +764,7 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			BaseContribution baseC = (BaseContribution) iterator.next();
 			ContributionWrapper wrapped = null;
-			
+
 			// we don't add analysis contributions
 			if (!baseC.getDataType().equals(ContributionDataType.ANALYSIS))
 			{
@@ -752,17 +773,19 @@ public class SATC_Solution extends BaseLayer implements
 					BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
 					wrapped = new BMC_Wrapper(bmc);
 				}
+				else if (baseC instanceof StraightLegForecastContribution)
+				{
+					wrapped = new StraightLegWrapper(baseC);
+				}
+				else if (baseC instanceof CourseForecastContribution)
+				{
+					wrapped = new CourseForecastWrapper(
+							(CourseForecastContribution) baseC);
+				}
 				else
 				{
-					if (baseC instanceof StraightLegForecastContribution)
-					{
-						wrapped = new StraightLegWrapper(baseC);
-					}
-					else
-					{
-						// we don't add analysis contributions - they're in there already
-						wrapped = new ContributionWrapper(baseC);
-					}
+					// we don't add analysis contributions - they're in there already
+					wrapped = new ContributionWrapper(baseC);
 				}
 
 				this.add(wrapped);
