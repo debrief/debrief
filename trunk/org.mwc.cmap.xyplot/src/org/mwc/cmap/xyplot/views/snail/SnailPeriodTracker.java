@@ -21,7 +21,7 @@ import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 public class SnailPeriodTracker extends WorkbenchWindowControlContribution 
 {
 	private Combo _reader;
-	private long _period;
+	private long _period = 0;
 	private List<ISnailPeriodChangedListener> _listeners = new ArrayList<ISnailPeriodChangedListener>();
 	
 	public static interface TIME_PERIODS
@@ -37,14 +37,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	public static Map<String, Integer> PERIODS_IN_MILLISEC = new HashMap<String, Integer>();
 
 	public SnailPeriodTracker() 
-	{
-		this(0);
-	}
-	
-	public SnailPeriodTracker(long period) 
-	{	
-		_period = period;
-		
+	{		
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.ZERO, 0);
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.FIVE_MIN, 5 * 60 * 1000);
 		PERIODS_IN_MILLISEC.put(TIME_PERIODS.TEN_MIN, 10 * 60 * 1000);
@@ -77,7 +70,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 	    for (String value: PERIODS_IN_MILLISEC.keySet())
 	    	_reader.add(value);
 	    
-	    _reader.setText(getPeriod(_period));
+	    _reader.setText(getPeriodText(_period));
 	    
 	    _reader.addSelectionListener(new SelectionAdapter(){
 	    	@Override
@@ -120,7 +113,7 @@ public class SnailPeriodTracker extends WorkbenchWindowControlContribution
 		_period = period;
 	}
 	
-	String getPeriod(final long period)
+	String getPeriodText(final long period)
 	{
 		final Iterator<Entry<String, Integer>> iter = PERIODS_IN_MILLISEC.entrySet().iterator();
 		while(iter.hasNext())

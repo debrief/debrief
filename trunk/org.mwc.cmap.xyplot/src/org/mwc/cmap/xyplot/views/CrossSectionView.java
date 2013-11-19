@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
@@ -86,6 +87,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 	 * store the plot information when we're reloading a plot in a fresh session
 	 */
 	private IMemento _memento = null;
+	
 
 	/**
 	 * Toolbar drop down for specifying time period
@@ -261,7 +263,25 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			if (editor == null)
 			{
 				// see if there are any editors at all open
-				//TODO: search the required editor by TimeProvider id ?
+				final IEditorReference[] theEditors = page.getEditorReferences();
+				for (int i = 0; i < theEditors.length; i++)
+				{
+					final IEditorReference thisE = theEditors[i];
+					editor = thisE.getEditor(false);
+
+					// right, see if it has a time manager
+					final TimeProvider tp = (TimeProvider) editor
+							.getAdapter(TimeProvider.class);
+					if (tp != null)
+					{
+						final String hisId = tp.getId();
+						if (hisId.equals(_viewer.getPlotId()))
+							break;
+					}
+				}
+
+				// nope, drop out.
+				return;
 			}
 		}
 
@@ -281,6 +301,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			// add our listener to the time object
 			_timeProvider.addListener(_timeListener, 
 					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+			_viewer.setPlotId(_timeProvider.getId());
 		}
 	}
 
