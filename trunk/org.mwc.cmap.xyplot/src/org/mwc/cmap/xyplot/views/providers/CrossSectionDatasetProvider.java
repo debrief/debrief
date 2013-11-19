@@ -1,22 +1,29 @@
 package org.mwc.cmap.xyplot.views.providers;
 
+import java.awt.Color;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.mwc.cmap.xyplot.views.ILocationCalculator;
 import org.mwc.cmap.xyplot.views.LocationCalculator;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -24,7 +31,8 @@ import MWC.TacticalData.Fix;
 public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 {
 	private ILocationCalculator _calc;
-	
+	private Map<Integer, Color> _seriesColors = new HashMap<Integer, Color>();
+	 
 	public CrossSectionDatasetProvider()
 	{
 		this(WorldDistance.KM);
@@ -33,24 +41,7 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 	public CrossSectionDatasetProvider(final int units)
 	{
 		_calc = new LocationCalculator(units);
-	}
-
-	@Override
-	public XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
-			final HiResDate startT, final 	HiResDate endT) 
-	{
-		final Collection<Editable> editables  = wlist.getItemsBetween(startT, endT);
-		Watchable[] wbs = (Watchable[]) editables.toArray(new Watchable[editables.size()]);
-		return getSeries(line, wlist.getName(), wbs);
-	}
-
-	@Override
-	public XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
-			final HiResDate timeT) 
-	{
-		final Watchable[] wbs = wlist.getNearestTo(timeT);
-		return getSeries(line, wlist.getName(), wbs);
-	}
+	}	
 	
 	private XYSeries getSeries(final LineShape line, String seriesName,  Watchable[] wbs)
 	{
@@ -62,6 +53,78 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 			series.add(x_coord, y_coord);    		        		
 		}
 		return series;
+	}
+	
+	XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
+			final HiResDate startT, final 	HiResDate endT) 
+	{
+		final Collection<Editable> editables  = wlist.getItemsBetween(startT, endT);
+		Watchable[] wbs = (Watchable[]) editables.toArray(new Watchable[editables.size()]);
+		return getSeries(line, wlist.getName(), wbs);
+	}
+
+	XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
+			final HiResDate timeT) 
+	{
+		final Watchable[] wbs = wlist.getNearestTo(timeT);
+		return getSeries(line, wlist.getName(), wbs);
+	}
+	
+	@Override
+	public XYSeriesCollection getDataset(LineShape line, Layers layers,
+			HiResDate startT, HiResDate endT) 
+	{
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		walk(layers, line, startT, endT, dataset);
+		return dataset;
+	}
+	
+	@Override
+	public XYSeriesCollection getDataset(LineShape line, Layers layers,
+			HiResDate timeT) 
+	{
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		walk(layers, line, timeT, null, dataset);
+		return dataset;
+	}
+	
+	private void walk(final Layers layers, final LineShape line, 
+			final HiResDate startT, final HiResDate endT,
+			final XYSeriesCollection dataset)
+	{
+		final Enumeration<Editable> numer = layers.elements();
+	    
+	    while(numer.hasMoreElements())  
+	    {
+	    	final Editable next = numer.nextElement();  
+	    	if (next instanceof WatchableList)
+		    { 
+	    		final WatchableList wlist = (WatchableList) next;
+    			if (!(wlist instanceof TrackWrapper))
+    				return;
+    			
+	    		if(endT != null)
+	    		{	    			   			
+	    			final XYSeries series = getSeries(line,
+	    						(TrackWrapper) wlist, startT, endT);
+	    		    dataset.addSeries(series);
+	    		}
+	    		else
+	    		{
+	    			final XYSeries series = getSeries(line,
+							(TrackWrapper) wlist, startT);
+    				dataset.addSeries(series);
+	    		}
+	    		 _seriesColors.put(new Integer(dataset.getSeriesCount()-1), 
+	    		    		wlist.getColor());	    			
+		    }		    
+	    }
+	}
+	
+	@Override
+	public Map<Integer, Color> getSeriesColors() 
+	{
+		return _seriesColors;
 	}
 	
 	static public final class CrossSectionDatasetProviderTest extends junit.framework.TestCase
@@ -140,9 +203,9 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 				}
 			}
 		}
-		
-		//TODO: tests with holes in data
+	
 		
 	}
 
+	
 }

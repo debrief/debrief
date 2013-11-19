@@ -10,8 +10,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -32,13 +32,9 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
 
-import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WatchableList;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -153,7 +149,31 @@ public class CrossSectionViewer
 		_dataset.removeAllSeries();
 	
 		if (_currentTime != null)
-			walkThrough(theLayers, line);
+		{
+			if(isSnail())
+			{
+				final HiResDate startDTG = new HiResDate(_currentTime
+						.getDate().getTime() - _timePeriod);	
+				_dataset = _datasetProvider.getDataset(line, theLayers, startDTG, _currentTime);
+				final Map<Integer, Color> colors = _datasetProvider.getSeriesColors();
+				for(Integer seriesKey: colors.keySet())
+				{
+					setSnailRenderer(seriesKey, colors.get(seriesKey));
+				}
+				_chart.getXYPlot().setRenderer(_snailRenderer);
+			}
+			else
+			{
+				_dataset = _datasetProvider.getDataset(line, theLayers, _currentTime);
+				final Map<Integer, Color> colors = _datasetProvider.getSeriesColors();
+				for(Integer seriesKey: colors.keySet())
+				{
+					setDiscreteRenderer(seriesKey, colors.get(seriesKey));
+				}
+				_chart.getXYPlot().setRenderer(_discreteRenderer);
+			}
+			
+		}
 		
 		double maxX = 0;
 		double maxY = 0;
@@ -177,12 +197,7 @@ public class CrossSectionViewer
 		if (xAxis.getUpperBound() < maxX)
 			xAxis.setUpperBound(maxX + 5);
 		
-		if (isSnail())
-			_chart.getXYPlot().setRenderer(_snailRenderer);
-		else
-			_chart.getXYPlot().setRenderer(_discreteRenderer);
 		_chart.getXYPlot().setDataset(_dataset);
-		//printDataset(_dataset);
 	}
 	
 	private void setDiscreteRenderer(final int series, final Color paint)
@@ -231,46 +246,6 @@ public class CrossSectionViewer
 			final PropertyChangeListener listener) 
 	{
 		_propListeners.remove(listener);		
-	}
-
-	private void walkThrough(final Object root, final LineShape line)
-	{		
-		Enumeration<Editable> numer; 
-	    if (root instanceof Layer)
-	    	numer = ((Layer) root).elements();
-	    else if (root instanceof Layers)
-	    	numer = ((Layers) root).elements();
-	    else return;
-	    	
-	    while(numer.hasMoreElements())  
-	    {
-	    	final Editable next = numer.nextElement();  
-	    	if (next instanceof WatchableList)
-		    {
-	    			final WatchableList wlist = (WatchableList) next;
-	    			if (!(wlist instanceof TrackWrapper))
-	    				return;
-	    			   			
-	    			if (isSnail())
-	    			{
-	    				final HiResDate startDTG = new HiResDate(_currentTime
-	    						.getDate().getTime() - _timePeriod);	    				
-	    				final XYSeries series = _datasetProvider.getSeries(line,
-	    						(TrackWrapper) wlist, startDTG, _currentTime);
-	    		        _dataset.addSeries(series);
-		    			setSnailRenderer(_dataset.getSeriesCount()-1, wlist.getColor());
-	    			}
-	    			else
-	    			{	    				
-	    				final XYSeries series = _datasetProvider.getSeries(line,
-								(TrackWrapper) wlist, _currentTime);
-	    				_dataset.addSeries(series);
-		    			setDiscreteRenderer(_dataset.getSeriesCount()-1, wlist.getColor());	    					    				
-	    			}
-		    }		    
-	    	if (!(next instanceof WatchableList))
-	    		walkThrough(next, line);
-	    }
 	}
 	
 	public void saveState(final IMemento memento)
