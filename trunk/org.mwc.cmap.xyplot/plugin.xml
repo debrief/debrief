@@ -20,22 +20,9 @@
             allowMultiple="true"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.xyplot.views.CrossSectionView"
-            icon="icons/document_chart.png"
+            icon="icons/x-section.png"
             id="org.mwc.cmap.xyplot.views.CrossSectionView"
             name="Cross Section">
       </view>
    </extension>
-   
-   <extension
-       point="org.eclipse.ui.views">
-        <view
-            allowMultiple="true"
-            category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.cmap.xyplot.views.CrossSectionView"
-            icon="icons/document_chart.png"
-            id="org.mwc.cmap.xyplot.views.CrossSectionView"
-            name="Cross Section">
-      </view>
-   </extension>
-
 </plugin>
