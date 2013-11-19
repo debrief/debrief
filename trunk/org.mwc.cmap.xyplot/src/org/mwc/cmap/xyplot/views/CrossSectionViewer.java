@@ -27,7 +27,6 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
@@ -83,6 +82,8 @@ public class CrossSectionViewer
 	
 	private long _timePeriod = 0;
 	
+	private String _plotId;
+	
 	/**
 	 * Memento parameters
 	 */
@@ -92,6 +93,7 @@ public class CrossSectionViewer
 		final String TIME = "Current_Time";
 		final String TIME_PERIOD = "Time_Period";
 		final String IS_SNAIL = "Is_Snail";
+		final String ID = "Plot_Id";
 	}
 	
    	
@@ -205,22 +207,7 @@ public class CrossSectionViewer
 		_snailRenderer.setUseFillPaint(true);
 		_snailRenderer.setSeriesShapesFilled(series, true);
 		_snailRenderer.setSeriesShapesVisible(series, true);	  
-	}
-	
-	private void printDataset(XYDataset xydataset)
-	{
-		int indexOf;
-		for (int i = 0; i < xydataset.getSeriesCount(); i++) 
-		{
-			indexOf = xydataset.indexOf(xydataset.getSeriesKey(i));
-			for (int j = 0; j < xydataset.getItemCount(indexOf); j++) 
-			{
-				double x = xydataset.getXValue(indexOf, j);
-				double y = xydataset.getYValue(indexOf, j);
-				System.out.println(x + " ; " + y);
-			}
-		}
-	}
+	}	
 	
 	public void addSelectionChangedListener(final ISelectionChangedListener listener) 
 	{
@@ -290,6 +277,7 @@ public class CrossSectionViewer
 	
 	public void saveState(final IMemento memento)
 	{
+		memento.putString(PLOT_ATTRIBUTES.ID, _plotId);
 		final boolean is_snail = isSnail();
 		memento.putBoolean(PLOT_ATTRIBUTES.IS_SNAIL, is_snail);	
 		memento.putFloat(PLOT_ATTRIBUTES.TIME_PERIOD, (float)_timePeriod);
@@ -327,6 +315,8 @@ public class CrossSectionViewer
 	
 	public void restoreState(final IMemento memento)
 	{
+		_plotId = memento.getString(PLOT_ATTRIBUTES.ID);
+		
 		final XStream xs = new XStream(new DomDriver());
 		final String dataStr = memento.getString(PLOT_ATTRIBUTES.DATA);
 
@@ -375,6 +365,16 @@ public class CrossSectionViewer
 	protected long getPeriod()
 	{
 		return _timePeriod;
+	}
+	
+	protected String getPlotId() 
+	{
+		return _plotId;
+	}
+
+	protected void setPlotId(final String _plotId) 
+	{
+		this._plotId = _plotId;
 	}
 	
 	
