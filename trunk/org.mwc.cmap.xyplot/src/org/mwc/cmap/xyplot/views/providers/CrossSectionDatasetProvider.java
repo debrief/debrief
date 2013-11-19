@@ -74,24 +74,20 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 	public XYSeriesCollection getDataset(LineShape line, Layers layers,
 			HiResDate startT, HiResDate endT) 
 	{
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		walk(layers, line, startT, endT, dataset);
-		return dataset;
+		return walk(layers, line, startT, endT);
 	}
 	
 	@Override
 	public XYSeriesCollection getDataset(LineShape line, Layers layers,
 			HiResDate timeT) 
 	{
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		walk(layers, line, timeT, null, dataset);
-		return dataset;
+		return walk(layers, line, timeT, null);
 	}
 	
-	private void walk(final Layers layers, final LineShape line, 
-			final HiResDate startT, final HiResDate endT,
-			final XYSeriesCollection dataset)
+	private XYSeriesCollection walk(final Layers layers, final LineShape line, 
+			final HiResDate startT, final HiResDate endT)
 	{
+		final XYSeriesCollection dataset = new XYSeriesCollection();
 		final Enumeration<Editable> numer = layers.elements();
 	    
 	    while(numer.hasMoreElements())  
@@ -101,7 +97,7 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 		    { 
 	    		final WatchableList wlist = (WatchableList) next;
     			if (!(wlist instanceof TrackWrapper))
-    				return;
+    				return dataset;
     			
 	    		if(endT != null)
 	    		{	    			   			
@@ -119,6 +115,7 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 	    		    		wlist.getColor());	    			
 		    }		    
 	    }
+	    return dataset;
 	}
 	
 	@Override
