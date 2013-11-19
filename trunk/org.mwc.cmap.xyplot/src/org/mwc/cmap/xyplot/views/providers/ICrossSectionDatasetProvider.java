@@ -1,16 +1,21 @@
 package org.mwc.cmap.xyplot.views.providers;
 
-import org.jfree.data.xy.XYSeries;
+import java.awt.Color;
+import java.util.Map;
 
-import Debrief.Wrappers.TrackWrapper;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
 
 public interface ICrossSectionDatasetProvider 
 {
 	//TODO: javadoc
-	XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
+	XYSeriesCollection getDataset(final LineShape line, final Layers layers, 
 			final HiResDate startT, final HiResDate endT);
-	XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
+	XYSeriesCollection getDataset(final LineShape line, final Layers layers, 
 			final HiResDate timeT);
+	
+	Map<Integer, Color> getSeriesColors();
 }
