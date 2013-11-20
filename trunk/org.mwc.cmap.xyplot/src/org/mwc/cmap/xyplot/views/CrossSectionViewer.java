@@ -5,6 +5,7 @@ import java.awt.Frame;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,11 @@ import MWC.GenericData.HiResDate;
 public class CrossSectionViewer
 {
 		
+	/**
+	 * manage all of the property listeners
+	 */
+	private PropertyChangeSupport _pSupport;
 	private List<ISelectionChangedListener> _listeners = new ArrayList<ISelectionChangedListener>();
-	private List<PropertyChangeListener> _propListeners = new ArrayList<PropertyChangeListener>();
 	
 	/**
 	 * the Swing control we insert the plot into
@@ -222,17 +226,21 @@ public class CrossSectionViewer
 		_listeners.remove(listener);		
 	}
 	
-	public void addPropertyChangedListener(final PropertyChangeListener listener) 
+	public void addPropertyChangedListener(final PropertyChangeListener listener,
+			final String propertyType) 
 	{
-		if (! _propListeners.contains(listener))
-			_propListeners.add(listener);			
+		if (_pSupport == null)
+			_pSupport = new PropertyChangeSupport(this);
+
+		_pSupport.addPropertyChangeListener(propertyType, listener);
 	}
 
 	
 	public void removePropertyChangedListener(
-			final PropertyChangeListener listener) 
+			final PropertyChangeListener listener,
+			final String propertyType) 
 	{
-		_propListeners.remove(listener);		
+		_pSupport.removePropertyChangeListener(propertyType, listener);
 	}
 	
 	public void saveState(final IMemento memento)
