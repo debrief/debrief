@@ -127,6 +127,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 						if (shape instanceof LineShape && !shape.equals(_line))
 						{
 							_line = (LineShape) shape;
+							_line.addPropertyListener(_lineListener);
 							_viewer.fillPlot(_myLayers, _line, _datasetProvider);
 						}
 					}		
@@ -134,7 +135,6 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			}
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
-		_viewer.addPropertyChangedListener(_lineListener, PlainWrapper.LOCATION_CHANGED);
 		
 		_snailMode.addSnailPeriodChangedListener(this);
 		
@@ -177,7 +177,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
-						_line = null;
+						clearLineListener();
 						processNewLayers(part);
 					}
 				});
@@ -187,7 +187,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
-						_line = null;
+						clearLineListener();
 						processNewLayers(part);
 					}
 				});
@@ -200,7 +200,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 						// is this our set of layers?
 						if (part == _myLayers)
 						{
-							_line = null;
+							clearLineListener();
 							// stop listening to this layer
 							clearLayerListener();
 						}					
@@ -392,15 +392,22 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		}
 	}
 	
+	void clearLineListener()
+	{
+		if (_line != null)
+		{
+			_line.removePropertyListener(_lineListener);
+			_lineListener = null;
+			_line = null;
+		}
+	}
+	
 	public void dispose()
 	{
 		super.dispose();
 		// make sure we close the listeners
 		clearLayerListener();
-		
-		_viewer.removePropertyChangedListener(_lineListener, 
-				PlainWrapper.LOCATION_CHANGED);
-		_line = null;
+		clearLineListener();		
 		
 		if (_timeProvider != null)
 		{
@@ -423,8 +430,6 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 	{
 		public void propertyChange(final PropertyChangeEvent event)
 		{
-			// see if it's the time or the period which
-			// has changed
 			if (event.getPropertyName().equals(
 					PlainWrapper.LOCATION_CHANGED))
 			{
@@ -466,5 +471,6 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			}
 		}
 	}
-
+	
+	
 }
