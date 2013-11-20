@@ -134,7 +134,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			}
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
-		_viewer.addPropertyChangedListener(_lineListener);
+		_viewer.addPropertyChangedListener(_lineListener, PlainWrapper.LOCATION_CHANGED);
 		
 		_snailMode.addSnailPeriodChangedListener(this);
 		
@@ -397,7 +397,11 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		super.dispose();
 		// make sure we close the listeners
 		clearLayerListener();
+		
+		_viewer.removePropertyChangedListener(_lineListener, 
+				PlainWrapper.LOCATION_CHANGED);
 		_line = null;
+		
 		if (_timeProvider != null)
 		{
 			_timeProvider.removeListener(_timeListener, 
