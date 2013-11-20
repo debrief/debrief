@@ -4,7 +4,8 @@ public interface SupportsPropertyListeners
 {
 
 	public static final String FORMAT = "Format";
-	
+	public static final String EXTENDED = "Extended";
+
 	public void addPropertyChangeListener(String property,
 			java.beans.PropertyChangeListener listener);
 
@@ -23,7 +24,8 @@ public interface SupportsPropertyListeners
 	public void removePropertyChangeListener(String property,
 			java.beans.PropertyChangeListener listener);
 
-	/** something has changed - tell everybody
+	/**
+	 * something has changed - tell everybody
 	 * 
 	 * @param propertyChanged
 	 * @param oldValue

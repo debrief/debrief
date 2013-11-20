@@ -3,7 +3,6 @@
  */
 package org.mwc.debrief.core.creators.chartFeatures;
 
-import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -76,7 +75,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 			// get the results
 			final String txt = inp.getValue();
 			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
-					new WorldDistance(5, WorldDistance.KM), Color.RED);
+					new WorldDistance(5, WorldDistance.KM), PlanningSegment.DEFAULT_COLOR);
 		}
 
 		return res;
@@ -167,6 +166,9 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 								
 								// create new track
 								final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
+								
+								// initialize NameVisible (false)
+								tw.setNameVisible(false);
 
 								// store the name
 								tw.setName(txt);

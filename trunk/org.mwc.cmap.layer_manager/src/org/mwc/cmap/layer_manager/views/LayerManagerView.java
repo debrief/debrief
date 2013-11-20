@@ -359,6 +359,7 @@ public class LayerManagerView extends ViewPart
 		if (_myLayers != null)
 		{
 			_myLayers.removeDataExtendedListener(_myLayersListener);
+			_myLayers.removeDataReformattedListener(_myLayersListener);
 			_myLayersListener = null;
 			_myLayers = null;
 		}

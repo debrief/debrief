@@ -3,6 +3,9 @@
  */
 package org.mwc.cmap.plotViewer.actions;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -22,7 +25,7 @@ import MWC.GUI.PlainChart;
 /**
  * @author ian.mayo
  */
-abstract public class CoreEditorAction implements IEditorActionDelegate,
+abstract public class CoreEditorAction extends AbstractHandler implements IEditorActionDelegate,
 		IWorkbenchWindowActionDelegate
 {
 
@@ -36,8 +39,10 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	 */
 	public void setActiveEditor(final IAction action, final IEditorPart targetEditor)
 	{
-		if (targetEditor == null)
+		if (targetEditor == null) {
+			_myEditor = null;
 			return;
+		}
 
 		if (targetEditor instanceof IChartBasedEditor)
 		{
@@ -105,7 +110,11 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 
 		// ok - if we were going to drop out we'd have done it already. Let's just
 		// go for it.
+		executeInternal();
+	}
 
+	private void executeInternal()
+	{
 		// check we're looking at our type of editor
 		final PlainChart chrt = getChart();
 		if (chrt == null)
@@ -147,6 +156,13 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	public void init(final IWorkbenchWindow window)
 	{
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException
+	{
+		executeInternal();
+		return null;
 	}
 
 }

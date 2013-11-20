@@ -27,7 +27,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.tests"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.TimeController"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.tote"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.waterfall_core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.xyplot"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.data_feed"/>

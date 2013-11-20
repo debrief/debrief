@@ -255,8 +255,8 @@ public class LineShape extends PlainShape implements Editable,
 			final WorldVector wv = _end.subtract(_start);
 			final double range = Conversions.convertRange(wv.getRange(), myUnits);
 			final double bearing = wv.getBearing();
-			final String msg = String.format("%.3f", range) + " " + myUnits + " "
-					+ String.format("%.3f", bearing) + "\u00B0";
+			final String msg = String.format("%.1f", range) + " " + myUnits + " "
+					+ String.format("%d", (int)Math.toDegrees(bearing)) + "\u00B0";
 			
 			float rotate = (float) Math.toDegrees(bearing);
 			if (start.x < end.x)

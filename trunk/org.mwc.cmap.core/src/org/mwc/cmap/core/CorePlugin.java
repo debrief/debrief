@@ -722,6 +722,14 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	    return activePart == null ? false : activePart.equals(part);
 	}
 	
+	public static IWorkbenchPart getActivePart()
+	{ 
+		final IWorkbenchPage activePage = getActivePage();
+		if (activePage == null)
+			return null;
+		return activePage.getActivePart();
+	}
+	
 	/**
 	 * create an action that we can stick in our manager
 	 * 

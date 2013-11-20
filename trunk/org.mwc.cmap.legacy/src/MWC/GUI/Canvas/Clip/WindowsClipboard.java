@@ -242,4 +242,11 @@ public class WindowsClipboard implements CanvasType
 
 	}
 
+	@Override
+	public void drawText(String str, int x, int y, float rotate, boolean above)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

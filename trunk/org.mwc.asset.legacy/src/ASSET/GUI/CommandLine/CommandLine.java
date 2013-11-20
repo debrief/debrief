@@ -414,7 +414,7 @@ public class CommandLine
 			TEST_ROOT = System.getProperty("TEST_ROOT");
 			if (TEST_ROOT == null)
 			{
-				TEST_ROOT = "../org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Samples/legacy";
+				TEST_ROOT = "../org.mwc.asset.core.feature/root_installs/AssetData/Samples/legacy";
 			}
 
 			System.out.println("root is:" + TEST_ROOT);

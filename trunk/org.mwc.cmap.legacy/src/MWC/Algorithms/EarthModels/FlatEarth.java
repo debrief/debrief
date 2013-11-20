@@ -195,7 +195,7 @@ public class FlatEarth implements EarthModel
 		// admiralty manual of navigation
 
 	  // perform brief check to ensure that the positions are not identical
-	  if (from.equals(to))
+	  if (from == null || from.equals(to))
 	  	return new WorldVector(0,0,0);
 
 	  // 0. convert our position, course and distance values in degrees to radians

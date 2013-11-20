@@ -258,6 +258,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private SelectionAdapter _playListener;
 
+	//private static final Color bColor = new Color(Display.getDefault(), 0, 0, 0);
+	private static final Color bColor = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+
+	private static final Color fColor = new Color(Display.getDefault(), 33, 255, 22);
+
+	private static final Font arialFont = new Font(Display.getDefault(), "Arial", 16, SWT.NONE);
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -392,9 +399,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// _timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended",
 		// 16,
 		// SWT.NONE));
-		_timeLabel.setFont(new Font(Display.getDefault(), "Arial", 16, SWT.NONE));
-		_timeLabel.setForeground(new Color(Display.getDefault(), 33, 255, 22));
-		_timeLabel.setBackground(new Color(Display.getDefault(), 0, 0, 0));
+		_timeLabel.setFont(arialFont );
+		_timeLabel.setForeground(fColor );
+		_timeLabel.setBackground(bColor );
 
 		// next create the time slider holder
 		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
@@ -521,22 +528,22 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			public void widgetSelected(final SelectionEvent e)
 			{
 				final boolean playing = _playButton.getSelection();
-				ImageDescriptor thisD;
+				//ImageDescriptor thisD;
 				if (playing)
 				{
-					thisD = TimeControllerPlugin
-							.getImageDescriptor("icons/media_pause.png");
+					//thisD = TimeControllerPlugin
+					//		.getImageDescriptor("icons/media_pause.png");
 					startPlaying();
 					_playButton.setToolTipText(PAUSE_TEXT);
 				}
 				else
 				{
-					thisD = TimeControllerPlugin
-							.getImageDescriptor("icons/media_play.png");
+					//thisD = TimeControllerPlugin
+					//		.getImageDescriptor("icons/media_play.png");
 					stopPlaying();
 					_playButton.setToolTipText(PLAY_TEXT);
 				}
-				_playButton.setImage(thisD.createImage());
+				_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
 			}
 		};
 		_playButton.addSelectionListener(_playListener);
@@ -763,12 +770,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				else
 				{
 
-					// ok - we no longer reset the range limits on a data change,
-					// since it's proving inconvenient to have to reset the sliders
-					// after some data is dropped in.
-
-		//			_slideManager.resetRange(newPeriod.getStartDTG(),
-			//				newPeriod.getEndDTG());
+					// extend the slider
+					_slideManager.resetRange(newPeriod.getStartDTG(),
+							newPeriod.getEndDTG());
+					
+					// now the slider selector bar thingy
 					Display.getDefault().asyncExec(new Runnable()
 					{
 						public void run()
@@ -779,6 +785,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							// and our range selector - first the outer
 							// ranges
 							_dtgRangeSlider.updateOuterRanges(newPeriod);
+ 
+							// ok - we no longer reset the range limits on a data change,
+							// since it's proving inconvenient to have to reset the sliders
+							// after some data is dropped in.
 
 							// ok, now the user ranges...
 				//			_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
@@ -2632,33 +2642,45 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		TestCase.assertNotNull("check we have time provider", _myTemporalDataset);
 		TestCase.assertNotNull("check we have period to control",
 				_controllablePeriod);
+		
+		Object oldDtgFormat = _myStepperProperties.getPropertyValue(TimeControlProperties.DTG_FORMAT_ID);
+			
+		try
+		{
+			_myStepperProperties.setPropertyValue(
+					TimeControlProperties.DTG_FORMAT_ID, new Integer(4));
 
-		final HiResDate tDemanded = new HiResDate(0, 818748000000000L);
-		// note - time equates to: 120600:00
+			final HiResDate tDemanded = new HiResDate(0, 818748000000000L);
+			// note - time equates to: 120600:00
 
-		// ok, try stepping forward. get the current time
-		final HiResDate tNow = _myTemporalDataset.getTime();
+			// ok, try stepping forward. get the current time
+			final HiResDate tNow = _myTemporalDataset.getTime();
 
-		// step forward one
-		final Event ev = new Event();
-		_forwardButton.notifyListeners(SWT.Selection, ev);
+			// step forward one
+			final Event ev = new Event();
+			_forwardButton.notifyListeners(SWT.Selection, ev);
 
-		// find the new time
-		final HiResDate tNew = _myTemporalDataset.getTime();
+			// find the new time
+			final HiResDate tNew = _myTemporalDataset.getTime();
 
-		TestCase.assertNotSame("time has changed", "" + tNew.getMicros(),
+			TestCase.assertNotSame("time has changed", "" + tNew.getMicros(),
 				"" + tNow.getMicros());
 
-		// ok, go back to the demanded time (in case we loaded the plot with a
-		// different saved time)
-		_controllableTime.setTime(new Integer(111), tDemanded, true);
+			// ok, go back to the demanded time (in case we loaded the plot with a
+			// different saved time)
+			_controllableTime.setTime(new Integer(111), tDemanded, true);
 
-		// have a look at the date
-		final String timeStr = _timeLabel.getText();
+			// have a look at the date
+			final String timeStr = _timeLabel.getText();
 
-		// check it's what we're expecting
-		TestCase.assertEquals("time is correct", timeStr, "120600:00");
-
+			// check it's what we're expecting
+			TestCase.assertEquals("time is correct", timeStr, "120600:00");
+		
+		} finally
+		{
+			_myStepperProperties.setPropertyValue(
+					TimeControlProperties.DTG_FORMAT_ID, oldDtgFormat);
+		}
 	}
 
 	// /////////////////////////////////////////////////

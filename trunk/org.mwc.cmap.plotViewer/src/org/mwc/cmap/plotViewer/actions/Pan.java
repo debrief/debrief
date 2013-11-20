@@ -6,6 +6,7 @@ package org.mwc.cmap.plotViewer.actions;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
@@ -28,12 +29,6 @@ public class Pan extends CoreDragAction
 
 	public static class PanMode extends SWTChart.PlotMouseDragger
 	{
-
-		/**
-		 * the hand cursor we show when dragging
-		 * 
-		 */
-		Cursor _newCursor;
 
 		/**
 		 * the original area
@@ -106,9 +101,6 @@ public class Pan extends CoreDragAction
 		{
 
 			// and ditch our old one
-			_newCursor.dispose();
-			_newCursor = null;
-
 			// cool, sorted. create an action, so we can put it into the undo buffer.
 			final Action theAction = new PanAction(_theProjection, _originalArea, _lastArea);
 
@@ -132,11 +124,9 @@ public class Pan extends CoreDragAction
 			_lastArea = new WorldArea(_originalArea);
 			_lastLocation = null;
 
-			// create the new cursor
-			_newCursor = getDownCursor();
-
+			
 			// and assign it to the control
-			canvas.getCanvas().setCursor(_newCursor);
+			canvas.getCanvas().setCursor(getDownCursor());
 		}
 
 		/**
@@ -147,13 +137,7 @@ public class Pan extends CoreDragAction
 		public Cursor getDownCursor()
 		{
 			// ok, return the pan cursor
-			if ((_downCursor == null) || (_downCursor.isDisposed()))
-			{
-				_downCursor = new Cursor(Display.getDefault(), CorePlugin
-						.getImageDescriptor("icons/hand_fist.ico").getImageData(), 4, 2);
-			}
-
-			return _downCursor;
+			return CursorRegistry.getCursor(CursorRegistry.HAND_FIST);
 		}
 
 		/**
@@ -164,11 +148,7 @@ public class Pan extends CoreDragAction
 		public Cursor getNormalCursor()
 		{
 			// ok, return the normal cursor
-			if ((_normalCursor == null) || (_normalCursor.isDisposed()))
-				_normalCursor = new Cursor(Display.getDefault(), CorePlugin
-						.getImageDescriptor("icons/hand.ico").getImageData(), 4, 2);
-
-			return _normalCursor;
+			return CursorRegistry.getCursor(CursorRegistry.HAND);
 		}
 	}
 

@@ -28,7 +28,7 @@
       </affiliation>
     </author>
     <edition>Documentation for Debrief NG</edition>
-    <pubdate>Summer 2012</pubdate>
+    <pubdate>Winter 2013</pubdate>
     <abstract>
       <title>Contact details</title>
       <para>Should you wish to learn more about <application>Debrief</application> please contact
@@ -37,7 +37,7 @@
         <title>Debrief Project Sponsor</title>
         <para>
           <address>
-            <personname>Lt Cdr Bob Mannion</personname>
+            <personname>Lt Cdr Dave Whitehouse</personname>
             <personname>SO2 UW OA</personname>
             <otheraddr>Maritime Warfare Centre</otheraddr>
             <street>Marlborough Building, HMS Collingwood</street>
@@ -578,9 +578,9 @@
                     </imageobject>
                   </inlinemediaobject></para></entry>
 
-                <entry xml:id="project_sponsor"><para>Debrief
-                project sponsor. <address>
-<personname>Lt Cdr Bob Mannion RN</personname>
+                <entry xml:id="project_sponsor"><para>Debrief project sponsor.
+                    <address>
+<personname>Lt Cdr David Whitehouse RN</personname>
 <otheraddr>Maritime Warfare Centre</otheraddr>
 <street>Marlborough Building, HMS Collingwood</street>
 <city>Fareham, HANTS</city>
@@ -4621,6 +4621,10 @@ and so on....</programlisting></para>
           If the location is not specified in the properties file, the
           <filename>WMF</filename> image will be created in the
           <application>Debrief</application> installation directory.</para>
+          <para>Note: exporting vector plots via the clipboard is limited to MS Windows PCs.  But,
+            an equivalent capability allows you to export the vector plot inside an RTF wrapper via
+            the clipboard for pasteing into any Word Processor (on OSX or Linux).  The shortcut for
+            this is <guibutton>&lt;shift>&lt;control>&lt;c></guibutton>. </para>
 
           <para>Also, don't forget that time-variable graphs produced by the
           Track-Time toolbox (see <xref linkend="track_toolbox" />) can be exported
@@ -6203,7 +6207,7 @@ and so on....</programlisting></para>
           be. You'll make more detailed changes to the track location once the track is
           created.</para>
         <para>Next, you must select "Create Track Segment" from <application>Debrief</application>'s
-          Drawing Toolbar.<screenshot>
+          Drawing Toolbar, or the <guimenu>Drawing</guimenu> menu.<screenshot>
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/AddSegment.png" width="40%"/>

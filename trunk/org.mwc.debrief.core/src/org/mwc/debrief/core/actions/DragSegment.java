@@ -10,7 +10,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -18,11 +17,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.CursorRegistry;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.plotViewer.editors.chart.CoreTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
-import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.drag.CoreDragOperation;
 import org.mwc.debrief.core.actions.drag.RotateDragMode;
 import org.mwc.debrief.core.actions.drag.ShearDragMode;
@@ -225,8 +224,7 @@ public class DragSegment extends DragFeature
 	@Override
 	public Cursor getDragCursor()
 	{
-		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-				"icons/SelectFeatureHitDown.ico").getImageData(), 4, 2);
+		return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_DOWN);
 	}
 
 	@Override

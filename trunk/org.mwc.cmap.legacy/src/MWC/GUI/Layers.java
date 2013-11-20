@@ -256,6 +256,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	private final PropertyChangeListener _formatListener;
 
+	/**
+	 * handler for if the size (length) of a layer changes
+	 * 
+	 */
+	private final PropertyChangeListener _extendedListener;
+
 	// ////////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////////
@@ -265,7 +271,15 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public Layers()
 	{
-		_formatListener = new MyPropListener();
+		_formatListener = new ReformatListener();
+		_extendedListener = new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0)
+			{
+				fireExtended();
+			}
+		};
 
 		produceLists();
 	}
@@ -276,7 +290,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @author ian
 	 *
 	 */
-	private class MyPropListener implements PropertyChangeListener, Serializable
+	private class ReformatListener implements PropertyChangeListener, Serializable
 	{
 		/**
 		 * 
@@ -541,6 +555,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
 			pr.addPropertyChangeListener(SupportsPropertyListeners.FORMAT,
 					_formatListener);
+			pr.addPropertyChangeListener(SupportsPropertyListeners.EXTENDED,
+					_extendedListener);
 		}
 
 	}
@@ -627,6 +643,15 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
 			pr.removePropertyChangeListener(SupportsPropertyListeners.FORMAT,
 					_formatListener);
+			pr.removePropertyChangeListener(SupportsPropertyListeners.EXTENDED,
+					_extendedListener);
+		}
+		
+		// do we need to tell it that it's being removed?
+		if(theLayer instanceof NeedsToBeInformedOfRemove)
+		{
+			NeedsToBeInformedOfRemove rem = (NeedsToBeInformedOfRemove) theLayer;
+			rem.beingRemoved();
 		}
 
 		// and fire the modified event

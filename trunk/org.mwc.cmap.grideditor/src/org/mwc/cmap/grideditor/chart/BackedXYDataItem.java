@@ -20,7 +20,7 @@ public class BackedXYDataItem extends XYDataItem implements BackedChartItem {
 	}
 	
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public Object clone() {
 		//sic
 		return super.clone();
 	}

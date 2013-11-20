@@ -28,9 +28,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.contexts.IContextActivation;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
@@ -73,6 +76,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		IChartBasedEditor
 {
 
+	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
 	// //////////////////////////////
 	// member data
 	// //////////////////////////////
@@ -133,6 +137,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	protected PartMonitor _myPartMonitor;
 
 	protected GeoToolsHandler _myGeoHandler;
+	protected IContextActivation _myActivation;
 
 	// //////////////////////////////
 	// constructor
@@ -275,6 +280,54 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
+	private IPartListener partListener = new IPartListener()
+	{
+		
+		@Override
+		public void partOpened(IWorkbenchPart part)
+		{
+			activateContext(part);
+		}
+		
+		@Override
+		public void partDeactivated(IWorkbenchPart part)
+		{
+			deactivateContext(part);
+		}
+		
+		@Override
+		public void partClosed(IWorkbenchPart part)
+		{
+			deactivateContext(part);
+		}
+		
+		@Override
+		public void partBroughtToTop(IWorkbenchPart part)
+		{
+			activateContext(part);
+		}
+		
+		@Override
+		public void partActivated(IWorkbenchPart part)
+		{
+			activateContext(part);
+		}
+
+		private void activateContext(IWorkbenchPart part)
+		{
+			if (part == CorePlotEditor.this && _myActivation == null) {
+					_myActivation = getContextService().activateContext(CONTEXT_ID);
+			}
+		}
+		private void deactivateContext(IWorkbenchPart part)
+		{
+			if (part == CorePlotEditor.this && _myActivation != null) {
+					getContextService().deactivateContext(_myActivation);
+					_myActivation = null;
+			}
+		}
+	};
+	
 	public void dispose()
 	{
 		// ok, tell the chart to self-destruct (And dispose/release of any objects)
@@ -282,6 +335,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_myChart = null;
 
 		super.dispose();
+		
+		getSite().getPage().removePartListener(partListener);
 
 		// empty the part monitor
 		if (_myPartMonitor != null)
@@ -369,17 +424,25 @@ public abstract class CorePlotEditor extends EditorPart implements
 		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
 				_copyClipboardAction);
 
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
 		// listen out for us losing focus - so we can drop the selection
 		listenForMeLosingFocus();
 
 		// listen out for us gaining focus - so we can set the cursort tracker
 		listenForMeGainingFocus();
+	
+		getSite().getPage().addPartListener(partListener);
 	}
 
+	private IContextService getContextService() {
+		return (IContextService) getSite().getService(IContextService.class);
+	}
+	
 	private void listenForMeLosingFocus()
 	{
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
+		//_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+		//		.getPartService());
 		_myPartMonitor.addPartListener(CorePlotEditor.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
@@ -396,8 +459,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 	private void listenForMeGainingFocus()
 	{
 		final EditorPart linkToMe = this;
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
+		//_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+		//		.getPartService());
 		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{

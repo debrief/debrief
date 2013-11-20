@@ -4,6 +4,9 @@
 package org.mwc.cmap.plotViewer.actions;
 
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
@@ -98,6 +101,18 @@ abstract public class CoreDragAction extends CoreEditorAction
 		public void execute()
 		{
 			_editor.setDragMode(_newMode);
+			
+			IEditorReference[] editorReferences = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getEditorReferences();
+			for (IEditorReference editorReference:editorReferences) {
+				IEditorPart editorPart = editorReference.getEditor(false);
+				if (editorPart instanceof IChartBasedEditor) {
+					IChartBasedEditor editor = (IChartBasedEditor) editorPart;
+					SWTChart chart = editor.getChart();
+					if (chart != null) {
+						chart.setDragMode(_newMode);
+					}
+				}
+			}
 
 			// ok - store the mode in the core editor
 			PlotViewerPlugin.setCurrentMode(_newMode);

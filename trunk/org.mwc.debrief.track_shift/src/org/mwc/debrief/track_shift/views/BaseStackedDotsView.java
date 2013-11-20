@@ -51,7 +51,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
-import org.jfree.data.Range;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
@@ -124,12 +123,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * our listener for tracks being shifted...
 	 */
 	protected TrackShiftListener _myShiftListener;
-
-	/**
-	 * flag indicating whether we should override the y-axis to ensure that zero
-	 * is always in the centre
-	 */
-	private Action _centreYAxis;
 
 	/**
 	 * buttons for which plots to show
@@ -407,9 +400,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				// double-check our label is still in the right place
 				final double xVal = _linePlot.getRangeAxis().getLowerBound();
 				final double yVal = _linePlot.getDomainAxis().getUpperBound();
-				annot.setX(yVal);
-				annot.setY(xVal);
-
+				boolean annotChanged = false;
+				if (annot.getX() != yVal) {
+					annot.setX(yVal);
+					annotChanged = true;
+				}
+				if (annot.getY() != xVal) {
+					annot.setY(xVal);
+					annotChanged = true;
+				}
 				// and write the text
 				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
@@ -418,10 +417,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				final String dateVal = _df.format(newDate);
 				final String theMessage = " [" + dateVal + "," + numA + "]";
-				annot.setText(theMessage);
-
-				_linePlot.removeAnnotation(annot);
-				_linePlot.addAnnotation(annot);
+				if (!theMessage.equals(annot.getText())) {
+					annot.setText(theMessage);
+					annotChanged = true;
+				}
+				if (annotChanged) {
+					_linePlot.removeAnnotation(annot);
+					_linePlot.addAnnotation(annot);
+				}
 			}
 		});
 
@@ -516,7 +519,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	protected void fillLocalPullDown(final IMenuManager manager)
 	{
-		manager.add(_centreYAxis);
 		manager.add(_onlyVisible);
 		// and the help link
 		manager.add(new Separator());
@@ -553,22 +555,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_autoResize.setToolTipText("Keep plot sized to show all data");
 		_autoResize.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/fit_to_size.png"));
-
-		_centreYAxis = new Action("Center Y axis on origin", IAction.AS_CHECK_BOX)
-		{
-			@Override
-			public void run()
-			{
-				super.run();
-				// ok - redraw the plot we may have changed the axis centreing
-				updateStackedDots(false);
-			}
-		};
-		_centreYAxis.setText("Center Y Axis");
-		_centreYAxis.setChecked(true);
-		_centreYAxis.setToolTipText("Keep Y origin in centre of axis");
-		_centreYAxis.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/follow_selection.gif"));
 
 		_showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
 		{
@@ -796,20 +782,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// update the current datasets
 		updateData(updateDoublets);
-
-		// we will only centre the y-axis if the user hasn't performed a zoom
-		// operation
-		if (_centreYAxis.isChecked())
-		{
-			if (_showDotPlot.isChecked())
-			{
-				// do a quick fudge to make sure zero is in the centre
-				final Range rng = _dotPlot.getRangeAxis().getRange();
-				final double maxVal = Math.max(Math.abs(rng.getLowerBound()),
-						Math.abs(rng.getUpperBound()));
-				_dotPlot.getRangeAxis().setRange(-maxVal, maxVal);
-			}
-		}
 
 		// right, are we updating the range data?
 		if (_autoResize.isChecked())

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.mwc.debrief</groupId>
+  <artifactId>parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <tycho.version>0.18.0</tycho.version>
+    <tycho-extras.version>0.18.0</tycho-extras.version>
+
+    <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
+  </properties>
+
+  <modules>
+<!--
+    <module>org.mwc.asset.NetAsset2</module>
+    <module>org.mwc.asset.NetCore</module>
+    <module>org.mwc.asset.ScenarioController2</module>
+    <module>org.mwc.asset.ScenarioPlotter</module>
+    <module>org.mwc.asset.SensorMonitor</module>
+    <module>org.mwc.asset.VesselMonitor</module>
+    <module>org.mwc.asset.core</module>
+    <module>org.mwc.asset.core.feature</module>
+    <module>org.mwc.asset.help</module>
+    <module>org.mwc.asset.legacy</module>
+-->
+    <module>org.mwc.cmap.LiveDataMonitor</module>
+    <module>org.mwc.cmap.NarrativeViewer</module>
+    <module>org.mwc.cmap.TimeController</module>
+    <module>org.mwc.cmap.combined.feature</module>
+    <module>org.mwc.cmap.core</module>
+    <module>org.mwc.cmap.grideditor</module>
+    <module>org.mwc.cmap.gt2Plot</module>
+<!--    <module>org.mwc.cmap.installer</module> -->
+    <module>org.mwc.cmap.layer_manager</module>
+    <module>org.mwc.cmap.legacy</module>
+    <module>org.mwc.cmap.overview</module>
+    <module>org.mwc.cmap.plotViewer</module>
+    <module>org.mwc.cmap.tests</module>
+    <module>org.mwc.cmap.tote</module>
+    <module>org.mwc.cmap.xyplot</module>
+    <module>org.mwc.cmap.jfreechart</module>
+    <module>org.mwc.debrief.GNDManager</module>
+    <module>org.mwc.debrief.SensorFusion</module>
+    <module>org.mwc.debrief.TimeBar</module>
+    <module>org.mwc.debrief.combined.feature</module>
+    <module>org.mwc.debrief.core</module>
+    <module>org.mwc.debrief.data_feed</module>
+    <module>org.mwc.debrief.data_feed_dummy</module>
+    <module>org.mwc.debrief.help</module>
+    <module>org.mwc.debrief.legacy</module>
+    <module>org.mwc.debrief.multipath2</module>
+    <module>org.mwc.debrief.track_shift</module>
+    <module>org.mwc.gnd.demonstrator</module>
+    <module>org.qinetiq.data_feed</module>
+    <module>org.mwc.debrief.test2</module>
+    <module>org.mwc.debrief.targetplatforms</module>
+    <module>org.mwc.debrief.site</module>
+    <module>org.mwc.debrief.product</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>0.18.0</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>  
+         <groupId>org.eclipse.tycho</groupId>  
+         <artifactId>target-platform-configuration</artifactId>  
+         <version>${tycho.version}</version>  
+         <configuration>  
+         <target>  
+           <artifact>  
+             <groupId>org.mwc.debrief</groupId>  
+             <artifactId>eclipse38</artifactId>  
+             <version>0.0.1-SNAPSHOT</version>  
+           </artifact>  
+         </target>  
+          <environments>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86</arch>
+            </environment>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>macosx</os>
+              <ws>cocoa</ws>
+              <arch>x86_64</arch>
+            </environment>
+          </environments>
+         </configuration>  
+      </plugin>  
+      <plugin>
+	<groupId>org.eclipse.tycho</groupId>
+	<artifactId>tycho-surefire-plugin</artifactId>
+	<version>${tycho.version}</version>
+	<configuration>
+  	  <useUIHarness>true</useUIHarness>
+	  <useUIThread>true</useUIThread>
+	  <argLine>-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true</argLine>
+	<!-- https://docs.sonatype.org/display/TYCHO/How+to+run+SWTBot+tests+with+Tycho -->
+	<!-- set useUIThread=true for regular ui tests -->
+	<!-- set useUIThread=false for swtbot tests -->
+
+	  <product>org.eclipse.platform.ide</product>
+	  <application>org.eclipse.ui.ide.workbench</application>
+	  <dependencies>
+		<dependency>
+			<type>p2-installable-unit</type>
+			<artifactId>org.eclipse.platform</artifactId>
+			<version>0.0.0</version>
+		</dependency>
+	<!-- http://www.jmock.org/maven.html -->
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+	  </dependencies>
+	  <includes>
+		<include>**/AllTests.class</include>
+		<include>**/*AllTests*.class</include>
+		<include>**/*AllBotTests*.class</include>
+		<include>**/*TestSuite*.class</include>
+	  </includes>
+	</configuration>
+	</plugin>
+	<plugin>
+		<groupId>org.eclipse.tycho</groupId>
+		<artifactId>tycho-compiler-plugin</artifactId>
+		<version>${tycho.version}</version>
+		<configuration>
+			<encoding>UTF-8</encoding>
+		</configuration>
+	</plugin>
+	<plugin>
+		<groupId>org.eclipse.tycho</groupId>
+		<artifactId>tycho-source-plugin</artifactId>
+		<version>${tycho.version}</version>
+		<executions>
+			<execution>
+				<id>plugin-source</id>
+				<goals>
+				<goal>plugin-source</goal>
+				</goals>
+			</execution>
+		</executions>
+	</plugin>
+			
+    </plugins>
+  </build>
+  <profiles> 
+    <profile> 
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-surefire-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+	      <argLine>-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build> 
+    </profile> 
+  </profiles> 
+</project>

@@ -8,5 +8,14 @@
             id="org.mwc.cmap.plotViewer.CMAP"
             name="CMAP"/>
    </extension>
+   
+   <extension
+       point="org.eclipse.ui.contexts">
+       <context
+          id="org.mwc.cmap.plotEditorContext"
+          name="Debrief Plot Editor Context"
+          parentId="org.eclipse.ui.contexts.window">
+       </context>
+    </extension>
 
 </plugin>

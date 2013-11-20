@@ -4,8 +4,10 @@
 package org.mwc.cmap.core.property_support;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.jface.preference.ColorSelector;
@@ -28,7 +30,11 @@ public class ColorHelper extends EditorHelper
 
 	private final static java.awt.Color OFF_WHITE = new Color(255, 255, 254);
 
+	protected static final int IMAGES_SIZE = 200;
+
 	private final CustomColorsStore _customColorsStore = new CustomColorsStore();
+	
+	private final Map<RGB, Image> rgbImagesMap = new HashMap<RGB, Image>();
 
 	public ColorHelper(final Control parentControl)
 	{
@@ -193,9 +199,23 @@ public class ColorHelper extends EditorHelper
 			{
 				Image res = null;
 				final RGB rgb = (RGB) element;
+				Image image = rgbImagesMap.get(rgb);
+				if (image != null && !image.isDisposed()) {
+					return image;
+				}
+				if (rgbImagesMap.size() > IMAGES_SIZE) {
+					Collection<Image> images = rgbImagesMap.values();
+					for (Image img:images) {
+						if (img!=null && !img.isDisposed()) {
+							img.dispose();
+						}
+					}
+					rgbImagesMap.clear();
+				}
 				final ImageData id = createColorImage(rgb);
 				final ImageData mask = id.getTransparencyMask();
 				res = new Image(Display.getCurrent(), id, mask);
+				rgbImagesMap.put(rgb, res);
 				return res;
 			}
 

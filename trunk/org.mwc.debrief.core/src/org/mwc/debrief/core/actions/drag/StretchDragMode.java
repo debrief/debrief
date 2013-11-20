@@ -1,8 +1,7 @@
 package org.mwc.debrief.core.actions.drag;
 
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.widgets.Display;
-import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.cmap.core.CursorRegistry;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -62,12 +61,8 @@ public class StretchDragMode extends RotateDragMode
 		}
 	
 		public Cursor getHotspotCursor()
-		{
-			if (_hotspotCursor == null)
-				_hotspotCursor =  new Cursor(Display.getDefault(), DebriefPlugin
-					.getImageDescriptor("icons/SelectFeatureHitStretch.ico").getImageData(), 4,
-					2);	
-			return _hotspotCursor;
+		{			
+			return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_STRETCH);
 		}
 	}
 	

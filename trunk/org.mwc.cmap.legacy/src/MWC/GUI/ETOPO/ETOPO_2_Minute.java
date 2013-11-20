@@ -649,8 +649,9 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 			ed = null;
 		}
 
+		// TODO FIX-TEST
 		// check data
-		public void testFindData()
+		public void NtestFindData()
 		{
 
 		//	String thefile = THE_PATH;

@@ -30,10 +30,12 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -225,6 +227,26 @@ public class XYPlotView extends ViewPart
 	 * somebody to listen to the time changes
 	 */
 	private PropertyChangeListener _timeListener;
+	
+	private IPartListener editorListener = new IPartListener()
+	{
+		@Override
+		public void partOpened(IWorkbenchPart part) {}
+		@Override
+		public void partDeactivated(IWorkbenchPart part) {}
+		@Override
+		public void partBroughtToTop(IWorkbenchPart part) {}
+		@Override
+		public void partActivated(IWorkbenchPart part) {}
+		
+		@Override
+		public void partClosed(IWorkbenchPart part)
+		{
+			if (part == editor) {
+				getSite().getPage().hideView(XYPlotView.this);
+			}
+		}
+	};
 
 	/**
 	 * helper - to let the user edit us
@@ -254,6 +276,8 @@ public class XYPlotView extends ViewPart
 	 * 
 	 */
 	protected DataListener _modifiedListener;
+
+	private IEditorPart editor;
 
 	/**
 	 * The constructor.
@@ -354,9 +378,11 @@ public class XYPlotView extends ViewPart
 			@Override
 			public void dataReformatted(final Layers theData, final Layer changedLayer)
 			{
+				regenerateData();
 			}
 		};
 
+		getSite().getWorkbenchWindow().getPartService().addPartListener(editorListener);
 	}
 
 	/**
@@ -599,8 +625,19 @@ public class XYPlotView extends ViewPart
 				// double-check our label is still in the right place
 				final double xVal = _thePlot.getRangeAxis().getUpperBound();
 				final double yVal = _thePlot.getDomainAxis().getLowerBound();
-				annot.setX(yVal);
-				annot.setY(xVal);
+				
+				boolean annotChanged = false;
+				if (annot.getX() != yVal)
+				{
+					annot.setX(yVal);
+					annotChanged = true;
+				}
+				if (annot.getY() != xVal)
+				{
+					annot.setY(xVal);
+					annotChanged = true;
+				}
+
 
 				// and write the text
 				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
@@ -610,12 +647,19 @@ public class XYPlotView extends ViewPart
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				final String dateVal = _df.format(newDate);
 				final String theMessage = " [" + dateVal + "," + numA + "]";
-				annot.setText(theMessage);
+				if (!theMessage.equals(annot.getText()))
+				{
+					annot.setText(theMessage);
+					annotChanged = true;
+				}
 
 				// aah, now we have to add and then remove the annotation in order
 				// for the new text value to be displayed. Watch and learn...
-				_thePlot.removeAnnotation(annot);
-				_thePlot.addAnnotation(annot);
+				if (annotChanged)
+				{
+					_thePlot.removeAnnotation(annot);
+					_thePlot.addAnnotation(annot);
+				}
 
 			}
 		});
@@ -637,7 +681,7 @@ public class XYPlotView extends ViewPart
 		final IWorkbench wb = PlatformUI.getWorkbench();
 		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		final IWorkbenchPage page = win.getActivePage();
-		IEditorPart editor = null;
+		editor = null;
 
 		// the page might not yet be open...
 		if (page != null)
@@ -973,10 +1017,13 @@ public class XYPlotView extends ViewPart
 				if (doListen)
 				{
 					layers.addDataModifiedListener(_modifiedListener);
+					layers.addDataReformattedListener(_modifiedListener);
 					layers.addDataExtendedListener(_modifiedListener);
+					regenerateData();
 				}
 				else
 				{
+					layers.removeDataReformattedListener(_modifiedListener);
 					layers.removeDataExtendedListener(_modifiedListener);
 					layers.removeDataModifiedListener(_modifiedListener);
 				}
@@ -991,6 +1038,10 @@ public class XYPlotView extends ViewPart
 	{
 		super.dispose();
 		
+		if (editorListener != null) {
+			getSite().getWorkbenchWindow().getPartService().removePartListener(editorListener);
+			editorListener = null;
+		}
 		// closing, ditch the listenesr
 		ditchListeners();
 	}
@@ -1003,6 +1054,7 @@ public class XYPlotView extends ViewPart
 			if (layers != null)
 			{
 				layers.removeDataExtendedListener(_modifiedListener);
+				layers.removeDataReformattedListener(_modifiedListener);
 				layers.removeDataModifiedListener(_modifiedListener);
 			}
 		}

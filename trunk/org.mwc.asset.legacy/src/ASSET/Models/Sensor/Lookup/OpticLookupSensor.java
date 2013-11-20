@@ -692,7 +692,7 @@ public class OpticLookupSensor extends LookupSensor
 		public void testRead()
 		{
 			String fileName = "lookup_test_scenario.xml";
-			fileName = "src/ASSET/Models/Sensor/Lookup/" + fileName;
+			fileName = "../org.mwc.asset.legacy/src/ASSET/Models/Sensor/Lookup/" + fileName;
 
 			CoreScenario scen = new CoreScenario();
 			try

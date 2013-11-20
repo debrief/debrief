@@ -1,18 +1,45 @@
 package org.mwc.cmap.tests.ui;
 
-import junit.framework.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import junit.framework.TestCase;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Scale;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.TimeController.views.TimeController;
+import org.mwc.cmap.tests.Activator;
+import org.osgi.framework.Bundle;
 
 public class TimeControllerTests extends TestCase
 {
 
 	private static final String VIEW_ID = "org.mwc.cmap.TimeController.views.TimeController";
 	private TimeController _myController;
+	private IProject project;
 	
 	public TimeControllerTests(final String testName)
 	{
@@ -33,7 +60,9 @@ public class TimeControllerTests extends TestCase
      super.setUp();
 
      // initialize the test fixture for each test that is run
-     waitForJobs();
+     project = createSampleProject();
+
+     openSampleFile(project);
      _myController =
         (TimeController) PlatformUI
            .getWorkbench()
@@ -44,7 +73,7 @@ public class TimeControllerTests extends TestCase
      // Delay for 3 seconds so that 
      // the favorites view can be seen
      waitForJobs();
-     delay(3000);
+     //delay(3000);
   }
 
   /**
@@ -54,17 +83,25 @@ public class TimeControllerTests extends TestCase
    *
    * @see TestCase#tearDown()
    */
-  protected void tearDown() throws Exception {
-     super.tearDown();
+	protected void tearDown() throws Exception
+	{
+		super.tearDown();
 
-     // Dispose of the test fixture
-     waitForJobs();
-     PlatformUI
-        .getWorkbench()
-        .getActiveWorkbenchWindow()
-        .getActivePage()
-        .hideView(_myController);
-  }
+		// Dispose of the test fixture
+		waitForJobs();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.getActivePage();
+		page.closeAllEditors(false);
+		waitForJobs();
+		page.hideView(_myController);
+		try
+		{
+			project.delete(true, true, null);
+		} catch (Exception e)
+		{
+			Activator.log(e);
+		}
+	}
 
   /**
    * Run the view test
@@ -92,7 +129,7 @@ public class TimeControllerTests extends TestCase
    * 
    * @param waitTimeMillis the number of milliseconds 
    */
-  protected void delay(final long waitTimeMillis) {
+  protected static void delay(final long waitTimeMillis) {
      final Display display = Display.getCurrent();
 
      // If this is the user interface thread, then process input
@@ -121,12 +158,149 @@ public class TimeControllerTests extends TestCase
   /**
    * Wait until all background tasks are complete
    */
-  @SuppressWarnings("deprecation")
-	public void waitForJobs() {
-     while (Platform.getJobManager().currentJob() != null)
-        delay(1000);
-  }	
-  
-  
+	public void waitForJobs()
+	{
+		waitForJobs(60 * 60 * 1000);
+	}
+
+	public static void waitForJobs(long maxIdle)
+	{
+		long start = System.currentTimeMillis();
+		while (!Job.getJobManager().isIdle())
+		{
+			delay(1000);
+			if ((System.currentTimeMillis() - start) > maxIdle)
+			{
+				Job[] jobs = Job.getJobManager().find(null);
+				StringBuffer buffer = new StringBuffer();
+				for (Job job : jobs)
+				{
+					if (job.getThread() != null)
+					{
+						buffer.append(job.getName()).append(" (").append(job.getClass())
+								.append(")\n");
+					}
+				}
+				if (buffer.length() > 0)
+					throw new RuntimeException("Invalid jobs found:" + buffer.toString()); //$NON-NLS-1$
+			}
+		}
+	}
+
+	public static boolean extract(File file, File destination,
+			IProgressMonitor monitor)
+	{
+		ZipFile zipFile = null;
+		destination.mkdirs();
+		try
+		{
+			zipFile = new ZipFile(file);
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			while (entries.hasMoreElements())
+			{
+				if (monitor.isCanceled())
+				{
+					return false;
+				}
+				ZipEntry entry = (ZipEntry) entries.nextElement();
+				if (entry.isDirectory())
+				{
+					monitor.setTaskName("Extracting " + entry.getName());
+					File dir = new File(destination, entry.getName());
+					dir.mkdirs();
+					continue;
+				}
+				monitor.setTaskName("Extracting " + entry.getName());
+				File entryFile = new File(destination, entry.getName());
+				entryFile.getParentFile().mkdirs();
+				InputStream input = null;
+				OutputStream output = null;
+				try
+				{
+					input = zipFile.getInputStream(entry);
+					output = new FileOutputStream(entryFile);
+					copyFile(input, output);
+				} finally
+				{
+					if (input != null)
+					{
+						try
+						{
+							input.close();
+						} catch (Exception e)
+						{
+						}
+					}
+					if (output != null)
+					{
+						try
+						{
+							output.close();
+						} catch (Exception e)
+						{
+						}
+					}
+				}
+			}
+		} catch (IOException e)
+		{
+			Activator.log(e);
+			return false;
+		} finally
+		{
+			if (zipFile != null)
+			{
+				try
+				{
+					zipFile.close();
+				} catch (IOException e)
+				{
+					// ignore
+				}
+			}
+		}
+		return true;
+	}
+
+	public static void copyFile(InputStream in, OutputStream out)
+			throws IOException
+	{
+		byte[] buffer = new byte[16 * 1024];
+		int len;
+		while ((len = in.read(buffer)) >= 0)
+		{
+			out.write(buffer, 0, len);
+		}
+	}  	
+
+	private void openSampleFile(IProject project) throws PartInitException
+	{
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.getActivePage();
+		IFile sample = project.getFile("/sample.xml");
+		assertTrue(sample.exists());
+		IDE.openEditor(page, sample);
+	}
+
+	private IProject createSampleProject() throws IOException, CoreException
+	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		String projectName = "cmapProject";
+		IProjectDescription description = workspace
+				.newProjectDescription(projectName);
+		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+		String zipLocation = FileLocator.resolve(
+				bundle.getEntry("projects/cmapProject.zip")).getFile();
+		File file = new File(zipLocation);
+		String dest = Platform.getConfigurationLocation().getURL().getFile();
+		File destination = new File(dest);
+		extract(file, destination, new NullProgressMonitor());
+		description.setName(projectName);
+		description.setLocation(new Path(dest).append(projectName));
+		IProject project = workspace.getRoot().getProject(projectName);
+		project.create(description, null);
+		project.open(null);
+		return project;
+	}
 
 }

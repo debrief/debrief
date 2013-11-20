@@ -27,7 +27,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
-		topLeft.addView(CorePlugin.TIME_BAR);
+		topLeft.addPlaceholder(CorePlugin.TIME_BAR);
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
@@ -87,7 +87,9 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
 		
 		// ok - make sure the debrief action sets are visible
-		layout.addActionSet("org.mwc.debrief.core");
+		// The actionSets ext point has been moved to commands/menus
+		// See https://www.assembla.com/spaces/Debrief/tickets/517
+		// layout.addActionSet("org.mwc.debrief.core");
 	}
 
 	

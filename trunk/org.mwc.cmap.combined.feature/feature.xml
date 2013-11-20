@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.combined.feature"
       label="%featureName"
-      version="1.0.203"
+      version="1.0.207"
       provider-name="MWC"
       plugin="org.mwc.cmap.core">
 
@@ -271,12 +271,6 @@ Library.
          version="0.0.0"/>
 
    <plugin
-         id="org.junit"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.mwc.cmap.LiveDataMonitor"
          download-size="0"
          install-size="0"
@@ -285,6 +279,13 @@ Library.
 
    <plugin
          id="org.mwc.cmap.gt2Plot"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.cmap.jfreechart"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -1,8 +1,7 @@
 package org.mwc.debrief.core.actions.drag;
 
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.widgets.Display;
-import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.cmap.core.CursorRegistry;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -20,8 +19,7 @@ public class ShearDragMode extends RotateDragMode
 	{
 
 		private WorldLocation _lastLoc;
-		private Cursor _hotspotCursor;
-
+		
 		public ShearOperation(final WorldLocation cursorLoc, final WorldLocation origin,
 				final CoreTMASegment segment, final TrackWrapper parentTrack, final Layers theLayers)
 		{
@@ -55,11 +53,7 @@ public class ShearDragMode extends RotateDragMode
 
 		public Cursor getHotspotCursor()
 		{
-			if(_hotspotCursor == null)
-				_hotspotCursor =  new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-					"icons/SelectFeatureHitShear.ico").getImageData(), 4, 2);
-			
-			return _hotspotCursor;
+			return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_SHEAR);
 		}
 	}
 

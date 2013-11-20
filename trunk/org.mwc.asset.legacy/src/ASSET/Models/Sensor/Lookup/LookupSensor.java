@@ -1992,7 +1992,7 @@ public abstract class LookupSensor extends CoreSensor
 			CoreScenario cs = new CoreScenario();
 			try
 			{
-				String fName = "../org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Samples/legacy/lookup_tutorial_scenario.xml";
+				String fName = "../org.mwc.asset.core.feature/root_installs/AssetData/Samples/legacy/lookup_tutorial_scenario.xml";
 				File tFile = new File(fName);
 				assertTrue("sceanrio not found", tFile.exists());
 				java.io.FileInputStream fis = new java.io.FileInputStream(fName);

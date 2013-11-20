@@ -5,11 +5,15 @@
 
 package MWC.Algorithms.Projections;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
+import junit.framework.TestCase;
+
 import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -122,7 +126,6 @@ public class FlatProjection extends PlainProjection
 
 	public void offsetOrigin(final boolean updateDataArea)
 	{
-
 		// ensure there's a valid (minimum) value
 		if (_scaleVal < 0.0000002)
 			_scaleVal = 0.0000002;
@@ -154,12 +157,12 @@ public class FlatProjection extends PlainProjection
 			{
 				// work out the new top left
 				final WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
-						.getLat() + edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
+								.getLat() + edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
 
 				// and now the new bottom right
 				final WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
-						.getLat() - edgeY,
-						getDataArea().getBottomRight().getLong() + edgeX, 0);
+								.getLat() - edgeY,
+								getDataArea().getBottomRight().getLong() + edgeX, 0);
 
 				// and update the data-area - note we call the parent, not the one in
 				// this class,
@@ -428,5 +431,120 @@ public class FlatProjection extends PlainProjection
 			// do nothing, since we don't have any data
 		}
 	}
+
+
+	@Override
+	public void zoom(final double value, final WorldArea area)
+	{
+		// TODO: fix the algorithm so that the test would pass
+		if (getDataArea() == null || getScreenArea() == null)
+		{
+			return;
+		}
+
+		// only zoom out if we are not already looking at the full plot
+		if ((getDataArea().getWidth() < 360) || (getDataArea().getHeight() < 180))
+		{
+
+			if (value == 0)
+			{
+				// so, we are doing a fit to window, make it so
+
+				// find the width and height of the data
+				// we've got to calculate the new scale
+				double thisBorder = getDataBorder();
+
+				// find the x scale factor
+				double dx = (getDataArea().getWidth() * thisBorder)
+							/ getScreenArea().width;
+				// find the y scale factor
+				double dy = (getDataArea().getHeight() * thisBorder)
+							/ getScreenArea().height;
+
+				// find the maximum of these
+				_scaleVal = Math.max(dx, dy);
+
+				// now offset the origin (but sizne we're doing a FitToWin, don't
+				// update the data area
+				offsetOrigin(false);
+
+			}
+			else
+			{
+				_scaleVal = _scaleVal * value;
+
+				final WorldLocation actualCenter = getDataArea().getCentre();
+				final WorldLocation desiredCenter = area.getCentre();
+				final double deltaX = actualCenter.getLat() - desiredCenter.getLat();
+				final double deltaY = actualCenter.getLong() - desiredCenter.getLong();
+
+				// we've been provided with a zoom factor, which will change the data
+			    // area covered - allow the offsetOrigin to update the data area
+				offsetOrigin(true);
+
+				final WorldArea newArea = super.getDataArea();
+				final WorldLocation newTL = new WorldLocation(
+						newArea.getTopLeft().getLat() + deltaX*_scaleVal,
+						newArea.getTopLeft().getLong() + deltaY*_scaleVal, 0);
+				final WorldLocation newBR = new WorldLocation(
+						newArea.getBottomRight().getLat() + deltaX*_scaleVal,
+						newArea.getBottomRight().getLong() + deltaY*_scaleVal, 0);
+				super.setDataArea(new WorldArea(newTL, newBR));
+			}
+
+		}
+
+		// and fire the zoom event
+		firePropertyChange(PlainProjection.ZOOM_EVENT, null, this);
+
+	}
+
+	public static class TestFlatProj extends TestCase
+	{
+
+		FlatProjection proj;
+
+		public void setUp()
+		{
+			proj = new FlatProjection();
+			WorldLocation.setModel(new CompletelyFlatEarth());
+
+			final WorldLocation oldTopLeft = new WorldLocation(0, 0, 0);
+			final WorldLocation oldBottomRight = new WorldLocation(10, 10, 0);
+			final WorldArea oldArea = new WorldArea(oldTopLeft, oldBottomRight);
+			proj.setDataArea(oldArea);
+			proj.setScreenArea(new Dimension(10, 10));
+		}
+
+		public void testZoomAreaTopLeftCorner()
+		{
+			final WorldLocation topLeft = new WorldLocation(0, 0, 0);
+			final WorldLocation bottomRight = new WorldLocation(5, 5, 0);
+			final WorldArea area = new WorldArea(topLeft, bottomRight);
+			// after 'normalization' in WorldArea constructor
+			// topLeft is 5 (lat), 0 (lon)
+			// bottomRight is 0 (lat), 5 (lon)
+
+			proj.setScaleVal(1);
+			proj.zoom(2, area);
+
+			assertEquals(new WorldLocation(20, 0, 0), proj.getDataArea().getTopLeft());
+			assertEquals(new WorldLocation(0, 20, 0), proj.getDataArea().getBottomRight());
+		}
+
+		public void testZoomAreaBottomRightCorner()
+		{
+			final WorldLocation topLeft = new WorldLocation(5, 5, 0);
+			final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
+			final WorldArea area = new WorldArea(topLeft, bottomRight);
+
+			proj.setScaleVal(1);
+			proj.zoom(2, area);
+
+			assertEquals(new WorldLocation(10, -10, 0), proj.getDataArea().getTopLeft());
+			assertEquals(new WorldLocation(-10, 10, 0), proj.getDataArea().getBottomRight());
+		}
+	}
+
 
 }
