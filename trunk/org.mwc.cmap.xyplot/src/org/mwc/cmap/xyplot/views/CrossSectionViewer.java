@@ -2,18 +2,13 @@ package org.mwc.cmap.xyplot.views;
 
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
@@ -29,15 +24,11 @@ import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
 
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 
 
 public class CrossSectionViewer
@@ -66,8 +57,6 @@ public class CrossSectionViewer
 	 */
 	private HiResDate _currentTime = null;
 	
-	private DateFormat _dateFormat = new SimpleDateFormat("dd-mm-yyyy HH:mm:ss");
-	
 	/**
 	 * the chart marker
 	 */
@@ -83,8 +72,6 @@ public class CrossSectionViewer
 	 */
 	private static interface PLOT_ATTRIBUTES
 	{
-		final String DATA = "XYPlot_Data";
-		final String TIME = "Current_Time";
 		final String TIME_PERIOD = "Time_Period";
 		final String IS_SNAIL = "Is_Snail";
 		final String ID = "Plot_Id";
@@ -253,86 +240,23 @@ public class CrossSectionViewer
 		memento.putString(PLOT_ATTRIBUTES.ID, _plotId);
 		final boolean is_snail = isSnail();
 		memento.putBoolean(PLOT_ATTRIBUTES.IS_SNAIL, is_snail);	
-		memento.putFloat(PLOT_ATTRIBUTES.TIME_PERIOD, (float)_timePeriod);
-	
-		if (_currentTime != null)
-			memento.putString(PLOT_ATTRIBUTES.TIME, 
-				_dateFormat.format(_currentTime.getDate()));
-		
-		final XStream xs = new XStream(new DomDriver());
-		String str = xs.toXML(_dataset);
-		memento.putString(PLOT_ATTRIBUTES.DATA, str);
-		
-		if (is_snail)
-		{
-			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
-			{
-				Paint color = _snailRenderer.getSeriesPaint(i);
-				saveColor(memento, i, (Color) color);
-			}
-		}
-		else
-		{
-			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
-			{
-				Paint color = _discreteRenderer.getSeriesPaint(i);
-				saveColor(memento, i, (Color) color);
-			}
-		}
-	}
-	
-	private void saveColor(final IMemento memento, final int series, final Color color)
-	{
-		memento.putInteger("SERIES_" + series + "_COLOR", color.getRGB());
+		memento.putFloat(PLOT_ATTRIBUTES.TIME_PERIOD, (float)_timePeriod);		
 	}
 	
 	public void restoreState(final IMemento memento)
 	{
-		_plotId = memento.getString(PLOT_ATTRIBUTES.ID);
-		
-		final XStream xs = new XStream(new DomDriver());
-		final String dataStr = memento.getString(PLOT_ATTRIBUTES.DATA);
-
-		if (dataStr == null)
-			return;
-		
-		_dataset = (XYSeriesCollection) xs.fromXML(dataStr);
+		_plotId = memento.getString(PLOT_ATTRIBUTES.ID);		
 		
 		final Boolean is_snail = memento.getBoolean(PLOT_ATTRIBUTES.IS_SNAIL);
 		if (is_snail)
-		{
-			
-			_timePeriod = memento.getFloat(PLOT_ATTRIBUTES.TIME_PERIOD).longValue();
-			
-			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
-			{
-				final int RGB = memento.getInteger("SERIES_" + i + "_COLOR");
-				setSnailRenderer(i, new Color(RGB));
-			}
-			_chart.getXYPlot().setRenderer(_snailRenderer);
+		{			
+			_timePeriod = memento.getFloat(PLOT_ATTRIBUTES.TIME_PERIOD).longValue();			
 		}
 		else
 		{
-			for (int i = 0; i < _dataset.getSeriesCount(); i++) 
-			{
-				final int RGB = memento.getInteger("SERIES_" + i + "_COLOR");
-				setDiscreteRenderer(i, new Color(RGB));
-			}
-			_chart.getXYPlot().setRenderer(_discreteRenderer);
+			_timePeriod = 0;
 		}
-		_chart.getXYPlot().setDataset(_dataset);
-		
-		final String timeStr = memento.getString(PLOT_ATTRIBUTES.TIME);
-		
-		try 
-		{
-			if (timeStr != null)
-				_currentTime = new HiResDate(_dateFormat.parse(timeStr));
-		} catch (ParseException e) 
-		{
-			CorePlugin.logError(Status.ERROR, 
-					"Failed to read time in saved XY Plot data", e);
-		}
+			
 	}
 	
 	protected long getPeriod()
