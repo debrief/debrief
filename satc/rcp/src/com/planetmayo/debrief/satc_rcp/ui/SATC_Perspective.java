@@ -38,18 +38,6 @@ public class SATC_Perspective implements IPerspectiveFactory {
 		final IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.TOP, 0.4f, SPATIAL_VIEW);
 		topRight.addView(STATES_VIEW);
 		topRight.addView(IPageLayout.ID_PROP_SHEET);
-
-		
-		// make all of teh views closeable
-		layout.getViewLayout(SPATIAL_VIEW).setCloseable(true);
-		layout.getViewLayout(MAINTAIN_VIEW).setCloseable(true);
-		layout.getViewLayout(HARNESS_VIEW).setCloseable(true);
-		layout.getViewLayout(STATES_VIEW).setCloseable(true);
-
-		layout.getViewLayout(SPATIAL_VIEW).setMoveable(true);
-		layout.getViewLayout(MAINTAIN_VIEW).setMoveable(true);
-		layout.getViewLayout(HARNESS_VIEW).setMoveable(true);
-		layout.getViewLayout(STATES_VIEW).setMoveable(true);
 		
 		// ok - try to show the Debrief shotrcuts (will fail in pure SATC)
 		layout.addActionSet("org.mwc.debrief.core");		
