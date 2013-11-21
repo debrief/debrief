@@ -34,6 +34,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -90,28 +91,51 @@ public class CreateSolutionFromSensorData implements
 					validCuts.add((SensorContactWrapper) cuts.nextElement());
 				}
 			}
-			else if (thisItem instanceof ContributionWrapper)
+			else if ((thisItem instanceof ContributionWrapper)
+					|| (thisItem instanceof SATC_Solution))
 			{
 				if (subjects.length == 1)
 				{
-					ContributionWrapper cw = (ContributionWrapper) thisItem;
-					BaseContribution theCont = cw.getContribution();
-					String verb1 = "";
+					BaseTimePeriod period = null;
 
-					SATC_Solution solution = (SATC_Solution) parentLayers[0];
-					String actionTitle = "Add new contribution";
+					if (thisItem instanceof ContributionWrapper)
+					{
+						ContributionWrapper cw = (ContributionWrapper) thisItem;
+						BaseContribution theCont = cw.getContribution();
+						period = new TimePeriod.BaseTimePeriod(new HiResDate(
+								theCont.getStartDate()), new HiResDate(theCont.getFinishDate()));
 
-					parent.add(new DoIt(verb1 + "Speed Forecast for period ["
-							+ theCont.getName() + "]", new SpeedForecastContributionFromCuts(
-							solution, actionTitle, theLayers, theCont)));
-					parent.add(new DoIt(verb1 + "Course Forecast for period ["
-							+ theCont.getName() + "]",
-							new CourseForecastContributionFromCuts(solution, actionTitle,
-									theLayers, theCont)));
-					parent.add(new DoIt(verb1 + "Straight Leg for period ["
-							+ theCont.getName() + "]",
-							new StraightLegForecastContributionFromCuts(solution,
-									actionTitle, theLayers, theCont)));
+					}
+					else
+					{
+						SATC_Solution solution = (SATC_Solution) thisItem;
+
+						if (solution.getSolver().getProblemSpace().getStartDate() != null)
+							period = new TimePeriod.BaseTimePeriod(solution.getStartDTG(),
+									solution.getEndDTG());
+					}
+
+					// did it work?
+					if (period != null)
+					{
+						parent.add(new Separator());
+						
+						SATC_Solution solution = (SATC_Solution) parentLayers[0];
+						String actionTitle = "Add new contribution";
+
+						parent.add(new DoIt("Add Speed Forecast for period covered by ["
+								+ thisItem.getName() + "]",
+								new SpeedForecastContributionFromCuts(solution, actionTitle,
+										theLayers, period)));
+						parent.add(new DoIt("Add Course Forecast for period covered by ["
+								+ thisItem.getName() + "]",
+								new CourseForecastContributionFromCuts(solution, actionTitle,
+										theLayers, period)));
+						parent.add(new DoIt("Add Straight Leg for period covered by ["
+								+ thisItem.getName() + "]",
+								new StraightLegForecastContributionFromCuts(solution,
+										actionTitle, theLayers, period)));
+					}
 				}
 			}
 		}
@@ -146,13 +170,12 @@ public class CreateSolutionFromSensorData implements
 				}
 			}
 
-			// and the new solution
-			MenuManager thisD = new MenuManager("Create new solution");
-			thisMenu.add(thisD);
-
-			// add the child items
-			addItemsTo(null, thisD, validCuts, title, theLayers, "Using ");
-
+			DoIt wizardItem = new DoIt("Create new scenario from these cuts",
+					new BearingMeasurementContributionFromCuts(null, title, theLayers,
+							validCuts));
+			wizardItem.setImageDescriptor(SATC_Interface_Activator
+					.getImageDescriptor("icons/document_new.png"));
+			thisMenu.add(wizardItem);
 		}
 	}
 
@@ -164,12 +187,13 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period covering "
-				+ title, new StraightLegWizardFromCuts(solution, actionTitle, layers,
+		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period [" + title
+				+ "]", new StraightLegWizardFromCuts(solution, actionTitle, layers,
 				validItems));
 		wizardItem.setImageDescriptor(SATC_Interface_Activator
 				.getImageDescriptor("icons/wizard.png"));
 		parent.add(wizardItem);
+		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
 						layers, validItems)));
@@ -308,9 +332,9 @@ public class CreateSolutionFromSensorData implements
 		}
 
 		public SpeedForecastContributionFromCuts(SATC_Solution existingSolution,
-				String title, Layers theLayers, BaseContribution oldCont)
+				String title, Layers theLayers, TimePeriod period)
 		{
-			super(existingSolution, title, theLayers, oldCont);
+			super(existingSolution, title, theLayers, period);
 		}
 
 		@Override
@@ -332,9 +356,9 @@ public class CreateSolutionFromSensorData implements
 		}
 
 		public CourseForecastContributionFromCuts(SATC_Solution existingSolution,
-				String title, Layers theLayers, BaseContribution oldCont)
+				String title, Layers theLayers, TimePeriod period)
 		{
-			super(existingSolution, title, theLayers, oldCont);
+			super(existingSolution, title, theLayers, period);
 		}
 
 		@Override
@@ -454,9 +478,9 @@ public class CreateSolutionFromSensorData implements
 
 		public StraightLegForecastContributionFromCuts(
 				SATC_Solution existingSolution, String title, Layers theLayers,
-				BaseContribution oldCont)
+				TimePeriod period)
 		{
-			super(existingSolution, title, theLayers, oldCont);
+			super(existingSolution, title, theLayers, period);
 		}
 
 		@Override
@@ -480,11 +504,9 @@ public class CreateSolutionFromSensorData implements
 		}
 
 		public ForecastContributionFromCuts(SATC_Solution existingSolution,
-				String title, Layers theLayers, BaseContribution oldCont)
+				String title, Layers theLayers, TimePeriod timePeriod)
 		{
-			super(existingSolution, title, theLayers, new TimePeriod.BaseTimePeriod(
-					new HiResDate(oldCont.getStartDate()), new HiResDate(
-							oldCont.getFinishDate())));
+			super(existingSolution, title, theLayers, timePeriod);
 		}
 
 		protected final BaseContribution createContribution(String contName)
