@@ -1,6 +1,7 @@
 package org.mwc.debrief.satc_interface.data.wrappers;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GenericData.HiResDate;
@@ -9,7 +10,7 @@ import MWC.GenericData.WorldLocation;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
-public class ContributionWrapper implements Plottable
+public class ContributionWrapper implements Plottable, ExcludeFromRightClickEdit
 {
 	final BaseContribution _myCont;
 	

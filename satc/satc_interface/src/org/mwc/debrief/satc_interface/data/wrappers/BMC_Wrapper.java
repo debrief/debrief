@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Status;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables.IteratorWrapper;
@@ -95,7 +96,7 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 		return new IteratorWrapper(_myElements.iterator());
 	}
 
-	protected class MeasurementEditable implements Plottable
+	protected class MeasurementEditable implements Plottable, ExcludeFromRightClickEdit
 	{
 		// ///////////////////////////////////////////////////////////
 		// info class
