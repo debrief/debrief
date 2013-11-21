@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
@@ -126,15 +127,15 @@ public class CreateSolutionFromSensorData implements
 						parent.add(new DoIt("Add Speed Forecast for period covered by ["
 								+ thisItem.getName() + "]",
 								new SpeedForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period)));
+										theLayers, period),"icons/speed.png"));
 						parent.add(new DoIt("Add Course Forecast for period covered by ["
 								+ thisItem.getName() + "]",
 								new CourseForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period)));
+										theLayers, period),"icons/direction.png"));
 						parent.add(new DoIt("Add Straight Leg for period covered by ["
 								+ thisItem.getName() + "]",
 								new StraightLegForecastContributionFromCuts(solution,
-										actionTitle, theLayers, period)));
+										actionTitle, theLayers, period),"icons/leg.png"));
 					}
 				}
 			}
@@ -187,7 +188,7 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period [" + title
+		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period covered by [" + title
 				+ "]", new StraightLegWizardFromCuts(solution, actionTitle, layers,
 				validItems));
 		wizardItem.setImageDescriptor(SATC_Interface_Activator
@@ -196,19 +197,19 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
-						layers, validItems)));
-		parent.add(new DoIt(verb1 + "Speed Forecast for period [" + title + "]",
+						layers, validItems),"icons/bearings.gif"));
+		parent.add(new DoIt(verb1 + "Speed Forecast for period covered by [" + title + "]",
 				new SpeedForecastContributionFromCuts(solution, actionTitle, layers,
-						validItems)));
-		parent.add(new DoIt(verb1 + "Range Forecast for period [" + title + "]",
+						validItems),"icons/speed.png"));
+		parent.add(new DoIt(verb1 + "Range Forecast for period covered by [" + title + "]",
 				new RangeForecastContributionFromCuts(solution, actionTitle, layers,
-						validItems)));
-		parent.add(new DoIt(verb1 + "Course Forecast for period [" + title + "]",
+						validItems),"icons/range.png"));
+		parent.add(new DoIt(verb1 + "Course Forecast for period covered by [" + title + "]",
 				new CourseForecastContributionFromCuts(solution, actionTitle, layers,
-						validItems)));
-		parent.add(new DoIt(verb1 + "Straight Leg for period [" + title + "]",
+						validItems),"icons/direction.png"));
+		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title + "]",
 				new StraightLegForecastContributionFromCuts(solution, actionTitle,
-						layers, validItems)));
+						layers, validItems),"icons/leg.png"));
 
 	}
 
@@ -220,6 +221,12 @@ public class CreateSolutionFromSensorData implements
 		{
 			super(title);
 			_myOperation = operation;
+		}
+
+		DoIt(String title, IUndoableOperation operation, String path)
+		{
+			this(title, operation);
+			this.setImageDescriptor(SATC_Interface_Activator.getImageDescriptor(path));
 		}
 
 		@Override
