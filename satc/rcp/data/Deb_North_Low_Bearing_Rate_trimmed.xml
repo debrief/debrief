@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Thu Nov 21 11:29:55 GMT 2013" Name="Debrief Plot" PlotId="1385027164422">
+<plot Created="Thu Nov 21 14:18:10 GMT 2013" Name="Debrief Plot" PlotId="1385027164422">
 <details Text="Saved with Debrief version dated Tue Nov 19 17:37:00 GMT 2013"/>
 <session>
 <layers>
@@ -993,7 +993,7 @@
 <colour Value="GREEN"/>
 <SymbolColor Value="CYAN"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<TrackSegment LineStyle="Solid" Name="121221.40" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix ArrowShowing="false" Course="-66.970" Dtg="100112 122140" Label="" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.659" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="60.0163869" Long="-0.0837516"/>
@@ -1199,10 +1199,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.1421539" Long="-0.2492666"/>
+<shortLocation Depth="0.000" Lat="60.1301939" Long="-0.2492667"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.9747620" Long="0.0013629"/>
+<shortLocation Depth="0.000" Lat="59.9859389" Long="0.0013630"/>
 </br>
 </projection>
 <gui>
