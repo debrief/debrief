@@ -75,7 +75,7 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
-		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList
+		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList, BaseLayer.ProvidesRange
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -351,6 +351,61 @@ public class SATC_Solution extends BaseLayer implements
 	public boolean hasOrderedChildren()
 	{
 		return true;
+	}
+
+	private static class MeasureRange implements RouteStepper
+	{
+
+		final private WorldLocation origin;
+		double minRange = Double.MAX_VALUE;
+
+		public MeasureRange(WorldLocation origin)
+		{
+			this.origin = origin;
+		}
+
+		@Override
+		public void step(CoreRoute thisRoute, State thisState)
+		{
+			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+			// convert to our coord system
+			WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
+			double range = wLoc.rangeFrom(origin);
+			minRange = Math.min(range, minRange);
+		}
+
+		public final double getMinRange()
+		{
+			return minRange;
+		}
+
+		@Override
+		public void legComplete(CoreRoute thisRoute)
+		{
+		}
+
+		@Override
+		public void finish()
+		{
+		}
+
+		@Override
+		public void reset()
+		{
+		}
+	}
+
+	@Override
+	public double rangeFrom(final WorldLocation other)
+	{
+		double res = -1;
+		if ((_newRoutes != null) && (_newRoutes.length > 0))
+		{
+			MeasureRange mr = new MeasureRange(other);
+			walkRoute(_newRoutes, mr);
+			res = mr.getMinRange();
+		}
+		return res;
 	}
 
 	@Override
