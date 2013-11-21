@@ -54,7 +54,7 @@ public class SpeedConstraintsWizardPage extends CoreEditableWizardPage
 
 		public void setMaxSpeed(WorldSpeed speed)
 		{
-			_speed.setMinSpeed(speed.getValueIn(WorldSpeed.M_sec));
+			_speed.setMaxSpeed(speed.getValueIn(WorldSpeed.M_sec));
 		}
 
 		public boolean isHasEstimate()
