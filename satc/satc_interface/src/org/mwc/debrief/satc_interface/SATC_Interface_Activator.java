@@ -14,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.osgi.framework.BundleContext;
@@ -79,7 +80,7 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 		ISolversManager solver = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
 		ISolver newSolver = pw.getSolver();
-		
+
 		// aah, just double-check that it's not already the solver
 		if (solver.getActiveSolver() != newSolver)
 		{
@@ -110,6 +111,10 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 			}
 		};
 		job.schedule();
+
+		// register our image helper
+		CoreViewLabelProvider.addImageHelper(new SATC_ImageHelper());
+
 	}
 
 	private void initPartMonitor()

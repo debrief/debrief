@@ -96,7 +96,7 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 		return new IteratorWrapper(_myElements.iterator());
 	}
 
-	protected class MeasurementEditable implements Plottable, ExcludeFromRightClickEdit
+	public class MeasurementEditable implements Plottable, ExcludeFromRightClickEdit
 	{
 		// ///////////////////////////////////////////////////////////
 		// info class
