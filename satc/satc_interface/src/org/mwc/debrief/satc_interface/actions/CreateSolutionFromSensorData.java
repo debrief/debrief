@@ -16,7 +16,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
@@ -120,22 +119,22 @@ public class CreateSolutionFromSensorData implements
 					if (period != null)
 					{
 						parent.add(new Separator());
-						
+
 						SATC_Solution solution = (SATC_Solution) parentLayers[0];
 						String actionTitle = "Add new contribution";
 
 						parent.add(new DoIt("Add Speed Forecast for period covered by ["
 								+ thisItem.getName() + "]",
 								new SpeedForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period),"icons/speed.png"));
+										theLayers, period), "icons/speed.png"));
 						parent.add(new DoIt("Add Course Forecast for period covered by ["
 								+ thisItem.getName() + "]",
 								new CourseForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period),"icons/direction.png"));
+										theLayers, period), "icons/direction.png"));
 						parent.add(new DoIt("Add Straight Leg for period covered by ["
 								+ thisItem.getName() + "]",
 								new StraightLegForecastContributionFromCuts(solution,
-										actionTitle, theLayers, period),"icons/leg.png"));
+										actionTitle, theLayers, period), "icons/leg.png"));
 					}
 				}
 			}
@@ -173,9 +172,14 @@ public class CreateSolutionFromSensorData implements
 
 			DoIt wizardItem = new DoIt("Create new scenario from these cuts",
 					new BearingMeasurementContributionFromCuts(null, title, theLayers,
-							validCuts));
-			wizardItem.setImageDescriptor(SATC_Interface_Activator
-					.getImageDescriptor("icons/document_new.png"));
+							validCuts){
+
+								@Override
+								public String getContributionName()
+								{
+									
+									return "Bearing data";
+								}}, "icons/calculator.gif");
 			thisMenu.add(wizardItem);
 		}
 	}
@@ -188,28 +192,27 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		DoIt wizardItem = new DoIt("Open Straight Leg Wizard for period covered by [" + title
-				+ "]", new StraightLegWizardFromCuts(solution, actionTitle, layers,
-				validItems));
-		wizardItem.setImageDescriptor(SATC_Interface_Activator
-				.getImageDescriptor("icons/wizard.png"));
+		DoIt wizardItem = new DoIt(
+				"Open Straight Leg Wizard for period covered by [" + title + "]",
+				new StraightLegWizardFromCuts(solution, actionTitle, layers, validItems),
+				"icons/wizard.png");
 		parent.add(wizardItem);
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
-						layers, validItems),"icons/bearings.gif"));
-		parent.add(new DoIt(verb1 + "Speed Forecast for period covered by [" + title + "]",
-				new SpeedForecastContributionFromCuts(solution, actionTitle, layers,
-						validItems),"icons/speed.png"));
-		parent.add(new DoIt(verb1 + "Range Forecast for period covered by [" + title + "]",
-				new RangeForecastContributionFromCuts(solution, actionTitle, layers,
-						validItems),"icons/range.png"));
-		parent.add(new DoIt(verb1 + "Course Forecast for period covered by [" + title + "]",
-				new CourseForecastContributionFromCuts(solution, actionTitle, layers,
-						validItems),"icons/direction.png"));
-		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title + "]",
-				new StraightLegForecastContributionFromCuts(solution, actionTitle,
-						layers, validItems),"icons/leg.png"));
+						layers, validItems), "icons/bearings.gif"));
+		parent.add(new DoIt(verb1 + "Speed Forecast for period covered by ["
+				+ title + "]", new SpeedForecastContributionFromCuts(solution,
+				actionTitle, layers, validItems), "icons/speed.png"));
+		parent.add(new DoIt(verb1 + "Range Forecast for period covered by ["
+				+ title + "]", new RangeForecastContributionFromCuts(solution,
+				actionTitle, layers, validItems), "icons/range.png"));
+		parent.add(new DoIt(verb1 + "Course Forecast for period covered by ["
+				+ title + "]", new CourseForecastContributionFromCuts(solution,
+				actionTitle, layers, validItems), "icons/direction.png"));
+		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
+				+ "]", new StraightLegForecastContributionFromCuts(solution,
+				actionTitle, layers, validItems), "icons/leg.png"));
 
 	}
 
@@ -217,15 +220,10 @@ public class CreateSolutionFromSensorData implements
 	{
 		private final IUndoableOperation _myOperation;
 
-		DoIt(String title, IUndoableOperation operation)
+		DoIt(String title, IUndoableOperation operation, String path)
 		{
 			super(title);
 			_myOperation = operation;
-		}
-
-		DoIt(String title, IUndoableOperation operation, String path)
-		{
-			this(title, operation);
 			this.setImageDescriptor(SATC_Interface_Activator.getImageDescriptor(path));
 		}
 

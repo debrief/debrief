@@ -47,7 +47,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="com.planetmayo.debrief.satc_rcp.ui.SATC_Perspective"
-            fixed="true"
+            fixed="false"
             icon="icons/calculator.png"
             id="com.planetmayo.debrief.satc_rcp.perspective"
             name="Track Generation">

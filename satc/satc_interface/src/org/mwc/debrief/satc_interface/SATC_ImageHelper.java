@@ -2,6 +2,7 @@ package org.mwc.debrief.satc_interface;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
+import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.StraightLegWrapper;
@@ -20,7 +21,9 @@ public class SATC_ImageHelper implements ViewLabelImageHelper
 	{
 		ImageDescriptor res = null;
 
-		if (editable instanceof StraightLegWrapper)
+		if (editable instanceof SATC_Solution)
+			res = SATC_Interface_Activator.getImageDescriptor("icons/calculator.gif");
+		else if (editable instanceof StraightLegWrapper)
 			res = SATC_Interface_Activator.getImageDescriptor("icons/leg.png");
 		else if (editable instanceof BMC_Wrapper.MeasurementEditable)
 			res = SATC_Interface_Activator.getImageDescriptor("icons/bearings.gif");
