@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScenarioController OutputDirectory="RunPlan"  xmlns="http://www.mwc.org/asset" >
+<ScenarioController OutputDirectory="RunPlan_North"  xmlns="http://www.mwc.org/asset" >
 		<ScenarioGenerator></ScenarioGenerator>
 	
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="35" Units="minutes" ></Duration>
+			<Duration Value="120" Units="minutes" ></Duration>
 		</TimeObserver>
 		<DebriefReplayObserver Name="RedTrack" record_detections="true"
 			record_positions="true" Active="true" record_decisions="false"

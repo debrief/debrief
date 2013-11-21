@@ -2,8 +2,7 @@
 <Scenario Name="Force Protection Scenario" xmlns="http://www.mwc.org/asset"
 	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
 	ShowActivity="false" ShowStatus="true">
-	<StepTime Units="seconds" Value="20"></StepTime>
-	<StepPause Value="200" Units="millis"></StepPause>
+	<StepTime Units="seconds" Value="50"></StepTime>
 	<Environment Name="token" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
 		<VisualLookupEnvironment Name="Easy to see">
@@ -31,40 +30,19 @@
 		<Surface Name="SUBJECT">
 			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE" />
 			<SensorFit></SensorFit>
-			<Status Course="180" Fuel="100">
+			<Status Course="320" Fuel="100">
 				<Location>
-					<relativeLocation>
-						<North Value="5100" Units="m" />
-						<East Value="1200" Units="m" />
-					</relativeLocation>
-					
+					<shortLocation Lat="60" Long="0"></shortLocation>
 				</Location>
-				<Speed Value="6" Units="kts" />
+				<Speed Value="9" Units="kts" />
 			</Status>
 			<Waterfall Name="subject route">
-				<Transit Name="" Looping="false">
-					<WorldPath>
-						<Point>
-							<relativeLocation>
-								<North Value="3600" Units="m" />
-								<East Value="1200" Units="m" />
-							</relativeLocation>
-						</Point>
-						<Point>
-							<relativeLocation>
-								<North Value="2100" Units="m" />
-								<East Value="2700" Units="m" />
-							</relativeLocation>
-						</Point>
-						<Point>
-							<relativeLocation>
-								<North Value="-3000" Units="m" />
-								<East Value="2700" Units="m" />
-							</relativeLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="6" Units="kts" />
-				</Transit>
+				<Move Name="leg one" Course="320">
+					<Vector Value="5.7" Units="nm" /></Move>
+				<Move Name="leg two" Course="350">
+					<Vector Value="9.75" Units="nm" /></Move>
+				<Move Name="leg three" Course="310">
+					<Vector Value="4" Units="nm" /></Move>
 			</Waterfall>
 
 
@@ -87,53 +65,21 @@
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 			</SensorFit>
-			<Status Course="180" Fuel="100">
+			<Status Course="40" Fuel="100">
 				<Location>
-					<relativeLocation>
-						<North Value="5700" Units="m" />
-						<East Value="2400" Units="m" />
-					</relativeLocation>
-					
+					<shortLocation Lat="60.2" Long="0"></shortLocation>
 				</Location>
-				<Speed Value="9" Units="kts" />
+				<Speed Value="2.5" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Transit Name="" Looping="false">
-					<WorldPath>
-						<Point>
-							<relativeLocation>
-								<North Value="5100" Units="m" />
-								<East Value="2400" Units="m" />
-							</relativeLocation>
-						</Point>
-						<Point>
-							<relativeLocation>
-								<North Value="3800" Units="m" />
-								<East Value="0400" Units="m" />
-							</relativeLocation>
-						</Point>
-						<Point>
-							<relativeLocation>
-								<North Value="2700" Units="m" />
-								<East Value="0400" Units="m" />
-							</relativeLocation>
-						</Point>
-						<Point>
-							<relativeLocation>
-								<North Value="2600" Units="m" />
-								<East Value="3100" Units="m" />
-							</relativeLocation>
-						</Point>
-						<Point>
-							<relativeLocation>
-								<North Value="-3000" Units="m" />
-								<East Value="3100" Units="m" />
-							</relativeLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="10" Units="kts" />
-				</Transit>
+				<Move Name="leg one" Course="200">
+					<Vector Value="3" Units="nm" /></Move>
+				<Move Name="leg two" Course="340">
+					<Vector Value="1.6" Units="nm" /></Move>
+				<Move Name="leg three" Course="60">
+					<Vector Value="2" Units="nm" /></Move>
 			</Waterfall>
+
 
 
 			<SurfaceMovementCharacteristics Name=""
@@ -142,7 +88,7 @@
 				<MaxSpeed Value="20" Units="kts" />
 				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="1" Units="kt/s" />
-				<TurningCircle Value="300" Units="m"></TurningCircle>
+				<TurningCircle Value="800" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
 	</Participants>
