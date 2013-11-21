@@ -251,6 +251,65 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 		});
 		return top;
 	}
+	
+
+	/**
+	 * for the set of generated routes, work out which have the highest score
+	 * 
+	 * @param boundsManager
+	 *          the c
+	 * @param theLegs
+	 */
+	public Map<StraightLeg, CoreRoute> calculateRouteScores2(
+			final Collection<BaseContribution> contribs, List<LegWithRoutes> theLegs,
+			IProgressMonitor monitor) throws InterruptedException
+	{
+		final Map<StraightLeg, CoreRoute> top = new LinkedHashMap<StraightLeg, CoreRoute>();
+		
+		// input - a set of legs, with candidate routes in each leg
+		// output - we need to provide a series of legs, with a route for each leg
+		// big picture - we want to value routes that are consistent with each other, not just well-performing on their own.
+		
+		operateOn(theLegs, monitor, new LegOperation()
+		{
+			public void apply(LegWithRoutes thisLeg)
+			{
+				if (thisLeg.getLeg().getType() == LegType.STRAIGHT)
+				{
+					CoreRoute minRoute = null;
+					double minScore = Double.MAX_VALUE;
+					CoreRoute[][] routes = thisLeg.getRoutes();
+					for (int i = 0; i < routes.length; i++)
+					{
+						for (CoreRoute route : routes[i])
+						{
+							if (route == null || !route.isPossible())
+							{
+								continue;
+							}
+							double score = 0;
+							for (BaseContribution contributions : contribs)
+							{
+								score += contributions.calculateErrorScoreFor(route);
+							}
+							route.setScore(score);
+							if (score < minScore)
+							{
+								minScore = score;
+								minRoute = route;
+							}
+						}
+					}
+					top.put((StraightLeg) thisLeg.getLeg(), minRoute);
+				}
+			}
+		});
+		
+		// so, all the routes have been scored, and we've identified the top-scoring routes
+		
+		
+		return top;
+	}
 
 	public List<LegWithRoutes> generateRoutes(List<CoreLeg> theLegs,
 			IProgressMonitor monitor) throws InterruptedException
