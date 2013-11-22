@@ -2,6 +2,8 @@ package org.mwc.debrief.timebar.views;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -52,6 +54,8 @@ public class TimeBarView extends ViewPart {
 	private Layers.DataListener _myLayersListener;
 
 	private ISelectionChangedListener _selectionChangeListener;
+	
+	private List<ISelectionProvider> _parts = new ArrayList<ISelectionProvider>();
 	
 	
 	/**
@@ -235,6 +239,16 @@ public class TimeBarView extends ViewPart {
 
 		// make sure we close the listeners
 		clearLayerListener();
+		if(_viewer != null)
+		{
+			_viewer.removeSelectionChangedListener(_selectionChangeListener);
+			for(ISelectionProvider iS: _parts)
+			{
+				iS.removeSelectionChangedListener(_selectionChangeListener);
+			}
+			_parts.clear();
+			_selectionChangeListener = null;
+		}
 		if (_timeProvider != null)
 		{
 			_timeProvider.removeListener(_temporalListener, 
@@ -354,8 +368,13 @@ public class TimeBarView extends ViewPart {
 						// aah, just check it's not is
 						if (part != _viewer)
 						{
-							final ISelectionProvider iS = (ISelectionProvider) part;
-							iS.addSelectionChangedListener(_selectionChangeListener);
+							if (_selectionChangeListener != null)
+							{
+								final ISelectionProvider iS = (ISelectionProvider) part;
+								iS.addSelectionChangedListener(_selectionChangeListener);
+								if (!_parts.contains(iS))
+									_parts.add(iS);
+							}
 						}
 					}
 				});
@@ -368,8 +387,29 @@ public class TimeBarView extends ViewPart {
 						// aah, just check it's not is
 						if (part != _viewer)
 						{
-							final ISelectionProvider iS = (ISelectionProvider) part;
-							iS.removeSelectionChangedListener(_selectionChangeListener);
+							if (_selectionChangeListener != null)
+							{
+								final ISelectionProvider iS = (ISelectionProvider) part;
+								iS.removeSelectionChangedListener(_selectionChangeListener);
+							}
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.CLOSED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not is
+						if (part == _viewer)
+						{
+							_viewer.removeSelectionChangedListener(_selectionChangeListener);
+							for(ISelectionProvider iS: _parts)
+							{
+								iS.removeSelectionChangedListener(_selectionChangeListener);
+							}
+							
 						}
 					}
 				});
