@@ -10,10 +10,17 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -24,8 +31,12 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.RTFTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -60,6 +71,8 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.plotViewer.PlotViewerPlugin;
+import org.mwc.cmap.plotViewer.actions.RTFWriter;
 import org.mwc.cmap.xyplot.XYPlotPlugin;
 
 import Debrief.GUI.Tote.StepControl;
@@ -758,7 +771,9 @@ public class XYPlotView extends ViewPart
 	{
 
 		// create the metafile graphics
-		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d("c:/",
+		String dir  = System.getProperty("java.io.tmpdir");
+		
+		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
 				(Graphics2D) _chartInPanel.getGraphics());
 
 		doWMF(mf);
@@ -780,17 +795,72 @@ public class XYPlotView extends ViewPart
 		final Dimension dim = MetafileCanvasGraphics2d.getLastScreenSize();
 
 		// try to copy the wmf to the clipboard
+		if (Platform.OS_WIN32.equals(Platform.getOS()) && Platform.ARCH_X86.equals(Platform.getOSArch())) {
+			try
+			{
+				// create the clipboard
+				final ClipboardCopy cc = new ClipboardCopy();
+
+				cc.copyWithPixelSize(fName, dim.width, dim.height, false);
+			}
+			catch (final Exception e)
+			{
+				MWC.Utilities.Errors.Trace.trace(e, "Whilst writing WMF to clipboard");
+			}
+		} else {
+			rtfToClipboard(fName, dim);
+		}
+
+	}
+
+	private void rtfToClipboard(final String fName, final Dimension dim)
+	{
+		// Issue #520 - Copy WMF embedded in RTF
+		ByteArrayOutputStream os = null;
+		DataInputStream dis = null;
 		try
 		{
-			// create the clipboard
-			final ClipboardCopy cc = new ClipboardCopy();
-
-			cc.copyWithPixelSize(fName, dim.width, dim.height, false);
+				os = new ByteArrayOutputStream();
+				RTFWriter writer = new RTFWriter(os);
+				File file = new File(fName);
+			byte[] data = new byte[(int) file.length()];
+			dis = new DataInputStream(new FileInputStream(file));
+			dis.readFully(data);
+			writer.writeHeader();
+			writer.writeEmfPicture(data, dim.getWidth(), dim.getHeight());
+			writer.writeTail();
+			
+			RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+			Clipboard clipboard = new Clipboard(Display.getDefault());
+			Object[] rtfData = new Object[] { os.toString() };
+			clipboard.setContents(rtfData, new Transfer[] {rtfTransfer});
 		}
-		catch (final Exception e)
+		catch (final Exception e1)
 		{
-			MWC.Utilities.Errors.Trace.trace(e, "Whilst writing WMF to clipboard");
+			IStatus status = new Status(IStatus.ERROR, PlotViewerPlugin.PLUGIN_ID, e1.getLocalizedMessage(), e1);
+						XYPlotPlugin.getDefault().getLog().log(status);
 		}
+		finally {
+			if (os != null) {
+				try
+				{
+					os.close();
+				} catch (IOException e1)
+				{
+					// ignore
+				}
+			}
+			if (dis != null) {
+				try
+				{
+					dis.close();
+				} catch (IOException e1)
+				{
+					// ignore
+				}
+			}
+		}
+			
 
 	}
 	
