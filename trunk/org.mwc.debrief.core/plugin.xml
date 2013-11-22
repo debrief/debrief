@@ -240,12 +240,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -261,12 +258,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
         </menuContribution>
@@ -373,12 +367,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
            </command>
            
@@ -394,12 +385,9 @@
               </parameter>
               <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
            </command>
         </menuContribution>
@@ -412,12 +400,9 @@
               id="org.mwc.debrief.core.ZoomOut">
               <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
               </visibleWhen>
             </command>
           	<command
@@ -427,12 +412,9 @@
               id="org.mwc.debrief.core.FitToWindow">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -443,12 +425,9 @@
               id="org.mwc.debrief.core.Redraw">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -465,12 +444,9 @@
               id="org.mwc.debrief.core.ZoomOut">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
          </menuContribution>
@@ -483,12 +459,9 @@
               id="org.mwc.debrief.core.FitToWindow">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -499,12 +472,9 @@
               id="org.mwc.debrief.core.Redraw">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activeCorePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -613,12 +583,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -1094,6 +1061,24 @@
               <equals
                     value="org.mwc.debrief.PlotEditor">
               </equals>
+           </with>
+        </definition>
+     </extension>
+     
+     <extension
+           point="org.eclipse.core.expressions.definitions">
+        <definition
+              id="org.mwc.debrief.activeCorePlotEditor">
+           <with
+                 variable="activeEditorId">
+              <or>
+              <equals
+                    value="org.mwc.debrief.PlotEditor">
+              </equals>
+              <equals
+                    value="org.mwc.asset.ASSETPlotEditor">
+              </equals>
+              </or>
            </with>
         </definition>
      </extension>
