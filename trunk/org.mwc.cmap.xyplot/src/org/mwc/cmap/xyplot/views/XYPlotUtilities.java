@@ -42,12 +42,12 @@ public class XYPlotUtilities
 		dataStr.delete(len-2, len-1);
 		dataStr.append("\n");
 		
-		int itemsCount = 0;
+		int itemsCount = Integer.MAX_VALUE;
 		for (int i = 0; i < dataset.getSeriesCount(); i++) 
 		{
-			final TimeSeries series = dataset.getSeries(dataset.getSeriesKey(0));
+			final TimeSeries series = dataset.getSeries(dataset.getSeriesKey(i));
 			final int items = series.getItemCount();
-			if (items > itemsCount)
+			if (items < itemsCount)
 				itemsCount = items;
 		}
 		
