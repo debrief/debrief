@@ -518,6 +518,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	public final void setPresent(boolean val)
 	{
 		_enabledBtn.setSelection(val);
+		enabledChanged();
 	}
 
 	final protected void updateStatus(final String message)

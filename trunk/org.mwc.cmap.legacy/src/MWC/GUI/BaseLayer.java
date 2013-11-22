@@ -142,6 +142,16 @@ import java.util.Enumeration;
 public class BaseLayer extends Plottables implements Layer, SupportsPropertyListeners
 {
 
+	/** marker interface for layers that implement their own getRange(), and where
+	 * our processing should not inspect the children
+	 * @author ian
+	 *
+	 */
+	public static interface ProvidesRange
+	{
+		
+	}
+	
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////

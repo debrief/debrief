@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.legacy,
  org.mwc.cmap.core,
  org.mwc.debrief.legacy,
- org.eclipse.ui.views
+ org.eclipse.ui.views,
+ org.mwc.cmap.plotViewer
 Export-Package: org.mwc.cmap.xyplot,
  org.mwc.cmap.xyplot.views
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
