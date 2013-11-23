@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.uncommons.maths.random.GaussianGenerator;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.CandidateFactory;
@@ -17,6 +16,8 @@ import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.TerminationCondition;
+import org.uncommons.watchmaker.framework.islands.IslandEvolution;
+import org.uncommons.watchmaker.framework.islands.RingMigration;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
 import org.uncommons.watchmaker.framework.operators.ListCrossover;
 import org.uncommons.watchmaker.framework.operators.SplitEvolution;
@@ -162,23 +163,26 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		Random rng = new MersenneTwisterRNG();
 		List<EvolutionaryOperator<List<StraightRoute>>> operators = new ArrayList<EvolutionaryOperator<List<StraightRoute>>>();
 		
+		PointsCrossover pointsCrossover = new PointsCrossover(straightLegs, new Probability(1));
 		SplitEvolution<List<StraightRoute>> crossovers = new SplitEvolution<List<StraightRoute>>(
 				new ListCrossover<StraightRoute>(),
-				new PointsCrossover(straightLegs, new Probability(1), new Probability(0.33), new Probability(0.33)),
-				new GaussianGenerator(0.25, .5, rng) {
-
-					@Override
-					public Double nextValue()
-					{
-						return Math.max(Math.min(super.nextValue(), 0), 1);
-					}					
-				}
+				pointsCrossover,
+				0.4
 		);
-		PointsMutationToVertexes mutation = new PointsMutationToVertexes(straightLegs, new Probability(0.7));
+		PointsMutationToVertexes mutation = new PointsMutationToVertexes(straightLegs, new Probability(parameters.getMutationProbability()), 20);
 		operators.add(crossovers);
 		operators.add(mutation);
 		
-		final GAEngine engine = new GAEngine(
+		/*final GAEngine engine = new GAEngine(
+				new RoutesCandidateFactory(straightLegs), 
+				new EvolutionPipeline<List<StraightRoute>>(operators),
+				new RoutesFitnessEvaluator(straightLegs, contributions),
+				new TournamentSelection(new Probability(1)), 				
+				rng
+		);*/
+		final IslandEvolution<List<StraightRoute>> engine = new IslandEvolution<List<StraightRoute>>(
+				4,
+				new RingMigration(), 
 				new RoutesCandidateFactory(straightLegs), 
 				new EvolutionPipeline<List<StraightRoute>>(operators),
 				new RoutesFitnessEvaluator(straightLegs, contributions),
@@ -186,6 +190,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				rng
 		);
 		engine.addEvolutionObserver(mutation);
+		engine.addEvolutionObserver(pointsCrossover);
 		TerminationCondition progressMonitorCondition = new TerminationCondition()
 		{			
 			@Override
@@ -196,23 +201,13 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		};
 		List<StraightRoute> solution = engine.evolve(
 				parameters.getPopulationSize(), 
-				parameters.getElitizm(), 
+				parameters.getElitizm(),
+				20,
+				5,
 				progressMonitorCondition,
 				new ElapsedTime(parameters.getTimeout()),
 				progressMonitorCondition,
 				new Stagnation(parameters.getStagnationSteps())
-				{
-
-					@Override
-					public boolean shouldTerminate(PopulationData<?> populationData)
-					{						
-						if (engine.getTopRoutesScore() == Double.MAX_VALUE) 
-						{
-							return false;
-						}
-						return super.shouldTerminate(populationData);
-					}
-				} 
 		);
 		if (progressMonitor.isCanceled())
 		{

@@ -7,27 +7,30 @@ import java.util.Random;
 import org.uncommons.maths.number.ConstantGenerator;
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.Probability;
-import org.uncommons.watchmaker.framework.EvolutionObserver;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 import org.uncommons.watchmaker.framework.PopulationData;
+import org.uncommons.watchmaker.framework.islands.IslandEvolutionObserver;
 
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.vividsolutions.jts.geom.Point;
 
 public abstract class AbstractMutation implements EvolutionaryOperator<List<StraightRoute>>,
-														EvolutionObserver<List<StraightRoute>>
+								IslandEvolutionObserver<List<StraightRoute>>
 {
 	protected final List<StraightLeg> legs;
 	protected final NumberGenerator<Probability> mutationProbability;
+	protected final int generationsInEpoch;
 	
-	protected volatile int iteration;
+	protected final ThreadLocal<Integer> generation = new ThreadLocal<Integer>();
+	protected volatile int epoch;
 
 	public AbstractMutation(List<StraightLeg> legs,
-			Probability mutationProbability)
+			Probability mutationProbability, int generationsInEpoch)
 	{
 		this.legs = legs;
 		this.mutationProbability = new ConstantGenerator<Probability>(mutationProbability);
+		this.generationsInEpoch = generationsInEpoch;
 	}	
 	
 	@Override
@@ -40,10 +43,17 @@ public abstract class AbstractMutation implements EvolutionaryOperator<List<Stra
 		}
 		return result;
 	}
-
+	
+	protected int getIteration() 
+	{
+		int g = generation.get() == null ? 0 : generation.get();
+		return epoch * generationsInEpoch + g;
+	}
+	
 	protected List<StraightRoute> mutate(List<StraightRoute> candidate, Random rng) 
 	{
 		int length = candidate.size();
+		int iteration = getIteration();
 		List<StraightRoute> result = null;
     for (int i = 0; i < length; i++)
     {
@@ -56,28 +66,42 @@ public abstract class AbstractMutation implements EvolutionaryOperator<List<Stra
 				}
 				StraightLeg leg = legs.get(i);
 				
-				StraightRoute newRoute;				
-				do
+				StraightRoute newRoute = null;	
+				int repeats;
+				int possibleRepeats = iteration != 0 ? 5 : 50;
+				for (repeats = 0; repeats < possibleRepeats; repeats++)
 				{
 					newRoute = (StraightRoute) leg.createRoute("",
-							mutatePoint(route.getStartPoint(), leg, false, rng),
-							mutatePoint(route.getEndPoint(), leg, true, rng));
+							mutatePoint(iteration, route.getStartPoint(), leg, false, rng),
+							mutatePoint(iteration, route.getEndPoint(), leg, true, rng));
 					leg.decideAchievableRoute(newRoute);
+					if (newRoute.isPossible()) 
+					{
+						break;
+					}
+				}				
+				if (newRoute.isPossible())
+				{
+					result.set(i, newRoute);
 				}
-				while (!newRoute.isPossible());
-				
-				result.set(i, newRoute);
 			}
     }
-    return result == null ? candidate : result;		
+    return result == null || result.isEmpty() ? candidate : result;		
 	}
 	
 	@Override
 	public void populationUpdate(
 			PopulationData<? extends List<StraightRoute>> data)
 	{
-		iteration = data.getGenerationNumber();		
+		epoch = data.getGenerationNumber();
+	}
+	
+	@Override
+	public void islandPopulationUpdate(int islandIndex,
+			PopulationData<? extends List<StraightRoute>> data)
+	{
+		generation.set(data.getGenerationNumber());		
 	}
 
-	protected abstract Point mutatePoint(Point current, StraightLeg leg, boolean useEndPoint, Random rng);
+	protected abstract Point mutatePoint(int iteration, Point current, StraightLeg leg, boolean useEndPoint, Random rng);
 }

@@ -385,7 +385,7 @@ public class TestHarnessView extends ViewPart
 		
 		_useSAButton = new Button(composite, SWT.CHECK);
 		_useSAButton.setSelection(false);
-		_useSAButton.setText("Use Simulated Annealing (experimental)");
+		_useSAButton.setText("Use Simulated Annealing");
 		
 		_currentSolutionGeneratorComposite = new Composite(gaGroup, SWT.NONE);
 		_currentSolutionGeneratorComposite.setLayoutData(new GridData(GridData.FILL_BOTH));

@@ -10,6 +10,7 @@ import org.geotools.referencing.GeodeticCalculator;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
@@ -115,6 +116,22 @@ public class StraightRoute extends CoreRoute
 		final double xDelta = _endP.getX() - startX;
 		final double yDelta = _endP.getY() - startY;
 
+		/*if (_myStates == null) 
+		{
+			_myStates = new ArrayList<State>();
+		}
+		for (BoundedState boundedState : states) {
+			Date currentDate = boundedState.getTime();
+			long delta = currentDate.getTime() - _startTime.getTime();
+			
+			Point p = MathUtils.calculateBezier(delta / elapsed, _startP, _endP, null);
+			State state = new State(currentDate, p, _course, _speed);
+			if(boundedState.getColor() != null)
+			{
+				state.setColor(boundedState.getColor());
+			}
+			_myStates.add(state);
+		}*/
 		// move to our start time
 		Iterator<BoundedState> iter = states.iterator();
 		while (iter.hasNext())
