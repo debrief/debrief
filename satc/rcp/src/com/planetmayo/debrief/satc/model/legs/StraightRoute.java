@@ -3,15 +3,12 @@ package com.planetmayo.debrief.satc.model.legs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 import org.geotools.referencing.GeodeticCalculator;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -107,22 +104,16 @@ public class StraightRoute extends CoreRoute
 	@Override
 	public void generateSegments(final Collection<BoundedState> states)
 	{
-		// what is our time period
 		final long elapsed = _endTime.getTime() - _startTime.getTime();
-
-		// find the x & y deltas
-		final double startX = _startP.getX();
-		final double startY = _startP.getY();
-		final double xDelta = _endP.getX() - startX;
-		final double yDelta = _endP.getY() - startY;
-
-		/*if (_myStates == null) 
+		if (_myStates == null) 
 		{
 			_myStates = new ArrayList<State>();
 		}
-		for (BoundedState boundedState : states) {
+		
+		for (BoundedState boundedState : states) 
+		{
 			Date currentDate = boundedState.getTime();
-			long delta = currentDate.getTime() - _startTime.getTime();
+			double delta = currentDate.getTime() - _startTime.getTime();
 			
 			Point p = MathUtils.calculateBezier(delta / elapsed, _startP, _endP, null);
 			State state = new State(currentDate, p, _course, _speed);
@@ -131,52 +122,7 @@ public class StraightRoute extends CoreRoute
 				state.setColor(boundedState.getColor());
 			}
 			_myStates.add(state);
-		}*/
-		// move to our start time
-		Iterator<BoundedState> iter = states.iterator();
-		while (iter.hasNext())
-		{
-			// get the next date
-			BoundedState thisBoundedState = iter.next();
-			Date thisDate = thisBoundedState.getTime();
-
-			// is this after our start time?
-			if (!thisDate.before(_startTime))
-			{
-				if (!thisDate.after(_endTime))
-				{
-					// ok, consider how far along the route we are
-					long delta = thisDate.getTime() - _startTime.getTime();
-					double proportion = (delta * 1.0) / elapsed;
-
-					// ok, work out where it is
-					Point p = GeoSupport.getFactory().createPoint(
-							new Coordinate(startX + proportion * xDelta, startY + proportion
-									* yDelta));
-
-					// create the state object
-					State newS = new State(thisDate, p, _course, _speed);
-					
-					// set the color, if we have them
-					if(thisBoundedState.getColor() != null)
-						newS.setColor(thisBoundedState.getColor());
-					
-
-					if (_myStates == null)
-						_myStates = new ArrayList<State>();
-
-					// and remember it
-					_myStates.add(newS);
-
-				}
-				else
-				{
-					// ok, we're done - drop out
-					break;
-				}
-			}
 		}
-
 	}
 
 	/**

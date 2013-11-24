@@ -99,8 +99,7 @@ public class PointsCrossover extends AbstractCrossover<List<StraightRoute>>
 	public void populationUpdate(
 			PopulationData<? extends List<StraightRoute>> data)
 	{
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override

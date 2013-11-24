@@ -54,17 +54,6 @@ public class AlteringLeg extends CoreLeg
 		return LegType.ALTERING;
 	}
 
-	/**
-	 * run through all the route permutation, and find the one with the highest
-	 * score(s)
-	 * 
-	 */
-	public void calculateOptimum()
-	{
-		// TODO calculate an optimal solution through this manoeuvre
-
-	}
-
 	@Override
 	public CoreRoute createRoute(String name, Point start, Point end)
 	{

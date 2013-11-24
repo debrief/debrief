@@ -7,14 +7,8 @@ import java.util.Random;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
-import org.uncommons.watchmaker.framework.CandidateFactory;
-import org.uncommons.watchmaker.framework.EvaluatedCandidate;
-import org.uncommons.watchmaker.framework.EvolutionUtils;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
-import org.uncommons.watchmaker.framework.FitnessEvaluator;
-import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
 import org.uncommons.watchmaker.framework.PopulationData;
-import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.TerminationCondition;
 import org.uncommons.watchmaker.framework.islands.IslandEvolution;
 import org.uncommons.watchmaker.framework.islands.RingMigration;
@@ -58,13 +52,11 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		parameters.setElitizm(10);
 		parameters.setMutationProbability(0.25);
 		parameters.setPopulationSize(70);
-		parameters.setStagnationSteps(250);
+		parameters.setStagnationSteps(20);
 		parameters.setTopRoutes(10);
 		parameters.setTimeoutBetweenIterations(0);
 		parameters.setTimeout(30000);
-		parameters.setRecalculatePointsProbs(10);
-		parameters.setCheckReachability(25);
-		parameters.setExtendBestPoints(33);
+		parameters.setUseAlteringLegs(true);
 	}
 	
 	public GAParameters getParameters()
@@ -173,19 +165,12 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		operators.add(crossovers);
 		operators.add(mutation);
 		
-		/*final GAEngine engine = new GAEngine(
-				new RoutesCandidateFactory(straightLegs), 
-				new EvolutionPipeline<List<StraightRoute>>(operators),
-				new RoutesFitnessEvaluator(straightLegs, contributions),
-				new TournamentSelection(new Probability(1)), 				
-				rng
-		);*/
 		final IslandEvolution<List<StraightRoute>> engine = new IslandEvolution<List<StraightRoute>>(
 				4,
 				new RingMigration(), 
 				new RoutesCandidateFactory(straightLegs), 
 				new EvolutionPipeline<List<StraightRoute>>(operators),
-				new RoutesFitnessEvaluator(straightLegs, contributions),
+				new RoutesFitnessEvaluator(straightLegs, parameters.isUseAlteringLegs(), contributions, problemSpaceView),
 				new TournamentSelection(new Probability(1)), 				
 				rng
 		);
@@ -257,70 +242,5 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				((IGASolutionsListener) listener).iterationComputed(new ArrayList<CompositeRoute>(topRoutes));
 			}
 		}		
-	}
-	
-	private class GAEngine extends GenerationalEvolutionEngine<List<StraightRoute>> 
-	{
-		private double topRoutesScore;
-		
-		public GAEngine(CandidateFactory<List<StraightRoute>> candidateFactory,
-				EvolutionaryOperator<List<StraightRoute>> evolutionScheme,
-				FitnessEvaluator<? super List<StraightRoute>> fitnessEvaluator,
-				SelectionStrategy<? super List<StraightRoute>> selectionStrategy, Random rng)
-		{
-			super(candidateFactory, evolutionScheme, fitnessEvaluator, selectionStrategy,
-					rng);
-		}
-		
-		public double getTopRoutesScore()
-		{
-			return topRoutesScore;
-		}
-
-		@Override
-		protected List<EvaluatedCandidate<List<StraightRoute>>> nextEvolutionStep(
-				List<EvaluatedCandidate<List<StraightRoute>>> evaluatedPopulation, int eliteCount,
-				Random rng)
-		{			
-			List<EvaluatedCandidate<List<StraightRoute>>> result = super.nextEvolutionStep(evaluatedPopulation, eliteCount, rng);
-			EvolutionUtils.sortEvaluatedPopulation(result, false);
-			List<CompositeRoute> routes = new ArrayList<CompositeRoute>(parameters.getTopRoutes());
-			for (int i = 0; i < parameters.getTopRoutes(); i++) 
-			{
-				if (i >= result.size()) 
-				{
-					break;
-				}
-				routes.add(solutionToRoute(result.get(i).getCandidate(), false));
-			}
-			fireIterationComputed(routes);
-			if (parameters.getTimeoutBetweenIterations() > 0) 
-			{
-				try 
-				{
-					Thread.sleep(parameters.getTimeoutBetweenIterations());
-				}
-				catch (InterruptedException ex)
-				{
-					Thread.currentThread().interrupt();
-				}
-			}
-			int topCounts = Math.min(15, result.size());
-			topRoutesScore = 0;
-			for (int i = 0; i < topCounts; i++) 
-			{
-				if (result.get(i).getFitness() == Double.MAX_VALUE) 
-				{
-					topRoutesScore = Double.MAX_VALUE;
-					break;
-				}
-				topRoutesScore += result.get(i).getFitness();
-			}
-			if (topRoutesScore != Double.MAX_VALUE) 
-			{
-				topRoutesScore = topRoutesScore / topCounts;
-			}			
-			return result;
-		}	
 	}
 }

@@ -403,7 +403,11 @@ public class TestHarnessView extends ViewPart
 	}
 	
 	private void createGAParameters(Composite gaParameters) 
-	{		
+	{
+		UIUtils.createLabel(gaParameters, "Consider alterings:", new GridData());		
+		final Button considerAlteringLegs = new Button(gaParameters, SWT.CHECK);
+		considerAlteringLegs.setLayoutData(new GridData());		
+		
 		UIUtils.createLabel(gaParameters, "Population size:", new GridData());
 		final FormattedText populationSize = new FormattedText(gaParameters);
 		populationSize.setFormatter(new LongFormatter());
@@ -440,30 +444,35 @@ public class TestHarnessView extends ViewPart
 			@Override
 			protected void doBind(GASolutionGenerator gaSolutionGenerator)
 			{
+				GAParameters parameters = gaSolutionGenerator.getParameters();
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, populationSize.getControl()),
-						BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.POPULATION_SIZE)
+						BeansObservables.observeValue(parameters, GAParameters.POPULATION_SIZE)
 				));
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, elitizm.getControl()),
-						BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.ELITIZM)
+						BeansObservables.observeValue(parameters, GAParameters.ELITIZM)
 				));
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, stagnation.getControl()),
-						BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.STAGNATION_STEPS)
+						BeansObservables.observeValue(parameters, GAParameters.STAGNATION_STEPS)
 				));
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, timeout.getControl()),
-						BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.TIMEOUT)
+						BeansObservables.observeValue(parameters, GAParameters.TIMEOUT)
 				));
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, mutation.getControl()),
-						BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.MUTATION_PROBABILITY)
+						BeansObservables.observeValue(parameters, GAParameters.MUTATION_PROBABILITY)
 				));		
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, timeoutIteration.getControl()),
-						BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.TIMEOUT_BETWEEN_ITERATIONS)
-				));				
+						BeansObservables.observeValue(parameters, GAParameters.TIMEOUT_BETWEEN_ITERATIONS)
+				));
+				add(_context.bindValue(
+						WidgetProperties.selection().observe(considerAlteringLegs), 
+						BeansObservables.observeValue(parameters, GAParameters.USE_ALTERING_LEGS))
+				);
 			}
 		};
 	}

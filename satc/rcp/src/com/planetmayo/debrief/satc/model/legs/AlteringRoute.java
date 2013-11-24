@@ -1,6 +1,8 @@
 package com.planetmayo.debrief.satc.model.legs;
 
+import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -23,6 +25,10 @@ public class AlteringRoute extends CoreRoute
 	 * case of quad curve and two points in case of cubic curve   
 	 */	
 	private volatile Point _controlPoints[] = null;
+	
+	private volatile double _maxSpeed = -1;
+	private volatile double _minSpeed = -1;
+	private volatile int _extremumsCount = -1;
 
 	public AlteringRoute(String name, Point startP, Date startTime, Point endP,
 			Date endTime)
@@ -130,6 +136,38 @@ public class AlteringRoute extends CoreRoute
 		_routeType = AlteringRouteType.CUBIC_BEZIER;
 	}
 	
+	public double getMaxSpeed() 
+	{
+		if (_maxSpeed != -1) 
+		{
+			return _maxSpeed;
+		}
+		calculateExtremumSpeeds();
+		return _maxSpeed;
+	}
+	
+	public double getMinSpeed() 
+	{
+		if (_minSpeed != -1) 
+		{
+			return _minSpeed;
+		}
+		calculateExtremumSpeeds();
+		return _minSpeed;		
+	}
+	
+	
+	
+	public int getExtremumsCount()
+	{
+		if (_extremumsCount != -1)
+		{
+			return _extremumsCount;
+		}
+		calculateExtremumSpeeds();
+		return _extremumsCount;
+	}
+
 	/**
 	 * get the straight line between the endsd
 	 * 
@@ -143,5 +181,57 @@ public class AlteringRoute extends CoreRoute
 	public Point[] getBezierControlPoints() 
 	{
 		return _controlPoints;
+	}
+	
+	private void calculateExtremumSpeeds()
+	{
+		double xCoeff, yCoeff; 
+		GeodeticCalculator calculator = new GeodeticCalculator();
+		calculator.setStartingGeographicPoint(_startP.getX(), _startP.getY());
+		calculator.setDestinationGeographicPoint(_startP.getX() + 1, _startP.getY());
+		xCoeff = calculator.getOrthodromicDistance();
+		xCoeff *= xCoeff;
+		
+		calculator.setDestinationGeographicPoint(_startP.getX(), _startP.getY() + 1);
+		yCoeff = calculator.getOrthodromicDistance();
+		yCoeff *= yCoeff;
+		
+		long timeDelta = _endTime.getTime() - _startTime.getTime();
+		double p0x = _startP.getX(), p1x = _controlPoints[0].getX(), p2x = _controlPoints[1].getX(), p3x = _endP.getX();
+		double p0y = _startP.getY(), p1y = _controlPoints[0].getY(), p2y = _controlPoints[1].getY(), p3y = _endP.getY();
+
+		double c1 = p3x - 3 * p2x + 3 * p1x - p0x;
+		double c2 = p2x - 2 * p1x + p0x;
+		double c3 = p1x - p0x;
+		double c4 = p3y - 3 * p2y + 3 * p1y - p0y;
+		double c5 = p2y - 2 * p1y + p0y;
+		double c6 = p1y - p0y;
+
+		double[] coefs = new double[4];
+		coefs[3] = xCoeff * (2 * c1 * c1) + yCoeff * (2 * c4 * c4);
+		coefs[2] = xCoeff * (6 * c1 * c2) + yCoeff * (6 * c4 * c5);
+		coefs[1] = xCoeff * (4 * c2 * c2  + 2 * c1 * c3) + yCoeff * (4 * c5 * c5 + 2 * c4 * c6);
+		coefs[0] = xCoeff * (2 * c2 * c3) + yCoeff * (2 * c5 * c6);
+		
+		double res[] = new double[3];		
+		int roots = CubicCurve2D.solveCubic(coefs, res);
+		res = Arrays.copyOf(res, roots + 2);
+		res[roots] = 0;
+		res[roots + 1] = 1;
+		
+		_minSpeed = Double.MAX_VALUE;
+		_maxSpeed = -Double.MAX_VALUE;
+		_extremumsCount = -2;
+		for (double root : res) 
+		{
+			if (root >= 0 && root <= 1)
+			{
+				long time = _startTime.getTime() + (long) (root * timeDelta);
+				double speed = getSpeed(new Date(time));
+				_minSpeed = Math.min(_minSpeed, speed);
+				_maxSpeed = Math.max(_maxSpeed, speed);
+				_extremumsCount++;
+			}
+		}
 	}
 }

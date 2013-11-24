@@ -13,9 +13,7 @@ public class GAParameters extends ModelObject
 	public static final String TIMEOUT_BETWEEN_ITERATIONS = "timeoutBetweenIterations";
 	public static final String MUTATION_PROBABILITY = "mutationProbability";
 	public static final String TOP_ROUTES = "topRoutes";
-	public static final String RECALCULATE_POINTS_PROBS = "recalculatePointsProbs";
-	public static final String CHECK_REACHABILITY = "checkReachability";
-	public static final String EXTEND_BEST_POINTS = "extendBestPoints";
+	public static final String USE_ALTERING_LEGS = "useAlteringLegs";
 	
 	private int populationSize;
 	private int elitizm;
@@ -24,10 +22,7 @@ public class GAParameters extends ModelObject
 	private int timeoutBetweenIterations;
 	private int topRoutes;
 	private double mutationProbability;
-	private int recalculatePointsProbs;
-	private int checkReachability;
-	private int extendBestPoints;
-	
+	private boolean useAlteringLegs;	
 	
 	public int getPopulationSize()
 	{
@@ -113,39 +108,15 @@ public class GAParameters extends ModelObject
 		firePropertyChange(TIMEOUT_BETWEEN_ITERATIONS, old, timeoutBetweenIterations);
 	}
 
-	public int getRecalculatePointsProbs()
+	public boolean isUseAlteringLegs()
 	{
-		return recalculatePointsProbs;
+		return useAlteringLegs;
 	}
 
-	public void setRecalculatePointsProbs(int recalculatePointsProbs)
+	public void setUseAlteringLegs(boolean useAlteringLegs)
 	{
-		int old = this.recalculatePointsProbs;
-		this.recalculatePointsProbs = recalculatePointsProbs;
-		firePropertyChange(RECALCULATE_POINTS_PROBS, old, recalculatePointsProbs);
-	}
-
-	public int getCheckReachability()
-	{
-		return checkReachability;
-	}
-
-	public void setCheckReachability(int checkReachability)
-	{
-		int old = this.checkReachability;
-		this.checkReachability = checkReachability;
-		firePropertyChange(CHECK_REACHABILITY, old, checkReachability);
-	}
-
-	public int getExtendBestPoints()
-	{
-		return extendBestPoints;
-	}
-
-	public void setExtendBestPoints(int extendBestPoints)
-	{
-		int old = this.extendBestPoints;
-		this.extendBestPoints = extendBestPoints;
-		firePropertyChange(CHECK_REACHABILITY, old, extendBestPoints);
+		boolean old = this.useAlteringLegs;
+		this.useAlteringLegs = useAlteringLegs;
+		firePropertyChange(USE_ALTERING_LEGS, old, useAlteringLegs);
 	}
 }
