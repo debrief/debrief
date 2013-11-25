@@ -158,12 +158,7 @@ public class TimeBarView extends ViewPart {
 	{
 		// just check we're not already looking at it
 		if (part.equals(_myLayers))
-		{
 			return;
-		}
-		
-		// de-register current layers before tracking the new one
-		clearLayerListener();
 		
 		_myLayers = (Layers) part;
 		if (_myLayersListener == null)
@@ -214,9 +209,7 @@ public class TimeBarView extends ViewPart {
 			{
 				public void run()
 				{
-					if (_viewer.isDisposed())
-						return;
-					// ok, fire the change in the UI thread	
+					// ok, fire the change in the UI thread
 					_viewer.drawDiagram(theData, true /* jump to begin */);
 					// hmm, do we know about the new item? If so, better select it
 					if (newItem != null)
@@ -423,9 +416,7 @@ public class TimeBarView extends ViewPart {
 							{
 								_selectionProvider
 									.removeSelectionChangedListener(_selectionChangeListener);
-							}
-							
-							clearLayerListener();
+							}						
 						}
 					}
 				});
