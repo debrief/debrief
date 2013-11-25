@@ -200,8 +200,7 @@ Library.
       <import plugin="com.ibm.icu" version="3.8.1" match="greaterOrEqual"/>
       <import plugin="org.mwc.debrief.core"/>
       <import plugin="org.eclipse.help"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.2" match="compatible"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.5.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.hamcrest.core" version="1.1.0" match="greaterOrEqual"/>
       <import plugin="org.mwc.cmap.legacy" version="1.0.50" match="greaterOrEqual"/>
