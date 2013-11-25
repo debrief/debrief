@@ -215,6 +215,11 @@ public class XYPlotView extends ViewPart
 	 * put the plot on the clipboard
 	 */
 	private Action _exportToClipboard;
+	
+	/**
+	 * put the plot on the clipboard as String matrix
+	 */
+	private Action _copyToClipboard;
 
 	/**
 	 * the Swing control we insert the plot into
@@ -767,6 +772,7 @@ public class XYPlotView extends ViewPart
 
 		// create the metafile graphics
 		String dir  = System.getProperty("java.io.tmpdir");
+		
 		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
 				(Graphics2D) _chartInPanel.getGraphics());
 
@@ -777,9 +783,7 @@ public class XYPlotView extends ViewPart
 	{
 
 		// create the metafile graphics
-		String dir  = System.getProperty("java.io.tmpdir");
-		
-		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
+		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d("c:/",
 				(Graphics2D) _chartInPanel.getGraphics());
 
 		doWMF(mf);
@@ -816,26 +820,25 @@ public class XYPlotView extends ViewPart
 		DataInputStream dis = null;
 		try
 		{
+				os = new ByteArrayOutputStream();
+				RTFWriter writer = new RTFWriter(os);
+				File file = new File(fName);
+			byte[] data = new byte[(int) file.length()];
+			dis = new DataInputStream(new FileInputStream(file));
+			dis.readFully(data);
+			writer.writeHeader();
+			writer.writeEmfPicture(data, dim.getWidth(), dim.getHeight());
+			writer.writeTail();
 			
-			os = new ByteArrayOutputStream();
-			RTFWriter writer = new RTFWriter(os);
-			File file = new File(fName);
-		  byte[] data = new byte[(int) file.length()];
-		  dis = new DataInputStream(new FileInputStream(file));
-		  dis.readFully(data);
-		  writer.writeHeader();
-		  writer.writeEmfPicture(data, dim.getWidth(), dim.getHeight());
-		  writer.writeTail();
-			
-		  RTFTransfer rtfTransfer = RTFTransfer.getInstance();
-		  Clipboard clipboard = new Clipboard(Display.getDefault());
-		  Object[] rtfData = new Object[] { os.toString() };
-		  clipboard.setContents(rtfData, new Transfer[] {rtfTransfer});
+			RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+			Clipboard clipboard = new Clipboard(Display.getDefault());
+			Object[] rtfData = new Object[] { os.toString() };
+			clipboard.setContents(rtfData, new Transfer[] {rtfTransfer});
 		}
 		catch (final Exception e1)
 		{
 			IStatus status = new Status(IStatus.ERROR, PlotViewerPlugin.PLUGIN_ID, e1.getLocalizedMessage(), e1);
-			XYPlotPlugin.getDefault().getLog().log(status);
+						XYPlotPlugin.getDefault().getLog().log(status);
 		}
 		finally {
 			if (os != null) {
@@ -857,8 +860,10 @@ public class XYPlotView extends ViewPart
 				}
 			}
 		}
-	}
+			
 
+	}
+	
 	private final void doWMF(final MetafileCanvasGraphics2d mf)
 	{
 
@@ -952,6 +957,7 @@ public class XYPlotView extends ViewPart
 		manager.add(_growPlot);
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
+		manager.add(_copyToClipboard);
 		manager.add(_editMyProperties);
 		manager.add(_listenForDataChanges);
 	}
@@ -1073,6 +1079,25 @@ public class XYPlotView extends ViewPart
 				.setToolTipText("Place a WMF image of the graph on the clipboard");
 		_exportToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/copy.png"));
+		
+		_copyToClipboard = new Action()
+		{
+			public void run()
+			{
+				if (_thePlot != null)
+				{
+					final TimeSeriesCollection dataset = (TimeSeriesCollection)
+							_thePlot.getDataset();
+					XYPlotUtilities.copyToClipboard(_chartInPanel.getName(),
+							dataset);
+				}
+			}
+		};
+		_copyToClipboard.setText("Copy to Clipboard");
+		_copyToClipboard
+				.setToolTipText("Copies the graph as a text matrix to the clipboard");
+		_copyToClipboard.setImageDescriptor(XYPlotPlugin
+				.getImageDescriptor("icons/csv.png"));
 
 	}
 
