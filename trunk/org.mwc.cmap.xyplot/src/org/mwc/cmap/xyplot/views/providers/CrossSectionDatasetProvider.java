@@ -49,7 +49,7 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 		for(final Watchable wb: wbs)
 		{		    					
 			final Double x_coord = new Double(_calc.getDistance(line, wb));
-        	final Double y_coord = new Double(wb.getDepth());
+        	final Double y_coord = new Double(-1.0*wb.getDepth());
 			series.add(x_coord, y_coord);    		        		
 		}
 		return series;
