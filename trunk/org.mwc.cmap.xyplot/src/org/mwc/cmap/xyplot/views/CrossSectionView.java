@@ -55,6 +55,11 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 	private ISelectionChangedListener _selectionChangeListener;
 	
 	/**
+	 * Provider listening to us
+	 */
+	private ISelectionProvider _selectionProvider;
+	
+	/**
 	 * helper application to help track activation/closing of new plots
 	 */
 	private PartMonitor _partMonitor;
@@ -218,7 +223,15 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 						if (part != _viewer)
 						{
 							final ISelectionProvider iS = (ISelectionProvider) part;
-							iS.addSelectionChangedListener(_selectionChangeListener);
+							if (!iS.equals(_selectionProvider))
+							{
+								_selectionProvider = iS;
+								if (_selectionChangeListener != null)
+								{
+									_selectionProvider
+										.addSelectionChangedListener(_selectionChangeListener);
+								}
+							}
 						}
 					}
 				});
@@ -231,8 +244,11 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 						// aah, just check it's not is
 						if (part != _viewer)
 						{
-							final ISelectionProvider iS = (ISelectionProvider) part;
-							iS.removeSelectionChangedListener(_selectionChangeListener);
+							if (_selectionProvider != null && _selectionChangeListener != null)
+							{
+								_selectionProvider
+									.removeSelectionChangedListener(_selectionChangeListener);
+							}
 						}
 					}
 				});
@@ -318,6 +334,9 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		if (part.equals(_myLayers))
 			return;
 		
+		// de-register current layers before tracking the new one
+		clearLayerListener();
+		
 		_myLayers = (Layers) part;
 		if (_myLayersListener == null)
 		{
@@ -402,13 +421,8 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		}
 	}
 	
-	public void dispose()
+	void clearTimeListener()
 	{
-		super.dispose();
-		// make sure we close the listeners
-		clearLayerListener();
-		clearLineListener();		
-		
 		if (_timeProvider != null)
 		{
 			_timeProvider.removeListener(_timeListener, 
@@ -416,6 +430,28 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			_timeListener = null;
 			_timeProvider = null;			
 		}
+	}
+	
+	public void dispose()
+	{
+		super.dispose();
+		// make sure we close the listeners
+		clearLayerListener();
+		clearLineListener();		
+		clearTimeListener();
+		
+		if(_viewer != null)
+		{
+			_viewer.removeSelectionChangedListener(_selectionChangeListener);
+		}
+		
+		if (_selectionProvider != null)
+		{
+			_selectionProvider.removeSelectionChangedListener(_selectionChangeListener);
+			_selectionProvider = null;
+		}
+		
+		_selectionChangeListener = null;
 	}
 	
 	@Override
