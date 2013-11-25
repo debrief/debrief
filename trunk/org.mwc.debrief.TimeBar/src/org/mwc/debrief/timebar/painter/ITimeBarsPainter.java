@@ -15,6 +15,8 @@ public interface ITimeBarsPainter extends PropertyChangeListener
 	final static int TIME_LINE_WIDTH = 3;
 	final static int TIME_LINE_STYLE = SWT.LINE_SOLID;
 	
+	public boolean isDisposed();
+	
 	public void drawBar(IEventEntry modelEntry);
 	
 	public void drawSpot(IEventEntry modelEntry);

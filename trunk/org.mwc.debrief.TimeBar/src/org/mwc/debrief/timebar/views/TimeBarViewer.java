@@ -111,6 +111,11 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     		_painter.jumpToBegin();
     }
     
+    public boolean isDisposed()
+    {
+    	return _painter.isDisposed();
+    }
+    
     public void drawDiagram(final Layers theLayers)
     {
     	this.drawDiagram(theLayers, false);

@@ -391,6 +391,12 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 		composite.jumpToEarliestEvent();
 				
 	}
+
+	@Override
+	public boolean isDisposed() 
+	{
+		return _chart.isDisposed();
+	}
 	
 	
 }
