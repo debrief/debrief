@@ -1534,6 +1534,37 @@
 				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
 				<hiddenToolBarItem id="org.eclipse.search.OpenSearchDialogPage"/>
      	</perspectiveExtension>
+     	<perspectiveExtension
+     		targetID="org.eclipse.ui.resourcePerspective">
+     			<hiddenMenuItem id="bookmark"/>
+     			<hiddenMenuItem id="org.eclipse.ui.edit.addBookmark"/>
+				<hiddenMenuItem id="org.eclipse.ui.edit.addTask"/>
+				<hiddenMenuItem id="org.eclipse.ui.project.buildAll"/>
+				<hiddenMenuItem id="org.eclipse.ui.project.buildProject"/>
+				<hiddenMenuItem id="org.eclipse.ui.project.cleanAction"/>
+				<hiddenMenuItem id="org.eclipse.ui.project.buildAutomatically"/>
+				<hiddenMenuItem id="org.eclipse.ui.project.properties"/>
+				<hiddenMenuItem id="org.eclipse.ui.navigate.goInto"/>
+				<hiddenMenuItem id="org.eclipse.search.menu"/>
+				<hiddenMenuItem id="org.eclipse.search.ui.openSearchDialog"/>
+				<hiddenMenuItem id="org.eclipse.search.ui.openFileSearchPage"/>
+				<hiddenMenuItem id="textSearchSubMenu"/>
+				<hiddenMenuItem id="org.eclipse.search.ui.performTextSearchWorkspace"/>
+				<hiddenMenuItem id="org.eclipse.search.ui.performTextSearchProject"/>
+				<hiddenMenuItem id="org.eclipse.search.ui.performTextSearchFile"/>
+				<hiddenMenuItem id="org.eclipse.search.ui.performTextSearchWorkingSet"/>
+				<hiddenMenuItem id="org.eclipse.ui.navigate.back"/>
+				<hiddenMenuItem id="org.eclipse.ui.navigate.forward"/>
+				<hiddenMenuItem id="org.eclipse.ui.navigate.up"/>
+				<hiddenMenuItem id="converstLineDelimitersTo"/>
+				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.windows"/>
+				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.unix"/>
+				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.macOS9"/>
+				<hiddenToolBarItem id="org.eclipse.debug.ui.commands.RunToLine"/>
+				<hiddenToolBarItem id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
+				<hiddenToolBarItem id="org.eclipse.search.OpenSearchDialogPage"/>
+     	</perspectiveExtension>
  	</extension>
 
 	<extension point="org.eclipse.ui.preferencePages">
@@ -1641,5 +1672,11 @@
           </parameter>
        </key>
     </extension>
+    
+    <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.mwc.debrief.core.Startup"></startup>
+   </extension>
 
 </plugin>
