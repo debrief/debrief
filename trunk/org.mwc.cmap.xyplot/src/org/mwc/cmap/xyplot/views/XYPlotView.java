@@ -215,7 +215,7 @@ public class XYPlotView extends ViewPart
 	 * put the plot on the clipboard
 	 */
 	private Action _exportToClipboard;
-	
+
 	/**
 	 * put the plot on the clipboard as String matrix
 	 */
@@ -245,22 +245,34 @@ public class XYPlotView extends ViewPart
 	 * somebody to listen to the time changes
 	 */
 	private PropertyChangeListener _timeListener;
-	
+
 	private IPartListener editorListener = new IPartListener()
 	{
 		@Override
-		public void partOpened(IWorkbenchPart part) {}
+		public void partOpened(IWorkbenchPart part)
+		{
+		}
+
 		@Override
-		public void partDeactivated(IWorkbenchPart part) {}
+		public void partDeactivated(IWorkbenchPart part)
+		{
+		}
+
 		@Override
-		public void partBroughtToTop(IWorkbenchPart part) {}
+		public void partBroughtToTop(IWorkbenchPart part)
+		{
+		}
+
 		@Override
-		public void partActivated(IWorkbenchPart part) {}
-		
+		public void partActivated(IWorkbenchPart part)
+		{
+		}
+
 		@Override
 		public void partClosed(IWorkbenchPart part)
 		{
-			if (part == editor) {
+			if (part == editor)
+			{
 				getSite().getPage().hideView(XYPlotView.this);
 			}
 		}
@@ -280,17 +292,20 @@ public class XYPlotView extends ViewPart
 
 	private String _myId;
 
-	/** the special action that indicates if we should listen to our data changing, but
-	 * only if we have a data provider
+	/**
+	 * the special action that indicates if we should listen to our data changing,
+	 * but only if we have a data provider
 	 */
 	private Action _listenForDataChanges;
 
-	/** a helper that's able to generate a dataset
+	/**
+	 * a helper that's able to generate a dataset
 	 * 
 	 */
 	private transient DatasetProvider _provider;
 
-	/** our pre-generated layer listener
+	/**
+	 * our pre-generated layer listener
 	 * 
 	 */
 	protected DataListener _modifiedListener;
@@ -318,7 +333,8 @@ public class XYPlotView extends ViewPart
 	 * @param thePlotId
 	 */
 	public void showPlot(final String title, final AbstractSeriesDataset dataset,
-			final String units, final formattingOperation theFormatter, final String thePlotId)
+			final String units, final formattingOperation theFormatter,
+			final String thePlotId)
 	{
 
 		_listenForDataChanges.setEnabled(false);
@@ -400,7 +416,8 @@ public class XYPlotView extends ViewPart
 			}
 		};
 
-		getSite().getWorkbenchWindow().getPartService().addPartListener(editorListener);
+		getSite().getWorkbenchWindow().getPartService()
+				.addPartListener(editorListener);
 	}
 
 	/**
@@ -504,7 +521,8 @@ public class XYPlotView extends ViewPart
 	}
 
 	private void fillThePlot(final String title, final String units,
-			final formattingOperation theFormatter, final AbstractSeriesDataset dataset)
+			final formattingOperation theFormatter,
+			final AbstractSeriesDataset dataset)
 	{
 
 		final StepControl _theStepper = null;
@@ -643,7 +661,7 @@ public class XYPlotView extends ViewPart
 				// double-check our label is still in the right place
 				final double xVal = _thePlot.getRangeAxis().getUpperBound();
 				final double yVal = _thePlot.getDomainAxis().getLowerBound();
-				
+
 				boolean annotChanged = false;
 				if (annot.getX() != yVal)
 				{
@@ -655,7 +673,6 @@ public class XYPlotView extends ViewPart
 					annot.setY(xVal);
 					annotChanged = true;
 				}
-
 
 				// and write the text
 				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
@@ -769,10 +786,8 @@ public class XYPlotView extends ViewPart
 
 	final void wmfToFile()
 	{
-
 		// create the metafile graphics
-		String dir  = System.getProperty("java.io.tmpdir");
-		
+		String dir = System.getProperty("java.io.tmpdir");
 		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
 				(Graphics2D) _chartInPanel.getGraphics());
 
@@ -781,9 +796,9 @@ public class XYPlotView extends ViewPart
 
 	final void wmfToClipboard()
 	{
-
 		// create the metafile graphics
-		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d("c:/",
+		final String dir = System.getProperty("java.io.tmpdir");
+		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
 				(Graphics2D) _chartInPanel.getGraphics());
 
 		doWMF(mf);
@@ -795,7 +810,9 @@ public class XYPlotView extends ViewPart
 		final Dimension dim = MetafileCanvasGraphics2d.getLastScreenSize();
 
 		// try to copy the wmf to the clipboard
-		if (Platform.OS_WIN32.equals(Platform.getOS()) && Platform.ARCH_X86.equals(Platform.getOSArch())) {
+		if (Platform.OS_WIN32.equals(Platform.getOS())
+				&& Platform.ARCH_X86.equals(Platform.getOSArch()))
+		{
 			try
 			{
 				// create the clipboard
@@ -807,7 +824,9 @@ public class XYPlotView extends ViewPart
 			{
 				MWC.Utilities.Errors.Trace.trace(e, "Whilst writing WMF to clipboard");
 			}
-		} else {
+		}
+		else
+		{
 			rtfToClipboard(fName, dim);
 		}
 
@@ -820,50 +839,57 @@ public class XYPlotView extends ViewPart
 		DataInputStream dis = null;
 		try
 		{
-				os = new ByteArrayOutputStream();
-				RTFWriter writer = new RTFWriter(os);
-				File file = new File(fName);
+			os = new ByteArrayOutputStream();
+			RTFWriter writer = new RTFWriter(os);
+			File file = new File(fName);
 			byte[] data = new byte[(int) file.length()];
 			dis = new DataInputStream(new FileInputStream(file));
 			dis.readFully(data);
 			writer.writeHeader();
 			writer.writeEmfPicture(data, dim.getWidth(), dim.getHeight());
 			writer.writeTail();
-			
+
 			RTFTransfer rtfTransfer = RTFTransfer.getInstance();
 			Clipboard clipboard = new Clipboard(Display.getDefault());
-			Object[] rtfData = new Object[] { os.toString() };
-			clipboard.setContents(rtfData, new Transfer[] {rtfTransfer});
+			Object[] rtfData = new Object[]
+			{ os.toString() };
+			clipboard.setContents(rtfData, new Transfer[]
+			{ rtfTransfer });
 		}
 		catch (final Exception e1)
 		{
-			IStatus status = new Status(IStatus.ERROR, PlotViewerPlugin.PLUGIN_ID, e1.getLocalizedMessage(), e1);
-						XYPlotPlugin.getDefault().getLog().log(status);
+			IStatus status = new Status(IStatus.ERROR, PlotViewerPlugin.PLUGIN_ID,
+					e1.getLocalizedMessage(), e1);
+			XYPlotPlugin.getDefault().getLog().log(status);
 		}
-		finally {
-			if (os != null) {
+		finally
+		{
+			if (os != null)
+			{
 				try
 				{
 					os.close();
-				} catch (IOException e1)
+				}
+				catch (IOException e1)
 				{
 					// ignore
 				}
 			}
-			if (dis != null) {
+			if (dis != null)
+			{
 				try
 				{
 					dis.close();
-				} catch (IOException e1)
+				}
+				catch (IOException e1)
 				{
 					// ignore
 				}
 			}
 		}
-			
 
 	}
-	
+
 	private final void doWMF(final MetafileCanvasGraphics2d mf)
 	{
 
@@ -986,8 +1012,10 @@ public class XYPlotView extends ViewPart
 				doListenStatusUpdate();
 			}
 		};
-		_listenForDataChanges.setToolTipText("Auto-sync with calculated track data.");
-		_listenForDataChanges.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
+		_listenForDataChanges
+				.setToolTipText("Auto-sync with calculated track data.");
+		_listenForDataChanges.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/synced.gif"));
 
 		_switchAxes = new Action("Plot as waterfall", SWT.TOGGLE)
 		{
@@ -1079,17 +1107,16 @@ public class XYPlotView extends ViewPart
 				.setToolTipText("Place a WMF image of the graph on the clipboard");
 		_exportToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/copy.png"));
-		
+
 		_copyToClipboard = new Action()
 		{
 			public void run()
 			{
 				if (_thePlot != null)
 				{
-					final TimeSeriesCollection dataset = (TimeSeriesCollection)
-							_thePlot.getDataset();
-					XYPlotUtilities.copyToClipboard(_chartInPanel.getName(),
-							dataset);
+					final TimeSeriesCollection dataset = (TimeSeriesCollection) _thePlot
+							.getDataset();
+					XYPlotUtilities.copyToClipboard(_chartInPanel.getName(), dataset);
 				}
 			}
 		};
@@ -1127,14 +1154,15 @@ public class XYPlotView extends ViewPart
 
 	}
 
-	
 	@Override
 	public void dispose()
 	{
 		super.dispose();
-		
-		if (editorListener != null) {
-			getSite().getWorkbenchWindow().getPartService().removePartListener(editorListener);
+
+		if (editorListener != null)
+		{
+			getSite().getWorkbenchWindow().getPartService()
+					.removePartListener(editorListener);
 			editorListener = null;
 		}
 		// closing, ditch the listenesr
@@ -1220,7 +1248,8 @@ public class XYPlotView extends ViewPart
 	 * @param memento
 	 * @throws PartInitException
 	 */
-	public void init(final IViewSite site, final IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento)
+			throws PartInitException
 	{
 		// let our parent go for it first
 		super.init(site, memento);
@@ -1295,7 +1324,8 @@ public class XYPlotView extends ViewPart
 
 	}
 
-	private void storeFont(final IMemento memento, final String entryHeader, final Font theFont)
+	private void storeFont(final IMemento memento, final String entryHeader,
+			final Font theFont)
 	{
 		// write elements
 		memento.putInteger(entryHeader + "_SIZE", theFont.getSize());
@@ -1339,8 +1369,9 @@ public class XYPlotView extends ViewPart
 		}
 	}
 
-	public void showPlot(final String theTitle, final DatasetProvider prov, final String units2,
-			final formattingOperation theFormatter, final String thePlotId)
+	public void showPlot(final String theTitle, final DatasetProvider prov,
+			final String units2, final formattingOperation theFormatter,
+			final String thePlotId)
 
 	{
 		// right, store the incoming data, so we can save it when/if
