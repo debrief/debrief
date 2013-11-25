@@ -260,14 +260,7 @@ public class TimeBarView extends ViewPart {
 		
 		_selectionChangeListener = null;
 		
-		if (_timeProvider != null)
-		{
-			_timeProvider.removeListener(_temporalListener, 
-					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-			_temporalListener = null;
-			_timeProvider = null;
-			
-		}
+		clearTimeListener();
 	}
 	
 	/**
@@ -280,6 +273,17 @@ public class TimeBarView extends ViewPart {
 			_myLayers.removeDataExtendedListener(_myLayersListener);
 			_myLayersListener = null;
 			_myLayers = null;
+		}
+	}
+	
+	void clearTimeListener()
+	{
+		if (_timeProvider != null)
+		{
+			_timeProvider.removeListener(_temporalListener, 
+					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+			_temporalListener = null;
+			_timeProvider = null;			
 		}
 	}
 	
@@ -426,6 +430,7 @@ public class TimeBarView extends ViewPart {
 							}
 							
 							clearLayerListener();
+							clearTimeListener();
 						}
 					}
 				});
