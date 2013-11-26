@@ -116,6 +116,13 @@ public class CrossSectionViewer
 		_currentTime = newDTG;
 	}
 	
+	public void clearPlot()
+	{
+		_dataset.removeAllSeries();
+		_chart.getXYPlot().setDataset(_dataset);
+		_chart.getXYPlot().clearAnnotations();		
+	}
+	
 	public void fillPlot(final Layers theLayers, final LineShape line,
 			final ICrossSectionDatasetProvider prov)
 	{
