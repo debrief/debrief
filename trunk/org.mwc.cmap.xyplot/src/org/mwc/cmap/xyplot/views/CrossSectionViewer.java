@@ -161,6 +161,8 @@ public class CrossSectionViewer
 		
 		double maxX = 0;
 		double maxY = 0;
+		double minX = Integer.MAX_VALUE;
+		double minY = Integer.MAX_VALUE;
 		
 		for (int i = 0; i < _dataset.getSeriesCount(); i++) 
 		{
@@ -168,18 +170,28 @@ public class CrossSectionViewer
 			final double x = series.getMaxX(); 
 			if (maxX < x)
 				maxX = x;
+			final double mX = series.getMinX();
+			if (minX > mX)
+				minX = mX;
 			final double y = series.getMaxY(); 
 			if (maxY < y)
 				maxY = y;
+			final double mY = series.getMinY();
+			if (minY > mY)
+				minY = mY;
 		}
 		
 		final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis(); 
 		if (yAxis.getUpperBound() < maxY)
 			yAxis.setUpperBound(maxY + 5);
+		if (yAxis.getLowerBound() > minY)
+			yAxis.setLowerBound(minY - 5);
 		
 		final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
 		if (xAxis.getUpperBound() < maxX)
 			xAxis.setUpperBound(maxX + 5);
+		if (xAxis.getLowerBound() > minX)
+			xAxis.setLowerBound(minX - 5);
 		
 		_chart.getXYPlot().setDataset(_dataset);
 	}
