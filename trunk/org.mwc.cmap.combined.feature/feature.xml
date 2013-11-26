@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.combined.feature"
       label="%featureName"
-      version="1.0.207"
+      version="1.0.208"
       provider-name="MWC"
       plugin="org.mwc.cmap.core">
 

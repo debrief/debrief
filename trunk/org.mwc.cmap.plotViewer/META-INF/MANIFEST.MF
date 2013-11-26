@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Plot Viewer
 Bundle-SymbolicName: org.mwc.cmap.plotViewer; singleton:=true
-Bundle-Version: 1.1.69
+Bundle-Version: 1.1.70
 Bundle-Activator: org.mwc.cmap.plotViewer.PlotViewerPlugin
 Bundle-Vendor: MWC
 Export-Package: org.mwc.cmap.plotViewer,
