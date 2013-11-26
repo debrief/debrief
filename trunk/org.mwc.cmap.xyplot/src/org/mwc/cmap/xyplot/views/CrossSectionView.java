@@ -109,7 +109,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		
 		 
 		listenToMyParts();
-		setupFiringChangesToChart();
+		setupFiringTimeChangesToChart();
 		contributeToActionBars();
 		
 		_selectionChangeListener = new ISelectionChangedListener() 
@@ -224,6 +224,9 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 							final ISelectionProvider iS = (ISelectionProvider) part;
 							if (!iS.equals(_selectionProvider))
 							{
+								if (part instanceof IEditorPart)
+									setUpTimeProvider((IEditorPart) part);	
+								
 								_selectionProvider = iS;
 								if (_selectionChangeListener != null)
 								{
@@ -257,7 +260,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 				.getActivePage());
 	}
 	
-	private void setupFiringChangesToChart()
+	private void setupFiringTimeChangesToChart()
 	{
 
 		// see if we've alreay been configured
@@ -300,10 +303,21 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			}
 		}
 
+		setUpTimeProvider(editor);
+	}
+	
+	private void setUpTimeProvider(IEditorPart editor)
+	{
 		if (editor != null)
 		{
 			// get it's time-provider interface
-			_timeProvider = (TimeProvider) editor.getAdapter(TimeProvider.class);
+			final TimeProvider prov = (TimeProvider) editor.getAdapter(TimeProvider.class); 
+			if (_timeProvider != null && _timeProvider.equals(prov)) 
+					return;
+			if (_timeListener != null)
+				_timeProvider.removeListener(_timeListener, 
+					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+			_timeProvider = prov;
 		}
 		else
 			CorePlugin.logError(Status.WARNING, "Failed to identify time provider",
