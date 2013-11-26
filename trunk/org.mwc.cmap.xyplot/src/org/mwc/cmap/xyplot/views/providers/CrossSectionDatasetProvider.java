@@ -59,6 +59,8 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 			final HiResDate startT, final 	HiResDate endT) 
 	{
 		final Collection<Editable> editables  = wlist.getItemsBetween(startT, endT);
+		if (editables == null)
+			return  new XYSeries(wlist.getName());
 		Watchable[] wbs = (Watchable[]) editables.toArray(new Watchable[editables.size()]);
 		return getSeries(line, wlist.getName(), wbs);
 	}
