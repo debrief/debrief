@@ -869,10 +869,12 @@ public class ImportReplay extends PlainImporterBase
 		}
 	}
 
-	private PlainLineImporter getImporterFor(final String theLine)
+	private PlainLineImporter getImporterFor(final String rawString)
 	{
-
 		PlainLineImporter res = null;
+
+		// trim any leading whitespace
+		final String theLine = rawString.trim();
 
 		// so, determine if this is a comment
 		if (theLine.charAt(0) == ';')
@@ -1302,7 +1304,7 @@ public class ImportReplay extends PlainImporterBase
 			assertTrue("File finished received", fileFinished);
 			assertTrue("All Files finished received", allFilesFinished);
 
-			assertEquals("Count of layers", 2, _theLayers.size());
+			assertEquals("Count of layers", 3, _theLayers.size());
 
 			// area of coverage
 			final MWC.GenericData.WorldArea area = _theLayers.elementAt(0).getBounds();
@@ -1319,7 +1321,10 @@ public class ImportReplay extends PlainImporterBase
 					.getLong(), -11.59376, 0.00001);
 			super.assertEquals("br depth of first layer", area.getBottomRight()
 					.getDepth(), 0, 0.00001);
-
+			
+			// check those narrative lines got read in
+			NarrativeWrapper narratives = (NarrativeWrapper) _theLayers.elementAt(2);
+			assertEquals("have read in both narrative entries",2, narratives.size());
 		}
 	}
 

@@ -181,6 +181,33 @@ public final class ImportNarrative implements PlainLineImporter
       super(val);
     }
 
+    public void testImportWithWhitespace1()
+    {
+      final String theLine = "  ;NARRATIVE:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
+      final ImportNarrative in = new ImportNarrative();
+      final Object res = in.readThisLine(theLine);
+      final NarrativeEntry ne = (NarrativeEntry)res;
+
+      // check it contains the right data
+      final String theDate = ne.getDTGString();
+      assertEquals(theDate, "020421 121857");
+      assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
+    }
+    
+    public void testImportWithWhitespace2()
+    {
+      final String theLine = "\t;NARRATIVE:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
+      final ImportNarrative in = new ImportNarrative();
+      final Object res = in.readThisLine(theLine);
+      final NarrativeEntry ne = (NarrativeEntry)res;
+
+      // check it contains the right data
+      final String theDate = ne.getDTGString();
+      assertEquals(theDate, "020421 121857");
+      assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
+    }
+
+    
     public void testImportSingleLine()
     {
       final String theLine = ";NARRATIVE:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";

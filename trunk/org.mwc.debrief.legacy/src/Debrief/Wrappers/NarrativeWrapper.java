@@ -203,6 +203,14 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_lineWidth = val;
 	}
+	
+	/** how many entries do we have?
+	 * 
+	 */
+	public int size()
+	{
+		return _myEntries.size();
+	}
 
 	public final boolean hasEditor()
 	{
