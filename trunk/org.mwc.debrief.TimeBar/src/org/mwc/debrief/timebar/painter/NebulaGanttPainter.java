@@ -113,8 +113,13 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 		if (!modelEntry.isVisible())
 			return;
 			
-		final GanttEvent evt = new GanttEvent(_chart, modelEntry.getName(), 
+		GanttEvent evt = _eventEntries.get(modelEntry);
+		if (evt == null)
+		{
+			evt = new GanttEvent(_chart, modelEntry.getName(), 
 				modelEntry.getStart(), modelEntry.getEnd(), 0);
+			addEvent(evt, modelEntry);		
+		}
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
 		
@@ -126,19 +131,25 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 			final GanttGroup group = new GanttGroup(_chart);
 			for (final IEventEntry entry: modelEntry.getChildren())
 			{
+				GanttEvent ganttEvt = _eventEntries.get(entry);
+				if (ganttEvt == null)
+				{
+					ganttEvt = new GanttEvent(_chart, entry.getName(), 
+							entry.getStart(), entry.getEnd(), 0);
+					addEvent(ganttEvt, entry);
+				}
 				if (entry instanceof TimeSpot)
 				{
 					drawSpot(entry);					
-					group.addEvent(_eventEntries.get(entry));
+					group.addEvent(ganttEvt);
 				}
 				else
 				{
 					drawBar(entry);
-				}
-				evt.addScopeEvent(_eventEntries.get(entry));
+				}				
+				evt.addScopeEvent(ganttEvt);
 			}
 		}
-		addEvent(evt, modelEntry);		
 	}
 
 	@Override
@@ -156,6 +167,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 	private void addEvent(final GanttEvent evt, final IEventEntry modelEntry)
 	{
+		if (_eventEntries.containsKey(modelEntry))
+			return;
+		
 		_eventEntries.put(modelEntry, evt);
 		if (_earliestEvent == null)
 		{
