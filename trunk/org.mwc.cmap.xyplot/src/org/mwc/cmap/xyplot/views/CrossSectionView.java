@@ -131,6 +131,7 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 						final PlainShape shape = ((ShapeWrapper) eb).getShape();
 						if (shape instanceof LineShape && !shape.equals(_line))
 						{
+							clearLineListener();
 							_line = (LineShape) shape;
 							_line.addPropertyListener(_lineListener);
 							_viewer.fillPlot(_myLayers, _line, _datasetProvider);
@@ -182,7 +183,6 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
-						clearLineListener();
 						processNewLayers(part);
 					}
 				});
@@ -192,7 +192,6 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
-						clearLineListener();
 						processNewLayers(part);
 					}
 				});
@@ -336,6 +335,8 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		
 		// de-register current layers before tracking the new one
 		clearLayerListener();
+		clearLineListener();
+		_viewer.clearPlot();
 		
 		_myLayers = (Layers) part;
 		if (_myLayersListener == null)
@@ -452,6 +453,8 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		}
 		
 		_selectionChangeListener = null;
+		
+		_viewer.clearPlot();
 	}
 	
 	@Override
