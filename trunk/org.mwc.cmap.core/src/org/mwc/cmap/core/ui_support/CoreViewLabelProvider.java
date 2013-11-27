@@ -26,7 +26,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
-import MWC.GenericData.Watchable;
+import MWC.GenericData.ColoredWatchable;
 
 public class CoreViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
@@ -119,9 +119,9 @@ public class CoreViewLabelProvider extends LabelProvider implements
 				final Editable ed = ew.getEditable();
 
 				// aah does this have color?
-				if (ed instanceof Watchable) {
+				if (ed instanceof ColoredWatchable) {
 					// ok - cast it
-					final Watchable was = (Watchable) ed;
+					final ColoredWatchable was = (ColoredWatchable) ed;
 
 					// generate the id
 					final String theId = idFor(was);
@@ -160,8 +160,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 		if (thirdPartyImageDescriptor != null) {
 			// right, is this something that we apply color to?
-			if (editable instanceof Watchable) {
-				final Watchable thisW = (Watchable) editable;
+			if (editable instanceof ColoredWatchable && ((ColoredWatchable)editable).getColor() != null) {
+				final ColoredWatchable thisW = (ColoredWatchable) editable;
 
 				// sort out the color index
 				final String thisId = idFor(thisW);
@@ -238,7 +238,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * @param thisW the item to hash
 	 * @return a unique string for this item type and color
 	 */
-	private String idFor(final Watchable thisW) {
+	private String idFor(final ColoredWatchable thisW) {
 		return thisW.getClass() + " " + thisW.getColor();
 	}
 

@@ -6,7 +6,7 @@ package MWC.GenericData;
  * @author ianmayo
  *
  */
-public interface Watchable
+public interface Watchable extends ColoredWatchable
 {
   /** get the current location of the watchable
    * @return the location
@@ -47,9 +47,5 @@ public interface Watchable
   /** find out the name of this watchable
    */
   public String getName();
-
-  /** find out the colour of this watchable
-   */
-  public java.awt.Color getColor();
 
 }
