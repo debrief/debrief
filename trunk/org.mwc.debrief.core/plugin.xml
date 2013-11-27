@@ -1136,7 +1136,7 @@
        <command
              defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
              id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
-             name="&amp;WPF Layers">
+             name="&amp;VPF Layers">
        </command>
        
        
