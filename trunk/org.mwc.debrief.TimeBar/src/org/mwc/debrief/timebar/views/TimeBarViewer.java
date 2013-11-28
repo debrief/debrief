@@ -278,6 +278,15 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 		setSelectionToObject(eventEntry);		
 	}
 	
+	protected void dispose()
+	{
+		if(_painter != null)
+		{
+			_painter.removeListener(this);
+			_painter = null;
+		}
+	}
+	
 }
 
 

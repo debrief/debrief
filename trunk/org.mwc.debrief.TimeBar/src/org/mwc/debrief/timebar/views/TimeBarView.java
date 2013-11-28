@@ -250,6 +250,7 @@ public class TimeBarView extends ViewPart {
 		if(_viewer != null)
 		{
 			_viewer.removeSelectionChangedListener(_selectionChangeListener);
+			_viewer.dispose();
 		}
 		
 		if (_selectionProvider != null)
