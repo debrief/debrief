@@ -29,7 +29,7 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		ImageDescriptor res = null;
 		
 		if (editable instanceof TrackWrapper)
-			res = CorePlugin.getImageDescriptor("icons/track.gif");
+			res = CorePlugin.getImageDescriptor("icons/track.png");
 		else if (editable instanceof SensorWrapper)
 			res = CorePlugin.getImageDescriptor("icons/SensorFit.png");
 		else if (editable instanceof ChartFolio)

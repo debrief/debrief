@@ -102,7 +102,7 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
-public interface WatchableList
+public interface WatchableList extends ColoredWatchable
 {
 	/**
 	 * the name of the property change event to fire should this object get
@@ -173,11 +173,6 @@ public interface WatchableList
 	 * find out the total area covered by this list
 	 */
 	public MWC.GenericData.WorldArea getBounds();
-
-	/**
-	 * find out the default colour for this list
-	 */
-	public java.awt.Color getColor();
 
 	/**
 	 * find out the symbol to use for plotting this list in Snail mode
