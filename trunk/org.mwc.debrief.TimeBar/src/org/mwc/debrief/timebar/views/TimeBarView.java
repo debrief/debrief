@@ -317,6 +317,8 @@ public class TimeBarView extends ViewPart {
 						// is this our set of layers?
 						if (part == _myLayers)
 						{
+							//de-register listeners from the layer
+							_viewer.unWalkThrough(_myLayers);
 							// stop listening to this layer
 							clearLayerListener();
 						}						
