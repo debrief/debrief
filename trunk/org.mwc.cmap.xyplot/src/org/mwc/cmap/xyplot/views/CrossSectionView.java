@@ -359,7 +359,8 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 			{
 
 				public void dataModified(final Layers theData, final Layer changedLayer)
-				{						
+				{			
+					processReformattedLayer(theData, changedLayer);
 				}
 
 				public void dataExtended(final Layers theData)
@@ -384,6 +385,9 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 
 		// and listen for items being reformatted
 		_myLayers.addDataReformattedListener(_myLayersListener);
+		
+		// and listen for items being reformatted
+		_myLayers.addDataModifiedListener(_myLayersListener);
 
 		// do an initial population.
 		processNewData(_myLayers, null, null);		
