@@ -61,6 +61,11 @@ public class CrossSectionViewer
 	private static final Shape _markerShape = new Rectangle2D.Double(-2, -2, 2, 2);
 	private static final int _markerSize = 4;
 	
+	/**
+	 * Number of ticks to show before and after min and max axis values.
+	 */
+	private static final int TICK_OFFSET = 1;
+	
 	private long _timePeriod = 0;
 	
 	private String _plotId;
@@ -187,18 +192,13 @@ public class CrossSectionViewer
 			if (minY > mY)
 				minY = mY;
 		}
-		
 		final ValueAxis yAxis = _chart.getXYPlot().getRangeAxis(); 
-		if (yAxis.getUpperBound() < maxY)
-			yAxis.setUpperBound(maxY + 5);
-		if (yAxis.getLowerBound() > minY)
-			yAxis.setLowerBound(minY - 5);
+		yAxis.setUpperBound(maxY + TICK_OFFSET);
+		yAxis.setLowerBound(minY - TICK_OFFSET);
 		
 		final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
-		if (xAxis.getUpperBound() < maxX)
-			xAxis.setUpperBound(maxX + 5);
-		if (xAxis.getLowerBound() > minX)
-			xAxis.setLowerBound(minX - 5);
+		xAxis.setUpperBound(maxX + TICK_OFFSET);
+		xAxis.setLowerBound(minX - TICK_OFFSET);
 		
 		_chart.getXYPlot().setDataset(_dataset);
 	}
