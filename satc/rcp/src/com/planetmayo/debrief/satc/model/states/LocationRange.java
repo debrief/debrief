@@ -53,7 +53,8 @@ public class LocationRange extends BaseRange<LocationRange>
 	public void constrainTo(LocationRange sTwo) throws IncompatibleStateException
 	{
 		Geometry intersection = _myArea.intersection(sTwo._myArea);
-		if (intersection.isEmpty()) {
+		if (intersection.isEmpty()) 
+		{
 			throw new IncompatibleStateException("location ranges don't intersect", this, sTwo);
 		}
 		_myArea = intersection;

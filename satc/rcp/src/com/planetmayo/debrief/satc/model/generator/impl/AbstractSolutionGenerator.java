@@ -171,13 +171,18 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 		// increementing counter, to number turns
 		int counter = 1;
 
-		Iterator<BoundedState> iterator = theStates.iterator();
-		while (iterator.hasNext())
+		for (BoundedState thisS : theStates)
 		{
 			if (monitor.isCanceled())
+			{
 				throw new InterruptedException();
-
-			BoundedState thisS = iterator.next();
+			}
+			if (thisS.getLocation() == null)
+			{
+				// leg algorithms work with location polygons so we don't need 
+				// to consider states which doesn't have locations here
+				continue;
+			}
 			String thisLegName = thisS.getMemberOf();
 
 			// is this the current leg?
