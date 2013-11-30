@@ -6,12 +6,15 @@ package org.mwc.cmap.core.ui_support;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -48,7 +51,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 */
 	Image nonVisibleImage = null;
 
-	private ImageRegistry _imageRegistry;
+	private static ImageRegistry _imageRegistry;
 
 	/**
 	 * 
@@ -192,7 +195,42 @@ public class CoreViewLabelProvider extends LabelProvider implements
 						newGC.setBackground(thisColor);
 
 						// apply a color wash
-						newGC.fillRectangle(0, 0, wid, ht);
+						if (Platform.OS_LINUX.equals(Platform.getOS()))
+						{
+							ImageData data = res.getImageData();
+						  // we recognize two transparency types
+							if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL
+									|| data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
+							{
+								for (int i = 0; i < wid; i++)
+								{
+									for (int j = 0; j < ht; j++)
+									{
+										if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL)
+										{
+											if (data.getPixel(i, j) > 0)
+											{
+												newGC.fillRectangle(i, j, 1, 1);
+											}
+										} else if (data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
+										{
+											if (data.getAlpha(i, j) > 0)
+											{
+												newGC.fillRectangle(i, j, 1, 1);
+											}
+										}
+									}
+								}
+							} else
+							{
+								// display solid color icon
+								newGC.fillRectangle(0, 0, wid, ht);
+							}
+						} else
+						{
+							// Mac/Windows 
+							newGC.fillRectangle(0, 0, wid, ht);
+						}
 
 						// and dispose the GC
 						newGC.dispose();
