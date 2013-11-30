@@ -28,6 +28,8 @@ import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldVector;
 
 
 public class CrossSectionViewer
@@ -171,20 +173,12 @@ public class CrossSectionViewer
 			
 		}
 		
-		double maxX = 0;
 		double maxY = 0;
-		double minX = Integer.MAX_VALUE;
 		double minY = Integer.MAX_VALUE;
 		
 		for (int i = 0; i < _dataset.getSeriesCount(); i++) 
 		{
 			final XYSeries series = _dataset.getSeries(_dataset.getSeriesKey(i));
-			final double x = series.getMaxX(); 
-			if (maxX < x)
-				maxX = x;
-			final double mX = series.getMinX();
-			if (minX > mX)
-				minX = mX;
 			final double y = series.getMaxY(); 
 			if (maxY < y)
 				maxY = y;
@@ -197,10 +191,16 @@ public class CrossSectionViewer
 		yAxis.setLowerBound(minY - TICK_OFFSET);
 		
 		final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
-		xAxis.setUpperBound(maxX + TICK_OFFSET);
-		xAxis.setLowerBound(minX - TICK_OFFSET);
+		xAxis.setUpperBound(getXAxisLength(line) + TICK_OFFSET);
+		xAxis.setLowerBound(0);
 		
 		_chart.getXYPlot().setDataset(_dataset);
+	}
+	
+	private double getXAxisLength(LineShape line)
+	{
+		final WorldVector wv = line.getLine_Start().subtract(line.getLineEnd());
+		return new WorldDistance(wv).getValueIn(WorldDistance.KM);
 	}
 	
 	private void setDiscreteRenderer(final int series, final Color paint)
