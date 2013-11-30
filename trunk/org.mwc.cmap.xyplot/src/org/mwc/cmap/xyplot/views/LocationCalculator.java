@@ -38,8 +38,10 @@ public class LocationCalculator implements ILocationCalculator
 	private double getDistance(final WorldLocation start, final WorldLocation end,
 			final WorldLocation watchableLocation)
 	{
-		final double angleA = watchableLocation.rangeFrom(end);
+		// perpendicular distance from watchable to the line
+		final double leg = watchableLocation.rangeFrom(start, end).getValueIn(_units);
 		final double hypotenus = new WorldDistance(watchableLocation.subtract(end)).getValueIn(_units);
+		final double angleA = Math.asin(leg / hypotenus);		
 		return hypotenus * Math.cos(Math.PI*angleA/180);
 	}
 	
@@ -70,7 +72,7 @@ public class LocationCalculator implements ILocationCalculator
 			assertEquals(60.0, angleA);
 						
 			final double d = calc.getDistance(start, end, watch);
-			assertEquals(3333.6000000000013, d);
+			assertEquals(6667.200000000001, d);
 		}
 		
 	}
