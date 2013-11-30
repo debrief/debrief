@@ -425,6 +425,8 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		if (_myLayers != null)
 		{
 			_myLayers.removeDataExtendedListener(_myLayersListener);
+			_myLayers.removeDataModifiedListener(_myLayersListener);
+			_myLayers.removeDataReformattedListener(_myLayersListener);
 			_myLayersListener = null;
 			_myLayers = null;
 		}
