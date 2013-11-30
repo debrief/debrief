@@ -55,15 +55,15 @@ public class LocationCalculator implements ILocationCalculator
 		public final void setUp()
 		{
 			// set the earth model we are expecting
-			MWC.GenericData.WorldLocation.setModel(new CompletelyFlatEarth());
-
-			start = new WorldLocation(0, 0, 0);
-			end = new WorldLocation(0, 1, 0);			
-			watch = new WorldLocation(1, 0.5, 0);		
+			MWC.GenericData.WorldLocation.setModel(new CompletelyFlatEarth());	
 		}
 		
-		public void testGetDistance()
+		public void testGetDistanceMiddle()
 		{
+			start = new WorldLocation(0, 0, 0);
+			end = new WorldLocation(0, 1, 0);			
+			watch = new WorldLocation(1, 0.5, 0);	
+			
 			final double lineLen = new WorldDistance(end.subtract(start))
 				.getValueIn(WorldDistance.MINUTES);
 			assertEquals(60.0, lineLen);
@@ -73,6 +73,23 @@ public class LocationCalculator implements ILocationCalculator
 		
 			final double d = calc.getDistance(start, end, watch);
 			assertEquals(30.0, d, 0.00001 /* epsilon */);
+		}	
+		
+		public void testGetDistanceQuarter()
+		{
+			start = new WorldLocation(0, 0, 0);
+			end = new WorldLocation(0, 2, 0);			
+			watch = new WorldLocation(1, 1.5, 0);	
+			
+			final double lineLen = new WorldDistance(end.subtract(start))
+				.getValueIn(WorldDistance.MINUTES);
+			assertEquals(60.0 * 2, lineLen);
+			
+			final double perpendicular = watch.rangeFrom(start, end).getValueIn(WorldDistance.MINUTES);
+			assertEquals(60.0, perpendicular);
+		
+			final double d = calc.getDistance(start, end, watch);
+			assertEquals(15.0, d, 0.00001 /* epsilon */);
 		}	
 		
 	}
