@@ -79,17 +79,14 @@ public class LocationCalculator implements ILocationCalculator
 		{
 			start = new WorldLocation(0, 0, 0);
 			end = new WorldLocation(0, 2, 0);			
-			watch = new WorldLocation(1, 1.5, 0);	
+			watch = new WorldLocation(0, 1.5, 0);	
 			
 			final double lineLen = new WorldDistance(end.subtract(start))
 				.getValueIn(WorldDistance.MINUTES);
 			assertEquals(60.0 * 2, lineLen);
-			
-			final double perpendicular = watch.rangeFrom(start, end).getValueIn(WorldDistance.MINUTES);
-			assertEquals(60.0, perpendicular);
-		
+						
 			final double d = calc.getDistance(start, end, watch);
-			assertEquals(15.0, d, 0.00001 /* epsilon */);
+			assertEquals(30.0, d, 0.00001 /* epsilon */);
 		}	
 		
 	}
