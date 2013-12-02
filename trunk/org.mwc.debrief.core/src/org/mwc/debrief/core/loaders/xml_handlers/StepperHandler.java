@@ -10,6 +10,7 @@ package org.mwc.debrief.core.loaders.xml_handlers;
  */
 
 import java.awt.Color;
+import java.text.ParseException;
 
 import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
@@ -288,7 +289,13 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 			final String radius = (String) details.properties.get(RADIUS);
 			if (radius != null)
-				rr.setRadius(Double.parseDouble(radius));
+				try {
+					rr.setRadius(MWCXMLReader.readThisDouble(radius));
+				} catch (final ParseException pe) {
+					MWC.Utilities.Errors.Trace.trace(pe,
+							"Reader: Whilst reading in " + RADIUS + " value of :"
+									+ radius);
+				}
 
 			final String arcs = (String) details.properties.get(ARCS);
 			if (arcs != null)
@@ -349,7 +356,17 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			final SnailHighlighter sp = (SnailHighlighter) thisPainter;
 			final String vector_stretch = (String) details.properties.get(VECTOR_STRETCH);
 			if (vector_stretch != null)
-				sp.setVectorStretch(Double.valueOf(vector_stretch).doubleValue());
+			{
+				try {
+					final double value = MWCXMLReader.readThisDouble(vector_stretch); 
+					sp.setVectorStretch(value);
+					sp.getSnailProperties().setVectorStretch(value);
+				} catch (final ParseException pe) {
+					MWC.Utilities.Errors.Trace.trace(pe,
+							"Reader: Whilst reading in " + VECTOR_STRETCH + " value of :"
+									+ vector_stretch);
+				}
+			}				
 
 			final String linkPos = (String) details.properties.get(LINK_POSITIONS);
 			if (linkPos != null)
@@ -374,11 +391,6 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 				final Duration theLen = Duration.fromString(trailLength);
 				sp.getSnailProperties().setTrailLength(theLen);
 			}
-
-			final String vectorStretch = (String) details.properties.get(VECTOR_STRETCH);
-			if (vectorStretch != null)
-				sp.getSnailProperties().setVectorStretch(
-						Double.parseDouble(vectorStretch));
 		}
 	}
 
