@@ -8,10 +8,12 @@ package MWC.Utilities.ReaderWriter.XML;
 
 import java.io.CharArrayWriter;
 import java.text.DateFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -58,10 +60,17 @@ public class MWCXMLReader extends DefaultHandler {
 	 * number formatter used by our "writeThis" methods
 	 */
 	static private final java.text.DecimalFormat shortFormat = new java.text.DecimalFormat(
-			"0.000");
+			"0.000", new DecimalFormatSymbols(Locale.UK));
 	static private final java.text.DecimalFormat longFormat = new java.text.DecimalFormat(
-			"0.0000000");
+			"0.0000000", new DecimalFormatSymbols(Locale.UK));
 
+	/**
+	 * number formatter used by our "readThis" methods
+	 */
+	// comma is used as the decimal separator here
+	static private final java.text.DecimalFormat shortCommaFormat = new java.text.DecimalFormat(
+			"0.000", new DecimalFormatSymbols(Locale.FRANCE));
+	
 	/**
 	 * whether we report "Handler not found for.." errors
 	 */
@@ -293,9 +302,9 @@ public class MWCXMLReader extends DefaultHandler {
 		@Override
 		public final void setValue(final String name, final String value) {
 			try {
-				final double val = Double.parseDouble(value);// longFormat.parse(value).doubleValue();
+				final double val = readThisDouble(value);				
 				setValue(name, val);
-			} catch (final java.lang.NumberFormatException pe) {
+			} catch (final ParseException pe) {
 				MWC.Utilities.Errors.Trace.trace(pe,
 						"Reader: Whilst reading in " + name + " value of :"
 								+ value);
@@ -425,9 +434,8 @@ public class MWCXMLReader extends DefaultHandler {
 		return longFormat.format(val);
 	}
 
-	static public double readThisDouble(final String val)
-			throws java.text.ParseException {
-		// 
+	static public double readThisDouble(final String val) 
+			throws ParseException {
 		double res;
 
 		// SPECIAL CASE: An external system is producing Debrief datafiles. It
@@ -435,7 +443,16 @@ public class MWCXMLReader extends DefaultHandler {
 		if (val.toUpperCase().equals("NAN"))
 			res = 0;
 		else
-			res = shortFormat.parse(val).doubleValue();
+		{
+			try 
+			{
+				res = shortFormat.parse(val).doubleValue();
+			} 
+			catch (final ParseException e) 
+			{
+				res = shortCommaFormat.parse(val).doubleValue();
+			}
+		}
 
 		return res;
 	}
