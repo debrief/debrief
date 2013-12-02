@@ -82,6 +82,8 @@ public class LayerManagerView extends ViewPart
 	 * helper application to help track creation/activation of new plots
 	 */
 	private PartMonitor _myPartMonitor;
+	
+	private ISelectionProvider _curSelectionProvider;
 
 	MyTreeViewer _treeViewer;
 
@@ -349,6 +351,17 @@ public class LayerManagerView extends ViewPart
 		// make sure we close the listeners
 		clearLayerListener();
 
+		// dispose part monitor
+		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+
+		// remove selection listeners
+		if(_curSelectionProvider != null)
+		{
+		    _curSelectionProvider.removeSelectionChangedListener(_selectionChangeListener);
+		    _curSelectionProvider = null;
+		}
+
+		_selectionChangeListener = null;
 	}
 
 	/**
@@ -593,6 +606,7 @@ public class LayerManagerView extends ViewPart
 						{
 							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.addSelectionChangedListener(_selectionChangeListener);
+							_curSelectionProvider = iS;
 						}
 					}
 				});
@@ -607,6 +621,7 @@ public class LayerManagerView extends ViewPart
 						{
 							final ISelectionProvider iS = (ISelectionProvider) part;
 							iS.removeSelectionChangedListener(_selectionChangeListener);
+							_curSelectionProvider = null;
 						}
 					}
 				});
