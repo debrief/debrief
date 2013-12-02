@@ -344,13 +344,17 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 	void processNewLayers(final Object part)
 	{
 		// just check we're not already looking at it
-		if (part.equals(_myLayers))
+		if (!part.equals(_myLayers))
+		{
+			// de-register current layers before tracking the new one
+			clearLayerListener();
+			clearLineListener();
+			_viewer.clearPlot();
+		}
+		else
+		{
 			return;
-		
-		// de-register current layers before tracking the new one
-		clearLayerListener();
-		clearLineListener();
-		_viewer.clearPlot();
+		}		
 		
 		_myLayers = (Layers) part;
 		if (_myLayersListener == null)
