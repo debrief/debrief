@@ -195,7 +195,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 						newGC.setBackground(thisColor);
 
 						// apply a color wash
-						if (Platform.OS_LINUX.equals(Platform.getOS()))
+						if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS()))
 						{
 							ImageData data = res.getImageData();
 						  // we recognize two transparency types
@@ -228,7 +228,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 							}
 						} else
 						{
-							// Mac/Windows 
+							// Windows
 							newGC.fillRectangle(0, 0, wid, ht);
 						}
 
