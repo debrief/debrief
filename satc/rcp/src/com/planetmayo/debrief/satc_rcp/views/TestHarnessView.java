@@ -404,7 +404,7 @@ public class TestHarnessView extends ViewPart
 	
 	private void createGAParameters(Composite gaParameters) 
 	{
-		UIUtils.createLabel(gaParameters, "Consider alterings:", new GridData());		
+		UIUtils.createLabel(gaParameters, "Consider alterations:", new GridData());		
 		final Button considerAlteringLegs = new Button(gaParameters, SWT.CHECK);
 		considerAlteringLegs.setLayoutData(new GridData());		
 		
