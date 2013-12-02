@@ -157,13 +157,15 @@ public class TimeBarView extends ViewPart {
 	void processNewLayers(final Object part)
 	{
 		// just check we're not already looking at it
-		if (part.equals(_myLayers))
+		if (!part.equals(_myLayers))
+		{
+			// de-register current layers before tracking the new one
+			clearLayerListener();
+		} 
+		else
 		{
 			return;
 		}
-		
-		// de-register current layers before tracking the new one
-		clearLayerListener();
 		
 		_myLayers = (Layers) part;
 		if (_myLayersListener == null)
@@ -271,6 +273,8 @@ public class TimeBarView extends ViewPart {
 	{
 		if (_myLayers != null)
 		{
+			//de-register listeners from the layer
+			_viewer.unWalkThrough(_myLayers);			
 			_myLayers.removeDataExtendedListener(_myLayersListener);
 			_myLayersListener = null;
 			_myLayers = null;
@@ -318,8 +322,6 @@ public class TimeBarView extends ViewPart {
 						// is this our set of layers?
 						if (part == _myLayers)
 						{
-							//de-register listeners from the layer
-							_viewer.unWalkThrough(_myLayers);
 							// stop listening to this layer
 							clearLayerListener();
 						}						
