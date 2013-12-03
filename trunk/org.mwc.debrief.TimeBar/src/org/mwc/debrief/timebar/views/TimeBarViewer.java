@@ -30,7 +30,6 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -133,11 +132,6 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     	while(numer.hasMoreElements())  
     	{
     		final Editable next = numer.nextElement();  
-    		if (next instanceof PlainWrapper)
-    		{
-				((PlainWrapper) next).addPropertyChangeListener(
-						PlainWrapper.VISIBILITY_CHANGED, _painter);
-			}
     		
     		if (next instanceof WatchableList)
 	    	{
@@ -171,32 +165,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     			walkThrough(next);
     	}
     }  
-    
-	/**
-	 * Un-register property change listeners
-	 */
-    protected void unWalkThrough(final Object root)
-    {
-    	Enumeration<Editable> numer; 
-    	if (root instanceof Layer)
-    		numer = ((Layer) root).elements();
-    	else if (root instanceof Layers)
-    		numer = ((Layers) root).elements();
-    	else return;
-    	
-    	while(numer.hasMoreElements())  
-    	{
-    		final Editable next = numer.nextElement();  
-    		if (next instanceof PlainWrapper)
-    		{
-				((PlainWrapper) next).removePropertyChangeListener(
-						PlainWrapper.VISIBILITY_CHANGED, _painter);
-			}
-    		if (!(next instanceof WatchableList))
-    			unWalkThrough(next);
-    	}    	
-    }
-    
+        
     @Override
 	public void addSelectionChangedListener(final ISelectionChangedListener listener) 
 	{

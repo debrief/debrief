@@ -1,7 +1,5 @@
 package org.mwc.debrief.timebar.painter;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +38,7 @@ import MWC.GUI.Editable;
 
 
 
-public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListener
+public class NebulaGanttPainter implements ITimeBarsPainter
 {
 	GanttChart _chart;
 	Map<IEventEntry, GanttEvent> _eventEntries = new HashMap<IEventEntry, GanttEvent>();	
@@ -337,37 +335,6 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 		}
 		return null;
 	}
-	
-	private GanttEvent findGanttEvent(final Object source)
-	{
-		for (final Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
-		{
-			if (entry.getKey().getSource().equals(source))
-			{
-				return entry.getValue();
-			}
-		}
-		return null;
-	}
-	
-
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) 
-	{		
-		final GanttEvent event = findGanttEvent(evt.getSource());
-		if (event != null)
-		{
-			if (new Boolean(true).equals(evt.getNewValue()))
-			{
-				_chart.getGanttComposite().addEvent(event);
-			}
-			else
-			{
-				_chart.getGanttComposite().removeEvent(event);				
-			}
-		}		
-	}
-	
 	
 	@Override
 	public void fitToWindow() 

@@ -273,8 +273,7 @@ public class TimeBarView extends ViewPart {
 	{
 		if (_myLayers != null)
 		{
-			//de-register listeners from the layer
-			_viewer.unWalkThrough(_myLayers);			
+			//de-register listeners from the layer			
 			_myLayers.removeDataExtendedListener(_myLayersListener);
 			_myLayers.removeDataReformattedListener(_myLayersListener);
 			_myLayersListener = null;

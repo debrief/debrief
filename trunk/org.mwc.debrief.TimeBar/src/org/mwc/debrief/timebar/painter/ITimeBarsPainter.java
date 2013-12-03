@@ -1,6 +1,5 @@
 package org.mwc.debrief.timebar.painter;
 
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
@@ -9,7 +8,7 @@ import org.mwc.debrief.timebar.model.IEventEntry;
 
 import MWC.GUI.Editable;
 
-public interface ITimeBarsPainter extends PropertyChangeListener
+public interface ITimeBarsPainter
 {
 	final static Color TIME_LINE_COLOR = new Color(null, 0, 255, 0);
 	final static int TIME_LINE_WIDTH = 3;
