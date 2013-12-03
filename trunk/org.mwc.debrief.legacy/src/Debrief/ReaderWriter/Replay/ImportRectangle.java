@@ -62,9 +62,11 @@
 package Debrief.ReaderWriter.Replay;
 
 import MWC.Utilities.ReaderWriter.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import Debrief.Wrappers.*;
 import MWC.GUI.Shapes.*;
 
+import java.text.ParseException;
 import java.util.*;
 
 import junit.framework.TestCase;
@@ -101,80 +103,89 @@ final class ImportRectangle implements PlainLineImporter {
 		// start with the symbology
 		theSymbology = st.nextToken();
 
-		// now the location
-		latDeg = Double.valueOf(st.nextToken());
-		latMin = Double.valueOf(st.nextToken());
-		latSec = Double.valueOf(st.nextToken()).doubleValue();
+		try
+		{
+			// now the location
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
-		/**
-		 * now, we may have trouble here, since there may not be a space between
-		 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
-		 */
-		String vDiff = st.nextToken();
-		if (vDiff.length() > 3) {
-			// hmm, they are combined
-			latHem = vDiff.charAt(0);
-			final String secondPart = vDiff.substring(1, vDiff.length());
-			longDeg = Double.valueOf(secondPart);
-		} else {
-			// they are separate, so only the hem is in this one
-			latHem = vDiff.charAt(0);
-			longDeg = Double.valueOf(st.nextToken());
+			/**
+			 * now, we may have trouble here, since there may not be a space between
+			 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// we have our first location, create it
+			TL = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+					longMin, longSec, longHem, 0);
+	
+			// now the location
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between
+			 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// we have our second location, create it
+			BR = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+					longMin, longSec, longHem, 0);
+	
+			// and lastly read in the message
+			if (st.hasMoreTokens()) {
+				theText = st.nextToken("\r");
+				if (theText != null)
+					theText = theText.trim();
+			}
+			// create the Rectangle object
+			final PlainShape sp = new RectangleShape(TL, BR);
+			sp.setColor(ImportReplay.replayColorFor(theSymbology));
+	
+			final WorldArea tmp = new WorldArea(TL, BR);
+			tmp.normalise();
+	
+			// and put it into a shape
+			final ShapeWrapper sw = new ShapeWrapper(theText, sp,
+					ImportReplay.replayColorFor(theSymbology), null);
+	
+			return sw;
 		}
-		longMin = Double.valueOf(st.nextToken());
-		longSec = Double.valueOf(st.nextToken()).doubleValue();
-		longHem = st.nextToken().charAt(0);
-
-		// we have our first location, create it
-		TL = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-				longMin, longSec, longHem, 0);
-
-		// now the location
-		latDeg = Double.valueOf(st.nextToken());
-		latMin = Double.valueOf(st.nextToken());
-		latSec = Double.valueOf(st.nextToken()).doubleValue();
-
-		/**
-		 * now, we may have trouble here, since there may not be a space between
-		 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
-		 */
-		vDiff = st.nextToken();
-		if (vDiff.length() > 3) {
-			// hmm, they are combined
-			latHem = vDiff.charAt(0);
-			final String secondPart = vDiff.substring(1, vDiff.length());
-			longDeg = Double.valueOf(secondPart);
-		} else {
-			// they are separate, so only the hem is in this one
-			latHem = vDiff.charAt(0);
-			longDeg = Double.valueOf(st.nextToken());
+		catch(final ParseException pe)
+		{
+			MWC.Utilities.Errors.Trace.trace(pe,
+					"Whilst import Rectangle");
+			return null;
 		}
-		longMin = Double.valueOf(st.nextToken());
-		longSec = Double.valueOf(st.nextToken()).doubleValue();
-		longHem = st.nextToken().charAt(0);
-
-		// we have our second location, create it
-		BR = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-				longMin, longSec, longHem, 0);
-
-		// and lastly read in the message
-		if (st.hasMoreTokens()) {
-			theText = st.nextToken("\r");
-			if (theText != null)
-				theText = theText.trim();
-		}
-		// create the Rectangle object
-		final PlainShape sp = new RectangleShape(TL, BR);
-		sp.setColor(ImportReplay.replayColorFor(theSymbology));
-
-		final WorldArea tmp = new WorldArea(TL, BR);
-		tmp.normalise();
-
-		// and put it into a shape
-		final ShapeWrapper sw = new ShapeWrapper(theText, sp,
-				ImportReplay.replayColorFor(theSymbology), null);
-
-		return sw;
 	}
 
 	/**

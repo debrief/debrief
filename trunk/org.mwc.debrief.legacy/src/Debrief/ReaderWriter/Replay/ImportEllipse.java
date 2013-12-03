@@ -79,9 +79,12 @@
 package Debrief.ReaderWriter.Replay;
 
 import MWC.Utilities.ReaderWriter.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import Debrief.Wrappers.*;
 import MWC.GUI.Shapes.*;
+
+import java.text.ParseException;
 import java.util.*;
 import MWC.GenericData.*;
 import MWC.Algorithms.*;
@@ -134,55 +137,64 @@ final class ImportEllipse implements PlainLineImporter
 		// produce a date from this data
 		theDate = DebriefFormatDateTime.parseThis(dateStr);
 
-		// now the location
-		latDeg = Double.valueOf(st.nextToken());
-		latMin = Double.valueOf(st.nextToken());
-		latSec = Double.valueOf(st.nextToken());
-
-		/**
-		 * now, we may have trouble here, since there may not be a space between the
-		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
-		 */
-		final String vDiff = st.nextToken();
-		if (vDiff.length() > 3)
+		try
 		{
-			// hmm, they are combined
-			latHem = vDiff.charAt(0);
-			final String secondPart = vDiff.substring(1, vDiff.length());
-			longDeg = Double.valueOf(secondPart);
+			// now the location
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3)
+			{
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			}
+			else
+			{
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// now the radius of the circle
+			orient = MWCXMLReader.readThisDouble(st.nextToken());
+			maxima = Conversions.Yds2Degs(MWCXMLReader.readThisDouble(st.nextToken()));
+			minima = Conversions.Yds2Degs(MWCXMLReader.readThisDouble(st.nextToken()));
+
+			// and now read in the message
+			theText = st.nextToken("\r").trim();
+	
+			// create the tactical data
+			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+					longMin, longSec, longHem, 0);
+	
+			// create the circle object
+			final PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(maxima,
+					WorldDistance.DEGS), new WorldDistance(minima, WorldDistance.DEGS));
+			sp.setColor(ImportReplay.replayColorFor(theSymbology));
+	
+			// and put it into a shape
+			final ShapeWrapper sw = new ShapeWrapper(theText, sp, ImportReplay
+					.replayColorFor(theSymbology), theDate);
+	
+			return sw;
 		}
-		else
+		catch (final ParseException pe) 
 		{
-			// they are separate, so only the hem is in this one
-			latHem = vDiff.charAt(0);
-			longDeg = Double.valueOf(st.nextToken());
+			MWC.Utilities.Errors.Trace.trace(pe,
+					"Whilst import Ellipse");
+			return null;
 		}
-		longMin = Double.valueOf(st.nextToken());
-		longSec = Double.valueOf(st.nextToken());
-		longHem = st.nextToken().charAt(0);
-
-		// now the radius of the circle
-		orient = Double.valueOf(st.nextToken()).doubleValue();
-		maxima = Conversions.Yds2Degs(Double.valueOf(st.nextToken()).doubleValue());
-		minima = Conversions.Yds2Degs(Double.valueOf(st.nextToken()).doubleValue());
-
-		// and now read in the message
-		theText = st.nextToken("\r").trim();
-
-		// create the tactical data
-		theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-				longMin, longSec, longHem, 0);
-
-		// create the circle object
-		final PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(maxima,
-				WorldDistance.DEGS), new WorldDistance(minima, WorldDistance.DEGS));
-		sp.setColor(ImportReplay.replayColorFor(theSymbology));
-
-		// and put it into a shape
-		final ShapeWrapper sw = new ShapeWrapper(theText, sp, ImportReplay
-				.replayColorFor(theSymbology), theDate);
-
-		return sw;
 	}
 
 	/**

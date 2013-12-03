@@ -60,8 +60,10 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 /**
@@ -115,71 +117,80 @@ final class ImportPeriodText implements PlainLineImporter
     theOtherDate = DebriefFormatDateTime.parseThis(dateStr);
 
     // now the location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
-
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    final String vDiff = st.nextToken();
-    if (vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg = Double.valueOf(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
-
-    final String depthStr = st.nextToken();
     try
     {
-      theDepth = Double.parseDouble(depthStr);
+    	latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+    	latMin = MWCXMLReader.readThisDouble(st.nextToken());
+    	latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+	    /** now, we may have trouble here, since there may not be
+	     * a space between the hemisphere character and a 3-digit
+	     * latitude value - so BE CAREFUL
+	     */
+	    final String vDiff = st.nextToken();
+	    if (vDiff.length() > 3)
+	    {
+	      // hmm, they are combined
+	      latHem = vDiff.charAt(0);
+	      final String secondPart = vDiff.substring(1, vDiff.length());
+	      longDeg = MWCXMLReader.readThisDouble(secondPart);
+	    }
+	    else
+	    {
+	      // they are separate, so only the hem is in this one
+	      latHem = vDiff.charAt(0);
+	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	    }
+	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	    longHem = st.nextToken().charAt(0);
+
+	    final String depthStr = st.nextToken();
+	    try
+	    {
+	      theDepth = MWCXMLReader.readThisDouble(depthStr);
+	    }
+	    catch (final ParseException e)
+	    {
+	      // hey, it didn't contain a double, just use it as a text string
+	      theText = depthStr;
+	    }
+
+	    if (st.hasMoreTokens())
+	    {
+	      // if we haven't read in part of the message already, read in the remainder
+	      if (theText != null)
+	      {
+	        // and now read in the remainder of the line, and append to the message
+	        theText += " " + st.nextToken("\r").trim();
+	      }
+	      else
+	      {
+	        // and now read in the message, we have already read the depth
+	        theText = st.nextToken("\r").trim();
+	      }
+	    }
+
+	    // create the tactical data
+	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
+	                               longDeg, longMin, longSec, longHem,
+	                               theDepth);
+
+	    // create the fix ready to store it
+	    final LabelWrapper lw = new LabelWrapper(theText,
+	                                       theLoc,
+	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       theDate,
+	                                       theOtherDate);
+	
+	    return lw;
     }
-    catch (final NumberFormatException fe)
+    catch(final ParseException pe)
     {
-      // hey, it didn't contain a double, just use it as a text string
-      theText = depthStr;
+    	MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import PeriodText");
+		return null;
     }
-
-    if (st.hasMoreTokens())
-    {
-      // if we haven't read in part of the message already, read in the remainder
-      if (theText != null)
-      {
-        // and now read in the remainder of the line, and append to the message
-        theText += " " + st.nextToken("\r").trim();
-      }
-      else
-      {
-        // and now read in the message, we have already read the depth
-        theText = st.nextToken("\r").trim();
-      }
-    }
-
-    // create the tactical data
-    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-                               longDeg, longMin, longSec, longHem,
-                               theDepth);
-
-    // create the fix ready to store it
-    final LabelWrapper lw = new LabelWrapper(theText,
-                                       theLoc,
-                                       ImportReplay.replayColorFor(theSymbology),
-                                       theDate,
-                                       theOtherDate);
-
-    return lw;
   }
 
   /**

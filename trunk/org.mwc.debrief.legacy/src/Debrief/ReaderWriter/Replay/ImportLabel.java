@@ -64,6 +64,9 @@
 package Debrief.ReaderWriter.Replay;
 
 import MWC.Utilities.ReaderWriter.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+
+import java.text.ParseException;
 import java.util.*;
 import MWC.GenericData.*;
 import Debrief.Wrappers.*;
@@ -97,51 +100,60 @@ final class ImportLabel implements PlainLineImporter
     // start with the symbology
     theSymbology = st.nextToken();
 
-    // now the location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
-
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    final String vDiff = st.nextToken();
-    if(vDiff.length() > 3)
+    try
     {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Double.valueOf(secondPart);
+    	// now the location
+    	latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+    	latMin = MWCXMLReader.readThisDouble(st.nextToken());
+    	latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+	    /** now, we may have trouble here, since there may not be
+	     * a space between the hemisphere character and a 3-digit
+	     * latitude value - so BE CAREFUL
+	     */
+	    final String vDiff = st.nextToken();
+	    if(vDiff.length() > 3)
+	    {
+	      // hmm, they are combined
+	      latHem = vDiff.charAt(0);
+	      final String secondPart = vDiff.substring(1, vDiff.length());
+	      longDeg  = MWCXMLReader.readThisDouble(secondPart);
+	    }
+	    else
+	    {
+	      // they are separate, so only the hem is in this one
+	      latHem = vDiff.charAt(0);
+	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	    }
+	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	    longHem = st.nextToken().charAt(0);
+
+	    // and now read in the message
+	    theText = st.nextToken("\r").trim();
+	
+	    // create the tactical data
+	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
+	                               longDeg, longMin, longSec, longHem,
+	                               0);
+	
+	    // create the fix ready to store it
+	    final LabelWrapper lw = new LabelWrapper(theText,
+	                                       theLoc,
+	                                       ImportReplay.replayColorFor(theSymbology));
+	    
+	    // also get the symbol type
+	    final String symType = ImportReplay.replayTrackSymbolFor(theSymbology);
+	    lw.setSymbolType(symType);
+	
+	    return lw;
     }
-    else
+    catch(final ParseException pe)
     {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
+    	MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import Label");
+		return null;
     }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
-
-    // and now read in the message
-    theText = st.nextToken("\r").trim();
-
-    // create the tactical data
-    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-                               longDeg, longMin, longSec, longHem,
-                               0);
-
-    // create the fix ready to store it
-    final LabelWrapper lw = new LabelWrapper(theText,
-                                       theLoc,
-                                       ImportReplay.replayColorFor(theSymbology));
-    
-    // also get the symbol type
-    final String symType = ImportReplay.replayTrackSymbolFor(theSymbology);
-    lw.setSymbolType(symType);
-
-    return lw;
   }
 
   /** determine the identifier returning this type of annotation

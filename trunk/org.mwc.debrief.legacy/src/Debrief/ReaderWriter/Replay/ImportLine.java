@@ -59,12 +59,14 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.*;
 import MWC.GenericData.*;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /** class to parse a label from a line of text
  */
@@ -96,34 +98,36 @@ final class ImportLine implements PlainLineImporter
     
     // now the start location
     String vDiff;
-	start = extractStart(st);
-
-    // now the end location
-    latDeg = Integer.parseInt(st.nextToken());
-    latMin = Integer.parseInt(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
+	
+    try
+	{
+		start = extractStart(st);
+		// now the end location
+		latDeg = Integer.parseInt(st.nextToken());
+		latMin = Integer.parseInt(st.nextToken());
+		latSec = MWCXMLReader.readThisDouble(st.nextToken());
     
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Integer.parseInt(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Integer.parseInt(st.nextToken());
-    }
-    longMin = Integer.parseInt(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
+	    /** now, we may have trouble here, since there may not be
+	     * a space between the hemisphere character and a 3-digit
+	     * latitude value - so BE CAREFUL
+	     */
+	    vDiff = st.nextToken();
+	    if(vDiff.length() > 3)
+	    {
+	      // hmm, they are combined
+	      latHem = vDiff.charAt(0);
+	      final String secondPart = vDiff.substring(1, vDiff.length());
+	      longDeg  = Integer.parseInt(secondPart);
+	    }
+	    else
+	    {
+	      // they are separate, so only the hem is in this one
+	      latHem = vDiff.charAt(0);
+	      longDeg = Integer.parseInt(st.nextToken());
+	    }
+	    longMin = Integer.parseInt(st.nextToken());
+	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	    longHem = st.nextToken().charAt(0);
 
 		// we have our second location, create it
 		end = new WorldLocation(latDeg, latMin, latSec, latHem, 
@@ -131,31 +135,38 @@ final class ImportLine implements PlainLineImporter
 										       0);
 
 		
-	String theText="";
-    // see if there are any more tokens waiting,
-    if(st.hasMoreTokens())
-    {
-      // and lastly read in the message
-      theText = st.nextToken("\r").trim();
-    }
-		
-    // create the Line object
-    final PlainShape sp = new LineShape(start, end);
-    sp.setColor(ImportReplay.replayColorFor(theSymbology));
-    
-		final WorldArea tmp = new WorldArea(start, end);
-		tmp.normalise();
-		
-    // and put it into a shape
-    final ShapeWrapper sw = new ShapeWrapper(theText, 
-                                       sp, 
-                                       ImportReplay.replayColorFor(theSymbology),
-																			 null);
-    
-    return sw;
+		String theText="";
+	    // see if there are any more tokens waiting,
+	    if(st.hasMoreTokens())
+	    {
+	      // and lastly read in the message
+	      theText = st.nextToken("\r").trim();
+	    }
+			
+	    // create the Line object
+	    final PlainShape sp = new LineShape(start, end);
+	    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+	    
+			final WorldArea tmp = new WorldArea(start, end);
+			tmp.normalise();
+			
+	    // and put it into a shape
+	    final ShapeWrapper sw = new ShapeWrapper(theText, 
+	                                       sp, 
+	                                       ImportReplay.replayColorFor(theSymbology),
+																				 null);
+	    
+	    return sw;
+	}
+	catch(final ParseException pe)
+	{
+		MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import Line");
+		return null;
+	}
   }
 
-public static WorldLocation extractStart(final StringTokenizer st) {
+public static WorldLocation extractStart(final StringTokenizer st) throws ParseException {
 	WorldLocation start;
 	double latDeg;
 	double longDeg;
@@ -165,36 +176,35 @@ public static WorldLocation extractStart(final StringTokenizer st) {
 	char longHem;
 	double latSec;
 	double longSec;
-	latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
-    
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    final String vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Double.valueOf(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
+	latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	latMin = MWCXMLReader.readThisDouble(st.nextToken());
+	latSec = MWCXMLReader.readThisDouble(st.nextToken());
+	/** now, we may have trouble here, since there may not be
+	 * a space between the hemisphere character and a 3-digit
+	 * latitude value - so BE CAREFUL
+	 */
+	final String vDiff = st.nextToken();
+	if(vDiff.length() > 3)
+	{
+	   // hmm, they are combined
+	  latHem = vDiff.charAt(0);
+	  final String secondPart = vDiff.substring(1, vDiff.length());
+	  longDeg  = MWCXMLReader.readThisDouble(secondPart);
+	}
+	else
+	{
+	  // they are separate, so only the hem is in this one
+	  latHem = vDiff.charAt(0);
+	  longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	}
+	longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	longHem = st.nextToken().charAt(0);
 
-		// we have our first location, create it
-		start = new WorldLocation(latDeg, latMin, latSec, latHem, 
-													 longDeg, longMin, longSec, longHem,
-										       0);
+	// we have our first location, create it
+	start = new WorldLocation(latDeg, latMin, latSec, latHem, 
+							 longDeg, longMin, longSec, longHem,
+						       0);
 	return start;
 }
   
