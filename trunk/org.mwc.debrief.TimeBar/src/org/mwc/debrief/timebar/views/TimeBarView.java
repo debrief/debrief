@@ -216,7 +216,7 @@ public class TimeBarView extends ViewPart {
 			{
 				public void run()
 				{
-					if (_viewer.isDisposed())
+					if (_viewer == null || _viewer.isDisposed())
 						return;
 					// ok, fire the change in the UI thread	
 					_viewer.drawDiagram(theData, true /* jump to begin */);
@@ -276,6 +276,7 @@ public class TimeBarView extends ViewPart {
 			//de-register listeners from the layer
 			_viewer.unWalkThrough(_myLayers);			
 			_myLayers.removeDataExtendedListener(_myLayersListener);
+			_myLayers.removeDataReformattedListener(_myLayersListener);
 			_myLayersListener = null;
 			_myLayers = null;
 		}

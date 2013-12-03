@@ -113,7 +113,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     
     public boolean isDisposed()
     {
-    	return _painter.isDisposed();
+    	return _painter==null || _painter.isDisposed();
     }
     
     public void drawDiagram(final Layers theLayers)
