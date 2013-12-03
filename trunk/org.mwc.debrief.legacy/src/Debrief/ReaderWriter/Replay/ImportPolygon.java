@@ -78,6 +78,7 @@
 //
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -92,6 +93,7 @@ import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
@@ -164,35 +166,44 @@ final class ImportPolygon implements PlainLineImporter
 				break;
 			}
 			
-			// now the location
-			latDeg = Double.valueOf(sts);
-			latMin = Double.valueOf(st.nextToken());
-			latSec = Double.valueOf(st.nextToken()).doubleValue();
-		
-			/**
-			 * now, we may have trouble here, since there may not be a space between
-			 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
-			 */
-			final String vDiff = st.nextToken();
-			if (vDiff.length() > 3) {
-				// hmm, they are combined
-				latHem = vDiff.charAt(0);
-				final String secondPart = vDiff.substring(1, vDiff.length());
-				longDeg = Double.valueOf(secondPart);
-			} else {
-				// they are separate, so only the hem is in this one
-				latHem = vDiff.charAt(0);
-				longDeg = Double.valueOf(st.nextToken());
-			}
-			longMin = Double.valueOf(st.nextToken());
-			longSec = Double.valueOf(st.nextToken()).doubleValue();
-			longHem = st.nextToken().charAt(0);
+			try
+			{
+				// now the location
+				latDeg = MWCXMLReader.readThisDouble(sts);
+				latMin = MWCXMLReader.readThisDouble(st.nextToken());
+				latSec = MWCXMLReader.readThisDouble(st.nextToken());
 			
-			// we have our first location, create it
-			final WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-							longMin, longSec, longHem, 0);	
-			final PolygonNode newNode = new PolygonNode(counter.toString(), theLoc, sp);
-			sp.add(newNode);
+				/**
+				 * now, we may have trouble here, since there may not be a space between
+				 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
+				 */
+				final String vDiff = st.nextToken();
+				if (vDiff.length() > 3) {
+					// hmm, they are combined
+					latHem = vDiff.charAt(0);
+					final String secondPart = vDiff.substring(1, vDiff.length());
+					longDeg = MWCXMLReader.readThisDouble(secondPart);
+				} else {
+					// they are separate, so only the hem is in this one
+					latHem = vDiff.charAt(0);
+					longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+				}
+				longMin = MWCXMLReader.readThisDouble(st.nextToken());
+				longSec = MWCXMLReader.readThisDouble(st.nextToken());
+				longHem = st.nextToken().charAt(0);
+				
+				// we have our first location, create it
+				final WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+								longMin, longSec, longHem, 0);	
+				final PolygonNode newNode = new PolygonNode(counter.toString(), theLoc, sp);
+				sp.add(newNode);
+			}
+			catch(final ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Whilst import Polygon");
+				return null;
+			}
 			
 			counter += 1;
 		}

@@ -41,12 +41,14 @@
 //
 package Debrief.ReaderWriter.PCArgos;
 
+import java.text.ParseException;
 import java.util.*;
 
 import Debrief.ReaderWriter.Replay.ReplayFix;
 import MWC.GenericData.*;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /** import a fix from a line of text (in PCArgos format)
  */
@@ -138,30 +140,38 @@ final class ImportArgosFix implements PlainLineImporter
 		final String theY = st.nextToken();
 		final String theZ = st.nextToken();
 
-		x = Double.valueOf(theX).doubleValue();
-		y = Double.valueOf(theY).doubleValue();
-		z = Double.valueOf(theZ).doubleValue();
-
+		try
+		{
+			x = MWCXMLReader.readThisDouble(theX);
+			y = MWCXMLReader.readThisDouble(theY);
+			z = MWCXMLReader.readThisDouble(theZ);
+	
+			
+			// calc the bearing
+			final double brg = Math.atan2(y,x);
+			final double rng = Math.sqrt(x*x + y*y);
+			final WorldVector offset = new WorldVector(brg, MWC.Algorithms.Conversions.Yds2Degs(rng), z);
+			theLoc = _origin.add(offset);
+	
+		    dtg = new HiResDate(val, 0);
 		
-		// calc the bearing
-		final double brg = Math.atan2(y,x);
-		final double rng = Math.sqrt(x*x + y*y);
-		final WorldVector offset = new WorldVector(brg, MWC.Algorithms.Conversions.Yds2Degs(rng), z);
-		theLoc = _origin.add(offset);
-
-    dtg = new HiResDate(val, 0);
-
-
-    // create the fix ready to store it
-    final Fix res = new Fix(dtg, theLoc, 0.0, 0.0);
 		
-    final ReplayFix rf = new ReplayFix();
-    rf.theFix = res;
-    rf.theTrackName = trk;
-    rf.theSymbology = "@@";
-    
-    
-    return rf;
+		    // create the fix ready to store it
+		    final Fix res = new Fix(dtg, theLoc, 0.0, 0.0);
+				
+		    final ReplayFix rf = new ReplayFix();
+		    rf.theFix = res;
+		    rf.theTrackName = trk;
+		    rf.theSymbology = "@@";
+		    	    
+		    return rf;
+		}
+		catch(final ParseException pe)
+		{
+			MWC.Utilities.Errors.Trace.trace(pe,
+					"Whilst reading ArgosFix coordinates");
+			return null;
+		}
   }
   public final String getYourType(){
     return null;

@@ -74,6 +74,7 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
@@ -84,6 +85,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a label from a line of text
@@ -103,7 +105,7 @@ final class ImportBearing implements PlainLineImporter
 
     // declare local variables
     WorldLocation start, end;
-    double latDeg, longDeg, latMin, longMin;
+    double latDeg=0.0, longDeg, latMin, longMin;
     char latHem, longHem;
     double latSec, longSec;
     String theText="";
@@ -128,70 +130,85 @@ final class ImportBearing implements PlainLineImporter
 		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // now the start location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
+	
+	try 
+    {    	
+		latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+		latMin = MWCXMLReader.readThisDouble(st.nextToken());
+	    latSec = MWCXMLReader.readThisDouble(st.nextToken());
+	 
+   
+	    latMin = MWCXMLReader.readThisDouble(st.nextToken());
+	    latSec = MWCXMLReader.readThisDouble(st.nextToken());
+   
+	    /** now, we may have trouble here, since there may not be
+	     * a space between the hemisphere character and a 3-digit
+	     * latitude value - so BE CAREFUL
+	     */
+	    final String vDiff = st.nextToken();
+	    if(vDiff.length() > 3)
+	    {
+	      // hmm, they are combined
+	      latHem = vDiff.charAt(0);
+	      final String secondPart = vDiff.substring(1, vDiff.length());
+	      longDeg  = MWCXMLReader.readThisDouble(secondPart);
+	    }
+	    else
+	    {
+	      // they are separate, so only the hem is in this one
+	      latHem = vDiff.charAt(0);
+	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	    }
+	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	    longHem = st.nextToken().charAt(0);
 
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    final String vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Double.valueOf(secondPart);
+	    // we have our first location, create it
+	    start = new WorldLocation(latDeg, latMin, latSec, latHem,
+	                           longDeg, longMin, longSec, longHem,
+	                           0);
+
+
+
+	    // now the end location
+	    final double orient = MWCXMLReader.readThisDouble(st.nextToken());
+	    final double length = MWCXMLReader.readThisDouble(st.nextToken());
+
+	    // we have our second location, create it
+	    // now create the offset
+	    final WorldVector offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(orient),
+	                                         MWC.Algorithms.Conversions.Yds2Degs(length), 0);
+	    end = start.add(offset);
+	
+	    // see if there are any more tokens waiting,
+	    if(st.hasMoreTokens())
+	    {
+	      // and lastly read in the message
+	      theText = st.nextToken("\r").trim();
+	    }
+
+	    // create the Line object
+	    final PlainShape sp = new LineShape(start, end);
+	    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+	
+	    final WorldArea tmp = new WorldArea(start, end);
+	    tmp.normalise();
+	
+	    // and put it into a shape
+	    final ShapeWrapper sw = new ShapeWrapper(theText,
+	                                       sp,
+	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       theDate);
+	
+	    return sw;
     }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
+	catch (final ParseException pe) 
+	{
+		MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import bearing");
+		return null;
+	}
 
-    // we have our first location, create it
-    start = new WorldLocation(latDeg, latMin, latSec, latHem,
-                           longDeg, longMin, longSec, longHem,
-                           0);
-
-
-
-    // now the end location
-    final double orient =Double.valueOf(st.nextToken()).doubleValue();
-    final double length = Double.valueOf(st.nextToken()).doubleValue();
-
-    // we have our second location, create it
-    // now create the offset
-    final WorldVector offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(orient),
-                                         MWC.Algorithms.Conversions.Yds2Degs(length), 0);
-    end = start.add(offset);
-
-    // see if there are any more tokens waiting,
-    if(st.hasMoreTokens())
-    {
-      // and lastly read in the message
-      theText = st.nextToken("\r").trim();
-    }
-
-    // create the Line object
-    final PlainShape sp = new LineShape(start, end);
-    sp.setColor(ImportReplay.replayColorFor(theSymbology));
-
-    final WorldArea tmp = new WorldArea(start, end);
-    tmp.normalise();
-
-    // and put it into a shape
-    final ShapeWrapper sw = new ShapeWrapper(theText,
-                                       sp,
-                                       ImportReplay.replayColorFor(theSymbology),
-                                       theDate);
-
-    return sw;
   }
 
   /** determine the identifier returning this type of annotation

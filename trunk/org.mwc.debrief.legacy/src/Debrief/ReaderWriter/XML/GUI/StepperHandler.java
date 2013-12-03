@@ -9,6 +9,8 @@ package Debrief.ReaderWriter.XML.GUI;
  * @version 1.0
  */
 
+import java.text.ParseException;
+
 import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.XML.GUIHandler;
@@ -50,7 +52,13 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
         {
           // set the cursor
           final SnailPainter sp = (SnailPainter) theTote.getStepper().getCurrentPainter();
-          sp.setVectorStretch(Double.valueOf(vector_stretch).doubleValue());
+          try {
+        	  sp.setVectorStretch( MWCXMLReader.readThisDouble(vector_stretch));
+          } catch (final ParseException pe) {
+        	  MWC.Utilities.Errors.Trace.trace(pe,
+						"Reader: Whilst reading in VectorStretch value of :"
+								+ vector_stretch);
+          }
         }
       }
 
