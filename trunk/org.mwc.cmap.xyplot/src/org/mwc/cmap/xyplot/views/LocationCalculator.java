@@ -89,5 +89,32 @@ public class LocationCalculator implements ILocationCalculator
 			assertEquals(30.0, d, 0.00001 /* epsilon */);
 		}	
 		
+		public void testDistanceJump()
+		{
+			calc = new LocationCalculator(WorldDistance.KM);
+			start = new WorldLocation(25.0000000, 51.6889495, 0);
+			end = new WorldLocation(26.3595475, 51.6882503, 0);
+			
+			watch = new WorldLocation(26.2152611, 51.862166, 40);	//0240		
+			System.out.println(calc.getDistance(start, end, watch));
+						
+			watch = new WorldLocation(26.2144472, 51.8585917, 40);			
+			System.out.println(calc.getDistance(start, end, watch));
+			
+			watch = new WorldLocation(26.2140611, 51.8572444, 15);
+			System.out.println(calc.getDistance(start, end, watch));
+			
+			watch = new WorldLocation(26.2137222, 51.8560667, 15); //0243
+			System.out.println(calc.getDistance(start, end, watch));
+			
+			watch = new WorldLocation(26.2133806, 51.8548861, 15); //0244
+			System.out.println(calc.getDistance(start, end, watch));
+			
+			//Till this moment the distance is increased.
+			//There is a "jump" here (the distance is decreased)
+			watch = new WorldLocation(26.2283833, 51.5456056, 15); //0259
+			System.out.println(calc.getDistance(start, end, watch));
+		}
+		
 	}
 }
