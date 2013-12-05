@@ -28,10 +28,12 @@ abstract public class PolygonHandler extends ShapeHandler implements
 {
 
 	private static final String FILLED_STR = "Filled";
+	private static final String SEMI_TRANSPARENT_STR = "SemiTransparent";
 	private static final String CLOSED_STR = "Closed";
 	private static final String LABEL_NODES = "LabelNodes";
 	WorldPath _polygon;
 	Boolean _filled = null;
+	Boolean _semiTransparent = null;
 	Boolean _closed = null;
 	Boolean _labelNodes = null;
 
@@ -55,6 +57,15 @@ abstract public class PolygonHandler extends ShapeHandler implements
 				_filled = new Boolean(value);
 			}
 		});
+		
+		addAttributeHandler(new HandleBooleanAttribute(SEMI_TRANSPARENT_STR)
+		{
+			public void setValue(final String name, final boolean value)
+			{
+				_semiTransparent = new Boolean(value);
+			}
+		});
+		
 		addAttributeHandler(new HandleBooleanAttribute(LABEL_NODES)
 		{
 			public void setValue(final String name, final boolean value)
@@ -90,6 +101,8 @@ abstract public class PolygonHandler extends ShapeHandler implements
 		}
 		if (_filled != null)
 			poly.setFilled(_filled.booleanValue());
+		if (_semiTransparent != null)
+			poly.setSemiTransparent(_semiTransparent.booleanValue());
 		if (_closed != null)
 			poly.setClosed(_closed.booleanValue());
 		if (_labelNodes != null)
@@ -127,6 +140,7 @@ abstract public class PolygonHandler extends ShapeHandler implements
 			// export the attributes
 			final MWC.GUI.Shapes.PolygonShape cs = (MWC.GUI.Shapes.PolygonShape) ps;
 			ePlottable.setAttribute(FILLED_STR, writeThis(cs.getFilled()));
+			ePlottable.setAttribute(SEMI_TRANSPARENT_STR, writeThis(cs.getSemiTransparent()));
 			ePlottable.setAttribute(CLOSED_STR, writeThis(cs.getClosed()));
 			ePlottable.setAttribute(LABEL_NODES, writeThis(cs.getShowNodeLabels()));
 

@@ -292,7 +292,10 @@ public class PolygonShape extends PlainShape implements Editable,
 			// ok, now plot it
 			if (getFilled())
 			{
-				dest.fillPolygon(xP, yP, xP.length);
+				if (getSemiTransparent())
+					dest.semiFillPolygon(xP, yP, xP.length);
+				else
+					dest.fillPolygon(xP, yP, xP.length);
 			}
 			else
 			{
@@ -483,6 +486,7 @@ public class PolygonShape extends PlainShape implements Editable,
 			{
 				final PropertyDescriptor[] res =
 				{ prop("Filled", "whether to fill the polygon", FORMAT),
+						prop("SemiTransparent", "whether the filled polygon is semi-transparent", FORMAT),
 						prop("ShowNodeLabels", "whether to label the nodes", FORMAT),
 						prop("Closed", "whether to close the polygon (ignored if filled)", FORMAT) };
 				return res;

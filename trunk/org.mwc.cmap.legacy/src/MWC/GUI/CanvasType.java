@@ -179,6 +179,19 @@ public interface CanvasType {
   public void fillArc(int x, int y,
                int width, int height,
                int startAngle, int arcAngle);
+  
+  /**
+   * fill an arc on the current destination
+   *
+   * @param x pixels
+   * @param width pixels
+   * @param startAngle degrees
+   * @param alpha 0 - transparent, 255 -opaque
+   */
+  public void fillArc(int x, int y,
+               int width, int height,
+               int startAngle, int arcAngle,
+               int alpha);
 
 	/**
    * fillOval
@@ -269,8 +282,16 @@ public interface CanvasType {
   public void fillPolygon(int[] xPoints,
                           int[] yPoints,
                           int nPoints);
-
-
+  
+  /**
+   * draw a semi-filled polygon
+   *
+   * @param xPoints list of x coordinates
+   * @param yPoints list of y coordinates
+   * @param nPoints length of list
+  */
+  public void semiFillPolygon(int[] xPoints, int[] yPoints,
+			final int nPoints);
   /**
    * drawPolygon
    *

@@ -23,11 +23,13 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
   protected MWC.GenericData.WorldLocation _centre;
   protected double _radius;     // in kiloyards
   protected Boolean _filled;
+  protected Boolean _semiTransparent;
 	protected WorldDistance _radiusDist = null;
   private static final String MY_TYPE = "circle";
   private static final String CENTRE = "centre";
   private static final String RADIUS = "Radius";
   private static final String FILLED = "Filled";
+  private static final String SEMI_TRANSPARENT = "SemiTransparent";
 
   public CircleHandler()
   {
@@ -84,6 +86,14 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
       }
     });
 
+    
+    addAttributeHandler(new HandleBooleanAttribute(SEMI_TRANSPARENT)
+    {
+      public void setValue(final String name, final boolean value)
+      {
+        _semiTransparent = new Boolean(value);
+      }
+    });
   }
 
   // this is one of ours, so get on with it!
@@ -92,6 +102,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
     _radius = 0.0;
     _centre = null;
     _filled = null;
+    _semiTransparent = null;
     _radiusDist = null;
     super.handleOurselves(name, attributes);
   }
@@ -109,6 +120,10 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
     
     if (_filled != null)
       ls.setFilled(_filled.booleanValue());
+    if(_semiTransparent != null)
+    {
+    	ls.setSemiTransparent(_semiTransparent.booleanValue());
+    }
 
     return ls;
   }
@@ -138,6 +153,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
                                         final org.w3c.dom.Document doc)
   {
     ePlottable.setAttribute(FILLED, writeThis(cs.getFilled()));
+    ePlottable.setAttribute(SEMI_TRANSPARENT, writeThis(cs.getSemiTransparent()));
     LocationHandler.exportLocation(cs.getCentre(), CENTRE, ePlottable, doc);
     WorldDistanceHandler.exportDistance(RADIUS, cs.getRadius(), ePlottable, doc);
   }

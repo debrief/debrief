@@ -39,7 +39,9 @@ public class WindowsClipboard implements CanvasType
 	public native void drawPolygon(int[] xPoints, int[] yPoints, int nPoints);
 
 	public native void fillPolygon(int[] xPoints, int[] yPoints, int nPoints);
-
+	
+	public native void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints); 
+	
 	public native void drawRect(int startX, int startY, int width, int height);
 
 	public native void fillRect(int startX, int startY, int width, int height);
@@ -56,6 +58,9 @@ public class WindowsClipboard implements CanvasType
 	public native void fillArc(int x, int y, int width, int height,
 			int startAngle, int arcAngle);
 
+	public native void fillArc(int x, int y, int width, int height,
+			int startAngle, int arcAngle, int alpha);
+	
 	public native void endDraw(Object theVal);
 
 	public native void startDraw(Object theVal, int wid, int ht);

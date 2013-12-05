@@ -924,6 +924,22 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// painting oval - occasionally happens in first pass", false);
 
 	}
+	
+	public final void fillArc(final int x, final int y, final int width,
+			final int height, final int startAngle, final int arcAngle,
+			final int alpha)
+	{
+		if (_theDest != null)
+			if (!_theDest.isDisposed())
+			{
+				_theDest.setAlpha(alpha);
+				_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
+			}
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when
+		// painting oval - occasionally happens in first pass", false);
+
+	}
 
 	public final void semiFillArc(final int x, final int y, final int width,
 			final int height, final int startAngle, final int arcAngle)

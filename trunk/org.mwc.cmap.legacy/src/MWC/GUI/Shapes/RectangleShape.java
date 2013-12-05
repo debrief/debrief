@@ -223,7 +223,10 @@ public class RectangleShape extends PlainShape implements Editable,
 		// and plot the polygon
 		if (getFilled())
 		{
-			dest.fillPolygon(xP, yP, STEPS);
+			if (getSemiTransparent())
+				dest.semiFillPolygon(xP, yP, STEPS);
+			else
+				dest.fillPolygon(xP, yP, STEPS);
 		}
 		else
 		{
@@ -364,7 +367,8 @@ public class RectangleShape extends PlainShape implements Editable,
 				final PropertyDescriptor[] res =
 				{ prop("Corner_TopLeft", "the top left corner", SPATIAL),
 						prop("CornerBottomRight", "the bottom right corner", SPATIAL),
-						prop("Filled", "whether this shape is filled", FORMAT) };
+						prop("Filled", "whether this shape is filled", FORMAT),
+						prop("SemiTransparent", "whether the filled rect is semi-transparent", FORMAT),};
 
 				return res;
 

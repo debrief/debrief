@@ -90,6 +90,8 @@ import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.Utilities.Errors.Trace;
@@ -509,6 +511,12 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 								* Math
 										.cos(6.283185307179586 * (double) (i_85_ + i_86_ + 90) / 360.0)));
 		setGDIHollowBrush();
+	}
+	
+	public void fillArc(final int i, final int i_82_, final int i_83_, final int i_84_, final int i_85_,
+			final int i_86_, final int alpha)
+	{
+		throw new NotImplementedException();
 	}
 
 	public void fillOval(final int i, final int i_89_, final int i_90_, final int i_91_)
@@ -981,6 +989,12 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints) 
+	{
+		throw new NotImplementedException();		
 	}
 
 }

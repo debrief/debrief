@@ -118,6 +118,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Canvas.Metafile.WMF;
@@ -429,6 +431,11 @@ public class MetafileCanvas implements CanvasType
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillArc");
 	}
+	
+	public void fillArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle, final int alpha)
+	{
+		throw new NotImplementedException();
+	}
 
 	public void drawArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
 	{
@@ -648,6 +655,13 @@ public class MetafileCanvas implements CanvasType
 		//drawText(str, x-deltaX, y-deltaY);
 		//drawRect(x+deltaX, y+deltaY, fontMetrics.stringWidth(str), distance);
 		g.setFontEscapement(old);
+	}
+
+
+	@Override
+	public void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints) 
+	{
+		throw new NotImplementedException();		
 	}
 
 

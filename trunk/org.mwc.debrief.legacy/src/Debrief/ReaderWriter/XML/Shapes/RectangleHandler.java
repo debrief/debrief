@@ -20,10 +20,12 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
   private static final String TL = "tl";
   private static final String BR = "br";
   private static final String FILLED = "Filled";
+  private static final String SEMI_TRANSPARENT = "SemiTransparent";
 
   MWC.GenericData.WorldLocation _start;
   MWC.GenericData.WorldLocation _end;
   Boolean _filled;
+  Boolean _semiTransparent;
 
   public RectangleHandler()
   {
@@ -51,6 +53,13 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
         _filled = new Boolean(value);
       }});
     
+    addAttributeHandler(new HandleBooleanAttribute(SEMI_TRANSPARENT)
+    {
+      public void setValue(final String name, final boolean value)
+      {
+        _semiTransparent = new Boolean(value);
+      }});
+    
   }
 
   public final MWC.GUI.Shapes.PlainShape getShape()
@@ -58,6 +67,8 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
     final MWC.GUI.Shapes.RectangleShape ls = new MWC.GUI.Shapes.RectangleShape(_start, _end);
     if(_filled != null)
       ls.setFilled(_filled.booleanValue());
+    if(_semiTransparent != null)
+        ls.setSemiTransparent(_semiTransparent.booleanValue());
     return ls;
   }
 
@@ -80,6 +91,7 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCorner_TopLeft(), TL, ePlottable, doc);
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCornerBottomRight(), BR, ePlottable, doc);
       ePlottable.setAttribute(FILLED, writeThis(cs.getFilled()));
+      ePlottable.setAttribute(SEMI_TRANSPARENT, writeThis(cs.getSemiTransparent()));
     }
     else
     {

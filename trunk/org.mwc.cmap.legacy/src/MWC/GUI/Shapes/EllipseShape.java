@@ -258,7 +258,12 @@ public class EllipseShape extends PlainShape implements Editable
     }
 
     if (getFilled())
-      dest.fillPolygon(xPoints, yPoints, len);
+    {
+    	if (getSemiTransparent())
+    		dest.semiFillPolygon(xPoints, yPoints, len);
+    	else
+    		dest.fillPolygon(xPoints, yPoints, len);
+    }      
     else
       dest.drawPolygon(xPoints, yPoints, len);
   }
@@ -577,7 +582,8 @@ public class EllipseShape extends PlainShape implements Editable
           prop("Minima", "the Ellipse minima"),
           prop("Orientation", "the Ellipse orientation (degrees)"),
           prop("Centre", "the centre of the Ellipse"),
-          prop("Filled", "whether to fill the Ellipse")
+          prop("Filled", "whether to fill the Ellipse"),
+          prop("SemiTransparent", "whether the filled Ellipse is semi-transparent")
         };
 
         return res;

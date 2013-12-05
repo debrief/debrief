@@ -220,6 +220,8 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
@@ -769,6 +771,12 @@ public class SwingCanvas extends javax.swing.JComponent
     //      MWC.Utilities.Errors.Trace.trace("Graphics object not available when painting oval - occasionally happens in first pass", false);
 
   }
+  
+  public final void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+          final int arcAngle, final int alpha)
+  {
+	throw new NotImplementedException();
+  }
 
   public final void startDraw(final Object theVal)
   {
@@ -1210,5 +1218,11 @@ public void drawText(String str, int x, int y, float rotate, boolean above)
 {
 	// TODO Auto-generated method stub
 	
+}
+
+@Override
+public void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints) 
+{
+	throw new NotImplementedException();		
 }
 }

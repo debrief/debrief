@@ -247,7 +247,10 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
     // and plot the polygon
     if (getFilled())
     {
-    	dest.fillPolygon(xP, yP, STEPS);
+    	if (getSemiTransparent())
+    		dest.semiFillPolygon(xP, yP, STEPS);
+    	else
+    		dest.fillPolygon(xP, yP, STEPS);    		
     }
     else
     {
@@ -429,7 +432,8 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
         final PropertyDescriptor[] res = {
           prop("Radius", "the circle radius"),
           prop("Centre", "the centre of the circle"),
-          prop("Filled", "whether to fill the circle")
+          prop("Filled", "whether to fill the circle"),
+          prop("SemiTransparent", "whether the filled circle is semi-transparent"),
         };
 
         return res;

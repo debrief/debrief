@@ -271,7 +271,10 @@ public class ArcShape extends CircleShape
 
     if (getFilled())
     {
-      dest.fillArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth);
+    	if(getSemiTransparent())
+    		dest.fillArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth, TRANSPARENCY_SHADE);
+    	else
+    		dest.fillArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth);
     }
     else
     {
@@ -550,6 +553,7 @@ public class ArcShape extends CircleShape
           prop("ArcWidth", "the angle of arc to plot"),
           prop("PlotOrigin", "whether to plot the origin of the arc"),
           prop("Filled", "whether to fill the arc"),
+          prop("SemiTransparent", "whether the filled arc is semi-transparent"),
           prop("PlotSpokes", "whether to draw in the spokes of the arc")
         };
 

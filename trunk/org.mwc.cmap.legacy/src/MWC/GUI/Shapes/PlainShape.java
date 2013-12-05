@@ -180,6 +180,12 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * 
 	 */
 	private boolean _isFilled = false;
+	
+	/**
+	 * whether this filled shape is semi-transparent
+	 * 
+	 */
+	private boolean _semiTransparent = false;
 
 	/** the font used for this shape
 	 * 
@@ -359,6 +365,16 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	public void setVisible(final boolean val)
 	{
 		_isVisible = val;
+	}
+	
+	public boolean getSemiTransparent()
+	{
+		return _semiTransparent;
+	}
+
+	public void setSemiTransparent(final boolean semiTransparent)
+	{
+		_semiTransparent = semiTransparent;
 	}
 
 	// ////////////////////////////////////////////////////

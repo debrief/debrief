@@ -95,6 +95,13 @@ public class MockCanvasType implements CanvasType
         // TODO Auto-generated method stub
 
     }
+    
+    public void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+            final int arcAngle, final int alpha)
+    {
+        // TODO Auto-generated method stub
+
+    }
 
     public void fillOval(final int x, final int y, final int width, final int height)
     {
@@ -269,6 +276,13 @@ public class MockCanvasType implements CanvasType
 
 	@Override
 	public void drawText(String str, int x, int y, float rotate, boolean above)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints) 
 	{
 		// TODO Auto-generated method stub
 		
