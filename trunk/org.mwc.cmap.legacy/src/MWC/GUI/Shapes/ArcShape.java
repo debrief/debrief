@@ -133,6 +133,7 @@ import java.beans.PropertyDescriptor;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -142,452 +143,460 @@ import MWC.GenericData.WorldVector;
 public class ArcShape extends CircleShape
 {
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-
-  // keep track of versions
-  static final long serialVersionUID = 1;
-
-  /**
-   * the centre bearing of the shape
-   */
-  private double _centreBearing;
-
-  /**
-   * the arc-width to use
-   */
-  private double _arcWidth;
-
-  /**
-   * the number of segments to use to plot this shape (when applicable)
-   */
-  public static final int NUM_SEGMENTS1 = 40;
-
-  /**
-   * whether to plot the origin of the arc
-   */
-  private boolean _plotOrigin = true;
-
-  /**
-   * whether to plot in the spokes of the arc
-   */
-  private boolean _plotSpokes = false;
-  
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-
-  /**
-   * constructor
-   *
-   * @param theCentre the WorldLocation marking the centre of the circle
-   * @param theRadius the radius of the circle (in yards)
-   */
-  public ArcShape(final WorldLocation theCentre,
-                  final double theRadius,
-                  final double centreBearing,
-                  final double arcWidth,
-                  final boolean plotOrigin,
-                  final boolean plotSpokes)
-  {
-  	this(theCentre, new WorldDistance(theRadius, WorldDistance.YARDS), centreBearing, arcWidth, plotOrigin, plotSpokes);
-  } 
-  
-  /**
-   * constructor
-   *
-   * @param theCentre the WorldLocation marking the centre of the circle
-   * @param theRadius the radius of the circle (in yards)
-   */
-  public ArcShape(final WorldLocation theCentre,
-                  final WorldDistance theRadius,
-                  final double centreBearing,
-                  final double arcWidth,
-                  final boolean plotOrigin,
-                  final boolean plotSpokes)
-  {
-    super(theCentre, theRadius);
-
-    super.setName("Arc");
-
-    _centreBearing = centreBearing;
-    _arcWidth = arcWidth;
-    _plotOrigin = plotOrigin;
-    _plotSpokes = plotSpokes;
-
-    // now represented our arc as an area
-    calcPoints();
-  }
-
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
-
-  public void paint(final CanvasType dest)
-  {
-    // are we visible?
-    if (!getVisible())
-      return;
-
-    if (this.getColor() != null)
-    {
-      // create a transparent colour
-      final Color newcol = getColor();
-      dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(), TRANSPARENCY_SHADE));
-    }
-
-    final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
-    final WorldLocation topLeft = new WorldLocation(_theCentre.add(new WorldVector(0, radDegs, 0)));
-    topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), radDegs, 0));
-
-    // create & extend to bottom right
-    final WorldLocation bottomRight = new WorldLocation(_theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), radDegs, 0)));
-    bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), radDegs, 0));
-
-
-    // get the origin
-    final Point tl = dest.toScreen(topLeft);
-
-    final int tlx = tl.x;
-    final int tly = tl.y;
-
-    // get the width and height
-    final Point br = dest.toScreen(bottomRight);
-
-    // sort out the start angle
-    int startAngle = (int) (_centreBearing - _arcWidth / 2d);
-
-    // and offset by 90 degs
-    startAngle -= 90;
-
-    // and make it go anticlockwise
-    startAngle = -startAngle;
-
-    final int wid = br.x - tlx;
-    final int height = br.y - tly;
-
-    // and now draw it
-
-    if (getFilled())
-    {
-    	if(getSemiTransparent())
-    		dest.fillArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth, TRANSPARENCY_SHADE);
-    	else
-    		dest.fillArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth);
-    }
-    else
-    {
-      dest.drawArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth);
-    }
-
-
-    final Point origin = new Point(dest.toScreen(_theCentre));
-
-
-    // does the user want us to plot the origin?
-    if (_plotOrigin)
-    {
-      // also plot the origin
-      dest.fillRect(origin.x - 1, origin.y - 2, 3, 3);
-    }
-
-    // spokes?
-    if (_plotSpokes)
-    {
-      final Point startPoint = dest.toScreen(getStartPoint(radDegs));
-
-      dest.drawLine(origin.x, origin.y, startPoint.x, startPoint.y);
-
-      final Point endPoint = dest.toScreen(getEndPoint(radDegs));
-
-      dest.drawLine(origin.x, origin.y, endPoint.x, endPoint.y);
-    }
-
-  }
-
-
-  /**
-   * calculate some convenience values based on the radius
-   * and centre of the circle
-   */
-  protected void calcPoints()
-  {
-    // calc the radius in degrees
-    final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
-
-    // create our area, starting with the centre point
-    _theArea = new WorldArea(_theCentre, _theCentre);
-
-    // extend to start of line
-    final WorldLocation other = getStartPoint(radDegs);
-    _theArea.extend(other);
-
-    // extend to centre of line
-    final WorldLocation other2 = getCentrePoint(radDegs);
-    _theArea.extend(other2);
-
-    // extend to centre of line
-    final WorldLocation other3 = getEndPoint(radDegs);
-    _theArea.extend(other3);
-  }
-
-  /**
-   * calculate the point at the start of the arc
-   *
-   * @param radDegs
-   * @return
-   */
-  private WorldLocation getStartPoint(final double radDegs)
-  {
-    final double startAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing - _arcWidth / 2);
-    final WorldLocation other = _theCentre.add(new WorldVector(startAng, radDegs, 0));
-    return other;
-  }
-
-  /**
-   * calculate the point half way along the arc
-   *
-   * @param radDegs
-   * @return
-   */
-  private WorldLocation getCentrePoint(final double radDegs)
-  {
-    final double centre = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing);
-    final WorldLocation other2 = _theCentre.add(new WorldVector(centre, radDegs, 0));
-    return other2;
-  }
-
-  /**
-   * calculate the location of the point at the end of the arc
-   *
-   * @param radDegs
-   * @return
-   */
-  private WorldLocation getEndPoint(final double radDegs)
-  {
-    final double endAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing + _arcWidth / 2);
-    final WorldLocation other3 = _theCentre.add(new WorldVector(endAng, radDegs, 0));
-    return other3;
-  }
-
-
-  /**
-   * get the range from the indicated world location -
-   * making this abstract allows for individual shapes
-   * to have 'hit-spots' in various locations.
-   */
-  public double rangeFrom(final WorldLocation point)
-  {
-    double res = this._theCentre.rangeFrom(point);
-
-    /** note, the user may also be clicking on the arc itself
-     *
-     */
-    final double radDegs =_theRadius.getValueIn(WorldDistance.DEGS);
-
-    // first the start
-    double res2 = getStartPoint(radDegs).rangeFrom(point);
-    res = Math.min(res, res2);
-
-    // now the centre
-    res2 = getCentrePoint(radDegs).rangeFrom(point);
-    res = Math.min(res, res2);
-
-    // now the end
-    res2 = getEndPoint(radDegs).rangeFrom(point);
-    res = Math.min(res, res2);
-
-    return res;
-  }
-
-  /**
-   * the angular size of the arc (degs)
-   *
-   * @return angular size of arc
-   */
-  public double getArcWidth()
-  {
-    return _arcWidth;
-  }
-
-  /**
-   * the angular size of the arc (degs)
-   *
-   * @param _arcWidth the size
-   */
-  public void setArcWidth(final double _arcWidth)
-  {
-    this._arcWidth = _arcWidth;
-    
-    // and calc the new summary data
-    calcPoints();
-    
-    // and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);    
-  }
-
-  /**
-   * the centre of the arc (degs)
-   *
-   * @return angle from the origin to the centre
-   */
-  public double getCentreBearing()
-  {
-    return _centreBearing;
-  }
-
-
-  /**
-   * the centre of the arc (degs)
-   *
-   * @param centreBearing angle from the origin to 1/2 way along line of arc
-   */
-  public void setCentreBearing(final double centreBearing)
-  {
-    this._centreBearing = centreBearing;
-    
-    // and calc the new summary data
-    calcPoints();
-    
-    // and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);    
-    
-  }
-
-  /**
-   * whether to plot the point at the origin
-   *
-   * @return yes/no
-   */
-  public boolean getPlotOrigin()
-  {
-    return _plotOrigin;
-  }
-
-  /**
-   * whether to plot the point at the origin
-   *
-   * @param plotOrigin yes/no
-   */
-  public void setPlotOrigin(final boolean plotOrigin)
-  {
-    this._plotOrigin = plotOrigin;
-  }
-
-  /**
-   * whether to plot in the spokes of the arc
-   *
-   * @return yes/no
-   */
-  public boolean getPlotSpokes()
-  {
-    return _plotSpokes;
-  }
-
-  /**
-   * whether to plot the spokes of an arc
-   *
-   * @param plotSpokes yes/no
-   */
-  public void setPlotSpokes(final boolean plotSpokes)
-  {
-    this._plotSpokes = plotSpokes;
-  }
-
-  //////////////////////////////////////////////////
-  // editor support
-  //////////////////////////////////////////////////
-
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  public EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new ArcInfo(this, this.getName());
-
-    return _myEditor;
-  }
-
-  /**
-   * get the 'anchor point' for any labels attached to
-   * this shape
-   */
-  public WorldLocation getAnchor()
-  {
-    return _theCentre;
-  }
-
-  //////////////////////////////////////////////////
-  // 3-d support
-  //////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////
-  // bean info for this class
-  /////////////////////////////////////////////////////
-  public class ArcInfo extends EditorType
-  {
-
-    public ArcInfo(final ArcShape data,
-                   final String theName)
-    {
-      super(data, theName, "");
-    }
-
-    public String getName()
-    {
-      return ArcShape.this.getName();
-    }
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          prop("Radius", "the circle radius"),
-          prop("Centre", "the centre of the circle"),
-          prop("CentreBearing", "bearing from centre of circle to 1/2 way along arc"),
-          prop("ArcWidth", "the angle of arc to plot"),
-          prop("PlotOrigin", "whether to plot the origin of the arc"),
-          prop("Filled", "whether to fill the arc"),
-          prop("SemiTransparent", "whether the filled arc is semi-transparent"),
-          prop("PlotSpokes", "whether to draw in the spokes of the arc")
-        };
-
-        return res;
-
-      }
-      catch (final IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class CircleTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public CircleTest(final String val)
-    {
-      super(val);
-    }
-
-    public void testMyParams()
-    {
-      Editable ed = new ArcShape(new WorldLocation(2d, 2d, 2d),new WorldDistance(2d, WorldDistance.YARDS), 12, 2, true, true);
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+	// ////////////////////////////////////////////////
+	// member variables
+	// ////////////////////////////////////////////////
+
+	// keep track of versions
+	static final long serialVersionUID = 1;
+
+	/**
+	 * the centre bearing of the shape
+	 */
+	private double _centreBearing;
+
+	/**
+	 * the arc-width to use
+	 */
+	private double _arcWidth;
+
+	/**
+	 * the number of segments to use to plot this shape (when applicable)
+	 */
+	public static final int NUM_SEGMENTS1 = 40;
+
+	/**
+	 * whether to plot the origin of the arc
+	 */
+	private boolean _plotOrigin = true;
+
+	/**
+	 * whether to plot in the spokes of the arc
+	 */
+	private boolean _plotSpokes = false;
+
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
+
+	/**
+	 * constructor
+	 * 
+	 * @param theCentre
+	 *          the WorldLocation marking the centre of the circle
+	 * @param theRadius
+	 *          the radius of the circle (in yards)
+	 */
+	public ArcShape(final WorldLocation theCentre, final double theRadius,
+			final double centreBearing, final double arcWidth,
+			final boolean plotOrigin, final boolean plotSpokes)
+	{
+		this(theCentre, new WorldDistance(theRadius, WorldDistance.YARDS),
+				centreBearing, arcWidth, plotOrigin, plotSpokes);
+	}
+
+	/**
+	 * constructor
+	 * 
+	 * @param theCentre
+	 *          the WorldLocation marking the centre of the circle
+	 * @param theRadius
+	 *          the radius of the circle (in yards)
+	 */
+	public ArcShape(final WorldLocation theCentre, final WorldDistance theRadius,
+			final double centreBearing, final double arcWidth,
+			final boolean plotOrigin, final boolean plotSpokes)
+	{
+		super(theCentre, theRadius);
+
+		super.setName("Arc");
+
+		_centreBearing = centreBearing;
+		_arcWidth = arcWidth;
+		_plotOrigin = plotOrigin;
+		_plotSpokes = plotSpokes;
+
+		// now represented our arc as an area
+		calcPoints();
+	}
+
+	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
+
+	public void paint(final CanvasType dest)
+	{
+		// are we visible?
+		if (!getVisible())
+			return;
+
+		if (this.getColor() != null)
+		{
+			// create a transparent colour
+			final Color newcol = getColor();
+			dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol
+					.getBlue(), TRANSPARENCY_SHADE));
+		}
+
+		final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
+		final WorldLocation topLeft = new WorldLocation(
+				_theCentre.add(new WorldVector(0, radDegs, 0)));
+		topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+				radDegs, 0));
+
+		// create & extend to bottom right
+		final WorldLocation bottomRight = new WorldLocation(
+				_theCentre.add(new WorldVector(MWC.Algorithms.Conversions
+						.Degs2Rads(180), radDegs, 0)));
+		bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions
+				.Degs2Rads(90), radDegs, 0));
+
+		// get the origin
+		final Point tl = dest.toScreen(topLeft);
+
+		final int tlx = tl.x;
+		final int tly = tl.y;
+
+		// get the width and height
+		final Point br = dest.toScreen(bottomRight);
+
+		// sort out the start angle
+		int startAngle = (int) (_centreBearing - _arcWidth / 2d);
+
+		// and offset by 90 degs
+		startAngle -= 90;
+
+		// and make it go anticlockwise
+		startAngle = -startAngle;
+
+		final int wid = br.x - tlx;
+		final int height = br.y - tly;
+
+		// and now draw it
+
+		if (getFilled())
+		{
+			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+			{
+				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+				ext.semiFillArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth);
+			}
+			else
+				dest.fillArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth);
+		}
+		else
+		{
+			dest.drawArc(tlx, tly, wid, height, startAngle, (int) -_arcWidth);
+		}
+
+		final Point origin = new Point(dest.toScreen(_theCentre));
+
+		// does the user want us to plot the origin?
+		if (_plotOrigin)
+		{
+			// also plot the origin
+			dest.fillRect(origin.x - 1, origin.y - 2, 3, 3);
+		}
+
+		// spokes?
+		if (_plotSpokes)
+		{
+			final Point startPoint = dest.toScreen(getStartPoint(radDegs));
+
+			dest.drawLine(origin.x, origin.y, startPoint.x, startPoint.y);
+
+			final Point endPoint = dest.toScreen(getEndPoint(radDegs));
+
+			dest.drawLine(origin.x, origin.y, endPoint.x, endPoint.y);
+		}
+
+	}
+
+	/**
+	 * calculate some convenience values based on the radius and centre of the
+	 * circle
+	 */
+	protected void calcPoints()
+	{
+		// calc the radius in degrees
+		final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
+
+		// create our area, starting with the centre point
+		_theArea = new WorldArea(_theCentre, _theCentre);
+
+		// extend to start of line
+		final WorldLocation other = getStartPoint(radDegs);
+		_theArea.extend(other);
+
+		// extend to centre of line
+		final WorldLocation other2 = getCentrePoint(radDegs);
+		_theArea.extend(other2);
+
+		// extend to centre of line
+		final WorldLocation other3 = getEndPoint(radDegs);
+		_theArea.extend(other3);
+	}
+
+	/**
+	 * calculate the point at the start of the arc
+	 * 
+	 * @param radDegs
+	 * @return
+	 */
+	private WorldLocation getStartPoint(final double radDegs)
+	{
+		final double startAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing
+				- _arcWidth / 2);
+		final WorldLocation other = _theCentre.add(new WorldVector(startAng,
+				radDegs, 0));
+		return other;
+	}
+
+	/**
+	 * calculate the point half way along the arc
+	 * 
+	 * @param radDegs
+	 * @return
+	 */
+	private WorldLocation getCentrePoint(final double radDegs)
+	{
+		final double centre = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing);
+		final WorldLocation other2 = _theCentre.add(new WorldVector(centre,
+				radDegs, 0));
+		return other2;
+	}
+
+	/**
+	 * calculate the location of the point at the end of the arc
+	 * 
+	 * @param radDegs
+	 * @return
+	 */
+	private WorldLocation getEndPoint(final double radDegs)
+	{
+		final double endAng = MWC.Algorithms.Conversions.Degs2Rads(_centreBearing
+				+ _arcWidth / 2);
+		final WorldLocation other3 = _theCentre.add(new WorldVector(endAng,
+				radDegs, 0));
+		return other3;
+	}
+
+	/**
+	 * get the range from the indicated world location - making this abstract
+	 * allows for individual shapes to have 'hit-spots' in various locations.
+	 */
+	public double rangeFrom(final WorldLocation point)
+	{
+		double res = this._theCentre.rangeFrom(point);
+
+		/**
+		 * note, the user may also be clicking on the arc itself
+		 * 
+		 */
+		final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
+
+		// first the start
+		double res2 = getStartPoint(radDegs).rangeFrom(point);
+		res = Math.min(res, res2);
+
+		// now the centre
+		res2 = getCentrePoint(radDegs).rangeFrom(point);
+		res = Math.min(res, res2);
+
+		// now the end
+		res2 = getEndPoint(radDegs).rangeFrom(point);
+		res = Math.min(res, res2);
+
+		return res;
+	}
+
+	/**
+	 * the angular size of the arc (degs)
+	 * 
+	 * @return angular size of arc
+	 */
+	public double getArcWidth()
+	{
+		return _arcWidth;
+	}
+
+	/**
+	 * the angular size of the arc (degs)
+	 * 
+	 * @param _arcWidth
+	 *          the size
+	 */
+	public void setArcWidth(final double _arcWidth)
+	{
+		this._arcWidth = _arcWidth;
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+	}
+
+	/**
+	 * the centre of the arc (degs)
+	 * 
+	 * @return angle from the origin to the centre
+	 */
+	public double getCentreBearing()
+	{
+		return _centreBearing;
+	}
+
+	/**
+	 * the centre of the arc (degs)
+	 * 
+	 * @param centreBearing
+	 *          angle from the origin to 1/2 way along line of arc
+	 */
+	public void setCentreBearing(final double centreBearing)
+	{
+		this._centreBearing = centreBearing;
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+
+	}
+
+	/**
+	 * whether to plot the point at the origin
+	 * 
+	 * @return yes/no
+	 */
+	public boolean getPlotOrigin()
+	{
+		return _plotOrigin;
+	}
+
+	/**
+	 * whether to plot the point at the origin
+	 * 
+	 * @param plotOrigin
+	 *          yes/no
+	 */
+	public void setPlotOrigin(final boolean plotOrigin)
+	{
+		this._plotOrigin = plotOrigin;
+	}
+
+	/**
+	 * whether to plot in the spokes of the arc
+	 * 
+	 * @return yes/no
+	 */
+	public boolean getPlotSpokes()
+	{
+		return _plotSpokes;
+	}
+
+	/**
+	 * whether to plot the spokes of an arc
+	 * 
+	 * @param plotSpokes
+	 *          yes/no
+	 */
+	public void setPlotSpokes(final boolean plotSpokes)
+	{
+		this._plotSpokes = plotSpokes;
+	}
+
+	// ////////////////////////////////////////////////
+	// editor support
+	// ////////////////////////////////////////////////
+
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	public EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new ArcInfo(this, this.getName());
+
+		return _myEditor;
+	}
+
+	/**
+	 * get the 'anchor point' for any labels attached to this shape
+	 */
+	public WorldLocation getAnchor()
+	{
+		return _theCentre;
+	}
+
+	// ////////////////////////////////////////////////
+	// 3-d support
+	// ////////////////////////////////////////////////
+
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class ArcInfo extends EditorType
+	{
+
+		public ArcInfo(final ArcShape data, final String theName)
+		{
+			super(data, theName, "");
+		}
+
+		public String getName()
+		{
+			return ArcShape.this.getName();
+		}
+
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+						prop("Radius", "the circle radius", SPATIAL),
+						prop("Centre", "the centre of the circle", SPATIAL),
+						prop("CentreBearing",
+								"bearing from centre of circle to 1/2 way along arc", SPATIAL),
+						prop("ArcWidth", "the angle of arc to plot", SPATIAL),
+						prop("PlotOrigin", "whether to plot the origin of the arc", SPATIAL),
+						prop("Filled", "whether to fill the arc", FORMAT),
+						prop("SemiTransparent",
+								"whether the filled arc is semi-transparent", FORMAT),
+						prop("PlotSpokes", "whether to draw in the spokes of the arc", SPATIAL) };
+
+				return res;
+
+			}
+			catch (final IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class CircleTest extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public CircleTest(final String val)
+		{
+			super(val);
+		}
+
+		public void testMyParams()
+		{
+			Editable ed = new ArcShape(new WorldLocation(2d, 2d, 2d),
+					new WorldDistance(2d, WorldDistance.YARDS), 12, 2, true, true);
+			editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
 }
-
-
-
-

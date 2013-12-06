@@ -138,6 +138,7 @@ import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -259,8 +260,11 @@ public class EllipseShape extends PlainShape implements Editable
 
     if (getFilled())
     {
-    	if (getSemiTransparent())
-    		dest.semiFillPolygon(xPoints, yPoints, len);
+			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+			{
+				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+    		ext.semiFillPolygon(xPoints, yPoints, len);
+			}
     	else
     		dest.fillPolygon(xPoints, yPoints, len);
     }      

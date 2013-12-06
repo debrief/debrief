@@ -151,6 +151,7 @@ import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
@@ -223,8 +224,11 @@ public class RectangleShape extends PlainShape implements Editable,
 		// and plot the polygon
 		if (getFilled())
 		{
-			if (getSemiTransparent())
-				dest.semiFillPolygon(xP, yP, STEPS);
+			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+			{
+				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+				ext.semiFillPolygon(xP, yP, STEPS);
+			}
 			else
 				dest.fillPolygon(xP, yP, STEPS);
 		}
@@ -365,10 +369,12 @@ public class RectangleShape extends PlainShape implements Editable,
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ prop("Corner_TopLeft", "the top left corner", SPATIAL),
+				{
+						prop("Corner_TopLeft", "the top left corner", SPATIAL),
 						prop("CornerBottomRight", "the bottom right corner", SPATIAL),
 						prop("Filled", "whether this shape is filled", FORMAT),
-						prop("SemiTransparent", "whether the filled rect is semi-transparent", FORMAT),};
+						prop("SemiTransparent",
+								"whether the filled rect is semi-transparent", FORMAT), };
 
 				return res;
 
@@ -440,8 +446,9 @@ public class RectangleShape extends PlainShape implements Editable,
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
-	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final ComponentConstruct currentNearest, final Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
+			final Layer parentLayer)
 	{
 
 		// right - the first two points are easy, we just pass the location directly

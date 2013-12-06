@@ -116,8 +116,6 @@ import java.awt.image.ImageObserver;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
@@ -499,11 +497,6 @@ final public class AWTCanvas extends java.awt.Canvas
   {
     _theDest.fillArc(x, y, width, height, startAngle, arcAngle);
   }
-  
-  public void fillArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle, final int alpha)
-  {
-	throw new NotImplementedException();
-  }
 
   public void drawArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
   {
@@ -710,9 +703,4 @@ public void drawText(String str, int x, int y, float rotate, boolean above)
 	
 }
 
-@Override
-public void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints) 
-{
-	throw new NotImplementedException();	
-}
 }

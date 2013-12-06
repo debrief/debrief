@@ -11,8 +11,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
 
@@ -241,12 +239,6 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		//
 		_dest.fillArc(x, y, width, height, startAngle, arcAngle);
 	}
-	
-	public void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
-			final int arcAngle, final int alpha) {
-		//
-		throw new NotImplementedException();
-	}
 
 	public void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
 			final int arcAngle) {
@@ -328,11 +320,5 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	{
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints) 
-	{
-		throw new NotImplementedException();		
 	}
 }

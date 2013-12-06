@@ -13,6 +13,7 @@ import java.util.Vector;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
@@ -76,7 +77,8 @@ public class PolygonShape extends PlainShape implements Editable,
 		private transient EditorType _myEditor;
 		private transient PolygonShape _myParent;
 
-		public PolygonNode(final String name, final WorldLocation location, final PolygonShape parent)
+		public PolygonNode(final String name, final WorldLocation location,
+				final PolygonShape parent)
 		{
 			_myName = name;
 			_myLocation = location;
@@ -292,8 +294,11 @@ public class PolygonShape extends PlainShape implements Editable,
 			// ok, now plot it
 			if (getFilled())
 			{
-				if (getSemiTransparent())
-					dest.semiFillPolygon(xP, yP, xP.length);
+				if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+				{
+					ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+					ext.semiFillPolygon(xP, yP, xP.length);
+				}
 				else
 					dest.fillPolygon(xP, yP, xP.length);
 			}
@@ -485,10 +490,13 @@ public class PolygonShape extends PlainShape implements Editable,
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ prop("Filled", "whether to fill the polygon", FORMAT),
-						prop("SemiTransparent", "whether the filled polygon is semi-transparent", FORMAT),
+				{
+						prop("Filled", "whether to fill the polygon", FORMAT),
+						prop("SemiTransparent",
+								"whether the filled polygon is semi-transparent", FORMAT),
 						prop("ShowNodeLabels", "whether to label the nodes", FORMAT),
-						prop("Closed", "whether to close the polygon (ignored if filled)", FORMAT) };
+						prop("Closed", "whether to close the polygon (ignored if filled)",
+								FORMAT) };
 				return res;
 
 			}
@@ -547,8 +555,9 @@ public class PolygonShape extends PlainShape implements Editable,
 
 	}
 
-	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final ComponentConstruct currentNearest, final Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
+			final Layer parentLayer)
 	{
 		// ok - pass through our corners
 		final Iterator<PolygonNode> myPts = _nodes.iterator();

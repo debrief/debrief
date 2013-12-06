@@ -281,11 +281,4 @@ public class MockCanvasType implements CanvasType
 		
 	}
 
-	@Override
-	public void semiFillPolygon(int[] xPoints, int[] yPoints, int nPoints) 
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
 }
