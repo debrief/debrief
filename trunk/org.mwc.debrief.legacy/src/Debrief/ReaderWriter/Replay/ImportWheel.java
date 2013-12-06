@@ -55,12 +55,14 @@
 //
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.*;
 import MWC.GenericData.*;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -114,57 +116,66 @@ final class ImportWheel implements PlainLineImporter
     // produce a date from this data
     theDate = DebriefFormatDateTime.parseThis(dateStr);
 
-    // now the location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
-
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    final String vDiff = st.nextToken();
-    if (vDiff.length() > 3)
+    try
     {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg = Double.valueOf(secondPart);
+    	// now the location
+    	latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+    	latMin = MWCXMLReader.readThisDouble(st.nextToken());
+    	latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+	    /** now, we may have trouble here, since there may not be
+	     * a space between the hemisphere character and a 3-digit
+	     * latitude value - so BE CAREFUL
+	     */
+	    final String vDiff = st.nextToken();
+	    if (vDiff.length() > 3)
+	    {
+	      // hmm, they are combined
+	      latHem = vDiff.charAt(0);
+	      final String secondPart = vDiff.substring(1, vDiff.length());
+	      longDeg =MWCXMLReader.readThisDouble(secondPart);
+	    }
+	    else
+	    {
+	      // they are separate, so only the hem is in this one
+	      latHem = vDiff.charAt(0);
+	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	    }
+	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	    longHem = st.nextToken().charAt(0);
+
+	    // now the radius of the circle
+	    innerRadius = MWCXMLReader.readThisDouble(st.nextToken());
+	    outerRadius = MWCXMLReader.readThisDouble(st.nextToken());
+	
+	
+	    // and now read in the message
+	    theText = st.nextToken("\r").trim();
+
+	    // create the tactical data
+	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
+	                               longDeg, longMin, longSec, longHem,
+	                               0);
+	
+	    // create the circle object
+	    final PlainShape wh = new WheelShape(theLoc, innerRadius, outerRadius);
+	    wh.setColor(ImportReplay.replayColorFor(theSymbology));
+	
+	    // and put it into a shape
+	    final ShapeWrapper sw = new ShapeWrapper(theText,
+	                                       wh,
+	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       theDate);
+	
+	    return sw;
     }
-    else
+    catch(final ParseException pe)
     {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
+    	MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import Wheel");
+    	return null;
     }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
-
-    // now the radius of the circle
-    innerRadius = Double.valueOf(st.nextToken()).doubleValue();
-    outerRadius = Double.valueOf(st.nextToken()).doubleValue();
-
-
-    // and now read in the message
-    theText = st.nextToken("\r").trim();
-
-    // create the tactical data
-    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-                               longDeg, longMin, longSec, longHem,
-                               0);
-
-    // create the circle object
-    final PlainShape wh = new WheelShape(theLoc, innerRadius, outerRadius);
-    wh.setColor(ImportReplay.replayColorFor(theSymbology));
-
-    // and put it into a shape
-    final ShapeWrapper sw = new ShapeWrapper(theText,
-                                       wh,
-                                       ImportReplay.replayColorFor(theSymbology),
-                                       theDate);
-
-    return sw;
   }
 
   /**

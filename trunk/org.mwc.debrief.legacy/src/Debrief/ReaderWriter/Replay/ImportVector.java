@@ -1,5 +1,6 @@
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
@@ -31,37 +32,45 @@ final class ImportVector implements PlainLineImporter
 	    // start with the symbology
 	    theSymbology = st.nextToken();
 	    
-	    // now the start location
-		start = ImportLine.extractStart(st);
-
-	    final String range = st.nextToken();
-	    final WorldDistance distance = new WorldDistance(new Double(range), WorldDistance.YARDS);
-	    final String bearingString = st.nextToken();
-			
-		String theText="";
-	    // see if there are any more tokens waiting,
-	    if(st.hasMoreTokens())
+	    try
 	    {
-	      // and lastly read in the message
-	      theText = st.nextToken("\r").trim();
+		    // now the start location
+			start = ImportLine.extractStart(st);
+	
+		    final String range = st.nextToken();
+		    final WorldDistance distance = new WorldDistance(new Double(range), WorldDistance.YARDS);
+		    final String bearingString = st.nextToken();
+				
+			String theText="";
+		    // see if there are any more tokens waiting,
+		    if(st.hasMoreTokens())
+		    {
+		      // and lastly read in the message
+		      theText = st.nextToken("\r").trim();
+		    }
+	    
+			
+		    // create the Vector object
+		    final VectorShape sp = new VectorShape(start, new Double(bearingString), distance);
+		    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+		    
+			final WorldArea tmp = new WorldArea(start, sp.getLineEnd());
+			tmp.normalise();
+				
+		    // and put it into a shape
+		    final ShapeWrapper sw = new ShapeWrapper(theText, 
+		                                       sp, 
+		                                       ImportReplay.replayColorFor(theSymbology),
+																					 null);
+		    
+		    return sw;
 	    }
-	    
-	    
-			
-	    // create the Vector object
-	    final VectorShape sp = new VectorShape(start, new Double(bearingString), distance);
-	    sp.setColor(ImportReplay.replayColorFor(theSymbology));
-	    
-		final WorldArea tmp = new WorldArea(start, sp.getLineEnd());
-		tmp.normalise();
-			
-	    // and put it into a shape
-	    final ShapeWrapper sw = new ShapeWrapper(theText, 
-	                                       sp, 
-	                                       ImportReplay.replayColorFor(theSymbology),
-																				 null);
-	    
-	    return sw;
+	    catch(final ParseException pe)
+	    {
+	    	MWC.Utilities.Errors.Trace.trace(pe,
+					"Whilst import Vector");
+	    	return null;
+	    }
   }
   
   /** determine the identifier returning this type of annotation
