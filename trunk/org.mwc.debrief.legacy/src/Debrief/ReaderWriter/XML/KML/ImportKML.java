@@ -37,6 +37,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class ImportKML
 {
@@ -231,9 +232,9 @@ public class ImportKML
 							.getTextContent();
 					// and now parse the string
 					final String[] coords = coordsTxt.split(",");
-					final double longVal = Double.parseDouble(coords[0]);
-					final double latVal = Double.parseDouble(coords[1]);
-					final double altitudeVal = Double.parseDouble(coords[2]);
+					final double longVal = MWCXMLReader.readThisDouble(coords[0]);
+					final double latVal = MWCXMLReader.readThisDouble(coords[1]);
+					final double altitudeVal = MWCXMLReader.readThisDouble(coords[2]);
 
 					// lastly, the course/speed
 					double courseDegs;
@@ -318,9 +319,10 @@ public class ImportKML
 	 * @param contents the inside of the linestring construct
 	 * @param theLayers where we're going to stick the data
 	 * @param startDate the start date for the track
+	 * @throws ParseException 
 	 */
 	private static void parseTheseCoords(final String contents, final Layers theLayers,
-			final Date startDate)
+			final Date startDate) throws ParseException
 	{
 		final StringTokenizer token = new StringTokenizer(contents, ",\n", false);
 
@@ -335,10 +337,11 @@ public class ImportKML
 			// just check that we have altitude data
 			double theAlt = 0;
 			if(altitude.length() > 0)
-				theAlt = Double.valueOf(altitude);
+				theAlt = MWCXMLReader.readThisDouble(altitude);
 
 			addFix(theLayers, startDate.toString(), new HiResDate(newDate.getTime()),
-					new WorldLocation(Double.valueOf(latV), Double.valueOf(longV),
+					new WorldLocation(MWCXMLReader.readThisDouble(latV), 
+							MWCXMLReader.readThisDouble(longV),
 							-theAlt), 0, 0);
 
 			// add a second incremenet to the date, to create the new date
@@ -352,8 +355,9 @@ public class ImportKML
 	 * 
 	 * @param descriptionTxt
 	 * @return
+	 * @throws ParseException 
 	 */
-	private static double courseFrom(final String descriptionTxt)
+	private static double courseFrom(final String descriptionTxt) throws ParseException
 	{
 		double res = 0;
 		// STRING LOOKS LIKE
@@ -365,7 +369,7 @@ public class ImportKML
 		if ((startI > 0) && (endI > 0))
 		{
 			final String subStr = descriptionTxt.substring(startI + 7, endI - 1);
-			res = Double.valueOf(subStr.trim());
+			res = MWCXMLReader.readThisDouble(subStr.trim());
 		}
 		return res;
 	}
@@ -375,8 +379,9 @@ public class ImportKML
 	 * 
 	 * @param descriptionTxt
 	 * @return
+	 * @throws ParseException 
 	 */
-	private static double speedFrom(final String descriptionTxt)
+	private static double speedFrom(final String descriptionTxt) throws ParseException
 	{
 		double res = 0;
 		// STRING LOOKS LIKE
@@ -388,7 +393,7 @@ public class ImportKML
 		if ((startI > 0) && (endI > 0))
 		{
 			final String subStr = descriptionTxt.substring(startI + 6, endI - 1);
-			res = Double.valueOf(subStr.trim());
+			res = MWCXMLReader.readThisDouble(subStr.trim());
 		}
 		return res;
 	}

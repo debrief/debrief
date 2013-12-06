@@ -237,8 +237,8 @@ public final class ImportFix implements PlainLineImporter
 			longHem = st.nextToken().charAt(0);
 
 			// parse (and convert) the vessel status parameters
-			theCourse = MWC.Algorithms.Conversions.Degs2Rads(Double.valueOf(
-					st.nextToken()).doubleValue());
+			theCourse = MWC.Algorithms.Conversions.Degs2Rads(
+					MWCXMLReader.readThisDouble(st.nextToken()));
 			theSpeed = MWC.Algorithms.Conversions.Kts2Yps(Double
 					.valueOf(st.nextToken()).doubleValue());
 	
@@ -975,6 +975,12 @@ public final class ImportFix implements PlainLineImporter
 		final double val = Double.valueOf(test).doubleValue();
 
 		System.out.println("res is:" + val);
+		
+		try {
+			System.out.println("utility res is: " + MWCXMLReader.readThisDouble(test));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

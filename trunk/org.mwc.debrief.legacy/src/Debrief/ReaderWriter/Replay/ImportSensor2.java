@@ -85,8 +85,10 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import junit.framework.Assert;
@@ -150,95 +152,104 @@ final class ImportSensor2 implements PlainLineImporter {
     // if that's its destiny
     next.trim();
 
-    // find out if it's our null value
-    if (next.startsWith("N")) {
-      // ditch it,
-    } else {
-
-      // get the deg out of this value
-      latDeg = Double.valueOf(next);
-
-      // ok, this is valid data, persevere with it
-      latMin = Double.valueOf(st.nextToken());
-      latSec = Double.valueOf(st.nextToken()).doubleValue();
-
-      /** now, we may have trouble here, since there may not be
-       * a space between the hemisphere character and a 3-digit
-       * latitude value - so BE CAREFUL
-       */
-      final String vDiff = st.nextToken();
-      if (vDiff.length() > 3) {
-        // hmm, they are combined
-        latHem = vDiff.charAt(0);
-        final String secondPart = vDiff.substring(1, vDiff.length());
-        longDeg = Double.valueOf(secondPart);
-      } else {
-        // they are separate, so only the hem is in this one
-        latHem = vDiff.charAt(0);
-        longDeg = Double.valueOf(st.nextToken());
-      }
-
-      longMin = Double.valueOf(st.nextToken());
-      longSec = Double.valueOf(st.nextToken()).doubleValue();
-      longHem = st.nextToken().charAt(0);
-
-      // create the origin
-      origin = new WorldLocation(latDeg, latMin, latSec, latHem,
-          longDeg, longMin, longSec, longHem,
-          0);
-    } // whether the duff origin data was entered
-
-    // get the bearing
-    final String brgStr = st.nextToken();
-    if(!brgStr.startsWith("N"))
+    try
     {
-    	// cool, we have data
-    	brg = new Double(Double.valueOf(brgStr));    	
-    }
+	    // find out if it's our null value
+	    if (next.startsWith("N")) {
+	      // ditch it,
+	    } else {
+
+	      // get the deg out of this value
+	      latDeg = MWCXMLReader.readThisDouble(next);
+
+	      // ok, this is valid data, persevere with it
+	      latMin = MWCXMLReader.readThisDouble(st.nextToken());
+	      latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+	      /** now, we may have trouble here, since there may not be
+	       * a space between the hemisphere character and a 3-digit
+	       * latitude value - so BE CAREFUL
+	       */
+	      final String vDiff = st.nextToken();
+	      if (vDiff.length() > 3) {
+	        // hmm, they are combined
+	        latHem = vDiff.charAt(0);
+	        final String secondPart = vDiff.substring(1, vDiff.length());
+	        longDeg = MWCXMLReader.readThisDouble(secondPart);
+	      } else {
+	        // they are separate, so only the hem is in this one
+	        latHem = vDiff.charAt(0);
+	        longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	      }
+	
+	      longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	      longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	      longHem = st.nextToken().charAt(0);
+
+	      // create the origin
+	      origin = new WorldLocation(latDeg, latMin, latSec, latHem,
+	          longDeg, longMin, longSec, longHem,
+	          0);
+	    } // whether the duff origin data was entered
+
+	    // get the bearing
+	    final String brgStr = st.nextToken();
+	    if(!brgStr.startsWith("N"))
+	    {
+	    	// cool, we have data
+	    	brg = new Double(MWCXMLReader.readThisDouble(brgStr));    	
+	    }
     
-    // and now get the ambiguous bearing
-    String tmp = st.nextToken();
-    if(!tmp.startsWith("N"))
-    {
-    	// cool, we have data
-    	brg2 = new Double(Double.valueOf(tmp));    	
+	    // and now get the ambiguous bearing
+	    String tmp = st.nextToken();
+	    if(!tmp.startsWith("N"))
+	    {
+	    	// cool, we have data
+	    	brg2 = new Double(MWCXMLReader.readThisDouble(tmp));    	
+	    }
+
+	    // and the frequency
+	    tmp = st.nextToken();
+	    if(!tmp.startsWith("N"))
+	    {
+	    	// cool, we have data
+	    	freq = new Double(MWCXMLReader.readThisDouble(tmp));    	
+	    }
+
+	    // and the range
+	    tmp = st.nextToken();
+	    if(!tmp.startsWith("N"))
+	    {
+	    	// cool, we have data
+	    	rng = new WorldDistance(new Double(MWCXMLReader.readThisDouble(tmp)), WorldDistance.YARDS);    	
+	    }
+
+	    // get the (possibly multi-word) track name
+	    sensorName = ImportFix.checkForQuotedTrackName(st);
+	
+	    // trim the sensor name
+	    sensorName = sensorName.trim();
+	
+	    // and lastly read in the message
+	    theText = st.nextToken("\r").trim();
+	
+	    theColor = ImportReplay.replayColorFor(theSymbology);
+	
+	    final int theStyle = ImportReplay.replayLineStyleFor(theSymbology);
+
+
+	    // create the contact object
+	    final SensorContactWrapper data =
+	        new SensorContactWrapper(theTrack, theDtg, rng, brg, brg2, freq, origin, theColor, theText, theStyle, sensorName);
+	
+	    return data;
     }
-
-    // and the frequency
-    tmp = st.nextToken();
-    if(!tmp.startsWith("N"))
+    catch(final ParseException pe)
     {
-    	// cool, we have data
-    	freq = new Double(Double.valueOf(tmp));    	
+    	MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import sensor2");
+		return null;
     }
-
-    // and the range
-    tmp = st.nextToken();
-    if(!tmp.startsWith("N"))
-    {
-    	// cool, we have data
-    	rng = new WorldDistance(new Double(Double.valueOf(tmp)), WorldDistance.YARDS);    	
-    }
-
-    // get the (possibly multi-word) track name
-    sensorName = ImportFix.checkForQuotedTrackName(st);
-
-    // trim the sensor name
-    sensorName = sensorName.trim();
-
-    // and lastly read in the message
-    theText = st.nextToken("\r").trim();
-
-    theColor = ImportReplay.replayColorFor(theSymbology);
-
-    final int theStyle = ImportReplay.replayLineStyleFor(theSymbology);
-
-
-    // create the contact object
-    final SensorContactWrapper data =
-        new SensorContactWrapper(theTrack, theDtg, rng, brg, brg2, freq, origin, theColor, theText, theStyle, sensorName);
-
-    return data;
   }
 
   /**

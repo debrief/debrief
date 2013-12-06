@@ -52,11 +52,13 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.LabelWrapper;
 import MWC.GenericData.*;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a label from a line of text
@@ -95,50 +97,59 @@ final class ImportTimeText implements PlainLineImporter
 
 		// and extract the date
 		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-		
-    // now the location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
+	
+	try
+	{
+		// now the location
+		latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+		latMin = MWCXMLReader.readThisDouble(st.nextToken());
+		latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    final String vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Double.valueOf(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
+	    /** now, we may have trouble here, since there may not be
+	     * a space between the hemisphere character and a 3-digit
+	     * latitude value - so BE CAREFUL
+	     */
+	    final String vDiff = st.nextToken();
+	    if(vDiff.length() > 3)
+	    {
+	      // hmm, they are combined
+	      latHem = vDiff.charAt(0);
+	      final String secondPart = vDiff.substring(1, vDiff.length());
+	      longDeg  = MWCXMLReader.readThisDouble(secondPart);
+	    }
+	    else
+	    {
+	      // they are separate, so only the hem is in this one
+	      latHem = vDiff.charAt(0);
+	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	    }
+	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	    longHem = st.nextToken().charAt(0);
 
-    // and now read in the message
-    theText = st.nextToken("\r").trim();
-
-    // create the tactical data
-    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-                               longDeg, longMin, longSec, longHem,
-                               0);
-
-    // create the fix ready to store it
-    final LabelWrapper lw = new LabelWrapper(theText,
-                                       theLoc,
-                                       ImportReplay.replayColorFor(theSymbology),
-																			 theDate,
-																			 null);
-
-    return lw;
+	    // and now read in the message
+	    theText = st.nextToken("\r").trim();
+	
+	    // create the tactical data
+	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
+	                               longDeg, longMin, longSec, longHem,
+	                               0);
+	
+	    // create the fix ready to store it
+	    final LabelWrapper lw = new LabelWrapper(theText,
+	                                       theLoc,
+	                                       ImportReplay.replayColorFor(theSymbology),
+																				 theDate,
+																				 null);
+	
+	    return lw;
+	}
+	catch(final ParseException pe)
+	{
+		MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import TimeText");
+		return null;
+	}
   }
 
   /** determine the identifier returning this type of annotation

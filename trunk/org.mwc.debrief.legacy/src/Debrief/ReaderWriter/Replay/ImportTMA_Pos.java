@@ -31,6 +31,7 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.*;
@@ -38,6 +39,7 @@ import MWC.Algorithms.Conversions;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.*;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -99,90 +101,99 @@ public final class ImportTMA_Pos implements PlainLineImporter
 		// find out if it's our null value
 		String next = st.nextToken();
 
-		// get the deg out of this value
-		latDeg = Double.valueOf(next);
-
-		// ok, this is valid data, persevere with it
-		latMin = Double.valueOf(st.nextToken());
-		latSec = Double.valueOf(st.nextToken()).doubleValue();
-
-		/**
-		 * now, we may have trouble here, since there may not be a space between the
-		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
-		 */
-		final String vDiff = st.nextToken();
-		if (vDiff.length() > 3)
+		try
 		{
-			// hmm, they are combined
-			latHem = vDiff.charAt(0);
-			final String secondPart = vDiff.substring(1, vDiff.length());
-			longDeg = Double.valueOf(secondPart);
+			// get the deg out of this value
+			latDeg = MWCXMLReader.readThisDouble(next);
+
+			// ok, this is valid data, persevere with it
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3)
+			{
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			}
+			else
+			{
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+	
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// create the origin
+			origin = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+					longMin, longSec, longHem, 0);
+	
+			// read in the solution name
+			solutionName = st.nextToken();
+	
+			// trim the sensor name
+			solutionName = solutionName.trim();
+	
+			// now the ellipse details (or null)
+			next = st.nextToken();
+	
+			// let's trim this string aswell, just so we're sure N is the first letter
+			// if that's its destiny
+			next = next.trim();
+
+			// find out if it's our null value
+			if (next.startsWith("N"))
+			{
+				// ditch it,
+			}
+			else
+			{
+				// now the ellipse details
+				orientation = MWCXMLReader.readThisDouble(next);
+				maxima = MWCXMLReader.readThisDouble(st.nextToken());
+				minima = MWCXMLReader.readThisDouble(st.nextToken());
+	
+				theEllipse = new EllipseShape(null, orientation, new WorldDistance(
+						Conversions.Yds2Degs(maxima), WorldDistance.DEGS), new WorldDistance(
+						Conversions.Yds2Degs(minima), WorldDistance.DEGS));
+	
+			} // whether the duff ellipse data was entered
+
+			course = MWCXMLReader.readThisDouble(st.nextToken());
+			speed = MWCXMLReader.readThisDouble(st.nextToken());
+			depth = MWCXMLReader.readThisDouble(st.nextToken());
+
+			// and lastly read in the message
+			theLabel = st.nextToken("\r").trim();
+			// strip off any gash
+			theLabel = theLabel.trim();
+	
+			theColor = ImportReplay.replayColorFor(theSymbology);
+	
+			final String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
+	
+			// create the contact object
+			final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
+					theDtg, origin, course, speed, depth, theColor, theLabel, theEllipse,
+					theStyle);
+	
+			return data;
 		}
-		else
+		catch(final ParseException pe)
 		{
-			// they are separate, so only the hem is in this one
-			latHem = vDiff.charAt(0);
-			longDeg = Double.valueOf(st.nextToken());
+			MWC.Utilities.Errors.Trace.trace(pe,
+					"Whilst import TMA_Pos");
+			return null;
 		}
-
-		longMin = Double.valueOf(st.nextToken());
-		longSec = Double.valueOf(st.nextToken()).doubleValue();
-		longHem = st.nextToken().charAt(0);
-
-		// create the origin
-		origin = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-				longMin, longSec, longHem, 0);
-
-		// read in the solution name
-		solutionName = st.nextToken();
-
-		// trim the sensor name
-		solutionName = solutionName.trim();
-
-		// now the ellipse details (or null)
-		next = st.nextToken();
-
-		// let's trim this string aswell, just so we're sure N is the first letter
-		// if that's its destiny
-		next = next.trim();
-
-		// find out if it's our null value
-		if (next.startsWith("N"))
-		{
-			// ditch it,
-		}
-		else
-		{
-			// now the ellipse details
-			orientation = Double.valueOf(next).doubleValue();
-			maxima = Double.valueOf(st.nextToken()).doubleValue();
-			minima = Double.valueOf(st.nextToken()).doubleValue();
-
-			theEllipse = new EllipseShape(null, orientation, new WorldDistance(
-					Conversions.Yds2Degs(maxima), WorldDistance.DEGS), new WorldDistance(
-					Conversions.Yds2Degs(minima), WorldDistance.DEGS));
-
-		} // whether the duff ellipse data was entered
-
-		course = Double.valueOf(st.nextToken()).doubleValue();
-		speed = Double.valueOf(st.nextToken()).doubleValue();
-		depth = Double.valueOf(st.nextToken()).doubleValue();
-
-		// and lastly read in the message
-		theLabel = st.nextToken("\r").trim();
-		// strip off any gash
-		theLabel = theLabel.trim();
-
-		theColor = ImportReplay.replayColorFor(theSymbology);
-
-		final String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
-
-		// create the contact object
-		final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
-				theDtg, origin, course, speed, depth, theColor, theLabel, theEllipse,
-				theStyle);
-
-		return data;
 	}
 
 	/**
