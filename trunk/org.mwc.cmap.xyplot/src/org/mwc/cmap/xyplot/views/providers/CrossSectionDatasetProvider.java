@@ -28,131 +28,138 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
-public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
+public class CrossSectionDatasetProvider implements
+		ICrossSectionDatasetProvider
 {
 	private ILocationCalculator _calc;
 	private Map<Integer, Color> _seriesColors = new HashMap<Integer, Color>();
-	 
+
 	public CrossSectionDatasetProvider()
 	{
 		this(WorldDistance.KM);
 	}
-	
+
 	public CrossSectionDatasetProvider(final int units)
 	{
 		_calc = new LocationCalculator(units);
-	}	
-	
-	private XYSeries getSeries(final LineShape line, String seriesName,  Watchable[] wbs)
+	}
+
+	private XYSeries getSeries(final LineShape line, String seriesName,
+			Watchable[] wbs)
 	{
-		final XYSeries series = new XYSeries(seriesName);
-		for(final Watchable wb: wbs)
-		{		    					
+		final XYSeries series = new XYSeries(seriesName, false, true);
+		for (final Watchable wb : wbs)
+		{
 			final Double x_coord = new Double(_calc.getDistance(line, wb));
-        	final Double y_coord = new Double(-1.0*wb.getDepth());
-			series.add(x_coord, y_coord);    		        		
+			final Double y_coord = new Double(-1.0 * wb.getDepth());
+			series.add(x_coord, y_coord);
 		}
 		return series;
 	}
-	
-	XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
-			final HiResDate startT, final 	HiResDate endT) 
+
+	XYSeries getSeries(final LineShape line, final TrackWrapper wlist,
+			final HiResDate startT, final HiResDate endT)
 	{
-		final Collection<Editable> editables  = wlist.getItemsBetween(startT, endT);
+		final Collection<Editable> editables = wlist.getItemsBetween(startT, endT);
 		if (editables == null)
-			return  new XYSeries(wlist.getName());
-		Watchable[] wbs = (Watchable[]) editables.toArray(new Watchable[editables.size()]);
+			return new XYSeries(wlist.getName(), false, true);
+		Watchable[] wbs = (Watchable[]) editables.toArray(new Watchable[editables
+				.size()]);
 		return getSeries(line, wlist.getName(), wbs);
 	}
 
-	XYSeries getSeries(final LineShape line, final TrackWrapper wlist, 
-			final HiResDate timeT) 
+	XYSeries getSeries(final LineShape line, final TrackWrapper wlist,
+			final HiResDate timeT)
 	{
 		final Watchable[] wbs = wlist.getNearestTo(timeT);
 		return getSeries(line, wlist.getName(), wbs);
 	}
-	
+
 	@Override
 	public XYSeriesCollection getDataset(LineShape line, Layers layers,
-			HiResDate startT, HiResDate endT) 
+			HiResDate startT, HiResDate endT)
 	{
 		return walk(layers, line, startT, endT);
 	}
-	
+
 	@Override
 	public XYSeriesCollection getDataset(LineShape line, Layers layers,
-			HiResDate timeT) 
+			HiResDate timeT)
 	{
 		return walk(layers, line, timeT, null);
 	}
-	
-	private XYSeriesCollection walk(final Layers layers, final LineShape line, 
+
+	private XYSeriesCollection walk(final Layers layers, final LineShape line,
 			final HiResDate startT, final HiResDate endT)
 	{
 		final XYSeriesCollection dataset = new XYSeriesCollection();
 		final Enumeration<Editable> numer = layers.elements();
-	    
-	    while(numer.hasMoreElements())  
-	    {
-	    	final Editable next = numer.nextElement();  
-	    	if (next instanceof WatchableList)
-		    { 
-	    		final WatchableList wlist = (WatchableList) next;
-    			if (!(wlist instanceof TrackWrapper))
-    				return dataset;
-    			
-	    		if(endT != null)
-	    		{	    			   			
-	    			final XYSeries series = getSeries(line,
-	    						(TrackWrapper) wlist, startT, endT);
-	    		    dataset.addSeries(series);
-	    		}
-	    		else
-	    		{
-	    			final XYSeries series = getSeries(line,
-							(TrackWrapper) wlist, startT);
-    				dataset.addSeries(series);
-	    		}
-	    		 _seriesColors.put(new Integer(dataset.getSeriesCount()-1), 
-	    		    		wlist.getColor());	    			
-		    }		    
-	    }
-	    return dataset;
+
+		while (numer.hasMoreElements())
+		{
+			final Editable next = numer.nextElement();
+			if (next instanceof WatchableList)
+			{
+				final WatchableList wlist = (WatchableList) next;
+				if (wlist.getVisible())
+				{
+					if (wlist instanceof TrackWrapper)
+					{
+						TrackWrapper track = (TrackWrapper) wlist;
+
+						if (endT != null)
+						{
+							final XYSeries series = getSeries(line, track, startT, endT);
+							dataset.addSeries(series);
+						}
+						else
+						{
+							final XYSeries series = getSeries(line, track, startT);
+							dataset.addSeries(series);
+						}
+						_seriesColors.put(new Integer(dataset.getSeriesCount() - 1),
+								wlist.getColor());
+					}
+				}
+			}
+		}
+		return dataset;
 	}
-	
+
 	@Override
-	public Map<Integer, Color> getSeriesColors() 
+	public Map<Integer, Color> getSeriesColors()
 	{
 		return _seriesColors;
 	}
-	
-	static public final class CrossSectionDatasetProviderTest extends junit.framework.TestCase
+
+	static public final class CrossSectionDatasetProviderTest extends
+			junit.framework.TestCase
 	{
 		DateFormat _dateFormat = new SimpleDateFormat("dd-mm-yyyy HH:mm");
 		HiResDate[] _times;
 		int TIME_ARRAY_SIZE = 7;
-		
+
 		TrackWrapper _track;
 		LineShape _line;
-		
+
 		CrossSectionDatasetProvider _testable = new CrossSectionDatasetProvider();
-		
+
 		public void setUp() throws ParseException
 		{
 			WorldLocation start = new WorldLocation(0, 0, 0);
 			WorldLocation end = new WorldLocation(0, 1, 0);
 			_line = new LineShape(start, end);
-			
+
 			_times = new HiResDate[TIME_ARRAY_SIZE];
-			for (int i=0; i<TIME_ARRAY_SIZE; i++)
+			for (int i = 0; i < TIME_ARRAY_SIZE; i++)
 			{
-				final Date dateVal = _dateFormat.parse("09-09-2013 10:" + i*10);
-				_times[i] = new HiResDate(dateVal); 
+				final Date dateVal = _dateFormat.parse("09-09-2013 10:" + i * 10);
+				_times[i] = new HiResDate(dateVal);
 			}
-			
+
 			_track = new TrackWrapper();
 			int j = 0;
-			for (double i=0.0; i<=1.2; i+=0.2)
+			for (double i = 0.0; i <= 1.2; i += 0.2)
 			{
 				final WorldLocation loc = new WorldLocation(0, i, 0);
 				final Fix fix = new Fix(_times[j], loc, 2, 2);
@@ -160,51 +167,51 @@ public class CrossSectionDatasetProvider implements ICrossSectionDatasetProvider
 				j++;
 			}
 		}
-		
+
 		public void testDiscreteSeries() throws ParseException
-		{			
-			for (int i=0; i<TIME_ARRAY_SIZE; i++)
+		{
+			for (int i = 0; i < TIME_ARRAY_SIZE; i++)
 			{
 				final XYSeries series = _testable.getSeries(_line, _track, _times[i]);
 				assertEquals(1, series.getItemCount());
 				final XYDataItem item = series.getDataItem(0);
 				assertNotNull(item.getXValue());
-				assertEquals(0.0, item.getYValue()); //depth is 0
+				assertEquals(0.0, item.getYValue()); // depth is 0
 			}
 		}
-		
+
 		public void testSnailSeries2() throws ParseException
-		{	
-			for (int i=0; i<TIME_ARRAY_SIZE-1; i++)
+		{
+			for (int i = 0; i < TIME_ARRAY_SIZE - 1; i++)
 			{
-				final XYSeries series = _testable.getSeries(_line, _track, _times[i], _times[i+1]);
+				final XYSeries series = _testable.getSeries(_line, _track, _times[i],
+						_times[i + 1]);
 				assertEquals(2, series.getItemCount());
-				for (int j=0; j<2; j++)
+				for (int j = 0; j < 2; j++)
 				{
 					final XYDataItem item = series.getDataItem(j);
 					assertNotNull(item.getXValue());
-					assertEquals(0.0, item.getYValue()); //depth is 0
+					assertEquals(0.0, item.getYValue()); // depth is 0
 				}
 			}
 		}
-		
+
 		public void testSnailSeries() throws ParseException
-		{	
-			for (int i=0; i<TIME_ARRAY_SIZE-2; i++)
+		{
+			for (int i = 0; i < TIME_ARRAY_SIZE - 2; i++)
 			{
-				final XYSeries series = _testable.getSeries(_line, _track, _times[i], _times[i+1]);
+				final XYSeries series = _testable.getSeries(_line, _track, _times[i],
+						_times[i + 1]);
 				assertEquals(2, series.getItemCount());
-				for (int j=0; j<2; j++)
+				for (int j = 0; j < 2; j++)
 				{
 					final XYDataItem item = series.getDataItem(j);
 					assertNotNull(item.getXValue());
-					assertEquals(0.0, item.getYValue()); //depth is 0
+					assertEquals(0.0, item.getYValue()); // depth is 0
 				}
 			}
 		}
-	
-		
+
 	}
 
-	
 }
