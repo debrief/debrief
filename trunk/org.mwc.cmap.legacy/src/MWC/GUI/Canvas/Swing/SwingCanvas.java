@@ -220,8 +220,6 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
