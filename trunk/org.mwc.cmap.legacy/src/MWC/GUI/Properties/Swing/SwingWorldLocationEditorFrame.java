@@ -14,6 +14,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 /**
@@ -465,7 +466,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
       // sort out the depth, since it doesn't depend on
       // which panel is being edited
-      depth = Double.parseDouble(depthValue.getText());
+      depth =  MWCXMLReader.readThisDouble(depthValue.getText());
 
       // determine which panel is being edited
       if(entryPanel.getSelectedComponent() == DM)

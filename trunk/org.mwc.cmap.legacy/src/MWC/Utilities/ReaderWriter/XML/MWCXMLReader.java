@@ -461,7 +461,7 @@ public class MWCXMLReader extends DefaultHandler {
 		return DebriefFormatDateTime.parseThis(val);
 	}
 
-	static public Duration parseThisDuration(final String val) {
+	static public Duration parseThisDuration(final String val) throws ParseException {
 		return Duration.fromString(val);
 	}
 

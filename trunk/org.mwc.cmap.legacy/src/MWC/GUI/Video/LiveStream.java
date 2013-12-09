@@ -37,6 +37,7 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import javax.media.Buffer;
@@ -48,6 +49,8 @@ import javax.media.format.VideoFormat;
 import javax.media.protocol.BufferTransferHandler;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.PushBufferStream;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class LiveStream implements PushBufferStream, Runnable {
 
@@ -106,7 +109,7 @@ public class LiveStream implements PushBufferStream, Runnable {
       thread = new Thread(this, "Screen Grabber");
     }
 
-    protected void parseLocator(final MediaLocator locator) {
+    protected void parseLocator(final MediaLocator locator) throws ParseException {
       String rem = locator.getRemainder();
       // Strip off starting slashes
       while (rem.startsWith("/") && rem.length() > 1)
@@ -140,7 +143,7 @@ public class LiveStream implements PushBufferStream, Runnable {
 	    if (st.hasMoreTokens()) {
         // Parse the frame rate
         final String stFPS = st.nextToken();
-        frameRate = (Double.valueOf(stFPS)).floatValue();
+        frameRate = new Double(MWCXMLReader.readThisDouble(stFPS)).floatValue();
 	    }
     }
 

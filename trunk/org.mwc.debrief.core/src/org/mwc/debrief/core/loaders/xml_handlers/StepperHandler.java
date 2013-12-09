@@ -223,24 +223,48 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		val = (String) details.properties.get("SmallStep");
 		if (val != null)
 		{
-			final Duration dur = Duration.fromString(val);
-			timePrefs.setSmallStep(dur);
+			try
+			{
+				final Duration dur = Duration.fromString(val);
+				timePrefs.setSmallStep(dur);
+			}
+			catch (final java.text.ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading duration value is:" + val);
+			}
 		}
 
 		// /////////////////////////////////////////////////////////////
 		val = (String) details.properties.get("LargeStep");
 		if (val != null)
 		{
-			final Duration dur = Duration.fromString(val);
-			timePrefs.setLargeStep(dur);
+			try
+			{
+				final Duration dur = Duration.fromString(val);
+				timePrefs.setLargeStep(dur);
+			}
+			catch (final java.text.ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading duration value is:" + val);
+			}
 		}
 
 		// /////////////////////////////////////////////////////////////
 		val = (String) details.properties.get("AutoStepInterval");
 		if (val != null)
 		{
-			final Duration dur = Duration.fromString(val);
-			timePrefs.setAutoInterval(dur);
+			try
+			{
+				final Duration dur = Duration.fromString(val);
+				timePrefs.setAutoInterval(dur);
+			}
+			catch (final java.text.ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading duration value is:" + val);
+			}
 		}
 
 		// /////////////////////////////////////////////////////////////
@@ -388,8 +412,16 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			final String trailLength = (String) details.properties.get(TRAIL_LENGTH);
 			if (trailLength != null)
 			{
-				final Duration theLen = Duration.fromString(trailLength);
-				sp.getSnailProperties().setTrailLength(theLen);
+				try
+				{
+					final Duration theLen = Duration.fromString(trailLength);
+					sp.getSnailProperties().setTrailLength(theLen);
+				}
+				catch (final java.text.ParseException pe)
+				{
+					MWC.Utilities.Errors.Trace.trace(pe,
+							"Failed reading duration value is:" + trailLength);
+				}
 			}
 		}
 	}

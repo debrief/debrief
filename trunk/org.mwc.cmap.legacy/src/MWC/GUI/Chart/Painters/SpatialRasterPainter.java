@@ -17,6 +17,7 @@ import java.awt.Toolkit;
 import java.awt.geom.Dimension2D;
 import java.awt.image.MemoryImageSource;
 import java.beans.PropertyEditorSupport;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -31,6 +32,7 @@ import MWC.GUI.ETOPO.Conrec;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * interface which indicates that this class is capable of providing an integer value
@@ -1242,10 +1244,10 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
     {
       try
       {
-        final double d = Double.parseDouble(token.nextToken());
+        final double d =  MWCXMLReader.readThisDouble(token.nextToken());
         sortedDepths.add(new Double(d));
       }
-      catch (final NumberFormatException e)
+      catch (final ParseException e)
       {
         // don't worry, we'll just move onto the next one
       }

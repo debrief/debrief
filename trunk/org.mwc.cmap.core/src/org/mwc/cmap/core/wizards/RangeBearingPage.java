@@ -1,12 +1,14 @@
 package org.mwc.cmap.core.wizards;
 
 import java.beans.PropertyDescriptor;
+import java.text.ParseException;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class RangeBearingPage extends CoreEditableWizardPage
 {
@@ -82,10 +84,17 @@ public class RangeBearingPage extends CoreEditableWizardPage
 			final double bearing = prefs.getDouble("BEARING", 0d);
 			final String rangeStr = prefs.get(RANGE, NULL_RANGE);
 			final String[] parts = rangeStr.split(",");
-			final double val = Double.parseDouble(parts[0]);
-			final int units = Integer.parseInt(parts[1]);
-			final WorldDistance range = new WorldDistance(val, units);
-			setData(range, bearing);
+			try
+			{
+				final double val = MWCXMLReader.readThisDouble(parts[0]);
+				final int units = Integer.parseInt(parts[1]);
+				final WorldDistance range = new WorldDistance(val, units);
+				setData(range, bearing);
+			}
+			catch(final ParseException pe)
+			{
+				 MWC.Utilities.Errors.Trace.trace(pe);	
+			}
 		}
 	}
 

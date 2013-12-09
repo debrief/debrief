@@ -14,8 +14,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.ParseException;
 
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 public class AWTWorldLocationEditor extends Dialog implements ActionListener
@@ -203,21 +205,28 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		}
 		else if(p1.getSource() == _okBtn)
 		{
-			// extract the data values
-			double latV = Double.valueOf(_latDegs.getText()).doubleValue() +
-										Double.valueOf(_latMins.getText()).doubleValue() / 60.0;
-			
-			if(_southBtn.getState())
-				latV = latV * -1.0;
-
-			// extract the data values
-			double longV = Double.valueOf(_longDegs.getText()).doubleValue() +
-										Double.valueOf(_longMins.getText()).doubleValue() / 60.0;
-			 
-			if(_westBtn.getState())
-				longV = longV * -1.0;
-			
-			_result = new WorldLocation(latV, longV, _result.getDepth());
+			try
+			{
+				// extract the data values
+				double latV = MWCXMLReader.readThisDouble(_latDegs.getText()) +
+							   MWCXMLReader.readThisDouble(_latMins.getText()) / 60.0;
+				
+				if(_southBtn.getState())
+					latV = latV * -1.0;
+	
+				// extract the data values
+				double longV = MWCXMLReader.readThisDouble(_longDegs.getText()) +
+						MWCXMLReader.readThisDouble(_longMins.getText()) / 60.0;
+				 
+				if(_westBtn.getState())
+					longV = longV * -1.0;
+				
+				_result = new WorldLocation(latV, longV, _result.getDepth());
+			}
+			catch(final ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe);	
+			}
 		}
 		
 		setVisible(false);
