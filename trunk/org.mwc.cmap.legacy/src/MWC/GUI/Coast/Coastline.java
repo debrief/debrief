@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * Represents a single section of coastline.
@@ -68,8 +69,8 @@ public class Coastline implements Serializable
 					// note that we read in the long before the lat from the file
 					final String longStr = st.nextToken();
 					final String latStr = st.nextToken();
-					final double _lat = Double.valueOf(latStr).doubleValue();
-					final double _long = Double.valueOf(longStr).doubleValue();
+					final double _lat = MWCXMLReader.readThisDouble(latStr);
+					final double _long = MWCXMLReader.readThisDouble(longStr);
 					final WorldLocation pt = new WorldLocation(_lat, _long, 0);
 
 					if (cs != null)

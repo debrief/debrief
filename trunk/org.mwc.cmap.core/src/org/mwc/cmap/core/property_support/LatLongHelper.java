@@ -8,6 +8,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -30,6 +31,7 @@ import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 import MWC.Utilities.TextFormatting.DebriefFormatLocation;
 
@@ -446,18 +448,18 @@ public class LatLongHelper extends EditorHelper
 			try
 			{
 				// produce a new location from our data values
-				final double dLatDeg = Double.parseDouble(_latDeg);
-				final double dLatMin = Double.parseDouble(_latMin);
-				final double dLatSec = Double.parseDouble(_latSec);
-				final double dLongDeg = Double.parseDouble(_longDeg);
-				final double dLongMin = Double.parseDouble(_longMin);
-				final double dLongSec = Double.parseDouble(_longSec);
+				final double dLatDeg =  MWCXMLReader.readThisDouble(_latDeg);
+				final double dLatMin =  MWCXMLReader.readThisDouble(_latMin);
+				final double dLatSec =  MWCXMLReader.readThisDouble(_latSec);
+				final double dLongDeg = MWCXMLReader.readThisDouble(_longDeg);
+				final double dLongMin = MWCXMLReader.readThisDouble(_longMin);
+				final double dLongSec = MWCXMLReader.readThisDouble(_longSec);
 
 				res = new WorldLocation(dLatDeg, dLatMin, dLatSec, _latHem.charAt(0),
 						dLongDeg, dLongMin, dLongSec, _longHem.charAt(0), depth);
 
 			}
-			catch (final NumberFormatException ee)
+			catch (final ParseException ee)
 			{
 				CorePlugin.logError(Status.ERROR,
 						"Failed to correctly parse double in lat helper", ee);

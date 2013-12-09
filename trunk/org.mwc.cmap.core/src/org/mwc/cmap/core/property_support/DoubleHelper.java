@@ -3,9 +3,13 @@
  */
 package org.mwc.cmap.core.property_support;
 
+import java.text.ParseException;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class DoubleHelper extends EditorHelper
 {
@@ -41,9 +45,9 @@ public class DoubleHelper extends EditorHelper
 		{
 			try
 			{
-				res = Double.valueOf((String) value);
+				res = MWCXMLReader.readThisDouble((String) value);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				res = _previousValue;
 			}

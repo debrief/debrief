@@ -66,6 +66,7 @@ import MWC.GUI.Tools.Palette.CreateTOPO;
 import MWC.GUI.Tools.Palette.CreateVPFLayers;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
 /**
@@ -438,8 +439,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 					if (firstItem != null && secondItem != null)
 					{
 						// hey, go for it
-						final double latVal = Double.parseDouble(firstItem);
-						final double longVal = Double.parseDouble(secondItem);
+						final double latVal = MWCXMLReader.readThisDouble(firstItem);
+						final double longVal = MWCXMLReader.readThisDouble(secondItem);
 						res = new WorldLocation(latVal, longVal, 0d);
 					}
 				}
@@ -477,13 +478,13 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			{
 				try
 				{
-					final Double latDegs = Double.parseDouble(st.nextToken());
-					final Double latMin = Double.parseDouble(st.nextToken());
-					final Double latSec = Double.parseDouble(st.nextToken());
+					final Double latDegs = MWCXMLReader.readThisDouble(st.nextToken());
+					final Double latMin = MWCXMLReader.readThisDouble(st.nextToken());
+					final Double latSec = MWCXMLReader.readThisDouble(st.nextToken());
 					final char latHem = st.nextToken().charAt(0);
-					final Double longDegs = Double.parseDouble(st.nextToken());
-					final Double longMin = Double.parseDouble(st.nextToken());
-					final Double longSec = Double.parseDouble(st.nextToken());
+					final Double longDegs = MWCXMLReader.readThisDouble(st.nextToken());
+					final Double longMin = MWCXMLReader.readThisDouble(st.nextToken());
+					final Double longSec = MWCXMLReader.readThisDouble(st.nextToken());
 					final char longHem = st.nextToken().charAt(0);
 					res = new WorldLocation(latDegs, latMin, latSec, latHem, longDegs,
 							longMin, longSec, longHem, 0);
@@ -501,11 +502,11 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			{
 				try
 				{
-					final Double latDegs = Double.parseDouble(st.nextToken());
-					final Double latMin = Double.parseDouble(st.nextToken());
+					final Double latDegs = MWCXMLReader.readThisDouble(st.nextToken());
+					final Double latMin = MWCXMLReader.readThisDouble(st.nextToken());
 					final char latHem = st.nextToken().charAt(0);
-					final Double longDegs = Double.parseDouble(st.nextToken());
-					final Double longMin = Double.parseDouble(st.nextToken());
+					final Double longDegs = MWCXMLReader.readThisDouble(st.nextToken());
+					final Double longMin = MWCXMLReader.readThisDouble(st.nextToken());
 					final char longHem = st.nextToken().charAt(0);
 					res = new WorldLocation(latDegs, latMin, 0, latHem, longDegs,
 							longMin, 0, longHem, 0);

@@ -1,12 +1,14 @@
 package org.mwc.cmap.core.wizards;
 
 import java.beans.PropertyDescriptor;
+import java.text.ParseException;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class EnterRangePage extends CoreEditableWizardPage
 {
@@ -69,10 +71,17 @@ public class EnterRangePage extends CoreEditableWizardPage
 		{
 			final String speedStr = prefs.get(RANGE, NULL_RANGE);
 			final String[] parts = speedStr.split(",");
-			final double val = Double.parseDouble(parts[0]);
-			final int units = Integer.parseInt(parts[1]);
-			final WorldDistance  range = new WorldDistance(val, units);
-			_defaultRange = range;
+			try
+			{
+				final double val =  MWCXMLReader.readThisDouble(parts[0]);
+				final int units = Integer.parseInt(parts[1]);
+				final WorldDistance  range = new WorldDistance(val, units);
+				_defaultRange = range;
+			}
+			catch(final ParseException pe)
+			{
+				 MWC.Utilities.Errors.Trace.trace(pe);
+			}
 		}
 	}	
 	

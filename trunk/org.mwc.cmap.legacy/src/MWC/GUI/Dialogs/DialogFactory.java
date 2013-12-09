@@ -89,12 +89,14 @@ package MWC.GUI.Dialogs;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.text.ParseException;
 
 import javax.swing.JOptionPane;
 
 import MWC.GUI.Dialogs.AWT.AWTFile;
 import MWC.GUI.Dialogs.AWT.MessageDialog;
 import MWC.GUI.Dialogs.Swing.SwingFile;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class DialogFactory
 {
@@ -254,9 +256,9 @@ public class DialogFactory
       {
         try
         {
-          res = Double.valueOf(s);
+          res = MWCXMLReader.readThisDouble(s);
         }
-        catch (final java.lang.NumberFormatException e)
+        catch (final ParseException e)
         {
           MWC.Utilities.Errors.Trace.trace(e);
           showMessage("Integer entry", "Sorry, invalid double entered");

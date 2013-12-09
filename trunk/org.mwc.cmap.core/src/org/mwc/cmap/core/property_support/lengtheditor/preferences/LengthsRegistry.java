@@ -11,6 +11,8 @@ import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.lengtheditor.Messages;
 
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+
 
 public class LengthsRegistry {
 
@@ -101,7 +103,7 @@ public class LengthsRegistry {
 		final String f = split[0];
 		final String s = split[1];
 		try {
-			final Double value = Double.valueOf(s);
+			final Double value = MWCXMLReader.readThisDouble(s);
 			myNames.add(f);
 			myLengths.add(value);
 		} catch (final Exception e) {
