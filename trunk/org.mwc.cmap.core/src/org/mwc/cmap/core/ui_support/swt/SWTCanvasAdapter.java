@@ -612,7 +612,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			_theDest.setAlpha(45);
 			_theDest.fillPolygon(poly);
 			_theDest.setAlpha(255);
-
+			_theDest.drawPolygon(poly);
 		}
 	}
 
