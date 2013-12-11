@@ -8,6 +8,8 @@
  */
 package ASSET.Util.MonteCarlo;
 
+import java.text.ParseException;
+
 import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
 import MWC.GenericData.WorldArea;
@@ -41,8 +43,9 @@ public final class LocationArea implements XMLObject
 	 * constructor - read ourselves in from the element
 	 * 
 	 * @param element
+	 * @throws ParseException 
 	 */
-	public LocationArea(final Element element)
+	public LocationArea(final Element element) throws ParseException
 	{
 		// read ourselves in from this node
 		WorldArea myArea = XMLVariance.readInAreaFromXML(element);

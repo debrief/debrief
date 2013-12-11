@@ -8,9 +8,12 @@
  */
 package ASSET.Util.XMLFactory;
 
+import java.text.ParseException;
+
 import org.w3c.dom.Element;
 
 import ASSET.Util.RandomGenerator;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class XMLRange implements XMLOperation
 {
@@ -47,9 +50,9 @@ public class XMLRange implements XMLOperation
     try
     {
       // get the data items
-      _min = Double.parseDouble(element.getAttribute("min"));
-      _max = Double.parseDouble(element.getAttribute("max"));
-      _step = Double.parseDouble(element.getAttribute("step"));
+      _min = MWCXMLReader.readThisDouble(element.getAttribute("min"));
+      _max =  MWCXMLReader.readThisDouble(element.getAttribute("max"));
+      _step =  MWCXMLReader.readThisDouble(element.getAttribute("step"));
       final String fr = element.getAttribute("format");
       if(fr != null)
         _format = new java.text.DecimalFormat(fr);
@@ -58,7 +61,7 @@ public class XMLRange implements XMLOperation
       newPermutation();
 
     }
-    catch(NumberFormatException de)
+    catch(final ParseException de)
     {
       de.printStackTrace();
       throw new java.lang.RuntimeException("Poor XMLRange data");

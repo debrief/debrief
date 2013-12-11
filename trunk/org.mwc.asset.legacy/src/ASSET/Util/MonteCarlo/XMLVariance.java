@@ -8,6 +8,7 @@
  */
 package ASSET.Util.MonteCarlo;
 
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import ASSET.Util.RandomGenerator;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public final class XMLVariance
 {
@@ -56,9 +58,10 @@ public final class XMLVariance
 
 	/**
 	 * ************************************************************ constructor
-	 * *************************************************************
+	 * *
+	 * ************************************************************
 	 */
-	public XMLVariance(final Element myElement)
+	public XMLVariance(final Element myElement) throws ParseException
 	{
 		// read in the data from this element
 		_myName = myElement.getAttribute(NAME);
@@ -308,8 +311,9 @@ public final class XMLVariance
 	 * @param myElement
 	 *          the element to read the data from
 	 * @return a world area containing the read-in data
+	 * @throws ParseException 
 	 */
-	public static WorldArea readInAreaFromXML(final Element myElement)
+	public static WorldArea readInAreaFromXML(final Element myElement) throws ParseException
 	{
 		WorldArea theArea = null;
 		NodeList theShortLocation = myElement.getElementsByTagName("shortLocation");
@@ -376,9 +380,10 @@ public final class XMLVariance
 	 * @param myElement
 	 *          the element to read the data from
 	 * @return a world location representing the read-in data
+	 * @throws ParseException 
 	 */
 	public static WorldLocation readInLocationFromXML(Element myElement,
-			String locationName)
+			String locationName) throws ParseException
 	{
 		WorldLocation theRes = null;
 		NodeList theLocation = myElement.getElementsByTagName(locationName);
@@ -441,17 +446,17 @@ public final class XMLVariance
 		return theRes;
 	}
 
-	private static WorldLocation extractShortLocation(Element topL)
+	private static WorldLocation extractShortLocation(Element topL) throws ParseException
 	{
 		String llat = topL.getAttribute("Lat");
 		String llong = topL.getAttribute("Long");
 
-		WorldLocation thisCorner = new WorldLocation(Double.parseDouble(llat),
-				Double.parseDouble(llong), 0);
+		WorldLocation thisCorner = new WorldLocation(MWCXMLReader.readThisDouble(llat),
+				MWCXMLReader.readThisDouble(llong), 0);
 		return thisCorner;
 	}
 
-	private static WorldLocation extractRelativeLocation(Element topL)
+	private static WorldLocation extractRelativeLocation(Element topL) throws ParseException
 	{
 		// first get the North bit
 		NodeList thisDirection = topL.getElementsByTagName("North");
@@ -463,7 +468,7 @@ public final class XMLVariance
 			String units = North.getAttribute(UNITS);
 			int theUnits = WorldDistance.getUnitIndexFor(units);
 			String val = North.getAttribute(VALUE);
-			north = new WorldDistance(Double.parseDouble(val), theUnits);
+			north = new WorldDistance(MWCXMLReader.readThisDouble(val), theUnits);
 		}
 
 		thisDirection = topL.getElementsByTagName("East");
@@ -475,7 +480,7 @@ public final class XMLVariance
 			String units = North.getAttribute(UNITS);
 			int theUnits = WorldDistance.getUnitIndexFor(units);
 			String val = North.getAttribute(VALUE);
-			east = new WorldDistance(Double.parseDouble(val), theUnits);
+			east = new WorldDistance(MWCXMLReader.readThisDouble(val), theUnits);
 		}
 
 		WorldLocation res = new WorldLocation.LocalLocation(north, east, 0);
@@ -483,15 +488,15 @@ public final class XMLVariance
 		return res;
 	}
 
-	private static WorldLocation extractLongLocation(Element topL)
+	private static WorldLocation extractLongLocation(Element topL) throws ParseException
 	{
 		int latDeg = Integer.parseInt(topL.getAttribute("LatDeg"));
 		int longDeg = Integer.parseInt(topL.getAttribute("LongDeg"));
 		int latMin = Integer.parseInt(topL.getAttribute("LatMin"));
 		int longMin = Integer.parseInt(topL.getAttribute("LongMin"));
 
-		double latSec = Double.parseDouble(topL.getAttribute("LatSec"));
-		double longSec = Double.parseDouble(topL.getAttribute("LongSec"));
+		double latSec = MWCXMLReader.readThisDouble(topL.getAttribute("LatSec"));
+		double longSec = MWCXMLReader.readThisDouble(topL.getAttribute("LongSec"));
 
 		char latHemi = topL.getAttribute("LatHem").charAt(0);
 		char longHemi = topL.getAttribute("LongHem").charAt(0);

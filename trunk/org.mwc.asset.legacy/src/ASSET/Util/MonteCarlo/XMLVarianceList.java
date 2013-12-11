@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.text.ParseException;
 import java.util.Iterator;
 
 /**
@@ -74,11 +75,18 @@ public class XMLVarianceList
     {
       final Element o = (Element) lis.item(i);
 
-      // create this variance
-      final XMLVariance xv = new XMLVariance(o);
+      try
+      {
+    	  // create this variance
+    	  final XMLVariance xv = new XMLVariance(o);
 
-      // and store it
-      _myVariables.add(xv);
+    	  // and store it
+    	  _myVariables.add(xv);
+      }
+      catch(final ParseException pe)
+      {
+    	  MWC.Utilities.Errors.Trace.trace(pe);
+      }
 
     }
   }
