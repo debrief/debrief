@@ -285,7 +285,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		fireDemStatus();
 	}
 
-	private void fireDemStatus() throws NumberFormatException
+	private void fireDemStatus()
 	{
 		if (_listener != null)
 		{
