@@ -1,6 +1,7 @@
 package org.mwc.debrief.core.wizards;
 
 import java.beans.PropertyDescriptor;
+import java.text.ParseException;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Text;
@@ -9,6 +10,7 @@ import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class EnterSolutionPage extends CoreEditableWizardPage
 {
@@ -86,11 +88,18 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 			final double course = prefs.getDouble(COURSE, 0d);
 			final String speedStr = prefs.get(SPEED, NULL_SPEED);
 			final String[] parts = speedStr.split(",");
-			final double val = Double.parseDouble(parts[0]);
-			final int units = Integer.parseInt(parts[1]);
-			final WorldSpeed  speed = new WorldSpeed(val, units);
-			_myWrapper.setCourse(course);
-			_myWrapper.setSpeed(speed);
+			try 
+			{
+				final double val = MWCXMLReader.readThisDouble(parts[0]);			
+				final int units = Integer.parseInt(parts[1]);
+				final WorldSpeed  speed = new WorldSpeed(val, units);
+				_myWrapper.setCourse(course);
+				_myWrapper.setSpeed(speed);
+			} 
+			catch (final ParseException e) 
+			{
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
 		}
 	}
 

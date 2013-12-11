@@ -3,10 +3,13 @@ package org.mwc.debrief.multipath2.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 import flanagan.interpolation.LinearInterpolation;
 
@@ -32,8 +35,9 @@ public class RangeValues
 	 *           if the numbers aren't legible
 	 * @throws IOException
 	 *           if the file can't be found
+	 * @throws ParseException 
 	 */
-	public void load(final String path) throws NumberFormatException, IOException,
+	public void load(final String path) throws ParseException, IOException,
 			MultiPathModel.DataFormatException
 	{
 		final Vector<Double> times = new Vector<Double>();
@@ -49,11 +53,11 @@ public class RangeValues
 			double thisTime = 0, thisRange = 0;
 			if (st.hasMoreTokens())
 			{
-				thisTime = Double.valueOf(st.nextToken());
+				thisTime = MWCXMLReader.readThisDouble(st.nextToken());
 			}
 			if (st.hasMoreTokens())
 			{
-				thisRange = Double.valueOf(st.nextToken());
+				thisRange = MWCXMLReader.readThisDouble(st.nextToken());
 			}
 
 			if (thisTime < 2000000)
@@ -132,7 +136,7 @@ public class RangeValues
 				times.load("src/org/mwc/debrief/multipath/model2/test_times_bad.csv");
 				fail("should not have found file");
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}
@@ -151,7 +155,7 @@ public class RangeValues
 			{
 				times.load(TEST_RANGES_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}

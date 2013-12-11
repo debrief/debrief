@@ -1,6 +1,7 @@
 package org.mwc.debrief.core.wizards;
 
 import java.io.File;
+import java.text.ParseException;
 
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -18,6 +19,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.FlatFile.FlatFileExporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -133,20 +135,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
 				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
-
-	private static boolean isNumber(final Object i)
-	{
-		try
-		{
-			Double.parseDouble(i.toString());
-			return true;
-		}
-		catch (final NumberFormatException nfe)
-		{
-			return false;
-		}
-	}
-
+	
 	@Override
 	public boolean isPageComplete()
 	{
@@ -301,9 +290,15 @@ public class FlatFilenameWizardPage extends WizardPage
 						return;
 
 					// is this the value property?
-					if (isNumber(newValue))
-						_speedOfSound = Double.valueOf(newValue.toString());
-
+					try 
+					{
+						_speedOfSound =  MWCXMLReader.readThisDouble(newValue.toString());
+					} 
+					catch (final ParseException e) 
+					{
+						// ignore
+					}					
+					
 					dialogChanged();
 					// and remember the new value
 					store();
@@ -323,8 +318,16 @@ public class FlatFilenameWizardPage extends WizardPage
 			speedOfSoundEditor.setStringValue("");
 			speedOfSoundEditor.load();
 			if (speedOfSoundEditor.getStringValue() != null)
-				if (isNumber(speedOfSoundEditor.getStringValue()))
-					_speedOfSound = Double.valueOf(speedOfSoundEditor.getStringValue());
+			{
+				try
+				{
+					_speedOfSound =  MWCXMLReader.readThisDouble(speedOfSoundEditor.getStringValue());
+				}
+				catch(final ParseException pe)
+				{
+					// ignore
+				}
+			}					
 
 			@SuppressWarnings("unused")
 			final
@@ -399,10 +402,14 @@ public class FlatFilenameWizardPage extends WizardPage
 					if (!property.equals(FieldEditor.VALUE))
 						return;
 
-					if (isNumber(newValue))
-						_sensor1Fwd = Double.valueOf(newValue.toString());
-					else
+					try
+					{
+						_sensor1Fwd = MWCXMLReader.readThisDouble(newValue.toString());
+					}
+					catch(final ParseException pe)
+					{
 						_sensor1Fwd = null;
+					}	
 
 					if (_sensor1AftEditor != null)
 						_sensor1AftEditor.setEnabled(!_sensorType1.startsWith("H"),
@@ -433,8 +440,16 @@ public class FlatFilenameWizardPage extends WizardPage
 			sensor1FwdEditor.setStringValue("");
 			sensor1FwdEditor.load();
 			if (sensor1FwdEditor.getStringValue() != null)
-				if (isNumber(sensor1FwdEditor.getStringValue()))
-					_sensor1Fwd = Double.valueOf(sensor1FwdEditor.getStringValue());
+			{
+				try
+				{
+					_sensor1Fwd = MWCXMLReader.readThisDouble(sensor1FwdEditor.getStringValue());
+				}
+				catch (final ParseException pe)
+				{
+					// ignore
+				}
+			}					
 
 			@SuppressWarnings("unused")
 			final
@@ -461,10 +476,15 @@ public class FlatFilenameWizardPage extends WizardPage
 						return;
 
 					// is this the value property?
-					if (isNumber(newValue))
-						_sensor1Aft = Double.valueOf(newValue.toString());
-					else
+					try
+					{
+						_sensor1Aft = MWCXMLReader.readThisDouble(newValue.toString());
+					}
+					catch(final ParseException pe)
+					{
 						_sensor1Aft = null;
+					}					
+						
 					dialogChanged();
 
 					// remember this value
@@ -486,8 +506,16 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensor1AftEditor.load();
 			enableAftEditor(container, _sensor1AftEditor, _sensorType1);
 			if (_sensor1AftEditor.getStringValue() != null)
-				if (isNumber(_sensor1AftEditor.getStringValue()))
-					_sensor1Aft = Double.valueOf(_sensor1AftEditor.getStringValue());
+			{
+				try
+				{
+					_sensor1Aft = MWCXMLReader.readThisDouble(_sensor1AftEditor.getStringValue());
+				}
+				catch(final ParseException pe)
+				{
+					// ignore
+				}
+			}					
 
 			@SuppressWarnings("unused")
 			final
@@ -551,15 +579,15 @@ public class FlatFilenameWizardPage extends WizardPage
 						if (!property.equals(FieldEditor.VALUE))
 							return;
 
-						// is this the value property?
-						if (isNumber(newValue))
+						// is this the value property?						
+						try
 						{
-							_sensor2Fwd = Double.valueOf(newValue.toString());
+							_sensor2Fwd = MWCXMLReader.readThisDouble(newValue.toString());
 							dialogChanged();
 							// remember this value
 							this.store();
 						}
-						else
+						catch(final ParseException pe)
 						{
 							_sensor2Fwd = null;
 						}
@@ -578,8 +606,16 @@ public class FlatFilenameWizardPage extends WizardPage
 						.setErrorMessage("A value for Sensor 2 fwd depth must be supplied");
 				sensor2FwdEditor.load();
 				if (sensor2FwdEditor.getStringValue() != null)
-					if (isNumber(sensor2FwdEditor.getStringValue()))
-						_sensor2Fwd = Double.valueOf(sensor2FwdEditor.getStringValue());
+				{
+					try
+					{
+						_sensor2Fwd = MWCXMLReader.readThisDouble(sensor2FwdEditor.getStringValue());
+					}
+					catch(final ParseException pe)
+					{
+						// ignore
+					}
+				}
 
 				@SuppressWarnings("unused")
 				final
@@ -606,11 +642,11 @@ public class FlatFilenameWizardPage extends WizardPage
 							return;
 
 						// is this the value property?
-						if (isNumber(newValue))
+						try
 						{
-							_sensor2Aft = Double.valueOf(newValue.toString());
+							_sensor2Aft = MWCXMLReader.readThisDouble(newValue.toString());
 						}
-						else
+						catch(final ParseException pe)
 						{
 							_sensor2Aft = null;
 						}
@@ -636,8 +672,16 @@ public class FlatFilenameWizardPage extends WizardPage
 				enableAftEditor(container, _sensor2AftEditor, _sensorType2);
 
 				if (_sensor2AftEditor.getStringValue() != null)
-					if (isNumber(_sensor2AftEditor.getStringValue()))
-						_sensor2Aft = Double.valueOf(_sensor2AftEditor.getStringValue());
+				{
+					try
+					{
+						_sensor2Aft = MWCXMLReader.readThisDouble(_sensor2AftEditor.getStringValue());
+					}
+					catch(final ParseException pe)
+					{
+						// ignore
+					}
+				}
 
 				@SuppressWarnings("unused")
 				final

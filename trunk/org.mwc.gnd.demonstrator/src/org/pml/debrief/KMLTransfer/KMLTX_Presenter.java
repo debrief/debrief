@@ -33,6 +33,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class KMLTX_Presenter
 {
@@ -519,11 +520,11 @@ public class KMLTX_Presenter
 				{
 					data = new String(ch, start, length);
 					split = data.split(",");
-					double longVal = Double.valueOf(split[0]);
-					double latVal = Double.valueOf(split[1]);
+					double longVal = MWCXMLReader.readThisDouble(split[0]);
+					double latVal = MWCXMLReader.readThisDouble(split[1]);
 					coords = new Point2D.Double(longVal, latVal);
 				}
-				catch (NumberFormatException e)
+				catch (final ParseException e)
 				{
 					System.err.println("number format prob reading pos for 1:" + split[0]
 							+ " or 2:" + split[1]);
@@ -588,8 +589,8 @@ public class KMLTX_Presenter
 
 					String subStr = details.substring(startStr, endStr);
 					String[] components = subStr.split(" ");
-					course = Double.valueOf(components[3]);
-					speed = Double.valueOf(components[0]);
+					course = MWCXMLReader.readThisDouble(components[3]);
+					speed = MWCXMLReader.readThisDouble(components[0]);
 
 					// now the mmsi
 					startStr = details.indexOf("mmsi=");
@@ -602,6 +603,9 @@ public class KMLTX_Presenter
 				catch (java.lang.StringIndexOutOfBoundsException aw)
 				{
 					System.out.println("prob reading desc for " + name);
+				} catch (final ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				isDesc = false;
 			}

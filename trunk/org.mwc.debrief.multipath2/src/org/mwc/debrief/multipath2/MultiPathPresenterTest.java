@@ -1,6 +1,7 @@
 package org.mwc.debrief.multipath2;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.eclipse.core.runtime.Status;
 import org.jfree.data.time.TimeSeries;
@@ -92,7 +93,7 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 
 			_ranges.load(path);
 		}
-		catch (final NumberFormatException e)
+		catch (final ParseException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"ranges file number formatting problem", e);
