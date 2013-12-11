@@ -9,9 +9,12 @@ package ASSET.Util.XML.Vessels.Util;
  * @version 1.0
  */
 
+import java.text.ParseException;
+
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
@@ -35,7 +38,14 @@ abstract public class DemandedStatusHandler extends MWC.Utilities.ReaderWriter.X
     {
       public void setValue(String name, final String val)
       {
-        _myCourse = Double.parseDouble(val);
+        try 
+        {
+			_myCourse =  MWCXMLReader.readThisDouble(val);
+		} 
+        catch (final ParseException e) 
+        {
+        	MWC.Utilities.Errors.Trace.trace(e);
+		}
       }
     });
 

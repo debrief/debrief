@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 import ASSET.Util.SupportTesting;
 import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
 import ASSET.Util.XML.ScenarioHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * list of items in a particular file which may be changed
@@ -716,7 +717,7 @@ public final class MultiScenarioGenerator
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
 				String val = thisA.getAttribute("Value");
-				originalSpeed = Double.parseDouble(val);
+				originalSpeed = MWCXMLReader.readThisDouble(val);
 
 			}
 			catch (Exception e)
@@ -773,7 +774,7 @@ public final class MultiScenarioGenerator
 						.createPath("//*[@Name='bravo']/Status/Speed");
 				nl = (NodeList) xp2.evaluate(resDocument, XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
-				assertTrue("correct name", Double.parseDouble(thisA
+				assertTrue("correct name", MWCXMLReader.readThisDouble(thisA
 						.getAttribute("Value")) != originalSpeed);
 			}
 			catch (Exception e)

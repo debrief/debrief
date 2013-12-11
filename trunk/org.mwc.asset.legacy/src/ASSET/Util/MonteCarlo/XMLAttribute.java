@@ -8,6 +8,8 @@
  */
 package ASSET.Util.MonteCarlo;
 
+import java.text.ParseException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -31,9 +33,10 @@ public final class XMLAttribute implements XMLObject
   /**
    * ************************************************************
    * constructor
-   * *************************************************************
+   * *
+ * @throws ParseException ************************************************************
    */
-  public XMLAttribute(final Element element)
+  public XMLAttribute(final Element element) throws ParseException
   {
     // read ourselves in from this element
 

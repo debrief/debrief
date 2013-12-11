@@ -1,6 +1,7 @@
 package org.mwc.asset.netasset2.part;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
@@ -21,6 +22,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.mwc.asset.netasset2.Activator;
 import org.mwc.cmap.gridharness.data.WorldSpeed;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class VPart extends Composite implements IVPartControl, IVPartMovement
 {
@@ -282,12 +285,21 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		fireDemStatus();
 	}
 
-	private void fireDemStatus()
+	private void fireDemStatus() throws NumberFormatException
 	{
 		if (_listener != null)
 		{
-			_listener.demanded(Double.valueOf(getDemCourse()),
-					Double.valueOf(getDemSpeed()), Double.valueOf(getDemDepth()));
+			try
+			{
+			_listener.demanded( MWCXMLReader.readThisDouble(getDemCourse()),
+					 MWCXMLReader.readThisDouble(getDemSpeed()), 
+					 MWCXMLReader.readThisDouble(getDemDepth()));
+			}
+			catch(final ParseException pe)
+			{
+				Activator.logError(Status.ERROR, "Invalid Dem numeric format",
+						null);
+			}
 		}
 		else
 		{
