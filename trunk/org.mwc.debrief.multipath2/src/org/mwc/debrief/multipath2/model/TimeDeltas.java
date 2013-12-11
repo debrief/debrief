@@ -3,6 +3,7 @@ package org.mwc.debrief.multipath2.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import java.util.Vector;
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
 
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * class that loads a series of time-delta observations
@@ -66,7 +68,7 @@ public class TimeDeltas
 	 * @throws IOException
 	 *           if the file can't be found
 	 */
-	public void load(final String path) throws NumberFormatException, IOException,
+	public void load(final String path) throws ParseException, IOException,
 			MultiPathModel.DataFormatException
 	{
 		final Vector<Double> times = new Vector<Double>();
@@ -95,10 +97,10 @@ public class TimeDeltas
 			final int sec = Integer.valueOf(st.nextToken().trim());
 			final int milli = Integer.valueOf(st.nextToken().trim());
 
-			final double delay = Double.valueOf(st.nextToken().trim());
+			final double delay = MWCXMLReader.readThisDouble(st.nextToken().trim());
 			@SuppressWarnings("unused")
 			final
-			double strength = Double.valueOf(st.nextToken().trim());
+			double strength = MWCXMLReader.readThisDouble(st.nextToken().trim());
 
 			// do the time
 			final GregorianCalendar cal2 = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
@@ -175,7 +177,7 @@ public class TimeDeltas
 				times.load("../org.mwc.debrief.multipath2/src/org/mwc/debrief/multipath/model2/test_times_bad.csv");
 				fail("should not have found file");
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}
@@ -194,7 +196,7 @@ public class TimeDeltas
 			{
 				times.load(TEST_TIMES_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}

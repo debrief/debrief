@@ -29,6 +29,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -49,6 +50,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * The graphical interface of the bean (drawing and mouse event handling). <br>
@@ -91,7 +94,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
  * 
  * @author Frederic Vernier, Frederic.Vernier@laposte.net
  * @version 1.4.1
- * @created 16 février 2004
+ * @created 16 fï¿½vrier 2004
  */
 
 public class BiSliderPresentation implements Serializable, MouseListener,
@@ -2147,11 +2150,25 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 				JSlider1.removeMouseListener(this);
 				if (Dragging == PRECISE_RIGHT_RULER)
 				{
-					Ctrl.setMaximumColoredValue(Double.parseDouble(JLabel1.getText()));
+					try 
+					{
+						Ctrl.setMaximumColoredValue(MWCXMLReader.readThisDouble(JLabel1.getText()));
+					} 
+					catch (final ParseException pe) 
+					{
+						MWC.Utilities.Errors.Trace.trace(pe);
+					}
 				}
 				else if (Dragging == PRECISE_LEFT_RULER)
 				{
-					Ctrl.setMinimumColoredValue(Double.parseDouble(JLabel1.getText()));
+					try 
+					{
+						Ctrl.setMinimumColoredValue(MWCXMLReader.readThisDouble(JLabel1.getText()));
+					} 
+					catch (final ParseException pe) 
+					{
+						MWC.Utilities.Errors.Trace.trace(pe);
+					}
 				}
 
 				Ctrl.repaint();
@@ -2242,7 +2259,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	{
 		try
 		{
-			double NV = Double.parseDouble(NewValue_Arg);
+			double NV = MWCXMLReader.readThisDouble(NewValue_Arg);
 
 			if (NV < Ctrl.getMaximumValue())
 			{
@@ -2269,7 +2286,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	{
 		try
 		{
-			double NV = Double.parseDouble(NewValue_Arg);
+			double NV = MWCXMLReader.readThisDouble(NewValue_Arg);
 
 			if (NV > Ctrl.getMinimumValue())
 			{
