@@ -277,12 +277,12 @@ final class ImportPolygon implements PlainLineImporter
 	}
 	
 	public static class TestImport extends TestCase {
-		// TODO FIX-TEST
-		public void NtestNoLabel() {
+	
+		public void testNoLabel() {
 			final String line = ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-			assertNull(res.getLabel());
+			assertEquals("", res.getLabel());
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
@@ -301,12 +301,11 @@ final class ImportPolygon implements PlainLineImporter
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 		
-		// TODO FIX-TEST
-		public void NtestLeadingSpace() {
+		public void testLeadingSpace() {
 			final String line = "	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-			assertNull(res.getLabel());
+			assertEquals("", res.getLabel());
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
@@ -353,12 +352,11 @@ final class ImportPolygon implements PlainLineImporter
 			assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 		
-		// TODO FIX-TEST
-		public void NtestWithoutEndDate() {
+		public void testWithoutEndDate() {
 			final String line = ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-			assertNull(res.getLabel());
+			assertEquals("", res.getLabel());
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
