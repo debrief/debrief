@@ -100,7 +100,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 /**
  * class that is able to export a polygon - note the Replay file format doesn't include polygons, so we only export it.
  */
-final class ImportPolygon implements PlainLineImporter
+class ImportPolygon implements PlainLineImporter
 {
 
 	/**
@@ -154,7 +154,7 @@ final class ImportPolygon implements PlainLineImporter
 		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
 		Integer counter = new Integer(1);
 		// create the Polygon object
-		final PolygonShape sp = new PolygonShape(nodes);		
+		final PolygonShape sp = createShape(nodes);		
 		
 		while (st.hasMoreTokens()) 
 		{
@@ -215,9 +215,14 @@ final class ImportPolygon implements PlainLineImporter
 
 		return sw;
 	}
+	
+	protected PolygonShape createShape(final Vector<PolygonNode> nodes)
+	{
+		return new PolygonShape(nodes);
+	}
 
 	@Override
-	public final String getYourType()
+	public String getYourType()
 	{
 		return _myType;
 	}
@@ -263,17 +268,21 @@ final class ImportPolygon implements PlainLineImporter
 	@Override
 	public final boolean canExportThis(final Object val)
 	{
-		boolean res = false;
-
 		if (val instanceof ShapeWrapper)
 		{
 			final ShapeWrapper sw = (ShapeWrapper) val;
 			final PlainShape ps = sw.getShape();
-			res = (ps instanceof PolygonShape);
+			if (ps instanceof PolygonShape)
+				return canExport((PolygonShape) ps);			
 		}
 
-		return res;
+		return false;
 
+	}
+	
+	protected boolean canExport(final PolygonShape ps)
+	{
+		return ps.getClosed();
 	}
 	
 	public static class TestImport extends TestCase {
@@ -375,12 +384,11 @@ final class ImportPolygon implements PlainLineImporter
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 		
-		// TODO FIX-TEST
-		public void NtestWithoutDates() {
+		public void testWithoutDates() {
 			final String line = ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-			assertNull(res.getLabel());
+			assertEquals("", res.getLabel());
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
