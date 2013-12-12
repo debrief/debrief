@@ -5,6 +5,7 @@ import java.util.Vector;
 import junit.framework.TestCase;
 
 import Debrief.Wrappers.ShapeWrapper;
+
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 
@@ -45,5 +46,5 @@ final class ImportPolyline extends ImportPolygon
 			assertEquals(line, ip.exportThis(sw));
 		}
 	}
-	}
+
 }
