@@ -12,7 +12,7 @@
 
 ;POLY: @G 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W testpoly
 
-;POLY: @G 22 0 0 N 21.5 0 0 W 22.1 0 0 N 21.8 0 0 W 22.2 0 0 N 21.5 0 0 W testpolyline
+;POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W testpolyline
 
 ;WHEEL: @C 951212 050200 21.3 0 0 N 21.5 0 0 W 200 1500 test wheel
 
