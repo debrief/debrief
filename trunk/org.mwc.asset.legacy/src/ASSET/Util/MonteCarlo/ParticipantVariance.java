@@ -9,6 +9,7 @@
 package ASSET.Util.MonteCarlo;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -346,7 +347,14 @@ public final class ParticipantVariance extends XMLVarianceList
 			// ok. we don't know if there's going to be short or long locations in the
 			// element
 			// let our clever little class do it
-			theArea = XMLVariance.readInAreaFromXML(myElement);
+			try 
+			{
+				theArea = XMLVariance.readInAreaFromXML(myElement);
+			} 
+			catch (final ParseException e) 
+			{
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
 		}
 
 		return theArea;

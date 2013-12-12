@@ -237,6 +237,7 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.hasPropertyListeners;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * Class defining GUI-independent part of property editing.
@@ -1003,7 +1004,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
           // a string?
           if (val.getClass().equals(String.class))
           {
-            final Double d = Double.valueOf((String) val);
+            final Double d =  MWCXMLReader.readThisDouble((String) val);
             final Object args2[] = {d};
             setter.invoke(data, args2);
           }

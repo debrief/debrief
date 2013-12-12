@@ -85,8 +85,10 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 /**
@@ -144,74 +146,84 @@ final class ImportSensor implements PlainLineImporter {
     // if that's its destiny
     next.trim();
 
-    // find out if it's our null value
-    if (next.startsWith("N")) {
-      // ditch it,
-    } else {
+    try
+    {
+    	// find out if it's our null value
+    	if (next.startsWith("N")) {
+    		// ditch it,
+    	} else {
 
-      // get the deg out of this value
-      latDeg = Double.valueOf(next);
+      
+    	  // get the deg out of this value
+    	  latDeg = MWCXMLReader.readThisDouble(next);
 
-      // ok, this is valid data, persevere with it
-      latMin = Double.valueOf(st.nextToken());
-      latSec = Double.valueOf(st.nextToken()).doubleValue();
+    	  // ok, this is valid data, persevere with it
+    	  latMin = MWCXMLReader.readThisDouble(st.nextToken());
+    	  latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
-      /** now, we may have trouble here, since there may not be
-       * a space between the hemisphere character and a 3-digit
-       * latitude value - so BE CAREFUL
-       */
-      final String vDiff = st.nextToken();
-      if (vDiff.length() > 3) {
-        // hmm, they are combined
-        latHem = vDiff.charAt(0);
-        final String secondPart = vDiff.substring(1, vDiff.length());
-        longDeg = Double.valueOf(secondPart);
-      } else {
-        // they are separate, so only the hem is in this one
-        latHem = vDiff.charAt(0);
-        longDeg = Double.valueOf(st.nextToken());
-      }
+	      /** now, we may have trouble here, since there may not be
+	       * a space between the hemisphere character and a 3-digit
+	       * latitude value - so BE CAREFUL
+	       */
+	      final String vDiff = st.nextToken();
+	      if (vDiff.length() > 3) {
+	        // hmm, they are combined
+	        latHem = vDiff.charAt(0);
+	        final String secondPart = vDiff.substring(1, vDiff.length());
+	        longDeg = MWCXMLReader.readThisDouble(secondPart);
+	      } else {
+	        // they are separate, so only the hem is in this one
+	        latHem = vDiff.charAt(0);
+	        longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+	      }
+	
+	      longMin = MWCXMLReader.readThisDouble(st.nextToken());
+	      longSec = MWCXMLReader.readThisDouble(st.nextToken());
+	      longHem = st.nextToken().charAt(0);
 
-      longMin = Double.valueOf(st.nextToken());
-      longSec = Double.valueOf(st.nextToken()).doubleValue();
-      longHem = st.nextToken().charAt(0);
+	      // create the origin
+	      origin = new WorldLocation(latDeg, latMin, latSec, latHem,
+	          longDeg, longMin, longSec, longHem,
+	          0);
+	    } // whether the duff origin data was entered
 
-      // create the origin
-      origin = new WorldLocation(latDeg, latMin, latSec, latHem,
-          longDeg, longMin, longSec, longHem,
-          0);
-    } // whether the duff origin data was entered
-
-    brg = Double.valueOf(st.nextToken()).doubleValue();
-    rng = Double.valueOf(st.nextToken()).doubleValue();
+	    brg = MWCXMLReader.readThisDouble(st.nextToken());
+	    rng = MWCXMLReader.readThisDouble(st.nextToken());
     
-    // only store a sensor range if a legitimate one was passed in
-    WorldDistance sensorRng;
-    if(rng != 0)
-    	sensorRng = new WorldDistance(rng, WorldDistance.YARDS);
-    else
-    	sensorRng = null;
+	    // only store a sensor range if a legitimate one was passed in
+	    WorldDistance sensorRng;
+	    if(rng != 0)
+	    	sensorRng = new WorldDistance(rng, WorldDistance.YARDS);
+	    else
+	    	sensorRng = null;
  
 
-    // get the (possibly multi-word) track name
-    sensorName = ImportFix.checkForQuotedTrackName(st);
-    
-    // and ditch some whitespace
-    sensorName = sensorName.trim();
- 
-    // and lastly read in the message
-    theText = st.nextToken("\r").trim();
-
-    theColor = ImportReplay.replayColorFor(theSymbology);
-
-    final int theStyle = ImportReplay.replayLineStyleFor(theSymbology);
-
-
-    // create the contact object
-    final SensorContactWrapper data =
-        new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin, theColor, theText, theStyle, sensorName);
-
-    return data;
+	    // get the (possibly multi-word) track name
+	    sensorName = ImportFix.checkForQuotedTrackName(st);
+	    
+	    // and ditch some whitespace
+	    sensorName = sensorName.trim();
+	 
+	    // and lastly read in the message
+	    theText = st.nextToken("\r").trim();
+	
+	    theColor = ImportReplay.replayColorFor(theSymbology);
+	
+	    final int theStyle = ImportReplay.replayLineStyleFor(theSymbology);
+	
+	
+	    // create the contact object
+	    final SensorContactWrapper data =
+	        new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin, theColor, theText, theStyle, sensorName);
+	
+	    return data;
+    }
+    catch(final ParseException pe)
+    {
+    	MWC.Utilities.Errors.Trace.trace(pe,
+				"Whilst import sensor");
+    	return null;
+    }
   }
 
   /**

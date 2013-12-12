@@ -8,6 +8,8 @@
  */
 package ASSET.Util.MonteCarlo;
 
+import java.text.ParseException;
+
 import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
 import MWC.GenericData.WorldDistance;
@@ -50,8 +52,9 @@ public final class LocationOffset implements XMLObject
    * constructor - read ourselves in from the element
    *
    * @param element
+ * @throws ParseException 
    */
-  public LocationOffset(final Element element)
+  public LocationOffset(final Element element) throws ParseException
   {
     // read ourselves in from this node
     WorldLocation myArea = XMLVariance.readInLocationFromXML(element, LOCATION_NAME);

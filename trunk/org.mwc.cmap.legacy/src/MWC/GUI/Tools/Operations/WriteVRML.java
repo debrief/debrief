@@ -64,6 +64,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -71,6 +72,7 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /** Abstract class containing core functionality for creating files
  * in VRML format.  The file is placed in the Debrief working directory
@@ -236,39 +238,46 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 		 */
 		String depth = convertDepth(Math.abs(bounds.getDepthRange() / _depth_stretch));
 
-		// check depth is +ve
-		double dv = Double.valueOf(depth).doubleValue();
-		dv = Math.abs(dv);
-		depth = _doubleFormat.format(dv);
+		try
+		{
+			// check depth is +ve
+			double dv =  MWCXMLReader.readThisDouble(depth);
+			dv = Math.abs(dv);
+			depth = _doubleFormat.format(dv);
+	
+			// determine the centre point
+			final WorldLocation centre = bounds.getCentre();
+			final String x = convertDegs(centre.getLong());
+			final String y = convertDegs(centre.getLat());
+			String z = convertDepth(centre.getDepth());
+			dv =  MWCXMLReader.readThisDouble(z);
+			dv = Math.abs(dv);
+			z = _doubleFormat.format(dv);		
 
-		// determine the centre point
-		final WorldLocation centre = bounds.getCentre();
-		final String x = convertDegs(centre.getLong());
-		final String y = convertDegs(centre.getLat());
-		String z = convertDepth(centre.getDepth());
-		dv = Double.valueOf(z).doubleValue();
-		dv = Math.abs(dv);
-		z = _doubleFormat.format(dv);
-
-
-		// first the surface
-		out.write("Transform {");  out.newLine();
-		out.write("translation " + x + " " + y + " 0"); out.newLine();
-		out.write("children ["); 		  out.newLine();
-		out.write("Shape{ appearance Appearance {"); out.newLine();
-//		out.write("		material Material { diffuseColor 0.8 0.8 1.0  transparency 0.44 }}"); 		  out.newLine();
-		out.write("		material Material { diffuseColor 0.8 0.8 1.0 }}"); 		  out.newLine();
-    out.write("			geometry Box{size " + wid + " "+ ht + " 0.1}}"); 		  out.newLine();
-		out.write("]}"); 		  out.newLine();
-
-		// now the depth axis
-		out.write("Transform {");  out.newLine();
-		out.write("translation " + x + " " + y + " " + z); out.newLine();
-		out.write("children ["); 		  out.newLine();
-		out.write("Shape{ appearance Appearance {"); out.newLine();
-		out.write("		material Material { emissiveColor   0.7 0.7 0.7 }}"); 		  out.newLine();
-    out.write("			geometry Box{size 1.0 1.0 " + depth + " }}"); 		  out.newLine();
-		out.write("]}"); 		  out.newLine();
+			// first the surface
+			out.write("Transform {");  out.newLine();
+			out.write("translation " + x + " " + y + " 0"); out.newLine();
+			out.write("children ["); 		  out.newLine();
+			out.write("Shape{ appearance Appearance {"); out.newLine();
+	//		out.write("		material Material { diffuseColor 0.8 0.8 1.0  transparency 0.44 }}"); 		  out.newLine();
+			out.write("		material Material { diffuseColor 0.8 0.8 1.0 }}"); 		  out.newLine();
+	    out.write("			geometry Box{size " + wid + " "+ ht + " 0.1}}"); 		  out.newLine();
+			out.write("]}"); 		  out.newLine();
+	
+			// now the depth axis
+			out.write("Transform {");  out.newLine();
+			out.write("translation " + x + " " + y + " " + z); out.newLine();
+			out.write("children ["); 		  out.newLine();
+			out.write("Shape{ appearance Appearance {"); out.newLine();
+			out.write("		material Material { emissiveColor   0.7 0.7 0.7 }}"); 		  out.newLine();
+	    out.write("			geometry Box{size 1.0 1.0 " + depth + " }}"); 		  out.newLine();
+			out.write("]}"); 		  out.newLine();
+		
+		} 
+		catch(final ParseException pe)
+		{
+			 MWC.Utilities.Errors.Trace.trace(pe);	
+		}
 
 
 /*
@@ -403,20 +412,21 @@ Shape{ appearance Appearance {
  * @param theColor the colour of the box
  * @param theLbl the label attached to the box
  * @throws IOException file troubles
+ * @throws ParseException 
  */
 	protected void writeBox(final BufferedWriter out,
 													final double xVal,
 													final double yVal,
 													final double zVal,
 													final java.awt.Color theColor,
-													final String theLbl) throws IOException
+													final String theLbl) throws IOException, ParseException
 	{
 		final double red = theColor.getRed() / 255.0;
 		final double green = theColor.getGreen() / 255.0;
 		final double blue = theColor.getBlue() / 255.0;
 
 		final String dt = convertDepth(zVal);
-		final double dtText = Double.valueOf(dt).doubleValue() + 10;
+		final double dtText = MWCXMLReader.readThisDouble(dt) + 10;
 
 		out.write("Transform {");  out.newLine();
 		out.write("translation " + convertDegs(xVal) + " " + convertDegs(yVal) + " " + dt); out.newLine();

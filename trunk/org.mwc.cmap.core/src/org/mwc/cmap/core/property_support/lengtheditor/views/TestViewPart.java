@@ -16,6 +16,7 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.mwc.cmap.core.property_support.lengtheditor.LengthPropertyDescriptor;
 
 import MWC.GenericData.WorldDistance.ArrayLength;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 public class TestViewPart extends ViewPart
@@ -128,7 +129,7 @@ public class TestViewPart extends ViewPart
 				{
 					if (value instanceof String)
 					{
-						final double thisD = Double.parseDouble((String) value);
+						final double thisD =  MWCXMLReader.readThisDouble((String) value);
 						setNewValue(new ArrayLength(thisD));
 					}
 					else if (value instanceof ArrayLength)

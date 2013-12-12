@@ -1,6 +1,9 @@
 package Debrief.ReaderWriter.XML.Shapes;
 
+import java.text.ParseException;
+
 import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
@@ -36,7 +39,15 @@ abstract public class VectorHandler extends ShapeHandler implements
 		{
 			public void setValue(final String name, final String val)
 			{
-				_bearing = Double.valueOf(val);
+				try 
+				{
+					_bearing = MWCXMLReader.readThisDouble(val);
+				} 
+				catch (final ParseException pe) 
+				{
+					MWC.Utilities.Errors.Trace.trace(pe,
+							"Whilst set Vector bearing: " + val);
+				}
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(ARROW_AT_END)

@@ -2,6 +2,7 @@ package org.mwc.debrief.multipath2.model;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -460,7 +461,7 @@ public class MultiPathModel
 				svp.load(SVP.SVP_Test.SVP_FILE);
 				times.load(TimeDeltas.IntervalTest.TEST_TIMES_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				e.printStackTrace();
 				fail();
@@ -586,7 +587,7 @@ public class MultiPathModel
 			{
 				svp.load(SVP.SVP_Test.SVP_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				e.printStackTrace();
 				fail("number format");
@@ -612,7 +613,7 @@ public class MultiPathModel
 			{
 				svp.load(SVP.SVP_Test.SVP_FILE2);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				e.printStackTrace();
 				fail("number format");
@@ -638,7 +639,7 @@ public class MultiPathModel
 			{
 				deltas.load(TimeDeltas.IntervalTest.TEST_TIMES_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				e.printStackTrace();
 				fail("number format problem");

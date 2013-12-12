@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -70,6 +71,7 @@ import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
 import ASSET.Scenario.MultiScenarioLister;
 import MWC.GenericData.Duration;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		MultiScenarioPresenter.MultiScenarioDisplay
@@ -575,8 +577,15 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			if (stepSizeStr != null)
 			{
 				// and store it.
-				final Double duration = Double.valueOf(stepSizeStr);
-				_myPendingStepSize = new Duration(duration, Duration.MILLISECONDS);
+				try
+				{
+					final Double duration = MWCXMLReader.readThisDouble(stepSizeStr);
+					_myPendingStepSize = new Duration(duration, Duration.MILLISECONDS);
+				}
+				catch(final ParseException pe)
+				{
+					MWC.Utilities.Errors.Trace.trace(pe);
+				}
 			}
 
 		}

@@ -10,6 +10,7 @@ package org.mwc.debrief.core.loaders.xml_handlers;
  */
 
 import java.awt.Color;
+import java.text.ParseException;
 
 import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
@@ -222,24 +223,48 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		val = (String) details.properties.get("SmallStep");
 		if (val != null)
 		{
-			final Duration dur = Duration.fromString(val);
-			timePrefs.setSmallStep(dur);
+			try
+			{
+				final Duration dur = Duration.fromString(val);
+				timePrefs.setSmallStep(dur);
+			}
+			catch (final java.text.ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading duration value is:" + val);
+			}
 		}
 
 		// /////////////////////////////////////////////////////////////
 		val = (String) details.properties.get("LargeStep");
 		if (val != null)
 		{
-			final Duration dur = Duration.fromString(val);
-			timePrefs.setLargeStep(dur);
+			try
+			{
+				final Duration dur = Duration.fromString(val);
+				timePrefs.setLargeStep(dur);
+			}
+			catch (final java.text.ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading duration value is:" + val);
+			}
 		}
 
 		// /////////////////////////////////////////////////////////////
 		val = (String) details.properties.get("AutoStepInterval");
 		if (val != null)
 		{
-			final Duration dur = Duration.fromString(val);
-			timePrefs.setAutoInterval(dur);
+			try
+			{
+				final Duration dur = Duration.fromString(val);
+				timePrefs.setAutoInterval(dur);
+			}
+			catch (final java.text.ParseException pe)
+			{
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading duration value is:" + val);
+			}
 		}
 
 		// /////////////////////////////////////////////////////////////
@@ -288,7 +313,13 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 			final String radius = (String) details.properties.get(RADIUS);
 			if (radius != null)
-				rr.setRadius(Double.parseDouble(radius));
+				try {
+					rr.setRadius(MWCXMLReader.readThisDouble(radius));
+				} catch (final ParseException pe) {
+					MWC.Utilities.Errors.Trace.trace(pe,
+							"Reader: Whilst reading in " + RADIUS + " value of :"
+									+ radius);
+				}
 
 			final String arcs = (String) details.properties.get(ARCS);
 			if (arcs != null)
@@ -349,7 +380,17 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			final SnailHighlighter sp = (SnailHighlighter) thisPainter;
 			final String vector_stretch = (String) details.properties.get(VECTOR_STRETCH);
 			if (vector_stretch != null)
-				sp.setVectorStretch(Double.valueOf(vector_stretch).doubleValue());
+			{
+				try {
+					final double value = MWCXMLReader.readThisDouble(vector_stretch); 
+					sp.setVectorStretch(value);
+					sp.getSnailProperties().setVectorStretch(value);
+				} catch (final ParseException pe) {
+					MWC.Utilities.Errors.Trace.trace(pe,
+							"Reader: Whilst reading in " + VECTOR_STRETCH + " value of :"
+									+ vector_stretch);
+				}
+			}				
 
 			final String linkPos = (String) details.properties.get(LINK_POSITIONS);
 			if (linkPos != null)
@@ -371,14 +412,17 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			final String trailLength = (String) details.properties.get(TRAIL_LENGTH);
 			if (trailLength != null)
 			{
-				final Duration theLen = Duration.fromString(trailLength);
-				sp.getSnailProperties().setTrailLength(theLen);
+				try
+				{
+					final Duration theLen = Duration.fromString(trailLength);
+					sp.getSnailProperties().setTrailLength(theLen);
+				}
+				catch (final java.text.ParseException pe)
+				{
+					MWC.Utilities.Errors.Trace.trace(pe,
+							"Failed reading duration value is:" + trailLength);
+				}
 			}
-
-			final String vectorStretch = (String) details.properties.get(VECTOR_STRETCH);
-			if (vectorStretch != null)
-				sp.getSnailProperties().setVectorStretch(
-						Double.parseDouble(vectorStretch));
 		}
 	}
 

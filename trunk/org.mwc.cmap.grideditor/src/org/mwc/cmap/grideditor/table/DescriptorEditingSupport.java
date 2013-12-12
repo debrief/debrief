@@ -1,5 +1,7 @@
 package org.mwc.cmap.grideditor.table;
 
+import java.text.ParseException;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoContext;
@@ -17,6 +19,7 @@ import org.mwc.cmap.gridharness.data.GriddableSeries;
 import org.mwc.cmap.gridharness.views.MultiControlCellEditor;
 
 import MWC.GUI.TimeStampedDataItem;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 public class DescriptorEditingSupport extends EditingSupport {
@@ -120,7 +123,7 @@ public class DescriptorEditingSupport extends EditingSupport {
 		final Class<?> descriptorType = getDescriptor().getType();
 		try {
 			if (double.class.equals(descriptorType)) {
-				return Double.valueOf(stringValue);
+				return MWCXMLReader.readThisDouble(stringValue);
 			}
 			if (int.class.equals(descriptorType)) {
 				return Integer.valueOf(stringValue);
@@ -139,6 +142,8 @@ public class DescriptorEditingSupport extends EditingSupport {
 			}
 			throw new UnsupportedOperationException("Primitive type is not suported: " + descriptorType);
 		} catch (final NumberFormatException e) {
+			return null;
+		} catch (final ParseException pe) {
 			return null;
 		}
 	}

@@ -3,12 +3,15 @@ package org.mwc.debrief.multipath2.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.mwc.debrief.multipath2.model.MultiPathModel.CalculationException;
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 import flanagan.interpolation.LinearInterpolation;
 
@@ -37,7 +40,7 @@ public class SVP
 	 * @throws IOException
 	 *           if the file can't be found
 	 */
-	public void load(final String path) throws NumberFormatException, IOException,
+	public void load(final String path) throws ParseException, IOException,
 			DataFormatException
 	{
 		// ok, clear the cache - we're getting a new profile
@@ -56,7 +59,7 @@ public class SVP
 			{
 				final String thisE = st.nextToken();
 				if (thisE.length() > 0)
-					values.add(Double.valueOf(thisE));
+					values.add(MWCXMLReader.readThisDouble(thisE));
 			}
 		}
 		
@@ -330,7 +333,7 @@ public class SVP
 			{
 				svp.load(SVP_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}
@@ -370,7 +373,7 @@ public class SVP
 			{
 				svp.load(SVP_FILE2);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}
@@ -427,7 +430,7 @@ public class SVP
 			{
 				svp.load(SVP_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}
@@ -486,7 +489,7 @@ public class SVP
 			{
 				svp.load(SVP_FILE_NO_ZERO);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}
@@ -518,7 +521,7 @@ public class SVP
 			{
 				svp.load(SVP_FILE);
 			}
-			catch (final NumberFormatException e)
+			catch (final ParseException e)
 			{
 				fail("wrong number format");
 			}

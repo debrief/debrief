@@ -3,7 +3,6 @@ package org.mwc.cmap.grideditor.interpolation;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 
 import MWC.GUI.TimeStampedDataItem;
-
 import flanagan.interpolation.CubicSpline;
 
 class CubicItemsInterpolator extends AbstractItemsInterpolator {

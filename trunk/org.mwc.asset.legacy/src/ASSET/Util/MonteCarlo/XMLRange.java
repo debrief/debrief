@@ -9,6 +9,7 @@
 package ASSET.Util.MonteCarlo;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -16,6 +17,7 @@ import org.w3c.dom.Element;
 
 import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public final class XMLRange implements XMLOperation
 {
@@ -63,13 +65,14 @@ public final class XMLRange implements XMLOperation
   /**
    * ************************************************************
    * constructor
-   * *************************************************************
+   * *
+ * @throws ParseException ************************************************************
    */
-  public XMLRange(final Element element)
+  public XMLRange(final Element element) throws ParseException
   {
     // get the data items
-    double min = Double.parseDouble(element.getAttribute("min"));
-    double max = Double.parseDouble(element.getAttribute("max"));
+    double min = MWCXMLReader.readThisDouble(element.getAttribute("min"));
+    double max = MWCXMLReader.readThisDouble(element.getAttribute("max"));
 
     // see if the step size has been set
     final String stepStr = element.getAttribute("step");

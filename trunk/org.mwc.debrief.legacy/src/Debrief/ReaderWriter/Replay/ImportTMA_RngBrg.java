@@ -34,10 +34,13 @@
 package Debrief.ReaderWriter.Replay;
 
 import MWC.Utilities.ReaderWriter.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import Debrief.Wrappers.*;
 import MWC.GUI.Shapes.*;
+
+import java.text.ParseException;
 import java.util.*;
 import java.awt.*;
 
@@ -96,61 +99,70 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 		// next with the symbology
 		theSymbology = st.nextToken(normalDelimiters);
 
-		// now get the range and bearing
-		brg = Double.valueOf(st.nextToken()).doubleValue();
-		rng = Double.valueOf(st.nextToken()).doubleValue();
-
-		// read in the solution name
-		solutionName = st.nextToken();
-
-		// trim the sensor name
-		solutionName = solutionName.trim();
-
-		// now the ellipse details (or null)
-		String next = st.nextToken();
-
-		// let's trim this string aswell, just so we're sure N is the first letter
-		// if that's its destiny
-		next = next.trim();
-
-		// find out if it's our null value
-		if (next.startsWith("N"))
+		try
 		{
-			// ditch it,
+			// now get the range and bearing
+			brg = MWCXMLReader.readThisDouble(st.nextToken());
+			rng = MWCXMLReader.readThisDouble(st.nextToken());
+
+			// read in the solution name
+			solutionName = st.nextToken();
+	
+			// trim the sensor name
+			solutionName = solutionName.trim();
+	
+			// now the ellipse details (or null)
+			String next = st.nextToken();
+	
+			// let's trim this string aswell, just so we're sure N is the first letter
+			// if that's its destiny
+			next = next.trim();
+	
+			// find out if it's our null value
+			if (next.startsWith("N"))
+			{
+				// ditch it,
+			}
+			else
+			{
+				// now the ellipse details
+				orientation = MWCXMLReader.readThisDouble(next);
+				maxima = MWCXMLReader.readThisDouble(st.nextToken());
+				minima = MWCXMLReader.readThisDouble(st.nextToken());
+	
+				theEllipse = new EllipseShape(null, orientation, new WorldDistance(
+						MWC.Algorithms.Conversions.Yds2Degs(maxima), WorldDistance.DEGS),
+						new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(minima),
+								WorldDistance.DEGS));
+	
+			} // whether the duff ellipse data was entered
+
+			course = MWCXMLReader.readThisDouble(st.nextToken());
+			speed = MWCXMLReader.readThisDouble(st.nextToken());
+			depth = MWCXMLReader.readThisDouble(st.nextToken());
+	
+			// and lastly read in the message
+			theLabel = st.nextToken("\r");
+			// strip off any gash
+			theLabel = theLabel.trim();
+	
+			theColor = ImportReplay.replayColorFor(theSymbology);
+
+			final String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
+	
+			// create the contact object
+			final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
+					theDtg, rng, brg, course, speed, depth, theColor, theLabel, theEllipse,
+					theStyle);
+	
+			return data;
 		}
-		else
+		catch(final ParseException pe)
 		{
-			// now the ellipse details
-			orientation = Double.valueOf(next).doubleValue();
-			maxima = Double.valueOf(st.nextToken()).doubleValue();
-			minima = Double.valueOf(st.nextToken()).doubleValue();
-
-			theEllipse = new EllipseShape(null, orientation, new WorldDistance(
-					MWC.Algorithms.Conversions.Yds2Degs(maxima), WorldDistance.DEGS),
-					new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(minima),
-							WorldDistance.DEGS));
-
-		} // whether the duff ellipse data was entered
-
-		course = Double.valueOf(st.nextToken()).doubleValue();
-		speed = Double.valueOf(st.nextToken()).doubleValue();
-		depth = Double.valueOf(st.nextToken()).doubleValue();
-
-		// and lastly read in the message
-		theLabel = st.nextToken("\r");
-		// strip off any gash
-		theLabel = theLabel.trim();
-
-		theColor = ImportReplay.replayColorFor(theSymbology);
-
-		final String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
-
-		// create the contact object
-		final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
-				theDtg, rng, brg, course, speed, depth, theColor, theLabel, theEllipse,
-				theStyle);
-
-		return data;
+			MWC.Utilities.Errors.Trace.trace(pe,
+					"Whilst import TMA_RngBrg");
+			return null;
+		}
 	}
 
 	/**

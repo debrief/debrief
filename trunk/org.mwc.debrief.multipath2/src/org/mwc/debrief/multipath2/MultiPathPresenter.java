@@ -2,6 +2,7 @@ package org.mwc.debrief.multipath2;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.events.SelectionEvent;
@@ -218,7 +219,7 @@ public class MultiPathPresenter
 			_display.setSliderMax((int)maxDepth);
 
 		}
-		catch (final NumberFormatException e)
+		catch (final ParseException e)
 		{
 			CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
 			_svp = null;
@@ -432,7 +433,7 @@ public class MultiPathPresenter
 			_display.setIntervalName(fName);
 
 		}
-		catch (final NumberFormatException e)
+		catch (final ParseException e)
 		{
 			CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
 			_times = null;

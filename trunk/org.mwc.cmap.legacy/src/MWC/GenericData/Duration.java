@@ -7,7 +7,10 @@
 package MWC.GenericData;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.StringTokenizer;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 /**
@@ -204,7 +207,7 @@ final public class Duration implements Serializable
     return res;
   }
   
-  public static Duration fromString(final String duration)
+  public static Duration fromString(final String duration) throws ParseException
   {
   	Duration res = null;
   	
@@ -218,7 +221,7 @@ final public class Duration implements Serializable
 
     // parse the strings
     final int theUnits = getUnitIndexFor(units);
-    final double theVal = Double.parseDouble(val);
+    final double theVal =  MWCXMLReader.readThisDouble(val);
     
     // collate the new value
     res = new Duration(theVal, theUnits);
@@ -307,7 +310,7 @@ final public class Duration implements Serializable
 
     }
 
-    public void testToString()
+    public void testToString() throws ParseException
     {
       Duration dd = new Duration(12, MINUTES);
       String res = dd.toString();

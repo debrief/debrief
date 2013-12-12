@@ -9,10 +9,12 @@ package ASSET.Scenario.Genetic;
  * @version 1.0
  */
 
+import java.text.ParseException;
 import java.util.*;
 import java.io.InputStream;
 
 import ASSET.Util.MonteCarlo.XMLVariance;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class GeneticAlgorithm
 {
@@ -495,8 +497,15 @@ public class GeneticAlgorithm
       {
         final XMLVariance variable = (XMLVariance) it.next();
         final String curVal = variable.getValue();
-        final double thisV = Double.valueOf(curVal).doubleValue();
-        res.score *= thisV;
+		try 
+		{
+			final double thisV = MWCXMLReader.readThisDouble(curVal);
+			res.score *= thisV;
+		} 
+		catch (final ParseException e) 
+		{
+			MWC.Utilities.Errors.Trace.trace(e);
+		}       
       }
 
 

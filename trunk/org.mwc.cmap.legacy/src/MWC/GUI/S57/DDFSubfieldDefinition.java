@@ -22,6 +22,10 @@
 
 package MWC.GUI.S57;
 
+import java.text.ParseException;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+
 import com.bbn.openmap.MoreMath;
 import com.bbn.openmap.layer.vpf.MutableInt;
 import com.bbn.openmap.util.Debug;
@@ -486,9 +490,9 @@ public class DDFSubfieldDefinition implements DDFConstants
 
 			try
 			{
-				return Double.parseDouble(dataString);
+				return  MWCXMLReader.readThisDouble(dataString);
 			}
-			catch (final NumberFormatException nfe)
+			catch (final ParseException pe)
 			{
 				if (Debug.debugging("iso8211"))
 				{
@@ -629,9 +633,9 @@ public class DDFSubfieldDefinition implements DDFConstants
 
 			try
 			{
-				return Double.valueOf(dataString).intValue();
+				return  new Double(MWCXMLReader.readThisDouble(dataString)).intValue();
 			}
-			catch (final NumberFormatException nfe)
+			catch (final ParseException pe)
 			{
 				if (Debug.debugging("iso8211"))
 				{

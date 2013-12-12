@@ -53,6 +53,7 @@
 
 package Debrief.Tools.Operations;
 
+import java.text.ParseException;
 import java.util.*;
 
 import MWC.GUI.Editable;
@@ -111,9 +112,16 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
           if (fw.getSymbolShowing())
           {
             final String lbl = fw.getName();
-            writeBox(out,
-                     pos.getLong(), pos.getLat(), pos.getDepth(),
-                     fw.getColor(), lbl);
+            try 
+            {
+				writeBox(out,
+				         pos.getLong(), pos.getLat(), pos.getDepth(),
+				         fw.getColor(), lbl);
+			} 
+            catch (ParseException e) 
+			{
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
           }
 
           if (fw.getLabelShowing())

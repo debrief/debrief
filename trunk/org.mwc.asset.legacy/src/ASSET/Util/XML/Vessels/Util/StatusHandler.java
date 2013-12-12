@@ -10,9 +10,12 @@ package ASSET.Util.XML.Vessels.Util;
  */
 
 
+import java.text.ParseException;
+
 import ASSET.Participants.Status;
 import ASSET.Util.XML.Utils.ASSETLocationHandler;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
 abstract public class StatusHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -35,7 +38,14 @@ abstract public class StatusHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     {
       public void setValue(String name, final String val)
       {
-        _myCourse = Double.parseDouble(val);
+        try 
+        {
+			_myCourse = MWCXMLReader.readThisDouble(val);
+		} 
+        catch (final ParseException e) 
+        {
+        	 MWC.Utilities.Errors.Trace.trace(e);
+		}
       }
     });
 
@@ -50,7 +60,14 @@ abstract public class StatusHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     {
       public void setValue(String name, final String val)
       {
-        _myFuel = Double.parseDouble(val);
+        try 
+        {
+			_myFuel = MWCXMLReader.readThisDouble(val);
+		} 
+        catch (final ParseException e) 
+        {
+        	 MWC.Utilities.Errors.Trace.trace(e);
+		}
       }
     });
     super.addAttributeHandler(new HandleAttribute("Id")

@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
 import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 public class LengthPropertyDescriptor extends TextPropertyDescriptor {
@@ -24,7 +25,7 @@ public class LengthPropertyDescriptor extends TextPropertyDescriptor {
 					if(str.endsWith("m"))
 						str = str.substring(0, str.length() - 2);
 					
-					final double thisLen = Double.parseDouble(str);
+					final double thisLen =  MWCXMLReader.readThisDouble(str);
 					new WorldDistance.ArrayLength(thisLen);
 					return null;
 				} catch (final Exception e) {

@@ -136,6 +136,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -207,69 +208,78 @@ public final class ImportFix implements PlainLineImporter
 
 		theSymbology = st.nextToken(normalDelimiters);
 
-		latDeg = Double.valueOf(st.nextToken());
-		latMin = Double.valueOf(st.nextToken());
-		latSec = Double.valueOf(st.nextToken());
-
-		/**
-		 * now, we may have trouble here, since there may not be a space between the
-		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
-		 */
-		final String vDiff = st.nextToken();
-		if (vDiff.length() > 3)
+		try
 		{
-			// hmm, they are combined
-			latHem = vDiff.charAt(0);
-			final String secondPart = vDiff.substring(1, vDiff.length());
-			longDeg = Double.valueOf(secondPart);
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec =  MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3)
+			{
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			}
+			else
+			{
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg =  MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// parse (and convert) the vessel status parameters
+			theCourse = MWC.Algorithms.Conversions.Degs2Rads(
+					MWCXMLReader.readThisDouble(st.nextToken()));
+			theSpeed = MWC.Algorithms.Conversions.Kts2Yps(Double
+					.valueOf(st.nextToken()).doubleValue());
+	
+			// get the depth value
+			final String depthStr = st.nextToken();
+	
+			// we know that the Depth str may be NaN, but Java can interpret this
+			// directly
+			if (depthStr.equals("NaN"))
+				theDepth = Double.NaN;
+			else
+				theDepth =  MWCXMLReader.readThisDouble(depthStr);
+
+			// NEW FEATURE: we take any remaining text, and use it as a label
+			String txtLabel = null;
+			if (st.hasMoreTokens())
+				txtLabel = st.nextToken("\r");
+			if (txtLabel != null)
+				txtLabel = txtLabel.trim();
+	
+			// create the tactical data
+			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+					longMin, longSec, longHem, theDepth);
+	
+			// create the fix ready to store it
+			final Fix res = new Fix(theDate, theLoc, theCourse, theSpeed);
+			final ReplayFix rf = new ReplayFix();
+			rf.theFix = res;
+			rf.theTrackName = theTrackName;
+			rf.theSymbology = theSymbology;
+			if ((txtLabel != null) && (txtLabel.length() > 0))
+				rf.label = txtLabel;
+	
+			return rf;
 		}
-		else
+		catch(final ParseException pe)
 		{
-			// they are separate, so only the hem is in this one
-			latHem = vDiff.charAt(0);
-			longDeg = Double.valueOf(st.nextToken());
+			MWC.Utilities.Errors.Trace.trace(pe,
+					"Whilst import Fix");
+			return null;
 		}
-		longMin = Double.valueOf(st.nextToken());
-		longSec = Double.valueOf(st.nextToken());
-		longHem = st.nextToken().charAt(0);
-
-		// parse (and convert) the vessel status parameters
-		theCourse = MWC.Algorithms.Conversions.Degs2Rads(Double.valueOf(
-				st.nextToken()).doubleValue());
-		theSpeed = MWC.Algorithms.Conversions.Kts2Yps(Double
-				.valueOf(st.nextToken()).doubleValue());
-
-		// get the depth value
-		final String depthStr = st.nextToken();
-
-		// we know that the Depth str may be NaN, but Java can interpret this
-		// directly
-		if (depthStr.equals("NaN"))
-			theDepth = Double.NaN;
-		else
-			theDepth = Double.valueOf(depthStr).doubleValue();
-
-		// NEW FEATURE: we take any remaining text, and use it as a label
-		String txtLabel = null;
-		if (st.hasMoreTokens())
-			txtLabel = st.nextToken("\r");
-		if (txtLabel != null)
-			txtLabel = txtLabel.trim();
-
-		// create the tactical data
-		theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-				longMin, longSec, longHem, theDepth);
-
-		// create the fix ready to store it
-		final Fix res = new Fix(theDate, theLoc, theCourse, theSpeed);
-		final ReplayFix rf = new ReplayFix();
-		rf.theFix = res;
-		rf.theTrackName = theTrackName;
-		rf.theSymbology = theSymbology;
-		if ((txtLabel != null) && (txtLabel.length() > 0))
-			rf.label = txtLabel;
-
-		return rf;
 	}
 
 	/**
@@ -965,6 +975,12 @@ public final class ImportFix implements PlainLineImporter
 		final double val = Double.valueOf(test).doubleValue();
 
 		System.out.println("res is:" + val);
+		
+		try {
+			System.out.println("utility res is: " + MWCXMLReader.readThisDouble(test));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

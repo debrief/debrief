@@ -1,6 +1,7 @@
 package org.mwc.debrief.core.gpx.mappers;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 import com.topografix.gpx.v10.Gpx.Trk.Trkseg.Trkpt;
 import com.topografix.gpx.v10.ObjectFactory;
@@ -108,9 +110,9 @@ public class FixMapper implements DebriefJaxbContextAware
 				final Object object = unmarshaller.unmarshal((Node) any.get(0));
 				final FixExtensionType fixExtension = (FixExtensionType) JAXBIntrospector.getValue(object);
 
-				trackPoint.setCourse(Double.valueOf(fixExtension.getCourse()).doubleValue());
+				trackPoint.setCourse(MWCXMLReader.readThisDouble(fixExtension.getCourse()));
 				trackPoint.setLabel(fixExtension.getLabel());
-				trackPoint.setSpeed(Double.valueOf(fixExtension.getSpeed()).doubleValue());
+				trackPoint.setSpeed(MWCXMLReader.readThisDouble(fixExtension.getSpeed()));
 				final LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 				locationConverter.setAsText(fixExtension.getLabelLocation().value());
 				trackPoint.setLabelLocation((Integer) locationConverter.getValue());
@@ -123,6 +125,10 @@ public class FixMapper implements DebriefJaxbContextAware
 			catch (final JAXBException e)
 			{
 				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", e);
+			}
+			catch (final ParseException pe)
+			{
+				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", pe);
 			}
 		}
 
