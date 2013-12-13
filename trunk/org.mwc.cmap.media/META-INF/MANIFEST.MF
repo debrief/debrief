@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Media Player
+Bundle-Vendor: MWC
+Bundle-SymbolicName: org.mwc.cmap.media;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.cmap.media.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: lib/commons-cli.jar,
+ lib/logback-classic.jar,
+ lib/logback-core.jar,
+ lib/slf4j-api.jar,
+ .,
+ lib/jai_imageio.jar,
+ lib/jni_helper.jar,
+ lib/commons-io-2.1.jar,
+ lib/xuggle-utils-1.22.jar,
+ lib/xuggle-xuggler-5.4.jar
+Export-Package: org.mwc.cmap.media.time
