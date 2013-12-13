@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="Media player"
+            class="org.mwc.cmap.media.perspective.PlanetmayoPerspective"
+            id="org.mwc.cmap.media.perspective.PlanetmayoPerspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Media Player"
+            id="org.mwc.cmap.media">
+      </category>
+      <view
+            name="Video Player"
+            icon="icons/player.gif"
+            category="org.mwc.cmap.media"
+            class="org.mwc.cmap.media.views.VideoPlayerView"
+            id="org.mwc.cmap.media.views.VideoPlayerView"            
+            allowMultiple="true">
+            
+      </view>
+      <view
+            name="Images"
+            icon="icons/images16.gif"
+            category="org.mwc.cmap.media"
+            class="org.mwc.cmap.media.views.ImagesView"
+            id="org.mwc.cmap.media.views.ImagesView"            
+            allowMultiple="true">         
+      </view>
+      <view
+            name="Test-harness View"
+            icon="icons/openbrwsr.gif"
+            category="org.mwc.cmap.media"
+            class="org.mwc.cmap.media.views.TestHarnessView"
+            id="org.mwc.cmap.media.views.TestHarnessView">            
+      </view>
+   </extension>   
+   <!--<extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.mwc.cmap.media.perspective.PlanetmayoPerspective">
+         <view
+               relative="org.eclipse.ui.editorss"
+               relationship="left"
+               standalone="true"
+               minimized="false"
+               id="org.mwc.cmap.media.views.VideoPlayerView">
+         </view>
+         <view
+               relative="org.eclipse.ui.editorss"
+               relationship="left"
+               standalone="true"
+               minimized="false"
+               id="org.mwc.cmap.media.views.TestHarnessView">
+         </view>
+         <view
+               relative="org.eclipse.ui.editorss"
+               relationship="left"
+               standalone="true"
+               minimized="false"
+               id="org.mwc.cmap.media.views.ImagesView">
+         </view>         
+      </perspectiveExtension>
+   </extension> -->
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+   <!--
+   <extension point="org.eclipse.ui.activities">
+     <activity id="org.mwc.cmap.media.forbiddenViewActivityId" name="Forbidden View Activity" /> 
+     <activityPatternBinding
+         activityId="org.mwc.cmap.media.forbiddenViewActivityId"
+         isEqualityPattern="true"
+         pattern="org.mwc.cmap.media/org.mwc.cmap.media.views.VideoPlayerView">
+     </activityPatternBinding>
+     <activityPatternBinding
+         activityId="org.mwc.cmap.media.forbiddenViewActivityId"
+         isEqualityPattern="true"
+         pattern="org.mwc.cmap.media/org.mwc.cmap.media.views.TestHarnessView">
+     </activityPatternBinding>
+     <activityPatternBinding
+         activityId="org.mwc.cmap.media.forbiddenViewActivityId"
+         isEqualityPattern="true"
+         pattern="org.mwc.cmap.media/org.mwc.cmap.media.views.ImagesView">
+     </activityPatternBinding>
+   </extension>
+   -->
+   
+   <extension point="org.eclipse.ui.menus">
+        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
+       		<toolbar
+               id="org.mwc.cmap.media.toolbar"
+               label="Media Player">
+			  <separator name="additions" visible="true"/>   
+       		</toolbar>
+       	</menuContribution>
+       	<menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
+            <menu id="org.mwc.cmap.media.menu" label="Media"/>
+        </menuContribution>
+        <menuContribution locationURI="menu:org.mwc.cmap.media.menu?after=additions"> 
+            <command
+              commandId="org.mwc.cmap.media.actions.NewVideoPlayerAction"
+              icon="icons/player.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.NewVideoPlayerAction">
+            </command>
+            <command
+              commandId="org.mwc.cmap.media.actions.NewImagesViewAction"
+              icon="icons/images16.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.NewImagesViewAction">
+            </command>
+            <command
+              commandId="org.mwc.cmap.media.actions.OpenTestHarnessAction"
+              icon="icons/openbrwsr.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
+            </command>
+        </menuContribution>
+        <menuContribution locationURI="toolbar:org.mwc.cmap.media.toolbar?after=additions"> 
+            <command
+              commandId="org.mwc.cmap.media.actions.NewVideoPlayerAction"
+              icon="icons/player.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.NewVideoPlayerAction">
+            </command>
+            <command
+              commandId="org.mwc.cmap.media.actions.NewImagesViewAction"
+              icon="icons/images16.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.NewImagesViewAction">
+            </command>
+            <command
+              commandId="org.mwc.cmap.media.actions.OpenTestHarnessAction"
+              icon="icons/openbrwsr.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
+            </command>
+         </menuContribution>
+   </extension>
+   
+   <extension
+          point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.cmap.media.actions.NewVideoPlayerAction"
+             id="org.mwc.cmap.media.actions.NewVideoPlayerAction"
+             name="Video Player">
+       </command>
+       <command
+             defaultHandler="org.mwc.cmap.media.actions.NewImagesViewAction"
+             id="org.mwc.cmap.media.actions.NewImagesViewAction"
+             name="Images">
+       </command>
+       <command
+             defaultHandler="org.mwc.cmap.media.actions.OpenTestHarnessAction"
+             id="org.mwc.cmap.media.actions.OpenTestHarnessAction"
+             name="Test-harness View">
+       </command>
+   </extension>
+   
+   <!--
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Planetmayo"
+            visible="true"
+            id="org.mwc.cmap.media.actionSet">
+         <menu
+               label="Media"
+               id="org.mwc.cmap.media.menu">
+            <separator
+                  name="org.mwc.cmap.media.group">
+            </separator>
+         </menu>
+         <action
+               label="&amp;Video Player"
+               icon="icons/sample.gif"
+               class="org.mwc.cmap.media.actions.NewVideoPlayerAction"
+               tooltip="Create video player"
+               menubarPath="org.mwc.cmap.media.menu/org.mwc.cmap.media.group"
+               toolbarPath="org.mwc.cmap.media.group"
+               id="org.mwc.cmap.media.actions.NewVideoPlayerAction">
+         </action>
+         <action
+               label="&amp;Images"
+               icon="icons/sample.gif"
+               class="org.mwc.cmap.media.actions.NewImagesViewAction"
+               tooltip="Create images view"
+               menubarPath="org.mwc.cmap.media.menu/org.mwc.cmap.media.group"
+               toolbarPath="org.mwc.cmap.media.group"
+               id="org.mwc.cmap.media.actions.NewImagesViewAction">
+         </action>         
+         <action
+               label="&amp;Test-harness View"
+               icon="icons/sample.gif"
+               class="org.mwc.cmap.media.actions.OpenTestHarnessAction"
+               tooltip="Test-harness View"
+               menubarPath="org.mwc.cmap.media.menu/org.mwc.cmap.media.group"
+               toolbarPath="org.mwc.cmap.media.group"
+               id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
+         </action>         
+      </actionSet>
+   </extension>
+   -->   
+
+</plugin>
