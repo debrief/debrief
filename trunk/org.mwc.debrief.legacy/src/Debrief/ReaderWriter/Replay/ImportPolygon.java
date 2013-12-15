@@ -84,7 +84,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import junit.framework.TestCase;
-
 import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
@@ -95,7 +94,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import MWC.Utilities.TextFormatting.GeneralFormat;
 
 /**
  * class that is able to export a polygon - note the Replay file format doesn't include polygons, so we only export it.
@@ -129,26 +127,25 @@ class ImportPolygon implements PlainLineImporter
 		// start with the symbology
 		theSymbology = st.nextToken();
 		
-		//read start date
 		String dateToken = st.nextToken();
 		String timeToken = st.nextToken();
-		try {
+		if(hasStartDateOnly(line))
+		{
 			startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-		} catch (final NumberFormatException e) {
-			// There is no start date specified
-			line = line.substring(line.indexOf(dateToken));
-			st = new StringTokenizer(line);
 		}
-		
-		//read end date
-		dateToken = st.nextToken();
-		timeToken = st.nextToken();
-		try {
+		else if(hasStartEndDates(line))
+		{
+			startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+						
+			dateToken = st.nextToken();
+			timeToken = st.nextToken();
 			endDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-		} catch (final NumberFormatException e) {
-			// There is no end date specified
-			line = line.substring(line.indexOf(dateToken));
+		}
+		else
+		{
+			line = line.substring(line.indexOf(theSymbology));
 			st = new StringTokenizer(line);
+			st.nextToken(); // skip the simbology
 		}
 		
 		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
@@ -161,11 +158,9 @@ class ImportPolygon implements PlainLineImporter
 			// meet the label
 			final String sts = st.nextToken();
 			
-			if (!Character.isDigit(sts.charAt(0))) {
-				theText = sts;
-				break;
-			}
 			
+			if (Character.isDigit(sts.charAt(0)))
+			{
 			try
 			{
 				// now the location
@@ -206,6 +201,16 @@ class ImportPolygon implements PlainLineImporter
 			}
 			
 			counter += 1;
+			}
+			else
+			{
+				theText = sts;
+				if(st.hasMoreTokens())
+			    {
+			      // and lastly read in the message
+			      theText += st.nextToken("\r");
+			    }
+			}
 		}
 				
 		// and put Polygon into a shape		
@@ -214,6 +219,29 @@ class ImportPolygon implements PlainLineImporter
 						startDate, endDate);
 
 		return sw;
+	}
+	
+	private boolean hasStartEndDates(final String line)
+	{
+		return hasDate(line, 9);
+	}
+	
+	private boolean hasStartDateOnly(final String line)
+	{
+		return hasDate(line, 7);
+	}
+	
+	private boolean hasDate(final String line, final int skip)
+	{
+		StringTokenizer st = new StringTokenizer(line);
+		for (int i=0; i<skip; i++)
+		{
+			if (!st.hasMoreTokens())
+				return false;
+			st.nextToken();
+		}
+		final char longHem = st.nextToken().charAt(0);
+		return 'N' == longHem || 'S' == longHem;
 	}
 	
 	protected PolygonShape createShape(final Vector<PolygonNode> nodes)
@@ -226,7 +254,7 @@ class ImportPolygon implements PlainLineImporter
 	{
 		return _myType;
 	}
-
+	
 	@Override
 	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
@@ -234,12 +262,8 @@ class ImportPolygon implements PlainLineImporter
 
 		final PolygonShape polygon = (PolygonShape) theShape.getShape();
 
-		// result value. Note - we're representing this as a Replay file comment marker - since
-		// Debrief won't be able to import it.
-		String line = ";;Debrief Polygon:" + polygon.getName();
-
-		// remember how many pts we have
-		int ctr = 1;
+		String line = getYourType();
+		line += " " + ImportReplay.replaySymbolFor(polygon.getColor(), null);
 		
 		// ok, start looping through them:
 		final Iterator<PolygonNode> pts = polygon.getPoints().iterator();
@@ -252,16 +276,13 @@ class ImportPolygon implements PlainLineImporter
 			
 			// convert to a string
 			final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
-			
-			// put in a leading newline
-			line += GeneralFormat.LINE_SEPARATOR;
-			
+						
 			// now our line
-			line += ";;Point: " + ctr++ + " " + str;
+			line += " " + str;
 			
 		}
 
-		return line;
+		return line + " " + polygon.getName();
 
 	}
 
@@ -361,6 +382,13 @@ class ImportPolygon implements PlainLineImporter
 			assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 		
+		public void testWithCompoundLabel() {
+			final String line = ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E test long label";
+			final ImportPolygon ip = new ImportPolygon();
+			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			assertEquals("test long label", res.getLabel());
+		}
+		
 		public void testWithoutEndDate() {
 			final String line = ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
@@ -405,6 +433,14 @@ class ImportPolygon implements PlainLineImporter
 			loc = nodes.get(1).getLocation();
 			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+		}
+		
+		public void testExport()
+		{
+			final String line = ";POLY: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
+			final ImportPolygon ip = new ImportPolygon();
+			final ShapeWrapper sw = (ShapeWrapper) ip.readThisLine(line);
+			assertEquals(line, ip.exportThis(sw));
 		}
 	}
 
