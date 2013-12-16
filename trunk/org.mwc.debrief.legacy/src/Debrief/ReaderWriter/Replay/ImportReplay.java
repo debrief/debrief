@@ -431,6 +431,7 @@ public class ImportReplay extends PlainImporterBase
 			_theImporters.addElement(new ImportTMA_Pos());
 			_theImporters.addElement(new ImportTMA_RngBrg());
 			_theImporters.addElement(new ImportPolygon());
+			_theImporters.addElement(new ImportPolyline());
 			// note that we don't rely on ImportFix for importing Replay fixes, since
 			// they are handled by the ImportReplay method. We are including it in
 			// this list so that we can use it as an exporter
