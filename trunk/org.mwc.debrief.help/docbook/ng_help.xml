@@ -9051,10 +9051,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
 
           <para><indexterm>
               <primary>Narrative Data</primary>
-
               <secondary>File format</secondary>
-            </indexterm>The format for the different types of annotations is:
-          <screen width="70">            <markup>
+            </indexterm>The format for the different types of annotations is: <screen width="70">            <markup>
 123456789012345678901234567890123456789012345678901234567890123456789
 0123456789012345678901234567890 
 
@@ -9085,6 +9083,9 @@ DDD XX..XX
 
 ;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
 ;; symb, start date, end date, lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line)
+
+;POLYLINE: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
+;; (this is an open polygon) symb, start date, end date, lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line)
 
 ;SGSAGEOG: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H 
 DD MM SS.S H DDD MM SS.S H XX..XX 
@@ -9148,21 +9149,18 @@ surrounded by quotes (").
  ;; dtg, track name, narrative entry-type, narrative entry.  Note the track name 
 and entry type can be multi-word if surrounded by quotes (").
             </markup>   </screen><note>
-              <para>Note, when null positions are entered for <glossterm
-              linkend="g_sensor">Sensor</glossterm> data, the position is
-              taken from the track named in "ownship name". Debrief finds the
-              nearest track location equal to or greater than the indicated
-              time, and uses this as the sensor lat and long.</para>
+              <para>Note, when null positions are entered for <glossterm linkend="g_sensor"
+                  >Sensor</glossterm> data, the position is taken from the track named in "ownship
+                name". Debrief finds the nearest track location equal to or greater than the
+                indicated time, and uses this as the sensor lat and long.</para>
             </note><note>
-              <para>As with normal positional data, annotation entries which
-              use a track/ownship name may now contain multi-word phrases if
-              they are enclosed in quotation marks ("), and the year can be
-              expressed as 2 or 4 figures.</para>
+              <para>As with normal positional data, annotation entries which use a track/ownship
+                name may now contain multi-word phrases if they are enclosed in quotation marks ("),
+                and the year can be expressed as 2 or 4 figures.</para>
             </note><note>
-              <para>Debrief can handle decimal values for degrees or minutes.
-              If you original data is in decimal degrees or degrees plus
-              decimal minutes feel free to use these values directly, but
-              remember to provide a zero for the unused column(s)</para>
+              <para>Debrief can handle decimal values for degrees or minutes. If you original data
+                is in decimal degrees or degrees plus decimal minutes feel free to use these values
+                directly, but remember to provide a zero for the unused column(s)</para>
             </note></para>
 
           <para><glossterm linkend="g_annotation">Annotation</glossterm>
