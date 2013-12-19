@@ -600,11 +600,12 @@ public class VideoPlayerView extends ViewPart {
 			}
 			if (player.open(memento.getString(STATE_VIDEO_FILE))) {
 				try {
-					player.seek(Long.parseLong(memento.getString(STATE_POSITION)));
+					// Issue #545 - We don't need set position
+					// player.seek(Long.parseLong(memento.getString(STATE_POSITION)));
 					startTime.setValue(new Date(Long.parseLong(memento.getString(STATE_START_TIME))));
 				} catch (NumberFormatException ex) {
 					// can't restore state
-					ex.printStackTrace();					
+					Activator.log(ex);					
 				}
 			}
 		}		

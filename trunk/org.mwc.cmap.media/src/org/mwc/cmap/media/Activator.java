@@ -26,7 +26,6 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		context.registerService(ITimeProvider.class.getName(), new TimeProvider(), new Hashtable<String, Object>());
-		// this is deprecated
 		NativeLibrariesLoader.loadBundledXuggler(context.getDataFile("native"), context.getBundle());
 		plugin = this;
 		this.context = context;

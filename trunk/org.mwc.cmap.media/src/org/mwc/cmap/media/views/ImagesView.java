@@ -373,15 +373,16 @@ public class ImagesView extends ViewPart {
 		}
 		if (memento.getString(STATE_FOLDER) != null) {
 			openFolder(memento.getString(STATE_FOLDER));
-			if (memento.getString(STATE_SELECTED_IMAGE) != null) {
-				String selectedImage = memento.getString(STATE_SELECTED_IMAGE);
-				for (int i = 0; i < images.size(); i++) {
-					if (images.get(i).getFileName().equals(selectedImage)) {
-						selectImage(i);
-						break;
-					}
-				}
-			}
+			// Issue #545 - we don't need select a image
+//			if (memento.getString(STATE_SELECTED_IMAGE) != null) {
+//				String selectedImage = memento.getString(STATE_SELECTED_IMAGE);
+//				for (int i = 0; i < images.size(); i++) {
+//					if (images.get(i).getFileName().equals(selectedImage)) {
+//						selectImage(i);
+//						break;
+//					}
+//				}
+//			}
 		}
 	}
 	
