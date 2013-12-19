@@ -9161,6 +9161,9 @@ and entry type can be multi-word if surrounded by quotes (").
               <para>Debrief can handle decimal values for degrees or minutes. If you original data
                 is in decimal degrees or degrees plus decimal minutes feel free to use these values
                 directly, but remember to provide a zero for the unused column(s)</para>
+            </note><note>
+              <para>Where labels are provided for shapes, Debrief allows multi-line text labels -
+                just insert a \n character to indicate the line-break</para>
             </note></para>
 
           <para><glossterm linkend="g_annotation">Annotation</glossterm>

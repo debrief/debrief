@@ -261,11 +261,17 @@ public class TextLabel extends PlainShape implements Editable
 	{
 		super(0, 1, "Text");
 
-		_theString = theString;
+		_theString =  replaceNewLines(theString);
 		_theShape = theShape;
 		_theRelativeLocation = LocationPropertyEditor.LEFT;
 		_theFont = new Font("Sans Serif", 12, 12);
 		_theFixedOffset = new java.awt.Dimension(0, 0);
+	}
+	
+	
+	protected String replaceNewLines(final String inStr)
+	{
+		return inStr.replace("\\n", "\n");
 	}
 
 	// public TextLabel()
