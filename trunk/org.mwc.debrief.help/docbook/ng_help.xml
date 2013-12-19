@@ -9081,11 +9081,11 @@ DDD XX..XX
 ;RECT: @@ DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
 ;; symb, tl corner lat &amp; long, br corner lat &amp; long, label
 
-;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
-;; symb, start date, end date, lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line)
+;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
+;; symb, start date (optional), end date (optional), lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line, or non-numeric label encountered)
 
-;POLYLINE: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
-;; (this is an open polygon) symb, start date, end date, lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line)
+;POLYLINE: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
+;; (this is an open polygon) symb, start date (optional), end date (optional), lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line, or non-numeric label encountered)
 
 ;SGSAGEOG: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H 
 DD MM SS.S H DDD MM SS.S H XX..XX 
