@@ -8,6 +8,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.media.time.ITimeProvider;
 import org.mwc.cmap.media.time.impl.TimeProvider;
+import org.mwc.cmap.media.xuggle.NativeLibrariesLoader;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -26,7 +27,7 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context);
 		context.registerService(ITimeProvider.class.getName(), new TimeProvider(), new Hashtable<String, Object>());
 		// this is deprecated
-		//NativeLibrariesLoader.loadBundledXuggler(context.getDataFile("native"), context.getBundle());
+		NativeLibrariesLoader.loadBundledXuggler(context.getDataFile("native"), context.getBundle());
 		plugin = this;
 		this.context = context;
 	}
