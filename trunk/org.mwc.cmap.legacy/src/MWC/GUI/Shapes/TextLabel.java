@@ -271,7 +271,7 @@ public class TextLabel extends PlainShape implements Editable
 	
 	protected String replaceNewLines(final String inStr)
 	{
-		return inStr.replace("\\n", "\n");
+		return inStr == null ? inStr : inStr.replace("\\n", "\n");
 	}
 
 	// public TextLabel()
