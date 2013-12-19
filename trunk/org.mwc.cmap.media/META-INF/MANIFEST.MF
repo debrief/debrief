@@ -6,7 +6,9 @@ Bundle-SymbolicName: org.mwc.cmap.media;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.cmap.media.Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.mwc.cmap.core,
+ org.mwc.cmap.legacy
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: lib/commons-cli.jar,

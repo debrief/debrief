@@ -1,5 +1,7 @@
 package org.mwc.cmap.media.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,8 +30,12 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.media.Activator;
 import org.mwc.cmap.media.PlanetmayoFormats;
 import org.mwc.cmap.media.PlanetmayoImages;
@@ -38,6 +44,8 @@ import org.mwc.cmap.media.utility.DateUtils;
 import org.mwc.cmap.media.xuggle.PlayerAdapter;
 import org.mwc.cmap.media.xuggle.PlayerListener;
 import org.mwc.cmap.media.xuggle.XugglePlayer;
+
+import MWC.GenericData.HiResDate;
 
 public class VideoPlayerView extends ViewPart {
 	private static final String STATE_VIDEO_FILE = "filename";
@@ -63,10 +71,76 @@ public class VideoPlayerView extends ViewPart {
 	private boolean fireNewTime;
 	
 	private SimpleDateFormat timeFormat;
+	
+	private ControllableTime _controllableTime;
+	
+	private TimeProvider _timeProvider;
+	
+	private boolean _firingNewTime;
+	
+	private PartMonitor _myPartMonitor;
+	
+	private PropertyChangeListener _propertyChangeListener = new PropertyChangeListener()
+	{
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			if (!player.isOpened() || _firingNewTime || _timeProvider == null
+					|| _timeProvider.getPeriod() == null
+					|| _timeProvider.getTime() == null
+					|| !player.isOpened())
+			{
+				return;
+			}
+			Object newValue = evt.getNewValue();
+			if (newValue instanceof HiResDate)
+			{
+				HiResDate now = (HiResDate) newValue;
+				if (now != null)
+				{
+					Date startDate = (Date) startTime.getValue();
+					
+					int offset = TimeZone.getDefault().getRawOffset();
+					Date date = now.getDate();
+					DateUtils.removeMilliSeconds(date);
+					long millis = date.getTime() - startDate.getTime() - offset;
+					if (millis < 0) {
+						millis = 0;
+					}
+					if (millis > player.getDuration()) {
+						millis = player.getDuration();
+					}
+					if (player.isPlaying()) {
+						player.pause();
+					}
+					player.seek(millis);
+				}
+			}
+		}
+	};
 
 	public VideoPlayerView() {
 	}
 
+	public void fireNewTime(final HiResDate dtg)
+	{
+		if (_controllableTime == null) {
+			return;
+		}
+		if (!_firingNewTime)
+		{
+			_firingNewTime = true;
+			try
+			{
+				_controllableTime.setTime(this, dtg, true);
+			}
+			finally
+			{
+				_firingNewTime = false;
+			}
+		}
+	}
 	@Override
 	public void init(final IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
@@ -96,6 +170,7 @@ public class VideoPlayerView extends ViewPart {
 	@Override
 	public void dispose() {
 		super.dispose();
+		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
 		Activator.getDefault().getTimeProvider().removeListener(timeListener);		
 	}	
 
@@ -118,8 +193,82 @@ public class VideoPlayerView extends ViewPart {
 		fillMenu();
 		restoreSavedState();
 		Activator.getDefault().getTimeProvider().addListener(timeListener);
+		// and start listing for any part action
+		setupListeners();
+
+		// ok we're all ready now. just try and see if the current part is valid
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+				.getActivePage());
 	}
 	
+	private void setupListeners()
+	{
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+
+		_myPartMonitor.addPartListener(ControllableTime.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+
+						if (_controllableTime != part)
+						{
+							// implementation here.
+							final ControllableTime ct = (ControllableTime) part;
+							_controllableTime = ct;
+						}
+					}
+
+				});
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+						if (part == _controllableTime)
+						{
+							_controllableTime = null;
+						}
+					}
+				});
+
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+
+						if (_timeProvider != part)
+						{
+							// implementation here.
+							final TimeProvider tp = (TimeProvider) part;
+							_timeProvider = tp;
+							_timeProvider.addListener(_propertyChangeListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						}
+					}
+
+				});
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+						if (part == _timeProvider)
+						{
+							_timeProvider.removeListener(_propertyChangeListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							_timeProvider = null;
+						}
+					}
+				});
+	}
+
 	private void updatePlayTime(long milli) {
 		playTime.setText(timeFormat.format(new Date(milli - TimeZone.getDefault().getOffset(0))));
 	}
@@ -252,8 +401,47 @@ public class VideoPlayerView extends ViewPart {
 				if ((getViewSite().getPage().getActivePart() == VideoPlayerView.this && fireNewTime) || player.isPlaying()) {
 					Date start = (Date) startTime.getValue();
 					DateUtils.removeMilliSeconds(start);
-					milli += start.getTime();
-					Activator.getDefault().getTimeProvider().fireNewTime(VideoPlayerView.this, milli);
+					long time = milli + start.getTime();
+					Activator.getDefault().getTimeProvider().fireNewTime(VideoPlayerView.this, time);
+				}
+				if (player.isPlaying()) {
+					update(player, milli);
+				}
+			}
+			
+			@Override
+			public void onStop(XugglePlayer player)
+			{
+				super.onStop(player);
+				Date startDate = (Date) startTime.getValue();
+				fireNewTime(new HiResDate(startDate));
+			}
+			
+			@Override
+			public void onVideoOpened(XugglePlayer player, String fileName)
+			{
+				super.onVideoOpened(player, fileName);
+			}
+
+			@Override
+			public void onSeek(XugglePlayer player, long milli)
+			{
+				updatePlayTime(milli);
+				update(player, milli);
+			}
+
+			private void update(XugglePlayer player, long milli)
+			{
+				scale.setSelection((int) (milli/1000));
+				if ( _timeProvider != null 
+						&& _timeProvider.getPeriod() != null && player.isOpened()) {
+					int offset = TimeZone.getDefault().getRawOffset();
+					Date start = (Date) startTime.getValue();
+					long step = milli + start.getTime() + offset;
+					HiResDate newDTG = new HiResDate(step);
+					if (_timeProvider.getPeriod().contains(newDTG)) {
+						fireNewTime(newDTG);
+					}
 				}
 			}
 		});		
