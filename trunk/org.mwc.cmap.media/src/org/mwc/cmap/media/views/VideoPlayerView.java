@@ -11,7 +11,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.nebula.widgets.formattedtext.DateTimeFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -100,11 +99,9 @@ public class VideoPlayerView extends ViewPart {
 				if (now != null)
 				{
 					Date startDate = (Date) startTime.getValue();
-					
-					int offset = TimeZone.getDefault().getRawOffset();
 					Date date = now.getDate();
 					DateUtils.removeMilliSeconds(date);
-					long millis = date.getTime() - startDate.getTime() - offset;
+					long millis = date.getTime() - startDate.getTime();
 					if (millis < 0) {
 						millis = 0;
 					}
@@ -293,7 +290,7 @@ public class VideoPlayerView extends ViewPart {
 		
 		new Label(control, SWT.LEFT).setText("Start time: ");
 		startTime = new FormattedText(control);
-		startTime.setFormatter(new DateTimeFormatter(PlanetmayoFormats.getInstance().getDateFormatPattern()));
+		startTime.setFormatter(PlanetmayoFormats.getInstance().getDateTimeFormatter());
 		startTime.setValue(new Date());
 		startTime.getControl().setEnabled(false);
 		startTime.getControl().addKeyListener(new KeyListener() {
@@ -435,9 +432,8 @@ public class VideoPlayerView extends ViewPart {
 				scale.setSelection((int) (milli/1000));
 				if ( _timeProvider != null 
 						&& _timeProvider.getPeriod() != null && player.isOpened()) {
-					int offset = TimeZone.getDefault().getRawOffset();
 					Date start = (Date) startTime.getValue();
-					long step = milli + start.getTime() + offset;
+					long step = milli + start.getTime();
 					HiResDate newDTG = new HiResDate(step);
 					if (_timeProvider.getPeriod().contains(newDTG)) {
 						fireNewTime(newDTG);

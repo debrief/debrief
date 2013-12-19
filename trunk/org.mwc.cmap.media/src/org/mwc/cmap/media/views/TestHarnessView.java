@@ -3,7 +3,6 @@ package org.mwc.cmap.media.views;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.eclipse.nebula.widgets.formattedtext.DateTimeFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -93,7 +92,7 @@ public class TestHarnessView extends ViewPart {
 		fireComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
 		
 		timeToFire = new FormattedText(fireComposite);
-		timeToFire.setFormatter(new DateTimeFormatter(PlanetmayoFormats.getInstance().getDateFormatPattern()));
+		timeToFire.setFormatter(PlanetmayoFormats.getInstance().getDateTimeFormatter());
 		timeToFire.setValue(new Date());
 		
 		button = new Button(fireComposite, SWT.PUSH);
