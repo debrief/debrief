@@ -3,6 +3,7 @@ package org.mwc.cmap.media.actions;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -41,13 +42,14 @@ public class BasePlanetmayoAction extends AbstractHandler {
 	{
 		findNextId();
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IViewPart view = null;
 		try
 		{
-			window.getActivePage().showView(viewId, "" + (nextId++), IWorkbenchPage.VIEW_ACTIVATE);
+			view  = window.getActivePage().showView(viewId, "" + (nextId++), IWorkbenchPage.VIEW_ACTIVATE);
 		} catch (PartInitException e)
 		{
 			Activator.log(e);
 		}
-		return null;
+		return view;
 	}
 }

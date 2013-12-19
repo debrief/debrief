@@ -284,7 +284,7 @@ public class ImagesView extends ViewPart {
 		menu.add(refresh);
 	}	
 	
-	private boolean openFolder(String folderName) {
+	public boolean openFolder(String folderName) {
 		this.openedFolder = folderName;
 		loadedGallery = false;
 		gallery.removeAll();
@@ -448,5 +448,10 @@ public class ImagesView extends ViewPart {
 				return 1;
 			}
 		}
+	}
+
+	public String getOpenedFolder()
+	{
+		return this.openedFolder;
 	}
 }

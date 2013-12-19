@@ -145,10 +145,67 @@
               id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
             </command>
          </menuContribution>
+         <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions"> 
+            <command
+              commandId="org.mwc.cmap.media.actions.OpenVideoPlayerAction"
+              icon="icons/player.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.OpenVideoPlayerAction">
+              <visibleWhen>
+					<with
+						variable="selection">
+						<iterate ifEmpty="false">
+						  <and>
+							<adapt type="org.eclipse.core.resources.IResource">
+							<or>
+								<test property="org.eclipse.core.resources.extension" value="avi" forcePluginActivation="true"/>
+								<test property="org.eclipse.core.resources.extension" value="vob" forcePluginActivation="true"/>
+								<test property="org.eclipse.core.resources.extension" value="mp4" forcePluginActivation="true"/>
+								<test property="org.eclipse.core.resources.extension" value="mov" forcePluginActivation="true"/>
+								<test property="org.eclipse.core.resources.extension" value="mpeg" forcePluginActivation="true"/>
+								<test property="org.eclipse.core.resources.extension" value="flv" forcePluginActivation="true"/>
+								<test property="org.eclipse.core.resources.extension" value="mp3" forcePluginActivation="true"/>
+								<test property="org.eclipse.core.resources.extension" value="wma" forcePluginActivation="true"/>
+							</or>
+							</adapt>
+						  </and>
+						</iterate>
+						<count value="1"/>
+					</with>
+			  </visibleWhen>
+            </command>
+            <command
+              commandId="org.mwc.cmap.media.actions.OpenImagesViewAction"
+              icon="icons/images16.gif"
+              style="push"
+              id="org.mwc.cmap.media.actions.OpenImagesViewAction">
+              <visibleWhen>
+					<with
+						variable="selection">
+						<iterate ifEmpty="false">
+						  <and>
+							<adapt type="org.eclipse.core.resources.IFolder"/>
+						  </and>
+						</iterate>
+						<count value="1"/>
+					</with>
+			  </visibleWhen>
+            </command>
+         </menuContribution>      
    </extension>
    
    <extension
           point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.cmap.media.actions.OpenVideoPlayerAction"
+             id="org.mwc.cmap.media.actions.OpenVideoPlayerAction"
+             name="View in media player">
+       </command>
+       <command
+             defaultHandler="org.mwc.cmap.media.actions.OpenImagesViewAction"
+             id="org.mwc.cmap.media.actions.OpenImagesViewAction"
+             name="Load in image viewer">
+       </command>
        <command
              defaultHandler="org.mwc.cmap.media.actions.NewVideoPlayerAction"
              id="org.mwc.cmap.media.actions.NewVideoPlayerAction"

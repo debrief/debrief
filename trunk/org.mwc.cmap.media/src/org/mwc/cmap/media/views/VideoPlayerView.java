@@ -79,6 +79,8 @@ public class VideoPlayerView extends ViewPart {
 	
 	private PartMonitor _myPartMonitor;
 	
+	private String _selected;
+	
 	private PropertyChangeListener _propertyChangeListener = new PropertyChangeListener()
 	{
 		
@@ -410,8 +412,12 @@ public class VideoPlayerView extends ViewPart {
 			public void onStop(XugglePlayer player)
 			{
 				super.onStop(player);
-				Date startDate = (Date) startTime.getValue();
-				fireNewTime(new HiResDate(startDate));
+				if (startTime != null && startTime.getControl() != null
+						&& !startTime.getControl().isDisposed())
+				{
+					Date startDate = (Date) startTime.getValue();
+					fireNewTime(new HiResDate(startDate));
+				}
 			}
 			
 			@Override
@@ -459,15 +465,7 @@ public class VideoPlayerView extends ViewPart {
 		        String[] filterExt = { "*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3", "*.wma", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selected = fd.open();
-		        if (selected != null) {
-		        	if (! player.open(selected)) {
-		        		movieOpened(null, null);
-		        		MessageBox message = new MessageBox(getSite().getShell(), SWT.ICON_WARNING | SWT.OK);
-		        		message.setText("Video player: " + new File(selected).getName());
-		        		message.setMessage("This file format isn't supported.");
-		        		message.open();
-		        	}
-		        }
+		        VideoPlayerView.this.open(selected);
 			}
 		};
 		open.setText("Open");
@@ -595,6 +593,7 @@ public class VideoPlayerView extends ViewPart {
 				stretch.setChecked(stretchBool);
 			}
 			if (player.open(memento.getString(STATE_VIDEO_FILE))) {
+				_selected = memento.getString(STATE_VIDEO_FILE);
 				try {
 					// Issue #545 - We don't need set position
 					// player.seek(Long.parseLong(memento.getString(STATE_POSITION)));
@@ -605,5 +604,25 @@ public class VideoPlayerView extends ViewPart {
 				}
 			}
 		}		
+	}
+
+	public String getSelected()
+	{
+		return _selected;
+	}
+
+	public void open(String selected)
+	{
+		if (selected != null) {
+			if (! player.open(selected)) {
+				movieOpened(null, null);
+				MessageBox message = new MessageBox(getSite().getShell(), SWT.ICON_WARNING | SWT.OK);
+				message.setText("Video player: " + new File(selected).getName());
+				message.setMessage("This file format isn't supported.");
+				message.open();
+			} else {
+				_selected = selected;
+			}
+		}
 	}
 }
