@@ -96,7 +96,8 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
- * class that is able to export a polygon - note the Replay file format doesn't include polygons, so we only export it.
+ * class that is able to export a polygon - note the Replay file format doesn't
+ * include polygons, so we only export it.
  */
 class ImportPolygon implements PlainLineImporter
 {
@@ -108,7 +109,7 @@ class ImportPolygon implements PlainLineImporter
 
 	@Override
 	public final Object readThisLine(final String theLine)
-	{		
+	{
 		String line = theLine;
 		// get a stream from the string
 		StringTokenizer st = new StringTokenizer(line);
@@ -117,7 +118,7 @@ class ImportPolygon implements PlainLineImporter
 		double latDeg, longDeg, latMin, longMin;
 		char latHem, longHem;
 		double latSec, longSec;
-		HiResDate startDate=null, endDate = null;
+		HiResDate startDate = null, endDate = null;
 		String theText = null;
 		String theSymbology;
 
@@ -126,17 +127,17 @@ class ImportPolygon implements PlainLineImporter
 
 		// start with the symbology
 		theSymbology = st.nextToken();
-		
+
 		String dateToken = st.nextToken();
 		String timeToken = st.nextToken();
-		if(hasStartDateOnly(line))
+		if (hasStartDateOnly(line))
 		{
 			startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 		}
-		else if(hasStartEndDates(line))
+		else if (hasStartEndDates(line))
 		{
 			startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-						
+
 			dateToken = st.nextToken();
 			timeToken = st.nextToken();
 			endDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
@@ -147,94 +148,96 @@ class ImportPolygon implements PlainLineImporter
 			st = new StringTokenizer(line);
 			st.nextToken(); // skip the simbology
 		}
-		
+
 		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
 		Integer counter = new Integer(1);
 		// create the Polygon object
-		final PolygonShape sp = createShape(nodes);		
-		
-		while (st.hasMoreTokens()) 
+		final PolygonShape sp = createShape(nodes);
+
+		while (st.hasMoreTokens())
 		{
 			// meet the label
 			final String sts = st.nextToken();
-			
-			
+
 			if (Character.isDigit(sts.charAt(0)))
 			{
-			try
-			{
-				// now the location
-				latDeg = MWCXMLReader.readThisDouble(sts);
-				latMin = MWCXMLReader.readThisDouble(st.nextToken());
-				latSec = MWCXMLReader.readThisDouble(st.nextToken());
-			
-				/**
-				 * now, we may have trouble here, since there may not be a space between
-				 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
-				 */
-				final String vDiff = st.nextToken();
-				if (vDiff.length() > 3) {
-					// hmm, they are combined
-					latHem = vDiff.charAt(0);
-					final String secondPart = vDiff.substring(1, vDiff.length());
-					longDeg = MWCXMLReader.readThisDouble(secondPart);
-				} else {
-					// they are separate, so only the hem is in this one
-					latHem = vDiff.charAt(0);
-					longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+				try
+				{
+					// now the location
+					latDeg = MWCXMLReader.readThisDouble(sts);
+					latMin = MWCXMLReader.readThisDouble(st.nextToken());
+					latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+					/**
+					 * now, we may have trouble here, since there may not be a space
+					 * between the hemisphere character and a 3-digit latitude value - so
+					 * BE CAREFUL
+					 */
+					final String vDiff = st.nextToken();
+					if (vDiff.length() > 3)
+					{
+						// hmm, they are combined
+						latHem = vDiff.charAt(0);
+						final String secondPart = vDiff.substring(1, vDiff.length());
+						longDeg = MWCXMLReader.readThisDouble(secondPart);
+					}
+					else
+					{
+						// they are separate, so only the hem is in this one
+						latHem = vDiff.charAt(0);
+						longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+					}
+					longMin = MWCXMLReader.readThisDouble(st.nextToken());
+					longSec = MWCXMLReader.readThisDouble(st.nextToken());
+					longHem = st.nextToken().charAt(0);
+
+					// we have our first location, create it
+					final WorldLocation theLoc = new WorldLocation(latDeg, latMin,
+							latSec, latHem, longDeg, longMin, longSec, longHem, 0);
+					final PolygonNode newNode = new PolygonNode(counter.toString(),
+							theLoc, sp);
+					sp.add(newNode);
 				}
-				longMin = MWCXMLReader.readThisDouble(st.nextToken());
-				longSec = MWCXMLReader.readThisDouble(st.nextToken());
-				longHem = st.nextToken().charAt(0);
-				
-				// we have our first location, create it
-				final WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-								longMin, longSec, longHem, 0);	
-				final PolygonNode newNode = new PolygonNode(counter.toString(), theLoc, sp);
-				sp.add(newNode);
-			}
-			catch(final ParseException pe)
-			{
-				MWC.Utilities.Errors.Trace.trace(pe,
-						"Whilst import Polygon");
-				return null;
-			}
-			
-			counter += 1;
+				catch (final ParseException pe)
+				{
+					MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Polygon");
+					return null;
+				}
+
+				counter += 1;
 			}
 			else
 			{
 				theText = sts;
-				if(st.hasMoreTokens())
-			    {
-			      // and lastly read in the message
-			      theText += st.nextToken("\r");
-			    }
+				if (st.hasMoreTokens())
+				{
+					// and lastly read in the message
+					theText += st.nextToken("\r");
+				}
 			}
 		}
-				
-		// and put Polygon into a shape		
+
+		// and put Polygon into a shape
 		final PolygonWrapper sw = new PolygonWrapper(theText, sp,
-						ImportReplay.replayColorFor(theSymbology), 
-						startDate, endDate);
+				ImportReplay.replayColorFor(theSymbology), startDate, endDate);
 
 		return sw;
 	}
-	
+
 	private boolean hasStartEndDates(final String line)
 	{
 		return hasDate(line, 9);
 	}
-	
+
 	private boolean hasStartDateOnly(final String line)
 	{
 		return hasDate(line, 7);
 	}
-	
+
 	private boolean hasDate(final String line, final int skip)
 	{
 		StringTokenizer st = new StringTokenizer(line);
-		for (int i=0; i<skip; i++)
+		for (int i = 0; i < skip; i++)
 		{
 			if (!st.hasMoreTokens())
 				return false;
@@ -243,7 +246,7 @@ class ImportPolygon implements PlainLineImporter
 		final char longHem = st.nextToken().charAt(0);
 		return 'N' == longHem || 'S' == longHem;
 	}
-	
+
 	protected PolygonShape createShape(final Vector<PolygonNode> nodes)
 	{
 		return new PolygonShape(nodes);
@@ -254,7 +257,7 @@ class ImportPolygon implements PlainLineImporter
 	{
 		return _myType;
 	}
-	
+
 	@Override
 	public final String exportThis(final MWC.GUI.Plottable theWrapper)
 	{
@@ -264,7 +267,7 @@ class ImportPolygon implements PlainLineImporter
 
 		String line = getYourType();
 		line += " " + ImportReplay.replaySymbolFor(polygon.getColor(), null);
-		
+
 		// ok, start looping through them:
 		final Iterator<PolygonNode> pts = polygon.getPoints().iterator();
 		while (pts.hasNext())
@@ -273,13 +276,14 @@ class ImportPolygon implements PlainLineImporter
 					.next();
 			// get the loc
 			final WorldLocation loc = node.getLocation();
-			
+
 			// convert to a string
-			final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
-						
+			final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation
+					.toString(loc);
+
 			// now our line
 			line += " " + str;
-			
+
 		}
 
 		return line + " " + polygon.getName();
@@ -294,21 +298,23 @@ class ImportPolygon implements PlainLineImporter
 			final ShapeWrapper sw = (ShapeWrapper) val;
 			final PlainShape ps = sw.getShape();
 			if (ps instanceof PolygonShape)
-				return canExport((PolygonShape) ps);			
+				return canExport((PolygonShape) ps);
 		}
 
 		return false;
 
 	}
-	
+
 	protected boolean canExport(final PolygonShape ps)
 	{
 		return ps.getClosed();
 	}
-	
-	public static class TestImport extends TestCase {
-	
-		public void testNoLabel() {
+
+	public static class TestImport extends TestCase
+	{
+
+		public void testNoLabel()
+		{
 			final String line = ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
@@ -316,23 +322,24 @@ class ImportPolygon implements PlainLineImporter
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
-			
+
 			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
-			
+
 			assertEquals("1", nodes.get(0).getName());
 			WorldLocation loc = nodes.get(0).getLocation();
 			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
 			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-			
+
 			assertEquals("2", nodes.get(1).getName());
 			loc = nodes.get(1).getLocation();
 			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
-		
-		public void testLeadingSpace() {
-			final String line = "	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
+
+		public void testLeadingSpace()
+		{
+			final String line = "    	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertEquals("", res.getLabel());
@@ -342,25 +349,26 @@ class ImportPolygon implements PlainLineImporter
 
 			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(3, nodes.size());
-			
+
 			assertEquals("1", nodes.get(0).getName());
 			WorldLocation loc = nodes.get(0).getLocation();
 			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
 			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-			
+
 			assertEquals("2", nodes.get(1).getName());
 			loc = nodes.get(1).getLocation();
 			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-			
+
 			assertEquals("3", nodes.get(2).getName());
 			loc = nodes.get(2).getLocation();
 			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
 			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
 		}
-		
-		public void testWithLabel() {
-			final String line = ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
+
+		public void testWithLabel()
+		{
+			final String line = " ;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertEquals("label", res.getLabel());
@@ -370,26 +378,28 @@ class ImportPolygon implements PlainLineImporter
 
 			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
-			
+
 			assertEquals("1", nodes.get(0).getName());
 			WorldLocation loc = nodes.get(0).getLocation();
 			assertEquals("1 correct lat", 49.7303, loc.getLat(), 0.0001);
 			assertEquals("1 correct long", 4.16989, loc.getLong(), 0.0001);
-			
+
 			assertEquals("2", nodes.get(1).getName());
 			loc = nodes.get(1).getLocation();
 			assertEquals("2 correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
-		
-		public void testWithCompoundLabel() {
+
+		public void testWithCompoundLabel()
+		{
 			final String line = ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E test long label";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertEquals("test long label", res.getLabel());
 		}
-		
-		public void testWithoutEndDate() {
+
+		public void testWithoutEndDate()
+		{
 			final String line = ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
@@ -397,22 +407,23 @@ class ImportPolygon implements PlainLineImporter
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
-			
+
 			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
-			
+
 			assertEquals("1", nodes.get(0).getName());
 			WorldLocation loc = nodes.get(0).getLocation();
 			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
 			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-			
+
 			assertEquals("2", nodes.get(1).getName());
 			loc = nodes.get(1).getLocation();
 			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
-		
-		public void testWithoutDates() {
+
+		public void testWithoutDates()
+		{
 			final String line = ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
 			final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
@@ -420,21 +431,21 @@ class ImportPolygon implements PlainLineImporter
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
-			
+
 			final Vector<PolygonNode> nodes = polygon.getPoints();
 			assertEquals(2, nodes.size());
-			
+
 			assertEquals("1", nodes.get(0).getName());
 			WorldLocation loc = nodes.get(0).getLocation();
 			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
 			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-			
+
 			assertEquals("2", nodes.get(1).getName());
 			loc = nodes.get(1).getLocation();
 			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
-		
+
 		public void testExport()
 		{
 			final String line = ";POLY: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
@@ -443,6 +454,5 @@ class ImportPolygon implements PlainLineImporter
 			assertEquals(line, ip.exportThis(sw));
 		}
 	}
-
 
 }
