@@ -324,6 +324,12 @@ public class DataSupport
 		}
 	}
 	
+	/**
+	 * Deletes any sensor data that is outside the start/finish period 
+	 * of the primary track.
+	 * @param primary
+	 * @param index
+	 */
 	public static void trimToTrackPeriod(final TrackWrapper primary,
 			final HashMap<SensorWrapper, SensorSeries> index)
 	{
@@ -343,6 +349,54 @@ public class DataSupport
 			{
 				thisS.setVisible(false);
 			}
+		}
+	}
+	
+	/**
+	 * Deletes all blocks of sensor data that are more than 45 degrees from an
+	 * secondary track.
+	 */
+	public static void trimToSensorNearSubjectTracks(final TrackWrapper primary,
+			final WatchableList[] secondaries,
+			final HashMap<SensorWrapper, SensorSeries> index)
+	{
+		if (primary == null || secondaries == null || index == null)
+			return;
+		
+		final Iterator<SensorWrapper> sensors = index.keySet().iterator();
+		// loop through all sensors:
+		while(sensors.hasNext())
+		{
+			final SensorWrapper sensor = sensors.next();
+			final Enumeration<Editable> contacts = sensor.elements();
+			// loop though the individual sensor contact objects
+			while (contacts.hasMoreElements())
+			{
+				final SensorContactWrapper contact = (SensorContactWrapper) contacts.nextElement();
+				final HiResDate contactTime = contact.getDTG();
+				// loop through each secondary track
+				for (int i = 0; i < secondaries.length; i++)
+				{
+					final WatchableList thisS = secondaries[i];
+					
+					final Watchable[] secondaryFixes = thisS.getNearestTo(contactTime);
+					final Watchable[] primaryFixes = primary.getNearestTo(contactTime);
+					double bearing = 0;
+					if (secondaryFixes != null && secondaryFixes.length > 0)
+					{
+						if(primaryFixes != null && primaryFixes.length > 0)
+						{
+							//FIXME:
+							bearing = secondaryFixes[0].getLocation()
+									.bearingFrom(primaryFixes[0].getLocation()); 
+						}
+					}
+					if (Math.abs(contact.getBearing() - bearing) > 45)
+					{
+						sensor.setVisible(false);
+					}
+				}
+			} // end loop through sensor contacts
 		}
 	}
 
