@@ -13,6 +13,12 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -23,6 +29,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -186,6 +193,7 @@ public class VideoPlayerView extends ViewPart {
 	}
 
 	public void createPartControl(Composite parent) {
+		initDrop(parent);
 		createMainWindow(parent);
 		createActions();
 		fillToolbarManager();
@@ -200,6 +208,74 @@ public class VideoPlayerView extends ViewPart {
 				.getActivePage());
 	}
 	
+	private void initDrop(Control control)
+	{
+		final DropTarget target = new DropTarget(control, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
+		Transfer[] transfers = new Transfer[] {FileTransfer.getInstance()};
+		target.setTransfer(transfers);
+		target.addDropListener(new DropTargetAdapter()
+		{
+			@Override
+			public void dragEnter(DropTargetEvent e)
+			{
+				if (e.detail == DND.DROP_NONE)
+				{
+					e.detail = DND.DROP_LINK;
+				}
+			}
+
+			@Override
+			public void dragOperationChanged(DropTargetEvent e)
+			{
+				if (e.detail == DND.DROP_NONE)
+				{
+					e.detail = DND.DROP_LINK;
+				}
+			}
+
+			@Override
+			public void drop(DropTargetEvent e)
+			{
+				if (e.data == null)
+				{
+					e.detail = DND.DROP_NONE;
+					return;
+				}
+				if (e.data instanceof String[])
+				{
+					String[] fileNames = (String[]) e.data;
+					if (fileNames.length > 0 && fileNames[0] != null
+							&& !fileNames[0].isEmpty())
+					{
+						String fileName = fileNames[0];
+
+						int index = fileName.lastIndexOf(".");
+						if (index >= 0 && new File(fileName).isFile())
+						{
+							String extension = fileName.substring(index + 1);
+							String[] supportedExtensions =
+							{ "avi", "vob", "mp4", "mov", "mpeg", "flv", "mp3", "wma" };
+							boolean supported = false;
+							for (String ext : supportedExtensions)
+							{
+								if (ext.equalsIgnoreCase(extension))
+								{
+									supported = true;
+									break;
+								}
+							}
+							if (supported && !fileName.equals(_selected))
+							{
+								open(fileName);
+							}
+						}
+
+					}
+				}
+			}
+		});
+	}
+
 	private void setupListeners()
 	{
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
