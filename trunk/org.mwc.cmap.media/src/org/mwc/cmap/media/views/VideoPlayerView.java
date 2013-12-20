@@ -11,9 +11,14 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.nebula.widgets.formattedtext.DateTimeFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -24,6 +29,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -80,6 +86,8 @@ public class VideoPlayerView extends ViewPart {
 	
 	private PartMonitor _myPartMonitor;
 	
+	private String _selected;
+	
 	private PropertyChangeListener _propertyChangeListener = new PropertyChangeListener()
 	{
 		
@@ -100,11 +108,9 @@ public class VideoPlayerView extends ViewPart {
 				if (now != null)
 				{
 					Date startDate = (Date) startTime.getValue();
-					
-					int offset = TimeZone.getDefault().getRawOffset();
 					Date date = now.getDate();
 					DateUtils.removeMilliSeconds(date);
-					long millis = date.getTime() - startDate.getTime() - offset;
+					long millis = date.getTime() - startDate.getTime();
 					if (millis < 0) {
 						millis = 0;
 					}
@@ -187,6 +193,7 @@ public class VideoPlayerView extends ViewPart {
 	}
 
 	public void createPartControl(Composite parent) {
+		initDrop(parent);
 		createMainWindow(parent);
 		createActions();
 		fillToolbarManager();
@@ -201,6 +208,74 @@ public class VideoPlayerView extends ViewPart {
 				.getActivePage());
 	}
 	
+	private void initDrop(Control control)
+	{
+		final DropTarget target = new DropTarget(control, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
+		Transfer[] transfers = new Transfer[] {FileTransfer.getInstance()};
+		target.setTransfer(transfers);
+		target.addDropListener(new DropTargetAdapter()
+		{
+			@Override
+			public void dragEnter(DropTargetEvent e)
+			{
+				if (e.detail == DND.DROP_NONE)
+				{
+					e.detail = DND.DROP_LINK;
+				}
+			}
+
+			@Override
+			public void dragOperationChanged(DropTargetEvent e)
+			{
+				if (e.detail == DND.DROP_NONE)
+				{
+					e.detail = DND.DROP_LINK;
+				}
+			}
+
+			@Override
+			public void drop(DropTargetEvent e)
+			{
+				if (e.data == null)
+				{
+					e.detail = DND.DROP_NONE;
+					return;
+				}
+				if (e.data instanceof String[])
+				{
+					String[] fileNames = (String[]) e.data;
+					if (fileNames.length > 0 && fileNames[0] != null
+							&& !fileNames[0].isEmpty())
+					{
+						String fileName = fileNames[0];
+
+						int index = fileName.lastIndexOf(".");
+						if (index >= 0 && new File(fileName).isFile())
+						{
+							String extension = fileName.substring(index + 1);
+							String[] supportedExtensions =
+							{ "avi", "vob", "mp4", "mov", "mpeg", "flv", "mp3", "wma" };
+							boolean supported = false;
+							for (String ext : supportedExtensions)
+							{
+								if (ext.equalsIgnoreCase(extension))
+								{
+									supported = true;
+									break;
+								}
+							}
+							if (supported && !fileName.equals(_selected))
+							{
+								open(fileName);
+							}
+						}
+
+					}
+				}
+			}
+		});
+	}
+
 	private void setupListeners()
 	{
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
@@ -293,7 +368,7 @@ public class VideoPlayerView extends ViewPart {
 		
 		new Label(control, SWT.LEFT).setText("Start time: ");
 		startTime = new FormattedText(control);
-		startTime.setFormatter(new DateTimeFormatter(PlanetmayoFormats.getInstance().getDateFormatPattern()));
+		startTime.setFormatter(PlanetmayoFormats.getInstance().getDateTimeFormatter());
 		startTime.setValue(new Date());
 		startTime.getControl().setEnabled(false);
 		startTime.getControl().addKeyListener(new KeyListener() {
@@ -413,8 +488,12 @@ public class VideoPlayerView extends ViewPart {
 			public void onStop(XugglePlayer player)
 			{
 				super.onStop(player);
-				Date startDate = (Date) startTime.getValue();
-				fireNewTime(new HiResDate(startDate));
+				if (startTime != null && startTime.getControl() != null
+						&& !startTime.getControl().isDisposed())
+				{
+					Date startDate = (Date) startTime.getValue();
+					fireNewTime(new HiResDate(startDate));
+				}
 			}
 			
 			@Override
@@ -435,9 +514,8 @@ public class VideoPlayerView extends ViewPart {
 				scale.setSelection((int) (milli/1000));
 				if ( _timeProvider != null 
 						&& _timeProvider.getPeriod() != null && player.isOpened()) {
-					int offset = TimeZone.getDefault().getRawOffset();
 					Date start = (Date) startTime.getValue();
-					long step = milli + start.getTime() + offset;
+					long step = milli + start.getTime();
 					HiResDate newDTG = new HiResDate(step);
 					if (_timeProvider.getPeriod().contains(newDTG)) {
 						fireNewTime(newDTG);
@@ -463,15 +541,7 @@ public class VideoPlayerView extends ViewPart {
 		        String[] filterExt = { "*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3", "*.wma", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selected = fd.open();
-		        if (selected != null) {
-		        	if (! player.open(selected)) {
-		        		movieOpened(null, null);
-		        		MessageBox message = new MessageBox(getSite().getShell(), SWT.ICON_WARNING | SWT.OK);
-		        		message.setText("Video player: " + new File(selected).getName());
-		        		message.setMessage("This file format isn't supported.");
-		        		message.open();
-		        	}
-		        }
+		        VideoPlayerView.this.open(selected);
 			}
 		};
 		open.setText("Open");
@@ -599,14 +669,36 @@ public class VideoPlayerView extends ViewPart {
 				stretch.setChecked(stretchBool);
 			}
 			if (player.open(memento.getString(STATE_VIDEO_FILE))) {
+				_selected = memento.getString(STATE_VIDEO_FILE);
 				try {
-					player.seek(Long.parseLong(memento.getString(STATE_POSITION)));
+					// Issue #545 - We don't need set position
+					// player.seek(Long.parseLong(memento.getString(STATE_POSITION)));
 					startTime.setValue(new Date(Long.parseLong(memento.getString(STATE_START_TIME))));
 				} catch (NumberFormatException ex) {
 					// can't restore state
-					ex.printStackTrace();					
+					Activator.log(ex);					
 				}
 			}
 		}		
+	}
+
+	public String getSelected()
+	{
+		return _selected;
+	}
+
+	public void open(String selected)
+	{
+		if (selected != null) {
+			if (! player.open(selected)) {
+				movieOpened(null, null);
+				MessageBox message = new MessageBox(getSite().getShell(), SWT.ICON_WARNING | SWT.OK);
+				message.setText("Video player: " + new File(selected).getName());
+				message.setMessage("This file format isn't supported.");
+				message.open();
+			} else {
+				_selected = selected;
+			}
+		}
 	}
 }

@@ -13,11 +13,18 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
@@ -121,6 +128,7 @@ public class ImagesView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		initDrop(parent);
 		createMainWindow(parent);
 		createActions();
 		fillToolbarManager();
@@ -129,6 +137,58 @@ public class ImagesView extends ViewPart {
 		Activator.getDefault().getTimeProvider().addListener(timeListener);
 	}
 	
+	private void initDrop(Control control)
+	{
+		final DropTarget target = new DropTarget(control, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
+		Transfer[] transfers = new Transfer[] {FileTransfer.getInstance()};
+		target.setTransfer(transfers);
+		target.addDropListener(new DropTargetAdapter()
+		{
+			@Override
+			public void dragEnter(DropTargetEvent e)
+			{
+				if (e.detail == DND.DROP_NONE)
+				{
+					e.detail = DND.DROP_LINK;
+				}
+			}
+
+			@Override
+			public void dragOperationChanged(DropTargetEvent e)
+			{
+				if (e.detail == DND.DROP_NONE)
+				{
+					e.detail = DND.DROP_LINK;
+				}
+			}
+
+			@Override
+			public void drop(DropTargetEvent e)
+			{
+				if (e.data == null)
+				{
+					e.detail = DND.DROP_NONE;
+					return;
+				}
+				if (e.data instanceof String[])
+				{
+					String[] fileNames = (String[]) e.data;
+					if (fileNames.length > 0 && fileNames[0] != null
+							&& !fileNames[0].isEmpty())
+					{
+						String fileName = fileNames[0];
+						if (!fileName.equals(openedFolder)
+								&& new File(fileName).isDirectory())
+						{
+							openFolder(fileName);
+						}
+
+					}
+				}
+			}
+		});
+	}
+
 	private void createMainWindow(Composite parent) {
 		main = parent;
 		modeLayout = new StackLayout();
@@ -284,7 +344,7 @@ public class ImagesView extends ViewPart {
 		menu.add(refresh);
 	}	
 	
-	private boolean openFolder(String folderName) {
+	public boolean openFolder(String folderName) {
 		this.openedFolder = folderName;
 		loadedGallery = false;
 		gallery.removeAll();
@@ -373,15 +433,16 @@ public class ImagesView extends ViewPart {
 		}
 		if (memento.getString(STATE_FOLDER) != null) {
 			openFolder(memento.getString(STATE_FOLDER));
-			if (memento.getString(STATE_SELECTED_IMAGE) != null) {
-				String selectedImage = memento.getString(STATE_SELECTED_IMAGE);
-				for (int i = 0; i < images.size(); i++) {
-					if (images.get(i).getFileName().equals(selectedImage)) {
-						selectImage(i);
-						break;
-					}
-				}
-			}
+			// Issue #545 - we don't need select a image
+//			if (memento.getString(STATE_SELECTED_IMAGE) != null) {
+//				String selectedImage = memento.getString(STATE_SELECTED_IMAGE);
+//				for (int i = 0; i < images.size(); i++) {
+//					if (images.get(i).getFileName().equals(selectedImage)) {
+//						selectImage(i);
+//						break;
+//					}
+//				}
+//			}
 		}
 	}
 	
@@ -447,5 +508,10 @@ public class ImagesView extends ViewPart {
 				return 1;
 			}
 		}
+	}
+
+	public String getOpenedFolder()
+	{
+		return this.openedFolder;
 	}
 }
