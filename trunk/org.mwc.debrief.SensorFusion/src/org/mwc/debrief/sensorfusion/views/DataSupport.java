@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -320,6 +321,28 @@ public class DataSupport
 
 			if (!series.isEmpty())
 				newData.addSeries(series);
+		}
+	}
+	
+	public static void trimToTrackPeriod(final TrackWrapper primary,
+			final HashMap<SensorWrapper, SensorSeries> index)
+	{
+		final HiResDate startPeriod = primary.getStartDTG();
+		final HiResDate finishPeriod = primary.getEndDTG();		
+		final Iterator<SensorWrapper> sensors = index.keySet().iterator();
+		while(sensors.hasNext())
+		{
+			final SensorWrapper thisS = sensors.next();
+			final HiResDate startDTG = thisS.getStartDTG();
+			final HiResDate endDTG = thisS.getEndDTG();
+			if (startPeriod.compareTo(startDTG) < 0)
+			{
+				thisS.setVisible(false);				
+			}
+			if(finishPeriod.compareTo(endDTG) > 0)
+			{
+				thisS.setVisible(false);
+			}
 		}
 	}
 
