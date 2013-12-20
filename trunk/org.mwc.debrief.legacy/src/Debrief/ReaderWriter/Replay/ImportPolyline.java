@@ -27,6 +27,9 @@ final class ImportPolyline extends ImportPolygon
 	{
 		final PolygonShape ps = new PolygonShape(nodes);
 		ps.setClosed(false);
+		// these polylines  frequently have lots and lots of points. Better switch
+		// labels off.
+		ps.setShowNodeLabels(false);
 		return ps;
 	}
 	
