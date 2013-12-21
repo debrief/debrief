@@ -92,6 +92,10 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	protected ISelectionProvider _currentProvider;
 
 	private Action _doSplit;
+	
+	private Action _trimToTrack;
+	
+	private Action _trimToSubjectTracks;
 
 	/**
 	 * The constructor.
@@ -476,6 +480,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		final IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(_useOriginalColors);
 		bars.getToolBarManager().add(_doSplit);
+		bars.getToolBarManager().add(_trimToTrack);
+		bars.getToolBarManager().add(_trimToSubjectTracks);
 		// and the help link
 		bars.getToolBarManager().add(new Separator());
 		bars.getToolBarManager().add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData", null, this));
@@ -509,6 +515,32 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		};
 		_doSplit.setImageDescriptor(Activator
 				.getImageDescriptor("icons/scissors.png"));
+		
+		_trimToTrack = new Action("Trim to track period", SWT.NONE)
+		{
+			@Override
+			public void run()
+			{
+				trimToTrack();
+			}
+
+		};
+		// TODO: new icon
+		_trimToTrack.setImageDescriptor(Activator
+				.getImageDescriptor("icons/scissors.png"));
+		
+		_trimToSubjectTracks = new Action("Trim to sensor data near subject tracks", SWT.NONE)
+		{
+			@Override
+			public void run()
+			{
+				trimToSubjectTracks();
+			}
+
+		};
+		// TODO: new icon
+		_trimToSubjectTracks.setImageDescriptor(Activator
+				.getImageDescriptor("icons/scissors.png"));
 	}
 
 	protected void splitTracks()
@@ -526,6 +558,37 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				// ok, fire off a layers extended event to share the good news
 				if (_currentLayers != null)
 					_currentLayers.fireModified(primary);
+			}
+		}
+	}
+	
+	protected void trimToTrack()
+	{
+		// ok, go get the primary track
+		if (_trackData != null)
+		{
+			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
+			DataSupport.trimToTrackPeriod(primary, _trackIndex);
+			// ok, fire off a layers extended event to share the good news
+			if (_currentLayers != null)
+				// TODO: is this enough?
+				_currentLayers.fireModified(primary);				
+		}
+	}
+	
+	protected void trimToSubjectTracks()
+	{
+		// ok, go get the primary track
+		if (_trackData != null)
+		{
+			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
+			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
+			DataSupport.trimToSensorNearSubjectTracks(primary, secondaries, _trackIndex);
+			// ok, fire off a layers extended event to share the good news
+			if (_currentLayers != null)
+			{
+				// TODO: is this enough?
+				_currentLayers.fireModified(primary);				
 			}
 		}
 	}
