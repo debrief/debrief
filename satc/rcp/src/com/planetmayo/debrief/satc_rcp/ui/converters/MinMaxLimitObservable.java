@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc_rcp.ui.converters;
 
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.Diffs;
 import org.eclipse.core.databinding.observable.DisposeEvent;
@@ -12,13 +13,12 @@ import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 
 import com.planetmayo.debrief.satc.util.ObjectUtils;
-import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
 public class MinMaxLimitObservable extends AbstractObservableValue
 {
 	private IObservableValue minObservable;
 	private IObservableValue maxObservable;
-	private UnitConverter siConverter;
+	private IConverter converter;
 	private PrivateInterface privateInterface;
 	private Object cachedValue;
 	private boolean updating;
@@ -51,13 +51,13 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 		this(minObservable, maxObservable, null);
 	}
 	
-	public MinMaxLimitObservable(IObservableValue minObservable,
-			IObservableValue maxObservable, UnitConverter siConverter) 
+	public MinMaxLimitObservable(IObservableValue minObservable, 
+			IObservableValue maxObservable, IConverter converter) 
 	{
 		super(minObservable.getRealm());
 		this.minObservable = minObservable;
 		this.maxObservable = maxObservable;
-		this.siConverter = siConverter;
+		this.converter = converter;
 		this.intervalMode = minObservable != null && maxObservable != null; 
 				
 		privateInterface = new PrivateInterface();
@@ -128,15 +128,25 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 		}
 		if (minValue != null) 
 		{
-			minValue = siConverter == null ? ((Number) minValue).intValue() : 
-				siConverter.getModelToUI().convert(minValue);
-			minString = minValue.toString();
+			if (converter != null)
+			{
+				minString = converter.convert(minValue).toString();
+			}
+			else 
+			{
+				minString = "" + ((Number) minValue).intValue();
+			}
 		}
 		if (maxValue != null) 
 		{
-			maxValue = siConverter == null ? ((Number) maxValue).intValue() : 
-				siConverter.getModelToUI().convert(maxValue);			
-			maxString = maxValue.toString();
+			if (converter != null)
+			{
+				maxString = converter.convert(maxValue).toString();
+			}
+			else 
+			{
+				maxString = "" + ((Number) maxValue).intValue();
+			}
 		}
 		if (! intervalMode) 
 		{

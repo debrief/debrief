@@ -1,9 +1,9 @@
 package com.planetmayo.debrief.satc_rcp.ui.converters.units;
 
-public enum UnitConverter
+public class UnitConverter
 {
-	SPEED_KTS(new MSecToKts(), new KtsToMSec()),
-	ANGLE_DEG(new RadsToDeg(), new DegToRads());
+	public static final UnitConverter SPEED_KTS = new UnitConverter(new MSecToKts(), new KtsToMSec());
+	public static final UnitConverter ANGLE_DEG = new UnitConverter(new RadsToDeg(), new DegToRads());
 	
 	private final AbstractUnitConverter modelToUI;
 	private final AbstractUnitConverter uiToModel;
@@ -21,6 +21,14 @@ public enum UnitConverter
 	public AbstractUnitConverter getUIToModel()
 	{
 		return uiToModel;
+	}
+	
+	public static UnitConverter scale(UnitConverter converter, double scale)
+	{
+		return new UnitConverter(
+				new ScaleConverter(converter.getModelToUI(), scale), 
+				new ScaleConverter(converter.getUIToModel(), 1 / scale)
+		);
 	}
 	
 }

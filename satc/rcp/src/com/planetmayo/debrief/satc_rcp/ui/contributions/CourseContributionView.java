@@ -9,6 +9,8 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.CompoundConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.IntegerConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
@@ -38,7 +40,7 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 		IObservableValue maxCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MAX_COURSE);		
 		MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(minCourseValue, 
-				maxCourseValue, UnitConverter.ANGLE_DEG);
+				maxCourseValue, new CompoundConverter(UnitConverter.ANGLE_DEG.getModelToUI(), new IntegerConverter()));
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelConverter);
 		bindCommonDates(context);
 		

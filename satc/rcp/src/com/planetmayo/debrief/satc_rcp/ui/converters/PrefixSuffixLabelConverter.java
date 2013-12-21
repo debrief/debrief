@@ -1,5 +1,8 @@
 package com.planetmayo.debrief.satc_rcp.ui.converters;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import org.eclipse.core.databinding.conversion.IConverter;
 
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.AbstractUnitConverter;
@@ -8,6 +11,7 @@ public class PrefixSuffixLabelConverter implements IConverter, Cloneable
 {
 	private AbstractUnitConverter nestedUnitConverter;
 
+	private final NumberFormat numberFormat;
 	private final Class<?> fromType;
 	private final String prefix;
 	private final String suffix;
@@ -25,10 +29,17 @@ public class PrefixSuffixLabelConverter implements IConverter, Cloneable
 	public PrefixSuffixLabelConverter(Class<?> fromType, String prefix,
 			String suffix)
 	{
+		this(fromType, prefix, suffix, new DecimalFormat("0"));
+	}
+	
+	public PrefixSuffixLabelConverter(Class<?> fromType, String prefix,
+			String suffix, NumberFormat numberFormat)
+	{
 		this.fromType = fromType;
 		this.prefix = prefix;
 		this.suffix = suffix;
-	}
+		this.numberFormat = numberFormat;
+	}	
 
 	@Override
 	public Object convert(Object from)
@@ -42,7 +53,7 @@ public class PrefixSuffixLabelConverter implements IConverter, Cloneable
 			if (getNestedUnitConverter() != null) {
 				from = getNestedUnitConverter().convert(from);
 			}			
-			from = ((Number) from).intValue();
+			from = numberFormat.format((Number) from);
 		}
 		return prefix + from + suffix;
 	}

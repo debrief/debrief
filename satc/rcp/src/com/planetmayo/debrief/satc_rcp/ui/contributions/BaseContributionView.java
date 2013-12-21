@@ -38,6 +38,8 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.CompoundConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.IntegerConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.NullToBooleanConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
@@ -136,9 +138,14 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 		if (unitConverter != null)
 		{
+			IConverter modelToUI = new CompoundConverter(
+					unitConverter.getModelToUI(),
+					new IntegerConverter()
+			);
 			context.bindValue(sliderValue, uiProxy,
 					UIUtils.converterStrategy(unitConverter.getUIToModel()),
-					UIUtils.converterStrategy(unitConverter.getModelToUI()));
+					UIUtils.converterStrategy(modelToUI)
+			);
 		}
 		else
 		{

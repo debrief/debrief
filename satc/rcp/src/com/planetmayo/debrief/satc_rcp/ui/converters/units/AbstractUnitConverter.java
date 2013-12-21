@@ -20,21 +20,18 @@ public abstract class AbstractUnitConverter implements IConverter
 			return null;
 		}		
 		Double result = safeConvert((Number) obj);
-		if (isModelToUI) {
-			return result.intValue();
-		}
 		return result;
 	}
 
 	@Override
 	public Object getFromType()
 	{
-		return isModelToUI ? Double.class : Integer.class;
+		return Number.class;
 	}
 
 	@Override
 	public Object getToType()
 	{
-		return isModelToUI ? Integer.class : Double.class;
+		return Double.class;
 	}	
 }
