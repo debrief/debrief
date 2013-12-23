@@ -14,6 +14,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
@@ -22,13 +23,19 @@ import org.jfree.ui.RectangleInsets;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 
 public class DataSupport
 {
@@ -341,11 +348,11 @@ public class DataSupport
 			final SensorWrapper thisS = sensors.next();
 			final HiResDate startDTG = thisS.getStartDTG();
 			final HiResDate endDTG = thisS.getEndDTG();
-			if (startPeriod.compareTo(startDTG) < 0)
+			if (startPeriod.compareTo(startDTG) > 0)
 			{
 				thisS.setVisible(false);				
 			}
-			if(finishPeriod.compareTo(endDTG) > 0)
+			if(finishPeriod.compareTo(endDTG) < 0)
 			{
 				thisS.setVisible(false);
 			}
@@ -422,6 +429,98 @@ public class DataSupport
 				.getDate().getTime()), val, color, connectToPrevious, null);
 
 		return cd;
+	}
+	
+	static public final class DataSupportTest extends junit.framework.TestCase
+	{
+		private HashMap<SensorWrapper, SensorSeries> _trackIndex;
+		private TimeSeriesCollection _timeData;
+		private TrackWrapper _primary;
+		private SensorWrapper _sw1;
+		private SensorWrapper _sw2;
+		
+		public void setUp()
+		{
+			_trackIndex = new HashMap<SensorWrapper, SensorSeries>();
+			_timeData = new TimeSeriesCollection();
+			_primary = getDummyTrack();
+		}
+		
+		private TrackWrapper getDummyTrack()
+		{
+			final TrackWrapper tw = new TrackWrapper();
+		
+			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
+			fw1.setLabel("fw1");
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
+			fw2.setLabel("fw2");
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
+			fw3.setLabel("fw3");
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+					loc_1.add(new WorldVector(33, new WorldDistance(400,
+							WorldDistance.METRES), null)), 40, 140));
+			fw4.setLabel("fw4");
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+					loc_1.add(new WorldVector(33, new WorldDistance(500,
+							WorldDistance.METRES), null)), 50, 150));
+			fw5.setLabel("fw5");
+			tw.addFix(fw1);
+			tw.addFix(fw2);
+			tw.addFix(fw3);
+			tw.addFix(fw4);
+			tw.addFix(fw5);
+			// also give it some sensor data
+			_sw1 = new SensorWrapper("title one");
+			_sw1.setVisible(true);
+			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+					new HiResDate(150, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
+					new HiResDate(180, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
+					new HiResDate(250, 0), null, null, null, null, null, 0, null);
+			_sw1.add(scwa1);
+			_sw1.add(scwa2);
+			_sw1.add(scwa3);
+			tw.add(_sw1);
+			_sw2 = new SensorWrapper("title two");
+			_sw2.setVisible(true);
+			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
+					new HiResDate(260, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
+					new HiResDate(280, 0), null, null, null, null, null, 0, null);
+			// this is than the track finish
+			final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
+					new HiResDate(650, 0), null, null, null, null, null, 0, null);
+			_sw2.add(scw1);
+			_sw2.add(scw2);
+			_sw2.add(scw3);
+			tw.add(_sw2);		
+		
+			return tw;
+		}
+
+		
+		public void testTrimToTrackPeriod()
+		{
+			TrackWrapper[] secondaries = new TrackWrapper[0];
+			
+			DataSupport.tracksFor(_primary, secondaries, _timeData);
+
+			DataSupport.sensorDataFor(_primary, _timeData, _trackIndex);
+			
+			assertTrue(_sw1.getVisible());
+			assertTrue(_sw2.getVisible());
+			DataSupport.trimToTrackPeriod(_primary, _trackIndex);
+			assertTrue(_sw1.getVisible());
+			assertFalse(_sw2.getVisible());
+		}
 	}
 
 }
