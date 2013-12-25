@@ -14,7 +14,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.FixedMillisecond;
-import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
@@ -23,10 +22,7 @@ import org.jfree.ui.RectangleInsets;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
-import Debrief.Wrappers.TMAContactWrapper;
-import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
@@ -350,7 +346,9 @@ public class DataSupport
 			final HiResDate endDTG = thisS.getEndDTG();
 			if (startPeriod.compareTo(startDTG) > 0)
 			{
-				thisS.setVisible(false);				
+				thisS.setVisible(false);	
+				System.out.println(thisS.getName());
+				continue;
 			}
 			if(finishPeriod.compareTo(endDTG) < 0)
 			{
@@ -393,12 +391,12 @@ public class DataSupport
 					{
 						if(primaryFixes != null && primaryFixes.length > 0)
 						{
-							//FIXME:
-							bearing = secondaryFixes[0].getLocation()
-									.bearingFrom(primaryFixes[0].getLocation()); 
+							WorldLocation wl1 = secondaryFixes[0].getLocation();
+							WorldLocation wl2 = primaryFixes[0].getLocation();
+							bearing = wl1.bearingFrom(wl2); 
 						}
 					}
-					if (Math.abs(contact.getBearing() - bearing) > 45)
+					if (Math.abs(contact.getBearing() - bearing) > 45*Math.PI/180)
 					{
 						sensor.setVisible(false);
 					}
@@ -443,10 +441,10 @@ public class DataSupport
 		{
 			_trackIndex = new HashMap<SensorWrapper, SensorSeries>();
 			_timeData = new TimeSeriesCollection();
-			_primary = getDummyTrack();
+			_primary = getDummyPrimary();
 		}
 		
-		private TrackWrapper getDummyTrack()
+		private TrackWrapper getDummyPrimary()
 		{
 			final TrackWrapper tw = new TrackWrapper();
 		
@@ -480,11 +478,11 @@ public class DataSupport
 			_sw1 = new SensorWrapper("title one");
 			_sw1.setVisible(true);
 			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
-					new HiResDate(150, 0), null, null, null, null, null, 0, null);
+					new HiResDate(150, 0), null, new Double(15), null, null, null, 0, null);
 			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
-					new HiResDate(180, 0), null, null, null, null, null, 0, null);
+					new HiResDate(180, 0), null, new Double(15), null, null, null, 0, null);
 			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
-					new HiResDate(250, 0), null, null, null, null, null, 0, null);
+					new HiResDate(250, 0), null, new Double(15), null, null, null, 0, null);
 			_sw1.add(scwa1);
 			_sw1.add(scwa2);
 			_sw1.add(scwa3);
@@ -495,7 +493,7 @@ public class DataSupport
 					new HiResDate(260, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
 					new HiResDate(280, 0), null, null, null, null, null, 0, null);
-			// this is than the track finish
+			// this time is greater than the primary track finish period
 			final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
 					new HiResDate(650, 0), null, null, null, null, null, 0, null);
 			_sw2.add(scw1);
@@ -505,11 +503,44 @@ public class DataSupport
 		
 			return tw;
 		}
+		
+		private TrackWrapper getDummySecondary()
+		{
+			final TrackWrapper tw = new TrackWrapper();
+		
+			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
+			fw1.setLabel("fw1");
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
+			fw2.setLabel("fw2");
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33+200, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
+			fw3.setLabel("fw3");
+			
+			tw.addFix(fw1);
+			tw.addFix(fw2);
+			tw.addFix(fw3);
+		
+			return tw;
+		}
+		
+		private TrackWrapper[] getDummyTracks()
+		{
+			final TrackWrapper[] tracks = new TrackWrapper[1];
+			final TrackWrapper track = getDummySecondary();
+			tracks[0] = track;
+			return tracks;
+		}
 
 		
 		public void testTrimToTrackPeriod()
 		{
-			TrackWrapper[] secondaries = new TrackWrapper[0];
+			final TrackWrapper[] secondaries = new TrackWrapper[0];
 			
 			DataSupport.tracksFor(_primary, secondaries, _timeData);
 
@@ -520,6 +551,21 @@ public class DataSupport
 			DataSupport.trimToTrackPeriod(_primary, _trackIndex);
 			assertTrue(_sw1.getVisible());
 			assertFalse(_sw2.getVisible());
+		}
+		
+		public void testTrimToSensorNearSubjectTracks()
+		{
+			final TrackWrapper[] secondaries = getDummyTracks();
+			
+			DataSupport.tracksFor(_primary, secondaries, _timeData);
+
+			DataSupport.sensorDataFor(_primary, _timeData, _trackIndex);
+			
+			assertTrue(_sw1.getVisible());
+			assertTrue(_sw2.getVisible());
+			DataSupport.trimToSensorNearSubjectTracks(_primary, secondaries, _trackIndex);
+			assertFalse(_sw1.getVisible());
+			assertTrue(_sw2.getVisible());
 		}
 	}
 
