@@ -571,7 +571,6 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			DataSupport.trimToTrackPeriod(primary, _trackIndex);
 			// ok, fire off a layers extended event to share the good news
 			if (_currentLayers != null)
-				// TODO: is this enough?
 				_currentLayers.fireModified(primary);				
 		}
 	}
@@ -587,7 +586,6 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			// ok, fire off a layers extended event to share the good news
 			if (_currentLayers != null)
 			{
-				// TODO: is this enough?
 				_currentLayers.fireModified(primary);				
 			}
 		}
