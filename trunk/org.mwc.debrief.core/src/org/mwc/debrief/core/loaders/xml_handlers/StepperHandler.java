@@ -54,6 +54,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 	private static final String ARCS_FINISH = "Arc_Finish";
 
 	private static final String SHADE_ARCS = "ShadeArcs";
+	private static final String JUST_PRIMARY = "JustPrimary";
 
 	private static final String RADIUS = "Radius";
 
@@ -341,6 +342,10 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			if (fillRings != null)
 				rr.setFillArcs(Boolean.valueOf(fillRings));
 
+			final String justPrimary = (String) details.properties.get(JUST_PRIMARY);
+			if (justPrimary != null)
+				rr.setJustPlotPrimary(Boolean.valueOf(justPrimary));
+
 			final String useTrackColor = (String) details.properties.get(USE_TRACK_COLOR);
 			if (useTrackColor != null)
 				rr.setUseCurrentTrackColor(Boolean.valueOf(useTrackColor));
@@ -525,6 +530,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			details.addProperty(NUM_RINGS,
 					MWCXMLReader.writeThis(hi.getNumRings().getCurrent()));
 			details.addProperty(SHADE_ARCS, MWCXMLReader.writeThis(hi.getFillArcs()));
+			details.addProperty(JUST_PRIMARY, MWCXMLReader.writeThis(hi.isJustPlotPrimary()));
 			details.addProperty(USE_TRACK_COLOR,
 					MWCXMLReader.writeThis(hi.getUseCurrentTrackColor()));
 
