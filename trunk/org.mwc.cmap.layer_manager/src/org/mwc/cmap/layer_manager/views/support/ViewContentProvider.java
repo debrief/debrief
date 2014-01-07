@@ -22,6 +22,11 @@ import MWC.GUI.*;
  */
 public class ViewContentProvider implements IStructuredContentProvider,	ITreeContentProvider
 {
+	/** set a limit on the limit for which we allow a layer
+	 * to be expanded  
+	 */
+	private static final int MAX_ITEMS = 10000;
+	
 	/**
 	 * the view provider
 	 */
@@ -134,7 +139,19 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 		if (parent instanceof EditableWrapper)
 		{
 			final EditableWrapper pw = (EditableWrapper) parent;
-			res = pw.hasChildren();
+			
+			// special case - only allow the layer to open if it has less than max-items
+			Editable ed = pw.getEditable();
+			if(ed instanceof Plottables)
+			{
+				// get the object as a list
+				Plottables pl = (Plottables) ed;
+				
+				// check if it's a reasonable size
+				res = pl.size() < MAX_ITEMS;
+			}
+			else
+				res = pw.hasChildren();
 		}
 
 		return res;
