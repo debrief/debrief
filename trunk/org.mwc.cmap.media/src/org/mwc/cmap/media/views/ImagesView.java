@@ -1,5 +1,7 @@
 package org.mwc.cmap.media.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +30,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.media.Activator;
 import org.mwc.cmap.media.PlanetmayoFormats;
 import org.mwc.cmap.media.PlanetmayoImages;
@@ -37,9 +43,12 @@ import org.mwc.cmap.media.dialog.ShowImageDialog;
 import org.mwc.cmap.media.gallery.ImageGallery;
 import org.mwc.cmap.media.gallery.ImageGalleryElementsBuilder;
 import org.mwc.cmap.media.time.ITimeListener;
+import org.mwc.cmap.media.utility.DateUtils;
 import org.mwc.cmap.media.views.images.ImageLoader;
 import org.mwc.cmap.media.views.images.ImagePanel;
 import org.mwc.cmap.media.views.images.ThumbnailPackage;
+
+import MWC.GenericData.HiResDate;
 
 public class ImagesView extends ViewPart {
 	private static final String STATE_FULLSIZE = "fullSize";
@@ -71,6 +80,32 @@ public class ImagesView extends ViewPart {
 	
 	private ITimeListener timeListener;
 	
+	private ControllableTime _controllableTime;
+	
+	private TimeProvider _timeProvider;
+	
+	private PartMonitor _myPartMonitor;
+	
+	private PropertyChangeListener _propertyChangeListener = new PropertyChangeListener()
+	{
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			Object newValue = evt.getNewValue();
+			if (newValue instanceof HiResDate)
+			{
+				HiResDate now = (HiResDate) newValue;
+				if (now != null)
+				{
+					long millis = now.getMicros()/1000;
+					selectImage(millis);
+				}
+			}
+		}
+	};
+	private boolean _firingNewTime;
+	
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
@@ -82,25 +117,7 @@ public class ImagesView extends ViewPart {
 				if (src == ImagesView.this || images == null || images.isEmpty()) {
 					return;
 				}
-				ImageMetaData toSelect = new ImageMetaData(null, new Date(millis));
-				int result = Collections.binarySearch(images, toSelect, IMAGES_COMPARATOR);
-				if (result >= 0) {
-					selectImage(result);
-					return;
-				}
-				result = (- (result + 1)) + 1;
-				long nearest = Long.MAX_VALUE;
-				int nearestImage = -1;
-				for (int i = result - 2; i <= result; i++) {
-					if (i >= 0 && i < images.size()) {
-						long distance = toSelect.distance(images.get(i));
-						if (distance < nearest) {
-							nearest = distance;
-							nearestImage = i;
-						}
-					}					
-				}
-				selectImage(nearestImage);				
+				selectImage(millis);				
 			}
 		};		
 	}
@@ -108,8 +125,28 @@ public class ImagesView extends ViewPart {
 	@Override
 	public void dispose() {
 		Activator.getDefault().getTimeProvider().removeListener(timeListener);
+		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
 		gallery.dispose();
 		super.dispose();
+	}
+	
+	public void fireNewTime(final HiResDate dtg)
+	{
+		if (_controllableTime == null) {
+			return;
+		}
+		if (!_firingNewTime)
+		{
+			_firingNewTime = true;
+			try
+			{
+				_controllableTime.setTime(this, dtg, true);
+			}
+			finally
+			{
+				_firingNewTime = false;
+			}
+		}
 	}
 	
 	@Override
@@ -135,6 +172,12 @@ public class ImagesView extends ViewPart {
 		fillMenu();
 		restoreSavedState();
 		Activator.getDefault().getTimeProvider().addListener(timeListener);
+		// and start listing for any part action
+		setupListeners();
+
+		// ok we're all ready now. just try and see if the current part is valid
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+				.getActivePage());
 	}
 	
 	private void initDrop(Control control)
@@ -231,6 +274,7 @@ public class ImagesView extends ViewPart {
 			public void mouseUp(MouseEvent event) {
 				ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel label = (ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel) event.data;
 				long timeToFire = label.getImageMeta().getDate().getTime();
+				fireNewTime(new HiResDate(timeToFire));
 				int index = images.indexOf(label.getImageMeta());
 				Activator.getDefault().getTimeProvider().fireNewTime(ImagesView.this, timeToFire);
 				selectImage(index);				
@@ -514,4 +558,101 @@ public class ImagesView extends ViewPart {
 	{
 		return this.openedFolder;
 	}
+
+	/**
+	 * Select nearest image from the images list based on date in image name
+	 * 
+	 * @param millis
+	 */
+	private void selectImage(long millis)
+	{
+		ImageMetaData toSelect = new ImageMetaData(null, new Date(millis));
+		int result = Collections.binarySearch(images, toSelect, IMAGES_COMPARATOR);
+		if (result >= 0) {
+			selectImage(result);
+			return;
+		}
+		result = (- (result + 1)) + 1;
+		long nearest = Long.MAX_VALUE;
+		int nearestImage = -1;
+		for (int i = result - 2; i <= result; i++) {
+			if (i >= 0 && i < images.size()) {
+				long distance = toSelect.distance(images.get(i));
+				if (distance < nearest) {
+					nearest = distance;
+					nearestImage = i;
+				}
+			}					
+		}
+		selectImage(nearestImage);
+	}
+	
+	private void setupListeners()
+	{
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+
+		_myPartMonitor.addPartListener(ControllableTime.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+
+						if (_controllableTime != part)
+						{
+							// implementation here.
+							final ControllableTime ct = (ControllableTime) part;
+							_controllableTime = ct;
+						}
+					}
+
+				});
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+						if (part == _controllableTime)
+						{
+							_controllableTime = null;
+						}
+					}
+				});
+
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+
+						if (_timeProvider != part)
+						{
+							// implementation here.
+							final TimeProvider tp = (TimeProvider) part;
+							_timeProvider = tp;
+							_timeProvider.addListener(_propertyChangeListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						}
+					}
+
+				});
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+						if (part == _timeProvider)
+						{
+							_timeProvider.removeListener(_propertyChangeListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							_timeProvider = null;
+						}
+					}
+				});
+	}
+
 }
