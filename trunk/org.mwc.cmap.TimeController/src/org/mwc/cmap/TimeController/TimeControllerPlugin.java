@@ -1,12 +1,13 @@
 package org.mwc.cmap.TimeController;
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.ui.plugin.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
-import java.util.*;
 
 /**
  * The main plugin class to be used in the desktop.
