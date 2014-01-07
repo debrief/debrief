@@ -6189,7 +6189,7 @@ and so on....</programlisting></para>
     </chapter>
     <chapter xml:id="ExercisePlanning">
       <title>Exercise planning</title>
-      <sect1>
+      <sect1 xml:id="planning_intro">
         <title>Introduction</title>
         <para>In Spring 2012 Debrief received extensions in order to support <indexterm>
             <primary>Exercise Planning</primary>
@@ -6228,7 +6228,7 @@ and so on....</programlisting></para>
           </variablelist>Thus, changing one of the two named parameters will result in the third
           parameter getting a calculated value.</para>
       </sect1>
-      <sect1>
+      <sect1 xml:id="create_planning">
         <title>Creating tracks</title>
         <para>Newly created planning tracks are created in the centre of the current plot. So, start
           off by navigating to the part of the world where you roughly want your vessel tracks to
@@ -6278,7 +6278,7 @@ and so on....</programlisting></para>
         <para>Once you've created a parent track, next time you can select it from the first dialog
           - after which you just need to specify a leg name,</para>
       </sect1>
-      <sect1>
+      <sect1 xml:id="manipulate_planning">
         <title>Manipulating tracks</title>
         <para>One you've created one or more track legs you can start editing them. There are four
           ways to edit a leg:<variablelist>
@@ -6344,7 +6344,7 @@ and so on....</programlisting></para>
             </varlistentry>
           </variablelist></para>
       </sect1>
-      <sect1>
+      <sect1 xml:id="xy_planning">
         <title>XY plots of planning tracks</title>
         <para>If you're a clever-clogs scientist doing fancy things like producing run-plans that
           have a predictable bearing rate, or range between the participants then this is just up
