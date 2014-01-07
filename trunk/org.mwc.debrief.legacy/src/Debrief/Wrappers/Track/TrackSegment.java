@@ -30,6 +30,7 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -1296,6 +1297,32 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		newTrack.add(this);
 
 		return newTrack;
+	}
+
+	public void trimTo(TimePeriod period)
+	{
+		java.util.SortedSet<Editable> newList = new java.util.TreeSet<Editable>();
+		
+		Iterator<Editable> iter = getData().iterator();
+		while (iter.hasNext())
+		{
+			FixWrapper thisE = (FixWrapper) iter.next();
+			if(period.contains(thisE.getTime()))
+			{
+				newList.add(thisE);
+			}
+		}
+		
+		// clear the existing list
+		super.removeAllElements();
+		
+		// ok, copy over the new list
+		iter = newList.iterator();
+		while (iter.hasNext())
+		{
+			Editable editable = (Editable) iter.next();
+			super.add(editable);
+		}
 	}
 
 }

@@ -3591,4 +3591,37 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	}
 
+	public void trimTo(TimePeriod period)
+	{
+		if (_mySensors != null)
+		{
+			final Enumeration<Editable> iter = _mySensors.elements();
+			while (iter.hasMoreElements())
+			{
+				final SensorWrapper sw = (SensorWrapper) iter.nextElement();
+				sw.trimTo(period);
+			}
+		}
+
+		if (_mySolutions != null)
+		{
+			final Enumeration<Editable> iter = _mySolutions.elements();
+			while (iter.hasMoreElements())
+			{
+				final TMAWrapper sw = (TMAWrapper) iter.nextElement();
+				sw.trimTo(period);
+			}
+		}
+
+		if (_thePositions != null)
+		{
+			final Enumeration<Editable> segments = _thePositions.elements();
+			while (segments.hasMoreElements())
+			{
+				final TrackSegment seg = (TrackSegment) segments.nextElement();
+				seg.trimTo(period);
+			}
+		}
+	}
+
 }

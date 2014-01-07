@@ -978,5 +978,24 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		}, visibleFrequency);
 
 	}
-
+	
+	public void trimTo(TimePeriod period)
+	{
+		java.util.SortedSet<Editable> newList = new java.util.TreeSet<Editable>();
+		
+		Iterator<Editable> iter = _myContacts.iterator();
+		while (iter.hasNext())
+		{
+			PlottableWrapperWithTimeAndOverrideableColor thisE = (PlottableWrapperWithTimeAndOverrideableColor) iter.next();
+			if(period.contains(thisE.getTime()))
+			{
+				newList.add(thisE);
+			}
+		}
+		
+		// ok, copy over the items
+		_myContacts.clear();
+		
+		_myContacts.addAll(newList);
+	}
 }
