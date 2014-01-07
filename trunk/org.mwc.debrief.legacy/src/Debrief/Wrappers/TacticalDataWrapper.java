@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
@@ -184,6 +185,36 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
 		public void testDecimateThroughZero() throws ParseException
 		{
+			final SensorWrapper sw = getList();
+
+			Iterator<Editable> iter = sw._myContacts.iterator();
+			while (iter.hasNext())
+			{
+				final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
+				System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
+			}
+
+			System.out.println("=================");
+
+			assertEquals("correct number before", 7, sw._myContacts.size());
+
+			final Date startDate = DateFormat.getDateTimeInstance().parse(
+					"July 7, 2011 12:34:00 PM GMT");
+
+			sw.decimate(new HiResDate(60000), startDate.getTime());
+
+			assertEquals("correct number of decimated", 6, sw._myContacts.size());
+
+			iter = sw._myContacts.iterator();
+			while (iter.hasNext())
+			{
+				final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
+				System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
+			}
+		}
+
+		private SensorWrapper getList() throws ParseException
+		{
 			final SensorWrapper sw = new SensorWrapper("mySensor");
 
 			SensorContactWrapper scw = new SensorContactWrapper("parent",
@@ -228,31 +259,47 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 					.getTime()), new WorldDistance(2, WorldDistance.NM), 345.1,
 					new WorldLocation(1, 3, 0), Color.RED, "the label", 0, "other label");
 			sw.add(scw);
+			return sw;
+		}
 
-			Iterator<Editable> iter = sw._myContacts.iterator();
-			while (iter.hasNext())
-			{
-				final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
-				System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
-			}
+		public void testTrim() throws ParseException
+		{
+			SensorWrapper ts0 = getList();
+			TimePeriod newP = new TimePeriod.BaseTimePeriod(new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:34:04 PM GMT")),
+					new HiResDate(DateFormat.getDateTimeInstance().parse(
+							"July 7, 2011 12:39:04 PM GMT")));
+			assertEquals("correct len", 7, ts0._myContacts.size());
+			ts0.trimTo(newP);
+			assertEquals("correct new len", 7, ts0._myContacts.size());
 
-			System.out.println("=================");
+			ts0 = getList();
+			newP = new TimePeriod.BaseTimePeriod(new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:34:04 PM GMT")), new HiResDate(
+					DateFormat.getDateTimeInstance()
+							.parse("July 7, 2011 12:35:32 PM GMT")));
+			assertEquals("correct len", 7, ts0._myContacts.size());
+			ts0.trimTo(newP);
+			assertEquals("correct new len", 3, ts0._myContacts.size());
 
-			assertEquals("correct number before", 7, sw._myContacts.size());
+			ts0 = getList();
+			newP = new TimePeriod.BaseTimePeriod(new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:35:32 PM GMT")), new HiResDate(
+					DateFormat.getDateTimeInstance()
+							.parse("July 7, 2011 12:38:18 PM GMT")));
+			assertEquals("correct len", 7, ts0._myContacts.size());
+			ts0.trimTo(newP);
+			assertEquals("correct new len", 4, ts0._myContacts.size());
 
-			final Date startDate = DateFormat.getDateTimeInstance().parse(
-					"July 7, 2011 12:34:00 PM GMT");
+			ts0 = getList();
+			newP = new TimePeriod.BaseTimePeriod(new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:41:04 PM GMT")), new HiResDate(
+					DateFormat.getDateTimeInstance()
+							.parse("July 7, 2012 12:39:04 PM GMT")));
+			assertEquals("correct len", 7, ts0._myContacts.size());
+			ts0.trimTo(newP);
+			assertEquals("correct new len", 0, ts0._myContacts.size());
 
-			sw.decimate(new HiResDate(60000), startDate.getTime());
-
-			assertEquals("correct number of decimated", 6, sw._myContacts.size());
-
-			iter = sw._myContacts.iterator();
-			while (iter.hasNext())
-			{
-				final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
-				System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
-			}
 		}
 
 	}
@@ -978,24 +1025,25 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		}, visibleFrequency);
 
 	}
-	
+
 	public void trimTo(TimePeriod period)
 	{
 		java.util.SortedSet<Editable> newList = new java.util.TreeSet<Editable>();
-		
+
 		Iterator<Editable> iter = _myContacts.iterator();
 		while (iter.hasNext())
 		{
-			PlottableWrapperWithTimeAndOverrideableColor thisE = (PlottableWrapperWithTimeAndOverrideableColor) iter.next();
-			if(period.contains(thisE.getTime()))
+			PlottableWrapperWithTimeAndOverrideableColor thisE = (PlottableWrapperWithTimeAndOverrideableColor) iter
+					.next();
+			if (period.contains(thisE.getTime()))
 			{
 				newList.add(thisE);
 			}
 		}
-		
+
 		// ok, copy over the items
 		_myContacts.clear();
-		
+
 		_myContacts.addAll(newList);
 	}
 }
