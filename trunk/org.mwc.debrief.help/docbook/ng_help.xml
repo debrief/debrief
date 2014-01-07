@@ -2514,6 +2514,34 @@ and so on....</programlisting></para>
               burden of this large operation it isn't possible to <guibutton>Undo</guibutton> the
                 <guibutton>Delete</guibutton> command.</para>
           </warning>
+          <warning>
+            <para>The Layer Manager performs particularly poorly when it has layers that contain 10s
+              of 1000s of entries - sometimes taking several minutes to refresh all of the
+              labels/icons in that layer.  So, if you have a layer that contains more than 10,000
+              items, the Layer Manager will not let you expand it - avoiding the performance issue.
+              If you do have, for example, a track that contains many 10s of thousands of positions
+              in it, then you should reduce the data volume by:<orderedlist>
+                <listitem>
+                  <para>If you need high frequency data, reduce the time period covered by the track
+                    by selecting a reduced <emphasis>Time Period</emphasis> in the <emphasis>Time
+                      Controller</emphasis>, then selecting <indexterm>
+              <primary>Track sections</primary>
+              <secondary>Trim Tracks (to reduce volume)</secondary>
+            </indexterm><guibutton>Trim Tracks to Time
+                      Period</guibutton> from the track's popup menu.  This will reduce all data
+                    points that fall outside the current period indicated in the Time Controller
+                    slider bars</para>
+                </listitem>
+                <listitem>
+                  <para>If you need to cover a long period of time, then select <indexterm>
+              <primary>Track sections</primary>
+              <secondary>Resample (to reduce volume)</secondary>
+            </indexterm><guibutton>Resample
+                      data at xxxx</guibutton>, and select a larger time period (10 mins, 30 mins?).
+                    This will reduce the number of positions in the track.</para>
+                </listitem>
+              </orderedlist>.</para>
+          </warning>
         </sect2>
       </sect1>
 
@@ -6161,7 +6189,7 @@ and so on....</programlisting></para>
     </chapter>
     <chapter xml:id="ExercisePlanning">
       <title>Exercise planning</title>
-      <sect1>
+      <sect1 xml:id="planning_intro">
         <title>Introduction</title>
         <para>In Spring 2012 Debrief received extensions in order to support <indexterm>
             <primary>Exercise Planning</primary>
@@ -6200,7 +6228,7 @@ and so on....</programlisting></para>
           </variablelist>Thus, changing one of the two named parameters will result in the third
           parameter getting a calculated value.</para>
       </sect1>
-      <sect1>
+      <sect1 xml:id="create_planning">
         <title>Creating tracks</title>
         <para>Newly created planning tracks are created in the centre of the current plot. So, start
           off by navigating to the part of the world where you roughly want your vessel tracks to
@@ -6250,7 +6278,7 @@ and so on....</programlisting></para>
         <para>Once you've created a parent track, next time you can select it from the first dialog
           - after which you just need to specify a leg name,</para>
       </sect1>
-      <sect1>
+      <sect1 xml:id="manipulate_planning">
         <title>Manipulating tracks</title>
         <para>One you've created one or more track legs you can start editing them. There are four
           ways to edit a leg:<variablelist>
@@ -6316,7 +6344,7 @@ and so on....</programlisting></para>
             </varlistentry>
           </variablelist></para>
       </sect1>
-      <sect1>
+      <sect1 xml:id="xy_planning">
         <title>XY plots of planning tracks</title>
         <para>If you're a clever-clogs scientist doing fancy things like producing run-plans that
           have a predictable bearing rate, or range between the participants then this is just up

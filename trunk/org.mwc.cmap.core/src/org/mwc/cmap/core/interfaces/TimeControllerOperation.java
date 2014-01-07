@@ -55,6 +55,7 @@ public abstract class TimeControllerOperation
 	 * whether there should just be two sensors on the primary track
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	private final boolean _doubleSensor;
 
 	

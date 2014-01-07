@@ -258,12 +258,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private SelectionAdapter _playListener;
 
-	//private static final Color bColor = new Color(Display.getDefault(), 0, 0, 0);
-	private static final Color bColor = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+	// private static final Color bColor = new Color(Display.getDefault(), 0, 0,
+	// 0);
+	private static final Color bColor = Display.getCurrent().getSystemColor(
+			SWT.COLOR_BLACK);
 
-	private static final Color fColor = new Color(Display.getDefault(), 33, 255, 22);
+	private static final Color fColor = new Color(Display.getDefault(), 33, 255,
+			22);
 
-	private static final Font arialFont = new Font(Display.getDefault(), "Arial", 16, SWT.NONE);
+	private static final Font arialFont = new Font(Display.getDefault(), "Arial",
+			16, SWT.NONE);
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -399,9 +403,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// _timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended",
 		// 16,
 		// SWT.NONE));
-		_timeLabel.setFont(arialFont );
-		_timeLabel.setForeground(fColor );
-		_timeLabel.setBackground(bColor );
+		_timeLabel.setFont(arialFont);
+		_timeLabel.setForeground(fColor);
+		_timeLabel.setBackground(bColor);
 
 		// next create the time slider holder
 		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
@@ -478,7 +482,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	{
 		final FineTuneStepperProps fineTunerProperties = new FineTuneStepperProps(
 				_dtgRangeSlider, doMinVal);
-		final EditableWrapper wrappedEditable = new EditableWrapper(fineTunerProperties);
+		final EditableWrapper wrappedEditable = new EditableWrapper(
+				fineTunerProperties);
 		final StructuredSelection _propsAsSelection1 = new StructuredSelection(
 				wrappedEditable);
 		CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection1,
@@ -528,22 +533,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			public void widgetSelected(final SelectionEvent e)
 			{
 				final boolean playing = _playButton.getSelection();
-				//ImageDescriptor thisD;
+				// ImageDescriptor thisD;
 				if (playing)
 				{
-					//thisD = TimeControllerPlugin
-					//		.getImageDescriptor("icons/media_pause.png");
+					// thisD = TimeControllerPlugin
+					// .getImageDescriptor("icons/media_pause.png");
 					startPlaying();
 					_playButton.setToolTipText(PAUSE_TEXT);
 				}
 				else
 				{
-					//thisD = TimeControllerPlugin
-					//		.getImageDescriptor("icons/media_play.png");
+					// thisD = TimeControllerPlugin
+					// .getImageDescriptor("icons/media_play.png");
 					stopPlaying();
 					_playButton.setToolTipText(PLAY_TEXT);
 				}
-				_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
+				_playButton.setImage(TimeControllerPlugin
+						.getImage("icons/media_play.png"));
 			}
 		};
 		_playButton.addSelectionListener(_playListener);
@@ -568,7 +574,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		eFwd.setToolTipText("Move to end of dataset");
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
-		final GridDataFactory btnGd = GridDataFactory.fillDefaults().grab(true, false);
+		final GridDataFactory btnGd = GridDataFactory.fillDefaults().grab(true,
+				false);
 		btnGd.applyTo(eBwd);
 		btnGd.applyTo(lBwd);
 		btnGd.applyTo(sBwd);
@@ -773,7 +780,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					// extend the slider
 					_slideManager.resetRange(newPeriod.getStartDTG(),
 							newPeriod.getEndDTG());
-					
+
 					// now the slider selector bar thingy
 					Display.getDefault().asyncExec(new Runnable()
 					{
@@ -785,14 +792,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							// and our range selector - first the outer
 							// ranges
 							_dtgRangeSlider.updateOuterRanges(newPeriod);
- 
+
 							// ok - we no longer reset the range limits on a data change,
 							// since it's proving inconvenient to have to reset the sliders
 							// after some data is dropped in.
 
 							// ok, now the user ranges...
-				//			_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
-				//					newPeriod.getEndDTG());
+							// _dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
+							// newPeriod.getEndDTG());
 						}
 					});
 				}
@@ -1408,7 +1415,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 							// and update the slider ranges
 							// do we have start/stop times?
-							final HiResDate startDTG = _myStepperProperties.getSliderStartTime();
+							final HiResDate startDTG = _myStepperProperties
+									.getSliderStartTime();
 							if ((startDTG != null) && (_myTemporalDataset != null))
 							{
 								// cool - update the slider to our data settings
@@ -1461,7 +1469,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// ok, now add the new ones
 		if (_timeOperations != null)
 		{
-			final Iterator<TimeControllerOperation> newOps = _timeOperations.iterator();
+			final Iterator<TimeControllerOperation> newOps = _timeOperations
+					.iterator();
 			while (newOps.hasNext())
 			{
 				final TimeControllerOperation newOp = newOps.next();
@@ -1547,7 +1556,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * 
 	 * @param relProjector
 	 */
-	protected void storeProjectionParent(final RelativeProjectionParent relProjector)
+	protected void storeProjectionParent(
+			final RelativeProjectionParent relProjector)
 	{
 		// ok, this isn't us, is it?
 		if (relProjector != this)
@@ -1648,6 +1658,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		{
 			_myTemporalDataset.removeListener(_temporalListener,
 					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+			_myTemporalDataset.removeListener(_temporalListener,
+					TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
 		}
 	}
 
@@ -1971,7 +1983,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	public void addSelectionChangedListener(final ISelectionChangedListener listener)
+	public void addSelectionChangedListener(
+			final ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
 			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
@@ -2018,7 +2031,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		return _tNowSlider;
 	}
 
-	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(
+			final ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
 	}
@@ -2104,8 +2118,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		menuManager.add(_filterToSelectionAction);
 
 		// now our own menu editor
-		final Action toolboxProperties = new Action("Edit Time controller properties",
-				Action.AS_PUSH_BUTTON)
+		final Action toolboxProperties = new Action(
+				"Edit Time controller properties", Action.AS_PUSH_BUTTON)
 		{
 			public void runWithEvent(final Event event)
 			{
@@ -2154,8 +2168,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// and the range highlighters
 		final SWTPlotHighlighter[] highlighterList = myLayerPainterManager
 				.getHighlighterList();
-		final String curHighlighterName = myLayerPainterManager.getCurrentHighlighter()
-				.getName();
+		final String curHighlighterName = myLayerPainterManager
+				.getCurrentHighlighter().getName();
 
 		// add the items
 		for (int i = 0; i < highlighterList.length; i++)
@@ -2243,7 +2257,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		menuManager.add(displayMenu);
 
 		// ok, what are the painters we know about
-		final TemporalLayerPainter[] painterList = myLayerPainterManager.getPainterList();
+		final TemporalLayerPainter[] painterList = myLayerPainterManager
+				.getPainterList();
 
 		// add the items
 		for (int i = 0; i < painterList.length; i++)
@@ -2270,7 +2285,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					});
 				}
 			};
-			final String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
+			final String descPath = "icons/" + painter.toString().toLowerCase()
+					+ ".gif";
 			changePainter.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 					.getImageDescriptor(descPath));
 
@@ -2299,7 +2315,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				// ok - get the info object for this painter
 				if (currentPainter.hasEditor())
 				{
-					final EditableWrapper pw = new EditableWrapper(currentPainter, _myLayers);
+					final EditableWrapper pw = new EditableWrapper(currentPainter,
+							_myLayers);
 					CorePlugin.editThisInProperties(_selectionListeners,
 							new StructuredSelection(pw), provider, myPart);
 				}
@@ -2376,7 +2393,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	}
 
-	private void setRelativeMode(final boolean primaryCentred, final boolean primaryOriented)
+	private void setRelativeMode(final boolean primaryCentred,
+			final boolean primaryOriented)
 	{
 		_targetProjection.setRelativeMode(primaryCentred, primaryOriented);
 		// and trigger redraw
@@ -2518,7 +2536,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					if (content != null)
 					{
 						final IMarker marker = file.createMarker(IMarker.BOOKMARK);
-						final Map<String, Object> attributes = new HashMap<String, Object>(4);
+						final Map<String, Object> attributes = new HashMap<String, Object>(
+								4);
 						attributes.put(IMarker.MESSAGE, content);
 						attributes.put(IMarker.LOCATION, currentText);
 						attributes.put(IMarker.LINE_NUMBER, "" + tNow);
@@ -2605,7 +2624,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * @param memento
 	 * @throws PartInitException
 	 */
-	public void init(final IViewSite site, final IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento)
+			throws PartInitException
 	{
 
 		super.init(site, memento);
@@ -2642,9 +2662,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		TestCase.assertNotNull("check we have time provider", _myTemporalDataset);
 		TestCase.assertNotNull("check we have period to control",
 				_controllablePeriod);
-		
-		Object oldDtgFormat = _myStepperProperties.getPropertyValue(TimeControlProperties.DTG_FORMAT_ID);
-			
+
+		Object oldDtgFormat = _myStepperProperties
+				.getPropertyValue(TimeControlProperties.DTG_FORMAT_ID);
+
 		try
 		{
 			_myStepperProperties.setPropertyValue(
@@ -2663,8 +2684,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			// find the new time
 			final HiResDate tNew = _myTemporalDataset.getTime();
 
-			TestCase.assertNotSame("time has changed", "" + tNew.getMicros(),
-				"" + tNow.getMicros());
+			TestCase.assertNotSame("time has changed", "" + tNew.getMicros(), ""
+					+ tNow.getMicros());
 
 			// ok, go back to the demanded time (in case we loaded the plot with a
 			// different saved time)
@@ -2675,8 +2696,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 			// check it's what we're expecting
 			TestCase.assertEquals("time is correct", timeStr, "120600:00");
-		
-		} finally
+
+		}
+		finally
 		{
 			_myStepperProperties.setPropertyValue(
 					TimeControlProperties.DTG_FORMAT_ID, oldDtgFormat);

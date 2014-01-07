@@ -26,6 +26,7 @@ import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.ImportAsTrack;
 import org.mwc.debrief.core.ContextOperations.MergeContacts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
+import org.mwc.debrief.core.ContextOperations.TrimTrack;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.osgi.framework.BundleContext;
@@ -186,6 +187,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		RightClickSupport.addRightClickGenerator(new GenerateNewSensorContact());
 		RightClickSupport.addRightClickGenerator(new GenerateNewNarrativeEntry());
 		RightClickSupport.addRightClickGenerator(new ImportAsTrack());
+		RightClickSupport.addRightClickGenerator(new TrimTrack());
 
 
 		// and the Replay importer/exporter (used to export items from the
