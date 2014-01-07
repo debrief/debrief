@@ -1219,6 +1219,12 @@ public class LayerManagerView extends ViewPart
 			// are we tracking new layers?
 			if (_trackNewLayers.isChecked())
 			{
+				// remove old listeners
+				if (_myLayers != null && _myLayersListener != null)
+				{
+					_myLayers.removeDataExtendedListener(_myLayersListener);
+					_myLayers.removeDataReformattedListener(_myLayersListener);
+				}
 				// implementation here.
 				_myLayers = (Layers) part;
 				if (_myLayersListener == null)
