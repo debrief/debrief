@@ -4,7 +4,6 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -21,15 +20,11 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
@@ -174,61 +169,5 @@ public class TrimTrack implements RightClickContextItemGenerator
 			return null;
 		}
 
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-		public final void testInterpolate()
-		{
-			final Layers theLayers = new Layers();
-			final ArrayList<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
-			TrackWrapper track = new TrackWrapper();
-			track.setName("Trk");
-			theLayers.addThisLayer(track);
-			tracks.add(track);
-
-			for (int i = 0; i < 3; i++)
-			{
-				final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0,
-						'W', 0);
-				final Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(0);
-				cal.set(2005, 6, 6, 12, i * 5, 0);
-				final Fix newFix = new Fix(new HiResDate(cal.getTime()), thisLoc, 0, 0);
-
-				final FixWrapper sw = new FixWrapper(newFix);
-				track.add(sw);
-			}
-
-			// ok, now do the interpolation
-			final TrimTrackOperation ct = new TrimTrackOperation("convert it",
-					theLayers, tracks);
-
-			// check we're starting with the right number of items
-			assertEquals("starting with right number", 3, track.numFixes());
-
-			try
-			{
-				ct.execute(null, null);
-			}
-			catch (final ExecutionException e)
-			{
-				fail("Exception thrown");
-			}
-
-			// check we've got the right number of fixes
-			assertEquals("right num of fixes generated", track.numFixes(), 11);
-
-		}
 	}
 }
