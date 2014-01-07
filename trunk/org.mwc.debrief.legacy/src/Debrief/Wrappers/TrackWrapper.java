@@ -35,6 +35,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
@@ -210,8 +211,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param subjects
 	 *          the items to insert.
 	 */
-	public static void groupTracks(final TrackWrapper target, final Layers theLayers,
-			final Layer[] parents, final Editable[] subjects)
+	public static void groupTracks(final TrackWrapper target,
+			final Layers theLayers, final Layer[] parents, final Editable[] subjects)
 	{
 		// ok, loop through the subjects, adding them onto the target
 		for (int i = 0; i < subjects.length; i++)
@@ -1038,8 +1039,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final ComponentConstruct currentNearest, final Layer parentLayer)
+	public void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
+			final Layer parentLayer)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
@@ -1077,8 +1079,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
+	public void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
+			final Layer parentLayer, final Layers theData)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
@@ -2516,13 +2519,15 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	private void paintVectorLabel(final CanvasType dest)
 	{
-		if (getVisible()) {
+		if (getVisible())
+		{
 			final Enumeration<Editable> posis = _thePositions.elements();
 			while (posis.hasMoreElements())
 			{
 				final TrackSegment thisE = (TrackSegment) posis.nextElement();
 				// paint only visible planning segments
-				if ( (thisE instanceof PlanningSegment) && thisE.getVisible()) {
+				if ((thisE instanceof PlanningSegment) && thisE.getVisible())
+				{
 					PlanningSegment ps = (PlanningSegment) thisE;
 					ps.paintLabel(dest);
 				}
@@ -3004,6 +3009,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theVal
 	 *          frequency to use
 	 */
+	@FireExtended
 	public final void setResampleDataAt(final HiResDate theVal)
 	{
 		this._lastDataFrequency = theVal;
@@ -3213,7 +3219,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				final SegmentList list = (SegmentList) thisO;
 				final Collection<Editable> items = list.getData();
-				for (final Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+				for (final Iterator<Editable> iterator = items.iterator(); iterator
+						.hasNext();)
 				{
 					final TrackSegment segment = (TrackSegment) iterator.next();
 					segment.shift(offset);
@@ -3435,14 +3442,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// find out the offset at the split point, so we can initiate it for
 			// the
 			// second part of the track
-			final WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(
-					splitPnt.getDateTimeGroup())[0].getLocation();
-			final WorldVector secondOffset = splitPnt.getLocation().subtract(refTrackLoc);
+			final WorldLocation refTrackLoc = theTMA.getReferenceTrack()
+					.getNearestTo(splitPnt.getDateTimeGroup())[0].getLocation();
+			final WorldVector secondOffset = splitPnt.getLocation().subtract(
+					refTrackLoc);
 
 			// put the lists back into plottable layers
 			final RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1,
 					theTMA.getOffset());
-			final RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
+			final RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2,
+					secondOffset);
 
 			// update the freq's
 			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
@@ -3464,7 +3473,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// find out the offset at the split point, so we can initiate it for
 			// the
 			// second part of the track
-			final Watchable[] matches = this.getNearestTo(splitPnt.getDateTimeGroup());
+			final Watchable[] matches = this
+					.getNearestTo(splitPnt.getDateTimeGroup());
 			final WorldLocation origin = matches[0].getLocation();
 
 			final FixWrapper t1Start = (FixWrapper) p1.first();
@@ -3472,8 +3482,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// put the lists back into plottable layers
 			final AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
 					t1Start.getLocation(), null, null);
-			final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null,
-					null);
+			final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin,
+					null, null);
 
 			// update the freq's
 			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
@@ -3556,7 +3566,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			else
 			{
 				// calculate the course
-				final WorldVector wv = currFw.getLocation().subtract(prevFw.getLocation());
+				final WorldVector wv = currFw.getLocation().subtract(
+						prevFw.getLocation());
 				prevFw.getFix().setCourse(wv.getBearing());
 
 				// calculate the speed
@@ -3564,14 +3575,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				final WorldDistance wd = new WorldDistance(wv);
 				final double distance = wd.getValueIn(WorldDistance.METRES);
 				// get time difference in seconds
-				final long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime()
-						.getMicros()) / 1000000;
+				final long timeDifference = (currFw.getTime().getMicros() - prevFw
+						.getTime().getMicros()) / 1000000;
 
 				// get speed in meters per second and convert it to knots
 				final WorldSpeed speed = new WorldSpeed(distance / timeDifference,
 						WorldSpeed.M_sec);
-				final double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts,
-						speed.getValue());
+				final double knots = WorldSpeed.convert(WorldSpeed.M_sec,
+						WorldSpeed.Kts, speed.getValue());
 				prevFw.setSpeed(knots);
 
 				prevFw = currFw;
