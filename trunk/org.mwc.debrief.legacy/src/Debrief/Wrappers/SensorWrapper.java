@@ -155,6 +155,7 @@ import java.util.SortedSet;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -566,6 +567,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * 
 	 * @param defaultColor
 	 */
+	@FireReformatted
 	public void setDefaultColor(final Color defaultColor)
 	{
 		super.setColor(defaultColor);

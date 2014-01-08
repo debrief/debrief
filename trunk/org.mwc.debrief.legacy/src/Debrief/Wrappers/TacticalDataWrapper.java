@@ -22,7 +22,6 @@ import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
@@ -976,6 +975,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	/**
 	 * the line thickness (convenience wrapper around width)
 	 */
+	@FireReformatted
 	public final void setLineThickness(final int val)
 	{
 		_lineWidth = val;
@@ -988,6 +988,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 *          parameter for setName
 	 */
 	@Override
+	@FireReformatted
 	public final void setName(final String name)
 	{
 		_myName = name;
