@@ -485,4 +485,14 @@ public class SensorMonitor extends ViewPart
 	{
 		_table.setFocus();
 	}
+
+	@Override
+	public void dispose()
+	{
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+		}
+		super.dispose();
+	}
 }

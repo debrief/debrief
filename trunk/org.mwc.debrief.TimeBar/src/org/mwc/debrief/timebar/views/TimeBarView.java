@@ -264,6 +264,10 @@ public class TimeBarView extends ViewPart {
 		_selectionChangeListener = null;
 		
 		clearTimeListener();
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+		}
 	}
 	
 	/**

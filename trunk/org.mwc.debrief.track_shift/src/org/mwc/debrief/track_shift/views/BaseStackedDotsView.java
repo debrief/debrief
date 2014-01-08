@@ -237,6 +237,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			final Action action = iterator.next();
 			toolBarManager.add(action);
 		}
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+		}
 	}
 
 	/**

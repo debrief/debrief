@@ -90,6 +90,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		// ok, now shut down the server-et-al
 		_presenter.disconnect();
 
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+		}
+		
 		return super.preWindowShellClose();
 	}
 
