@@ -789,7 +789,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public void addDataModifiedListener(final DataListener theListener)
 	{
-		_dataModifiedListeners.addElement(theListener);
+		if (!_dataModifiedListeners.contains(theListener))
+		{
+			_dataModifiedListeners.addElement(theListener);
+		}
 	}
 
 	/**
@@ -800,7 +803,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public void addDataExtendedListener(final DataListener theListener)
 	{
-		_dataExtendedListeners.addElement(theListener);
+		if (!_dataExtendedListeners.contains(theListener))
+		{
+			_dataExtendedListeners.addElement(theListener);
+		}
 	}
 
 	/**
@@ -811,7 +817,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public void addDataReformattedListener(final DataListener theListener)
 	{
-		_dataReformattedListeners.addElement(theListener);
+		if (!_dataReformattedListeners.contains(theListener))
+		{
+			_dataReformattedListeners.addElement(theListener);
+		}
 	}
 
 	/**
