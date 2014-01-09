@@ -2,6 +2,7 @@ package org.mwc.debrief.sensorfusion.views;
 
 import java.awt.Color;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,7 +50,8 @@ public class DataSupport
 	public static JFreeChart createChart(final XYDataset dataset)
 	{
 
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Bearing Management", // title
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"Bearing Management", // title
 				"Time", // x-axis label
 				"Bearing", // y-axis label
 				dataset, // data
@@ -67,7 +69,7 @@ public class DataSupport
 		plot.setRangeGridlinePaint(Color.white);
 		plot.setDomainCrosshairVisible(false);
 		plot.setRangeCrosshairVisible(false);
-		
+
 		plot.setOrientation(PlotOrientation.HORIZONTAL);
 
 		final XYItemRenderer r = plot.getRenderer();
@@ -77,7 +79,6 @@ public class DataSupport
 			renderer.setBaseShapesVisible(true);
 			renderer.setBaseShapesFilled(true);
 		}
-
 
 		final DateAxis axis = (DateAxis) plot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm.ss"));
@@ -278,8 +279,8 @@ public class DataSupport
 							final Watchable thisLoc = nearest[0];
 							final WorldVector offset = thisLoc.getLocation().subtract(
 									thisP.getLocation());
-							final double thisVal = MWC.Algorithms.Conversions.Rads2Degs(offset
-									.getBearing());
+							final double thisVal = MWC.Algorithms.Conversions
+									.Rads2Degs(offset.getBearing());
 
 							thisT.add(create(thisP.getTime(), thisVal, thisP.getColor()));
 						}
@@ -292,7 +293,8 @@ public class DataSupport
 	}
 
 	public static void sensorDataFor(final TrackWrapper primary,
-			final TimeSeriesCollection newData, final HashMap<SensorWrapper, SensorSeries> index)
+			final TimeSeriesCollection newData,
+			final HashMap<SensorWrapper, SensorSeries> index)
 	{
 
 		index.clear();
@@ -308,7 +310,8 @@ public class DataSupport
 			index.put(sensor, series);
 			while (cuts.hasMoreElements())
 			{
-				final SensorContactWrapper scw = (SensorContactWrapper) cuts.nextElement();
+				final SensorContactWrapper scw = (SensorContactWrapper) cuts
+						.nextElement();
 				final double thisVal = scw.getBearing();
 
 				// wrap this in a try/catch - in case there are multiple entries
@@ -326,10 +329,11 @@ public class DataSupport
 				newData.addSeries(series);
 		}
 	}
-	
+
 	/**
-	 * Deletes any sensor data that is outside the start/finish period 
-	 * of the primary track.
+	 * Deletes any sensor data that is outside the start/finish period of the
+	 * primary track.
+	 * 
 	 * @param primary
 	 * @param index
 	 */
@@ -337,75 +341,96 @@ public class DataSupport
 			final HashMap<SensorWrapper, SensorSeries> index)
 	{
 		final HiResDate startPeriod = primary.getStartDTG();
-		final HiResDate finishPeriod = primary.getEndDTG();		
+		final HiResDate finishPeriod = primary.getEndDTG();
 		final Iterator<SensorWrapper> sensors = index.keySet().iterator();
-		while(sensors.hasNext())
+		while (sensors.hasNext())
 		{
 			final SensorWrapper thisS = sensors.next();
 			final HiResDate startDTG = thisS.getStartDTG();
 			final HiResDate endDTG = thisS.getEndDTG();
 			if (startPeriod.compareTo(startDTG) > 0)
 			{
-				thisS.setVisible(false);	
+				thisS.setVisible(false);
 				System.out.println(thisS.getName());
 				continue;
 			}
-			if(finishPeriod.compareTo(endDTG) < 0)
+			if (finishPeriod.compareTo(endDTG) < 0)
 			{
 				thisS.setVisible(false);
 			}
 		}
 	}
-	
+
 	/**
 	 * Deletes all blocks of sensor data that are more than 45 degrees from an
 	 * secondary track.
+	 * 
+	 * @return
 	 */
-	public static void trimToSensorNearSubjectTracks(final TrackWrapper primary,
-			final WatchableList[] secondaries,
-			final HashMap<SensorWrapper, SensorSeries> index)
+	public static ArrayList<SensorWrapper> trimToSensorNearSubjectTracks(
+			final TrackWrapper primary, final WatchableList[] secondaries)
 	{
-		if (primary == null || secondaries == null || index == null)
-			return;
-		
-		final Iterator<SensorWrapper> sensors = index.keySet().iterator();
-		// loop through all sensors:
-		while(sensors.hasNext())
+		ArrayList<SensorWrapper> toRemove = new ArrayList<SensorWrapper>();
+
+		if (primary == null || secondaries == null)
+			return toRemove;
+
+		Enumeration<Editable> sensors = primary.getSensors().elements();
+		while (sensors.hasMoreElements())
 		{
-			final SensorWrapper sensor = sensors.next();
-			final Enumeration<Editable> contacts = sensor.elements();
-			// loop though the individual sensor contact objects
-			while (contacts.hasMoreElements())
+			SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+		//	if (sensor.getVisible())
 			{
-				final SensorContactWrapper contact = (SensorContactWrapper) contacts.nextElement();
-				final HiResDate contactTime = contact.getDTG();
-				// loop through each secondary track
-				for (int i = 0; i < secondaries.length; i++)
+				final Enumeration<Editable> contacts = sensor.elements();
+				// loop though the individual sensor contact objects
+				while (sensor != null && (contacts.hasMoreElements()))
 				{
-					final WatchableList thisS = secondaries[i];
-					
-					final Watchable[] secondaryFixes = thisS.getNearestTo(contactTime);
-					final Watchable[] primaryFixes = primary.getNearestTo(contactTime);
-					double bearing = 0;
-					if (secondaryFixes != null && secondaryFixes.length > 0)
+					final SensorContactWrapper contact = (SensorContactWrapper) contacts
+							.nextElement();
+					// check this sensor contact has a bearing
+					if (contact.getHasBearing())
 					{
-						if(primaryFixes != null && primaryFixes.length > 0)
+						final HiResDate contactTime = contact.getDTG();
+						// loop through each secondary track
+						for (int i = 0; i < secondaries.length; i++)
 						{
-							WorldLocation wl1 = secondaryFixes[0].getLocation();
-							WorldLocation wl2 = primaryFixes[0].getLocation();
-							bearing = wl1.bearingFrom(wl2); 
+							final WatchableList thisS = secondaries[i];
+
+							final Watchable[] secondaryFixes = thisS
+									.getNearestTo(contactTime);
+							final Watchable[] primaryFixes = primary
+									.getNearestTo(contactTime);
+							double bearing = 0;
+							if (secondaryFixes != null && secondaryFixes.length > 0)
+							{
+								if (primaryFixes != null && primaryFixes.length > 0)
+								{
+									WorldLocation wl1 = secondaryFixes[0].getLocation();
+									WorldLocation wl2 = primaryFixes[0].getLocation();
+									bearing = wl1.bearingFrom(wl2);
+								}
+							}
+
+							double bearingDelta = contact.getBearing()
+									- Math.toDegrees(bearing);
+							if (Math.abs(bearingDelta) > 45)
+							{
+								// ok, remember we want to forget it
+								toRemove.add(sensor);
+
+								// now clear the sensor, as a marker to move on to the next
+								// sensor
+								sensor = null;
+							}
 						}
-					}
-					if (Math.abs(contact.getBearing() - bearing) > 45*Math.PI/180)
-					{
-						sensor.setVisible(false);
 					}
 				}
 			} // end loop through sensor contacts
 		}
+		return toRemove;
 	}
 
-	private static ColouredDataItem create(final HiResDate hiResDate, 
+	private static ColouredDataItem create(final HiResDate hiResDate,
 			final double thisVal, final Color color)
 	{
 		double val = thisVal;
@@ -423,12 +448,12 @@ public class DataSupport
 			}
 		}
 		_previousVal = val;
-		final ColouredDataItem cd = new ColouredDataItem(new FixedMillisecond(hiResDate
-				.getDate().getTime()), val, color, connectToPrevious, null);
+		final ColouredDataItem cd = new ColouredDataItem(new FixedMillisecond(
+				hiResDate.getDate().getTime()), val, color, connectToPrevious, null);
 
 		return cd;
 	}
-	
+
 	static public final class DataSupportTest extends junit.framework.TestCase
 	{
 		private HashMap<SensorWrapper, SensorSeries> _trackIndex;
@@ -436,18 +461,18 @@ public class DataSupport
 		private TrackWrapper _primary;
 		private SensorWrapper _sw1;
 		private SensorWrapper _sw2;
-		
+
 		public void setUp()
 		{
 			_trackIndex = new HashMap<SensorWrapper, SensorSeries>();
 			_timeData = new TimeSeriesCollection();
 			_primary = getDummyPrimary();
 		}
-		
+
 		private TrackWrapper getDummyPrimary()
 		{
 			final TrackWrapper tw = new TrackWrapper();
-		
+
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 					loc_1.add(new WorldVector(33, new WorldDistance(100,
@@ -478,11 +503,14 @@ public class DataSupport
 			_sw1 = new SensorWrapper("title one");
 			_sw1.setVisible(true);
 			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
-					new HiResDate(150, 0), null, new Double(15), null, null, null, 0, null);
+					new HiResDate(150, 0), null, new Double(15), null, null, null, 0,
+					null);
 			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
-					new HiResDate(180, 0), null, new Double(15), null, null, null, 0, null);
+					new HiResDate(180, 0), null, new Double(15), null, null, null, 0,
+					null);
 			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
-					new HiResDate(250, 0), null, new Double(15), null, null, null, 0, null);
+					new HiResDate(250, 0), null, new Double(150), null, null, null, 0,
+					null);
 			_sw1.add(scwa1);
 			_sw1.add(scwa2);
 			_sw1.add(scwa3);
@@ -499,15 +527,15 @@ public class DataSupport
 			_sw2.add(scw1);
 			_sw2.add(scw2);
 			_sw2.add(scw3);
-			tw.add(_sw2);		
-		
+			tw.add(_sw2);
+
 			return tw;
 		}
-		
+
 		private TrackWrapper getDummySecondary()
 		{
 			final TrackWrapper tw = new TrackWrapper();
-		
+
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 					loc_1.add(new WorldVector(33, new WorldDistance(100,
@@ -518,17 +546,17 @@ public class DataSupport
 							WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
 			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
-					loc_1.add(new WorldVector(33+200, new WorldDistance(300,
+					loc_1.add(new WorldVector(33 + 200, new WorldDistance(300,
 							WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
-			
+
 			tw.addFix(fw1);
 			tw.addFix(fw2);
 			tw.addFix(fw3);
-		
+
 			return tw;
 		}
-		
+
 		private TrackWrapper[] getDummyTracks()
 		{
 			final TrackWrapper[] tracks = new TrackWrapper[1];
@@ -537,35 +565,35 @@ public class DataSupport
 			return tracks;
 		}
 
-		
 		public void testTrimToTrackPeriod()
 		{
 			final TrackWrapper[] secondaries = new TrackWrapper[0];
-			
+
 			DataSupport.tracksFor(_primary, secondaries, _timeData);
 
 			DataSupport.sensorDataFor(_primary, _timeData, _trackIndex);
-			
+
 			assertTrue(_sw1.getVisible());
 			assertTrue(_sw2.getVisible());
 			DataSupport.trimToTrackPeriod(_primary, _trackIndex);
 			assertTrue(_sw1.getVisible());
 			assertFalse(_sw2.getVisible());
 		}
-		
+
 		public void testTrimToSensorNearSubjectTracks()
 		{
 			final TrackWrapper[] secondaries = getDummyTracks();
-			
+
 			DataSupport.tracksFor(_primary, secondaries, _timeData);
 
 			DataSupport.sensorDataFor(_primary, _timeData, _trackIndex);
-			
+
 			assertTrue(_sw1.getVisible());
 			assertTrue(_sw2.getVisible());
-			DataSupport.trimToSensorNearSubjectTracks(_primary, secondaries, _trackIndex);
-			assertFalse(_sw1.getVisible());
-			assertTrue(_sw2.getVisible());
+			ArrayList<SensorWrapper> res = DataSupport.trimToSensorNearSubjectTracks(
+					_primary, secondaries);
+			assertEquals("contains sensors", 1, res.size());
+			assertEquals("correct first sensor", _primary.getSensors().first(), res.get(0));
 		}
 	}
 
