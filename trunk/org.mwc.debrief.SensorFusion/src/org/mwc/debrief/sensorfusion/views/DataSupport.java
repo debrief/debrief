@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -336,29 +335,32 @@ public class DataSupport
 	 * 
 	 * @param primary
 	 * @param index
+	 * @return 
 	 */
-	public static void trimToTrackPeriod(final TrackWrapper primary,
-			final HashMap<SensorWrapper, SensorSeries> index)
+	public static ArrayList<SensorWrapper> trimToTrackPeriod(final TrackWrapper primary)
 	{
+		ArrayList<SensorWrapper> toDelete = new ArrayList<SensorWrapper>();
 		final HiResDate startPeriod = primary.getStartDTG();
 		final HiResDate finishPeriod = primary.getEndDTG();
-		final Iterator<SensorWrapper> sensors = index.keySet().iterator();
-		while (sensors.hasNext())
+		Enumeration<Editable> numer = primary.getSensors().elements();
+		while(numer.hasMoreElements())
 		{
-			final SensorWrapper thisS = sensors.next();
+			final SensorWrapper thisS = (SensorWrapper) numer.nextElement();
 			final HiResDate startDTG = thisS.getStartDTG();
 			final HiResDate endDTG = thisS.getEndDTG();
-			if (startPeriod.compareTo(startDTG) > 0)
+			if (startPeriod.greaterThan(endDTG))
 			{
-				thisS.setVisible(false);
-				System.out.println(thisS.getName());
-				continue;
+				// this sensor is before the track even starts
+				toDelete.add(thisS);
 			}
-			if (finishPeriod.compareTo(endDTG) < 0)
+			if (finishPeriod.lessThan(startDTG))
 			{
-				thisS.setVisible(false);
+				// this sensor is after the track ends
+				toDelete.add(thisS);
 			}
 		}
+		
+		return toDelete;
 	}
 
 	/**
@@ -460,7 +462,8 @@ public class DataSupport
 		private TimeSeriesCollection _timeData;
 		private TrackWrapper _primary;
 		private SensorWrapper _sw1;
-		private SensorWrapper _sw2;
+		private SensorWrapper _sw2a;
+		private SensorWrapper _sw2b;
 
 		public void setUp()
 		{
@@ -515,8 +518,8 @@ public class DataSupport
 			_sw1.add(scwa2);
 			_sw1.add(scwa3);
 			tw.add(_sw1);
-			_sw2 = new SensorWrapper("title two");
-			_sw2.setVisible(true);
+			_sw2a = new SensorWrapper("title two");
+			_sw2a.setVisible(true);
 			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
 					new HiResDate(260, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
@@ -524,10 +527,24 @@ public class DataSupport
 			// this time is greater than the primary track finish period
 			final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
 					new HiResDate(650, 0), null, null, null, null, null, 0, null);
-			_sw2.add(scw1);
-			_sw2.add(scw2);
-			_sw2.add(scw3);
-			tw.add(_sw2);
+			_sw2a.add(scw1);
+			_sw2a.add(scw2);
+			_sw2a.add(scw3);
+			_sw2b = new SensorWrapper("title three");
+			_sw2b.setVisible(true);
+			final SensorContactWrapper scw1b = new SensorContactWrapper("ddd",
+					new HiResDate(760, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scw2b = new SensorContactWrapper("eee",
+					new HiResDate(880, 0), null, null, null, null, null, 0, null);
+			// this time is greater than the primary track finish period
+			final SensorContactWrapper scw3b = new SensorContactWrapper("fff",
+					new HiResDate(950, 0), null, null, null, null, null, 0, null);
+			_sw2b.add(scw1b);
+			_sw2b.add(scw2b);
+			_sw2b.add(scw3b);
+			tw.add(_sw1);
+			tw.add(_sw2a);
+			tw.add(_sw2b);
 
 			return tw;
 		}
@@ -574,10 +591,11 @@ public class DataSupport
 			DataSupport.sensorDataFor(_primary, _timeData, _trackIndex);
 
 			assertTrue(_sw1.getVisible());
-			assertTrue(_sw2.getVisible());
-			DataSupport.trimToTrackPeriod(_primary, _trackIndex);
-			assertTrue(_sw1.getVisible());
-			assertFalse(_sw2.getVisible());
+			assertTrue(_sw2a.getVisible());
+			assertEquals(3,_primary.getSensors().size());
+			ArrayList<SensorWrapper> res = DataSupport.trimToTrackPeriod(_primary);
+			assertNotNull(res);
+			assertEquals(1, res.size());
 		}
 
 		public void testTrimToSensorNearSubjectTracks()
@@ -589,7 +607,7 @@ public class DataSupport
 			DataSupport.sensorDataFor(_primary, _timeData, _trackIndex);
 
 			assertTrue(_sw1.getVisible());
-			assertTrue(_sw2.getVisible());
+			assertTrue(_sw2a.getVisible());
 			ArrayList<SensorWrapper> res = DataSupport.trimToSensorNearSubjectTracks(
 					_primary, secondaries);
 			assertEquals("contains sensors", 1, res.size());
