@@ -1,12 +1,18 @@
 package org.mwc.debrief.sensorfusion.views;
 
 import java.awt.event.InputEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -29,6 +35,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -50,6 +57,92 @@ import MWC.GenericData.WatchableList;
 public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		FusionHelper
 {
+
+	private static class TrimToSubjectOperation extends CMAPOperation
+	{
+
+		final private TrackWrapper _primary;
+		final private WatchableList[] _secondaries;
+		final private Layers _layers;
+		private ArrayList<SensorWrapper> _deletedSensors;
+
+		public TrimToSubjectOperation(TrackWrapper primary,
+				WatchableList[] secondaries, Layers _currentLayers)
+		{
+			super("Trim to sensors that match secondary tracks");
+			_primary = primary;
+			_secondaries = secondaries;
+			_layers = _currentLayers;
+
+		}
+
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
+				throws ExecutionException
+		{
+			_deletedSensors = DataSupport.trimToSensorNearSubjectTracks(_primary,
+					_secondaries);
+
+			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext())
+			{
+				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+				_primary.removeElement(thisSensor);
+			}
+
+			// ok, fire off a layers extended event to share the good news
+			if (_layers != null && !_deletedSensors.isEmpty())
+			{
+				_layers.fireModified(_primary);
+			}
+
+			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
+					"trim sensors successful", null);
+			return res;
+		}
+
+		@Override
+		public boolean canRedo()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean canUndo()
+		{
+			return true;
+		}
+
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			return execute(monitor, info);
+		}
+
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+				throws ExecutionException
+		{
+			// ok, restore the items
+			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext())
+			{
+				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+				_primary.add(thisSensor);
+			}
+
+			// ok, fire off a layers extended event to share the good news
+			if (_layers != null && !_deletedSensors.isEmpty())
+			{
+				_layers.fireModified(_primary);
+			}
+
+			
+			// register success
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
+					null);
+		}
+	}
 
 	private static final String CHART_NAME = "Bearing data";
 
@@ -92,9 +185,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	protected ISelectionProvider _currentProvider;
 
 	private Action _doSplit;
-	
+
 	private Action _trimToTrack;
-	
+
 	private Action _trimToSubjectTracks;
 
 	/**
@@ -125,9 +218,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 						// aah, just check it's not us
 						if (part != getMe())
 						{
-							if(_currentProvider != null)
+							if (_currentProvider != null)
 								stopListeningTo(_currentProvider);
-							
+
 							startListeningTo((ISelectionProvider) part);
 						}
 					}
@@ -193,13 +286,15 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 										recalculateData();
 									}
 
-									public void dataModified(final Layers theData, final Layer changedLayer)
+									public void dataModified(final Layers theData,
+											final Layer changedLayer)
 									{
 										// redo the data
 										recalculateData();
 									}
 
-									public void dataReformatted(final Layers theData, final Layer changedLayer)
+									public void dataReformatted(final Layers theData,
+											final Layer changedLayer)
 									{
 										// redo the presentation
 										redrawPlot();
@@ -267,7 +362,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_currentProvider = null;
 	}
 
-	protected void storeDetails(final TrackManager provider, final IWorkbenchPart parentPart)
+	protected void storeDetails(final TrackManager provider,
+			final IWorkbenchPart parentPart)
 	{
 		// ok, we've got a new plot to watch. better watch it...
 		_trackData = provider;
@@ -328,18 +424,16 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		getSite().setSelectionProvider(_selectionHelper);
 
 		// declare our context sensitive help
-		CorePlugin.declareContextHelp(parent, 
-				"org.mwc.debrief.help.BulkSensorData");
-		
+		CorePlugin
+				.declareContextHelp(parent, "org.mwc.debrief.help.BulkSensorData");
 
-		
 		parent.setLayout(new FillLayout());
 
 		// ok, let's mockup the UI
 		final JFreeChart myChart = DataSupport.createChart(null);
 		myChart.setTitle(CHART_NAME);
 		myChart.getXYPlot().setRenderer(_plotRenderer);
-		
+
 		// and the chart frame
 		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, true);
 		_myChartFrame.setDisplayToolTips(false);
@@ -355,7 +449,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				if (entity instanceof XYItemEntity)
 				{
 					final XYItemEntity xyi = (XYItemEntity) entity;
-					final TimeSeriesCollection coll = (TimeSeriesCollection) xyi.getDataset();
+					final TimeSeriesCollection coll = (TimeSeriesCollection) xyi
+							.getDataset();
 					final TacticalSeries ts = (TacticalSeries) coll
 							.getSeries(((XYItemEntity) entity).getSeriesIndex());
 					if (ts instanceof SensorSeries)
@@ -404,7 +499,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
 
-			@SuppressWarnings({ "rawtypes" })
+			@SuppressWarnings(
+			{ "rawtypes" })
 			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				// right, see what it is
@@ -470,7 +566,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		if (wrappers.size() > 0)
 		{
 			// and provide the selection object
-			final StructuredSelection trackSelection = new StructuredSelection(wrappers);
+			final StructuredSelection trackSelection = new StructuredSelection(
+					wrappers);
 			setSelection(trackSelection);
 		}
 	}
@@ -484,12 +581,25 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		bars.getToolBarManager().add(_trimToSubjectTracks);
 		// and the help link
 		bars.getToolBarManager().add(new Separator());
-		bars.getToolBarManager().add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData", null, this));
+		bars.getToolBarManager().add(
+				CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData",
+						null, this));
+		
+		IMenuManager menu = getViewSite().getActionBars().getMenuManager();
+		menu.add(_useOriginalColors);
+		menu.add(_doSplit);
+		menu.add(_trimToTrack);
+		menu.add(_trimToSubjectTracks);
+		menu.add(new Separator());
+		menu.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData",
+				null, this));
+		
 	}
 
 	private void makeActions()
 	{
-		_useOriginalColors = new Action("Plot tracks using original colors", SWT.TOGGLE)
+		_useOriginalColors = new Action("Plot tracks using original colors",
+				SWT.TOGGLE)
 		{
 			@Override
 			public void run()
@@ -515,7 +625,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		};
 		_doSplit.setImageDescriptor(Activator
 				.getImageDescriptor("icons/scissors.png"));
-		
+
 		_trimToTrack = new Action("Trim to track period", SWT.NONE)
 		{
 			@Override
@@ -528,8 +638,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		// TODO: new icon
 		_trimToTrack.setImageDescriptor(Activator
 				.getImageDescriptor("icons/scissors.png"));
-		
-		_trimToSubjectTracks = new Action("Trim to sensor data near subject tracks", SWT.NONE)
+
+		_trimToSubjectTracks = new Action(
+				"Trim to sensor data near subject tracks", SWT.NONE)
 		{
 			@Override
 			public void run()
@@ -561,7 +672,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			}
 		}
 	}
-	
+
 	protected void trimToTrack()
 	{
 		// ok, go get the primary track
@@ -571,23 +682,22 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			DataSupport.trimToTrackPeriod(primary, _trackIndex);
 			// ok, fire off a layers extended event to share the good news
 			if (_currentLayers != null)
-				_currentLayers.fireModified(primary);				
+				_currentLayers.fireModified(primary);
 		}
 	}
-	
+
 	protected void trimToSubjectTracks()
 	{
+
 		// ok, go get the primary track
 		if (_trackData != null)
 		{
 			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
 			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
-			DataSupport.trimToSensorNearSubjectTracks(primary, secondaries, _trackIndex);
-			// ok, fire off a layers extended event to share the good news
-			if (_currentLayers != null)
-			{
-				_currentLayers.fireModified(primary);				
-			}
+
+			TrimToSubjectOperation op = new TrimToSubjectOperation(primary,
+					secondaries, _currentLayers);
+			CorePlugin.run(op);
 		}
 	}
 
@@ -652,7 +762,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	{
 	}
 
-	public void addSelectionChangedListener(final ISelectionChangedListener listener)
+	public void addSelectionChangedListener(
+			final ISelectionChangedListener listener)
 	{
 		_selectionHelper.addSelectionChangedListener(listener);
 	}
@@ -662,7 +773,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		return _selectionHelper.getSelection();
 	}
 
-	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(
+			final ISelectionChangedListener listener)
 	{
 		_selectionHelper.removeSelectionChangedListener(listener);
 	}
