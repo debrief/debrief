@@ -257,7 +257,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// now something else
 		final SensorWrapper sw = new SensorWrapper("some sensor");
-		sw.add(new SensorContactWrapper());
+		SensorContactWrapper scw = new SensorContactWrapper();
+		scw.setDTG(new HiResDate(1000));
+		sw.add(scw);
 		sw.setVisible(true);
 		_tw.add(sw);
 
@@ -593,7 +595,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 				_ctr++;
 			}
 		};
-		sw.add(new SensorContactWrapper());
+		SensorContactWrapper scw = new SensorContactWrapper();
+		scw.setDTG(new HiResDate(1000));
+		sw.add(scw);
 		_tw.add(sw);
 
 		// it should only have been fired once
