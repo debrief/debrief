@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -92,7 +93,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			// ok, fire off a layers extended event to share the good news
 			if (_layers != null && !_deletedSensors.isEmpty())
 			{
-				_layers.fireModified(_primary);
+				_layers.fireExtended();
 			}
 
 			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
@@ -134,9 +135,93 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			// ok, fire off a layers extended event to share the good news
 			if (_layers != null && !_deletedSensors.isEmpty())
 			{
-				_layers.fireModified(_primary);
+				_layers.fireExtended();
+				_deletedSensors.clear();
 			}
 
+			
+			// register success
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
+					null);
+		}
+	}
+
+	private static class TrimToTrackPeriodOperation extends CMAPOperation
+	{
+	
+		final private TrackWrapper _primary;
+		final private Layers _layers;
+		private ArrayList<SensorWrapper> _deletedSensors;
+	
+		public TrimToTrackPeriodOperation(TrackWrapper primary,
+				Layers _currentLayers)
+		{
+			super("Trim sensors outside primary track period");
+			_primary = primary;
+			_layers = _currentLayers;
+	
+		}
+	
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
+				throws ExecutionException
+		{
+			_deletedSensors = DataSupport.trimToTrackPeriod(_primary);
+	
+			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext())
+			{
+				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+				_primary.removeElement(thisSensor);
+			}
+	
+			// ok, fire off a layers extended event to share the good news
+			if (_layers != null && !_deletedSensors.isEmpty())
+			{
+				_layers.fireExtended();
+			}
+	
+			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
+					"trim sensors successful", null);
+			return res;
+		}
+	
+		@Override
+		public boolean canRedo()
+		{
+			return true;
+		}
+	
+		@Override
+		public boolean canUndo()
+		{
+			return true;
+		}
+	
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			return execute(monitor, info);
+		}
+	
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+				throws ExecutionException
+		{
+			// ok, restore the items
+			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext())
+			{
+				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+				_primary.add(thisSensor);
+			}
+	
+			// ok, fire off a layers extended event to share the good news
+			if (_layers != null && !_deletedSensors.isEmpty())
+			{
+				_layers.fireExtended();
+				_deletedSensors.clear();
+			}
 			
 			// register success
 			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
@@ -679,10 +764,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		if (_trackData != null)
 		{
 			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
-			DataSupport.trimToTrackPeriod(primary, _trackIndex);
-			// ok, fire off a layers extended event to share the good news
-			if (_currentLayers != null)
-				_currentLayers.fireModified(primary);
+			
+			IUndoableOperation op = new TrimToTrackPeriodOperation(primary, _currentLayers);
+			CorePlugin.run(op);
 		}
 	}
 
@@ -695,7 +779,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
 			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
 
-			TrimToSubjectOperation op = new TrimToSubjectOperation(primary,
+			IUndoableOperation op = new TrimToSubjectOperation(primary,
 					secondaries, _currentLayers);
 			CorePlugin.run(op);
 		}
