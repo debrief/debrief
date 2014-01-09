@@ -792,4 +792,14 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	{
 		_targetViewport.getProjection().addListener(this);
 	}
+
+	@Override
+	public void dispose()
+	{
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+		}
+		super.dispose();
+	}
 }

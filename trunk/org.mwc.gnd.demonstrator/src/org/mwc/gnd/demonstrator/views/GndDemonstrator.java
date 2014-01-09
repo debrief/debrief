@@ -291,4 +291,14 @@ public class GndDemonstrator extends ViewPart
 					}
 				});
 	}
+
+	@Override
+	public void dispose()
+	{
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+		}
+		super.dispose();
+	}
 }

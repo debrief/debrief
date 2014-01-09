@@ -362,6 +362,10 @@ public class VesselMonitor extends ViewPart
 	{
 		super.dispose();
 		
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+		}
 		// ok, stop listening to the old one
 		if (_myPart != null)
 		{
