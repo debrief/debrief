@@ -1408,8 +1408,8 @@ public final class SensorContactWrapper extends
 
 			final SensorWrapper sw = new SensorWrapper("some sensor");
 			final SensorContactWrapper scw = new SensorContactWrapper();
-			sw.add(scw);
 			scw.setDTG(theDate);
+			sw.add(scw);
 
 			final Fix fx = new Fix();
 			fx.setLocation(location);
