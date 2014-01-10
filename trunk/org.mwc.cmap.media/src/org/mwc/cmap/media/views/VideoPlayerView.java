@@ -254,7 +254,7 @@ public class VideoPlayerView extends ViewPart {
 						{
 							String extension = fileName.substring(index + 1);
 							String[] supportedExtensions =
-							{ "avi", "vob", "mp4", "mov", "mpeg", "flv", "mp3", "wma" };
+							{ "avi", "vob", "mp4", "mov", "mpeg", "flv", "mp3", "wma", "wav" };
 							boolean supported = false;
 							for (String ext : supportedExtensions)
 							{

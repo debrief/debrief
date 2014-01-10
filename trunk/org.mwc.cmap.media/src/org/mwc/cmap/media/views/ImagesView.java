@@ -43,7 +43,6 @@ import org.mwc.cmap.media.dialog.ShowImageDialog;
 import org.mwc.cmap.media.gallery.ImageGallery;
 import org.mwc.cmap.media.gallery.ImageGalleryElementsBuilder;
 import org.mwc.cmap.media.time.ITimeListener;
-import org.mwc.cmap.media.utility.DateUtils;
 import org.mwc.cmap.media.views.images.ImageLoader;
 import org.mwc.cmap.media.views.images.ImagePanel;
 import org.mwc.cmap.media.views.images.ThumbnailPackage;
