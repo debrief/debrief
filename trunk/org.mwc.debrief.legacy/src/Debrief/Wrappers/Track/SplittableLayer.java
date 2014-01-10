@@ -56,9 +56,9 @@ public class SplittableLayer extends BaseLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public SplittableLayer(final boolean b)
+	public SplittableLayer(final boolean orderedChildren)
 	{
-		super(b);
+		super(orderedChildren);
 	}
 
 	/** whether this type of BaseLayer is able to have shapes added to it
