@@ -7038,6 +7038,59 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             than 15 seconds Debrief splits the successive data into a new
             tracks. The original and new tracks are then renamed with a "_1",
             "_2" suffix.</para>
+            <para>In the above screenshot you can see that the purple dataset actually covers 3
+              periods of sensor data, roughly: 0545-0640, 0710-0720 and 0830-1010.  If we click on
+              the Axe toolbar button (<guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/bulk_sensor_handaxe.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>, <guibutton>Auto-split sensor segments</guibutton>), then we will see the
+              tracks separated as in the following screenshot.<screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/BulkSensorManager_PostSplit.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot></para>
+          </sect3>
+          <sect3>
+            <title>Trim to track period</title>
+            <para>Sometimes the data extraction process results in sensor datasets being
+              loaded/provided that cover time periods outside the range of the parent track.  These
+              unnecessarily slow down Debrief - so you may choose to delete them.  The
+                <guibutton>Trim to track period</guibutton>(<guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/bulk_sensor_hourglass.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>) operation will delete any blocks of sensor data that completely fall
+              outside the time period of the primary track.</para>
+          </sect3>
+          <sect3>
+            <title>Remove sensor data unrelated to Secondary Tracks</title>
+            <para>Sensor data loaded from a command system may contain many, many tracks.  Many of
+              the tracks will be of contacts unrelated to the platforms in question.  It's quite
+              easy for Debrief to determine sensor data that isn't related to the loaded secondary
+              tracks. By clicking on the <guibutton>Remove sensor data unrelated to Secondary
+                Tracks</guibutton> (<guiicon>
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="figures/bulk_sensor_scissors.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </guiicon>) button, Debrief will compare the bearing from the primary track to each
+              secondary track.  If a block of sensor data doesn't have a single cut that is within
+              45 degrees of any secondary track, it will be deleted.  Running this operation on the
+              above sample dataset gives this greatly reduced sensor dataset:<screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/BulkSensorManager_trim_unrelated.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot></para>
           </sect3>
 
           <sect3>
@@ -9110,9 +9163,11 @@ DDD XX..XX
 ;; symb, tl corner lat &amp; long, br corner lat &amp; long, label
 
 ;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
+;POLY: @@ DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
 ;; symb, start date (optional), end date (optional), lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line, or non-numeric label encountered)
 
 ;POLYLINE: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
+;POLYLINE: @@ DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
 ;; (this is an open polygon) symb, start date (optional), end date (optional), lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line, or non-numeric label encountered)
 
 ;SGSAGEOG: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H 
