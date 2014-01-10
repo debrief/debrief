@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -36,6 +37,7 @@ import MWC.TacticalData.Fix;
 public class DataSupport
 {
 
+	private static final int THRESHOLD_FOR_IRRELEVANT_DATA = 45;
 	private static double _previousVal;
 
 	/**
@@ -335,15 +337,16 @@ public class DataSupport
 	 * 
 	 * @param primary
 	 * @param index
-	 * @return 
+	 * @return
 	 */
-	public static ArrayList<SensorWrapper> trimToTrackPeriod(final TrackWrapper primary)
+	public static ArrayList<SensorWrapper> trimToTrackPeriod(
+			final TrackWrapper primary)
 	{
 		ArrayList<SensorWrapper> toDelete = new ArrayList<SensorWrapper>();
 		final HiResDate startPeriod = primary.getStartDTG();
 		final HiResDate finishPeriod = primary.getEndDTG();
 		Enumeration<Editable> numer = primary.getSensors().elements();
-		while(numer.hasMoreElements())
+		while (numer.hasMoreElements())
 		{
 			final SensorWrapper thisS = (SensorWrapper) numer.nextElement();
 			final HiResDate startDTG = thisS.getStartDTG();
@@ -359,7 +362,7 @@ public class DataSupport
 				toDelete.add(thisS);
 			}
 		}
-		
+
 		return toDelete;
 	}
 
@@ -373,6 +376,7 @@ public class DataSupport
 			final TrackWrapper primary, final WatchableList[] secondaries)
 	{
 		ArrayList<SensorWrapper> toRemove = new ArrayList<SensorWrapper>();
+		ArrayList<SensorWrapper> toKeep = new ArrayList<SensorWrapper>();
 
 		if (primary == null || secondaries == null)
 			return toRemove;
@@ -381,54 +385,71 @@ public class DataSupport
 		while (sensors.hasMoreElements())
 		{
 			SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
-		//	if (sensor.getVisible())
+
+			// ok, remember this one
+			toRemove.add(sensor);
+
+			final Enumeration<Editable> contacts = sensor.elements();
+			// loop though the individual sensor contact objects
+			while (sensor != null && (contacts.hasMoreElements()))
 			{
-				final Enumeration<Editable> contacts = sensor.elements();
-				// loop though the individual sensor contact objects
-				while (sensor != null && (contacts.hasMoreElements()))
+				final SensorContactWrapper contact = (SensorContactWrapper) contacts
+						.nextElement();
+				// check this sensor contact has a bearing
+				if (!contact.getHasBearing())
 				{
-					final SensorContactWrapper contact = (SensorContactWrapper) contacts
-							.nextElement();
-					// check this sensor contact has a bearing
-					if (contact.getHasBearing())
+					// hey, no bearing - we aren't sufficiently able to decide if
+					// it can be ditched.
+					toKeep.add(sensor);
+					sensor = null;
+				}
+				else
+				{
+					final HiResDate contactTime = contact.getDTG();
+					// loop through each secondary track
+					for (int i = 0; i < secondaries.length; i++)
 					{
-						final HiResDate contactTime = contact.getDTG();
-						// loop through each secondary track
-						for (int i = 0; i < secondaries.length; i++)
+						final WatchableList thisS = secondaries[i];
+
+						final Watchable[] secondaryFixes = thisS.getNearestTo(contactTime);
+						final Watchable[] primaryFixes = primary.getNearestTo(contactTime);
+						double bearing = 0;
+						if (secondaryFixes != null && secondaryFixes.length > 0)
 						{
-							final WatchableList thisS = secondaries[i];
-
-							final Watchable[] secondaryFixes = thisS
-									.getNearestTo(contactTime);
-							final Watchable[] primaryFixes = primary
-									.getNearestTo(contactTime);
-							double bearing = 0;
-							if (secondaryFixes != null && secondaryFixes.length > 0)
+							if (primaryFixes != null && primaryFixes.length > 0)
 							{
-								if (primaryFixes != null && primaryFixes.length > 0)
-								{
-									WorldLocation wl1 = secondaryFixes[0].getLocation();
-									WorldLocation wl2 = primaryFixes[0].getLocation();
-									bearing = wl1.bearingFrom(wl2);
-								}
-							}
-
-							double bearingDelta = contact.getBearing()
-									- Math.toDegrees(bearing);
-							if (Math.abs(bearingDelta) > 45)
-							{
-								// ok, remember we want to forget it
-								toRemove.add(sensor);
-
-								// now clear the sensor, as a marker to move on to the next
-								// sensor
-								sensor = null;
+								WorldLocation wl1 = secondaryFixes[0].getLocation();
+								WorldLocation wl2 = primaryFixes[0].getLocation();
+								bearing = wl1.bearingFrom(wl2);
 							}
 						}
+
+						double bearingDelta = contact.getBearing()
+								- Math.toDegrees(bearing);
+						if (Math.abs(bearingDelta) < THRESHOLD_FOR_IRRELEVANT_DATA)
+						{
+							// ok, this sensor is relevant
+							toKeep.add(sensor);
+
+							// now clear the sensor, as a marker to move on to the next
+							// sensor
+							sensor = null;
+						}
 					}
+
 				}
 			} // end loop through sensor contacts
 		}
+
+		// ok, we've built up a list of sensors to keep. We now need to get rid of
+		// the other ones
+		Iterator<SensorWrapper> keepers = toKeep.iterator();
+		while (keepers.hasNext())
+		{
+			SensorWrapper keepMe = (SensorWrapper) keepers.next();
+			toRemove.remove(keepMe);
+		}
+
 		return toRemove;
 	}
 
@@ -592,7 +613,7 @@ public class DataSupport
 
 			assertTrue(_sw1.getVisible());
 			assertTrue(_sw2a.getVisible());
-			assertEquals(3,_primary.getSensors().size());
+			assertEquals(3, _primary.getSensors().size());
 			ArrayList<SensorWrapper> res = DataSupport.trimToTrackPeriod(_primary);
 			assertNotNull(res);
 			assertEquals(1, res.size());
@@ -610,8 +631,7 @@ public class DataSupport
 			assertTrue(_sw2a.getVisible());
 			ArrayList<SensorWrapper> res = DataSupport.trimToSensorNearSubjectTracks(
 					_primary, secondaries);
-			assertEquals("contains sensors", 1, res.size());
-			assertEquals("correct first sensor", _primary.getSensors().first(), res.get(0));
+			assertEquals("contains sensors", 2, res.size());
 		}
 	}
 

@@ -139,7 +139,6 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				_deletedSensors.clear();
 			}
 
-			
 			// register success
 			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
 					null);
@@ -148,62 +147,62 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 	private static class TrimToTrackPeriodOperation extends CMAPOperation
 	{
-	
+
 		final private TrackWrapper _primary;
 		final private Layers _layers;
 		private ArrayList<SensorWrapper> _deletedSensors;
-	
+
 		public TrimToTrackPeriodOperation(TrackWrapper primary,
 				Layers _currentLayers)
 		{
 			super("Trim sensors outside primary track period");
 			_primary = primary;
 			_layers = _currentLayers;
-	
+
 		}
-	
+
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
 			_deletedSensors = DataSupport.trimToTrackPeriod(_primary);
-	
+
 			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
 			while (iter.hasNext())
 			{
 				SensorWrapper thisSensor = (SensorWrapper) iter.next();
 				_primary.removeElement(thisSensor);
 			}
-	
+
 			// ok, fire off a layers extended event to share the good news
 			if (_layers != null && !_deletedSensors.isEmpty())
 			{
 				_layers.fireExtended();
 			}
-	
+
 			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"trim sensors successful", null);
 			return res;
 		}
-	
+
 		@Override
 		public boolean canRedo()
 		{
 			return true;
 		}
-	
+
 		@Override
 		public boolean canUndo()
 		{
 			return true;
 		}
-	
+
 		@Override
 		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
 			return execute(monitor, info);
 		}
-	
+
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
@@ -215,14 +214,71 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				SensorWrapper thisSensor = (SensorWrapper) iter.next();
 				_primary.add(thisSensor);
 			}
-	
+
 			// ok, fire off a layers extended event to share the good news
 			if (_layers != null && !_deletedSensors.isEmpty())
 			{
 				_layers.fireExtended();
 				_deletedSensors.clear();
 			}
-			
+
+			// register success
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
+					null);
+		}
+	}
+
+	private static class SplitSegmentsOperation extends CMAPOperation
+	{
+
+		final private Layers _layers;
+		private SplittableLayer _youSplitter;
+
+		public SplitSegmentsOperation(SplittableLayer youSplitter,
+				Layers currentLayers)
+		{
+			super("Auto-split sensor datasets");
+			_youSplitter = youSplitter;
+			_layers = currentLayers;
+		}
+
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
+				throws ExecutionException
+		{
+			_youSplitter.AutoSplitTracks();
+
+			// ok, fire off a layers extended event to share the good news
+			if (_layers != null)
+				_layers.fireExtended();
+
+			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
+					"split sensor tracks successful", null);
+			return res;
+		}
+
+		@Override
+		public boolean canRedo()
+		{
+			return false;
+		}
+
+		@Override
+		public boolean canUndo()
+		{
+			return false;
+		}
+
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			return execute(monitor, info);
+		}
+
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+				throws ExecutionException
+		{
 			// register success
 			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
 					null);
@@ -467,7 +523,11 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		final WatchableList primary = _trackData.getPrimaryTrack();
 
 		if (primary == null)
+		{
 			_myChartFrame.getChart().setTitle("Primary track missing");
+			_myChartFrame.getChart().getXYPlot().setDataset(null);
+			return;
+		}
 		else
 			_myChartFrame.getChart().setTitle(CHART_NAME);
 
@@ -661,6 +721,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	{
 		final IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(_useOriginalColors);
+		bars.getToolBarManager().add(new Separator());
 		bars.getToolBarManager().add(_doSplit);
 		bars.getToolBarManager().add(_trimToTrack);
 		bars.getToolBarManager().add(_trimToSubjectTracks);
@@ -669,16 +730,17 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		bars.getToolBarManager().add(
 				CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData",
 						null, this));
-		
+
 		IMenuManager menu = getViewSite().getActionBars().getMenuManager();
 		menu.add(_useOriginalColors);
+		bars.getToolBarManager().add(new Separator());
 		menu.add(_doSplit);
 		menu.add(_trimToTrack);
 		menu.add(_trimToSubjectTracks);
 		menu.add(new Separator());
-		menu.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData",
-				null, this));
-		
+		menu.add(CorePlugin.createOpenHelpAction(
+				"org.mwc.debrief.help.BulkSensorData", null, this));
+
 	}
 
 	private void makeActions()
@@ -709,7 +771,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 		};
 		_doSplit.setImageDescriptor(Activator
-				.getImageDescriptor("icons/scissors.png"));
+				.getImageDescriptor("icons/handaxe.png"));
 
 		_trimToTrack = new Action("Trim to track period", SWT.NONE)
 		{
@@ -720,12 +782,11 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			}
 
 		};
-		// TODO: new icon
 		_trimToTrack.setImageDescriptor(Activator
-				.getImageDescriptor("icons/scissors.png"));
+				.getImageDescriptor("icons/hourglass.png"));
 
 		_trimToSubjectTracks = new Action(
-				"Trim to sensor data near subject tracks", SWT.NONE)
+				"Remove sensor data unrelated to Secondary Tracks", SWT.NONE)
 		{
 			@Override
 			public void run()
@@ -734,7 +795,6 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			}
 
 		};
-		// TODO: new icon
 		_trimToSubjectTracks.setImageDescriptor(Activator
 				.getImageDescriptor("icons/scissors.png"));
 	}
@@ -749,11 +809,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			if (sensors instanceof SplittableLayer)
 			{
 				final SplittableLayer youSplitter = (SplittableLayer) sensors;
-				youSplitter.AutoSplitTracks();
-
-				// ok, fire off a layers extended event to share the good news
-				if (_currentLayers != null)
-					_currentLayers.fireModified(primary);
+				IUndoableOperation op = new SplitSegmentsOperation(youSplitter,
+						_currentLayers);
+				CorePlugin.run(op);
 			}
 		}
 	}
@@ -764,23 +822,23 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		if (_trackData != null)
 		{
 			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
-			
-			IUndoableOperation op = new TrimToTrackPeriodOperation(primary, _currentLayers);
+
+			IUndoableOperation op = new TrimToTrackPeriodOperation(primary,
+					_currentLayers);
 			CorePlugin.run(op);
 		}
 	}
 
 	protected void trimToSubjectTracks()
 	{
-
 		// ok, go get the primary track
 		if (_trackData != null)
 		{
 			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
 			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
 
-			IUndoableOperation op = new TrimToSubjectOperation(primary,
-					secondaries, _currentLayers);
+			IUndoableOperation op = new TrimToSubjectOperation(primary, secondaries,
+					_currentLayers);
 			CorePlugin.run(op);
 		}
 	}
