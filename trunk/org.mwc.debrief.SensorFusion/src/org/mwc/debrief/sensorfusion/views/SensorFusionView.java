@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -23,6 +24,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -39,6 +41,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.sensorfusion.Activator;
 import org.mwc.debrief.sensorfusion.views.DataSupport.SensorSeries;
@@ -580,7 +583,17 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		myChart.getXYPlot().setRenderer(_plotRenderer);
 
 		// and the chart frame
-		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, true);
+		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, true)
+		{
+
+			@Override
+			protected Menu createPopupMenu(boolean arg0, boolean arg1, boolean arg2,
+					boolean arg3)
+			{
+				// prevent the JFreeChart menu from opening
+				return null;
+			}
+		};
 		_myChartFrame.setDisplayToolTips(false);
 		_myChartFrame.setHorizontalAxisTrace(false);
 		_myChartFrame.setVerticalAxisTrace(false);
@@ -602,27 +615,54 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 					{
 						final SensorSeries ss = (SensorSeries) ts;
 
-						// right, is ctrl-key pressed
-						final int mods = event.getTrigger().getModifiers();
-						if ((mods & InputEvent.CTRL_MASK) == 0)
+						// check which mouse it si
+						if (event.getTrigger().getButton() == 3)
 						{
-							_selectedTracks.removeAllElements();
-							_selectedTracks.add(ss);
+							// get the sensor itself
+							final SensorWrapper sensor = ss.getSensor();
+
+							// get the parent layer
+							final TrackWrapper parentLayer = (TrackWrapper) _trackData
+									.getPrimaryTrack();
+
+							// ok, create ourselves a menu
+							final MenuManager mmgr = new MenuManager();
+
+							// insert the relevant menu items
+							RightClickSupport.getDropdownListFor(mmgr, new Editable[]
+							{ sensor }, null, new Layer[]
+							{ parentLayer }, _currentLayers, false);
+
+							// get the SWT menu object for it
+							final Menu thisM = mmgr.createContextMenu(_myChartFrame);
+
+							// and display it
+							thisM.setVisible(true);
 						}
 						else
 						{
-							if (_selectedTracks.contains(ts))
-								_selectedTracks.remove(ts);
-							else
+							// right, is ctrl-key pressed
+							final int mods = event.getTrigger().getModifiers();
+							if ((mods & InputEvent.CTRL_MASK) == 0)
+							{
+								_selectedTracks.removeAllElements();
 								_selectedTracks.add(ss);
+							}
+							else
+							{
+								if (_selectedTracks.contains(ts))
+									_selectedTracks.remove(ts);
+								else
+									_selectedTracks.add(ss);
 
+							}
+
+							// and update the UI
+							updatedSelection();
+
+							// ok, we need to redraw
+							redrawPlot();
 						}
-
-						// and update the UI
-						updatedSelection();
-
-						// ok, we need to redraw
-						redrawPlot();
 					}
 				}
 				else

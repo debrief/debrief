@@ -49,7 +49,7 @@ public class SplittableLayer extends BaseLayer
 
 	}
 
-	private static final long DELTA_LIMIT = 1000 * 60 * 15; // 15 mins
+	private static final long DELTA_LIMIT = 1000 * 60 * 30; // 30 mins
 
 	/**
 	 * 

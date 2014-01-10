@@ -631,7 +631,7 @@ public class DataSupport
 			assertTrue(_sw2a.getVisible());
 			ArrayList<SensorWrapper> res = DataSupport.trimToSensorNearSubjectTracks(
 					_primary, secondaries);
-			assertEquals("contains sensors", 2, res.size());
+			assertEquals("contains sensors", 0, res.size());
 		}
 	}
 
