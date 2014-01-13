@@ -4,9 +4,10 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="Media player"
             class="org.mwc.cmap.media.perspective.PlanetmayoPerspective"
-            id="org.mwc.cmap.media.perspective.PlanetmayoPerspective">
+            icon="icons/video_camera.gif"
+            id="org.mwc.cmap.media.perspective.PlanetmayoPerspective"
+            name="Media player">
       </perspective>
    </extension>
    <extension
