@@ -48,7 +48,7 @@
       <perspective
             class="com.planetmayo.debrief.satc_rcp.ui.SATC_Perspective"
             fixed="false"
-            icon="icons/calculator.png"
+            icon="icons/compass.png"
             id="com.planetmayo.debrief.satc_rcp.perspective"
             name="Track Generation">
       </perspective>
