@@ -6,15 +6,12 @@ package org.mwc.cmap.core.ui_support;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -29,7 +26,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
-import MWC.GenericData.ColoredWatchable;
+import MWC.GenericData.Watchable;
 
 public class CoreViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
@@ -51,7 +48,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 */
 	Image nonVisibleImage = null;
 
-	private static ImageRegistry _imageRegistry;
+	private ImageRegistry _imageRegistry;
 
 	/**
 	 * 
@@ -122,9 +119,9 @@ public class CoreViewLabelProvider extends LabelProvider implements
 				final Editable ed = ew.getEditable();
 
 				// aah does this have color?
-				if (ed instanceof ColoredWatchable) {
+				if (ed instanceof Watchable) {
 					// ok - cast it
-					final ColoredWatchable was = (ColoredWatchable) ed;
+					final Watchable was = (Watchable) ed;
 
 					// generate the id
 					final String theId = idFor(was);
@@ -163,8 +160,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 		if (thirdPartyImageDescriptor != null) {
 			// right, is this something that we apply color to?
-			if (editable instanceof ColoredWatchable && ((ColoredWatchable)editable).getColor() != null) {
-				final ColoredWatchable thisW = (ColoredWatchable) editable;
+			if (editable instanceof Watchable) {
+				final Watchable thisW = (Watchable) editable;
 
 				// sort out the color index
 				final String thisId = idFor(thisW);
@@ -195,42 +192,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 						newGC.setBackground(thisColor);
 
 						// apply a color wash
-						if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS()))
-						{
-							ImageData data = res.getImageData();
-						  // we recognize two transparency types
-							if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL
-									|| data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
-							{
-								for (int i = 0; i < wid; i++)
-								{
-									for (int j = 0; j < ht; j++)
-									{
-										if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL)
-										{
-											if (data.getPixel(i, j) > 0)
-											{
-												newGC.fillRectangle(i, j, 1, 1);
-											}
-										} else if (data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
-										{
-											if (data.getAlpha(i, j) > 0)
-											{
-												newGC.fillRectangle(i, j, 1, 1);
-											}
-										}
-									}
-								}
-							} else
-							{
-								// display solid color icon
-								newGC.fillRectangle(0, 0, wid, ht);
-							}
-						} else
-						{
-							// Windows
-							newGC.fillRectangle(0, 0, wid, ht);
-						}
+						newGC.fillRectangle(0, 0, wid, ht);
 
 						// and dispose the GC
 						newGC.dispose();
@@ -276,7 +238,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * @param thisW the item to hash
 	 * @return a unique string for this item type and color
 	 */
-	private String idFor(final ColoredWatchable thisW) {
+	private String idFor(final Watchable thisW) {
 		return thisW.getClass() + " " + thisW.getColor();
 	}
 
