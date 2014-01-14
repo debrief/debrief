@@ -4,11 +4,16 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.awt.SWT_AWT;
@@ -17,7 +22,12 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IViewPart;
 import org.mwc.cmap.media.utility.ImageUtils;
+import org.mwc.cmap.media.views.VideoPlayerView;
 import org.mwc.cmap.media.xuggle.impl.PlayingThread;
 import org.mwc.cmap.media.xuggle.impl.ThreadUINotifier;
 
@@ -32,9 +42,40 @@ public class XugglePlayer extends Composite {
     private String fileName;
 
     private PlayingThread thread;
+		private IViewPart view;
+		private Label label;
+		
+		private ControlContribution statusContribution = new ControlContribution(VideoPlayerView.ID)
+		{
 
-    public XugglePlayer(Composite composite) {
+			@Override
+			protected Control createControl(Composite parent)
+			{
+				if (label != null && label.isDisposed())
+				{
+
+					label.dispose();
+					label = null;
+				}
+
+				label = new Label(parent, SWT.RIGHT | SWT.BORDER);
+				return label;
+			}
+
+			@Override
+			public void dispose()
+			{
+				if (label != null && !label.isDisposed()) {
+					label.dispose();
+				}
+				label = null;
+				super.dispose();
+			}
+		};
+
+    public XugglePlayer(Composite composite, IViewPart viewPart) {
         super(composite, SWT.EMBEDDED);
+        this.view = viewPart;
         setLayout(new FillLayout());        
         Frame frame = SWT_AWT.new_Frame(this);
         frame.setBackground(new Color(getBackground().getRed(), getBackground().getGreen(), getBackground().getBlue()));
@@ -60,10 +101,62 @@ public class XugglePlayer extends Composite {
             }
         };
         frame.add(videoBuffer);
+        videoBuffer.addMouseListener(new MouseAdapter()
+				{
+
+					@Override
+					public void mouseExited(MouseEvent e)
+					{
+						Display.getDefault().asyncExec(new Runnable()
+						{
+							
+							@Override
+							public void run()
+							{
+								if (XugglePlayer.this.isDisposed()) {
+									return;
+								}
+								view.getViewSite().getActionBars().getStatusLineManager().remove(statusContribution);
+								view.getViewSite().getActionBars().updateActionBars();
+							}
+						});
+					}
+        	
+				});
+        videoBuffer.addMouseMotionListener(new MouseMotionAdapter()
+				{
+					
+					@Override
+					public void mouseMoved(MouseEvent e)
+					{
+						java.awt.Point point = e.getPoint();
+						final String message = "(" + point.x + "," + (videoBuffer.getHeight() - point.y) + ")";
+						Display.getDefault().syncExec(new Runnable()
+						{
+							
+							@Override
+							public void run()
+							{
+								if (XugglePlayer.this.isDisposed()) {
+									return;
+								}
+								view.getViewSite().getActionBars().getStatusLineManager().remove(statusContribution);
+								view.getViewSite().getActionBars().getStatusLineManager().add(statusContribution);
+								view.getViewSite().getActionBars().updateActionBars();
+								if (label != null && !label.isDisposed()) {
+									label.setText(message);
+								}
+							}
+						});
+					}
+					
+				});
         addDisposeListener(new DisposeListener() {
             public void widgetDisposed(DisposeEvent disposeEvent) {
                 removeDisposeListener(this);
                 stop();
+                view.getViewSite().getActionBars().getStatusLineManager().remove(statusContribution);
+                statusContribution.dispose();
             }
         });
     }

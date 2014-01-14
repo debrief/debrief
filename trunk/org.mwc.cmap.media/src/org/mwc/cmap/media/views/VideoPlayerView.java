@@ -460,7 +460,7 @@ public class VideoPlayerView extends ViewPart {
 		playTime = new Label(control, SWT.LEFT);
 		playTime.setText("00:00:00.000");
 		
-		player = new XugglePlayer(composite);
+		player = new XugglePlayer(composite, this);
 		data = new GridData();
 		data.grabExcessHorizontalSpace = true;
 		data.grabExcessVerticalSpace = true;
