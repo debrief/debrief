@@ -27,11 +27,10 @@ public class SATC_Perspective implements IPerspectiveFactory {
 
 		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.4f, HARNESS_VIEW);
 		bottomLeft.addView(MAINTAIN_VIEW);
-		
 
 		// lower spatial panel
 		final IFolderLayout bottomRight = layout.createFolder("bottomRight", IPageLayout.RIGHT, 0.3f, editorArea);
-		bottomRight.addView(SPATIAL_VIEW);
+		bottomRight.addPlaceholder(SPATIAL_VIEW);
 		bottomRight.addView(LAYER_MANAGER);
 
 		// upper states panel
