@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashSet;
@@ -44,6 +43,7 @@ public class XugglePlayer extends Composite {
     private PlayingThread thread;
 		private IViewPart view;
 		private Label label;
+		private String message;
 		
 		private ControlContribution statusContribution = new ControlContribution(VideoPlayerView.ID)
 		{
@@ -59,6 +59,7 @@ public class XugglePlayer extends Composite {
 				}
 
 				label = new Label(parent, SWT.RIGHT | SWT.BORDER);
+				label.setText(message);
 				return label;
 			}
 
@@ -71,6 +72,7 @@ public class XugglePlayer extends Composite {
 				label = null;
 				super.dispose();
 			}
+
 		};
 
     public XugglePlayer(Composite composite, IViewPart viewPart) {
@@ -130,7 +132,7 @@ public class XugglePlayer extends Composite {
 					public void mouseMoved(MouseEvent e)
 					{
 						java.awt.Point point = e.getPoint();
-						final String message = "(" + point.x + "," + (videoBuffer.getHeight() - point.y) + ")";
+						message = "(" + point.x + "," + (videoBuffer.getHeight() - point.y) + ")";
 						Display.getDefault().syncExec(new Runnable()
 						{
 							
@@ -140,12 +142,10 @@ public class XugglePlayer extends Composite {
 								if (XugglePlayer.this.isDisposed()) {
 									return;
 								}
+								view.getViewSite().getActionBars().getStatusLineManager().markDirty();
 								view.getViewSite().getActionBars().getStatusLineManager().remove(statusContribution);
 								view.getViewSite().getActionBars().getStatusLineManager().add(statusContribution);
 								view.getViewSite().getActionBars().updateActionBars();
-								if (label != null && !label.isDisposed()) {
-									label.setText(message);
-								}
 							}
 						});
 					}
