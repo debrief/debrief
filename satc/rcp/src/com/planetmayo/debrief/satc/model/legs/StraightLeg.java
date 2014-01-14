@@ -8,17 +8,17 @@ import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 public class StraightLeg extends CoreLeg
 {
-
+	
 	public StraightLeg(String name)
 	{
-		super(name);
+		this(name, null);
 	}
 	
 	
@@ -99,7 +99,7 @@ public class StraightLeg extends CoreLeg
 								scale, scale, startCoord.x, startCoord.y);
 
 						// ok, apply the transform to the location
-						Geometry originalGeom = thisL.getGeometry();
+						/*Geometry originalGeom = thisL.getGeometry();
 						Geometry newGeom = st.transform(originalGeom);
 
 						// see if the end point is in the new geometry
@@ -112,6 +112,11 @@ public class StraightLeg extends CoreLeg
 							// bugger, can't do this one
 							theRoute.setImpossible();
 							break;
+						}*/
+						if (! MathUtils.rayTracing(endPt, thisL.getGeometry(), st))
+						{
+							theRoute.setImpossible();
+							break;							
 						}
 					}
 				}

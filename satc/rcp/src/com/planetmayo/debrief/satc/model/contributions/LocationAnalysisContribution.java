@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ListIterator;
 
-import org.geotools.referencing.GeodeticCalculator;
-
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -16,6 +14,7 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -299,7 +298,7 @@ public class LocationAnalysisContribution extends
 				// start with the origin
 				coords[0] = new Coordinate(center.x, center.y);
 				
-				GeodeticCalculator calculator = new GeodeticCalculator();
+				GeodeticCalculator calculator = GeoSupport.createCalculator();
 				calculator.setStartingGeographicPoint(center.x, center.y);
 				
 				// now the start course

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import org.geotools.referencing.GeodeticCalculator;
-
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -47,7 +47,7 @@ public class StraightRoute extends CoreRoute
 	{
 		super(startP, endP, startTime, endTime, name, LegType.STRAIGHT);
 		
-		GeodeticCalculator calculator = new GeodeticCalculator();
+		GeodeticCalculator calculator = GeoSupport.createCalculator();
 		calculator.setStartingGeographicPoint(startP.getX(), startP.getY());
 		calculator.setDestinationGeographicPoint(endP.getX(), endP.getY());
 		// find the course (converting it to our compass-oriented coordinate system

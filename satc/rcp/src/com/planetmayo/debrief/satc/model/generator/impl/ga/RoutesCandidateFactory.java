@@ -1,31 +1,60 @@
 package com.planetmayo.debrief.satc.model.generator.impl.ga;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.uncommons.watchmaker.framework.CandidateFactory;
 
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
+import com.planetmayo.debrief.satc.util.MathUtils;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
 public class RoutesCandidateFactory implements CandidateFactory<List<StraightRoute>>
 {
 	private List<StraightLeg> straightLegs;
+	private List<PointsGenerator> startPoints;
+	private List<PointsGenerator> endPoints;
 	
 	public RoutesCandidateFactory(List<StraightLeg> legs) 
 	{
+		this.startPoints = new ArrayList<RoutesCandidateFactory.PointsGenerator>();
+		this.endPoints = new ArrayList<RoutesCandidateFactory.PointsGenerator>();
 		this.straightLegs = new ArrayList<StraightLeg>();
 		for (StraightLeg leg : legs)
 		{
 			if (leg.getType() == LegType.STRAIGHT)
 			{
+				LineString startBearing = leg.getFirst().getBearingLine();
+				LineString endBearing = leg.getLast().getBearingLine();
 				this.straightLegs.add(leg);
+				if (startBearing == null || endBearing == null)
+				{
+					leg.generatePoints(Precision.MEDIUM.getNumPoints());
+				}
+				if (startBearing != null)
+				{
+					startPoints.add(new BearingLinePointsGenerator(startBearing));
+				}
+				else
+				{
+					startPoints.add(new GriddedPointsGenerator(leg.getStartPoints()));
+				}
+				if (endBearing != null)
+				{
+					endPoints.add(new BearingLinePointsGenerator(endBearing));
+				}
+				else
+				{
+					endPoints.add(new GriddedPointsGenerator(leg.getEndPoints()));
+				}				
 			}
 		}
 	}
@@ -33,25 +62,10 @@ public class RoutesCandidateFactory implements CandidateFactory<List<StraightRou
 	@Override
 	public List<List<StraightRoute>> generateInitialPopulation(int populationSize, Random rng)
 	{
-		ArrayList<Points> points = new ArrayList<Points>();
-		for (StraightLeg leg : straightLegs)
-		{
-			points.add(new Points(leg.getStartPoints()));
-			points.add(new Points(leg.getEndPoints()));
-		}
 		List<List<StraightRoute>> population = new ArrayList<List<StraightRoute>>(populationSize);
 		for (int i = 0; i < populationSize; i++)
 		{
-			List<StraightRoute> solution = new ArrayList<StraightRoute>(points.size());
-			int j = 0;
-			for (StraightLeg leg : straightLegs) 
-			{
-				Point start = points.get(j).getNext(rng);
-				Point end = points.get(j + 1).getNext(rng);				
-				solution.add((StraightRoute) leg.createRoute("", start, end));
-				j += 2;
-			}
-			population.add(solution);
+			population.add(generateRandomCandidate(rng));
 		}
 		return Collections.unmodifiableList(population);
 	}
@@ -71,45 +85,65 @@ public class RoutesCandidateFactory implements CandidateFactory<List<StraightRou
 	@Override
 	public List<StraightRoute> generateRandomCandidate(Random rng)
 	{
-		ArrayList<StraightRoute> candidate = new ArrayList<StraightRoute>();
-		for (StraightLeg leg : straightLegs) 
+		List<StraightRoute> solution = new ArrayList<StraightRoute>(straightLegs.size());
+		for (int j = 0; j < straightLegs.size(); j++)
 		{
-			Point start =  leg.getStartPoints().get(rng.nextInt(leg.getStartPoints().size()));
-			Point end =  leg.getStartPoints().get(rng.nextInt(leg.getStartPoints().size()));
-			candidate.add((StraightRoute) leg.createRoute("", start, end));
+			StraightLeg leg = straightLegs.get(j);
+			Point start = startPoints.get(j).next(rng);
+			Point end = endPoints.get(j).next(rng);
+			solution.add((StraightRoute) leg.createRoute("", start, end));
 		}
-		return candidate;
+		return solution;
 	}
 	
-	private class Points 
+	private interface PointsGenerator 
+	{
+		
+		Point next(Random rng);
+	}
+	
+	private class BearingLinePointsGenerator implements PointsGenerator
+	{
+		private final List<Point> segments;
+		private AtomicInteger currentSegment;
+		
+		public BearingLinePointsGenerator(LineString bearingLine)
+		{
+			segments = new ArrayList<Point>();
+			Point startBearing = bearingLine.getStartPoint();
+			Point endBearing = bearingLine.getEndPoint();
+			for (double t = 0; t < 1; t += 0.05)
+			{
+				segments.add(MathUtils.calculateBezier(t, startBearing, endBearing, null));
+			}
+			segments.add(endBearing);
+			currentSegment = new AtomicInteger(-1);
+		}
+
+		@Override
+		public Point next(Random rng)
+		{
+			currentSegment.compareAndSet(2, -1);
+			int segment = rng.nextInt(segments.size() - 2);
+			Point segmentStart = segments.get(segment);
+			Point segmentEnd = segments.get(segment + 1);			
+			return MathUtils.calculateBezier(rng.nextDouble(), segmentStart, segmentEnd, null);
+		}
+	}
+	
+	private class GriddedPointsGenerator implements PointsGenerator
 	{
 		private final List<Point> points;
-		private final boolean[] used;
-		
-		public Points(List<Point> points)
+
+		public GriddedPointsGenerator(List<Point> points)
 		{
 			this.points = points;
-			used = new boolean[points.size()];
 		}
-		
-		public Point getNext(Random rng) 
+
+		@Override
+		public Point next(Random rng)
 		{
-			int nextPoint = rng.nextInt(used.length);
-			int i = nextPoint;
-			while (used[i]) 
-			{
-				i++;
-				if (i == used.length) 
-				{
-					i = 0;
-				}
-				if (i == nextPoint) 
-				{
-					Arrays.fill(used, false);
-				}
-			}
-			used[i] = true;
-			return points.get(i);
-		}		
+			return points.get(rng.nextInt(points.size()));
+		}
 	}
 }

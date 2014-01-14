@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.geotools.referencing.GeodeticCalculator;
-
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
@@ -18,6 +16,7 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -150,7 +149,7 @@ public class RangeForecastContribution extends BaseContribution
 			{
 				State state = route.getStateAt(currentDate);
 				Point location = state.getLocation();
-				GeodeticCalculator calculator = new GeodeticCalculator();
+				GeodeticCalculator calculator = GeoSupport.createCalculator();
 				calculator.setStartingGeographicPoint(location.getX(), location.getY());
 				calculator.setDestinationGeographicPoint(origin.origin.getLon(),
 						origin.origin.getLat());

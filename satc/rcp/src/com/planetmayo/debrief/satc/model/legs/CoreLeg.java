@@ -51,7 +51,10 @@ public abstract class CoreLeg
 	protected CoreLeg(String name, List<BoundedState> states)
 	{
 		this(name);
-		add(states);
+		if (states != null)
+		{
+			add(states);
+		}
 	}	
 
 	/**

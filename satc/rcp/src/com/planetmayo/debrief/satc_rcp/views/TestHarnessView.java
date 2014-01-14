@@ -52,6 +52,8 @@ import com.planetmayo.debrief.satc.model.generator.impl.sa.SASolutionGenerator;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.support.TestSupport;
+import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.calculator.GeoCalculatorType;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamReader;
@@ -98,6 +100,7 @@ public class TestHarnessView extends ViewPart
 	private Action _liveAction;
 	private Action _saveAction;
 	private Action _loadAction;
+	private Action _useFastCalculator;
 	
 	private Button _useGAButton;
 	private Button _useSAButton;
@@ -675,6 +678,9 @@ public class TestHarnessView extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		manager.add(_useFastCalculator);
+		manager.add(new Separator());
+		
 		manager.add(_clearAction);
 		manager.add(_restartAction);
 		manager.add(new Separator());
@@ -779,7 +785,19 @@ public class TestHarnessView extends ViewPart
 				doLoad();
 			}
 		};
-		_loadAction.setToolTipText("Load solver from file");		
+		_loadAction.setToolTipText("Load solver from file");
+		
+		_useFastCalculator = new Action("Fast Calc", SWT.TOGGLE)
+		{
+
+			@Override
+			public void run()
+			{
+				GeoSupport.setCalculatorType(_useFastCalculator.isChecked() ? 
+						GeoCalculatorType.FAST : GeoCalculatorType.ORIGINAL);				
+			}			
+		};
+		_useFastCalculator.setChecked(true);
 	}
 
 	private void doLoad()

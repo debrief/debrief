@@ -6,16 +6,8 @@ import java.util.Random;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.uncommons.maths.random.MersenneTwisterRNG;
-import org.uncommons.maths.random.Probability;
-import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.TerminationCondition;
-import org.uncommons.watchmaker.framework.islands.IslandEvolution;
-import org.uncommons.watchmaker.framework.islands.RingMigration;
-import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
-import org.uncommons.watchmaker.framework.operators.ListCrossover;
-import org.uncommons.watchmaker.framework.operators.SplitEvolution;
-import org.uncommons.watchmaker.framework.selection.TournamentSelection;
 import org.uncommons.watchmaker.framework.termination.ElapsedTime;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
@@ -62,6 +54,11 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	public GAParameters getParameters()
 	{
 		return parameters;
+	}
+	
+	protected IContributions getContributions() 
+	{
+		return contributions;
 	}
 
 	@Override
@@ -114,7 +111,6 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					{
 						if (leg.getType() == LegType.STRAIGHT) 
 						{
-							leg.generatePoints(_myPrecision.getNumPoints());
 							straightLegs.add((StraightLeg) leg);
 						}
 					}					
@@ -153,29 +149,12 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	private void runGA(final IProgressMonitor progressMonitor) throws InterruptedException
 	{	
 		Random rng = new MersenneTwisterRNG();
-		List<EvolutionaryOperator<List<StraightRoute>>> operators = new ArrayList<EvolutionaryOperator<List<StraightRoute>>>();
-		
-		PointsCrossover pointsCrossover = new PointsCrossover(straightLegs, new Probability(1));
-		SplitEvolution<List<StraightRoute>> crossovers = new SplitEvolution<List<StraightRoute>>(
-				new ListCrossover<StraightRoute>(),
-				pointsCrossover,
-				0.4
-		);
-		PointsMutationToVertexes mutation = new PointsMutationToVertexes(straightLegs, new Probability(parameters.getMutationProbability()), 20);
-		operators.add(crossovers);
-		operators.add(mutation);
-		
-		final IslandEvolution<List<StraightRoute>> engine = new IslandEvolution<List<StraightRoute>>(
+		final RCPIslandEvolution engine = new RCPIslandEvolution(
+				this,
+				straightLegs,
 				4,
-				new RingMigration(), 
-				new RoutesCandidateFactory(straightLegs), 
-				new EvolutionPipeline<List<StraightRoute>>(operators),
-				new RoutesFitnessEvaluator(straightLegs, parameters.isUseAlteringLegs(), contributions, problemSpaceView),
-				new TournamentSelection(new Probability(1)), 				
 				rng
 		);
-		engine.addEvolutionObserver(mutation);
-		engine.addEvolutionObserver(pointsCrossover);
 		TerminationCondition progressMonitorCondition = new TerminationCondition()
 		{			
 			@Override
@@ -188,11 +167,11 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				parameters.getPopulationSize(), 
 				parameters.getElitizm(),
 				20,
-				5,
+				1,
 				progressMonitorCondition,
 				new ElapsedTime(parameters.getTimeout()),
-				progressMonitorCondition,
 				new Stagnation(parameters.getStagnationSteps())
+				//new TargetFitness(0.07, false)
 		);
 		if (progressMonitor.isCanceled())
 		{
