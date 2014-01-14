@@ -1,11 +1,16 @@
 package com.planetmayo.debrief.satc.util;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 public class MathUtils
 {
+	public static final double EPS = 0.00001;
+	
 	private static final double TWO_PI = 2 * Math.PI;
+	private static final double PI_BY_TWO = Math.PI / 2;
 	/**
 	 * return angle from [0; 2*Math.PI)
 	 * @param angle
@@ -153,17 +158,102 @@ public class MathUtils
 	
 	public static double calcAbsoluteValue(Point vector)	
 	{
-		return Math.hypot(vector.getX(), vector.getY());
+		return calcAbsoluteValue(vector.getX(), vector.getY());
+	}
+	
+	public static double calcAbsoluteValue(double x, double y)	
+	{	
+		return Math.sqrt(x * x + y * y);
+	}
+	
+	public static double calcAngle(double x, double y)
+	{
+		double value = calcAbsoluteValue(x, y);
+		double angle = Math.acos(x / value);
+		if (y < 0)
+		{
+			angle = TWO_PI - angle;
+		}
+		return angle;		
 	}
 	
 	public static double calcAngle(Point vector)
 	{
-		double value = calcAbsoluteValue(vector);
-		double angle = Math.acos(vector.getX() / value);
-		if (vector.getY() < 0)
+		return calcAngle(vector.getX(), vector.getY());
+	}
+	
+	public static double fast_atan2(double y, double x)
+	{
+			if (x == 0)
+			{
+				if ( y > 0) return PI_BY_TWO;
+				if ( y == 0) return 0.;
+				return -PI_BY_TWO;
+			}
+			double atan;
+			double z = y/x;
+			if (Math.abs(z) < 1.0)
+			{
+				atan = z/(1.0 + 0.28*z*z);
+				if (x < 0)
+				{
+					if (y < 0) return atan - Math.PI;
+					return atan + Math.PI;
+				}
+			}
+			else
+			{
+				atan = PI_BY_TWO - z/(z*z + 0.28);
+				if (y < 0) return atan - Math.PI;
+			}
+			return atan;
+	}
+
+	public static boolean rayTracing(Point point, Geometry polygon, AffineTransformation transform)
+	{
+		if (transform == null)
 		{
-			angle = TWO_PI - angle;
+			transform = new AffineTransformation();
 		}
-		return angle;
+		double x = point.getX();
+		double y = point.getY(); 
+		
+		Coordinate[] polygonCoords = polygon.getCoordinates();
+		Coordinate start = transform.transform(polygonCoords[0], new Coordinate());
+		Coordinate end = new Coordinate();
+		
+		double[] intersections = new double[polygonCoords.length];
+		int index = 0;
+		for (int i = 1; i < polygonCoords.length; i++)
+		{
+			end = transform.transform(polygonCoords[i], end);
+			Coordinate a = start, b = end;
+			if (end.y < start.y)
+			{
+				b = start;
+				a = end;
+			}
+			if (y >= a.y && y < b.y) 
+			{
+				double diff = (y - a.y) / (b.y - a.y);
+				intersections[index] = a.x + (b.x - a.x) * diff;
+				index++;
+			}
+			start.x = end.x;
+			start.y = end.y;
+		}
+		int sum = 0;
+		for (int i = 0; i < index; i++) 
+		{
+			if (intersections[i] == x)
+			{
+				return true;
+			} 
+			else if (intersections[i] < x)
+			{
+				sum++;
+			}			
+		}
+		return (sum % 2) != 0;
 	}
 }
