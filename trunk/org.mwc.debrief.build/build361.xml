@@ -173,7 +173,7 @@
 		</copy>
 	</target>
 
-    <target name="copy_to_cd">
+    <target name="copy_zip_to_cd">
 
         <property name="cdDest" value="/Users/ian/Desktop/Untitled CD.fpbf" />
 
@@ -185,6 +185,17 @@
 
         <copy todir="${cdDest}/" verbose="true">
             <fileset file="${deployDest}/products/DebriefNG-win32.win32.x86.zip" />
+        </copy>
+    </target>
+	
+    <target name="copy_repo_to_cd">
+
+        <property name="cdDest" value="/Users/ian/Desktop/Untitled CD.fpbf" />
+
+        <echo message="copying new versions" />
+
+        <copy todir="${cdDest}/repository" verbose="true">
+            <fileset dir="${deployDest}/repository" />
         </copy>
     </target>
 
