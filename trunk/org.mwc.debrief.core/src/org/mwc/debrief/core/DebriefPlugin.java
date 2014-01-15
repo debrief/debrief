@@ -176,10 +176,10 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 		// also provide someps extra functionality to the right-click editor
 		RightClickSupport.addRightClickGenerator(new GenerateTrack());
+		RightClickSupport.addRightClickGenerator(new GroupTracks());
+		RightClickSupport.addRightClickGenerator(new GenerateInfillSegment());
 		RightClickSupport.addRightClickGenerator(new MergeTracks());
 		RightClickSupport.addRightClickGenerator(new MergeContacts());
-		RightClickSupport.addRightClickGenerator(new GenerateInfillSegment());
-		RightClickSupport.addRightClickGenerator(new GroupTracks());
 		RightClickSupport.addRightClickGenerator(new GenerateTMASegment());
 		RightClickSupport.addRightClickGenerator(new GenerateTUASolution());
 		RightClickSupport.addRightClickGenerator(new GenerateSensorRangePlot());
