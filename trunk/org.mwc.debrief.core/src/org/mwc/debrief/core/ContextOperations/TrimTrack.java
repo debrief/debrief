@@ -61,9 +61,9 @@ public class TrimTrack implements RightClickContextItemGenerator
 		{
 			final String title;
 			if (tracks.size() == 1)
-				title = "Trim track to Time Period";
+				title = "Trim track to Time Period (from Time Controller)";
 			else
-				title = "Trim tracks to Time Period";
+				title = "Trim tracks to Time Period (from Time Controller)";
 
 			// get a final version
 			final ArrayList<TrackWrapper> finalTracks = tracks;
