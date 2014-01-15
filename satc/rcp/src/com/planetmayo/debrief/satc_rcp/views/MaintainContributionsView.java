@@ -78,6 +78,7 @@ public class MaintainContributionsView extends ViewPart
 {
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
+	private static final String TITLE = "Maintain Contributions";
 
 	private static final Map<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>> CONTRIBUTION_PANELS;
 	static
@@ -144,7 +145,7 @@ public class MaintainContributionsView extends ViewPart
 		initListeners(parent);
 		solversManager.addSolversManagerListener(solverManagerListener);
 		
-		setActiveSolver(solversManager.getActiveSolver());
+		setActiveSolver(solversManager.getActiveSolver());		
 	}
 	
 	@Override
@@ -561,6 +562,11 @@ public class MaintainContributionsView extends ViewPart
 					new StructuredSelection(activeSolver.getVehicleType())
 			);
 			precisionsCombo.setSelection(new StructuredSelection(activeSolver.getPrecision()));
+			setPartName(TITLE + " - " + activeSolver.getName());
+		}
+		else 
+		{
+			setPartName(TITLE);
 		}
 		if (! contList.isDisposed())
 		{
