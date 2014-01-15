@@ -972,7 +972,7 @@ public final class ReformatFixes implements FilterOperation
       final HashMap<String, Vector<SetterHolder>> res = ReformatFixes.getCommonProperties(theObjects2);
 
       // check we have our two items
-      assertEquals("found right number of properties", 3, res.keySet().size());
+      assertEquals("found right number of properties", 4, res.keySet().size());
 
       // get the first list
       final Vector<SetterHolder> firstList =  res.get(res.keySet().iterator().next());
