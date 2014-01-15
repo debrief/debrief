@@ -48,7 +48,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 */
 	Image nonVisibleImage = null;
 
-	private ImageRegistry _imageRegistry;
+	private static ImageRegistry _imageRegistry;
 
 	/**
 	 * 
