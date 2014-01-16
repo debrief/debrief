@@ -67,7 +67,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
-		HasDraggableComponents, ProvidesContiguousElements
+		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack
 {
 
 	// //////////////////////////////////////
