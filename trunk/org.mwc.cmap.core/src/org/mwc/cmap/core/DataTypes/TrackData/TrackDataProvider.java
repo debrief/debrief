@@ -3,7 +3,6 @@
  */
 package org.mwc.cmap.core.DataTypes.TrackData;
 
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.WatchableList;
 
 /**
@@ -31,7 +30,7 @@ public interface TrackDataProvider
 		/** 
 		 * 
 		 */
-		public void trackShifted(TrackWrapper subject);
+		public void trackShifted(WatchableList target);
 	}
 
 	/**
@@ -56,9 +55,9 @@ public interface TrackDataProvider
 	
 	/** ok - tell anybody that wants to know about our movement
 	 * 
-	 * @param target what's being dragged
+	 * @param watchableList what's being dragged
 	 */
-	public void fireTrackShift(final TrackWrapper target);
+	public void fireTrackShift(final WatchableList watchableList);
 	
 	/** ok, the tracks have changed. tell the world
 	 * 

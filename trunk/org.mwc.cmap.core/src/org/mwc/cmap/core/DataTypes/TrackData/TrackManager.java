@@ -370,7 +370,7 @@ public class TrackManager implements TrackDataProvider
 	 * @param target
 	 */
 	@Override
-	public void fireTrackShift(final TrackWrapper target)
+	public void fireTrackShift(final WatchableList target)
 	{
 		if (_myShiftListeners != null)
 		{
