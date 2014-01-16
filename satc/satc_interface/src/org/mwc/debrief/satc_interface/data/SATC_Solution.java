@@ -10,13 +10,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.jfree.util.ReadOnlyIterator;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
@@ -25,6 +34,7 @@ import org.mwc.debrief.satc_interface.data.wrappers.StraightLegWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -75,7 +85,8 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
-		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList, BaseLayer.ProvidesRange
+		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
+		BaseLayer.ProvidesRange, ISecondaryTrack
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -100,8 +111,8 @@ public class SATC_Solution extends BaseLayer implements
 			{
 				PropertyDescriptor[] res =
 				{
-						prop("ShowLocationConstraints", "whether to display location constraints",
-								FORMAT),
+						prop("ShowLocationConstraints",
+								"whether to display location constraints", FORMAT),
 						prop("OnlyPlotLegEnds",
 								"whether to only plot location bounds at leg ends", FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
@@ -269,6 +280,77 @@ public class SATC_Solution extends BaseLayer implements
 	protected void fireRepaint()
 	{
 		super.firePropertyChange(SupportsPropertyListeners.FORMAT, null, this);
+	}
+
+	/**
+	 * return our legs as a series of track segments - for the bearing residuals
+	 * plot
+	 * 
+	 */
+	@Override
+	public Enumeration<Editable> elements()
+	{
+		Vector<Editable> res = new Vector<Editable>();
+
+		// ok, loop through the legs, representing each one as a track segment
+		// check if we have any solutions
+		if ((_newRoutes == null) || (_newRoutes.length == 0))
+		{
+		}
+		else
+		{
+			CompositeRoute thisR = _newRoutes[0];
+
+			// loop through the legs
+			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+			while (legs.hasNext())
+			{
+				TrackSegment ts = new TrackSegment();
+
+				CoreRoute thisLeg = (CoreRoute) legs.next();
+
+				// ok, loop through the states
+				Iterator<State> iter = thisLeg.getStates().iterator();
+				while (iter.hasNext())
+				{
+					State state = (State) iter.next();
+					WorldLocation theLoc = conversions.toLocation(state.getLocation()
+							.getCoordinate());
+					double theCourse = state.getCourse();
+					double theSpeed = new WorldSpeed(state.getSpeed(), WorldSpeed.M_sec)
+							.getValueIn(WorldSpeed.ft_sec / 3);
+					Fix newF = new Fix(new HiResDate(state.getTime().getTime()), theLoc,
+							theCourse, theSpeed);
+					FixWrapper newFW = new FixWrapper(newF)
+					{
+
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public String getMultiLineName()
+						{
+							return super.getName();
+						}
+
+					};
+					final Color thisCol;
+
+					if (state.getColor() == null)
+						thisCol = Color.red;
+					else
+						thisCol = state.getColor();
+					newFW.setColor(thisCol);
+					ts.addFix(newFW);
+				}
+
+				res.add(ts);
+			}
+		}
+
+		return res.elements();
 	}
 
 	@Override
@@ -439,6 +521,8 @@ public class SATC_Solution extends BaseLayer implements
 
 				// tell the layer manager that we've changed
 
+				fireTrackShifted();
+
 				// hey, trigger repaint
 				fireRepaint();
 			}
@@ -538,6 +622,39 @@ public class SATC_Solution extends BaseLayer implements
 		solver.getContributions().addContributionsChangedListener(
 				_contributionsListener);
 		solver.getBoundsManager().addConstrainSpaceListener(_constrainListener);
+	}
+
+	protected void fireTrackShifted()
+	{
+		final WatchableList wl = this;
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				// if the current editor is a track data provider,
+				// tell it that we've shifted
+				final IWorkbench wb = PlatformUI.getWorkbench();
+				final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				if (win != null)
+				{
+					final IWorkbenchPage page = win.getActivePage();
+					final IEditorPart editor = page.getActiveEditor();
+					final TrackDataProvider dataMgr = (TrackDataProvider) editor
+							.getAdapter(TrackDataProvider.class);
+					// is it one of ours?
+					if (dataMgr != null)
+					{
+						{
+							dataMgr.fireTrackShift((WatchableList) wl);
+						}
+					}
+				}
+
+			}
+		});
+
 	}
 
 	@Override
@@ -828,7 +945,8 @@ public class SATC_Solution extends BaseLayer implements
 				}
 				else
 				{
-					// we don't add analysis contributions - they're in there already
+					// we don't add analysis contributions - they're in there
+					// already
 					wrapped = new ContributionWrapper(baseC);
 				}
 
@@ -938,7 +1056,8 @@ public class SATC_Solution extends BaseLayer implements
 						long thisTime = state.getTime().getTime();
 						if ((thisTime >= startT) && (thisTime <= finishT))
 						{
-							// check we haven't just stored a state at this time,
+							// check we haven't just stored a state at this
+							// time,
 							// JFReeChart plotting doesn't like it.
 							if (states.size() > 0)
 							{
