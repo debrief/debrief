@@ -45,7 +45,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	private static final String SHOW_BOUNDS = "ShowBounds";
 	private static final String ONLY_ENDS = "OnlyPlotEnds";
 	private static final String SHOW_SOLUTIONS = "ShowSolutions";
-	private static final String AUTO_SOLUTIONS = "AutoSolutions";
+	private static final String LIVE_RUNNING = "LiveRunning";
 
 	protected String _myContents;
 
@@ -60,7 +60,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	protected boolean _showSolutions = false;
 
 	protected boolean _showBounds = false;
-	protected boolean _autoGenerate = false;
+	protected boolean _liveRunning = true;
 
 	protected boolean _onlyPlotEnds = false;
 
@@ -97,12 +97,12 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 				_onlyPlotEnds  = value;
 			}
 		});
-		addAttributeHandler(new HandleBooleanAttribute(AUTO_SOLUTIONS)
+		addAttributeHandler(new HandleBooleanAttribute(LIVE_RUNNING)
 		{
 			@Override
 			public void setValue(String name, boolean value)
 			{
-				_autoGenerate = value;
+				_liveRunning = value;
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(SHOW_SOLUTIONS)
@@ -158,7 +158,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 		solution.setOnlyPlotLegEnds(_onlyPlotEnds);
 		solution.setShowSolutions(_showSolutions);
 		solution.setColor(_myColor);
-		solution.getSolver().setAutoGenerateSolutions(_autoGenerate);
+		solution.getSolver().setLiveRunning(_liveRunning);
 
 		// ok, repopulate the solver from the contents
 		if (_cdataCharacters.size() > 0)
@@ -229,7 +229,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 					writeThis(solution.getOnlyPlotLegEnds()));
 			newI.setAttribute(SHOW_SOLUTIONS,
 					writeThis(solution.getShowSolutions()));
-			newI.setAttribute(AUTO_SOLUTIONS, writeThis(solution.getSolver().isAutoGenerateSolutions()));
+			newI.setAttribute(LIVE_RUNNING, writeThis(solution.getSolver().isLiveRunning()));
 			ColourHandler.exportColour(solution.getColor(), newI, doc);
 
 			// insert the CDATA child node

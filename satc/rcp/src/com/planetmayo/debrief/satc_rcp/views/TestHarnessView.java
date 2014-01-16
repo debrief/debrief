@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,6 +45,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.impl.Solver;
 import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.GAParameters;
@@ -116,6 +119,7 @@ public class TestHarnessView extends ViewPart
 	private Binder<SASolutionGenerator> _saBinder;	
 	private List<Control> bfGraphControls = new ArrayList<Control>();
 	private List<Control> gaGraphControls = new ArrayList<Control>();
+	private PropertyChangeListener _liveRunningListener;
 
 	private ISolver _activeSolver;
 	private ISolversManager _solversManager;
@@ -601,6 +605,13 @@ public class TestHarnessView extends ViewPart
 	{
 		_settingActiveSolver = true;
 		try {
+			if (_activeSolver != null) 
+			{
+				((Solver) _activeSolver).removePropertyChangeListener(
+						ISolver.LIVE_RUNNING, 
+						_liveRunningListener
+				);
+			}
 			_activeSolver = solver;
 			_gaBinder.clear();
 			_saBinder.clear();
@@ -616,6 +627,7 @@ public class TestHarnessView extends ViewPart
 			_loadAction.setEnabled(enabled);
 			_useGAButton.setEnabled(false);
 			_useSAButton.setEnabled(false);
+			
 			if (solver != null) {
 				_solvers.setSelection(new StructuredSelection(solver));
 				if (solver.getSolutionGenerator() instanceof SwitchableSolutionGenerator) {
@@ -623,6 +635,21 @@ public class TestHarnessView extends ViewPart
 					_useSAButton.setEnabled(true);
 				}
 				selectSolutionGenerator(solver.getSolutionGenerator());
+				
+				_liveAction.setChecked(_activeSolver.isLiveRunning());
+				_liveRunningListener = new PropertyChangeListener()
+				{
+					
+					@Override
+					public void propertyChange(PropertyChangeEvent evt)
+					{
+						_liveAction.setChecked(_activeSolver.isLiveRunning());
+					}
+				};
+				((Solver) _activeSolver).addPropertyChangeListener(
+						ISolver.LIVE_RUNNING, 
+						_liveRunningListener
+				);						
 			}
 		}
 		finally
@@ -731,7 +758,6 @@ public class TestHarnessView extends ViewPart
 				_activeSolver.setLiveRunning(_liveAction.isChecked());
 			}
 		};
-		_liveAction.setChecked(true);
 
 		_restartAction = new Action()
 		{
@@ -761,7 +787,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				_activeSolver.run();
+				_activeSolver.run(true, true);
 			}
 		};
 		_playAction.setText("Play");
@@ -817,7 +843,7 @@ public class TestHarnessView extends ViewPart
 				if (reader.isLoaded()) 
 				{
 					_activeSolver.load(reader);
-					_activeSolver.run();
+					_activeSolver.run(true, false);
 				}
 			}
 			catch (FileNotFoundException e)

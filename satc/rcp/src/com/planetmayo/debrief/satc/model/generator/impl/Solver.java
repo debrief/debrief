@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
+import com.planetmayo.debrief.satc.model.ModelObject;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -20,8 +21,10 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
-public class Solver implements ISolver
+public class Solver extends ModelObject implements ISolver
 {
+	private static final long serialVersionUID = 1L;
+
 	private final String name;
 	
 	private final IContributions contributions;
@@ -38,12 +41,10 @@ public class Solver implements ISolver
 	 */
 	private volatile boolean liveRunning = true;
 	
-	private volatile boolean autoGenerateSolutions = false;
-	
 	private volatile boolean isClear = false;
 	
 	private LiveRunningListener liveRunningListener;
-	private AutoGenerateSolutionsListener autoGenerateListener;
+	private BoundsManagerToSolutionGeneratorBinding boundsManagerListener;
 	
 	/**
 	 * the set of contribution properties that we're interested in
@@ -52,8 +53,6 @@ public class Solver implements ISolver
 	private final String[] propertiesToRestartBoundsManager =
 	{ BaseContribution.ACTIVE, BaseContribution.START_DATE,
 			BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };	
-	private final String[] propertiesToRestartSolutionGenerator =
-	{ BaseContribution.WEIGHT, BaseContribution.ESTIMATE };
 	
 	public Solver(String name, IContributions contributions, ProblemSpace problemSpace,
 			IBoundsManager boundsManager,	ISolutionGenerator solutionGenerator, 
@@ -78,13 +77,8 @@ public class Solver implements ISolver
 		{
 			contributions.addPropertyListener(property, liveRunningListener);
 		}
-		
-		autoGenerateListener = new AutoGenerateSolutionsListener();
-		for (String property : propertiesToRestartSolutionGenerator) 
-		{
-			contributions.addPropertyListener(property, autoGenerateListener);
-		}		
-		boundsManager.addConstrainSpaceListener(autoGenerateListener);
+		boundsManagerListener = new BoundsManagerToSolutionGeneratorBinding();
+		boundsManager.addConstrainSpaceListener(boundsManagerListener);
 	}
 	
 	@Override
@@ -108,23 +102,13 @@ public class Solver implements ISolver
 	@Override
 	public void setLiveRunning(boolean checked)
 	{
+		boolean old = liveRunning;
 		liveRunning = checked;
+		firePropertyChange(LIVE_RUNNING, old, checked);
 	}
 
 	@Override
-	public boolean isAutoGenerateSolutions()
-	{
-		return autoGenerateSolutions;
-	}
-
-	@Override
-	public void setAutoGenerateSolutions(boolean autoGenerateSolutions)
-	{
-		this.autoGenerateSolutions = autoGenerateSolutions;
-	}
-
-	@Override
-	public boolean isLiveEnabled()
+	public boolean isLiveRunning()
 	{
 		return liveRunning;
 	}
@@ -144,7 +128,9 @@ public class Solver implements ISolver
 	@Override
 	public void setVehicleType(VehicleType type)
 	{
+		VehicleType old = type;
 		boundsManager.setVehicleType(type);
+		firePropertyChange(VEHICLE_TYPE, old, type);		
 	}
 
 	@Override
@@ -156,7 +142,9 @@ public class Solver implements ISolver
 	@Override
 	public void setPrecision(Precision precision)
 	{
+		Precision old = precision;
 		solutionGenerator.setPrecision(precision);
+		firePropertyChange(PRECISION, old, precision);
 	}
 
 	@Override
@@ -188,9 +176,17 @@ public class Solver implements ISolver
 	}
 
 	@Override
-	public synchronized void run()
+	public synchronized void run(boolean constraint, boolean generate)
 	{
-		boundsManager.run();
+		if (constraint) 
+		{
+			boundsManager.restart();
+			boundsManager.run();
+		}
+		if (generate && boundsManager.isCompleted())
+		{
+			solutionGenerator.generateSolutions(true);
+		}
 	}
 	
   @Override
@@ -208,7 +204,7 @@ public class Solver implements ISolver
 	{
 		try 
 		{
-			boundsManager.removeConstrainSpaceListener(autoGenerateListener);
+			boundsManager.removeConstrainSpaceListener(boundsManagerListener);
 			contributions.removeContributionsChangedListener(liveRunningListener);
 
 			clear();			
@@ -221,7 +217,7 @@ public class Solver implements ISolver
 		}
 		finally 
 		{
-			boundsManager.addConstrainSpaceListener(autoGenerateListener);
+			boundsManager.addConstrainSpaceListener(boundsManagerListener);
 			contributions.addContributionsChangedListener(liveRunningListener);
 		}
 	}
@@ -272,16 +268,12 @@ public class Solver implements ISolver
 		}
 	}
 	
-	private class AutoGenerateSolutionsListener extends SteppingAdapter implements PropertyChangeListener
+	private class BoundsManagerToSolutionGeneratorBinding extends SteppingAdapter
 	{
 
 		@Override
 		public void statesBounded(IBoundsManager boundsManager)
 		{
-			if (autoGenerateSolutions) 
-			{
-				solutionGenerator.generateSolutions(true);
-			}
 		}
 
 		@Override
@@ -295,15 +287,6 @@ public class Solver implements ISolver
 				IncompatibleStateException ex)
 		{
 			solutionGenerator.clear();
-		}
-
-		@Override
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			if (autoGenerateSolutions && boundsManager.isCompleted()) 
-			{
-				solutionGenerator.generateSolutions(false);
-			}			
 		}
 	}
 }

@@ -283,7 +283,7 @@ public class SATC_Solution extends BaseLayer implements
 
 	public void recalculate()
 	{
-		_mySolver.run();
+		_mySolver.run(true, true);
 	}
 
 	public Color getColor()
@@ -314,16 +314,6 @@ public class SATC_Solution extends BaseLayer implements
 	public ISolver getSolver()
 	{
 		return _mySolver;
-	}
-
-	public boolean isAutoRecalc()
-	{
-		return _mySolver.isAutoGenerateSolutions();
-	}
-
-	public void setAutoRecalc(boolean autoRecalc)
-	{
-		_mySolver.setAutoGenerateSolutions(autoRecalc);
 	}
 
 	@Override

@@ -612,7 +612,6 @@ public class CreateSolutionFromSensorData implements
 				final ISolver newSolution = solvMgr.createSolver(solutionName);
 
 				_targetSolution = new SATC_Solution(newSolution);
-				newSolution.setAutoGenerateSolutions(false);
 				_theLayers.addThisLayer(_targetSolution);
 
 				// ok, give it the default contributions
