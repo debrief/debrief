@@ -153,7 +153,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 						// is this different to our current one?
 						if (provider != _targetLayers)
-						{
+						{							
 							// ok, start listening to the new one
 							_targetLayers = provider;
 							plotSelected(provider, parentPart);
@@ -168,6 +168,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 					{
 						if (part == _targetLayers)
 						{
+							// cancel the listeners
+							plotSelected(null, null);
+							
 							_targetLayers = null;
 							clearPlot();
 						}
@@ -204,6 +207,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 					{
 						if (part == _targetViewport)
 						{
+							if(_targetViewport != null)
+								stopListeningToViewport();
+							
 							_targetViewport = null;
 						}
 					}
