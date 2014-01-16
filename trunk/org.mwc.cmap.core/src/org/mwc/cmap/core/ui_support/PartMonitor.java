@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -76,10 +77,35 @@ public class PartMonitor implements IPartListener
 	
 	
 	
+	/** 
+	 * @deprecated - we should just use the ditch method, it's neater
+	 * @param partService
+	 */
 	public void dispose(final IPartService partService)
 	{
+		if(_myPartService != partService)
+			CorePlugin.logError(Status.ERROR, "FOR MAINTAINER: PartMonitor is looking at wrong server", null);
+		ditch();
+	}
+
+	/** convenience method to fire a part-activated message representing
+	 * the currently active editor.  If there is a part already active when
+	 * the view opens we will use that part to populate the new view, 
+	 * if applicable
+	 * @param currentPage
+	 */
+	public void fireActivePart(final IWorkbenchPage currentPage)
+	{
+		// just check we have an editor
+		if(currentPage != null)
+			partActivated(currentPage.getActiveEditor());
+	}
+	
+	public void ditch()
+	{
+
 		// right stop listening
-		partService.removePartListener(this);
+		_myPartService.removePartListener(this);
 		
 		// hey, ditch our lists aswell
 		final Iterator<HashMap<Class<?>, Vector<ICallback>>> iter = _myEvents.values().iterator();
@@ -100,28 +126,6 @@ public class PartMonitor implements IPartListener
 		}
 		
 		// and ditch the full list of events
-		_myEvents.clear();
-	}
-
-	/** convenience method to fire a part-activated message representing
-	 * the currently active editor.  If there is a part already active when
-	 * the view opens we will use that part to populate the new view, 
-	 * if applicable
-	 * @param currentPage
-	 */
-	public void fireActivePart(final IWorkbenchPage currentPage)
-	{
-		// just check we have an editor
-		if(currentPage != null)
-			partActivated(currentPage.getActiveEditor());
-	}
-	
-	public void ditch()
-	{
-		// stop listening for part changes
-		_myPartService.removePartListener(this);
-		
-		// and clear what we're listening to
 		_myEvents.clear();
 	}
 	
