@@ -67,6 +67,7 @@ import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.magic.OptimiseTest;
 import org.mwc.debrief.track_shift.magic.OptimiseTest.TryOffsetFunction;
 
+import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.Editable;
@@ -232,14 +233,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(new Separator());
 
 		final Vector<Action> actions = DragSegment.getDragModes();
-		for (final Iterator<Action> iterator = actions.iterator(); iterator.hasNext();)
+		for (final Iterator<Action> iterator = actions.iterator(); iterator
+				.hasNext();)
 		{
 			final Action action = iterator.next();
 			toolBarManager.add(action);
-		}
-		if (_myPartMonitor != null)
-		{
-			_myPartMonitor.ditch();
 		}
 	}
 
@@ -295,12 +293,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						}
 					}
 
-					// ok, we've just got draggable items - override the current item
+					// ok, we've just got draggable items - override the current
+					// item
 					_draggableSelection = dragees;
 				}
 			}
 		};
 
+		// sort out the part monitor
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+
+		// now start listening out for people's parts
 		watchMyParts();
 
 		// put the actions in the UI
@@ -341,12 +345,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_dotPlot.addRangeMarker(zeroMarker);
 
 		_linePlot = new XYPlot();
-		final NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
+		final NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits()
+				+ ")");
 		_linePlot.setRangeAxis(absBrgAxis);
 		absBrgAxis.setAutoRangeIncludesZero(false);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-		final DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(null,
-				null, _linePlot);
+		final DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
+				null, null, _linePlot);
 		lineRend.setPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
 
@@ -405,27 +410,32 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				final double xVal = _linePlot.getRangeAxis().getLowerBound();
 				final double yVal = _linePlot.getDomainAxis().getUpperBound();
 				boolean annotChanged = false;
-				if (annot.getX() != yVal) {
+				if (annot.getX() != yVal)
+				{
 					annot.setX(yVal);
 					annotChanged = true;
 				}
-				if (annot.getY() != xVal) {
+				if (annot.getY() != xVal)
+				{
 					annot.setY(xVal);
 					annotChanged = true;
 				}
 				// and write the text
 				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
-				final Date newDate = new Date((long) _linePlot.getDomainCrosshairValue());
+				final Date newDate = new Date((long) _linePlot
+						.getDomainCrosshairValue());
 				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				final String dateVal = _df.format(newDate);
 				final String theMessage = " [" + dateVal + "," + numA + "]";
-				if (!theMessage.equals(annot.getText())) {
+				if (!theMessage.equals(annot.getText()))
+				{
 					annot.setText(theMessage);
 					annotChanged = true;
 				}
-				if (annotChanged) {
+				if (annotChanged)
+				{
 					_linePlot.removeAnnotation(annot);
 					_linePlot.addAnnotation(annot);
 				}
@@ -518,6 +528,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			_theTrackDataListener.removeTrackShiftListener(_myShiftListener);
 			_theTrackDataListener.removeTrackShiftListener(_myShiftListener);
 		}
+
+		// stop the part monitor
+		_myPartMonitor.ditch();
 
 	}
 
@@ -647,7 +660,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				.getImageDescriptor("icons/reveal.gif"));
 
 		// now the course action
-		_magicBtn = new Action("Attempt to auto-stack dots", IAction.AS_PUSH_BUTTON)
+		_magicBtn = new Action("Attempt to auto-stack dots (only for Manual TMA)", IAction.AS_PUSH_BUTTON)
 		{
 			@Override
 			public void run()
@@ -671,10 +684,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		final IStructuredSelection sel = (IStructuredSelection) selProvider
 				.getSelection();
 
+		// check that the secondary track is a TrackWrapper
+		ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
+		if (!(secondary instanceof TrackWrapper))
+		{
+			CorePlugin.logError(Status.WARNING,
+					"We can't 'Do Magic' for a non-standard TMA solution", null);
+			return;
+		}
+
+		TrackWrapper secondaryTrack = (TrackWrapper) secondary;
+
 		// ok, see if we've got something of value
 		final Vector<DraggableItem> dragees = new Vector<DraggableItem>();
 		final String troubles = OptimiseTest.getDraggables(dragees, sel,
-				_myHelper.getSecondaryTrack());
+				secondaryTrack);
 
 		if (troubles != null)
 		{
@@ -683,8 +707,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		}
 
 		// cool sort out the list of sensor locations for these tracks
-		final TreeSet<Doublet> doublets = _myHelper.getDoublets(_onlyVisible.isChecked(),
-				true, false);
+		final TreeSet<Doublet> doublets = _myHelper.getDoublets(
+				_onlyVisible.isChecked(), true, false);
 
 		// Create instance of Minimisation
 		final Minimisation min = new Minimisation();
@@ -724,7 +748,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				MWC.Algorithms.Conversions.m2Degs(range), 0);
 
 		// get the secondary track
-		final TrackWrapper secTrack = _myHelper.getSecondaryTrack();
+		final TrackWrapper secTrack = secondaryTrack;
 
 		final DragOperation shiftIt = new DragOperation()
 		{
@@ -739,8 +763,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_ourLayersSubject, secTrack, shiftIt);
 
 		// and wrap it
-		final DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject,
-				secTrack);
+		final DebriefActionWrapper daw = new DebriefActionWrapper(dta,
+				_ourLayersSubject, secTrack);
 
 		// and add it to the clipboard
 		CorePlugin.run(daw);
@@ -761,7 +785,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	{
 	}
 
-	public void logError(final int statusCode, final String string, final Exception object)
+	public void logError(final int statusCode, final String string,
+			final Exception object)
 	{
 		// somehow, put the message into the UI
 		_myChart.setTitle(string);
@@ -783,6 +808,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	void updateStackedDots(final boolean updateDoublets)
 	{
+
+		// note, we can only do our magic if the secondary track is amanual TMA
+		_magicBtn.setEnabled(_myHelper.getSecondaryTrack() instanceof TrackWrapper);
 
 		// update the current datasets
 		updateData(updateDoublets);
@@ -807,7 +835,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		if (updateDoublets)
 		{
 			// trigger recalculation of date axis ticks
-			final CachedTickDateAxis date = (CachedTickDateAxis) _combined.getDomainAxis();
+			final CachedTickDateAxis date = (CachedTickDateAxis) _combined
+					.getDomainAxis();
 			date.clearTicks();
 
 			if (_showDotPlot.isChecked())
@@ -828,10 +857,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	/**
 	 * sort out what we're listening to...
 	 */
-	private void watchMyParts()
+	private final void watchMyParts()
 	{
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
 
 		final ErrorLogger logger = this;
 
@@ -933,7 +960,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						{
 							_myShiftListener = new TrackShiftListener()
 							{
-								public void trackShifted(final TrackWrapper subject)
+								public void trackShifted(final WatchableList subject)
 								{
 									// the tracks have moved, we haven't changed
 									// the tracks or
@@ -1028,11 +1055,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 								{
 								}
 
-								public void dataModified(final Layers theData, final Layer changedLayer)
+								public void dataModified(final Layers theData,
+										final Layer changedLayer)
 								{
 								}
 
-								public void dataReformatted(final Layers theData, final Layer changedLayer)
+								public void dataReformatted(final Layers theData,
+										final Layer changedLayer)
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
 											_onlyVisible.isChecked(), _holder, logger, getType(),
@@ -1105,7 +1134,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	}
 
 	@Override
-	public void init(final IViewSite site, final IMemento memento) throws PartInitException
+	public void init(final IViewSite site, final IMemento memento)
+			throws PartInitException
 	{
 		super.init(site, memento);
 
