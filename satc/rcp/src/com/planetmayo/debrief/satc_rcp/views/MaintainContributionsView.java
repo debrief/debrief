@@ -277,6 +277,11 @@ public class MaintainContributionsView extends ViewPart
 		group.setLayout(layout);
 		group.setText("Preferences");
 
+		liveConstraints = new Button(group, SWT.TOGGLE);
+		liveConstraints.setText("Auto-Recalc of Constraints");
+		liveConstraints.setLayoutData(new GridData(
+				GridData.HORIZONTAL_ALIGN_BEGINNING	| GridData.VERTICAL_ALIGN_CENTER));			
+		
 		recalculate = new Button(group, SWT.DEFAULT);
 		recalculate.setText("Calculate Solution");
 		recalculate.addSelectionListener(new SelectionAdapter()
@@ -294,11 +299,6 @@ public class MaintainContributionsView extends ViewPart
 		recalculate.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_CENTER | GridData.VERTICAL_ALIGN_CENTER));
 
-		liveConstraints = new Button(group, SWT.CHECK);
-		liveConstraints.setText("Live constraints");
-		liveConstraints.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING	| GridData.VERTICAL_ALIGN_CENTER));			
-		
 		cancelGeneration = new Button(group, SWT.PUSH);
 		cancelGeneration.setText("Cancel");
 		cancelGeneration.setVisible(false);
