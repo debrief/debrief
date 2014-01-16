@@ -154,7 +154,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 		SATC_Solution solution = new SATC_Solution(newSolvr);
 
 		// and the preferences
-		solution.setShowLocationBounds(_showBounds);
+		solution.setShowLocationConstraints(_showBounds);
 		solution.setOnlyPlotLegEnds(_onlyPlotEnds);
 		solution.setShowSolutions(_showSolutions);
 		solution.setColor(_myColor);
@@ -224,7 +224,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			// store the name
 			newI.setAttribute(NAME, solution.getName());
 			newI.setAttribute(SHOW_BOUNDS,
-					writeThis(solution.getShowLocationBounds()));
+					writeThis(solution.getShowLocationConstraints()));
 			newI.setAttribute(ONLY_ENDS,
 					writeThis(solution.getOnlyPlotLegEnds()));
 			newI.setAttribute(SHOW_SOLUTIONS,

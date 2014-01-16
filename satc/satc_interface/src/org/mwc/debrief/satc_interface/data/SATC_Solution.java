@@ -100,12 +100,11 @@ public class SATC_Solution extends BaseLayer implements
 			{
 				PropertyDescriptor[] res =
 				{
-						prop("ShowLocationBounds", "whether to display location bounds",
+						prop("ShowLocationConstraints", "whether to display location constraints",
 								FORMAT),
 						prop("OnlyPlotLegEnds",
 								"whether to only plot location bounds at leg ends", FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
-						prop("AutoRecalc", "auto-recalc on changes", FORMAT),
 						prop("Name", "the name for this solution", EditorType.FORMAT),
 						prop("Color", "the color to display this solution",
 								EditorType.FORMAT),
@@ -296,7 +295,7 @@ public class SATC_Solution extends BaseLayer implements
 		this._myColor = color;
 	}
 
-	public boolean getShowLocationBounds()
+	public boolean getShowLocationConstraints()
 	{
 		return _showLocationBounds;
 	}
@@ -777,7 +776,7 @@ public class SATC_Solution extends BaseLayer implements
 	}
 
 	@FireReformatted
-	public void setShowLocationBounds(boolean showLocationBounds)
+	public void setShowLocationConstraints(boolean showLocationBounds)
 	{
 		_showLocationBounds = showLocationBounds;
 	}
