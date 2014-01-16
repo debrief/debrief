@@ -753,7 +753,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	}
 
 	@Override
-	public final String getName()
+	public String getName()
 	{
 		return getLabel();
 	}
