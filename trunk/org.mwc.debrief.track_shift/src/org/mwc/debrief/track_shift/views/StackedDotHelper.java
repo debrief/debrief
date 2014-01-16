@@ -67,8 +67,8 @@ public final class StackedDotHelper
 	// MEMBER METHODS
 	// ////////////////////////////////////////////////
 
-	public TreeSet<Doublet> getDoublets(final boolean onlyVis, final boolean needBearing,
-			final boolean needFrequency)
+	public TreeSet<Doublet> getDoublets(final boolean onlyVis,
+			final boolean needBearing, final boolean needFrequency)
 	{
 		return getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
 				needFrequency);
@@ -79,14 +79,14 @@ public final class StackedDotHelper
 	 * 
 	 */
 	public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
-			final ISecondaryTrack targetTrack, final boolean onlyVis, final boolean needBearing,
-			final boolean needFrequency)
+			final ISecondaryTrack targetTrack, final boolean onlyVis,
+			final boolean needBearing, final boolean needFrequency)
 	{
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
 		// friendly fix-wrapper to save us repeatedly creating it
-		final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
-				0.0, 0.0));
+		final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0,
+				0, 0), 0.0, 0.0));
 
 		// loop through our sensor data
 		final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
@@ -136,7 +136,8 @@ public final class StackedDotHelper
 									if (thisI instanceof SegmentList)
 									{
 										final SegmentList thisList = (SegmentList) thisI;
-										final Enumeration<Editable> theElements = thisList.elements();
+										final Enumeration<Editable> theElements = thisList
+												.elements();
 										while (theElements.hasMoreElements())
 										{
 											final TrackSegment ts = (TrackSegment) theElements
@@ -230,9 +231,9 @@ public final class StackedDotHelper
 	 *          how far the current track has been dragged
 	 */
 	public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot,
-			final TrackDataProvider tracks, final boolean onlyVis, final boolean showCourse,
-			final boolean flipAxes, final Composite holder, final ErrorLogger logger,
-			final boolean updateDoublets)
+			final TrackDataProvider tracks, final boolean onlyVis,
+			final boolean showCourse, final boolean flipAxes, final Composite holder,
+			final ErrorLogger logger, final boolean updateDoublets)
 	{
 		// do we even have a primary track
 		if (_primaryTrack == null)
@@ -287,6 +288,10 @@ public final class StackedDotHelper
 				final HiResDate currentTime = thisD.getDTG();
 				final FixedMillisecond thisMilli = new FixedMillisecond(currentTime
 						.getDate().getTime());
+
+				// put the measured bearing back in the positive domain
+				if (measuredBearing < 0)
+					measuredBearing += 360d;
 
 				// stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
 				if (flipAxes)
@@ -371,11 +376,12 @@ public final class StackedDotHelper
 			return;
 		}
 
-		final Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(startDTG,
-				endDTG);
+		final Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(
+				startDTG, endDTG);
 
 		// loop through th items
-		for (final Iterator<Editable> iterator = hostFixes.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = hostFixes.iterator(); iterator
+				.hasNext();)
 		{
 			final Editable editable = (Editable) iterator.next();
 			final FixWrapper fw = (FixWrapper) editable;
@@ -424,9 +430,9 @@ public final class StackedDotHelper
 	 * @param onlyVis
 	 * @param holder
 	 */
-	void initialise(final TrackDataProvider tracks, final boolean showError, final boolean onlyVis,
-			final Composite holder, final ErrorLogger logger, final String dataType, final boolean needBrg,
-			final boolean needFreq)
+	void initialise(final TrackDataProvider tracks, final boolean showError,
+			final boolean onlyVis, final Composite holder, final ErrorLogger logger,
+			final String dataType, final boolean needBrg, final boolean needFreq)
 	{
 
 		// have we been created?
@@ -550,8 +556,9 @@ public final class StackedDotHelper
 	 *          how far the current track has been dragged
 	 */
 	public void updateFrequencyData(final XYPlot dotPlot, final XYPlot linePlot,
-			final TrackDataProvider tracks, final boolean onlyVis, final Composite holder,
-			final ErrorLogger logger, final boolean updateDoublets)
+			final TrackDataProvider tracks, final boolean onlyVis,
+			final Composite holder, final ErrorLogger logger,
+			final boolean updateDoublets)
 	{
 
 		// do we have anything?
