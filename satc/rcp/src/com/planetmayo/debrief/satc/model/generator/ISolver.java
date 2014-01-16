@@ -20,6 +20,11 @@ import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
  */
 public interface ISolver
 {
+	static final String LIVE_RUNNING = "liveRunning";
+	static final String NAME = "name";
+	static final String PRECISION = "precision";
+	static final String VEHICLE_TYPE = "vehicleType";
+	
 	/**
 	 * @returns solver name
 	 */
@@ -56,7 +61,7 @@ public interface ISolver
 	/**
 	 * solves the problem with specified parameters
 	 */
-	void run();
+	void run(boolean constraint, boolean generate);
 	
 	/**
 	 * cancels generation job
@@ -75,21 +80,7 @@ public interface ISolver
 	 * 
 	 * @return
 	 */
-	boolean isLiveEnabled();
-	
-	/**
-	 * are we generating solutions automatically 
-	 * after bounds manager finishes with problem space?  
-	 */
-	boolean isAutoGenerateSolutions();
-
-	/**
-	 * specify should we start generating solutions automatically 
-	 * after bounds manager finishes with problem space  
-	 * 
-	 * @param autoGenerateSolutions
-	 */
-  void setAutoGenerateSolutions(boolean autoGenerateSolutions);
+	boolean isLiveRunning();
   
   /**
    * sets vehicle type which is used in computations 

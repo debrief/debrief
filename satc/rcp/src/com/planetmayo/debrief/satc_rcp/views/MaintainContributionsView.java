@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.databinding.Binding;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -102,8 +106,9 @@ public class MaintainContributionsView extends ViewPart
 
 	
 	/** UI fields */
+	private DataBindingContext context;
 	private Composite main;
-	private Button generateSolutions;
+	private Button liveConstraints;
 	private Button recalculate;
 	private Button cancelGeneration;
 	private ComboViewer precisionsCombo;
@@ -123,6 +128,7 @@ public class MaintainContributionsView extends ViewPart
 	/**
 	 * current listeners 
 	 */
+	private Binding liveRunningBinding;
 	private IContributionsChangedListener contributionsChangedListener;
 	private IGenerateSolutionsListener generateSolutionsListener;
 	private ISolversManagerListener solverManagerListener;
@@ -130,6 +136,7 @@ public class MaintainContributionsView extends ViewPart
 	@Override
 	public void createPartControl(final Composite parent)
 	{
+		context = new DataBindingContext();
 		IContributionsManager contributionsManager = SATC_Activator.getDefault()
 				.getService(IContributionsManager.class, true);
 		IVehicleTypesManager vehicleManager = SATC_Activator.getDefault()
@@ -151,6 +158,7 @@ public class MaintainContributionsView extends ViewPart
 	@Override
 	public void dispose()
 	{
+		context.dispose();
 		setActiveSolver(null);
 		solversManager.removeSolverManagerListener(solverManagerListener);
 		super.dispose();
@@ -270,7 +278,7 @@ public class MaintainContributionsView extends ViewPart
 		group.setText("Preferences");
 
 		recalculate = new Button(group, SWT.DEFAULT);
-		recalculate.setText("Recalculate");
+		recalculate.setText("Calculate Solution");
 		recalculate.addSelectionListener(new SelectionAdapter()
 		{
 
@@ -279,31 +287,17 @@ public class MaintainContributionsView extends ViewPart
 			{
 				if (activeSolver != null)
 				{
-					activeSolver.getBoundsManager().restart();
-					activeSolver.run();
+					activeSolver.run(true, true);
 				}
 			}
 		});
 		recalculate.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_CENTER | GridData.VERTICAL_ALIGN_CENTER));
 
-		generateSolutions = new Button(group, SWT.CHECK);
-		generateSolutions.setText("Auto generate solutions");
-		generateSolutions.addSelectionListener(new SelectionAdapter()
-		{
-
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (activeSolver != null)
-				{
-					activeSolver.setAutoGenerateSolutions(generateSolutions.getSelection());
-				}
-			}
-		});
-		generateSolutions.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING	| GridData.VERTICAL_ALIGN_CENTER));
-
+		liveConstraints = new Button(group, SWT.CHECK);
+		liveConstraints.setText("Live constraints");
+		liveConstraints.setLayoutData(new GridData(
+				GridData.HORIZONTAL_ALIGN_BEGINNING	| GridData.VERTICAL_ALIGN_CENTER));			
 		
 		cancelGeneration = new Button(group, SWT.PUSH);
 		cancelGeneration.setText("Cancel");
@@ -532,7 +526,8 @@ public class MaintainContributionsView extends ViewPart
 			activeSolver.getContributions().
 				removeContributionsChangedListener(contributionsChangedListener);
 			activeSolver.getSolutionGenerator().
-				removeReadyListener(generateSolutionsListener);			
+				removeReadyListener(generateSolutionsListener);
+			liveRunningBinding.dispose();			
 		}
 		List<BaseContribution> contributions = new ArrayList<BaseContribution>(contributionsControl.keySet());
 		for (BaseContribution contribution : contributions)
@@ -556,12 +551,15 @@ public class MaintainContributionsView extends ViewPart
 			{
 				addContribution(contribution, false);
 			}
-			contList.layout();
-			generateSolutions.setSelection(activeSolver.isAutoGenerateSolutions());
+			contList.layout();			
 			vehiclesCombo.setSelection(
 					new StructuredSelection(activeSolver.getVehicleType())
 			);
 			precisionsCombo.setSelection(new StructuredSelection(activeSolver.getPrecision()));
+			liveRunningBinding = context.bindValue(
+					WidgetProperties.selection().observe(liveConstraints),
+					BeansObservables.observeValue(activeSolver, ISolver.LIVE_RUNNING)
+			);
 			setPartName(TITLE + " - " + activeSolver.getName());
 		}
 		else 
@@ -571,7 +569,7 @@ public class MaintainContributionsView extends ViewPart
 		if (! contList.isDisposed())
 		{
 			precisionsCombo.getCombo().setEnabled(hasSolver);
-			generateSolutions.setEnabled(hasSolver);
+			liveConstraints.setEnabled(hasSolver);
 			recalculate.setEnabled(hasSolver);
 			vehiclesCombo.getCombo().setEnabled(hasSolver);
 			addContributionButton.setEnabled(hasSolver);

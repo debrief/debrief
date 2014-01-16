@@ -407,7 +407,7 @@ public class TestSupport
 	{
 		IContributions contributions = generator.getContributions();
 		// clear the geneartor first
-		boolean live = generator.isLiveEnabled();
+		boolean live = generator.isLiveRunning();
 		generator.setLiveRunning(false);
 		generator.clear();
 
@@ -523,7 +523,7 @@ public class TestSupport
 
 		// ok, and get it to go for it
 		generator.setLiveRunning(live);
-		generator.run();
+		generator.run(true, false);
 
 	}
 
