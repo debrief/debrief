@@ -23,6 +23,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -49,7 +50,7 @@ public final class StackedDotHelper
 	/**
 	 * the secondary track we're monitoring
 	 */
-	private TrackWrapper _secondaryTrack;
+	private ISecondaryTrack _secondaryTrack;
 
 	/**
 	 * the set of points to watch on the primary track. This is stored as a sorted
@@ -78,7 +79,7 @@ public final class StackedDotHelper
 	 * 
 	 */
 	public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
-			final TrackWrapper targetTrack, final boolean onlyVis, final boolean needBearing,
+			final ISecondaryTrack targetTrack, final boolean onlyVis, final boolean needBearing,
 			final boolean needFrequency)
 	{
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
@@ -486,7 +487,7 @@ public final class StackedDotHelper
 
 			// correct sort?
 			final WatchableList secTrk = secs[0];
-			if (!(secTrk instanceof TrackWrapper))
+			if (!(secTrk instanceof ISecondaryTrack))
 			{
 				logger.logError(IStatus.INFO,
 						"The secondary track must be a vehicle track", null);
@@ -494,7 +495,7 @@ public final class StackedDotHelper
 			}
 			else
 			{
-				_secondaryTrack = (TrackWrapper) secTrk;
+				_secondaryTrack = (ISecondaryTrack) secTrk;
 			}
 
 		}
@@ -666,7 +667,7 @@ public final class StackedDotHelper
 		linePlot.setDataset(actualSeries);
 	}
 
-	public TrackWrapper getSecondaryTrack()
+	public ISecondaryTrack getSecondaryTrack()
 	{
 		return _secondaryTrack;
 	}
