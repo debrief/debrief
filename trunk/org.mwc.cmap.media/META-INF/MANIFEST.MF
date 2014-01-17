@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Media Player
 Bundle-Vendor: MWC
 Bundle-SymbolicName: org.mwc.cmap.media;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-Activator: org.mwc.cmap.media.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
