@@ -1,12 +1,13 @@
 package org.mwc.debrief.core.loaders;
 
-import static org.mwc.debrief.core.loaders.GpxUtil.*;
+import static org.mwc.debrief.core.loaders.GpxUtil.collectDirecotryPath;
+import static org.mwc.debrief.core.loaders.GpxUtil.getDocumentSource;
+import static org.mwc.debrief.core.loaders.GpxUtil.isGpx10;
+import static org.mwc.debrief.core.loaders.GpxUtil.isValid;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -23,7 +24,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.gpx.mappers.TrackMapper;
 
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 
 import com.topografix.gpx.v10.Gpx;
@@ -128,7 +128,7 @@ public class JaxbGpxHelper implements GpxHelper
 	}
 
 	@Override
-	public void marshall(final Layers from, final File fileName)
+	public void marshall(final List<TrackWrapper> tracks, final File fileName)
 	{
 		final String direcotryPath = collectDirecotryPath();
 
@@ -142,7 +142,6 @@ public class JaxbGpxHelper implements GpxHelper
 		try
 		{
 			final File saveTo = new File(direcotryPath, fileName.getName());
-			final List<TrackWrapper> tracks = getTracksToMarshall(from);
 
 			if (tracks.size() > 0)
 			{
@@ -184,20 +183,5 @@ public class JaxbGpxHelper implements GpxHelper
 			}
 			CorePlugin.errorDialog("Export to GPS", "Problem during the export." + dialogMsg);
 		}
-	}
-
-	private List<TrackWrapper> getTracksToMarshall(final Layers from)
-	{
-		final Enumeration<Editable> allLayers = from.elements();
-		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
-		while (allLayers.hasMoreElements())
-		{
-			final Editable element = allLayers.nextElement();
-			if (element instanceof TrackWrapper)
-			{
-				tracks.add((TrackWrapper) element);
-			}
-		}
-		return tracks;
 	}
 }
