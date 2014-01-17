@@ -2,7 +2,9 @@ package org.mwc.debrief.core.loaders;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
 
 /**
@@ -32,9 +34,9 @@ public interface GpxHelper
 	 * Will marshall in gpx 1.0 version only
 	 * 
 	 * @param from
-	 *          aggregate root
+	 *          tracks to export
 	 * @param saveToGpx
 	 *          GPX file to save to.
 	 */
-	void marshall(Layers from, File saveToGpx);
+	void marshall(List<TrackWrapper> tracks, File saveToGpx);
 }
