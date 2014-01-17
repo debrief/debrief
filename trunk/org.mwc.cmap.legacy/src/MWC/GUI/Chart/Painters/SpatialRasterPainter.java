@@ -1234,7 +1234,6 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 
   public final void setContourDepths(final String contourDepths)
   {
-
     // keep a sorted list of the depths
     final TreeSet<Double> sortedDepths = new TreeSet<Double>();
 
@@ -1250,6 +1249,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       catch (final ParseException e)
       {
         // don't worry, we'll just move onto the next one
+      	e.printStackTrace();
       }
 
     }

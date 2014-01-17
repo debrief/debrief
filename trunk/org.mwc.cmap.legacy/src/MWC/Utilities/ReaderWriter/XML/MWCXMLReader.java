@@ -434,23 +434,26 @@ public class MWCXMLReader extends DefaultHandler {
 		return longFormat.format(val);
 	}
 
-	static public double readThisDouble(final String val) 
+	static public double readThisDouble(final String value) 
 			throws ParseException {
 		double res;
+		
+		// do some trimming, just in case
+		final String trimmed = value.trim();
 
 		// SPECIAL CASE: An external system is producing Debrief datafiles. It
 		// puts NaN in for course, and it's making us trip over.
-		if (val.toUpperCase().equals("NAN"))
+		if (trimmed.toUpperCase().equals("NAN"))
 			res = 0;
 		else
 		{
 			try 
 			{
-				res = shortFormat.parse(val).doubleValue();
+				res = shortFormat.parse(trimmed).doubleValue();
 			} 
 			catch (final ParseException e) 
 			{
-				res = shortCommaFormat.parse(val).doubleValue();
+				res = shortCommaFormat.parse(trimmed).doubleValue();
 			}
 		}
 
