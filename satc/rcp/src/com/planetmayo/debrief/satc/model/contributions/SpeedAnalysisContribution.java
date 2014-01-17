@@ -3,7 +3,6 @@ package com.planetmayo.debrief.satc.model.contributions;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
-import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 
 public class SpeedAnalysisContribution extends
@@ -31,7 +30,7 @@ public class SpeedAnalysisContribution extends
 	}
 
 	@Override
-	protected SpeedRange duplicateThis(SpeedRange thisRange)
+	protected SpeedRange cloneRange(SpeedRange thisRange)
 	{
 		return new SpeedRange(thisRange);
 	}
@@ -41,36 +40,6 @@ public class SpeedAnalysisContribution extends
 			SpeedRange thisRange) throws IncompatibleStateException
 	{
 		currentLegState.constrainTo(thisRange);
-	}
-
-	public void actUpon2(ProblemSpace space) throws IncompatibleStateException
-	{
-		BoundedState lastStateWithSpeed = null;
-		if (space.getVehicleType() != null)
-		{
-			double maxDecel = space.getVehicleType().getMaxDecelRate();
-			double maxAccel = space.getVehicleType().getMaxAccelRate();
-			for (BoundedState currentState : space.states())
-			{
-				if (lastStateWithSpeed != null)
-				{
-					double diffSeconds = (currentState.getTime().getTime() - lastStateWithSpeed
-							.getTime().getTime()) / 1000.0d;
-
-					double minSpeed = lastStateWithSpeed.getSpeed().getMin() - maxDecel
-							* diffSeconds;
-					double maxSpeed = lastStateWithSpeed.getSpeed().getMax() + maxAccel
-							* diffSeconds;
-					if (minSpeed < 0)
-					{
-						minSpeed = 0;
-					}
-					currentState.constrainTo(new SpeedRange(minSpeed, maxSpeed));
-				}
-				if (currentState.getSpeed() != null)
-					lastStateWithSpeed = currentState;
-			}
-		}
 	}
 
 	@Override
@@ -112,11 +81,5 @@ public class SpeedAnalysisContribution extends
 			minSpeed = 0;
 		}
 		return new SpeedRange(minSpeed, maxSpeed);
-	}
-
-	@Override
-	protected void relaxConstraint(BoundedState currentState, SpeedRange newRange)
-	{
-		currentState.setSpeed(newRange);
 	}
 }

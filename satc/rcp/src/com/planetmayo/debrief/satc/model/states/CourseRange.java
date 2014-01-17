@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import com.planetmayo.debrief.satc.util.MathUtils;
+
 /**
  * class representing a set of Course bounds
  * 
@@ -170,8 +172,8 @@ public class CourseRange extends BaseRange<CourseRange>
 		else
 		{
 			// generate the inverse angles
-			double newMin = this._min + Math.PI;
-			double newMax = this._max + Math.PI;
+			double newMin = MathUtils.normalizeAngle(this._min + Math.PI);
+			double newMax = MathUtils.normalizeAngle(this._max + Math.PI);
 
 			res = new CourseRange(newMin, newMax);
 		}

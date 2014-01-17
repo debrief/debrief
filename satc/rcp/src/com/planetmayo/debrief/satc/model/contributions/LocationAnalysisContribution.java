@@ -1,16 +1,14 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ListIterator;
+import java.util.List;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
-import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
@@ -50,7 +48,7 @@ public class LocationAnalysisContribution extends
 	}
 
 	@Override
-	protected LocationRange duplicateThis(LocationRange thisRange)
+	protected LocationRange cloneRange(LocationRange thisRange)
 	{
 		return new LocationRange(thisRange);
 	}
@@ -62,35 +60,17 @@ public class LocationAnalysisContribution extends
 		currentLegState.constrainTo(thisRange);
 	}
 
-	protected void applyAnalysisConstraints(final ProblemSpace space,
-			SwitchableIterator switcher) throws IncompatibleStateException
+	protected void applyAnalysisConstraints(List<BoundedState> states, VehicleType vType) throws IncompatibleStateException
 	{
 		// remember the previous state
 		BoundedState lastStateWithState = null;
 
-		// get the vehicle type
-		final VehicleType vType = space.getVehicleType();
-
 		// ok, loop through the states, setting range limits for any unbounded
 		// ranges
-		Collection<BoundedState> theStates = space.states();
-		ArrayList<BoundedState> al = new ArrayList<BoundedState>(theStates);
-		ListIterator<BoundedState> iter = switcher.getIterator(al);
-		while (switcher.canStep(iter))
+		for  (BoundedState currentState : states)
 		{
-			BoundedState currentState = switcher.next(iter);
-
-			// ok, we're not in a leg. relax it.
-			try
-			{
-				lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
+			lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
 						currentState, vType);
-			}
-			catch (IncompatibleStateException e)
-			{
-				e.setFailingState(currentState);
-				throw e;
-			}
 		}
 	}
 
@@ -110,11 +90,9 @@ public class LocationAnalysisContribution extends
 		SpeedRange speed = state.getSpeed();
 
 		// now - if we're running backwards, we need to reverse the course
-		if (diff < 0)
+		if (diff < 0 && course != null)
 		{
-			// aah, do we have a course?
-			if (course != null)
-				course = course.generateInverse();
+			course = course.generateInverse();
 		}
 
 		// ok, put the time back to +ve
@@ -216,53 +194,6 @@ public class LocationAnalysisContribution extends
 		}
 		return new LocationRange(GeoSupport.getFactory().createPolygon(res, null));
 	}
-
-	@Override
-	protected void relaxConstraint(BoundedState currentState,
-			LocationRange newRange)
-	{
-		currentState.setLocation(newRange);
-	}
-
-	// @Override
-	// public void actUpon(ProblemSpace space) throws IncompatibleStateException
-	// {
-	// // remember the previous state
-	// BoundedState _lastState = null;
-	//
-	// // ok, loop through the states
-	// @SuppressWarnings("unused")
-	// int ctr = 0;
-	// Iterator<BoundedState> iter = space.states().iterator();
-	// while (iter.hasNext())
-	// {
-	// ctr++;
-	// BoundedState thisS = iter.next();
-	//
-	// // do we have a previous constraint to work from?
-	// if (_lastState != null)
-	// {
-	//
-	// // ok. sort out the constraints from the last state
-	// long timeDiff = thisS.getTime().getTime() - _lastState.getTime().getTime();
-	//
-	// // we may be going forwards or backwards, use the abs time diff
-	// timeDiff = Math.abs(timeDiff);
-	//
-	// // ok - where could we have travelled to?
-	// LocationRange newConstraint = getRangeFor(_lastState, timeDiff);
-	//
-	// if (newConstraint != null)
-	// {
-	// // and constraint it
-	// thisS.constrainTo(newConstraint);
-	// }
-	// }
-	//
-	// // ok, remember, and move on
-	// _lastState = thisS;
-	// }
-	// }
 
 	public LinearRing getCourseRing(Coordinate center, CourseRange course, SpeedRange speed, long timeMillis)
 	{
