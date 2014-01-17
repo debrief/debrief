@@ -113,7 +113,17 @@ public class ExportTrackToGPX implements RightClickContextItemGenerator
 				}
 			}
 			
-			final File someFile = new File("debrief_export.gpx");			
+			// if there's only one track - use it in the filename
+			final String fileHeader;
+			if(tracks.size() == 1)
+			{
+				fileHeader = tracks.get(0).getName() + "_export";
+			}
+			
+			else
+				fileHeader = "debrief_export";
+			
+			final File someFile = new File(fileHeader + ".gpx");			
 			ImportGPX.doExport(tracks, someFile);
 			
 			return Status.OK_STATUS;
