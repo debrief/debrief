@@ -64,26 +64,24 @@ public class BoundedState implements Comparable<BoundedState>
 	 */
 	public void constrainTo(CourseRange range) throws IncompatibleStateException
 	{
-		// do we have any speed constraints?
-		if (_course == null)
+		try 
 		{
-			// no, better create some
-			_course = new CourseRange(range);
-		}
-		else
-		{
-			// yes, further constrain to this set
-
-			try
+			// do we have any speed constraints?
+			if (_course == null)
 			{
+				// no, better create some
+				_course = new CourseRange(range);
+			}
+			else
+			{
+				// yes, further constrain to this set
 				_course.constrainTo(range);
 			}
-			catch (IncompatibleStateException e)
-			{
-				// inject the state details
-				e.setFailingState(this);
-				throw e;
-			}
+		}
+		catch (IncompatibleStateException ex) 
+		{
+			ex.setFailingState(this);
+			throw ex;
 		}
 	}
 
@@ -95,15 +93,23 @@ public class BoundedState implements Comparable<BoundedState>
 	public void constrainTo(LocationRange range)
 			throws IncompatibleStateException
 	{
-		// do we have any speed constraints?
-		if (_location == null)
+		try 
 		{
-			// no, better create some
-			_location = new LocationRange(range);
+			// do we have any speed constraints?
+			if (_location == null)
+			{
+				// no, better create some
+				_location = new LocationRange(range);
+			}
+			else
+			{ // yes, further constrain to this set
+				_location.constrainTo(range);
+			}
 		}
-		else
-		{ // yes, further constrain to this set
-			_location.constrainTo(range);
+		catch (IncompatibleStateException ex)
+		{
+			ex.setFailingState(this);
+			throw ex;
 		}
 	}
 
@@ -114,15 +120,23 @@ public class BoundedState implements Comparable<BoundedState>
 	 */
 	public void constrainTo(SpeedRange range) throws IncompatibleStateException
 	{
-		// do we have any speed constraints?
-		if (_speed == null)
+		try
 		{
+			// do we have any speed constraints?
+			if (_speed == null)
+			{
 			// no, better create some
-			_speed = new SpeedRange(range);
+				_speed = new SpeedRange(range);
+			}
+			else
+			{ // yes, further constrain to this set
+				_speed.constrainTo(range);
+			}
 		}
-		else
-		{ // yes, further constrain to this set
-			_speed.constrainTo(range);
+		catch (IncompatibleStateException ex)
+		{
+			ex.setFailingState(this);
+			throw ex;
 		}
 	}
 

@@ -36,7 +36,7 @@ public class CourseAnalysisContribution extends
 	}
 
 	@Override
-	protected CourseRange duplicateThis(CourseRange thisRange)
+	protected CourseRange cloneRange(CourseRange thisRange)
 	{
 		return new CourseRange(thisRange);
 	}
@@ -47,11 +47,10 @@ public class CourseAnalysisContribution extends
 	{
 		currentLegCourse.constrainTo(thisRange);
 	}
+	
 	protected CourseRange calcRelaxedRange(BoundedState lastStateWithRange,
 			VehicleType vType, long millis)
 	{
-		
-		
 		// just in case we're doing a reverse pass, use the abs millis
 		millis = Math.abs(millis);
 		
@@ -103,11 +102,4 @@ public class CourseAnalysisContribution extends
 		CourseRange newRange = new CourseRange(newMin, newMax);
 		return newRange;
 	}
-
-	@Override
-	protected void relaxConstraint(BoundedState currentState, CourseRange newRange)
-	{
-		currentState.setCourse(newRange);
-	}
-
 }
