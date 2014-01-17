@@ -1678,5 +1678,12 @@
       <startup
             class="org.mwc.debrief.core.Startup"></startup>
    </extension>
+    <extension
+          point="org.mwc.cmap.core.RightClickSupport">
+          <helper
+                class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
+    </extension>
+   
+   
 
 </plugin>
