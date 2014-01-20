@@ -38,6 +38,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
+import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
@@ -46,6 +47,7 @@ import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -2303,6 +2305,34 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 
 			}// while fixWrappers has more elements
+			
+			// SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
+			// 
+			if(seg instanceof CoreTMASegment)
+			{
+				CoreTMASegment tma = (CoreTMASegment) seg;
+				
+				WorldLocation firstLoc = seg.first().getBounds().getCentre();
+				WorldLocation lastLoc = seg.last().getBounds().getCentre();
+				Font f = new Font("Sans Serif", Font.PLAIN, 11);
+				Color c = _theLabel.getColor();
+				
+				// tell the segment it's being stretched
+				final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
+						.formatOneDecimalPlace(tma.getSpeed().getValueIn(WorldSpeed.Kts));
+
+				// copied this text from RelativeTMASegment
+				String textLabel = "[" + spdTxt + " kts " + (int) tma.getCourse() + "\u00B0]";
+				
+				// ok, now plot it
+				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+						lastLoc, 1.2, true);
+				textLabel = getName().replace(TextLabel.NEWLINE_MARKER, " ");
+				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
+						lastLoc, 1.2, false);
+			}
+			
+
 
 			// ok, just see if we have any pending polylines to paint
 			paintSetOfPositions(dest, lastCol, thisLineStyle);
