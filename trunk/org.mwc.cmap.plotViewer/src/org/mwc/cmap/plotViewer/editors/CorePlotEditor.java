@@ -1,12 +1,12 @@
 package org.mwc.cmap.plotViewer.editors;
 
 import java.awt.Color;
-import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import java.util.Enumeration;
-
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -65,9 +65,8 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
 import MWC.GUI.CanvasType.PaintListener;
-
+import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
@@ -124,9 +123,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 	protected DropTarget target;
 
 	Vector<ISelectionChangedListener> _selectionListeners;
-	
+
 	ISelectionChangedListener _selectionChangeListener;
-	
+
 	Plottable _selectedItem;
 
 	ISelection _currentSelection;
@@ -225,14 +224,16 @@ public abstract class CorePlotEditor extends EditorPart implements
 				if (theLayer instanceof GeoToolsLayer)
 				{
 					// get the content
-					final GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
+					final GtProjection gp = (GtProjection) _myChart.getCanvas()
+							.getProjection();
 					final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
 					gt.clearMap();
 
 					if (gp.numLayers() == 0)
 					{
 						// ok - we've got to force the data rea
-						final WorldArea area = _myChart.getCanvas().getProjection().getDataArea();
+						final WorldArea area = _myChart.getCanvas().getProjection()
+								.getDataArea();
 						_myChart.getCanvas().getProjection().setDataArea(area);
 					}
 
@@ -265,7 +266,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 			}
 
 			@Override
-			public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
+			public void dataExtended(final Layers theData, final Plottable newItem,
+					final Layer parent)
 			{
 				layersExtended();
 				fireDirty();
@@ -290,20 +292,20 @@ public abstract class CorePlotEditor extends EditorPart implements
 				fireDirty();
 			}
 		};
-		
-		_selectionChangeListener = new ISelectionChangedListener() 
+
+		_selectionChangeListener = new ISelectionChangedListener()
 		{
-			
+
 			@Override
-			public void selectionChanged(final SelectionChangedEvent event) 
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
 				final ISelection sel = event.getSelection();
 				if (!(sel instanceof IStructuredSelection))
 					return;
 				final IStructuredSelection ss = (IStructuredSelection) sel;
 				final Object o = ss.getFirstElement();
-				if (o instanceof EditableWrapper) 
-				{	
+				if (o instanceof EditableWrapper)
+				{
 					final EditableWrapper pw = (EditableWrapper) o;
 					final Layer changedLayer = pw.getTopLevelLayer();
 					final Editable ed = pw.getEditable();
@@ -311,17 +313,17 @@ public abstract class CorePlotEditor extends EditorPart implements
 					{
 						if (!ed.equals(_selectedItem))
 							unHighlightItem(_selectedItem, changedLayer);
-					}					
-					
+					}
+
 					if (ed instanceof Plottable)
 					{
 						final Plottable plottable = (Plottable) ed;
-						_selectedItem = plottable;	
-						highlightItem(_selectedItem, changedLayer);											
+						_selectedItem = plottable;
+						highlightItem(_selectedItem, changedLayer);
 					}
-						
+
 				}
-				
+
 			}
 		};
 
@@ -329,31 +331,31 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	private IPartListener partListener = new IPartListener()
 	{
-		
+
 		@Override
 		public void partOpened(IWorkbenchPart part)
 		{
 			activateContext(part);
 		}
-		
+
 		@Override
 		public void partDeactivated(IWorkbenchPart part)
 		{
 			deactivateContext(part);
 		}
-		
+
 		@Override
 		public void partClosed(IWorkbenchPart part)
 		{
 			deactivateContext(part);
 		}
-		
+
 		@Override
 		public void partBroughtToTop(IWorkbenchPart part)
 		{
 			activateContext(part);
 		}
-		
+
 		@Override
 		public void partActivated(IWorkbenchPart part)
 		{
@@ -362,19 +364,22 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		private void activateContext(IWorkbenchPart part)
 		{
-			if (part == CorePlotEditor.this && _myActivation == null) {
-					_myActivation = getContextService().activateContext(CONTEXT_ID);
+			if (part == CorePlotEditor.this && _myActivation == null)
+			{
+				_myActivation = getContextService().activateContext(CONTEXT_ID);
 			}
 		}
+
 		private void deactivateContext(IWorkbenchPart part)
 		{
-			if (part == CorePlotEditor.this && _myActivation != null) {
-					getContextService().deactivateContext(_myActivation);
-					_myActivation = null;
+			if (part == CorePlotEditor.this && _myActivation != null)
+			{
+				getContextService().deactivateContext(_myActivation);
+				_myActivation = null;
 			}
 		}
 	};
-	
+
 	public void dispose()
 	{
 		// ok, tell the chart to self-destruct (And dispose/release of any objects)
@@ -382,7 +387,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_myChart = null;
 
 		super.dispose();
-		
+
 		getSite().getPage().removePartListener(partListener);
 
 		// empty the part monitor
@@ -432,7 +437,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 			 */
 			private static final long serialVersionUID = 1L;
 
-			protected void addEditor(final Plottable res, final EditorType e, final Layer parentLayer)
+			protected void addEditor(final Plottable res, final EditorType e,
+					final Layer parentLayer)
 			{
 				selectPlottable(res, parentLayer);
 			}
@@ -478,20 +484,21 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		// listen out for us gaining focus - so we can set the cursort tracker
 		listenForMeGainingFocus();
-		
+
 		listenForSelectionChange();
-	
+
 		getSite().getPage().addPartListener(partListener);
 	}
 
-	private IContextService getContextService() {
+	private IContextService getContextService()
+	{
 		return (IContextService) getSite().getService(IContextService.class);
 	}
-	
+
 	private void listenForMeLosingFocus()
 	{
-		//_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-		//		.getPartService());
+		// _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+		// .getPartService());
 		_myPartMonitor.addPartListener(CorePlotEditor.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
@@ -508,8 +515,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 	private void listenForMeGainingFocus()
 	{
 		final EditorPart linkToMe = this;
-		//_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-		//		.getPartService());
+		// _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+		// .getPartService());
 		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -529,19 +536,20 @@ public abstract class CorePlotEditor extends EditorPart implements
 					}
 				});
 	}
-	
+
 	private void listenForSelectionChange()
 	{
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback() 
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(final String type,
-							final Object part, final IWorkbenchPart parentPart) 
-						{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
 						// aah, just check it's not is
 						final ISelectionProvider iS = (ISelectionProvider) part;
-						if (!iS.equals(this)) {
-							if (_selectionChangeListener != null) 
+						if (!iS.equals(this))
+						{
+							if (_selectionChangeListener != null)
 							{
 								iS.addSelectionChangedListener(_selectionChangeListener);
 							}
@@ -557,15 +565,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 					{
 						// aah, just check it's not is
 						final ISelectionProvider iS = (ISelectionProvider) part;
-						if (!iS.equals(this)) 
+						if (!iS.equals(this))
 						{
-							if (_selectionChangeListener != null) 
+							if (_selectionChangeListener != null)
 							{
 								iS.removeSelectionChangedListener(_selectionChangeListener);
 							}
 						}
 					}
-				});	
+				});
 	}
 
 	boolean checkIfImTheSameAs(final Object target1)
@@ -596,105 +604,110 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{
 		CorePlugin.logError(Status.INFO,
 				"Double-click processed, opening property editor for:" + target1, null);
-		final EditableWrapper parentP = new EditableWrapper(parentLayer, null, getChart()
-				.getLayers());
-		final EditableWrapper wrapped = new EditableWrapper(target1, parentP, getChart()
-				.getLayers());
+		final EditableWrapper parentP = new EditableWrapper(parentLayer, null,
+				getChart().getLayers());
+		final EditableWrapper wrapped = new EditableWrapper(target1, parentP,
+				getChart().getLayers());
 		final ISelection selected = new StructuredSelection(wrapped);
 		fireSelectionChanged(selected);
 	}
-	
-	public void highlightItem(final Plottable target,
-			final Layer changedLayer)
+
+	public void highlightItem(final Plottable target, final Layer changedLayer)
 	{
 		if (target == null || target.getBounds() == null)
 			return;
 		if (getChart() == null)
 			return;
-		
+
 		final CanvasType can = getChart().getCanvas();
 		can.addPainter(new CanvasType.PaintAdaptor()
 		{
 
 			@Override
-			public void paintMe(CanvasType dest) 
+			public void paintMe(CanvasType dest)
 			{
-				drawHighlightedBorder(dest, getDataPoints(target.getBounds()));
+				drawHighlightedBorder(dest, target.getBounds());
 			}
 
 			@Override
-			public String getName() 
+			public String getName()
 			{
 				return getPaintListenerName(target);
 			}
-			
+
 		});
 		getChart().update(changedLayer);
-		
+
 	}
-	
+
 	private String getPaintListenerName(final Plottable target)
 	{
 		return target.getName() + target.getBounds();
 	}
-	
-	private Collection<WorldLocation> getDataPoints(final WorldArea area)
-	{
-		final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
-		res.add(area.getTopLeft());
-		res.add(area.getTopRight());
-		res.add(area.getBottomRight());
-		res.add(area.getBottomLeft());
-
-		return res;
-	}
-	
 	private void drawHighlightedBorder(final CanvasType can,
-			final Collection<WorldLocation> pts)
+			final WorldArea worldArea)
 	{
-		can.setColor(new Color(255,0,0, 45));
+		can.setColor(new Color(255, 255, 255, 45));
+		can.setLineStyle(CanvasType.DOT_DASH);
 		can.setLineWidth(2);
-		
-		final Iterator<WorldLocation> iter = pts.iterator();
-		final int STEPS = pts.size();
-		final int[] xP = new int[STEPS];
-		final int[] yP = new int[STEPS];
-		int ctr = 0;
-		while (iter.hasNext())
+
+		// ok, get the TL & BR coordinates
+		WorldLocation tl = worldArea.getTopLeft();
+		WorldLocation br = worldArea.getBottomRight();
+
+		// now put them into a rectangle in screen coords
+		Rectangle rect = new Rectangle(can.toScreen(tl));
+		rect.add(can.toScreen(br));
+
+		// now expand the rectangle
+		final int BORDER = 3;
+		rect.grow(BORDER, BORDER);
+
+		// and draw the rectangle
+		can.drawRect(rect.x, rect.y, rect.width, rect.height);
+
+		// lastly, loop through the points
+		PathIterator pi = rect.getPathIterator(new AffineTransform());
+		double[] coords = new double[2];
+		while (!pi.isDone())
 		{
-			final Point pt = can.toScreen(iter.next());
-			xP[ctr] = pt.x;
-			yP[ctr++] = pt.y;
-			can.fillRect(pt.x-2, pt.y-2, 4, 4);
+			int code = pi.currentSegment(coords);
+			// is this a new coordinate?
+			if (code == PathIterator.SEG_LINETO)
+			{
+				// yes, draw a corner marker
+				can.fillRect((int) coords[0] - 2, (int) coords[1] - 2, 4, 4);
+			}
+			// and move to the next
+			pi.next();
 		}
-		can.drawPolygon(xP, yP, STEPS);
+
 	}
-	
-	public void unHighlightItem(final Plottable target,
-			final Layer changedLayer)
+
+	public void unHighlightItem(final Plottable target, final Layer changedLayer)
 	{
 		if (getChart() == null)
 			return;
 		final CanvasType can = getChart().getCanvas();
-		final Enumeration<PaintListener> enumer = can.getPainters();		
+		final Enumeration<PaintListener> enumer = can.getPainters();
 		final String pName = getPaintListenerName(target);
 		CanvasType.PaintListener painter = null;
 		while (enumer.hasMoreElements())
-	    {
-	      final CanvasType.PaintListener thisPainter =
-	        (CanvasType.PaintListener) enumer.nextElement();
-	      if(thisPainter.getName().equals(pName))
-	      {
-	    	  painter = thisPainter;
-	    	  break;
-	      }
-	    }
-		if(painter != null)
+		{
+			final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer
+					.nextElement();
+			if (thisPainter.getName().equals(pName))
+			{
+				painter = thisPainter;
+				break;
+			}
+		}
+		if (painter != null)
 		{
 			can.removePainter(painter);
-		    getChart().update(changedLayer);
-		}	
+			getChart().update(changedLayer);
+		}
 	}
 
 	/**
@@ -704,7 +717,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 	final void putBackdropIntoProperties()
 	{
 		final SWTCanvas can = (SWTCanvas) getChart().getCanvas();
-		final EditableWrapper wrapped = new EditableWrapper(can, getChart().getLayers());
+		final EditableWrapper wrapped = new EditableWrapper(can, getChart()
+				.getLayers());
 		final ISelection sel = new StructuredSelection(wrapped);
 		fireSelectionChanged(sel);
 
@@ -905,7 +919,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener
 	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
-	public void addSelectionChangedListener(final ISelectionChangedListener listener)
+	public void addSelectionChangedListener(
+			final ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
 			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
@@ -916,8 +931,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 	}
 
 	/**
-	 * Returns the ActionbarContributor for the Editor.
-	 * ISelectionChangedListener
+	 * Returns the ActionbarContributor for the Editor. ISelectionChangedListener
+	 * 
 	 * @return the ActionbarContributor for the Editor.
 	 */
 	public SubActionBars2 getActionbar()
@@ -942,7 +957,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 * org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener
 	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
-	public void removeSelectionChangedListener(final ISelectionChangedListener listener)
+	public void removeSelectionChangedListener(
+			final ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
 	}
@@ -967,7 +983,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 			_currentSelection = sel;
 			if (_selectionListeners != null)
 			{
-				final SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
+				final SelectionChangedEvent sEvent = new SelectionChangedEvent(this,
+						sel);
 				for (final Iterator<ISelectionChangedListener> stepper = _selectionListeners
 						.iterator(); stepper.hasNext();)
 				{
@@ -1006,14 +1023,17 @@ public abstract class CorePlotEditor extends EditorPart implements
 				public void run()
 				{
 					firePropertyChange(PROP_DIRTY);
-					final PropertySheet propertiesView = (PropertySheet) CorePlugin.findView(IPageLayout.ID_PROP_SHEET);
-					if (propertiesView != null) 
+					final PropertySheet propertiesView = (PropertySheet) CorePlugin
+							.findView(IPageLayout.ID_PROP_SHEET);
+					if (propertiesView != null)
 					{
-						final PropertySheetPage propertySheetPage = (PropertySheetPage) propertiesView.getCurrentPage();
-						if (propertySheetPage != null && !propertySheetPage.getControl().isDisposed()) 
-		                { 
-		                    propertySheetPage.refresh(); 
-		                } 
+						final PropertySheetPage propertySheetPage = (PropertySheetPage) propertiesView
+								.getCurrentPage();
+						if (propertySheetPage != null
+								&& !propertySheetPage.getControl().isDisposed())
+						{
+							propertySheetPage.refresh();
+						}
 					}
 				}
 			});
