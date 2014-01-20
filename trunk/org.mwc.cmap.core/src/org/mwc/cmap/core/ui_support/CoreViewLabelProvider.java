@@ -3,16 +3,25 @@
  */
 package org.mwc.cmap.core.ui_support;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
@@ -26,7 +35,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
-import MWC.GenericData.Watchable;
+import MWC.GenericData.ColoredWatchable;
 
 public class CoreViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
@@ -48,7 +57,9 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 */
 	Image nonVisibleImage = null;
 
-	private static ImageRegistry _imageRegistry;
+	//private static ImageRegistry _imageRegistry;
+	
+	private Map<String, Image> _imageMap = new HashMap<String, Image>();
 
 	/**
 	 * 
@@ -80,10 +91,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	}
 
 	protected Image getLocallyCachedImage(final String index) {
-		if (_imageRegistry == null)
-			_imageRegistry = new ImageRegistry();
-
-		return _imageRegistry.get(index);
+		return _imageMap.get(index);
 	}
 
 	/**
@@ -95,40 +103,70 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 *            the image to store
 	 */
 	protected void storeLocallyCachedImage(final String index, final Image image) {
-		if (_imageRegistry == null)
-			_imageRegistry = new ImageRegistry();
-
-		_imageRegistry.put(index, image);
+		_imageMap.put(index, image);
 	}
 
+	public void disposeImages()
+	{
+		Collection<Image> images = _imageMap.values();
+		for (Image image : images)
+		{
+			if (image != null && !image.isDisposed())
+			{
+				image.dispose();
+			}
+		}
+		_imageMap.clear();
+	}
+	
 	/**
 	 * ditch the cache for the specified items, so we generate new ones as
 	 * required
-	 * 
-	 * @param newList
-	 *            the list of objects for whom we want to delete an image
-	 * 
 	 */
-	public void resetCacheFor(final Vector<Object> newList) {
-		// ok, cycle through them
-		for (final Iterator<Object> iterator = newList.iterator(); iterator
-				.hasNext();) {
-			final Object object = iterator.next();
-			if (object instanceof EditableWrapper) {
-				final EditableWrapper ew = (EditableWrapper) object;
-				final Editable ed = ew.getEditable();
-
-				// aah does this have color?
-				if (ed instanceof Watchable) {
-					// ok - cast it
-					final Watchable was = (Watchable) ed;
-
-					// generate the id
-					final String theId = idFor(was);
-
-					// and ditch it
-					_imageRegistry.remove(theId);
+	public void resetCacheFor(Tree tree)
+	{
+		if (tree != null && _imageMap != null && _imageMap.values().size() > 100)
+		{
+			TreeItem[] items = tree.getItems();
+			Set<String> imageIds = new HashSet<String>();
+			for (TreeItem item : items)
+			{
+				addImageIds(imageIds, item);
+			}
+			Set<String> keySet = _imageMap.keySet();
+			Set<String> toRemove = new HashSet<String>();
+			for (String key:keySet) {
+				if (!imageIds.contains(key)) {
+					toRemove.add(key);
 				}
+			}
+			for (String id:toRemove) {
+				Image image = _imageMap.get(id);
+				if (image != null && !image.isDisposed()) {
+					image.dispose();
+				}
+				_imageMap.remove(id);
+			}
+		}
+	}
+	
+	private void addImageIds(Set<String> imageIds, TreeItem item)
+	{
+		Object data = item.getData();
+		if (data instanceof EditableWrapper)
+		{
+			EditableWrapper editableWrapper = (EditableWrapper) data;
+			Editable editable = editableWrapper.getEditable();
+			if (editable instanceof ColoredWatchable)
+			{
+				String id = idFor((ColoredWatchable) editable);
+				imageIds.add(id);
+			}
+		}
+		TreeItem[] items = item.getItems();
+		if (items.length > 0) {
+			for (TreeItem i:items) {
+				addImageIds(imageIds, i);
 			}
 		}
 	}
@@ -160,8 +198,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 		if (thirdPartyImageDescriptor != null) {
 			// right, is this something that we apply color to?
-			if (editable instanceof Watchable) {
-				final Watchable thisW = (Watchable) editable;
+			if (editable instanceof ColoredWatchable) {
+				final ColoredWatchable thisW = (ColoredWatchable) editable;
 
 				// sort out the color index
 				final String thisId = idFor(thisW);
@@ -192,7 +230,43 @@ public class CoreViewLabelProvider extends LabelProvider implements
 						newGC.setBackground(thisColor);
 
 						// apply a color wash
-						newGC.fillRectangle(0, 0, wid, ht);
+						// Linux/Mac doesn't fill transparent color properly. The following is workaround.
+						if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS()))
+						{
+							ImageData data = res.getImageData();
+						  // we recognize two transparency types
+							if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL
+									|| data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
+							{
+								for (int i = 0; i < wid; i++)
+								{
+									for (int j = 0; j < ht; j++)
+									{
+										if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL)
+										{
+											if (data.getPixel(i, j) > 0)
+											{
+												newGC.fillRectangle(i, j, 1, 1);
+											}
+										} else if (data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
+										{
+											if (data.getAlpha(i, j) > 0)
+											{
+												newGC.fillRectangle(i, j, 1, 1);
+											}
+										}
+									}
+								}
+							} else
+							{
+								// display solid color icon
+								newGC.fillRectangle(0, 0, wid, ht);
+							}
+						} else
+						{
+							// Windows
+							newGC.fillRectangle(0, 0, wid, ht);
+						}
 
 						// and dispose the GC
 						newGC.dispose();
@@ -238,7 +312,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * @param thisW the item to hash
 	 * @return a unique string for this item type and color
 	 */
-	private String idFor(final Watchable thisW) {
+	private String idFor(final ColoredWatchable thisW) {
 		return thisW.getClass() + " " + thisW.getColor();
 	}
 
