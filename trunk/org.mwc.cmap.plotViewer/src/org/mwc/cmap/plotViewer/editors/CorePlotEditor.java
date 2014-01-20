@@ -1,8 +1,12 @@
 package org.mwc.cmap.plotViewer.editors;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
+import java.util.Enumeration;
+
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -13,6 +17,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.DND;
@@ -60,6 +65,9 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.CanvasType.PaintListener;
+
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
@@ -70,6 +78,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
@@ -115,6 +124,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 	protected DropTarget target;
 
 	Vector<ISelectionChangedListener> _selectionListeners;
+	
+	ISelectionChangedListener _selectionChangeListener;
+	
+	Plottable _selectedItem;
 
 	ISelection _currentSelection;
 
@@ -277,6 +290,40 @@ public abstract class CorePlotEditor extends EditorPart implements
 				fireDirty();
 			}
 		};
+		
+		_selectionChangeListener = new ISelectionChangedListener() 
+		{
+			
+			@Override
+			public void selectionChanged(final SelectionChangedEvent event) 
+			{
+				final ISelection sel = event.getSelection();
+				if (!(sel instanceof IStructuredSelection))
+					return;
+				final IStructuredSelection ss = (IStructuredSelection) sel;
+				final Object o = ss.getFirstElement();
+				if (o instanceof EditableWrapper) 
+				{	
+					final EditableWrapper pw = (EditableWrapper) o;
+					final Layer changedLayer = pw.getTopLevelLayer();
+					final Editable ed = pw.getEditable();
+					if (_selectedItem != null)
+					{
+						if (!ed.equals(_selectedItem))
+							unHighlightItem(_selectedItem, changedLayer);
+					}					
+					
+					if (ed instanceof Plottable)
+					{
+						final Plottable plottable = (Plottable) ed;
+						_selectedItem = plottable;	
+						highlightItem(_selectedItem, changedLayer);											
+					}
+						
+				}
+				
+			}
+		};
 
 	}
 
@@ -431,6 +478,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		// listen out for us gaining focus - so we can set the cursort tracker
 		listenForMeGainingFocus();
+		
+		listenForSelectionChange();
 	
 		getSite().getPage().addPartListener(partListener);
 	}
@@ -480,6 +529,44 @@ public abstract class CorePlotEditor extends EditorPart implements
 					}
 				});
 	}
+	
+	private void listenForSelectionChange()
+	{
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback() 
+				{
+					public void eventTriggered(final String type,
+							final Object part, final IWorkbenchPart parentPart) 
+						{
+						// aah, just check it's not is
+						final ISelectionProvider iS = (ISelectionProvider) part;
+						if (!iS.equals(this)) {
+							if (_selectionChangeListener != null) 
+							{
+								iS.addSelectionChangedListener(_selectionChangeListener);
+							}
+						}
+
+					}
+				});
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(final String type, final Object part,
+							final IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not is
+						final ISelectionProvider iS = (ISelectionProvider) part;
+						if (!iS.equals(this)) 
+						{
+							if (_selectionChangeListener != null) 
+							{
+								iS.removeSelectionChangedListener(_selectionChangeListener);
+							}
+						}
+					}
+				});	
+	}
 
 	boolean checkIfImTheSameAs(final Object target1)
 	{
@@ -515,6 +602,99 @@ public abstract class CorePlotEditor extends EditorPart implements
 				.getLayers());
 		final ISelection selected = new StructuredSelection(wrapped);
 		fireSelectionChanged(selected);
+	}
+	
+	public void highlightItem(final Plottable target,
+			final Layer changedLayer)
+	{
+		if (target == null || target.getBounds() == null)
+			return;
+		if (getChart() == null)
+			return;
+		
+		final CanvasType can = getChart().getCanvas();
+		can.addPainter(new CanvasType.PaintAdaptor()
+		{
+
+			@Override
+			public void paintMe(CanvasType dest) 
+			{
+				drawHighlightedBorder(dest, getDataPoints(target.getBounds()));
+			}
+
+			@Override
+			public String getName() 
+			{
+				return getPaintListenerName(target);
+			}
+			
+		});
+		getChart().update(changedLayer);
+		
+	}
+	
+	private String getPaintListenerName(final Plottable target)
+	{
+		return target.getName() + target.getBounds();
+	}
+	
+	private Collection<WorldLocation> getDataPoints(final WorldArea area)
+	{
+		final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+
+		res.add(area.getTopLeft());
+		res.add(area.getTopRight());
+		res.add(area.getBottomRight());
+		res.add(area.getBottomLeft());
+
+		return res;
+	}
+	
+	private void drawHighlightedBorder(final CanvasType can,
+			final Collection<WorldLocation> pts)
+	{
+		can.setColor(new Color(255,0,0, 45));
+		can.setLineWidth(2);
+		
+		final Iterator<WorldLocation> iter = pts.iterator();
+		final int STEPS = pts.size();
+		final int[] xP = new int[STEPS];
+		final int[] yP = new int[STEPS];
+		int ctr = 0;
+		while (iter.hasNext())
+		{
+			final Point pt = can.toScreen(iter.next());
+			xP[ctr] = pt.x;
+			yP[ctr++] = pt.y;
+			can.fillRect(pt.x-2, pt.y-2, 4, 4);
+		}
+		can.drawPolygon(xP, yP, STEPS);
+	}
+	
+	public void unHighlightItem(final Plottable target,
+			final Layer changedLayer)
+	{
+		if (getChart() == null)
+			return;
+		final CanvasType can = getChart().getCanvas();
+		final Enumeration<PaintListener> enumer = can.getPainters();		
+		final String pName = getPaintListenerName(target);
+		CanvasType.PaintListener painter = null;
+		while (enumer.hasMoreElements())
+	    {
+	      final CanvasType.PaintListener thisPainter =
+	        (CanvasType.PaintListener) enumer.nextElement();
+	      if(thisPainter.getName().equals(pName))
+	      {
+	    	  painter = thisPainter;
+	    	  break;
+	      }
+	    }
+		if(painter != null)
+		{
+			can.removePainter(painter);
+		    getChart().update(changedLayer);
+		}	
 	}
 
 	/**
@@ -737,7 +917,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	/**
 	 * Returns the ActionbarContributor for the Editor.
-	 * 
+	 * ISelectionChangedListener
 	 * @return the ActionbarContributor for the Editor.
 	 */
 	public SubActionBars2 getActionbar()
