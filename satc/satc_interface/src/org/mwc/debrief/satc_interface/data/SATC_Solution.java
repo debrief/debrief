@@ -86,7 +86,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
 		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
-		BaseLayer.ProvidesRange, ISecondaryTrack
+		BaseLayer.ProvidesRange, ISecondaryTrack,  Editable.DoNoInspectChildren
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -910,6 +910,8 @@ public class SATC_Solution extends BaseLayer implements
 		@SuppressWarnings("unused")
 		ISolversManager mgr = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
+		
+		mgr.deactivateSolverIfActive(_mySolver);
 	}
 
 	/**
