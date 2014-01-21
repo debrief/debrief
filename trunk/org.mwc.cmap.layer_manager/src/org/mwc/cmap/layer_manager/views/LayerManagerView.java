@@ -352,7 +352,7 @@ public class LayerManagerView extends ViewPart
 		clearLayerListener();
 
 		// dispose part monitor
-		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.ditch();
 
 		// remove selection listeners
 		if(_curSelectionProvider != null)
@@ -362,6 +362,9 @@ public class LayerManagerView extends ViewPart
 		}
 
 		_selectionChangeListener = null;
+		if (_myLabelProvider != null) {
+			_myLabelProvider.disposeImages();
+		}
 	}
 
 	/**
@@ -1389,7 +1392,9 @@ public class LayerManagerView extends ViewPart
 			// delete the images for the specified items from the image cache
 			// right, tell our label generator to ditch it's cache, since one or more
 			// of the images may have changed
-			_myLabelProvider.resetCacheFor(newList);
+			// Issue #533
+			//_myLabelProvider.resetCacheFor(newList);
+			_myLabelProvider.resetCacheFor(_treeViewer.getTree());
 
 			// and do the update
 			final Object[] itemsToUpdate = newList.toArray();
@@ -1398,7 +1403,7 @@ public class LayerManagerView extends ViewPart
 		}
 		catch (final Exception e)
 		{
-
+			CorePlugin.getDefault().getLog().log(new Status(IStatus.WARNING, CorePlugin.PLUGIN_ID, "Tree warning", e));
 		}
 		finally
 		{
@@ -1441,11 +1446,6 @@ public class LayerManagerView extends ViewPart
 			});
 		}
 
-	}
-
-	private static interface IOperateOn
-	{
-		public void doItTo(Editable item);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1510,6 +1510,11 @@ public class LayerManagerView extends ViewPart
 		}
 
 		// ok, and update the layers
+	}
+
+	private static interface IOperateOn
+	{
+		public void doItTo(Editable item);
 	}
 
 	/**
