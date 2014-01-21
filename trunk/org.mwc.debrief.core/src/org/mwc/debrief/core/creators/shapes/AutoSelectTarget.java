@@ -68,6 +68,7 @@ public class AutoSelectTarget extends AbstractHandler implements IWorkbenchWindo
 	{
 
 		Command command = event.getCommand();
+		@SuppressWarnings("unused")
 		boolean oldValue = HandlerUtil.toggleCommandState(command);
 		_ticked = !_ticked;
 		return null;
