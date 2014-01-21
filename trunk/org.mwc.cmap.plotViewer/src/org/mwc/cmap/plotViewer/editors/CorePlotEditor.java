@@ -6,8 +6,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IResource;
@@ -65,8 +66,6 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
-import MWC.GUI.CanvasType.PaintListener;
-import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
@@ -126,9 +125,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	ISelectionChangedListener _selectionChangeListener;
 
-	Plottable _selectedItem;
-
 	ISelection _currentSelection;
+	
+	CanvasType.PaintListener _selectionPainter;
 
 	/**
 	 * keep track of whether the current plot is dirty...
@@ -302,31 +301,77 @@ public abstract class CorePlotEditor extends EditorPart implements
 				final ISelection sel = event.getSelection();
 				if (!(sel instanceof IStructuredSelection))
 					return;
-				final IStructuredSelection ss = (IStructuredSelection) sel;
-				final Object o = ss.getFirstElement();
-				if (o instanceof EditableWrapper)
+				
+				final IStructuredSelection ss = (IStructuredSelection) sel;				
+				final CanvasType can = getChart().getCanvas();
+				
+				// unselect the current selection
+				if (_currentSelection != null && _currentSelection instanceof IStructuredSelection)
 				{
-					final EditableWrapper pw = (EditableWrapper) o;
-					final Layer changedLayer = pw.getTopLevelLayer();
-					final Editable ed = pw.getEditable();
-					if (_selectedItem != null)
+					can.removePainter(_selectionPainter);
+					final List<EditableWrapper> eds = getSelItems((IStructuredSelection) _currentSelection);					
+					for(EditableWrapper ed: eds)
 					{
-						if (!ed.equals(_selectedItem))
-							unHighlightItem(_selectedItem, changedLayer);
-					}
-
-					if (ed instanceof Plottable)
-					{
-						final Plottable plottable = (Plottable) ed;
-						_selectedItem = plottable;
-						highlightItem(_selectedItem, changedLayer);
-					}
-
+						getChart().update(ed.getTopLevelLayer());						
+					}					
 				}
-
+				// store the new selection
+				_currentSelection = ss;				
+				
+				//select the current selection
+				can.addPainter(_selectionPainter);
+				final List<EditableWrapper> eds = getSelItems(ss);
+				for(EditableWrapper ed: eds)
+				{
+					getChart().update(ed.getTopLevelLayer());
+				}				
 			}
 		};
+		
+		_selectionPainter = new CanvasType.PaintAdaptor()
+		{
+			@Override
+			public void paintMe(CanvasType dest)
+			{
+				if(_currentSelection != null && _currentSelection instanceof IStructuredSelection)
+				{
+					List<EditableWrapper> selItems = getSelItems((IStructuredSelection) _currentSelection);
+					for(EditableWrapper ed: selItems)
+					{
+						if(ed != null)
+						{
+							drawHighlightedBorder(dest, 
+								((Plottable) ed.getEditable()).getBounds());
+						}
+					}
+				}
+			}
 
+			@Override
+			public String getName()
+			{
+				return "SELECTION PAINTER";
+			}
+		}; 
+	}
+	
+	private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
+	{
+		List<EditableWrapper> res = new ArrayList<EditableWrapper>();
+		final Iterator selIterator = ss.iterator();
+		while(selIterator.hasNext())
+		{
+			final Object o = selIterator.next();
+			if (o instanceof EditableWrapper)
+			{
+				final EditableWrapper pw = (EditableWrapper) o;
+				if(pw.getEditable() instanceof Plottable)
+				{
+					res.add(pw);								
+				}							
+			}
+		}
+		return res;
 	}
 
 	private IPartListener partListener = new IPartListener()
@@ -612,42 +657,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 		fireSelectionChanged(selected);
 	}
 
-	public void highlightItem(final Plottable target, final Layer changedLayer)
-	{
-		if (target == null || target.getBounds() == null)
-			return;
-		if (getChart() == null)
-			return;
-
-		final CanvasType can = getChart().getCanvas();
-		can.addPainter(new CanvasType.PaintAdaptor()
-		{
-
-			@Override
-			public void paintMe(CanvasType dest)
-			{
-				drawHighlightedBorder(dest, target.getBounds());
-			}
-
-			@Override
-			public String getName()
-			{
-				return getPaintListenerName(target);
-			}
-
-		});
-		getChart().update(changedLayer);
-
-	}
-
-	private String getPaintListenerName(final Plottable target)
-	{
-		return target.getName() + target.getBounds();
-	}
-
 	private void drawHighlightedBorder(final CanvasType can,
 			final WorldArea worldArea)
 	{
+		if (worldArea == null)
+			return;
+		
 		can.setColor(new Color(255, 255, 255, 45));
 		can.setLineStyle(CanvasType.DOT_DASH);
 		can.setLineWidth(2);
@@ -685,31 +700,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
-	public void unHighlightItem(final Plottable target, final Layer changedLayer)
-	{
-		if (getChart() == null)
-			return;
-		final CanvasType can = getChart().getCanvas();
-		final Enumeration<PaintListener> enumer = can.getPainters();
-		final String pName = getPaintListenerName(target);
-		CanvasType.PaintListener painter = null;
-		while (enumer.hasMoreElements())
-		{
-			final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer
-					.nextElement();
-			if (thisPainter.getName().equals(pName))
-			{
-				painter = thisPainter;
-				break;
-			}
-		}
-		if (painter != null)
-		{
-			can.removePainter(painter);
-			getChart().update(changedLayer);
-		}
-	}
-
+	
 	/**
 	 * place the chart in the properties window
 	 * 
