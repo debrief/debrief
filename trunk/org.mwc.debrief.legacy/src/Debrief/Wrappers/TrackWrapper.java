@@ -2327,7 +2327,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// ok, now plot it
 				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
 						lastLoc, 1.2, true);
-				textLabel = getName().replace(TextLabel.NEWLINE_MARKER, " ");
+				textLabel = tma.getName().replace(TextLabel.NEWLINE_MARKER, " ");
 				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
 						lastLoc, 1.2, false);
 			}
