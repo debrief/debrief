@@ -74,21 +74,38 @@ public class CreateSolutionFromSensorData implements
 			Editable thisItem = subjects[i];
 			if (thisItem instanceof SensorContactWrapper)
 			{
-				if (validCuts == null)
-					validCuts = new ArrayList<SensorContactWrapper>();
+				SensorContactWrapper scw = (SensorContactWrapper) thisItem;
 
-				validCuts.add((SensorContactWrapper) thisItem);
+				if (scw.getVisible())
+				{
+					if (validCuts == null)
+						validCuts = new ArrayList<SensorContactWrapper>();
+
+					// SPECIAL PROCESSING: if the user has accidentally selected both the
+					// sensor and a block of cuts, they will get added twice.
+					// so - double-check we haven't already loaded this cut
+					if (!validCuts.contains(scw))
+						validCuts.add(scw);
+				}
 			}
 			else if (thisItem instanceof SensorWrapper)
 			{
-				if (validCuts == null)
-					validCuts = new ArrayList<SensorContactWrapper>();
-
 				SensorWrapper sw = (SensorWrapper) thisItem;
+
 				Enumeration<Editable> cuts = sw.elements();
 				while (cuts.hasMoreElements())
 				{
-					validCuts.add((SensorContactWrapper) cuts.nextElement());
+					SensorContactWrapper thisCut = (SensorContactWrapper) cuts
+							.nextElement();
+					if (thisCut.getVisible())
+					{
+						if (validCuts == null)
+							validCuts = new ArrayList<SensorContactWrapper>();
+
+						// SPECIAL PROCESSING: see above for duplicate cuts
+						if (!validCuts.contains(thisCut))
+							validCuts.add(thisCut);
+					}
 				}
 			}
 			else if ((thisItem instanceof ContributionWrapper)
@@ -172,14 +189,16 @@ public class CreateSolutionFromSensorData implements
 
 			DoIt wizardItem = new DoIt("Create new scenario from these cuts",
 					new BearingMeasurementContributionFromCuts(null, title, theLayers,
-							validCuts){
+							validCuts)
+					{
 
-								@Override
-								public String getContributionName()
-								{
-									
-									return "Bearing data";
-								}}, "icons/calculator.gif");
+						@Override
+						public String getContributionName()
+						{
+
+							return "Bearing data";
+						}
+					}, "icons/calculator.gif");
 			thisMenu.add(wizardItem);
 		}
 	}
