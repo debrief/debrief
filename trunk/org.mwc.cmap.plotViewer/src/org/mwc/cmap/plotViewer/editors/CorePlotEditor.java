@@ -304,7 +304,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 					return;
 
 				final IStructuredSelection ss = (IStructuredSelection) sel;
-				final CanvasType can = getChart().getCanvas();
+				SWTChart theChart = getChart();
+				if (theChart == null)
+					return;
+
+				final CanvasType can = theChart.getCanvas();
 
 				// unselect the current selection
 				if (_currentSelection != null
@@ -346,8 +350,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 							Plottable theE = (Plottable) ed.getEditable();
 							if (theE.getVisible())
 							{
-								if (! (theE instanceof DoNotHighlightMe))
-									drawHighlightedBorder(dest, theE.getBounds());								
+								if (!(theE instanceof DoNotHighlightMe))
+									drawHighlightedBorder(dest, theE.getBounds());
 							}
 						}
 					}

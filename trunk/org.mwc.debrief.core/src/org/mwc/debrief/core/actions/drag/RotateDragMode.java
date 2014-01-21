@@ -126,26 +126,30 @@ public class RotateDragMode extends DragMode
 			// find the nearest segment
 			final TrackSegment seg = findNearest(track, cursorLoc);
 
-			final FixWrapper first = (FixWrapper) seg.first();
-			final FixWrapper last = (FixWrapper) seg.last();
-			final WorldLocation firstLoc = first.getFixLocation();
-			final WorldLocation lastLoc = last.getFixLocation();
-			final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
-			final WorldLocation centreLoc = lineBounds.getCentre();
+			if (seg != null)
+			{
+				final FixWrapper first = (FixWrapper) seg.first();
+				final FixWrapper last = (FixWrapper) seg.last();
+				final WorldLocation firstLoc = first.getFixLocation();
+				final WorldLocation lastLoc = last.getFixLocation();
+				final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
+				final WorldLocation centreLoc = lineBounds.getCentre();
 
-			final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
-			final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
-			final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
+				final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
+				final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
+				final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-			final DraggableItem centreEnd = getCentreOperation(seg, track, theLayers);
-			final DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last,
-					track, theLayers);
-			final DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first,
-					track, theLayers);
+				final DraggableItem centreEnd = getCentreOperation(seg, track,
+						theLayers);
+				final DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last,
+						track, theLayers);
+				final DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first,
+						track, theLayers);
 
-			currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
-			currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
-			currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
+				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
+				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
+				currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
+			}
 		}
 	}
 
