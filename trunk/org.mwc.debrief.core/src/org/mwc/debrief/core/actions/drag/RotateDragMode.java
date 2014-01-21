@@ -37,7 +37,8 @@ public class RotateDragMode extends DragMode
 		super(title, toolTip);
 	}
 
-	protected TrackSegment findNearest(final TrackWrapper track, final WorldLocation loc)
+	protected TrackSegment findNearest(final TrackWrapper track,
+			final WorldLocation loc)
 	{
 		double res = -1;
 		TrackSegment nearest = null;
@@ -53,6 +54,37 @@ public class RotateDragMode extends DragMode
 						.hasNext();)
 				{
 					final TrackSegment thisSeg = (TrackSegment) iterator.next();
+
+					// is this type of segment suitable?
+					if (isAcceptable(thisSeg))
+					{
+						// yes, is it visible?
+						if (thisSeg.getVisible())
+						{
+							final double thisRes = thisSeg.rangeFrom(loc);
+							if (nearest == null)
+							{
+								nearest = thisSeg;
+								res = thisRes;
+							}
+							else
+							{
+								if (thisRes < res)
+								{
+									nearest = thisSeg;
+									res = thisRes;
+								}
+							}
+						}
+					}
+				}
+
+			}
+			else if (editable instanceof TrackSegment)
+			{
+				final TrackSegment thisSeg = (TrackSegment) editable;
+				if (isAcceptable(thisSeg))
+				{
 					if (thisSeg.getVisible())
 					{
 						final double thisRes = thisSeg.rangeFrom(loc);
@@ -73,28 +105,6 @@ public class RotateDragMode extends DragMode
 				}
 
 			}
-			else if (editable instanceof TrackSegment)
-			{
-				final TrackSegment thisSeg = (TrackSegment) editable;
-				if (thisSeg.getVisible())
-				{
-					final double thisRes = thisSeg.rangeFrom(loc);
-					if (nearest == null)
-					{
-						nearest = thisSeg;
-						res = thisRes;
-					}
-					else
-					{
-						if (thisRes < res)
-						{
-							nearest = thisSeg;
-							res = thisRes;
-						}
-					}
-				}
-
-			}
 		}
 		return nearest;
 
@@ -102,8 +112,8 @@ public class RotateDragMode extends DragMode
 
 	@Override
 	public void findNearest(final Layer thisLayer, final WorldLocation cursorLoc,
-			final Point cursorPos, final LocationConstruct currentNearest, final Layer parentLayer,
-			final Layers theLayers)
+			final Point cursorPos, final LocationConstruct currentNearest,
+			final Layer parentLayer, final Layers theLayers)
 	{
 		/**
 		 * we need to get the following hit points, both ends (to support rotate),
@@ -116,30 +126,26 @@ public class RotateDragMode extends DragMode
 			// find the nearest segment
 			final TrackSegment seg = findNearest(track, cursorLoc);
 
-			// see if it's a candidate (we may only want TMASegments)
-			if (isAcceptable(seg))
-			{
-				final FixWrapper first = (FixWrapper) seg.first();
-				final FixWrapper last = (FixWrapper) seg.last();
-				final WorldLocation firstLoc = first.getFixLocation();
-				final WorldLocation lastLoc = last.getFixLocation();
-				final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
-				final WorldLocation centreLoc = lineBounds.getCentre();
+			final FixWrapper first = (FixWrapper) seg.first();
+			final FixWrapper last = (FixWrapper) seg.last();
+			final WorldLocation firstLoc = first.getFixLocation();
+			final WorldLocation lastLoc = last.getFixLocation();
+			final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
+			final WorldLocation centreLoc = lineBounds.getCentre();
 
-				final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
-				final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
-				final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
+			final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
+			final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
+			final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-				final DraggableItem centreEnd = getCentreOperation(seg, track, theLayers);
-				final DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last, track,
-						theLayers);
-				final DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
-						theLayers);
+			final DraggableItem centreEnd = getCentreOperation(seg, track, theLayers);
+			final DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last,
+					track, theLayers);
+			final DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first,
+					track, theLayers);
 
-				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
-				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
-				currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
-			}
+			currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
+			currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
+			currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
 		}
 	}
 
@@ -191,7 +197,8 @@ public class RotateDragMode extends DragMode
 		return new TranslateOperation(seg);
 	}
 
-	private WorldDistance calcDist(final WorldLocation myLoc, final WorldLocation cursorLoc)
+	private WorldDistance calcDist(final WorldLocation myLoc,
+			final WorldLocation cursorLoc)
 	{
 		return new WorldDistance(myLoc.subtract(cursorLoc).getRange(),
 				WorldDistance.DEGS);
@@ -207,7 +214,8 @@ public class RotateDragMode extends DragMode
 	 * Function
 	 */
 
-public static class RotateOperation extends CoreDragOperation implements DraggableItem, IconProvider
+	public static class RotateOperation extends CoreDragOperation implements
+			DraggableItem, IconProvider
 	{
 		WorldLocation workingLoc;
 		double originalBearing;
@@ -215,9 +223,10 @@ public static class RotateOperation extends CoreDragOperation implements Draggab
 		Double lastRotate = null;
 		protected TrackWrapper _parent;
 		protected Layers _layers;
-		
-		public RotateOperation(final WorldLocation cursorLoc, final WorldLocation origin,
-				final TrackSegment segment, final TrackWrapper parentTrack, final Layers theLayers)
+
+		public RotateOperation(final WorldLocation cursorLoc,
+				final WorldLocation origin, final TrackSegment segment,
+				final TrackWrapper parentTrack, final Layers theLayers)
 		{
 			super(segment, "end point");
 			workingLoc = cursorLoc;
@@ -257,7 +266,7 @@ public static class RotateOperation extends CoreDragOperation implements Draggab
 		}
 
 		public Cursor getHotspotCursor()
-		{			
+		{
 			return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_ROTATE);
 		}
 	}
