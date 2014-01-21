@@ -1062,4 +1062,17 @@ public interface Editable
 	{
 		
 	}
+
+
+	/**
+	 * marker interface used by classes that don't want to be highlighted by a snail painter, or the 
+	 * plot selection indicator
+	 * 
+	 * @author ian.mayo
+	 * 
+	 */
+	public static interface DoNotHighlightMe
+	{
+	
+	}
 }

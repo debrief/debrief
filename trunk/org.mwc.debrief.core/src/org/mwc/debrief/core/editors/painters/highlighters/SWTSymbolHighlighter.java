@@ -8,8 +8,8 @@ package org.mwc.debrief.core.editors.painters.highlighters;
 
 import java.awt.*;
 
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.*;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GenericData.*;
 
 public final class SWTSymbolHighlighter implements SWTPlotHighlighter, Editable
@@ -38,7 +38,7 @@ public final class SWTSymbolHighlighter implements SWTPlotHighlighter, Editable
 		{
 
 			// sort out if this is an item that we plot
-			if (watch instanceof DoNotHighlightMe)
+			if (watch instanceof Editable.DoNotHighlightMe)
 			{
 				// hey, don't bother...
 				return;

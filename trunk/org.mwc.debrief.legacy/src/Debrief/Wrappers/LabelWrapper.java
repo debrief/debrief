@@ -192,10 +192,10 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -214,7 +214,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
 public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericData.WatchableList, MWC.GenericData.Watchable,
-		DraggableItem, DoNotHighlightMe
+		DraggableItem, Editable.DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables

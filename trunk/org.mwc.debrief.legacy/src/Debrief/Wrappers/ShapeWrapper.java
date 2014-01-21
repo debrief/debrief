@@ -235,9 +235,9 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Vector;
 
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -255,7 +255,7 @@ import MWC.GenericData.WorldVector;
 public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
 		MWC.GenericData.Watchable, DraggableItem, HasDraggableComponents,
-		DoNotHighlightMe
+		Editable.DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables

@@ -154,9 +154,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
@@ -171,7 +171,7 @@ import MWC.GenericData.WorldLocation;
  */
 public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 		MWC.GenericData.WatchableList, 
-		MWC.GUI.Layer, TimePeriod, DoNotHighlightMe
+		MWC.GUI.Layer, TimePeriod, Editable.DoNotHighlightMe
 {
 
 	// //////////////////////////////////////

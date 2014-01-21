@@ -85,8 +85,9 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
@@ -112,7 +113,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 public final class TMAContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
 		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
-		DoNotHighlightMe
+		Editable.DoNotHighlightMe
 {
 	// ///////////////////////////////////////////
 	// member variables

@@ -66,6 +66,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
@@ -342,8 +343,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 					{
 						if (ed != null)
 						{
-							drawHighlightedBorder(dest,
-									((Plottable) ed.getEditable()).getBounds());
+							Plottable theE = (Plottable) ed.getEditable();
+							if (theE.getVisible())
+							{
+								if (! (theE instanceof DoNotHighlightMe))
+									drawHighlightedBorder(dest, theE.getBounds());								
+							}
 						}
 					}
 				}

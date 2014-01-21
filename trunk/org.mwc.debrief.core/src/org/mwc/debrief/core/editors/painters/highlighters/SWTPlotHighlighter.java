@@ -11,12 +11,12 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Enumeration;
 
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
@@ -79,7 +79,7 @@ public interface SWTPlotHighlighter extends Editable {
 			try {
 
 				// sort out if this is an item that we plot
-				if (watch instanceof DoNotHighlightMe) {
+				if (watch instanceof Editable.DoNotHighlightMe) {
 					// hey, don't bother...
 					return;
 				}

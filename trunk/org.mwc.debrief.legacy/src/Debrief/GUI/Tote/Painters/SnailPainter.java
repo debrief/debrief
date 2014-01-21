@@ -367,7 +367,7 @@ public class SnailPainter extends TotePainter
 			{
 				// just double-check this isn't a buoy-pattern, we don't want to display
 				// them
-				if (thisLayer instanceof DoNotHighlightMe)
+				if (thisLayer instanceof Editable.DoNotHighlightMe)
 				{
 					// ignore it, we don't want to plot it.
 				}
@@ -1035,17 +1035,6 @@ public class SnailPainter extends TotePainter
 				SnailPainter parent, HiResDate dtg, Color backColor);
 
 		public boolean canPlot(Watchable wt);
-	}
-
-	/**
-	 * marker interface used by classes that don't want to be highlighted
-	 * 
-	 * @author ian.mayo
-	 * 
-	 */
-	public interface DoNotHighlightMe
-	{
-
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////

@@ -141,9 +141,9 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import junit.framework.Assert;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
@@ -162,7 +162,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
 		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
-		DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
+		Editable.DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
 {
 	/**
 	 * 
