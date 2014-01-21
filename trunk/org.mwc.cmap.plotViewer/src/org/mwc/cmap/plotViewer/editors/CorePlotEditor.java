@@ -126,7 +126,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	ISelectionChangedListener _selectionChangeListener;
 
 	ISelection _currentSelection;
-	
+
 	CanvasType.PaintListener _selectionPainter;
 
 	/**
@@ -301,47 +301,49 @@ public abstract class CorePlotEditor extends EditorPart implements
 				final ISelection sel = event.getSelection();
 				if (!(sel instanceof IStructuredSelection))
 					return;
-				
-				final IStructuredSelection ss = (IStructuredSelection) sel;				
+
+				final IStructuredSelection ss = (IStructuredSelection) sel;
 				final CanvasType can = getChart().getCanvas();
-				
+
 				// unselect the current selection
-				if (_currentSelection != null && _currentSelection instanceof IStructuredSelection)
+				if (_currentSelection != null
+						&& _currentSelection instanceof IStructuredSelection)
 				{
 					can.removePainter(_selectionPainter);
-					final List<EditableWrapper> eds = getSelItems((IStructuredSelection) _currentSelection);					
-					for(EditableWrapper ed: eds)
+					final List<EditableWrapper> eds = getSelItems((IStructuredSelection) _currentSelection);
+					for (EditableWrapper ed : eds)
 					{
-						getChart().update(ed.getTopLevelLayer());						
-					}					
+						getChart().update(ed.getTopLevelLayer());
+					}
 				}
 				// store the new selection
-				_currentSelection = ss;				
-				
-				//select the current selection
+				_currentSelection = ss;
+
+				// select the current selection
 				can.addPainter(_selectionPainter);
 				final List<EditableWrapper> eds = getSelItems(ss);
-				for(EditableWrapper ed: eds)
+				for (EditableWrapper ed : eds)
 				{
 					getChart().update(ed.getTopLevelLayer());
-				}				
+				}
 			}
 		};
-		
+
 		_selectionPainter = new CanvasType.PaintAdaptor()
 		{
 			@Override
 			public void paintMe(CanvasType dest)
 			{
-				if(_currentSelection != null && _currentSelection instanceof IStructuredSelection)
+				if (_currentSelection != null
+						&& _currentSelection instanceof IStructuredSelection)
 				{
 					List<EditableWrapper> selItems = getSelItems((IStructuredSelection) _currentSelection);
-					for(EditableWrapper ed: selItems)
+					for (EditableWrapper ed : selItems)
 					{
-						if(ed != null)
+						if (ed != null)
 						{
-							drawHighlightedBorder(dest, 
-								((Plottable) ed.getEditable()).getBounds());
+							drawHighlightedBorder(dest,
+									((Plottable) ed.getEditable()).getBounds());
 						}
 					}
 				}
@@ -352,23 +354,23 @@ public abstract class CorePlotEditor extends EditorPart implements
 			{
 				return "SELECTION PAINTER";
 			}
-		}; 
+		};
 	}
-	
+
 	private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
 	{
 		List<EditableWrapper> res = new ArrayList<EditableWrapper>();
-		final Iterator selIterator = ss.iterator();
-		while(selIterator.hasNext())
+		final Iterator<?> selIterator = ss.iterator();
+		while (selIterator.hasNext())
 		{
 			final Object o = selIterator.next();
 			if (o instanceof EditableWrapper)
 			{
 				final EditableWrapper pw = (EditableWrapper) o;
-				if(pw.getEditable() instanceof Plottable)
+				if (pw.getEditable() instanceof Plottable)
 				{
-					res.add(pw);								
-				}							
+					res.add(pw);
+				}
 			}
 		}
 		return res;
@@ -524,11 +526,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
-		// listen out for us losing focus - so we can drop the selection
-		listenForMeLosingFocus();
 
 		// listen out for us gaining focus - so we can set the cursort tracker
-		listenForMeGainingFocus();
+		listenForMeGainingLosingFocus();
 
 		listenForSelectionChange();
 
@@ -540,43 +540,30 @@ public abstract class CorePlotEditor extends EditorPart implements
 		return (IContextService) getSite().getService(IContextService.class);
 	}
 
-	private void listenForMeLosingFocus()
+	private void listenForMeGainingLosingFocus()
 	{
-		// _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-		// .getPartService());
+		final EditorPart linkToMe = this;
 		_myPartMonitor.addPartListener(CorePlotEditor.class,
 				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
 					public void eventTriggered(final String type, final Object instance,
 							final IWorkbenchPart parentPart)
 					{
-						final boolean isMe = checkIfImTheSameAs(instance);
-						if (isMe)
+						if (linkToMe.equals(instance))
 							_currentSelection = null;
 					}
 				});
-	}
-
-	private void listenForMeGainingFocus()
-	{
-		final EditorPart linkToMe = this;
-		// _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-		// .getPartService());
 		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(final String type, final Object instance,
 							final IWorkbenchPart parentPart)
 					{
-						if (type == PartMonitor.ACTIVATED)
+						if (linkToMe.equals(this))
 						{
-							final boolean isMe = checkIfImTheSameAs(instance);
-							if (isMe)
-							{
-								// tell the cursor track that we're it's bitch.
-								RangeTracker.displayResultsIn(linkToMe);
-								CursorTracker.trackThisChart(_myChart, linkToMe);
-							}
+							// tell the cursor track that we're it's bitch.
+							RangeTracker.displayResultsIn(linkToMe);
+							CursorTracker.trackThisChart(_myChart, linkToMe);
 						}
 					}
 				});
@@ -590,16 +577,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
-						// aah, just check it's not is
 						final ISelectionProvider iS = (ISelectionProvider) part;
-						if (!iS.equals(this))
-						{
-							if (_selectionChangeListener != null)
-							{
-								iS.addSelectionChangedListener(_selectionChangeListener);
-							}
-						}
-
+						iS.addSelectionChangedListener(_selectionChangeListener);
 					}
 				});
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
@@ -608,30 +587,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 					public void eventTriggered(final String type, final Object part,
 							final IWorkbenchPart parentPart)
 					{
-						// aah, just check it's not is
 						final ISelectionProvider iS = (ISelectionProvider) part;
-						if (!iS.equals(this))
-						{
-							if (_selectionChangeListener != null)
-							{
-								iS.removeSelectionChangedListener(_selectionChangeListener);
-							}
-						}
+						iS.removeSelectionChangedListener(_selectionChangeListener);
 					}
 				});
-	}
-
-	boolean checkIfImTheSameAs(final Object target1)
-	{
-		boolean res = false;
-		// is it me?
-		if (target1 == this)
-			res = true;
-		else
-		{
-			res = false;
-		}
-		return res;
 	}
 
 	/**
@@ -662,7 +621,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{
 		if (worldArea == null)
 			return;
-		
+
 		can.setColor(new Color(255, 255, 255, 45));
 		can.setLineStyle(CanvasType.DOT_DASH);
 		can.setLineWidth(2);
@@ -700,7 +659,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
-	
 	/**
 	 * place the chart in the properties window
 	 * 
