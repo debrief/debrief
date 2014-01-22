@@ -2322,7 +2322,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						.formatOneDecimalPlace(tma.getSpeed().getValueIn(WorldSpeed.Kts));
 
 				// copied this text from RelativeTMASegment
-				String textLabel = "[" + spdTxt + " kts " + (int) tma.getCourse() + "\u00B0]";
+				double courseVal =  tma.getCourse();
+				if(courseVal < 0)
+					courseVal += 360;
+				
+				String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
 				
 				// ok, now plot it
 				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
