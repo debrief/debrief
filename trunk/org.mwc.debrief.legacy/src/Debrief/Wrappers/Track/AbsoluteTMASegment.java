@@ -265,22 +265,28 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		double newCourse;
 
 		// right - we just stretch about the ends, and we use different
-		// processing depending on which end is being shifted.
-		final FixWrapper first = (FixWrapper) this.getData().iterator().next();
-		if (first.getLocation().equals(origin))
+		// processing depending on which end is being shifted.		
+		FixWrapper firstL = (FixWrapper) this.first();
+		FixWrapper lastL = (FixWrapper) this.last();
+		
+		if (firstL.getLocation().equals(origin))
 		{
+			// ok - the origin our first point - so we're dragging the far end
+			
 			// set the new course
 			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 		}
 		else
 		{
-			// reverse the course, of course
-			offset = origin.subtract(cursor);
-			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
-
+			// ok - the origin our last point - so we're dragging the origin of the segment
+			
 			// right, we've got to shift the start point to the relevant location,
 			// and fix the bearing
-			_origin = origin;
+			_origin = cursor;
+			
+			// reverse the course, of course
+			offset = lastL.getLocation().subtract(cursor);
+			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 		}
 
 		// how long do we have for the travel?

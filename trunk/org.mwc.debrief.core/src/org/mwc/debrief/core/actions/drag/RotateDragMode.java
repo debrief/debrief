@@ -139,16 +139,17 @@ public class RotateDragMode extends DragMode
 				final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
 				final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-				final DraggableItem centreEnd = getCentreOperation(seg, track,
+				final DraggableItem dragCentre = getCentreOperation(seg, track,
 						theLayers);
-				final DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last,
+				final DraggableItem dragStart = getEndOperation(cursorLoc, seg, last,
 						track, theLayers);
-				final DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first,
+				final DraggableItem dragEnd = getEndOperation(cursorLoc, seg, first,
 						track, theLayers);
 
-				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
-				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
-				currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
+				currentNearest.checkMe(dragStart, firstDist, null, thisLayer);
+				currentNearest.checkMe(dragEnd, lastDist, null, thisLayer);
+				currentNearest.checkMe(dragCentre, centreDist, null, thisLayer);
+			
 			}
 		}
 	}
@@ -221,12 +222,12 @@ public class RotateDragMode extends DragMode
 	public static class RotateOperation extends CoreDragOperation implements
 			DraggableItem, IconProvider
 	{
-		WorldLocation workingLoc;
-		double originalBearing;
-		WorldLocation _origin;
+		final WorldLocation workingLoc;
+		final double originalBearing;
+		final WorldLocation _origin;
 		Double lastRotate = null;
-		protected TrackWrapper _parent;
-		protected Layers _layers;
+		final protected TrackWrapper _parent;
+		final protected Layers _layers;
 
 		public RotateOperation(final WorldLocation cursorLoc,
 				final WorldLocation origin, final TrackSegment segment,

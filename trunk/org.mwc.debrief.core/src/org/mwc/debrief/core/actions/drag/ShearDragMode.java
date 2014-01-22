@@ -32,7 +32,7 @@ public class ShearDragMode extends RotateDragMode
 			workingLoc.addToMe(vector);
 
 			final CoreTMASegment seg = (CoreTMASegment) _segment;
-
+			
 			// undo the previous turn
 			if (_lastLoc != null)
 			{
@@ -64,9 +64,9 @@ public class ShearDragMode extends RotateDragMode
 
 	@Override
 	protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
-			final TrackSegment seg, final FixWrapper subject, final TrackWrapper parent, final Layers theLayers)
+			final TrackSegment seg, final FixWrapper origin, final TrackWrapper parent, final Layers theLayers)
 	{
-		return new ShearOperation(cursorLoc, subject.getFixLocation(),
+		return new ShearOperation(cursorLoc, origin.getFixLocation(),
 				(CoreTMASegment) seg, parent, theLayers);
 	}
 
