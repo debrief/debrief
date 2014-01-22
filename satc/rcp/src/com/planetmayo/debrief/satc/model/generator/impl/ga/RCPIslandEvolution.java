@@ -68,7 +68,6 @@ public class RCPIslandEvolution
 		SplitEvolution<List<StraightRoute>> crossovers = new SplitEvolution<List<StraightRoute>>(
 				new ListCrossover<StraightRoute>(), pointsCrossover, 0.4);		
 		SplitEvolution<List<StraightRoute>> mutatuions = new SplitEvolution<List<StraightRoute>>(
-				//new NonAdaptivePointMutation(straightLegs, new Probability(0.4)),
 				adaptiveMutation = new AdaptivePointMutation(straightLegs, new Probability(0.3)),				
   			new RandomMutation(straightLegs, new Probability(0.4), factory),
 				0.7);
@@ -83,7 +82,6 @@ public class RCPIslandEvolution
 						useAlterings && solutionGenerator.getParameters().isUseAlteringLegs(),
 						solutionGenerator.getContributions(),
 						solutionGenerator.getProblemSpace()),
-						//new TournamentSelection(new Probability(0.7)),
 						new SigmaScaling(),
 						rng);
 		island.setSingleThreaded(true);
@@ -122,7 +120,6 @@ public class RCPIslandEvolution
 						solutionGenerator.getContributions(),
 						solutionGenerator.getProblemSpace()),
 						new SigmaScaling(),
-						//new TournamentSelection(new Probability(1)),
 						rng);
 		continent.setSingleThreaded(true);
 		continent.addEvolutionObserver(pointsCrossover);
@@ -141,7 +138,6 @@ public class RCPIslandEvolution
 		{
 			islandPopulations.add(new ArrayList<List<StraightRoute>>());
 		}
-		//List<EvaluatedCandidate<List<StraightRoute>>> evaluatedCombinedPopulation = new ArrayList<EvaluatedCandidate<List<StraightRoute>>>();
 
 		PopulationData<List<StraightRoute>> data = null;
 		List<TerminationCondition> satisfiedConditions = null;
@@ -155,19 +151,14 @@ public class RCPIslandEvolution
 			{
 				List<Future<List<EvaluatedCandidate<List<StraightRoute>>>>> futures = threadPool
 						.invokeAll(epochs);
-
-				//evaluatedCombinedPopulation.clear();
 				List<List<EvaluatedCandidate<List<StraightRoute>>>> evaluatedPopulations = new ArrayList<List<EvaluatedCandidate<List<StraightRoute>>>>(
 						islands.size());
 				for (Future<List<EvaluatedCandidate<List<StraightRoute>>>> future : futures)
 				{
 					List<EvaluatedCandidate<List<StraightRoute>>> evaluatedIslandPopulation = future
 							.get();
-					//evaluatedCombinedPopulation.addAll(evaluatedIslandPopulation);
 					evaluatedPopulations.add(evaluatedIslandPopulation);
 				}
-				//EvolutionUtils.sortEvaluatedPopulation(evaluatedCombinedPopulation,
-				//		false);
 
 				data = EvolutionUtils.getPopulationData(evaluatedPopulations.get(0),
 						false, eliteCount, currentEpochIndex, startTime);

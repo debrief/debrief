@@ -3,7 +3,6 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.awt.geom.Point2D;
 import java.util.List;
 
-import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
