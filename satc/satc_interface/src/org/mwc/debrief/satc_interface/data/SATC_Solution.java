@@ -907,7 +907,6 @@ public class SATC_Solution extends BaseLayer implements
 	public void beingRemoved()
 	{
 		// get the manager
-		@SuppressWarnings("unused")
 		ISolversManager mgr = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
 		
@@ -955,6 +954,23 @@ public class SATC_Solution extends BaseLayer implements
 				this.add(wrapped);
 			}
 		}
+	}
+	
+	
+
+	@Override
+	@FireReformatted
+	public void setName(String theName)
+	{
+		super.setName(theName);
+		_mySolver.setName(theName);
+		
+		// also trigger a refresh in maintain contributions
+		// get the manager
+		ISolversManager mgr = SATC_Activator.getDefault().getService(
+				ISolversManager.class, true);
+		mgr.setActiveSolver(_mySolver);
+
 	}
 
 	@Override
