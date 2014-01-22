@@ -60,12 +60,12 @@ public class PointsCrossover extends AbstractCrossover<List<StraightRoute>>
 					double scoreDiff = route1.getScore() - route2.getScore();
 
 					StraightLeg leg = legs.get(i);
-					newRoute = (StraightRoute) leg.createRoute(
-							"",
+					newRoute = (StraightRoute) leg.createRoute(							
 							MathUtils.calculateBezier(getDistance(scoreDiff, rng),
 									route1.getStartPoint(), route2.getStartPoint(), null),
 							MathUtils.calculateBezier(getDistance(scoreDiff, rng),
-									route1.getEndPoint(), route2.getEndPoint(), null));
+									route1.getEndPoint(), route2.getEndPoint(), null),
+									null);
 					leg.decideAchievableRoute(newRoute);
 					result.add(newRoute);
 				}

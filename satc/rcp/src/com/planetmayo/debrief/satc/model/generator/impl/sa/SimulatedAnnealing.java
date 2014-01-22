@@ -57,7 +57,7 @@ public class SimulatedAnnealing
 		CoreRoute current = startRoute;
 		if (current == null) 
 		{
-			current = leg.createRoute("", start.startPoint(),	end.startPoint());
+			current = leg.createRoute(start.startPoint(),	end.startPoint(), null);
 		}
 		double eCurrent = error(current);
 			
@@ -72,9 +72,10 @@ public class SimulatedAnnealing
 				{
 					throw new InterruptedException();
 				}
-				newRoute = leg.createRoute("",
+				newRoute = leg.createRoute(
 						start.newPoint(current.getStartPoint(), t),
-						end.newPoint(current.getEndPoint(), t));
+						end.newPoint(current.getEndPoint(), t),
+						null);
 				leg.decideAchievableRoute(newRoute);
 				if (newRoute.isPossible())
 				{

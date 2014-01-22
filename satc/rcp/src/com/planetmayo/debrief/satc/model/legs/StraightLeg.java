@@ -159,8 +159,9 @@ public class StraightLeg extends CoreLeg
 	}
 	
 	@Override
-	public CoreRoute createRoute(String name, Point start, Point end)
+	public CoreRoute createRoute(Point start, Point end, String name)
 	{
+		name = name == null ? getName() : name;
 		StraightRoute route = new StraightRoute(name, start, getFirst().getTime(), end, getLast().getTime());
 		route.generateSegments(_states);
 		return route;

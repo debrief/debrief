@@ -77,9 +77,10 @@ public abstract class AbstractMutation implements EvolutionaryOperator<List<Stra
 				int possibleRepeats = 5;//iteration != 0 ? 5 : 50;
 				for (repeats = 0; repeats < possibleRepeats; repeats++)
 				{
-					newRoute = (StraightRoute) leg.createRoute("",
+					newRoute = (StraightRoute) leg.createRoute(
 							mutatePoint(iteration, route.getStartPoint(), i, false, rng),
-							mutatePoint(iteration, route.getEndPoint(), i, true, rng));
+							mutatePoint(iteration, route.getEndPoint(), i, true, rng),
+							null);
 					leg.decideAchievableRoute(newRoute);
 					if (newRoute.isPossible()) 
 					{

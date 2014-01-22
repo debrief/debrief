@@ -1,12 +1,9 @@
 package com.planetmayo.debrief.satc.model.generator.impl.bf;
 
-import java.util.Date;
 import java.util.List;
 
-import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
-import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.vividsolutions.jts.geom.Point;
 
 public class LegWithRoutes
@@ -36,7 +33,7 @@ public class LegWithRoutes
 			for (int j = 0; j < endLength; j++)
 			{
 				String name = leg.getName() + "_" + perms;
-				routes[i][j] = createRoute(startPoints.get(i), endPoints.get(j), name);
+				routes[i][j] = leg.createRoute(startPoints.get(i), endPoints.get(j), name);
 				perms++;
 				if (perms >= MAX_PERMS) 
 				{
@@ -44,27 +41,6 @@ public class LegWithRoutes
 				}
 			}
 		}
-	}
-	
-	private CoreRoute createRoute(Point start, Point end, String name)
-	{
-		Date startDate = leg.getFirst().getTime();
-		Date endDate = leg.getLast().getTime();
-		CoreRoute result = null;
-		switch (leg.getType()) 
-		{
-			case STRAIGHT:
-				result = new StraightRoute(name, start, startDate, end, endDate);
-				break;
-			case ALTERING:
-				result = new AlteringRoute(name, start, startDate, end, endDate);
-				break;
-		}
-		if (result != null)
-		{
-			result.generateSegments(leg.getStates());
-		}
-		return result;
 	}
 	
 	public void decideAchievableRoutes() 

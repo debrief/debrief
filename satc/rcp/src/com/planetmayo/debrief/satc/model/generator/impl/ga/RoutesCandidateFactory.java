@@ -91,7 +91,7 @@ public class RoutesCandidateFactory implements CandidateFactory<List<StraightRou
 			StraightLeg leg = straightLegs.get(j);
 			Point start = startPoints.get(j).next(rng);
 			Point end = endPoints.get(j).next(rng);
-			solution.add((StraightRoute) leg.createRoute("", start, end));
+			solution.add((StraightRoute) leg.createRoute(start, end, null));
 		}
 		return solution;
 	}
