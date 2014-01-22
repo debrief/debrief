@@ -568,7 +568,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 					public void eventTriggered(final String type, final Object instance,
 							final IWorkbenchPart parentPart)
 					{
-						if (linkToMe.equals(this))
+						if (linkToMe.equals(instance))
 						{
 							// tell the cursor track that we're it's bitch.
 							RangeTracker.displayResultsIn(linkToMe);
