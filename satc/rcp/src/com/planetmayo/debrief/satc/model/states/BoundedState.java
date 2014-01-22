@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.vividsolutions.jts.geom.LineString;
 
 public class BoundedState implements Comparable<BoundedState>
 {
@@ -15,6 +16,8 @@ public class BoundedState implements Comparable<BoundedState>
 
 	private LocationRange _location;
 
+	private LineString _bearingLine;
+	
 	/**
 	 * the leg that this state is a member of
 	 * 
@@ -148,6 +151,16 @@ public class BoundedState implements Comparable<BoundedState>
 	public String getMemberOf()
 	{
 		return _memberOf;
+	}
+	
+	public LineString getBearingLine()
+	{
+		return _bearingLine;
+	}
+
+	public void setBearingLine(LineString _bearingLine)
+	{
+		this._bearingLine = _bearingLine;
 	}
 
 	public CourseRange getCourse()

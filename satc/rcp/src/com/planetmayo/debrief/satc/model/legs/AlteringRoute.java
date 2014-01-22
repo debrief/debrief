@@ -6,12 +6,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import org.geotools.referencing.GeodeticCalculator;
-
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.Point;
 
 public class AlteringRoute extends CoreRoute
@@ -35,10 +34,10 @@ public class AlteringRoute extends CoreRoute
 	{
 		super(startP, endP, startTime, endTime, name, LegType.ALTERING);
 		
-		GeodeticCalculator calculator = new GeodeticCalculator();
-		calculator.setStartingGeographicPoint(startP.getX(), startP.getY());
-		calculator.setDestinationGeographicPoint(endP.getX(), endP.getY());
-		_directDistance = calculator.getOrthodromicDistance();
+		//GeodeticCalculator calculator = new GeodeticCalculator();
+		//calculator.setStartingGeographicPoint(startP.getX(), startP.getY());
+		//calculator.setDestinationGeographicPoint(endP.getX(), endP.getY());
+		//_directDistance = calculator.getOrthodromicDistance();
 	}
 
 	/**
@@ -89,7 +88,7 @@ public class AlteringRoute extends CoreRoute
 			double t = delta / elapsed;
 			Point currentPoint = MathUtils.calculateBezier(t, _startP, _endP, _controlPoints);
 			Point speedVector = MathUtils.calculateBezierDerivative(t, _startP, _endP, _controlPoints);
-			GeodeticCalculator calculator = new GeodeticCalculator();
+			GeodeticCalculator calculator = GeoSupport.createCalculator();
 			calculator.setStartingGeographicPoint(currentPoint.getX(), currentPoint.getY());
 			calculator.setDestinationGeographicPoint(currentPoint.getX() + speedVector.getX(), currentPoint.getY() + speedVector.getY());
 			return calculator.getOrthodromicDistance() / elapsed;
@@ -154,9 +153,7 @@ public class AlteringRoute extends CoreRoute
 		}
 		calculateExtremumSpeeds();
 		return _minSpeed;		
-	}
-	
-	
+	}	
 	
 	public int getExtremumsCount()
 	{
@@ -186,7 +183,7 @@ public class AlteringRoute extends CoreRoute
 	private void calculateExtremumSpeeds()
 	{
 		double xCoeff, yCoeff; 
-		GeodeticCalculator calculator = new GeodeticCalculator();
+		GeodeticCalculator calculator = GeoSupport.createCalculator();
 		calculator.setStartingGeographicPoint(_startP.getX(), _startP.getY());
 		calculator.setDestinationGeographicPoint(_startP.getX() + 1, _startP.getY());
 		xCoeff = calculator.getOrthodromicDistance();

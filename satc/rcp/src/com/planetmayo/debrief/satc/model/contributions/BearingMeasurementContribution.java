@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Status;
-import org.geotools.referencing.GeodeticCalculator;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
@@ -22,9 +21,11 @@ import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
@@ -90,7 +91,7 @@ public class BearingMeasurementContribution extends BaseContribution
 				coords[0] = new Coordinate(lon, lat);
 
 				// create a utility object to help with calcs
-				GeodeticCalculator calc = new GeodeticCalculator();
+				GeodeticCalculator calc = GeoSupport.createCalculator();
 
 				// now the top-left
 				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
@@ -137,6 +138,10 @@ public class BearingMeasurementContribution extends BaseContribution
 
 				// well, if we didn't - we do now! Apply it!
 				thisState.constrainTo(lr);
+				
+				LineString bearingLine = GeoSupport.getFactory()
+						.createLineString(new Coordinate[] { coords[0], coords[2] });
+				thisState.setBearingLine(bearingLine);
 			}
 		}
 
@@ -179,7 +184,7 @@ public class BearingMeasurementContribution extends BaseContribution
 				State state = route.getStateAt(dateMeasurement);
 				if (state != null && state.getLocation() != null)
 				{
-					GeodeticCalculator calculator = new GeodeticCalculator();
+					GeodeticCalculator calculator = GeoSupport.createCalculator();
 					calculator.setStartingGeographicPoint(measurement.origin.getLon(),
 							measurement.origin.getLat());
 					calculator.setDestinationGeographicPoint(state.getLocation().getX(),

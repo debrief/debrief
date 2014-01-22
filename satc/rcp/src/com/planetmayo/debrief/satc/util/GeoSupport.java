@@ -2,10 +2,10 @@ package com.planetmayo.debrief.satc.util;
 
 import java.util.ArrayList;
 
-import org.geotools.referencing.GeodeticCalculator;
-
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.util.calculator.GeoCalculatorType;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -21,7 +21,9 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class GeoSupport
 {
-	private static GeometryFactory _factory;
+	private static volatile GeoCalculatorType _calculatorType = GeoCalculatorType.FAST;
+	
+	private static final GeometryFactory _factory = new GeometryFactory();
 
 	public static double[][] getCoordsFor(LocationRange loc)
 	{
@@ -37,6 +39,11 @@ public class GeoSupport
 
 		return res;
 	}
+	
+	public static void setCalculatorType(GeoCalculatorType type)
+	{
+		_calculatorType = type;
+	}
 
 	/**
 	 * get our geometry factory
@@ -45,9 +52,6 @@ public class GeoSupport
 	 */
 	public static GeometryFactory getFactory()
 	{
-		if (_factory == null)
-			_factory = new GeometryFactory();
-
 		return _factory;
 	}
 	
@@ -82,7 +86,7 @@ public class GeoSupport
 	
 	public static Geometry geoRingOrPolygon(Point center, double range, boolean polygon)
 	{
-		GeodeticCalculator calculator = new GeodeticCalculator();
+		GeodeticCalculator calculator = createCalculator();
 		calculator.setStartingGeographicPoint(center.getX(), center.getY());
 		calculator.setDirection(0, range);
 		double yRadius = Math.abs(calculator.getDestinationGeographicPoint().getY() - center.getY());
@@ -146,6 +150,11 @@ public class GeoSupport
 	public static double convertToCompassAngle(double angle)
 	{
 		return MathUtils.normalizeAngle(Math.PI / 2 - angle);
+	}
+	
+	public static GeodeticCalculator createCalculator() 
+	{
+		return _calculatorType.create();
 	}
 
 	public static String formatGeoPoint(GeoPoint geoPoint)

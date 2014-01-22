@@ -689,11 +689,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	
 	private void plotCurrentTopRoutes(List<CompositeRoute> _currentRoutes) 
 	{
-		float width = 4.0f;
-		float color = 0.0f;
+		float width = 1.0f;
 		for (CompositeRoute route : _currentRoutes)
 		{
-			Color currentColor = getHeatMapColorFor(color);
+			Color currentColor = Color.BLACK;
 			for (CoreRoute routePart : route.getLegs())
 			{
 				Point startP = routePart.getStartPoint();
@@ -714,8 +713,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				_renderer.setSeriesLinesVisible(num, true);
 				_renderer.setSeriesShapesVisible(num, false);
 			}
-			color += 0.1f;
-			width -= 0.3f;
 		}
 	}
 
