@@ -51,6 +51,7 @@ import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.NonColoredWatchable;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
@@ -86,7 +87,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
 		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
-		BaseLayer.ProvidesRange, ISecondaryTrack,  Editable.DoNoInspectChildren
+		BaseLayer.ProvidesRange, ISecondaryTrack,  Editable.DoNoInspectChildren, NonColoredWatchable
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
