@@ -680,9 +680,6 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void paintThese(CanvasType dest, Collection<BoundedState> states)
 	{
-		Color newCol = _myColor.darker();
-		dest.setColor(newCol);
-
 		// keep track of the leg name of the previous leg - we
 		// use it to track which leg we're in.
 		String lastName = null;
@@ -705,6 +702,16 @@ public class SATC_Solution extends BaseLayer implements
 
 			if (plotThisOne && thisS.getLocation() != null)
 			{
+				// get the color for this state
+				Color thisCol  = thisS.getColor();
+				
+				// do we have one? if not, use the color for the whole solution
+				if(thisCol == null)
+					thisCol = this.getColor();
+				
+				// ok, make the color a little darker
+				Color newCol = thisCol.darker();
+				dest.setColor(newCol);
 
 				lastName = thisS.getMemberOf();
 
