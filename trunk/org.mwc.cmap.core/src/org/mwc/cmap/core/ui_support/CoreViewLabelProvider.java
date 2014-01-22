@@ -36,9 +36,11 @@ import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
 import MWC.GenericData.ColoredWatchable;
+import MWC.GenericData.NonColoredWatchable;
 
 public class CoreViewLabelProvider extends LabelProvider implements
-		ITableLabelProvider {
+		ITableLabelProvider
+{
 
 	static Vector<ViewLabelImageHelper> imageHelpers = null;
 
@@ -57,8 +59,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 */
 	Image nonVisibleImage = null;
 
-	//private static ImageRegistry _imageRegistry;
-	
+	// private static ImageRegistry _imageRegistry;
+
 	private Map<String, Image> _imageMap = new HashMap<String, Image>();
 
 	/**
@@ -67,30 +69,41 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 	/**
 	 */
-	public CoreViewLabelProvider() {
+	public CoreViewLabelProvider()
+	{
 		// ok, retrieve the images from our own registry
 		visImage = CorePlugin.getImageFromRegistry("check2.png");
 		hiddenImage = CorePlugin.getImageFromRegistry("blank_check.png");
 		nonVisibleImage = CorePlugin.getImageFromRegistry("desktop.png");
 	}
 
-	public static void addImageHelper(final ViewLabelImageHelper helper) {
+	public static void addImageHelper(final ViewLabelImageHelper helper)
+	{
 		if (imageHelpers == null)
 			imageHelpers = new Vector<ViewLabelImageHelper>(1, 1);
-		imageHelpers.add(helper);
+
+		// put the new helper at the start. The "core" helpers tend to get added
+		// first,
+		// meaning they get selected before the more specific ones. So, insert the
+		// helpers
+		// at the start, so the specific ones get selected first.
+		imageHelpers.insertElementAt(helper, 0);
 	}
 
-	public static void removeImageHelper(final ViewLabelImageHelper helper) {
+	public static void removeImageHelper(final ViewLabelImageHelper helper)
+	{
 		imageHelpers.remove(helper);
 	}
 
 	@Override
-	public String getText(final Object obj) {
+	public String getText(final Object obj)
+	{
 		final EditableWrapper pw = (EditableWrapper) obj;
 		return pw.getEditable().toString();
 	}
 
-	protected Image getLocallyCachedImage(final String index) {
+	protected Image getLocallyCachedImage(final String index)
+	{
 		return _imageMap.get(index);
 	}
 
@@ -98,11 +111,12 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * remember this image
 	 * 
 	 * @param index
-	 *            how to retrieve the image
+	 *          how to retrieve the image
 	 * @param image
-	 *            the image to store
+	 *          the image to store
 	 */
-	protected void storeLocallyCachedImage(final String index, final Image image) {
+	protected void storeLocallyCachedImage(final String index, final Image image)
+	{
 		_imageMap.put(index, image);
 	}
 
@@ -118,7 +132,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		}
 		_imageMap.clear();
 	}
-	
+
 	/**
 	 * ditch the cache for the specified items, so we generate new ones as
 	 * required
@@ -135,21 +149,25 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			}
 			Set<String> keySet = _imageMap.keySet();
 			Set<String> toRemove = new HashSet<String>();
-			for (String key:keySet) {
-				if (!imageIds.contains(key)) {
+			for (String key : keySet)
+			{
+				if (!imageIds.contains(key))
+				{
 					toRemove.add(key);
 				}
 			}
-			for (String id:toRemove) {
+			for (String id : toRemove)
+			{
 				Image image = _imageMap.get(id);
-				if (image != null && !image.isDisposed()) {
+				if (image != null && !image.isDisposed())
+				{
 					image.dispose();
 				}
 				_imageMap.remove(id);
 			}
 		}
 	}
-	
+
 	private void addImageIds(Set<String> imageIds, TreeItem item)
 	{
 		Object data = item.getData();
@@ -164,123 +182,145 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			}
 		}
 		TreeItem[] items = item.getItems();
-		if (items.length > 0) {
-			for (TreeItem i:items) {
+		if (items.length > 0)
+		{
+			for (TreeItem i : items)
+			{
 				addImageIds(imageIds, i);
 			}
 		}
 	}
 
 	@Override
-	public Image getImage(final Object subject) {
+	public Image getImage(final Object subject)
+	{
 		final EditableWrapper item = (EditableWrapper) subject;
 		final Editable editable = item.getEditable();
 		Image res = null;
 
 		// try our helpers first
 		ImageDescriptor thirdPartyImageDescriptor = null;
-		if (imageHelpers != null) {
-			
+		if (imageHelpers != null)
+		{
+
 			// take a copy of the images listing, in case we receive a new
 			// helper whilst we're looping through
-			final Vector<ViewLabelImageHelper> spareHelpers = new Vector<ViewLabelImageHelper>(imageHelpers);
-			
+			final Vector<ViewLabelImageHelper> spareHelpers = new Vector<ViewLabelImageHelper>(
+					imageHelpers);
+
 			// ok, now go for it.
-			for (final Iterator<ViewLabelImageHelper> iter = spareHelpers
-					.iterator(); iter.hasNext();) {
+			for (final Iterator<ViewLabelImageHelper> iter = spareHelpers.iterator(); iter
+					.hasNext();)
+			{
 				final ViewLabelImageHelper helper = iter.next();
 				thirdPartyImageDescriptor = helper.getImageFor(editable);
-				if (thirdPartyImageDescriptor != null) {
+				if (thirdPartyImageDescriptor != null)
+				{
 					break;
 				}
 			}
 		}
 
-		if (thirdPartyImageDescriptor != null) {
-			// right, is this something that we apply color to?
-			if (editable instanceof ColoredWatchable) {
-				final ColoredWatchable thisW = (ColoredWatchable) editable;
+		if (thirdPartyImageDescriptor != null)
+		{
+			// is this a special case that doesn't want color?
+			if (!(editable instanceof NonColoredWatchable))
+			{
+				// right, is this something that we apply color to?
+				if (editable instanceof ColoredWatchable)
+				{
+					final ColoredWatchable thisW = (ColoredWatchable) editable;
 
-				// sort out the color index
-				final String thisId = idFor(thisW);
+					// sort out the color index
+					final String thisId = idFor(thisW);
 
-				// do we have a cached image for this combination?
-				res = getLocallyCachedImage(thisId);
+					// do we have a cached image for this combination?
+					res = getLocallyCachedImage(thisId);
 
-				// have a look
-				if (res == null) {
-					// nope, better generate one
-					res = CorePlugin
-							.getImageFromRegistry(thirdPartyImageDescriptor);
+					// have a look
+					if (res == null)
+					{
+						// nope, better generate one
+						res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
 
-					// now apply our decoration
-					if (res != null) {
-						// take a clone of the image
-						res = new Image(Display.getCurrent(), res
-								.getImageData());
-						final int wid = res.getBounds().width;
-						final int ht = res.getBounds().height;
-
-						// create a graphics context for this new image
-						final GC newGC = new GC(res);
-
-						// set the color of our editable
-						final org.eclipse.swt.graphics.Color thisColor = ColorHelper
-								.getColor(thisW.getColor());
-						newGC.setBackground(thisColor);
-
-						// apply a color wash
-						// Linux/Mac doesn't fill transparent color properly. The following is workaround.
-						if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS()))
+						// now apply our decoration
+						if (res != null)
 						{
-							ImageData data = res.getImageData();
-						  // we recognize two transparency types
-							if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL
-									|| data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
+							// take a clone of the image
+							res = new Image(Display.getCurrent(), res.getImageData());
+							final int wid = res.getBounds().width;
+							final int ht = res.getBounds().height;
+
+							// create a graphics context for this new image
+							final GC newGC = new GC(res);
+
+							// set the color of our editable
+							final org.eclipse.swt.graphics.Color thisColor = ColorHelper
+									.getColor(thisW.getColor());
+							newGC.setBackground(thisColor);
+
+							// apply a color wash
+							// Linux/Mac doesn't fill transparent color properly. The
+							// following is workaround.
+							if (Platform.OS_LINUX.equals(Platform.getOS())
+									|| Platform.OS_MACOSX.equals(Platform.getOS()))
 							{
-								for (int i = 0; i < wid; i++)
+								ImageData data = res.getImageData();
+								// we recognize two transparency types
+								if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL
+										|| data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
 								{
-									for (int j = 0; j < ht; j++)
+									for (int i = 0; i < wid; i++)
 									{
-										if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL)
+										for (int j = 0; j < ht; j++)
 										{
-											if (data.getPixel(i, j) > 0)
+											if (data.getTransparencyType() == SWT.TRANSPARENCY_PIXEL)
 											{
-												newGC.fillRectangle(i, j, 1, 1);
+												if (data.getPixel(i, j) > 0)
+												{
+													newGC.fillRectangle(i, j, 1, 1);
+												}
 											}
-										} else if (data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
-										{
-											if (data.getAlpha(i, j) > 0)
+											else if (data.getTransparencyType() == SWT.TRANSPARENCY_ALPHA)
 											{
-												newGC.fillRectangle(i, j, 1, 1);
+												if (data.getAlpha(i, j) > 0)
+												{
+													newGC.fillRectangle(i, j, 1, 1);
+												}
 											}
 										}
 									}
 								}
-							} else
+								else
+								{
+									// display solid color icon
+									newGC.fillRectangle(0, 0, wid, ht);
+								}
+							}
+							else
 							{
-								// display solid color icon
+								// Windows
 								newGC.fillRectangle(0, 0, wid, ht);
 							}
-						} else
-						{
-							// Windows
-							newGC.fillRectangle(0, 0, wid, ht);
+
+							// and dispose the GC
+							newGC.dispose();
+
+							// and store the new image
+							storeLocallyCachedImage(thisId, res);
 						}
-
-						// and dispose the GC
-						newGC.dispose();
-
-						// and store the new image
-						storeLocallyCachedImage(thisId, res);
 					}
 				}
-			} else {
-				// nope, better generate one
-				res = CorePlugin
-						.getImageFromRegistry(thirdPartyImageDescriptor);
 			}
-		} else {
+			else
+			{
+				// nope, better generate one
+				res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
+			}
+
+		}
+		else
+		{
 
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
 
@@ -295,10 +335,10 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			else if (editable instanceof FeaturePainter)
 				imageKey = "vpf.gif";
 
-			res = PlatformUI.getWorkbench().getSharedImages()
-					.getImage(imageKey);
+			res = PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 
-			if (res == null) {
+			if (res == null)
+			{
 				// ok, try to get the image from our own registry
 				res = CorePlugin.getImageFromRegistry(imageKey);
 			}
@@ -307,33 +347,41 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		return res;
 	}
 
-	/** generate a unique id for this item - taking its color into account
+	/**
+	 * generate a unique id for this item - taking its color into account
 	 * 
-	 * @param thisW the item to hash
+	 * @param thisW
+	 *          the item to hash
 	 * @return a unique string for this item type and color
 	 */
-	private String idFor(final ColoredWatchable thisW) {
+	private String idFor(final ColoredWatchable thisW)
+	{
 		return thisW.getClass() + " " + thisW.getColor();
 	}
 
-	public Image getColumnImage(final Object element, final int columnIndex) {
+	public Image getColumnImage(final Object element, final int columnIndex)
+	{
 		Image res = null;
 		if (columnIndex == 0)
 			res = getImage(element);
-		else if (columnIndex == 1) {
+		else if (columnIndex == 1)
+		{
 			// hey - don't bother with this bit - just use the text-marker
 
 			// sort out the visibility
 			final EditableWrapper pw = (EditableWrapper) element;
 			final Editable ed = pw.getEditable();
-			if (ed instanceof Plottable) {
+			if (ed instanceof Plottable)
+			{
 				final Plottable pl = (Plottable) ed;
 
 				if (pl.getVisible())
 					res = visImage;
 				else
 					res = hiddenImage;
-			} else {
+			}
+			else
+			{
 				res = nonVisibleImage;
 			}
 		}
@@ -341,23 +389,25 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		return res;
 	}
 
-	public String getColumnText(final Object element, final int columnIndex) {
+	public String getColumnText(final Object element, final int columnIndex)
+	{
 		String res = null;
 		if (columnIndex == 0)
 			res = getText(element);
-
 
 		return res;
 	}
 
 	@Override
-	public boolean isLabelProperty(final Object element, final String property) {
+	public boolean isLabelProperty(final Object element, final String property)
+	{
 		final boolean res = true;
 
 		return res;
 	}
 
-	public static interface ViewLabelImageHelper {
+	public static interface ViewLabelImageHelper
+	{
 		/**
 		 * produce an image icon for this object
 		 * 
