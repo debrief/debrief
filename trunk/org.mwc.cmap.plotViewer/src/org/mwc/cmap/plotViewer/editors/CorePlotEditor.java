@@ -66,7 +66,6 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
-import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
@@ -350,7 +349,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 							Plottable theE = (Plottable) ed.getEditable();
 							if (theE.getVisible())
 							{
-								if (!(theE instanceof DoNotHighlightMe))
+							//	if (!(theE instanceof DoNotHighlightMe))
 									drawHighlightedBorder(dest, theE.getBounds());
 							}
 						}
@@ -366,11 +365,20 @@ public abstract class CorePlotEditor extends EditorPart implements
 		};
 	}
 
+	/** get the first NNN valid items from the selection
+	 * 
+	 * @param ss the current structured selection
+	 * @return the first 20 items
+	 */
 	private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
 	{
 		List<EditableWrapper> res = new ArrayList<EditableWrapper>();
 		final Iterator<?> selIterator = ss.iterator();
-		while (selIterator.hasNext())
+		
+		// limit how many entities to highlight
+		final int MAX_HIGHLIGHT=20;
+
+		while (selIterator.hasNext() && res.size()<MAX_HIGHLIGHT)
 		{
 			final Object o = selIterator.next();
 			if (o instanceof EditableWrapper)
