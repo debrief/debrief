@@ -104,10 +104,11 @@ final public class ValueWithUnitsControl extends Composite implements
 	@Override
 	public void dispose()
 	{
-		super.dispose();
-
 		_myText.removeFocusListener(this);
 		_myText.removeSelectionListener(this);
+
+		// and drop everything else
+		super.dispose();
 	}
 
 	/**
