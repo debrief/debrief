@@ -3,6 +3,7 @@
  */
 package org.mwc.debrief.core.creators.chartFeatures;
 
+import java.awt.Color;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -166,6 +167,9 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 								
 								// create new track
 								final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
+								
+								// give it a default color
+								tw.setColor(Color.red);
 								
 								// initialize NameVisible (false)
 								tw.setNameVisible(false);
