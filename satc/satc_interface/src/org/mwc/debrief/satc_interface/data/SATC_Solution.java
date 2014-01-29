@@ -1192,6 +1192,7 @@ public class SATC_Solution extends BaseLayer implements
 							Fix theFix = new Fix(theTime, theLocation, theCourse,
 									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
 							FixWrapper newFix = new FixWrapper(theFix);
+							newFix.resetName();
 							segment.addFix(newFix);
 						}
 
