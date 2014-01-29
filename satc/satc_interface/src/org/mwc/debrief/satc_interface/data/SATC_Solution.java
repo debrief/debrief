@@ -573,7 +573,8 @@ public class SATC_Solution extends BaseLayer implements
 
 				if (toBeRemoved != null)
 				{
-					removeElement(toBeRemoved);
+					// ditch it from the parent (but don't trigger the remote  updates to fire)
+					SATC_Solution.super.removeElement(toBeRemoved);
 				}
 				else
 				{
@@ -1048,8 +1049,6 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public void filterListTo(HiResDate start, HiResDate end)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
