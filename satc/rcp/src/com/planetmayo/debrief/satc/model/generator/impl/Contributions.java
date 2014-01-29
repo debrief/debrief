@@ -50,6 +50,8 @@ public class Contributions implements IContributions
 			// register an error
 			SATC_Activator.log(Status.ERROR, "Contribution names must be unique",
 					null);
+			SATC_Activator.showMessage("Add new contribution",
+					"Sorry, contribution names must be unique");
 			return;
 		}
 		contributions.add(contribution);
@@ -74,7 +76,7 @@ public class Contributions implements IContributions
 			LogFactory.getLog().error(
 					"We're trying to delete " + contribution
 							+ " but its not one of ours!");
-			
+
 			return;
 		}
 		contributions.remove(contribution);
