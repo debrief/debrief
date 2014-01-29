@@ -4,8 +4,12 @@
 package org.mwc.cmap.core.property_support.ui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -15,7 +19,7 @@ import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.property_support.IDebriefProperty;
 
 final public class ValueWithUnitsControl extends Composite implements
-		ModifyListener
+		ModifyListener, FocusListener, SelectionListener
 {
 
 	/**
@@ -65,6 +69,8 @@ final public class ValueWithUnitsControl extends Composite implements
 		_myText = new Text(this, SWT.BORDER);
 		_myText.setTextLimit(7);
 		_myText.addModifyListener(this);
+		_myText.addFocusListener(this);
+		_myText.addSelectionListener(this);
 		_myCombo = new Combo(this, SWT.DROP_DOWN);
 		_myCombo.addModifyListener(this);
 	}
@@ -95,6 +101,15 @@ final public class ValueWithUnitsControl extends Composite implements
 			_myModel.storeMe(property.getValue());
 	}
 
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+
+		_myText.removeFocusListener(this);
+		_myText.removeSelectionListener(this);
+	}
+
 	/**
 	 * update the values displayed
 	 * 
@@ -108,11 +123,23 @@ final public class ValueWithUnitsControl extends Composite implements
 		_myCombo.select(units);
 	}
 
+	@Override
+	public void focusGained(final FocusEvent e)
+	{
+		selectAll();
+	}
+
+	@Override
+	public void focusLost(final FocusEvent e)
+	{
+	}
+
 	/**
 	 * encode ourselves into an object
 	 * 
 	 * @return
 	 */
+	@Override
 	public Object getData()
 	{
 		Object res = null;
@@ -121,7 +148,7 @@ final public class ValueWithUnitsControl extends Composite implements
 		{
 			final double dist = new Double(distTxt).doubleValue();
 			final int units = _myCombo.getSelectionIndex();
-			if(units != -1)
+			if (units != -1)
 				res = _myModel.createResultsObject(dist, units);
 		}
 		return res;
@@ -146,37 +173,13 @@ final public class ValueWithUnitsControl extends Composite implements
 		_myCombo.select(0);
 	}
 
-	
-	
 	@Override
-	public void setEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
-		_myCombo.setEnabled(enabled);
-		_myText.setEnabled(enabled);
-	}
-
-	/**
-	 * set ourselves to this value
-	 * 
-	 * @param value
-	 */
-	public void setData(final Object value)
-	{
-		// let the daddy do his bit
-		super.setData(value);
-		
-		// now store the data itself
-		_myModel.storeMe(value);
-		doUpdate();
-	}
-
 	public void modifyText(final ModifyEvent e)
 	{
 		// store the value in the property, if we have one?
 		if (_property != null)
 			_property.setValue(getData());
-		
+
 		// also tell any listeners
 		final Listener[] listeners = this.getListeners(SWT.Selection);
 		for (int i = 0; i < listeners.length; i++)
@@ -184,7 +187,49 @@ final public class ValueWithUnitsControl extends Composite implements
 			final Listener listener = listeners[i];
 			listener.handleEvent(new Event());
 		}
-		
+
+	}
+
+	private void selectAll()
+	{
+		if (_myText != null)
+			if (!_myText.isDisposed())
+				_myText.selectAll();
+	}
+
+	/**
+	 * set ourselves to this value
+	 * 
+	 * @param value
+	 */
+	@Override
+	public void setData(final Object value)
+	{
+		// let the daddy do his bit
+		super.setData(value);
+
+		// now store the data itself
+		_myModel.storeMe(value);
+		doUpdate();
+	}
+
+	@Override
+	public void setEnabled(final boolean enabled)
+	{
+		super.setEnabled(enabled);
+		_myCombo.setEnabled(enabled);
+		_myText.setEnabled(enabled);
+	}
+
+	@Override
+	public void widgetDefaultSelected(final SelectionEvent e)
+	{
+	}
+
+	@Override
+	public void widgetSelected(final SelectionEvent e)
+	{
+		selectAll();
 	}
 
 }

@@ -6,6 +6,8 @@ package org.mwc.cmap.core.property_support;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
@@ -68,6 +70,20 @@ public abstract class EditorHelper
 					listener.handleEvent(new Event());
 				}
 
+			}
+		});
+		res.addFocusListener(new FocusListener()
+		{
+			
+			@Override
+			public void focusLost(FocusEvent e)
+			{
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e)
+			{
+				res.selectAll();
 			}
 		});
 		return res;
