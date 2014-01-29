@@ -83,6 +83,7 @@ abstract public class CoreTMASegment extends TrackSegment
 				_speed.getValueIn(WorldSpeed.ft_sec) / 3);
 
 		final FixWrapper newFix = new FixWrapper(fix);
+		newFix.resetName();
 		return newFix;
 	}
 
