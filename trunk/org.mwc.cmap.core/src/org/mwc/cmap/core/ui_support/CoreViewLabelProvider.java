@@ -3,6 +3,7 @@
  */
 package org.mwc.cmap.core.ui_support;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -255,8 +257,18 @@ public class CoreViewLabelProvider extends LabelProvider implements
 							final GC newGC = new GC(res);
 
 							// set the color of our editable
+							Color jColor = thisW.getColor();
+							if(jColor == null)
+							{
+								// ok, declare a warning
+								CorePlugin.logError(Status.WARNING, "Color not returned for:" + thisW, null);
+								
+								// give it a color for now
+								jColor = Color.gray;
+							}
+							
 							final org.eclipse.swt.graphics.Color thisColor = ColorHelper
-									.getColor(thisW.getColor());
+									.getColor(jColor);
 							newGC.setBackground(thisColor);
 
 							// apply a color wash
