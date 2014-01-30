@@ -64,11 +64,10 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		_map = new MapContent();
 		_view = _map.getViewport();
 
-		// set the aspect radio matching to true.  The default 
+		// set the aspect radio matching to true. The default
 		// value for this was false - but when we did fit to
 		// window, it wasn't putting the specified area in the centre of the shape
 		_view.setMatchingAspectRatio(true);
-
 
 		// sort out the degs to m transform
 		try
@@ -232,7 +231,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			throws MismatchedDimensionException, TransformException
 	{
 		final DirectPosition2D mapPos = new DirectPosition2D(x.getLong(),
-															x.getLat());
+				x.getLat());
 		final DirectPosition2D mapM = new DirectPosition2D();
 		_degs2metres.transform(mapPos, mapM);
 		return mapM;
@@ -346,22 +345,21 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			if (scaleVal != 0)
 				newScale = scale / scaleVal;
 
-			final DirectPosition2D corner = new DirectPosition2D(desiredCenter.getX() - 0.5d
-						* paneArea.width / newScale, desiredCenter.getY() + 0.5d * paneArea.height
-						/ newScale);
+			final DirectPosition2D corner = new DirectPosition2D(desiredCenter.getX()
+					- 0.5d * paneArea.width / newScale, desiredCenter.getY() + 0.5d
+					* paneArea.height / newScale);
 
 			final Envelope2D newMapArea = new Envelope2D();
-			//scale
+			// scale
 			newMapArea.setFrameFromCenter(desiredCenter, corner);
 
 			final double height = newMapArea.getHeight();
 			final double width = newMapArea.getWidth();
-			//translate
-			newMapArea.setFrameFromDiagonal(
-					newMapArea.getBounds().x + deltaX*scaleVal,
-					newMapArea.getBounds().y + deltaY*scaleVal,
-					newMapArea.getBounds().x + width + deltaX*scaleVal,
-					newMapArea.getBounds().y + height + deltaY*scaleVal);
+			// translate
+			newMapArea.setFrameFromDiagonal(newMapArea.getBounds().x + deltaX
+					* scaleVal, newMapArea.getBounds().y + deltaY * scaleVal,
+					newMapArea.getBounds().x + width + deltaX * scaleVal,
+					newMapArea.getBounds().y + height + deltaY * scaleVal);
 
 			final WorldArea newArea = convertToWorldArea(newMapArea);
 			newArea.normalise();
@@ -372,17 +370,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		catch (MismatchedDimensionException e)
 		{
 			GtActivator.logError(Status.ERROR,
-						"Unexpected problem whilst performing zoom", e);
+					"Unexpected problem whilst performing zoom", e);
 		}
 		catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
 		{
-				GtActivator.logError(Status.ERROR,
-						"Unable to do inverse transform in zoom", e);
+			GtActivator.logError(Status.ERROR,
+					"Unable to do inverse transform in zoom", e);
 		}
 		catch (TransformException e)
 		{
-				GtActivator.logError(Status.ERROR,
-						"Unexpected problem whilst performing", e);
+			GtActivator.logError(Status.ERROR,
+					"Unexpected problem whilst performing", e);
 		}
 
 	}
@@ -395,8 +393,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 		super.setScreenArea(theArea);
 
-		final java.awt.Rectangle screenArea = new java.awt.Rectangle(0, 0, theArea.width,
-				theArea.height);
+		final java.awt.Rectangle screenArea = new java.awt.Rectangle(0, 0,
+				theArea.width, theArea.height);
 		_view.setScreenArea(screenArea);
 	}
 
@@ -420,15 +418,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
 			return;
 		}
-		
+
 		// trim the coordinates
-		gtTrim(theArea);	
+		gtTrim(theArea);
 
 		final WorldLocation tl = theArea.getTopLeft();
 		final WorldLocation br = theArea.getBottomRight();
 
-		final DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(), tl.getLat());
-		final DirectPosition2D brDegs = new DirectPosition2D(br.getLong(), br.getLat());
+		final DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(),
+				tl.getLat());
+		final DirectPosition2D brDegs = new DirectPosition2D(br.getLong(),
+				br.getLat());
 
 		final DirectPosition2D tlM = new DirectPosition2D();
 		final DirectPosition2D brM = new DirectPosition2D();
@@ -505,8 +505,10 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		final WorldLocation tl = area.getTopLeft();
 		final WorldLocation br = area.getBottomRight();
 
-		final DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(), tl.getLat());
-		final DirectPosition2D brDegs = new DirectPosition2D(br.getLong(), br.getLat());
+		final DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(),
+				tl.getLat());
+		final DirectPosition2D brDegs = new DirectPosition2D(br.getLong(),
+				br.getLat());
 
 		final DirectPosition2D tlM = new DirectPosition2D();
 		final DirectPosition2D brM = new DirectPosition2D();
@@ -528,12 +530,19 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 				{
 					final ReferencedEnvelope thisBounds = layer.getBounds();
 
-					// right, now the painful bit of converting the layers
-					final ReferencedEnvelope newBounds = thisBounds.transform(
-							other.getCoordinateReferenceSystem(), false);
+					if (thisBounds != null)
+					{
+						// right, now the painful bit of converting the layers
+						final ReferencedEnvelope newBounds = thisBounds.transform(
+								other.getCoordinateReferenceSystem(), false);
 
-					if (newBounds.intersects(other))
-						return true;
+						if (newBounds.intersects(other))
+							return true;
+					}
+					else
+					{
+						CorePlugin.logError(Status.WARNING, "GtProjection overlap. Layer has no bounds:"+ layer.getTitle(), null);
+					}
 				}
 			}
 		}
@@ -664,6 +673,5 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 
 	}
-
 
 }
