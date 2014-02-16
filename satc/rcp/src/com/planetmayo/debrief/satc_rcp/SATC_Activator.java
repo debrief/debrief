@@ -3,7 +3,9 @@ package com.planetmayo.debrief.satc_rcp;
 import java.util.Hashtable;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -28,6 +30,8 @@ public class SATC_Activator extends AbstractUIPlugin
 
 	private static SATC_Activator plugin;
 
+	private BundleContext context;
+
 	public static SATC_Activator getDefault()
 	{
 		return plugin;
@@ -43,8 +47,24 @@ public class SATC_Activator extends AbstractUIPlugin
 		getDefault().getLog().log(new Status(status, PLUGIN_ID, message, e));
 	}
 
-	private BundleContext context;
-
+	/**
+	 * show a message to the user
+	 * 
+	 * @param title
+	 * @param message
+	 */
+	public static void showMessage(final String title, final String message)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openInformation(null, title, message);
+			}
+		});
+	}
+	
 	public SATC_Activator()
 	{
 	}

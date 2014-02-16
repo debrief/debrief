@@ -51,6 +51,7 @@ import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.NonColoredWatchable;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
@@ -86,7 +87,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
 		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
-		BaseLayer.ProvidesRange, ISecondaryTrack,  Editable.DoNoInspectChildren
+		BaseLayer.ProvidesRange, ISecondaryTrack,  Editable.DoNoInspectChildren, NonColoredWatchable
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -572,7 +573,8 @@ public class SATC_Solution extends BaseLayer implements
 
 				if (toBeRemoved != null)
 				{
-					removeElement(toBeRemoved);
+					// ditch it from the parent (but don't trigger the remote  updates to fire)
+					SATC_Solution.super.removeElement(toBeRemoved);
 				}
 				else
 				{
@@ -679,9 +681,6 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void paintThese(CanvasType dest, Collection<BoundedState> states)
 	{
-		Color newCol = _myColor.darker();
-		dest.setColor(newCol);
-
 		// keep track of the leg name of the previous leg - we
 		// use it to track which leg we're in.
 		String lastName = null;
@@ -704,6 +703,16 @@ public class SATC_Solution extends BaseLayer implements
 
 			if (plotThisOne && thisS.getLocation() != null)
 			{
+				// get the color for this state
+				Color thisCol  = thisS.getColor();
+				
+				// do we have one? if not, use the color for the whole solution
+				if(thisCol == null)
+					thisCol = this.getColor();
+				
+				// ok, make the color a little darker
+				Color newCol = thisCol.darker();
+				dest.setColor(newCol);
 
 				lastName = thisS.getMemberOf();
 
@@ -907,7 +916,6 @@ public class SATC_Solution extends BaseLayer implements
 	public void beingRemoved()
 	{
 		// get the manager
-		@SuppressWarnings("unused")
 		ISolversManager mgr = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
 		
@@ -955,6 +963,23 @@ public class SATC_Solution extends BaseLayer implements
 				this.add(wrapped);
 			}
 		}
+	}
+	
+	
+
+	@Override
+	@FireReformatted
+	public void setName(String theName)
+	{
+		super.setName(theName);
+		_mySolver.setName(theName);
+		
+		// also trigger a refresh in maintain contributions
+		// get the manager
+		ISolversManager mgr = SATC_Activator.getDefault().getService(
+				ISolversManager.class, true);
+		mgr.setActiveSolver(_mySolver);
+
 	}
 
 	@Override
@@ -1024,8 +1049,6 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public void filterListTo(HiResDate start, HiResDate end)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -1169,6 +1192,7 @@ public class SATC_Solution extends BaseLayer implements
 							Fix theFix = new Fix(theTime, theLocation, theCourse,
 									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
 							FixWrapper newFix = new FixWrapper(theFix);
+							newFix.resetName();
 							segment.addFix(newFix);
 						}
 

@@ -29,7 +29,13 @@ public interface ISolver
 	 * @returns solver name
 	 */
   String getName();
-	
+
+  /** 
+   * 
+   * @param name the new solver name
+   */
+	void setName(String name);
+
 	/**
 	 * returns contributions manager associated with solver 
 	 */
@@ -117,4 +123,5 @@ public interface ISolver
   	
   	Precision readPrecision();
   }
+
 }

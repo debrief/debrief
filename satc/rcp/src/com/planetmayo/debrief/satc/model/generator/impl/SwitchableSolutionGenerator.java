@@ -30,7 +30,7 @@ public class SwitchableSolutionGenerator implements ISolutionGenerator
 		this.problemSpace = problemSpace;
 		this.listeners = Collections.synchronizedSet(
 				new HashSet<IGenerateSolutionsListener>());
-		switchToBF();
+		switchToGA();
 	}
 
 	@Override

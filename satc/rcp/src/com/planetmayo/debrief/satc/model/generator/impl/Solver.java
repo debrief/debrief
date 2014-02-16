@@ -25,7 +25,7 @@ public class Solver extends ModelObject implements ISolver
 {
 	private static final long serialVersionUID = 1L;
 
-	private final String name;
+	private String name;
 	
 	private final IContributions contributions;
 	private final IBoundsManager boundsManager;
@@ -85,6 +85,12 @@ public class Solver extends ModelObject implements ISolver
 	public String getName()
 	{
 		return name;
+	}
+	
+	@Override
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 
 	@Override

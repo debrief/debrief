@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Satc_interface
 Bundle-SymbolicName: org.mwc.debrief.satc_interface; singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.4
 Bundle-Activator: org.mwc.debrief.satc_interface.SATC_Interface_Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
