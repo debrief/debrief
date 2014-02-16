@@ -1,7 +1,10 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -11,6 +14,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
+import com.planetmayo.debrief.satc.util.StraightLineCulling;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -32,6 +36,13 @@ public class LocationAnalysisContribution extends
 		setName("Location Analysis");
 
 	}
+	
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.ANALYSIS;
+	}
+	
 
 	@Override
 	protected void applyThis(BoundedState state, LocationRange thisState)
@@ -71,6 +82,7 @@ public class LocationAnalysisContribution extends
 			lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
 						currentState, vType);
 		}
+		straightLineCulling(states);
 	}
 
 	@Override
@@ -194,7 +206,7 @@ public class LocationAnalysisContribution extends
 		return new LocationRange(GeoSupport.getFactory().createPolygon(res, null));
 	}
 
-	public LinearRing getCourseRing(Coordinate center, CourseRange course, SpeedRange speed, long timeMillis)
+	private LinearRing getCourseRing(Coordinate center, CourseRange course, SpeedRange speed, long timeMillis)
 	{
 		LinearRing res = null;
 		
@@ -263,16 +275,10 @@ public class LocationAnalysisContribution extends
 	 *          the time since the last state
 	 * @return
 	 */
-	public LinearRing getSpeedRing(Coordinate centerPoint, SpeedRange speed, long timeMillis)	
+	private LinearRing getSpeedRing(Coordinate centerPoint, SpeedRange speed, long timeMillis)	
 	{
 		Point center = GeoSupport.getFactory().createPoint(centerPoint);
 		return GeoSupport.geoRing(center, getMaxRange(speed, timeMillis));
-	}	
-
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.ANALYSIS;
 	}
 
 	private double getMaxRange(SpeedRange speed, long timeMillis)
@@ -287,6 +293,37 @@ public class LocationAnalysisContribution extends
 	private Coordinate convert(Point2D point)
 	{
 		return new Coordinate(point.getX(), point.getY());
+	}
+	
+	private void straightLineCulling(List<BoundedState> states) throws IncompatibleStateException 
+	{
+		Map<String, List<LocationRange>> straightLines = new HashMap<String, List<LocationRange>>();
+		for (BoundedState state : states)
+		{
+			String memberOf = state.getMemberOf();
+			if (memberOf == null) 
+			{
+				continue;
+			}
+			if (! straightLines.containsKey(memberOf)) 
+			{
+				straightLines.put(memberOf, new ArrayList<LocationRange>());
+			}
+			if (state.getLocation() != null)
+			{
+				straightLines.get(memberOf).add(state.getLocation());
+			}
+		}
+		for (List<LocationRange> straightLine : straightLines.values())
+		{
+			StraightLineCulling culling = new StraightLineCulling(straightLine);
+			culling.process();
+			if (culling.getConstrainedStart() != null && culling.getConstrainedEnd() != null)
+			{
+				straightLine.get(0).constrainTo(new LocationRange(culling.getConstrainedStart()));
+				straightLine.get(straightLine.size() - 1).constrainTo(new LocationRange(culling.getConstrainedEnd()));
+			}
+		}
 	}
 
 }

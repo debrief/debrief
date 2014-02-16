@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -46,22 +47,28 @@ public class StraightLineCulling
 			return;
 		}
 		CompliantLine[] crissCross = findCrissCrossLines(transformation);
+		if (crissCross == null)
+		{
+			return;
+		}
 		CompliantLine result1 = new LineSolver(crissCross[0], false).process();
 		CompliantLine result2 = new LineSolver(crissCross[1], true).process();
 		if (result1 == null || result2 == null)
 		{
 			return;
 		}
-		line1 = normalizeCoordinates(result1.getTransformedLine());
-		line2 = normalizeCoordinates(result2.getTransformedLine());
-		Point intersection = MathUtils.findIntersection(line1[0], line1[1], line2[0], line2[1]);		
+		line1 = result1.getTransformedLine();
+		line2 = result2.getTransformedLine();
+		Point intersection = MathUtils.findIntersection(line1[0], line1[1], line2[0], line2[1]);
+		Coordinate[] scaledLine1 = scaleAndNormalizeLine(5, line1);
+		Coordinate[] scaledLine2 = scaleAndNormalizeLine(5, line2);
 		Geometry intersectPolygon = GeoSupport.getFactory().createPolygon(new Coordinate[] {
-				line1[0], line2[0], intersection.getCoordinate(), line1[0]
+				scaledLine1[0], scaledLine2[0], intersection.getCoordinate(), scaledLine1[0]
 		});
 		constrainedStart = intersectPolygon.intersection(getStartLocation());
 		
 		intersectPolygon = GeoSupport.getFactory().createPolygon(new Coordinate[] {
-				line1[1], line2[1], intersection.getCoordinate(), line1[1]
+				scaledLine1[1], scaledLine2[1], intersection.getCoordinate(), scaledLine1[1]
 		});		
 		constrainedEnd = getEndLocation().intersection(intersectPolygon);
 	}
@@ -103,17 +110,17 @@ public class StraightLineCulling
 		filtered.add(previous);
 		for (LocationRange range : ranges) 
 		{
-			if (! range.getGeometry().intersects(previous)) 
-			{
+			//if (! range.getGeometry().intersects(previous)) 
+			//{
 				previous = range.getGeometry();
 				filtered.add(previous);
-			}			
+			//}			
 		}
-		if (! filtered.contains(ranges.get(ranges.size() - 1).getGeometry())) 
+		/*if (! filtered.contains(ranges.get(ranges.size() - 1).getGeometry())) 
 		{
 			filtered.remove(filtered.size() - 1);
 			filtered.add(ranges.get(ranges.size() - 1).getGeometry());
-		}
+		}*/
 	}
 	
 	private AffineTransformation transformWorldToMiddleLine() 
@@ -146,6 +153,7 @@ public class StraightLineCulling
 		return false;
 	}
 	
+	
 	private CompliantLine[] findCrissCrossLines(AffineTransformation transformation)
 	{
 		Geometry start = transformation.transform(getStartLocation());
@@ -159,10 +167,37 @@ public class StraightLineCulling
 		splitCoordinatesByZero(start, startGreatZero, startLessZero);
 		splitCoordinatesByZero(end, endGreatZero, endLessZero);
 		
-		return new CompliantLine[] {
+		CompliantLine[] crissCross = new CompliantLine[] {
 				new CompliantLine(transformation, findBestCoordinates(startLessZero, endGreatZero)),
 				new CompliantLine(transformation, findBestCoordinates(startGreatZero, endLessZero))
 		};
+		if (! checkCompliantCrissCross(transformation, crissCross)) 
+		{
+			return null;
+		}
+		return crissCross;
+	}
+	
+	private boolean checkCompliantCrissCross(AffineTransformation transformation, CompliantLine[] crissCross)
+	{
+		AffineTransformation crissTransform = new AffineTransformation(transformation); 
+		transformWorldToLine(crissTransform, crissCross[0].getLine()[0], crissCross[0].getLine()[1]);
+		crissTransform.translate(0, -3 * EPS);
+		PolygonLocation first = calculatePolygonLocation(crissTransform, getEndLocation());
+		crissTransform.translate(0, 6 * EPS);
+		PolygonLocation second = calculatePolygonLocation(crissTransform, getStartLocation());
+		if (first.location == Location.INTERSECT || second.location == Location.INTERSECT) 
+		{
+			return false;
+		}		
+		
+		AffineTransformation crossTransform = new AffineTransformation(transformation); 
+		transformWorldToLine(crossTransform, crissCross[1].getLine()[0], crissCross[1].getLine()[1]);
+		crossTransform.translate(0, -3 * EPS);
+		first = calculatePolygonLocation(crossTransform, getStartLocation());
+		crossTransform.translate(0, 6 * EPS);
+		second = calculatePolygonLocation(crossTransform, getEndLocation());
+		return ! (first.location == Location.INTERSECT || second.location == Location.INTERSECT); 
 	}
 	
 	private void splitCoordinatesByZero(Geometry geometry, List<Coordinate> great, List<Coordinate> less)
@@ -211,16 +246,60 @@ public class StraightLineCulling
 		world.rotate(-yDiff / length, xDiff / length);
 	}
 	
-	private Coordinate[] normalizeCoordinates(Coordinate[] coordinates) 
+	private Coordinate[] scaleAndNormalizeLine(double scaleFactor, Coordinate[] coordinates) 
 	{
+		coordinates = Arrays.copyOf(coordinates, 2);		
+		double centreX = (coordinates[0].x + coordinates[1].x) / 2;
+		double centreY = (coordinates[0].y + coordinates[1].y) / 2;
+		coordinates[0] = new Coordinate(
+				centreX + (coordinates[0].x - centreX) * scaleFactor,
+				centreY + (coordinates[0].y - centreY) * scaleFactor
+		);
+		coordinates[1] = new Coordinate(
+				centreX + (coordinates[1].x - centreX) * scaleFactor,
+				centreY + (coordinates[1].y - centreY) * scaleFactor
+		);		
 		for (Coordinate c : coordinates)
 		{
 			c.x = Math.rint(c.x / EPS) * EPS;
 			c.y = Math.rint(c.y / EPS) * EPS;
 		}
 		return coordinates;
-	}
+	}	
+	
+	private PolygonLocation calculatePolygonLocation(AffineTransformation modification, Geometry geometry) 
+	{
+		TreeSet<Coordinate> coordinates = new TreeSet<Coordinate>(
+				new Comparator<Coordinate>()
+				{
 
+					@Override
+					public int compare(Coordinate o1, Coordinate o2)
+					{
+						return (int) Math.signum(Math.abs(o1.y) - Math.abs(o2.y));
+					}					
+				}
+		);
+		double min = Double.MAX_VALUE;
+		double max = -Double.MAX_VALUE;
+		for (Coordinate coord : geometry.getCoordinates())
+		{
+			Coordinate temp = modification.transform(coord, new Coordinate());
+			coordinates.add(temp);
+			max = Math.max(max, temp.y);
+			min = Math.min(min, temp.y);
+			if (min <= EPS && max >= -EPS)
+			{
+				return new PolygonLocation(Location.INTERSECT, null);
+			}
+		}
+		if (min < 0) 
+		{
+			return new PolygonLocation(Location.UNDER, coordinates);		
+		}
+		return new PolygonLocation(Location.OVER, coordinates);
+	}		
+	
 	private Geometry getLocation(int num)
 	{
 		return filtered.get(num);
@@ -349,36 +428,7 @@ public class StraightLineCulling
 			{
 				return locations.get(geometry);
 			}
-				
-			TreeSet<Coordinate> coordinates = new TreeSet<Coordinate>(
-					new Comparator<Coordinate>()
-					{
-
-						@Override
-						public int compare(Coordinate o1, Coordinate o2)
-						{
-							return (int) Math.signum(Math.abs(o1.y) - Math.abs(o2.y));
-						}					
-					}
-			);
-			double min = Double.MAX_VALUE;
-			double max = -Double.MAX_VALUE;
-			for (Coordinate coord : geometry.getCoordinates())
-			{
-				Coordinate temp = modification.transform(coord, new Coordinate());
-				coordinates.add(temp);
-				max = Math.max(max, temp.y);
-				min = Math.min(min, temp.y);
-				if (min <= EPS && max >= -EPS)
-				{
-					return new PolygonLocation(Location.INTERSECT, null);
-				}
-			}
-			if (min < 0) 
-			{
-				return new PolygonLocation(Location.UNDER, coordinates);		
-			}
-			return new PolygonLocation(Location.OVER, coordinates);
+			return calculatePolygonLocation(modification, geometry);
 		}	
 		
 		private CompliantLine nextCompliantLine(TreeSet<Coordinate> candidates, boolean isChangeLeft) 
@@ -388,6 +438,10 @@ public class StraightLineCulling
 			Coordinate point2 = null;
 			for (Coordinate c : candidates)
 			{
+				if ((c.x >= point.x && isChangeLeft) || (c.x <= point.x && !isChangeLeft)) 
+				{
+					continue;
+				}
 				double xDiff = Math.abs(c.x - point.x);
 				double yDiff = Math.abs(c.y - point.y);
 				double sin = yDiff / Math.hypot(xDiff, yDiff);
@@ -436,10 +490,9 @@ public class StraightLineCulling
 					return;
 				}
 			}
-			double delta = 0.15 * (maxX - minX);
 			line = new CompliantLine(line.getWorld(), new Coordinate[] {				
-					new Coordinate(minX - delta, 0),
-					new Coordinate(maxX + delta, 0)
+					new Coordinate(minX, 0),
+					new Coordinate(maxX, 0)
 			});
 		}		
 	}
