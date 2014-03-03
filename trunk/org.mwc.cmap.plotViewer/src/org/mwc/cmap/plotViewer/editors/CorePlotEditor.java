@@ -595,7 +595,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 							final IWorkbenchPart parentPart)
 					{
 						final ISelectionProvider iS = (ISelectionProvider) part;
-						iS.addSelectionChangedListener(_selectionChangeListener);
+			// TODO- make it possible for use to indicate if highlights get plotted (prob via Layer Manager)			
+			//			iS.addSelectionChangedListener(_selectionChangeListener);
 					}
 				});
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
@@ -605,7 +606,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 							final IWorkbenchPart parentPart)
 					{
 						final ISelectionProvider iS = (ISelectionProvider) part;
-						iS.removeSelectionChangedListener(_selectionChangeListener);
+						// TODO- make it possible for use to indicate if highlights get plotted (prob via Layer Manager)			
+			//			iS.removeSelectionChangedListener(_selectionChangeListener);
 					}
 				});
 	}
