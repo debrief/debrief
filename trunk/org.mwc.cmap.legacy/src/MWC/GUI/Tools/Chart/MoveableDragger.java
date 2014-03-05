@@ -349,14 +349,14 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
             if (currentNearest.object == null)
             {
               // no, just copy in the data
-              currentNearest.setData(p, rng, thisLayer);
+              currentNearest.setData(p, rng, thisLayer, thisLayer);
             }
             else
             {
               // yes it has, copy the data items in
               if (rng < currentNearest.distance)
               {
-                currentNearest.setData(p, rng, thisLayer);
+                currentNearest.setData(p, rng, thisLayer, thisLayer);
               }
             }
           }

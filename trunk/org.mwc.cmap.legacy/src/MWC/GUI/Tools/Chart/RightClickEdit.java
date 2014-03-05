@@ -307,15 +307,19 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 
 		public double distance = -1;
 
-		public Layer parent = null;
+		@SuppressWarnings("unused")
+		private Layer parent = null;  // we don't currently use the parent, but let's keep it safe anyway
 
 		public java.util.Vector<Plottable> rangeIndependent;
 
-		public void setData(final Plottable p, final double dist, final Layer l)
+		public Layer topLayer;
+
+		public void setData(final Plottable p, final double dist, final Layer l, final Layer top)
 		{
 			object = p;
 			distance = dist;
 			parent = l;
+			topLayer = top;
 		}
 
 		public void addRangeIndependent(final Plottable p)
@@ -328,7 +332,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 
 	public static void findNearest(final Layer thisLayer,
 			final MWC.GenericData.WorldLocation cursorPos,
-			final ObjectConstruct currentNearest)
+			final ObjectConstruct currentNearest, final Layer topLayer)
 	{
 		// so, step through this layer
 		if (thisLayer.getVisible())
@@ -346,14 +350,14 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 					if (currentNearest.object == null)
 					{
 						// no, just copy in the data
-						currentNearest.setData(thisLayer, rng, thisLayer);
+						currentNearest.setData(thisLayer, rng, thisLayer, topLayer);
 					}
 					else
 					{
 						// yes it has, copy the data items in
 						if (rng < currentNearest.distance)
 						{
-							currentNearest.setData(thisLayer, rng, thisLayer);
+							currentNearest.setData(thisLayer, rng, thisLayer, topLayer);
 						}
 					}
 				}
@@ -380,7 +384,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 							final Layer l = (Layer) next;
 
 							// find the nearest values
-							findNearest(l, cursorPos, currentNearest);
+							findNearest(l, cursorPos, currentNearest, topLayer);
 						}
 						else
 						{
@@ -406,14 +410,14 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 											if (currentNearest.object == null)
 											{
 												// no, just copy in the data
-												currentNearest.setData(p, rng, thisLayer);
+												currentNearest.setData(p, rng, thisLayer, topLayer);
 											}
 											else
 											{
 												// yes it has, copy the data items in
 												if (rng < currentNearest.distance)
 												{
-													currentNearest.setData(p, rng, thisLayer);
+													currentNearest.setData(p, rng, thisLayer, topLayer);
 												}
 											}
 										}
@@ -477,7 +481,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 				// find the nearest items, this method call will recursively pass down
 				// through
 				// the layers
-				findNearest(thisL, thePos, vals);
+				findNearest(thisL, thePos, vals, thisL);
 
 				if ((layerDist == -1) || (vals.distance < layerDist))
 				{
@@ -489,7 +493,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 		}
 
 		res = vals.object;
-		theParent = vals.parent;
+		theParent = vals.topLayer;
 		dist = vals.distance;
 		noPoints = vals.rangeIndependent;
 

@@ -248,7 +248,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					// find the nearest items, this method call will recursively pass down
 					// through
 					// the layers
-					RightClickEdit.findNearest(thisL, loc, vals);
+					RightClickEdit.findNearest(thisL, loc, vals, thisL);
 
 					if ((layerDist == -1) || (vals.distance < layerDist))
 					{
@@ -259,7 +259,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 			// ok, now retrieve the values produced by the range-finding algorithm
 			Plottable res = vals.object;
-			final Layer theParent = vals.parent;
+			final Layer theParent = vals.topLayer;
 			final double dist = vals.distance;
 			final Vector<Plottable> noPoints = vals.rangeIndependent;
 

@@ -82,7 +82,7 @@ public class LayerManagerView extends ViewPart
 	 * helper application to help track creation/activation of new plots
 	 */
 	private PartMonitor _myPartMonitor;
-	
+
 	private ISelectionProvider _curSelectionProvider;
 
 	MyTreeViewer _treeViewer;
@@ -212,8 +212,9 @@ public class LayerManagerView extends ViewPart
 		 *          what to update on completion
 		 */
 
-		SelectionOperation(final String label, final IOperateOn execute, final IOperateOn undo,
-				final IOperateOn redo, final ISelectionProvider provider, final Layers destination)
+		SelectionOperation(final String label, final IOperateOn execute,
+				final IOperateOn undo, final IOperateOn redo,
+				final ISelectionProvider provider, final Layers destination)
 		{
 			super(label);
 
@@ -355,14 +356,16 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.ditch();
 
 		// remove selection listeners
-		if(_curSelectionProvider != null)
+		if (_curSelectionProvider != null)
 		{
-		    _curSelectionProvider.removeSelectionChangedListener(_selectionChangeListener);
-		    _curSelectionProvider = null;
+			_curSelectionProvider
+					.removeSelectionChangedListener(_selectionChangeListener);
+			_curSelectionProvider = null;
 		}
 
 		_selectionChangeListener = null;
-		if (_myLabelProvider != null) {
+		if (_myLabelProvider != null)
+		{
 			_myLabelProvider.disposeImages();
 		}
 	}
@@ -713,7 +716,8 @@ public class LayerManagerView extends ViewPart
 				}
 				else
 				{
-					final WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
+					final WatchableList[] secs = _theTrackDataListener
+							.getSecondaryTracks();
 					if (secs != null)
 					{
 						for (int i = 0; i < secs.length; i++)
@@ -789,7 +793,8 @@ public class LayerManagerView extends ViewPart
 	void fillContextMenu(final IMenuManager manager)
 	{
 		// get the selected item
-		final StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+		final StructuredSelection sel = (StructuredSelection) _treeViewer
+				.getSelection();
 
 		// right, we only worry about primary, secondary, hide, reveal if something
 		// is selected
@@ -1066,8 +1071,8 @@ public class LayerManagerView extends ViewPart
 			public void run()
 			{
 
-				final AbstractOperation doIt = new SelectionOperation("Add as secondary",
-						new IOperateOn()
+				final AbstractOperation doIt = new SelectionOperation(
+						"Add as secondary", new IOperateOn()
 						{
 							public void doItTo(final Editable item)
 							{
@@ -1185,7 +1190,8 @@ public class LayerManagerView extends ViewPart
 				.getImageDescriptor("icons/reveal.gif"));
 	}
 
-	protected static void setPlottableVisible(final Editable item, final boolean on)
+	protected static void setPlottableVisible(final Editable item,
+			final boolean on)
 	{
 		if (item instanceof Plottable)
 		{
@@ -1235,7 +1241,8 @@ public class LayerManagerView extends ViewPart
 					_myLayersListener = new Layers.DataListener2()
 					{
 
-						public void dataModified(final Layers theData, final Layer changedLayer)
+						public void dataModified(final Layers theData,
+								final Layer changedLayer)
 						{
 						}
 
@@ -1244,13 +1251,14 @@ public class LayerManagerView extends ViewPart
 							dataExtended(theData, null, null);
 						}
 
-						public void dataReformatted(final Layers theData, final Layer changedLayer)
+						public void dataReformatted(final Layers theData,
+								final Layer changedLayer)
 						{
 							handleReformattedLayer(changedLayer);
 						}
 
-						public void dataExtended(final Layers theData, final Plottable newItem,
-								final Layer parentLayer)
+						public void dataExtended(final Layers theData,
+								final Plottable newItem, final Layer parentLayer)
 						{
 							processNewData(theData, newItem, parentLayer);
 						}
@@ -1277,7 +1285,8 @@ public class LayerManagerView extends ViewPart
 	 * @param item
 	 *          the item to add (together with its children)
 	 */
-	private void addItemAndChildrenToList(final Vector<Object> list, final TreeItem item)
+	private void addItemAndChildrenToList(final Vector<Object> list,
+			final TreeItem item)
 	{
 		final Object myData = item.getData();
 		if (myData != null)
@@ -1362,7 +1371,8 @@ public class LayerManagerView extends ViewPart
 
 			if (_pendingLayers.size() > 0)
 			{
-				for (final Iterator<Layer> iter = _pendingLayers.iterator(); iter.hasNext();)
+				for (final Iterator<Layer> iter = _pendingLayers.iterator(); iter
+						.hasNext();)
 				{
 					final Layer changedLayer = (Layer) iter.next();
 
@@ -1370,8 +1380,11 @@ public class LayerManagerView extends ViewPart
 					// see if we can find the element related to the indicated layer
 					final TreeItem thisItem = (TreeItem) changed;
 
-					// add the item and its children to the list
-					addItemAndChildrenToList(newList, thisItem);
+					if (thisItem != null)
+					{
+						// add the item and its children to the list
+						addItemAndChildrenToList(newList, thisItem);
+					}
 				}
 			}
 			else
@@ -1393,7 +1406,7 @@ public class LayerManagerView extends ViewPart
 			// right, tell our label generator to ditch it's cache, since one or more
 			// of the images may have changed
 			// Issue #533
-			//_myLabelProvider.resetCacheFor(newList);
+			// _myLabelProvider.resetCacheFor(newList);
 			_myLabelProvider.resetCacheFor(_treeViewer.getTree());
 
 			// and do the update
@@ -1403,7 +1416,12 @@ public class LayerManagerView extends ViewPart
 		}
 		catch (final Exception e)
 		{
-			CorePlugin.getDefault().getLog().log(new Status(IStatus.WARNING, CorePlugin.PLUGIN_ID, "Tree warning", e));
+			CorePlugin
+					.getDefault()
+					.getLog()
+					.log(
+							new Status(IStatus.WARNING, CorePlugin.PLUGIN_ID, "Tree warning",
+									e));
 		}
 		finally
 		{
@@ -1433,8 +1451,8 @@ public class LayerManagerView extends ViewPart
 					if (newItem != null)
 					{
 						// wrap the plottable
-						final EditableWrapper parentWrapper = new EditableWrapper(parentLayer,
-								null, theData);
+						final EditableWrapper parentWrapper = new EditableWrapper(
+								parentLayer, null, theData);
 						final EditableWrapper wrapped = new EditableWrapper(newItem,
 								parentWrapper, theData);
 						final ISelection selected = new StructuredSelection(wrapped);
@@ -1531,7 +1549,8 @@ public class LayerManagerView extends ViewPart
 
 	}
 
-	private static void triggerChartUpdate(final Layer changedLayer, final Layers myLayers)
+	private static void triggerChartUpdate(final Layer changedLayer,
+			final Layers myLayers)
 	{
 		myLayers.fireReformatted(changedLayer);
 	}
@@ -1591,12 +1610,14 @@ public class LayerManagerView extends ViewPart
 											.getContentProvider();
 
 									// find the wrapped children of this object
-									final Object[] contents = contentP.getChildren(editableWrapper);
+									final Object[] contents = contentP
+											.getChildren(editableWrapper);
 
 									// loop through, expanding them
 									for (final Object content : contents)
 									{
-										// expand the particular child. Note we go down through all the layers, since the target
+										// expand the particular child. Note we go down through all
+										// the layers, since the target
 										// object may be several layers deep
 										_treeViewer.expandToLevel(content,
 												AbstractTreeViewer.ALL_LEVELS);
@@ -1604,7 +1625,8 @@ public class LayerManagerView extends ViewPart
 								}
 							}
 
-							// now just display it. This part of the tree may not have been loaded before,
+							// now just display it. This part of the tree may not have been
+							// loaded before,
 							// but we're sure it is now.
 							_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
 						}
