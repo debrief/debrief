@@ -1210,7 +1210,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	}
 	
 	@Override
-	public void iterationComputed(List<CompositeRoute> topRoutes)
+	public void iterationComputed(List<CompositeRoute> topRoutes, double topScore)
 	{
 		_currentTopRoutes = null;
 		if (_settings.isShowIntermediateGASolutions())

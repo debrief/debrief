@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -29,6 +30,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -38,6 +40,11 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.part.ViewPart;
+import org.swtchart.Chart;
+import org.swtchart.IAxis;
+import org.swtchart.ILineSeries;
+import org.swtchart.ISeries.SeriesType;
+import org.swtchart.ISeriesSet;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
@@ -53,9 +60,10 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
+import com.planetmayo.debrief.satc.model.generator.impl.ga.IGASolutionsListener;
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
@@ -81,13 +89,15 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
-	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
+	public static final String ID =
+			"com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	private static final String TITLE = "Maintain Contributions";
 
 	private static final Map<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>> CONTRIBUTION_PANELS;
 	static
 	{
-		CONTRIBUTION_PANELS = new HashMap<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>>();
+		CONTRIBUTION_PANELS =
+				new HashMap<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>>();
 		CONTRIBUTION_PANELS.put(ATBForecastContribution.class,
 				ATBForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(BearingMeasurementContribution.class,
@@ -104,7 +114,6 @@ public class MaintainContributionsView extends ViewPart
 				StraightLegForecastContributionView.class);
 	}
 
-	
 	/** UI fields */
 	private DataBindingContext context;
 	private Composite main;
@@ -117,44 +126,46 @@ public class MaintainContributionsView extends ViewPart
 	private Menu addContributionMenu;
 	private ToolItem addContributionButton;
 
-
-	/** Contribution -> Contribution view mappings */	
+	/** Contribution -> Contribution view mappings */
 	private HashMap<BaseContribution, BaseContributionView<?>> contributionsControl =
 			new HashMap<BaseContribution, BaseContributionView<?>>();
 	private ISolver activeSolver;
-	
+
 	private ISolversManager solversManager;
 
 	/**
-	 * current listeners 
+	 * current listeners
 	 */
 	private Binding liveRunningBinding;
 	private IContributionsChangedListener contributionsChangedListener;
-	private IGenerateSolutionsListener generateSolutionsListener;
+	private IGASolutionsListener generateSolutionsListener;
 	private ISolversManagerListener solverManagerListener;
+	private Chart performanceChart;
 
 	@Override
 	public void createPartControl(final Composite parent)
 	{
 		context = new DataBindingContext();
-		IContributionsManager contributionsManager = SATC_Activator.getDefault()
-				.getService(IContributionsManager.class, true);
-		IVehicleTypesManager vehicleManager = SATC_Activator.getDefault()
-				.getService(IVehicleTypesManager.class, true);
-		solversManager = SATC_Activator.getDefault()
-				.getService(ISolversManager.class, true);
+		IContributionsManager contributionsManager =
+				SATC_Activator.getDefault().getService(IContributionsManager.class,
+						true);
+		IVehicleTypesManager vehicleManager =
+				SATC_Activator.getDefault()
+						.getService(IVehicleTypesManager.class, true);
+		solversManager =
+				SATC_Activator.getDefault().getService(ISolversManager.class, true);
 
 		initUI(parent);
 		populateContributionList(contributionsManager.getAvailableContributions());
 		populatePrecisionsList(Precision.values());
 		populateVehicleTypesList(vehicleManager.getAllTypes());
-		
+
 		initListeners(parent);
 		solversManager.addSolversManagerListener(solverManagerListener);
-		
-		setActiveSolver(solversManager.getActiveSolver());		
+
+		setActiveSolver(solversManager.getActiveSolver());
 	}
-	
+
 	@Override
 	public void dispose()
 	{
@@ -174,12 +185,14 @@ public class MaintainContributionsView extends ViewPart
 		GridLayout layout = new GridLayout(3, false);
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;
-		Composite header = UIUtils.createEmptyComposite(parent, layout,
-				new GridData(GridData.FILL_HORIZONTAL));
+		Composite header =
+				UIUtils.createEmptyComposite(parent, layout, new GridData(
+						GridData.FILL_HORIZONTAL));
 		UIUtils.createSpacer(header, new GridData(40, SWT.DEFAULT));
-		Composite headerNested = UIUtils.createEmptyComposite(header, UIUtils
-				.createGridLayoutWithoutMargins(4, true), new GridData(
-				GridData.FILL_HORIZONTAL));
+		Composite headerNested =
+				UIUtils.createEmptyComposite(header, UIUtils
+						.createGridLayoutWithoutMargins(4, true), new GridData(
+						GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(headerNested, SWT.CENTER, "Active", new GridData(
 				GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(headerNested, SWT.CENTER, "Hard constraints",
@@ -243,8 +256,8 @@ public class MaintainContributionsView extends ViewPart
 		group.setText("Analyst Contributions");
 		fillAnalystContributionsGroup(group);
 
-		final ScrolledComposite scrolled = new ScrolledComposite(group,
-				SWT.V_SCROLL);
+		final ScrolledComposite scrolled =
+				new ScrolledComposite(group, SWT.V_SCROLL);
 		scrolled.setLayoutData(new GridData(GridData.FILL_BOTH));
 		contList = UIUtils.createScrolledBody(scrolled, SWT.NONE);
 		contList.setLayout(new GridLayout(1, false));
@@ -280,8 +293,8 @@ public class MaintainContributionsView extends ViewPart
 		liveConstraints = new Button(group, SWT.TOGGLE);
 		liveConstraints.setText("Auto-Recalc of Constraints");
 		liveConstraints.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING	| GridData.VERTICAL_ALIGN_CENTER));			
-		
+				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+
 		recalculate = new Button(group, SWT.DEFAULT);
 		recalculate.setText("Calculate Solution");
 		recalculate.addSelectionListener(new SelectionAdapter()
@@ -296,8 +309,8 @@ public class MaintainContributionsView extends ViewPart
 				}
 			}
 		});
-		recalculate.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_CENTER | GridData.VERTICAL_ALIGN_CENTER));
+		recalculate.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER
+				| GridData.VERTICAL_ALIGN_CENTER));
 
 		cancelGeneration = new Button(group, SWT.PUSH);
 		cancelGeneration.setText("Cancel");
@@ -347,7 +360,7 @@ public class MaintainContributionsView extends ViewPart
 				ISelection sel = precisionsCombo.getSelection();
 				IStructuredSelection cSel = (IStructuredSelection) sel;
 				Precision precision = (Precision) cSel.getFirstElement();
-				if (activeSolver != null) 
+				if (activeSolver != null)
 				{
 					activeSolver.setPrecision(precision);
 				}
@@ -368,6 +381,92 @@ public class MaintainContributionsView extends ViewPart
 		initVehicleGroup(main);
 		initAnalystContributionsGroup(main);
 		initAddContributionGroup(main);
+		initPerformanceGraph(main);
+	}
+
+	private void initPerformanceGraph(Composite parent)
+	{
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.heightHint = 200;
+
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.marginWidth = 5;
+		fillLayout.marginHeight = 5;
+		group.setLayout(fillLayout);
+		group.setLayoutData(gridData);
+		group.setText("Performance");
+
+		final Color colorBlack = new Color(Display.getCurrent(), 0, 0, 0);
+
+		performanceChart = new Chart(group, SWT.NONE);
+		double[] ySeries =
+		{ 0.3, 1.4, 1.3, 1.9, 2.1 };
+
+		final ArrayList<Double> dList = new ArrayList<Double>();
+		dList.add(1.1);
+
+		ISeriesSet seriesSet = performanceChart.getSeriesSet();
+		final ILineSeries series =
+				(ILineSeries) seriesSet.createSeries(SeriesType.LINE, "line series");
+		series.setYSeries(ySeries);
+		series.setLineColor(colorBlack);
+
+		performanceChart.getLegend().setVisible(false);
+		performanceChart.getTitle().setVisible(false);
+		IAxis xAxis = performanceChart.getAxisSet().getXAxis(0);
+		xAxis.getTitle().setVisible(false);
+		xAxis.adjustRange();
+
+		xAxis.getTick().setForeground(colorBlack);
+
+		performanceChart.setForeground(colorBlack);
+
+		IAxis yAxis = performanceChart.getAxisSet().getYAxis(0);
+		yAxis.adjustRange();
+		yAxis.enableLogScale(true);
+		yAxis.getTick().setForeground(colorBlack);
+		yAxis.getTitle().setForeground(colorBlack);
+		yAxis.getTitle().setText("Error Sum");
+
+	}
+
+	private void clearPerformanceGraph()
+	{
+		ILineSeries ySeries =
+				(ILineSeries) performanceChart.getSeriesSet().getSeries("line series");
+		double[] newYVals = new double[]
+		{  };
+
+		ySeries.setYSeries(newYVals);
+
+		performanceChart.getAxisSet().getXAxis(0).adjustRange();
+		performanceChart.getAxisSet().getYAxis(0).adjustRange();
+		performanceChart.getAxisSet().getYAxis(0).enableLogScale(true);
+		performanceChart.redraw();
+
+	}
+
+	private void addNewPerformanceScore(double value)
+	{
+		ILineSeries ySeries =
+				(ILineSeries) performanceChart.getSeriesSet().getSeries("line series");
+		double[] yVals = ySeries.getYSeries();
+
+		double[] newYVals = new double[yVals.length + 1];
+		System.arraycopy(yVals, 0, newYVals, 0, yVals.length);
+
+		newYVals[newYVals.length - 1] = value;
+
+		ySeries.setYSeries(newYVals);
+
+		performanceChart.getAxisSet().getXAxis(0).adjustRange();
+		performanceChart.getAxisSet().getYAxis(0).adjustRange();
+
+		performanceChart.redraw();
+
 	}
 
 	private void initVehicleGroup(Composite parent)
@@ -406,8 +505,9 @@ public class MaintainContributionsView extends ViewPart
 					ISelection selection = event.getSelection();
 					if (selection instanceof StructuredSelection)
 					{
-						VehicleType type = (VehicleType) ((StructuredSelection) selection)
-								.getFirstElement();
+						VehicleType type =
+								(VehicleType) ((StructuredSelection) selection)
+										.getFirstElement();
 						activeSolver.setVehicleType(type);
 					}
 				}
@@ -426,7 +526,7 @@ public class MaintainContributionsView extends ViewPart
 				@Override
 				public void widgetSelected(SelectionEvent arg0)
 				{
-					if (activeSolver != null) 
+					if (activeSolver != null)
 					{
 						activeSolver.getContributions().addContribution(item.create());
 					}
@@ -452,121 +552,135 @@ public class MaintainContributionsView extends ViewPart
 					.next()));
 		}
 	}
-	
-	private void initListeners(final Composite parent) 
+
+	private void initListeners(final Composite parent)
 	{
-		contributionsChangedListener = UIListener.wrap(parent.getDisplay(),
-				IContributionsChangedListener.class, 
-				new IContributionsChangedListener()
-				{
-					
-					@Override
-					public void removed(BaseContribution contribution)
-					{
-						removeContribution(contribution, true);
-					}
-					
-					@Override
-					public void added(BaseContribution contribution)
-					{
-						addContribution(contribution, true);
-					}
-				}
-		);
-		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),
-				IGenerateSolutionsListener.class, new SteppingAdapter()
-				{
-					Control focused = null;
+		contributionsChangedListener =
+				UIListener.wrap(parent.getDisplay(),
+						IContributionsChangedListener.class,
+						new IContributionsChangedListener()
+						{
 
-					@Override
-					public void startingGeneration()
-					{
-						focused = parent.getDisplay().getFocusControl();
-						UIUtils.setEnabled(parent, false);
-						cancelGeneration.setVisible(true);
-						cancelGeneration.setEnabled(true);
-					}
+							@Override
+							public void removed(BaseContribution contribution)
+							{
+								removeContribution(contribution, true);
+							}
 
-					@Override
-					public void finishedGeneration(Throwable error)
-					{
-						UIUtils.setEnabled(parent, true);
-						cancelGeneration.setVisible(false);
+							@Override
+							public void added(BaseContribution contribution)
+							{
+								addContribution(contribution, true);
+							}
+						});
+		generateSolutionsListener =
+				UIListener.wrap(parent.getDisplay(), IGASolutionsListener.class,
+						new SteppingAdapter()
+						{
+							Control focused = null;
 
-						// we've encountered an instance during file-load where focused is
-						// null, better check it
-						if (focused != null)
-							focused.setFocus();
-					}
-				}
-		);	
-		solverManagerListener = UIListener.wrap(parent.getDisplay(), ISolversManagerListener.class, 
-				new ISolversManagerListener()
-				{
-					
-					@Override
-					public void solverCreated(ISolver solver)
-					{
-						
-					}
-					
-					@Override
-					public void activeSolverChanged(ISolver activeSolver)
-					{
-						setActiveSolver(activeSolver);
-					}
-				}
-		);
+							@Override
+							public void startingGeneration()
+							{
+								focused = parent.getDisplay().getFocusControl();
+								UIUtils.setEnabled(parent, false);
+								cancelGeneration.setVisible(true);
+								cancelGeneration.setEnabled(true);
+
+								// ok, clear the graph
+								clearPerformanceGraph();
+							}
+
+							@Override
+							public void iterationComputed(List<CompositeRoute> topRoutes,
+									double topScore)
+							{
+								if (topScore < 100)
+									addNewPerformanceScore(topScore);
+							}
+
+							@Override
+							public void finishedGeneration(Throwable error)
+							{
+								UIUtils.setEnabled(parent, true);
+								cancelGeneration.setVisible(false);
+
+								// we've encountered an instance during file-load where focused
+								// is
+								// null, better check it
+								if (focused != null)
+									focused.setFocus();
+							}
+						});
+		solverManagerListener =
+				UIListener.wrap(parent.getDisplay(), ISolversManagerListener.class,
+						new ISolversManagerListener()
+						{
+
+							@Override
+							public void solverCreated(ISolver solver)
+							{
+
+							}
+
+							@Override
+							public void activeSolverChanged(ISolver activeSolver)
+							{
+								setActiveSolver(activeSolver);
+							}
+						});
 	}
-	
-	protected void setActiveSolver(ISolver solver) 
+
+	protected void setActiveSolver(ISolver solver)
 	{
-		if (activeSolver != null) 
-		{			
-			activeSolver.getContributions().
-				removeContributionsChangedListener(contributionsChangedListener);
-			activeSolver.getSolutionGenerator().
-				removeReadyListener(generateSolutionsListener);
-			liveRunningBinding.dispose();			
+		if (activeSolver != null)
+		{
+			activeSolver.getContributions().removeContributionsChangedListener(
+					contributionsChangedListener);
+			activeSolver.getSolutionGenerator().removeReadyListener(
+					generateSolutionsListener);
+			liveRunningBinding.dispose();
 		}
-		List<BaseContribution> contributions = new ArrayList<BaseContribution>(contributionsControl.keySet());
+		List<BaseContribution> contributions =
+				new ArrayList<BaseContribution>(contributionsControl.keySet());
 		for (BaseContribution contribution : contributions)
 		{
 			removeContribution(contribution, false);
 		}
-		if (! contList.isDisposed())
+		if (!contList.isDisposed())
 		{
 			contList.layout();
 		}
-		
+
 		activeSolver = solver;
-		boolean hasSolver = activeSolver != null;		
-		if (hasSolver) 
+		boolean hasSolver = activeSolver != null;
+		if (hasSolver)
 		{
-			activeSolver.getContributions().
-				addContributionsChangedListener(contributionsChangedListener);
-			activeSolver.getSolutionGenerator().
-				addReadyListener(generateSolutionsListener);
-			for (BaseContribution contribution : activeSolver.getContributions()) 
+			activeSolver.getContributions().addContributionsChangedListener(
+					contributionsChangedListener);
+			activeSolver.getSolutionGenerator().addReadyListener(
+					generateSolutionsListener);
+			for (BaseContribution contribution : activeSolver.getContributions())
 			{
 				addContribution(contribution, false);
 			}
-			contList.layout();			
-			vehiclesCombo.setSelection(
-					new StructuredSelection(activeSolver.getVehicleType())
-			);
-			precisionsCombo.setSelection(new StructuredSelection(activeSolver.getPrecision()));
-			liveRunningBinding = context.bindValue(
-					WidgetProperties.selection().observe(liveConstraints),
-					BeansObservables.observeValue(activeSolver, ISolver.LIVE_RUNNING)
-			);
+			contList.layout();
+			vehiclesCombo.setSelection(new StructuredSelection(activeSolver
+					.getVehicleType()));
+			precisionsCombo.setSelection(new StructuredSelection(activeSolver
+					.getPrecision()));
+			liveRunningBinding =
+					context
+							.bindValue(WidgetProperties.selection().observe(liveConstraints),
+									BeansObservables.observeValue(activeSolver,
+											ISolver.LIVE_RUNNING));
 			setPartName(TITLE + " - " + activeSolver.getName());
 		}
-		else 
+		else
 		{
 			setPartName(TITLE);
 		}
-		if (! contList.isDisposed())
+		if (!contList.isDisposed())
 		{
 			precisionsCombo.getCombo().setEnabled(hasSolver);
 			liveConstraints.setEnabled(hasSolver);
@@ -575,7 +689,7 @@ public class MaintainContributionsView extends ViewPart
 			addContributionButton.setEnabled(hasSolver);
 		}
 	}
-	
+
 	public void addContribution(BaseContribution contribution, boolean doLayout)
 	{
 		// ok, create a wrapper for this
@@ -587,15 +701,16 @@ public class MaintainContributionsView extends ViewPart
 		try
 		{
 			Class<?> viewClass = CONTRIBUTION_PANELS.get(contribution.getClass());
-			panel = (BaseContributionView<?>) viewClass.getConstructor(
-					Composite.class, contribution.getClass(), IContributions.class)
-					.newInstance(contList, contribution, activeSolver.getContributions());
+			panel =
+					(BaseContributionView<?>) viewClass.getConstructor(Composite.class,
+							contribution.getClass(), IContributions.class).newInstance(
+							contList, contribution, activeSolver.getContributions());
 			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 					| GridData.GRAB_HORIZONTAL));
 
 			// and rememeber it
 			contributionsControl.put(contribution, panel);
-			if (doLayout) 
+			if (doLayout)
 			{
 				contList.layout();
 			}
@@ -606,17 +721,18 @@ public class MaintainContributionsView extends ViewPart
 		}
 	}
 
-	protected void removeContribution(BaseContribution contribution, boolean doLayout)
+	protected void removeContribution(BaseContribution contribution,
+			boolean doLayout)
 	{
 		BaseContributionView<?> panel = contributionsControl.get(contribution);
 		if (panel != null)
 		{
 			panel.dispose();
 			contributionsControl.remove(contribution);
-			if (doLayout) 
+			if (doLayout)
 			{
 				contList.layout();
 			}
 		}
-	}	
+	}
 }

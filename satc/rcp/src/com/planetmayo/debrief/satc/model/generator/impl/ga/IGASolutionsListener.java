@@ -8,5 +8,10 @@ import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 public interface IGASolutionsListener extends IGenerateSolutionsListener
 {
 	
-	void iterationComputed(List<CompositeRoute> topRoutes);
+	/** learn that an iteration is complete
+	 * 
+	 * @param topRoutes the top performing routes for this iteration
+	 * @param topScore the score of the single best performing route
+	 */
+	void iterationComputed(List<CompositeRoute> topRoutes, double topScore);
 }
