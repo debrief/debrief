@@ -22,8 +22,6 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -35,10 +33,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.part.ViewPart;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
@@ -127,10 +121,10 @@ public class MaintainContributionsView extends ViewPart
 	private Button recalculate;
 	private Button cancelGeneration;
 	private ComboViewer precisionsCombo;
-	private ComboViewer vehiclesCombo;
+//	private ComboViewer vehiclesCombo;
 	private Composite contList;
-	private Menu addContributionMenu;
-	private ToolItem addContributionButton;
+//	private Menu addContributionMenu;
+//	private ToolItem addContributionButton;
 
 	/** Contribution -> Contribution view mappings */
 	private HashMap<BaseContribution, BaseContributionView<?>> contributionsControl =
@@ -213,38 +207,38 @@ public class MaintainContributionsView extends ViewPart
 
 	private void initAddContributionGroup(Composite parent)
 	{
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.marginWidth = 5;
-		fillLayout.marginHeight = 5;
-		group.setLayout(fillLayout);
-		group.setLayoutData(gridData);
-		group.setText("New Contribution");
-
-		addContributionMenu = new Menu(group);
-		final ToolBar toolBar = new ToolBar(group, SWT.NONE);
-		toolBar.setBounds(50, 50, 50, 50);
-		addContributionButton = new ToolItem(toolBar, SWT.DROP_DOWN);
-		addContributionButton.setText("Add...");
-		addContributionButton.addListener(SWT.Selection, new Listener()
-		{
-			@Override
-			public void handleEvent(Event event)
-			{
-				if (event.detail == SWT.ARROW)
-				{
-					Rectangle rect = addContributionButton.getBounds();
-					Point pt = new Point(rect.x, rect.y + rect.height);
-					pt = toolBar.toDisplay(pt);
-					addContributionMenu.setLocation(pt.x, pt.y);
-					addContributionMenu.setVisible(true);
-				}
-			}
-		});
+//		GridData gridData = new GridData();
+//		gridData.horizontalAlignment = SWT.FILL;
+//		gridData.grabExcessHorizontalSpace = true;
+//
+//		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+//		FillLayout fillLayout = new FillLayout();
+//		fillLayout.marginWidth = 5;
+//		fillLayout.marginHeight = 5;
+//		group.setLayout(fillLayout);
+//		group.setLayoutData(gridData);
+//		group.setText("New Contribution");
+//
+//		addContributionMenu = new Menu(group);
+//		final ToolBar toolBar = new ToolBar(group, SWT.NONE);
+//		toolBar.setBounds(50, 50, 50, 50);
+//		addContributionButton = new ToolItem(toolBar, SWT.DROP_DOWN);
+//		addContributionButton.setText("Add...");
+//		addContributionButton.addListener(SWT.Selection, new Listener()
+//		{
+//			@Override
+//			public void handleEvent(Event event)
+//			{
+//				if (event.detail == SWT.ARROW)
+//				{
+//					Rectangle rect = addContributionButton.getBounds();
+//					Point pt = new Point(rect.x, rect.y + rect.height);
+//					pt = toolBar.toDisplay(pt);
+//					addContributionMenu.setLocation(pt.x, pt.y);
+//					addContributionMenu.setVisible(true);
+//				}
+//			}
+//		});
 
 	}
 
@@ -395,7 +389,7 @@ public class MaintainContributionsView extends ViewPart
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = true;
-		gridData.heightHint = 300;
+		gridData.heightHint = 200;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
 		FillLayout fillLayout = new FillLayout();
@@ -405,39 +399,40 @@ public class MaintainContributionsView extends ViewPart
 		group.setLayoutData(gridData);
 		group.setText("Performance");
 
+		// we need the color black several times
 		final Color colorBlack = new Color(Display.getCurrent(), 0, 0, 0);
 
+		// generate the chart
 		performanceChart = new Chart(group, SWT.NONE);
+		
+		// format the chart
+		performanceChart.getLegend().setVisible(false);
+		performanceChart.getTitle().setVisible(false);
+		performanceChart.setForeground(colorBlack);
+		ISeriesSet seriesSet = performanceChart.getSeriesSet();
+
+		// now give the chart our data series
 		double[] ySeries =
 		{};
-
-		final ArrayList<Double> dList = new ArrayList<Double>();
-		dList.add(1.1);
-
-		ISeriesSet seriesSet = performanceChart.getSeriesSet();
 		final ILineSeries series =
 				(ILineSeries) seriesSet.createSeries(SeriesType.LINE, SERIES_NAME);
 		series.enableArea(true);
 		series.setYSeries(ySeries);
 		series.setLineColor(colorBlack);
 
-		performanceChart.getLegend().setVisible(false);
-		performanceChart.getTitle().setVisible(false);
+		// ok, now for the x axis
 		IAxis xAxis = performanceChart.getAxisSet().getXAxis(0);
 		xAxis.getTitle().setVisible(false);
 		xAxis.adjustRange();
-
 		xAxis.getTick().setForeground(colorBlack);
 
-		performanceChart.setForeground(colorBlack);
-
+		// and the y axis
 		IAxis yAxis = performanceChart.getAxisSet().getYAxis(0);
 		yAxis.adjustRange();
 		yAxis.enableLogScale(true);
 		yAxis.getTick().setForeground(colorBlack);
 		yAxis.getTitle().setForeground(colorBlack);
 		yAxis.getTitle().setText("Error Sum");
-
 	}
 
 	private void clearPerformanceGraph()
@@ -468,7 +463,7 @@ public class MaintainContributionsView extends ViewPart
 		newYVals[newYVals.length - 1] = value;
 
 		ySeries.setYSeries(newYVals);
-
+		
 		performanceChart.getAxisSet().getXAxis(0).adjustRange();
 		performanceChart.getAxisSet().getYAxis(0).adjustRange();
 
@@ -478,68 +473,68 @@ public class MaintainContributionsView extends ViewPart
 
 	private void initVehicleGroup(Composite parent)
 	{
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.marginWidth = 5;
-		fillLayout.marginHeight = 5;
-		group.setLayout(fillLayout);
-		group.setLayoutData(gridData);
-		group.setText("Vehicle");
-
-		vehiclesCombo = new ComboViewer(group);
-		vehiclesCombo.setContentProvider(new ArrayContentProvider());
-		vehiclesCombo.setLabelProvider(new LabelProvider()
-		{
-
-			@Override
-			public String getText(Object element)
-			{
-				return ((VehicleType) element).getName();
-			}
-		});
-		vehiclesCombo.addSelectionChangedListener(new ISelectionChangedListener()
-		{
-
-			@Override
-			public void selectionChanged(SelectionChangedEvent event)
-			{
-				if (activeSolver != null)
-				{
-					ISelection selection = event.getSelection();
-					if (selection instanceof StructuredSelection)
-					{
-						VehicleType type =
-								(VehicleType) ((StructuredSelection) selection)
-										.getFirstElement();
-						activeSolver.setVehicleType(type);
-					}
-				}
-			}
-		});
+//		GridData gridData = new GridData();
+//		gridData.horizontalAlignment = SWT.FILL;
+//		gridData.grabExcessHorizontalSpace = true;
+//
+//		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+//		FillLayout fillLayout = new FillLayout();
+//		fillLayout.marginWidth = 5;
+//		fillLayout.marginHeight = 5;
+//		group.setLayout(fillLayout);
+//		group.setLayoutData(gridData);
+//		group.setText("Vehicle");
+//
+//		vehiclesCombo = new ComboViewer(group);
+//		vehiclesCombo.setContentProvider(new ArrayContentProvider());
+//		vehiclesCombo.setLabelProvider(new LabelProvider()
+//		{
+//
+//			@Override
+//			public String getText(Object element)
+//			{
+//				return ((VehicleType) element).getName();
+//			}
+//		});
+//		vehiclesCombo.addSelectionChangedListener(new ISelectionChangedListener()
+//		{
+//
+//			@Override
+//			public void selectionChanged(SelectionChangedEvent event)
+//			{
+//				if (activeSolver != null)
+//				{
+//					ISelection selection = event.getSelection();
+//					if (selection instanceof StructuredSelection)
+//					{
+//						VehicleType type =
+//								(VehicleType) ((StructuredSelection) selection)
+//										.getFirstElement();
+//						activeSolver.setVehicleType(type);
+//					}
+//				}
+//			}
+//		});
 	}
 
 	public void populateContributionList(List<ContributionBuilder> items)
 	{
-		for (final ContributionBuilder item : items)
-		{
-			MenuItem menuItem = new MenuItem(addContributionMenu, SWT.PUSH);
-			menuItem.setText(item.getDescription());
-			menuItem.addSelectionListener(new SelectionAdapter()
-			{
-				@Override
-				public void widgetSelected(SelectionEvent arg0)
-				{
-					if (activeSolver != null)
-					{
-						activeSolver.getContributions().addContribution(item.create());
-					}
-				}
-			});
-		}
+//		for (final ContributionBuilder item : items)
+//		{
+//			MenuItem menuItem = new MenuItem(addContributionMenu, SWT.PUSH);
+//			menuItem.setText(item.getDescription());
+//			menuItem.addSelectionListener(new SelectionAdapter()
+//			{
+//				@Override
+//				public void widgetSelected(SelectionEvent arg0)
+//				{
+//					if (activeSolver != null)
+//					{
+//						activeSolver.getContributions().addContribution(item.create());
+//					}
+//				}
+//			});
+//		}
 	}
 
 	public void populatePrecisionsList(Precision[] precisions)
@@ -550,14 +545,14 @@ public class MaintainContributionsView extends ViewPart
 
 	public void populateVehicleTypesList(List<VehicleType> vehicles)
 	{
-		vehiclesCombo.setInput(vehicles);
-
-		// ok, try to set the first one
-		if (vehicles.size() > 0)
-		{
-			vehiclesCombo.setSelection(new StructuredSelection(vehicles.iterator()
-					.next()));
-		}
+//		vehiclesCombo.setInput(vehicles);
+//
+//		// ok, try to set the first one
+//		if (vehicles.size() > 0)
+//		{
+//			vehiclesCombo.setSelection(new StructuredSelection(vehicles.iterator()
+//					.next()));
+//		}
 	}
 
 	private void initListeners(final Composite parent)
@@ -673,8 +668,8 @@ public class MaintainContributionsView extends ViewPart
 				addContribution(contribution, false);
 			}
 			contList.layout();
-			vehiclesCombo.setSelection(new StructuredSelection(activeSolver
-					.getVehicleType()));
+//			vehiclesCombo.setSelection(new StructuredSelection(activeSolver
+//					.getVehicleType()));
 			precisionsCombo.setSelection(new StructuredSelection(activeSolver
 					.getPrecision()));
 			liveRunningBinding =
@@ -693,8 +688,8 @@ public class MaintainContributionsView extends ViewPart
 			precisionsCombo.getCombo().setEnabled(hasSolver);
 			liveConstraints.setEnabled(hasSolver);
 			recalculate.setEnabled(hasSolver);
-			vehiclesCombo.getCombo().setEnabled(hasSolver);
-			addContributionButton.setEnabled(hasSolver);
+//			vehiclesCombo.getCombo().setEnabled(hasSolver);
+//			addContributionButton.setEnabled(hasSolver);
 		}
 	}
 
