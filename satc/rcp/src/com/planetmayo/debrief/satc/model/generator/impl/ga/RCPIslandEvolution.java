@@ -160,8 +160,6 @@ public class RCPIslandEvolution
 		// keep looping until a TerminationCondition is successful
 		while (satisfiedConditions == null)
 		{
-			System.err.println("new generation, num:" + currentEpochIndex);
-
 			List<Callable<List<EvaluatedCandidate<List<StraightRoute>>>>> epochs =
 					createEpochTasks(populationSize, eliteCount, epochLength,
 							islandPopulations);
