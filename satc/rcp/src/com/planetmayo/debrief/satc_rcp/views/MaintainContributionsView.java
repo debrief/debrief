@@ -89,6 +89,11 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
+	/** name we use for the performance graph
+	 * 
+	 */
+	private static final String SERIES_NAME = "line series";
+	
 	public static final String ID =
 			"com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	private static final String TITLE = "Maintain Contributions";
@@ -389,7 +394,7 @@ public class MaintainContributionsView extends ViewPart
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = true;
-		gridData.heightHint = 200;
+		gridData.heightHint = 300;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
 		FillLayout fillLayout = new FillLayout();
@@ -403,14 +408,15 @@ public class MaintainContributionsView extends ViewPart
 
 		performanceChart = new Chart(group, SWT.NONE);
 		double[] ySeries =
-		{ 0.3, 1.4, 1.3, 1.9, 2.1 };
+		{ };
 
 		final ArrayList<Double> dList = new ArrayList<Double>();
 		dList.add(1.1);
 
 		ISeriesSet seriesSet = performanceChart.getSeriesSet();
 		final ILineSeries series =
-				(ILineSeries) seriesSet.createSeries(SeriesType.LINE, "line series");
+				(ILineSeries) seriesSet.createSeries(SeriesType.LINE, SERIES_NAME);
+		series.enableArea(true);
 		series.setYSeries(ySeries);
 		series.setLineColor(colorBlack);
 
@@ -430,13 +436,13 @@ public class MaintainContributionsView extends ViewPart
 		yAxis.getTick().setForeground(colorBlack);
 		yAxis.getTitle().setForeground(colorBlack);
 		yAxis.getTitle().setText("Error Sum");
-
+		
 	}
 
 	private void clearPerformanceGraph()
 	{
 		ILineSeries ySeries =
-				(ILineSeries) performanceChart.getSeriesSet().getSeries("line series");
+				(ILineSeries) performanceChart.getSeriesSet().getSeries(SERIES_NAME);
 		double[] newYVals = new double[]
 		{  };
 
@@ -452,7 +458,7 @@ public class MaintainContributionsView extends ViewPart
 	private void addNewPerformanceScore(double value)
 	{
 		ILineSeries ySeries =
-				(ILineSeries) performanceChart.getSeriesSet().getSeries("line series");
+				(ILineSeries) performanceChart.getSeriesSet().getSeries(SERIES_NAME);
 		double[] yVals = ySeries.getYSeries();
 
 		double[] newYVals = new double[yVals.length + 1];
@@ -595,7 +601,8 @@ public class MaintainContributionsView extends ViewPart
 							public void iterationComputed(List<CompositeRoute> topRoutes,
 									double topScore)
 							{
-								if (topScore < 100)
+								// check it's roughly suitable
+								if (topScore < 1000000)
 									addNewPerformanceScore(topScore);
 							}
 
