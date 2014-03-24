@@ -89,11 +89,12 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
-	/** name we use for the performance graph
+	/**
+	 * name we use for the performance graph
 	 * 
 	 */
 	private static final String SERIES_NAME = "line series";
-	
+
 	public static final String ID =
 			"com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	private static final String TITLE = "Maintain Contributions";
@@ -408,7 +409,7 @@ public class MaintainContributionsView extends ViewPart
 
 		performanceChart = new Chart(group, SWT.NONE);
 		double[] ySeries =
-		{ };
+		{};
 
 		final ArrayList<Double> dList = new ArrayList<Double>();
 		dList.add(1.1);
@@ -436,7 +437,7 @@ public class MaintainContributionsView extends ViewPart
 		yAxis.getTick().setForeground(colorBlack);
 		yAxis.getTitle().setForeground(colorBlack);
 		yAxis.getTitle().setText("Error Sum");
-		
+
 	}
 
 	private void clearPerformanceGraph()
@@ -444,7 +445,7 @@ public class MaintainContributionsView extends ViewPart
 		ILineSeries ySeries =
 				(ILineSeries) performanceChart.getSeriesSet().getSeries(SERIES_NAME);
 		double[] newYVals = new double[]
-		{  };
+		{};
 
 		ySeries.setYSeries(newYVals);
 
