@@ -42,13 +42,9 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	{
 		super(contributions, jobsManager, problemSpace);
 		parameters = new GAParameters();
-		parameters.setElitizm(10);
 		parameters.setMutationProbability(0.25);
-		parameters.setPopulationSize(70);
-		parameters.setStagnationSteps(20);
 		parameters.setTopRoutes(10);
 		parameters.setTimeoutBetweenIterations(0);
-		parameters.setTimeout(30000);
 		parameters.setUseAlteringLegs(true);
 	}
 
@@ -166,13 +162,14 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				return progressMonitor.isCanceled();
 			}
 		};
+
 		List<StraightRoute> solution =
 				engine.evolve(parameters.getPopulationSize(), parameters.getElitizm(),
-						20, 1, progressMonitorCondition,
+						parameters.getEpochLength(), 1, progressMonitorCondition,
 						new ElapsedTime(parameters.getTimeout()),
 						new Stagnation(parameters.getStagnationSteps())
-				// new TargetFitness(0.07, false)
-						);
+//				, new TargetFitness(0.07, false)
+				);
 		if (progressMonitor.isCanceled())
 		{
 			throw new InterruptedException();
@@ -209,6 +206,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	public void setPrecision(Precision precision)
 	{
 		super.setPrecision(precision);
+		parameters.setPrecision(precision);
 		if (straightLegs != null)
 		{
 			generateSolutions(true);
