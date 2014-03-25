@@ -7092,6 +7092,35 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                 </mediaobject>
               </screenshot></para>
           </sect3>
+          <sect3>
+            <title>Automatically shading bulk sensor data</title>
+            <para>When very long sets of sensor data are exported to a report, it can be difficult
+              for a reader to distinguish newer from old cuts - particularly when they are
+              overlapping. Debrief provides support for this via the two<indexterm>
+                <primary>Shading Sensor Data</primary>
+              </indexterm>
+              <guimenuitem>Shade</guimenuitem> operations:<screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/ShadeSensor.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot></para>
+            <para>These two operations shade the selected block of sensor data (or whole sensor)
+              according to two operations - as shown below.<screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/ShadeRainbow.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot><screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/ShadeBlueRed.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot></para>
+          </sect3>
 
           <sect3>
             <title>Trim length of sensor lines</title>
