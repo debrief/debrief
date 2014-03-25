@@ -138,7 +138,7 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator {
 		};
 		parent.add(doBlueShade);
 
-		final String title3 = "Clear shading";
+		final String title3 = "Reset shading";
 		final Action clearShade = new Action(title3)
 		{
 			public void run()
@@ -255,21 +255,28 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator {
 				{
 					long time = (swc.getDTG().getMicros() - _startDTG.getMicros()) / 1000000;
 					
-					//long center = 0;
-			    double width = 255f;
+//					//long center = 0;
+//			    double width = 255f;
+//
+//			    double i = (double)time/(double)_delta;
+//			    double freq = 255f;
+//			    
+//			    long r = (long) (Math.sin(freq*i + 0) * width);
+//			    long g = 0;
+//			    if (_shader == ShadeOperation.RAINBOW_SHADE)
+//			    {
+//			    	g = (long) (Math.sin(freq*i + 80f) * width);
+//			    }
+//			    long b = (long) (Math.sin(freq*i - 160f) * width);
+//			    
+//					swc.setColor(new Color(checkRBG(r), checkRBG(g), checkRBG(b)));
+					
 
-			    double i = (double)time/(double)_delta;
-			    double freq = 255f;
-			    
-			    long r = (long) (Math.sin(freq*i + 0) * width);
-			    long g = 0;
-			    if (_shader == ShadeOperation.RAINBOW_SHADE)
-			    {
-			    	g = (long) (Math.sin(freq*i + 80f) * width);
-			    }
-			    long b = (long) (Math.sin(freq*i - 160f) * width);
-			    
-					swc.setColor(new Color(checkRBG(r), checkRBG(g), checkRBG(b)));
+					// produce value from 0..1 for how far through the rainbow we require
+					float hue = (float)((double)time / (double)_delta);
+
+					swc.setColor(new Color(Color.HSBtoRGB(hue, 0.8f, 0.7f)));
+					
 				}
 			}
 
