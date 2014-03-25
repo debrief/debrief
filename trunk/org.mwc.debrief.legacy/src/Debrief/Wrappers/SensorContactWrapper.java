@@ -139,11 +139,11 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
+
 import junit.framework.Assert;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
