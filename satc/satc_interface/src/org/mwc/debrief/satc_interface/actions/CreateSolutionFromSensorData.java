@@ -66,6 +66,7 @@ public class CreateSolutionFromSensorData implements
 	{
 		ArrayList<SensorContactWrapper> validCuts = null;
 
+		parent.add(new Separator());
 		IMenuManager thisMenu = new MenuManager("SemiAuto TMA");
 		parent.add(thisMenu);
 
