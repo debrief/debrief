@@ -50,12 +50,16 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.cheatsheets.OpenCheatSheetAction;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
@@ -1460,7 +1464,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				// lastly, trigger a navigator refresh
 				final IFile iff = newInput.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
-
+				// refresh navigator
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IViewPart view = page.findView("org.eclipse.ui.views.ResourceNavigator");
+				if (view instanceof ResourceNavigator)
+				{
+					((ResourceNavigator) view).getViewer().refresh(iff);
+				}
 			}
 			catch (final FileNotFoundException e)
 			{
