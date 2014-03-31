@@ -11,7 +11,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -33,6 +45,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -43,6 +57,7 @@ import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
@@ -149,6 +164,96 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	protected GeoToolsHandler _myGeoHandler;
 	protected IContextActivation _myActivation;
+	
+	private IResourceChangeListener resourceChangeListener = new IResourceChangeListener()
+	{
+		
+		@Override
+		public void resourceChanged(IResourceChangeEvent event)
+		{
+			IResourceDelta delta = event.getDelta();
+			final int eventType = event.getType();
+			if (delta != null) {
+				try
+				{
+					delta.accept(new IResourceDeltaVisitor()
+					{
+						
+						@Override
+						public boolean visit(IResourceDelta delta) throws CoreException
+						{
+							IResource resource = delta.getResource();
+							if (resource instanceof IWorkspaceRoot) {
+								return true;
+							}
+							if (resource instanceof IProject)
+							{
+								IEditorInput input = getEditorInput();
+								if (input instanceof IFileEditorInput)
+								{
+									IProject project = ((IFileEditorInput) input).getFile()
+											.getProject();
+									if (resource.equals(project)
+											&& (eventType == IResourceChangeEvent.PRE_DELETE || eventType == IResourceChangeEvent.PRE_CLOSE))
+									{
+										closeEditor(false);
+										return false;
+									}
+								}
+								return true;
+							}
+							if (resource instanceof IFolder)
+							{
+								return true;
+							}
+							if (resource instanceof IFile)
+							{
+								IEditorInput input = getEditorInput();
+								if (input instanceof IFileEditorInput)
+								{
+									IFile file = ((IFileEditorInput) input).getFile();
+									if (resource.equals(file)
+											&& delta.getKind() == IResourceDelta.REMOVED)
+									{
+										IPath movedToPath = delta.getMovedToPath();
+										if (movedToPath != null)
+										{
+											IResource path = ResourcesPlugin.getWorkspace().getRoot().findMember(movedToPath);
+											if (path instanceof IFile)
+											{
+												final FileEditorInput newInput = new FileEditorInput(
+														(IFile) path);
+												Display.getDefault().asyncExec(new Runnable()
+												{
+													
+													@Override
+													public void run()
+													{
+														setInputWithNotify(newInput);
+													}
+												});
+											}
+										}
+										else
+										{
+											closeEditor(false);
+										}
+									}
+								}
+							}
+							return false;
+						}
+
+					});
+				}
+				catch (CoreException e)
+				{
+					IStatus status = new Status(IStatus.INFO, PlotViewerPlugin.PLUGIN_ID, e.getLocalizedMessage(),e);
+					PlotViewerPlugin.getDefault().getLog().log(status);
+				}
+			}
+		}
+	};
 
 	// //////////////////////////////
 	// constructor
@@ -453,6 +558,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		super.dispose();
 
 		getSite().getPage().removePartListener(partListener);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 
 		// empty the part monitor
 		if (_myPartMonitor != null)
@@ -469,6 +575,19 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_timeListener = null;
 	}
 
+	private void closeEditor(final boolean save)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				getSite().getPage().closeEditor(CorePlotEditor.this, save);
+			}
+		});
+	}
+	
 	public void createPartControl(final Composite parent)
 	{
 		// hey, create the chart
@@ -550,6 +669,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		listenForSelectionChange();
 
 		getSite().getPage().addPartListener(partListener);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE|IResourceChangeEvent.PRE_DELETE|IResourceChangeEvent.POST_CHANGE);
 	}
 
 	private IContextService getContextService()
