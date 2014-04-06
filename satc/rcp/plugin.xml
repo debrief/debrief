@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Debrief SATC"
+            id="com.planetmayo.debrief.satc">
+      </category>
+      <view
+            name="Maintain Contributions"
+            icon="icons/maintain.png"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView"
+            id="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView">
+      </view>
+      <view
+            name="Spatial View"
+            icon="icons/map.png"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc_rcp.views.SpatialView"
+            id="com.planetmayo.debrief.satc_rcp.views.SpatialView">
+      </view>
+      <view
+            name="Track States"
+            icon="icons/list.png"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc_rcp.views.TrackStatesView"
+            id="com.planetmayo.debrief.satc_rcp.views.TrackStatesView">
+      </view>
+      <view
+            name="Test Harness"
+            icon="icons/harness.png"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc_rcp.views.TestHarnessView"
+            id="com.planetmayo.debrief.satc_rcp.views.TestHarnessView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.planetmayo.debrief.satc_rcp.ui.SATC_Perspective"
+            fixed="false"
+            icon="icons/compass.png"
+            id="com.planetmayo.debrief.satc_rcp.perspective"
+            name="Track Generation">
+      </perspective>
+   </extension>
+
+</plugin>

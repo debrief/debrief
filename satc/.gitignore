@@ -1,0 +1,11 @@
+
+/bin
+/model/bin
+/rcp/bin
+gwt/gwt-unitCache
+gwt/war/WEB-INF/classes
+gwt/war/WEB-INF/deploy
+gwt/war/gwt
+com.google.appengine.eclipse.core.prefs
+com.google.gwt.eclipse.core.prefs
+satc_interface/bin
