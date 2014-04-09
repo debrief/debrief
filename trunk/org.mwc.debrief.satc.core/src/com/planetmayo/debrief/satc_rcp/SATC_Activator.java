@@ -26,7 +26,7 @@ import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings;
 public class SATC_Activator extends AbstractUIPlugin
 {
 
-	public static final String PLUGIN_ID = "com.planetmayo.debrief.satc";
+	public static final String PLUGIN_ID = "org.mwc.debrief.satc.core";
 
 	private static SATC_Activator plugin;
 

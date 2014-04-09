@@ -33,7 +33,7 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.mwc.debrief.satc_interface"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.mwc.debrief.satc.integration"; //$NON-NLS-1$
 
 	// The shared instance
 	private static SATC_Interface_Activator plugin;
