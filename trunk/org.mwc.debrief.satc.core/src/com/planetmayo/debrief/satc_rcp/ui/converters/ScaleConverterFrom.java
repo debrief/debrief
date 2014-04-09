@@ -1,0 +1,62 @@
+package com.planetmayo.debrief.satc_rcp.ui.converters;
+
+import org.eclipse.core.databinding.conversion.IConverter;
+
+public class ScaleConverterFrom implements IConverter {
+	
+	protected int[] increments;
+	protected int[] values;
+	protected int startValue;
+	
+	public ScaleConverterFrom(int[] increments, int[] borders) {
+		this.increments = increments;
+		this.values = new int[increments.length];
+		for (int i = 0; i < borders.length - 1; i++) {
+			values[i] = (borders[i + 1] - borders[i]) / increments[i];
+		}
+		startValue = borders[0];
+	}
+
+	@Override
+	public Object convert(Object value) {
+		if (value == null) {
+			return null;
+		}
+		int val = (Integer) value;
+		int current = 0;
+		int result = startValue;
+		for (int i = 0; i < values.length; i++) {
+			int delta = Math.min(values[i], val - current);
+			result += delta * increments[i];
+			if (delta < values[i]) {
+				break;
+			}
+			current += delta;
+		}
+		return (double)result;
+	}
+
+	@Override
+	public Object getFromType() {
+		return Integer.class;
+	}
+
+	@Override
+	public Object getToType() {
+		return Double.class;
+	}
+	
+	public static void main(String[] args) {
+		ScaleConverterFrom converter = new ScaleConverterFrom(
+				new int[]{50, 100, 200, 500, 1000}, 
+				new int[]{100, 1000, 3000, 7000, 17000, 40000}
+		);
+		ScaleConverterTo converter1 = new ScaleConverterTo(
+				new int[]{50, 100, 200, 500, 1000}, 
+				new int[]{100, 1000, 3000, 7000, 17000, 40000}
+		);		
+		for (int i = 1; i < 300; i++) {
+			System.out.println(i + " - " + converter.convert(i) + " - " + converter1.convert(converter.convert(i)));
+		}
+	}
+}
