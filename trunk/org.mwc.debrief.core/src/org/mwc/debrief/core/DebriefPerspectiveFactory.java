@@ -44,8 +44,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 			"midLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
 		bottomLeft.addPlaceholder(DebriefPlugin.MULTI_PATH);
-		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
-			
+		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);		
 		
 		// bottom: placeholder for the xyplot
 		final IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
@@ -55,7 +54,11 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
     bottomPanel.addPlaceholder(CorePlugin.NARRATIVES2);
     bottomPanel.addPlaceholder(CorePlugin.GRID_EDITOR);
 //		bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
-		
+    
+		// RIGHT: SATC contributions
+		final IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.6f,
+			editorArea);
+		right.addPlaceholder(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);		
 		
 		// and our view shortcuts
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
@@ -71,6 +74,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
 		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
 		layout.addShowViewShortcut(DebriefPlugin.TIME_BAR);
+		layout.addShowViewShortcut(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 		
 		// it via action (so we can populate it)  
 
