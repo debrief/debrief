@@ -877,43 +877,47 @@ public class ImportReplay extends PlainImporterBase
 		// trim any leading whitespace
 		final String theLine = rawString.trim();
 
-		// so, determine if this is a comment
-		if (theLine.charAt(0) == ';')
+		// check it's not an empty line
+		if(theLine.length() > 0)
 		{
-			// look through types of import handler
-			final Enumeration<PlainLineImporter> iter = _theImporters.elements();
-
-			// get the type for this comment
-			final StringTokenizer st = new StringTokenizer(theLine);
-			final String type = st.nextToken();
-
-			// cycle through my types
-			while (iter.hasMoreElements())
+			// so, determine if this is a comment
+			if (theLine.charAt(0) == ';')
 			{
-				final PlainLineImporter thisImporter = iter.nextElement();
-
-				// get the handler correct type?
-				final String thisType = thisImporter.getYourType();
-
-				if (thisType == null)
+				// look through types of import handler
+				final Enumeration<PlainLineImporter> iter = _theImporters.elements();
+	
+				// get the type for this comment
+				final StringTokenizer st = new StringTokenizer(theLine);
+				final String type = st.nextToken();
+	
+				// cycle through my types
+				while (iter.hasMoreElements())
 				{
-					MWC.Utilities.Errors.Trace.trace("null returned by: " + thisImporter);
-					return null;
-				}
-
-				// does this one fit?
-				if (thisType.equals(type))
-				{
-					res = thisImporter;
-					break;
+					final PlainLineImporter thisImporter = iter.nextElement();
+	
+					// get the handler correct type?
+					final String thisType = thisImporter.getYourType();
+	
+					if (thisType == null)
+					{
+						MWC.Utilities.Errors.Trace.trace("null returned by: " + thisImporter);
+						return null;
+					}
+	
+					// does this one fit?
+					if (thisType.equals(type))
+					{
+						res = thisImporter;
+						break;
+					}
 				}
 			}
+			else
+			{
+				res = new ImportFix();
+			}
 		}
-		else
-		{
-			res = new ImportFix();
-		}
-
+		
 		// done
 		return res;
 	}
