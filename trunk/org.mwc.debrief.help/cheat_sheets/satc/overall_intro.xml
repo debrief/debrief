@@ -13,5 +13,5 @@ Please read the help page that&apos;s linked below to learn some of the concepts
       </description>
       <command
             required="false"
-            serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/satc.html)"/> </item>
+            serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/satc.html#satc_intro)"/> </item>
 </cheatsheet>
