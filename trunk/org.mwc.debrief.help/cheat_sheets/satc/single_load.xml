@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Title">
+   <intro>
+      <description>
+         <b>Right, we've got to load some data to use in the TMA. We're going to find an load it here.</b>
+      </description>
+   </intro>
+   <item
+         title="Open the Navigator">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Browse to the SATC folder">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Load the file">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+</cheatsheet>

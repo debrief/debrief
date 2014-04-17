@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Title">
+   <intro>
+      <description>
+         <b>Body</b>
+      </description>
+   </intro>
+   <item
+         title="Browse to the sensor data">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Select a block of sensor cuts">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Create solution based upon cuts">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="View the results">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+</cheatsheet>

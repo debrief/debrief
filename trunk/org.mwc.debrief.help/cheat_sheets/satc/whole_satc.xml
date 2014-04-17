@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<compositeCheatsheet name="Semi Automated Track Construction">
+   <taskGroup kind="sequence" name="Walkthrough" skip="false">
+      <intro>
+         <b>Introduction</b><br/>
+This collection of cheat sheets will teach you how to use Debrief&apos;s Semi Automated Track Construction (SATC) capabilities.
+      </intro>
+      <onCompletion>
+         <b>Conclusion</b>
+      </onCompletion>
+      <task kind="cheatsheet" name="Concepts" skip="false">
+         <intro>
+            <b>Background</b><br/>
+Before we get started with loading and manipulating data, we&apos;re going to learn some of the background terms and concepts.
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="overall_intro.xml">
+         </param>
+      </task>
+      <taskGroup kind="sequence" name="Single Leg Solution" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <task kind="cheatsheet" name="Loading the data" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="single_load.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Creating the scenario" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="single_create.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Getting a solution" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="single_solution.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Adding more contributions" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="single_contribution.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Importing as a TMA track" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="single_import.xml">
+            </param>
+         </task>
+      </taskGroup>
+      <taskGroup kind="sequence" name="Multi Leg Solution" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <task kind="cheatsheet" name="Loading the data" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="multi_load.xml">
+            </param>
+         </task>
+      </taskGroup>
+   </taskGroup>
+</compositeCheatsheet>
