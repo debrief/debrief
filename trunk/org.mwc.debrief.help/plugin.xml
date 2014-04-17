@@ -21,6 +21,10 @@
             name="General"
             parentCategory="org.mwc.debrief.help.cheats"/>
       <category
+            id="org.mwc.debrief.help.cheat_satc"
+            name="Semi Automatic Track Construction"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
             id="org.mwc.debrief.help.cheat_started"
             name="Getting started"
             parentCategory="org.mwc.debrief.help.cheats"/>
@@ -81,6 +85,12 @@
             name="Linking to existing datafiles"/>   
             <!--  note, we use the generate_project id when we manually open
             the cheat sheet in the PlotEditor class -->                                    
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_satc"
+            composite="true"
+            contentFile="cheat_sheets/satc/whole_satc.xml"
+            id="org.mwc.debrief.help.started.satc"
+            name="A walkthrough of SATC"/>                 
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/GenerateProject.xml"
