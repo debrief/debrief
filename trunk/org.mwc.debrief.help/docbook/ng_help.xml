@@ -7217,6 +7217,41 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             operations described in <xref linkend="GroomingTrackData"/>.</para>
         </sect2>
       </sect1>
+      <sect1 xml:id="satc">
+        <title>Semi Automated Track Construction</title>
+        <sect2>
+          <title>Introduction</title>
+          <para>clear link to reference section</para>
+          <para>explain bearings only TMA (prob from reference section)</para>
+          <para>include screenshot of solution</para>
+          <para>screenshot of maintain contributions window</para>
+        </sect2>
+        <sect2 xml:id="satc_intro">
+          <title>Concepts</title>
+          <para>
+            <variablelist>
+              <varlistentry>
+                <term>Leg</term>
+                <listitem>
+                  <para>sd</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Straight Leg</term>
+                <listitem>
+                  <para>sdf</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Altering Leg</term>
+                <listitem>
+                  <para>dfgd</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </sect2>
+      </sect1>
     </chapter>
   </part>
 
