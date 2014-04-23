@@ -22,13 +22,36 @@ Before we get started with loading and manipulating data, we&apos;re going to le
       <taskGroup kind="sequence" name="Single Leg Solution" skip="false">
          <intro>
             <b>Introduction</b>
+Let&apos;s start off with an easy scenario. We&apos;re going to work on an engagement where there is just a single leg of target data.
          </intro>
          <onCompletion>
             <b>Conclusion</b>
          </onCompletion>
+         <task kind="cheatsheet" name="Generating a project" skip="true">
+            <intro>
+               To be able to save your tutorial data, you need a Debrief <b>Workspace</b> to store your data in.  But, if you have a Debrief <b>Navigator</b> window open, and it you can see one or more folders in it, you can skip this step.
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b><br/>
+You now have a Debrief <b>Project</b>, to contain your tutorial data.
+            </onCompletion>
+            <param name="path" value="../GettingStarted/GenerateProject.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Finding the sample data" skip="true">
+            <intro>
+               You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled <b>Sample Data</b>, that contains a folder called <b>SATC</b>. If there is on there, you can skip this step.
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>&lt;br&gt;
+Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the tutorial now.
+            </onCompletion>
+            <param name="path" value="../GettingStarted/FindingYourData.xml">
+            </param>
+         </task>
          <task kind="cheatsheet" name="Loading the data" skip="false">
             <intro>
-               <b>Introduction</b>
+               Let&apos;s get some sample data loaded.
             </intro>
             <onCompletion>
                <b>Conclusion</b>
