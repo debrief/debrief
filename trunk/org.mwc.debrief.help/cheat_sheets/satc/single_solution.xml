@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cheatsheet
-      title="Title">
+<cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Generate a solution">
    <intro>
       <description>
-         <b>Body</b>
+         <b>You have now provided background data to SATC, now you can ask it to generate a solution.</b>
       </description>
    </intro>
    <item

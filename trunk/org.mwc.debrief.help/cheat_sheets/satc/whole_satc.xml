@@ -64,14 +64,14 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
                <b>Introduction</b>
             </intro>
             <onCompletion>
-               <b>Conclusion</b>
+               Data has now been collated, now to move on.
             </onCompletion>
             <param name="path" value="single_create.xml">
             </param>
          </task>
          <task kind="cheatsheet" name="Getting a solution" skip="false">
             <intro>
-               <b>Introduction</b>
+               Now for the interesting bit. Let&apos;s see SATC generate a solution.
             </intro>
             <onCompletion>
                <b>Conclusion</b>
