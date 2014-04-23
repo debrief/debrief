@@ -7251,6 +7251,22 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             </variablelist>
           </para>
         </sect2>
+        <sect2 xml:id="satc_ui">
+          <title>User Interface</title>
+          <para>screenshots of Maintain Contributions View</para>
+          <formalpara xml:id="satc_ui_preferences">
+            <title>Preferences</title>
+            <para>sdf buttons, precision</para>
+          </formalpara>
+          <formalpara xml:id="satc_ui_contributions">
+            <title>Analyst Contributions</title>
+            <para>Analyst Contributions</para>
+          </formalpara>
+          <formalpara>
+            <title>Performance</title>
+            <para>How the graph works</para>
+          </formalpara>
+        </sect2>
       </sect1>
     </chapter>
   </part>
