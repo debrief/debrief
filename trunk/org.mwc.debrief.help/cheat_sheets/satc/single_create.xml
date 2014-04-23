@@ -31,6 +31,9 @@
          You will also see that the <b>Maintain Contributions</b> view has opened - you will use this to create and manage your
          solution tracks.  Please read the overview of the <b>Maintain Contributions </b> view using the Help Link provided below.
       </description>
+      <command
+            required="true"
+            serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/satc.html#satc_ui)"/>
    </item>
    <item
          title="Specify a target leg">
