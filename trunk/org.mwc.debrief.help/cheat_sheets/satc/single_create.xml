@@ -1,29 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Title">
+ xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Create solution">
    <intro>
       <description>
-         the text goes in<b>a</b> here <i>too</i> and <b>more</b>, with a return <br/>.
+         Ok, let&apos;s create our first solution.
       </description>
    </intro>
    <item
          title="Browse to the sensor data">
       <description>
+         We&apos;re going to use all of the ownship sensor data to create our solution.<br/>
+         So, open the <b>Layer Manager</b>, then open the <b>Track:OWNSHIP</b>.  The ownship track has a <b>Sensors (1 items)</b> object.
+         Open this and you will see the single block of sensor data. 
       </description>
    </item>
    <item
          title="Select a block of sensor cuts">
       <description>
+         Ok, we&apos;ve found the sensor data. Now right-click on this item (<b>Sensor:Plain (11 items)</b>), and
+         select <b>Semi Auto TMA</b> / <b>Create new solution from these cuts</b>
       </description>
    </item>
    <item
          title="Create solution based upon cuts">
       <description>
+         You should see that there is now a new item in the <b>Layer Manager</b>. It has been given the name <b>121213.14</b>,
+         that is the DTG of the first item in the solution. We will now change the name of the solution.  Select it in the <b>Layer Manager</b>, 
+         and you can now change its <b>Name</b> value to <b>Single Leg</b>in the <b>Properties</b> view.
+         <br/>
+         You will also see that the <b>Maintain Contributions</b> view has opened - you will use this to create and manage your
+         solution tracks.  Please read the overview of the <b>Maintain Contributions </b> view using the Help Link provided below.
       </description>
    </item>
    <item
-         title="View the results">
+         title="Specify a target leg">
       <description>
+         Your deep, deep, analysis skills have led you to believe that all of these cuts relate to a single leg of target data - in
+         other words, the target maintains course and speed through the period of interest.  That information is useful to the 
+         TMA algorithms.  Provide this information to the TMA algorithm by right-clicking once again on the <b>Sensor:Plain (11 items)</b> item
+         in the <b>Layer Manager</b>, then browse down the menu to <b>Semi Auto TMA</b>, then <b>Add to Single Leg</b>. From the 
+         menu that appears, select <b>Straight Leg for period covered by [sensor cuts]</b>
       </description>
    </item>
 </cheatsheet>
