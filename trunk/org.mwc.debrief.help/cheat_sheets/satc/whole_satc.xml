@@ -54,7 +54,7 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
                Let&apos;s get some sample data loaded.
             </intro>
             <onCompletion>
-               <b>Conclusion</b>
+               Ok, now you have ownship track loaded, and you can see the fan of ownship bearing data.
             </onCompletion>
             <param name="path" value="single_load.xml">
             </param>

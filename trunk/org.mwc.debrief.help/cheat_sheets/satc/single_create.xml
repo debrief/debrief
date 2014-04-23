@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cheatsheet
-      title="Title">
+<cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Title">
    <intro>
       <description>
-         <b>Body</b>
+         the text goes in<b>a</b> here <i>too</i> and <b>more</b>, with a return <br/>.
       </description>
    </intro>
    <item
          title="Browse to the sensor data">
       <description>
-         <b>Body</b>
       </description>
    </item>
    <item
          title="Select a block of sensor cuts">
       <description>
-         <b>Body</b>
       </description>
    </item>
    <item
          title="Create solution based upon cuts">
       <description>
-         <b>Body</b>
       </description>
    </item>
    <item
          title="View the results">
       <description>
-         <b>Body</b>
       </description>
    </item>
 </cheatsheet>
