@@ -7219,14 +7219,14 @@ track name, ellipse orientation (deg from north),  maxima (yds),
       </sect1>
       <sect1 xml:id="satc">
         <title>Semi Automated Track Construction</title>
-        <sect2>
+        <sect2 xml:id="satc_intro">
           <title>Introduction</title>
           <para>clear link to reference section</para>
           <para>explain bearings only TMA (prob from reference section)</para>
           <para>include screenshot of solution</para>
           <para>screenshot of maintain contributions window</para>
         </sect2>
-        <sect2 xml:id="satc_intro">
+        <sect2 xml:id="satc_concepts">
           <title>Concepts</title>
           <para>
             <variablelist>
@@ -7248,19 +7248,105 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                   <para>dfgd</para>
                 </listitem>
               </varlistentry>
+              <varlistentry>
+                <term>Precision</term>
+                <listitem>
+                  <para/>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Scenario</term>
+                <listitem>
+                  <para/>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Solution</term>
+                <listitem>
+                  <para>sdf</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Analyst Contribution</term>
+                <listitem><para></para></listitem>
+              </varlistentry>
             </variablelist>
           </para>
         </sect2>
         <sect2 xml:id="satc_ui">
           <title>User Interface</title>
-          <para>screenshots of Maintain Contributions View</para>
+          <para>SATC scenarios are managed from within the <guilabel>Maintain
+              Contributions</guilabel> view within Debrief.<screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/MaintainContributions.png" width="100%"/>
+                </imageobject>
+                <caption>Maintain Contributions View</caption>
+              </mediaobject>
+            </screenshot>The following sections describe the three parts of the <guilabel>Maintain
+              Contributiosn</guilabel> View</para>
           <formalpara xml:id="satc_ui_preferences">
             <title>Preferences</title>
-            <para>sdf buttons, precision</para>
+            <para>This panel provides overall control of the scenario.<variablelist>
+                <varlistentry>
+                  <term>Auto-Recalc of Constraints</term>
+                  <listitem>
+                    <para>This toggle button tells SATC whether it should recalculate the
+                      constraints each time a contribution is changed</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Calculate Solution</term>
+                  <listitem>
+                    <para>Actually calculating the solution can take up to several minutes, so the
+                      overall solution is only calculated when this button is pressed</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Precision</term>
+                  <listitem>
+                    <para>Used to indicate which of the three precision levels are required in
+                      solution generation. </para>
+                  </listitem>
+                </varlistentry>
+              </variablelist></para>
           </formalpara>
           <formalpara xml:id="satc_ui_contributions">
             <title>Analyst Contributions</title>
-            <para>Analyst Contributions</para>
+            <para>This contains a list of the contributions provided by the analyst. For each
+              contribution, this data is present:<variablelist>
+                <varlistentry>
+                  <term>Name</term>
+                  <listitem>
+                    <para>Each contribution is presented inside it's own UI block. The contribution
+                      name is provided at the top-left</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Hard Constraints</term>
+                  <listitem>
+                    <para>Some contributions have hard constraints. In the earlier screenshot you
+                      can see that the Speed Forecast has hard constraints of 5-15 knots. No
+                      solution will go outside these bounds.</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Estimate</term>
+                  <listitem>
+                    <para>Where an estimate is provided, it is shown here. For the Speed Forecast in
+                      the earlier screenshot, you can see that an estimate of 13 knots has been
+                      provided. So, solutions will be favoured if they have a target speed nearer to
+                      13 knots.</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Weight</term>
+                  <listitem>
+                    <para>The weighting is a way of the analyst tuning the TMA process. Higher
+                      weighting figure more strongly in the generated solutions.</para>
+                  </listitem>
+                </varlistentry>
+              </variablelist></para>
           </formalpara>
           <formalpara>
             <title>Performance</title>
