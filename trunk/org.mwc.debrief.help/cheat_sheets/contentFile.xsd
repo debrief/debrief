@@ -32,7 +32,6 @@
 		<xsd:complexType mixed="true">
 			<xsd:choice maxOccurs="unbounded">
 				<xsd:element name="b" minOccurs="0" maxOccurs="unbounded" />
-				<xsd:element name="i" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element name="br" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:choice>
 		</xsd:complexType>
