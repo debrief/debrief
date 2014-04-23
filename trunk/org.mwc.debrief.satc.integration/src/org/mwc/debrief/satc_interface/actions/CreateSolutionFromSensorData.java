@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.SATC_Interface_Activator;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
@@ -602,6 +603,9 @@ public class CreateSolutionFromSensorData implements
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 		{
 
+			// also, check that the maintain contributions window is open
+			CorePlugin.openView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
+
 			initSolver();
 
 			String contName = getContributionName();
@@ -614,7 +618,7 @@ public class CreateSolutionFromSensorData implements
 				if (bmc != null)
 					_targetSolution.addContribution(bmc);
 			}
-
+			
 			return Status.OK_STATUS;
 		}
 
