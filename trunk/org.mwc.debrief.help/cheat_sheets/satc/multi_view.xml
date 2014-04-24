@@ -80,7 +80,7 @@
          line will appear on the plot.  Zooming in on the plot shows us that the single leg is 9.2 kts, at 319 degrees.  If we 
          zoom out again, we can see that, Yes, this could be a solution that fits in the data.
          <br/><b>Note:</b> the use of randomisation in the SATC process means that your calculated speeds may well be different
-         to mine. Don't worry, this is intended.
+         to mine. Don&apos;t worry, this is intended.
       </description>
    </item>
    <item
@@ -126,10 +126,10 @@
    </item>
    <item title="Adjust speed constraint">
       <description>
-         Ok, let&apos;s generate a new solution.  A constraint of 0-40 knots isn't much of a constraint at all, so it has little effect.  So,
+         Ok, let&apos;s generate a new solution.  A constraint of 0-40 knots isn&apos;t much of a constraint at all, so it has little effect.  So,
          expand the <b>Speed Constraint - overall speed</b> item in the <b>Maintain Contributions</b> view. Now reduce the maximum speed from 
          40 knots down to 15 knots.  If you still have the Location constraints visible, you will see them adjust to repesent the new constraint.
-         <br/>This is because the vessel can't travel as far in each leg.  Also, increase the minimum speed to 8 knots.  Re-generate the solution
+         <br/>This is because the vessel can&apos;t travel as far in each leg.  Also, increase the minimum speed to 8 knots.  Re-generate the solution
          and see what you think.  
       </description>
    </item>

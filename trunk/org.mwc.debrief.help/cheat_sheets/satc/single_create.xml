@@ -3,7 +3,7 @@
  xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Create scenario">
    <intro>
       <description>
-         Ok, let&apos;s create our first scenario. <b>Note: 'Scenario' is the term used to describe the collection of data that is collated in order for SATC to produce an optimal 'Solution'.</b>
+         Ok, let&apos;s create our first scenario. <b>Note: &apos;Scenario&apos; is the term used to describe the collection of data that is collated in order for SATC to produce an optimal &apos;Solution&apos;.</b>
       </description>
    </intro>
    <item
@@ -41,7 +41,7 @@
          From the <b>Maintain Contributions</b> view you will see that there is a single item listed in the <b>Analyst Contributions</b>.
          This is the bearing data that will be used to inform all of the subsequent contributions.  
          <br/>
-         Let's learn more about it.  This contribution is the set of bearings that represent the unknown target track.  You will see that the contribution
+         Let&apos;s learn more about it.  This contribution is the set of bearings that represent the unknown target track.  You will see that the contribution
          has an estimate value of <b>+/- 3 degs</b>. This means the algorithm will only offer solutions that are within 3 degrees of these bearing measurements.
          <br/>You can view these measurements.  First, select the <b>Single Leg</b> in the <b>Layer Manager</b>.  Then, in the <b>Properties Window</b>, tick the <b>ShowLocationConstraints</b> item.
          <br/>A set of "pie-slices" will now appear on the plot, showing the 3 degree allowable error on each bearing measurement.  If you expand the <b>Bearing Measurement - Bearing Data</b> contribution

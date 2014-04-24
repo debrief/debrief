@@ -20,7 +20,7 @@
       <description>
          The first way of importing, is to convert the current solution to a <b>Composite Track</b>. Just right-click on the scenario in the Layer Manager,
           and select <b>Convert to Composite Track (legs)</b>.
-         <br/>Once you've done that, you will see a new track appear on the plot (it&apos;s probably yellow). You will also see
+         <br/>Once you&apos;ve done that, you will see a new track appear on the plot (it&apos;s probably yellow). You will also see
           a new item in the <b>Layer Manager</b> - it will have the same name as the scenario, but it will be marked as a <b>Track</b>.
       </description>
    </item>

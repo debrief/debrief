@@ -13,19 +13,22 @@
    </item>
    <item title="Load ownship track">
       <description>
-         From the SATC sub-folder, drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area. (Or, right click it, and select "Open With > Debrief Plot Editor").
+         From the SATC sub-folder, drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area. (Or, right click it, 
+         and select "Open With > Debrief Plot Editor").
       </description>
    </item>
    <item title="Load ownship sensor data">
       <description>
-         You should now see the Debrief editor, with a blue ownship track.<br/> Next, we will load the ownship sensor (sonar) data, by dragging in the <b>L1_OwnshipSensor.rep</b> file. 
+         You should now see the Debrief editor, with a blue ownship track.<br/> Next, we will load the ownship sensor (sonar) data,
+          by dragging in the <b>L1_OwnshipSensor.rep</b> file. 
          Follow the Wizard steps to load the sensor data, give it a color, and indicate that Yes, you wish it to be visible.
       </description>
    </item>
    <item title="Check sensor data is visible">
       <description>
-         <b>You did follow the wizard steps correctly, didn't you?</b> <br/>
-         If you haven't got a bearing fan displayed on the plot, use the <b>Layer Manager</b> View to navigate to the <b>Plain</b> sensor, and make it visible.
+         <b>You did follow the wizard steps correctly, didn&apos;t you?</b> <br/>
+         If you haven&apos;t got a bearing fan displayed on the plot, use the <b>Layer Manager</b> View to navigate to
+          the <b>Plain</b> sensor, and make it visible.
       </description>
    </item>
 </cheatsheet>
