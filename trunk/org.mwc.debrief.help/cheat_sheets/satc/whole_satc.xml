@@ -25,7 +25,7 @@ Before we get started with loading and manipulating data, we&apos;re going to le
 Let&apos;s start off with an easy scenario. We&apos;re going to work on an engagement where there is just a single leg of target data.
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            And that&apos;s the end of the tutorial for single-leg target track construction.
          </onCompletion>
          <task kind="cheatsheet" name="Generating a project" skip="true">
             <intro>
@@ -92,19 +92,26 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
       </taskGroup>
       <taskGroup kind="sequence" name="Multi Leg Solution" skip="false">
          <intro>
-            <b>Introduction</b>
+            Now for a more advanced tutorial. In this tutorial we&apos;re going to work with a scenario with several targets zigs, where a number of contributions are required to get a good quality solution.
          </intro>
          <onCompletion>
             <b>Conclusion</b>
          </onCompletion>
-         <task kind="cheatsheet" name="Loading the data" skip="false">
+         <task kind="cheatsheet" name="Loading the data file" skip="false">
+            <intro>
+               To start with, we wil have to load some data.
+            </intro>
+            <param name="path" value="multi_load.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="View the data" skip="false">
             <intro>
                <b>Introduction</b>
             </intro>
             <onCompletion>
                <b>Conclusion</b>
             </onCompletion>
-            <param name="path" value="multi_load.xml">
+            <param name="path" value="multi_view.xml">
             </param>
          </task>
       </taskGroup>

@@ -7230,7 +7230,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           regarding the <guilabel>FRITMA</guilabel> tool it was determined that a custom-built TMA
           algortihm would be a viable solution for the requirement. This new Debrief feature was to
           be called Semi Automatic Track Construction (<guilabel>SATC</guilabel>) </para>
-        <sect2>
+        <sect2 xml:id="SATC_tma">
           <title>Bearings Only TMA</title>
           <para>The concept of Bearings Only Target Motion Analysis, or Bearings Only Tracking (BOT)
             is an established field of mathematics. An easy intro to this is covered in this <link
