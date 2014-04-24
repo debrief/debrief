@@ -7218,13 +7218,128 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
       </sect1>
       <sect1 xml:id="satc">
-        <title>Semi Automated Track Construction</title>
+        <title>Semi-Automated TMA generation</title>
+        <para>Many Debrief users have high-performance workstations that have sufficient processing
+          power to produce an initial best-guess at a solution for target tracks based on bearing
+          data.  In 2012 talks started regarding the delivery of such a capability to analyst
+          usesrs.  Significantly, it was perceived that an automated approach would benefit from
+          multi-leg engagements, engagements that are typically challenging using the existing
+          Debrief manual TMA capabilities.</para>
+        
+        <para>Following exploratory discussions with <guilabel>Atlas Elektronik UK</guilabel>
+          regarding the <guilabel>FRITMA</guilabel> tool it was determined that a custom-built TMA
+          algortihm would be a viable solution for the requirement. This new Debrief feature was to
+          be called Semi Automatic Track Construction (<guilabel>SATC</guilabel>) </para>
+        <sect2>
+          <title>Bearings Only TMA</title>
+          <para>The concept of Bearings Only Target Motion Analysis, or Bearings Only Tracking (BOT)
+            is an established field of mathematics. An easy intro to this is covered in this <link
+              xlink:href="http://mpet.freeservers.com/dc_tma1.html">users online guidance</link> for
+            the 688i game. This system utilises a variant on that concept. Whilst BOT focuses on the
+            production of a near-real time estimate of the current state (location, course, speed)
+            of the subject vehicle, this system performs the process time-late, aiming to produce a
+            whole segment of vehicle track. The time-late nature of the undertaking (possibly
+            several weeks later) means that an analyst has the opportunity to research other
+            information about the vehicle track to contribute to the algorithm. This other
+            information may be through acoustic analysis, supplementary documentation, or
+            third-party sensors.</para>
+        </sect2>
         <sect2 xml:id="satc_intro">
-          <title>Introduction</title>
-          <para>clear link to reference section</para>
-          <para>explain bearings only TMA (prob from reference section)</para>
-          <para>include screenshot of solution</para>
-          <para>screenshot of maintain contributions window</para>
+          <title>Overview of SATC</title>
+          <para>A series of meetings with Dr Iain McKenna (BAE Systems) led to a strategy where
+            informed analysts would be able to submit a series of contributions representing
+            knowlege they held regarding a vessel engagement.  This flow of knowledge and
+            interaction with the algorithm is as recorded below<screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/SATC_sequence.png" width="100%"/>
+                </imageobject>
+                <caption>SATC Sequence</caption>
+              </mediaobject>
+            </screenshot><variablelist>
+              <varlistentry>
+                <term>1. Submit Bearings</term>
+                <listitem>
+                  <para>Bearing data lies at the core of the SATC algorthm, proving one of the most
+                    useful constraints on potential target track</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>2. Indicate Target Legs</term>
+                <listitem>
+                  <para>The second-most important contribution is the knowledge of where the target
+                    is travelling in a straight line.  Again, this greatly reduces the number of
+                    candidate solutions that need to be considered.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>3. Submit Other Contributions</term>
+                <listitem>
+                  <para>Once the first two contributions are in place, the analyst is then able to
+                    submit his knowledge/hypotheses regarding target course, speed, or the range to
+                    the target.  These forecasts can relate to the whole target solution, particular
+                    legs, or even discrete periods of time between those legs.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>4. Generate/Assess Solutions</term>
+                <listitem>
+                  <para>The analyst can then trigger the generation of a solution. The solution is
+                      <guilabel>optimal</guilabel> in regard to the contributions that the analyst
+                    has submitted.  If the solution does't match the analysts expectation, or if it
+                    just doesn't look right, then the analyst can submit further contributions, as
+                    appropriate.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>5. Import as Debrief Track</term>
+                <listitem>
+                  <para>Ultimately, if/when the analyst is happy with the solution produced he can
+                    import the solution into Debrief, either as a collection of legs (to be used in
+                    the existing manual TMA process), or directly as a conventional Debrief
+                    track.</para>
+                </listitem>
+              </varlistentry>
+            </variablelist></para>
+          <para>Internall, the SATC process runs in two stages.  The first considers
+            hard-constraints that the analyst has recorded for the engagement.  These constraints
+            are intelligently fused into a consolidated body of constraints, one set for each
+            potential target location (one location is produced for each bearing measurement).  This
+            phase is able to run very quickly, since it just deals with hard facts.  It is possible
+            to view the set of constraints changing live on the Debrief plot whilst the
+            hard-constraints are manipulated.</para>
+          <para>The second stage is where candidate solutions are produced.  This stage can be quite
+            time-consuming, so it is only run on analyst request.  The stage produces an imaginary
+            grid over the potential start and end positions for each straight leg. The algortihm
+            then looks at the possible straight courses between combinations of these points. An
+            optimisation algorithm reduces the number of permutations that need to be considered.
+            The optimisation algorithm also discard solutions that, whilst mathematically optimal,
+            do not represent achievable successive courses (due to simple speed/time calculations). <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/SATC_process.png" width="100%"/>
+                </imageobject>
+                <caption>SATC Process</caption>
+              </mediaobject>
+            </screenshot></para>
+          <para>The following screenshot shows a TMA scenario using simulated data.  The ownship
+            track is shown in <guilabel>Blue</guilabel>, the truth target track is shown in
+              <guilabel>Red</guilabel>, and the generated solution is shown in
+              <guilabel>Yellow</guilabel>.  The  range error between truth and generated track is
+            shown in the <guilabel>Range vs Time Plot</guilabel>. The scenario is particularly
+            challenging, given that there are more target manoeuvres than ownship manoeuvres, the
+            target is quite distant, and the bearing rates are relatively low.  <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/SATC_solution.png" width="100%"/>
+                </imageobject>
+                <caption>Sample solution</caption>
+              </mediaobject>
+            </screenshot></para>
+          <para><note>
+            <para>Further detail regarding the strategies and algorithms used in SATC are found
+              later in this document, in <xref linkend="chap_genetic_algorithms"/></para>
+          </note></para>
         </sect2>
         <sect2 xml:id="satc_concepts">
           <title>Concepts</title>
@@ -7344,6 +7459,13 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                   <listitem>
                     <para>The weighting is a way of the analyst tuning the TMA process. Higher
                       weighting figure more strongly in the generated solutions.</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Delete</term>
+                  <listitem>
+                    <para>Use this to delete a contribution. It will also disappear from the Layer
+                      Manager.</para>
                   </listitem>
                 </varlistentry>
               </variablelist></para>
@@ -9862,21 +9984,7 @@ departure / d.lat = tan (course)</markup>
         <para>This section records the high-level concepts related to the Semi-Automatic Track
           Construction (SATC) implementation in <application>Debrief</application>.</para>
 
-        <section>
-          <title>Background</title>
-
-          <para>The concept of Bearings Only Target Motion Analysis, or Bearings Only Tracking (BOT)
-            is an established field of mathematics. An easy intro to this is covered in this <link
-              xlink:href="http://mpet.freeservers.com/dc_tma1.html">users online guidance</link> for
-            the 688i game. This system utilises a variant on that concept. Whilst BOT focuses on the
-            production of a near-real time estimate of the current state (location, course, speed)
-            of the subject vehicle, this system performs the process time-late, aiming to produce a
-            whole segment of vehicle track. The time-late nature of the undertaking (possibly
-            several weeks later) means that an analyst has the opportunity to research other
-            information about the vehicle track to contribute to the algorithm. This other
-            information may be through acoustic analysis, supplementary documentation, or
-            third-party sensors.</para>
-        </section>
+        
 
         <section>
           <title>Strategy</title>
