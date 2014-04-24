@@ -7261,15 +7261,17 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <term>1. Submit Bearings</term>
                 <listitem>
                   <para>Bearing data lies at the core of the SATC algorthm, proving one of the most
-                    useful constraints on potential target track</para>
+                    useful constraints on potential target track. The solution generation process is
+                    started by submitting a block of bearings to a solution.</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
                 <term>2. Indicate Target Legs</term>
                 <listitem>
-                  <para>The second-most important contribution is the knowledge of where the target
-                    is travelling in a straight line.  Again, this greatly reduces the number of
-                    candidate solutions that need to be considered.</para>
+                  <para>The second-most important contribution is the knowledge of time periods
+                    where the target is believed to be travelling in a straight line.  Again, this
+                    greatly reduces the number of candidate solutions that need to be
+                    considered.</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
@@ -7301,7 +7303,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 </listitem>
               </varlistentry>
             </variablelist></para>
-          <para>Internall, the SATC process runs in two stages.  The first considers
+          <para>Internally, the SATC process runs in two stages.  The first considers
             hard-constraints that the analyst has recorded for the engagement.  These constraints
             are intelligently fused into a consolidated body of constraints, one set for each
             potential target location (one location is produced for each bearing measurement).  This
@@ -7326,9 +7328,10 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             track is shown in <guilabel>Blue</guilabel>, the truth target track is shown in
               <guilabel>Red</guilabel>, and the generated solution is shown in
               <guilabel>Yellow</guilabel>.  The  range error between truth and generated track is
-            shown in the <guilabel>Range vs Time Plot</guilabel>. The scenario is particularly
-            challenging, given that there are more target manoeuvres than ownship manoeuvres, the
-            target is quite distant, and the bearing rates are relatively low.  <screenshot>
+            shown in the <guilabel>Range vs Time Plot</guilabel> at the foot of the image. The
+            scenario is particularly challenging, given that there are more target manoeuvres than
+            ownship manoeuvres, the target is quite distant, and the bearing rates are relatively
+            low.  <screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/SATC_solution.png" width="100%"/>
@@ -7468,16 +7471,16 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                       Manager.</para>
                   </listitem>
                 </varlistentry>
-              </variablelist></para>
+              </variablelist>Most contributions</para>
           </formalpara>
           <formalpara>
             <title>Performance</title>
-            <para>The performance graph is an indication of progress of the SATC algorithm.  Along
+            <para>The performance graph is an indication of progress of the SATC algorithm. Along
               the x-axis it shows the number of cycles of the algorithm, and on the y-axis it shows
-              the error score of the best-performing solution in that generation.  When
+              the error score of the best-performing solution in that generation. When
                 <guilabel>Medium</guilabel> or <guilabel>High</guilabel> precision values are used,
-              a greater number of cycles are performed, and each cycle uses a greater number of
-              solution permutations. </para>
+              a greater number of cycles are performed, with each cycle processing a greater number
+              of solution permutations. </para>
           </formalpara>
         </sect2>
       </sect1>
