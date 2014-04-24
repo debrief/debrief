@@ -3,15 +3,17 @@
       title="Title">
    <intro>
       <description>
-         <b>Here we&apos;re going to walk through some concepts that are used in Semi Automatic Track Construction (SATC).</b>
+         We have had to come up with some new concepts during the development of SATC. This means that unfortunately you need to spend 
+         10 minutes or so doing some background reading.  But, don&apos;t worry, you&apos;ll find things much
+         simpler afterwards.
       </description>
    </intro>
    <item
          title="Concepts">
       <description>
-Please read the help page that&apos;s linked below to learn some of the concepts that are used within SATC.
+Please press <b>Click to perform</b> (below) to learn some background, together with significant concepts that are used within SATC.
       </description>
       <command
-            required="false"
-            serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/satc.html#satc_intro)"/> </item>
+            required="true"
+            serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/satc.html)"/> </item>
 </cheatsheet>

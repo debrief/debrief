@@ -21,6 +21,13 @@
 					Learn how Debrief supports grooming track data and creating TMA solutions
 				</text>
 			</link>
+			<link style-id="content-link" label="Semi-Automatic Track Construction"
+				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.cheatsheet.satc.composite"
+				id="debrief-viewSATC">
+				<text>
+					Automated track construction using Debrief
+				</text>
+			</link>
 			<link style-id="content-link" label="Viewing Debrief's error log"
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/fault_diagnosis.html"
 				id="debrief-viewlog">
