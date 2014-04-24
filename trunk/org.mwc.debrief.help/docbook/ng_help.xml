@@ -7350,7 +7350,12 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           </formalpara>
           <formalpara>
             <title>Performance</title>
-            <para>How the graph works</para>
+            <para>The performance graph is an indication of progress of the SATC algorithm.  Along
+              the x-axis it shows the number of cycles of the algorithm, and on the y-axis it shows
+              the error score of the best-performing solution in that generation.  When
+                <guilabel>Medium</guilabel> or <guilabel>High</guilabel> precision values are used,
+              a greater number of cycles are performed, and each cycle uses a greater number of
+              solution permutations. </para>
           </formalpara>
         </sect2>
       </sect1>
