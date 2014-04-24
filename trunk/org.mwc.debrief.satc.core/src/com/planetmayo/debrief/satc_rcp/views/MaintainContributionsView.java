@@ -179,7 +179,7 @@ public class MaintainContributionsView extends ViewPart {
 				new GridData(GridData.FILL_HORIZONTAL));
 		UIUtils.createSpacer(header, new GridData(40, SWT.DEFAULT));
 		Composite headerNested = UIUtils.createEmptyComposite(header, UIUtils
-				.createGridLayoutWithoutMargins(4, true), new GridData(
+				.createGridLayoutWithoutMargins(5, true), new GridData(
 				GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(headerNested, SWT.CENTER, "Active", new GridData(
 				GridData.FILL_HORIZONTAL));
@@ -187,10 +187,10 @@ public class MaintainContributionsView extends ViewPart {
 				new GridData(GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(headerNested, SWT.CENTER, "Estimate", new GridData(
 				GridData.FILL_HORIZONTAL));
-		UIUtils.createLabel(headerNested, SWT.CENTER, "Weight", new GridData(
+		UIUtils.createLabel(headerNested, SWT.CENTER, "Weighting", new GridData(
 				GridData.HORIZONTAL_ALIGN_END));
-		UIUtils.createSpacer(header, new GridData(40, SWT.DEFAULT));
-
+		UIUtils.createLabel(headerNested, SWT.CENTER, "Delete", new GridData(
+				GridData.HORIZONTAL_ALIGN_END));
 	}
 
 	private void initAddContributionGroup(Composite parent) {
