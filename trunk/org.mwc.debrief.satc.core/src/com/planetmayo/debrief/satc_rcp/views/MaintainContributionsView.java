@@ -8,6 +8,7 @@ import java.util.Map;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -33,6 +34,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
@@ -156,7 +159,11 @@ public class MaintainContributionsView extends ViewPart {
 		initListeners(parent);
 		solversManager.addSolversManagerListener(solverManagerListener);
 
+		// also, set the help context
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.mwc.debrief.help.SATC");
+
 		setActiveSolver(solversManager.getActiveSolver());
+		
 	}
 
 	@Override
@@ -358,6 +365,13 @@ public class MaintainContributionsView extends ViewPart {
 		initAnalystContributionsGroup(main);
 		initAddContributionGroup(main);
 		initPerformanceGraph(main);
+		
+		// also sort out the header controls
+		final IActionBars bars = getViewSite().getActionBars();
+		IToolBarManager manager = bars.getToolBarManager();
+		manager.add(SATC_Activator.createOpenHelpAction(
+				"org.mwc.debrief.help.SATC", null, this));
+
 	}
 
 	private void initPerformanceGraph(Composite parent) {
