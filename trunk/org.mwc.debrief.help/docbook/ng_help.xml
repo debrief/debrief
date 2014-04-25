@@ -7319,7 +7319,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             do not represent achievable successive courses (due to simple speed/time calculations). <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SATC_process.png" width="100%"/>
+                  <imagedata fileref="figures/SATC_Process.png" width="100%"/>
                 </imageobject>
                 <caption>SATC Process</caption>
               </mediaobject>
@@ -7349,44 +7349,53 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <para>
             <variablelist>
               <varlistentry>
-                <term>Leg</term>
+                <term>Hard Constraint</term>
                 <listitem>
-                  <para>sd</para>
+                  <para>A set of parameters that any target solution must meet - for example an analyst may know the range of speeds of
+                     a class of vessel sufficient to say "any solution track for this vessel must be within 2 and 9 knots".</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
-                <term>Straight Leg</term>
+                <term>Estimate</term>
                 <listitem>
-                  <para>sdf</para>
+                  <para>A subjective contribution from an analyst, such as "I believe the vessel is travelling at 4 knots". The SATC will consider values
+                  other than the estimate, but solutions that match the estimate will be favoured.</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
-                <term>Altering Leg</term>
+                <term>Contribution</term>
                 <listitem>
-                  <para>dfgd</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term>Precision</term>
-                <listitem>
-                  <para/>
+                  <para>A piece of information that is used in development of target solutions. This may be a measurement (such as range, bearing or frequency) data, 
+                  an analyst forecast (a prediction, such as speed range), or one of a hidden set of analysis contributions that
+                  deduce further constraints based on other contributions.</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
                 <term>Scenario</term>
                 <listitem>
-                  <para/>
+                  <para>The collection of information and knowledge that is used to produced target solutions</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Leg</term>
+                <listitem>
+                  <para>A period of time for which it is known that the target vessel is either on steady course/speed (<guilabel>Straight Leg</guilabel>) or 
+                  is manoeuvring (<guilabel>Altering Leg</guilabel>)</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Precision</term>
+                <listitem>
+                  <para>An indication of the level of fidelity to be considered by the SATC algorithm.  For the LOW, MEDIUM, HIGH precisions the algorithm
+                  is allowed to run for 5, 15 and 30 seconds resp. For these precisions, the number of solutions considered for each 
+                  processing cycle are 45, 70 and 120 resp.</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
                 <term>Solution</term>
                 <listitem>
-                  <para>sdf</para>
+                  <para>A single permutation of target track, comprised of a series of legs - both altering and straight.</para>
                 </listitem>
-              </varlistentry>
-              <varlistentry>
-                <term>Analyst Contribution</term>
-                <listitem><para></para></listitem>
               </varlistentry>
             </variablelist>
           </para>
