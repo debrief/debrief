@@ -9966,7 +9966,7 @@ departure / d.lat = tan (course)</markup>
                   <imagedata fileref="figures/contour_6.gif"/>
                 </imageobject>
 
-                <caption/>
+                <caption>Contouring algorithm</caption>
               </mediaobject>
             </figure>The sample contour plot itself</para>
         </sect2>
@@ -9995,7 +9995,9 @@ departure / d.lat = tan (course)</markup>
         <title>High-Level SATC Concepts</title>
 
         <para>This section records the high-level concepts related to the Semi-Automatic Track
-          Construction (SATC) implementation in <application>Debrief</application>.</para>
+          Construction (SATC) implementation in <application>Debrief</application>. The content
+          presented here represents system documentation, not necessarily targeted at the routine
+          SATC user, user guidance is contained in <xref linkend="satc"/>.</para>
 
         
 
@@ -10034,7 +10036,7 @@ departure / d.lat = tan (course)</markup>
             <para>A single instance of performing SATC on a set of data, plus contributions is
               called a Scenario. This includes all contributions and their states. It also includes
               the measurements that inform a Measurement Contributions. A scenario may be saved to
-              file, in order that it's analysis may continue at another time.</para>
+              file, in order that its analysis may continue at another time.</para>
           </section>
 
           <section>
@@ -10056,24 +10058,15 @@ departure / d.lat = tan (course)</markup>
 
             <para>A leg represents a period of vehicle track. The leg may be a straight leg
               (representing the way vehicles normally move) or an alteration leg (representing how a
-              vehicle makes the transition from one straight leg to another. The fact that the a set
-              of Vehicle States (or Bounded Vehicle States) objects are in a straight or altering
-              leg means we can infer further constraints/relaxations on them. </para>
+              vehicle makes the transition from one straight leg to another). The fact that the a
+              set of Vehicle States (or Bounded Vehicle States) objects are in a straight or
+              altering leg means we can infer further constraints/relaxations on them. </para>
           </section>
 
           <section>
             <title>Vehicle State</title>
 
-            <para>A vehicle state is represented as a time, location, course and speed. Note 2: I
-              may be mistaken in taking a OTG (Over The Ground) strategy where we deal in actual
-              lats and longs. Greater accuracy may be available in taking a DR strategy where we
-              deal in range and bearing from ownship.</para>
-
-            <note>
-              <para>Note: I may be mistaken in taking a OTG (Over The Ground) strategy where we deal
-                in actual lats and longs. Greater accuracy may be available in taking a DR strategy
-                where we deal in range and bearing from ownship</para>
-            </note>
+            <para>A vehicle state is represented as a time, location, course and speed. </para>
           </section>
 
           <section>
@@ -10084,14 +10077,14 @@ departure / d.lat = tan (course)</markup>
               representing spatial constraints. </para>
 
             <note>
-              <para>Note: we use a polygon for location instead of min/max values for lat/long
-                values so that we gain access to more complex spatial operations. </para>
+              <para>We use a polygon for location instead of min/max values for lat/long values so
+                that we gain access to more complex spatial operations. </para>
             </note>
 
             <note>
-              <para>Note We may need to introduce non-continuous ranges for these states. We may
-                need to constrain course, for example, to being in the range of either 040-060 or
-                130-150. But, as of Nov 2012 this requirement hasn't emerged yet.</para>
+              <para>We may need to introduce non-continuous ranges for these states. We may need to
+                constrain course, for example, to being in the range of either 040-060 or 130-150.
+                But, as of Nov 2012 this requirement hasn't emerged yet.</para>
             </note>
           </section>
 
@@ -10112,12 +10105,11 @@ departure / d.lat = tan (course)</markup>
             <title>Alteration Leg</title>
 
             <para>An alteration leg allows for change in course and/or speed. The alteration leg may
-              represent a vehicle speed change, a vehicle manoeuvre, or a period for which
-              insufficient data is available to suggest straight-line travel (in which case there
-              may be an unpredictable number of course/speed changes). Consequently an Alteration
-              Leg doesn't just have values for vehicle state at either end, it is expressed as a
-              series of vehicle states (or bounded vehicle states in the constrain the problem space
-              phase).</para>
+              represent a speed change, a course change, or a period for which insufficient data is
+              available to suggest straight-line travel (in which case there may be an unpredictable
+              number of course/speed changes). Consequently an Alteration Leg doesn't just have
+              values for vehicle state at either end, it is expressed as a series of vehicle states
+              (or bounded vehicle states in the constrain the problem space phase).</para>
           </section>
 
           <section>
@@ -10159,8 +10151,8 @@ departure / d.lat = tan (course)</markup>
 
                 <listitem>
                   <para><emphasis>Weighting</emphasis> - used to affect the significance of this
-                    contribution when comparing candidate solutions (only supplied if estimate data
-                    is present)</para>
+                    contribution when comparing candidate solutions (only used if estimate data is
+                    present)</para>
                 </listitem>
               </itemizedlist>
             </section>
@@ -10251,7 +10243,7 @@ departure / d.lat = tan (course)</markup>
               expensive process, so the problem space will be constrained as far as possible prior
               to consideration of candidate solutions. </para>
 
-            <para>The analyst triggers the generation of a new solution, specifying at time period.
+            <para>The analyst triggers the generation of a new solution, specifying a time period.
               Here's what happens next:</para>
 
             <orderedlist>
@@ -10284,7 +10276,7 @@ departure / d.lat = tan (course)</markup>
             </orderedlist>
 
             <note>
-              <para>Note: we may not achieve an unchanging bounded state due to perturbations in the
+              <para>We may not achieve an unchanging bounded state due to perturbations in the
                 algorithm, so we decide it's stable when there are negligible differences. </para>
             </note>
             <para>On completion the algorithm moves on to generating and assessing candidate
@@ -10340,11 +10332,6 @@ departure / d.lat = tan (course)</markup>
             <para>The solution generator is an algorithm that is able to take a problem space
               definition, and use the contributions to define possible course and speed permutations
               for a series of start points. </para>
-
-            <note>
-              <para>Note: there's a document from Iain Mc on how to determine the tracks to run.
-              </para>
-            </note>
 
             <para>Solutions are generated leg-by-leg as follows:</para>
 
@@ -10403,8 +10390,11 @@ departure / d.lat = tan (course)</markup>
               </listitem>
 
               <listitem>
-                <para>Next we do some fancy maths to determine the attainable leg permutations.
-                </para>
+                <para>Next we do some fancy maths to determine the attainable leg permutations: each
+                  leg matrix is multiplied against the matrix for the successive leg.  The resulting
+                  matrix contains the possible leg permutations - from start points in the first
+                  leg, to end points in the last leg.  So, it is only cells that have a non-zero
+                  value that need to be considered.  </para>
               </listitem>
 
               <listitem>
@@ -10442,6 +10432,11 @@ departure / d.lat = tan (course)</markup>
                   values representing all of the legs.</para>
               </listitem>
             </orderedlist>
+            <note>
+              <para>Genetic Algortihms have proven to be the most versatile and effect optimisation
+                strategy for SATC. The SATC implementation of GA is recorded in further detail at
+                  <xref linkend="satc_ga"/></para>
+            </note>
           </section>
 
           <section>
@@ -10451,36 +10446,30 @@ departure / d.lat = tan (course)</markup>
               For some scenarios there may be one (or few) solutions with very high performance.
               These can be presented directly to the analyst for consideration. For other scenarios
               there may be many solutions that offer a similar performance result. It is proposed
-              that the system has a means by which if offers distinct solutions to the analyst, in
-              order to further refine the contributions. Such processes could include:</para>
-
-            <orderedlist>
-              <listitem>
-                <para><emphasis role="bold">Extreme solutions</emphasis>
-                </para>
-              </listitem>
-
-              <listitem>
-                <para>The system could examine the solutions, and highlight those that have have
-                  extremes of course, speed, location within the bounded vehicle states. For these
-                  extreme solutions the system could show how particular contributions ‘contributed'
-                  to their performance score - to allow the estimate or hard constraints on those
-                  contributions to be relaxed/tightened.</para>
-              </listitem>
-
-              <listitem>
-                <para><emphasis role="bold">Bounded vehicle states </emphasis></para>
-              </listitem>
-
-              <listitem>
-                <para>Alternatively, where too many solutions are provided, the system could
-                  (somehow) provide a visualisation of the set of bounded vehicle states. The
-                  analyst may determine that for a period of time there are insufficient or
-                  excessive constraints on the problem space and adjust the contributions
-                  accordingly to either tighten the space, or loosen the space to allow fresh
-                  solutions to be considered.</para>
-              </listitem>
-            </orderedlist>
+              that the system has a means by which it offers distinct solutions to the analyst, in
+              order to further refine the contributions. Such processes could include:<variablelist>
+                <varlistentry>
+                  <term>Extreme solutions</term>
+                  <listitem>
+                    <para>The system could examine the solutions, and highlight those that have have
+                      extremes of course, speed, location within the bounded vehicle states. For
+                      these extreme solutions the system could show how particular contributions
+                      ‘contributed' to their performance score - to allow the estimate or hard
+                      constraints on those contributions to be relaxed/tightened.</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Bounded vehicle states </term>
+                  <listitem>
+                    <para>Alternatively, where too many solutions are provided, the system could
+                      (somehow) provide a visualisation of the set of bounded vehicle states. The
+                      analyst may determine that for a period of time there are insufficient or
+                      excessive constraints on the problem space and adjust the contributions
+                      accordingly to either tighten the space, or loosen the space to allow fresh
+                      solutions to be considered.</para>
+                  </listitem>
+                </varlistentry>
+              </variablelist></para>
           </section>
 
           <section>
@@ -10515,6 +10504,13 @@ departure / d.lat = tan (course)</markup>
                   <imagedata fileref="figures/tma_bearingbasedMDA.gif"/>
                 </imageobject>
               </mediaobject>
+              <note>
+                <para>While Bearing based MDA worked effectively with simulated data, it proved
+                  unable to recognise manoeuvres in real data.  The simulated data typically had 3
+                  decimal places of degrees bearing. But, our real world bearing typically only have
+                  one or zero decimal places - and the algortihms were unable to work with this low
+                  fidelity.</para>
+              </note>
             </section>
 
             <section>
@@ -10539,10 +10535,9 @@ departure / d.lat = tan (course)</markup>
               <title>Attributes</title>
 
               <para>Hard constraints are available that specify that the vehicle has a minimum speed
-                of 1 knot, and a maximum speed of 30 knots. The maximum turning circle is 1km
-                radius, and the minimum is 100m radius (clearly the vehicle is also capable of
-                straight line travel). It is also known that the vehicle can decelerate at 1 knot
-                per 5 seconds and accelerate at 1 knot per 10 seconds. </para>
+                of 1 knot, and a maximum speed of 30 knots. The minimum turning circle is 1km
+                radius. It is also known that the vehicle can decelerate at 1 knot per 5 seconds and
+                accelerate at 1 knot per 10 seconds. </para>
 
               <para>Potentially, such a constraint could also include an estimate on vehicle state,
                 such as the vehicle normally travels between 8 and 12 knots.</para>
@@ -10570,8 +10565,8 @@ departure / d.lat = tan (course)</markup>
               </itemizedlist>
 
               <note>
-                <para>Note: is is acknowledged that these two abilities will only really have an
-                  effect in alteration legs. </para>
+                <para>it is acknowledged that these two abilities will only really have an effect in
+                  alteration legs. </para>
               </note>
 
               <para>The contribution may affect the assess candidate solutions phase - the
@@ -10610,9 +10605,9 @@ departure / d.lat = tan (course)</markup>
                     and when the Forecast Contribution next runs it will fill in any bounded vehicle
                     states in its time period.</para>
 
-                  <para>The combination of range, measurement and bearing errors can be used to
-                    generate a sector shape. The intersection between this shape and the existing
-                    bounded location will produce a reduced bounded location.</para>
+                  <para>The combination of range, bearing and bearing errors can be used to generate
+                    a sector shape. The intersection between this shape and the existing bounded
+                    location will produce a reduced bounded location.</para>
 
                   <para>The contribution will also examine the bearing rate through the leg, to
                     perform both straight-leg and alteration-leg detection, inserting new legs as
@@ -10628,13 +10623,6 @@ departure / d.lat = tan (course)</markup>
                     applied to it, and the value returned. </para>
                 </listitem>
               </itemizedlist>
-
-              <note>
-                <para>Note - I originally included in here the analysis of potential courses and
-                  speeds to further reduce the bounded location. But, this processing is not unique
-                  to measured bearing data, so it has been moved to the Analysis
-                  Contribution.</para>
-              </note>
             </section>
           </section>
 
@@ -10662,11 +10650,6 @@ departure / d.lat = tan (course)</markup>
                 contribution will determine that the leg must actually contain an alteration - and
                 replace it with an alteration leg. I don't think it's able to determine how to
                 segment a straight leg into a composite - it can only replace it whole-meal. </para>
-
-              <para><emphasis>Similarly, the contribution will examine the bounded locations and
-                  ensure that all locations are accessible given the bounded speed constraints -
-                  reducing the bounded locations as appropriate. </emphasis>Strike that last bit, I
-                think it's tidier to leave that to a Location Analysis Contribution.</para>
             </section>
           </section>
 
@@ -10714,9 +10697,7 @@ departure / d.lat = tan (course)</markup>
               <title>Attributes</title>
 
               <para>The analyst specifies a time period for which he believes the vehicle is
-                travelling on a straight course. The analyst also indicates whether this is a ‘hard
-                constraint' or an ‘estimate'. If it's an estimate then the leg can be split by other
-                contributions that are able to perform manoeuvre detections.</para>
+                travelling on a straight course at constant speed. </para>
             </section>
 
             <section>
@@ -10725,54 +10706,114 @@ departure / d.lat = tan (course)</markup>
               <para><emphasis>Constrain the problem space. </emphasis></para>
 
               <para>The contribution will examine the current set of legs. If there isn't a straight
-                leg defined for the specified time period, then the a leg is inserted. If the time
-                period consists of a composite of legs then the contribution will either 1) replace
-                them with a single straight leg if this is a hard-constraint, or 2) leave them
-                as-is.</para>
+                leg defined for the specified time period, then the a leg is inserted.</para>
             </section>
           </section>
         </section>
       </section>
-
       <section>
-        <title>Solution Generator based on Genetic Algorithm</title>
+        <title>Optimisation Strategies</title>
+        <para>Of the two phased approach to SATC, the second page - consider candidate solutions has
+          a much larger processing requirement.  It's in that stage that high volumes of potential
+          solutions have to be considered, with each point of each solution being used in many
+          error/performance calculations,</para>
+        <para>The following three strategies were considered for phase 2.</para>
+        <section>
+          <title>Brute Force</title>
+          <para>The first strategy considered involved Brute Force.  The algortihm steadily
+            progressed through all possible permutations, exhaustively considering performance of
+            each one, and finally producing an optimal result.  This straightforward method was easy
+            to implement, and proved useful in the early implementation phases.  But, as we strove
+            for greater fidelity in solution produced the grids of candidate start/end points got
+            tighter and tighter, giving an exponential explosion in the volume of processing to be
+            conducted.</para>
+        </section>
+        <section>
+          <title>Simulated Annealing</title>
+          <para>After we had reached the limits of how much the Brute Force Algortihm could be
+            performance optimised, we needed to consider optimisation technique in order to get
+              <emphasis>good enough</emphasis> solutions in a reasonable time frame.</para>
+          <para>The first technique considered was Simulated Annealing. In this technique a function
+            is produced that is able to produce a candidate solution.  This function contains a
+            temperature variable.  At the start of processing this variable is high, which allows
+            for a great variety of solutions considered. As it cools, it reduces the allowable
+            changes in the solution. </para>
+          <para>This algorithm gave a significant performance improvement in generating solutions,
+            and carried a lot of hope.  But, it fell short in not giving the necessary degree of
+            control when it came to ensuring that consecutive legs were coherent with each other, as
+            explained below in <xref linkend="inconsistent_range"/>. </para>
+        </section>
+        <section>
+          <title>Genetic Algortihm</title>
+          <para>Genetic Algortihms were the third optimisation technique considered.  They brought
+            the performance improvements of Simulated Annealing with the tight control offered by
+            Brute Force processing.  It is described further in the next section.</para>
+        </section>
+      </section>
 
+      <section xml:id="satc_ga">
+        <title>Solution Generator based on Genetic Algorithm</title>
         <section>
           <title>Definitions</title>
-
-          <para><emphasis>Gene</emphasis> - single permutation for each straight leg</para>
-
-          <para><emphasis>Chromosome</emphasis>, <emphasis>Individual</emphasis> - set of genes, set
-            of straight routes and constructed alterations between them (a composite route)</para>
-
-          <para><emphasis>Population</emphasis> - set of chromosomes which are used on current
-            iteration (a collection of composite routes).</para>
-
-          <para><emphasis>GA</emphasis> - [pending]</para>
-
-          <para><emphasis>Island</emphasis> - one instance of separate GA with its own
-            characteristics.</para>
-
-          <para><emphasis>Iteration</emphasis> - [pending]</para>
-
-          <para><emphasis>Epoch</emphasis> - number of iterations conducted before a migrations is
-            performed. (20 iterations by default in <application>Debrief-SATC</application>).</para>
-
+          <para>
+            <variablelist>
+              <varlistentry>
+                <term>Gene</term>
+                <listitem>
+                  <para>single permutation of a straight leg track segment</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Chromosome, Individual</term>
+                <listitem>
+                  <para>set of genes, set of straight routes and constructed alterations between
+                    them (a composite route)</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Population</term>
+                <listitem>
+                  <para>set of chromosomes which are used on current iteration (a collection of
+                    composite routes).</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>GA</term>
+                <listitem>
+                  <para>the collection of algorithms/processing that lead to the delivery of an
+                    optimal composite track solution</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Island</term>
+                <listitem>
+                  <para>one instance of separate GA with its own characteristics.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Iteration</term>
+                <listitem>
+                  <para>the production and assessment of a single solution</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Epoch</term>
+                <listitem>
+                  <para>number of iterations conducted before a migrations is performed. (20
+                    iterations by default in <application>Debrief-SATC</application>).</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
           <example>
             <title>Example</title>
-
             <para><emphasis>Gene of Chromosome 1</emphasis> - any black straight line</para>
-
             <para><emphasis>Gene of Chromosome 2</emphasis> - any blue straight line</para>
-
             <para><emphasis>Chromosome 1</emphasis> - set of black straight lines</para>
-
             <para><emphasis>Chromosome 2</emphasis> - set of blue straight lines</para>
           </example>
-
           <figure xml:id="example1">
             <title>Example</title>
-
             <mediaobject>
               <imageobject>
                 <imagedata width="100%" fileref="figures/tma_fig1_definitions.png"/>
@@ -10780,62 +10821,58 @@ departure / d.lat = tan (course)</markup>
             </mediaobject>
           </figure>
         </section>
-
         <section>
           <title>Structure</title>
-
           <section>
             <title>Islands</title>
-
-            <para>To allow multiple parallel threads of development, an Islands Model
+            <para>To allow multiple parallel threads of solution derivation, an Islands Model
               (Multiple-population GA) is used, with synchronized migrations (<link
                 xlink:href="http://tracer.uc3m.es/tws/cEA/documents/cant98.pdf"
                 >http://tracer.uc3m.es/tws/cEA/documents/cant98.pdf</link>). This involves several
               separate populations which are optimized in parallel. After each epoch the islands
               exchange chromosomes between each other. Each island is separate GA with its own
               characteristics.</para>
-
             <para>Our islands structure is shown on <xref linkend="islands_structure"/>.</para>
-
             <figure xml:id="islands_structure">
               <title>Islands structure</title>
-
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/tma_fig2_islandstructure.png"/>
                 </imageobject>
               </mediaobject>
             </figure>
-
             <para>The figure shows two simple and two complex islands. These are designed to produce
               good candidates from random search area. After each epoch every of simple and complex
               islands sends 5 elite individuals to elite island, which chooses the best candidate
               from these islands and optimizes it. The presence of different types of island allows
               the algorithm to produce an optimal solution across a range of problem types.</para>
           </section>
-
           <section>
             <title>Genetic algorithm</title>
-
             <para>Each island is one instance of GA with its own parameters. The different island
-              types have different strategies for Selection, Crossover, and Mutation.</para>
-
-            <para>Candidate Factory - generates random chromosomes (see <xref
-                linkend="candidate_factory"/>)</para>
-
-            <para>Selection Strategy - selects chromosomes from current population (see <xref
-                linkend="chromosome_selection"/>)</para>
-
-            <para>Crossover - mates chromosomes selected by selection strategy and generates new
-              chromosomes (see <xref linkend="crossover"/>)</para>
-
-            <para>Mutation - mutates some genes in chromosomes produced by crossover (see <xref
-                linkend="mutation"/>)</para>
-
-            <para>Finished - the GA stops evolving after one of two criteria: time elapsed
-              (typically set to 30 secs), or stagnation (where the optimal solution stops showing
-              improvement in successive generations).</para>
-
+              types have different strategies for Selection, Crossover, and Mutation.<orderedlist>
+                <listitem>
+                  <para>Candidate Generation - generates random chromosomes (see <xref
+                      linkend="candidate_factory"/>)</para>
+                </listitem>
+                <listitem>
+                  <para>Selection Strategy - selects chromosomes from current population (see <xref
+                      linkend="chromosome_selection"/>)</para>
+                </listitem>
+                <listitem>
+                  <para>Crossover - mates chromosomes selected by selection strategy and generates
+                    new chromosomes (see <xref linkend="crossover"/>)</para>
+                </listitem>
+                <listitem>
+                  <para>Mutation - mutates some genes in chromosomes produced by crossover (see
+                      <xref linkend="mutation"/>)</para>
+                </listitem>
+                <listitem>
+                  <para>Completion - the GA stops evolving after one of two criteria: time elapsed
+                    (typically set to 30 secs), or stagnation (where the optimal solution stops
+                    showing improvement in successive generations).</para>
+                </listitem>
+              </orderedlist></para>
             <screen><code>population = CandidateFactory.randomPopulation(populationSize)
 while not finished(population)
    elite = take best from (population)
@@ -10846,61 +10883,48 @@ while not finished(population)
    calculate fitness and sort (newPopulation)
    population = newPopulation
 end </code></screen>
-
             <para>The Simple and Complex islands are configured as described in <xref
                 linkend="island_attributes"/></para>
           </section>
         </section>
-
         <section xml:id="candidate_factory">
           <title>Candidate Factory</title>
-
           <para>The Candidate Factory generates an initial set of candidate routes (individuals)
             within the problem space, together with further randomly generated routes.</para>
-
           <para>No specific algorithm is used to generate initial population, it simply generates
             the required number of random solutions according to the following steps.</para>
-
-          <para>Usually start and end polygons contain part of corresponding bearing line in it.
-            When present, the target bearing measurement is the most effective observation on the
-            target track, so the best solutions start with initial points on this line. Where the
-            polygon does contain part of bearing line this line splits on multiple segments and the
+          <para>Usually start and end polygons contain part of corresponding bearing line. When
+            present, the target bearing measurement is the most effective observation on the target
+            track, so the best solutions start with initial points on this line. Where the polygon
+            does contain part of bearing line this line splits on multiple segments and the
             candidate factory takes a random point from each segment consequentially, as shown on
               <xref linkend="bearing_lines"/>.</para>
-
           <figure xml:id="bearing_lines">
             <title>Bearing lines for new points</title>
-
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/tma_fig3_bearingline.png"/>
               </imageobject>
             </mediaobject>
           </figure>
-
           <para>When the candidate factory needs to generate a point for above polygon it takes
             first segment and generates c<subscript>1</subscript>, when it needs a new point again
             it takes second segment and generates c<subscript>2</subscript> etc.</para>
-
           <para>On occasions when the start or end polygon doesn't have part of corresponding
             bearing line (there is no sensor data for that time), the candidate factory generates a
             grid of points for this polygon, it applies a grid to the polygon then takes a random
             one each time, as in <xref linkend="polygon_without"/>.</para>
-
           <figure xml:id="polygon_without">
             <title>Polygon without bearing line</title>
-
             <mediaobject>
               <imageobject>
-                <imagedata width="100%"  fileref="figures/tma_fig4_polygonwithoutline.png"/>
+                <imagedata width="100%" fileref="figures/tma_fig4_polygonwithoutline.png"/>
               </imageobject>
             </mediaobject>
           </figure>
-
           <para>To generate random chromosomes the candidate factory takes the start and end
             polygons for each straight leg and generates a point from each one using the above
             rules. The following pseudocode documents this:</para>
-
           <screen><code>I = empty chromosome
 for (leg = every straight of Legs)
   S = start polygon of (leg)
@@ -10911,18 +10935,14 @@ for (leg = every straight of Legs)
   add new gene (a) to chromosome (I)
 end</code></screen>
         </section>
-
         <section xml:id="chromosome_selection">
           <title>Chromosome selection strategy</title>
-
           <para>To select the chromosome to use in genetic operators we use tournament selection
               (<link xlink:href="http://en.wikipedia.org/wiki/Tournament_selection"
               xlink:type="simple">http://en.wikipedia.org/wiki/Tournament_selection</link>) with
             tournament size = 2 and a probability to allow the worse candidate, depending on the
             island type.</para>
-
           <para>The tournament strategy is implemented according to this pseudocode:</para>
-
           <screen><code>population = current population
 population = current population
 p = probability to accept worse
@@ -10940,130 +10960,102 @@ while (selected.size &lt; populationSize)
   end
 end</code></screen>
         </section>
-
         <section>
           <title>Genetic operators</title>
-
           <para>Two types of genetic operator are used: crossover and mutation.</para>
-
           <section xml:id="crossover">
             <title>Crossover</title>
-
             <para>Crossover is genetic operator which is used to produce new chromosomes based on
               crossing two parent chromosomes. There are several techniques to implement crossover,
               we use two of them: one-point list crossover and arithmetic crossover.</para>
-
             <section>
               <title>One-point list crossover</title>
-
               <para>One-point list crossover is well known and widely used crossover operator <link
                   xlink:href="http://en.wikipedia.org/wiki/Crossover_%28genetic_algorithm%29"
                   >http://en.wikipedia.org/wiki/Crossover_(genetic_algorithm)</link>. It selects
                 random split point in parent chromosomes and generates two child chromosome based on
                 the following rule:</para>
-
-              <para><mediaobject>
+              <para>
+                <mediaobject>
                   <imageobject>
                     <imagedata align="left" fileref="figures/tma_crossoveroperator.png"/>
                   </imageobject>
-                </mediaobject></para>
-
+                </mediaobject>
+              </para>
               <para>In our example (<xref linkend="example1"/>): our two chromosomes</para>
-
               <blockquote>
                 <para>X<subscript>1</subscript> = { a<subscript>1</subscript>,
                     b<subscript>1</subscript>, c<subscript>1</subscript>} - black straight
                   lines</para>
-
                 <para>X<subscript>2</subscript> = { a<subscript>2</subscript>,
                     b<subscript>2</subscript>, c<subscript>2</subscript>} - blue straight
                   lines</para>
               </blockquote>
-
               <para>let's take our split point = 1, in this case we will have two new
                 chromosomes:</para>
-
               <figure>
                 <title>one point crossover example</title>
-
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/tma_fig5_1ptcrossover.png" width="100%"/>
+                    <imagedata fileref="figures/tma_fig5_1ptcrossover.png" width="90%"/>
                   </imageobject>
                 </mediaobject>
               </figure>
-
               <blockquote>
                 <para>I<subscript>1</subscript> = { a<subscript>2</subscript>,
                     b<subscript>1</subscript>, c<subscript>1</subscript>} - black lines on the above
                   figure</para>
-
                 <para>I<subscript>2</subscript> = { a<subscript>1</subscript>,
                     b<subscript>2</subscript>, c<subscript>2</subscript>} - blue lines on the above
                   figure</para>
               </blockquote>
             </section>
-
             <section>
               <title>Arithmetic crossover</title>
-
               <para>Arithmetic crossover is GA crossover operator designed for continuous search
                 spaces, it has several modification and described in many papers (for instance:
                   <link
                   xlink:href="http://www.researchgate.net/publication/228618503_A_new_genetic_algorithm_with_arithmetic_crossover_to_economic_and_environmental_economic_dispatch/file/9fcfd50a6971a00cc5.pdf"
                   >http://www.researchgate.net/publication/228618503_A_new_genetic_algorithm_with_arithmetic_crossover_to_economic_and_environmental_economic_dispatch/file/9fcfd50a6971a00cc5.pdf</link>)</para>
-
               <para>The general idea of arithmetic crossover is to take two corresponding genes from
                 parent individuals and create new gene as linear combination of parent genes:</para>
-
               <para><inlinemediaobject>
                   <imageobject>
                     <imagedata align="left" fileref="figures/tma_equation1.png"/>
                   </imageobject>
                 </inlinemediaobject> where</para>
-
               <itemizedlist spacing="compact">
                 <listitem>
                   <para>a - gene from first parent</para>
                 </listitem>
-
                 <listitem>
                   <para>b - gene from second parent</para>
                 </listitem>
-
                 <listitem>
                   <para>c - new gene</para>
                 </listitem>
-
                 <listitem>
                   <para>r - random number [0; 1]</para>
                 </listitem>
               </itemizedlist>
-
               <para>Because the above formula restricts a new gene to be between its parents,
                 several authors propose extending the random number interval to [-d; 1 + d], where d
                 is parameter which allows new gene to go outside. Usually d is less than
                 0.25.</para>
-
               <para>For 2D points arithmetic crossover looks like: a, b - (blue) parent genes, c -
                 (green) possible new genes:</para>
-
               <figure>
                 <title>Illustration of arithmetic crossover for 2D points</title>
-
                 <mediaobject>
                   <imageobject>
-                    <imagedata width="100%" fileref="figures/tma_fig6_crossover2d.png"/>
+                    <imagedata width="40%" fileref="figures/tma_fig6_crossover2d.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
-
               <para>In our application we will use the following implementation of arithmetic
                 crossover. Initial parameters: two parent chromosomes P<subscript>1</subscript>,
                   P<subscript>2</subscript>.</para>
-
               <para>Pseudocode:</para>
-
               <screen><code>I = empty chromosome
 
 for (a = every gene of X<subscript>1</subscript>) (b = every gene of X<subscript>2</subscript>)
@@ -11083,39 +11075,31 @@ for (a = every gene of X<subscript>1</subscript>) (b = every gene of X<subscript
   c = route(s<subscript>c</subscript>, e<subscript>c</subscript>)
   add new gene (c) to chromosome (I)
 end</code></screen>
-
               <para>For our example from <xref linkend="example1"/>, we generate new chromosome
                 (green) with arithmetic crossover.</para>
-
               <figure>
                 <title>Arithmetic crossover example</title>
-
                 <mediaobject>
                   <imageobject>
-                    <imagedata  width="100%" fileref="figures/tma_fig7_arithmeticcrossoverex.png"/>
+                    <imagedata width="100%" fileref="figures/tma_fig7_arithmeticcrossoverex.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
             </section>
           </section>
-
           <section xml:id="mutation">
             <title>Mutation</title>
-
             <para>The goal of mutation is to produce individuals which aren't present in current
               population - thus individuals that aren't achievable by crossover. Mutation is a
               genetic operator which produces new chromosomes by substituting genes in parent
-              chromosome for newly generated ones with some specified probability. Implementation of
-              mutation usually depends on concrete problem. In our implementation we will use two
-              techniques.</para>
-
+              chromosome for newly generated ones with some specified probabilit. The specific
+              mutation used in a GA instance depends on an understanding of the problem domain and
+              data patterns.In our implementation we will use two techniques.</para>
             <section>
               <title>Random mutation</title>
-
               <para>Random mutation substitutes some genes of a parent chromosome for corresponding
                 genes randomly generated by candidates factory chromosome. Pseudocode of random
                 mutation looks like:</para>
-
               <screen><code>X = parent chromosome
 R = new random chromosome (from CandidatesFactory.generateRandom)
 p = mutation probability
@@ -11127,76 +11111,60 @@ for (a every gene of X) (b every gene of R)
     add new gene (a) to chromosome (I)
   end
 end</code></screen>
-
               <para>Example: Let's take parent chromosome X (black) and random chromosome R (red).
                 Mutation is made only on second gene this will produce new chromosome I
                 (green)</para>
-
               <figure>
                 <title>Random mutation</title>
-
                 <mediaobject>
                   <imageobject>
-                    <imagedata  width="100%" fileref="figures/tma_fig8a_randommutation.png"/>
+                    <imagedata width="100%" fileref="figures/tma_fig8a_randommutation.png"/>
                   </imageobject>
-
                   <imageobject>
-                    <imagedata  width="100%" fileref="figures/tma_fig8b_randommutation.png"/>
+                    <imagedata width="100%" fileref="figures/tma_fig8b_randommutation.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
             </section>
-
             <section>
               <title>Mutation to vertex</title>
-
               <para>Mutation to vertex comes to GA from <application>Debrief</application>'s
                 experimental Simulated Annealing (SA) optimized point generation implementation (see
                   <xref linkend="optimised_generation"/>), this algorithm gives good results for SA
                 optimization and there is value in also using it within GA with some specific
                 modifications.</para>
-
               <para>Because in GA on each iteration there are multiple individuals there is no
                 reason to use two vertices and take a new point between them. It's simpler to take
                 only one vertex and create a new point as linear combination of current point and
                 chosen vertex:</para>
-
               <para><inlinemediaobject>
                   <imageobject>
-                    <imagedata  width="100%" fileref="figures/tma_equation2.png"/>
+                    <imagedata width="30%" fileref="figures/tma_equation2.png"/>
                   </imageobject>
                 </inlinemediaobject> where</para>
-
               <itemizedlist spacing="compact">
                 <listitem>
                   <para>a - current point</para>
                 </listitem>
-
                 <listitem>
                   <para>b - chosen vertex</para>
                 </listitem>
-
                 <listitem>
                   <para>c - new point</para>
                 </listitem>
-
                 <listitem>
                   <para>r - random number between [0, 1]</para>
                 </listitem>
               </itemizedlist>
-
               <para>To generate "r” we use Y distribution from SA implementation (see <xref
                   linkend="standard_VFA"/>). This distribution depends on current iteration and
                 produces values which are closest to 0 when number of iterations goes to infinity.
                 To avoid very small values for "r” we take iteration parameter for this distribution
                 as follows:</para>
-
               <para><inlineequation>
                   <mathphrase>iteration = real iteration % 300</mathphrase>
                 </inlineequation></para>
-
               <para>Pseudocode for mutation to vertex:</para>
-
               <screen><code>X - parent chromosome
 p - mutation probability
 
@@ -11216,93 +11184,74 @@ for (a every gene of X)
     add new gene (a) to chromosome (I)
   end
 end</code></screen>
-
               <para>Example: Parent chromosome X (black), new chromosome I (green). Mutation was
                 made for first and third genes.</para>
-
               <figure>
                 <title>Mutation to vertex example</title>
-
                 <mediaobject>
                   <imageobject>
-                    <imagedata  width="100%" fileref="figures/tma_fig9_mutationtovertex.png"/>
+                    <imagedata width="100%" fileref="figures/tma_fig9_mutationtovertex.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
             </section>
           </section>
-
           <section xml:id="standard_VFA">
             <title>Standard VFA strategy</title>
-
             <para>The development of the semi-automated TMA in <application>Debrief</application>
               included some investigation into the value in Simulated Annealing (SA). In support of
               this, algorithms were developed that related to the Very Fast Algortihm (VFA) strategy
               for producing an improved SA temperature function.</para>
-
             <para>The initial algorithm is an implementation on VFA selection algorithm with current
               point (P) and current temperature (T):</para>
-
             <orderedlist>
               <listitem>
                 <para>VFA defines random distribution (Y):</para>
-
                 <para><inlinemediaobject>
                     <imageobject>
-                      <imagedata  width="100%" fileref="figures/tma_equation3.png"/>
+                      <imagedata width="30%" fileref="figures/tma_equation3.png"/>
                     </imageobject>
                   </inlinemediaobject></para>
-
                 <para>T - current temperature</para>
-
                 <para>u - random value of uniform distribution</para>
               </listitem>
-
               <listitem>
                 <para>Calculate two random values y<subscript>1</subscript> and
                     y<subscript>2</subscript> based on this Y distribution</para>
               </listitem>
-
               <listitem>
                 <para>Create new point: <inlineequation>
                     <mathphrase>P<subscript>new</subscript> = (P.x + y<subscript>1</subscript> *
                       width, P.y + y<subscript>2</subscript> * height)</mathphrase>
                   </inlineequation></para>
               </listitem>
-
               <listitem>
                 <para>If current polygon doesn't contain P<subscript>new</subscript> point go to
                   step 2.</para>
               </listitem>
             </orderedlist>
           </section>
-
           <section xml:id="optimised_generation">
             <title>Optimised point generation</title>
-
             <para>The VFA selection strategy described above has a high performance cost when run
               later in the process - a cost that isn't justified when the temperature is cooling,
               and only small steps are needed (when SA is in the "discrete improvements" phase as
               temperature approaches zero and only small jumps are allowed). So, a custom selection
               strategy is provided, which selects a random point in area with current point (P) and
               current temperature (T):</para>
-
             <orderedlist>
               <listitem>
                 <para>Select two random vertices of current polygon (V<subscript>1</subscript>,
                     V<subscript>2</subscript>)</para>
               </listitem>
-
               <listitem>
                 <para>Create two segments: (P, V<subscript>1</subscript>), (P,
                     V<subscript>2</subscript>)</para>
               </listitem>
-
               <listitem>
                 <para>Calculate two random values y<subscript>1</subscript> and
                     y<subscript>2</subscript> based on Y distribution from VFA (VFA - 1)</para>
               </listitem>
-
               <listitem>
                 <para>find X point on (P, V<subscript>1</subscript>) segment on road from P to
                     V<subscript>1</subscript>, with distance <inlineequation>
@@ -11310,7 +11259,6 @@ end</code></screen>
                       distance(P, V<subscript>1</subscript>)</mathphrase>
                   </inlineequation></para>
               </listitem>
-
               <listitem>
                 <para>find Y point on (P, P<subscript>2</subscript>) segment on road from P to
                     V<subscript>2</subscript>, with distance <inlineequation>
@@ -11318,116 +11266,95 @@ end</code></screen>
                       distance(P, V<subscript>2</subscript>)</mathphrase>
                   </inlineequation></para>
               </listitem>
-
               <listitem>
                 <para>find P<subscript>new</subscript> on road from X to Y with distance = rand(0,
                   1) * distance(X, Y)</para>
               </listitem>
             </orderedlist>
-
             <figure>
               <title>Point generation</title>
-
               <mediaobject>
                 <imageobject>
-                  <imagedata  width="100%" fileref="figures/tma_fig10_pointgeneration.png"/>
+                  <imagedata width="100%" fileref="figures/tma_fig10_pointgeneration.png"/>
                 </imageobject>
               </mediaobject>
             </figure>
           </section>
         </section>
-
         <section>
           <title>Fitness function</title>
-
           <para>As previously explained, each chromosome in GA is a set of straight routes. The
             fitness function starts by verifying that each of these straight routes are achievable.
             If everything is ok it then constructs altering routes (cubic bezier curves) between
-            them. The GA fitness score is the sum of two scores:</para>
-
-          <orderedlist numeration="loweralpha">
-            <listitem override="a">
-              <para>contributions scores for straight and altering routes</para>
-            </listitem>
-
-            <listitem>
-              <para>score how altering route is compatible with its previous and next straight
-                routes.</para>
-            </listitem>
-          </orderedlist>
-
+            them. The GA fitness score is the sum of two scores:<itemizedlist>
+              <listitem>
+                <para>a) contributions scores for straight and altering routes</para>
+              </listitem>
+              <listitem>
+                <para>b) score how altering route is compatible with its previous and next straight
+                  routes.</para>
+              </listitem>
+            </itemizedlist></para>
           <para>The detail of the a) scores is described in the
               <application>Debrief-SATC</application> contribution documentation.</para>
-
           <para>Score b) is very effective in producing a solution that is the sum of consistent
             straight line legs. It's quite easy for the GA to produce a solution that is the
             collection of the best performing individual legs, but where the legs aren't consistent
             with each other. In <xref linkend="inconsistent_range"/> it is clear that whilst the
             green and purple legs are both valid, they aren't consistent with each other.</para>
-
           <figure xml:id="inconsistent_range">
             <title>Inconsistent range</title>
-
             <mediaobject>
               <imageobject>
-                <imagedata  width="100%" fileref="figures/tma_fig11_inconsistentrange.png"/>
+                <imagedata width="100%" fileref="figures/tma_fig11_inconsistentrange.png"/>
               </imageobject>
             </mediaobject>
           </figure>
-
           <para><xref linkend="consistent_legs"/> demonstrates the inclusion of the consistent legs
             scoring - used to verify that it is possible for a vehicle to transition between the two
             legs in the available time.</para>
-
           <figure xml:id="consistent_legs">
             <title>Consistent legs</title>
-
             <mediaobject>
               <imageobject>
-                <imagedata  width="100%" fileref="figures/tma_fig12_consistentlegs.png"/>
+                <imagedata width="100%" fileref="figures/tma_fig12_consistentlegs.png"/>
               </imageobject>
             </mediaobject>
           </figure>
-
           <para>Note that in <xref linkend="consistent_legs"/>, the solutions still don't match the
             true ("SUBJECT") track - that requires further contribution from the analyst. But, the
             legs in the solution route are consistent with each other.</para>
-
-          <para>To score how altering route is compatible with its previous and next straight routes
-            the GA fitness function uses speed changes during alteration. Smooth speed plot (without
-            peaks) is the best situation, peaks which are near to previous and next speed are worse
-            but valid, and huge peaks are the worst situation (<xref linkend="speed_plotc"/>)</para>
-
+          <para>To score how well altering route is compatible with its previous and next straight
+            routes the GA fitness function uses speed changes during alteration.</para>
+          <para> A smooth speed plot (without peaks) is the best situation (<xref
+              linkend="speed_plot"/>), peaks which are near to previous and next speed are worse but
+            valid (<xref linkend="speed_plotb"/>), and huge peaks are the worst situation (<xref
+              linkend="speed_plotc"/>)</para>
           <figure xml:id="speed_plot">
             <title>Speed plot with smooth speed change</title>
-
             <mediaobject>
               <imageobject>
-                <imagedata  width="100%" fileref="figures/tma_fig13a_speedplot.png"/>
+                <imagedata width="100%" fileref="figures/tma_fig13a_speedplot.png"/>
               </imageobject>
             </mediaobject>
           </figure>
           <figure xml:id="speed_plotb">
             <title>Speed plot with peaks near to straight legs</title>
-            
             <mediaobject>
               <imageobject>
-                <imagedata  width="100%" fileref="figures/tma_fig13b_speedplot.png"/>
+                <imagedata width="100%" fileref="figures/tma_fig13b_speedplot.png"/>
               </imageobject>
             </mediaobject>
           </figure>
           <figure xml:id="speed_plotc">
             <title>Speed plot with huge peaks</title>
-            
             <mediaobject>
               <imageobject>
-                <imagedata  width="100%" fileref="figures/tma_fig13c_speedplot.png"/>
+                <imagedata width="100%" fileref="figures/tma_fig13c_speedplot.png"/>
               </imageobject>
             </mediaobject>
           </figure>
-          
           <para>Pseudocode for altering route score is:</para>
-
           <screen><code>a - altering route
 previous - previous straight route
 next - next straight route
@@ -11441,9 +11368,7 @@ else if (peaks == 1)
 else
   score = 1.5 * (a.max_speed_peak - a. min_speed_peak)<superscript>2</superscript>
 end</code></screen>
-
           <para>Pseudocode of fitness function:</para>
-
           <screen>X - chromosome to score
 score = 0;
 if (some route from (X) is impossible)
@@ -11459,46 +11384,36 @@ for (every altering route (a) from (alterings))
   score = score + compatible score (a, previous of(a), next of (a))
 end</screen>
         </section>
-
         <section xml:id="island_attributes">
           <title>Island attributes</title>
-
           <section>
             <title>Elite island characteristics (beta)</title>
-
             <itemizedlist>
               <listitem>
                 <para>Fixed population size = 70 individuals by default</para>
               </listitem>
-
               <listitem>
                 <para>Fixed chromosome size = count of straight legs</para>
               </listitem>
-
               <listitem>
                 <para>Elitism = 10 individuals by default</para>
               </listitem>
-
               <listitem>
                 <para>Tournament selection (probability to select worse = 0)</para>
               </listitem>
-
               <listitem>
                 <para>Use altering legs</para>
               </listitem>
-
               <listitem>
                 <para>Crossovers: <itemizedlist>
                     <listitem>
                       <para>one-point crossover (20% of selected candidates)</para>
                     </listitem>
-
                     <listitem>
                       <para>adaptive arithmetic crossover (80% of selected candidates)</para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
-
               <listitem>
                 <para>Mutations:<itemizedlist>
                     <listitem>
@@ -11508,31 +11423,24 @@ end</screen>
               </listitem>
             </itemizedlist>
           </section>
-
           <section>
             <title>Simple and complex island characteristics</title>
-
             <para>The only difference between simple and complex island is simple islands use only
               straight legs and DON'T use altering ones, and complex islands use altering legs
               too.</para>
-
             <itemizedlist>
               <listitem>
                 <para>Fixed population size = 70 individuals by default</para>
               </listitem>
-
               <listitem>
                 <para>Fixed chromosome size = count of straight legs</para>
               </listitem>
-
               <listitem>
                 <para>Elitism = 10 individuals by default</para>
               </listitem>
-
               <listitem>
                 <para>Tournament selection (probability to select worse = 0.3)</para>
               </listitem>
-
               <listitem>
                 <para>Crossovers: <itemizedlist>
                     <listitem>
@@ -11540,14 +11448,12 @@ end</screen>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
-
               <listitem>
                 <para>Mutations:<itemizedlist>
                     <listitem>
                       <para>mutation to vertex with 0.4 probability (60% of selected
                         candidates)</para>
                     </listitem>
-
                     <listitem>
                       <para>random mutation with 0.4 probability (40% of selected candidates)</para>
                     </listitem>
