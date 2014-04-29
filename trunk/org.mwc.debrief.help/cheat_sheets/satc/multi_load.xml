@@ -19,7 +19,7 @@
          title="Drag in the file">
       <description>         
          Before you load the data-file, close any existing Debrief plots, then drag 
-         in the data-file from the SATC folder we used in the previous tutorial.
+         in the <b>L2_Scenario.xml</b> data-file from the SATC folder we used in the previous tutorial.
       </description>
    </item>
 </cheatsheet>

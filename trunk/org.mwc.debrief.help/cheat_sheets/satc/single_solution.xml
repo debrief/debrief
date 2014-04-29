@@ -3,7 +3,7 @@
  xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Generate a solution">
    <intro>
       <description>
-         <b>You have now provided background data to SATC, now you can ask it to generate a solution.</b>
+         You have now provided background data to SATC, now you can ask it to generate a solution.
       </description>
    </intro>
    <item
@@ -15,7 +15,7 @@
          with an answer within a few seconds.  In this scenario we have quite sparse bearing data, and the ownship
          maneouvres mean that there aren&apos;t very many candidate solutions.
          <br/>At the time of writing (April 2014), a solution of 9.0kts on 269 degrees is returned.  If you wish, you can try using a high precision.
-         I don&apos;t think you will get a better solution, but you will see the <b>Performance</b> graph steadily growing as SATC targets
+         I don&apos;t think you will get a better solution, but you will see the <b>Performance</b> graph growing more steadily as SATC homes
          in on a particular solution.
       </description>
    </item>
