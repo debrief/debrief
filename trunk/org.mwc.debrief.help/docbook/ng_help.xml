@@ -7283,12 +7283,13 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     is manoeuvring (<guilabel>Altering Leg</guilabel>)</para>
                 </listitem>
               </varlistentry>
-              <varlistentry>
+              <varlistentry xml:id="satc_precision">
                 <term>Precision</term>
                 <listitem>
-                  <para>An indication of the level of fidelity to be considered by the SATC algorithm.  For the LOW, MEDIUM, HIGH precisions the algorithm
-                    is allowed to run for 5, 15 and 30 seconds resp. For these precisions, the number of solutions considered for each 
-                    processing cycle are 45, 70 and 120 resp.</para>
+                  <para>An indication of the level of fidelity to be considered by the SATC
+                    algorithm. For the LOW, MEDIUM, HIGH precisions the algorithm is allowed to run
+                    for 5, 15 and 30 seconds resp. For these precisions, the number of solutions
+                    considered for each processing cycle are 45, 70 and 120 resp.</para>
                 </listitem>
               </varlistentry>
               <varlistentry>
@@ -7366,12 +7367,12 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             phase is able to run very quickly, since it just deals with hard facts.  It is possible
             to view the set of constraints changing live on the Debrief plot whilst the
             hard-constraints are manipulated.</para>
-          <para>The second stage is where candidate solutions are produced.  This stage can be quite
-            time-consuming, so it is only run on analyst request.  The stage produces an imaginary
+          <para>The second stage is where candidate solutions are produced. This stage can be quite
+            time-consuming, so it is only run on analyst request. The stage produces an imaginary
             grid over the potential start and end positions for each straight leg. The algortihm
             then looks at the possible straight courses between combinations of these points. An
             optimisation algorithm reduces the number of permutations that need to be considered.
-            The optimisation algorithm also discard solutions that, whilst mathematically optimal,
+            The optimisation algorithm also discards solutions that, whilst mathematically optimal,
             do not represent achievable successive courses (due to simple speed/time calculations). <screenshot>
               <mediaobject>
                 <imageobject>
@@ -7404,7 +7405,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         <sect2 xml:id="satc_ui">
           <title>User Interface</title>
           <para>SATC scenarios are managed from within the <guilabel>Maintain
-              Contributions</guilabel> view within Debrief.<screenshot>
+              Contributions</guilabel> view within Debrief.  This view opens automatically when a
+            new scenario is created.<screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/MaintainContributions.png" width="100%"/>
@@ -7433,8 +7435,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <varlistentry>
                   <term>Precision</term>
                   <listitem>
-                    <para>Used to indicate which of the three precision levels are required in
-                      solution generation. </para>
+                    <para>Used to indicate which of the three <link linkend="satc_precision"
+                        >precision</link> levels are required in solution generation. </para>
                   </listitem>
                 </varlistentry>
               </variablelist></para>
@@ -7446,8 +7448,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <varlistentry>
                   <term>Name</term>
                   <listitem>
-                    <para>Each contribution is presented inside it's own UI block. The contribution
-                      name is provided at the top-left</para>
+                    <para>Each contribution is presented inside it's own screen object. The
+                      contribution name is provided at the top-left of this block</para>
                   </listitem>
                 </varlistentry>
                 <varlistentry>
@@ -7471,7 +7473,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                   <term>Weight</term>
                   <listitem>
                     <para>The weighting is a way of the analyst tuning the TMA process. Higher
-                      weighting figure more strongly in the generated solutions.</para>
+                      weightings figure more strongly in the generated solutions.</para>
                   </listitem>
                 </varlistentry>
                 <varlistentry>
@@ -7481,16 +7483,16 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                       Manager.</para>
                   </listitem>
                 </varlistentry>
-              </variablelist>Most contributions</para>
+              </variablelist></para>
           </formalpara>
           <formalpara>
             <title>Performance</title>
             <para>The performance graph is an indication of progress of the SATC algorithm. Along
-              the x-axis it shows the number of cycles of the algorithm, and on the y-axis it shows
-              the error score of the best-performing solution in that generation. When
-                <guilabel>Medium</guilabel> or <guilabel>High</guilabel> precision values are used,
-              a greater number of cycles are performed, with each cycle processing a greater number
-              of solution permutations. </para>
+              the x-axis it shows the number of cycles that the algorithm has run through, and on
+              the y-axis it shows the error score of the best-performing solution in that
+              generation. When <guilabel>Medium</guilabel> or <guilabel>High</guilabel> precision
+              values are used, a greater number of cycles are performed, with each cycle processing
+              a greater number of solution permutations. </para>
           </formalpara>
         </sect2>
       </sect1>
