@@ -34,12 +34,12 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence maxOccurs="unbounded">
+				<xsd:element ref="intro" minOccurs="0" maxOccurs="1"/>
+				<xsd:element ref="onCompletion" minOccurs="0" maxOccurs="1"/>
 				<xsd:choice>
 					<xsd:element ref="task"/>
 					<xsd:element ref="taskGroup"/>
 				</xsd:choice>
-				<xsd:element ref="intro" minOccurs="0" maxOccurs="1"/>
-				<xsd:element ref="onCompletion" minOccurs="0" maxOccurs="1"/>
 				<xsd:element ref="dependency" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="kind" type="xsd:string" use="optional" default="set">
@@ -138,19 +138,33 @@
 			</xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="intro" type="xsd:string">
+	
+	<xsd:element name="intro">
 		<xsd:annotation>
 			<xsd:documentation>
-            Contains the text which will be displayed before this task has been started. May contain form text markup.
-         </xsd:documentation>
+				Contains the text which will be displayed before this task has been started. May contain form text markup.
+			</xsd:documentation>
 		</xsd:annotation>
+		<xsd:complexType mixed="true">
+			<xsd:choice maxOccurs="unbounded">
+				<xsd:element name="b" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="br" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:choice>
+		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="onCompletion" type="xsd:string">
+	
+	<xsd:element name="onCompletion">
 		<xsd:annotation>
 			<xsd:documentation>
             Contains the text which will be displayed in the completion panel for this task. May contain form text markup.
          </xsd:documentation>
 		</xsd:annotation>
+		<xsd:complexType mixed="true">
+			<xsd:choice maxOccurs="unbounded">
+				<xsd:element name="b" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="br" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:choice>
+		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="dependency">
 		<xsd:annotation>
