@@ -17,10 +17,6 @@
             id="org.mwc.debrief.help.cheats"
             name="Debrief"/>
       <category
-            id="org.mwc.debrief.help.cheat_general"
-            name="General"
-            parentCategory="org.mwc.debrief.help.cheats"/>
-      <category
             id="org.mwc.debrief.help.cheat_satc"
             name="Semi Automatic Track Construction"
             parentCategory="org.mwc.debrief.help.cheats"/>
@@ -49,21 +45,9 @@
             name="S2R Operations"
             parentCategory="org.mwc.debrief.help.cheats"/>
       <category
-            id="org.mwc.debrief.help.cheat_tma"
-            name="TMA data"
-            parentCategory="org.mwc.debrief.help.cheats"/>
-      <category
-            id="org.mwc.debrief.help.cheat_buoys"
-            name="Buoyfields"
-            parentCategory="org.mwc.debrief.help.cheats"/>                                    
-      <category
             id="org.mwc.debrief.help.cheat_narratives"
             name="Narratives"
             parentCategory="org.mwc.debrief.help.cheats"/>                                    
-      <category
-            id="org.mwc.debrief.help.cheat_maintaining"
-            name="Maintaining Debrief"
-            parentCategory="org.mwc.debrief.help.cheats"/>         
       <category
             id="org.mwc.debrief.help.trackRecon"
             name="Track Reconstruction"
@@ -85,12 +69,6 @@
             name="Linking to existing datafiles"/>   
             <!--  note, we use the generate_project id when we manually open
             the cheat sheet in the PlotEditor class -->                                    
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_satc"
-            composite="true"
-            contentFile="cheat_sheets/satc/whole_satc.xml"
-            id="org.mwc.debrief.help.started.satc"
-            name="A walkthrough of SATC"/>                 
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/GenerateProject.xml"
@@ -201,11 +179,9 @@
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_satc"
             composite="true"
-            contentFile="$nl$/cheat_sheets/satc/whole_satc.xml"
-            id="org.mwc.debrief.help.cheatsheet.satc.composite"
-            name="Semi Automatic Track Construction">
-      </cheatsheet>   
-      
+            contentFile="cheat_sheets/satc/whole_satc.xml"
+            id="org.mwc.debrief.help.started.satc.composite"
+            name="A walkthrough of Debrief's Auto-TMA capabilities"/>                       
 </extension>
    <extension
          point="org.eclipse.help.contexts">
