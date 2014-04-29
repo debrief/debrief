@@ -3,7 +3,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
    <intro>
-      <description>Debrief NG stores it's data in a local folder called a Project. It's into this
+      <description>Debrief NG stores it&apos;s data in a local folder called a Project. It&apos;s into this
          folder that you place analysis files and links to existing data folders elsewhere on your
          machine/network. This tutorial will lead you through creating a new, blank project.
       </description>
