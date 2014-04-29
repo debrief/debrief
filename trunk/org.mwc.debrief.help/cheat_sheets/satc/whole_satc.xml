@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<compositeCheatsheet name="Semi Automated Track Construction">
+<compositeCheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="../compositeContentFile.xsd"
+ name="Semi Automated Track Construction">
    <taskGroup kind="sequence" name="Walkthrough" skip="false">
       <intro>
          <b>Introduction</b><br/>
@@ -16,8 +18,8 @@ Before we get started with loading and manipulating data, we&apos;re going to le
          <onCompletion>
             <b>Conclusion</b>
          </onCompletion>
-         <param name="path" value="overall_intro.xml">
-         </param>
+         <param name="path" value="overall_intro.xml"/>
+         
       </task>
       <taskGroup kind="sequence" name="Single Leg Solution" skip="false">
          <intro>
@@ -29,26 +31,45 @@ Let&apos;s start off with an easy scenario. We&apos;re going to work on an engag
          </onCompletion>
          <task kind="cheatsheet" name="Generating a project" skip="true">
             <intro>
-               To be able to save your tutorial data, you need a Debrief <b>Workspace</b> to store your data in.  But, if you have a Debrief <b>Navigator</b> window open, and it you can see one or more folders in it, you can skip this step.
+               To be able to save your tutorial data, you need a Debrief <b>Workspace</b> to store your data in.  
+               But, if you have a Debrief <b>Navigator</b> window open, and in it you can see one or more folders in it, you can skip this step.
             </intro>
             <onCompletion>
                <b>Conclusion</b><br/>
 You now have a Debrief <b>Project</b>, to contain your tutorial data.
             </onCompletion>
-            <param name="path" value="../GettingStarted/GenerateProject.xml">
-            </param>
+            <param name="path" value="../GettingStarted/GenerateProject.xml"/>
+            
          </task>
-         <task kind="cheatsheet" name="Finding the sample data" skip="true">
+         <taskGroup kind="choice" name="Finding the sample data">
             <intro>
-               You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled <b>Sample Data</b>, that contains a folder called <b>SATC</b>. If there is on there, you can skip this step.
+               There are two ways to load the sample data. We&apos;re probably going to end up modifying the sample data, so you don&apos;t
+               want to do that if you&apos;re working on a set of sample data that's shared with other user, since you 
+               would be modifying the <b>master</b> copy of the data. Start off by considering if your Debrief installation folder
+               is on your local machine, or on a Network Shared Folder.
             </intro>
-            <onCompletion>
-               <b>Conclusion</b>&lt;br&gt;
-Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the tutorial now.
-            </onCompletion>
-            <param name="path" value="../GettingStarted/FindingYourData.xml">
-            </param>
-         </task>
+            <task kind="cheatsheet" name="Sample data from a local folder" skip="true">
+               <intro>
+                  You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled <b>Sample Data</b>, that contains a folder called <b>SATC</b>. If there is on there, you can skip this step.
+               </intro>
+               <onCompletion>
+                  <b>Conclusion</b>&lt;br&gt;
+                  Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the tutorial now.
+               </onCompletion>
+               <param name="path" value="../GettingStarted/FindingYourData.xml"/>
+            </task>
+            <task kind="cheatsheet" name="Sample data from a shared folder" skip="true">
+               <intro>
+                  You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled <b>Sample Data</b>, that contains a folder called <b>SATC</b>. If there is on there, you can skip this step.
+               </intro>
+               <onCompletion>
+                  <b>Conclusion</b><br/>
+                  Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the tutorial now.
+               </onCompletion>
+               <param name="path" value="../GettingStarted/FindingYourNetworkData.xml"/>
+            </task>
+            
+         </taskGroup>
          <task kind="cheatsheet" name="Loading the data" skip="false">
             <intro>
                Let&apos;s get some sample data loaded.
@@ -56,8 +77,8 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
             <onCompletion>
                Ok, now you have ownship track loaded, and you can see the fan of ownship bearing data.
             </onCompletion>
-            <param name="path" value="single_load.xml">
-            </param>
+            <param name="path" value="single_load.xml"/>
+            
          </task>
          <task kind="cheatsheet" name="Creating the scenario" skip="false">
             <intro>
@@ -66,8 +87,8 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
             <onCompletion>
                Data has now been collated, now to move on.
             </onCompletion>
-            <param name="path" value="single_create.xml">
-            </param>
+            <param name="path" value="single_create.xml"/>
+            
          </task>
          <task kind="cheatsheet" name="Getting a solution" skip="false">
             <intro>
@@ -76,8 +97,8 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
             <onCompletion>
                We now have a target solution, very close to the truth track, generated by SATC.
             </onCompletion>
-            <param name="path" value="single_solution.xml">
-            </param>
+            <param name="path" value="single_solution.xml"/>
+            
          </task>
          <task kind="cheatsheet" name="Importing as a TMA track" skip="false">
             <intro>
@@ -86,8 +107,8 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
             <onCompletion>
                <b>Conclusion</b>
             </onCompletion>
-            <param name="path" value="single_import.xml">
-            </param>
+            <param name="path" value="single_import.xml"/>
+            
          </task>
       </taskGroup>
       <taskGroup kind="sequence" name="Multi Leg Solution" skip="false">
@@ -101,8 +122,7 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
             <intro>
                To start with, we wil have to load some data.
             </intro>
-            <param name="path" value="multi_load.xml">
-            </param>
+            <param name="path" value="multi_load.xml"/>            
          </task>
          <task kind="cheatsheet" name="View the data" skip="false">
             <intro>
@@ -111,8 +131,8 @@ Ok, you&apos;ve found the Debrief <b>Sample Data</b>.  You&apos;re ready for the
             <onCompletion>
                <b>Conclusion</b>
             </onCompletion>
-            <param name="path" value="multi_view.xml">
-            </param>
+            <param name="path" value="multi_view.xml"/>
+            
          </task>
       </taskGroup>
    </taskGroup>
