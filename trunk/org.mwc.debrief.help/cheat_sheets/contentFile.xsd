@@ -29,10 +29,11 @@
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="description">
-		<xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="xsd:string"/>
-			</xsd:simpleContent>
+		<xsd:complexType mixed="true">
+			<xsd:choice maxOccurs="unbounded">
+				<xsd:element name="b" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="br" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:choice>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="onCompletion">
@@ -114,8 +115,9 @@
 	</xsd:element>
 	<xsd:element name="command">
 		<xsd:complexType>
-			<xsd:attribute name="when" type="xsd:string" use="required"/>
+			<xsd:attribute name="when" type="xsd:string" use="optional"/>
 			<xsd:attribute name="confirm" type="xsd:boolean" use="optional" default="false"/>
+			<xsd:attribute name="required" type="xsd:boolean" use="optional" default="false"/>
 			<xsd:attribute name="serialization" type="xsd:string" use="optional"/>
 			<xsd:attribute name="returns" type="xsd:string" use="optional"/>
 		</xsd:complexType>

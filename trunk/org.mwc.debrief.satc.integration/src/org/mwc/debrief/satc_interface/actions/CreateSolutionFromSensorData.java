@@ -605,6 +605,9 @@ public class CreateSolutionFromSensorData implements
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 		{
 
+			// also, check that the maintain contributions window is open
+			CorePlugin.openView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
+
 			initSolver();
 
 			String contName = getContributionName();
@@ -628,6 +631,7 @@ public class CreateSolutionFromSensorData implements
 				MaintainContributionsView mv = (MaintainContributionsView) aView;
 				mv.setActiveSolver(_targetSolution.getSolver());
 			}
+			
 			return Status.OK_STATUS;
 		}
 

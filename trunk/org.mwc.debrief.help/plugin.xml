@@ -17,8 +17,8 @@
             id="org.mwc.debrief.help.cheats"
             name="Debrief"/>
       <category
-            id="org.mwc.debrief.help.cheat_general"
-            name="General"
+            id="org.mwc.debrief.help.cheat_satc"
+            name="Semi Automatic Track Construction"
             parentCategory="org.mwc.debrief.help.cheats"/>
       <category
             id="org.mwc.debrief.help.cheat_started"
@@ -45,21 +45,9 @@
             name="S2R Operations"
             parentCategory="org.mwc.debrief.help.cheats"/>
       <category
-            id="org.mwc.debrief.help.cheat_tma"
-            name="TMA data"
-            parentCategory="org.mwc.debrief.help.cheats"/>
-      <category
-            id="org.mwc.debrief.help.cheat_buoys"
-            name="Buoyfields"
-            parentCategory="org.mwc.debrief.help.cheats"/>                                    
-      <category
             id="org.mwc.debrief.help.cheat_narratives"
             name="Narratives"
             parentCategory="org.mwc.debrief.help.cheats"/>                                    
-      <category
-            id="org.mwc.debrief.help.cheat_maintaining"
-            name="Maintaining Debrief"
-            parentCategory="org.mwc.debrief.help.cheats"/>         
       <category
             id="org.mwc.debrief.help.trackRecon"
             name="Track Reconstruction"
@@ -187,6 +175,13 @@
             id="org.mwc.debrief.help.cheatsheet.s2r.composite"
             name="Single Sided Reconstruction in Debrief">
       </cheatsheet>   
+      <!-- and the SATC bits -->
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_satc"
+            composite="true"
+            contentFile="cheat_sheets/satc/whole_satc.xml"
+            id="org.mwc.debrief.help.started.satc.composite"
+            name="A walkthrough of Debrief's Auto-TMA capabilities"/>                       
 </extension>
    <extension
          point="org.eclipse.help.contexts">
