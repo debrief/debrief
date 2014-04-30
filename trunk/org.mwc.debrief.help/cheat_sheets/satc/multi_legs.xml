@@ -63,7 +63,7 @@
          So, we&apos;ve got a solution.  But, I think it can be improved.  Let&apos;s try to give the target a consistent speed. We&apos;re
          going to give a speed constraint to the whole period of the engagement. We could have done this by right-clicking on the whole <b>Sensor:Plain</b>
          object, but an alternate way of doing this is to right-click on our <b>Tutorial Scenario</b> object in the <b>Layer Manager</b>,  
-         and selecting <b>Add speed constraint for the period covered by [Tutorial Scenario]</b>.  A wizard will open, name the contribution
+         and selecting <b>Add Speed Forecast for period covered by [Tutorial Scenario]</b>.  A wizard will open, name the contribution
          as <b>Overall Speed</b>. You will see this new constraint displayed in the <b>Maintain Contributions</b> view - with a default set
          of hard constraints shown: zero to forty knots.
       </description>
