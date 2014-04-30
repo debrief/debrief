@@ -53,7 +53,7 @@
          <br/>So, now we have a three-leg solution that is compliant with our sensor data, and our straight leg forecasts.
          <br/>We can take a step to verify this by switching on the location constraints.  First, select the <b>Tutorial Scenario</b>
           in the <b>Layer Manager</b>. Then, in the <b>Properties</b> window, switch on <b>ShowLocationConstraints</b>. You&apos;ll see
-         lots and lots of clutter on the plot. Also switch on <b>OnlyShowLegEnds</b>.  This shows the calculated location 
+         lots and lots of clutter on the plot. Also switch on <b>OnlyPlotLegEnds</b>.  This shows the calculated location 
          constraints at the start and end of each leg.  We can see that yes, the solution is compliant with them.
       </description>
    </item>
