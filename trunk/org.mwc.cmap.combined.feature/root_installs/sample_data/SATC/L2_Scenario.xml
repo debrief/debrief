@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Apr 29 13:16:48 BST 2014" Name="Debrief Plot" PlotId="1385027164422">
+<plot Created="Wed Apr 30 13:28:09 BST 2014" Name="Debrief Plot" PlotId="1385027164422">
 <details Text="Saved with Debrief version dated Thu Apr 17 11:41:54 BST 2014"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="OWNSHIP" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -2461,15 +2461,15 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.4047595" Long="-0.1741677"/>
+<shortLocation Depth="0.000" Lat="60.6936890" Long="-0.3579050"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.9355258" Long="0.2202965"/>
+<shortLocation Depth="0.000" Lat="59.6290720" Long="0.4040338"/>
 </br>
 </projection>
 <gui>
 <tote>
-<primary Name="SENSOR"/>
+<primary Name="OWNSHIP"/>
 </tote>
 <component Type="Stepper">
 <property Name="GREEN" Value="64"/>
