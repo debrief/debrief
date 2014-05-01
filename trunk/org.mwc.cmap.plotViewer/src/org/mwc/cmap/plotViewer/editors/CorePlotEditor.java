@@ -165,7 +165,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	protected GeoToolsHandler _myGeoHandler;
 	protected IContextActivation _myActivation;
 	
-	private IResourceChangeListener resourceChangeListener = new IResourceChangeListener()
+	protected IResourceChangeListener resourceChangeListener = new IResourceChangeListener()
 	{
 		
 		@Override
