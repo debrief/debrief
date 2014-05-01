@@ -123,6 +123,7 @@ import MWC.TacticalData.IRollingNarrativeProvider;
 /**
  * @author ian.mayo
  */
+@SuppressWarnings("deprecation")
 public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 {
 	// Extension point tag and attributes in plugin.xml
@@ -1117,6 +1118,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 
 				OutputStream tmpOS = null;
+				// the workspace has a listenser that will close/rename the current plot editor if it's parent file
+				// has been deleted/renamed. We need to cancel that processing whilst we do a file-save,
+				// since the file-save includes a name-change.
 				ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 				try
 				{
