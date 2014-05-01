@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -1116,7 +1117,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 
 				OutputStream tmpOS = null;
-
+				ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 				try
 				{
 					// NEW STRATEGY. Save to tmp first, then overwrite existing on
@@ -1280,6 +1281,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					{
 						CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
 					}
+					ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE|IResourceChangeEvent.PRE_DELETE|IResourceChangeEvent.POST_CHANGE);
 				}
 			}
 		}
