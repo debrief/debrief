@@ -43,7 +43,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -148,6 +150,32 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
 
+	private IWorkbenchListener workbenchListener = new IWorkbenchListener()
+	{
+
+		@Override
+		public boolean preShutdown(IWorkbench workbench, boolean forced)
+		{
+			IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+			for (IWorkbenchWindow window:windows) {
+				IWorkbenchPage page = window.getActivePage();
+				IViewReference[] viewReferences = page.getViewReferences();
+				for (IViewReference viewReference:viewReferences) {
+					String id = viewReference.getId();
+					if (XY_PLOT.equals(id)) {
+						page.hideView(viewReference);
+					}
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public void postShutdown(IWorkbench workbench)
+		{
+		}
+	};
+
 	/**
 	 * The constructor.
 	 */
@@ -167,6 +195,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
+		PlatformUI.getWorkbench().addWorkbenchListener(workbenchListener);
 
 		// hack to initialise the TIFF importers. I believe we're having classpath
 		// issues,
@@ -226,6 +255,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	public void stop(final BundleContext context) throws Exception
 	{
 		super.stop(context);
+		PlatformUI.getWorkbench().removeWorkbenchListener(workbenchListener);
 		plugin = null;
 		resourceBundle = null;
 	}
