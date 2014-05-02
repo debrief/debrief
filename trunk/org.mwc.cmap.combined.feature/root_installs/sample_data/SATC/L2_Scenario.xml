@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Wed Apr 30 13:28:09 BST 2014" Name="Debrief Plot" PlotId="1385027164422">
-<details Text="Saved with Debrief version dated Thu Apr 17 11:41:54 BST 2014"/>
+<plot Created="Fri May 02 06:51:55 BST 2014" Name="Debrief Plot" PlotId="1385027164422">
+<details Text="Saved with Debrief version dated Fri May 02 06:26:49 BST 2014"/>
 <session>
 <layers>
 <track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="OWNSHIP" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="Plain" TrackName="SENSOR" Visible="true" WormInHole="true">
+<sensor LineThickness="1" Name="Plain" TrackName="OWNSHIP" Visible="true" WormInHole="true">
 <colour Value="RED"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="180.000" Dtg="100112 120000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="Cookie SUBJECT held on Plain Cookie" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="40000.0000000"/>
@@ -2461,10 +2461,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.6936890" Long="-0.3579050"/>
+<shortLocation Depth="0.000" Lat="60.3984365" Long="-0.7019186"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.6290720" Long="0.4040338"/>
+<shortLocation Depth="0.000" Lat="59.8697683" Long="0.0266308"/>
 </br>
 </projection>
 <gui>
