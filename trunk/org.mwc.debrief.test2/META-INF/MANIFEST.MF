@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief tests
 Bundle-SymbolicName: org.mwc.debrief.test2
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Vendor: MWC
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit;bundle-version="4.0.0",
