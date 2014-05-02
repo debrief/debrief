@@ -150,7 +150,11 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
 
-	private IWorkbenchListener workbenchListener = new IWorkbenchListener()
+	/** special-case handler that ensures that XY Plot views are 
+	 * closed when the app closes. XY-Plot views are "special" views
+	 * because we don't wish them to persist between sessions.
+	 */
+	private  IWorkbenchListener workbenchListener = new IWorkbenchListener()
 	{
 
 		@Override
@@ -195,6 +199,10 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
+		
+		// we have an ongoing problem with the window that RCP provides for a floated XY
+		// Plot staying behind after the view itself has closed, and 
+		// after the app has closed/re-opened.
 		PlatformUI.getWorkbench().addWorkbenchListener(workbenchListener);
 
 		// hack to initialise the TIFF importers. I believe we're having classpath
