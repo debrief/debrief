@@ -122,7 +122,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 				paintDataRect(dest);
 			}
 
-			public void resizedEvent(final PlainProjection theProj, final Dimension newScreenArea)
+			public void resizedEvent(final PlainProjection theProj,
+					final Dimension newScreenArea)
 			{
 			}
 		});
@@ -153,7 +154,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 						// is this different to our current one?
 						if (provider != _targetLayers)
-						{							
+						{
 							// ok, start listening to the new one
 							_targetLayers = provider;
 							plotSelected(provider, parentPart);
@@ -170,7 +171,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						{
 							// cancel the listeners
 							plotSelected(null, null);
-							
+
 							_targetLayers = null;
 							clearPlot();
 						}
@@ -187,7 +188,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						// is this different to our current one?
 						if (provider != _targetViewport)
 						{
-							// ok, stop listening to the current viewport (if we have one)
+							// ok, stop listening to the current viewport (if we
+							// have one)
 							if (_targetViewport != null)
 								stopListeningToViewport();
 
@@ -207,9 +209,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 					{
 						if (part == _targetViewport)
 						{
-							if(_targetViewport != null)
+							if (_targetViewport != null)
 								stopListeningToViewport();
-							
+
 							_targetViewport = null;
 						}
 					}
@@ -295,7 +297,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	 * @param parentPart
 	 *          the part containing the plot
 	 */
-	protected void plotSelected(final Layers provider, final IWorkbenchPart parentPart)
+	protected void plotSelected(final Layers provider,
+			final IWorkbenchPart parentPart)
 	{
 		// ok - update our chart to show the indicated plot.
 		_myOverviewChart.setLayers(provider);
@@ -360,7 +363,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
 				final int JITTER, final Layers theLayers, final SWTCanvas theCanvas)
 		{
-			// just do a check that we have our start point (it may have been cleared
+			// just do a check that we have our start point (it may have been
+			// cleared
 			// at the end of the move operation)
 			if (_startPoint != null)
 			{
@@ -370,8 +374,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 					return;
 				Tracker _dragTracker = new Tracker((Composite) _myCanvas.getCanvas(),
 						SWT.RESIZE);
-				final Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
-						deltaY);
+				final Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y,
+						deltaX, deltaY);
 				_dragTracker.setRectangles(new Rectangle[]
 				{ rect });
 				final boolean dragResult = _dragTracker.open();
@@ -383,10 +387,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 					final java.awt.Point tl = new java.awt.Point(res.x, res.y);
 					final java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
 							+ res.height);
-					final WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
-							.toWorld(tl));
-					final WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
-							.toWorld(br));
+					final WorldLocation locA = new WorldLocation(_myCanvas
+							.getProjection().toWorld(tl));
+					final WorldLocation locB = new WorldLocation(_myCanvas
+							.getProjection().toWorld(br));
 					final WorldArea area = new WorldArea(locA, locB);
 
 					// hmm, check we have a controllable viewport
@@ -398,12 +402,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 							// ok, we also need to get hold of the target chart
 							final WorldArea oldArea = _targetViewport.getViewport();
-							final Action theAction = new OverviewZoomInAction(_targetViewport,
-									oldArea, area);
+							final Action theAction = new OverviewZoomInAction(
+									_targetViewport, oldArea, area);
 
 							// and wrap it
-							final DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-									null, null);
+							final DebriefActionWrapper daw = new DebriefActionWrapper(
+									theAction, null, null);
 
 							// and add it to the clipboard
 							CorePlugin.run(daw);
@@ -420,7 +424,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			}
 		}
 
-		public void doMouseUp(final org.eclipse.swt.graphics.Point point, final int keyState)
+		public void doMouseUp(final org.eclipse.swt.graphics.Point point,
+				final int keyState)
 		{
 			_startPoint = null;
 		}
@@ -503,7 +508,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void drawText(final Font theFont, final String theStr, final int x, final int y)
+		public void drawText(final Font theFont, final String theStr, final int x,
+				final int y)
 		{
 			// ignore - we don't do text in overview
 		}
@@ -528,7 +534,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public void drawText(final Font theFont, final String theStr, final int x, final int y)
+		public void drawText(final Font theFont, final String theStr, final int x,
+				final int y)
 		{
 			// ignore - we don't do text in overview
 		}
@@ -591,7 +598,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		public final void paintMe(final CanvasType dest)
 		{
 
-			// just double-check we have some layers (if we're part of an overview
+			// just double-check we have some layers (if we're part of an
+			// overview
 			// chart, we may not have...)
 			if (_theLayers == null)
 				return;
@@ -603,7 +611,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 				if (sArea.width > 0)
 				{
 
-					// hey, we've plotted at least once, has the data area changed?
+					// hey, we've plotted at least once, has the data area
+					// changed?
 					if (_lastDataArea != _parentView._myOverviewChart.getCanvas()
 							.getProjection().getDataArea())
 					{
@@ -615,9 +624,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						_myLayers.clear();
 					}
 
-					final int canvasHeight = _parentView._myOverviewChart.getCanvas().getSize()
-							.getSize().height;
-					final int canvasWidth = _parentView._myOverviewChart.getCanvas().getSize().width;
+					final int canvasHeight = _parentView._myOverviewChart.getCanvas()
+							.getSize().getSize().height;
+					final int canvasWidth = _parentView._myOverviewChart.getCanvas()
+							.getSize().width;
 
 					paintBackground(dest);
 
@@ -636,18 +646,22 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 							// just check if this layer is visible
 							if (thisLayer.getVisible())
 							{
-								// System.out.println("painting:" + thisLayer.getName());
+								// System.out.println("painting:" +
+								// thisLayer.getName());
 
 								if (doubleBufferPlot())
 								{
-									// check we're plotting to a SwingCanvas, because we don't
+									// check we're plotting to a SwingCanvas,
+									// because we don't
 									// double-buffer anything else
 									if (dest instanceof SWTCanvas)
 									{
-										// does this layer want to be double-buffered?
+										// does this layer want to be
+										// double-buffered?
 										if (thisLayer instanceof BaseLayer)
 										{
-											// just check if there is a property which over-rides the
+											// just check if there is a property
+											// which over-rides the
 											// double-buffering
 											final BaseLayer bl = (BaseLayer) thisLayer;
 											if (bl.isBuffered())
@@ -655,7 +669,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 												isAlreadyPlotted = true;
 
 												// do our double-buffering bit
-												// do we have a layer for this object
+												// do we have a layer for this
+												// object
 												org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image) _myLayers
 														.get(thisLayer);
 												if (image == null)
@@ -675,7 +690,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 													final GC newGC = new GC(image);
 
-													// wrap the GC into something we know how to plot to.
+													// wrap the GC into
+													// something we know how to
+													// plot to.
 													final SWTCanvasAdapter ca = new OverviewSWTCanvasAdapter(
 															dest.getProjection());
 
@@ -684,13 +701,16 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 													// and store the GC
 													ca.startDraw(newGC);
 
-													// ok, paint the layer into this canvas
+													// ok, paint the layer into
+													// this canvas
 													thisLayer.paint(ca);
 
 													// done.
 													ca.endDraw(null);
 
-													// store this image in our list, indexed by the layer
+													// store this image in our
+													// list, indexed by the
+													// layer
 													// object itself
 													_myLayers.put(thisLayer, image);
 
@@ -698,24 +718,29 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 													newGC.dispose();
 												}
 
-												// have we ended up with an image to paint?
+												// have we ended up with an
+												// image to paint?
 												if (image != null)
 												{
-													// get the graphics to paint to
+													// get the graphics to paint
+													// to
 													final SWTCanvas canv = (SWTCanvas) dest;
 
-													// lastly add this image to our Graphics object
+													// lastly add this image to
+													// our Graphics object
 													canv.drawSWTImage(image, 0, 0, canvasWidth,
 															canvasHeight, 255);
 
-													// but, we also have to ditch the image
+													// but, we also have to
+													// ditch the image
 													// image.dispose();
 												}
 
 											}
 										}
-									} // whether we were plotting to a SwingCanvas (which may be
-									// double-buffered
+									} // whether we were plotting to a
+										// SwingCanvas (which may be
+										// double-buffered
 								} // whther we are happy to do double-buffering
 
 								// did we manage to paint it
@@ -788,7 +813,11 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	 */
 	void stopListeningToViewport()
 	{
-		_targetViewport.getProjection().removeListener(this);
+		if (_targetViewport != null)
+			if (_targetViewport.getProjection() != null)
+			{
+				_targetViewport.getProjection().removeListener(this);
+			}
 	}
 
 	/**
@@ -802,6 +831,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	@Override
 	public void dispose()
 	{
+		// don't forget to stop listening for layer changes
+		_myOverviewChart.setLayers(null);
+
+		// and stop listening for projection changes
+		stopListeningToViewport();
+
 		if (_myPartMonitor != null)
 		{
 			_myPartMonitor.ditch();
