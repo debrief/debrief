@@ -422,10 +422,10 @@ public final class SensorContactWrapper extends
 			double rangeToUse = 0;
 
 			// do we have the range?
+			final WorldArea totalArea = new WorldArea(outerEnvelope);
+			totalArea.extend(_calculatedOrigin);
 			if (_range == null)
 			{
-				final WorldArea totalArea = new WorldArea(outerEnvelope);
-				totalArea.extend(_calculatedOrigin);
 
 				// just use the maximum dimension of the plot
 				rangeToUse = 2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
@@ -435,8 +435,35 @@ public final class SensorContactWrapper extends
 
 			// also do the far end
 			res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
+			
+			double maxLat = totalArea.getTopLeft().getLat();
+			double maxLon = totalArea.getTopRight().getLong();
+			double minLat = totalArea.getBottomRight().getLat();
+			double minLon = totalArea.getBottomLeft().getLong();
+			
+			if (res == null)
+			{
+				res = new WorldLocation(totalArea.getTopLeft().getLat(), totalArea
+						.getTopRight().getLong(), 0);
+			}
+			else if (res.getLat() > maxLat)
+			{
+				res.setLat(maxLat);
+			}
+			else if (res.getLat() < minLat)
+			{
+				res.setLat(minLat);
+			}
+			else if (res.getLong() > maxLon)
+			{
+				res.setLong(maxLon);
+			}
+			else if (res.getLong() < minLon)
+			{
+				res.setLong(minLon);
+			}
 		}
-
+		
 		return res;
 	}
 
@@ -606,7 +633,10 @@ public final class SensorContactWrapper extends
 			}
 
 			// draw the line
-			dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+			if (farEnd != null)
+			{
+				dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+			}
 
 			// only plot the label if we don't want it simple
 			if (!keep_simple)
