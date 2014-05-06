@@ -302,7 +302,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	{
 		// ok - update our chart to show the indicated plot.
 		_myOverviewChart.setLayers(provider);
-		_myOverviewChart.rescale();
+		if (provider != null)
+		{
+			_myOverviewChart.rescale();
+		}
 		_myOverviewChart.repaint();
 		// this.setPartName(parentPart.getTitle());
 	}
