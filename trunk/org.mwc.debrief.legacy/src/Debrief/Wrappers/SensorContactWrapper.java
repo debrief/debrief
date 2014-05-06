@@ -288,9 +288,9 @@ public final class SensorContactWrapper extends
 	}
 
 	public SensorContactWrapper(final String theTrack, final HiResDate theDtg,
-			final WorldDistance range, final Double brg, final Double brg2, final Double freq,
-			final WorldLocation origin, final Color theColor, final String labelStr, final int theStyle,
-			final String sensorName)
+			final WorldDistance range, final Double brg, final Double brg2,
+			final Double freq, final WorldLocation origin, final Color theColor,
+			final String labelStr, final int theStyle, final String sensorName)
 	{
 		this();
 
@@ -422,48 +422,56 @@ public final class SensorContactWrapper extends
 			double rangeToUse = 0;
 
 			// do we have the range?
-			final WorldArea totalArea = new WorldArea(outerEnvelope);
-			totalArea.extend(_calculatedOrigin);
 			if (_range == null)
 			{
+				final WorldArea totalArea = new WorldArea(outerEnvelope);
+				totalArea.extend(_calculatedOrigin);
 
 				// just use the maximum dimension of the plot
 				rangeToUse = 2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
+
+				double maxLat = totalArea.getTopLeft().getLat();
+				double maxLon = totalArea.getTopRight().getLong();
+				double minLat = totalArea.getBottomRight().getLat();
+				double minLon = totalArea.getBottomLeft().getLong();
+
+				// also do the far end
+				res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
+
+				// we may have failed = through trying to draw a monster sized line, do some fallback
+				if (res == null)
+				{
+					res = new WorldLocation(totalArea.getTopLeft().getLat(), totalArea
+							.getTopRight().getLong(), 0);
+				}
+				else if (res.getLat() > maxLat)
+				{
+					res.setLat(maxLat);
+				}
+				else if (res.getLat() < minLat)
+				{
+					res.setLat(minLat);
+				}
+				else if (res.getLong() > maxLon)
+				{
+					res.setLong(maxLon);
+				}
+				else if (res.getLong() < minLon)
+				{
+					res.setLong(minLon);
+				}
+
 			}
 			else
+			{
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
 
-			// also do the far end
-			res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
-			
-			double maxLat = totalArea.getTopLeft().getLat();
-			double maxLon = totalArea.getTopRight().getLong();
-			double minLat = totalArea.getBottomRight().getLat();
-			double minLon = totalArea.getBottomLeft().getLong();
-			
-			if (res == null)
-			{
-				res = new WorldLocation(totalArea.getTopLeft().getLat(), totalArea
-						.getTopRight().getLong(), 0);
+				// also do the far end
+				res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
 			}
-			else if (res.getLat() > maxLat)
-			{
-				res.setLat(maxLat);
-			}
-			else if (res.getLat() < minLat)
-			{
-				res.setLat(minLat);
-			}
-			else if (res.getLong() > maxLon)
-			{
-				res.setLong(maxLon);
-			}
-			else if (res.getLong() < minLon)
-			{
-				res.setLong(minLon);
-			}
+
 		}
-		
+
 		return res;
 	}
 
@@ -805,7 +813,8 @@ public final class SensorContactWrapper extends
 		if (wa != null)
 		{
 			// find out current course
-			final double course = MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
+			final double course = MWC.Algorithms.Conversions
+					.Rads2Degs(wa.getCourse());
 
 			// cool, we have a course - we can go for it. remember the bearings
 			final double bearing1 = getBearing();
