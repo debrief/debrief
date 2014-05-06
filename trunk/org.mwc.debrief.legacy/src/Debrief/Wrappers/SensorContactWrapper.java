@@ -145,6 +145,7 @@ import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
@@ -668,6 +669,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * method to reset the colour, so that we take that of our parent
 	 */
+  @FireReformatted
 	public final void resetColor()
 	{
 		setColor(null);
