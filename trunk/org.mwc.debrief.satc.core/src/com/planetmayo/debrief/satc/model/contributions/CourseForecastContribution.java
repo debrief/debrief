@@ -23,12 +23,17 @@ public class CourseForecastContribution extends BaseContribution
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		// create a bounded state representing our values
-		final CourseRange courseRange = new CourseRange(minCourse, maxCourse);
-		for (BoundedState state : space.getBoundedStatesBetween(startDate,
-				finishDate))
+		// verify that we have min and max values present
+		if ((minCourse != null) && (maxCourse != null))
 		{
-			state.constrainTo(courseRange);
+
+			// create a bounded state representing our values
+			final CourseRange courseRange = new CourseRange(minCourse, maxCourse);
+			for (BoundedState state : space.getBoundedStatesBetween(startDate,
+					finishDate))
+			{
+				state.constrainTo(courseRange);
+			}
 		}
 	}
 
