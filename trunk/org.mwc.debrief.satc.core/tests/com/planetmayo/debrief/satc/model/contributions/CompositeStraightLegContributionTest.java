@@ -13,7 +13,8 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("deprecation")
-public class CompositeStraightLegContributionTest extends ForecastContributionTestBase
+public class CompositeStraightLegContributionTest extends
+		ForecastContributionTestBase
 {
 
 	private static final String TEST_NAME_1 = "test_name_1";
@@ -70,6 +71,101 @@ public class CompositeStraightLegContributionTest extends ForecastContributionTe
 	}
 
 	@Test
+	public void testActUpon2() throws Exception
+	{
+		CompositeStraightLegForecastContribution contribution = (CompositeStraightLegForecastContribution) createContribution();
+		contribution.getCourse().setMinCourse(34.0);
+		contribution.getCourse().setMaxCourse(null);
+		contribution.getSpeed().setMaxSpeed(null);
+		ProblemSpace space = createTestSpace();
+		contribution.actUpon(space);
+		int inLegOne = 0;
+		int hasCourseBounds = 0;
+		int hasSpeedBounds = 0;
+		for (BoundedState state : space.states())
+		{
+			if (state.getMemberOf() != null)
+				if (state.getMemberOf().equals(TEST_NAME_1))
+					inLegOne++;
+			if (state.getCourse() != null)
+				hasCourseBounds++;
+			if (state.getSpeed() != null)
+				hasSpeedBounds++;
+		}
+		assertEquals(4, inLegOne);
+		assertEquals(0, hasCourseBounds);
+		assertEquals(0, hasSpeedBounds);
+
+		// provide the missing course maximum
+		contribution.getCourse().setMaxCourse(134.0);
+		space = createTestSpace();
+		contribution.actUpon(space);
+		inLegOne = 0;
+		hasCourseBounds = 0;
+		hasSpeedBounds = 0;
+		for (BoundedState state : space.states())
+		{
+			if (state.getMemberOf() != null)
+				if (state.getMemberOf().equals(TEST_NAME_1))
+					inLegOne++;
+			if (state.getCourse() != null)
+				hasCourseBounds++;
+			if (state.getSpeed() != null)
+				hasSpeedBounds++;
+		}
+		assertEquals(4, inLegOne);
+		assertEquals(4, hasCourseBounds);
+		assertEquals(0, hasSpeedBounds);
+
+		// provide the missing speed values
+		contribution.getSpeed().setMinSpeed(4.0);
+		contribution.getSpeed().setMaxSpeed(13.0);
+		space = createTestSpace();
+		contribution.actUpon(space);
+		inLegOne = 0;
+		hasCourseBounds = 0;
+		hasSpeedBounds = 0;
+		for (BoundedState state : space.states())
+		{
+			if (state.getMemberOf() != null)
+				if (state.getMemberOf().equals(TEST_NAME_1))
+					inLegOne++;
+			if (state.getCourse() != null)
+				hasCourseBounds++;
+			if (state.getSpeed() != null)
+				hasSpeedBounds++;
+		}
+
+		assertEquals(4, inLegOne);
+		assertEquals(4, hasCourseBounds);
+		assertEquals(4, hasSpeedBounds);
+
+
+		// lose a speed value
+		contribution.getSpeed().setMinSpeed(null);
+		contribution.getSpeed().setMaxSpeed(13.0);
+		space = createTestSpace();
+		contribution.actUpon(space);
+		inLegOne = 0;
+		hasCourseBounds = 0;
+		hasSpeedBounds = 0;
+		for (BoundedState state : space.states())
+		{
+			if (state.getMemberOf() != null)
+				if (state.getMemberOf().equals(TEST_NAME_1))
+					inLegOne++;
+			if (state.getCourse() != null)
+				hasCourseBounds++;
+			if (state.getSpeed() != null)
+				hasSpeedBounds++;
+		}
+
+		assertEquals(4, inLegOne);
+		assertEquals(4, hasCourseBounds);
+		assertEquals(0, hasSpeedBounds);
+	}
+
+	@Test
 	public void testOverlap() throws Exception
 	{
 		StraightLegForecastContribution contribution = (StraightLegForecastContribution) createContribution();
@@ -77,16 +173,20 @@ public class CompositeStraightLegContributionTest extends ForecastContributionTe
 		ProblemSpace space = createTestSpace();
 		contribution.actUpon(space);
 		boolean hasThrown = false;
-		try{
+		try
+		{
 			contribution2.actUpon(space);
 		}
-		catch(IncompatibleStateException re)
+		catch (IncompatibleStateException re)
 		{
-			assertEquals("Correct message provided", 
-					"We don't support overlapping legs. Old leg:test_name_1 New leg:test_name_2 state at:Thu Dec 27 01:50:00 GMT 2012", re.getMessage());
+			assertEquals(
+					"Correct message provided",
+					"We don't support overlapping legs. Old leg:test_name_1 New leg:test_name_2 state at:Thu Dec 27 01:50:00 GMT 2012",
+					re.getMessage());
 			hasThrown = true;
 		}
-		assertTrue("an exception should have been thrown, for overlapping legs", hasThrown);
+		assertTrue("an exception should have been thrown, for overlapping legs",
+				hasThrown);
 	}
 
 }
