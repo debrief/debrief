@@ -199,8 +199,8 @@ public abstract class BaseContribution extends ModelObject implements
 	public int compareTo(BaseContribution o)
 	{
 		// ok, what type am I?
-		int myScore = getScore();
-		int hisScore = o.getScore();
+		int myScore = getSortOrder();
+		int hisScore = o.getSortOrder();
 		if (myScore == hisScore)
 		{
 			// try the class names first, to group them
@@ -231,7 +231,11 @@ public abstract class BaseContribution extends ModelObject implements
 		return name;
 	}
 
-	protected int getScore()
+	/** determine the order in which the contributions are displayed in the View listing
+	 * 
+	 * @return
+	 */
+	protected int getSortOrder()
 	{
 		switch (getDataType())
 		{

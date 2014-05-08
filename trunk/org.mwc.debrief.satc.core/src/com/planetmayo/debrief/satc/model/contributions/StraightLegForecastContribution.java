@@ -120,7 +120,7 @@ public class StraightLegForecastContribution extends BaseContribution
 	}
 
 	@Override
-	protected int getScore()
+	protected int getSortOrder()
 	{
 		return MEASUREMENT_DEFAULT_SCORE + 1;
 	}
