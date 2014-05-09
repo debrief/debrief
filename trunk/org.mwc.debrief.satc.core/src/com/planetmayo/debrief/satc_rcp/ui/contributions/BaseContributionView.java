@@ -76,8 +76,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected Scale maxSlider;
 	protected Scale estimateSlider;
 
-	private DataBindingContext context;
-	private PropertyChangeListener titleChangeListener;
+	protected DataBindingContext context;
+	protected PropertyChangeListener titleChangeListener;
 
 	private final IContributions contributions;
 
