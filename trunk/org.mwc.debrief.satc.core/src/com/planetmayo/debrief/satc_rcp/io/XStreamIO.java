@@ -52,8 +52,8 @@ public class XStreamIO
 		aliasFor(xstream, RangeForecastContribution.class);
 		aliasFor(xstream, SpeedAnalysisContribution.class);
 		aliasFor(xstream, SpeedForecastContribution.class);
-		aliasFor(xstream, StraightLegForecastContribution.class);
 		aliasFor(xstream, CompositeStraightLegForecastContribution.class);
+		aliasFor(xstream, StraightLegForecastContribution.class);
 
 		xstream.alias("bmeasurement", BMeasurement.class);
 		xstream.alias("rorigin", ROrigin.class);

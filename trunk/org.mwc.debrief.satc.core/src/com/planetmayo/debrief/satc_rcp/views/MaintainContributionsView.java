@@ -49,6 +49,7 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
@@ -71,6 +72,7 @@ import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.ATBForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BaseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.CompositeStraightLegForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionView;
@@ -109,6 +111,8 @@ public class MaintainContributionsView extends ViewPart {
 				RangeForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(SpeedForecastContribution.class,
 				SpeedContributionView.class);
+		CONTRIBUTION_PANELS.put(CompositeStraightLegForecastContribution.class,
+				CompositeStraightLegForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(StraightLegForecastContribution.class,
 				StraightLegForecastContributionView.class);
 	}

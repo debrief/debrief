@@ -15,19 +15,19 @@ public class CompositeStraightLegForecastContribution extends
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/** the speed forecast
+
+	/**
+	 * the speed forecast
 	 * 
 	 */
 	private final SpeedForecastContribution _speed = new SpeedForecastContribution();
-	
-	/** the course forecast
+
+	/**
+	 * the course forecast
 	 * 
 	 */
 	private final CourseForecastContribution _course = new CourseForecastContribution();
 
-	
-	
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
@@ -68,7 +68,7 @@ public class CompositeStraightLegForecastContribution extends
 	{
 		// set the parent value
 		super.setFinishDate(newFinishDate);
-		
+
 		// now set the child values
 		_course.setFinishDate(newFinishDate);
 		_speed.setFinishDate(newFinishDate);
@@ -85,7 +85,8 @@ public class CompositeStraightLegForecastContribution extends
 		_speed.setStartDate(newStartDate);
 	}
 
-	/** get the course constraint
+	/**
+	 * get the course constraint
 	 * 
 	 * @return
 	 */
@@ -93,8 +94,9 @@ public class CompositeStraightLegForecastContribution extends
 	{
 		return _course;
 	}
-	
-	/** get the speed constraint
+
+	/**
+	 * get the speed constraint
 	 * 
 	 * @return
 	 */
@@ -108,10 +110,10 @@ public class CompositeStraightLegForecastContribution extends
 	{
 		// handle the straight leg component first
 		super.actUpon(space);
-		
+
 		// now apply the constraints from the speed forecast
 		_speed.actUpon(space);
-		
+
 		// and the course forecast
 		_course.actUpon(space);
 	}
@@ -120,9 +122,8 @@ public class CompositeStraightLegForecastContribution extends
 	protected double calcError(State thisState)
 	{
 		// combine the three errors
-		return super.calcError(thisState) + _course.calcError(thisState) + _speed.calcError(thisState);
+		return super.calcError(thisState) + _course.calcError(thisState)
+				+ _speed.calcError(thisState);
 	}
-	
-	
 
 }

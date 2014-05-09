@@ -45,6 +45,7 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
@@ -236,6 +237,10 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
 				+ "]", new StraightLegForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems), "icons/leg.png"));
+		parent.add(new DoIt(verb1
+				+ "Composite Straight Leg for period covered by [" + title + "]",
+				new CompositeStraightLegForecastContributionFromCuts(solution,
+						actionTitle, layers, validItems), "icons/leg.png"));
 
 	}
 
@@ -494,6 +499,31 @@ public class CreateSolutionFromSensorData implements
 		}
 	}
 
+	private class CompositeStraightLegForecastContributionFromCuts extends
+			ForecastContributionFromCuts
+	{
+		public CompositeStraightLegForecastContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		public CompositeStraightLegForecastContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				TimePeriod period)
+		{
+			super(existingSolution, title, theLayers, period);
+		}
+
+		@Override
+		protected BaseContribution getContribution()
+		{
+			return new CompositeStraightLegForecastContribution();
+		}
+
+	}
+
 	private class StraightLegForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
@@ -620,18 +650,20 @@ public class CreateSolutionFromSensorData implements
 				if (bmc != null)
 					_targetSolution.addContribution(bmc);
 			}
-			
-			// also, check that the maintain contributions window is open - the user is bound to be interested
+
+			// also, check that the maintain contributions window is open - the user
+			// is bound to be interested
 			CorePlugin.openView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 
 			// also, try to set this as the current scenario in Maintain Contribs
-			IViewPart aView = CorePlugin.findView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
-			if(aView != null)
+			IViewPart aView = CorePlugin
+					.findView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
+			if (aView != null)
 			{
 				MaintainContributionsView mv = (MaintainContributionsView) aView;
 				mv.setActiveSolver(_targetSolution.getSolver());
 			}
-			
+
 			return Status.OK_STATUS;
 		}
 
