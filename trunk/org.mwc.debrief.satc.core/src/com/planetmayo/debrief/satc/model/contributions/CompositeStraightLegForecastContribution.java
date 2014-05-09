@@ -20,20 +20,20 @@ public class CompositeStraightLegForecastContribution extends
 	 * the speed forecast
 	 * 
 	 */
-	private final SpeedForecastContribution _speed = new SpeedForecastContribution();
+	private final SpeedForecastContribution speed = new SpeedForecastContribution();
 
 	/**
 	 * the course forecast
 	 * 
 	 */
-	private final CourseForecastContribution _course = new CourseForecastContribution();
+	private final CourseForecastContribution course = new CourseForecastContribution();
 
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
 		super.addPropertyChangeListener(listener);
-		_course.addPropertyChangeListener(listener);
-		_speed.addPropertyChangeListener(listener);
+		course.addPropertyChangeListener(listener);
+		speed.addPropertyChangeListener(listener);
 
 	}
 
@@ -42,16 +42,16 @@ public class CompositeStraightLegForecastContribution extends
 			PropertyChangeListener listener)
 	{
 		super.addPropertyChangeListener(propertyName, listener);
-		_course.addPropertyChangeListener(propertyName, listener);
-		_speed.addPropertyChangeListener(propertyName, listener);
+		course.addPropertyChangeListener(propertyName, listener);
+		speed.addPropertyChangeListener(propertyName, listener);
 	}
 
 	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener)
 	{
 		super.removePropertyChangeListener(listener);
-		_course.removePropertyChangeListener(listener);
-		_speed.removePropertyChangeListener(listener);
+		course.removePropertyChangeListener(listener);
+		speed.removePropertyChangeListener(listener);
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class CompositeStraightLegForecastContribution extends
 			PropertyChangeListener listener)
 	{
 		super.removePropertyChangeListener(propertyName, listener);
-		_course.removePropertyChangeListener(propertyName, listener);
-		_speed.removePropertyChangeListener(propertyName, listener);
+		course.removePropertyChangeListener(propertyName, listener);
+		speed.removePropertyChangeListener(propertyName, listener);
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public class CompositeStraightLegForecastContribution extends
 		super.setFinishDate(newFinishDate);
 
 		// now set the child values
-		_course.setFinishDate(newFinishDate);
-		_speed.setFinishDate(newFinishDate);
+		course.setFinishDate(newFinishDate);
+		speed.setFinishDate(newFinishDate);
 	}
 
 	@Override
@@ -81,8 +81,8 @@ public class CompositeStraightLegForecastContribution extends
 		super.setStartDate(newStartDate);
 
 		// now set the child values
-		_course.setStartDate(newStartDate);
-		_speed.setStartDate(newStartDate);
+		course.setStartDate(newStartDate);
+		speed.setStartDate(newStartDate);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class CompositeStraightLegForecastContribution extends
 	 */
 	public CourseForecastContribution getCourse()
 	{
-		return _course;
+		return course;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class CompositeStraightLegForecastContribution extends
 	 */
 	public SpeedForecastContribution getSpeed()
 	{
-		return _speed;
+		return speed;
 	}
 
 	@Override
@@ -112,18 +112,19 @@ public class CompositeStraightLegForecastContribution extends
 		super.actUpon(space);
 
 		// now apply the constraints from the speed forecast
-		_speed.actUpon(space);
+		speed.actUpon(space);
 
 		// and the course forecast
-		_course.actUpon(space);
+		course.actUpon(space);
 	}
 
 	@Override
 	protected double calcError(State thisState)
 	{
 		// combine the three errors
-		return super.calcError(thisState) + _course.calcError(thisState)
-				+ _speed.calcError(thisState);
+		return super.calcError(thisState) + course.calcError(thisState)
+				+ speed.calcError(thisState);
 	}
+
 
 }
