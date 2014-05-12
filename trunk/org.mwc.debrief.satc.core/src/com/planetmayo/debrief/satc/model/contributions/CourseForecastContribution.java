@@ -43,7 +43,7 @@ public class CourseForecastContribution extends BaseContribution
 		double delta = 0;
 
 		// do we have an estimate?
-		if (getEstimate() != null)
+		if (estimate != null  && minCourse != null & maxCourse != null)
 		{
 			CourseRange cr = new CourseRange(minCourse, maxCourse);
 			delta = cr.calcErrorFor(this.getEstimate(), thisState.getCourse());
