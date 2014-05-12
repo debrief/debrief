@@ -74,10 +74,9 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		UIUtils.createLabel(bodyGroup, "MDA: ", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		Composite group2 = new Composite(bodyGroup, SWT.NONE);
 		group2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		group2.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
+		group2.setLayout(UIUtils.createGridLayoutWithoutMargins(3, false));
 		runMDACheckbox = new Button(group2, SWT.CHECK);
-		Label lbl = new Label(group2, SWT.NONE);
-		lbl.setText("(Run Manoeuvre Detection Algortihm)");
+		UIUtils.createLabel(bodyGroup, "(Auto-detect target manoeuvres) - NOT IMPLEMENTED", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 	}
 	
 	@Override

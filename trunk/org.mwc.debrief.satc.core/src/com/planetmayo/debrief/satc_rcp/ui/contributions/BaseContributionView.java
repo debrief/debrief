@@ -405,7 +405,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		bodyGroup.setLayout(new GridLayout(3, false));
 
 		UIUtils.createLabel(bodyGroup, "Name:", new GridData(70, SWT.DEFAULT));
-		UIUtils.createSpacer(bodyGroup, new GridData(95, SWT.DEFAULT));
+		UIUtils.createSpacer(bodyGroup, new GridData(45, SWT.DEFAULT));
 		contributionNameText = new Text(bodyGroup, SWT.BORDER);
 		contributionNameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 

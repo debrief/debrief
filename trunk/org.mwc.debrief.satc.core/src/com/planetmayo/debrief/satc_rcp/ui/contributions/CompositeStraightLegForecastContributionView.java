@@ -65,8 +65,8 @@ public class CompositeStraightLegForecastContributionView extends
 		initializeWidgets();
 		
 				
-		UIUtils.createLabel(bodyGroup, "Speed: (0-40kts)", new GridData(90, SWT.DEFAULT));
-		UIUtils.createSpacer(bodyGroup, new GridData(75, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Speed: (0-40kts)", new GridData(120, SWT.DEFAULT));
+		UIUtils.createSpacer(bodyGroup, new GridData(30, SWT.DEFAULT));
 		
 		// add the speed
 		Composite speed = new Composite(bodyGroup, SWT.NONE);
@@ -78,8 +78,8 @@ public class CompositeStraightLegForecastContributionView extends
 		speedEstimate = createSpeed(speed, "Estimate:");
 
 		// now add the course
-		UIUtils.createLabel(bodyGroup, "Course: (0-360°)", new GridData(90, SWT.DEFAULT));
-		UIUtils.createSpacer(bodyGroup, new GridData(75, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Course: (0-360°)", new GridData(120, SWT.DEFAULT));
+		UIUtils.createSpacer(bodyGroup, new GridData(30, SWT.DEFAULT));
 		
 		Composite course = new Composite(bodyGroup, SWT.NONE);
 		course.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
