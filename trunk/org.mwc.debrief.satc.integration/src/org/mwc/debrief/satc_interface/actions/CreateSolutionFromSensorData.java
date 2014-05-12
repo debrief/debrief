@@ -216,11 +216,20 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		DoIt wizardItem = new DoIt(
-				"Open Straight Leg Wizard for period covered by [" + title + "]",
-				new StraightLegWizardFromCuts(solution, actionTitle, layers, validItems),
-				"icons/wizard.png");
-		parent.add(wizardItem);
+		// NOTE: we've removed the composite wizard, since it clashed with our new strategy
+		// where we have NULL has default value for course/speed forecast attributes
+		//
+		// DoIt wizardItem = new DoIt(
+		// "Open Straight Leg Wizard for period covered by [" + title + "]",
+		// new StraightLegWizardFromCuts(solution, actionTitle, layers, validItems),
+		// "icons/wizard.png");
+		// parent.add(wizardItem);
+		// parent.add(new Separator());
+		
+		parent.add(new DoIt(verb1
+				+ "Composite Straight Leg for period covered by [" + title + "]",
+				new CompositeStraightLegForecastContributionFromCuts(solution,
+						actionTitle, layers, validItems), "icons/leg.png"));
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
@@ -237,10 +246,6 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
 				+ "]", new StraightLegForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems), "icons/leg.png"));
-		parent.add(new DoIt(verb1
-				+ "Composite Straight Leg for period covered by [" + title + "]",
-				new CompositeStraightLegForecastContributionFromCuts(solution,
-						actionTitle, layers, validItems), "icons/leg.png"));
 
 	}
 
@@ -446,6 +451,7 @@ public class CreateSolutionFromSensorData implements
 
 	}
 
+	@SuppressWarnings("unused")
 	private class StraightLegWizardFromCuts extends ForecastContributionFromCuts
 	{
 		private NewStraightLegWizard _wizard;
