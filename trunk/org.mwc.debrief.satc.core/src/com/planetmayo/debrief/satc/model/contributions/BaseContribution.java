@@ -37,8 +37,10 @@ public abstract class BaseContribution extends ModelObject implements
 
 	protected BaseContribution()
 	{
-		// give a default name
-		setName("auto_id:" + new Date().getTime());
+		// give a default name - we can't just rely on the DTG,
+		// because the composite straight leg editor generates
+		// several at once
+		setName("auto_id:" + new Date().getTime() + "+_" + (int)(Math.random() * 1000d));
 	}
 
 	/**
