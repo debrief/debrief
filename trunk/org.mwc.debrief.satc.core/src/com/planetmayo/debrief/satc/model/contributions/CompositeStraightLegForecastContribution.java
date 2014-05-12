@@ -30,6 +30,17 @@ public class CompositeStraightLegForecastContribution extends
 	 * 
 	 */
 	private final CourseForecastContribution course = new CourseForecastContribution();
+	
+	public CompositeStraightLegForecastContribution()
+	{
+		speed.setMinSpeed(null);
+		speed.setMaxSpeed(null);
+		speed.setEstimate(null);
+		course.setMinCourse(null);
+		course.setMaxCourse(null);
+		course.setEstimate(null);
+	}
+	
 
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener)
