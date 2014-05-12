@@ -154,23 +154,27 @@ public class CompositeStraightLegForecastContributionView extends
 		
 		ISWTObservableValue maxSpeedTextValue = bindSpeedValue(context, maxSpeed, maxSpeedValue);
 		
-		bindSpeedValue(context, speedEstimate, estimateSpeedValue);
+		ISWTObservableValue estimateSpeedTextValue = bindSpeedValue(context, speedEstimate, estimateSpeedValue);
 		
 		ISWTObservableValue minCourseTextValue = bindCourseValue(context, minCrse, minCourseValue);
 		
 		ISWTObservableValue maxCourseTextValue = bindCourseValue(context, maxCrse, maxCourseValue);
 		
-		bindCourseValue(context, crseEstimate, estimateCourseValue);
-
-		ControlDecorationSupport.create(new MinMaxValidator(
-				minSpeedTextValue, maxSpeedTextValue,
-				"Both max/min values must be present"), SWT.LEFT
-				| SWT.TOP);
+		ISWTObservableValue estimateCourseTextValue = bindCourseValue(context, crseEstimate, estimateCourseValue);
 		
-		ControlDecorationSupport.create(new MinMaxValidator(
-				minCourseTextValue, maxCourseTextValue,
-				"Both max/min values must be present"), SWT.LEFT
-				| SWT.TOP);
+		ControlDecorationSupport.create(new Validator(
+				minSpeedTextValue, maxSpeedTextValue, estimateSpeedTextValue,
+				"Both max/min values must be present",
+				"Max value must be more or equals than min value",
+				"Estimate value must be between min and max"), 
+				SWT.LEFT | SWT.TOP);
+		
+		ControlDecorationSupport.create(new Validator(
+				minCourseTextValue, maxCourseTextValue, estimateCourseTextValue,
+				"Both max/min values must be present",
+				"Max value must be more or equals than min value",
+				"Estimate value must be between min and max"), 
+				SWT.LEFT | SWT.TOP);
 		
 	}
 
@@ -326,20 +330,27 @@ public class CompositeStraightLegForecastContributionView extends
 		}
 
 	}
-
-	private class MinMaxValidator extends MultiValidator
+		
+	private class Validator extends MultiValidator
 	{
 
 		private IObservableValue minValue;
 		private IObservableValue maxValue;
-		private String message;
+		private IObservableValue estimateValue;
+		private String message1;
+		private String message2;
+		private String message3;
 
-		public MinMaxValidator(IObservableValue minValue,
-				IObservableValue maxValue, String message)
+		public Validator(IObservableValue minValue,
+				IObservableValue maxValue, IObservableValue estimateValue,
+				String message1, String message2, String message3)
 		{
 			this.minValue = minValue;
 			this.maxValue = maxValue;
-			this.message = message;
+			this.estimateValue = estimateValue;
+			this.message1 = message1;
+			this.message2 = message2;
+			this.message3 = message3;
 		}
 
 		@Override
@@ -347,10 +358,44 @@ public class CompositeStraightLegForecastContributionView extends
 		{
 			String min = (String) minValue.getValue();
 			String max = (String) maxValue.getValue();
-			if (  ( (min == null || min.isEmpty()) && (max != null && !max.isEmpty()) ) ||
-					( (max == null || max.isEmpty()) && (min != null && !min.isEmpty()) ) )
+			String estimate = (String) estimateValue.getValue();
+			if (estimate != null && !estimate.isEmpty())
 			{
-				return ValidationStatus.error(message);
+				if (min == null || min.isEmpty())
+				{
+					return ValidationStatus.error(message1);
+				}
+				if (max == null || max.isEmpty())
+				{
+					return ValidationStatus.error(message1);
+				}
+			}
+			else
+			{
+				if ((max != null && !max.isEmpty()) && (min == null || min.isEmpty()))
+				{
+					return ValidationStatus.error(message1);
+				}
+				if ((min != null && !min.isEmpty()) && (max == null || max.isEmpty()))
+				{
+					return ValidationStatus.error(message1);
+				}
+			}
+			
+			if (max != null && !max.isEmpty() && min != null && !min.isEmpty())
+			{
+				Double dMin = new Double(min);
+				Double dMax = new Double(max);
+				if (dMin > dMax)
+				{
+					return ValidationStatus.error(message2);
+				}
+				if (estimate != null && !estimate.isEmpty()) {
+					Double dEstimate = new Double(estimate);
+					if (dEstimate < dMin || dEstimate > dMax) {
+						return ValidationStatus.error(message3);
+					}
+				}
 			}
 			return ValidationStatus.ok();
 		}
