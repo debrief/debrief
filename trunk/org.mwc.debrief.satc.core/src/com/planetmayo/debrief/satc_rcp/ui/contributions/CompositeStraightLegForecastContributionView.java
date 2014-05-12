@@ -1,7 +1,10 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import java.math.BigDecimal;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -24,6 +27,7 @@ import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForec
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class CompositeStraightLegForecastContributionView extends
@@ -146,29 +150,17 @@ public class CompositeStraightLegForecastContributionView extends
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
 				contribution, CompositeStraightLegForecastContribution.SPEED + "." + SpeedForecastContribution.MAX_SPEED);
 				
-		ISWTObservableValue minSpeedTextValue = WidgetProperties.text(SWT.Modify).
-			  observe(minSpeed);
-		context.bindValue(minSpeedTextValue, minSpeedValue, null, null);
+		ISWTObservableValue minSpeedTextValue = bindSpeedValue(context, minSpeed, minSpeedValue);
 		
-		ISWTObservableValue maxSpeedTextValue = WidgetProperties.text(SWT.Modify).
-			  observe(maxSpeed);
-		context.bindValue(maxSpeedTextValue, maxSpeedValue, null, null);
+		ISWTObservableValue maxSpeedTextValue = bindSpeedValue(context, maxSpeed, maxSpeedValue);
 		
-		ISWTObservableValue estimateSpeedTextValue = WidgetProperties.text(SWT.Modify).
-			  observe(speedEstimate);
-		context.bindValue(estimateSpeedTextValue, estimateSpeedValue, null, null);
+		bindSpeedValue(context, speedEstimate, estimateSpeedValue);
 		
-		ISWTObservableValue minCourseTextValue = WidgetProperties.text(SWT.Modify).
-			  observe(minCrse);
-		context.bindValue(minCourseTextValue, minCourseValue, null, null);
+		ISWTObservableValue minCourseTextValue = bindCourseValue(context, minCrse, minCourseValue);
 		
-		ISWTObservableValue maxCourseTextValue = WidgetProperties.text(SWT.Modify).
-			  observe(maxCrse);
-		context.bindValue(maxCourseTextValue, maxCourseValue, null, null);
+		ISWTObservableValue maxCourseTextValue = bindCourseValue(context, maxCrse, maxCourseValue);
 		
-		ISWTObservableValue estimateCourseTextValue = WidgetProperties.text(SWT.Modify).
-			  observe(crseEstimate);
-		context.bindValue(estimateCourseTextValue, estimateCourseValue, null, null);
+		bindCourseValue(context, crseEstimate, estimateCourseValue);
 
 		ControlDecorationSupport.create(new MinMaxValidator(
 				minSpeedTextValue, maxSpeedTextValue,
@@ -180,6 +172,38 @@ public class CompositeStraightLegForecastContributionView extends
 				"Both max/min values must be present"), SWT.LEFT
 				| SWT.TOP);
 		
+	}
+
+	private ISWTObservableValue bindSpeedValue(DataBindingContext context,
+			Text speed, IObservableValue observableSpeedValue)
+	{
+		ISWTObservableValue speedTextValue = WidgetProperties.text(SWT.FocusOut)
+				.observe(speed);
+		IConverter modelToUI = new ModelToUISpeedConverter();
+		
+		IConverter uiToModel = new UIToModelSpeedConverter();
+		
+		context.bindValue(speedTextValue, observableSpeedValue,
+				UIUtils.converterStrategy(uiToModel),
+				UIUtils.converterStrategy(modelToUI));
+		
+		return speedTextValue;
+	}
+	
+	private ISWTObservableValue bindCourseValue(DataBindingContext context,
+			Text course, IObservableValue observableCourseValue)
+	{
+		ISWTObservableValue courseTextValue = WidgetProperties.text(SWT.FocusOut)
+				.observe(course);
+		IConverter modelToUI = new ModelToUICourseConverter();
+		
+		IConverter uiToModel = new UIToModelCourseConverter();
+		
+		context.bindValue(courseTextValue, observableCourseValue,
+				UIUtils.converterStrategy(uiToModel),
+				UIUtils.converterStrategy(modelToUI));
+		
+		return courseTextValue;
 	}
 
 	@Override
@@ -332,4 +356,119 @@ public class CompositeStraightLegForecastContributionView extends
 		}
 
 	}
+	
+	private class ModelToUISpeedConverter implements IConverter
+	{
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+
+		@Override
+		public Object getFromType()
+		{
+			return Double.class;
+		}
+
+		@Override
+		public Object convert(Object fromObject)
+		{
+			if (fromObject == null)
+			{
+				return null;
+			}
+			double msec = ((Double) fromObject).doubleValue();
+			double kts = GeoSupport.MSec2kts(msec);
+			BigDecimal temp = BigDecimal.valueOf(kts).setScale(1, BigDecimal.ROUND_HALF_UP);
+			return temp.toString();
+		}
+	}
+
+	private class ModelToUICourseConverter implements IConverter
+	{
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+
+		@Override
+		public Object getFromType()
+		{
+			return Double.class;
+		}
+
+		@Override
+		public Object convert(Object fromObject)
+		{
+			if (fromObject == null)
+			{
+				return null;
+			}
+			double rad = ((Double) fromObject).doubleValue();
+			double degree = Math.toDegrees(rad);
+			BigDecimal temp = BigDecimal.valueOf(degree).setScale(0, BigDecimal.ROUND_HALF_UP);
+			return temp.toString();
+		}
+	}
+	private class UIToModelSpeedConverter implements IConverter
+	{
+		
+		@Override
+		public Object getToType()
+		{
+			return Double.class;
+		}
+		
+		@Override
+		public Object getFromType()
+		{
+			return String.class;
+		}
+		
+		@Override
+		public Object convert(Object fromObject)
+		{
+			String s = (String) fromObject;
+			if (fromObject == null || s.isEmpty()) {
+				return null;
+			}
+			double kts = new Double((String)fromObject).doubleValue();
+			double msec = GeoSupport.kts2MSec(kts);
+			return new Double(msec);
+		}
+
+	}
+	
+	private class UIToModelCourseConverter implements IConverter
+	{
+		
+		@Override
+		public Object getToType()
+		{
+			return Double.class;
+		}
+		
+		@Override
+		public Object getFromType()
+		{
+			return String.class;
+		}
+		
+		@Override
+		public Object convert(Object fromObject)
+		{
+			String s = (String) fromObject;
+			if (fromObject == null || s.isEmpty()) {
+				return null;
+			}
+			double degree = new Double((String)fromObject).doubleValue();
+			double rad = Math.toRadians(degree);
+			return new Double(rad);
+		}
+
+	}
+
+	
 }
