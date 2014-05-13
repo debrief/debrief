@@ -165,14 +165,14 @@ public class CompositeStraightLegForecastContributionView extends
 		ControlDecorationSupport.create(new Validator(
 				minSpeedTextValue, maxSpeedTextValue, estimateSpeedTextValue,
 				"Both max/min values must be present",
-				"Max value must be more or equals than min value",
+				"Max value must be greater than or equal to the min value",
 				"Estimate value must be between min and max"), 
 				SWT.LEFT | SWT.TOP);
 		
 		ControlDecorationSupport.create(new Validator(
 				minCourseTextValue, maxCourseTextValue, estimateCourseTextValue,
 				"Both max/min values must be present",
-				"Max value must be more or equals than min value",
+				"Max value must be greater than or equal to the min value",
 				"Estimate value must be between min and max"), 
 				SWT.LEFT | SWT.TOP);
 		
@@ -337,20 +337,20 @@ public class CompositeStraightLegForecastContributionView extends
 		private IObservableValue minValue;
 		private IObservableValue maxValue;
 		private IObservableValue estimateValue;
-		private String message1;
-		private String message2;
-		private String message3;
+		private String bothPresentMessage;
+		private String maxOverMinMessage;
+		private String estimateInRangeMessage;
 
 		public Validator(IObservableValue minValue,
 				IObservableValue maxValue, IObservableValue estimateValue,
-				String message1, String message2, String message3)
+				String bothPresentMessage, String maxOverMinMessage, String estimateInRangeMessage)
 		{
 			this.minValue = minValue;
 			this.maxValue = maxValue;
 			this.estimateValue = estimateValue;
-			this.message1 = message1;
-			this.message2 = message2;
-			this.message3 = message3;
+			this.bothPresentMessage = bothPresentMessage;
+			this.maxOverMinMessage = maxOverMinMessage;
+			this.estimateInRangeMessage = estimateInRangeMessage;
 		}
 
 		@Override
@@ -363,22 +363,22 @@ public class CompositeStraightLegForecastContributionView extends
 			{
 				if (min == null || min.isEmpty())
 				{
-					return ValidationStatus.error(message1);
+					return ValidationStatus.error(bothPresentMessage);
 				}
 				if (max == null || max.isEmpty())
 				{
-					return ValidationStatus.error(message1);
+					return ValidationStatus.error(bothPresentMessage);
 				}
 			}
 			else
 			{
 				if ((max != null && !max.isEmpty()) && (min == null || min.isEmpty()))
 				{
-					return ValidationStatus.error(message1);
+					return ValidationStatus.error(bothPresentMessage);
 				}
 				if ((min != null && !min.isEmpty()) && (max == null || max.isEmpty()))
 				{
-					return ValidationStatus.error(message1);
+					return ValidationStatus.error(bothPresentMessage);
 				}
 			}
 			
@@ -388,12 +388,12 @@ public class CompositeStraightLegForecastContributionView extends
 				Double dMax = new Double(max);
 				if (dMin > dMax)
 				{
-					return ValidationStatus.error(message2);
+					return ValidationStatus.error(maxOverMinMessage);
 				}
 				if (estimate != null && !estimate.isEmpty()) {
 					Double dEstimate = new Double(estimate);
 					if (dEstimate < dMin || dEstimate > dMax) {
-						return ValidationStatus.error(message3);
+						return ValidationStatus.error(estimateInRangeMessage);
 					}
 				}
 			}
