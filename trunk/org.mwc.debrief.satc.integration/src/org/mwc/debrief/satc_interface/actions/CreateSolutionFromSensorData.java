@@ -155,7 +155,7 @@ public class CreateSolutionFromSensorData implements
 										theLayers, period), "icons/direction.png"));
 						parent.add(new DoIt("Add Straight Leg for period covered by ["
 								+ thisItem.getName() + "]",
-								new StraightLegForecastContributionFromCuts(solution,
+								new CompositeStraightLegForecastContributionFromCuts(solution,
 										actionTitle, theLayers, period), "icons/leg.png"));
 					}
 				}
@@ -188,11 +188,11 @@ public class CreateSolutionFromSensorData implements
 					thisMenu.add(thisD);
 
 					// add the child items
-					addItemsTo(layer, thisD, validCuts, title, null, "");
+					addItemsTo(layer, thisD, validCuts, title, null, "New ");
 				}
 			}
 
-			DoIt wizardItem = new DoIt("Create new scenario from these cuts",
+			DoIt wizardItem = new DoIt("Create new scenario from these bearings",
 					new BearingMeasurementContributionFromCuts(null, title, theLayers,
 							validCuts)
 					{
@@ -200,7 +200,6 @@ public class CreateSolutionFromSensorData implements
 						@Override
 						public String getContributionName()
 						{
-
 							return "Bearing data";
 						}
 					}, "icons/calculator.gif");
@@ -226,14 +225,15 @@ public class CreateSolutionFromSensorData implements
 		// parent.add(wizardItem);
 		// parent.add(new Separator());
 		
+		parent.add(new DoIt("Contribute selected bearings to the scenario",
+				new BearingMeasurementContributionFromCuts(solution, actionTitle,
+						layers, validItems), "icons/bearings.gif"));
+		parent.add(new Separator());
 		parent.add(new DoIt(verb1
-				+ "Composite Straight Leg for period covered by [" + title + "]",
+				+ "Straight Leg for period covered by [" + title + "]",
 				new CompositeStraightLegForecastContributionFromCuts(solution,
 						actionTitle, layers, validItems), "icons/leg.png"));
 		parent.add(new Separator());
-		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
-				new BearingMeasurementContributionFromCuts(solution, actionTitle,
-						layers, validItems), "icons/bearings.gif"));
 		parent.add(new DoIt(verb1 + "Speed Forecast for period covered by ["
 				+ title + "]", new SpeedForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems), "icons/speed.png"));
@@ -243,9 +243,9 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Course Forecast for period covered by ["
 				+ title + "]", new CourseForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems), "icons/direction.png"));
-		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
-				+ "]", new StraightLegForecastContributionFromCuts(solution,
-				actionTitle, layers, validItems), "icons/leg.png"));
+//		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
+//				+ "]", new StraightLegForecastContributionFromCuts(solution,
+//				actionTitle, layers, validItems), "icons/leg.png"));
 
 	}
 
@@ -530,6 +530,7 @@ public class CreateSolutionFromSensorData implements
 
 	}
 
+	@SuppressWarnings("unused")
 	private class StraightLegForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
