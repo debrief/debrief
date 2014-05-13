@@ -443,6 +443,14 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				bodyGroup.setVisible(!data.exclude);
 				controlParent.layout(new Control[]
 				{ mainGroup });
+				if (controlParent.getParent() != null
+						&& controlParent.getParent().getParent() != null)
+				{
+					controlParent.getParent().getParent().layout(true, true);
+					controlParent.getParent().getParent().redraw();
+					controlParent.getParent().getParent().update();
+				}
+
 			}
 		});
 
