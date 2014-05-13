@@ -24,6 +24,7 @@ package com.planetmayo.debrief.satc.util.calculator;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.GeneralPath;
+import java.io.IOException;
 import java.text.Format;
 import javax.measure.unit.NonSI;
 import static java.lang.Math.*;
@@ -1226,7 +1227,16 @@ public class FastGeodeticCalculator implements GeodeticCalculator {
             }
             buffer.nextLine();
         }
-        return buffer.toString();
+        String res = buffer.toString();
+        try
+				{
+					buffer.close();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+        return res;
     }
 }
 

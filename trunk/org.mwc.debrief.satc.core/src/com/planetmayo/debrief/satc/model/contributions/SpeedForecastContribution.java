@@ -27,12 +27,17 @@ public class SpeedForecastContribution extends BaseContribution
 	public void actUpon(final ProblemSpace space)
 			throws IncompatibleStateException
 	{
-		// create a bounded state representing our values
-		final SpeedRange speedRange = new SpeedRange(getMinSpeed(), getMaxSpeed());
-		for (BoundedState state : space.getBoundedStatesBetween(startDate,
-				finishDate))
+
+		// check that speed values are present
+		if ((minSpeed != null) && (maxSpeed != null))
 		{
-			state.constrainTo(speedRange);
+			// create a bounded state representing our values
+			final SpeedRange speedRange = new SpeedRange(getMinSpeed(), getMaxSpeed());
+			for (BoundedState state : space.getBoundedStatesBetween(startDate,
+					finishDate))
+			{
+				state.constrainTo(speedRange);
+			}
 		}
 	}
 
@@ -44,10 +49,10 @@ public class SpeedForecastContribution extends BaseContribution
 		if (getEstimate() != null)
 		{
 			delta = this.getEstimate() - thisState.getSpeed();
-			
+
 			// ok - we 'normalise' this speed according to the max/min
 			Double limit;
-			
+
 			// is the state lower than the estimate?
 			if (delta > 0)
 			{
@@ -59,7 +64,7 @@ public class SpeedForecastContribution extends BaseContribution
 				// higher, use max
 				limit = getMaxSpeed();
 			}
-			
+
 			// do we have a relevant limit?
 			if (limit != null)
 			{

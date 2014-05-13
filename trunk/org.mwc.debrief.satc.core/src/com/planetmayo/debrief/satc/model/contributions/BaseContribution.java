@@ -37,8 +37,10 @@ public abstract class BaseContribution extends ModelObject implements
 
 	protected BaseContribution()
 	{
-		// give a default name
-		setName("auto_id:" + new Date().getTime());
+		// give a default name - we can't just rely on the DTG,
+		// because the composite straight leg editor generates
+		// several at once
+		setName("auto_id:" + new Date().getTime() + "+_" + (int)(Math.random() * 1000d));
 	}
 
 	/**
@@ -199,8 +201,8 @@ public abstract class BaseContribution extends ModelObject implements
 	public int compareTo(BaseContribution o)
 	{
 		// ok, what type am I?
-		int myScore = getScore();
-		int hisScore = o.getScore();
+		int myScore = getSortOrder();
+		int hisScore = o.getSortOrder();
 		if (myScore == hisScore)
 		{
 			// try the class names first, to group them
@@ -231,7 +233,11 @@ public abstract class BaseContribution extends ModelObject implements
 		return name;
 	}
 
-	protected int getScore()
+	/** determine the order in which the contributions are displayed in the View listing
+	 * 
+	 * @return
+	 */
+	protected int getSortOrder()
 	{
 		switch (getDataType())
 		{

@@ -76,8 +76,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected Scale maxSlider;
 	protected Scale estimateSlider;
 
-	private DataBindingContext context;
-	private PropertyChangeListener titleChangeListener;
+	protected DataBindingContext context;
+	protected PropertyChangeListener titleChangeListener;
 
 	private final IContributions contributions;
 
@@ -405,7 +405,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		bodyGroup.setLayout(new GridLayout(3, false));
 
 		UIUtils.createLabel(bodyGroup, "Name:", new GridData(70, SWT.DEFAULT));
-		UIUtils.createSpacer(bodyGroup, new GridData(95, SWT.DEFAULT));
+		UIUtils.createSpacer(bodyGroup, new GridData(45, SWT.DEFAULT));
 		contributionNameText = new Text(bodyGroup, SWT.BORDER);
 		contributionNameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
@@ -443,6 +443,14 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				bodyGroup.setVisible(!data.exclude);
 				controlParent.layout(new Control[]
 				{ mainGroup });
+				if (controlParent.getParent() != null
+						&& controlParent.getParent().getParent() != null)
+				{
+					controlParent.getParent().getParent().layout(true, true);
+					controlParent.getParent().getParent().redraw();
+					controlParent.getParent().getParent().update();
+				}
+
 			}
 		});
 

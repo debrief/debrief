@@ -110,7 +110,15 @@ public class StraightLegForecastContribution extends BaseContribution
 	@Override
 	protected int compareEqualClass(BaseContribution o)
 	{
-		return getStartDate().compareTo(o.getStartDate());
+		int res =getStartDate().compareTo(o.getStartDate());
+		
+		if(res == 0)
+		{
+			// ok, have to compare names
+			res = getName().compareTo(o.getName());
+		}
+		
+		return res;
 	}
 	
 	@Override
@@ -120,7 +128,7 @@ public class StraightLegForecastContribution extends BaseContribution
 	}
 
 	@Override
-	protected int getScore()
+	protected int getSortOrder()
 	{
 		return MEASUREMENT_DEFAULT_SCORE + 1;
 	}

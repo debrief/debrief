@@ -45,6 +45,7 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
@@ -154,7 +155,7 @@ public class CreateSolutionFromSensorData implements
 										theLayers, period), "icons/direction.png"));
 						parent.add(new DoIt("Add Straight Leg for period covered by ["
 								+ thisItem.getName() + "]",
-								new StraightLegForecastContributionFromCuts(solution,
+								new CompositeStraightLegForecastContributionFromCuts(solution,
 										actionTitle, theLayers, period), "icons/leg.png"));
 					}
 				}
@@ -187,11 +188,11 @@ public class CreateSolutionFromSensorData implements
 					thisMenu.add(thisD);
 
 					// add the child items
-					addItemsTo(layer, thisD, validCuts, title, null, "");
+					addItemsTo(layer, thisD, validCuts, title, null, "New ");
 				}
 			}
 
-			DoIt wizardItem = new DoIt("Create new scenario from these cuts",
+			DoIt wizardItem = new DoIt("Create new scenario from these bearings",
 					new BearingMeasurementContributionFromCuts(null, title, theLayers,
 							validCuts)
 					{
@@ -199,7 +200,6 @@ public class CreateSolutionFromSensorData implements
 						@Override
 						public String getContributionName()
 						{
-
 							return "Bearing data";
 						}
 					}, "icons/calculator.gif");
@@ -215,15 +215,25 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		DoIt wizardItem = new DoIt(
-				"Open Straight Leg Wizard for period covered by [" + title + "]",
-				new StraightLegWizardFromCuts(solution, actionTitle, layers, validItems),
-				"icons/wizard.png");
-		parent.add(wizardItem);
-		parent.add(new Separator());
-		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
+		// NOTE: we've removed the composite wizard, since it clashed with our new strategy
+		// where we have NULL has default value for course/speed forecast attributes
+		//
+		// DoIt wizardItem = new DoIt(
+		// "Open Straight Leg Wizard for period covered by [" + title + "]",
+		// new StraightLegWizardFromCuts(solution, actionTitle, layers, validItems),
+		// "icons/wizard.png");
+		// parent.add(wizardItem);
+		// parent.add(new Separator());
+		
+		parent.add(new DoIt("Contribute selected bearings to the scenario",
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
 						layers, validItems), "icons/bearings.gif"));
+		parent.add(new Separator());
+		parent.add(new DoIt(verb1
+				+ "Straight Leg for period covered by [" + title + "]",
+				new CompositeStraightLegForecastContributionFromCuts(solution,
+						actionTitle, layers, validItems), "icons/leg.png"));
+		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Speed Forecast for period covered by ["
 				+ title + "]", new SpeedForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems), "icons/speed.png"));
@@ -233,9 +243,9 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Course Forecast for period covered by ["
 				+ title + "]", new CourseForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems), "icons/direction.png"));
-		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
-				+ "]", new StraightLegForecastContributionFromCuts(solution,
-				actionTitle, layers, validItems), "icons/leg.png"));
+//		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
+//				+ "]", new StraightLegForecastContributionFromCuts(solution,
+//				actionTitle, layers, validItems), "icons/leg.png"));
 
 	}
 
@@ -441,6 +451,7 @@ public class CreateSolutionFromSensorData implements
 
 	}
 
+	@SuppressWarnings("unused")
 	private class StraightLegWizardFromCuts extends ForecastContributionFromCuts
 	{
 		private NewStraightLegWizard _wizard;
@@ -494,6 +505,32 @@ public class CreateSolutionFromSensorData implements
 		}
 	}
 
+	private class CompositeStraightLegForecastContributionFromCuts extends
+			ForecastContributionFromCuts
+	{
+		public CompositeStraightLegForecastContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		public CompositeStraightLegForecastContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				TimePeriod period)
+		{
+			super(existingSolution, title, theLayers, period);
+		}
+
+		@Override
+		protected BaseContribution getContribution()
+		{
+			return new CompositeStraightLegForecastContribution();
+		}
+
+	}
+
+	@SuppressWarnings("unused")
 	private class StraightLegForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
@@ -620,18 +657,20 @@ public class CreateSolutionFromSensorData implements
 				if (bmc != null)
 					_targetSolution.addContribution(bmc);
 			}
-			
-			// also, check that the maintain contributions window is open - the user is bound to be interested
+
+			// also, check that the maintain contributions window is open - the user
+			// is bound to be interested
 			CorePlugin.openView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 
 			// also, try to set this as the current scenario in Maintain Contribs
-			IViewPart aView = CorePlugin.findView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
-			if(aView != null)
+			IViewPart aView = CorePlugin
+					.findView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
+			if (aView != null)
 			{
 				MaintainContributionsView mv = (MaintainContributionsView) aView;
 				mv.setActiveSolver(_targetSolution.getSolver());
 			}
-			
+
 			return Status.OK_STATUS;
 		}
 

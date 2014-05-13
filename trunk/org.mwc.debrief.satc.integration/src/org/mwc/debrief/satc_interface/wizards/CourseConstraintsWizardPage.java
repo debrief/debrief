@@ -161,11 +161,14 @@ public class CourseConstraintsWizardPage extends CoreEditableWizardPage
 	public CourseConstraintsWizardPage(final ISelection selection,
 			CourseForecastContribution course)
 	{
-		super(selection, "coursePage", "Add Course Constraints",
+		super(
+				selection,
+				"coursePage",
+				"Add Course Constraints",
 				"If you wish to provide a course constraint for this straight leg, specify it below",
 				"images/scale_wizard.gif", null);
 		this.course = course;
-		
+
 	}
 
 	@Override

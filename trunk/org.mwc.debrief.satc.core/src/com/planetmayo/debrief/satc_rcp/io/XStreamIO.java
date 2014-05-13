@@ -17,6 +17,7 @@ import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
@@ -51,6 +52,7 @@ public class XStreamIO
 		aliasFor(xstream, RangeForecastContribution.class);
 		aliasFor(xstream, SpeedAnalysisContribution.class);
 		aliasFor(xstream, SpeedForecastContribution.class);
+		aliasFor(xstream, CompositeStraightLegForecastContribution.class);
 		aliasFor(xstream, StraightLegForecastContribution.class);
 
 		xstream.alias("bmeasurement", BMeasurement.class);
