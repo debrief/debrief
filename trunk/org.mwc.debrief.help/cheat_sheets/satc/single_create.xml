@@ -91,7 +91,7 @@
          other words, the target maintains course and speed through the period of interest.  That information is useful to the 
          TMA algorithms.  Provide this information to the TMA algorithm by right-clicking once again on the <b>Sensor:Plain (11 items)</b> item
          in the <b>Layer Manager</b>, then browse down the menu to <b>Semi Auto TMA</b>, then <b>Add to Single Leg</b>. From the 
-         menu that appears, select <b>Straight Leg for period covered by [sensor cuts]</b>. From the dialog that opens, name the contribution as <b>Leg limits</b>
+         menu that appears, select <b>Composite Straight Leg for period covered by [sensor cuts]</b>. From the dialog that opens, name the contribution as <b>Leg limits</b>         
       </description>
    </item>
    <item
