@@ -87,7 +87,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
 		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
-		BaseLayer.ProvidesRange, ISecondaryTrack,  Editable.DoNoInspectChildren, NonColoredWatchable
+		BaseLayer.ProvidesRange, ISecondaryTrack, NonColoredWatchable
 {
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -289,7 +289,7 @@ public class SATC_Solution extends BaseLayer implements
 	 * 
 	 */
 	@Override
-	public Enumeration<Editable> elements()
+	public Enumeration<Editable> segments()
 	{
 		Vector<Editable> res = new Vector<Editable>();
 
@@ -1301,5 +1301,4 @@ public class SATC_Solution extends BaseLayer implements
 		}
 
 	}
-
 }

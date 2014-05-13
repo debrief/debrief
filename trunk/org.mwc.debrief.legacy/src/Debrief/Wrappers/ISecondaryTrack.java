@@ -11,6 +11,6 @@ public interface ISecondaryTrack extends WatchableList {
 	 * 
 	 * @return
 	 */
-	Enumeration<Editable> elements();
+	Enumeration<Editable> segments();
 
 }

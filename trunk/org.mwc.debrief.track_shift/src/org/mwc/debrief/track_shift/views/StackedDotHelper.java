@@ -126,7 +126,7 @@ public final class StackedDotHelper
 								// right, get the track segment and fix nearest to
 								// this
 								// DTG
-								final Enumeration<Editable> trkData = targetTrack.elements();
+								final Enumeration<Editable> trkData = targetTrack.segments();
 								final Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
 
 								while (trkData.hasMoreElements())
