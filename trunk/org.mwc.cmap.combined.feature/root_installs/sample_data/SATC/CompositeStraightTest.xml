@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Fri May 09 13:41:09 BST 2014" Name="Debrief Plot" PlotId="1369149093378">
+<plot Created="Tue May 13 12:30:12 BST 2014" Name="Debrief Plot" PlotId="1369149093378">
 <details Text="Saved with Debrief version dated Fri May 09 12:06:13 BST 2014"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -3876,7 +3876,7 @@
 </fix>
 </TrackSegment>
 </track>
-<satc_solution LiveRunning="true" NAME="121213.14" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="121213.14" OnlyPlotEnds="true" ShowBounds="false" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<task version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -5117,7 +5117,7 @@
       <active>true</active>
       <weight>5</weight>
       <startDate>2010-01-12 12:13:14.0 UTC</startDate>
-      <finishDate>2010-01-12 13:13:14.0 UTC</finishDate>
+      <finishDate>2010-01-12 12:31:14.0 UTC</finishDate>
       <speed>
         <name>auto_id:1399636208329</name>
         <active>true</active>
@@ -5158,10 +5158,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="0.0565565" Long="-30.1167012"/>
+<shortLocation Depth="0.000" Lat="0.0540348" Long="-30.0968527"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="-0.1125498" Long="-30.0559583"/>
+<shortLocation Depth="0.000" Lat="-0.0906340" Long="-29.9753207"/>
 </br>
 </projection>
 <gui>
