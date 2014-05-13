@@ -183,14 +183,14 @@ public class MaintainContributionsView extends ViewPart {
 	}
 
 	private void fillAnalystContributionsGroup(Composite parent) {
-		GridLayout layout = new GridLayout(3, false);
+		GridLayout layout = new GridLayout(4, false);
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;
 		Composite header = UIUtils.createEmptyComposite(parent, layout,
 				new GridData(GridData.FILL_HORIZONTAL));
-		UIUtils.createSpacer(header, new GridData(40, SWT.DEFAULT));
+		UIUtils.createSpacer(header, new GridData(50, SWT.DEFAULT));
 		Composite headerNested = UIUtils.createEmptyComposite(header, UIUtils
-				.createGridLayoutWithoutMargins(5, true), new GridData(
+				.createGridLayoutWithoutMargins(4, true), new GridData(
 				GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(headerNested, SWT.CENTER, "Active", new GridData(
 				GridData.FILL_HORIZONTAL));
@@ -200,8 +200,9 @@ public class MaintainContributionsView extends ViewPart {
 				GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(headerNested, SWT.CENTER, "Weighting", new GridData(
 				GridData.HORIZONTAL_ALIGN_END));
-		UIUtils.createLabel(headerNested, SWT.CENTER, "Delete", new GridData(
+		UIUtils.createLabel(header, SWT.CENTER, "Delete", new GridData(
 				GridData.HORIZONTAL_ALIGN_END));
+		UIUtils.createSpacer(header, new GridData(20, SWT.DEFAULT));
 	}
 
 	private void initAddContributionGroup(Composite parent) {
