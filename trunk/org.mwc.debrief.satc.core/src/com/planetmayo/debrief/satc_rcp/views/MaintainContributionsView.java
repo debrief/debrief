@@ -87,6 +87,8 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
  */
 public class MaintainContributionsView extends ViewPart {
 
+	private static final int ERROR_SCORE_THRESHOLD = 1000000;
+
 	/**
 	 * name we use for the performance graph
 	 * 
@@ -450,7 +452,15 @@ public class MaintainContributionsView extends ViewPart {
 		double[] newYVals = new double[yVals.length + 1];
 		System.arraycopy(yVals, 0, newYVals, 0, yVals.length);
 
-		newYVals[newYVals.length - 1] = value;
+		if(value < ERROR_SCORE_THRESHOLD)
+		{
+			newYVals[newYVals.length - 1] = value;
+		}
+		else
+		{
+			newYVals[newYVals.length - 1] = 0;
+		}
+			
 
 		ySeries.setYSeries(newYVals);
 
@@ -577,7 +587,7 @@ public class MaintainContributionsView extends ViewPart {
 					public void iterationComputed(
 							List<CompositeRoute> topRoutes, double topScore) {
 						// check it's roughly suitable
-						if (topScore < 1000000)
+//						if (topScore < 1000000)
 							addNewPerformanceScore(topScore);
 					}
 
