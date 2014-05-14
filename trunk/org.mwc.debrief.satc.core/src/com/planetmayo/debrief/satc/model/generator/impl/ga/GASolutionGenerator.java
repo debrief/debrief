@@ -213,10 +213,6 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	{
 		super.setPrecision(precision);
 		parameters.setPrecision(precision);
-		if (straightLegs != null)
-		{
-			generateSolutions(true);
-		}
 	}
 
 	/**
