@@ -5,6 +5,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
+
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.ModelObject;
 import com.planetmayo.debrief.satc.model.Precision;
@@ -20,6 +22,7 @@ import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class Solver extends ModelObject implements ISolver
 {
@@ -186,12 +189,17 @@ public class Solver extends ModelObject implements ISolver
 	{
 		if (constraint) 
 		{
+			SATC_Activator.log(Status.INFO, "SATC - about to restart bounds", null);
 			boundsManager.restart();
+			SATC_Activator.log(Status.INFO, "SATC - restarted, about to collate bounds", null);
 			boundsManager.run();
+			SATC_Activator.log(Status.INFO, "SATC - bounds collated", null);
 		}
 		if (generate && boundsManager.isCompleted())
 		{
+			SATC_Activator.log(Status.INFO, "SATC - about to generate solutions", null);
 			solutionGenerator.generateSolutions(true);
+			SATC_Activator.log(Status.INFO, "SATC - preparation complete. SATC running", null);
 		}
 	}
 	
