@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.TerminationCondition;
@@ -24,6 +25,7 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class GASolutionGenerator extends AbstractSolutionGenerator
 {
@@ -104,6 +106,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 						protected <E> Void run(IProgressMonitor monitor,
 								Job<Void, E> previous) throws InterruptedException
 						{
+							SATC_Activator.log(Status.INFO, "SATC GA - Generate Legs - Start", null);
 							List<CoreLeg> rawLegs =
 									getTheLegs(problemSpaceView.states(), monitor);
 							straightLegs = new ArrayList<StraightLeg>();
@@ -114,6 +117,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 									straightLegs.add((StraightLeg) leg);
 								}
 							}
+							SATC_Activator.log(Status.INFO, "SATC GA - Generate Legs - Complete", null);
 							return null;
 						}
 					});
@@ -127,6 +131,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					protected <E> Void run(IProgressMonitor monitor, Job<Void, E> previous)
 							throws InterruptedException
 					{
+						SATC_Activator.log(Status.INFO, "SATC GA - Run GA - Start", null);
 						runGA(monitor);
 						return null;
 					}
@@ -134,6 +139,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					@Override
 					protected void onComplete()
 					{
+						SATC_Activator.log(Status.INFO, "SATC GA - Run GA - Complete", null);
 						synchronized (GASolutionGenerator.this)
 						{
 							mainJob = null;
