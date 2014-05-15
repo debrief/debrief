@@ -1,9 +1,11 @@
 package MWC.GUI.Coast;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -26,76 +28,68 @@ public class Coastline implements Serializable
 	protected final Vector<CoastSegment> _data;
 	protected WorldArea _myArea;
 
-	public Coastline(final InputStream str)
+	public Coastline(final InputStream str) throws IOException, ParseException
 	{
 		_data = new Vector<CoastSegment>(0, 1);
 		CoastSegment cs = null;
 		String thisLine = null;
 		final int count = 0;
+		
+		// DataInputStream dis = new DataInputStream(str);
+		final BufferedReader dis = new BufferedReader(new InputStreamReader(str));
 
-		try
+		boolean segment_saved = false;
+
+		while (((thisLine = dis.readLine()) != null) & (count < 10000))
 		{
-			// DataInputStream dis = new DataInputStream(str);
-			final BufferedReader dis = new BufferedReader(new InputStreamReader(str));
 
-			boolean segment_saved = false;
+			if (thisLine == null)
+				return;
 
-			while (((thisLine = dis.readLine()) != null) & (count < 10000))
+			// so we've got a line.
+			// see if it represents a new section
+			if (thisLine.startsWith("# -b"))
 			{
-
-				if (thisLine == null)
-					return;
-
-				// so we've got a line.
-				// see if it represents a new section
-				if (thisLine.startsWith("# -b"))
+				// this is a new section of coast, store the previous one,
+				// if there was one
+				if (cs != null)
 				{
-					// this is a new section of coast, store the previous one,
-					// if there was one
-					if (cs != null)
-					{
-						_data.addElement(cs);
-						// indicate we've saved it
-						segment_saved = true;
-					}
-
-					// create the new segment
-					cs = new CoastSegment();
-				}
-				else
-				{
-					// tokenize it
-					final StringTokenizer st = new StringTokenizer(thisLine);
-					// note that we read in the long before the lat from the file
-					final String longStr = st.nextToken();
-					final String latStr = st.nextToken();
-					final double _lat = MWCXMLReader.readThisDouble(latStr);
-					final double _long = MWCXMLReader.readThisDouble(longStr);
-					final WorldLocation pt = new WorldLocation(_lat, _long, 0);
-
-					if (cs != null)
-					{
-						cs.addPoint(pt);
-
-						// indicate the new segment has been changed
-						segment_saved = false;
-					}
+					_data.addElement(cs);
+					// indicate we've saved it
+					segment_saved = true;
 				}
 
+				// create the new segment
+				cs = new CoastSegment();
 			}
-
-			// we need to tidily handle the last segment (which may not have had a #-b
-			// id)
-			// see if there is a 'trailing' segment
-			if (segment_saved == false)
+			else
 			{
-				_data.addElement(cs);
+				// tokenize it
+				final StringTokenizer st = new StringTokenizer(thisLine);
+				// note that we read in the long before the lat from the file
+				final String longStr = st.nextToken();
+				final String latStr = st.nextToken();
+				final double _lat = MWCXMLReader.readThisDouble(latStr);
+				final double _long = MWCXMLReader.readThisDouble(longStr);
+				final WorldLocation pt = new WorldLocation(_lat, _long, 0);
+
+				if (cs != null)
+				{
+					cs.addPoint(pt);
+
+					// indicate the new segment has been changed
+					segment_saved = false;
+				}
 			}
 
 		}
-		catch (final Exception e)
+
+		// we need to tidily handle the last segment (which may not have had a #-b
+		// id)
+		// see if there is a 'trailing' segment
+		if (segment_saved == false)
 		{
-			MWC.Utilities.Errors.Trace.trace(e);
+			_data.addElement(cs);
 		}
 
 		// and reset the area covererd
