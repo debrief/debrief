@@ -165,6 +165,15 @@ public final class SensorContactWrapper extends
 		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
 		Editable.DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
 {
+	
+	/** if the sensor cut doesn't have a range, we plot it out to the
+	 * height + width of the screen (to be sure it extends past the visible viewport)
+	 * But, if we're looking at the whole globe, that may give a distance
+	 * that goes off the globe. So we double-check that it's not
+	 * greater than a Monster range value.
+	 */
+	private static final int MAXIMUM_SENSOR_BEARING_RANGE = 5;
+
 	/**
 	 * 
 	 */
@@ -400,7 +409,7 @@ public final class SensorContactWrapper extends
 
 		return _calculatedOrigin;
 	}
-
+	
 	/**
 	 * return the coordinates of the end of hte line
 	 * 
@@ -430,47 +439,15 @@ public final class SensorContactWrapper extends
 
 				// just use the maximum dimension of the plot
 				rangeToUse = 2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
-
-				double maxLat = totalArea.getTopLeft().getLat();
-				double maxLon = totalArea.getTopRight().getLong();
-				double minLat = totalArea.getBottomRight().getLat();
-				double minLon = totalArea.getBottomLeft().getLong();
-
-				// also do the far end
-				res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
-
-				// we may have failed = through trying to draw a monster sized line, do some fallback
-				if (res == null)
-				{
-					res = new WorldLocation(totalArea.getTopLeft().getLat(), totalArea
-							.getTopRight().getLong(), 0);
-				}
-				else if (res.getLat() > maxLat)
-				{
-					res.setLat(maxLat);
-				}
-				else if (res.getLat() < minLat)
-				{
-					res.setLat(minLat);
-				}
-				else if (res.getLong() > maxLon)
-				{
-					res.setLong(maxLon);
-				}
-				else if (res.getLong() < minLon)
-				{
-					res.setLong(minLon);
-				}
-
+				
+				// hey, trim it to something that's at least humanly possible
+				rangeToUse = Math.min(rangeToUse, MAXIMUM_SENSOR_BEARING_RANGE);
 			}
 			else
-			{
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
 
-				// also do the far end
-				res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
-			}
-
+			// also do the far end
+			res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
 		}
 
 		return res;

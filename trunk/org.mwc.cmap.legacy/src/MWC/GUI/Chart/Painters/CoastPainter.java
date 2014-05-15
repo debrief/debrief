@@ -136,8 +136,10 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Iterator;
 
 import MWC.Algorithms.PlainProjection;
@@ -288,18 +290,19 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 
 	final public void run()
 	{
+		InputStream fs = null;
 		// load our own coastline
 		try
 		{
 			// we will have to read it in from file
-			final InputStream fs = getCoastLineInput();
+			fs = getCoastLineInput();
 
 			if (fs != null)
 			{
 
 				long tNow = System.currentTimeMillis();
 				_myCoast = new Coastline(fs);
-				fs.close();
+
 				tNow = System.currentTimeMillis() - tNow;
 
 				if (_myParent != null)
@@ -313,6 +316,18 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 							"File not available. Coastline not loaded.", null);
 			}
 		}
+		catch (final ParseException e)
+		{
+			final String msg = "Can't read world file, is it a suitable file?";
+			if (_myParent != null)
+				_myParent.logError(ToolParent.ERROR, msg + ":" + e.getMessage(), null);
+			else
+				Trace.trace(msg + ":" + e.getLocalizedMessage(), false);
+
+			// also, clear the my_coast object - so we can give it a second try if the
+			// user fixes the problem
+			_myCoast = null;
+		}
 		catch (final Exception e)
 		{
 			if (_myParent != null)
@@ -320,9 +335,31 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 						"World file not found, coastlines not available:" + e.getMessage(),
 						null);
 			else
-				Trace.trace("World file not found, coastlines not available:"
-						+ e.getLocalizedMessage(), false);
+				Trace.trace(
+						"World file not found, coastlines not available:"
+								+ e.getLocalizedMessage(), false);
+
+			// also, clear the my_coast object - so we can give it a second try if the
+			// user fixes the problem
+			_myCoast = null;
 		}
+		finally
+		{
+			// close the file
+			if (fs != null)
+			{
+				try
+				{
+					fs.close();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
 		_loading = false;
 	}
 
