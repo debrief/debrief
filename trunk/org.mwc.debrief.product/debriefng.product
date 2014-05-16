@@ -19,7 +19,8 @@
 --launcher.defaultAction
 openFile</programArgs>
       <vmArgs>-Xms128m
--Xmx1024m</vmArgs>
+-Xmx1024m
+-Duser.timezone=GMT</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
