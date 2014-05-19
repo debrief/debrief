@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
 
@@ -31,6 +33,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.basic.DateConverter;
 
 public class XStreamIO
 {
@@ -40,6 +43,7 @@ public class XStreamIO
 	static
 	{
 		xstream = new XStream();
+		xstream.registerConverter(new DebriefDateConverter(), XStream.PRIORITY_VERY_HIGH);
 		xstream.processAnnotations(TaskDescription.class);
 
 		aliasFor(xstream, ATBForecastContribution.class);
@@ -200,4 +204,22 @@ public class XStreamIO
 
 	}
 
+	private static class DebriefDateConverter extends DateConverter {
+
+		@Override
+		public Object fromString(String str)
+		{
+			Date date = (Date) super.fromString(str);
+			return new Date(date.getTime() - TimeZone.getDefault().getRawOffset());
+		}
+
+		@Override
+		public String toString(Object obj)
+		{
+			Date date = new Date(((Date)obj).getTime() + TimeZone.getDefault().getRawOffset());
+			return super.toString(date);
+		}
+		
+		
+	}
 }
