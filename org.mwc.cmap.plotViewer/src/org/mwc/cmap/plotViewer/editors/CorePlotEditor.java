@@ -761,7 +761,16 @@ public abstract class CorePlotEditor extends EditorPart implements
 		if (worldArea == null)
 			return;
 
-		can.setColor(new Color(255, 255, 255, 45));
+		boolean oldMode = false;
+		if (can instanceof SWTCanvas) {
+			oldMode = ((SWTCanvas) can).getXORMode();
+		}
+		try
+		{
+			if (can instanceof SWTCanvas) {
+				((SWTCanvas) can).setXORMode(true);
+		}
+		can.setColor(new Color(255, 255, 255, 255));
 		can.setLineStyle(CanvasType.DOT_DASH);
 		can.setLineWidth(2);
 
@@ -794,6 +803,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 			}
 			// and move to the next
 			pi.next();
+		}
+		} finally {
+				if (can instanceof SWTCanvas) {
+					((SWTCanvas)can).setXORMode(oldMode);
+				}
 		}
 
 	}
