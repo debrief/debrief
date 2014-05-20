@@ -14,3 +14,5 @@
 * Aug 2011 - Introduce Wizard for creation of [new Narrative entries](http://www.debrief.info/tutorial/viewing_narratives.html#more_loading_narr)
 
 ![Example of Debrief charting](http://www.debrief.info/tutorial/figures/LandsEnd.png)
+
+[![Issues that are ready to be worked on](https://badge.waffle.io/ianmayo/debrief.png?label=ready&title=Ready)](http://waffle.io/ianmayo/debrief)
