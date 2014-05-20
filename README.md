@@ -1,3 +1,6 @@
+## Issues ready for resolution
+[![Issues that are ready to be worked on](https://badge.waffle.io/ianmayo/debrief.png?label=ready&title=Ready)](http://waffle.io/ianmayo/debrief)
+
 ## New in Debrief
 
 * Aug 2013 - Support for [auto-calculated range/brg labels](http://www.debrief.info/tutorial/drawing_features.html#ShowRangeCalc)
@@ -15,4 +18,3 @@
 
 ![Example of Debrief charting](http://www.debrief.info/tutorial/figures/LandsEnd.png)
 
-[![Issues that are ready to be worked on](https://badge.waffle.io/ianmayo/debrief.png?label=ready&title=Ready)](http://waffle.io/ianmayo/debrief)
