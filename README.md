@@ -1,5 +1,5 @@
 ## Issues ready for resolution
-[![Issues that are ready to be worked on](https://badge.waffle.io/ianmayo/debrief.png?label=ready&title=Ready)](http://waffle.io/ianmayo/debrief)
+[![Issues that are ready to be worked on](https://badge.waffle.io/debrief/debrief.png?label=ready&title=Ready)](http://waffle.io/debrief/debrief)
 
 ## New in Debrief
 
