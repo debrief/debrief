@@ -66,6 +66,12 @@
     </abstract>
     <revhistory>
       <revision>
+        <revnumber>2.6</revnumber>
+        <date>22nd May 2014</date>
+        <authorinitials>IM</authorinitials>
+        <revremark>Include SATC, plus updates to reflect GitHub hosting</revremark>
+      </revision>
+      <revision>
         <revnumber>2.5</revnumber>
         <date>10th June 2012</date>
         <authorinitials>IM</authorinitials>
@@ -172,6 +178,8 @@
       <para>Welcome to the documentation for <application>Debrief NG</application>.
           <application>Debrief</application> has been produced by the Maritime Warfare Centre in
         Portsmouth UK, to support the analysis and reporting of maritime tactical exercises.</para>
+        
+        <tip><para>There's lots more Debrief goodness on the Debrief Home Page: <link xlink:href="http://www.debrief.info">http://www.debrief.info</link></para></tip>
 
       <para>In December 2000 the Maritime Warfare Centre decided to give
           <application>Debrief</application> an Open Source status, opening the application and its
@@ -220,7 +228,7 @@
         </itemizedlist></para>
     </sect1>
 
-    <sect1>
+    <sect1 xml:id="whats_new">
       <title>What's new?</title>
 
       <formalpara>
@@ -505,7 +513,7 @@
       </sect2>
     </sect1>
 
-    <sect1>
+    <sect1 xml:id="users">
       <title>Debrief users</title>
 
       <para>Whilst <application>Debrief</application> was originally developed for use within the
@@ -731,26 +739,20 @@ Naval Undersea Warfare Center (NUWC)
 
           <para>A number of project <indexterm>
               <primary>Debrief</primary>
-
               <secondary>Obtaining Debrief</secondary>
             </indexterm>support activities (news, feature-requests, bug-reports) for
-              <application>Debrief</application> are conducted online, at a web-site known as
-              <application>SourceForge</application>. <application>SourceForge</application> is also
-            used to store the newest versions of Debrief, ready for download.</para>
+              <application>Debrief</application> are conducted online, at 
+              <application>GitHub</application> (<link xlink:href="https://github.com/debrief/debrief"
+            >https://github.com/debrief/debrief</link>) . </para>
+            
+          <para>The <application>SourceForge</application> site is  used to store the newest versions
+            of Debrief, ready for download: <link
+              xlink:href="http://sourceforge.net/projects/debrief/files/Debrief_Installation_Set/DebriefNG/"
+              >http://sourceforge.net/projects/debrief/files/Debrief_Installation_Set/DebriefNG/</link>.
 
-          <para>The home page for <application>Debrief</application> on
-              <application>SourceForge</application> is at <link
-              xlink:href="http://sourceforge.net/projects/debrief"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              >http://sourceforge.net/projects/debrief</link>. From this home you can read the
-            latest news on Debrief, request new features, report bugs, and download the most recent
-            version.</para>
-
-          <para>To obtain the latest version, examine the table titled "Latest File Releases", and
-            click on the <guilabel>Download</guilabel> link next to
-              <guilabel>Debrief-Installation-Set</guilabel>. Then click on
-              <guilabel>install.exe</guilabel> for a windows version of Debrief, or
-              <guilabel>install.bin</guilabel> for a unix version.</para>
+          To obtain the latest version, examine list of available downloads, and
+            click on the <guilabel>Download</guilabel> link next to the correct zip-file for
+            your operating system.</para>
         </sect2>
 
         <sect2 xml:id="where_to_get_help">
@@ -820,77 +822,18 @@ Naval Undersea Warfare Center (NUWC)
             <guibutton>Start</guibutton> menu.</para>
         </warning>
 
-        <para>Once you have downloaded Debrief NG, double-click on <filename>install.exe</filename>
-          and follow the steps provided. You are first met with the welcome screen: <figure
-            xml:id="installer_welcome">
-            <title>Welcome view of the installer</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/install1.png" width="315"/>
-                </imageobject>
-
-                <textobject>
-                  <phrase>Welcome view of the installer</phrase>
-                </textobject>
-              </mediaobject>
-            </screenshot>
-          </figure> Click on the <guibutton>Next</guibutton> button to move forward through the
-          screens. The first choice you are offered is the destination of the
-            <application>Debrief</application> files. Unless you have any strong objection this
-          default destination is normally acceptable. <figure xml:id="select_loc">
-            <title>Select Debrief location</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/install2.png" width="315"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure> Next you will see the <guilabel>Pre-Installation Summary</guilabel> dialog which
-          will allow you to step backwards to review installation settings prior to conducting the
-            install.<figure xml:id="pre_install_summary">
-            <title>Pre-installation summary</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/install3.png" width="315"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure>After this you will see Debrief being installed onto your machine</para>
-
-        <para><figure xml:id="install_progress">
-            <title>Debrief installation progress</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/install4.png" width="315"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure></para>
-
-        <para>Finally you will be greeted with the <guilabel>Installation Complete</guilabel> dialog
-          informing you that everything went ok.</para>
-
-        <para><figure xml:id="install_complete">
-            <title>Debrief installation complete</title>
-
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/install5.png" width="315"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure></para>
-
-        <para>It's now time to start <application>Debrief</application>.</para>
+        <para>Hey, Debrief NG needs no installer.  Just unzip the downloaded application zip file, and you're ready to go!  
+        <tip>
+        <para>
+        To follow
+        MS Windows conventions you may wish to copy the unzipped folder into your Programs folder, but you 
+        don't have to.
+        </para>
+        </tip>
+        
+        </para>
+        <para>To start the application just click
+        on the <emphasis>Debrief NG</emphasis> executable in the top level of the unpacked folder. </para>
       </sect1>
 
       <sect1 xml:id="setting_location_prefs">
@@ -921,8 +864,7 @@ Naval Undersea Warfare Center (NUWC)
         <sect2 xml:id="opening_application">
           <title>Opening application</title>
 
-          <para>Open the application using the shortcut placed in the Programs section of your Start
-            menu. The application may take a couple of seconds to load, but don't worry about the
+          <para>Open the application using the executable in your Debrief folder. The application may take a couple of seconds to load, but don't worry about the
             speed; once the windows are open Debrief runs quite quickly. If you are viewing this
             tutorial online, arrange this window and the <application>Debrief</application> window
             so that both are visible (although you may need to let them overlap if you have limited
@@ -948,10 +890,10 @@ Naval Undersea Warfare Center (NUWC)
             The buttons at the top-left of each page navigate you around the welcome guidance. On
             the <guilabel>Tutorials</guilabel> page one cheat-sheet in particular will help new Debrief-adopters:<variablelist>
               <varlistentry>
-                <term>Getting started with Debrief NG</term>
+                <term>A Debrief Walkthrough</term>
 
                 <listitem>
-                  <para>Walking you through loading your first data into Debrief</para>
+                  <para>Let Debrief itself lead you through your first session</para>
                 </listitem>
               </varlistentry>
             </variablelist></para>
@@ -7729,8 +7671,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
           <para>Debrief can be downloaded via the downloads page at the Debrief site (<link
               xlink:href="http://sf.net/projects/debrief" xmlns:xlink="http://www.w3.org/1999/xlink"
-              >http://sf.net/projects/debrief</link>). Be warned, because the full install contains
-            the Etopo data set it is well over 150 Mb in size. If you aren't able to perform such a
+              >http://sf.net/projects/debrief</link>). Be warned, because the full install is getting
+              on for 150 Mb in size. If you aren't able to perform such a
             download, or you need a formal copy for your IS/IT department please send an e-mail
             request to the project manager (see <xref linkend="contact_details"/>), and a CD-based
             copy will be forwarded to you via snail mail.</para>
@@ -7808,29 +7750,29 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
         <para>In addition to the <application>Debrief</application> web-site, the
             <application>Debrief</application> project makes use of
-            <application>SourceForge</application> and <application>Assembla</application> , online
+            <application>SourceForge</application> and <application>Github</application> , online
           development web-sites <indexterm>
             <primary>SourceForge</primary>
 
             <secondary>Providing Feedback</secondary>
           </indexterm> that provide us with bug-tracking, file download support, and news groups.
-          Since 2008, Assembla (<uri>http://www.assembla.com/spaces/Debrief</uri>) has taken over
-          the bug-reporting and feature requests, with SourceForge just responsible for
+          Since 2014, Github (<link xlink:href="https://github.com">https://github.com/debrief/debrief</link>) has taken over
+          the bug-reporting and feature requests, with SourceForge (<link xlink:href="https://sf.net">http://sf.net</link>) just responsible for
           downloads.</para>
 
         <figure xml:id="sf.net_home_page">
-          <title>Debrief's home page at Assembla</title>
+          <title>Debrief's home page at GitHub</title>
 
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/assembla_home.png" width="100%"/>
+                <imagedata fileref="figures/github_home.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </screenshot>
         </figure>
 
-        <para>From the screenshot of the Assembla home page for <application>Debrief</application>
+        <para>From the screenshot of the GitHub home page for <application>Debrief</application>
           you can see a list of the services it provides, ranging from discussion forums, through
           bug and feature-request trackers</para>
 
@@ -7842,9 +7784,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
               <secondary>Submitting</secondary>
             </indexterm> To report a bug, or a feature which you believe is behaving incorrectly,
-            you must first register at Assembla. You can either create a new account, or login using
-            a number of existing login authorities (including Google and Yahoo). Once registered,
-            you can click on the 'New Ticket' button, and submit a request for a bug-fix or new
+            you must first register at <link xlink:href="https://github.com">www.GitHub.com</link>. Once registered,
+            you can navigate to the <link xlink:href="https://github.com/debrief/debrief/issues">Debrief Issues</link> page, click on the 'New Issue' button, and submit a request for a bug-fix or new
             features. The items are then tracked, and provided an e-mail address was provided, the
             submitter is kept informed of the progress of the submission.</para>
 
@@ -7855,12 +7796,12 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             fall through the cracks.</para>
 
           <para><figure xml:id="bug_reporting_page">
-              <title>Assembla Bug Reporting page</title>
+              <title>GitHub Issue Reporting page</title>
 
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/assembla_bugs.png" width="100%"/>
+                    <imagedata fileref="figures/GitHub_NewIssue.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -10713,7 +10654,7 @@ departure / d.lat = tan (course)</markup>
           </section>
         </section>
       </section>
-      <section>
+      <section xml:id="ga_optimisation">
         <title>Optimisation Strategies</title>
         <para>Of the two phased approach to SATC, the second page - consider candidate solutions has
           a much larger processing requirement.  It's in that stage that high volumes of potential
@@ -11961,7 +11902,8 @@ range = Range to target from ownship (yds)</markup>
         <glossdef>
           <para>Cheat sheets guide users through tasks. The task is broken down into steps and
             presented to the user one step at a time, and the user checks off the steps as he/she
-            completes them.</para>
+            completes them. The Cheat Sheets can be accessed from the command in Debrief's <menuchoice><guibutton>Help</guibutton></menuchoice> menu,
+            or the Tutorials section of the Debrief's Welcome page. </para>
         </glossdef>
       </glossentry>
 
