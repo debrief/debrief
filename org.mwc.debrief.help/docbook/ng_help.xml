@@ -742,7 +742,7 @@ Naval Undersea Warfare Center (NUWC)
               <secondary>Obtaining Debrief</secondary>
             </indexterm>support activities (news, feature-requests, bug-reports) for
               <application>Debrief</application> are conducted online, at 
-              <application>GitHub</application> (<link xlink:href="https://github.com/debrief/debrief"
+            <glossterm linkend="g_github">GitHub</glossterm> (<link xlink:href="https://github.com/debrief/debrief"
             >https://github.com/debrief/debrief</link>) . </para>
             
           <para>The <application>SourceForge</application> site is  used to store the newest versions
@@ -7496,71 +7496,23 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
       <sect1 xml:id="debrief_news">
         <title>Keeping up to date</title>
-
-        <para>News lists (more commonly known as mailing lists) are one of the
-            <application>SourceForge.net</application> services <indexterm>
-            <primary>SourceForge</primary>
-
-            <secondary>Keeping up to date</secondary>
-          </indexterm> which are employed by <application>Debrief</application>. The lists provide
-          an e-mail based way of communicating Debrief news and announcements amongst a list of
-          interested users. Once an e-mail is sent to the e-mail address of the newsgroup (in your
-          case hosted at <emphasis>SourceForge.net</emphasis>), it is automatically forwarded to all
-          of registered news-list members. A separate e-mail address (the news-list title with a
-            <emphasis>request</emphasis> suffix) provides management support to the
-          newsgroup.</para>
-
-        <para>As of summer 2001 there are around a dozen users registered on the news list, with the
-            <application>Debrief</application> Project Manager (see <xref linkend="contact_details"
-          />) publishing news each time a new version of <application>Debrief</application> is made
-          available for download.</para>
-
-        <para>There is currently just one mailing list related to
-          <application>Debrief</application>, this is named <application>debrief-news</application>.
-          This is quite a low volume mailing list, with at the most two messages a month; so there's
-          no need to worry about getting snowed-under with news items.</para>
-
-        <sect2 xml:id="debrief_news_list">
-          <title>Joining</title>
-
-          <para>To join to the <application>Debrief</application> news list, send an e-mail to
-              <email>debrief-news-request@lists.sourceforge.net</email> with the single word
-              <emphasis>subscribe</emphasis> in the subject. You will receive a reply asking you to
-            confirm that you wish to subscribe. This e-mail is to validate your e-mail address, and
-            should be retained since it contains the password you must use to unsubscribe.</para>
+        <para>It's easy to keep up to date with what's happening in Debrief.  You can find out about
+          new bugs, software changes, and formal software releases using one of these
+          methods:</para>
+        <sect2>
+          <title>Twitter</title>
+          <para>Twitter fans just have to follow the <link
+              xlink:href="https://twitter.com/debrieftool">@debrieftool</link> account.</para>
         </sect2>
-
-        <sect2 xml:id="submitting_to_news_list">
-          <title>Submitting</title>
-
-          <para>Once you have joined the list, you are then entitled to submit news, should you wish
-            to. So, if you have identified or fixed a significant bug, or have contributed
-            significant content to the <application>Debrief</application> web-site, please feel free
-            to e-mail the news list directly. Just send an e-mail to
-              <email>debrief-news@lists.sourceforge.net</email></para>
-        </sect2>
-
-        <sect2 xml:id="leave_news_list">
-          <title>Leaving</title>
-
-          <para>If you wish to leave the news list, just send an e-mail to
-              <email>debrief-news@lists.sourceforge.net</email> with the single word
-              <emphasis>unsubscribe</emphasis> in the subject line followed by the password you were
-            provided with at your initial subscription. If you have lost your password please make a
-            request to the Project Manager (see <xref linkend="contact_details"/>) to be
-            unsubscribed.</para>
-        </sect2>
-
-        <sect2 xml:id="web_based_news">
-          <title>Web-based news-list management</title>
-
-          <para>In addition to these e-mail based methods of interacting with the
-              <application>Debrief</application> news list, there is a web-page based interface at:
-              <link xlink:href="http://lists.sourceforge.net/lists/listinfo/debrief-news"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              >http://lists.sourceforge.net/lists/listinfo/debrief-news</link>. From this page you
-            can subscribe, unsubscribe, and configure options for how the news messages are sent to
-            you.</para>
+        <sect2>
+          <title>Email</title>
+          <para>Alternatively, you can navigate to Debrief's <glossterm linkend="g_github">GitHub</glossterm> site (<link
+              xlink:href="https://github.com/debrief/debrief"
+              >https://github.com/debrief/debrief</link> ), and then either
+              <emphasis>Star</emphasis> the page to hear high level announcements, or
+              <emphasis>Watch</emphasis> the page to hear all the gory detail.  Learn more about the
+            options <link xlink:href="https://help.github.com/articles/watching-repositories"
+              >here</link>.</para>
         </sect2>
       </sect1>
 
@@ -7575,7 +7527,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
           <para>The IT Support department should be approached to conduct fresh
               <application>Debrief</application> installations. The most up-to-date Debrief
-            installer is located at <filename>//Needles/Operational
+            installer is located at <filename>//File-Share/Operational
               Analysis/collaborative/application/debrief/InstallDebrief.exe</filename>.</para>
         </sect2>
 
@@ -7750,7 +7702,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
         <para>In addition to the <application>Debrief</application> web-site, the
             <application>Debrief</application> project makes use of
-            <application>SourceForge</application> and <application>Github</application> , online
+          <application>SourceForge</application> and <glossterm linkend="g_github">GitHub</glossterm>, online
           development web-sites <indexterm>
             <primary>SourceForge</primary>
 
@@ -12016,6 +11968,16 @@ range = Range to target from ownship (yds)</markup>
 
         <glossdef>
           <para>Standard for digital topographic data, predominantly distributed by the NOAA</para>
+        </glossdef>
+      </glossentry>
+      <glossentry xml:id="g_github">
+        <glossterm>GitHub</glossterm>
+        <glossdef>
+          <para><link xlink:href="http://github.com">GitHub.com</link> is a web-site providing a
+            range of software development capabilities.  Its name comes from its use of the
+              <emphasis>Git</emphasis> software version control system.  <emphasis>Git</emphasis>
+            allows multiple developers to work simultaneously on a project, preventing conflicts and
+            helping to merge divergent development paths.</para>
         </glossdef>
       </glossentry>
 
