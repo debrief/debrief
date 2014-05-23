@@ -233,8 +233,7 @@ public class TrackWrapper_Support
 				// just add the reset color field first
 				final Class<SegmentList> c = SegmentList.class;
 				MethodDescriptor[] mds =
-				{ method(c, "mergeAllSegments", null, "Merge all track segments"),
-						method(c, "revealAllPositions", null, "Reveal all positions") };
+				{ method(c, "revealAllPositions", null, "Reveal all positions") };
 
 				final MethodDescriptor[] oldMeds = super.getMethodDescriptors();
 				// we now need to combine the two sets
@@ -319,47 +318,6 @@ public class TrackWrapper_Support
 		public EditorType getInfo()
 		{
 			return new SegmentInfo(this);
-		}
-
-		@FireExtended
-		public void mergeAllSegments()
-		{
-			final Collection<Editable> segs = getData();
-			TrackSegment first = null;
-			for (final Iterator<Editable> iterator = segs.iterator(); iterator.hasNext();)
-			{
-				final TrackSegment segment = (TrackSegment) iterator.next();
-
-				if (first == null)
-				{
-					// aaah, now, if this is a TMA segment we've got to replace it with
-					// a normal track segment. You can't join new track sections onto the
-					// end
-					// of a tma segment
-					if (segment instanceof CoreTMASegment)
-					{
-						final CoreTMASegment tma = (CoreTMASegment) segment;
-						first = new TrackSegment(tma);
-					}
-					else
-					{
-						// cool, just go ahead
-						first = segment;
-					}
-				}
-				else
-				{
-					first.append((Layer) segment);
-				}
-			}
-
-			// ditch the segments
-			this.removeAllElements();
-
-			// and put the first one back in
-			this.addSegment(first);
-
-			// and fire some kind of update...
 		}
 
 		/**

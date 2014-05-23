@@ -220,6 +220,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	@Override
 	public void setUp() throws Exception
 	{
+		// give the fixes some names, so we can track them
+		_fw1.setLabel("fw1");
+		_fw2.setLabel("fw2");
+		
 		_tw = new TrackWrapper();
 		_tw.setName(TRACK_NAME);
 		_tw.addFix(createFix(100000, 1, 1));
@@ -1369,6 +1373,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	public void testTrackMerge1()
 	{
 		final TrackSegment ts2 = new TrackSegment();
+		ts2.setName("ts2");
 		ts2.addFix(createFix(910000, 32, 33));
 		ts2.addFix(createFix(911000, 32, 33));
 		ts2.addFix(createFix(912000, 32, 33));
@@ -1385,18 +1390,21 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("track starts correctly", 6, trackLength());
 		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
 		assertEquals("have right num tracks", 2, theLayers.size());
+		assertEquals("fix starts in place", "test track", _fw1.getTrackWrapper().getName());
 
 		// do a merge
-		final Layer[] parents = new Layer[]
-		{ _tw, tw3 };
 		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
-		TrackWrapper.mergeTracks(ts2, theLayers, parents, subjects);
+		final TrackWrapper newTarget = new TrackWrapper();
+		newTarget.setName("Merged");
+		
+		TrackWrapper.mergeTracks(newTarget, theLayers, subjects);
 
 		// have a look at the results
-		assertEquals("track 3 is longer", 11, tw3.numFixes());
-		assertEquals("track got ditched", 1, theLayers.size());
-		assertEquals("fix has new parent", "tw3", _fw1.getTrackWrapper().getName());
+		assertEquals("new track got created", 3, theLayers.size());
+		assertEquals("track 3 is longer", 11, newTarget.numFixes());
+		assertEquals("new track has correct name", "Merged", newTarget.getName());
+		assertEquals("original fix still in place", "test track", _fw1.getTrackWrapper().getName());
 	}
 
 	public void testTrackMerge2()
@@ -1420,15 +1428,13 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		final Layer[] parents = new Layer[]
-		{ _tw, tw3 };
 		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
-		TrackWrapper.mergeTracks(_tw, theLayers, parents, subjects);
+		TrackWrapper.mergeTracks(_tw, theLayers, subjects);
 
 		// have a look at the results
 		assertEquals("track is longer", 11, _tw.numFixes());
-		assertEquals("track got ditched", 1, theLayers.size());
+		assertEquals("track got ditched", 2, theLayers.size());
 		final TrackSegment sl = (TrackSegment) _tw.elements().nextElement();
 		assertEquals("just the one segment - with all our points", 11, sl.size());
 
@@ -1455,11 +1461,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		final Layer[] parents = new Layer[]
-		{ _tw, tw3 };
 		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
-		TrackWrapper.mergeTracks(_tw, theLayers, parents, subjects);
+		TrackWrapper.mergeTracks(_tw,  theLayers, subjects);
 
 		// have a look at the results
 		assertEquals("track starts correctly", 6, trackLength());
@@ -1505,21 +1509,21 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.add(ts1);
 		tw.add(ts2);
 		tw.add(ts3);
+		
+		Editable[] items = new TrackSegment[3];
+		int ctr = 0;
+		items[ctr++] = ts1;
+		items[ctr++] = ts2;
+		items[ctr++] = ts3;
 
-		final Enumeration<Editable> data = tw.elements();
-		final SegmentList sl = (SegmentList) data.nextElement();
-
-		// check it's got the segs
-		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 15, tw.numFixes());
-
+		TrackWrapper newTrack = new TrackWrapper();
+		newTrack.setName("Merged");
+		Layers theLayers = new Layers();
+		
+		TrackWrapper.mergeTracks(newTrack, theLayers, items);
 		// do the merge
-		sl.mergeAllSegments();
 
-		assertEquals("has merged", "Track segments (1 items)", sl.toString());
-		assertEquals("track has correct data", "Positions (15 items)", tw
-				.elements().nextElement().toString());
-		assertEquals("has all fixes", 15, tw.numFixes());
+		assertEquals("has all fixes", 15, newTrack.numFixes());
 
 		assertEquals("correct start time", 110000, tw.getStartDTG().getDate()
 				.getTime());
@@ -1548,16 +1552,18 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("have right num tracks", 2, theLayers.size());
 
 		// do a merge
-		final Layer[] parents = new Layer[]
-		{ _tw, tw3 };
 		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
-		TrackWrapper.mergeTracks(ts2, theLayers, parents, subjects);
+		
+		TrackWrapper result = new TrackWrapper();
+		result.setName("Merged");
+		
+		TrackWrapper.mergeTracks(result, theLayers, subjects);
 
 		// have a look at the results
-		assertEquals("track 3 is longer", 11, tw3.numFixes());
-		assertEquals("track got ditched", 1, theLayers.size());
-		assertEquals("fix has new parent", "tw3", _fw1.getTrackWrapper().getName());
+		assertEquals("track 3 is longer", 11, result.numFixes());
+		assertEquals("track got created", 3, theLayers.size());
+		assertEquals("fix has new parent", "test track", _fw1.getTrackWrapper().getName());
 	}
 
 	/**

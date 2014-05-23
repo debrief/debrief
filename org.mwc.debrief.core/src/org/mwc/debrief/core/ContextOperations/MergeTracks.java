@@ -40,9 +40,10 @@ public class MergeTracks implements RightClickContextItemGenerator
 			final Layer[] parentLayers, final Editable[] subjects)
 	{
 		int validItems = 0;
+		String targetTrackName = null;
 
 		// we're only going to work with two or more items
-		if (subjects.length > 1)
+		if (subjects.length >= 1)
 		{
 			// are they tracks, or track segments
 			for (int i = 0; i < subjects.length; i++)
@@ -52,15 +53,24 @@ public class MergeTracks implements RightClickContextItemGenerator
 				if (thisE instanceof TrackWrapper)
 				{
 					goForIt = true;
+					validItems++;
 				}
 				else if (thisE instanceof TrackSegment)
 				{
 					goForIt = true;
+					validItems++;
+				}
+				else if(thisE instanceof SegmentList)
+				{
+					goForIt = true;
+					
+					SegmentList sl = (SegmentList) thisE;
+					targetTrackName = sl.getWrapper().getName() + " (Merged)";
+					validItems += sl.size();
 				}
 
 				if (goForIt)
 				{
-					validItems++;
 				}
 				else
 				{
@@ -77,14 +87,20 @@ public class MergeTracks implements RightClickContextItemGenerator
 			parent.add(new Separator());
 
 			final Editable editable = subjects[0];
-			final String title = "Merge tracks into " + editable.getName();
+			if(targetTrackName == null)
+			{
+				targetTrackName = editable.getName() + " (Merged)";
+			}
+			final String title = "Merge tracks into " + targetTrackName;
+			final TrackWrapper newTrack = new TrackWrapper();
+			newTrack.setName(targetTrackName);
 			// create this operation
 			final Action doMerge = new Action(title)
 			{
 				public void run()
 				{
 					final IUndoableOperation theAction = new MergeTracksOperation(title,
-							editable, theLayers, parentLayers, subjects);
+							newTrack, theLayers, parentLayers, subjects);
 
 					CorePlugin.run(theAction);
 				}
@@ -157,11 +173,11 @@ public class MergeTracks implements RightClickContextItemGenerator
 		private final Editable[] _subjects;
 		private final Editable _target;
 
-		public MergeTracksOperation(final String title, final Editable editable,
+		public MergeTracksOperation(final String title, final Editable target,
 				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
 		{
 			super(title);
-			_target = editable;
+			_target = target;
 			_layers = theLayers;
 			_parents = parentLayers;
 			_subjects = subjects;
@@ -170,9 +186,20 @@ public class MergeTracks implements RightClickContextItemGenerator
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			final int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
+			final int res = TrackWrapper.mergeTracks(_target, _layers, _subjects);
+			
+			// ok, we can also hide the parent
+			
 			if (res == IStatus.OK)
+			{
+				// it worked, so switch off the composite track
+				TrackWrapper oldParent = (TrackWrapper) _parents[0];				
+				oldParent.setVisible(false);
+				
+				// and talk about the UI update
 				fireModified();
+			}
+			
 			return Status.OK_STATUS;
 		}
 
