@@ -207,152 +207,8 @@ public class SATC_Solution extends BaseLayer implements
 		// clear the solver, just to be sure
 		_mySolver.getContributions().clear();
 
-		// init the listeners
-		initListeners();
-
 		// and listen for changes
 		listenToSolver(_mySolver);
-	}
-
-	private void initListeners()
-	{
-
-		_gaStepListener = new IGASolutionsListener()
-		{
-			@Override
-			public void solutionsReady(CompositeRoute[] routes)
-			{
-				// just double-check that the score is acceptable
-				if((_currentScore != null) && (_currentScore > 10))
-				{
-					// hey, skip it, no good solutions
-					CorePlugin.errorDialog("Generate TMA Solutions", 
-							"It was not possible to generate a candidate solution from the supplied data");
-				}
-				else
-				{
-					// ok, either there isn't a current score (non-GA solver),
-					// or the score is acceptable
-					
-					_newRoutes = routes;
-
-					// tell the layer manager that we've changed
-					fireTrackShifted();
-
-					// hey, trigger repaint
-					fireRepaint();
-				}
-			}
-
-			@Override
-			public void startingGeneration()
-			{
-				// ditch any existing routes
-				_newRoutes = null;
-				
-				// clear the top score counter
-				_currentScore = null;
-			}
-
-			@Override
-			public void finishedGeneration(Throwable error)
-			{
-			}
-
-			@Override
-			public void iterationComputed(List<CompositeRoute> topRoutes,
-					double topScore)
-			{
-				// store the most recent score - so we can
-				// decide whether to bother showing a result to the user
-				_currentScore = topScore;
-			}
-		};
-
-		_contributionsListener = new IContributionsChangedListener()
-		{
-
-			public void fireExtended()
-			{
-				firePropertyChange(SupportsPropertyListeners.EXTENDED, null, this);
-			}
-
-			@Override
-			public void added(BaseContribution contribution)
-			{
-				// fireRepaint();
-				fireExtended();
-			}
-
-			@Override
-			public void removed(BaseContribution contribution)
-			{
-
-				// hey, are we still storing this?
-				Editable toBeRemoved = null;
-
-				// get read-only version of elements
-				ReadOnlyIterator rIter = new ReadOnlyIterator(getData().iterator());
-				while (rIter.hasNext())
-				{
-					Editable editable = (Editable) rIter.next();
-					ContributionWrapper cw = (ContributionWrapper) editable;
-					if (cw.getContribution() == contribution)
-					{
-						// _mySolver.getContributions().removeContribution(contribution);
-						toBeRemoved = cw;
-					}
-				}
-
-				if (toBeRemoved != null)
-				{
-					// ditch it from the parent (but don't trigger the remote updates to
-					// fire)
-					SATC_Solution.super.removeElement(toBeRemoved);
-				}
-				else
-				{
-					SATC_Activator
-							.log(
-									IStatus.ERROR,
-									"We were asked to remove a contribution, but we didn't have it stored in the Layer",
-									null);
-				}
-
-				fireExtended();
-			}
-		};
-
-		_constrainListener = new IConstrainSpaceListener()
-		{
-			@Override
-			public void error(IBoundsManager boundsManager,
-					IncompatibleStateException ex)
-			{
-				_lastStates = null;
-			}
-
-			@Override
-			public void restarted(IBoundsManager boundsManager)
-			{
-				_lastStates = null;
-				_newRoutes = null;
-			}
-
-			@Override
-			public void statesBounded(IBoundsManager boundsManager)
-			{
-				// ok, better to plot them then!
-				_lastStates = _mySolver.getProblemSpace().states();
-				fireRepaint();
-			}
-
-			@Override
-			public void stepped(IBoundsManager boundsManager, int thisStep,
-					int totalSteps)
-			{
-			}
-		};
 	}
 
 	public void addContribution(BaseContribution cont)
@@ -660,6 +516,143 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void listenToSolver(ISolver solver)
 	{
+
+		_gaStepListener = new IGASolutionsListener()
+		{
+			@Override
+			public void solutionsReady(CompositeRoute[] routes)
+			{
+				// just double-check that the score is acceptable
+				if((_currentScore != null) && (_currentScore > 10))
+				{
+					// hey, skip it, no good solutions
+					CorePlugin.errorDialog("Generate TMA Solutions", 
+							"It was not possible to generate a candidate solution from the supplied data");
+				}
+				else
+				{
+					// ok, either there isn't a current score (non-GA solver),
+					// or the score is acceptable
+					
+					_newRoutes = routes;
+
+					// tell the layer manager that we've changed
+					fireTrackShifted();
+
+					// hey, trigger repaint
+					fireRepaint();
+				}
+			}
+
+			@Override
+			public void startingGeneration()
+			{
+				// ditch any existing routes
+				_newRoutes = null;
+				
+				// clear the top score counter
+				_currentScore = null;
+			}
+
+			@Override
+			public void finishedGeneration(Throwable error)
+			{
+			}
+
+			@Override
+			public void iterationComputed(List<CompositeRoute> topRoutes,
+					double topScore)
+			{
+				// store the most recent score - so we can
+				// decide whether to bother showing a result to the user
+				_currentScore = topScore;
+			}
+		};
+
+		_contributionsListener = new IContributionsChangedListener()
+		{
+
+			public void fireExtended()
+			{
+				firePropertyChange(SupportsPropertyListeners.EXTENDED, null, this);
+			}
+
+			@Override
+			public void added(BaseContribution contribution)
+			{
+				// fireRepaint();
+				fireExtended();
+			}
+
+			@Override
+			public void removed(BaseContribution contribution)
+			{
+
+				// hey, are we still storing this?
+				Editable toBeRemoved = null;
+
+				// get read-only version of elements
+				ReadOnlyIterator rIter = new ReadOnlyIterator(getData().iterator());
+				while (rIter.hasNext())
+				{
+					Editable editable = (Editable) rIter.next();
+					ContributionWrapper cw = (ContributionWrapper) editable;
+					if (cw.getContribution() == contribution)
+					{
+						// _mySolver.getContributions().removeContribution(contribution);
+						toBeRemoved = cw;
+					}
+				}
+
+				if (toBeRemoved != null)
+				{
+					// ditch it from the parent (but don't trigger the remote updates to
+					// fire)
+					SATC_Solution.super.removeElement(toBeRemoved);
+				}
+				else
+				{
+					SATC_Activator
+							.log(
+									IStatus.ERROR,
+									"We were asked to remove a contribution, but we didn't have it stored in the Layer",
+									null);
+				}
+
+				fireExtended();
+			}
+		};
+
+		_constrainListener = new IConstrainSpaceListener()
+		{
+			@Override
+			public void error(IBoundsManager boundsManager,
+					IncompatibleStateException ex)
+			{
+				_lastStates = null;
+			}
+
+			@Override
+			public void restarted(IBoundsManager boundsManager)
+			{
+				_lastStates = null;
+				_newRoutes = null;
+			}
+
+			@Override
+			public void statesBounded(IBoundsManager boundsManager)
+			{
+				// ok, better to plot them then!
+				_lastStates = _mySolver.getProblemSpace().states();
+				fireRepaint();
+			}
+
+			@Override
+			public void stepped(IBoundsManager boundsManager, int thisStep,
+					int totalSteps)
+			{
+			}
+		};
 
 		solver.getSolutionGenerator().addReadyListener(_gaStepListener);
 		solver.getContributions().addContributionsChangedListener(
