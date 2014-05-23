@@ -1509,21 +1509,21 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.add(ts1);
 		tw.add(ts2);
 		tw.add(ts3);
+		
+		Editable[] items = new TrackSegment[3];
+		int ctr = 0;
+		items[ctr++] = ts1;
+		items[ctr++] = ts2;
+		items[ctr++] = ts3;
 
-		final Enumeration<Editable> data = tw.elements();
-		final SegmentList sl = (SegmentList) data.nextElement();
-
-		// check it's got the segs
-		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 15, tw.numFixes());
-
+		TrackWrapper newTrack = new TrackWrapper();
+		newTrack.setName("Merged");
+		Layers theLayers = new Layers();
+		
+		TrackWrapper.mergeTracks(newTrack, theLayers, items);
 		// do the merge
-		sl.mergeAllSegments();
 
-		assertEquals("has merged", "Track segments (1 items)", sl.toString());
-		assertEquals("track has correct data", "Positions (15 items)", tw
-				.elements().nextElement().toString());
-		assertEquals("has all fixes", 15, tw.numFixes());
+		assertEquals("has all fixes", 15, newTrack.numFixes());
 
 		assertEquals("correct start time", 110000, tw.getStartDTG().getDate()
 				.getTime());

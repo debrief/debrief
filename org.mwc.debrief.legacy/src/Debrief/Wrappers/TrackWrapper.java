@@ -308,15 +308,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the parent tracks for the supplied items
 	 * @param subjects
 	 *          the actual selected items
-	 * @param _newName  name to give to the merged object
+	 * @param _newName
+	 *          name to give to the merged object
 	 * @return sufficient information to undo the merge
 	 */
-	public static int mergeTracks(final Editable recipient, final Layers theLayers,
-			final Editable[] subjects)
+	public static int mergeTracks(final Editable recipient,
+			final Layers theLayers, final Editable[] subjects)
 	{
 		// where we dump the new data points
 		TrackWrapper newTrack = (TrackWrapper) recipient;
-		
+
 		// check that the legs don't overlap
 		String failedMsg = checkTheyAreNotOverlapping(subjects);
 
@@ -333,91 +334,96 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		for (int i = 0; i < subjects.length; i++)
 		{
 			final Layer thisL = (Layer) subjects[i];
-			
-			// is this the target item (note we're comparing against the item
-			// passed in, not our temporary receiver, since the receiver may now be a tracksegment,
-			// not a TMA segment
-			if (thisL != newTrack)
-			{
-				// is it a plain segment?
-				if (thisL instanceof TrackWrapper)
-				{
-					// pass down through the positions/segments
-					final Enumeration<Editable> pts = thisL.elements();
 
-					while (pts.hasMoreElements())
-					{
-						final Editable obj = pts.nextElement();
-						if (obj instanceof SegmentList)
-						{
-							final SegmentList sl = (SegmentList) obj;
-							final Enumeration<Editable> segs = sl.elements();
-							while (segs.hasMoreElements())
-							{
-								final TrackSegment ts = (TrackSegment) segs.nextElement();
-								
-								if(ts instanceof CoreTMASegment)
-								{
-									CoreTMASegment ct = (CoreTMASegment) ts;
-									// ok, we need to duplicate this track segment
-									final TrackSegment newSeg = new TrackSegment(ct);
-									newTrack.add(newSeg);
-									
-								}
-								else
-								{
-									System.err.println("NOT RECEIVED EXPECTED OBJECT IN MERGE");
-								}
-							}
-						}
-						else if(obj instanceof TrackSegment)
-						{
-							TrackSegment ts = (TrackSegment) obj;
-							
-							// ok, duplicate the fixes in this segment
-							TrackSegment newT = duplicateFixes(ts);
-							
-							// and add it to the new track
-							newTrack.append(newT);
-						}
-					}
-				}
-				else
+			// is it a plain segment?
+			if (thisL instanceof TrackWrapper)
+			{
+				// pass down through the positions/segments
+				final Enumeration<Editable> pts = thisL.elements();
+
+				while (pts.hasMoreElements())
 				{
-				 if(thisL instanceof TrackSegment)
+					final Editable obj = pts.nextElement();
+					if (obj instanceof SegmentList)
 					{
-						TrackSegment ts = (TrackSegment) thisL;
-						
+						final SegmentList sl = (SegmentList) obj;
+						TrackSegment newT = new TrackSegment(); 
+						duplicateFixes(sl, newT);
+						newTrack.add(newT);
+					}
+					else if (obj instanceof TrackSegment)
+					{
+						TrackSegment ts = (TrackSegment) obj;
+
 						// ok, duplicate the fixes in this segment
-						TrackSegment newT = duplicateFixes(ts);
-						
+						TrackSegment newT = new TrackSegment(); 
+						duplicateFixes(ts, newT);
+
 						// and add it to the new track
 						newTrack.append(newT);
 					}
 				}
 			}
+			else if (thisL instanceof TrackSegment)
+			{
+				TrackSegment ts = (TrackSegment) thisL;
+
+				// ok, duplicate the fixes in this segment
+				TrackSegment newT = new TrackSegment(); 
+				duplicateFixes(ts, newT);
+
+				// and add it to the new track
+				newTrack.append(newT);
+			}
+			else if (thisL instanceof SegmentList)
+			{
+				SegmentList sl = (SegmentList) thisL;
+				TrackSegment newT = new TrackSegment(); 
+				
+				// ok, duplicate the fixes in this segment
+				duplicateFixes(sl, newT);
+
+				// and add it to the new track
+				newTrack.append(newT);
+			}
 		}
-		
+
 		// and store the new track
 		theLayers.addThisLayer(newTrack);
-
 
 		return MessageProvider.OK;
 	}
 
-	private static TrackSegment duplicateFixes(TrackSegment ts)
+	private static void duplicateFixes(SegmentList sl, TrackSegment target)
+	{		
+		final Enumeration<Editable> segs = sl.elements();
+		while (segs.hasMoreElements())
+		{
+			final TrackSegment segment = (TrackSegment) segs.nextElement();
+
+			if (segment instanceof CoreTMASegment)
+			{
+				CoreTMASegment ct = (CoreTMASegment) segment;
+				TrackSegment newSeg = new TrackSegment(ct);
+				duplicateFixes(newSeg, target);
+			}
+			else
+			{
+				duplicateFixes(segment, target);			
+			}
+		}
+	}
+
+	private static void duplicateFixes(TrackSegment source, TrackSegment target)
 	{
 		// ok, retrieve the points in the track segment
-		Enumeration<Editable> tsPts = ts.elements();
-		SortedSet<Editable> newPoints = new TreeSet<Editable>();
-		while(tsPts.hasMoreElements())
+		Enumeration<Editable> tsPts = source.elements();
+		while (tsPts.hasMoreElements())
 		{
 			FixWrapper existingFix = (FixWrapper) tsPts.nextElement();
 			FixWrapper newF = new FixWrapper(existingFix.getFix());
-			newPoints.add(newF);
+			target.addFix(newF);
 		}
-		TrackSegment newT = new TrackSegment(newPoints);
-		return newT;
 	}
 
 	private static String checkTheyAreNotOverlapping(final Editable[] subjects)
@@ -2315,29 +2321,29 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 
 			}// while fixWrappers has more elements
-			
+
 			// SPECIAL HANDLING, IF IT'S A TMA SEGMENT PLOT THE VECTOR LABEL
-			// 
-			if(seg instanceof CoreTMASegment)
+			//
+			if (seg instanceof CoreTMASegment)
 			{
 				CoreTMASegment tma = (CoreTMASegment) seg;
-				
+
 				WorldLocation firstLoc = seg.first().getBounds().getCentre();
 				WorldLocation lastLoc = seg.last().getBounds().getCentre();
 				Font f = new Font("Sans Serif", Font.PLAIN, 11);
 				Color c = _theLabel.getColor();
-				
+
 				// tell the segment it's being stretched
 				final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(tma.getSpeed().getValueIn(WorldSpeed.Kts));
 
 				// copied this text from RelativeTMASegment
-				double courseVal =  tma.getCourse();
-				if(courseVal < 0)
+				double courseVal = tma.getCourse();
+				if (courseVal < 0)
 					courseVal += 360;
-				
+
 				String textLabel = "[" + spdTxt + " kts " + (int) courseVal + "\u00B0]";
-				
+
 				// ok, now plot it
 				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
 						lastLoc, 1.2, true);
@@ -2345,8 +2351,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				CanvasTypeUtilities.drawLabelOnLine(dest, textLabel, f, c, firstLoc,
 						lastLoc, 1.2, false);
 			}
-			
-
 
 			// ok, just see if we have any pending polylines to paint
 			paintSetOfPositions(dest, lastCol, thisLineStyle);

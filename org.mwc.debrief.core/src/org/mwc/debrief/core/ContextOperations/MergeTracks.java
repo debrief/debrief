@@ -40,9 +40,10 @@ public class MergeTracks implements RightClickContextItemGenerator
 			final Layer[] parentLayers, final Editable[] subjects)
 	{
 		int validItems = 0;
+		String targetTrackName = null;
 
 		// we're only going to work with two or more items
-		if (subjects.length > 1)
+		if (subjects.length >= 1)
 		{
 			// are they tracks, or track segments
 			for (int i = 0; i < subjects.length; i++)
@@ -52,15 +53,24 @@ public class MergeTracks implements RightClickContextItemGenerator
 				if (thisE instanceof TrackWrapper)
 				{
 					goForIt = true;
+					validItems++;
 				}
 				else if (thisE instanceof TrackSegment)
 				{
 					goForIt = true;
+					validItems++;
+				}
+				else if(thisE instanceof SegmentList)
+				{
+					goForIt = true;
+					
+					SegmentList sl = (SegmentList) thisE;
+					targetTrackName = sl.getWrapper().getName() + " (Merged)";
+					validItems += sl.size();
 				}
 
 				if (goForIt)
 				{
-					validItems++;
 				}
 				else
 				{
@@ -77,10 +87,13 @@ public class MergeTracks implements RightClickContextItemGenerator
 			parent.add(new Separator());
 
 			final Editable editable = subjects[0];
-			final String newName = editable.getName() + " (Merged)";
-			final String title = "Merge tracks into " + newName;
+			if(targetTrackName == null)
+			{
+				targetTrackName = editable.getName() + " (Merged)";
+			}
+			final String title = "Merge tracks into " + targetTrackName;
 			final TrackWrapper newTrack = new TrackWrapper();
-			newTrack.setName(newName);
+			newTrack.setName(targetTrackName);
 			// create this operation
 			final Action doMerge = new Action(title)
 			{
