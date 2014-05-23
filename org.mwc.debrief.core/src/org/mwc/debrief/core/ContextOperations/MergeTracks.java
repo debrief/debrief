@@ -77,14 +77,17 @@ public class MergeTracks implements RightClickContextItemGenerator
 			parent.add(new Separator());
 
 			final Editable editable = subjects[0];
-			final String title = "Merge tracks into " + editable.getName();
+			final String newName = editable.getName() + " (Merged)";
+			final String title = "Merge tracks into " + newName;
+			final TrackWrapper newTrack = new TrackWrapper();
+			newTrack.setName(newName);
 			// create this operation
 			final Action doMerge = new Action(title)
 			{
 				public void run()
 				{
 					final IUndoableOperation theAction = new MergeTracksOperation(title,
-							editable, theLayers, parentLayers, subjects);
+							newTrack, theLayers, parentLayers, subjects);
 
 					CorePlugin.run(theAction);
 				}
@@ -157,11 +160,11 @@ public class MergeTracks implements RightClickContextItemGenerator
 		private final Editable[] _subjects;
 		private final Editable _target;
 
-		public MergeTracksOperation(final String title, final Editable editable,
+		public MergeTracksOperation(final String title, final Editable target,
 				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
 		{
 			super(title);
-			_target = editable;
+			_target = target;
 			_layers = theLayers;
 			_parents = parentLayers;
 			_subjects = subjects;
@@ -170,9 +173,20 @@ public class MergeTracks implements RightClickContextItemGenerator
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			final int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
+			final int res = TrackWrapper.mergeTracks(_target, _layers, _subjects);
+			
+			// ok, we can also hide the parent
+			
 			if (res == IStatus.OK)
+			{
+				// it worked, so switch off the composite track
+				TrackWrapper oldParent = (TrackWrapper) _parents[0];				
+				oldParent.setVisible(false);
+				
+				// and talk about the UI update
 				fireModified();
+			}
+			
 			return Status.OK_STATUS;
 		}
 
