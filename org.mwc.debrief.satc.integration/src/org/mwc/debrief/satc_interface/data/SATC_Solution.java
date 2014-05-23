@@ -17,7 +17,6 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -90,6 +89,170 @@ public class SATC_Solution extends BaseLayer implements
 		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
 		BaseLayer.ProvidesRange, ISecondaryTrack, NonColoredWatchable
 {
+	
+	/** utility class to work through a route
+	 * 
+	 * @author ian
+	 *
+	 */
+	private static class DoPaint implements RouteStepper
+	{
+		private static final double LEG_LABEL_CLIPPING_THRESHOLD = 1.1;
+		private Point lastPt = null;
+		private final CanvasType _dest;
+		private final float oldWid;
+		private final Color myColor;
+
+		public DoPaint(final CanvasType dest, final Color theColor)
+		{
+			_dest = dest;
+			oldWid = _dest.getLineWidth();
+			_dest.setLineWidth(5.0f);
+			myColor = theColor;
+		}
+
+		@Override
+		public void finish()
+		{
+			_dest.setLineWidth(oldWid);
+			_dest.setLineStyle(CanvasType.SOLID);
+		}
+
+		@Override
+		public void legComplete(final CoreRoute thisRoute)
+		{
+			// is it straight? or altering
+			if (thisRoute.getType() == LegType.STRAIGHT)
+			{
+				final StraightRoute straight = (StraightRoute) thisRoute;
+
+				// get the first point
+				final State firstState = thisRoute.getStates().get(0);
+				final State lastState = thisRoute.getStates().get(
+						thisRoute.getStates().size() - 1);
+
+				final Color theColor;
+
+				if (firstState.getColor() != null)
+					theColor = firstState.getColor();
+				else
+					theColor = Color.red;
+
+				final Font theFont = LEG_NAME_FONT;
+				final WorldLocation firstLoc = conversions.toLocation(firstState
+						.getLocation().getCoordinate());
+				final WorldLocation lastLoc = conversions.toLocation(lastState
+						.getLocation().getCoordinate());
+
+				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
+						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD,
+						true);
+
+				final String vectorDescription = String.format("%.1f", new WorldSpeed(
+						straight.getSpeed(), WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts))
+						+ " kts "
+						+ String.format("%.0f",
+								Math.toDegrees(MathUtils.normalizeAngle(straight.getCourse())))
+						+ "\u00B0";
+
+				CanvasTypeUtilities.drawLabelOnLine(_dest, vectorDescription, theFont,
+						theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD, false);
+			}
+
+		}
+
+		@Override
+		public void reset()
+		{
+			lastPt = null;
+		}
+
+		@Override
+		public void step(final CoreRoute thisRoute, final State thisState)
+		{
+			final com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+			// convert to screen
+			final WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
+
+			final Point screenPt = _dest.toScreen(wLoc);
+
+			if (lastPt != null)
+			{
+				// is it straight? or altering
+				if (thisRoute.getType() == LegType.STRAIGHT)
+					_dest.setLineStyle(CanvasType.SOLID);
+				else
+					_dest.setLineStyle(CanvasType.DOTTED);
+
+				// does this state have a color?
+				if (thisState.getColor() != null)
+					_dest.setColor(thisState.getColor());
+				else
+					_dest.setColor(myColor);
+
+				// draw the line
+				_dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
+			}
+
+			lastPt = screenPt;
+		}
+	}
+
+	private static class MeasureRange implements RouteStepper
+	{
+
+		final private WorldLocation origin;
+		double minRange = Double.MAX_VALUE;
+
+		public MeasureRange(final WorldLocation origin)
+		{
+			this.origin = origin;
+		}
+
+		@Override
+		public void finish()
+		{
+		}
+
+		public final double getMinRange()
+		{
+			return minRange;
+		}
+
+		@Override
+		public void legComplete(final CoreRoute thisRoute)
+		{
+		}
+
+		@Override
+		public void reset()
+		{
+		}
+
+		@Override
+		public void step(final CoreRoute thisRoute, final State thisState)
+		{
+			final com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+			// convert to our coord system
+			final WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
+			final double range = wLoc.rangeFrom(origin);
+			minRange = Math.min(range, minRange);
+		}
+	}
+
+	private static interface RouteStepper
+	{
+
+		public abstract void finish();
+
+		public abstract void legComplete(CoreRoute thisRoute);
+
+		public abstract void reset();
+
+		public abstract void step(CoreRoute thisRoute, State thisState);
+
+	}
+
 	// ///////////////////////////////////////////////////////////
 	// info class
 	// //////////////////////////////////////////////////////////
@@ -101,34 +264,9 @@ public class SATC_Solution extends BaseLayer implements
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public SATC_Info(SATC_Solution data)
+		public SATC_Info(final SATC_Solution data)
 		{
 			super(data, data.getName(), "");
-		}
-
-		@Override
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				PropertyDescriptor[] res =
-				{
-						prop("ShowLocationConstraints",
-								"whether to display location constraints", FORMAT),
-						prop("OnlyPlotLegEnds",
-								"whether to only plot location bounds at leg ends", FORMAT),
-						prop("ShowSolutions", "whether to display solutions", FORMAT),
-						prop("Name", "the name for this solution", EditorType.FORMAT),
-						prop("Color", "the color to display this solution",
-								EditorType.FORMAT),
-						prop("Visible", "whether to plot this solution", VISIBILITY) };
-
-				return res;
-			}
-			catch (IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
 		}
 
 		@Override
@@ -142,6 +280,120 @@ public class SATC_Solution extends BaseLayer implements
 					method(c, "recalculate", null, "Recalculate solutions") };
 
 			return mds;
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+						prop("ShowLocationConstraints",
+								"whether to display location constraints", FORMAT),
+						prop("OnlyPlotLegEnds",
+								"whether to only plot location bounds at leg ends", FORMAT),
+						prop("ShowSolutions", "whether to display solutions", FORMAT),
+						prop("Name", "the name for this solution", EditorType.FORMAT),
+						prop("Color", "the color to display this solution",
+								EditorType.FORMAT),
+						prop("Visible", "whether to plot this solution", VISIBILITY) };
+
+				return res;
+			}
+			catch (final IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+
+	}
+
+	protected static class WrappedState implements Watchable, Editable
+	{
+
+		private final State state;
+		private WorldLocation loc;
+		private boolean isVis = true;
+
+		public WrappedState(final State state)
+		{
+			this.state = state;
+		}
+
+		@Override
+		public WorldArea getBounds()
+		{
+			return new WorldArea(getLocation(), getLocation());
+		}
+
+		@Override
+		public Color getColor()
+		{
+			return state.getColor();
+		}
+
+		@Override
+		public double getCourse()
+		{
+			return state.getCourse();
+		}
+
+		@Override
+		public double getDepth()
+		{
+			return 0;
+		}
+
+		@Override
+		public EditorType getInfo()
+		{
+			return null;
+		}
+
+		@Override
+		public WorldLocation getLocation()
+		{
+			if (loc == null)
+				loc = conversions.toLocation(state.getLocation().getCoordinate());
+
+			return loc;
+		}
+
+		@Override
+		public String getName()
+		{
+			return DebriefFormatDateTime.toString(state.getTime().getTime());
+		}
+
+		@Override
+		public double getSpeed()
+		{
+			return MWC.Algorithms.Conversions.Mps2Kts(state.getSpeed());
+		}
+
+		@Override
+		public HiResDate getTime()
+		{
+			return new HiResDate(state.getTime().getTime());
+		}
+
+		@Override
+		public boolean getVisible()
+		{
+			return isVis;
+		}
+
+		@Override
+		public boolean hasEditor()
+		{
+			return false;
+		}
+
+		@Override
+		public void setVisible(final boolean val)
+		{
+			isVis = val;
 		}
 
 	}
@@ -186,15 +438,17 @@ public class SATC_Solution extends BaseLayer implements
 
 	private IGASolutionsListener _gaStepListener;
 
-	/** we remember the most recent score, to decide if it should be presented to the user
+	/**
+	 * we remember the most recent score, to decide if it should be presented to
+	 * the user
 	 * 
 	 */
 	protected Double _currentScore;
 
 	private PlainSymbol mySymbol;
 
-
-	/** wrap the provided solution
+	/**
+	 * wrap the provided solution
 	 * 
 	 * @param newSolution
 	 */
@@ -211,7 +465,7 @@ public class SATC_Solution extends BaseLayer implements
 		listenToSolver(_mySolver);
 	}
 
-	public void addContribution(BaseContribution cont)
+	public void addContribution(final BaseContribution cont)
 	{
 		_mySolver.getContributions().addContribution(cont);
 
@@ -225,6 +479,116 @@ public class SATC_Solution extends BaseLayer implements
 		else
 			thisW = new ContributionWrapper(cont);
 		super.add(thisW);
+	}
+
+	@Override
+	public void beingRemoved()
+	{
+		// get the manager
+		final ISolversManager mgr = SATC_Activator.getDefault().getService(
+				ISolversManager.class, true);
+
+		mgr.deactivateSolverIfActive(_mySolver);
+	}
+
+	/**
+	 * whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
+
+	/**
+	 * convert this solution into a formal track
+	 * 
+	 */
+	public void convertToLegs()
+	{
+		// check if we have any solutions
+		if ((_newRoutes == null) || (_newRoutes.length == 0))
+		{
+			CorePlugin.errorDialog("Convert solution to track",
+					"Sorry, this solution contains no generated routes");
+		}
+		else
+		{
+
+			for (int i = 0; i < _newRoutes.length; i++)
+			{
+				final CompositeRoute thisR = _newRoutes[i];
+
+				// the output track
+				final TrackWrapper newT = new TrackWrapper();
+				newT.setName(getName() + "_" + i);
+
+				final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+				while (legs.hasNext())
+				{
+					final CoreRoute thisLeg = legs.next();
+					if (thisLeg instanceof StraightRoute)
+					{
+						final StraightRoute straight = (StraightRoute) thisLeg;
+
+						// ok - produce a TMA leg
+						final double courseDegs = Math.toDegrees(straight.getCourse());
+						final WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
+								WorldSpeed.M_sec);
+						final WorldLocation origin = conversions.toLocation(straight
+								.getStartPoint().getCoordinate());
+						final HiResDate startTime = new HiResDate(straight.getStartTime()
+								.getTime());
+						final HiResDate endTime = new HiResDate(straight.getEndTime()
+								.getTime());
+
+						final AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs,
+								speed, origin, startTime, endTime);
+						abs.setName(straight.getName());
+						newT.add(abs);
+						abs.setName(straight.getName());
+					}
+					else if (thisLeg instanceof AlteringRoute)
+					{
+						final AlteringRoute altering = (AlteringRoute) thisLeg;
+
+						final TrackSegment segment = new TrackSegment();
+						segment.setName(altering.getName());
+
+						final ArrayList<State> states = altering.getStates();
+						for (final State thisS : states)
+						{
+							final double theCourse = thisS.getCourse();
+							final WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
+									WorldSpeed.M_sec);
+							final WorldLocation theLocation = conversions.toLocation(thisS
+									.getLocation().getCoordinate());
+							final HiResDate theTime = new HiResDate(thisS.getTime().getTime());
+
+							final Fix theFix = new Fix(theTime, theLocation, theCourse,
+									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
+							final FixWrapper newFix = new FixWrapper(theFix);
+							newFix.resetName();
+							segment.addFix(newFix);
+						}
+
+						// make it dotted, that's our way of doing it.
+						segment.setLineStyle(CanvasType.DOTTED);
+
+						newT.add(segment);
+					}
+					else
+						DebriefPlugin.logError(IStatus.ERROR,
+								"Unexpected type of route encountered:" + thisLeg, null);
+				}
+
+				// and store it
+				_myLayers.addThisLayer(newT);
+
+			}
+		}
 	}
 
 	/**
@@ -243,31 +607,31 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			for (int i = 0; i < _newRoutes.length; i++)
 			{
-				CompositeRoute thisR = _newRoutes[i];
+				final CompositeRoute thisR = _newRoutes[i];
 
 				// the output track
-				TrackWrapper newT = new TrackWrapper();
+				final TrackWrapper newT = new TrackWrapper();
 				newT.setName(getName() + "_" + i);
 
 				// loop through the legs
-				Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+				final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
 				while (legs.hasNext())
 				{
-					CoreRoute thisLeg = (CoreRoute) legs.next();
+					final CoreRoute thisLeg = legs.next();
 
 					// ok, loop through the states
-					Iterator<State> iter = thisLeg.getStates().iterator();
+					final Iterator<State> iter = thisLeg.getStates().iterator();
 					while (iter.hasNext())
 					{
-						State state = (State) iter.next();
-						WorldLocation theLoc = conversions.toLocation(state.getLocation()
-								.getCoordinate());
-						double theCourse = state.getCourse();
-						double theSpeed = new WorldSpeed(state.getSpeed(), WorldSpeed.M_sec)
-								.getValueIn(WorldSpeed.ft_sec / 3);
-						Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
+						final State state = iter.next();
+						final WorldLocation theLoc = conversions.toLocation(state
+								.getLocation().getCoordinate());
+						final double theCourse = state.getCourse();
+						final double theSpeed = new WorldSpeed(state.getSpeed(),
+								WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec / 3);
+						final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
 								theLoc, theCourse, theSpeed);
-						FixWrapper newFW = new FixWrapper(newF);
+						final FixWrapper newFW = new FixWrapper(newF);
 						newT.addFix(newFW);
 					}
 				}
@@ -278,20 +642,520 @@ public class SATC_Solution extends BaseLayer implements
 		}
 	}
 
-	/**
-	 * whether this type of BaseLayer is able to have shapes added to it
-	 * 
-	 * @return
-	 */
 	@Override
-	public boolean canTakeShapes()
+	public void filterListTo(final HiResDate start, final HiResDate end)
 	{
-		return false;
+	}
+
+	@Override
+	protected void finalize() throws Throwable
+	{
+		super.finalize();
+
+		_mySolver.getSolutionGenerator().removeReadyListener(_gaStepListener);
+		_mySolver.getContributions().removeContributionsChangedListener(
+				_contributionsListener);
+		_mySolver.getBoundsManager().removeConstrainSpaceListener(
+				_constrainListener);
+		_myLayers = null;
 	}
 
 	protected void fireRepaint()
 	{
 		super.firePropertyChange(SupportsPropertyListeners.FORMAT, null, this);
+	}
+
+	protected void fireTrackShifted()
+	{
+		final WatchableList wl = this;
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				// if the current editor is a track data provider,
+				// tell it that we've shifted
+				final IWorkbench wb = PlatformUI.getWorkbench();
+				final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				if (win != null)
+				{
+					final IWorkbenchPage page = win.getActivePage();
+					final IEditorPart editor = page.getActiveEditor();
+					final TrackDataProvider dataMgr = (TrackDataProvider) editor
+							.getAdapter(TrackDataProvider.class);
+					// is it one of ours?
+					if (dataMgr != null)
+					{
+						{
+							dataMgr.fireTrackShift(wl);
+						}
+					}
+				}
+
+			}
+		});
+
+	}
+
+	@Override
+	public Color getColor()
+	{
+		return _myColor;
+	}
+
+	@Override
+	public HiResDate getEndDTG()
+	{
+		return new HiResDate(_mySolver.getProblemSpace().getFinishDate());
+	}
+
+	@Override
+	public EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new SATC_Info(this);
+
+		return _myEditor;
+	}
+
+	@Override
+	public Collection<Editable> getItemsBetween(final HiResDate start,
+			final HiResDate end)
+	{
+		final Collection<Editable> items = new ArrayList<Editable>();
+		final ArrayList<State> states = new ArrayList<State>();
+
+		final long startT = start.getDate().getTime();
+		final long finishT = end.getDate().getTime();
+
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			final CompositeRoute route = _newRoutes[0];
+
+			final Iterator<CoreRoute> legs = route.getLegs().iterator();
+			while (legs.hasNext())
+			{
+				final CoreRoute thisLeg = legs.next();
+				final Iterator<State> theStates = thisLeg.getStates().iterator();
+				while (theStates.hasNext())
+				{
+					final State state = theStates.next();
+
+					// does it even have a location?
+					if (state.getLocation() != null)
+					{
+						final long thisTime = state.getTime().getTime();
+						if ((thisTime >= startT) && (thisTime <= finishT))
+						{
+							// check we haven't just stored a state at this
+							// time,
+							// JFReeChart plotting doesn't like it.
+							if (states.size() > 0)
+							{
+								final Date lastTime = states.get(states.size() - 1).getTime();
+								if (lastTime.getTime() != thisTime)
+								{
+									states.add(state);
+								}
+							}
+							else
+								states.add(state);
+						}
+					}
+				}
+			}
+		}
+
+		// ok, wrap the states
+		final Iterator<State> iter = states.iterator();
+		while (iter.hasNext())
+		{
+			final State state = iter.next();
+			items.add(wrapThis(state));
+		}
+
+		Collection<Editable> res = null;
+		if (items.size() > 0)
+		{
+			res = items;
+		}
+		return res;
+	}
+
+	@Override
+	public Watchable[] getNearestTo(final HiResDate DTG)
+	{
+		final ArrayList<Watchable> items = new ArrayList<Watchable>();
+
+		final long time = DTG.getDate().getTime();
+
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			final CompositeRoute route = _newRoutes[0];
+
+			final Iterator<CoreRoute> legs = route.getLegs().iterator();
+			while (legs.hasNext())
+			{
+				final CoreRoute thisLeg = legs.next();
+				final Iterator<State> states = thisLeg.getStates().iterator();
+				while (states.hasNext())
+				{
+					final State state = states.next();
+					// does it even have a location?
+					if (state.getLocation() != null)
+					{
+						if (state.getTime().getTime() > time)
+						{
+
+							items.add(wrapThis(state));
+							return items.toArray(new Watchable[]
+							{});
+						}
+					}
+				}
+			}
+
+		}
+
+		return items.toArray(new Watchable[]
+		{});
+	}
+
+	public boolean getOnlyPlotLegEnds()
+	{
+		return _onlyPlotLegEnds;
+	}
+
+	public boolean getShowLocationConstraints()
+	{
+		return _showLocationBounds;
+	}
+
+	public boolean getShowSolutions()
+	{
+		return _showSolutions;
+	}
+
+	@Override
+	public PlainSymbol getSnailShape()
+	{
+		if (mySymbol == null)
+			mySymbol = SymbolFactory.createSymbol(SymbolFactory.DEFAULT_SYMBOL_TYPE);
+
+		return mySymbol;
+	}
+
+	public ISolver getSolver()
+	{
+		return _mySolver;
+	}
+
+	@Override
+	public HiResDate getStartDTG()
+	{
+		return new HiResDate(_mySolver.getProblemSpace().getStartDate());
+	}
+
+	@Override
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean hasOrderedChildren()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean isBuffered()
+	{
+		return false;
+	}
+
+	private void listenToSolver(final ISolver solver)
+	{
+
+		_gaStepListener = new IGASolutionsListener()
+		{
+			@Override
+			public void finishedGeneration(final Throwable error)
+			{
+			}
+
+			@Override
+			public void iterationComputed(final List<CompositeRoute> topRoutes,
+					final double topScore)
+			{
+				// store the most recent score - so we can
+				// decide whether to bother showing a result to the user
+				_currentScore = topScore;
+			}
+
+			@Override
+			public void solutionsReady(final CompositeRoute[] routes)
+			{
+				// just double-check that the score is acceptable
+				if ((_currentScore != null) && (_currentScore > 10))
+				{
+					// hey, skip it, no good solutions
+					CorePlugin
+							.errorDialog("Generate TMA Solutions",
+									"It was not possible to generate a candidate solution from the supplied data");
+				}
+				else
+				{
+					// ok, either there isn't a current score (non-GA solver),
+					// or the score is acceptable
+
+					_newRoutes = routes;
+
+					// tell the layer manager that we've changed
+					fireTrackShifted();
+
+					// hey, trigger repaint
+					fireRepaint();
+				}
+			}
+
+			@Override
+			public void startingGeneration()
+			{
+				// ditch any existing routes
+				_newRoutes = null;
+
+				// clear the top score counter
+				_currentScore = null;
+			}
+		};
+
+		_contributionsListener = new IContributionsChangedListener()
+		{
+
+			@Override
+			public void added(final BaseContribution contribution)
+			{
+				// fireRepaint();
+				fireExtended();
+			}
+
+			public void fireExtended()
+			{
+				firePropertyChange(SupportsPropertyListeners.EXTENDED, null, this);
+			}
+
+			@Override
+			public void removed(final BaseContribution contribution)
+			{
+
+				// hey, are we still storing this?
+				Editable toBeRemoved = null;
+
+				// get read-only version of elements
+				final ReadOnlyIterator rIter = new ReadOnlyIterator(getData()
+						.iterator());
+				while (rIter.hasNext())
+				{
+					final Editable editable = (Editable) rIter.next();
+					final ContributionWrapper cw = (ContributionWrapper) editable;
+					if (cw.getContribution() == contribution)
+					{
+						// _mySolver.getContributions().removeContribution(contribution);
+						toBeRemoved = cw;
+					}
+				}
+
+				if (toBeRemoved != null)
+				{
+					// ditch it from the parent (but don't trigger the remote updates to
+					// fire)
+					SATC_Solution.super.removeElement(toBeRemoved);
+				}
+				else
+				{
+					SATC_Activator
+							.log(
+									IStatus.ERROR,
+									"We were asked to remove a contribution, but we didn't have it stored in the Layer",
+									null);
+				}
+
+				fireExtended();
+			}
+		};
+
+		_constrainListener = new IConstrainSpaceListener()
+		{
+			@Override
+			public void error(final IBoundsManager boundsManager,
+					final IncompatibleStateException ex)
+			{
+				_lastStates = null;
+			}
+
+			@Override
+			public void restarted(final IBoundsManager boundsManager)
+			{
+				_lastStates = null;
+				_newRoutes = null;
+			}
+
+			@Override
+			public void statesBounded(final IBoundsManager boundsManager)
+			{
+				// ok, better to plot them then!
+				_lastStates = _mySolver.getProblemSpace().states();
+				fireRepaint();
+			}
+
+			@Override
+			public void stepped(final IBoundsManager boundsManager,
+					final int thisStep, final int totalSteps)
+			{
+			}
+		};
+
+		solver.getSolutionGenerator().addReadyListener(_gaStepListener);
+		solver.getContributions().addContributionsChangedListener(
+				_contributionsListener);
+		solver.getBoundsManager().addConstrainSpaceListener(_constrainListener);
+	}
+
+	@Override
+	public void paint(final CanvasType dest)
+	{
+		if (getVisible())
+		{
+			dest.setColor(_myColor);
+			if (_lastStates != null)
+			{
+				if (_showLocationBounds)
+					paintThese(dest, _lastStates);
+			}
+
+			dest.setColor(_myColor);
+			if (_newRoutes != null)
+			{
+				paintThese(dest, _newRoutes);
+			}
+		}
+	}
+
+	private void paintThese(final CanvasType dest,
+			final Collection<BoundedState> states)
+	{
+		// keep track of the leg name of the previous leg - we
+		// use it to track which leg we're in.
+		String lastName = null;
+
+		// work through the location bounds
+		for (final Iterator<BoundedState> iterator = states.iterator(); iterator
+				.hasNext();)
+		{
+			final BoundedState thisS = iterator.next();
+
+			// do some fancy tests for if users only want the
+			// states that appear at leg ends
+			final boolean isLastOne = !iterator.hasNext();
+			final boolean isDifferentLeg = thisS.getMemberOf() != lastName;
+			final boolean isLegEnd = isLastOne || isDifferentLeg;
+
+			final boolean plotThisOne = !_onlyPlotLegEnds // users want all of them
+					|| (_onlyPlotLegEnds && isLegEnd); // users only want
+			// leg ends, and this is one
+
+			if (plotThisOne && thisS.getLocation() != null)
+			{
+				// get the color for this state
+				Color thisCol = thisS.getColor();
+
+				// do we have one? if not, use the color for the whole solution
+				if (thisCol == null)
+					thisCol = this.getColor();
+
+				// ok, make the color a little darker
+				final Color newCol = thisCol.darker();
+				dest.setColor(newCol);
+
+				lastName = thisS.getMemberOf();
+
+				final LocationRange theLoc = thisS.getLocation();
+				final Coordinate[] pts = theLoc.getGeometry().getCoordinates();
+
+				final int[] xPoints = new int[pts.length];
+				final int[] yPoints = new int[pts.length];
+
+				// collate polygon
+				for (int i = 0; i < pts.length; i++)
+				{
+					final Coordinate thisC = pts[i];
+					final WorldLocation thisLocation = conversions.toLocation(thisC);
+					final Point pt = dest.toScreen(thisLocation);
+					xPoints[i] = pt.x;
+					yPoints[i] = pt.y;
+				}
+
+				// fill in the polygons, if we can
+				if (dest instanceof ExtendedCanvasType)
+				{
+					final ExtendedCanvasType extended = (ExtendedCanvasType) dest;
+					extended.semiFillPolygon(xPoints, yPoints, pts.length);
+				}
+
+				// and a border
+				if (isLegEnd)
+					dest.setLineStyle(CanvasType.SOLID);
+				else
+					dest.setLineStyle(CanvasType.DOTTED);
+
+				dest.setLineWidth(0.0f);
+				dest.drawPolygon(xPoints, yPoints, xPoints.length);
+			}
+		}
+	}
+
+	private void paintThese(final CanvasType dest, final CompositeRoute[] routes)
+	{
+		final RouteStepper painter = new DoPaint(dest, _myColor);
+		walkRoute(routes, painter);
+	}
+
+	@Override
+	public double rangeFrom(final WorldLocation other)
+	{
+		double res = -1;
+		if ((_newRoutes != null) && (_newRoutes.length > 0))
+		{
+			final MeasureRange mr = new MeasureRange(other);
+			walkRoute(_newRoutes, mr);
+			res = mr.getMinRange();
+		}
+		return res;
+	}
+
+	public void recalculate()
+	{
+		_mySolver.run(true, true);
+	}
+
+	@Override
+	public void removeElement(final Editable p)
+	{
+		// ditch it from the parent
+		super.removeElement(p);
+
+		// get the ocntribution itself
+		final ContributionWrapper cw = (ContributionWrapper) p;
+		final BaseContribution comp = cw.getContribution();
+
+		// also remove it from the manager component
+		_mySolver.getContributions().removeContribution(comp);
 	}
 
 	/**
@@ -302,7 +1166,7 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public Enumeration<Editable> segments()
 	{
-		Vector<Editable> res = new Vector<Editable>();
+		final Vector<Editable> res = new Vector<Editable>();
 
 		// ok, loop through the legs, representing each one as a track segment
 		// check if we have any solutions
@@ -311,29 +1175,29 @@ public class SATC_Solution extends BaseLayer implements
 		}
 		else
 		{
-			CompositeRoute thisR = _newRoutes[0];
+			final CompositeRoute thisR = _newRoutes[0];
 
 			// loop through the legs
-			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+			final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
 			while (legs.hasNext())
 			{
-				TrackSegment ts = new TrackSegment();
+				final TrackSegment ts = new TrackSegment();
 
-				CoreRoute thisLeg = (CoreRoute) legs.next();
+				final CoreRoute thisLeg = legs.next();
 
 				// ok, loop through the states
-				Iterator<State> iter = thisLeg.getStates().iterator();
+				final Iterator<State> iter = thisLeg.getStates().iterator();
 				while (iter.hasNext())
 				{
-					State state = (State) iter.next();
-					WorldLocation theLoc = conversions.toLocation(state.getLocation()
-							.getCoordinate());
-					double theCourse = state.getCourse();
-					double theSpeed = new WorldSpeed(state.getSpeed(), WorldSpeed.M_sec)
-							.getValueIn(WorldSpeed.ft_sec / 3);
-					Fix newF = new Fix(new HiResDate(state.getTime().getTime()), theLoc,
-							theCourse, theSpeed);
-					FixWrapper newFW = new FixWrapper(newF)
+					final State state = iter.next();
+					final WorldLocation theLoc = conversions.toLocation(state
+							.getLocation().getCoordinate());
+					final double theCourse = state.getCourse();
+					final double theSpeed = new WorldSpeed(state.getSpeed(),
+							WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec / 3);
+					final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
+							theLoc, theCourse, theSpeed);
+					final FixWrapper newFW = new FixWrapper(newF)
 					{
 
 						/**
@@ -365,609 +1229,18 @@ public class SATC_Solution extends BaseLayer implements
 		return res.elements();
 	}
 
-	@Override
-	public EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new SATC_Info(this);
-
-		return _myEditor;
-	}
-
-	public void recalculate()
-	{
-		_mySolver.run(true, true);
-	}
-
-	public Color getColor()
-	{
-		return _myColor;
-	}
-
-	public void setColor(Color color)
-	{
-		this._myColor = color;
-	}
-
-	public boolean getShowLocationConstraints()
-	{
-		return _showLocationBounds;
-	}
-
-	public boolean getOnlyPlotLegEnds()
-	{
-		return _onlyPlotLegEnds;
-	}
-
-	public void setOnlyPlotLegEnds(boolean onlyPlotLegEnds)
-	{
-		this._onlyPlotLegEnds = onlyPlotLegEnds;
-	}
-
-	public ISolver getSolver()
-	{
-		return _mySolver;
-	}
-
-	@Override
-	protected void finalize() throws Throwable
-	{
-		super.finalize();
-
-		_mySolver.getSolutionGenerator().removeReadyListener(_gaStepListener);
-		_mySolver.getContributions().removeContributionsChangedListener(
-				_contributionsListener);
-		_mySolver.getBoundsManager().removeConstrainSpaceListener(
-				_constrainListener);
-		_myLayers = null;
-	}
-
-	@Override
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	@Override
-	public boolean hasOrderedChildren()
-	{
-		return true;
-	}
-
-	private static class MeasureRange implements RouteStepper
-	{
-
-		final private WorldLocation origin;
-		double minRange = Double.MAX_VALUE;
-
-		public MeasureRange(WorldLocation origin)
-		{
-			this.origin = origin;
-		}
-
-		@Override
-		public void step(CoreRoute thisRoute, State thisState)
-		{
-			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
-			// convert to our coord system
-			WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
-			double range = wLoc.rangeFrom(origin);
-			minRange = Math.min(range, minRange);
-		}
-
-		public final double getMinRange()
-		{
-			return minRange;
-		}
-
-		@Override
-		public void legComplete(CoreRoute thisRoute)
-		{
-		}
-
-		@Override
-		public void finish()
-		{
-		}
-
-		@Override
-		public void reset()
-		{
-		}
-	}
-
-	@Override
-	public double rangeFrom(final WorldLocation other)
-	{
-		double res = -1;
-		if ((_newRoutes != null) && (_newRoutes.length > 0))
-		{
-			MeasureRange mr = new MeasureRange(other);
-			walkRoute(_newRoutes, mr);
-			res = mr.getMinRange();
-		}
-		return res;
-	}
-
-	@Override
-	public boolean isBuffered()
-	{
-		return false;
-	}
-
-	public boolean getShowSolutions()
-	{
-		return _showSolutions;
-	}
-
-	@Override
-	public void removeElement(Editable p)
-	{
-		// ditch it from the parent
-		super.removeElement(p);
-
-		// get the ocntribution itself
-		ContributionWrapper cw = (ContributionWrapper) p;
-		BaseContribution comp = cw.getContribution();
-
-		// also remove it from the manager component
-		_mySolver.getContributions().removeContribution(comp);
-	}
-
-	private void listenToSolver(ISolver solver)
-	{
-
-		_gaStepListener = new IGASolutionsListener()
-		{
-			@Override
-			public void solutionsReady(CompositeRoute[] routes)
-			{
-				// just double-check that the score is acceptable
-				if((_currentScore != null) && (_currentScore > 10))
-				{
-					// hey, skip it, no good solutions
-					CorePlugin.errorDialog("Generate TMA Solutions", 
-							"It was not possible to generate a candidate solution from the supplied data");
-				}
-				else
-				{
-					// ok, either there isn't a current score (non-GA solver),
-					// or the score is acceptable
-					
-					_newRoutes = routes;
-
-					// tell the layer manager that we've changed
-					fireTrackShifted();
-
-					// hey, trigger repaint
-					fireRepaint();
-				}
-			}
-
-			@Override
-			public void startingGeneration()
-			{
-				// ditch any existing routes
-				_newRoutes = null;
-				
-				// clear the top score counter
-				_currentScore = null;
-			}
-
-			@Override
-			public void finishedGeneration(Throwable error)
-			{
-			}
-
-			@Override
-			public void iterationComputed(List<CompositeRoute> topRoutes,
-					double topScore)
-			{
-				// store the most recent score - so we can
-				// decide whether to bother showing a result to the user
-				_currentScore = topScore;
-			}
-		};
-
-		_contributionsListener = new IContributionsChangedListener()
-		{
-
-			public void fireExtended()
-			{
-				firePropertyChange(SupportsPropertyListeners.EXTENDED, null, this);
-			}
-
-			@Override
-			public void added(BaseContribution contribution)
-			{
-				// fireRepaint();
-				fireExtended();
-			}
-
-			@Override
-			public void removed(BaseContribution contribution)
-			{
-
-				// hey, are we still storing this?
-				Editable toBeRemoved = null;
-
-				// get read-only version of elements
-				ReadOnlyIterator rIter = new ReadOnlyIterator(getData().iterator());
-				while (rIter.hasNext())
-				{
-					Editable editable = (Editable) rIter.next();
-					ContributionWrapper cw = (ContributionWrapper) editable;
-					if (cw.getContribution() == contribution)
-					{
-						// _mySolver.getContributions().removeContribution(contribution);
-						toBeRemoved = cw;
-					}
-				}
-
-				if (toBeRemoved != null)
-				{
-					// ditch it from the parent (but don't trigger the remote updates to
-					// fire)
-					SATC_Solution.super.removeElement(toBeRemoved);
-				}
-				else
-				{
-					SATC_Activator
-							.log(
-									IStatus.ERROR,
-									"We were asked to remove a contribution, but we didn't have it stored in the Layer",
-									null);
-				}
-
-				fireExtended();
-			}
-		};
-
-		_constrainListener = new IConstrainSpaceListener()
-		{
-			@Override
-			public void error(IBoundsManager boundsManager,
-					IncompatibleStateException ex)
-			{
-				_lastStates = null;
-			}
-
-			@Override
-			public void restarted(IBoundsManager boundsManager)
-			{
-				_lastStates = null;
-				_newRoutes = null;
-			}
-
-			@Override
-			public void statesBounded(IBoundsManager boundsManager)
-			{
-				// ok, better to plot them then!
-				_lastStates = _mySolver.getProblemSpace().states();
-				fireRepaint();
-			}
-
-			@Override
-			public void stepped(IBoundsManager boundsManager, int thisStep,
-					int totalSteps)
-			{
-			}
-		};
-
-		solver.getSolutionGenerator().addReadyListener(_gaStepListener);
-		solver.getContributions().addContributionsChangedListener(
-				_contributionsListener);
-		solver.getBoundsManager().addConstrainSpaceListener(_constrainListener);
-	}
-
-	protected void fireTrackShifted()
-	{
-		final WatchableList wl = this;
-		Display.getDefault().asyncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				// if the current editor is a track data provider,
-				// tell it that we've shifted
-				final IWorkbench wb = PlatformUI.getWorkbench();
-				final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-				if (win != null)
-				{
-					final IWorkbenchPage page = win.getActivePage();
-					final IEditorPart editor = page.getActiveEditor();
-					final TrackDataProvider dataMgr = (TrackDataProvider) editor
-							.getAdapter(TrackDataProvider.class);
-					// is it one of ours?
-					if (dataMgr != null)
-					{
-						{
-							dataMgr.fireTrackShift((WatchableList) wl);
-						}
-					}
-				}
-
-			}
-		});
-
-	}
-
-	@Override
-	public void paint(CanvasType dest)
-	{
-		if (getVisible())
-		{
-			dest.setColor(_myColor);
-			if (_lastStates != null)
-			{
-				if (_showLocationBounds)
-					paintThese(dest, _lastStates);
-			}
-
-			dest.setColor(_myColor);
-			if (_newRoutes != null)
-			{
-				paintThese(dest, _newRoutes);
-			}
-		}
-	}
-
-	private void paintThese(CanvasType dest, Collection<BoundedState> states)
-	{
-		// keep track of the leg name of the previous leg - we
-		// use it to track which leg we're in.
-		String lastName = null;
-
-		// work through the location bounds
-		for (Iterator<BoundedState> iterator = states.iterator(); iterator
-				.hasNext();)
-		{
-			BoundedState thisS = iterator.next();
-
-			// do some fancy tests for if users only want the
-			// states that appear at leg ends
-			boolean isLastOne = !iterator.hasNext();
-			boolean isDifferentLeg = thisS.getMemberOf() != lastName;
-			boolean isLegEnd = isLastOne || isDifferentLeg;
-
-			boolean plotThisOne = !_onlyPlotLegEnds // users want all of them
-					|| (_onlyPlotLegEnds && isLegEnd); // users only want
-			// leg ends, and this is one
-
-			if (plotThisOne && thisS.getLocation() != null)
-			{
-				// get the color for this state
-				Color thisCol = thisS.getColor();
-
-				// do we have one? if not, use the color for the whole solution
-				if (thisCol == null)
-					thisCol = this.getColor();
-
-				// ok, make the color a little darker
-				Color newCol = thisCol.darker();
-				dest.setColor(newCol);
-
-				lastName = thisS.getMemberOf();
-
-				LocationRange theLoc = thisS.getLocation();
-				Coordinate[] pts = theLoc.getGeometry().getCoordinates();
-
-				int[] xPoints = new int[pts.length];
-				int[] yPoints = new int[pts.length];
-
-				// collate polygon
-				for (int i = 0; i < pts.length; i++)
-				{
-					Coordinate thisC = pts[i];
-					WorldLocation thisLocation = conversions.toLocation(thisC);
-					Point pt = dest.toScreen(thisLocation);
-					xPoints[i] = pt.x;
-					yPoints[i] = pt.y;
-				}
-
-				// fill in the polygons, if we can
-				if (dest instanceof ExtendedCanvasType)
-				{
-					ExtendedCanvasType extended = (ExtendedCanvasType) dest;
-					extended.semiFillPolygon(xPoints, yPoints, pts.length);
-				}
-
-				// and a border
-				if (isLegEnd)
-					dest.setLineStyle(CanvasType.SOLID);
-				else
-					dest.setLineStyle(CanvasType.DOTTED);
-
-				dest.setLineWidth(0.0f);
-				dest.drawPolygon(xPoints, yPoints, xPoints.length);
-			}
-		}
-	}
-
-	private void paintThese(CanvasType dest, CompositeRoute[] routes)
-	{
-		DoPaint painter = new DoPaint(dest);
-		walkRoute(routes, painter);
-	}
-
-	private void walkRoute(CompositeRoute[] routes, RouteStepper stepper)
-	{
-		for (int i = 0; i < routes.length; i++)
-		{
-			CompositeRoute thisComposite = routes[i];
-			Iterator<CoreRoute> legs = thisComposite.getLegs().iterator();
-
-			while (legs.hasNext())
-			{
-				stepper.reset();
-				CoreRoute thisRoute = legs.next();
-				ArrayList<State> states = thisRoute.getStates();
-				if (states != null)
-				{
-					Iterator<State> stateIter = states.iterator();
-					while (stateIter.hasNext())
-					{
-						State thisState = stateIter.next();
-						stepper.step(thisRoute, thisState);
-					}
-				}
-
-				stepper.legComplete(thisRoute);
-
-			}
-
-		}
-		stepper.finish();
-	}
-
-	private static interface RouteStepper
-	{
-
-		public abstract void step(CoreRoute thisRoute, State thisState);
-
-		public abstract void legComplete(CoreRoute thisRoute);
-
-		public abstract void finish();
-
-		public abstract void reset();
-
-	}
-
-	private class DoPaint implements RouteStepper
-	{
-		private static final double LEG_LABEL_CLIPPING_THRESHOLD = 1.1;
-		private Point lastPt = null;
-		private final CanvasType _dest;
-		private final float oldWid;
-
-		public DoPaint(CanvasType dest)
-		{
-			_dest = dest;
-			oldWid = _dest.getLineWidth();
-			_dest.setLineWidth(5.0f);
-		}
-
-		@Override
-		public void step(CoreRoute thisRoute, State thisState)
-		{
-			com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
-			// convert to screen
-			WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
-
-			Point screenPt = _dest.toScreen(wLoc);
-
-			if (lastPt != null)
-			{
-				// is it straight? or altering
-				if (thisRoute.getType() == LegType.STRAIGHT)
-					_dest.setLineStyle(CanvasType.SOLID);
-				else
-					_dest.setLineStyle(CanvasType.DOTTED);
-
-				// does this state have a color?
-				if (thisState.getColor() != null)
-					_dest.setColor(thisState.getColor());
-				else
-					_dest.setColor(_myColor);
-
-				// draw the line
-				_dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
-			}
-
-			lastPt = screenPt;
-		}
-
-		@Override
-		public void reset()
-		{
-			lastPt = null;
-		}
-
-		@Override
-		public void finish()
-		{
-			_dest.setLineWidth(oldWid);
-			_dest.setLineStyle(CanvasType.SOLID);
-		}
-
-		@Override
-		public void legComplete(CoreRoute thisRoute)
-		{
-			// is it straight? or altering
-			if (thisRoute.getType() == LegType.STRAIGHT)
-			{
-				StraightRoute straight = (StraightRoute) thisRoute;
-
-				// get the first point
-				State firstState = thisRoute.getStates().get(0);
-				State lastState = thisRoute.getStates().get(
-						thisRoute.getStates().size() - 1);
-
-				final Color theColor;
-
-				if (firstState.getColor() != null)
-					theColor = firstState.getColor();
-				else
-					theColor = Color.red;
-
-				Font theFont = LEG_NAME_FONT;
-				WorldLocation firstLoc = conversions.toLocation(firstState
-						.getLocation().getCoordinate());
-				WorldLocation lastLoc = conversions.toLocation(lastState.getLocation()
-						.getCoordinate());
-
-				CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
-						theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD,
-						true);
-
-				final String vectorDescription = String.format("%.1f", new WorldSpeed(
-						straight.getSpeed(), WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts))
-						+ " kts "
-						+ String.format("%.0f",
-								Math.toDegrees(MathUtils.normalizeAngle(straight.getCourse())))
-						+ "\u00B0";
-
-				CanvasTypeUtilities.drawLabelOnLine(_dest, vectorDescription, theFont,
-						theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD, false);
-			}
-
-		}
-	}
-
-	@FireReformatted
-	public void setShowLocationConstraints(boolean showLocationBounds)
-	{
-		_showLocationBounds = showLocationBounds;
-	}
-
-	public void setShowSolutions(boolean showSolutions)
-	{
-		_showSolutions = showSolutions;
-	}
-
-	@Override
-	public void beingRemoved()
-	{
-		// get the manager
-		ISolversManager mgr = SATC_Activator.getDefault().getService(
-				ISolversManager.class, true);
-
-		mgr.deactivateSolverIfActive(_mySolver);
-	}
-
 	/**
 	 * the Solver has been populated from XML. Now we have to scan it, to make it
 	 * visible as Debrief layers
 	 */
 	public void selfScan()
 	{
-		IContributions container = _mySolver.getContributions();
-		SortedSet<BaseContribution> conts = container.getContributions();
-		for (Iterator<BaseContribution> iterator = conts.iterator(); iterator
+		final IContributions container = _mySolver.getContributions();
+		final SortedSet<BaseContribution> conts = container.getContributions();
+		for (final Iterator<BaseContribution> iterator = conts.iterator(); iterator
 				.hasNext();)
 		{
-			BaseContribution baseC = (BaseContribution) iterator.next();
+			final BaseContribution baseC = iterator.next();
 			ContributionWrapper wrapped = null;
 
 			// we don't add analysis contributions
@@ -975,7 +1248,7 @@ public class SATC_Solution extends BaseLayer implements
 			{
 				if (baseC instanceof BearingMeasurementContribution)
 				{
-					BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
+					final BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
 					wrapped = new BMC_Wrapper(bmc);
 				}
 				else if (baseC instanceof StraightLegForecastContribution)
@@ -999,338 +1272,81 @@ public class SATC_Solution extends BaseLayer implements
 		}
 	}
 
+	public void setColor(final Color color)
+	{
+		this._myColor = color;
+	}
+
+	@Override
+	public void setLayers(final Layers parent)
+	{
+		_myLayers = parent;
+	}
+
 	@Override
 	@FireReformatted
-	public void setName(String theName)
+	public void setName(final String theName)
 	{
 		super.setName(theName);
 		_mySolver.setName(theName);
 
 		// also trigger a refresh in maintain contributions
 		// get the manager
-		ISolversManager mgr = SATC_Activator.getDefault().getService(
+		final ISolversManager mgr = SATC_Activator.getDefault().getService(
 				ISolversManager.class, true);
 		mgr.setActiveSolver(_mySolver);
 
 	}
 
-	@Override
-	public void setLayers(Layers parent)
+	public void setOnlyPlotLegEnds(final boolean onlyPlotLegEnds)
 	{
-		_myLayers = parent;
+		this._onlyPlotLegEnds = onlyPlotLegEnds;
 	}
 
-	@Override
-	public HiResDate getStartDTG()
+	@FireReformatted
+	public void setShowLocationConstraints(final boolean showLocationBounds)
 	{
-		return new HiResDate(_mySolver.getProblemSpace().getStartDate());
+		_showLocationBounds = showLocationBounds;
 	}
 
-	@Override
-	public HiResDate getEndDTG()
+	public void setShowSolutions(final boolean showSolutions)
 	{
-		return new HiResDate(_mySolver.getProblemSpace().getFinishDate());
+		_showSolutions = showSolutions;
 	}
 
-	@Override
-	public Watchable[] getNearestTo(HiResDate DTG)
+	private void walkRoute(final CompositeRoute[] routes,
+			final RouteStepper stepper)
 	{
-		ArrayList<Watchable> items = new ArrayList<Watchable>();
-
-		long time = DTG.getDate().getTime();
-
-		// check if we have any solutions
-		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		for (int i = 0; i < routes.length; i++)
 		{
-			// ok, collate some data
-			CompositeRoute route = _newRoutes[0];
+			final CompositeRoute thisComposite = routes[i];
+			final Iterator<CoreRoute> legs = thisComposite.getLegs().iterator();
 
-			Iterator<CoreRoute> legs = route.getLegs().iterator();
 			while (legs.hasNext())
 			{
-				CoreRoute thisLeg = (CoreRoute) legs.next();
-				Iterator<State> states = thisLeg.getStates().iterator();
-				while (states.hasNext())
+				stepper.reset();
+				final CoreRoute thisRoute = legs.next();
+				final ArrayList<State> states = thisRoute.getStates();
+				if (states != null)
 				{
-					State state = (State) states.next();
-					// does it even have a location?
-					if (state.getLocation() != null)
+					final Iterator<State> stateIter = states.iterator();
+					while (stateIter.hasNext())
 					{
-						if (state.getTime().getTime() > time)
-						{
-
-							items.add(wrapThis(state));
-							return items.toArray(new Watchable[]
-							{});
-						}
+						final State thisState = stateIter.next();
+						stepper.step(thisRoute, thisState);
 					}
 				}
+
+				stepper.legComplete(thisRoute);
+
 			}
 
 		}
-
-		return items.toArray(new Watchable[]
-		{});
+		stepper.finish();
 	}
 
 	private WrappedState wrapThis(final State state)
 	{
 		return new WrappedState(state);
-	}
-
-	@Override
-	public void filterListTo(HiResDate start, HiResDate end)
-	{
-	}
-
-	@Override
-	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
-	{
-		Collection<Editable> items = new ArrayList<Editable>();
-		ArrayList<State> states = new ArrayList<State>();
-
-		long startT = start.getDate().getTime();
-		long finishT = end.getDate().getTime();
-
-		// check if we have any solutions
-		if ((_newRoutes != null) && (_newRoutes.length >= 0))
-		{
-			// ok, collate some data
-			CompositeRoute route = _newRoutes[0];
-
-			Iterator<CoreRoute> legs = route.getLegs().iterator();
-			while (legs.hasNext())
-			{
-				CoreRoute thisLeg = (CoreRoute) legs.next();
-				Iterator<State> theStates = thisLeg.getStates().iterator();
-				while (theStates.hasNext())
-				{
-					State state = (State) theStates.next();
-
-					// does it even have a location?
-					if (state.getLocation() != null)
-					{
-						long thisTime = state.getTime().getTime();
-						if ((thisTime >= startT) && (thisTime <= finishT))
-						{
-							// check we haven't just stored a state at this
-							// time,
-							// JFReeChart plotting doesn't like it.
-							if (states.size() > 0)
-							{
-								Date lastTime = states.get(states.size() - 1).getTime();
-								if (lastTime.getTime() != thisTime)
-								{
-									states.add(state);
-								}
-							}
-							else
-								states.add(state);
-						}
-					}
-				}
-			}
-		}
-
-		// ok, wrap the states
-		Iterator<State> iter = states.iterator();
-		while (iter.hasNext())
-		{
-			State state = (State) iter.next();
-			items.add(wrapThis(state));
-		}
-
-		Collection<Editable> res = null;
-		if (items.size() > 0)
-		{
-			res = items;
-		}
-		return res;
-	}
-
-	@Override
-	public PlainSymbol getSnailShape()
-	{
-		if (mySymbol == null)
-			mySymbol = SymbolFactory.createSymbol(SymbolFactory.DEFAULT_SYMBOL_TYPE);
-
-		return mySymbol;
-	}
-
-	/**
-	 * convert this solution into a formal track
-	 * 
-	 */
-	public void convertToLegs()
-	{
-		// check if we have any solutions
-		if ((_newRoutes == null) || (_newRoutes.length == 0))
-		{
-			CorePlugin.errorDialog("Convert solution to track",
-					"Sorry, this solution contains no generated routes");
-		}
-		else
-		{
-
-			for (int i = 0; i < _newRoutes.length; i++)
-			{
-				CompositeRoute thisR = _newRoutes[i];
-
-				// the output track
-				TrackWrapper newT = new TrackWrapper();
-				newT.setName(getName() + "_" + i);
-
-				Iterator<CoreRoute> legs = thisR.getLegs().iterator();
-				while (legs.hasNext())
-				{
-					CoreRoute thisLeg = (CoreRoute) legs.next();
-					if (thisLeg instanceof StraightRoute)
-					{
-						StraightRoute straight = (StraightRoute) thisLeg;
-
-						// ok - produce a TMA leg
-						double courseDegs = Math.toDegrees(straight.getCourse());
-						WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
-								WorldSpeed.M_sec);
-						WorldLocation origin = conversions.toLocation(straight
-								.getStartPoint().getCoordinate());
-						HiResDate startTime = new HiResDate(straight.getStartTime()
-								.getTime());
-						HiResDate endTime = new HiResDate(straight.getEndTime().getTime());
-
-						AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs, speed,
-								origin, startTime, endTime);
-						abs.setName(straight.getName());
-						newT.add(abs);
-						abs.setName(straight.getName());
-					}
-					else if (thisLeg instanceof AlteringRoute)
-					{
-						AlteringRoute altering = (AlteringRoute) thisLeg;
-
-						TrackSegment segment = new TrackSegment();
-						segment.setName(altering.getName());
-
-						ArrayList<State> states = altering.getStates();
-						for (State thisS : states)
-						{
-							double theCourse = thisS.getCourse();
-							WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
-									WorldSpeed.M_sec);
-							WorldLocation theLocation = conversions.toLocation(thisS
-									.getLocation().getCoordinate());
-							HiResDate theTime = new HiResDate(thisS.getTime().getTime());
-
-							Fix theFix = new Fix(theTime, theLocation, theCourse,
-									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
-							FixWrapper newFix = new FixWrapper(theFix);
-							newFix.resetName();
-							segment.addFix(newFix);
-						}
-
-						// make it dotted, that's our way of doing it.
-						segment.setLineStyle(CanvasType.DOTTED);
-
-						newT.add(segment);
-					}
-					else
-						DebriefPlugin.logError(Status.ERROR,
-								"Unexpected type of route encountered:" + thisLeg, null);
-				}
-
-				// and store it
-				_myLayers.addThisLayer(newT);
-
-			}
-		}
-	}
-
-	protected static class WrappedState implements Watchable, Editable
-	{
-
-		private final State state;
-		private WorldLocation loc;
-		private boolean isVis = true;
-
-		public WrappedState(State state)
-		{
-			this.state = state;
-		}
-
-		@Override
-		public WorldLocation getLocation()
-		{
-			if (loc == null)
-				loc = conversions.toLocation(state.getLocation().getCoordinate());
-
-			return loc;
-		}
-
-		@Override
-		public double getCourse()
-		{
-			return state.getCourse();
-		}
-
-		@Override
-		public double getSpeed()
-		{
-			return MWC.Algorithms.Conversions.Mps2Kts(state.getSpeed());
-		}
-
-		@Override
-		public double getDepth()
-		{
-			return 0;
-		}
-
-		@Override
-		public WorldArea getBounds()
-		{
-			return new WorldArea(getLocation(), getLocation());
-		}
-
-		@Override
-		public void setVisible(boolean val)
-		{
-			isVis = val;
-		}
-
-		@Override
-		public boolean getVisible()
-		{
-			return isVis;
-		}
-
-		@Override
-		public HiResDate getTime()
-		{
-			return new HiResDate(state.getTime().getTime());
-		}
-
-		@Override
-		public String getName()
-		{
-			return DebriefFormatDateTime.toString(state.getTime().getTime());
-		}
-
-		@Override
-		public Color getColor()
-		{
-			return state.getColor();
-		}
-
-		@Override
-		public boolean hasEditor()
-		{
-			return false;
-		}
-
-		@Override
-		public EditorType getInfo()
-		{
-			return null;
-		}
-
 	}
 }
