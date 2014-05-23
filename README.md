@@ -1,8 +1,7 @@
-### Issues ready for resolution
+### Active Issues
 [![Issues that are ready to be worked on](https://badge.waffle.io/debrief/debrief.png?label=ready&title=Ready)](http://waffle.io/debrief/debrief)
 
-### Issues in progress
-[![Issues that are ready to be worked on](https://badge.waffle.io/debrief/debrief.png?label=in progress&title=in progress)](http://waffle.io/debrief/debrief)
+[![Issues that are in progress](https://badge.waffle.io/debrief/debrief.png?label=in progress&title=In progress)](http://waffle.io/debrief/debrief)
 
 ## New in Debrief
 
