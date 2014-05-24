@@ -171,9 +171,9 @@ public class MergeTracks implements RightClickContextItemGenerator
 		private final Layers _layers;
 		private final Layer[] _parents;
 		private final Editable[] _subjects;
-		private final Editable _target;
+		private final TrackWrapper _target;
 
-		public MergeTracksOperation(final String title, final Editable target,
+		public MergeTracksOperation(final String title, final TrackWrapper target,
 				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
 		{
 			super(title);

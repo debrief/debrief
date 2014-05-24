@@ -312,7 +312,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          name to give to the merged object
 	 * @return sufficient information to undo the merge
 	 */
-	public static int mergeTracks(final Editable recipient,
+	public static int mergeTracks(final TrackWrapper recipient,
 			final Layers theLayers, final Editable[] subjects)
 	{
 		// where we dump the new data points
