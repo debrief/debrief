@@ -5,6 +5,9 @@
 
 ## New in Debrief
 
+* Apr 2014 - Integrate [Semi Automated Track Construction (TMA)](http://www.debrief.info/tutorial/satc.html)
+* Dec 2013 - Intregration of time-synced audio, video, stills players (beta)
+* Oct 2013 - [Rotated labels](http://www.debrief.info/tutorial/satc_ga.html#consistent_legs) on legs
 * Aug 2013 - Support for [auto-calculated range/brg labels](http://www.debrief.info/tutorial/drawing_features.html#ShowRangeCalc)
 * Jul 2013 - Dragging mouse from BR to TL performs zoom-out, instead of zoom-in
 * Jun 2013 - Debrief can now calculate course/speed for a track if the data isn't produced by the recording device.
