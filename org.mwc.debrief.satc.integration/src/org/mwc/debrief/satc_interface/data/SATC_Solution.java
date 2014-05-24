@@ -583,9 +583,12 @@ public class SATC_Solution extends BaseLayer implements
 						DebriefPlugin.logError(IStatus.ERROR,
 								"Unexpected type of route encountered:" + thisLeg, null);
 				}
-
+				
 				// and store it
 				_myLayers.addThisLayer(newT);
+				
+				// and hide ourselves
+				setVisible(false);
 
 			}
 		}
@@ -638,6 +641,9 @@ public class SATC_Solution extends BaseLayer implements
 
 				// and store it
 				_myLayers.addThisLayer(newT);
+				
+				// and hide ourselves
+				setVisible(false);
 			}
 		}
 	}
