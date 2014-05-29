@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
@@ -117,6 +118,10 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator
 		{
 			// right,stick in a separator
 			parent.add(new Separator());
+			
+			// ok - introduce the shading menu
+			MenuManager newMenu = new MenuManager("Shading");
+			parent.add(newMenu);
 
 			// convert the list to an array
 			SensorContactWrapper[] listTemplate = new SensorContactWrapper[]
@@ -139,7 +144,7 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator
 				}
 			};
 
-			parent.add(doRainbowShade);
+			newMenu.add(doRainbowShade);
 			// create this operation
 			final String title2 = "Shade in blue-red spectrum";
 			final Action doBlueShade = new Action(title2)
@@ -152,7 +157,7 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator
 					CorePlugin.run(theAction);
 				}
 			};
-			parent.add(doBlueShade);
+			newMenu.add(doBlueShade);
 
 			final String title3 = "Reset shading";
 			final Action clearShade = new Action(title3)
@@ -165,7 +170,7 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator
 					CorePlugin.run(theAction);
 				}
 			};
-			parent.add(clearShade);
+			newMenu.add(clearShade);
 		}
 	}
 
