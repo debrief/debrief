@@ -1,5 +1,7 @@
 package org.mwc.cmap.core.property_support;
 
+import java.awt.Color;
+import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
@@ -17,28 +19,35 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.dnd.Clipboard;
+import org.mockito.Mockito;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -100,8 +109,9 @@ public class RightClickSupport
 	 * @param hideClipboardOperations
 	 */
 	static public void getDropdownListFor(final IMenuManager manager,
-			final Editable[] editables, final Layer[] topLevelLayers, final Layer[] parentLayers,
-			final Layers theLayers, final boolean hideClipboardOperations)
+			final Editable[] editables, final Layer[] topLevelLayers,
+			final Layer[] parentLayers, final Layers theLayers,
+			final boolean hideClipboardOperations)
 	{
 
 		// sort out the top level layer, if we have one
@@ -143,6 +153,56 @@ public class RightClickSupport
 				}
 			}
 
+			// special case: if only one item is selected, try adding any additional
+			// methods
+			if (editables.length == 1)
+			{
+				// any additional ones?
+				Editable theE = editables[0];
+
+				// ok, get the editor
+				EditorType info = theE.getInfo();
+
+				if (info != null)
+				{
+					BeanInfo[] additional = info.getAdditionalBeanInfo();
+
+					// any there?
+					if (additional != null)
+					{
+						// ok, loop through the beans
+						for (int i = 0; i < additional.length; i++)
+						{
+							BeanInfo thisB = additional[i];
+							if (thisB instanceof EditorType)
+							{
+								EditorType editor = (EditorType) thisB;
+								Editable subject = (Editable) editor.getData();
+
+								// and the properties
+								PropertyDescriptor[] theseProps = thisB
+										.getPropertyDescriptors();
+
+								for (int j = 0; j < theseProps.length; j++)
+								{
+									PropertyDescriptor thisP = theseProps[j];
+									if (supportsBooleanEditor(thisP))
+									{
+										// and wrap the object
+										Editable[] holder = new Editable[]
+										{ subject };
+
+										// generate boolean editors in the sub-menu
+										subMenu = generateBooleanEditorFor(manager, subMenu, thisP,
+												holder, theLayers, theTopLayer);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 			// hmm, have a go at methods for this item
 			// ok, try the methods
 			final MethodDescriptor[] meths = getCommonMethodsFor(editables);
@@ -162,8 +222,9 @@ public class RightClickSupport
 					else
 					{
 						// create button for this method
-						final Action doThisAction = new SubjectMethod(thisMethD.getDisplayName(),
-								editables, thisMethD.getMethod(), myTopLayer, theLayers);
+						final Action doThisAction = new SubjectMethod(
+								thisMethD.getDisplayName(), editables, thisMethD.getMethod(),
+								myTopLayer, theLayers);
 
 						// ok - add to the list.
 						manager.add(doThisAction);
@@ -190,13 +251,13 @@ public class RightClickSupport
 
 		}
 
-		final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
-
 		// see if we're still looking at the parent element (we only show
 		// clipboard
 		// operations for item clicked on)
 		if (!hideClipboardOperations)
 		{
+			final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
+
 			// hey, also see if we're going to do a cut/paste
 			RightClickCutCopyAdaptor.getDropdownListFor(manager, editables,
 					topLevelLayers, parentLayers, theLayers, theClipboard);
@@ -250,35 +311,42 @@ public class RightClickSupport
 	 */
 	private static void loadLoaderExtensions()
 	{
-		final IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
-				PLUGIN_ID, EXTENSION_POINT_ID);
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-		final IExtension[] extensions = point.getExtensions();
-		for (int i = 0; i < extensions.length; i++)
+		if (registry != null)
 		{
-			final IExtension iExtension = extensions[i];
-			final IConfigurationElement[] confE = iExtension.getConfigurationElements();
-			for (int j = 0; j < confE.length; j++)
+			final IExtensionPoint point = registry.getExtensionPoint(PLUGIN_ID,
+					EXTENSION_POINT_ID);
+
+			final IExtension[] extensions = point.getExtensions();
+			for (int i = 0; i < extensions.length; i++)
 			{
-				final IConfigurationElement iConfigurationElement = confE[j];
-				RightClickContextItemGenerator newInstance;
-				try
+				final IExtension iExtension = extensions[i];
+				final IConfigurationElement[] confE = iExtension
+						.getConfigurationElements();
+				for (int j = 0; j < confE.length; j++)
 				{
-					newInstance = (RightClickContextItemGenerator) iConfigurationElement
-							.createExecutableExtension("class");
-					addRightClickGenerator(newInstance);
-				}
-				catch (final CoreException e)
-				{
-					CorePlugin.logError(Status.ERROR,
-							"Trouble whilst loading right-click handler extensions", e);
+					final IConfigurationElement iConfigurationElement = confE[j];
+					RightClickContextItemGenerator newInstance;
+					try
+					{
+						newInstance = (RightClickContextItemGenerator) iConfigurationElement
+								.createExecutableExtension("class");
+						addRightClickGenerator(newInstance);
+					}
+					catch (final CoreException e)
+					{
+						CorePlugin.logError(Status.ERROR,
+								"Trouble whilst loading right-click handler extensions", e);
+					}
 				}
 			}
 		}
 	}
 
 	/** have a look at the supplied editors, find which properties are common */
-	protected static MethodDescriptor[] getCommonMethodsFor(final Editable[] editables)
+	protected static MethodDescriptor[] getCommonMethodsFor(
+			final Editable[] editables)
 	{
 		MethodDescriptor[] res = null;
 		final MethodDescriptor[] demo = new MethodDescriptor[]
@@ -310,7 +378,8 @@ public class RightClickSupport
 							// do we have an editor?
 							if (thisEditor != null)
 							{
-								final MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
+								final MethodDescriptor[] newSet = thisEditor
+										.getMethodDescriptors();
 
 								// find the common ones
 								res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
@@ -374,7 +443,8 @@ public class RightClickSupport
 	}
 
 	private static MWC.GUI.Tools.SubjectAction[] getIntersectionFor(
-			final MWC.GUI.Tools.SubjectAction[] a, final MWC.GUI.Tools.SubjectAction[] b,
+			final MWC.GUI.Tools.SubjectAction[] a,
+			final MWC.GUI.Tools.SubjectAction[] b,
 			final MWC.GUI.Tools.SubjectAction[] demo)
 	{
 		final Vector<MWC.GUI.Tools.SubjectAction> res = new Vector<MWC.GUI.Tools.SubjectAction>();
@@ -409,6 +479,28 @@ public class RightClickSupport
 			if (firstInfo != null)
 			{
 				res = firstInfo.getPropertyDescriptors();
+
+				// // and are there any more?
+				// BeanInfo[] abl = firstInfo.getAdditionalBeanInfo();
+				// for (int i = 0; i < abl.length; i++)
+				// {
+				// BeanInfo thisB = abl[i];
+				// PropertyDescriptor[] newPd = thisB.getPropertyDescriptors();
+				//
+				// // and extend the existing list
+				// PropertyDescriptor[] tmpList = new PropertyDescriptor[res.length +
+				// newPd.length];
+				//
+				// // copy in the originals
+				// System.arraycopy(res, 0, tmpList, 0, res.length);
+				//
+				// // and the new ones
+				// System.arraycopy(newPd, 0, tmpList, res.length, newPd.length);
+				//
+				// // and take over the list
+				// res = tmpList;
+				// }
+				//
 
 				// only continue if there are any property descriptors
 				if (res != null)
@@ -452,8 +544,9 @@ public class RightClickSupport
 	 *          second array
 	 * @return the common elements
 	 */
-	protected static MethodDescriptor[] getIntersectionFor(final MethodDescriptor[] a,
-			final MethodDescriptor[] b, final MethodDescriptor[] demo)
+	protected static MethodDescriptor[] getIntersectionFor(
+			final MethodDescriptor[] a, final MethodDescriptor[] b,
+			final MethodDescriptor[] demo)
 	{
 		final Vector<MethodDescriptor> res = new Vector<MethodDescriptor>();
 
@@ -485,7 +578,8 @@ public class RightClickSupport
 	 * @return the common elements
 	 */
 	protected static PropertyDescriptor[] getIntersectionFor(
-			final PropertyDescriptor[] a, final PropertyDescriptor[] b, final PropertyDescriptor[] demo)
+			final PropertyDescriptor[] a, final PropertyDescriptor[] b,
+			final PropertyDescriptor[] demo)
 	{
 		final Vector<PropertyDescriptor> res = new Vector<PropertyDescriptor>();
 
@@ -532,8 +626,8 @@ public class RightClickSupport
 		 * @param theLayers
 		 *          the host for the target layer
 		 */
-		public SubjectMethod(final String title, final Editable[] subject, final Method method,
-				final Layer topLayer, final Layers theLayers)
+		public SubjectMethod(final String title, final Editable[] subject,
+				final Method method, final Layer topLayer, final Layers theLayers)
 		{
 			super(title);
 			_subjects = subject;
@@ -1200,8 +1294,62 @@ public class RightClickSupport
 			}
 		}
 
-		// TODO FIX-TEST
-		public final void NtestPropMgt()
+		public final void testAdditionalSomePresent()
+		{
+			LabelWrapper lw = new LabelWrapper("Some label", new WorldLocation(1.1,
+					1.1, 12), Color.red);
+			Editable[] editables = new Editable[]
+			{ lw };
+			MenuManager menu = new MenuManager("Holder");
+
+			RightClickSupport.getDropdownListFor(menu, editables, null, null, null,
+					true);
+
+			assertEquals("Has items", 2, menu.getSize());
+
+		}
+
+		public final void testAdditionalNonePresent()
+		{
+			ShapeWrapper sw = new ShapeWrapper("rect", new RectangleShape(
+					new WorldLocation(12.1, 12.3, 12), new WorldLocation(1.1, 1.1, 12)),
+					Color.red, new HiResDate(2222));
+			Editable[] editables = new Editable[]
+			{ sw };
+			MenuManager menu = new MenuManager("Holder");
+
+			RightClickSupport.getDropdownListFor(menu, editables, null, null, null,
+					true);
+
+			boolean foundTransparent = false;
+
+			assertEquals("Has items", 2, menu.getSize());
+			IContributionItem[] items = menu.getItems();
+			for (int i = 0; i < items.length; i++)
+			{
+				IContributionItem thisI = items[i];
+				if (thisI instanceof MenuManager)
+				{
+					MenuManager subMenu = (MenuManager) thisI;
+					IContributionItem[] subItems = subMenu.getItems();
+					for (int j = 0; j < subItems.length; j++)
+					{
+						IContributionItem subI = subItems[j];
+						if (subI instanceof ActionContributionItem)
+						{
+							ActionContributionItem ac = (ActionContributionItem) subI;
+							String theName = ac.getAction().getText();
+							if (theName.equals("SemiTransparent"))
+								foundTransparent = true;
+						}
+					}
+				}
+			}
+
+			assertTrue("The additional bean info got processed!", foundTransparent);
+		}
+
+		public final void testPropMgt()
 		{
 			final Editable itemOne = new FixWrapper(new Fix(new HiResDate(122333),
 					new WorldLocation(1, 2, 3), 12, 14));
@@ -1222,7 +1370,7 @@ public class RightClickSupport
 			PropertyDescriptor[] props = RightClickSupport
 					.getCommonPropertiesFor(lst);
 			assertNotNull("found some data", props);
-			assertEquals("found right matches", 12, props.length);
+			assertEquals("found right matches", 13, props.length);
 			props = RightClickSupport.getCommonPropertiesFor(lst2);
 			assertNotNull("found some data", props);
 			assertEquals("found right matches", 1, props.length);
@@ -1231,10 +1379,10 @@ public class RightClickSupport
 			assertEquals("found right matches", 1, props.length);
 			props = RightClickSupport.getCommonPropertiesFor(lst4);
 			assertNotNull("found some data", props);
-			assertEquals("found right matches", 7, props.length);
+			assertEquals("found right matches", 8, props.length);
 			props = RightClickSupport.getCommonPropertiesFor(lst5);
 			assertNotNull("found some data", props);
-			assertEquals("found right matches", 12, props.length);
+			assertEquals("found right matches", 13, props.length);
 		}
 	}
 }
