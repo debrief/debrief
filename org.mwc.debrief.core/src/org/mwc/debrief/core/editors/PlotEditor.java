@@ -346,6 +346,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			_layerPainterManager = null;
 		}
 
+		if (_outlinePage != null) {
+			_outlinePage.dispose();
+			_outlinePage = null;
+		}
 	}
 
 	public void init(final IEditorSite site, final IEditorInput input)
@@ -784,7 +788,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * @return the created plot outline page
 	 */
 	protected PlotOutlinePage createOutlinePage() {
-		PlotOutlinePage page= new PlotOutlinePage(this);
+		PlotOutlinePage page= new PlotOutlinePage(this, _myLayers);
 		return page;
 	}
 
