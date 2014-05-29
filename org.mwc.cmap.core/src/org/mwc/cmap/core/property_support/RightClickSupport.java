@@ -32,7 +32,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.dnd.Clipboard;
-import org.mockito.Mockito;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
@@ -185,17 +184,29 @@ public class RightClickSupport
 
 								for (int j = 0; j < theseProps.length; j++)
 								{
+									
 									PropertyDescriptor thisP = theseProps[j];
+									
+									// and wrap the object
+									Editable[] holder = new Editable[]
+									{ subject };
 									if (supportsBooleanEditor(thisP))
 									{
-										// and wrap the object
-										Editable[] holder = new Editable[]
-										{ subject };
 
 										// generate boolean editors in the sub-menu
 										subMenu = generateBooleanEditorFor(manager, subMenu, thisP,
 												holder, theLayers, theTopLayer);
+									}					else
+									{
+										// now the drop-down lists
+										if (supportsListEditor(thisP))
+										{
+											// generate boolean editors in the sub-menu
+											subMenu = generateListEditorFor(manager, subMenu, thisP,
+													holder, theLayers, theTopLayer);
+										}
 									}
+
 								}
 							}
 						}
