@@ -60,6 +60,7 @@ import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
@@ -181,6 +182,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	private TimeManager _timeManager;
 
 	private org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
+
+	private PlotOutlinePage _outlinePage;
 
 	/**
 	 * constructor - quite simple really.
@@ -774,6 +777,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 
 	}
+	
+	/**
+	 * Creates the outline page used with this editor.
+	 *
+	 * @return the created plot outline page
+	 */
+	protected PlotOutlinePage createOutlinePage() {
+		PlotOutlinePage page= new PlotOutlinePage(this);
+		return page;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -784,6 +797,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(final Class adapter)
 	{
+		if (IContentOutlinePage.class.equals(adapter)) {
+			if (_outlinePage == null)
+				_outlinePage= createOutlinePage();
+			return _outlinePage;
+		}
 		Object res = null;
 
 		if (adapter == Layers.class)
