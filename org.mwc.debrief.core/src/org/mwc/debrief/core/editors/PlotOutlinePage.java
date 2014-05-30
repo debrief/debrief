@@ -79,8 +79,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	
 	MyTreeViewer _treeViewer;
 
-	private ISelectionProvider _curSelectionProvider;
-	
 	private CoreViewLabelProvider _myLabelProvider;
 
 	private DragDropSupport _dragDropSupport;
@@ -89,8 +87,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	
 	Layers _myLayers;
 	
-	Action _trackNewLayers;
-
 	/*
 	 * don't bother with the drill-down adapter. we've removed it to save space in
 	 * the local toolbar private DrillDownAdapter drillDownAdapter;
@@ -147,8 +143,11 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	
 	protected TrackManager _theTrackDataListener;
 
+	private PlotEditor _plotEditor;
+
 	public PlotOutlinePage(PlotEditor _plotEditor, Layers _myLayers)
 	{
+		this._plotEditor = _plotEditor;
 		this._myLayers = _myLayers;
 		this._theTrackDataListener = (TrackManager) _plotEditor.getAdapter(TrackManager.class);
 	}
@@ -244,6 +243,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 				}
 			}
 		};
+		
+		_plotEditor.addSelectionChangedListener(_selectionChangeListener);
 
 	// also listen out ourselves to any changes, so we can update the button
 			// enablement
@@ -273,6 +274,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		// FIXME
 		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
 
+		processNewLayers();
 	}
 	
 	private void contributeToActionBars()
@@ -830,8 +832,13 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		if (_followSelectionToggle.isChecked())
 		{
 			// ahh, just check if this is a whole new layers object
-			if (pw.getEditable() instanceof Layers)
-				processNewLayers(pw.getEditable());
+			if (pw.getEditable() instanceof Layers) 
+			{
+				if (pw.getEditable() != _myLayers) {
+					_myLayers = (Layers) pw.getEditable();
+					processNewLayers();
+				}
+			}
 			else
 			{
 				// just check that this is something we can work with
@@ -907,60 +914,43 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
 	}
 
-	void processNewLayers(final Object part)
+	void processNewLayers()
 	{
-		// just check we're not already looking at it
-		if (part != _myLayers)
+		if (_myLayersListener == null)
 		{
-			// are we tracking new layers?
-			if (_trackNewLayers.isChecked())
+			_myLayersListener = new Layers.DataListener2()
 			{
-				// remove old listeners
-				if (_myLayers != null && _myLayersListener != null)
+
+				public void dataModified(final Layers theData, final Layer changedLayer)
 				{
-					_myLayers.removeDataExtendedListener(_myLayersListener);
-					_myLayers.removeDataReformattedListener(_myLayersListener);
 				}
-				// implementation here.
-				_myLayers = (Layers) part;
-				if (_myLayersListener == null)
+
+				public void dataExtended(final Layers theData)
 				{
-					_myLayersListener = new Layers.DataListener2()
-					{
-
-						public void dataModified(final Layers theData,
-								final Layer changedLayer)
-						{
-						}
-
-						public void dataExtended(final Layers theData)
-						{
-							dataExtended(theData, null, null);
-						}
-
-						public void dataReformatted(final Layers theData,
-								final Layer changedLayer)
-						{
-							handleReformattedLayer(changedLayer);
-						}
-
-						public void dataExtended(final Layers theData,
-								final Plottable newItem, final Layer parentLayer)
-						{
-							processNewData(theData, newItem, parentLayer);
-						}
-					};
+					dataExtended(theData, null, null);
 				}
-				// right, listen for data being added
-				_myLayers.addDataExtendedListener(_myLayersListener);
 
-				// and listen for items being reformatted
-				_myLayers.addDataReformattedListener(_myLayersListener);
+				public void dataReformatted(final Layers theData,
+						final Layer changedLayer)
+				{
+					handleReformattedLayer(changedLayer);
+				}
 
-				// do an initial population.
-				processNewData(_myLayers, null, null);
-			}
+				public void dataExtended(final Layers theData, final Plottable newItem,
+						final Layer parentLayer)
+				{
+					processNewData(theData, newItem, parentLayer);
+				}
+			};
 		}
+		// right, listen for data being added
+		_myLayers.addDataExtendedListener(_myLayersListener);
+
+		// and listen for items being reformatted
+		_myLayers.addDataReformattedListener(_myLayersListener);
+
+		// do an initial population.
+		processNewData(_myLayers, null, null);
 	}
 
 	private void hookDoubleClickAction()
@@ -1029,11 +1019,11 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		clearLayerListener();
 
 		// remove selection listeners
-		if (_curSelectionProvider != null)
+		if (_plotEditor != null)
 		{
-			_curSelectionProvider
+			_plotEditor
 					.removeSelectionChangedListener(_selectionChangeListener);
-			_curSelectionProvider = null;
+			_plotEditor = null;
 		}
 
 		_selectionChangeListener = null;
