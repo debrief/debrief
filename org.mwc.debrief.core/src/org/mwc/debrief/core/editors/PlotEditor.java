@@ -801,11 +801,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(final Class adapter)
 	{
-		if (IContentOutlinePage.class.equals(adapter)) {
-			if (_outlinePage == null)
-				_outlinePage= createOutlinePage();
-			return _outlinePage;
-		}
 		Object res = null;
 
 		if (adapter == Layers.class)
@@ -948,11 +943,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 			res = _myRelativeWrapper;
 		}
+		else if (IContentOutlinePage.class.equals(adapter)) 
+		{
+			// lazy instantiation of outline page
+			if (_outlinePage == null)
+				_outlinePage= createOutlinePage();
+			
+			res = _outlinePage;
+		}
+
 
 		// did we find anything?
 		if (res == null)
 		{
-			// nope, don't bother.
+			// nope, see if the parent can find anything
 			res = super.getAdapter(adapter);
 		}
 
