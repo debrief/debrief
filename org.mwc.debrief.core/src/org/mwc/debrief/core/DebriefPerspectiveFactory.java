@@ -43,6 +43,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
 			"midLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
+		bottomLeft.addView(IPageLayout.ID_OUTLINE);
 		bottomLeft.addPlaceholder(DebriefPlugin.MULTI_PATH);
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);		
 		
@@ -51,10 +52,10 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
-    bottomPanel.addPlaceholder(CorePlugin.NARRATIVES2);
-    bottomPanel.addPlaceholder(CorePlugin.GRID_EDITOR);
-//		bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
-    
+		bottomPanel.addPlaceholder(CorePlugin.NARRATIVES2);
+		bottomPanel.addPlaceholder(CorePlugin.GRID_EDITOR);
+		//bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
+
 		// RIGHT: SATC contributions
 		final IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.6f,
 			editorArea);
@@ -62,7 +63,8 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		
 		// and our view shortcuts
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
-    layout.addShowViewShortcut(CorePlugin.NARRATIVES2);
+		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
+		layout.addShowViewShortcut(CorePlugin.NARRATIVES2);
 		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
 		layout.addShowViewShortcut(CorePlugin.TIME_BAR);
 		layout.addShowViewShortcut(CorePlugin.TOTE);
@@ -96,7 +98,4 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		// layout.addActionSet("org.mwc.debrief.core");
 	}
 
-	
-		
-	
 }
