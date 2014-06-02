@@ -346,7 +346,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			_layerPainterManager = null;
 		}
 
-		if (_outlinePage != null) {
+		if (_outlinePage != null)
+		{
 			_outlinePage.dispose();
 			_outlinePage = null;
 		}
@@ -479,7 +480,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							{
 								final ReplayLoader rl = (ReplayLoader) loader;
 								final ImportReplay ir = rl.getReplayLoader();
-								final Vector<SensorWrapper> sensors = ir.getNewlyLoadedSensors();
+								final Vector<SensorWrapper> sensors = ir
+										.getNewlyLoadedSensors();
 								if (sensors.size() == 1)
 								{
 									final SensorWrapper thisS = sensors.firstElement();
@@ -528,8 +530,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				"Import Sensor data", "Please provide the name for this sensor",
 				"a one-word title for this block of sensor contacts (e.g. S2046)",
 				imagePath, null, false);
-		final SelectColorPage getColor = new SelectColorPage(null, thisS.getColor(),
-				"Import Sensor data", "Now format the new sensor",
+		final SelectColorPage getColor = new SelectColorPage(null,
+				thisS.getColor(), "Import Sensor data", "Now format the new sensor",
 				"The default color for the cuts for this new sensor", imagePath, null);
 		final EnterBooleanPage getVis = new EnterBooleanPage(null, false,
 				"Import Sensor data",
@@ -588,18 +590,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		_loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
 		{
 
-			public INamedItem createInstance(final IConfigurationElement configElement,
-					final String label)
+			public INamedItem createInstance(
+					final IConfigurationElement configElement, final String label)
 			{
 				// get the attributes
-				final String theLabel = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
-				final String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
+				final String theLabel = configElement
+						.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+				final String icon = configElement
+						.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
 				final String fileTypes = configElement
 						.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
 
 				// create the instance
-				final INamedItem res = new IPlotLoader.DeferredPlotLoader(configElement,
-						theLabel, icon, fileTypes);
+				final INamedItem res = new IPlotLoader.DeferredPlotLoader(
+						configElement, theLabel, icon, fileTypes);
 
 				// and return it.
 				return res;
@@ -764,7 +768,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					{
 						public void run()
 						{
-							if (getChart() == null || getChart().getCanvas() == null) {
+							if (getChart() == null || getChart().getCanvas() == null)
+							{
 								return;
 							}
 							// ok - update our painter
@@ -781,14 +786,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 
 	}
-	
+
 	/**
 	 * Creates the outline page used with this editor.
-	 *
+	 * 
 	 * @return the created plot outline page
 	 */
-	protected PlotOutlinePage createOutlinePage() {
-		PlotOutlinePage page= new PlotOutlinePage(this, _myLayers);
+	protected PlotOutlinePage createOutlinePage()
+	{
+		PlotOutlinePage page = new PlotOutlinePage(this, _myLayers);
 		return page;
 	}
 
@@ -801,11 +807,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(final Class adapter)
 	{
-		if (IContentOutlinePage.class.equals(adapter)) {
-			if (_outlinePage == null)
-				_outlinePage= createOutlinePage();
-			return _outlinePage;
-		}
 		Object res = null;
 
 		if (adapter == Layers.class)
@@ -948,11 +949,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 			res = _myRelativeWrapper;
 		}
+		else if (IContentOutlinePage.class.equals(adapter))
+		{
+			// lazy instantiation of outline page
+			if (_outlinePage == null)
+				_outlinePage = createOutlinePage();
+
+			res = _outlinePage;
+		}
 
 		// did we find anything?
 		if (res == null)
 		{
-			// nope, don't bother.
+			// nope, see if the parent can find anything
 			res = super.getAdapter(adapter);
 		}
 
@@ -974,7 +983,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 
 			@Override
-			public SWTCanvas createCanvas(final Composite parent1, final GtProjection projection)
+			public SWTCanvas createCanvas(final Composite parent1,
+					final GtProjection projection)
 			{
 				return new CustomisedSWTCanvas(parent1, _myGeoHandler)
 				{
@@ -990,7 +1000,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					}
 
 					public void doSupplementalRightClickProcessing(
-							final MenuManager menuManager, final Plottable selected, final Layer theParentLayer)
+							final MenuManager menuManager, final Plottable selected,
+							final Layer theParentLayer)
 					{
 						if (selected instanceof CreateEditorForParent)
 						{
@@ -1140,10 +1151,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 
 				OutputStream tmpOS = null;
-				// the workspace has a listenser that will close/rename the current plot editor if it's parent file
-				// has been deleted/renamed. We need to cancel that processing whilst we do a file-save,
+				// the workspace has a listenser that will close/rename the current plot
+				// editor if it's parent file
+				// has been deleted/renamed. We need to cancel that processing whilst we
+				// do a file-save,
 				// since the file-save includes a name-change.
-				ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+				ResourcesPlugin.getWorkspace().removeResourceChangeListener(
+						resourceChangeListener);
 				try
 				{
 					// NEW STRATEGY. Save to tmp first, then overwrite existing on
@@ -1193,14 +1207,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								CorePlugin.logError(Status.INFO,
 										"Performing IFileEditorInput save", null);
 
-								final IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+								final IFile file = ((IFileEditorInput) getEditorInput())
+										.getFile();
 
 								// get the current path (since we're going to be moving the temp
 								// one to it
 								final IPath thePath = file.getLocation();
 
 								// create a backup path
-								final IPath bakPath = file.getFullPath().addFileExtension("bak");
+								final IPath bakPath = file.getFullPath()
+										.addFileExtension("bak");
 
 								// delete any existing backup file
 								final File existingBackupFile = new File(file.getLocation()
@@ -1250,9 +1266,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								final Path _p = new Path(_uri.getPath());
 
 								// create pointers to the existing file, and the backup file
-								final IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
-								final IFileStore backupFile = EFS.getLocalFileSystem().getStore(
-										_p.addFileExtension("bak"));
+								final IFileStore existingFile = EFS.getLocalFileSystem()
+										.getStore(_p);
+								final IFileStore backupFile = EFS.getLocalFileSystem()
+										.getStore(_p.addFileExtension("bak"));
 
 								// delete any existing backup file
 								final IFileInfo backupStatus = backupFile.fetchInfo();
@@ -1307,7 +1324,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					{
 						CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
 					}
-					ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE|IResourceChangeEvent.PRE_DELETE|IResourceChangeEvent.POST_CHANGE);
+					ResourcesPlugin.getWorkspace().addResourceChangeListener(
+							resourceChangeListener,
+							IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE
+									| IResourceChangeEvent.POST_CHANGE);
 				}
 			}
 		}
@@ -1493,8 +1513,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				final IFile iff = newInput.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
 				// refresh navigator
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				IViewPart view = page.findView("org.eclipse.ui.views.ResourceNavigator");
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				IViewPart view = page
+						.findView("org.eclipse.ui.views.ResourceNavigator");
 				if (view instanceof ResourceNavigator)
 				{
 					((ResourceNavigator) view).getViewer().refresh(iff);
