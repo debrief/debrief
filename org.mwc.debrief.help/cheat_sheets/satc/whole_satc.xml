@@ -6,6 +6,8 @@
       <intro>
          <b>Introduction</b><br/>
 This collection of cheat sheets will teach you how to use Debrief&apos;s Semi Automated Track Construction (SATC) capabilities.
+         <br/><br/><b>Tip:</b>  If you have multiple monitors, you may wish to drag out this <b>Cheat Sheets</b> window to give 
+         you more room for the multiple Debrief windows that you will use later on. 
       </intro>
       <onCompletion>
          <b>Conclusion</b>
@@ -16,7 +18,8 @@ This collection of cheat sheets will teach you how to use Debrief&apos;s Semi Au
 Before we get started with loading and manipulating data, we&apos;re going to learn some of the background terms and concepts.
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>Conclusion</b><br/>
+            Ok, that's the boring school work out of the way. The rest of this cheat-sheet is all conducted here in Debrief.
          </onCompletion>
          <param name="path" value="overall_intro.xml"/>
          
@@ -43,14 +46,17 @@ You now have a Debrief <b>Project</b>, to contain your tutorial data.
          </task>
          <taskGroup kind="choice" name="Finding the sample data">
             <intro>
-               There are two ways to load the sample data. We&apos;re probably going to end up modifying the sample data, so you don&apos;t
-               want to do that if you&apos;re working on a set of sample data that's shared with other user, since you 
-               would be modifying the <b>master</b> copy of the data. Start off by considering if your Debrief installation folder
+               There are two ways to load the sample data. We&apos;re probably going to end up modifying the sample data, 
+               so you shouldn&apos;t
+               do that if you&apos;re working on a set of sample data that's shared with other users  (since you 
+               would be modifying the <b>master</b> copy of the data). Start off by considering if your Debrief installation folder
                is on your local machine, or on a Network Shared Folder.
             </intro>
             <task kind="cheatsheet" name="Sample data from a local folder" skip="true">
                <intro>
-                  You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled <b>Sample Data</b>, that contains a folder called <b>SATC</b>. If there is on there, you can skip this step.
+                  You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  
+                  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled <b>Sample Data</b>, 
+                  that contains a folder called <b>SATC</b>. If there is one there, you can skip this step.
                </intro>
                <onCompletion>
                   <b>Conclusion</b>&lt;br&gt;
@@ -60,7 +66,11 @@ You now have a Debrief <b>Project</b>, to contain your tutorial data.
             </task>
             <task kind="cheatsheet" name="Sample data from a shared folder" skip="true">
                <intro>
-                  You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled <b>Sample Data</b>, that contains a folder called <b>SATC</b>. If there is on there, you can skip this step.
+                  You should have a Debrief project open. You will also need a link to the Debrief <b>sample data</b>.  
+                  So, open up the projects in your <b>Navigator</b> window, and see if there is a folder titled
+                  <b>Sample Data</b>, that contains a folder called <b>SATC</b>. 
+                  <br/><br/>If there is one there, you can skip this step,
+                  otherwise click on <b>Start working on this task</b>.
                </intro>
                <onCompletion>
                   <b>Conclusion</b><br/>
@@ -105,7 +115,8 @@ You now have a Debrief <b>Project</b>, to contain your tutorial data.
                Lastly we&apos;re going to import the solution into Debrief as a normal TMA track, for subsequent analysis/exploitation.
             </intro>
             <onCompletion>
-               <b>That&apos;s it for single leg solutoins.  Now close the Debrief plot containing the single-leg solution, (no need to save). Next we&apos;ll work on a multi-leg solution.</b>
+               <b>That&apos;s it for single leg solutions.</b>  Now close the Debrief plot containing the single-leg solution, 
+                  (no need to save). Next we&apos;ll work on a multi-leg solution.
             </onCompletion>
             <param name="path" value="single_import.xml"/>
             
@@ -113,7 +124,7 @@ You now have a Debrief <b>Project</b>, to contain your tutorial data.
       </taskGroup>
       <taskGroup kind="sequence" name="Multi Leg Solution" skip="false">
          <intro>
-            Now for a more advanced tutorial. In this tutorial we&apos;re going to work with a scenario with several targets zigs, where a number of contributions are required to get a good quality solution.
+            Now for something a little more advanced. In this tutorial we&apos;re going to work with a scenario with several targets zigs, where a number of contributions are required to get a good quality solution.
          </intro>
          <task kind="cheatsheet" name="Loading the data file" skip="false">
             <intro>

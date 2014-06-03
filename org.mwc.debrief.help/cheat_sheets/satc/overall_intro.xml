@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cheatsheet
+<cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="../contentFile.xsd"
       title="Title">
    <intro>
       <description>
@@ -15,6 +16,6 @@ Please press <b>Click to perform</b> (below) to learn some background, together 
          just one web page.
       </description>
       <command
-            required="true"
+            required="false"
             serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/satc.html)"/> </item>
 </cheatsheet>

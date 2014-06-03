@@ -15,7 +15,7 @@
 	</item>
 	<item title="Check you have a workspace">
 		<description>Before you can import the existing data, you need to define a project for your
-			work. This is a parent folder within which your links are stored. If your Navigator
+			work. This is a parent folder within which your data (or links to your data) is stored. If your Navigator
 			window is empty, you must follow the <b>Generating a project</b> cheat-sheet accessed
 			from the Help/Cheat Sheets menu.</description>
 	</item>
@@ -24,7 +24,7 @@
 			The sample data is going to be dragged in.  In order to do this, the relevant
 			windows both need to be visible at the same time.
 			<br/>
-			So, open Windows Explorer and arrange your on-screen Windows so that Debrief
+			So, open Windows Explorer and then arrange your on-screen Windows so that Debrief
 			is also visible. Then, navigate in Windows Explorer so that you can see the <b>sample_data</b>
 			folder. It&apos;s in the <b>Debrief/DebriefNG</b> folder.
 		</description>

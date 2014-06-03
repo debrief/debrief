@@ -46,8 +46,9 @@
          do this just like we do for normal Single-Sided Reconstruction: click on the <b>Drag TMA Segment</b> arrow button in the Debrief toolbar.
          <br/>As you click it, you will see the <b>Bearing Residuals</b> view open.  Next, make the <b>OWNSHIP</b> track as the Primary track, and 
          the <b>Single Leg TMA</b> track as the secondary track (using the mini-toolbar above the <b>Layer Manager</b>). Now you can drag the yellow track
-         and see the error residuals move.  Note: the <b>Asbolute</b> values graph is easier to read in this instance if you select the <b>Use +/- 180 scale
-         for the Absolute Data</b> button (it&apos;s probably the second button along).
+         and see the error residuals move.  
+         <br/><br/><b>Note:</b> the <b>Absolute</b> values graph is easier to read in this instance if you select the <b>Plot absolute data on +/- 180 axes
+         </b> button (it&apos;s in the <b>Bearing Residuals</b> toolbar, probably the second button along).
       </description>
    </item>
    <item
@@ -57,6 +58,23 @@
          culminating in the analyst merging the TMA solutions into a formal track.<br/>
          But, in this case, the raw SATC produced a perfectly acceptable solution. So, let&apos;s ditch the manual TMA track (by right-clicking on <b>Single Leg TMA</b> and selecting 
          <b>Delete Single Leg TMA</b>. Intead let's just import our original TMA solution by right-clicking on the <b>Single Leg</b> scenario, and selecting <b>Convert to Standalone Track</b>.
+         <br/><br/>You will now see the track has appeared in the <b>Layer Manager</b> as <b>Track:Single Leg</b>.
       </description>
    </item>
+   <item
+      title="Mark our homework">
+      <description>
+         At this point we happen to have our imported TMA Solution (<b>Track:Single Leg</b>), and the Truth Track (<b>Track:SUBJECT</b>)
+         both loaded in Debgrief.  We can 
+         now the application to calculate the distance between the two tracks.
+         <br/><br/>
+         Select <b>Track:Single Leg</b> and <b>Track:Subject</b> in the Layer Manager (use &lt;ctrl&gt; to multi-select).  Now, right click on either of them, and select <b>View XY Plot</b>.          
+         <br/><br/>
+         From the dialog that opens, select <b>Range</b> as the attribute to view, then select <b>Track:Subject</b> as the primary track.
+         <br/><br/>
+         You will see a graph open. This will show that the start of the track has an error of around 140 yds, reducing to 60 near the end.  This seems
+         quite good considering the target range from 8000 to 3000 yards from ownship. 
+      </description>
+   </item>
+   
 </cheatsheet>

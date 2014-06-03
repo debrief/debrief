@@ -13,6 +13,9 @@
          Ok, let&apos;s mark the first leg. In the <b>Layer Manager</b>, expand the Ownship sensor data, and select all of the
          <b>Green</b> cuts.  Now, right-click on them, and select <b>Semi Auto TMA</b> / <b>Add to Tutorial Scenario</b> / 
          <b>Straight leg for period covered by [sensor cuts]</b>. When asked, give it the name <b>First Leg</b>.
+         <br/><br/><b>Note:</b> selecting the cuts and "giving" them to the solution isn&apos;t actually adding
+         the cuts - the solution knows about the cuts already.  We&apos;re justing using the block of cuts
+          as a convenient way of specifying the start and end times for the leg.
       </description>
    </item>
    <item
@@ -90,7 +93,9 @@
    <item title="Verify solution">
       <description>
          Ok, now how good is that solution?  In the <b>Layer Manager</b>, make the <b>SUBJECT</b> track visible.  You should see
-         that the generated solution is very close to the truth track, even with this low bearing rate data.
+         that the generated solution is very close to the truth track, even with this low bearing rate data.  If you wish to 
+         verify the calculated solution against the truth track, you can view the XY Range plot (again) and see the separation
+         between the two tracks.
       </description>
    </item>
 </cheatsheet>
