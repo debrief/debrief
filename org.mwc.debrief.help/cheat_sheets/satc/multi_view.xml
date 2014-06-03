@@ -21,8 +21,8 @@
          The identification of straight legs is pivotal to the SATC process, since they greatly constrain
          the possible solution combinations.
          <br/>
-         Just as with manual TMA, the best practice for this process is to color the sensor cuts according
-         to the leg they&apos;re contained in.  If you make the sensor data visible for the Ownship track, you&apos;ll see 
+         Just as when conducting Manual TMA generation using Debrief, the best practice for this process is to color the sensor cuts according
+         to the leg they&apos;re contained in.  If you examine the Ownship sensor data, you&apos;ll see 
          that the first and second legs have been coloured in green and purple, respectively. Between each leg, a
          few cuts have been left red, to provide time for the target to make alterations.
       </description>
@@ -30,16 +30,19 @@
    <item
          title="Mark the final target leg">
       <description>         
-         Whilst the first two target legs have been coloured, the last one hasn&apos;t. So, expand the sensor data
+         Whilst the first two target legs have been coloured, the last one hasn&apos;t. Let&apos;s do it now. 
+         <br/><br/>
+         Expand the sensor data
          in the Layer Manager, and select the sensor cuts from <b>100112 134230</b> until the end of the
-         dataset, at <b>100112 140000</b>.  Now use the <b>Properties</b> view to change the color of these cuts to <b>Yellow</b>.
+         dataset, at <b>100112 140000</b>.  Now use the <b>Properties</b> view to change the color of these cuts to <b>Yellow</b> 
+         (or obviously you could right-click and select Color > Yellow).
       </description>
    </item>
    <item href="/org.mwc.debrief.help/html/legacy/satc.html#satc_intro"
       title="Create the scenario">
       <description>
          The most significant block of information in generating a solution is the bearing data.  So, the 
-         first step is to specify bearing data.  We are going to use all of the Ownship sensor data for this
+         first step is to provide the bearing data.  We are going to use all of the Ownship sensor data for this
          solution, so right-click on the <b>Sensor:Plain (145 items)</b> sensor, and select <b>Semi Auto TMA</b> / 
          <b>Create new scenario from these cuts</b>.
          <br/>As with the previous tutorial, you will see the new scenario (called <b>121200.00</b> appear in the layer manager, and the 

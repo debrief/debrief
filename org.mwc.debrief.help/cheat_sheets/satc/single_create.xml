@@ -3,7 +3,9 @@
  xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Create scenario">
    <intro>
       <description>
-         Ok, let&apos;s create our first scenario. <b>Note: &apos;Scenario&apos; is the term used to describe the collection of data that is collated in order for SATC to produce an optimal &apos;Solution&apos;.</b>
+         Ok, let&apos;s create our first scenario. 
+         <br/><br/><b>Note:</b> &apos;Scenario&apos; is the term used to describe the collection of data 
+          that is collated in order for SATC to produce an optimal &apos;Solution&apos;.
       </description>
    </intro>
    <item
@@ -18,7 +20,7 @@
          title="Select a block of sensor cuts">
       <description>
          Ok, we&apos;ve found the sensor data. Now right-click on this item (<b>Sensor:Plain (11 items)</b>), and
-         select <b>Semi Auto TMA</b> / <b>Create new solution from these cuts</b>
+         select <b>Semi Auto TMA</b> / <b>Create new solution from these bearings</b>
       </description>
    </item>
    <item
@@ -88,10 +90,12 @@
          title="Specify a target leg">
       <description>
          Your deep, deep, analysis skills have led you to believe that all of these cuts relate to a single leg of target data - in
-         other words, the target maintains course and speed through the period of interest.  That information is useful to the 
+         other words, the target maintains course and speed through the period of interest. 
+         
+         <br/><br/> That information is useful to the 
          TMA algorithms.  Provide this information to the TMA algorithm by right-clicking once again on the <b>Sensor:Plain (11 items)</b> item
          in the <b>Layer Manager</b>, then browse down the menu to <b>Semi Auto TMA</b>, then <b>Add to Single Leg</b>. From the 
-         menu that appears, select <b>Composite Straight Leg for period covered by [sensor cuts]</b>. From the dialog that opens, name the contribution as <b>Leg limits</b>         
+         menu that appears, select <b>New Straight Leg for period covered by [sensor cuts]</b>. From the dialog that opens, name the contribution as <b>Leg limits</b>         
       </description>
    </item>
    <item
