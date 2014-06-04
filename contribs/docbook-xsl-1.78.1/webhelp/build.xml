@@ -33,7 +33,7 @@
 	  in="${input-xml}"
 	    out="${xincluded-profiled.xml}"
 	    style="${ant.file.dir}/../profiling/profile.xsl"
-            classpath="${xercesImpl.jar}">
+            classpath="${xslt-processor-classpath}">
 	  <sysproperty key="org.apache.xerces.xni.parser.XMLParserConfiguration"
 		       value="org.apache.xerces.parsers.XIncludeParserConfiguration"/>
 	  <param name="profile.arch" expression="${profile.arch}" if="profile.arch"/>
