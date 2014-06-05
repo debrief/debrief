@@ -12,6 +12,7 @@
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="helpDir" value="./" />
 	<property name="helpDest" value="${helpDir}/html/legacy" />
+	<property name="webhelpOutput" value="org.mwc.debrief.help/html/webhelp" />
 	<property name="webhelpDest" value="${helpDir}/html/webhelp" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
@@ -21,7 +22,7 @@
 	<property name="xslt-processor-classpath" value="${contribDir}/saxon6_5_5/saxon.jar" />
 	<property name="webhelp.indexer.language" value="en" />
 	<property name="validate-against-dtd" value="false" />
-	<property name="output-dir" value="${webhelpDest}" />
+	<property name="output-dir" value="${webhelpOutput}" />
 	
 	
 	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
@@ -110,6 +111,9 @@
 		<copy todir="${webhelpDest}/common/images" overwrite="yes" failonerror="yes">
 			<fileset file="${helpDir}/docbook/figures/logo.png" />
 		</copy>
+                
+		<!-- delete webhelp output dir -->
+		<delete dir="${rootDir}/org.mwc.debrief.help/org.mwc.debrief.help" />
 	</target>
 
 	<target name="docbook_to_internet">
