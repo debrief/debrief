@@ -15,13 +15,16 @@
 	<property name="webhelpDest" value="${helpDir}/html/webhelp" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
-	<property name="webhelpDir" value="${rootDir}/org.mwc.debrief.help/docbook"/>
-	<property name="input-xml" value="${webhelpDir}/ng_help.xml"/>
-	<property name="input-images-dirs" value="${webhelpDir}/images/** ${webhelpDir}/figures/**"/>
-	<property name="xslt-processor-classpath" value="${contribDir}/saxon6_5_5/saxon.jar"/>
-	<property name="webhelp.indexer.language" value="en"/>
-	<property name="validate-against-dtd" value="false"/>
-	<property name="output-dir" value="${webhelpDest}"/>
+	<property name="webhelpDir" value="${rootDir}/org.mwc.debrief.help/docbook" />
+	<property name="input-xml" value="${webhelpDir}/ng_help.xml" />
+	<property name="input-images-dirs" value="${webhelpDir}/images/** ${webhelpDir}/figures/**" />
+	<property name="xslt-processor-classpath" value="${contribDir}/saxon6_5_5/saxon.jar" />
+	<property name="webhelp.indexer.language" value="en" />
+	<property name="validate-against-dtd" value="false" />
+	<property name="output-dir" value="${webhelpDest}" />
+	
+	<property name="stylesheet-path" value="docbook/webhelp_style.xsl" />
+	
 	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
 
 	<target name="clear_output" description="ditch the existing output files">
@@ -42,8 +45,7 @@
 
 		<!-- generate the HTML. Note: we're set to fail on error, which covers the XML compile failing  -->
 		<echo message="Generating HTML" />
-		<java classpath="${contribDir}/saxon6_5_2/saxon.jar" fork="yes" dir="${helpDest}"
-			classname="com.icl.saxon.StyleSheet" maxmemory="128m" failonerror="yes">
+		<java classpath="${contribDir}/saxon6_5_2/saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m" failonerror="yes">
 			<arg value="../../../org.mwc.debrief.help/docbook/ng_help.xml" />
 			<arg value="../../../org.mwc.debrief.help/docbook/eclipse_html_style.xsl" />
 		</java>
@@ -93,15 +95,21 @@
 	<target name="docbook_to_webhelp">
 		<delete dir="${webhelpDest}" />
 		<mkdir dir="${webhelpDest}" />
-		<antcall target="webhelp"/>
-                <echo message="Copying images" />
-                <copy todir="${webhelpDest}/figures" preservelastmodified="yes">
-                        <fileset dir="${helpDir}\docbook/figures" />
-                </copy>
-                <copy todir="${webhelpDest}/images" preservelastmodified="yes">
-                        <fileset dir="${helpDir}/docbook/images" />
-                </copy>
+		<antcall target="webhelp" />
+		<echo message="Copying images" />
+		<copy todir="${webhelpDest}/figures" preservelastmodified="yes">
+			<fileset dir="${helpDir}\docbook/figures" />
+		</copy>
+		<copy todir="${webhelpDest}/images" preservelastmodified="yes">
+			<fileset dir="${helpDir}/docbook/images" />
+		</copy>
+		
+		<!-- move the Debrief logo into the help content -->
+		<copy todir="${webhelpDest}/common/images" overwrite="yes" failonerror="yes">
+			<fileset file="${helpDir}/docbook/figures/logo.png" />
+		</copy>
 	</target>
+
 	<target name="docbook_to_internet">
 
 		<!-- help the ftp task get going-->
