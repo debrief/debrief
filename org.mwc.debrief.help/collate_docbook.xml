@@ -23,7 +23,6 @@
 	<property name="validate-against-dtd" value="false" />
 	<property name="output-dir" value="${webhelpDest}" />
 	
-	<property name="stylesheet-path" value="docbook/webhelp_style.xsl" />
 	
 	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
 
@@ -93,6 +92,9 @@
 
 
 	<target name="docbook_to_webhelp">
+		
+		<property name="stylesheet-path" value="docbook/webhelp_style.xsl" />
+		
 		<delete dir="${webhelpDest}" />
 		<mkdir dir="${webhelpDest}" />
 		<antcall target="webhelp" />
