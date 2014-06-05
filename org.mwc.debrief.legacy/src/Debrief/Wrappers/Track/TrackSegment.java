@@ -475,6 +475,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		final double[] lats = new double[allElements.length];
 		final double[] longs = new double[allElements.length];
 		final double[] depths = new double[allElements.length];
+		final double[] speeds = new double[allElements.length];
+		final double[] coursesRads = new double[allElements.length];
 		for (int i = 0; i < allElements.length; i++)
 		{
 			final FixWrapper fw = allElements[i];
@@ -482,11 +484,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			lats[i] = fw.getLocation().getLat();
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
+			speeds[i] = fw.getSpeed();
+			coursesRads[i] = fw.getCourse();
 		}
 
 		final CubicSpline latSpline = new CubicSpline(times, lats);
 		final CubicSpline longSpline = new CubicSpline(times, longs);
 		final CubicSpline depthSpline = new CubicSpline(times, depths);
+		final CubicSpline speedSpline = new CubicSpline(times, speeds);
+		final CubicSpline courseRadsSpline = new CubicSpline(times, coursesRads);
 
 		// what's the interval?
 		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
@@ -543,6 +549,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			final double thisLat = latSpline.interpolate(tNow);
 			final double thisLong = longSpline.interpolate(tNow);
 			final double thisDepth = depthSpline.interpolate(tNow);
+			final double thisSpeedKts = speedSpline.interpolate(tNow);
+			double thisCourseRads = courseRadsSpline.interpolate(tNow);
 
 			// create the new location
 			final WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
@@ -558,16 +566,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 						null);
 			}
 
-			final WorldVector offset = newLocation.subtract(origin.getLocation());
-			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
+	//		final WorldVector offset = newLocation.subtract(origin.getLocation());
+//			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
 			// start off with the course
-			double thisCourseRads = offset.getBearing();
 
 			// and now the speed
-			final double distYds = new WorldDistance(offset.getRange(),
-					WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
-			final double spdYps = distYds / timeSecs;
-			final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
+//			final double distYds = new WorldDistance(offset.getRange(),
+//					WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+//			final double spdYps = distYds / timeSecs;
+//			final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
 
 			// put course in the +ve domain
 			while (thisCourseRads < 0)
