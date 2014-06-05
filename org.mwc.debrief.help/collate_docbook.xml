@@ -12,10 +12,17 @@
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="helpDir" value="./" />
 	<property name="helpDest" value="${helpDir}/html/legacy" />
+	<property name="webhelpDest" value="${helpDir}/html/webhelp" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
-
-
+	<property name="webhelpDir" value="${rootDir}/org.mwc.debrief.help/docbook"/>
+	<property name="input-xml" value="${webhelpDir}/ng_help.xml"/>
+	<property name="input-images-dirs" value="${webhelpDir}/images/** ${webhelpDir}/figures/**"/>
+	<property name="xslt-processor-classpath" value="${contribDir}/saxon6_5_5/saxon.jar"/>
+	<property name="webhelp.indexer.language" value="en"/>
+	<property name="validate-against-dtd" value="false"/>
+	<property name="output-dir" value="${webhelpDest}"/>
+	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
 
 	<target name="clear_output" description="ditch the existing output files">
 		<delete dir="${helpDest}" />
@@ -76,10 +83,25 @@
 		<!-- lastly, do the pdf stage-->
 		<antcall target="docbook_to_pdf">
 		</antcall>
+		<!-- see contribs/docbook-xsl-1.78.1/webhelp/build.xml -->
+		<antcall target="docbook_to_webhelp">
+		</antcall>
 
 	</target>
 
 
+	<target name="docbook_to_webhelp">
+		<delete dir="${webhelpDest}" />
+		<mkdir dir="${webhelpDest}" />
+		<antcall target="webhelp"/>
+                <echo message="Copying images" />
+                <copy todir="${webhelpDest}/figures" preservelastmodified="yes">
+                        <fileset dir="${helpDir}\docbook/figures" />
+                </copy>
+                <copy todir="${webhelpDest}/images" preservelastmodified="yes">
+                        <fileset dir="${helpDir}/docbook/images" />
+                </copy>
+	</target>
 	<target name="docbook_to_internet">
 
 		<!-- help the ftp task get going-->
