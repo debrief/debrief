@@ -12,6 +12,7 @@
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="helpDir" value="./" />
 	<property name="helpDest" value="${helpDir}/html/legacy" />
+	<property name="webhelpOutput" value="html/webhelp" />
 	<property name="webhelpDest" value="${helpDir}/html/webhelp" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
@@ -21,7 +22,7 @@
 	<property name="xslt-processor-classpath" value="${contribDir}/saxon6_5_5/saxon.jar" />
 	<property name="webhelp.indexer.language" value="en" />
 	<property name="validate-against-dtd" value="false" />
-	<property name="output-dir" value="${webhelpDest}" />
+	<property name="output-dir" value="${webhelpOutput}" />
 	
 	
 	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
@@ -84,20 +85,22 @@
 		<!-- lastly, do the pdf stage-->
 		<antcall target="docbook_to_pdf">
 		</antcall>
-		<!-- see contribs/docbook-xsl-1.78.1/webhelp/build.xml -->
-		<antcall target="docbook_to_webhelp">
-		</antcall>
 
 	</target>
 
 
 	<target name="docbook_to_webhelp">
-		
-		<property name="stylesheet-path" value="docbook/webhelp_style.xsl" />
-		
+
+		<!-- see contribs/docbook-xsl-1.78.1/webhelp/build.xml -->
 		<delete dir="${webhelpDest}" />
 		<mkdir dir="${webhelpDest}" />
-		<antcall target="webhelp" />
+		
+		<echo message="Running DocBook build task" />
+		<antcall target="webhelp" >
+			<param name="stylesheet-path" value="docbook/webhelp_style.xsl" />			
+		</antcall>
+		
+		
 		<echo message="Copying images" />
 		<copy todir="${webhelpDest}/figures" preservelastmodified="yes">
 			<fileset dir="${helpDir}\docbook/figures" />
@@ -110,6 +113,7 @@
 		<copy todir="${webhelpDest}/common/images" overwrite="yes" failonerror="yes">
 			<fileset file="${helpDir}/docbook/figures/logo.png" />
 		</copy>
+		
 	</target>
 
 	<target name="docbook_to_internet">
@@ -125,7 +129,6 @@
 
 		<!-- take a copy of the index page, we're going to rename it -->
 		<copy file="html/legacy/index.html" tofile="html/legacy/home.html" />
-
 
 		<!-- note, the ftp task relies on an Apache Commons jar.  It's in the lib
 		     folder in the help project.  Tell Ant all about it using Ant/Runtime
