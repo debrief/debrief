@@ -110,9 +110,15 @@
 		</copy>
 		
 		<!-- move the Debrief logo into the help content -->
-		<copy todir="${webhelpDest}/common/images" overwrite="yes" failonerror="yes">
+		<copy description="replace header logo" todir="${webhelpDest}/common/images" overwrite="yes" failonerror="yes">
 			<fileset file="${helpDir}/docbook/figures/logo.png" />
 		</copy>
+		
+		<!-- move the favicon in, to replace the DocBook one -->
+		<copy description="replace favicon" todir="${webhelpDest}" overwrite="yes" failonerror="yes">
+			<fileset file="${helpDir}/docbook/figures/favicon.ico" />
+		</copy>
+		
 		
 	</target>
 
