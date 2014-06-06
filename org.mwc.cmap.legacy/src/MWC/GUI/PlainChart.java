@@ -393,7 +393,13 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		if ((sz.width != 0) && (sz.height != 0))
 		{
 			_theSize = sz;
-			getCanvas().getProjection().zoom(0.0);
+			
+			// make the data fit the area
+			getCanvas().rescale();
+			
+			// and redraw.  Note this call isn't essential, but it's absence causes an SWT error,
+			// presumably associated with the buffered images not matching the size of the 
+			// updated window			
 			getCanvas().updateMe();
 		}
 	}
