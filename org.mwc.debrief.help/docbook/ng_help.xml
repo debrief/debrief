@@ -3,6 +3,10 @@
 "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
 <book version="5.0" xmlns="http://docbook.org/ns/docbook">
   <info>
+    <keywordset>
+      <keyword>Maritime Analysis</keyword>
+      <keyword>Open Source Tool</keyword>
+    </keywordset>
     <title>Debrief NG User Documentation</title>
     <mediaobject>
       <imageobject>
