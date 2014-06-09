@@ -427,6 +427,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	public WorldArea getDataArea()
 	{
+		if (_theLayers == null) return null;
 		final WorldArea res = _theLayers.getBounds();
 		return res;
 	}
