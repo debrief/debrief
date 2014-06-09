@@ -5992,7 +5992,7 @@
 									<String>The file path of a small image with the company logo that will be added to the title in the header area.</String>
 								</field>
 								<field name="value">
-									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/figures/logo.png</String>
+									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/figures/icon.png</String>
 								</field>
 								<field name="defaultValue">
 									<String></String>
