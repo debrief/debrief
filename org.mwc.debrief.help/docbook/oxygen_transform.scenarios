@@ -24,7 +24,7 @@
 									<String>If value is 1 use Docbook admon graphics. If value is 0 do not use Docbook admon graphics.</String>
 								</field>
 								<field name="value">
-									<String>0</String>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<null/>
@@ -765,7 +765,7 @@
 									<String>If non-zero, then chapters will be numbered using the parameter value as the number format if the value matches one of the following: 1 or arabic Arabic numeration (1, 2, 3 ...). A or upperalpha Uppercase letter numeration (A, B, C ...). a or loweralpha Lowercase letter numeration (a, b, c ...). I or upperroman Uppercase roman numeration (I, II, III ...). i or lowerroman Lowercase roman letter numeration (i, ii, iii ...). Any nonzero value other than the above will generate the default number format (arabic).</String>
 								</field>
 								<field name="value">
-									<String>0</String>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>1</String>
@@ -811,7 +811,7 @@
 									<String>If non-zero, a chunk will be created for the first top-level sect1 or section elements in each component. Otherwise, that section will be part of the chunk for its parent.</String>
 								</field>
 								<field name="value">
-									<String>1</String>
+									<String>0</String>
 								</field>
 								<field name="defaultValue">
 									<String>0</String>
@@ -834,7 +834,7 @@
 									<String>If zero (the default), the XSL processor emits a message naming each separate chunk filename as it is being output. If nonzero, then the messages are suppressed.</String>
 								</field>
 								<field name="value">
-									<null/>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>0</String>
@@ -857,7 +857,7 @@
 									<String>This parameter sets the depth of section chunking.</String>
 								</field>
 								<field name="value">
-									<String>3</String>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>1</String>
@@ -1058,6 +1058,33 @@
 								</field>
 								<field name="possibleValues">
 									<null/>
+								</field>
+							</antParameter>
+							<antParameter>
+								<field name="name">
+									<String>clean.output</String>
+								</field>
+								<field name="description">
+									<String>If set to 'true' the output directory is removed before starting the transformation.</String>
+								</field>
+								<field name="value">
+									<String>false</String>
+								</field>
+								<field name="defaultValue">
+									<String>false</String>
+								</field>
+								<field name="type">
+									<Integer>4</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
+								<field name="possibleValues">
+									<String-array>
+										<null/>
+										<String>false</String>
+										<String>true</String>
+									</String-array>
 								</field>
 							</antParameter>
 							<antParameter>
@@ -1877,7 +1904,7 @@
 									<String>Specify if an index should be generated.</String>
 								</field>
 								<field name="value">
-									<String>1</String>
+									<String>0</String>
 								</field>
 								<field name="defaultValue">
 									<String>1</String>
@@ -2015,7 +2042,7 @@
 									<String>This parameter has a structured value. It is a table of space-delimited path/value pairs. Each path identifies some element in the source document using a restricted subset of XPath (only the implicit child axis, no wildcards, no predicates). Paths can be either relative or absolute. When processing a particular element, the stylesheets consult this table to determine if a ToC (or LoT(s)) should be generated. For example, consider the entry: book toc,figure This indicates that whenever a book is formatted, a Table Of Contents and a List of Figures should be generated. Similarly, /chapter toc indicates that whenever a document that has a root of chapter is formatted, a Table of Contents should be generated. The entry chapter would match all chapters, but /chapter matches only chapter document elements. Generally, the longest match wins. So, for example, if you want to distinguish articles in books from articles in parts, you could use these two entries: book/article toc,figure part/article toc Note that an article in a part can never match a book/article, so if you want nothing to be generated for articles in parts, you can simply leave that rule out. If you want to leave the rule in, to make it explicit that you're turning something off, use the value nop. For example, the following entry disables ToCs and LoTs for articles: article nop Do not simply leave the word article in the file without a matching value. That'd be just begging the silly little path/value parser to get confused. Section ToCs are further controlled by the generate.section.toc.level parameter. For a given section level to have a ToC, it must have both an entry in generate.toc and be within the range enabled by generate.section.toc.level.</String>
 								</field>
 								<field name="value">
-									<null/>
+									<String>book toc</String>
 								</field>
 								<field name="defaultValue">
 									<String> appendix toc,title article/appendix nop article toc,title book toc,title,figure,table,example,equation chapter toc,title part toc,title preface toc,title qandadiv toc qandaset toc reference toc,title sect1 toc sect2 toc
@@ -2660,7 +2687,7 @@
 									<String>If non-zero, the scaling attributes on graphics and media objects are ignored.</String>
 								</field>
 								<field name="value">
-									<null/>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>0</String>
@@ -2890,7 +2917,7 @@
 									<String>If inherit.keywords is non-zero, the keyword meta for each HTML head element will include all of the keywords from ancestor elements. Otherwise, only the keywords from the current section will be used.</String>
 								</field>
 								<field name="value">
-									<String>0</String>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>1</String>
@@ -3419,7 +3446,7 @@
 									<String>If non-zero, the navigational headers and footers in chunked HTML are presented in an alternate style that uses graphical icons for Next, Previous, Up, and Home. Default graphics are provided in the distribution. If zero, text is used instead of graphics.</String>
 								</field>
 								<field name="value">
-									<null/>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>0</String>
@@ -3488,7 +3515,7 @@
 									<String>If non-zero, the headers and footers of chunked HTML display the titles of the next and previous chunks, along with the words 'Next' and 'Previous' (or the equivalent graphical icons if navig.graphics is true). If false (zero), then only the words 'Next' and 'Previous' (or the icons) are displayed.</String>
 								</field>
 								<field name="value">
-									<String>0</String>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>1</String>
@@ -4826,7 +4853,7 @@
 									<String>If true (non-zero), unlabeled sections will be enumerated.</String>
 								</field>
 								<field name="value">
-									<String>0</String>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>0</String>
@@ -5800,7 +5827,7 @@
 									<String>If non-zero, variablelists will be formatted as tables. A processing instruction exists to specify a particular width for the column containing the terms: dbhtml term-width=".25in" You can override this setting with a processing instruction as the child of variablelist: dbhtml list-presentation="table" or dbhtml list-presentation="list". This parameter only applies to the HTML transformations. In the FO case, proper list markup is robust enough to handle the formatting. But see also variablelist.as.blocks. &lt;variablelist> &lt;?dbhtml list-presentation="table"?> &lt;?dbhtml term-width="1.5in"?> &lt;?dbfo list-presentation="list"?> &lt;?dbfo term-width="1in"?> &lt;varlistentry> &lt;term>list&lt;/term> &lt;listitem> &lt;para> Formatted as a table even if variablelist.as.table is set to 0. &lt;/para> &lt;/listitem> &lt;/varlistentry> &lt;/variablelist></String>
 								</field>
 								<field name="value">
-									<null/>
+									<String>1</String>
 								</field>
 								<field name="defaultValue">
 									<String>0</String>
@@ -5892,7 +5919,7 @@
 									<String>Path of HTML file with the footer of Webhelp output pages.</String>
 								</field>
 								<field name="value">
-									<null/>
+									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/webhelp_disqus.html</String>
 								</field>
 								<field name="defaultValue">
 									<null/>
@@ -5949,6 +5976,75 @@
 								</field>
 								<field name="type">
 									<Integer>5</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
+								<field name="possibleValues">
+									<null/>
+								</field>
+							</antParameter>
+							<antParameter>
+								<field name="name">
+									<String>webhelp.logo.image</String>
+								</field>
+								<field name="description">
+									<String>The file path of a small image with the company logo that will be added to the title in the header area.</String>
+								</field>
+								<field name="value">
+									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/figures/logo.png</String>
+								</field>
+								<field name="defaultValue">
+									<String></String>
+								</field>
+								<field name="type">
+									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
+								<field name="possibleValues">
+									<null/>
+								</field>
+							</antParameter>
+							<antParameter>
+								<field name="name">
+									<String>webhelp.logo.image.target.url</String>
+								</field>
+								<field name="description">
+									<String>The URL that will be opened when the logo image set with the webhelp.logo.image parameter is clicked in the Webhelp page.</String>
+								</field>
+								<field name="value">
+									<String>http://www.debrief.info</String>
+								</field>
+								<field name="defaultValue">
+									<String></String>
+								</field>
+								<field name="type">
+									<Integer>2</Integer>
+								</field>
+								<field name="isPredefined">
+									<Boolean>false</Boolean>
+								</field>
+								<field name="possibleValues">
+									<null/>
+								</field>
+							</antParameter>
+							<antParameter>
+								<field name="name">
+									<String>webhelp.skin.css</String>
+								</field>
+								<field name="description">
+									<String>The skin CSS parameter is the file path of a CSS that sets the style theme in the output Webhelp pages. It can be one of the predefined skin CSSs from directory: OXYGEN_INSTALL_DIR\frameworks\docbook\xsl\com.oxygenxml.webhelp\predefined-skins, or it can be a custom skin CSS generated with the Oxygen Skin Builder web application.</String>
+								</field>
+								<field name="value">
+									<String>/home/ian/git/debrief/org.mwc.debrief.help/docbook/webhelp_skin.css</String>
+								</field>
+								<field name="defaultValue">
+									<String></String>
+								</field>
+								<field name="type">
+									<Integer>2</Integer>
 								</field>
 								<field name="isPredefined">
 									<Boolean>false</Boolean>
@@ -6095,102 +6191,6 @@
 									<null/>
 								</field>
 							</antParameter>
-							<antParameter>
-								<field name="name">
-									<String>clean.output</String>
-								</field>
-								<field name="description">
-									<String>If set to 'true' the output directory is removed before starting the transformation.</String>
-								</field>
-								<field name="value">
-									<String>false</String>
-								</field>
-								<field name="defaultValue">
-									<String>false</String>
-								</field>
-								<field name="type">
-									<Integer>4</Integer>
-								</field>
-								<field name="isPredefined">
-									<Boolean>false</Boolean>
-								</field>
-								<field name="possibleValues">
-									<String-array>
-										<null/>
-										<String>false</String>
-										<String>true</String>
-									</String-array>
-								</field>
-							</antParameter>
-							<antParameter>
-								<field name="name">
-									<String>webhelp.skin.css</String>
-								</field>
-								<field name="description">
-									<String>The skin CSS parameter is the file path of a CSS that sets the style theme in the output Webhelp pages. It can be one of the predefined skin CSSs from directory: OXYGEN_INSTALL_DIR\frameworks\docbook\xsl\com.oxygenxml.webhelp\predefined-skins, or it can be a custom skin CSS generated with the Oxygen Skin Builder web application.</String>
-								</field>
-								<field name="value">
-									<null/>
-								</field>
-								<field name="defaultValue">
-									<String></String>
-								</field>
-								<field name="type">
-									<Integer>2</Integer>
-								</field>
-								<field name="isPredefined">
-									<Boolean>false</Boolean>
-								</field>
-								<field name="possibleValues">
-									<null/>
-								</field>
-							</antParameter>
-							<antParameter>
-								<field name="name">
-									<String>webhelp.logo.image</String>
-								</field>
-								<field name="description">
-									<String>The file path of a small image with the company logo that will be added to the title in the header area.</String>
-								</field>
-								<field name="value">
-									<null/>
-								</field>
-								<field name="defaultValue">
-									<String></String>
-								</field>
-								<field name="type">
-									<Integer>2</Integer>
-								</field>
-								<field name="isPredefined">
-									<Boolean>false</Boolean>
-								</field>
-								<field name="possibleValues">
-									<null/>
-								</field>
-							</antParameter>
-							<antParameter>
-								<field name="name">
-									<String>webhelp.logo.image.target.url</String>
-								</field>
-								<field name="description">
-									<String>The URL that will be opened when the logo image set with the webhelp.logo.image parameter is clicked in the Webhelp page.</String>
-								</field>
-								<field name="value">
-									<null/>
-								</field>
-								<field name="defaultValue">
-									<String></String>
-								</field>
-								<field name="type">
-									<Integer>2</Integer>
-								</field>
-								<field name="isPredefined">
-									<Boolean>false</Boolean>
-								</field>
-								<field name="possibleValues">
-									<null/>
-								</field>
-							</antParameter>
 						</list>
 					</field>
 					<field name="jvmArgs">
@@ -6218,7 +6218,7 @@
 						<null/>
 					</field>
 					<field name="name">
-						<String>DocBook WebHelp</String>
+						<String>Debrief WebHelp</String>
 					</field>
 					<field name="baseURL">
 						<null/>
