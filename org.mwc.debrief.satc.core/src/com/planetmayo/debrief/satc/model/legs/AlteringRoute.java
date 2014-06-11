@@ -118,18 +118,18 @@ public class AlteringRoute extends CoreRoute
 	 */
 	public void constructRoute(StraightRoute before, StraightRoute after) 
 	{
-		Point p0 = before.getStartPoint(),
-					p1 = before.getEndPoint(),
-					p2 = after.getStartPoint(),
-					p3 = after.getEndPoint();
+		final Point bStart = before.getStartPoint();
+		final Point bEnd = before.getEndPoint();
+		final Point aStart = after.getStartPoint();
+		final Point aEnd = after.getEndPoint();
 		
 		double coefBefore = before.getElapsedTime() / getElapsedTime();
 		double coefAfter = after.getElapsedTime() / getElapsedTime();
 		
-		double c1x = p1.getX() + (p1.getX() - p0.getX()) / (3 * coefBefore);
-		double c1y = p1.getY() + (p1.getY() - p0.getY()) / (3 * coefBefore);
-		double c2x = p2.getX() + (p2.getX() - p3.getX()) / (3 * coefAfter);
-		double c2y = p2.getY() + (p2.getY() - p3.getY()) / (3 * coefAfter);		
+		double c1x = bEnd.getX() + (bEnd.getX() - bStart.getX()) / (3 * coefBefore);
+		double c1y = bEnd.getY() + (bEnd.getY() - bStart.getY()) / (3 * coefBefore);
+		double c2x = aStart.getX() + (aStart.getX() - aEnd.getX()) / (3 * coefAfter);
+		double c2y = aStart.getY() + (aStart.getY() - aEnd.getY()) / (3 * coefAfter);		
 		
 		_controlPoints = new Point[] { GeoSupport.createPoint(c1x, c1y), GeoSupport.createPoint(c2x, c2y) };		
 		_routeType = AlteringRouteType.CUBIC_BEZIER;
