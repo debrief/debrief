@@ -290,12 +290,14 @@ public class MaintainContributionsView extends ViewPart {
 
 		liveConstraints = new Button(group, SWT.TOGGLE);
 		liveConstraints.setText("Auto-Recalc of Constraints");
+		liveConstraints.setEnabled(false);
 		liveConstraints.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_BEGINNING
 						| GridData.VERTICAL_ALIGN_CENTER));
 
 		recalculate = new Button(group, SWT.DEFAULT);
 		recalculate.setText("Calculate Solution");
+		recalculate.setEnabled(false);
 		recalculate.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -335,6 +337,7 @@ public class MaintainContributionsView extends ViewPart {
 				GridData.VERTICAL_ALIGN_CENTER));
 
 		precisionsCombo = new ComboViewer(precisionPanel);
+		precisionsCombo.getCombo().setEnabled(false);
 		precisionsCombo.setContentProvider(new ArrayContentProvider());
 		precisionsCombo.setLabelProvider(new LabelProvider() {
 
@@ -623,7 +626,15 @@ public class MaintainContributionsView extends ViewPart {
 		
 		// just double check that we aren't already looking at this solver
 		if (solver != activeSolver) {
+			
+			// ok - enable/disable the controls dependent on if we have a real solver
+			boolean enabled = solver != null;
+			precisionsCombo.getCombo().setEnabled(enabled);
+			recalculate.setEnabled(enabled);
+			liveConstraints.setEnabled(enabled);
+			performanceChart.setEnabled(enabled);
 
+			// other UI mgt
 			if (activeSolver != null) {
 				activeSolver.getContributions()
 						.removeContributionsChangedListener(
