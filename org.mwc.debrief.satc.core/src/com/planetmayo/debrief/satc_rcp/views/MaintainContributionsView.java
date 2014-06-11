@@ -632,6 +632,7 @@ public class MaintainContributionsView extends ViewPart {
 			precisionsCombo.getCombo().setEnabled(enabled);
 			recalculate.setEnabled(enabled);
 			liveConstraints.setEnabled(enabled);
+			performanceChart.setEnabled(enabled);
 
 			// other UI mgt
 			if (activeSolver != null) {
