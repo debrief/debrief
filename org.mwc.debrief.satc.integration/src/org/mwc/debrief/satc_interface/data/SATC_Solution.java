@@ -635,6 +635,10 @@ public class SATC_Solution extends BaseLayer implements
 						final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
 								theLoc, theCourse, theSpeed);
 						final FixWrapper newFW = new FixWrapper(newF);
+						
+						// reset the label
+						newFW.resetName();
+						
 						newT.addFix(newFW);
 					}
 				}
