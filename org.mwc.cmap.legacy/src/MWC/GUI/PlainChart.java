@@ -181,6 +181,7 @@ import java.util.Enumeration;
 import java.util.Stack;
 import java.util.Vector;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -392,11 +393,20 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		final Dimension sz = getScreenSize();
 		if ((sz.width != 0) && (sz.height != 0))
 		{
+			
 			_theSize = sz;
+
+			final PlainProjection theProj = getCanvas().getProjection();
 			
-			// make the data fit the area
-			getCanvas().rescale();
+			// retrieve the data area
+			WorldArea dataArea = theProj.getDataArea();
+
+			// resize to fit the new window
+			theProj.zoom(1);
 			
+			// override the data area
+			theProj.setDataArea(dataArea);
+						
 			// and redraw.  Note this call isn't essential, but it's absence causes an SWT error,
 			// presumably associated with the buffered images not matching the size of the 
 			// updated window			
