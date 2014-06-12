@@ -95,59 +95,85 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}
 		fireStartingGeneration();
 		Job<Void, Void> previous = null;
+		final Precision thePrecision = getPrecision();
+
 		if (fullRerun || straightLegs == null)
 		{
-			previous =
-					jobsManager.schedule(new Job<Void, Void>("Generate Legs",
-							GA_GENERATOR_GROUP)
-					{
+			previous = jobsManager.schedule(new Job<Void, Void>("Generate Legs",
+					GA_GENERATOR_GROUP)
+			{
 
-						@Override
-						protected <E> Void run(IProgressMonitor monitor,
-								Job<Void, E> previous) throws InterruptedException
-						{
-							SATC_Activator.log(Status.INFO, "SATC GA - Generate Legs - Start", null);
-							List<CoreLeg> rawLegs =
-									getTheLegs(problemSpaceView.states(), monitor);
-							straightLegs = new ArrayList<StraightLeg>();
-							for (CoreLeg leg : rawLegs)
-							{
-								if (leg.getType() == LegType.STRAIGHT)
-								{
-									straightLegs.add((StraightLeg) leg);
-								}
-							}
-							SATC_Activator.log(Status.INFO, "SATC GA - Generate Legs - Complete", null);
-							return null;
-						}
-					});
-		}
-		mainJob =
-				jobsManager.scheduleAfter(new Job<Void, Void>("Calculate GA",
-						GA_GENERATOR_GROUP)
+				@Override
+				protected <E> Void run(IProgressMonitor monitor, Job<Void, E> previous)
+						throws InterruptedException
 				{
-
-					@Override
-					protected <E> Void run(IProgressMonitor monitor, Job<Void, E> previous)
-							throws InterruptedException
+					SATC_Activator.log(Status.INFO, "SATC GA - Generate Legs - Start",
+							null);
+					List<CoreLeg> rawLegs = getTheLegs(problemSpaceView.states(), monitor);
+					straightLegs = new ArrayList<StraightLeg>();
+					for (CoreLeg leg : rawLegs)
 					{
-						SATC_Activator.log(Status.INFO, "SATC GA - Run GA - Start", null);
-						runGA(monitor);
-						return null;
-					}
-
-					@Override
-					protected void onComplete()
-					{
-						SATC_Activator.log(Status.INFO, "SATC GA - Run GA - Complete", null);
-						synchronized (GASolutionGenerator.this)
+						if (leg.getType() == LegType.STRAIGHT)
 						{
-							mainJob = null;
+							straightLegs.add((StraightLeg) leg);
 						}
-						fireFinishedGeneration(getException());
 					}
 
-				}, previous);
+					// ok - of we're low precision, try to hide some states
+					final int numStates = problemSpaceView.states().size();
+					final int tgtNum;
+					switch (thePrecision)
+					{
+					case LOW:
+						tgtNum = (int) (numStates * 0.2);
+						break;
+					case MEDIUM:
+						tgtNum = (int) (numStates * 0.5);
+						break;
+					case HIGH:
+					default:
+						tgtNum = (int) (numStates * 1.0);
+						break;
+					}
+
+					// does the user want to suppress?
+					if (getAutoSuppress())
+					{
+						// ok - cull the boring states
+						suppressCuts(problemSpaceView.states(), tgtNum);
+					}
+
+					SATC_Activator.log(Status.INFO, "SATC GA - Generate Legs - Complete",
+							null);
+					return null;
+				}
+			});
+		}
+		mainJob = jobsManager.scheduleAfter(new Job<Void, Void>("Calculate GA",
+				GA_GENERATOR_GROUP)
+		{
+
+			@Override
+			protected <E> Void run(IProgressMonitor monitor, Job<Void, E> previous)
+					throws InterruptedException
+			{
+				SATC_Activator.log(Status.INFO, "SATC GA - Run GA - Start", null);
+				runGA(monitor);
+				return null;
+			}
+
+			@Override
+			protected void onComplete()
+			{
+				SATC_Activator.log(Status.INFO, "SATC GA - Run GA - Complete", null);
+				synchronized (GASolutionGenerator.this)
+				{
+					mainJob = null;
+				}
+				fireFinishedGeneration(getException());
+			}
+
+		}, previous);
 		if (mainJob != null && mainJob.isComplete())
 		{
 			mainJob = null;
@@ -158,8 +184,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			throws InterruptedException
 	{
 		Random rng = new MersenneTwisterRNG();
-		final RCPIslandEvolution engine =
-				new RCPIslandEvolution(this, straightLegs, 4, rng);
+		final RCPIslandEvolution engine = new RCPIslandEvolution(this,
+				straightLegs, 4, rng);
 		TerminationCondition progressMonitorCondition = new TerminationCondition()
 		{
 			@Override
@@ -169,12 +195,12 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			}
 		};
 
-		List<StraightRoute> solution =
-				engine.evolve(parameters.getPopulationSize(), parameters.getElitizm(),
-						parameters.getEpochLength(), 1, progressMonitorCondition,
-						new ElapsedTime(parameters.getTimeout()),
-						new Stagnation(parameters.getStagnationSteps())
-//				, new TargetFitness(0.07, false)
+		List<StraightRoute> solution = engine.evolve(
+				parameters.getPopulationSize(), parameters.getElitizm(),
+				parameters.getEpochLength(), 1, progressMonitorCondition,
+				new ElapsedTime(parameters.getTimeout()),
+				new Stagnation(parameters.getStagnationSteps())
+		// , new TargetFitness(0.07, false)
 				);
 		if (progressMonitor.isCanceled())
 		{
