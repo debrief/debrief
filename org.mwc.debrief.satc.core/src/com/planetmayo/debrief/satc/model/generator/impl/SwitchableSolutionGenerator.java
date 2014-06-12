@@ -33,6 +33,30 @@ public class SwitchableSolutionGenerator implements ISolutionGenerator
 		switchToGA();
 	}
 
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @param autoSuppress yes/no
+	 */
+	public void setAutoSuppress(boolean autoSuppress)
+	{
+		if(currentGenerator != null)
+			currentGenerator.setAutoSuppress(autoSuppress);
+	}
+	
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @return yes/no
+	 */
+	public boolean getAutoSuppress()
+	{
+		boolean res = false;
+		if(currentGenerator != null)
+			res = currentGenerator.getAutoSuppress();
+		
+		return res;
+	}
+	
+	
 	@Override
 	public void addReadyListener(IGenerateSolutionsListener listener)
 	{

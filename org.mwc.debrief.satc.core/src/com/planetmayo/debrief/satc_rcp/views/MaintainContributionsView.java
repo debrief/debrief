@@ -125,6 +125,7 @@ public class MaintainContributionsView extends ViewPart {
 	private Button liveConstraints;
 	private Button recalculate;
 	private Button cancelGeneration;
+	private Button suppressCuts;
 	private ComboViewer precisionsCombo;
 	// private ComboViewer vehiclesCombo;
 	private Composite contList;
@@ -283,7 +284,7 @@ public class MaintainContributionsView extends ViewPart {
 		gridData.grabExcessHorizontalSpace = true;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		GridLayout layout = new GridLayout(4, false);
+		GridLayout layout = new GridLayout(5, false);
 		group.setLayoutData(gridData);
 		group.setLayout(layout);
 		group.setText("Preferences");
@@ -322,6 +323,22 @@ public class MaintainContributionsView extends ViewPart {
 				}
 			}
 		});
+		
+		suppressCuts = new Button(group, SWT.CHECK);
+		suppressCuts.setText("Suppress Cuts");
+		suppressCuts.setVisible(true);
+		suppressCuts.setEnabled(false);
+		suppressCuts.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (activeSolver != null) {
+					boolean doSuppress =  suppressCuts.getSelection();
+					activeSolver.setAutoSuppress(doSuppress);
+				}
+			}
+		});
+
 
 		Composite precisionPanel = new Composite(group, SWT.NONE);
 		precisionPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
@@ -627,13 +644,6 @@ public class MaintainContributionsView extends ViewPart {
 		// just double check that we aren't already looking at this solver
 		if (solver != activeSolver) {
 			
-			// ok - enable/disable the controls dependent on if we have a real solver
-			boolean enabled = solver != null;
-			precisionsCombo.getCombo().setEnabled(enabled);
-			recalculate.setEnabled(enabled);
-			liveConstraints.setEnabled(enabled);
-			performanceChart.setEnabled(enabled);
-
 			// other UI mgt
 			if (activeSolver != null) {
 				activeSolver.getContributions()
@@ -670,6 +680,7 @@ public class MaintainContributionsView extends ViewPart {
 				// .getVehicleType()));
 				precisionsCombo.setSelection(new StructuredSelection(
 						activeSolver.getPrecision()));
+				suppressCuts.setSelection(activeSolver.getAutoSuppress());
 				liveRunningBinding = context.bindValue(WidgetProperties
 						.selection().observe(liveConstraints), BeansObservables
 						.observeValue(activeSolver, ISolver.LIVE_RUNNING));
@@ -681,6 +692,9 @@ public class MaintainContributionsView extends ViewPart {
 				precisionsCombo.getCombo().setEnabled(hasSolver);
 				liveConstraints.setEnabled(hasSolver);
 				recalculate.setEnabled(hasSolver);
+				performanceChart.setEnabled(hasSolver);
+				suppressCuts.setEnabled(hasSolver);
+
 				// vehiclesCombo.getCombo().setEnabled(hasSolver);
 				// addContributionButton.setEnabled(hasSolver);
 			}
