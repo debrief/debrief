@@ -119,26 +119,26 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 						}
 					}
 
-					// ok - of we're low precision, try to hide some states
-					final int numStates = problemSpaceView.states().size();
-					final int tgtNum;
-					switch (thePrecision)
-					{
-					case LOW:
-						tgtNum = (int) (numStates * 0.2);
-						break;
-					case MEDIUM:
-						tgtNum = (int) (numStates * 0.5);
-						break;
-					case HIGH:
-					default:
-						tgtNum = (int) (numStates * 1.0);
-						break;
-					}
-
 					// does the user want to suppress?
 					if (getAutoSuppress())
 					{
+
+						// ok - of we're low precision, try to hide some states
+						final int numStates = problemSpaceView.states().size();
+						final int tgtNum;
+						switch (thePrecision)
+						{
+						case LOW:
+							tgtNum = (int) (numStates * 0.2);
+							break;
+						case MEDIUM:
+							tgtNum = (int) (numStates * 0.5);
+							break;
+						case HIGH:
+						default:
+							tgtNum = (int) (numStates * 1.0);
+							break;
+						}
 						// ok - cull the boring states
 						suppressCuts(problemSpaceView.states(), tgtNum);
 					}
