@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -26,9 +28,120 @@ import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
+import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 {
+	/** utility class, uses to store a set of states in increasing score order
+	 * 
+	 * @author ian
+	 *
+	 */
+	private static class ScoredState implements Comparable<ScoredState>
+		{
+			final Double _overlap;
+			final BoundedState _state;
+	
+			public ScoredState(double area, BoundedState boundedState)
+			{
+				_overlap = area;
+				_state = boundedState;
+			}
+	
+			@Override
+			public int compareTo(ScoredState o)
+			{
+				return _overlap.compareTo(o._overlap);
+			}
+	
+			public BoundedState getState()
+			{
+				return _state;
+			}
+		}
+
+	/** pass through the cuts, and suppress the least significant
+	 * 
+	 * @param states the set of states to process
+	 * @param targetSize the size we should aim for
+	 */
+	protected static void suppressCuts(Collection<BoundedState> states, final int targetSize)
+	{
+	
+		while (states.size() > targetSize)
+		{
+	
+			// collate a list to store the overlap-ordered states
+			SortedSet<ScoredState> sortedStates = new TreeSet<ScoredState>();
+	
+			// remember the last state
+			BoundedState lastState = null;
+			ScoredState thisSorted = null;
+	
+			Iterator<BoundedState> iter = states.iterator();
+			while (iter.hasNext())
+			{
+				// get the next state
+				BoundedState boundedState = (BoundedState) iter.next();
+	
+				// do we have a previous set?
+				if (lastState != null)
+				{
+					// does this state have location bounds?
+					if (boundedState.getLocation() != null)
+					{
+						if (boundedState.getMemberOf() != null)
+						{
+							// ok, are in the same leg as the previous?
+							if (boundedState.getMemberOf().equals(lastState.getMemberOf()))
+							{
+								// ok - we're in the same leg - what's the overlap
+								Geometry overlap = boundedState.getLocation().getGeometry()
+										.intersection(lastState.getLocation().getGeometry());
+								double area = overlap.getArea();
+								thisSorted = new ScoredState(-area, boundedState);
+								sortedStates.add(thisSorted);
+							}
+						}
+					}
+				}
+	
+				// does this state have a location bounds?
+				if (boundedState.getLocation() != null
+						&& boundedState.getMemberOf() != null)
+				{
+					lastState = boundedState;
+				}
+			}
+	
+			// ok - remove the last state from the list - we need it
+			sortedStates.remove(thisSorted);
+	
+			// ok - we should decided on some states to ditch
+			Iterator<ScoredState> sIter = sortedStates.iterator();
+			int ctr = 0;
+			int ToDelete = (int) (sortedStates.size() * 0.2);
+			ToDelete = Math.max(ToDelete, 1);
+	
+			// do we have enough to remove?
+			if (sortedStates.size() <= ToDelete)
+			{
+				// we can't do any more, just drop out
+				return;
+			}
+			else
+			{
+				while (ctr <= ToDelete)
+				{
+					ScoredState scoredState = (ScoredState) sIter
+							.next();
+					states.remove(scoredState.getState());
+					ctr++;
+				}
+			}
+		}
+	}
+
 	protected final IContributions contributions;
 
 	protected final IJobsManager jobsManager;
@@ -46,6 +159,11 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	 * 
 	 */
 	protected final Set<IGenerateSolutionsListener> _readyListeners;
+
+	/** whether the algorithm is allowed to suppress insignifican cuts
+	 * 
+	 */
+	private boolean _autoSuppress = true;
 	
 	public AbstractSolutionGenerator(IContributions contributions,
 			IJobsManager jobsManager, SafeProblemSpace problemSpace)
@@ -146,6 +264,24 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	public Precision getPrecision()
 	{
 		return _myPrecision;
+	}
+
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @param autoSuppress yes/no
+	 */
+	public void setAutoSuppress(boolean autoSuppress)
+	{
+		_autoSuppress  = autoSuppress;
+	}
+	
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @return yes/no
+	 */
+	public boolean getAutoSuppress()
+	{
+		return _autoSuppress;
 	}
 	
 	/**
