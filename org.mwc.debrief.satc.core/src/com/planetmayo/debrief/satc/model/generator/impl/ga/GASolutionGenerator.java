@@ -136,7 +136,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 							break;
 						case HIGH:
 						default:
-							tgtNum = (int) (numStates * 1.0);
+							tgtNum = (int) (numStates * 0.8);
 							break;
 						}
 						// ok - cull the boring states
