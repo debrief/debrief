@@ -7381,7 +7381,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <varlistentry>
                   <term>Suppress Cuts</term>
                   <listitem>
-                    <para>Whether to allow Debrief to suppress the least significant cuts.  Greater
+                    <para>Whether to allow Debrief to <link linkend="SuppressingCuts">Suppress</link> the least significant cuts.  Greater
                       <link linkend="satc_precision"
                         >precision</link> settings allow suppression of fewer cuts.</para>
                   </listitem>
@@ -10189,7 +10189,8 @@ departure / d.lat = tan (course)</markup>
               	as follows:
               	<orderedlist>
               		<listitem>
-              		  <para>Decide how many cuts to be suppressed. Each <link linkend="satc_precision"
+              		  <para>Decide how many cuts to be <link linkend="SuppressingCuts">suppressed</link>. Each 
+              		    <link linkend="satc_precision"
               		    >precision</link> level has a different %age, 
               			from 80% in Low Precision to 20% in High Precision</para>
               		</listitem>
@@ -10212,7 +10213,28 @@ departure / d.lat = tan (course)</markup>
               	</para>
               </listitem>
             </orderedlist>
-
+            <para><note xml:id="SuppressingCuts">              
+              <para>
+                The following images show the effect of cut suppression.  It is surprising how many cuts can be suppressed whislt still
+                producing an effective solution.
+                <figure xml:id="no_suppress">
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/NoSuppress.png"/>
+                    </imageobject>                    
+                    <caption>A solution showing all bounded states</caption>
+                  </mediaobject>
+                </figure>
+                <figure xml:id="cuts_suppressed">
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/CutsSuppressed.png"/>
+                    </imageobject>                    
+                    <caption>A solution showing Low Precision cut suppression</caption>
+                  </mediaobject>
+                </figure>
+              </para>              
+            </note></para>
             <para>On completion the algorithm moves on to generating and assessing candidate
               solutions.</para>
           </section>
