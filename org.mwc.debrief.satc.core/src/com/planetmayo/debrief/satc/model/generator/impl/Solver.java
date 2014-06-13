@@ -155,6 +155,26 @@ public class Solver extends ModelObject implements ISolver
 		solutionGenerator.setPrecision(precision);
 		firePropertyChange(PRECISION, old, precision);
 	}
+	
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @param autoSuppress yes/no
+	 */
+	public void setAutoSuppress(boolean autoSuppress)
+	{
+		Boolean old = solutionGenerator.getAutoSuppress();
+		solutionGenerator.setAutoSuppress(autoSuppress);
+		firePropertyChange(PRECISION, old, autoSuppress);
+	}
+	
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @return yes/no
+	 */
+	public boolean getAutoSuppress()
+	{
+		return solutionGenerator.getAutoSuppress();
+	}
 
 	@Override
 	public Precision getPrecision()

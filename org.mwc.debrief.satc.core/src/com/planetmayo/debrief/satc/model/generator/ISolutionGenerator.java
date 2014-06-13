@@ -32,6 +32,19 @@ public interface ISolutionGenerator
 	 */
 	Precision getPrecision();
 	
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @param autoSuppress yes/no
+	 */
+	void setAutoSuppress(boolean autoSuppress);
+	
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @return yes/no
+	 */
+	boolean getAutoSuppress();
+	
+	
 	/**
 	 * returns problem space which is used by solution generator  
 	 */

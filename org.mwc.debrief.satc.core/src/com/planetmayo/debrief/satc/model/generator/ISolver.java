@@ -23,6 +23,7 @@ public interface ISolver
 	static final String LIVE_RUNNING = "liveRunning";
 	static final String NAME = "name";
 	static final String PRECISION = "precision";
+	static final String AUTO_SUPPRESS = "suppress";
 	static final String VEHICLE_TYPE = "vehicleType";
 	
 	/**
@@ -101,6 +102,18 @@ public interface ISolver
   void setPrecision(Precision precision);
   
   Precision getPrecision();
+
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @param autoSuppress yes/no
+	 */
+	void setAutoSuppress(boolean autoSuppress);
+	
+	/** whether insignificant cuts should be suppressed (only in mid-low)
+	 * 
+	 * @return yes/no
+	 */
+	boolean getAutoSuppress();
   
   void save(Writer writer);
   

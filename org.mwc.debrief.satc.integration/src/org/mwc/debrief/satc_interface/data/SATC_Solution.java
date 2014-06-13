@@ -1052,7 +1052,8 @@ public class SATC_Solution extends BaseLayer implements
 			dest.setColor(_myColor);
 			if (_newRoutes != null)
 			{
-				paintThese(dest, _newRoutes);
+				if(_showSolutions)
+					paintThese(dest, _newRoutes);
 			}
 		}
 	}
