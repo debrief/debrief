@@ -4,7 +4,8 @@
      */
 
 html, body, #header #productTitle H1,  #contentBlock a, #contentBlock a:hover, #contentBlock a:after, #contentBlock a:active, a.link, a.navheader_parent_path, #header, #header.tab:not(.selectedTab), #header .tab.selectedTab{
-    font-family: Palatino, "Palatino Linotype", Georgia, Times, "Times New Roman", serif;
+    ont-family: Palatino, "Palatino Linotype", Georgia, Times, "Times New Roman", serif;
+    font-family:  "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 .frmBody, p.title, p, p .quote, .example-contents, ul.itemizedlist, ol.orderedlist, .code, .command, .email, .table-contents table, .table-contents thead, .table-contents tbody, .footer, .footer a, #header #lHeader, #header #productTitle H1, #header #tocMenu, #header .navheader_parent_path, #header #navigationLinks a, #splitterContainer .topic:not(.menuItemSelected), #splitterContainer .hasSubMenuClosed, #splitterContainer .hasSubMenuOpened, #splitterContainer .splitbuttonV, .shortdesc, .q, .example, .ul, .ol, .dl, .dt, .dd, .keyword.apiname, .p .image, :not(p) > .image, .fig.fignone, .figcap, .simpletable td, #header .link {
   background-color: transparent;
