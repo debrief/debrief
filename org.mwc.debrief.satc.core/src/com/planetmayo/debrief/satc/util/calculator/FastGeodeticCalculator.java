@@ -369,11 +369,9 @@ public class FastGeodeticCalculator implements GeodeticCalculator {
      * @throws IllegalArgumentException if {@code latitude} is not between -90 and +90 degrees.
      */
     private static double checkLatitude(final double latitude) throws IllegalArgumentException {
-        if (latitude >= Latitude.MIN_VALUE && latitude <= Latitude.MAX_VALUE) {
-            return toRadians(latitude);
-        }
-        throw new IllegalArgumentException(Errors.format(
-                ErrorKeys.LATITUDE_OUT_OF_RANGE_$1, new Latitude(latitude)));
+    	double lat = Math.max(latitude, Latitude.MIN_VALUE);
+    	lat = Math.min(latitude, Latitude.MAX_VALUE);
+      return toRadians(lat);
     }
 
     /**
@@ -386,11 +384,9 @@ public class FastGeodeticCalculator implements GeodeticCalculator {
      * @throws IllegalArgumentException if {@code longitude} is not between -180 and +180 degrees.
      */
     private static double checkLongitude(final double longitude) throws IllegalArgumentException {
-        if (longitude >= Longitude.MIN_VALUE && longitude <= Longitude.MAX_VALUE) {
-            return toRadians(longitude);
-        }
-        throw new IllegalArgumentException(Errors.format(
-                ErrorKeys.LONGITUDE_OUT_OF_RANGE_$1, new Longitude(longitude)));
+    	double lng = Math.max(longitude, Longitude.MIN_VALUE);
+    	lng = Math.min(lng,  Longitude.MAX_VALUE);
+      return toRadians(lng);
     }
 
     /**
