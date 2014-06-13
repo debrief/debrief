@@ -65,14 +65,14 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	 * @param states the set of states to process
 	 * @param targetSize the size we should aim for
 	 */
-	protected static void suppressCuts(Collection<BoundedState> states, final int targetSize)
+	public static Collection<BoundedState> suppressCuts(final Collection<BoundedState> states, final int targetSize)
 	{
 	
 		while (states.size() > targetSize)
 		{
 	
 			// collate a list to store the overlap-ordered states
-			SortedSet<ScoredState> sortedStates = new TreeSet<ScoredState>();
+			final SortedSet<ScoredState> sortedStates = new TreeSet<ScoredState>();
 	
 			// remember the last state
 			BoundedState lastState = null;
@@ -82,7 +82,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 			while (iter.hasNext())
 			{
 				// get the next state
-				BoundedState boundedState = (BoundedState) iter.next();
+				final BoundedState boundedState = (BoundedState) iter.next();
 	
 				// do we have a previous set?
 				if (lastState != null)
@@ -96,9 +96,9 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 							if (boundedState.getMemberOf().equals(lastState.getMemberOf()))
 							{
 								// ok - we're in the same leg - what's the overlap
-								Geometry overlap = boundedState.getLocation().getGeometry()
+								final Geometry overlap = boundedState.getLocation().getGeometry()
 										.intersection(lastState.getLocation().getGeometry());
-								double area = overlap.getArea();
+								final double area = overlap.getArea();
 								thisSorted = new ScoredState(-area, boundedState);
 								sortedStates.add(thisSorted);
 							}
@@ -118,7 +118,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 			sortedStates.remove(thisSorted);
 	
 			// ok - we should decided on some states to ditch
-			Iterator<ScoredState> sIter = sortedStates.iterator();
+			final Iterator<ScoredState> sIter = sortedStates.iterator();
 			int ctr = 0;
 			int ToDelete = (int) (sortedStates.size() * 0.2);
 			ToDelete = Math.max(ToDelete, 1);
@@ -127,19 +127,20 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 			if (sortedStates.size() <= ToDelete)
 			{
 				// we can't do any more, just drop out
-				return;
+				return states;
 			}
 			else
 			{
 				while (ctr <= ToDelete)
 				{
-					ScoredState scoredState = (ScoredState) sIter
+					final ScoredState scoredState = (ScoredState) sIter
 							.next();
 					states.remove(scoredState.getState());
 					ctr++;
 				}
 			}
 		}
+		return states;
 	}
 
 	protected final IContributions contributions;
