@@ -42,6 +42,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.geometry.coordinate.Position;
 import org.opengis.geometry.DirectPosition;
 
+import org.eclipse.core.runtime.Status;
 import org.geotools.measure.Angle;
 import org.geotools.measure.Latitude;
 import org.geotools.measure.Longitude;
@@ -62,6 +63,7 @@ import org.geotools.resources.i18n.VocabularyKeys;
 import org.geotools.io.TableWriter;
 
 import com.planetmayo.debrief.satc.util.MathUtils;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 
 /**
@@ -368,12 +370,19 @@ public class FastGeodeticCalculator implements GeodeticCalculator {
      * @return The latitude value in <strong>radians</strong>.
      * @throws IllegalArgumentException if {@code latitude} is not between -90 and +90 degrees.
      */
-    private static double checkLatitude(final double latitude) throws IllegalArgumentException {
-        if (latitude >= Latitude.MIN_VALUE && latitude <= Latitude.MAX_VALUE) {
-            return toRadians(latitude);
-        }
-        throw new IllegalArgumentException(Errors.format(
-                ErrorKeys.LATITUDE_OUT_OF_RANGE_$1, new Latitude(latitude)));
+    private static double checkLatitude(double latitude) throws IllegalArgumentException {
+    	// verify in-bounds
+    	if(latitude > Latitude.MAX_VALUE)
+    	{
+    		SATC_Activator.log(Status.WARNING, "Out of bounds lat requested:" + latitude, null);
+    		latitude = Latitude.MAX_VALUE;
+    	}
+    	if(latitude < Latitude.MIN_VALUE)
+    	{
+    		SATC_Activator.log(Status.WARNING, "Out of bounds lat requested:" + latitude, null);
+    		latitude = Latitude.MIN_VALUE;
+    	}
+      return toRadians(latitude);
     }
 
     /**
@@ -385,12 +394,20 @@ public class FastGeodeticCalculator implements GeodeticCalculator {
      * @return The longitude value in <strong>radians</strong>.
      * @throws IllegalArgumentException if {@code longitude} is not between -180 and +180 degrees.
      */
-    private static double checkLongitude(final double longitude) throws IllegalArgumentException {
-        if (longitude >= Longitude.MIN_VALUE && longitude <= Longitude.MAX_VALUE) {
-            return toRadians(longitude);
-        }
-        throw new IllegalArgumentException(Errors.format(
-                ErrorKeys.LONGITUDE_OUT_OF_RANGE_$1, new Longitude(longitude)));
+    private static double checkLongitude(double longitude) throws IllegalArgumentException {
+    	
+    	// verify in-bounds
+    	if(longitude > Longitude.MAX_VALUE)
+    	{
+    		SATC_Activator.log(Status.WARNING, "Out of bounds long requested:" + longitude, null);
+    		longitude = Longitude.MAX_VALUE;
+    	}
+    	if(longitude < Longitude.MIN_VALUE)
+    	{
+    		SATC_Activator.log(Status.WARNING, "Out of bounds long requested:" + longitude, null);
+    		longitude = Longitude.MIN_VALUE;
+    	}
+      return toRadians(longitude);
     }
 
     /**
