@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -354,7 +355,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 							// and the plot itself
 							final String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
-							page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
+							final IViewPart newPart = page.showView(plotId, theTitle,
+									IWorkbenchPage.VIEW_ACTIVATE);
 
 							// put our subjects into a vector
 							final Vector<WatchableList> theTracks = new Vector<WatchableList>(
@@ -406,16 +408,21 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 								return;
 							}
 
+							// NOTE: next section commented out.  When doing a relative
+							// calculation, it was causing the whole period to be shown
+							// - not just the period selected in the Time Controller
+							//
+							//
 							// aah. does the primary track have it's own time period?
-							if (thePrimary != null)
-							{
-								if (thePrimary.getStartDTG() != null)
-									startTime = thePrimary.getStartDTG();
+							// if (thePrimary != null)
+							// {
+							// if (thePrimary.getStartDTG() != null)
+							// startTime = thePrimary.getStartDTG();
+							//
+							// if (thePrimary.getEndDTG() != null)
+							// endTime = thePrimary.getEndDTG();
+							// }
 
-								if (thePrimary.getEndDTG() != null)
-									endTime = thePrimary.getEndDTG();
-							}
-							
 							final HiResDate finalStart = startTime;
 							final HiResDate finalEnd = endTime;
 
@@ -428,7 +435,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 									return ShowTimeVariablePlot3.getDataSeries(thePrimary,
 											theHolder, theTracks, finalStart, finalEnd, null);
 								}
-								
+
 								@Override
 								public Layers getLayers()
 								{
@@ -437,12 +444,30 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							};
 
 							// ok, try to retrieve the view
-							final IViewReference plotRef = page.findViewReference(plotId, theTitle);
+							final IViewReference plotRef = page.findViewReference(plotId,
+									theTitle);
 							final XYPlotView plotter = (XYPlotView) plotRef.getView(true);
 
-							plotter.showPlot(theTitle, prov, myOperation.toString() + " ("
-									+ myOperation.getUnits() + ")", theHolder._theFormatter,
-									thePlotId);
+							try
+							{
+								plotter.showPlot(theTitle, prov, myOperation.toString() + " ("
+										+ myOperation.getUnits() + ")", theHolder._theFormatter,
+										thePlotId);
+							}
+							catch (RuntimeException ex)
+							{
+								// show the error message
+								CorePlugin.errorDialog("Generate XY Plot", ex.getMessage());
+								
+								// and remove the view from the screen
+								page.hideView(newPart);
+								
+								// lastly - try to ditch the view
+								newPart.dispose();
+								
+								return;
+							}
+
 						}
 						catch (final PartInitException e)
 						{

@@ -465,7 +465,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			// get the data
 			// ////////////////////////////////////////////////////
 			final AbstractDataset theDataset = getDataSeries(thePrimary, theHolder,
-					_theTracks, _start_time, _end_time, jChart.getTimeOffsetProvider());
+						_theTracks, _start_time, _end_time, jChart.getTimeOffsetProvider());
 
 			// ////////////////////////////////////////////////
 			// put the holder into one of our special items
@@ -653,15 +653,15 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			boolean connectToPrevious = false;
 
 			// have we found any?. Hey, listen here. The "getItemsBetween"
-			// method may
-			// return
-			// data items, but we may still not be able to do the calc (such as
-			// if we
-			// have "NaN" for depth). So
-			// we still do a sanity check at the end of this method to stop us
-			// adding
-			// empty data series to the collection.
-			if (ss != null)
+			// method may return data items, but we may still not be able to do the calc 
+			// (such as if we have "NaN" for depth). So we still do a sanity check 
+			// at the end of this method to stop us adding empty data series to the collection.
+			if(ss == null)
+			{
+				throw new RuntimeException("Insufficient points found in primary (or secondary) track." +
+						"\nPlease check coverage of time controller bars"); 
+			}
+			else
 			{
 				// remember the default color for this series
 				Color seriesColor;
