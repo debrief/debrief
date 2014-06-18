@@ -33,6 +33,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		// Top left: Resource Navigator view and Bookmarks view placeholder
 		final IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f,
 				"topLeft");
+		midLeft.addView(IPageLayout.ID_PROP_SHEET);		
 		midLeft.addView(CorePlugin.TOTE);
 		midLeft.addPlaceholder(CorePlugin.STACKED_DOTS);
 		midLeft.addPlaceholder(CorePlugin.FREQ_RESIDUALS);
@@ -45,7 +46,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
 		bottomLeft.addView(IPageLayout.ID_OUTLINE);
 		bottomLeft.addPlaceholder(DebriefPlugin.MULTI_PATH);
-		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);		
 		
 		// bottom: placeholder for the xyplot
 		final IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
