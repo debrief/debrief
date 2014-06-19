@@ -432,7 +432,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		{
 			org.eclipse.swt.graphics.Color swtColpr = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 
 					newColor.getRed(), newColor.getGreen(), newColor.getBlue());
+			
 			// TODO: I presume we need to dispose of the previous generated color object
+			
+			// TODO: I hope we'll actually have a custom rounded rectangle to use
+			// for the color coding, not the active check box
 			activeCheckBox.setBackground(swtColpr);
 		}
 		else
