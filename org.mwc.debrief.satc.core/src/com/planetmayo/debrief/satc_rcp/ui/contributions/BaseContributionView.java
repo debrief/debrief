@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -130,17 +132,16 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			BooleanToNullConverter<?> checkBoxValueConverter,
 			UnitConverter unitConverter)
 	{
-		final WritableValue uiProxy =
-				new WritableValue(modelValue.getValue(), modelValue.getValueType());
+		final WritableValue uiProxy = new WritableValue(modelValue.getValue(),
+				modelValue.getValueType());
 
 		IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
 
 		if (unitConverter != null)
 		{
-			IConverter modelToUI =
-					new CompoundConverter(unitConverter.getModelToUI(),
-							new IntegerConverter());
+			IConverter modelToUI = new CompoundConverter(
+					unitConverter.getModelToUI(), new IntegerConverter());
 			context.bindValue(sliderValue, uiProxy,
 					UIUtils.converterStrategy(unitConverter.getUIToModel()),
 					UIUtils.converterStrategy(modelToUI));
@@ -151,10 +152,10 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		}
 		if (checkBox != null)
 		{
-			IObservableValue sliderEnabled =
-					WidgetProperties.enabled().observe(slider);
-			IObservableValue checkBoxValue =
-					WidgetProperties.selection().observe(checkBox);
+			IObservableValue sliderEnabled = WidgetProperties.enabled().observe(
+					slider);
+			IObservableValue checkBoxValue = WidgetProperties.selection().observe(
+					checkBox);
 			context.bindValue(checkBoxValue, modelValue,
 					UIUtils.converterStrategy(checkBoxValueConverter),
 					UIUtils.converterStrategy(new NullToBooleanConverter()));
@@ -207,10 +208,10 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				{
 					return;
 				}
-				double minT =
-						minValue == null ? Double.MIN_VALUE : minValue.doubleValue();
-				double maxT =
-						maxValue == null ? Double.MAX_VALUE : maxValue.doubleValue();
+				double minT = minValue == null ? Double.MIN_VALUE : minValue
+						.doubleValue();
+				double maxT = maxValue == null ? Double.MAX_VALUE : maxValue
+						.doubleValue();
 				if (newValue.doubleValue() < minT || newValue.doubleValue() > maxT)
 				{
 					if (minT == maxT)
@@ -302,30 +303,28 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	 */
 	protected final void bindCommonDates(DataBindingContext context)
 	{
-		IObservableValue startDateValue =
-				BeansObservables
-						.observeValue(contribution, BaseContribution.START_DATE);
-		IObservableValue startDateWidget =
-				WidgetProperties.selection().observe(startDate);
-		IObservableValue startTimeWidget =
-				WidgetProperties.selection().observe(startTime);
+		IObservableValue startDateValue = BeansObservables.observeValue(
+				contribution, BaseContribution.START_DATE);
+		IObservableValue startDateWidget = WidgetProperties.selection().observe(
+				startDate);
+		IObservableValue startTimeWidget = WidgetProperties.selection().observe(
+				startTime);
 		context.bindValue(new DateAndTimeObservableValue(startDateWidget,
 				startTimeWidget), startDateValue);
 
-		IObservableValue endDateValue =
-				BeansObservables.observeValue(contribution,
-						BaseContribution.FINISH_DATE);
-		IObservableValue endDateWidget =
-				WidgetProperties.selection().observe(endDate);
-		IObservableValue endTimeWidget =
-				WidgetProperties.selection().observe(endTime);
+		IObservableValue endDateValue = BeansObservables.observeValue(contribution,
+				BaseContribution.FINISH_DATE);
+		IObservableValue endDateWidget = WidgetProperties.selection().observe(
+				endDate);
+		IObservableValue endTimeWidget = WidgetProperties.selection().observe(
+				endTime);
 		context.bindValue(new DateAndTimeObservableValue(endDateWidget,
 				endTimeWidget), endDateValue);
 
-		IObservableValue nameValue =
-				BeansObservables.observeValue(contribution, BaseContribution.NAME);
-		IObservableValue nameText =
-				WidgetProperties.text(SWT.Modify).observe(contributionNameText);
+		IObservableValue nameValue = BeansObservables.observeValue(contribution,
+				BaseContribution.NAME);
+		IObservableValue nameText = WidgetProperties.text(SWT.Modify).observe(
+				contributionNameText);
 		context.bindValue(nameText, nameValue);
 	}
 
@@ -358,32 +357,32 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			IObservableValue hardContraint, IObservableValue estimateValue,
 			IConverter estimateConverter, IConverter hardConstraintsConverter)
 	{
-		IObservableValue activeValue =
-				BeansObservables.observeValue(contribution, BaseContribution.ACTIVE);
-		IObservableValue activeButton =
-				WidgetProperties.selection().observe(activeCheckBox);
+		IObservableValue activeValue = BeansObservables.observeValue(contribution,
+				BaseContribution.ACTIVE);
+		IObservableValue activeButton = WidgetProperties.selection().observe(
+				activeCheckBox);
 		context.bindValue(activeButton, activeValue);
 
 		if (hardContraint != null)
 		{
-			IObservableValue hardContraintLabel =
-					WidgetProperties.text().observe(hardConstraintLabel);
+			IObservableValue hardContraintLabel = WidgetProperties.text().observe(
+					hardConstraintLabel);
 			context.bindValue(hardContraintLabel, hardContraint, null,
 					UIUtils.converterStrategy(hardConstraintsConverter));
 		}
 
 		if (estimateValue != null)
 		{
-			IObservableValue estimateLabel =
-					WidgetProperties.text().observe(this.estimateLabel);
+			IObservableValue estimateLabel = WidgetProperties.text().observe(
+					this.estimateLabel);
 			context.bindValue(estimateLabel, estimateValue, null,
 					UIUtils.converterStrategy(estimateConverter));
 		}
 
-		IObservableValue weightValue =
-				BeansObservables.observeValue(contribution, BaseContribution.WEIGHT);
-		IObservableValue weightWidget =
-				WidgetProperties.selection().observe(weightSpinner);
+		IObservableValue weightValue = BeansObservables.observeValue(contribution,
+				BaseContribution.WEIGHT);
+		IObservableValue weightWidget = WidgetProperties.selection().observe(
+				weightSpinner);
 		context.bindValue(weightWidget, weightValue);
 	}
 
@@ -411,9 +410,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 		UIUtils.createLabel(bodyGroup, "Dates:", new GridData());
 		UIUtils.createSpacer(bodyGroup, new GridData());
-		Composite datesGroup =
-				UIUtils.createEmptyComposite(bodyGroup, new RowLayout(SWT.HORIZONTAL),
-						new GridData());
+		Composite datesGroup = UIUtils.createEmptyComposite(bodyGroup,
+				new RowLayout(SWT.HORIZONTAL), new GridData());
 		startDate = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.DATE);
 		startTime = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.TIME);
 		UIUtils.createLabel(datesGroup, "  -  ", new RowData());
@@ -421,6 +419,27 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		endTime = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.TIME);
 
 		createLimitAndEstimateSliders();
+	}
+	
+
+	/** set the color code for this contribution
+	 * 
+	 * @param newColor
+	 */
+	protected void setContributionColor(Color newColor)
+	{
+		if(newColor != null)
+		{
+			org.eclipse.swt.graphics.Color swtColpr = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 
+					newColor.getRed(), newColor.getGreen(), newColor.getBlue());
+			// TODO: I presume we need to dispose of the previous generated color object
+			activeCheckBox.setBackground(swtColpr);
+		}
+		else
+		{
+			// somehow - we need to set the control back to transparent
+			// TODO:
+		}
 	}
 
 	protected void createHeader(Composite parent)
@@ -461,7 +480,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		activeCheckBox = new Button(nested, SWT.CHECK);
 		activeCheckBox.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_CENTER));
-
+		
 		hardConstraintLabel = new Label(nested, SWT.CENTER);
 		hardConstraintLabel.setText("Hard constraints");
 		hardConstraintLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -503,8 +522,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		group = new Composite(bodyGroup, SWT.NONE);
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
-		minLabel =
-				UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		minLabel = UIUtils.createSpacer(group, new GridData(
+				GridData.FILL_HORIZONTAL));
 		minSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		minSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		minSlider.setPageIncrement(1);
@@ -515,8 +534,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		group = new Composite(bodyGroup, SWT.NONE);
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
-		maxLabel =
-				UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		maxLabel = UIUtils.createSpacer(group, new GridData(
+				GridData.FILL_HORIZONTAL));
 		maxSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		maxSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		maxSlider.setPageIncrement(1);
@@ -528,8 +547,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
 		estimateActiveCheckbox = new Button(group, SWT.CHECK);
-		estimateDetailsLabel =
-				UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		estimateDetailsLabel = UIUtils.createSpacer(group, new GridData(
+				GridData.FILL_HORIZONTAL));
 		estimateSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		estimateSlider.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.GRAB_HORIZONTAL));
@@ -581,8 +600,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		createHeader(mainGroup);
 		createBody(mainGroup);
 
-		titleChangeListener =
-				attachTitleChangeListener(contribution, getTitlePrefix());
+		titleChangeListener = attachTitleChangeListener(contribution,
+				getTitlePrefix());
 		initializeWidgets();
 
 		context = new DataBindingContext();
