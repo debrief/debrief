@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,10 +13,17 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 public class StraightLegForecastContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
+
+	public static final String COLOR = "COLOR";
+	
+	private Color _myCol = null;
 	
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
+		// track the color to use for this straight leg
+		Color newCol = null;
+		
 		for (BoundedState state : space.getBoundedStatesBetween(startDate,
 				finishDate))
 		{
@@ -29,8 +37,20 @@ public class StraightLegForecastContribution extends BaseContribution
 
 			// ok, now just store the leg id
 			state.setMemberOf(this.getName());
+			
+			// do we have a color?
+			if(newCol == null && state.getColor() != null)
+			{
+				// nope, store it.
+				newCol = new Color(state.getColor().getRGB());
+			}
 		}
 
+		// share the good news about the color change
+		Color oldCol = _myCol;
+		_myCol = newCol;
+		firePropertyChange(COLOR, oldCol, _myCol);
+		
 		// check that we have at least one state between two straight legs
 		List<BoundedState> previousState = new ArrayList<BoundedState>(
 				space.getBoundedStatesBetween(space.getStartDate(), new Date(startDate.getTime() - 1))
@@ -119,6 +139,11 @@ public class StraightLegForecastContribution extends BaseContribution
 		}
 		
 		return res;
+	}
+	
+	public Color getColor()
+	{
+		return _myCol;
 	}
 	
 	@Override
