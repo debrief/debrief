@@ -1,5 +1,8 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import java.awt.Color;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -26,6 +29,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
@@ -41,12 +45,35 @@ public class CompositeStraightLegForecastContributionView extends
 	private Text maxCrse;
 	private Text crseEstimate;
 
+	private PropertyChangeListener _colorListener;
+
 	public CompositeStraightLegForecastContributionView(Composite parent,
 			CompositeStraightLegForecastContribution contribution,
 			IContributions contributions)
 	{
 		super(parent, contribution, contributions);
 		initUI();
+
+		_colorListener = new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				setContributionColor((Color) evt.getNewValue());
+			}
+		};
+		// listen out for colro changes
+		contribution.addPropertyChangeListener(
+				StraightLegForecastContribution.COLOR, _colorListener);
+	}
+
+	@Override
+	public void dispose()
+	{
+		contribution.removePropertyChangeListener(
+				StraightLegForecastContribution.COLOR, _colorListener);
+
+		super.dispose();
 	}
 	
 	@Override
