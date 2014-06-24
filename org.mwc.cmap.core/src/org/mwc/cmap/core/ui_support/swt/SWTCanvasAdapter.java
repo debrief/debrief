@@ -107,6 +107,7 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -115,6 +116,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
@@ -559,7 +561,21 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (!_theDest.isDisposed())
 		{
 			_theDest.setAlpha(alphaTransparency);
-			_theDest.drawImage(img, x, y, width, height, x, y, width, height);
+			if (Platform.OS_LINUX.equals(Platform.getOS()))
+			{
+				ImageData data = img.getImageData();
+				final java.awt.Color trColor = java.awt.Color.black;
+				final int transPx = data.palette.getPixel(new RGB(trColor.getRed(),
+						trColor.getGreen(), trColor.getBlue()));
+				data.transparentPixel = transPx;
+				final Image image = new Image(Display.getCurrent(), data);
+				_theDest.drawImage(image, x, y, width, height, x, y, width, height);
+				image.dispose();
+			}
+			else
+			{
+				_theDest.drawImage(img, x, y, width, height, x, y, width, height);
+			}
 			_theDest.setAlpha(255);
 		}
 
