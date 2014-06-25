@@ -563,6 +563,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			_theDest.setAlpha(alphaTransparency);
 			if (Platform.OS_LINUX.equals(Platform.getOS()))
 			{
+				// SPECIAL CASE: It should fix background issue on Linux (it is constrained 
+				// on Linux; maybe it should be the same on Mac).	The issue happen 
+				// because "new GC(image)" ignores transparency on Linux. 
+				// It is probably a bug in SWT.
 				ImageData data = img.getImageData();
 				final java.awt.Color trColor = java.awt.Color.black;
 				final int transPx = data.palette.getPixel(new RGB(trColor.getRed(),
