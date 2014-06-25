@@ -41,7 +41,6 @@ public class CompositeStraightLegForecastContribution extends
 		course.setEstimate(null);
 	}
 	
-
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
