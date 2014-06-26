@@ -90,6 +90,12 @@ public class CalendarDateSuite {
             // on a whole figure
             _myCalendar.setTimeInMillis((minimum.getTime() / scaleStep) * scaleStep);
             
+            // aah, just double-check that we include the start time
+            if(_myCalendar.getTime().after(minimum))
+            {
+              _myCalendar.setTimeInMillis(((minimum.getTime() / scaleStep) - 1) * scaleStep);
+            }
+            
             // and send out another update...
             setTotalObjectRange(_myCalendar.getTime(), maximum);
             
