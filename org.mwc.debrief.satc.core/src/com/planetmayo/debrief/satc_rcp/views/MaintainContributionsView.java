@@ -697,6 +697,7 @@ public class MaintainContributionsView extends ViewPart
 					public void statesBounded(IBoundsManager boundsManager)
 					{
 						// TODO: force redraw of the items in the container list. The color has now changed!
+						System.out.println("DEBUG: states bounded");
 						contList.redraw();
 						contList.update();
 					}

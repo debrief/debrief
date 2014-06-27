@@ -83,7 +83,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected PropertyChangeListener titleChangeListener;
 
 	private final IContributions contributions;
-	protected Composite colorMarker;
 
 	public BaseContributionView(final Composite parent, final T contribution,
 			final IContributions contributions)
@@ -435,7 +434,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		layout.horizontalSpacing = 0;
 		expandButtonComposite.setLayout(layout);
 
-		colorMarker = new Composite(expandButtonComposite, SWT.NONE);
+		final Composite colorMarker = new Composite(expandButtonComposite, SWT.NONE);
 		layout = UIUtils.createGridLayoutWithoutMargins(1, false);
 		layout.horizontalSpacing = 0;
 		colorMarker.setLayout(layout);
@@ -448,7 +447,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			@Override
 			public void handleEvent(Event event)
 			{
-				customPaint(event);
+				customPaint(event, colorMarker.getBackground());
 			}
 		});
 
@@ -615,12 +614,12 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		mainGroup.setLayoutData(data);
 	}
 
-	protected void customPaint(Event event)
+	protected void customPaint(Event event, org.eclipse.swt.graphics.Color backColor)
 	{
 		if (contribution instanceof BaseContribution.HasColor)
 		{
 			// TODO: remove this debug line
-			System.out.println("custom paint:" + contribution.getName());
+			System.out.println("DEBUG: custom paint:" + contribution.getName());
 			
 			org.eclipse.swt.graphics.Color color = null;
 			if (contribution.isActive())
@@ -643,7 +642,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			}
 			else
 			{
-				event.gc.setBackground(colorMarker.getBackground());
+				event.gc.setBackground(backColor);
 				event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
 			}
 			
