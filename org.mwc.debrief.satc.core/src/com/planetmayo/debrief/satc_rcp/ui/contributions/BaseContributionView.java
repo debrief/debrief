@@ -37,6 +37,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution.HasColor;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
@@ -82,6 +83,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected PropertyChangeListener titleChangeListener;
 
 	private final IContributions contributions;
+	protected Composite colorMarker;
 
 	public BaseContributionView(final Composite parent, final T contribution,
 			final IContributions contributions)
@@ -420,31 +422,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 		createLimitAndEstimateSliders();
 	}
-	
-
-	/** set the color code for this contribution
-	 * 
-	 * @param newColor
-	 */
-	protected void setContributionColor(Color newColor)
-	{
-		if(newColor != null)
-		{
-			//org.eclipse.swt.graphics.Color swtColpr = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 
-			//		newColor.getRed(), newColor.getGreen(), newColor.getBlue());
-			
-			// TODO: I presume we need to dispose of the previous generated color object
-			
-			// TODO: I hope we'll actually have a custom rounded rectangle to use
-			// for the color coding, not the active check box
-			//activeCheckBox.setBackground(swtColpr);
-		}
-		else
-		{
-			// somehow - we need to set the control back to transparent
-			// TODO:
-		}
-	}
 
 	protected void createHeader(Composite parent)
 	{
@@ -458,19 +435,20 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		layout.horizontalSpacing = 0;
 		expandButtonComposite.setLayout(layout);
 
-		Composite roundRectangle = new Composite (expandButtonComposite, SWT.NONE);
+		colorMarker = new Composite(expandButtonComposite, SWT.NONE);
 		layout = UIUtils.createGridLayoutWithoutMargins(1, false);
 		layout.horizontalSpacing = 0;
-		roundRectangle.setLayout(layout);
+		colorMarker.setLayout(layout);
 		GridData gd = new GridData();
 		gd.heightHint = 30;
 		gd.widthHint = 10;
-		roundRectangle.setLayoutData(gd);
-		roundRectangle.addListener (SWT.Paint, new Listener () {
+		colorMarker.setLayoutData(gd);
+		colorMarker.addListener(SWT.Paint, new Listener()
+		{
 			@Override
 			public void handleEvent(Event event)
 			{
-				fillColor(event);
+				customPaint(event);
 			}
 		});
 
@@ -498,14 +476,13 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			}
 		});
 
-		Composite nested =
-				UIUtils.createEmptyComposite(header, UIUtils
-						.createGridLayoutWithoutMargins(4, true), new GridData(
-						GridData.FILL_HORIZONTAL));
+		Composite nested = UIUtils.createEmptyComposite(header, UIUtils
+				.createGridLayoutWithoutMargins(4, true), new GridData(
+				GridData.FILL_HORIZONTAL));
 		activeCheckBox = new Button(nested, SWT.CHECK);
 		activeCheckBox.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_CENTER));
-		
+
 		hardConstraintLabel = new Label(nested, SWT.CENTER);
 		hardConstraintLabel.setText("Hard constraints");
 		hardConstraintLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -638,7 +615,41 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		mainGroup.setLayoutData(data);
 	}
 
-	protected void fillColor(Event event)
+	protected void customPaint(Event event)
 	{
+		if (contribution instanceof BaseContribution.HasColor)
+		{
+			// TODO: remove this debug line
+			System.out.println("custom paint:" + contribution.getName());
+			
+			org.eclipse.swt.graphics.Color color = null;
+			if (contribution.isActive())
+			{
+				BaseContribution.HasColor colorCont = (HasColor) contribution;
+				Color jColor = colorCont.getColor();
+				if (jColor != null)
+				{
+					color = new org.eclipse.swt.graphics.Color(
+							Display.getCurrent(), jColor.getRed(), jColor.getGreen(),
+							jColor.getBlue());
+				}
+			}
+			
+			if(color != null)
+			{
+				event.gc.setBackground(color);
+				event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
+				color.dispose();
+			}
+			else
+			{
+				event.gc.setBackground(colorMarker.getBackground());
+				event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
+			}
+			
+			event.gc.setForeground(Display.getCurrent()
+					.getSystemColor(SWT.COLOR_GRAY));
+			event.gc.drawRoundRectangle(3, 5, 6, 20, 8, 8);
+		}
 	}
 }
