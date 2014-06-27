@@ -1,6 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
-import java.awt.Color;
 import java.math.BigDecimal;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -20,7 +19,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 
@@ -43,30 +41,12 @@ public class CompositeStraightLegForecastContributionView extends
 	private Text maxCrse;
 	private Text crseEstimate;
 
-	//private PropertyChangeListener _colorListener;
-
 	public CompositeStraightLegForecastContributionView(Composite parent,
 			CompositeStraightLegForecastContribution contribution,
 			IContributions contributions)
 	{
 		super(parent, contribution, contributions);
 		initUI();
-	}
-
-	@Override
-	protected void fillColor(Event event)
-	{
-		Color jColor = contribution.getColor();
-		if (jColor != null)
-		{
-			org.eclipse.swt.graphics.Color color = new org.eclipse.swt.graphics.Color(Display.getCurrent(),
-					jColor.getRed(), jColor.getGreen(), jColor.getBlue());
-			event.gc.setBackground(color);
-			event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
-			color.dispose();
-		}
-		event.gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-		event.gc.drawRoundRectangle(3, 5, 6, 20, 8, 8);
 	}
 
 	@Override
