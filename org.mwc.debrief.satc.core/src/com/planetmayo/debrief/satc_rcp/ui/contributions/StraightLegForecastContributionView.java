@@ -6,16 +6,17 @@ import org.eclipse.swt.widgets.Composite;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 
-public class StraightLegForecastContributionView extends BaseContributionView<StraightLegForecastContribution>
+public class StraightLegForecastContributionView extends
+		BaseContributionView<StraightLegForecastContribution>
 {
-	
-	public StraightLegForecastContributionView(Composite parent, StraightLegForecastContribution contribution,
-			IContributions contributions)
+
+	public StraightLegForecastContributionView(Composite parent,
+			StraightLegForecastContribution contribution, IContributions contributions)
 	{
 		super(parent, contribution, contributions);
 		initUI();
 	}
-	
+
 	@Override
 	protected void createLimitAndEstimateSliders()
 	{
@@ -39,5 +40,5 @@ public class StraightLegForecastContributionView extends BaseContributionView<St
 	{
 		hardConstraintLabel.setText("n/a");
 		estimateLabel.setText("n/a");
-	}	
+	}
 }

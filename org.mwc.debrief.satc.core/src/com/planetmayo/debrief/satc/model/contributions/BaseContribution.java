@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -27,6 +28,12 @@ public abstract class BaseContribution extends ModelObject implements
 	public static final String ACTIVE = "active";
 	public static final String ESTIMATE = "estimate";
 
+	/* note: most contributions don't provide a color property
+	 * it's just straight legs, really
+	 */
+	public static final String COLOR = "COLOR";
+
+
 	public static final String HARD_CONSTRAINTS = "hardConstraint";
 
 	protected String name;
@@ -35,6 +42,12 @@ public abstract class BaseContribution extends ModelObject implements
 	protected Date startDate;
 	protected Date finishDate;
 
+	// custom interface for contributions that have their own color
+	public static interface HasColor
+	{
+		public Color getColor();
+	}
+	
 	protected BaseContribution()
 	{
 		// give a default name - we can't just rely on the DTG,

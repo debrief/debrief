@@ -48,13 +48,16 @@ public class CompositeStraightLegForecastContributionView extends
 		super(parent, contribution, contributions);
 		initUI();
 	}
+
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+	}
 	
 	@Override
 	protected void initUI()
 	{
-		// do the parent bits now
-		//super.initUI();
-		
 		GridLayout layout = UIUtils.createGridLayoutWithoutMargins(1, false);
 		layout.verticalSpacing = 0;
 		mainGroup = new Group(controlParent, SWT.SHADOW_ETCHED_IN);
