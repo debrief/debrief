@@ -6,15 +6,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution.HasColor;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public class StraightLegForecastContribution extends BaseContribution
+public class StraightLegForecastContribution extends BaseContribution implements HasColor
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final String COLOR = "COLOR";
 	
 	private Color _myCol = null;
 	
