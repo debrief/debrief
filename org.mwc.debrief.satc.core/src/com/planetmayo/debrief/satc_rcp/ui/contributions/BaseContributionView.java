@@ -618,9 +618,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	{
 		if (contribution instanceof BaseContribution.HasColor)
 		{
-			// TODO: remove this debug line
-			System.out.println("DEBUG: custom paint:" + contribution.getName());
-			
 			org.eclipse.swt.graphics.Color color = null;
 			if (contribution.isActive())
 			{
