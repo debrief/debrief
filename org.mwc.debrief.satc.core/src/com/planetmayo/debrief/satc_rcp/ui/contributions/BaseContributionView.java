@@ -430,14 +430,14 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	{
 		if(newColor != null)
 		{
-			org.eclipse.swt.graphics.Color swtColpr = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 
-					newColor.getRed(), newColor.getGreen(), newColor.getBlue());
+			//org.eclipse.swt.graphics.Color swtColpr = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 
+			//		newColor.getRed(), newColor.getGreen(), newColor.getBlue());
 			
 			// TODO: I presume we need to dispose of the previous generated color object
 			
 			// TODO: I hope we'll actually have a custom rounded rectangle to use
 			// for the color coding, not the active check box
-			activeCheckBox.setBackground(swtColpr);
+			//activeCheckBox.setBackground(swtColpr);
 		}
 		else
 		{
@@ -453,7 +453,28 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				| GridData.GRAB_HORIZONTAL));
 		header.setLayout(UIUtils.createGridLayoutWithoutMargins(3, false));
 
-		expandButton = new ExpandButton(header);
+		Composite expandButtonComposite = new Composite(header, SWT.NONE);
+		GridLayout layout = UIUtils.createGridLayoutWithoutMargins(2, false);
+		layout.horizontalSpacing = 0;
+		expandButtonComposite.setLayout(layout);
+
+		Composite roundRectangle = new Composite (expandButtonComposite, SWT.NONE);
+		layout = UIUtils.createGridLayoutWithoutMargins(1, false);
+		layout.horizontalSpacing = 0;
+		roundRectangle.setLayout(layout);
+		GridData gd = new GridData();
+		gd.heightHint = 30;
+		gd.widthHint = 10;
+		roundRectangle.setLayoutData(gd);
+		roundRectangle.addListener (SWT.Paint, new Listener () {
+			@Override
+			public void handleEvent(Event event)
+			{
+				fillColor(event);
+			}
+		});
+
+		expandButton = new ExpandButton(expandButtonComposite);
 		expandButton.getControl().setLayoutData(new GridData(40, SWT.DEFAULT));
 		expandButton.addSelectionListener(new SelectionAdapter()
 		{
@@ -615,5 +636,9 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	public void setLayoutData(Object data)
 	{
 		mainGroup.setLayoutData(data);
+	}
+
+	protected void fillColor(Event event)
+	{
 	}
 }

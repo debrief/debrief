@@ -305,6 +305,8 @@ public class MaintainContributionsView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (activeSolver != null) {
 					activeSolver.run(true, true);
+					main.setSize(0, 0);
+					main.getParent().layout(true, true);
 				}
 			}
 		});

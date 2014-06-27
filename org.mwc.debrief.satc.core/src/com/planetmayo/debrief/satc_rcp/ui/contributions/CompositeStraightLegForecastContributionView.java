@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 
@@ -45,7 +46,7 @@ public class CompositeStraightLegForecastContributionView extends
 	private Text maxCrse;
 	private Text crseEstimate;
 
-	private PropertyChangeListener _colorListener;
+	//private PropertyChangeListener _colorListener;
 
 	public CompositeStraightLegForecastContributionView(Composite parent,
 			CompositeStraightLegForecastContribution contribution,
@@ -54,24 +55,44 @@ public class CompositeStraightLegForecastContributionView extends
 		super(parent, contribution, contributions);
 		initUI();
 
-		_colorListener = new PropertyChangeListener()
+//		_colorListener = new PropertyChangeListener()
+//		{
+//			@Override
+//			public void propertyChange(PropertyChangeEvent evt)
+//			{
+//				setContributionColor((Color) evt.getNewValue());
+//			}
+//		};
+//		// listen out for colro changes
+//		contribution.addPropertyChangeListener(
+//				StraightLegForecastContribution.COLOR, _colorListener);
+	}
+
+	@Override
+	protected void fillColor(Event event)
+	{
+		Color jColor = contribution.getColor();
+		org.eclipse.swt.graphics.Color color = controlParent.getBackground();
+		boolean requireDispose = false;
+		if (jColor != null)
 		{
-			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				setContributionColor((Color) evt.getNewValue());
-			}
-		};
-		// listen out for colro changes
-		contribution.addPropertyChangeListener(
-				StraightLegForecastContribution.COLOR, _colorListener);
+			color = new org.eclipse.swt.graphics.Color(Display.getCurrent(),
+					jColor.getRed(), jColor.getGreen(), jColor.getBlue());
+			requireDispose = true;
+		}
+		event.gc.setBackground(color);
+		event.gc.fillRoundRectangle(0, 5, 10, 20, 8, 8);
+		if (requireDispose)
+		{
+			color.dispose();
+		}
 	}
 
 	@Override
 	public void dispose()
 	{
-		contribution.removePropertyChangeListener(
-				StraightLegForecastContribution.COLOR, _colorListener);
+		//contribution.removePropertyChangeListener(
+		//		StraightLegForecastContribution.COLOR, _colorListener);
 
 		super.dispose();
 	}
