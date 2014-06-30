@@ -122,7 +122,6 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 						}
 						catch (final CoreException e)
 						{
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}

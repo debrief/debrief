@@ -501,7 +501,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 						final Sexagesimal longVal = SexagesimalSupport._DD_MM_SS_SSS.parse(longString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), true);
 						res = new WorldLocation(latVal.getCombinedDegrees(), longVal.getCombinedDegrees(), 0d);
 					} catch (final Exception e) {
-						// TODO Auto-generated catch block
 						CorePlugin.logError(Status.ERROR,
 								"whilst trying to get (lat,long) location off clipboard", e);
 					}

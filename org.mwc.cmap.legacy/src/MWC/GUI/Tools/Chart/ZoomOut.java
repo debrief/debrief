@@ -227,7 +227,6 @@ public class ZoomOut extends PlainTool
 				@Override
 				public Dimension getScreenSize()
 				{
-					// TODO Auto-generated method stub
 					return null;
 				}
 
@@ -239,7 +238,6 @@ public class ZoomOut extends PlainTool
 
 				@Override
 				public Component getPanel() {
-					// TODO Auto-generated method stub
 					return null;
 				}
 

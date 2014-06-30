@@ -158,7 +158,6 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 			@Override
 			public int compare(Viewer viewer, Object e1, Object e2)
 			{
-				// TODO Auto-generated method stub
 				BoundedState c1 = (BoundedState) e1;
 				BoundedState c2 = (BoundedState) e2;
 				return c1.compareTo(c2);

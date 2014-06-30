@@ -218,7 +218,6 @@ public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.M
 				}
 				catch (ParserConfigurationException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

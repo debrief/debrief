@@ -123,17 +123,14 @@ public class ESearch implements SearchModel
 		}
 		catch (final MalformedURLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (final JsonParseException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (final JsonMappingException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return res;
@@ -295,17 +292,14 @@ public class ESearch implements SearchModel
 			}
 			catch (final JsonParseException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch (final JsonMappingException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch (final IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

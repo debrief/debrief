@@ -128,7 +128,6 @@ public class AServer
 		@Override
 		public void restart(final ScenarioType scenario)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
@@ -178,7 +177,6 @@ public class AServer
 		@Override
 		public void restart(final ScenarioType scenario)
 		{
-			// TODO Auto-generated method stub
 
 		}
 

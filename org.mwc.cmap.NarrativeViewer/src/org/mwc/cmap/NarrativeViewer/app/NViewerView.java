@@ -140,7 +140,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			@Override
 			public void dataExtended(final Layers theData)
 			{
-				// TODO Auto-generated method stub
 
 			}
 

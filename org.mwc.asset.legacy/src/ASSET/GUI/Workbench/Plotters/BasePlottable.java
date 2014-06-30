@@ -67,13 +67,11 @@ public class BasePlottable implements Layer
 
 	public WorldArea getBounds()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public boolean getVisible()
 	{
-		// TODO Auto-generated method stub
 		return true;
 	}
 

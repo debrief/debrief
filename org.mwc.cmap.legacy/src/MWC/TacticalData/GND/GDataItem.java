@@ -123,14 +123,12 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 						@Override
 						public String getFieldName()
 						{
-							// TODO Auto-generated method stub
 							return theField;
 						}
 
 						@Override
 						public Class<?> getDataType()
 						{
-							// TODO Auto-generated method stub
 							Class<?> res;
 							if (theField.equals(GDataset.TIME))
 								res = Date.class;

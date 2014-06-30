@@ -545,7 +545,6 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		}
 		catch (ParserConfigurationException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 

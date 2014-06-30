@@ -165,13 +165,11 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
 
 	public void endExport(final Plottable item)
 	{
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void startExport(final Plottable item)
 	{
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -129,7 +129,6 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	@Override
 	public Collection<Editable> getItemsBetween(final HiResDate start, final HiResDate end)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -169,7 +168,6 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	@Override
 	public boolean hasEditor()
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -182,14 +180,12 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	@Override
 	public void exportShape()
 	{
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void append(final Layer other)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
@@ -254,35 +250,30 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	@Override
 	public void setName(final String val)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean hasOrderedChildren()
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public int getLineThickness()
 	{
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void add(final Editable point)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removeElement(final Editable point)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

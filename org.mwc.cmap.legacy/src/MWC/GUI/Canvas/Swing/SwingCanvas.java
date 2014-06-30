@@ -1201,14 +1201,12 @@ public class SwingCanvas extends javax.swing.JComponent
 
 @Override
 public void drawText(final String str, final int x, final int y, final float rotate) {
-	// TODO Auto-generated method stub
 	
 }
 
 @Override
 public void drawText(String str, int x, int y, float rotate, boolean above)
 {
-	// TODO Auto-generated method stub
 	
 }
 

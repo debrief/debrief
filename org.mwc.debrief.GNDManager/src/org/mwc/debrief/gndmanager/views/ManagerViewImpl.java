@@ -138,7 +138,6 @@ public class ManagerViewImpl extends Composite implements ManagerView
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e)
 			{
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -289,7 +288,6 @@ public class ManagerViewImpl extends Composite implements ManagerView
 	@Override
 	public String getFreeText()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -313,14 +311,12 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		@Override
 		public void dispose()
 		{
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
@@ -360,7 +356,6 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		@Override
 		public void dispose()
 		{
-			// TODO Auto-generated method stub
 
 		}
 

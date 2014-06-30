@@ -152,7 +152,6 @@ public class PositionList implements GriddableSeries {
 
 	public void setOnlyShowVisibleItems(final boolean val)
 	{
-		// TODO Auto-generated method stub
 		
 	}
 

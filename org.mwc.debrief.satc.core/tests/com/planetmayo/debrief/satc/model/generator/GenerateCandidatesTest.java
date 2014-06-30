@@ -680,7 +680,6 @@ public class GenerateCandidatesTest extends ModelTestBase
 		@Override
 		public void actUpon(ProblemSpace space) throws IncompatibleStateException
 		{
-			// TODO Auto-generated method stub
 		}
 		
 		

@@ -599,7 +599,6 @@ public class MultiPathModel
 			}
 			catch (final DataFormatException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				fail("bad data problem");
 			}
@@ -625,7 +624,6 @@ public class MultiPathModel
 			}
 			catch (final DataFormatException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				fail("bad data problem");
 			}

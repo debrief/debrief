@@ -27,7 +27,6 @@ public abstract class S57Feature implements Plottable
 
 	public WorldArea getBounds()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 

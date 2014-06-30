@@ -529,17 +529,14 @@ public final class MultiParticipantGenerator
 			}
 			catch (XPathExpressionException e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			catch (SAXParseException e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			catch (SAXException e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -632,7 +629,6 @@ public final class MultiParticipantGenerator
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

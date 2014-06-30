@@ -69,7 +69,6 @@ public class WorldImageLayer extends GeoToolsLayer
 		}
 		catch (final DataSourceException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -206,7 +205,6 @@ public class WorldImageLayer extends GeoToolsLayer
 			}
 			catch (final FactoryException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

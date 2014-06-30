@@ -96,56 +96,48 @@ public class CourseConstraintsWizardPage extends CoreEditableWizardPage
 		@Override
 		public boolean hasEditor()
 		{
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
 		public EditorType getInfo()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public int compareTo(Plottable arg0)
 		{
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
 		public void paint(CanvasType dest)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public WorldArea getBounds()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public boolean getVisible()
 		{
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
 		public void setVisible(boolean val)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public double rangeFrom(WorldLocation other)
 		{
-			// TODO Auto-generated method stub
 			return 0;
 		}
 

@@ -115,7 +115,6 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 				+ _myWrapper.getSpeed().getUnits();
 		prefs.put(SPEED, spdTxt);
 
-		// TODO Auto-generated method stub
 		super.dispose();
 	}
 

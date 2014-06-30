@@ -583,14 +583,12 @@ public class PolygonShape extends PlainShape implements Editable,
 	@Override
 	public int compareTo(final Plottable arg0)
 	{
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void exportShape()
 	{
-		// TODO Auto-generated method stub
 
 	}
 
@@ -615,7 +613,6 @@ public class PolygonShape extends PlainShape implements Editable,
 	@Override
 	public void append(final Layer other)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

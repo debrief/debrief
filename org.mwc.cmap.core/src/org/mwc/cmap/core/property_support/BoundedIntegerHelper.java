@@ -82,7 +82,6 @@ public class BoundedIntegerHelper extends EditorHelper
 
 				public void widgetDefaultSelected(final SelectionEvent e)
 				{
-					// TODO Auto-generated method stub
 					
 				}});
 			
@@ -101,7 +100,6 @@ public class BoundedIntegerHelper extends EditorHelper
 
 		protected void doSetFocus()
 		{
-			// TODO Auto-generated method stub
 			_theSlider.setFocus();
 		}
 
@@ -234,7 +232,6 @@ public class BoundedIntegerHelper extends EditorHelper
 		protected void doSetValue(final Object value)
 		{
 			
-			// TODO Auto-generated method stub
 			final SteppingBoundedInteger curr = (SteppingBoundedInteger) value;
 			if(_myLabel != null) 
 				_myLabel.setText(formatMe(curr.getCurrent()));

@@ -354,7 +354,6 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 				}
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

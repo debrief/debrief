@@ -419,7 +419,6 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 
 		public int convertColor(final int red, final int green, final int blue)
 		{
-			// TODO Auto-generated method stub
 			return getRGB(red, green, blue);
 		}
 		

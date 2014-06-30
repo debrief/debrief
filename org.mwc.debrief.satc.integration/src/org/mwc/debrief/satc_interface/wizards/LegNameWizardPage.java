@@ -53,42 +53,36 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 		@Override
 		public int compareTo(Plottable arg0)
 		{
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
 		public void paint(CanvasType dest)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public WorldArea getBounds()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public boolean getVisible()
 		{
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
 		public void setVisible(boolean val)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public double rangeFrom(WorldLocation other)
 		{
-			// TODO Auto-generated method stub
 			return 0;
 		}
 

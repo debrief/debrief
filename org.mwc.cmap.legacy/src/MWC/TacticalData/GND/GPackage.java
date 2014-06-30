@@ -102,17 +102,14 @@ public class GPackage extends BaseLayer
 		}
 		catch (final JsonParseException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (final JsonMappingException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (final IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("load complete!");
@@ -125,7 +122,6 @@ public class GPackage extends BaseLayer
 	@Override
 	public Enumeration<Editable> elements()
 	{
-		// TODO Auto-generated method stub
 		return super.elements();
 	}
 

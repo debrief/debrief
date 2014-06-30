@@ -443,14 +443,12 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 	@Override
 	public void exportThis()
 	{
-		// TODO Auto-generated method stub
 		super.exportThis();
 	}
 
 	@Override
 	public void append(final Layer other)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

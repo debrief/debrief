@@ -140,7 +140,6 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		@Override
 		public NonBeanPropertyDescriptor[] getNonBeanGriddableDescriptors()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 	}

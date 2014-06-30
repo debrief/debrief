@@ -167,7 +167,6 @@ public class ObservationList implements GriddableSeries
 
 	public void setOnlyShowVisibleItems(final boolean val)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

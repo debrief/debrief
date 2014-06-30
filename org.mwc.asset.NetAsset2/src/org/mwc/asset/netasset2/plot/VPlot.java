@@ -397,7 +397,6 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	@Override
 	public void restart(final ScenarioType scenario)
 	{
-		// TODO Auto-generated method stub
 
 	}
 }

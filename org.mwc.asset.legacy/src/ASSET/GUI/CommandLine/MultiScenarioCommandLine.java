@@ -400,7 +400,6 @@ public class MultiScenarioCommandLine
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
       assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
@@ -418,7 +417,6 @@ public class MultiScenarioCommandLine
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
       assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
@@ -438,7 +436,6 @@ public class MultiScenarioCommandLine
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -462,7 +459,6 @@ public class MultiScenarioCommandLine
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -496,7 +492,6 @@ public class MultiScenarioCommandLine
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
       assertEquals("ran ok", SUCCESS, res);

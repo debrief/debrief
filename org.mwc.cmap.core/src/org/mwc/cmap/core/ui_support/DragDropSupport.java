@@ -331,7 +331,6 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		 * @param source
 		 * @param targetElemet
 		 * @param parent
-		 *          TODO
 		 */
 		abstract public void handleDrop(InputStream source, Editable targetElemet,
 				Layers parent);
