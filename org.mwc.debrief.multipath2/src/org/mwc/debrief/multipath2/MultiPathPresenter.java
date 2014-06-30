@@ -282,7 +282,6 @@ public class MultiPathPresenter
 
 	protected void disableUI()
 	{
-		// TODO Auto-generated method stub
 
 	}
 
@@ -494,7 +493,6 @@ public class MultiPathPresenter
 
 			public void widgetDefaultSelected(final SelectionEvent e)
 			{
-				// TODO Auto-generated method stub
 
 			}
 		});

@@ -33,7 +33,5 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
 	@Override
 	protected void optimise() {
-		// TODO Auto-generated method stub
-		
 	}
 }

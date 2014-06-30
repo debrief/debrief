@@ -57,7 +57,6 @@ public class CruiserSym extends ScreenScaledSym
 	@Override
 	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
 	{
-		// TODO Auto-generated method stub
 		super.paint(dest, theLocation, direction);
 	}
 

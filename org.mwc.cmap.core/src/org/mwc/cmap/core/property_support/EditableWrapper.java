@@ -459,7 +459,6 @@ public class EditableWrapper implements IPropertySource
 
 	final public void resetPropertyValue(final Object id)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

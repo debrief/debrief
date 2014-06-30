@@ -44,7 +44,6 @@ public class TimeControllerTests extends TestCase
 	public TimeControllerTests(final String testName)
 	{
 		super(testName);
-		// TODO Auto-generated constructor stub
 	}
 	
 

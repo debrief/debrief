@@ -108,31 +108,26 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
 
 			protected void assignPixel(int width, int thisValue, int x_coord, int y_coord)
 			{
-				// TODO Auto-generated method stub
 				
 			}
 
 			protected void checkImageValid(int width, int height)
 			{
-				// TODO Auto-generated method stub
 				
 			}
 
 			protected void paintTheImage(CanvasType dest, int width, int height)
 			{
-				// TODO Auto-generated method stub
 				
 			}
 
 			protected void updatePixelColors(SpatialRasterPainter parent, int width, int height, int min_height, int max_height, CanvasType dest)
 			{
-				// TODO Auto-generated method stub
 				
 			}
 
 			public int convertColor(int red, int green, int blue)
 			{
-				// TODO Auto-generated method stub
 				return 0;
 			}};
     super.setBuffered(true);

@@ -119,7 +119,6 @@ public class RangeBearingPage extends CoreEditableWizardPage
 		prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
 		prefs.putDouble(BEARING, _myWrapper.getBearing());
 
-		// TODO Auto-generated method stub
 		super.dispose();
 	}
 

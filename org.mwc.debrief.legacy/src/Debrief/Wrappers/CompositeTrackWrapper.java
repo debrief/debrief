@@ -168,7 +168,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	@Override
 	public Color getColor()
 	{
-		// TODO Auto-generated method stub
 		return super.getColor();
 	}
 

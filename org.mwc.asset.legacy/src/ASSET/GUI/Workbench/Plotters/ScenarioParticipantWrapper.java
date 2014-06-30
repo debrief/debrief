@@ -627,7 +627,6 @@ public class ScenarioParticipantWrapper implements
 
 	public int getLineThickness()
 	{
-		// TODO Auto-generated method stub
 		return 1;
 	}
 

@@ -296,7 +296,6 @@ public class View8211
 		}
 		catch (final IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

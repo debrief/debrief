@@ -39,7 +39,6 @@ public class SWTRangeCalc implements toteCalculation
 
 	public String getUnits()
 	{
-		// TODO Auto-generated method stub
 		return "n/a";
 	}
 

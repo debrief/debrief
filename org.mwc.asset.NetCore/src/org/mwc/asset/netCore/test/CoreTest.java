@@ -48,7 +48,6 @@ public class CoreTest extends junit.framework.TestCase
 	@Override
 	protected void setUp() throws Exception
 	{
-		// TODO Auto-generated method stub
 		super.setUp();
 
 		_events = new Vector<String>();

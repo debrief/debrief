@@ -165,7 +165,6 @@ public class TrimTrack implements RightClickContextItemGenerator
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 

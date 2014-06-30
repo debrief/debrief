@@ -180,21 +180,18 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 		@Override
 		public int compareTo(Plottable arg0)
 		{
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
 		public void paint(CanvasType dest)
 		{
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public WorldArea getBounds()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -295,7 +292,6 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 	@Override
 	public void removeElement(Editable point)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

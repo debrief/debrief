@@ -149,7 +149,8 @@ public class BearingResidualsView extends BaseStackedDotsView
 	@Override
 	protected void optimise()
 	{
-		// TODO Auto-generated method stub
+		// TODO verify if we can ditch this method
+		
 
 	}
 

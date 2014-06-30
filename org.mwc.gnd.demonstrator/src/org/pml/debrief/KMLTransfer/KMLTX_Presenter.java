@@ -176,32 +176,26 @@ public class KMLTX_Presenter
 		}
 		catch (ZipException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (SAXException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (ParseException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (ParserConfigurationException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally
@@ -604,7 +598,6 @@ public class KMLTX_Presenter
 				{
 					System.out.println("prob reading desc for " + name);
 				} catch (final ParseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				isDesc = false;

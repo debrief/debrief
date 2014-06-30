@@ -466,7 +466,6 @@ public class MultiScenarioCore implements ISimulationQue
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			assertEquals("ran ok", SUCCESS, res);

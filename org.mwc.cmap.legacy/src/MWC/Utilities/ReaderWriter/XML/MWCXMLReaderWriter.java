@@ -80,7 +80,6 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		}
 		catch (final ParserConfigurationException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -264,13 +263,11 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 
 	public void endExport(final Plottable item)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
 	public void startExport(final Plottable item)
 	{
-		// TODO Auto-generated method stub
 
 	}
 

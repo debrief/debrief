@@ -45,14 +45,12 @@ public class PlotEditorActionBarContributor extends EditorActionBarContributor {
 	@Override
 	public void dispose()
 	{
-		// TODO Auto-generated method stub
 		super.dispose();
 	}
 
 	@Override
 	public void init(IActionBars bars)
 	{
-		// TODO Auto-generated method stub
 		super.init(bars);
 	}
 
@@ -61,13 +59,11 @@ public class PlotEditorActionBarContributor extends EditorActionBarContributor {
 	{
 		super.contributeToMenu(menuManager);
 		IMenuManager editorViewMenu = menuManager.findMenuUsingPath(EDITOR_VIEW_MENU_ID);
-
-		// TODO Auto-generated method stub
+		// TODO: verify what is happening with the above item. Do we need it?
 	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager)
 	{
-		// TODO Auto-generated method stub
 	}
 }

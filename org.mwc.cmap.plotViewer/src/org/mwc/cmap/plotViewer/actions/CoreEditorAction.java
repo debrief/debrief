@@ -143,19 +143,16 @@ abstract public class CoreEditorAction extends AbstractHandler implements IEdito
 	 */
 	public void selectionChanged(final IAction action, final ISelection selection)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
 	public void dispose()
 	{
-		// TODO Auto-generated method stub
 
 	}
 
 	public void init(final IWorkbenchWindow window)
 	{
-		// TODO Auto-generated method stub
 	}
 
 	@Override

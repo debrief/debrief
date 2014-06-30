@@ -111,7 +111,6 @@ public abstract class DataPointsDragTracker implements
 			}
 			catch (final Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

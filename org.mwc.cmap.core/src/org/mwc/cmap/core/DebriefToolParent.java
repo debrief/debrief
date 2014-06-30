@@ -54,7 +54,6 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	 */
 	public void setCursor(final int theCursor)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
@@ -63,7 +62,6 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 	 */
 	public void restoreCursor()
 	{
-		// TODO Auto-generated method stub
 
 	}
 

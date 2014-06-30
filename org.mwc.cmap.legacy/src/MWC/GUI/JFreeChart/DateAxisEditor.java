@@ -29,21 +29,18 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		public OptimisedDateTickUnit(final DateTickUnitType unitType, final int multiple)
 		{
 			super(unitType, multiple);
-			// TODO Auto-generated constructor stub
 		}
 
 		public OptimisedDateTickUnit(final DateTickUnitType unitType, final int multiple,
 				final DateFormat formatter)
 		{
 			super(unitType, multiple, formatter);
-			// TODO Auto-generated constructor stub
 		}
 
 		public OptimisedDateTickUnit(final DateTickUnitType unitType, final int multiple,
 				final DateTickUnitType rollUnitType, final int rollMultiple, final DateFormat formatter)
 		{
 			super(unitType, multiple, rollUnitType, rollMultiple, formatter);
-			// TODO Auto-generated constructor stub
 		}
 
 		/**

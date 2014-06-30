@@ -178,7 +178,6 @@ abstract public class Loader extends SwingCustomEditor
 				}
 				catch (XPathExpressionException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

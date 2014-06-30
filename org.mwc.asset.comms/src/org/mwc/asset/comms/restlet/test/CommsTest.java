@@ -132,7 +132,6 @@ public class CommsTest extends TestCase
 		@Override
 		public DemandedStatus getDemandedStatus(final int scenario, final int participant)
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 

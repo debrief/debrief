@@ -238,7 +238,6 @@ public class PClient implements ScenarioSteppedListener
 		}
 		catch (final IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -293,7 +292,6 @@ public class PClient implements ScenarioSteppedListener
 	@Override
 	public void restart(final ScenarioType scenario)
 	{
-		// TODO
 	}
 
 	/**
@@ -617,7 +615,6 @@ public class PClient implements ScenarioSteppedListener
 		}
 		catch (final IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

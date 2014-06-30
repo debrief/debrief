@@ -184,7 +184,6 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 				public WorldArea getDataArea()
 				{
-					// TODO Auto-generated method stub
 					return Layers.getDebriefOrigin();
 				}
 

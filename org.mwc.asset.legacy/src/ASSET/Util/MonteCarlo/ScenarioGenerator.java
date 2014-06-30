@@ -981,7 +981,6 @@ public final class ScenarioGenerator
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -1012,7 +1011,6 @@ public final class ScenarioGenerator
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -1030,7 +1028,6 @@ public final class ScenarioGenerator
 			}
 			catch (XPathExpressionException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -1108,7 +1105,6 @@ public final class ScenarioGenerator
 			}
 			catch (XPathExpressionException e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 

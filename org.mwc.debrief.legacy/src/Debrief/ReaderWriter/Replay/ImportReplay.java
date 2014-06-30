@@ -1199,13 +1199,11 @@ public class ImportReplay extends PlainImporterBase
 
 				public void addActionToBuffer(final Action theAction)
 				{
-					// TODO Auto-generated method stub
 
 				}
 
 				public Map<String, String> getPropertiesLike(final String pattern)
 				{
-					// TODO Auto-generated method stub
 					return null;
 				}
 
@@ -1216,25 +1214,21 @@ public class ImportReplay extends PlainImporterBase
 
 				public void restoreCursor()
 				{
-					// TODO Auto-generated method stub
 
 				}
 
 				public void setCursor(final int theCursor)
 				{
-					// TODO Auto-generated method stub
 
 				}
 
 				public void setProperty(final String name, final String value)
 				{
-					// TODO Auto-generated method stub
 
 				}
 
 				public void logError(final int status, final String text, final Exception e)
 				{
-					// TODO Auto-generated method stub
 
 				}
 			});

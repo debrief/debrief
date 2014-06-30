@@ -585,7 +585,6 @@ public class CommandLine
 				}
 				catch (XPathExpressionException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if (res != MultiScenarioCommandLine.SUCCESS)
@@ -672,17 +671,14 @@ public class CommandLine
 		}
 		catch (SAXParseException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		catch (SAXException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		catch (XPathExpressionException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
