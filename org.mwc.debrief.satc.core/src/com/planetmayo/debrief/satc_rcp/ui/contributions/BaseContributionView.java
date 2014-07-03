@@ -194,6 +194,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected void bindMaxMinEstimate(final IObservableValue estimate,
 			final IObservableValue min, final IObservableValue max)
 	{
+	}
+	
+	protected void bindMaxMinEstimateOld(final IObservableValue estimate,
+			final IObservableValue min, final IObservableValue max)
+	{
 		estimate.addValueChangeListener(new IValueChangeListener()
 		{
 
@@ -213,7 +218,9 @@ public abstract class BaseContributionView<T extends BaseContribution>
 						.doubleValue();
 				double maxT = maxValue == null ? Double.MAX_VALUE : maxValue
 						.doubleValue();
-				if (newValue.doubleValue() < minT || newValue.doubleValue() > maxT)
+				double minM = Math.min(minT, maxT);
+				double maxM = Math.max(minT, maxT);
+				if (newValue.doubleValue() < minM || newValue.doubleValue() > maxM)
 				{
 					if (minT == maxT)
 					{
@@ -256,15 +263,17 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				{
 					return;
 				}
-				if (newValue.doubleValue() > maxValue.doubleValue())
-				{
-					max.setValue(newValue);
-				}
 				// note: we may not have an estimate
+				double minT = Math.min(maxValue.doubleValue(), newValue.doubleValue());
+				double maxT = Math.max(maxValue.doubleValue(), newValue.doubleValue());
 				if (estimateValue != null)
-					if (estimateValue.doubleValue() < newValue.doubleValue())
+					if (estimateValue.doubleValue()> maxT)
 					{
-						estimate.setValue(newValue);
+						estimate.setValue(maxT);
+					}
+					if (estimateValue.doubleValue() < minT)
+					{
+						estimate.setValue(minT);
 					}
 			}
 		});
@@ -281,16 +290,17 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				{
 					return;
 				}
-				if (newValue.doubleValue() < minValue.doubleValue())
-				{
-					min.setValue(newValue);
-				}
-
 				// note: we may not have an estimate
+				double minT = Math.min(minValue.doubleValue(), newValue.doubleValue());
+				double maxT = Math.max(minValue.doubleValue(), newValue.doubleValue());
 				if (estimateValue != null)
-					if (estimateValue.doubleValue() > newValue.doubleValue())
+					if (estimateValue.doubleValue()> maxT)
 					{
-						estimate.setValue(newValue);
+						estimate.setValue(maxT);
+					}
+					if (estimateValue.doubleValue() < minT)
+					{
+						estimate.setValue(minT);
 					}
 			}
 		});
