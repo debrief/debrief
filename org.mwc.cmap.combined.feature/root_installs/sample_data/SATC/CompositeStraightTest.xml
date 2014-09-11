@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Wed Sep 10 15:11:55 GMT 2014" Name="Debrief Plot" PlotId="1369149093378">
+<plot Created="Wed Sep 10 15:13:07 GMT 2014" Name="Debrief Plot" PlotId="1369149093378">
 <details Text="Saved with Debrief version dated Wed Sep 10 05:56:30 GMT 2014"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
