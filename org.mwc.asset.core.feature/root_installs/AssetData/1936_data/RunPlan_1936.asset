@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name="Force Protection Scenario" xmlns="http://www.mwc.org/asset"
+<Scenario Name="1936 Run Plans" xmlns="http://www.mwc.org/asset"
 	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
 	ShowActivity="false" ShowStatus="true">
 	<StepTime Units="seconds" Value="50"></StepTime>
@@ -32,7 +32,7 @@
 			<SensorFit></SensorFit>
 			<Status Course="320" Fuel="100">
 				<Location>
-					<shortLocation Lat="60" Long="0"></shortLocation>
+					<shortLocation Lat="0" Long="0"></shortLocation>
 				</Location>
 				<Speed Value="9" Units="kts" />
 			</Status>
@@ -67,7 +67,7 @@
 			</SensorFit>
 			<Status Course="40" Fuel="100">
 				<Location>
-					<shortLocation Lat="60.2" Long="0"></shortLocation>
+					<shortLocation Lat="0.2" Long="0"></shortLocation>
 				</Location>
 				<Speed Value="2.5" Units="kts" />
 			</Status>
