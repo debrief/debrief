@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.pde.FeatureNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>AssetData</name>
+			<type>2</type>
+			<location>/home/ian/git/debrief/org.mwc.asset.core.feature/root_installs/AssetData</location>
+		</link>
+	</linkedResources>
 </projectDescription>
