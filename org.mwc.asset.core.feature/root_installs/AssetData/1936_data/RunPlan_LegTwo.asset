@@ -65,17 +65,17 @@
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 			</SensorFit>
-			<Status Course="40" Fuel="100">
+			<Status Course="355" Fuel="100">
 				<Location>
-					<longLocation LongMin="1" LongSec="2.3" LatMin="6"
-						LongHem="W" LongDeg="0" LatSec="13.5" LatHem="N" LatDeg="0">
+					<longLocation LongMin="0" LongSec="55" LatMin="5"
+						LongHem="W" LongDeg="0" LatSec="35.9" LatHem="N" LatDeg="0">
 					</longLocation>
 					
 				</Location>
 				<Speed Value="2.5" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Move Name="leg two" Course="340">
+				<Move Name="leg two" Course="354">
 					<Vector Value="12" Units="nm" /></Move>
 			</Waterfall>
 
