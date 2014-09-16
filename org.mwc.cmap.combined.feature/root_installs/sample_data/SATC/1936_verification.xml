@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Fri Sep 12 13:50:04 GMT 2014" Name="Debrief Plot" PlotId="1410511715301">
+<plot Created="Tue Sep 16 07:46:47 GMT 2014" Name="Debrief Plot" PlotId="1410511715301">
 <details Text="Saved with Debrief version dated Wed Sep 10 05:56:30 GMT 2014"/>
 <session>
 <layers>
@@ -7,7 +7,7 @@
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="Plain" TrackName="SENSOR" Visible="false" WormInHole="true">
+<sensor LineThickness="1" Name="Plain" TrackName="TURN" Visible="false" WormInHole="true">
 <colour Value="RED"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="180.000" Dtg="100112 120000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="Cookie SUBJECT held on Plain Cookie" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="24304.5000000"/>
@@ -2394,7 +2394,7 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
-<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="7000" ScaleStep="1000" Visible="true">
+<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="6000" ScaleStep="1000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
@@ -3217,7 +3217,7 @@
 <colour Value="BLUE"/>
 <SymbolColor Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<TrackSegment LineStyle="Solid" Name="121200.00" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix ArrowShowing="true" Course="40.000" Dtg="100112 120000" Label="121200.00" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.500" SymbolShowing="true" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="0.2000000" Long="-0.0000000"/>
@@ -3947,14 +3947,7 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="plot lines" Visible="true">
-<textlabel Label="121327.30" LabelLocation="Left" LabelVisible="true" Scale="Medium" Symbol="FilledSquare" SymbolVisible="true" Visible="true">
-<colour Value="RED"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="0.1536484" Long="-0.0216282"/>
-</centre>
-</textlabel>
-<line ArrowAtEnd="false" Label="New line" LabelLocation="Bottom" LabelVisible="true" LineThickness="2" ShowAutoCalc="false" Visible="true">
+<line ArrowAtEnd="false" Label="New line" LabelLocation="Bottom" LabelVisible="false" LineThickness="2" ShowAutoCalc="false" Visible="true">
 <colour Value="GREEN"/>
 <fontcolour Value="GREEN"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -3965,6 +3958,38 @@
 <shortLocation Depth="0.000" Lat="0.1536421" Long="-0.0216329"/>
 </br>
 </line>
+<textlabel Label="Leg one bearing: 124 degs\nLeg two bearing: 125 degs" LabelLocation="Left" LabelVisible="true" Scale="Medium" Symbol="Square" SymbolVisible="false" Visible="true">
+<colour CustomBlue="26" CustomGreen="26" CustomRed="26" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="0.1734191" Long="-0.0509826"/>
+</centre>
+</textlabel>
+<line ArrowAtEnd="false" Label="Leg one" LabelLocation="Left" LabelVisible="false" LineThickness="2" ShowAutoCalc="false" Visible="true">
+<colour CustomBlue="26" CustomGreen="26" CustomRed="26" Value="custom"/>
+<fontcolour CustomBlue="26" CustomGreen="26" CustomRed="26" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="0.1952590" Long="-0.0809787"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="0.1516622" Long="-0.0174612"/>
+</br>
+</line>
+<textlabel Label="Mid-way point" LabelLocation="Left" LabelVisible="true" Scale="Medium" Symbol="FilledSquare" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="0.1527021" Long="-0.0197418"/>
+</centre>
+</textlabel>
+<textlabel Label="121327.30" LabelLocation="Left" LabelVisible="true" Scale="Medium" Symbol="FilledSquare" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="0.1536484" Long="-0.0216282"/>
+</centre>
+</textlabel>
 <line ArrowAtEnd="false" Label="second leg" LabelLocation="Left" LabelVisible="true" LineThickness="2" ShowAutoCalc="false" Visible="true">
 <colour Value="BLUE"/>
 <fontcolour Value="BLUE"/>
@@ -3976,21 +4001,25 @@
 <shortLocation Depth="0.000" Lat="0.1536362" Long="-0.0216377"/>
 </br>
 </line>
-<textlabel Label="Mid-way point" LabelLocation="Left" LabelVisible="true" Scale="Medium" Symbol="FilledSquare" SymbolVisible="true" Visible="true">
-<colour Value="RED"/>
+<line ArrowAtEnd="false" Label="leg two" LabelLocation="Centre" LabelVisible="false" LineThickness="2" ShowAutoCalc="false" Visible="true">
+<colour CustomBlue="26" CustomGreen="26" CustomRed="26" Value="custom"/>
+<fontcolour CustomBlue="26" CustomGreen="26" CustomRed="26" Value="custom"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="0.1527021" Long="-0.0197418"/>
-</centre>
-</textlabel>
+<tl>
+<shortLocation Depth="0.000" Lat="0.1952860" Long="-0.0809694"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="0.1538269" Long="-0.0218108"/>
+</br>
+</line>
 </layer>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="0.1993864" Long="-0.0910308"/>
+<shortLocation Depth="0.000" Lat="0.2149273" Long="-0.0943384"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="0.1421574" Long="0.0038599"/>
+<shortLocation Depth="0.000" Lat="0.1325760" Long="-0.0048644"/>
 </br>
 </projection>
 <gui>
