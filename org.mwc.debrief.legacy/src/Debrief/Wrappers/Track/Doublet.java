@@ -8,6 +8,7 @@ import java.awt.Color;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.Algorithms.Conversions;
+import MWC.Algorithms.FrequencyCalcs;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -26,7 +27,7 @@ public final class Doublet implements Comparable<Doublet>
 		{
 			final double myCrseRads = MWC.Algorithms.Conversions.Degs2Rads(myCrseDegs);
 			final double bearingRads = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
-			return calcDopplerComponent(bearingRads, myCrseRads, mySpeedKts,
+			return FrequencyCalcs.calcDopplerComponent(bearingRads, myCrseRads, mySpeedKts,
 					observedFreq);
 		}
 
@@ -49,7 +50,7 @@ public final class Doublet implements Comparable<Doublet>
 		}
 
 		// TODO FIX-TEST
-		public void NtestDopplerShiftHighLevel()
+		public void testDopplerShiftHighLevel()
 		{
 			final WorldLocation loc1 = new WorldLocation(50, 0, 0);
 			final WorldLocation loc2 = new WorldLocation(51, 1, 0);
@@ -61,159 +62,9 @@ public final class Doublet implements Comparable<Doublet>
 			assertEquals(dLong, 0.63607d, 0.0001d);
 		}
 
-		public void testDopplerShiftLowLevel()
-		{
-			final double SPEED_OF_SOUND = 1500;
-
-			final WorldLocation hostLoc = new WorldLocation(4, 4, 0);
-			final WorldLocation tgtLoc = new WorldLocation(4, 7, 0);
-			double hostCourse = MWC.Algorithms.Conversions.Degs2Rads(60);
-			double hostSpeed = 8d; // MWC.Algorithms.Conversions.Kts2Yps(8);
-			double tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(300);
-			double tgtSpeed = 4; // MWC.Algorithms.Conversions.Kts2Yps(4);
-
-			double dLat = hostLoc.getLat() - tgtLoc.getLat();
-			double dLong = hostLoc.getLong() - tgtLoc.getLong();
-
-			double dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, dLat, dLong);
-
-			assertEquals("correct doppler shift", 1.00133, dShift, 0.00001d);
-
-			// and another permutation
-			hostCourse = MWC.Algorithms.Conversions.Degs2Rads(12d);
-			tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(333d);
-			hostSpeed = 3;
-			tgtSpeed = 4;
-
-			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, dLat, dLong);
-
-			assertEquals("correct doppler shift", 0.9995840, dShift, 0.00001d);
-
-			// move to southern hemi
-			hostLoc.setLat(-4);
-			tgtLoc.setLat(-5);
-			hostCourse = 0;
-			tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(180);
-
-			dLat = hostLoc.getLat() - tgtLoc.getLat();
-			dLong = hostLoc.getLong() - tgtLoc.getLong();
-
-			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, dLat, dLong);
-
-			assertEquals("correct doppler shift", 1.004427, dShift, 0.00001d);
-
-			hostCourse = MWC.Algorithms.Conversions.Degs2Rads(12d);
-			tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(333d);
-			hostSpeed = 3;
-
-			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, dLat, dLong);
-
-			assertEquals("correct doppler shift", 0.99908, dShift, 0.00001d);
-
-			hostLoc.setLong(-2);
-			tgtLoc.setLong(-3);
-			dLat = hostLoc.getLat() - tgtLoc.getLat();
-			dLong = hostLoc.getLong() - tgtLoc.getLong();
-
-			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, dLat, dLong);
-
-			assertEquals("correct doppler shift", 0.99914, dShift, 0.00001d);
-
-			// slow down target, so they're divering more slowly
-			hostSpeed = 0.1;
-
-			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, dLat, dLong);
-
-			assertEquals("correct doppler shift", 1.000768, dShift, 0.000001d);
-
-			// stop them both
-			hostSpeed = 0d;
-			tgtSpeed = 0d;
-
-			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, dLat, dLong);
-
-			assertEquals("correct doppler shift", 1.000, dShift, 0.000001d);
-		}
 	}
 
 	public static final double INVALID_BASE_FREQUENCY = -1d;
-
-	private static double calcDopplerComponent(final double theBearingRads,
-			final double myCourseRads, final double mySpeedKts,
-			final double observedFreq)
-	{
-
-		final double speedOfSoundKts = 2951;
-		double relBearingRads = theBearingRads - myCourseRads;
-
-		final double ownSpeedAlongKts = Math.abs(Math.cos(relBearingRads)
-				* mySpeedKts);
-
-		// put rel brg into +/- 180 domain
-		while (relBearingRads > Math.PI)
-			relBearingRads -= (2 * Math.PI);
-		while (relBearingRads < -(Math.PI))
-			relBearingRads += (2 * Math.PI);
-
-		double dopplerOffset = (ownSpeedAlongKts * observedFreq) / speedOfSoundKts;
-
-		if (Math.abs(relBearingRads) < (Math.PI / 2))
-			dopplerOffset = -dopplerOffset;
-		return dopplerOffset;
-	}
-
-	/**
-	 * perform doppler shift calculation Note: we receive dLat, dLong to support
-	 * different range calculations. The Excel spreadsheet (DopplerEffect.xls)
-	 * that is used to verify the algorithm uses flat-earth calcs. In normal use
-	 * we wish to use round-earth calcs
-	 * 
-	 * @param SpeedOfSound
-	 *          m/s
-	 * @param osHeadingRads
-	 *          rads
-	 * @param tgtHeadingRads
-	 *          rads
-	 * @param osSpeed
-	 *          m/s
-	 * @param tgtSpeed
-	 *          m/s
-	 * @param dLat
-	 *          degs
-	 * @param dLong
-	 *          degs
-	 * @return
-	 */
-	private static double calcDopplerShift(final double SpeedOfSound,
-			final double osHeadingRads, final double tgtHeadingRads, final double osSpeed,
-			final double tgtSpeed, final double dLat, final double dLong)
-	{
-		double a = -Math.atan2(dLong, dLat);
-
-		if (a - Math.PI / 2 < 0)
-			a += 3 * Math.PI / 2;
-		else
-			a -= Math.PI / 2;
-
-		final double b = tgtHeadingRads;
-		final double c = a - b;
-		final double d = osHeadingRads;
-		final double e = a - d;
-
-		final double s1 = Math.cos(c) * tgtSpeed;
-		final double s2 = Math.cos(e) * osSpeed;
-
-		final double doppler = (s2 - s1 + SpeedOfSound) / SpeedOfSound;
-
-		return doppler;
-	}
 
 	/**
 	 * Calculate the current doppler shift between the two positons
@@ -235,7 +86,7 @@ public final class Doublet implements Comparable<Doublet>
 		final double dLong = offset.getRange() * Math.sin(offset.getBearing());
 
 		// done, go for it.
-		return calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads,
+		return FrequencyCalcs.calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads,
 				osSpeed, tgtSpeed, dLat, dLong);
 	}
 
@@ -391,7 +242,7 @@ public final class Doublet implements Comparable<Doublet>
 
 		final double mySpeedKts = _hostFix.getSpeed();
 		final double observedFreq = _sensor.getFrequency();
-		final double dopplerComponent = calcDopplerComponent(theBearingRads,
+		final double dopplerComponent = FrequencyCalcs.calcDopplerComponent(theBearingRads,
 				myCourseRads, mySpeedKts, observedFreq);
 
 		correctedFreq = observedFreq + dopplerComponent;
@@ -447,13 +298,13 @@ public final class Doublet implements Comparable<Doublet>
 
 			final double mySpeedKts = _hostFix.getSpeed();
 			final double baseFreq = rt.getBaseFrequency();
-			final double myDopplerComponent = calcDopplerComponent(theBearingRads,
+			final double myDopplerComponent = FrequencyCalcs.calcDopplerComponent(theBearingRads,
 					myCourseRads, mySpeedKts, baseFreq);
 
 			final double hisCourseRads = _targetFix.getCourse();
 			final double hisSpeedKts = _targetFix.getSpeed();
 
-			final double hisDopplerComponent = calcDopplerComponent(Math.PI
+			final double hisDopplerComponent = FrequencyCalcs.calcDopplerComponent(Math.PI
 					+ theBearingRads, hisCourseRads, hisSpeedKts, baseFreq);
 
 			// note, we've changed the sign of how we add the two components to the
