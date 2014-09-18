@@ -9,6 +9,9 @@ package ASSET.Models.Sensor.Initial;
  * @version 1.0
  */
 
+import ASSET.NetworkParticipant;
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Environment.EnvironmentType;
@@ -16,11 +19,8 @@ import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Mediums.NarrowbandRadNoise;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Models.Vessels.Surface;
-import ASSET.NetworkParticipant;
-import ASSET.ParticipantType;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
-import ASSET.ScenarioType;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
@@ -169,6 +169,29 @@ public class NarrowbandSensor extends InitialSensor
 
       // yup, do our calc
       res = super.detectThis(environment, host, target, time, scenario);
+      
+      if(res != null)
+      {
+        // ok, also generate frequency, if we can!
+        NarrowbandRadNoise nbNoise = (NarrowbandRadNoise) target.getRadiatedChars().getMedium(1);
+        if(nbNoise != null)
+        {
+        	// get the f-nought
+        	double f0 = nbNoise.getFrequency();
+        	
+        	// now apply the doppler to get the measured freq
+        	
+        	// what's his doppler?
+        	
+        	// what's our doppler?
+        	Float freq = (float)f0;
+        	
+        	res.setFreq(freq);
+        	
+        }
+      }
+
+      
     }
     else
     {
@@ -185,6 +208,7 @@ public class NarrowbandSensor extends InitialSensor
       }
     }
 
+    
     // and remember the old course
     _oldCourse = course;
 
