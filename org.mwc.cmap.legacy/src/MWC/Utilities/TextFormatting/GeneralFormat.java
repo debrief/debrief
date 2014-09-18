@@ -66,6 +66,7 @@ public class GeneralFormat
   // member variables
   ////////////////////////////////////////////////////////////
   private static NumberFormat _oneDPFormat = new DecimalFormat("0.0", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
+  private static NumberFormat _threeDPFormat = new DecimalFormat("0.000", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
   private static NumberFormat _bearingFormat = new DecimalFormat("000.00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
   private static NumberFormat _rangeFormat = new DecimalFormat("#0", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
 
@@ -95,6 +96,15 @@ public class GeneralFormat
 
   public static String formatOneDecimalPlace(final double val){
     return _oneDPFormat.format(val);
+  }
+  
+  public static String formatTwoDecimalPlaces(final double val){
+    return _bearingFormat.format(val);
+  }
+
+
+  public static String formatThreeDecimalPlaces(final double val){
+    return _threeDPFormat.format(val);
   }
 
   public static String formatStatus(final double courseDegs, final double speedKts, final double depthMetres)
