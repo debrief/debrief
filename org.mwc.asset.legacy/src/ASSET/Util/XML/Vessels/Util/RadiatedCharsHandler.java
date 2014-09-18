@@ -36,6 +36,13 @@ abstract public class RadiatedCharsHandler extends MWC.Utilities.ReaderWriter.XM
         addMedium(new Integer(index), med);
       }
     });
+    addHandler(new ASSET.Util.XML.Vessels.Util.Mediums.NBHandler()
+    {
+      public void setMedium(final int index, final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium med)
+      {
+        addMedium(new Integer(index), med);
+      }
+    });
     addHandler(new ASSET.Util.XML.Vessels.Util.Mediums.SSKBBHandler()
     {
       public void setMedium(final int index, final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium med)
