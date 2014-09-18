@@ -71,11 +71,12 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	private String _myName;
 
-	/** whether we are 'alive' in the scenario
+	/**
+	 * whether we are 'alive' in the scenario
 	 * 
 	 */
 	private boolean _isAlive = true;
-	
+
 	/**
 	 * my movement model
 	 */
@@ -86,11 +87,12 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	private ASSET.Models.DecisionType _decisionModel;
 
-	/** whether to paint decisions for this object
+	/**
+	 * whether to paint decisions for this object
 	 * 
 	 */
 	private boolean _paintDecisions;
-	
+
 	/**
 	 * my radiation characteristics
 	 */
@@ -169,7 +171,6 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		_myId = id;
 		setStatus(status);
 		setDemandedStatus(demStatus);
-		
 
 		_movement = new ASSET.Models.Movement.CoreMovement();
 		_myName = name;
@@ -382,7 +383,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			_myStatus = _movement.step(newTime, _myStatus, _myDemandedStatus,
 					_movementChars);
 		}
-		
+
 		// do the state update cycle
 		updateStates(newTime);
 
@@ -406,7 +407,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		return _myId;
 	}
-	
+
 	@Override
 	public boolean isAlive()
 	{
@@ -418,8 +419,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		_isAlive = val;
 	}
-	
-	
+
 	@Override
 	public boolean getAlive()
 	{
@@ -522,8 +522,14 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	public double getSelfNoiseFor(final int medium, final double brg_degs)
 	{
-		double res = getSelfNoise()
-				.radiatedEnergyFor(medium, getStatus(), brg_degs);
+
+		double res = 0;
+		RadiatedCharacteristics selfNoise = getSelfNoise();
+		if (selfNoise != null)
+		{
+			Status status = getStatus();
+			selfNoise.radiatedEnergyFor(medium, status, brg_degs);
+		}
 		return res;
 	}
 

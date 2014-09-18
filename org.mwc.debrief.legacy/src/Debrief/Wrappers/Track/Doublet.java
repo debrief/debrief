@@ -75,8 +75,11 @@ public final class Doublet implements Comparable<Doublet>
 	 */
 	public static double getDopplerShift(final double SpeedOfSound, final Fix host, final Fix tgt)
 	{
-		final double osSpeed = MWC.Algorithms.Conversions.Kts2Mps(host.getSpeed());
-		final double tgtSpeed = MWC.Algorithms.Conversions.Kts2Mps(tgt.getSpeed());
+		final double osKts = Conversions.Yps2Kts(host.getSpeed());
+		final double tgtKts = Conversions.Yps2Kts(tgt.getSpeed());
+		
+		final double osSpeed = MWC.Algorithms.Conversions.Kts2Mps(osKts);
+		final double tgtSpeed = MWC.Algorithms.Conversions.Kts2Mps(tgtKts);
 		final double osHeadingRads = host.getCourse();
 		final double tgtHeadingRads = tgt.getCourse();
 

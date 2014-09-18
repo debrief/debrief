@@ -1288,6 +1288,24 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
+	<xs:complexType name="NarrowbandType">
+		<xs:annotation>
+			<xs:documentation>Narrowband noise characteristics</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: noise level
+				Editable: noise
+				level </xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="BaseNoiseLevel" type="xs:float" use="required">
+			<xs:annotation>
+				<xs:documentation>The base radiated noise level for this tonal</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Frequency" type="xs:float" use="required">
+			<xs:annotation>
+				<xs:documentation>The radiated frequency for this tonal</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 	<!--layered chart data -->
 	<!-- -->
 	<xs:complexType name="DebriefLayerType">
@@ -1805,6 +1823,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
+			<xs:element name="Narrowband" type="NarrowbandType" minOccurs="0"/>
 			<xs:element name="Optic" type="OpticType" minOccurs="0"/>
 			<xs:element name="Broadband" type="BroadbandType" minOccurs="0"/>
 			<xs:element name="SSKBroadband" type="SSKBroadbandType" minOccurs="0"/>

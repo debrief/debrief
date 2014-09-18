@@ -111,6 +111,11 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
    * strength of detection (%)
    */
   private Float _strength;
+  
+  /** observed frequency
+   * 
+   */
+  private Float _freq = null;
 
   /**
    * the type of this target
@@ -331,6 +336,11 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
   {
     _targetId = new Integer(val);
   }
+  
+  public void setFreq(Float freq)
+  {
+  	_freq = freq;
+  }
 
   public long getTime()
   {
@@ -345,6 +355,11 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
   public Float getStrength()
   {
     return _strength;
+  }
+  
+  public Float getFreq()
+  {
+  	return _freq;
   }
 
   public WorldLocation getSensorLocation()

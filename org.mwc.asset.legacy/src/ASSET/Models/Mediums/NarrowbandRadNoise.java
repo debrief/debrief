@@ -26,6 +26,9 @@ public class NarrowbandRadNoise implements ASSET.Models.Vessels.Radiated.Radiate
   //////////////////////////////////////////////////////////////////////
   private double _baseNoiseLevel;
 
+  /** f-nought */
+  private double _freq;
+  
   /**
    * my editor
    */
@@ -35,14 +38,20 @@ public class NarrowbandRadNoise implements ASSET.Models.Vessels.Radiated.Radiate
   // constructor
   //////////////////////////////////////////////////////////////////////
 
-  public NarrowbandRadNoise(final double baseNoiseLevel)
+  public NarrowbandRadNoise(final double baseNoiseLevel, final double freq)
   {
     _baseNoiseLevel = baseNoiseLevel;
+    _freq = freq;
   }
 
   //////////////////////////////////////////////////////////////////////
   // member methods
   //////////////////////////////////////////////////////////////////////
+  
+  public double getFrequency()
+  {
+  	return _freq;
+  }
 
   public double radiatedEnergyFor(final ASSET.Participants.Status status, double absBearingDegs)
   {
@@ -201,7 +210,7 @@ public class NarrowbandRadNoise implements ASSET.Models.Vessels.Radiated.Radiate
      */
     public Editable getEditable()
     {
-      return new NarrowbandRadNoise(12);
+      return new NarrowbandRadNoise(12, 12);
     }
   }
 

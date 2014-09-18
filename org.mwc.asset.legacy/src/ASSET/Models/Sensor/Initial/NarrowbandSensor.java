@@ -9,6 +9,9 @@ package ASSET.Models.Sensor.Initial;
  * @version 1.0
  */
 
+import ASSET.NetworkParticipant;
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Environment.EnvironmentType;
@@ -16,17 +19,18 @@ import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Mediums.NarrowbandRadNoise;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Models.Vessels.Surface;
-import ASSET.NetworkParticipant;
-import ASSET.ParticipantType;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
-import ASSET.ScenarioType;
 import ASSET.Util.SupportTesting;
+import Debrief.ReaderWriter.FlatFile.DopplerShift.DopplerShiftExporter;
+import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.TacticalData.Fix;
 
 public class NarrowbandSensor extends InitialSensor
 {
@@ -169,6 +173,42 @@ public class NarrowbandSensor extends InitialSensor
 
       // yup, do our calc
       res = super.detectThis(environment, host, target, time, scenario);
+      
+      if(res != null)
+      {
+        // ok, also generate frequency, if we can!
+        NarrowbandRadNoise nbNoise = (NarrowbandRadNoise) target.getRadiatedChars().getMedium(1);
+        if(nbNoise != null)
+        {
+        	// get the f-nought
+        	double f0 = nbNoise.getFrequency();
+        	
+        	// now apply the doppler to get the measured freq
+      		final double speedOfSoundKts = 2951;
+      		
+      		Status hS = host.getStatus();
+      		Status tS = target.getStatus();
+      		Fix hostFix = new Fix(new HiResDate(hS.getTime()), hS.getLocation(), 
+      				Math.toRadians(hS.getCourse()), hS.getSpeed().getValueIn(WorldSpeed.ft_sec/3)); 
+      		Fix tgtFix = new Fix(new HiResDate(tS.getTime()), tS.getLocation(), 
+      				Math.toRadians(tS.getCourse()), tS.getSpeed().getValueIn(WorldSpeed.ft_sec/3)); 
+
+        	double shift = Doublet.getDopplerShift(speedOfSoundKts, hostFix, tgtFix);
+        	
+        	// what's his doppler?
+        	
+        	// what's our doppler?
+        	
+        	// what's the observed freq?
+        	
+        	Float freq = (float)(f0 + shift);
+        	
+        	res.setFreq(freq);
+        	
+        }
+      }
+
+      
     }
     else
     {
@@ -185,6 +225,7 @@ public class NarrowbandSensor extends InitialSensor
       }
     }
 
+    
     // and remember the old course
     _oldCourse = course;
 
@@ -457,7 +498,7 @@ public class NarrowbandSensor extends InitialSensor
       statb.setLocation(locb);
       statb.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
       him.setStatus(statb);
-      him.getRadiatedChars().add(EnvironmentType.NARROWBAND, new NarrowbandRadNoise(222));
+      him.getRadiatedChars().add(EnvironmentType.NARROWBAND, new NarrowbandRadNoise(222, 12));
 
       CoreScenario theScenario = new CoreScenario();
       theScenario.addParticipant(him.getId(), him);
