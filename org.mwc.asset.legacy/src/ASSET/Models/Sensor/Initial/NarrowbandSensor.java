@@ -457,7 +457,7 @@ public class NarrowbandSensor extends InitialSensor
       statb.setLocation(locb);
       statb.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
       him.setStatus(statb);
-      him.getRadiatedChars().add(EnvironmentType.NARROWBAND, new NarrowbandRadNoise(222));
+      him.getRadiatedChars().add(EnvironmentType.NARROWBAND, new NarrowbandRadNoise(222, 12));
 
       CoreScenario theScenario = new CoreScenario();
       theScenario.addParticipant(him.getId(), him);
