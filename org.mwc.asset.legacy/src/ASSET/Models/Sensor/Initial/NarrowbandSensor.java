@@ -24,6 +24,7 @@ import ASSET.Scenario.CoreScenario;
 import ASSET.Util.SupportTesting;
 import Debrief.ReaderWriter.FlatFile.DopplerShift.DopplerShiftExporter;
 import Debrief.Wrappers.Track.Doublet;
+import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -193,18 +194,9 @@ public class NarrowbandSensor extends InitialSensor
       		Fix tgtFix = new Fix(new HiResDate(tS.getTime()), tS.getLocation(), 
       				Math.toRadians(tS.getCourse()), tS.getSpeed().getValueIn(WorldSpeed.ft_sec/3)); 
 
-        	double shift = Doublet.getDopplerShift(speedOfSoundKts, hostFix, tgtFix);
-        	
-        	// what's his doppler?
-        	
-        	// what's our doppler?
-        	
         	// what's the observed freq?
-        	
-        	Float freq = (float)(f0 + shift);
-        	
-        	res.setFreq(freq);
-        	
+        	double freq = FrequencyCalcs.getObservedFreq(f0, speedOfSoundKts, hostFix, tgtFix);        	
+        	res.setFreq((float)freq);        	
         }
       }
 
