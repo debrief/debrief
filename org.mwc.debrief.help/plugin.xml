@@ -82,7 +82,7 @@
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             composite="true"
-            contentFile="cheat_sheets/GettingStarted/GettingStartedComposite.xml"
+            contentFile="cheat_sheets/GettingStarted/intro_composite.xml"
             id="org.mwc.debrief.help.started.tutorial"
             name="Getting started with Debrief tutorial"/>                     
       <cheatsheet
@@ -94,7 +94,7 @@
                   <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             composite="true"
-            contentFile="cheat_sheets/analysis/CompositeAnalysis.xml"
+            contentFile="cheat_sheets/analysis/analysis_composite.xml"
             id="org.mwc.debrief.help.cheatsheet.analysis.composite"
             name="Starting to analyse data in Debrief">
       </cheatsheet>   
@@ -179,7 +179,7 @@
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_satc"
             composite="true"
-            contentFile="cheat_sheets/satc/whole_satc.xml"
+            contentFile="cheat_sheets/satc/satc_composite.xml"
             id="org.mwc.debrief.help.started.satc.composite"
             name="A walkthrough of Debrief's Auto-TMA capabilities"/>                       
 </extension>
