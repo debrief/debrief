@@ -40,7 +40,7 @@
     </description>
     <command
           required="false"
-          serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.cmap.layer_manager.views.LayerManagerView)"/>
+          serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ContentOutline)"/>
  </item>
  <item
        title="Zoom in on jump">
