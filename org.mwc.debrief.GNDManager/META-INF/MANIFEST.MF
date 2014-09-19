@@ -11,8 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views,
  org.mwc.debrief.legacy,
  org.mwc.cmap.plotViewer,
- org.mwc.debrief.core,
- org.mwc.cmap.layer_manager
+ org.mwc.debrief.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
