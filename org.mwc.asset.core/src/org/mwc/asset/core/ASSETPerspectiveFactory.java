@@ -44,7 +44,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		// Bottom left: Outline view and Property Sheet view
 		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft",
 				IPageLayout.BOTTOM, 0.6f, "upperMidLeft");
-		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
+		bottomLeft.addView(IPageLayout.ID_OUTLINE);
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
 
 		// bottom: placeholder for the xyplot
@@ -56,7 +56,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		// bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
 
 		// and our view shortcuts
-		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
+		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(CorePlugin.NARRATIVES);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		layout.addShowViewShortcut(ASSETPlugin.SCENARIO_CONTROLLER2);
