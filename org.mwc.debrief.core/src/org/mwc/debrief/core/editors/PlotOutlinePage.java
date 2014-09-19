@@ -346,7 +346,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
 		_collapseAllAction.setText("Collapse all layers");
 		_collapseAllAction
-				.setToolTipText("Collapse all layers in the layer manager");
+				.setToolTipText("Collapse all layers in the Outline View");
 		_collapseAllAction.setImageDescriptor(DebriefPlugin
 				.getImageDescriptor("icons/collapseall.gif"));
 
@@ -359,7 +359,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			}
 		};
 		_expandAllAction.setText("Expand all layers");
-		_expandAllAction.setToolTipText("Expand all layers in the layer manager");
+		_expandAllAction.setToolTipText("Expand all layers in the Outline View");
 		_expandAllAction.setImageDescriptor(DebriefPlugin
 				.getImageDescriptor("icons/expandall.gif"));
 
@@ -772,7 +772,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 					CorePlugin
 							.logError(
 									Status.INFO,
-									"PROBLEM: Layer manager does not hold track data listener.  Maintaner to track this occurrence",
+									"PROBLEM: Outline View does not hold track data listener.  Maintaner to track this occurrence",
 									null);
 				}
 				else

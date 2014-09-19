@@ -85,8 +85,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 	public static final String PLUGIN_ID = "org.mwc.cmap.core";
 
-	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
-
 	public static final String NARRATIVES = "org.mwc.cmap.narrative.views.NarrativeView";
 	public static final String NARRATIVES2 = "com.borlander.ianmayo.nviewer.app.view";
 

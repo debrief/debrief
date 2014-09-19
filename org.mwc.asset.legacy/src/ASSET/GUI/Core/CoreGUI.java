@@ -273,7 +273,7 @@ abstract public class CoreGUI
       //e.printStackTrace();
     }
     _theTools.addElement(new MenuItemInfo("File", null,
-                                          new ShowLayers(_theParent, "Show Layer Manager", _theProperties, _theData),
+                                          new ShowLayers(_theParent, "Show Outline View", _theProperties, _theData),
                                           null, ' '));
 
 

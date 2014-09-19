@@ -43,7 +43,7 @@ public class NewSensorWizard extends Wizard
 		final String message = "The sensor will now be added to the specified track, \n"
 				+ "and provided with the specified default color - you\n"
 				+ "can customise the sensor further in the Properties window\n"
-				+ "but first select it in the layer manager";
+				+ "but first select it in the Outline View";
 		final MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
 				PAGE_TITLE, "Steps complete", message, imagePath);
 		addPage(messagePage);
