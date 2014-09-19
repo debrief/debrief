@@ -7,9 +7,9 @@
       <onCompletion>
          So now you know how to go beyond merely formatting data, you&apos;re able to temporally navigate through an encounter, and produce plots of data
       </onCompletion>
-      <task kind="cheatsheet" name="Using the Layer Manager" skip="false">
+      <task kind="cheatsheet" name="Using the Outline View" skip="false">
          <intro>
-            Fristly, you&apos;ll be using the Layer Manager to control how much data is visible on the plot.
+            Fristly, you&apos;ll be using the Outline View to control how much data is visible on the plot.
          </intro>
          <onCompletion>
             Now you&apos;re a master of manipulating data, a skill essential both to data analysis and the collation of information for transfer to further presentation via Word or PowerPoint

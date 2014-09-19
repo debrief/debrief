@@ -11,31 +11,31 @@
    <item
          title="Select scenario">
       <description>
-         If you&apos;ve followed the instructions correctly then you will have a <b>Scenario</b> named <b>Single Leg</b> in your <b>Layer Manager</b> view.
+         If you&apos;ve followed the instructions correctly then you will have a <b>Scenario</b> named <b>Single Leg</b> in your <b>Outline View</b> view.
          Select it.
       </description>
    </item>
    <item
       title="Import as Composite Track">
       <description>
-         The first way of importing, is to convert the current solution to a <b>Composite Track</b>. Just right-click on the scenario in the Layer Manager,
+         The first way of importing, is to convert the current solution to a <b>Composite Track</b>. Just right-click on the scenario in the Outline View,
           and select <b>Convert to Composite Track (legs)</b>.
          <br/>Once you&apos;ve done that, you will see a new track appear on the plot (it&apos;s probably yellow). You will also see
-          a new item in the <b>Layer Manager</b> - it will have the same name as the scenario, but it will be marked as a <b>Track</b>.
+          a new item in the <b>Outline View</b> - it will have the same name as the scenario, but it will be marked as a <b>Track</b>.
       </description>
    </item>
    <item
       title="Rename to avoid confusion">
       <description>
          To prevent problems later on, we&apos;ll now rename the imported track. So, select the <b>Track:Single Leg_0</b> track in 
-         the <b>Layer Manager</b>, then change its name to <b>Single Leg TMA</b> in the <b>Properties</b> view. 
+         the <b>Outline View</b>, then change its name to <b>Single Leg TMA</b> in the <b>Properties</b> view. 
          
       </description>
    </item>
    <item
       title="Tidy the plot">
       <description>
-         Now, it would be all to easy for the plot to get confused here. So, use the <b>Layer Manager</b> to hide the red <b>SUBJECT</b> track.
+         Now, it would be all to easy for the plot to get confused here. So, use the <b>Outline View</b> to hide the red <b>SUBJECT</b> track.
       </description>
    </item>
    <item
@@ -44,7 +44,7 @@
          So, we should now just have the <b>OWNSHIP</b> and <b>Single Leg TMA</b> tracks visible.  Let&apos;s try adjusting the solution. We 
          do this just like we do for normal Single-Sided Reconstruction: click on the <b>Drag TMA Segment</b> arrow button in the Debrief toolbar.
          <br/>As you click it, you will see the <b>Bearing Residuals</b> view open.  Next, make the <b>OWNSHIP</b> track as the Primary track, and 
-         the <b>Single Leg TMA</b> track as the secondary track (using the mini-toolbar above the <b>Layer Manager</b>). Now you can drag the yellow track
+         the <b>Single Leg TMA</b> track as the secondary track (using the mini-toolbar above the <b>Outline View</b>). Now you can drag the yellow track
          and see the error residuals move.  
          <br/><br/><b>Note:</b> the <b>Absolute</b> values graph is easier to read in this instance if you select the <b>Plot absolute data on +/- 180 axes
          </b> button (it&apos;s in the <b>Bearing Residuals</b> toolbar, probably the second button along).
@@ -59,7 +59,7 @@
          (by right-clicking on <b>Single Leg TMA</b> and selecting 
          <b>Delete Single Leg TMA</b>. Instead let&apos;s just import our original TMA solution by right-clicking on the <b>Single Leg</b> 
          scenario, and selecting <b>Convert to Standalone Track</b>.
-         <br/><br/>You will now see the track has appeared in the <b>Layer Manager</b> as <b>Track:Single Leg</b>.
+         <br/><br/>You will now see the track has appeared in the <b>Outline View</b> as <b>Track:Single Leg</b>.
       </description>
    </item>
    <item
@@ -69,7 +69,7 @@
          both loaded in Debrief.  We can 
          now use the application to calculate the distance between the two tracks.
          <br/><br/>
-         Select <b>Track:Single Leg_TMA</b> and <b>Track:Subject</b> in the Layer Manager (use &lt;ctrl&gt; to multi-select).  
+         Select <b>Track:Single Leg_TMA</b> and <b>Track:Subject</b> in the Outline View (use &lt;ctrl&gt; to multi-select).  
          Now, right click on either of them, and select <b>View XY Plot</b>.          
          <br/><br/>
          From the dialog that opens, select <b>Range</b> as the attribute to view, then select <b>Track:Subject</b> as the primary track.

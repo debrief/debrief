@@ -10,7 +10,7 @@
    <item
       title="Mark first leg">
       <description>         
-         Ok, let&apos;s mark the first leg. In the <b>Layer Manager</b>, expand the Ownship sensor data, and select all of the
+         Ok, let&apos;s mark the first leg. In the <b>Outline View</b>, expand the Ownship sensor data, and select all of the
          <b>Green</b> cuts.  Now, right-click on them, and select <b>Semi Auto TMA</b> / <b>Add to Tutorial Scenario</b> / 
          <b>Straight leg for period covered by [sensor cuts]</b>. When asked, give it the name <b>First Leg</b>.
          <br/><br/><b>Note:</b> selecting the cuts and "giving" them to the solution isn&apos;t actually adding
@@ -33,7 +33,7 @@
    <item
       title="Mark second leg">
       <description>         
-         Now, we&apos;ll mark the second leg. In the <b>Layer Manager</b>, expand the Ownship sensor data, and select all of the
+         Now, we&apos;ll mark the second leg. In the <b>Outline View</b>, expand the Ownship sensor data, and select all of the
          <b>Purple</b> cuts.  Now, right-click on them, and select <b>Semi Auto TMA</b> / <b>Add to Tutorial Scenario</b> / 
          <b>Straight leg for period covered by [sensor cuts]</b>. When asked, give it the name <b>Second Leg</b>.
          <br/>The solution on the plot will disappear, since the new data means that it&apos;s probably incorrect.
@@ -55,7 +55,7 @@
          produced has a speed of 4.8 knots.
          <br/>So, now we have a three-leg solution that is compliant with our sensor data, and our straight leg forecasts.
          <br/>We can take a step to verify this by switching on the location constraints.  First, select the <b>Tutorial Scenario</b>
-          in the <b>Layer Manager</b>. Then, in the <b>Properties</b> window, switch on <b>ShowLocationConstraints</b>. You&apos;ll see
+          in the <b>Outline View</b>. Then, in the <b>Properties</b> window, switch on <b>ShowLocationConstraints</b>. You&apos;ll see
          lots and lots of clutter on the plot. Also switch on <b>OnlyPlotLegEnds</b>.  This shows the calculated location 
          constraints at the start and end of each leg.  We can see that yes, the solution is compliant with them.
       </description>
@@ -65,7 +65,7 @@
       <description>         
          So, we&apos;ve got a solution.  But, I think it can be improved.  Let&apos;s try to give the target a consistent speed. We&apos;re
          going to give a speed constraint to the whole period of the engagement. We could have done this by right-clicking on the whole <b>Sensor:Plain</b>
-         object, but an alternate way of doing this is to right-click on our <b>Tutorial Scenario</b> object in the <b>Layer Manager</b>,  
+         object, but an alternate way of doing this is to right-click on our <b>Tutorial Scenario</b> object in the <b>Outline View</b>,  
          and selecting <b>Add Speed Forecast for period covered by [Tutorial Scenario]</b>.  A wizard will open, name the contribution
          as <b>Overall Speed</b>. You will see this new constraint displayed in the <b>Maintain Contributions</b> view - with a default set
          of hard constraints shown: zero to forty knots.
@@ -92,7 +92,7 @@
    </item>
    <item title="Verify solution">
       <description>
-         Ok, now how good is that solution?  In the <b>Layer Manager</b>, make the <b>SUBJECT</b> track visible.  You should see
+         Ok, now how good is that solution?  In the <b>Outline View</b>, make the <b>SUBJECT</b> track visible.  You should see
          that the generated solution is very close to the truth track, even with this low bearing rate data.  If you wish to 
          verify the calculated solution against the truth track, you can view the XY Range plot (again) and see the separation
          between the two tracks.

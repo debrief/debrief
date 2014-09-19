@@ -11,7 +11,7 @@ Please see the associated help page for a discussion of the track merge operatio
    <item
          title="Select tracks">
       <description>
-         In this tutorial you have generated two track sections and you now wish to combine them into one track.  In the layer manager, select the two tracks <b>TMA_xxxx</b> and <b>TMA_yyyy</b> (use the [control] key to multi-select).
+         In this tutorial you have generated two track sections and you now wish to combine them into one track.  In the Outline View, select the two tracks <b>TMA_xxxx</b> and <b>TMA_yyyy</b> (use the [control] key to multi-select).
       </description>
    </item>
    <item
@@ -24,7 +24,7 @@ Please see the associated help page for a discussion of the track merge operatio
          href="/org.mwc.debrief.help/html/legacy/GroomingTrackData.html#CombineTrackSections"
          title="Provide infill positions">
       <description>
-         Debrief is now able to provide a track section between the two existing track segments.  To do this, open the <b>Track:TMA_xxxx</b> track, and then the <b>Track segments (2 items)</b> item.  Inside you&apos;ll see the two new segments.  Select both of them, and right-click on one of them - you&apos;ll be able to select <b>Generate infill segment</b>.  You&apos;ll see a new segment appear both in the layer manager and the plot.  Notice that the infill segment is shown as a dotted line - to indicate that this track segment is not based on any evidence, it&apos;s just been calculated to join the tracks either side.
+         Debrief is now able to provide a track section between the two existing track segments.  To do this, open the <b>Track:TMA_xxxx</b> track, and then the <b>Track segments (2 items)</b> item.  Inside you&apos;ll see the two new segments.  Select both of them, and right-click on one of them - you&apos;ll be able to select <b>Generate infill segment</b>.  You&apos;ll see a new segment appear both in the Outline View and the plot.  Notice that the infill segment is shown as a dotted line - to indicate that this track segment is not based on any evidence, it&apos;s just been calculated to join the tracks either side.
       </description>
    </item>
    <item

@@ -15,7 +15,7 @@
    <item
          title="Make sensor data visible">
       <description>
-         To keep the plot tidy, sensor data is not shown by default when loaded.  Expand <b>Track:NONSUCH</b> in the <b>Layer Manager</b>, then open <b>Sensors</b>, then select <b>Sensor:Sensor_A (52 items)</b>. Once the Sensor A sensor data is selected, click on the tick icon in the toolbar at top of the Layer Manager view, to make the sensor data visible - and it will appear on the plot.
+         To keep the plot tidy, sensor data is not shown by default when loaded.  Expand <b>Track:NONSUCH</b> in the <b>Outline View</b>, then open <b>Sensors</b>, then select <b>Sensor:Sensor_A (52 items)</b>. Once the Sensor A sensor data is selected, click on the tick icon in the toolbar at top of the Outline View view, to make the sensor data visible - and it will appear on the plot.
       </description>
    </item>
       <item
@@ -30,7 +30,7 @@
    <item
          title="Drop ambiguous data">
       <description>
-         Now, using the Layer Manager, expand the <b>SENSOR_A</b> dataset and select all of the child items (select the top one, scroll to the bottom of the list, then select the bottom one whilst holding down the shift-key).  Now, right click on one of the entries and select <b>Keep starboard bearings</b>.  The port bearings will dissappear.
+         Now, using the Outline View, expand the <b>SENSOR_A</b> dataset and select all of the child items (select the top one, scroll to the bottom of the list, then select the bottom one whilst holding down the shift-key).  Now, right click on one of the entries and select <b>Keep starboard bearings</b>.  The port bearings will dissappear.
       </description>
    </item>
    <item
@@ -44,7 +44,7 @@
    <item
          title="Indicate data to edit">
       <description>
-         The grid editor listens out for the current selection on the layer manager.  So, if the item on the layer manager is suitable for being edited in grid format it will be shown in the grid editor (though this behaviour can be cancelled by clicking on the lock icon in the grid editor toolbar).  If you open the <b>Track:NONSUCH</b> item and select the positions you&apos;ll see them appear in the grid editor.  Now click on the sensor data for Track:NONSUCH (<b>Sensor:SENSOR_A(52 items)</b>.
+         The grid editor listens out for the current selection on the Outline View.  So, if the item on the Outline View is suitable for being edited in grid format it will be shown in the grid editor (though this behaviour can be cancelled by clicking on the lock icon in the grid editor toolbar).  If you open the <b>Track:NONSUCH</b> item and select the positions you&apos;ll see them appear in the grid editor.  Now click on the sensor data for Track:NONSUCH (<b>Sensor:SENSOR_A(52 items)</b>.
       </description>
    </item>
    <item
@@ -89,7 +89,7 @@
          href="/org.mwc.debrief.help/html/legacy/sensor_data.html#SensorOffsetsEditor"
          title="Set array offset">
       <description>
-         We can move on now that we&apos;ve tidied the sensor data.  As you&apos;ll see, the sensor data is ambiguous, as produced by a towed array.  Currently Debrief is plotting the sensor cuts against the attack datum of the platform, but we need to apply an offset for this sensor (-451m in this case).   So, select <b>Sensor:SENSOR_A</b> in the <b>Layer Manager</b>, then open the <b>Properties Window</b> (the click to perform button below will also open it).  In the Properties Window you&apos;ll see the <b>SensorOffset</b> attribute.  This allows you to enter a custom offset or to choose from a set of lengths from a shared datafile (see the Help entry for this item for further details).  Anyway, ignore the shared values and enter -451 in this field, click on the Plot, and you&apos;ll see the bearings jump to reflect the change. To see where the current array centre is, switch on <b>Plot Array Centre</b> from the properties for the parent track - you&apos;ll see a cross appear astern of the current submarine location. 
+         We can move on now that we&apos;ve tidied the sensor data.  As you&apos;ll see, the sensor data is ambiguous, as produced by a towed array.  Currently Debrief is plotting the sensor cuts against the attack datum of the platform, but we need to apply an offset for this sensor (-451m in this case).   So, select <b>Sensor:SENSOR_A</b> in the <b>Outline View</b>, then open the <b>Properties Window</b> (the click to perform button below will also open it).  In the Properties Window you&apos;ll see the <b>SensorOffset</b> attribute.  This allows you to enter a custom offset or to choose from a set of lengths from a shared datafile (see the Help entry for this item for further details).  Anyway, ignore the shared values and enter -451 in this field, click on the Plot, and you&apos;ll see the bearings jump to reflect the change. To see where the current array centre is, switch on <b>Plot Array Centre</b> from the properties for the parent track - you&apos;ll see a cross appear astern of the current submarine location. 
       </description>
       <command
             required="false"

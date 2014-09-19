@@ -36,7 +36,7 @@
  <item
        title="Getting a feel for the data">
     <description>
-       Right we&apos;ve now got our first track section loaded.  You can also see it in the Layer Manager view.  If this isn&apos;t open, either select it from <b>Window/Show View/Layer Manager</b> or click the shortcut immediately below.  It would be useful to show symbols for all of the data points on the track. So, right-click on Track:Frigate.  A large popup menu will appear - which shows the range of items we can edit for this track, and operations we can apply to this track.  From the menu, select <b>Frigate</b> to see the list of editable items specific to this track.  From the popup menu, open the <b>Symbol Freqency</b> menu, and select <b>All</b>.  This will switch on a symbol at every data point.
+       Right we&apos;ve now got our first track section loaded.  You can also see it in the Outline View view.  If this isn&apos;t open, either select it from <b>Window/Show View/Outline View</b> or click the shortcut immediately below.  It would be useful to show symbols for all of the data points on the track. So, right-click on Track:Frigate.  A large popup menu will appear - which shows the range of items we can edit for this track, and operations we can apply to this track.  From the menu, select <b>Frigate</b> to see the list of editable items specific to this track.  From the popup menu, open the <b>Symbol Freqency</b> menu, and select <b>All</b>.  This will switch on a symbol at every data point.
     </description>
     <command
           required="false"
@@ -57,7 +57,7 @@
  <item
        title="Check what just happened">
     <description>
-       Now you&apos;ll see that the track has been split into two.  But, also observe that we&apos;ve still just got the two tracks shown in the Layer Manager. But, if you expand the <b>Track:Frigate</b> track using the arrow to its left, you&apos;ll see that it has a child named <b>Track segments (2)</b>.
+       Now you&apos;ll see that the track has been split into two.  But, also observe that we&apos;ve still just got the two tracks shown in the Outline View. But, if you expand the <b>Track:Frigate</b> track using the arrow to its left, you&apos;ll see that it has a child named <b>Track segments (2)</b>.
     </description>
  </item>
  <item
@@ -69,7 +69,7 @@
  <item
        title="Rejoin tracks">
     <description>
-       Now we can recombine these two track sections.  View the sections by opening up the <b>Track:Frigate</b> item in the <b>Layer Manager</b>.  You&apos;ll see there&apos;s a single item, labelled <b>Track segments (2 items)</b>.  Right click on this item and select <b>Merge all track segments</b>.  You&apos;ll now see the tracks combined.
+       Now we can recombine these two track sections.  View the sections by opening up the <b>Track:Frigate</b> item in the <b>Outline View</b>.  You&apos;ll see there&apos;s a single item, labelled <b>Track segments (2 items)</b>.  Right click on this item and select <b>Merge all track segments</b>.  You&apos;ll now see the tracks combined.
     </description>
  </item>
  <item
@@ -116,7 +116,7 @@ Drag in this file of 3rd party data, again selecting OTG during the import.   Yo
  <item
        title="Join track segments">
     <description>
-       Now that our tracks are lined up, we can group them together into one. Do this by selecting both tracks in the Layer Manager (use the control key to select multiple items).  Then right-click on one of them and select <b>Group tracks into Frigate</b>.  The segments will all now turn blue, and only the <b>Track:Frigate</b> will be shown in the Layer Manager. But, expanding this item shows <b>Track segments (3 items)</b>.  Right-click on this and select <b>Merge all track segments</b>.
+       Now that our tracks are lined up, we can group them together into one. Do this by selecting both tracks in the Outline View (use the control key to select multiple items).  Then right-click on one of them and select <b>Group tracks into Frigate</b>.  The segments will all now turn blue, and only the <b>Track:Frigate</b> will be shown in the Outline View. But, expanding this item shows <b>Track segments (3 items)</b>.  Right-click on this and select <b>Merge all track segments</b>.
     </description>
  </item>
 </cheatsheet>
