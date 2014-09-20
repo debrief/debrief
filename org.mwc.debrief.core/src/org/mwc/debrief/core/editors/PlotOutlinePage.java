@@ -1023,6 +1023,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		{
 			_plotEditor
 					.removeSelectionChangedListener(_selectionChangeListener);
+			_plotEditor.outlinePageClosed();
 			_plotEditor = null;
 		}
 
