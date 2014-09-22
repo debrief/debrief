@@ -1579,4 +1579,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		return true;
 	}
+
+	public void outlinePageClosed()
+	{
+		_outlinePage = null;
+	}
 }
