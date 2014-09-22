@@ -64,8 +64,10 @@
 	</item>
 	<item title="Edit a position">
 		<description>To select a position within a track, just double-click on it - its editable
-			attributes will appear in the properties window. You can now change the symbol, label,
-			or track color for that position.</description>
+			attributes will appear in the properties window. You can now change the symbol or label
+			(<b>LabelShowing</b> or <b>SymbolShowing</b>, 
+			visibility, or the color (<b>Color</b>) that position will be plotted in. Note: you may have to scroll up &amp; down the 
+			<b>Properties Window</b> to see all of the properties.</description>
 	</item>
 	<item title="Edit a whole track">
 		<description>Aaah, but how do you edit a track? Easy, just use the Outline View to select
