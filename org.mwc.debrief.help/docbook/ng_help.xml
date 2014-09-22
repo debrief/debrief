@@ -3274,11 +3274,15 @@ and so on....</programlisting></para>
           <sect3 xml:id="ExportToFlatFile">
             <title>Export to Flat File (SAM) format</title>
 
-            <para>This control exports a data file of tab-separated variables formatted according to
-              the Flat File format specified later in this document (<xref linkend="Section_Flat"
-              />). Data is exported for the specified time period for the current primary and
-              secondary tracks, using any sensor data that is visible over that period. Debrief will
-              remember the folder and sensor type specified in previous export operations.</para>
+            <para><indexterm>
+                <primary>Export</primary>
+                <secondary>SAM Format</secondary>
+              </indexterm>This control exports a data file of tab-separated variables formatted
+              according to the Flat File format specified later in this document (<xref
+                linkend="Section_Flat"/>). Data is exported for the specified time period for the
+              current primary and secondary tracks, using any sensor data that is visible over that
+              period. Debrief will remember the folder and sensor type specified in previous export
+              operations.</para>
 
             <sect4 xml:id="ExportToSamAlg">
               <title>SAM Export algorithm</title>
@@ -3355,7 +3359,10 @@ and so on....</programlisting></para>
           <sect3 xml:id="CopyToClip">
             <title>Copy to clipboard</title>
 
-            <para>Another operation that relies on the selected time period is exporting calculated
+            <para><indexterm>
+              <primary>Export</primary>
+              <secondary>Data to Clipboard</secondary>
+            </indexterm>Another operation that relies on the selected time period is exporting calculated
               data to the clipboard. This operation is available form the <guiicon>
                 <inlinemediaobject>
                   <imageobject>
@@ -4194,6 +4201,9 @@ and so on....</programlisting></para>
           <title>Export images</title>
 
           <para>In addition to <indexterm>
+            <primary>Export</primary>
+            <secondary>Images</secondary>
+          </indexterm><indexterm>
               <primary>WMF</primary>
 
               <secondary>Writing to File</secondary>
@@ -6610,7 +6620,10 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
         <sect2 xml:id="doppler_export">
           <title>Exploiting doppler calculations</title>
 
-          <para>To support the display frequency residuals (as used in <xref
+          <para><indexterm>
+            <primary>Export</primary>
+            <secondary>Calculated Doppler</secondary>
+          </indexterm>To support the display frequency residuals (as used in <xref
               linkend="DraggingTracks"/>), Debrief contains a set of doppler frequency calculations
             (see <xref linkend="freq_alg"/>). Should you require this data in a third-party
             application it is possible to export this calculated data. Do this export as follows:<orderedlist>
@@ -10230,6 +10243,7 @@ departure / d.lat = tan (course)</markup>
                 The following images show the effect of cut suppression.  It is surprising how many cuts can be suppressed whislt still
                 producing an effective solution.
                 <figure xml:id="no_suppress">
+                  <title>Solution showing all bounded states</title>
                   <mediaobject>
                     <imageobject>
                       <imagedata fileref="figures/NoSuppress.png"/>
@@ -10238,6 +10252,7 @@ departure / d.lat = tan (course)</markup>
                   </mediaobject>
                 </figure>
                 <figure xml:id="cuts_suppressed">
+                  <title>Solution showing low precision cut suppression</title>
                   <mediaobject>
                     <imageobject>
                       <imagedata fileref="figures/CutsSuppressed.png"/>
