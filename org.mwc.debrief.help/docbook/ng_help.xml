@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+i<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V5//EN"
 "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
 <book version="5.0" xmlns="http://docbook.org/ns/docbook">
@@ -187,9 +187,9 @@
 
       <para>In December 2000 the Maritime Warfare Centre decided to give
           <application>Debrief</application> an Open Source status, opening the application and its
-        source code into the public domain. Debrief has been made <indexterm>
+        source code into the public domain. Debrief has been made <iiterm>
           <primary>Open Source</primary>
-        </indexterm>Open Source to facilitate its wider use, encouraging adoption of standard file
+        </iiterm>Open Source to facilitate its wider use, encouraging adoption of standard file
         formats, presentation and practices between analysis agencies.</para>
 
       <para>Debrief provides the following features: <itemizedlist>
@@ -6473,7 +6473,10 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
           </sect3>
           <sect3>
             <title>Automatically shading bulk sensor data</title>
-            <para>When very long sets of sensor data are exported to a report, it can be difficult
+            <para><indexterm>
+              <primary>Sensor data</primary>              
+              <secondary>Shading sensor cuts</secondary>
+            </indexterm>When very long sets of sensor data are exported to a report, it can be difficult
               for a reader to distinguish newer from old cuts - particularly when they are
               overlapping. Debrief provides support for this via the two<indexterm>
                 <primary>Shading Sensor Data</primary>
