@@ -5,7 +5,7 @@
 
 ## New in Debrief
 
-* Sep 2014 - Formally replace Layer Manager with standard Eclipse [Outline View](http://www.debrief.info/tutorial/index.html#layer_mgr_intro)
+* Sep 2014 - Formally replace Layer Manager with standard Eclipse [Outline View](http://www.debrief.info/tutorial/layer_mgr.html#layer_mgr_intro)
 * Apr 2014 - Integrate [Semi Automated Track Construction (TMA)](http://www.debrief.info/tutorial/satc.html)
 * Dec 2013 - Intregration of time-synced audio, video, stills players (beta)
 * Oct 2013 - [Rotated labels](http://www.debrief.info/tutorial/satc_ga.html#consistent_legs) on legs
