@@ -18,7 +18,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.grideditor"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.gt2Plot"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.layer_manager"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.LiveDataMonitor"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.NarrativeViewer"/>

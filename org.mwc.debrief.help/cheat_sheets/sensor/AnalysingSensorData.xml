@@ -19,13 +19,13 @@
 		<description>Next, drag the SSK sensor data file  (sen_frig_sensor.rep) onto the plot.  No, there hasn't been a visible change to the plot, but be assured, the data is there.</description>
 	</item>
 	<item title="View the sensor data">
-		<description>From the Layer Manager, expand the 'tree' for each track (they're called 'Frigate' and 'New_SSK').  Within each track you will see named blocks of sensor data.  Make each block of sensor data visible by selecting it, then clicking on the 'make visible' toolbar button. As you make each set of data visible you should see its bearing fan appear. Overall there are three blocks of sensor data across the two tracks.</description>
+		<description>From the Outline View, expand the 'tree' for each track (they're called 'Frigate' and 'New_SSK').  Within each track you will see named blocks of sensor data.  Make each block of sensor data visible by selecting it, then clicking on the 'make visible' toolbar button. As you make each set of data visible you should see its bearing fan appear. Overall there are three blocks of sensor data across the two tracks.</description>
 	</item>
 	<item title="Sensor formatting options" skip="true">
 		<description>Sensor lines can be formatted to change their colour, their label, and the location of their label.  The formatting can be applied to a single sensor line or a series of sensor lines.  Now, the dense fans of sensor data present in the sample files you have don't lend themselves to being individually annotated. So we won't.  </description>
 	</item>
 	<item title="Format the sensor data">
-		<description>What we're going to do now is simulate formatting a series of bearing lines to represent a particular sensor state.  So, from the Layer Manager open up the "NEW_SSK_BB" sensor for the "New_SSK" track.  Select the first five sensor bearings.  Now switch to the properties view.  This view should show the editable properties for those bearings.  Change the color from red to yellow.  You will see the sensor lines on the plot update.</description>
+		<description>What we're going to do now is simulate formatting a series of bearing lines to represent a particular sensor state.  So, from the Outline View open up the "NEW_SSK_BB" sensor for the "New_SSK" track.  Select the first five sensor bearings.  Now switch to the properties view.  This view should show the editable properties for those bearings.  Change the color from red to yellow.  You will see the sensor lines on the plot update.</description>
 	</item>
 	<item title="Conduct a plot-lock" href="\org.mwc.debrief.help\html\legacy\formatting_data.html#track_shifting">
 		<description>What we're going to do now is to simulate the process of dragging tracks so that their bearing fans match.  In UK this is called a plot-lock, and in the US its called a tie-point.  First we must indicate which tracks we want to view the relationship between - so make the Frigate the primary track, and the New_SSK the secondary track - you should now see them both on the Track Tote.</description>

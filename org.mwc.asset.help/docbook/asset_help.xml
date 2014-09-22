@@ -7988,7 +7988,7 @@
               <listitem>
                 <para>In the top-right of the screenshot is the properties window - which displays
                   editable properties for the currently selected object, regardless of where the
-                  selection is (layer manager, gui, scenario controller).</para>
+                  selection is (Outline View, gui, scenario controller).</para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -8114,7 +8114,7 @@
               <term>Properties Window</term>
               <listitem>
                 <para>Below the Tote is the properties window, a holder for a wide range of editor
-                  panels - from the Layer Manager which shows all current data stored, through to
+                  panels - from the Outline View which shows all current data stored, through to
                   the vessel status viewer which shows the course, speed, depth (demanded and
                   current) for the selected participant, together with providing access to the
                   editable attributes of that participant - all in the tabbed properties
@@ -8423,7 +8423,7 @@
           also able to drill down into the content of the scenario. Two methods are typically used
           to start interrogating the scenario - <link linkend="WORKBENCH_DOUBLE_CLICK"
             >double-clicking on the plot</link> and using the <link
-            linkend="WORKBENCH_LAYER_MANAGER">Layer Manager</link>. </para>
+            linkend="WORKBENCH_LAYER_MANAGER">Outline View</link>. </para>
         <sect2 id="WORKBENCH_DOUBLE_CLICK">
           <title>Double-clicking the plot</title>
           <para>The <application>Workbench</application> should currently be showing a zoomed in
@@ -8460,19 +8460,19 @@
               >properties window</link>. </para>
         </sect2>
         <sect2 id="WORKBENCH_LAYER_MANAGER">
-          <title>Layer Manager</title>
-          <para>An alternative way of accessing the current scenario is through the Layer Manager.
-            This window provides a tree-view of the currently loaded data. Open the Layer Manager by
-            clicking on the <guilabel>Show Layer Manager</guilabel> icon ( <inlinegraphic
+          <title>Outline View</title>
+          <para>An alternative way of accessing the current scenario is through the Outline View.
+            This window provides a tree-view of the currently loaded data. Open the Outline View by
+            clicking on the <guilabel>Show Outline View</guilabel> icon ( <inlinegraphic
               fileref="figures/layer_mgr.gif" format="GIF"/>) from the <guilabel>File</guilabel>
             toolbar. <figure float="0" id="WorkBenchLayerMgr">
-              <title>Workbench Layer Manager</title>
+              <title>Workbench Outline View</title>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/WorkbenchLayerMgr.gif"/>
                 </imageobject>
               </mediaobject>
-            </figure> In its startup view the Layer Manager provides a top-level view of the data
+            </figure> In its startup view the Outline View provides a top-level view of the data
             collated into groups. In the example above the <guilabel>Chart Features</guilabel> group
             contains two items. Clicking on the key symbol to the left of the folder icon will open
             up that group and allow you to set the child items on/off or double-click to edit them.
@@ -8481,7 +8481,7 @@
             access to the Scenario formatting options. Open the cascading menu titled <guilabel>Edit
               Scenario</guilabel>and clear the tick box labelled <guilabel>Show Activity</guilabel>.
             At last all of the vessel activity labels have dissappeared. </para>
-          <para>Back to the Layer Manager, opening the <guilabel>Scenario</guilabel> group will show
+          <para>Back to the Outline View, opening the <guilabel>Scenario</guilabel> group will show
             all of the participants listed by name. In the example scenario loaded the blue helo
               <guilabel>HELO_ALPHA</guilabel> is listed first. Right-clicking on each item provides
             the popup menu seen earlier, and double-clicking on each one opens it in the vessel

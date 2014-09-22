@@ -21,8 +21,8 @@
 	<item title="Select the time period of interest" href="/org.mwc.debrief.help/html/legacy/controlling_time.html#time_controller">
 		<description>Right, select the period 120800 to 121100 using the time-period selector at the bottom of the Time Controller  (click help button above for more advice on the time controller).  Remember that holding down the shift-key makes the sliders move in one-hour jumps.</description>
 	</item>
-	<item title="Open the Layer Manager" href="/org.mwc.debrief.help/html/legacy/layer_mgr.html" skip="true">
-		<description>Next we need to indicate what tracks we want to see information for.  In the bottom left hand corner of Debrief you should find the Layer Manager window.  If it isn't there, select "Layer Manager" from Debrief's Window/Show View menu.</description>
+	<item title="Open the Outline View" href="/org.mwc.debrief.help/html/legacy/layer_mgr.html" skip="true">
+		<description>Next we need to indicate what tracks we want to see information for.  In the bottom left hand corner of Debrief you should find the Outline View window.  If it isn't there, select "Outline View" from Debrief's Window/Show View menu.</description>
 	</item>
 	<item title="Select the tracks of interest" dialog="true">
 		<description>Click on the two tracks (holding down the CTRL key to select multiple items).</description>

@@ -187,9 +187,9 @@
 
       <para>In December 2000 the Maritime Warfare Centre decided to give
           <application>Debrief</application> an Open Source status, opening the application and its
-        source code into the public domain. Debrief has been made <indexterm>
+        source code into the public domain. Debrief has been made <iiterm>
           <primary>Open Source</primary>
-        </indexterm>Open Source to facilitate its wider use, encouraging adoption of standard file
+        </iiterm>Open Source to facilitate its wider use, encouraging adoption of standard file
         formats, presentation and practices between analysis agencies.</para>
 
       <para>Debrief provides the following features: <itemizedlist>
@@ -309,7 +309,7 @@
       <formalpara>
         <title>Polished user interface</title>
 
-        <para>All of the user interface have received a refresh. The layer manager includes
+        <para>All of the user interface have received a refresh. The Outline View includes
           contextual icons giving an extra indication of what&apos;s in each layer.<figure
             xml:id="fig_context_icons">
             <title>Contextual icons</title>
@@ -977,7 +977,7 @@ Naval Undersea Warfare Center (NUWC)
               </indexterm>Views support editors and provide alternative presentations as well as
               ways to navigate the information in your Workbench. For example, the Navigator
               displays projects and other resources that you are working with (see <xref
-                linkend="navigating_debrief"/>), and the Layer Manager shows a list of selectable
+                linkend="navigating_debrief"/>), and the Outline View shows a list of selectable
               items within the current plot (see <xref linkend="layer_mgr"/>).</para>
 
             <para>Views also have their own drop-down menus. To open the menu for a view, click the
@@ -1482,7 +1482,7 @@ and so on....</programlisting></para>
 
           <para>Each open Debrief plot has its own undo buffer - so if the undo button appears
             disabled you must first make sure you&apos;ve clicked on the plot it relates to. Whilst you
-            may have made the edit via the Layer Manager, you must still click on the plot before
+            may have made the edit via the Outline View, you must still click on the plot before
             conducting an undo operation.</para>
         </sect2>
 
@@ -1553,10 +1553,10 @@ and so on....</programlisting></para>
               <primary>Property editor</primary>
             </indexterm>Track editing is performed on the Properties Window (see <xref
               linkend="g_property_window"/>), and is initiated by selecting the track either from
-            the plot or the Layer Manager, as described in the <emphasis>Editing your
+            the plot or the Outline View, as described in the <emphasis>Editing your
               data</emphasis> cheat-sheet.<note>
               <para>Many of these editing operations can be performed without using the Properties
-                Window, simply by right-clicking on a track either in the Layer Manger or on the
+                Window, simply by right-clicking on a track either in the Outline View or on the
                 plot</para>
             </note></para>
         </sect2>
@@ -2088,9 +2088,9 @@ and so on....</programlisting></para>
 
           <para>The properties shown are similar to those shown for most other shapes, with the
             exception of the actual locations of the polygon. Change the location of the nodes that
-            form the polygon by selecting them in the Layer Manager then editing them the Properties
+            form the polygon by selecting them in the Outline View then editing them the Properties
             View (see <xref linkend="properties_view"/>). New nodes are created by right-clicking on
-            the Polygon (in the Layer Manager or on the Plot), and selecting <guimenu>Add
+            the Polygon (in the Outline View or on the Plot), and selecting <guimenu>Add
               Node</guimenu>. </para>
           <para> Instead of being able to directly edit the points in the polygon, an indication of
             the number of points is provided, together with a button which will take you to the Path
@@ -2159,11 +2159,21 @@ and so on....</programlisting></para>
               </indexterm><guilabel>Show Auto Calc</guilabel> - this displays the calculated range
               and bearing 1/2 way along the line. Unfortunately this label is only visible on screen
               - the structure Windows Metafile format doesn&apos;t allow us to copy the rotated text
-              across the clipboard to copy it into MS Word. So, you&apos;ll only get this rotated text in
-              MS Word is you capture a screenshot, using software such as SnagIt or Hypercam. If you
-              do want to include such a label in your analysis report, and you wish to copy/paste
-              the image via the clipboard, then you can always manually put the range/bearing into
-              the line label, and specify that the label be shown 1/2 way along the line.</para>
+              across the clipboard to copy it into MS Word. So, you&apos;ll only get this rotated
+              text in MS Word is you capture a screenshot, using software such as SnagIt or
+              Hypercam. If you do want to include such a label in your analysis report, and you wish
+              to copy/paste the image via the clipboard, then you can always manually put the
+              range/bearing into the line label, and specify that the label be shown 1/2 way along
+              the line.<figure>
+                <title>Calculated Label</title>
+                <screenshot>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/CalculatedLabel.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </screenshot>
+              </figure></para>
           </note>
         </sect2>
 
@@ -2179,30 +2189,30 @@ and so on....</programlisting></para>
           <title>General</title>
 
           <para>To edit any existing annotation, double on it on the <glossterm linkend="g_plt"
-              >plot</glossterm> or the Layer Manager to select it - its attributes will then be
+              >plot</glossterm> or the Outline View to select it - its attributes will then be
             available from the Properties View. Alternatively, right-click on an item on the Plot or
-            Layer Manager, and editable attributes are available from the object&apos;s drop-down list.
+            Outline View, and editable attributes are available from the object&apos;s drop-down list.
             Only boolean (true/false) and list-related (top/bottom/left/right etc) are editable from
             the right-click menu.</para>
         </sect2>
       </sect1>
 
-      <!--         layer manager                     -->
+      <!--         Outline View                     -->
 
       <sect1 xml:id="layer_mgr">
         <title>Layer management</title>
 
         <sect2 xml:id="layer_mgr_intro">
-          <title>Layer Manager</title>
+          <title>Outline View</title>
 
           <para><indexterm>
-              <primary>Layer manager</primary>
-            </indexterm>The Layer Manager provides a tree-oriented view of all of the editable data
+              <primary>Outline View</primary>
+            </indexterm>The Outline View provides a tree-oriented view of all of the editable data
             within a plot, organised into layers. New items added to the plot are placed into a
               <emphasis>Misc</emphasis> layer. From here they can be reorganised into suitably
             themed layers via cut/paste (see <xref linkend="cut_copy_paste"/>).<figure
               xml:id="layer_manager">
-              <title>Layer Manager view</title>
+              <title>Outline View view</title>
 
               <screenshot>
                 <mediaobject>
@@ -2213,7 +2223,7 @@ and so on....</programlisting></para>
               </screenshot>
             </figure></para>
 
-          <para>Reveal the Layer Manager by selecting it from the
+          <para>Reveal the Outline View by selecting it from the
               <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop-down list. Once
             open you will see the data shown as a series of layers - each with a tick indicating if
             it&apos;s visible or not. A toolbar provides command buttons to make items visible or not
@@ -2226,7 +2236,7 @@ and so on....</programlisting></para>
 
           <para>The drop-down menu provides further commands, significantly including the ability to
             add a new layer; <guimenuitem>Create Layer</guimenuitem>. Further commands are available
-            when right-clicking on one or more Layer Manager elements: in particular the ability to
+            when right-clicking on one or more Outline View elements: in particular the ability to
             cut/copy/paste elements between layers and plots, together with the command to view a
             time-variable graph of the selected elements (see <xref linkend="show_time_vars"
             />).</para>
@@ -2243,7 +2253,7 @@ and so on....</programlisting></para>
           <para>In addition to copying/moving items between layers, items and layers themselves can
             be copied or moved between sessions within Debrief.</para>
 
-          <para>To paste a layer (or track) into the top level of the layer manager just click on
+          <para>To paste a layer (or track) into the top level of the Outline View just click on
             the white space below the displayed layers and select <guibutton>Paste Item</guibutton>
             form the popup menu.</para>
 
@@ -2254,7 +2264,7 @@ and so on....</programlisting></para>
               smallest line width supported is <emphasis>hairwidth</emphasis>, which plots the
               finest line the particular output device (screen or printer) can produce. The
               line-width parameter can be accessed by right-clicking on the screen item directly in
-              addition to via the Layer Manager.</para>
+              addition to via the Outline View.</para>
           </note>
           <warning>
             <para>In addition to the <guibutton>Cut</guibutton> menu command, is the
@@ -2264,10 +2274,10 @@ and so on....</programlisting></para>
                 <guibutton>Delete</guibutton> command.</para>
           </warning>
           <warning>
-            <para>The Layer Manager performs particularly poorly when it has layers that contain 10s
+            <para>The Outline View performs particularly poorly when it has layers that contain 10s
               of 1000s of entries - sometimes taking several minutes to refresh all of the
               labels/icons in that layer. So, if you have a layer that contains more than 10,000
-              items, the Layer Manager will not let you expand it - avoiding the performance issue.
+              items, the Outline View will not let you expand it - avoiding the performance issue.
               If you do have, for example, a track that contains many 10s of thousands of positions
               in it, then you should reduce the data volume by:<orderedlist>
                 <listitem>
@@ -2479,7 +2489,7 @@ and so on....</programlisting></para>
               <secondary>Split</secondary>
             </indexterm>Before a jump can be removed from a track, the track must be split. To split
             a track, first decide where the split should be made, and right-click on the point where
-            the split should happen (either on the plot or in the layer manager). The popup menu
+            the split should happen (either on the plot or in the Outline View). The popup menu
             will provide options to split the track immediately before or after the indicated point.<screenshot>
               <mediaobject>
                 <imageobject>
@@ -2489,7 +2499,7 @@ and so on....</programlisting></para>
             </screenshot></para>
 
           <para>On completion you&apos;ll see a visible split in the track, and the track represented as
-            two segments in the layer manager.<screenshot>
+            two segments in the Outline View.<screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/TrackAfterSplit.png" scalefit="1" width="100%"/>
@@ -2509,7 +2519,7 @@ and so on....</programlisting></para>
               <secondary>Join</secondary>
             </indexterm>Once track segments have been manipulated (see <xref
               linkend="DraggingTracks"/>), they can be rejoined. To rejoin tracks, select them
-            both/all in the layer manager (using the <guilabel>Control</guilabel> key as
+            both/all in the Outline View (using the <guilabel>Control</guilabel> key as
             appropriate). Then right-click and select Merge Tracks as shown below. Note, you can
             select which track becomes the &apos;host&apos;. <screenshot>
               <mediaobject>
@@ -2581,11 +2591,11 @@ and so on....</programlisting></para>
         <sect2 xml:id="UseOfGrid">
           <title>Use of Grid Editor</title>
 
-          <para>The Grid Editor tracks the current selection in the Layer Manager. Thus, when you
-            select something capable of being edited in a grid in the Layer Manager (such as a set
-            of positions or sensor cuts) then it is shown in the Layer Manager. <note>
+          <para>The Grid Editor tracks the current selection in the Outline View. Thus, when you
+            select something capable of being edited in a grid in the Outline View (such as a set
+            of positions or sensor cuts) then it is shown in the Outline View. <note>
               <para>If this becomes inconvenient you can stop the Grid Editor from tracking the
-                Layer Manager selection by clearing the <guilabel>Track Selection</guilabel> lock
+                Outline View selection by clearing the <guilabel>Track Selection</guilabel> lock
                 icon.</para>
             </note></para>
 
@@ -2781,7 +2791,7 @@ and so on....</programlisting></para>
           <title>Assigning tracks</title>
 
           <para>Assigning primary and secondary tracks is covered in the respective <glossterm
-              linkend="g_cheat">Cheat Sheet</glossterm>. Icons are provided in the layer manager
+              linkend="g_cheat">Cheat Sheet</glossterm>. Icons are provided in the Outline View
             toolbar to specify if the selected track should be:<orderedlist>
               <listitem>
                 <para>Made primary</para>
@@ -3213,7 +3223,11 @@ and so on....</programlisting></para>
             second/millisecond proportionate to the position of the slider. Debrief can be
             configured such that the slider stops on higher resolutions by selecting the relevant
             increment from the <guibutton>Time slider increment</guibutton> list in the Time
-            Controller&apos;s drop-down menu.</para>
+            Controller&apos;s drop-down menu.<tip><para>On occasion it&apos;s not possible to put 
+            the time slider markers on exactly the right time value - particularly if your plot
+            covers a long timer period.  In these circumstances, if you double-click on either the
+            start or finish arrow, their exact time is made available for editing in the 
+            Properties View (see <xref linkend="property_editing"/>)</para></tip></para>
         </sect2>
 
         <sect2 xml:id="time_bookmarks">
@@ -3421,7 +3435,7 @@ and so on....</programlisting></para>
                   participant is in contact or not. Exporting the colour flag to Excel allows the
                   post-analysis data to be filtered according to periods in contact - or any other
                   time-dependent aspect specified by the analyst. The application of a particular
-                  colour to sections of track is performed within the Layer Manager.</para>
+                  colour to sections of track is performed within the Outline View.</para>
               </tip><note>
                 <para>The last two columns output give identifier information: the first of these is
                   the name of the current item in this <glossterm linkend="g_track"
@@ -3809,13 +3823,13 @@ and so on....</programlisting></para>
         <sect2 xml:id="plot_mgt">
           <title>Plot management</title>
 
-          <para>The objects in the 3-d plot reflect the structure in the Layer Manager. So, to
-            hide/reveal a set of objects in 3-d just switch their layer off in the Layer Manager. <tip>
+          <para>The objects in the 3-d plot reflect the structure in the Outline View. So, to
+            hide/reveal a set of objects in 3-d just switch their layer off in the Outline View. <tip>
               <para>The objects in the 3-d view are a "cloned" set of the objects contained in the
-                Layer Manager at the point at which <guilabel>Show 3d View</guilabel> was selected.
+                Outline View at the point at which <guilabel>Show 3d View</guilabel> was selected.
                 Thus is it likely that moving objects between layers once the 3-d plot is open may
                 not be reflected in the 3-d view. If extensive restructuring has been conducted in
-                the Layer Manager and you wish the 3-d view to reflect this, close and re-open the
+                the Outline View and you wish the 3-d view to reflect this, close and re-open the
                 view.</para>
             </tip><note>
               <para>The 3-d view now includes bathymetric data <indexterm>
@@ -3843,12 +3857,12 @@ and so on....</programlisting></para>
 
         <para><indexterm>
             <primary>Time variable plots</primary>
-          </indexterm>Time-variable plots can be opened via the Layer Manager. When one or more
+          </indexterm>Time-variable plots can be opened via the Outline View. When one or more
           items that are candidate subjects <footnote>
             <para>Items are suitable for inclusion in a time-variable plot when they have both
               temporal and spatial attributes, so this includes tracks, individual locations and
               annotations, but does not include grids, scales, or background datasets.</para>
-          </footnote> for a time-variable plot are selected in the Layer Manager, it adds the
+          </footnote> for a time-variable plot are selected in the Outline View, it adds the
             <guibutton>Show XY Plot</guibutton> operation <indexterm>
             <primary>Toolbox</primary>
 
@@ -4943,7 +4957,7 @@ and so on....</programlisting></para>
           <para>Once loaded into a plot configure the VPF data by switching to the <guibutton>Layer
               Manager</guibutton>. In there, open the <guilabel>Chart Features</guilabel> layer, to
             see the new VPF layer. <figure xml:id="LayerMangerDemo_VPF">
-              <title>VPF Data in Layer Manager</title>
+              <title>VPF Data in Outline View</title>
 
               <screenshot>
                 <mediaobject>
@@ -5699,16 +5713,16 @@ and so on....</programlisting></para>
             <varlistentry>
               <term>Properties Window</term>
               <listitem>
-                <para>Select a leg in the Layer Manager, and you&apos;ll see the leg properties in the
+                <para>Select a leg in the Outline View, and you&apos;ll see the leg properties in the
                   Properties window. Note the <guimenu>Calculation</guimenu> field, this indicates
                   which two fields are used to specify the leg length. As you&apos;ll see, you can also
                   amend the leg name, the course, and the depth for that leg.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
-              <term>Layer Manager</term>
+              <term>Outline View</term>
               <listitem>
-                <para>Right-clicking on a leg in the layer manager lets you quickly edit some of the
+                <para>Right-clicking on a leg in the Outline View lets you quickly edit some of the
                   leg parameters <screenshot>
                     <mediaobject>
                       <imageobject>
@@ -5766,7 +5780,7 @@ and so on....</programlisting></para>
           graph to update itself as the tracks change.</para>
         <para>Here&apos;s how you do it:<orderedlist>
             <listitem>
-              <para>Select your two tracks in the Layer Manager</para>
+              <para>Select your two tracks in the Outline View</para>
             </listitem>
             <listitem>
               <para>Right-click on one of the tracks</para>
@@ -5837,8 +5851,8 @@ and so on....</programlisting></para>
           <para>Narrative data is loaded into <application>Debrief</application> in the same way as
             other data, by dragging and dropping from a REP file formatted as above, or by using the
               <emphasis>Generate New Narrative entry</emphasis> wizard. Open the wizard by either
-            right-clicking on the <emphasis>Narratives</emphasis> entry in the Layer Manager, or by
-            right-clicking in blank area of the Layer Manager if this is the first narrative
+            right-clicking on the <emphasis>Narratives</emphasis> entry in the Outline View, or by
+            right-clicking in blank area of the Outline View if this is the first narrative
               entry.<figure xml:id="add_narr_data">
               <title>New narrative entry wizard</title>
               <screenshot>
@@ -6032,12 +6046,12 @@ and so on....</programlisting></para>
               </mediaobject>
             </screenshot>
           </figure><note>
-            <para>If you right-click on the chart library in the Layer Manager you&apos;ll see the
+            <para>If you right-click on the chart library in the Outline View you&apos;ll see the
               editable properties. These include the colour used for the rectangles plus whether the
               chart name is displayed against the chart rectangle.</para>
           </note></para>
         <para>The folio displays a rectangle for each available chart. The folio is a top-level
-          layer in the Layer Manager that you can expand to view (and load) the child charts.
+          layer in the Outline View that you can expand to view (and load) the child charts.
           Alternatively, right-click on a corner of one of the rectangles and select &apos;Load this
           chart&apos; to load a specific chart.<figure>
             <title>Loading a chart</title>
@@ -6051,7 +6065,7 @@ and so on....</programlisting></para>
           </figure>
         </para>
         <para>The chart will then be loaded as a separate Debrief layer - and appear in the layer
-          manager. As with any other layer, you can control it&apos;s visibility using the layer manager.
+          manager. As with any other layer, you can control it&apos;s visibility using the Outline View.
           Note, Debrief isn&apos;t going to store the chart image in the plot-file, it&apos;s just going to
           store the path to the Image - which will re-loaded next time you open the plot.</para>
       </sect1>
@@ -6304,7 +6318,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               <secondary>Analysing</secondary>
             </indexterm> made visible, since with any reasonable volume of sensor data the plot
             quickly becomes illegible. Sensor data is switched on and off individually by accessing
-            the sensor, via its Track, from the Layer Manager.</para>
+            the sensor, via its Track, from the Outline View.</para>
 
           <para>It is once in <glossterm linkend="g_snail_trail">snail trail</glossterm> mode that
             sensor data is most easily analysed. When in snail mode the Snail display mode performs
@@ -6380,11 +6394,11 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               you&apos;ll typically be trying to determine which blocks of sensor data are close
               to/similar to target tracks. Sensor data is shown with symbols if it&apos;s visible in the
               plot (see the pink line near the centre-left of the image). Clicking on a block of
-              sensor data in the view also selects that sensor data in the Layer Manager (though on
+              sensor data in the view also selects that sensor data in the Outline View (though on
               occasion you need to expand the <guilabel>Sensors</guilabel> folder in the Layer
               Manager). As blocks of sensor data are selected, they are shown in black in the view.
               Items can be multiple-selected with the <keysym>&lt;ctrl&gt;</keysym> key. Once
-              multiple blocks of sensor data are selected in the layer manager you can right-click
+              multiple blocks of sensor data are selected in the Outline View you can right-click
               on them and select &apos;Merge sensors into <emphasis>xxxx</emphasis>&apos;</para>
 
             <para>Also note that whilst by default comes up with a unique color/symbol combination
@@ -6463,7 +6477,10 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
           </sect3>
           <sect3>
             <title>Automatically shading bulk sensor data</title>
-            <para>When very long sets of sensor data are exported to a report, it can be difficult
+            <para><indexterm>
+              <primary>Sensor data</primary>              
+              <secondary>Shading sensor cuts</secondary>
+            </indexterm>When very long sets of sensor data are exported to a report, it can be difficult
               for a reader to distinguish newer from old cuts - particularly when they are
               overlapping. Debrief provides support for this via the two<indexterm>
                 <primary>Shading Sensor Data</primary>
@@ -6500,7 +6517,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               viewport - whichever is nearer...). On a large area plot this may given sensor lines
               of 10s of nautical miles long. If in truth the detections are only in the thousands of
               yards, you may wish to give the sensor data a range. To do this, start by
-              multi-selecting a block of sensor data in the layer manager. Next, open the properties
+              multi-selecting a block of sensor data in the Outline View. Next, open the properties
               window - you&apos;ll see the elements have zero range. Just insert an &apos;indicative&apos; value
               for range. The sensor lines on the plot will now be clipped to that range - greatly
               reducing plot clutter.<screenshot>
@@ -6524,7 +6541,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             target. Open the graph by multi-selecting (&lt;ctrl-click&gt;) a series of sensor
             wrappers and a single target track (alternately you could select one track plus the
             &apos;Sensors&apos; item of another track if you wish to view a range plot that includes all the
-            sensors). If such a combination of objects have been selected in the Layer Manager, when
+            sensors). If such a combination of objects have been selected in the Outline View, when
             you right-click on them you are offered the &apos;View sensor range plot&apos; menu item:<screenshot>
               <mediaobject>
                 <imageobject>
@@ -6549,14 +6566,14 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                     <para>Name the new sensor using the wizard, and specify its default color</para>
                   </listitem>
                   <listitem>
-                    <para>Now select the new sensor in the layer manager - in order that you can
+                    <para>Now select the new sensor in the Outline View - in order that you can
                       edit its properties. In the property window set the correct sensor offset
                       distance (remember it&apos;s in metres, and specify negative values to represent a
                       trailing array), and mark that it should use a &apos;worm in the hole&apos;
                       algorithm</para>
                   </listitem>
                   <listitem>
-                    <para>Now, back to the layer manager - multi-select the new sensor, and the
+                    <para>Now, back to the Outline View - multi-select the new sensor, and the
                       target track. Right-click on them and select <guilabel>View sensor range
                         plot</guilabel>.</para>
                   </listitem>
@@ -6589,7 +6606,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             bearing (to be removed).</para>
 
           <para>Once a decision has been made on which of the two bearings to keep, open that block
-            of sensor data in the Layer Manager. Then, select the relevant sensor cuts (using
+            of sensor data in the Outline View. Then, select the relevant sensor cuts (using
             &lt;shift&gt; and &lt;control&gt; as necessary to multi-select). Once selected,
             right-click on one of the items and select <guimenuitem>Keep port bearing</guimenuitem>
             or <guimenuitem>Keep starboard bearing</guimenuitem>.</para>
@@ -7021,7 +7038,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <secondary>Analysing</secondary>
             </indexterm> made visible, since with any reasonable volume of TUA data the plot quickly
             becomes illegible. TUA data is switched on and off individually by accessing the whole
-            TUA track, via its Track, from the Layer Manager.</para>
+            TUA track, via its Track, from the Outline View.</para>
 
           <para>It is once in <glossterm linkend="g_snail_trail">snail trail</glossterm> mode that
             TUA data is most easily analysed. When in snail mode the Snail display mode performs the
@@ -10126,7 +10143,7 @@ departure / d.lat = tan (course)</markup>
               of measurement contribution is the Bearing Measurement Contribution. The analyst
               should be provided with a means of suppressing some measurements. In the
                 <application>Debrief</application> implementation it is proposed that this is done
-              by setting them to not visible in the Layer Manager.</para>
+              by setting them to not visible in the Outline View.</para>
           </section>
 
           <section>
@@ -12057,7 +12074,7 @@ range = Range to target from ownship (yds)</markup>
 
         <glossdef>
           <para>A collection of objected plotted on the <application>Debrief</application> Plot.
-            Each layer can be switched on and off individually using the Layer Manager (see <xref
+            Each layer can be switched on and off individually using the Outline View (see <xref
               linkend="layer_mgr"/>). When written to a plot-file, each layer is stored separately -
             making it quite easy to copy individual layers out of a plot-file using a text-editor
             and collating them into a new file. (An example of this would be drawing exercise areas

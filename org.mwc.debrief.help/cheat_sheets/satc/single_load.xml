@@ -27,7 +27,7 @@
    <item title="Check sensor data is visible">
       <description>
          <b>You did follow the wizard steps correctly, didn&apos;t you?</b> <br/>
-         If you haven&apos;t got a bearing fan displayed on the plot, use the <b>Layer Manager</b> View to navigate to
+         If you haven&apos;t got a bearing fan displayed on the plot, use the <b>Outline View</b> View to navigate to
           the <b>Plain</b> sensor within the <b>Ownship</b> track, and make it visible.
       </description>
    </item>
