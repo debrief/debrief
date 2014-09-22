@@ -187,9 +187,9 @@
 
       <para>In December 2000 the Maritime Warfare Centre decided to give
           <application>Debrief</application> an Open Source status, opening the application and its
-        source code into the public domain. Debrief has been made <iiterm>
+        source code into the public domain. Debrief has been made <indexterm>
           <primary>Open Source</primary>
-        </iiterm>Open Source to facilitate its wider use, encouraging adoption of standard file
+        </indexterm>Open Source to facilitate its wider use, encouraging adoption of standard file
         formats, presentation and practices between analysis agencies.</para>
 
       <para>Debrief provides the following features: <itemizedlist>
@@ -749,14 +749,9 @@ Naval Undersea Warfare Center (NUWC)
             <glossterm linkend="g_github">GitHub</glossterm> (<link xlink:href="https://github.com/debrief/debrief"
             >https://github.com/debrief/debrief</link>) . </para>
             
-          <para>The <application>SourceForge</application> site is  used to store the newest versions
-            of Debrief, ready for download: <link
-              xlink:href="http://sourceforge.net/projects/debrief/files/Debrief_Installation_Set/DebriefNG/"
-              >http://sourceforge.net/projects/debrief/files/Debrief_Installation_Set/DebriefNG/</link>.
-
-          To obtain the latest version, examine list of available downloads, and
-            click on the <guilabel>Download</guilabel> link next to the correct zip-file for
-            your operating system.</para>
+          <para> To obtain the latest version, examine the list of <link
+              xlink:href="https://github.com/debrief/debrief/releases">available downloads</link>,
+            and the relevant zip-file for your operating system.</para>
         </sect2>
 
         <sect2 xml:id="where_to_get_help">
