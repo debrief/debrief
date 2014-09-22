@@ -22,7 +22,8 @@
 	</item>
 	<item title="View the data in tree form">
 		<description> In addition to viewing your data on the 2D plot, the <b>Outline View</b>
-			displays it in tree form. Switch to the <b>Outline View</b> view to see the data.
+			displays it in tree form. Switch to the <b>Outline View</b> view to see the data. 
+			If the Outline View isn't open already, you can open it via the <b>Window/Show View</b> menu.
 			You&apos;ll see the two tracks there, together with other layers that contain <b>Chart
 				Features</b> (such as the <b>Grid</b> and <b>Scale</b>), and the <b>Misc</b> layer
 			that contains graphical annotations. </description>
