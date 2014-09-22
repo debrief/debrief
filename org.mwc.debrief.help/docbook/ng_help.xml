@@ -2159,11 +2159,21 @@ and so on....</programlisting></para>
               </indexterm><guilabel>Show Auto Calc</guilabel> - this displays the calculated range
               and bearing 1/2 way along the line. Unfortunately this label is only visible on screen
               - the structure Windows Metafile format doesn&apos;t allow us to copy the rotated text
-              across the clipboard to copy it into MS Word. So, you&apos;ll only get this rotated text in
-              MS Word is you capture a screenshot, using software such as SnagIt or Hypercam. If you
-              do want to include such a label in your analysis report, and you wish to copy/paste
-              the image via the clipboard, then you can always manually put the range/bearing into
-              the line label, and specify that the label be shown 1/2 way along the line.</para>
+              across the clipboard to copy it into MS Word. So, you&apos;ll only get this rotated
+              text in MS Word is you capture a screenshot, using software such as SnagIt or
+              Hypercam. If you do want to include such a label in your analysis report, and you wish
+              to copy/paste the image via the clipboard, then you can always manually put the
+              range/bearing into the line label, and specify that the label be shown 1/2 way along
+              the line.<figure>
+                <title>Calculated Label</title>
+                <screenshot>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/CalculatedLabel.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </screenshot>
+              </figure></para>
           </note>
         </sect2>
 
