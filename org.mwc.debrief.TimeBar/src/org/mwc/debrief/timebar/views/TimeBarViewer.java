@@ -236,7 +236,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 	@Override
 	public void eventDoubleClicked(final Object eventEntry) 
 	{
-		CorePlugin.openView(CorePlugin.LAYER_MANAGER);
+		CorePlugin.openView(IPageLayout.ID_OUTLINE);
 		CorePlugin.openView(IPageLayout.ID_PROP_SHEET);		
 	}
 

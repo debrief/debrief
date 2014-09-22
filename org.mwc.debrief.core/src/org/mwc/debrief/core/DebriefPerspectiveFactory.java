@@ -43,7 +43,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		// Bottom left: Outline view and Property Sheet view
 		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
 			"midLeft");
-		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
 		bottomLeft.addView(IPageLayout.ID_OUTLINE);
 		bottomLeft.addPlaceholder(DebriefPlugin.MULTI_PATH);
 		
@@ -62,7 +61,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		right.addPlaceholder(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);		
 		
 		// and our view shortcuts
-		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(CorePlugin.NARRATIVES2);
 		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);

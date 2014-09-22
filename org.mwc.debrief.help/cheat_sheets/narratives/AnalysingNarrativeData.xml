@@ -13,10 +13,10 @@
 		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.</description>
 	</item>
 	<item title="Load narrative data">
-		<description>Now return to the Navigator window and drag the "narrative.rep" file onto the current plot.  No, you probably won't see anything change (unless you have the layer manager open)</description>
+		<description>Now return to the Navigator window and drag the "narrative.rep" file onto the current plot.  No, you probably won't see anything change (unless you have the Outline View open)</description>
 	</item>
 	<item title="Inspect narrative data">
-		<description>If the Layer Manager isn't open yet, open it.  You'll see a new item shown, "Narratives (19 items)".  This shows that Debrief has loaded 19 narrative items.  No, you can't see any change on the plot, but that's because narrative data doesn't have a geographic location.</description>
+		<description>If the Outline View isn't open yet, open it.  You'll see a new item shown, "Narratives (19 items)".  This shows that Debrief has loaded 19 narrative items.  No, you can't see any change on the plot, but that's because narrative data doesn't have a geographic location.</description>
 	</item>
 	<item title="Open Narrative Viewer">
 		<description>Now open the Narrative Viewer from the "Window/Show View" drop-down menu.

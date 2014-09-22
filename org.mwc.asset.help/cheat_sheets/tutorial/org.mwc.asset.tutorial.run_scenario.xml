@@ -24,9 +24,9 @@
       </description>
    </item>
    <item
-         title="Open the Layer Manager">
+         title="Open the Outline View">
       <description>
-         You can also have a look at the scenario in a tree-type view by opening the Layer Manager.  You&apos;ll see that the simulation is represented as two top-level items, one for the scenario itself, and the other for the scenario controller (generator).
+         You can also have a look at the scenario in a tree-type view by opening the Outline View.  You&apos;ll see that the simulation is represented as two top-level items, one for the scenario itself, and the other for the scenario controller (generator).
       </description>
    </item>
       <item
@@ -51,7 +51,7 @@ A number of things will now have happened.  The Scenario Controller will show th
    <item
          title="Monitor a participant">
       <description>
-         There&apos;s one last interactive thing to look at. Open the <b>Vessel Monitor</b> view - this shows us the current status of any participant.  We instruct the vessel monitor which vessel to display by selecting it in the Layer Manager.  Open the tree node representing the scenario (prob <b>Cheat sheet scenario</b>), then select <b>Fisher One</b> from it.  You&apos;ll see the Vessel monitor update to show this participant.
+         There&apos;s one last interactive thing to look at. Open the <b>Vessel Monitor</b> view - this shows us the current status of any participant.  We instruct the vessel monitor which vessel to display by selecting it in the Outline View.  Open the tree node representing the scenario (prob <b>Cheat sheet scenario</b>), then select <b>Fisher One</b> from it.  You&apos;ll see the Vessel monitor update to show this participant.
 <br/>
 If the scenario has finished before you get this far, just click on Reload-data-files (it&apos;s the two yellow arrows at the top of the Scenario Controller), then <b>Init</b> and <b>Play</b> again.
 Chances are, you&apos;ll have to do some view re-arranging to see all of this information - observe that the vessel monitor rescales to suit the available space.

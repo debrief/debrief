@@ -16,7 +16,7 @@
    <item
          title="Highlight contacts">
       <description>
-         We&apos;re going to change the color of the contacts to use for our first solution.  Double-click somewhere along the bearing line for the last data point in first period of steady bearing data - it will be highlighted in the Layer Manager.  By my (unqualified eye), the last data point is the one at <b>090722 044127</b>.  Click on that to select it.  Next scroll back up to the start of the sensor data, hold down the &lt;shift&gt; key and click on the first entry.  This period of sensor data is now selected.  Before creating a TMA segment based on it we&apos;re going to highlight it in a unique color. So, right-click anywhere on it, and select <b>Multiple items/Color/Orange</b>.
+         We&apos;re going to change the color of the contacts to use for our first solution.  Double-click somewhere along the bearing line for the last data point in first period of steady bearing data - it will be highlighted in the Outline View.  By my (unqualified eye), the last data point is the one at <b>090722 044127</b>.  Click on that to select it.  Next scroll back up to the start of the sensor data, hold down the &lt;shift&gt; key and click on the first entry.  This period of sensor data is now selected.  Before creating a TMA segment based on it we&apos;re going to highlight it in a unique color. So, right-click anywhere on it, and select <b>Multiple items/Color/Orange</b>.
       </description>
    </item>
    <item
@@ -35,14 +35,14 @@
          skip="true"
          title="Recognise track data">
       <description>
-         If you expand the new track in the <b>Layer Manager</b> you&apos;ll see the <b>Positions</b> child item.  Notice that the icon for this item shows a straight-line section of data with an associated (but tiny) compass rose).  The equivalent object for <b>Track:NONSUCH</b> shows a non straight-line set of positions.  Also, note that on the plot, the name of the TMA segment is shown in italics, to denote that it&apos;s not based on actual position recordings.
+         If you expand the new track in the <b>Outline View</b> you&apos;ll see the <b>Positions</b> child item.  Notice that the icon for this item shows a straight-line section of data with an associated (but tiny) compass rose).  The equivalent object for <b>Track:NONSUCH</b> shows a non straight-line set of positions.  Also, note that on the plot, the name of the TMA segment is shown in italics, to denote that it&apos;s not based on actual position recordings.
       </description>
    </item>
    <item
          href="/org.mwc.debrief.help/html/legacy/analysing_data.html#assigning_tracks"
          title="Put the tracks on the tote">
       <description>
-         To view residuals, we must indicate to Debrief which is the ownship and which is the target.  Debrief can hold many more than two tracks, so we must inform it which two tracks we want to compare with each other. So, in the Layer Manager, first select the <b>Track:NONSUCH</b> item, then click on the <b>1</b>  (primary) in the Layer Manager toolbar.  Next, click on the <b>Track_xxxx</b> item and select <b>2</b> (secondary) button in the Layer Manager toolbar.  If you switch to the <b>Track Tote</b> view (shortcut provided below) you&apos;ll now see it contains our primary and secondary tracks - and we&apos;ve successfully indicated who we want to view in the residuals plot.
+         To view residuals, we must indicate to Debrief which is the ownship and which is the target.  Debrief can hold many more than two tracks, so we must inform it which two tracks we want to compare with each other. So, in the Outline View, first select the <b>Track:NONSUCH</b> item, then click on the <b>1</b>  (primary) in the Outline View toolbar.  Next, click on the <b>Track_xxxx</b> item and select <b>2</b> (secondary) button in the Outline View toolbar.  If you switch to the <b>Track Tote</b> view (shortcut provided below) you&apos;ll now see it contains our primary and secondary tracks - and we&apos;ve successfully indicated who we want to view in the residuals plot.
       </description>
       <command
             required="false"
@@ -71,13 +71,13 @@ In this view are the 4 drag operation buttons, that control how you drag the tra
          title="Generate second TMA segment">
       <description>
          Once you&apos;re happy with the first solution it&apos;s time to move on.   It would appear from the sensor data that the turn is represented by about 13 cuts before a further straight line section of data.
-So, on the plot, now click on the first sensor cut of the second steady set of bearings - that cut will be highlighted in the <b>Layer Manager</b>. Now scroll down to the end of the data and shift-click the last sensor cut.  We&apos;ve now selected the cuts to be used for the second track segment.  Right click on one of the selected items and select <b>Multiple items/Color/Green</b>.  The cuts will turn green.  Now right-click again on the cuts and click on <b>Generate TMA solution from selected cuts</b>, and complete the wizard once again.
+So, on the plot, now click on the first sensor cut of the second steady set of bearings - that cut will be highlighted in the <b>Outline View</b>. Now scroll down to the end of the data and shift-click the last sensor cut.  We&apos;ve now selected the cuts to be used for the second track segment.  Right click on one of the selected items and select <b>Multiple items/Color/Green</b>.  The cuts will turn green.  Now right-click again on the cuts and click on <b>Generate TMA solution from selected cuts</b>, and complete the wizard once again.
       </description>
    </item>
    <item
          title="Refine second solution">
       <description>
-         Now, find the new solution in the Layer Manager and set it as the secondary track.   Once the new solution is marked as secondary you are able to start dragging/refining this solution.  Give it a go.
+         Now, find the new solution in the Outline View and set it as the secondary track.   Once the new solution is marked as secondary you are able to start dragging/refining this solution.  Give it a go.
       </description>
    </item>
 </cheatsheet>
