@@ -25,9 +25,12 @@
             <param name="path" value="GenerateProject.xml">
             </param>
          </task>
-         <task kind="cheatsheet" name="Finding your data" skip="false">
+         <task kind="cheatsheet" name="Finding your data" skip="true">
             <intro>
-               If you already have one or more folders containing Debrief data, you can add them to your Debrief NG project (or load sample data that was installed within Debrief NG)
+               If you already have one or more folders containing Debrief data, 
+               you can add them to your Debrief NG project (or load sample data that was installed within Debrief NG).  
+               If you've haven't got any sample data, or if you can already see the <b>Sample Data</b> folder in your
+               <b>Navigator</b>, you can skip this task.
             </intro>
             <onCompletion>
                You can now repeat this process to create links to your other Debrief data directories.
@@ -37,9 +40,12 @@
             <param name="path" value="FindingYourData.xml">
             </param>
          </task>
-         <task kind="cheatsheet" name="Configuring library data" skip="false">
+         <task kind="cheatsheet" name="Configuring library data" skip="true">
             <intro>
-               Debrief can plot information from library datasets to add context to the current view.  Because of their typical size, these datasets are not distributed with Debrief, but should be obtained separately.
+               Debrief can plot information from library datasets to add context to the current view.  
+               Because of their typical size, these datasets are not distributed with Debrief, but should be obtained separately.
+               <br/>
+               If you don't hold a VPF CD, or the ~200Mb <b>ETOPO.RAW</b> file, you may skip this task.
             </intro>
             <onCompletion>
                <b>Conclusion</b>
