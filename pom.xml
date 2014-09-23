@@ -46,8 +46,8 @@
     <module>org.mwc.cmap.core</module>
     <module>org.mwc.cmap.grideditor</module>
     <module>org.mwc.cmap.gt2Plot</module>
-<!--    <module>org.mwc.cmap.installer</module> -->
-    <module>org.mwc.cmap.layer_manager</module>
+<!--    <module>org.mwc.cmap.installer</module>
+    <module>org.mwc.cmap.layer_manager</module> -->
     <module>org.mwc.cmap.legacy</module>
     <module>org.mwc.cmap.overview</module>
     <module>org.mwc.cmap.plotViewer</module>
