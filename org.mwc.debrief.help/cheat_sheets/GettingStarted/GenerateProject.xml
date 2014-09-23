@@ -47,8 +47,8 @@
          select <b>Project</b>, and then press <b>Next</b>. Now just enter a name for your project
          (this could be the name of the current exercise). If you&apos;re in a workplace where users
          are unable to create folders in their home directory, clear the <b>Use default location</b>
-         checkbox, and <b>Browse</b> to a folder in your personal working directories. Then just
-         press the &apos;Finish&apos; button, and you will see the new project in your workspace.
+         checkbox, and <b>Browse</b> to a folder in your personal working directories. (Note: you can ignore 'Working Sets' for now).
+         Then just press the &apos;Finish&apos; button, and you will see the new project in your workspace.
       </description>
    </item>
 </cheatsheet>
