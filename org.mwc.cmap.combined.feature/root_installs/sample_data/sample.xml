@@ -5993,10 +5993,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="59.2561787" Long="-7.1303964"/>
+<shortLocation Depth="0.000" Lat="22.2904658" Long="-21.8660806"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="57.1630975" Long="-3.6597905"/>
+<shortLocation Depth="0.000" Lat="21.7895915" Long="-21.3545485"/>
 </br>
 </projection>
 <gui>
