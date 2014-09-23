@@ -16,9 +16,12 @@
 			Navigator window, and the sample plot will open.</description>
 	</item>
 	<item href="/org.mwc.debrief.help/html/legacy/moving_around.html" title="Fit to window">
-		<description>To make sure all of the data is visible, click on the &quot;Fit-to-Window&quot;
+		<description>You can also experiment with zooming in and out.  Click the zoom out
+			button once to zoom out, or put plot into <b>Zoom In</b> mode by clicking on the Zoom In
+			button. Now, when you drag an area, the map will zoom in on that viewport.<br/>
+			Lastly, to make sure all of the data is visible, click on the &quot;Fit-to-Window&quot;
 			toolbar button. Read more about the toolbar buttons by clicking on the help-link to the
-			right of this text.</description>
+			right of this text.  </description>
 	</item>
 	<item title="View the data in tree form">
 		<description> In addition to viewing your data on the 2D plot, the <b>Outline View</b>
