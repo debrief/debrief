@@ -35,9 +35,9 @@
 			&apos;Advanced&apos; button to display the Advanced options. Next, click on the
 			&apos;Link to alternate location (Linked folder)&apos;, and click on
 			&apos;Browse...&apos; to navigate to an existing data folder on your machine or the
-			network, clicking on <b>Finish</b> to, erm, Finish. If you don&apos;t have your own
-			data, please use the Sample_data folder that&apos;s installed in your Debrief
-			installation folder (for a deployed Debrief) or
+			network, clicking on <b>Finish</b> to, erm, Finish. <br/><b>If you don&apos;t have your own
+			data</b>, please use the <b>sample_data</b> folder that&apos;s installed in your Debrief
+			installation folder (for a deployed Debrief) or<br/>
 			org.mwc.cmap.combined.feature/root_installs (if you are running a development version of
 			Debrief).</description>
 	</item>
