@@ -6000,7 +6000,10 @@
 </br>
 </projection>
 <gui>
-<tote/>
+<tote>
+<primary Name="NELSON"/>
+<secondary Name="COLLINGWOOD"/>
+</tote>
 <component Type="Stepper">
 <property Name="GREEN" Value="64"/>
 <property Name="DateFormat" Value="yy/MM/dd HH:mm"/>
