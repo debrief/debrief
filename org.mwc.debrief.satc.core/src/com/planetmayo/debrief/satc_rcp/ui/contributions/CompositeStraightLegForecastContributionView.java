@@ -168,14 +168,12 @@ public class CompositeStraightLegForecastContributionView extends
 		ControlDecorationSupport.create(new Validator(
 				minSpeedTextValue, maxSpeedTextValue, estimateSpeedTextValue,
 				"Both max/min values must be present",
-				"Max value must be greater than or equal to the min value",
 				"Estimate value must be between min and max"), 
 				SWT.LEFT | SWT.TOP);
 		
 		ControlDecorationSupport.create(new Validator(
 				minCourseTextValue, maxCourseTextValue, estimateCourseTextValue,
 				"Both max/min values must be present",
-				"Max value must be greater than or equal to the min value",
 				"Estimate value must be between min and max"), 
 				SWT.LEFT | SWT.TOP);
 		
@@ -341,18 +339,16 @@ public class CompositeStraightLegForecastContributionView extends
 		private IObservableValue maxValue;
 		private IObservableValue estimateValue;
 		private String bothPresentMessage;
-		private String maxOverMinMessage;
 		private String estimateInRangeMessage;
 
 		public Validator(IObservableValue minValue,
 				IObservableValue maxValue, IObservableValue estimateValue,
-				String bothPresentMessage, String maxOverMinMessage, String estimateInRangeMessage)
+				String bothPresentMessage, String estimateInRangeMessage)
 		{
 			this.minValue = minValue;
 			this.maxValue = maxValue;
 			this.estimateValue = estimateValue;
 			this.bothPresentMessage = bothPresentMessage;
-			this.maxOverMinMessage = maxOverMinMessage;
 			this.estimateInRangeMessage = estimateInRangeMessage;
 		}
 
@@ -385,21 +381,19 @@ public class CompositeStraightLegForecastContributionView extends
 				}
 			}
 			
-			if (max != null && !max.isEmpty() && min != null && !min.isEmpty())
-			{
-				Double dMin = new Double(min);
-				Double dMax = new Double(max);
-				if (dMin > dMax)
-				{
-					return ValidationStatus.error(maxOverMinMessage);
-				}
-				if (estimate != null && !estimate.isEmpty()) {
-					Double dEstimate = new Double(estimate);
-					if (dEstimate < dMin || dEstimate > dMax) {
-						return ValidationStatus.error(estimateInRangeMessage);
-					}
-				}
-			}
+//			if (max != null && !max.isEmpty() && min != null && !min.isEmpty())
+//			{
+//				Double dMin = new Double(min);
+//				Double dMax = new Double(max);
+//				if (estimate != null && !estimate.isEmpty()) {
+//					Double dEstimate = new Double(estimate);
+//					Double mMin = Math.min(dMin,  dMax);
+//					Double mMax = Math.max(dMin, dMax);
+//					if (dEstimate < mMin || dEstimate > mMax) {
+//						return ValidationStatus.error(estimateInRangeMessage);
+//					}
+//				}
+//			}
 			return ValidationStatus.ok();
 		}
 
