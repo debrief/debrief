@@ -533,23 +533,33 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			public void widgetSelected(final SelectionEvent e)
 			{
 				final boolean playing = _playButton.getSelection();
+				final String tipTxt;
+				final String imageTxt;
 				// ImageDescriptor thisD;
 				if (playing)
 				{
 					// thisD = TimeControllerPlugin
 					// .getImageDescriptor("icons/media_pause.png");
 					startPlaying();
-					_playButton.setToolTipText(PAUSE_TEXT);
+					tipTxt = PAUSE_TEXT;
+					imageTxt = "icons/media_pause.png";
 				}
 				else
 				{
 					// thisD = TimeControllerPlugin
 					// .getImageDescriptor("icons/media_play.png");
 					stopPlaying();
-					_playButton.setToolTipText(PLAY_TEXT);
+					tipTxt = PLAY_TEXT;
+					imageTxt = "icons/media_play.png";
+
 				}
+				
+				// ok, set the tooltip & image
+				_playButton.setToolTipText(tipTxt);
 				_playButton.setImage(TimeControllerPlugin
-						.getImage("icons/media_play.png"));
+						.getImage(imageTxt));
+
+				
 			}
 		};
 		_playButton.addSelectionListener(_playListener);
@@ -1643,6 +1653,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
+	@SuppressWarnings("deprecation")
 	public void dispose()
 	{
 		super.dispose();
