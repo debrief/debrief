@@ -27,7 +27,7 @@
 	<item title="Select the tracks of interest" dialog="true">
 		<description>Click on the two tracks (holding down the CTRL key to select multiple items).</description>
 	</item>
-	<item title="Open xy-plot" href="/org.mwc.debrief.help/html/legacy/track_toolbox.html#show_time_vars" dialog="true">
+	<item title="Open xy-plot" href="/org.mwc.debrief.help/html/legacy/show_time_vars.html" dialog="true">
 		<description>Then right-click on the selected items and click on "View XY Plot".  Next select "Range" from the drop-down list of calculations, then "OK".  Finally indicate which track is the primary (for plotting data that's based on the relationship between multiple tracks  Debrief needs to know which track is the "subject" of the calculation).</description>
 	</item>
 	<item title="Navigate around the plot">
