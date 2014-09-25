@@ -1,40 +1,25 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.util.ArrayList;
+
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
-import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
 
 public class Range1959ForecastContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
+	
+	private ArrayList<FrequencyMeasurement> measurements = new ArrayList<FrequencyMeasurement>();
+	public static final String OBSERVATIONS_NUMBER = "numObservations";
 
-	public static final String MIN_COURSE = "minCourse";
-
-	public static final String MAX_COURSE = "maxCourse";
-
-	protected Double minCourse = 0d;
-
-	protected Double maxCourse = 2 * Math.PI;
-
-	protected Double estimate = 0d;
+	public Range1959ForecastContribution()
+	{
+	}
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		// verify that we have min and max values present
-		if ((minCourse != null) && (maxCourse != null))
-		{
-
-			// create a bounded state representing our values
-			final CourseRange courseRange = new CourseRange(minCourse, maxCourse);
-			for (BoundedState state : space.getBoundedStatesBetween(startDate,
-					finishDate))
-			{
-				state.constrainTo(courseRange);
-			}
-		}
 	}
 
 	@Override
@@ -42,58 +27,39 @@ public class Range1959ForecastContribution extends BaseContribution
 	{
 		double delta = 0;
 
-		// do we have an estimate?
-		if (estimate != null  && minCourse != null & maxCourse != null)
-		{
-			CourseRange cr = new CourseRange(minCourse, maxCourse);
-			delta = cr.calcErrorFor(this.getEstimate(), thisState.getCourse());
-		}
-
 		return delta;
 	}
 
 	@Override
 	public ContributionDataType getDataType()
 	{
-		return ContributionDataType.FORECAST;
+		return ContributionDataType.MEASUREMENT;
 	}
 
-	public Double getEstimate()
+	public void addMeasurement(FrequencyMeasurement measure)
 	{
-		return estimate;
+		// extend the time period accordingly
+		if (this.getStartDate() == null)
+		{
+			this.setStartDate(measure.getTime());
+			this.setFinishDate(measure.getTime());
+		}
+		else
+		{
+			long newTime = measure.getTime().getTime();
+			if (this.getStartDate().getTime() > newTime)
+				this.setStartDate(measure.getTime());
+			if (this.getFinishDate().getTime() < newTime)
+				this.setFinishDate(measure.getTime());
+		}
+		measurements.add(measure);
+		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(),
+				measurements.size());		
 	}
 
-	public Double getMaxCourse()
+	public int size()
 	{
-		return maxCourse;
-	}
-
-	public Double getMinCourse()
-	{
-		return minCourse;
-	}
-
-	public void setEstimate(Double newEstimate)
-	{
-		Double oldEstimate = estimate;
-		this.estimate = newEstimate;
-		firePropertyChange(ESTIMATE, oldEstimate, newEstimate);
-	}
-
-	public void setMaxCourse(Double newMaxCourse)
-	{
-		Double oldMaxCourse = maxCourse;
-		this.maxCourse = newMaxCourse;
-		firePropertyChange(MAX_COURSE, oldMaxCourse, newMaxCourse);
-		firePropertyChange(HARD_CONSTRAINTS, oldMaxCourse, newMaxCourse);
-	}
-
-	public void setMinCourse(Double newMinCourse)
-	{
-		Double oldMinCourse = minCourse;
-		this.minCourse = newMinCourse;
-		firePropertyChange(MIN_COURSE, oldMinCourse, newMinCourse);
-		firePropertyChange(HARD_CONSTRAINTS, oldMinCourse, newMinCourse);
+		return measurements.size();
 	}
 
 }

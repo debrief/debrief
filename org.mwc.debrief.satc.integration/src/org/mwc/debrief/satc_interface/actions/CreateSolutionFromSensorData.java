@@ -48,6 +48,7 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
@@ -230,6 +231,7 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt("Contribute selected bearings to the scenario",
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
 						layers, validItems), "icons/bearings.gif"));
+
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
 				+ "]", new CompositeStraightLegForecastContributionFromCuts(solution,
@@ -399,17 +401,42 @@ public class CreateSolutionFromSensorData implements
 	private class Range1959ForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
-		public Range1959ForecastContributionFromCuts(SATC_Solution existingSolution,
-				String title, Layers theLayers,
+		private final ArrayList<SensorContactWrapper> _validCuts;
+
+		public Range1959ForecastContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
 				ArrayList<SensorContactWrapper> validCuts)
 		{
 			super(existingSolution, title, theLayers, validCuts);
+
+			_validCuts = validCuts;
 		}
 
 		@Override
 		protected BaseContribution getContribution()
 		{
-			return new Range1959ForecastContribution();
+			// ok, now collate the contriubtion
+			final Range1959ForecastContribution bmc = new Range1959ForecastContribution();
+
+			// add the bearing data
+			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
+			while (iter.hasNext())
+			{
+				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
+
+				Date date = scw.getDTG().getDate();
+				double freq = scw.getFrequency();
+
+				final FrequencyMeasurement thisM = new FrequencyMeasurement(date, freq);
+
+				// give it the respective color
+				thisM.setColor(scw.getColor());
+
+				// ok, store it.
+				bmc.addMeasurement(thisM);
+			}
+
+			return bmc;
 		}
 
 	}
