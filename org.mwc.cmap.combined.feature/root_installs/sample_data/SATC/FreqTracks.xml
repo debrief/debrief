@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Thu Sep 25 11:44:34 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Thu Sep 25 14:31:08 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Thu Sep 25 08:33:52 GMT 2014"/>
 <session>
 <layers>
@@ -7,489 +7,502 @@
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="false" WormInHole="true">
+<sensor LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="true" WormInHole="true">
 <colour Value="BLUE"/>
-<sensor_contact AmbiguousBearing="0.000" Bearing="180.000" Dtg="100112 120000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="180.000" Dtg="100112 120000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2000000" Long="-0.0000000"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-179.500" Dtg="100112 120050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-179.500" Dtg="100112 120050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2004111" Long="0.0008167"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-179.000" Dtg="100112 120140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-179.000" Dtg="100112 120140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2007528" Long="0.0017556"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-178.400" Dtg="100112 120230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-178.400" Dtg="100112 120230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2010139" Long="0.0027917"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-177.900" Dtg="100112 120320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-177.900" Dtg="100112 120320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2011917" Long="0.0039000"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-177.300" Dtg="100112 120410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-177.300" Dtg="100112 120410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2012778" Long="0.0050500"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-176.700" Dtg="100112 120500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-176.700" Dtg="100112 120500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2012694" Long="0.0062139"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-176.100" Dtg="100112 120550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-176.100" Dtg="100112 120550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2011722" Long="0.0073583"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-175.500" Dtg="100112 120640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-175.500" Dtg="100112 120640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2009833" Long="0.0084583"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-174.900" Dtg="100112 120730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-174.900" Dtg="100112 120730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2007083" Long="0.0094833"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-174.300" Dtg="100112 120820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-174.300" Dtg="100112 120820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2003556" Long="0.0104056"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-173.700" Dtg="100112 120910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-173.700" Dtg="100112 120910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1999361" Long="0.0112028"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-173.100" Dtg="100112 121000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-173.100" Dtg="100112 121000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1994556" Long="0.0118556"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-172.500" Dtg="100112 121050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-172.500" Dtg="100112 121050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1989333" Long="0.0123444"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-171.900" Dtg="100112 121140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-171.900" Dtg="100112 121140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1983750" Long="0.0126583"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-171.400" Dtg="100112 121230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-171.400" Dtg="100112 121230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1978000" Long="0.0127889"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-170.800" Dtg="100112 121320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-170.800" Dtg="100112 121320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1972250" Long="0.0127333"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-170.300" Dtg="100112 121410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-170.300" Dtg="100112 121410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1966583" Long="0.0124917"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-169.800" Dtg="100112 121500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-169.800" Dtg="100112 121500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1961194" Long="0.0120694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-169.300" Dtg="100112 121550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-169.300" Dtg="100112 121550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1956083" Long="0.0115250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-168.800" Dtg="100112 121640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-168.800" Dtg="100112 121640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1950972" Long="0.0109750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-168.300" Dtg="100112 121730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-168.300" Dtg="100112 121730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1945889" Long="0.0104250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-167.800" Dtg="100112 121820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-167.800" Dtg="100112 121820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1940778" Long="0.0098750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-167.300" Dtg="100112 121910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-167.300" Dtg="100112 121910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1935667" Long="0.0093250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-166.800" Dtg="100112 122000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-166.800" Dtg="100112 122000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1930583" Long="0.0087750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-166.200" Dtg="100112 122050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-166.200" Dtg="100112 122050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1925472" Long="0.0082250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-165.600" Dtg="100112 122140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-165.600" Dtg="100112 122140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1920389" Long="0.0076750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-165.100" Dtg="100112 122230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-165.100" Dtg="100112 122230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1915278" Long="0.0071250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-164.500" Dtg="100112 122320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-164.500" Dtg="100112 122320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1910167" Long="0.0065750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-163.900" Dtg="100112 122410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-163.900" Dtg="100112 122410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1905083" Long="0.0060250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-163.200" Dtg="100112 122500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-163.200" Dtg="100112 122500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1899972" Long="0.0054750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-162.600" Dtg="100112 122550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-162.600" Dtg="100112 122550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1894889" Long="0.0049250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-162.000" Dtg="100112 122640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-162.000" Dtg="100112 122640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1889778" Long="0.0043750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-161.300" Dtg="100112 122730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-161.300" Dtg="100112 122730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1884667" Long="0.0038250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-160.600" Dtg="100112 122820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-160.600" Dtg="100112 122820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1879583" Long="0.0032750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-159.900" Dtg="100112 122910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-159.900" Dtg="100112 122910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1874472" Long="0.0027250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-159.200" Dtg="100112 123000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-159.200" Dtg="100112 123000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1869361" Long="0.0021750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-158.500" Dtg="100112 123050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-158.500" Dtg="100112 123050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1864278" Long="0.0016250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-157.700" Dtg="100112 123140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-157.700" Dtg="100112 123140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1859167" Long="0.0010750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-157.000" Dtg="100112 123230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-157.000" Dtg="100112 123230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1854083" Long="0.0005250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-156.200" Dtg="100112 123320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-156.200" Dtg="100112 123320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1848972" Long="-0.0000250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-155.400" Dtg="100112 123410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-155.400" Dtg="100112 123410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1843861" Long="-0.0005750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-154.600" Dtg="100112 123500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-154.600" Dtg="100112 123500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1838778" Long="-0.0011250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-153.700" Dtg="100112 123550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-153.700" Dtg="100112 123550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1833667" Long="-0.0016750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-152.900" Dtg="100112 123640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-152.900" Dtg="100112 123640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1828583" Long="-0.0022250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-152.200" Dtg="100112 123730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-152.200" Dtg="100112 123730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1823472" Long="-0.0027750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-151.600" Dtg="100112 123820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-151.600" Dtg="100112 123820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1818361" Long="-0.0033250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-151.000" Dtg="100112 123910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-151.000" Dtg="100112 123910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1813278" Long="-0.0038750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-150.300" Dtg="100112 124000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-150.300" Dtg="100112 124000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1808167" Long="-0.0044250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-149.700" Dtg="100112 124050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-149.700" Dtg="100112 124050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1803083" Long="-0.0049750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-149.000" Dtg="100112 124140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-149.000" Dtg="100112 124140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1797972" Long="-0.0055250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-148.300" Dtg="100112 124230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-148.300" Dtg="100112 124230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1792861" Long="-0.0060750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-147.500" Dtg="100112 124320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-147.500" Dtg="100112 124320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1787778" Long="-0.0066250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-146.800" Dtg="100112 124410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-146.800" Dtg="100112 124410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1782667" Long="-0.0071750"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-145.900" Dtg="100112 124500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-145.900" Dtg="100112 124500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1777556" Long="-0.0077222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-145.100" Dtg="100112 124550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-145.100" Dtg="100112 124550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1772472" Long="-0.0082722"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-144.200" Dtg="100112 124640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-144.200" Dtg="100112 124640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1767361" Long="-0.0088222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-143.300" Dtg="100112 124730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-143.300" Dtg="100112 124730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1762278" Long="-0.0093722"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-142.400" Dtg="100112 124820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-142.400" Dtg="100112 124820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1757167" Long="-0.0099222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-141.400" Dtg="100112 124910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-141.400" Dtg="100112 124910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1752056" Long="-0.0104722"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-140.400" Dtg="100112 125000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-140.400" Dtg="100112 125000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1746972" Long="-0.0110222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-139.300" Dtg="100112 125050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-139.300" Dtg="100112 125050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1741861" Long="-0.0115722"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-138.200" Dtg="100112 125140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-138.200" Dtg="100112 125140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1736778" Long="-0.0121222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-137.100" Dtg="100112 125230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-137.100" Dtg="100112 125230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1731667" Long="-0.0126722"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-135.900" Dtg="100112 125320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-135.900" Dtg="100112 125320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1726556" Long="-0.0132222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-134.600" Dtg="100112 125410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-134.600" Dtg="100112 125410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1721472" Long="-0.0137722"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-133.300" Dtg="100112 125500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-133.300" Dtg="100112 125500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1716361" Long="-0.0143194"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-131.900" Dtg="100112 125550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-131.900" Dtg="100112 125550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1711278" Long="-0.0148694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-130.500" Dtg="100112 125640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-130.500" Dtg="100112 125640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1706167" Long="-0.0154194"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-129.000" Dtg="100112 125730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-129.000" Dtg="100112 125730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1701056" Long="-0.0159694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-127.500" Dtg="100112 125820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-127.500" Dtg="100112 125820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1695972" Long="-0.0165194"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-125.900" Dtg="100112 125910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-125.900" Dtg="100112 125910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1690861" Long="-0.0170694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-124.200" Dtg="100112 130000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-124.200" Dtg="100112 130000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1685750" Long="-0.0176194"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-122.500" Dtg="100112 130050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-122.500" Dtg="100112 130050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1680667" Long="-0.0181694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-120.700" Dtg="100112 130140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-120.700" Dtg="100112 130140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1675556" Long="-0.0187194"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-118.800" Dtg="100112 130230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-118.800" Dtg="100112 130230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1670472" Long="-0.0192667"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-116.900" Dtg="100112 130320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.900" Dtg="100112 130320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1665361" Long="-0.0198167"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-114.900" Dtg="100112 130410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-114.900" Dtg="100112 130410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1660250" Long="-0.0203667"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-112.900" Dtg="100112 130500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-112.900" Dtg="100112 130500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1655167" Long="-0.0209167"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-110.800" Dtg="100112 130550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-110.800" Dtg="100112 130550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1650056" Long="-0.0214667"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-108.600" Dtg="100112 130640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-108.600" Dtg="100112 130640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1644972" Long="-0.0220167"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-106.400" Dtg="100112 130730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-106.400" Dtg="100112 130730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1639861" Long="-0.0225667"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-104.100" Dtg="100112 130820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-104.100" Dtg="100112 130820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1634750" Long="-0.0231167"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-101.900" Dtg="100112 130910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-101.900" Dtg="100112 130910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1629667" Long="-0.0236639"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-99.500" Dtg="100112 131000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1624556" Long="-0.0242139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-97.200" Dtg="100112 131050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1619472" Long="-0.0247639"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-94.800" Dtg="100112 131140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1614361" Long="-0.0253139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-92.400" Dtg="100112 131230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1609250" Long="-0.0258639"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-90.000" Dtg="100112 131320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1604167" Long="-0.0264139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-87.700" Dtg="100112 131410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1599056" Long="-0.0269611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-85.300" Dtg="100112 131500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1593972" Long="-0.0275111"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-83.000" Dtg="100112 131550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1588861" Long="-0.0280611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-80.600" Dtg="100112 131640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1583750" Long="-0.0286111"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-78.400" Dtg="100112 131730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1578667" Long="-0.0291611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-76.100" Dtg="100112 131820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1573556" Long="-0.0297111"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-74.000" Dtg="100112 131910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1568444" Long="-0.0302583"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-71.800" Dtg="100112 132000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1563361" Long="-0.0308083"/>
 </centre>
@@ -580,156 +593,165 @@
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-48.400" Dtg="100112 133500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1589111" Long="-0.0446278"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-47.800" Dtg="100112 133550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1594861" Long="-0.0447444"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-47.200" Dtg="100112 133640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1600611" Long="-0.0448611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-46.600" Dtg="100112 133730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1606389" Long="-0.0449750"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-46.000" Dtg="100112 133820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1612139" Long="-0.0450917"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-45.500" Dtg="100112 133910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1617889" Long="-0.0452056"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-44.900" Dtg="100112 134000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1623667" Long="-0.0453222"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-44.400" Dtg="100112 134050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1629417" Long="-0.0454389"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-44.200" Dtg="100112 134140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<colour Value="GREEN"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1635167" Long="-0.0455528"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-44.600" Dtg="100112 134230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-44.600" Dtg="100112 134230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1640917" Long="-0.0456694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-44.900" Dtg="100112 134320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-44.900" Dtg="100112 134320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1646694" Long="-0.0457861"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-45.300" Dtg="100112 134410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-45.300" Dtg="100112 134410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1652444" Long="-0.0459000"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-45.600" Dtg="100112 134500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-45.600" Dtg="100112 134500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1658194" Long="-0.0460167"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-45.900" Dtg="100112 134550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-45.900" Dtg="100112 134550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1663972" Long="-0.0461306"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-46.200" Dtg="100112 134640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-46.200" Dtg="100112 134640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1669722" Long="-0.0462472"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-46.500" Dtg="100112 134730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-46.500" Dtg="100112 134730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1675472" Long="-0.0463639"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-46.800" Dtg="100112 134820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-46.800" Dtg="100112 134820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1681250" Long="-0.0464778"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-47.100" Dtg="100112 134910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-47.100" Dtg="100112 134910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1687000" Long="-0.0465944"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-47.400" Dtg="100112 135000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-47.400" Dtg="100112 135000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1692750" Long="-0.0467083"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-47.600" Dtg="100112 135050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-47.600" Dtg="100112 135050" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1698500" Long="-0.0468250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-47.900" Dtg="100112 135140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-47.900" Dtg="100112 135140" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1704278" Long="-0.0469417"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-48.100" Dtg="100112 135230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-48.100" Dtg="100112 135230" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1710028" Long="-0.0470556"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-48.400" Dtg="100112 135320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-48.400" Dtg="100112 135320" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1715778" Long="-0.0471722"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-48.600" Dtg="100112 135410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-48.600" Dtg="100112 135410" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1721556" Long="-0.0472889"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-48.800" Dtg="100112 135500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-48.800" Dtg="100112 135500" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1727306" Long="-0.0474028"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-49.100" Dtg="100112 135550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-49.100" Dtg="100112 135550" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1733056" Long="-0.0475194"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-49.300" Dtg="100112 135640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-49.300" Dtg="100112 135640" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1738833" Long="-0.0476361"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-49.500" Dtg="100112 135730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-49.500" Dtg="100112 135730" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1744583" Long="-0.0477500"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-49.700" Dtg="100112 135820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-49.700" Dtg="100112 135820" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1750333" Long="-0.0478667"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-49.900" Dtg="100112 135910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-49.900" Dtg="100112 135910" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1756083" Long="-0.0479806"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-50.100" Dtg="100112 140000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-50.100" Dtg="100112 140000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
 <shortLocation Depth="0.000" Lat="60.1761861" Long="-0.0480972"/>
 </centre>
@@ -1243,234 +1265,273 @@
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131000" Frequency="150.069" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1624556" Long="-0.0242139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131050" Frequency="150.048" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1619472" Long="-0.0247639"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131140" Frequency="150.027" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1614361" Long="-0.0253139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131230" Frequency="150.005" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1609250" Long="-0.0258639"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131320" Frequency="149.984" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1604167" Long="-0.0264139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131410" Frequency="149.963" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1599056" Long="-0.0269611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131500" Frequency="149.941" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1593972" Long="-0.0275111"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131550" Frequency="149.921" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1588861" Long="-0.0280611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131640" Frequency="149.900" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1583750" Long="-0.0286111"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131730" Frequency="149.880" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1578667" Long="-0.0291611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131820" Frequency="149.861" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1573556" Long="-0.0297111"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 131910" Frequency="149.842" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1568444" Long="-0.0302583"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132000" Frequency="149.824" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1563361" Long="-0.0308083"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132050" Frequency="149.825" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1558500" Long="-0.0314389"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132140" Frequency="149.826" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1554194" Long="-0.0322167"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132230" Frequency="149.827" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1550583" Long="-0.0331222"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132320" Frequency="149.829" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1547722" Long="-0.0341306"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132410" Frequency="149.830" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1545722" Long="-0.0352194"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132500" Frequency="149.830" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1544611" Long="-0.0363611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132550" Frequency="149.830" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1544417" Long="-0.0375222"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132640" Frequency="149.829" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1545139" Long="-0.0386722"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132730" Frequency="149.826" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1546778" Long="-0.0397861"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132820" Frequency="149.822" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1549278" Long="-0.0408333"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 132910" Frequency="149.816" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1552583" Long="-0.0417861"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133000" Frequency="149.809" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1556611" Long="-0.0426194"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133050" Frequency="149.800" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1561250" Long="-0.0433139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133140" Frequency="149.789" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1566389" Long="-0.0438500"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133230" Frequency="149.776" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1571889" Long="-0.0442139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133320" Frequency="149.763" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1577583" Long="-0.0443972"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133410" Frequency="149.761" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1583333" Long="-0.0445139"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133500" Frequency="149.759" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1589111" Long="-0.0446278"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133550" Frequency="149.757" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1594861" Long="-0.0447444"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133640" Frequency="149.755" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1600611" Long="-0.0448611"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133730" Frequency="149.753" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1606389" Long="-0.0449750"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133820" Frequency="149.752" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1612139" Long="-0.0450917"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 133910" Frequency="149.750" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1617889" Long="-0.0452056"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 134000" Frequency="149.748" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1623667" Long="-0.0453222"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 134050" Frequency="149.747" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1629417" Long="-0.0454389"/>
 </centre>
 </sensor_contact>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 134140" Frequency="149.674" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
+<colour Value="YELLOW"/>
 <centre>
 <shortLocation Depth="0.000" Lat="60.1635167" Long="-0.0455528"/>
 </centre>
@@ -3069,17 +3130,409 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
-<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="7000" ScaleStep="1000" Visible="true">
+<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
+<satc_solution LiveRunning="false" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
+<colour Value="GREEN"/><![CDATA[<task version="1">
+  <vehicleType>
+    <name>UK Ferry</name>
+    <minSpeedMS>1.028888888</minSpeedMS>
+    <maxSpeedMS>15.43333332</maxSpeedMS>
+    <minTurnRate__RadperSec>0.0</minTurnRate__RadperSec>
+    <maxTurnRate__RadperSec>0.03490658503988659</maxTurnRate__RadperSec>
+    <minAccelRateMSS>0.2</minAccelRateMSS>
+    <maxAccelRateMSS>0.4</maxAccelRateMSS>
+    <minDecelRateMSS>0.2</minDecelRateMSS>
+    <maxDecelRateMSS>0.4</maxDecelRateMSS>
+  </vehicleType>
+  <precision>LOW</precision>
+  <contributions>
+    <bearingMeasurementContribution>
+      <name>Bearing data</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
+      <bearingError>0.05235987755982988</bearingError>
+      <runMDA>false</runMDA>
+      <measurements>
+        <bmeasurement bearingAngle="4.546582701445228" time="2010-01-12 13:10:00.0 UTC" range="50000.0">
+          <origin lat="60.16245555555555" lon="-0.02421388888888889"/>
+          <__isActive>true</__isActive>
+          <color>
+            <red>0</red>
+            <green>255</green>
+            <blue>0</blue>
+            <alpha>255</alpha>
+          </color>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.586725274241098" time="2010-01-12 13:10:50.0 UTC" range="50000.0">
+          <origin lat="60.161947222222224" lon="-0.02476388888888889"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.628613176288962" time="2010-01-12 13:11:40.0 UTC" range="50000.0">
+          <origin lat="60.16143611111111" lon="-0.02531388888888889"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.670501078336826" time="2010-01-12 13:12:30.0 UTC" range="50000.0">
+          <origin lat="60.160925" lon="-0.025863888888888888"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.71238898038469" time="2010-01-12 13:13:20.0 UTC" range="50000.0">
+          <origin lat="60.16041666666666" lon="-0.02641388888888889"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.752531553180559" time="2010-01-12 13:14:10.0 UTC" range="50000.0">
+          <origin lat="60.159905555555554" lon="-0.02696111111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.794419455228423" time="2010-01-12 13:15:00.0 UTC" range="50000.0">
+          <origin lat="60.15939722222222" lon="-0.02751111111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.834562028024292" time="2010-01-12 13:15:50.0 UTC" range="50000.0">
+          <origin lat="60.15888611111111" lon="-0.028061111111111113"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.876449930072157" time="2010-01-12 13:16:40.0 UTC" range="50000.0">
+          <origin lat="60.158375" lon="-0.02861111111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.914847173616032" time="2010-01-12 13:17:30.0 UTC" range="50000.0">
+          <origin lat="60.15786666666666" lon="-0.02916111111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.9549897464119015" time="2010-01-12 13:18:20.0 UTC" range="50000.0">
+          <origin lat="60.157355555555554" lon="-0.029711111111111112"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="4.991641660703783" time="2010-01-12 13:19:10.0 UTC" range="50000.0">
+          <origin lat="60.156844444444445" lon="-0.03025833333333333"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.030038904247657" time="2010-01-12 13:20:00.0 UTC" range="50000.0">
+          <origin lat="60.15633611111111" lon="-0.030808333333333333"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.066690818539539" time="2010-01-12 13:20:50.0 UTC" range="50000.0">
+          <origin lat="60.15585" lon="-0.03143888888888889"/>
+          <__isActive>true</__isActive>
+          <color>
+            <red>0</red>
+            <green>0</green>
+            <blue>255</blue>
+            <alpha>255</alpha>
+          </color>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.099852074327431" time="2010-01-12 13:21:40.0 UTC" range="50000.0">
+          <origin lat="60.15541944444444" lon="-0.032216666666666664"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.134758659367318" time="2010-01-12 13:22:30.0 UTC" range="50000.0">
+          <origin lat="60.15505833333333" lon="-0.03312222222222222"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.1661745859032155" time="2010-01-12 13:23:20.0 UTC" range="50000.0">
+          <origin lat="60.15477222222222" lon="-0.03413055555555555"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.195845183187119" time="2010-01-12 13:24:10.0 UTC" range="50000.0">
+          <origin lat="60.15457222222222" lon="-0.03521944444444444"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.223770451219028" time="2010-01-12 13:25:00.0 UTC" range="50000.0">
+          <origin lat="60.15446111111111" lon="-0.03636111111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.251695719250938" time="2010-01-12 13:25:50.0 UTC" range="50000.0">
+          <origin lat="60.15444166666666" lon="-0.03752222222222222"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.276130328778859" time="2010-01-12 13:26:40.0 UTC" range="50000.0">
+          <origin lat="60.154513888888886" lon="-0.03867222222222222"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.298819609054784" time="2010-01-12 13:27:30.0 UTC" range="50000.0">
+          <origin lat="60.15467777777778" lon="-0.03978611111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.321508889330711" time="2010-01-12 13:28:20.0 UTC" range="50000.0">
+          <origin lat="60.15492777777778" lon="-0.04083333333333333"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.340707511102648" time="2010-01-12 13:29:10.0 UTC" range="50000.0">
+          <origin lat="60.15525833333333" lon="-0.04178611111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.358160803622591" time="2010-01-12 13:30:00.0 UTC" range="50000.0">
+          <origin lat="60.15566111111111" lon="-0.042619444444444446"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.3756140961425345" time="2010-01-12 13:30:50.0 UTC" range="50000.0">
+          <origin lat="60.156124999999996" lon="-0.04331388888888889"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.389576730158489" time="2010-01-12 13:31:40.0 UTC" range="50000.0">
+          <origin lat="60.156638888888885" lon="-0.04385"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.403539364174444" time="2010-01-12 13:32:30.0 UTC" range="50000.0">
+          <origin lat="60.15718888888889" lon="-0.044213888888888886"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.415756668938404" time="2010-01-12 13:33:20.0 UTC" range="50000.0">
+          <origin lat="60.157758333333334" lon="-0.04439722222222222"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.4262286444503705" time="2010-01-12 13:34:10.0 UTC" range="50000.0">
+          <origin lat="60.15833333333333" lon="-0.04451388888888889"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement[14]/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.438445949214331" time="2010-01-12 13:35:00.0 UTC" range="50000.0">
+          <origin lat="60.15891111111111" lon="-0.04462777777777778"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.448917924726297" time="2010-01-12 13:35:50.0 UTC" range="50000.0">
+          <origin lat="60.15948611111111" lon="-0.04474444444444445"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.459389900238262" time="2010-01-12 13:36:40.0 UTC" range="50000.0">
+          <origin lat="60.16006111111111" lon="-0.04486111111111111"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.469861875750229" time="2010-01-12 13:37:30.0 UTC" range="50000.0">
+          <origin lat="60.16063888888889" lon="-0.044975"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.480333851262195" time="2010-01-12 13:38:20.0 UTC" range="50000.0">
+          <origin lat="60.16121388888889" lon="-0.04509166666666667"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.489060497522166" time="2010-01-12 13:39:10.0 UTC" range="50000.0">
+          <origin lat="60.161788888888886" lon="-0.045205555555555554"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.499532473034132" time="2010-01-12 13:40:00.0 UTC" range="50000.0">
+          <origin lat="60.162366666666664" lon="-0.04532222222222222"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.508259119294104" time="2010-01-12 13:40:50.0 UTC" range="50000.0">
+          <origin lat="60.16294166666667" lon="-0.04543888888888889"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+        <bmeasurement bearingAngle="5.511749777798093" time="2010-01-12 13:41:40.0 UTC" range="50000.0">
+          <origin lat="60.163516666666666" lon="-0.045552777777777775"/>
+          <__isActive>true</__isActive>
+          <color reference="../../bmeasurement/color"/>
+        </bmeasurement>
+      </measurements>
+    </bearingMeasurementContribution>
+    <compositeStraightLegForecastContribution>
+      <name>Leg One Part 1</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:20:40.0 UTC</finishDate>
+      <__myCol>
+        <red>0</red>
+        <green>255</green>
+        <blue>0</blue>
+        <alpha>255</alpha>
+      </__myCol>
+      <speed>
+        <name>auto_id:1411645636660+_839</name>
+        <active>true</active>
+        <weight>5</weight>
+        <startDate reference="../../startDate"/>
+        <finishDate reference="../../finishDate"/>
+      </speed>
+      <course>
+        <name>auto_id:1411645636660+_208</name>
+        <active>true</active>
+        <weight>5</weight>
+        <startDate reference="../../startDate"/>
+        <finishDate reference="../../finishDate"/>
+      </course>
+    </compositeStraightLegForecastContribution>
+    <compositeStraightLegForecastContribution>
+      <name>Leg One Part 2</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:35:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
+      <__myCol>
+        <red>0</red>
+        <green>255</green>
+        <blue>0</blue>
+        <alpha>255</alpha>
+      </__myCol>
+      <speed>
+        <name>auto_id:1411645701580+_44</name>
+        <active>true</active>
+        <weight>5</weight>
+        <startDate reference="../../startDate"/>
+        <finishDate reference="../../finishDate"/>
+      </speed>
+      <course>
+        <name>auto_id:1411645701580+_844</name>
+        <active>true</active>
+        <weight>5</weight>
+        <startDate reference="../../startDate"/>
+        <finishDate reference="../../finishDate"/>
+      </course>
+    </compositeStraightLegForecastContribution>
+    <rangeForecastContribution>
+      <name>Leg One Part 1 Range</name>
+      <active>false</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
+      <minRangeM>5600.0</minRangeM>
+      <maxRangeM>8000.0</maxRangeM>
+      <estimate>0.0</estimate>
+      <sensorOrigins>
+        <rorigin time="2010-01-12 13:10:00.0 UTC">
+          <origin lat="60.16245555555555" lon="-0.02421388888888889"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:10:50.0 UTC">
+          <origin lat="60.161947222222224" lon="-0.02476388888888889"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:11:40.0 UTC">
+          <origin lat="60.16143611111111" lon="-0.02531388888888889"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:12:30.0 UTC">
+          <origin lat="60.160925" lon="-0.025863888888888888"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:13:20.0 UTC">
+          <origin lat="60.16041666666666" lon="-0.02641388888888889"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:14:10.0 UTC">
+          <origin lat="60.159905555555554" lon="-0.02696111111111111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:15:00.0 UTC">
+          <origin lat="60.15939722222222" lon="-0.02751111111111111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:15:50.0 UTC">
+          <origin lat="60.15888611111111" lon="-0.028061111111111113"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:16:40.0 UTC">
+          <origin lat="60.158375" lon="-0.02861111111111111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:17:30.0 UTC">
+          <origin lat="60.15786666666666" lon="-0.02916111111111111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:18:20.0 UTC">
+          <origin lat="60.157355555555554" lon="-0.029711111111111112"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:19:10.0 UTC">
+          <origin lat="60.156844444444445" lon="-0.03025833333333333"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:20:00.0 UTC">
+          <origin lat="60.15633611111111" lon="-0.030808333333333333"/>
+        </rorigin>
+      </sensorOrigins>
+    </rangeForecastContribution>
+    <rangeForecastContribution>
+      <name>Leg One Part 2 Range</name>
+      <active>false</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:35:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
+      <minRangeM>8000.0</minRangeM>
+      <maxRangeM>11000.0</maxRangeM>
+      <estimate>0.0</estimate>
+      <sensorOrigins>
+        <rorigin time="2010-01-12 13:35:00.0 UTC">
+          <origin lat="60.15891111111111" lon="-0.04462777777777778"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:35:50.0 UTC">
+          <origin lat="60.15948611111111" lon="-0.04474444444444445"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:36:40.0 UTC">
+          <origin lat="60.16006111111111" lon="-0.04486111111111111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:37:30.0 UTC">
+          <origin lat="60.16063888888889" lon="-0.044975"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:38:20.0 UTC">
+          <origin lat="60.16121388888889" lon="-0.04509166666666667"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:39:10.0 UTC">
+          <origin lat="60.161788888888886" lon="-0.045205555555555554"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:40:00.0 UTC">
+          <origin lat="60.162366666666664" lon="-0.04532222222222222"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:40:50.0 UTC">
+          <origin lat="60.16294166666667" lon="-0.04543888888888889"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:41:40.0 UTC">
+          <origin lat="60.163516666666666" lon="-0.045552777777777775"/>
+        </rorigin>
+      </sensorOrigins>
+    </rangeForecastContribution>
+    <courseAnalysisContribution>
+      <name>Course Analysis</name>
+      <active>true</active>
+      <weight>5</weight>
+    </courseAnalysisContribution>
+    <locationAnalysisContribution>
+      <name>Location Analysis</name>
+      <active>true</active>
+      <weight>5</weight>
+    </locationAnalysisContribution>
+    <speedAnalysisContribution>
+      <name>Speed Analysis</name>
+      <active>true</active>
+      <weight>5</weight>
+    </speedAnalysisContribution>
+  </contributions>
+</task>]]></satc_solution>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.2426665" Long="-0.1974817"/>
+<shortLocation Depth="0.000" Lat="60.3396812" Long="-0.4143303"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="60.1211023" Long="0.0286364"/>
+<shortLocation Depth="0.000" Lat="60.0807042" Long="0.0400196"/>
 </br>
 </projection>
 <gui>
