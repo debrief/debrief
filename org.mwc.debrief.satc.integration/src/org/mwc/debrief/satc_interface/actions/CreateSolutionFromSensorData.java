@@ -49,6 +49,7 @@ import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForec
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
@@ -215,7 +216,8 @@ public class CreateSolutionFromSensorData implements
 
 		String actionTitle = "Add new contribution";
 
-		// NOTE: we've removed the composite wizard, since it clashed with our new strategy
+		// NOTE: we've removed the composite wizard, since it clashed with our new
+		// strategy
 		// where we have NULL has default value for course/speed forecast attributes
 		//
 		// DoIt wizardItem = new DoIt(
@@ -224,15 +226,14 @@ public class CreateSolutionFromSensorData implements
 		// "icons/wizard.png");
 		// parent.add(wizardItem);
 		// parent.add(new Separator());
-		
+
 		parent.add(new DoIt("Contribute selected bearings to the scenario",
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
 						layers, validItems), "icons/bearings.gif"));
 		parent.add(new Separator());
-		parent.add(new DoIt(verb1
-				+ "Straight Leg for period covered by [" + title + "]",
-				new CompositeStraightLegForecastContributionFromCuts(solution,
-						actionTitle, layers, validItems), "icons/leg.png"));
+		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
+				+ "]", new CompositeStraightLegForecastContributionFromCuts(solution,
+				actionTitle, layers, validItems), "icons/leg.png"));
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Speed Forecast for period covered by ["
 				+ title + "]", new SpeedForecastContributionFromCuts(solution,
@@ -243,9 +244,21 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Course Forecast for period covered by ["
 				+ title + "]", new CourseForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems), "icons/direction.png"));
-//		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
-//				+ "]", new StraightLegForecastContributionFromCuts(solution,
-//				actionTitle, layers, validItems), "icons/leg.png"));
+
+		// does this data have frequency?
+		if (validItems.size() > 0)
+		{
+			SensorContactWrapper firstItem = validItems.get(0);
+			if (firstItem.getHasFrequency())
+			{
+				// ok, it has freq. Add the revevant option
+				parent.add(new Separator());
+				parent.add(new DoIt(verb1
+						+ "1959 Range Forecast for period covered by [" + title + "]",
+						new Range1959ForecastContributionFromCuts(solution, actionTitle,
+								layers, validItems), "icons/direction.png"));
+			}
+		}
 
 	}
 
@@ -379,6 +392,24 @@ public class CreateSolutionFromSensorData implements
 		protected BaseContribution getContribution()
 		{
 			return new SpeedForecastContribution();
+		}
+
+	}
+
+	private class Range1959ForecastContributionFromCuts extends
+			ForecastContributionFromCuts
+	{
+		public Range1959ForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		@Override
+		protected BaseContribution getContribution()
+		{
+			return new Range1959ForecastContribution();
 		}
 
 	}
