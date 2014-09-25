@@ -45,6 +45,11 @@ public interface SensorType extends MWC.GUI.Editable, SensorDataProvider
    * get the name of this sensor
    */
   public String getName();
+  
+  /** set the name of this sensor
+   * 
+   */
+  public void setName(String name);
 
   /**
    * get the id of this sensor

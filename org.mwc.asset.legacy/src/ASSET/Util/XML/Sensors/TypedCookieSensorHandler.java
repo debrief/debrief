@@ -82,7 +82,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
     });
     
   }
-  protected SensorType getSensor(int myId, String myName)
+  protected SensorType getSensor(int myId)
   {
     Integer thisDetLevel = DetectionEvent.DETECTED;
 
@@ -95,8 +95,6 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
     }
     
     final ASSET.Models.Sensor.Cookie.TypedCookieSensor typedSensor = new TypedCookieSensor(myId, _rangeDoublets, thisDetLevel);
-    typedSensor.setName(myName);
-    
     typedSensor.setProducesRange(_produceRange);
 
     

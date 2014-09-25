@@ -57,11 +57,10 @@ public abstract class ActiveBroadbandHandler extends BroadbandHandler
    * @param myName
    * @return the new sensor
    */
-  protected SensorType getSensor(int myId, String myName)
+  protected SensorType getSensor(int myId)
   {
     // get this instance
     final ASSET.Models.Sensor.Initial.ActiveBroadbandSensor bb = new ASSET.Models.Sensor.Initial.ActiveBroadbandSensor(myId);
-    bb.setName(myName);
 
     bb.setDetectionAperture(_myAperture);
     bb.setSourceLevel(_mySourceLevel);

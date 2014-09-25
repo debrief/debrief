@@ -21,11 +21,10 @@ abstract public class OpticLookupSensorHandler extends CoreLookupSensorHandler
   }
 
   protected LookupSensor createLookupSensor(int id,
-                                            String name,
                                             double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF,
                                             Duration ITP)
   {
-    return new OpticLookupSensor(id, name, VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
+    return new OpticLookupSensor(id, VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
   }
 
 }

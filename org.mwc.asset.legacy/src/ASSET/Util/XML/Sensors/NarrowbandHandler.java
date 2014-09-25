@@ -57,7 +57,7 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 	 * @param myName
 	 * @return the new sensor
 	 */
-	protected SensorType getSensor(int myId, String myName)
+	protected SensorType getSensor(int myId)
 	{
 		// get this instance
 		final ASSET.Models.Sensor.Initial.NarrowbandSensor bb = new ASSET.Models.Sensor.Initial.NarrowbandSensor(

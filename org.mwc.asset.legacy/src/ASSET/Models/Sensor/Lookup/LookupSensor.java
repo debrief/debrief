@@ -110,11 +110,10 @@ public abstract class LookupSensor extends CoreSensor
 	 * @param ITP
 	 *          identification time period
 	 */
-	public LookupSensor(int id, String name, double VDR, long TBDO, double MRF, double CRF,
+	public LookupSensor(int id, double VDR, long TBDO, double MRF, double CRF,
 			Duration CTP, double IRF, Duration ITP, String defaultName)
 	{
 		super(id, TBDO, defaultName);
-		setName(name);
 		this.VDR = VDR;
 		this.MRF = MRF;
 		this.CRF = CRF;
@@ -1191,7 +1190,7 @@ public abstract class LookupSensor extends CoreSensor
 				double IRF, Duration ITP, double rp_m, double ri_m, double cr_m, double ir_m,
 				double max_m)
 		{
-			super(12, "test", VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Test sensor");
+			super(12, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Test sensor");
 			_rp_m = rp_m;
 			_ri_m = ri_m;
 			_cr_m = cr_m;

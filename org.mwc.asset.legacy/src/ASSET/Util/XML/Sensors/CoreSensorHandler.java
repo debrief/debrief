@@ -56,7 +56,8 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
       _myId = ASSET.Util.IdNumber.generateInt();
 
     // get this instance
-    final SensorType sensor = getSensor(_myId, _myName);
+    final SensorType sensor = getSensor(_myId);
+    sensor.setName(_myName);
 
     // ok - now store it
     addSensor(sensor);
@@ -80,10 +81,9 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
    * method for child class to instantiate sensor
    *
    * @param myId
-   * @param myName
    * @return the new sensor
    */
-  abstract protected SensorType getSensor(int myId, String myName);
+  abstract protected SensorType getSensor(int myId);
 
 
   /** export the sensor bits handled by this core class

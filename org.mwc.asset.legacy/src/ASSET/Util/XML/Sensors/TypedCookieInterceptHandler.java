@@ -68,7 +68,7 @@ abstract public  class TypedCookieInterceptHandler extends CoreSensorHandler
     });
     
   }
-  protected SensorType getSensor(int myId, String myName)
+  protected SensorType getSensor(int myId)
   {
     Integer thisDetLevel = DetectionEvent.DETECTED;
 
@@ -81,8 +81,6 @@ abstract public  class TypedCookieInterceptHandler extends CoreSensorHandler
     }
     
     final TypedCookieInterceptSensor typedSensor = new TypedCookieInterceptSensor(myId, _rangeDoublets, thisDetLevel);
-    typedSensor.setName(myName);
-
     
     // do we have a medium
     if(_medium != -1)

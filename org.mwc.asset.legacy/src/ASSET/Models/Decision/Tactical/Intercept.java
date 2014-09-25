@@ -540,7 +540,7 @@ public class Intercept extends CoreDecision implements java.io.Serializable
 			ffta.setDecisionModel(wB);
 
 			// sensors
-			OpticLookupSensor optic = new OpticLookupSensor(12, "eyes", 1.0, 1000, 2,
+			OpticLookupSensor optic = new OpticLookupSensor(12,1.0, 1000, 2,
 					0.8, new Duration(2, Duration.SECONDS), 0.6, new Duration(1,
 							Duration.SECONDS));
 			searcher.getSensorFit().add(optic);

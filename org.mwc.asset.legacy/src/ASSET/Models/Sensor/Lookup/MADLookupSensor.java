@@ -57,10 +57,9 @@ public class MADLookupSensor extends LookupSensor
    * @param IRF  identification range factor
    * @param ITP  identification time period
    */
-  public MADLookupSensor(int id, String myName,
-                         double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF, Duration ITP)
+  public MADLookupSensor(int id, double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF, Duration ITP)
   {
-    super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "MAD Sensor");
+    super(id, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "MAD Sensor");
   }
 
 
@@ -354,7 +353,7 @@ public class MADLookupSensor extends LookupSensor
 
     public static MADLookupSensor getTestMADSensor()
     {
-      return new MADLookupSensor(12, "eyeball", 0.05, 10, 1.05, 0.8, new Duration(20, Duration.SECONDS), 0,
+      return new MADLookupSensor(12, 0.05, 10, 1.05, 0.8, new Duration(20, Duration.SECONDS), 0,
                                  null);
     }
 

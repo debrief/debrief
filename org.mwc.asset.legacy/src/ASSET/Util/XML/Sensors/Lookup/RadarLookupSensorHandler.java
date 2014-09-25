@@ -33,11 +33,10 @@ abstract public class RadarLookupSensorHandler extends CoreLookupSensorHandler
   }
 
   protected LookupSensor createLookupSensor(int id,
-                                            String name,
                                             double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF,
                                             Duration ITP)
   {
-    return new RadarLookupSensor(id, name, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, _k);
+    return new RadarLookupSensor(id, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, _k);
   }
 
 }

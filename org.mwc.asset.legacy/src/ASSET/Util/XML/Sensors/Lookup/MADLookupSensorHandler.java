@@ -21,11 +21,10 @@ abstract public class MADLookupSensorHandler extends CoreLookupSensorHandler
   }
 
   protected LookupSensor createLookupSensor(int id,
-                                            String name,
                                             double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF,
                                             Duration ITP)
   {
-    return new MADLookupSensor(id, name, VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
+    return new MADLookupSensor(id, VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
   }
 
 }
