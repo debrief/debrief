@@ -484,7 +484,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		String brgTxt = null;
 		if (bearing == null)
 		{
-			brgTxt = "00.000";
+			brgTxt = "NULL";
 		}
 		else
 		{
