@@ -60,7 +60,8 @@
 		<Surface Name="SENSOR">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Working="true" Name="NB_BRG">
+				<TypedCookieSensor Working="true" Name="NB_BRG"
+					ProducesRange="false">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="25" Units="nm" />
