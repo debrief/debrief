@@ -60,13 +60,13 @@
 		<Surface Name="SENSOR">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Working="false">
+				<TypedCookieSensor Working="true" Name="NB_BRG">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="25" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
-				<NarrowbandSensor Name="NB Sonar" Working="true"
+				<NarrowbandSensor Name="NB_FREQ" Working="true"
 					HasBearing="false">
 					<SteadyTime Value="0.0" Units="millis" />
 				</NarrowbandSensor>
