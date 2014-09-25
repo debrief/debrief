@@ -6,7 +6,7 @@
 			id="orgmwcdebriefcore-introLink-group">
 			<link label="First steps for Debrief"
 				id="debrief-welcome"
-   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/intro.html#intro_welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/PrefaceIntro.html"
 				style-id="content-link">
 				<text>Welcome to Debrief, it's background and it's history</text>
 			</link>
