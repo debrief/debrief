@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <introContent>
 	<extensionContent id="orgmwcdebriefcore-introExtension"
-		style="css/intro.css" name="Debrief bits" path="tutorials/@">
-		<group label="Finding your sea legs in Debrief NG" style-id="content-group"
+		alt-style="css/overview.properties" style="css/intro.css" name="Debrief bits" path="tutorials/@">
+		<group label="Finding your sea legs in DebriefNG" style-id="content-group"
 			id="orgmwcdebriefcore-introLink-group">
 			<link style-id="content-link" label="A Debrief walkthrough"
 				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial"

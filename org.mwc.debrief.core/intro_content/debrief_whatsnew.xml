@@ -7,7 +7,7 @@
 			<link label="Whats new for Debrief"
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_whats_new.html"
 				id="debrief-whatsnew" style-id="content-link">
-				<text>New features to be found in Debrief NG</text>
+				<text>New features to be found in DebriefNG</text>
 			</link>
 			<link label="Debrief's recent history"
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/History.html#TwoThouOnwards"

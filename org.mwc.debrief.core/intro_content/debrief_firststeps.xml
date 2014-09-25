@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <introContent>
 	<extensionContent id="orgmwcdebriefcore-introExtension"
-		style="css/intro.css" name="Sample Extension" path="firststeps/@">
+		alt-style="css/overview.properties" style="css/intro.css" name="Sample Extension" path="firststeps/@">
 		<group style-id="content-group"
 			id="orgmwcdebriefcore-introLink-group">
 			<link label="First steps for Debrief"
