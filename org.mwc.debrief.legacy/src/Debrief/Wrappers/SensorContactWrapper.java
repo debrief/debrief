@@ -758,6 +758,12 @@ public final class SensorContactWrapper extends
 		return _hasBearing;
 	}
 
+
+	public final void setHasBearing(final boolean val)
+	{
+		_hasBearing = val;
+	}
+
 	public final void setHasAmbiguousBearing(final boolean val)
 	{
 		_hasAmbiguous = val;
@@ -1238,6 +1244,9 @@ public final class SensorContactWrapper extends
 						prop("Color", "the color for this sensor contact", FORMAT),
 						prop("HasFrequency",
 								"whether this data item includes frequency data", OPTIONAL),
+						prop("HasBearing",
+										"whether this data item includes a bearing line",
+										OPTIONAL),
 						prop("HasAmbiguousBearing",
 								"whether this data item includes an ambiguous bearing line",
 								OPTIONAL),
