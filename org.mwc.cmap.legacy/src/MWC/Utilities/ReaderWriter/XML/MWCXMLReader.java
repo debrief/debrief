@@ -91,6 +91,11 @@ public class MWCXMLReader extends DefaultHandler {
 		this._reportNotHandled = val;
 	}
 	
+	public Vector<MWCXMLReader> getHandlers()
+	{
+		return _myHandlers;
+	}
+	
 	/**
 	 * the actual data for this type of object
 	 */
