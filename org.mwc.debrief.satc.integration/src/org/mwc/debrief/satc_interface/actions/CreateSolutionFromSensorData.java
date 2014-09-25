@@ -398,6 +398,39 @@ public class CreateSolutionFromSensorData implements
 
 	}
 
+	/** conveneince function. we've pulled it out of the class so that we can use it in testing
+	 * 
+	 * @param validCuts
+	 * @return
+	 */
+	public static BaseContribution generate1959(
+			ArrayList<SensorContactWrapper> validCuts)
+	{
+
+		// ok, now collate the contriubtion
+		final Range1959ForecastContribution bmc = new Range1959ForecastContribution();
+
+		// add the bearing data
+		Iterator<SensorContactWrapper> iter = validCuts.iterator();
+		while (iter.hasNext())
+		{
+			final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
+
+			Date date = scw.getDTG().getDate();
+			double freq = scw.getFrequency();
+
+			final FrequencyMeasurement thisM = new FrequencyMeasurement(date, freq);
+
+			// give it the respective color
+			thisM.setColor(scw.getColor());
+
+			// ok, store it.
+			bmc.addMeasurement(thisM);
+		}
+
+		return bmc;
+	}
+
 	private class Range1959ForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
@@ -415,28 +448,9 @@ public class CreateSolutionFromSensorData implements
 		@Override
 		protected BaseContribution getContribution()
 		{
-			// ok, now collate the contriubtion
-			final Range1959ForecastContribution bmc = new Range1959ForecastContribution();
+			BaseContribution res = generate1959(_validCuts);
+			return res;
 
-			// add the bearing data
-			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
-			while (iter.hasNext())
-			{
-				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
-
-				Date date = scw.getDTG().getDate();
-				double freq = scw.getFrequency();
-
-				final FrequencyMeasurement thisM = new FrequencyMeasurement(date, freq);
-
-				// give it the respective color
-				thisM.setColor(scw.getColor());
-
-				// ok, store it.
-				bmc.addMeasurement(thisM);
-			}
-
-			return bmc;
 		}
 
 	}
