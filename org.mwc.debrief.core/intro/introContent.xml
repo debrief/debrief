@@ -4,7 +4,7 @@
 ROOT - NORMAL
 -->
 	<page alt-style="css/root_swt.properties" style="css/root.css" id="root" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG, from the Maritime Warfare Centre</title>
+		<title style-id="intro-header">Welcome to DebriefNG, from the Maritime Warfare Centre</title>
 		<group id="links-background">
 			<group id="page-links">
 				<anchor id="beginAnchor"/>
@@ -43,7 +43,7 @@ ROOT - NORMAL
 ROOT - STANDBY
 -->
 	<page alt-style="css/standby_swt.properties" style="css/standby_root.css" id="standby" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<title style-id="intro-header">Welcome to DebriefNG</title>
 		<group id="links-background">
 			<group id="page-links">
 				<anchor id="beginAnchor"/>
@@ -67,7 +67,7 @@ ROOT - STANDBY
 OVERVIEW
 -->
 	<page style="css/overview/overview.css" alt-style="css/overview/swt.properties" id="overview" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<title style-id="intro-header">Welcome to DebriefNG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<group id="navigation-links" filteredFrom="swt">
 			<group id="page-links">
@@ -96,7 +96,7 @@ OVERVIEW
 			<group id="content-header" label="OVERVIEW" filteredFrom="swt">
             </group>
 			<text style-id="page-title" id="page-title" filteredFrom="html">OVERVIEW</text>
-			<text style-id="page-description" id="page-description">Debrief is a software application used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at Debrief NG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
+			<text style-id="page-description" id="page-description">Debrief is a software application used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at DebriefNG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
 			<text style-id="page-description" id="first-steps">If you want to get your hands dirty with Debrief open the [Tutorials] tab, and load some data.  If you want to learn more about Debrief look into one of the other tabs.</text>
 			<group id="overview-links">
 				<anchor id="beginAnchor"/>
@@ -116,7 +116,7 @@ OVERVIEW
 TUTORIALS
 -->
 	<page style="css/tutorials/tutorials.css" alt-style="css/tutorials/swt.properties" id="tutorials" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<title style-id="intro-header">Welcome to DebriefNG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
@@ -125,10 +125,10 @@ TUTORIALS
 			<text style-id="page-title" id="page-title" filteredFrom="html">TUTORIALS</text>
 			<text style-id="page-description" id="page-description">Learn how to be productive using Debrief by completing tutorials that will guide you along the way.</text>
 			<group id="overview-links" label="Getting started">
-				<link label="Getting started with Debrief NG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial" id="cheat_started">
-					<text>Configure Debrief NG and load your first data </text>
+				<link label="Getting started with DebriefNG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial" id="cheat_started">
+					<text>Configure DebriefNG and load your first data </text>
 				</link>
-				<link label="Single sided reconstruction with Debrief NG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.cheatsheet.s2r.composite" id="cheat_started">
+				<link label="Single sided reconstruction with DebriefNG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.cheatsheet.s2r.composite" id="cheat_started">
 					<text>Tidy ownship track and generate target track</text>
 				</link>
 			</group>
@@ -162,7 +162,7 @@ TUTORIALS
 SAMPLES
 -->
 	<page style="css/samples/samples.css" alt-style="css/samples/swt.properties" id="samples" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<title style-id="intro-header">Welcome to DebriefNG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
@@ -176,7 +176,7 @@ SAMPLES
 WHAT's NEW
 -->
 	<page style="css/whatsnew/whatsnew.css" alt-style="css/whatsnew/swt.properties" id="news" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<title style-id="intro-header">Welcome to DebriefNG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
