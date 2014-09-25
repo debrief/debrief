@@ -24,6 +24,7 @@ import org.mwc.debrief.core.ContextOperations.GenerateTUASolution;
 import org.mwc.debrief.core.ContextOperations.GenerateTrack;
 import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.ImportAsTrack;
+import org.mwc.debrief.core.ContextOperations.InterpolateTrack;
 import org.mwc.debrief.core.ContextOperations.MergeContacts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts;
@@ -192,7 +193,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		RightClickSupport.addRightClickGenerator(new ImportAsTrack());
 		RightClickSupport.addRightClickGenerator(new TrimTrack());
 		RightClickSupport.addRightClickGenerator(new RainbowShadeSonarCuts());
-
+		RightClickSupport.addRightClickGenerator(new InterpolateTrack());
 
 		// and the Replay importer/exporter (used to export items from the
 		// layer-manager)

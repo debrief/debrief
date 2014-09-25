@@ -16,13 +16,17 @@
 			Navigator window, and the sample plot will open.</description>
 	</item>
 	<item href="/org.mwc.debrief.help/html/legacy/moving_around.html" title="Fit to window">
-		<description>To make sure all of the data is visible, click on the &quot;Fit-to-Window&quot;
+		<description>You can also experiment with zooming in and out.  Click the zoom out
+			button once to zoom out, or put plot into <b>Zoom In</b> mode by clicking on the Zoom In
+			button. Now, when you drag an area, the map will zoom in on that viewport.<br/>
+			Lastly, to make sure all of the data is visible, click on the &quot;Fit-to-Window&quot;
 			toolbar button. Read more about the toolbar buttons by clicking on the help-link to the
-			right of this text.</description>
+			right of this text.  </description>
 	</item>
 	<item title="View the data in tree form">
 		<description> In addition to viewing your data on the 2D plot, the <b>Outline View</b>
-			displays it in tree form. Switch to the <b>Outline View</b> view to see the data.
+			displays it in tree form. Switch to the <b>Outline View</b> view to see the data. 
+			If the Outline View isn't open already, you can open it via the <b>Window/Show View</b> menu.
 			You&apos;ll see the two tracks there, together with other layers that contain <b>Chart
 				Features</b> (such as the <b>Grid</b> and <b>Scale</b>), and the <b>Misc</b> layer
 			that contains graphical annotations. </description>
@@ -56,17 +60,17 @@
 			you&apos;re undecided about your adherence to sub-para 14g. Note, it&apos;s not just
 			edits that are undo-able, lots of operations can be undone, just have a look on the Edit
 			menu whenever you feel the need to step-back. If you think something isn&apos;t on there
-			but it should be, just ask... <b>But it did not undo!</b>. The Undo button applies to
-			whichever is the active Debrief view. So, to undo a change to the plot, you first need
-			to select the plot (or the tab containing the plot name), then press undo. <b>But it did
+			but it should be, just ask... <b>But it did
 				not undo!</b>. The Undo button applies to whichever is the active Debrief view. So,
 			to undo a change to the plot, first need to select the plot (or the tab containing hte
 			plot name), then press undo.</description>
 	</item>
 	<item title="Edit a position">
 		<description>To select a position within a track, just double-click on it - its editable
-			attributes will appear in the properties window. You can now change the symbol, label,
-			or track color for that position.</description>
+			attributes will appear in the properties window. You can now change the symbol or label
+			(<b>LabelShowing</b> or <b>SymbolShowing</b>, 
+			visibility, or the color (<b>Color</b>) that position will be plotted in. Note: you may have to scroll up &amp; down the 
+			<b>Properties Window</b> to see all of the properties.</description>
 	</item>
 	<item title="Edit a whole track">
 		<description>Aaah, but how do you edit a track? Easy, just use the Outline View to select

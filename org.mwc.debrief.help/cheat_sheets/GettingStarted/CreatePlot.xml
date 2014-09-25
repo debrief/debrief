@@ -4,7 +4,7 @@
 		<description>This tutorial will lead you through creating a new, blank plot in Debrief.
 		</description>
 	</intro>
-	<item title="Check you have a Project" href="/org.mwc.debrief.help/html/concepts/projects.html">
+	<item title="Check you have a Project">
 		<description>Before you can create a Plot, you must have a Project into which the Plot is created. If you haven't created a project, go to the "Generating a project" cheatsheet, then return here.
 		</description>
 	</item>
