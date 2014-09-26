@@ -142,6 +142,9 @@ public class BearingMeasurementContribution extends BaseContribution
 				LineString bearingLine = GeoSupport.getFactory()
 						.createLineString(new Coordinate[] { coords[0], coords[2] });
 				thisState.setBearingLine(bearingLine);
+				
+				// also store the bearing value in the state - since it's of value in other processes (1959)
+				thisState.setBearingValue(bearing);
 			}
 		}
 
