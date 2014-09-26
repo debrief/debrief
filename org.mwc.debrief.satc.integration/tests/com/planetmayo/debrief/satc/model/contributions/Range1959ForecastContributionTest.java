@@ -131,7 +131,7 @@ public class Range1959ForecastContributionTest
 		
 		BaseContribution cont = CreateSolutionFromSensorData.generate1959(legOneArr);
 		
-//	 see contents of BearingMeasurementContributionTest
+	 see contents of BearingMeasurementContributionTest
 	}
 
 	private ArrayList<SensorContactWrapper> wrapThis(Collection<Editable> cuts)
