@@ -3,6 +3,8 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.awt.Color;
 import java.util.Date;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
+
 /**
  * utility class for storing a measurement
  * 
@@ -15,15 +17,22 @@ public class FrequencyMeasurement
 	private final Date _time;
 	private Color _color;
 	private boolean _isActive;
+	private final GeoPoint _theLoc;
 
-	public FrequencyMeasurement(Date time, double freq)
+	public FrequencyMeasurement(Date time, GeoPoint theLoc, double freq)
 	{
 		_time = time;
 		_color = java.awt.Color.red;
 		_isActive = true;
+		_theLoc = theLoc;
 		_freq = freq;
 	}
 
+	public GeoPoint getLocation()
+	{
+		return _theLoc;
+	}
+	
 	public java.awt.Color getColor()
 	{
 		return _color;
