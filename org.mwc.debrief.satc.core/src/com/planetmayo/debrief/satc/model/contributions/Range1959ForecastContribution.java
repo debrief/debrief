@@ -9,11 +9,17 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class Range1959ForecastContribution extends BaseContribution
 {
@@ -36,19 +42,140 @@ public class Range1959ForecastContribution extends BaseContribution
 		double rDotDotHz = calculateFreqRate();
 
 		// calculate rDotDotKts
-		double rDotDotKts = rDotDotHz * _C / _fNought;
+		double rDotDotKts = calcRDotKts(rDotDotHz);
 
 		// calculate bearing rate
 		double bDot = calculateBearingRate(space);
 
 		// calculate range
+		double range = calculateRange(rDotDotKts, bDot);
+		
+		// convert from kyds to m
+		range = GeoSupport.yds2m(Math.abs(range) * 1000d);
 
 		// calculate range error
+		final double error;
+		if (bDot < 3)
+		{
+			error = 20000;
+		}
+		else if (bDot < 5)
+		{
+			error = 10000;
+		}
+		else if (bDot < 8)
+		{
+			error = 5000;
+		}
+		else
+		{
+			error = 2000;
+		}
 
 		// calculate min/max ranges
+		double minR = range - error;
+		double maxR = range + error;
+		
+		// sanity check on minR
+		minR = Math.max(minR,  0);
+
+		// get the observation nearest to 1/2 way through the period
+		FrequencyMeasurement fm = getMidWayPoint();
+
+		// get the origin to use
+		Point origin = fm.getLocation().asPoint();
+
+		// get the time to use
+		Date originTime = fm.getDate();
 
 		// bound state for range bracket
+		applyConstraint(space, origin, minR, maxR, originTime);
+	}
 
+	public FrequencyMeasurement getMidWayPoint()
+	{
+		long midTime = this.getStartDate().getTime()
+				+ (this.getFinishDate().getTime() - this.getStartDate().getTime()) / 2;
+
+		Iterator<FrequencyMeasurement> iter = measurements.iterator();
+		long bestDiff = -1;
+		FrequencyMeasurement bestM = null;
+		while (iter.hasNext())
+		{
+			FrequencyMeasurement thisM = (FrequencyMeasurement) iter.next();
+			long thisDiff = Math.abs(thisM.getDate().getTime() - midTime);
+
+			if (bestM == null)
+			{
+				// ok, this is the first one
+				bestM = thisM;
+				bestDiff = thisDiff;
+			}
+			else
+			{
+				// test it
+				if (thisDiff < bestDiff)
+				{
+					bestDiff = thisDiff;
+					bestM = thisM;
+				}
+				else
+				{
+					// ok, we've passed the centre - drop out
+					break;
+				}
+			}
+		}
+
+		return bestM;
+	}
+
+	private void applyConstraint(ProblemSpace space, Point pt, double minRange,
+			double maxRange, Date time) throws IncompatibleStateException
+	{
+		// yes, ok we can centre our donut on that
+		LinearRing outer = getRing(pt, minRange);
+		LinearRing inner = getRing(pt, maxRange);
+		LinearRing[] holes = new LinearRing[]
+		{ inner };
+
+		// and create a polygon for it.
+		Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
+
+		// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
+
+		// create a LocationRange for the poly
+		// now define the polygon
+		final LocationRange myRa = new LocationRange(thePoly);
+
+		// is there already a bounded state at this time?
+		BoundedState thisS = space.getBoundedStateAt(time);
+
+		if (thisS == null)
+		{
+			// nope, better create it
+			thisS = new BoundedState(time);
+			space.add(thisS);
+		}
+
+		// apply the range
+		thisS.constrainTo(myRa);
+	}
+
+	private LinearRing getRing(Point pt, double rangeM)
+	{
+		// ok, now we create the outer circle
+		return GeoSupport.geoRing(pt, rangeM);
+	}
+
+	public double calcRDotKts(double rDotDotHz)
+	{
+		return rDotDotHz * _C / _fNought;
+	}
+
+	public double calculateRange(double rDotDotKts, double bDot)
+	{
+		return 110.85 * rDotDotKts / Math.pow(bDot, 2);
 	}
 
 	public double calculateBearingRate(ProblemSpace space)
@@ -64,7 +191,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		{
 			BoundedState boundedState = iterator.next();
 			// does it have a bearing?
-			if(boundedState.hasBearing())
+			if (boundedState.hasBearing())
 			{
 				values.add(boundedState.getBearing());
 				long millis = boundedState.getTime().getTime();
@@ -73,7 +200,10 @@ public class Range1959ForecastContribution extends BaseContribution
 			}
 		}
 
-		return getSlope(times, values);
+		double bDotRads = getSlope(times, values);
+
+		// convert the bearing rate to degs (our formula needs it
+		return Math.toDegrees(bDotRads);
 	}
 
 	public double calculateFreqRate()
@@ -139,6 +269,13 @@ public class Range1959ForecastContribution extends BaseContribution
 	public ContributionDataType getDataType()
 	{
 		return ContributionDataType.MEASUREMENT;
+	}
+
+	public void clear()
+	{
+		measurements.clear();
+		super.setStartDate(null);
+		super.setFinishDate(null);
 	}
 
 	/**
@@ -225,16 +362,16 @@ public class Range1959ForecastContribution extends BaseContribution
 			// and the time
 			String time = elements[2];
 
-			// String latDegs = elements[5];
-			// String latMins = elements[6];
-			// String latSecs = elements[7];
-			// String latHemi = elements[8];
-			//
-			// String lonDegs = elements[9];
-			// String lonMins = elements[10];
-			// String lonSecs = elements[11];
-			// String lonHemi = elements[12];
-			//
+			String latDegs = elements[5];
+			String latMins = elements[6];
+			String latSecs = elements[7];
+			String latHemi = elements[8];
+
+			String lonDegs = elements[9];
+			String lonMins = elements[10];
+			String lonSecs = elements[11];
+			String lonHemi = elements[12];
+
 			// // and the beraing
 			// String bearing = elements[13];
 			// String ambigBearing = elements[14];
@@ -247,19 +384,19 @@ public class Range1959ForecastContribution extends BaseContribution
 					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
-			// double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
-			// + Double.valueOf(latSecs) / 60d / 60d;
-			// if (latHemi.toUpperCase().equals("S"))
-			// lat = -lat;
-			// double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
-			// + Double.valueOf(lonSecs) / 60d / 60d;
-			// if (lonHemi.toUpperCase().equals("W"))
-			// lon = -lon;
-			//
-			// GeoPoint theLoc = new GeoPoint(lat, lon);
+			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
+					+ Double.valueOf(latSecs) / 60d / 60d;
+			if (latHemi.toUpperCase().equals("S"))
+				lat = -lat;
+			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
+					+ Double.valueOf(lonSecs) / 60d / 60d;
+			if (lonHemi.toUpperCase().equals("W"))
+				lon = -lon;
+
+			GeoPoint theLoc = new GeoPoint(lat, lon);
 			// double angle = Math.toRadians(Double.parseDouble(bearing));
 
-			FrequencyMeasurement measure = new FrequencyMeasurement(theDate,
+			FrequencyMeasurement measure = new FrequencyMeasurement(theDate, theLoc,
 					Double.parseDouble(freq));
 
 			addMeasurement(measure);

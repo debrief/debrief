@@ -2,38 +2,31 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import MWC.GUI.Layers;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 
 public class Range1959ForecastContributionTest
 {
 
 	private Range1959ForecastContribution _freq;
-	private Layers _layers;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		_freq = new Range1959ForecastContribution();
 	}
-
+	
 	@Test
 	public void testLoadFromOne() throws Exception
 	{
@@ -47,7 +40,8 @@ public class Range1959ForecastContributionTest
 				_freq.getFinishDate());
 
 		// and apply it to a problem space
-		assertEquals("correct freq", -0.0239, _freq.calculateFreqRate(), 0.0001);
+		double rDotDotHz = _freq.calculateFreqRate();
+		assertEquals("correct freq", -0.0239, rDotDotHz, 0.0001);
 		ProblemSpace space = new ProblemSpace();
 		// and add the bearings
 		addBearing(space, "100112", "131000", -99.53);
@@ -64,8 +58,33 @@ public class Range1959ForecastContributionTest
 		addBearing(space, "100112", "131910", -73.95);
 		addBearing(space, "100112", "132000", -71.82);
 
-		assertEquals("correct bearing", Math.toRadians(2.7869), _freq.calculateBearingRate(space),
-				0.0001);
+		double rDotDotKts = _freq.calcRDotKts(rDotDotHz);
+		double bDot = _freq.calculateBearingRate(space);
+		double range = _freq.calculateRange(rDotDotKts, bDot);
+		assertEquals("correct rDotDotHz", -0.0239763, rDotDotHz, 0.000001);
+		assertEquals("correct rDotDotKts", -0.47952, rDotDotKts, 0.00001);
+		assertEquals("correct bDot", 2.7869, bDot,
+				0.00001);
+		assertEquals("correct range", -6.8439, range, 0.001);
+		
+		// ok, now check that the new bound is generated
+		_freq.actUpon(space);
+		
+		// check the new constraint is in there.
+	}
+	
+	@Test
+	public void testMidPointDerivation()
+	{
+		_freq.loadFrom(TestSupport.getFreqDataOne());
+		FrequencyMeasurement thisM = _freq.getMidWayPoint();
+		assertEquals("found mid way", "12 Jan 2010 13:15:00 GMT", thisM.getDate().toGMTString());
+		_freq.clear();
+		
+		_freq.loadFrom(TestSupport.getFreqDataTwo());
+		thisM = _freq.getMidWayPoint();
+		assertEquals("found mid way", "12 Jan 2010 13:37:30 GMT", thisM.getDate().toGMTString());
+
 	}
 
 	private void addBearing(ProblemSpace space, String date, String time,
@@ -92,7 +111,7 @@ public class Range1959ForecastContributionTest
 				_freq.getFinishDate());
 
 		// and apply it to a problem space
-		assertEquals("correct freq", -0.0019, _freq.calculateFreqRate(), 0.0001);
+		double rDotDotHz = _freq.calculateFreqRate();
 		ProblemSpace space = new ProblemSpace();
 		// and add the bearings
 		addBearing(space, "100112", "133500", -48.41);
@@ -104,28 +123,14 @@ public class Range1959ForecastContributionTest
 		addBearing(space, "100112", "134000", -44.94);
 		addBearing(space, "100112", "134050", -44.42);
 
-		assertEquals("correct bearing", Math.toRadians(0.6938), _freq.calculateBearingRate(space),
-				0.0001);
-	}
-
-	@Test
-	public void testActUpon() throws Exception
-	{
-		testLoadFromOne();
-		ProblemSpace ps = new ProblemSpace();
-
-		_freq.actUpon(ps);
-		for (BoundedState state : ps.states())
-		{
-			Geometry geo = state.getLocation().getGeometry();
-			Coordinate[] coords = geo.getCoordinates();
-			for (int i = 0; i <= 4; i++)
-			{
-				Coordinate coordinate = coords[i];
-				assertNotNull("we should have a coordinate", coordinate);
-			}
-		}
-		assertEquals("read in all lines", 5, ps.size());
+		double rDotDotKts = _freq.calcRDotKts(rDotDotHz);
+		double bDot = _freq.calculateBearingRate(space);
+		double range = _freq.calculateRange(rDotDotKts, bDot);
+		assertEquals("correct freq", -0.001943, rDotDotHz, 0.00001);
+		assertEquals("correct rDotDotKts", -0.03887, rDotDotKts, 0.0001);
+		assertEquals("correct bDot", 0.69385, bDot,
+				0.00001);
+		assertEquals("correct range", -8.95088, range, 0.00001);
 	}
 
 }
