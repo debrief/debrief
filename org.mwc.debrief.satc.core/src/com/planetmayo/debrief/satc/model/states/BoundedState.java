@@ -29,6 +29,11 @@ public class BoundedState implements Comparable<BoundedState>
 	 */
 	private Color _color;
 
+	/** the measured bearing at this time (radians)
+	 * 
+	 */
+	private Double _bearing = null;
+
 	public BoundedState(Date time)
 	{
 		if (time == null)
@@ -206,6 +211,23 @@ public class BoundedState implements Comparable<BoundedState>
 	public Color getColor()
 	{
 		return _color;
+	}
+
+	public double getBearing()
+	{
+		if(_bearing == null)
+			throw new RuntimeException("SHOULD HAVE CHECKED IF BEARING PRESENT BEFORE ACCESSING");
+		return _bearing;
+	}
+	
+	public boolean hasBearing()
+	{
+		return (_bearing != null);
+	}
+	
+	public void setBearingValue(Double bearing)
+	{
+		_bearing = bearing;
 	}
 
 }
