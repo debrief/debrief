@@ -419,7 +419,7 @@ public class CreateSolutionFromSensorData implements
 			Date date = scw.getDTG().getDate();
 			double freq = scw.getFrequency();
 
-			final FrequencyMeasurement thisM = new FrequencyMeasurement(date, freq);
+			final FrequencyMeasurement thisM = new FrequencyMeasurement(date, conversions.toPoint(scw.getLocation()), freq);
 
 			// give it the respective color
 			thisM.setColor(scw.getColor());
