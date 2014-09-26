@@ -1,35 +1,26 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
-import org.mwc.debrief.core.editors.PlotEditor;
-import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
-import org.mwc.debrief.core.loaders.xml_handlers.PlotHandler;
-import org.mwc.debrief.core.loaders.xml_handlers.SessionHandler;
-import org.mwc.debrief.satc_interface.actions.CreateSolutionFromSensorData;
-import org.mwc.debrief.satc_interface.readerwriter.SATCHandler;
 
-import Debrief.ReaderWriter.XML.DebriefLayersHandler;
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import MWC.Algorithms.PlainProjection;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
-import MWC.GenericData.WorldArea;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.support.TestSupport;
+import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class Range1959ForecastContributionTest
 {
@@ -42,107 +33,99 @@ public class Range1959ForecastContributionTest
 	{
 		_freq = new Range1959ForecastContribution();
 	}
-	
-	public void populate() throws FileNotFoundException
-	{
-		// ok, load the data-file.
-		DebriefEclipseXMLReaderWriter loader = new DebriefEclipseXMLReaderWriter();
-		
-		String fName = "../org.mwc.cmap.combined.feature/root_installs/sample_data/SATC/FreqTracks.xml";
-		FileInputStream is = new FileInputStream(fName);
-		 _layers = new Layers();
-		PlotEditor plot = new PlotEditor();
-		IControllableViewport view = new IControllableViewport(){
-			public void setViewport(WorldArea target)
-			{}
-			public WorldArea getViewport()
-			{return null;}
-			public void setProjection(PlainProjection proj)
-			{}
-			public PlainProjection getProjection()
-			{return null;}
-			public void update()
-			{}
-			public void rescale()
-			{}};
-		PlotHandler handler = new PlotHandler(fName, _layers, view, plot);
-		
-		Vector<MWCXMLReader> handlers = handler.getHandlers();
-		Iterator<MWCXMLReader> iter = handlers.iterator();
-		while (iter.hasNext())
-		{
-			MWCXMLReader reader = (MWCXMLReader) iter.next();
-			if(reader instanceof SessionHandler)
-			{
-				SessionHandler sH = (SessionHandler) reader;
-				Vector<MWCXMLReader> handlers2 = sH.getHandlers();
-				Iterator<MWCXMLReader> iter2 = handlers2.iterator();
-				while (iter2.hasNext())
-				{
-					MWCXMLReader reader2 = (MWCXMLReader) iter2.next();
-					if(reader2 instanceof DebriefLayersHandler)
-					{
-						DebriefLayersHandler lH = (DebriefLayersHandler) reader2;
-						lH.addHandler(new SATCHandler());
-					}
-				}
-			}
-		}
-		
-		loader.importThis(fName, is, handler);
-	}
-
-//	@Test
-//	public void testActUpon()
-//	{
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testCalcError()
-//	{
-//		fail("Not yet implemented");
-//	}
 
 	@Test
-	public void testAddMeasurement() throws FileNotFoundException
+	public void testLoadFromOne() throws Exception
 	{
-		assertNotNull("Model exists", _freq);
-		assertEquals("no measurements",  0, _freq.size());
-		
-		populate();
-		
-		assertNotNull("layers created", _layers);
-		assertEquals("found layers",  3, _layers.size());
-		
-		// get the sensor layer
-		TrackWrapper sensor = (TrackWrapper) _layers.findLayer("SENSOR");
-		assertNotNull("found sensor",  sensor);
-		
-		//	get the sensor data
-		SensorWrapper theS = (SensorWrapper) sensor.getSensors().last();
-		Collection<Editable> legOneCuts = theS.getItemsBetween(DebriefFormatDateTime.parseThis("100112 131000"), DebriefFormatDateTime.parseThis("100112 132001"));
-		Collection<Editable> legTwoCuts = theS.getItemsBetween(DebriefFormatDateTime.parseThis("100112 133500"), DebriefFormatDateTime.parseThis("100112 134051"));
-		assertEquals("got all cuts", 13, legOneCuts.size());
-		assertEquals("got all cuts", 8, legTwoCuts.size());
-		
-		ArrayList<SensorContactWrapper> legOneArr = wrapThis(legOneCuts);
-		ArrayList<SensorContactWrapper> legTwoArr = wrapThis(legTwoCuts);
-		
-		BaseContribution cont = CreateSolutionFromSensorData.generate1959(legOneArr);
-		
-	 see contents of BearingMeasurementContributionTest
+		assertFalse("should be empty", _freq.hasData());
+
+		_freq.loadFrom(TestSupport.getFreqDataOne());
+		assertTrue("should not be empty", _freq.hasData());
+		assertEquals("correct start date", new Date(110, 00, 12, 13, 10, 00),
+				_freq.getStartDate());
+		assertEquals("correct finish date", new Date(110, 00, 12, 13, 20, 00),
+				_freq.getFinishDate());
+
+		// and apply it to a problem space
+		assertEquals("correct freq", -0.0239, _freq.calculateFreqRate(), 0.0001);
+		ProblemSpace space = new ProblemSpace();
+		// and add the bearings
+		addBearing(space, "100112", "131000", -99.53);
+		addBearing(space, "100112", "131050", -97.18);
+		addBearing(space, "100112", "131140", -94.8);
+		addBearing(space, "100112", "131230", -92.42);
+		addBearing(space, "100112", "131320", -90.04);
+		addBearing(space, "100112", "131410", -87.66);
+		addBearing(space, "100112", "131500", -85.3);
+		addBearing(space, "100112", "131550", -82.96);
+		addBearing(space, "100112", "131640", -80.65);
+		addBearing(space, "100112", "131730", -78.37);
+		addBearing(space, "100112", "131820", -76.14);
+		addBearing(space, "100112", "131910", -73.95);
+		addBearing(space, "100112", "132000", -71.82);
+
+		assertEquals("correct bearing", Math.toRadians(2.7869), _freq.calculateBearingRate(space),
+				0.0001);
 	}
 
-	private ArrayList<SensorContactWrapper> wrapThis(Collection<Editable> cuts)
+	private void addBearing(ProblemSpace space, String date, String time,
+			double bearingDegs) throws IncompatibleStateException
 	{
-		ArrayList<SensorContactWrapper> res = new ArrayList<SensorContactWrapper>();
-		for (Iterator<Editable> iter = cuts.iterator(); iter.hasNext();)
-		{
-			SensorContactWrapper editable = (SensorContactWrapper) iter.next();
-			res.add(editable);
-		}
-		return res;
+		Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+				"yyMMdd HHmmss"), date + " " + time);
+
+		BoundedState state = new BoundedState(theDate);
+		state.setBearingValue(Math.toRadians(bearingDegs));
+		space.add(state);
 	}
-	
+
+	@Test
+	public void testLoadFromTwo() throws Exception
+	{
+		assertFalse("should be empty", _freq.hasData());
+
+		_freq.loadFrom(TestSupport.getFreqDataTwo());
+		assertTrue("should not be empty", _freq.hasData());
+		assertEquals("correct start date", new Date(110, 00, 12, 13, 35, 00),
+				_freq.getStartDate());
+		assertEquals("correct finish date", new Date(110, 00, 12, 13, 40, 00),
+				_freq.getFinishDate());
+
+		// and apply it to a problem space
+		assertEquals("correct freq", -0.0019, _freq.calculateFreqRate(), 0.0001);
+		ProblemSpace space = new ProblemSpace();
+		// and add the bearings
+		addBearing(space, "100112", "133500", -48.41);
+		addBearing(space, "100112", "133550", -47.79);
+		addBearing(space, "100112", "133640", -47.19);
+		addBearing(space, "100112", "133730", -46.6);
+		addBearing(space, "100112", "133820", -46.03);
+		addBearing(space, "100112", "133910", -45.48);
+		addBearing(space, "100112", "134000", -44.94);
+		addBearing(space, "100112", "134050", -44.42);
+
+		assertEquals("correct bearing", Math.toRadians(0.6938), _freq.calculateBearingRate(space),
+				0.0001);
+	}
+
+	@Test
+	public void testActUpon() throws Exception
+	{
+		testLoadFromOne();
+		ProblemSpace ps = new ProblemSpace();
+
+		_freq.actUpon(ps);
+		for (BoundedState state : ps.states())
+		{
+			Geometry geo = state.getLocation().getGeometry();
+			Coordinate[] coords = geo.getCoordinates();
+			for (int i = 0; i <= 4; i++)
+			{
+				Coordinate coordinate = coords[i];
+				assertNotNull("we should have a coordinate", coordinate);
+			}
+		}
+		assertEquals("read in all lines", 5, ps.size());
+	}
+
 }
