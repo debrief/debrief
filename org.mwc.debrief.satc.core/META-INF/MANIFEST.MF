@@ -30,7 +30,8 @@ Bundle-ClassPath: libs/jts-1.13.jar,
  libs/gt-metadata-8.0-M4.jar,
  libs/uncommons-maths-1.2.3.jar,
  libs/org.swtchart_0.9.0.v20140219.jar,
- libs/org.swtchart.ext_0.9.0.v20140219.jar
+ libs/org.swtchart.ext_0.9.0.v20140219.jar,
+ libs/commons-math3-3.3.jar
 Export-Package: com.planetmayo.debrief.satc.log,
  com.planetmayo.debrief.satc.model,
  com.planetmayo.debrief.satc.model.contributions;uses:="com.planetmayo.debrief.satc.model,com.planetmayo.debrief.satc.model.states,junit.framework",
