@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Mon Sep 29 12:54:27 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Mon Sep 29 16:25:13 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Thu Sep 25 08:33:52 GMT 2014"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="false" WormInHole="true">
+<sensor LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="true" WormInHole="true">
 <colour Value="BLUE"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="180.000" Dtg="100112 120000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
@@ -3133,7 +3133,7 @@
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
-<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<task version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -3242,7 +3242,7 @@
           <origin lat="60.1623667" lon="-0.0453222"/>
           <color reference="../../bmeasurement/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="5.508259119294104" time="2010-01-12 13:40:50.0 UTC" isActive="true" range="50000.0">
+        <bmeasurement bearingAngle="5.508259119294104" time="2010-01-12 13:40:50.0 UTC" isActive="false" range="50000.0">
           <origin lat="60.1629417" lon="-0.0454389"/>
           <color reference="../../bmeasurement/color"/>
         </bmeasurement>
@@ -3280,7 +3280,7 @@
       <active>true</active>
       <weight>5</weight>
       <startDate>2010-01-12 13:35:00.0 UTC</startDate>
-      <finishDate>2010-01-12 13:40:50.0 UTC</finishDate>
+      <finishDate>2010-01-12 13:40:00.0 UTC</finishDate>
       <__myCol>
         <red>0</red>
         <green>255</green>
@@ -3303,6 +3303,48 @@
       </course>
     </compositeStraightLegForecastContribution>
     <range1959ForecastContribution fNought="150.0" speedSound="3000.0">
+      <name>Leg two freq</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:35:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:40:00.0 UTC</finishDate>
+      <measurements>
+        <freqMeasurement freq="149.759" time="2010-01-12 13:35:00.0 UTC" isActive="true">
+          <color>
+            <red>255</red>
+            <green>255</green>
+            <blue>0</blue>
+            <alpha>255</alpha>
+          </color>
+          <origin lat="60.1589111" lon="-0.0446278"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.757" time="2010-01-12 13:35:50.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1594861" lon="-0.0447444"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.755" time="2010-01-12 13:36:40.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1600611" lon="-0.0448611"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.753" time="2010-01-12 13:37:30.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1606389" lon="-0.044975"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.752" time="2010-01-12 13:38:20.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1612139" lon="-0.0450917"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.75" time="2010-01-12 13:39:10.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1617889" lon="-0.0452056"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.748" time="2010-01-12 13:40:00.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1623667" lon="-0.0453222"/>
+        </freqMeasurement>
+      </measurements>
+    </range1959ForecastContribution>
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0">
       <name>leg one freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3310,102 +3352,56 @@
       <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
       <measurements>
         <freqMeasurement freq="150.069" time="2010-01-12 13:10:00.0 UTC" isActive="true">
-          <color>
-            <red>255</red>
-            <green>255</green>
-            <blue>0</blue>
-            <alpha>255</alpha>
-          </color>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1624556" lon="-0.0242139"/>
         </freqMeasurement>
         <freqMeasurement freq="150.048" time="2010-01-12 13:10:50.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1619472" lon="-0.0247639"/>
         </freqMeasurement>
         <freqMeasurement freq="150.027" time="2010-01-12 13:11:40.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1614361" lon="-0.0253139"/>
         </freqMeasurement>
         <freqMeasurement freq="150.005" time="2010-01-12 13:12:30.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.160925" lon="-0.0258639"/>
         </freqMeasurement>
         <freqMeasurement freq="149.984" time="2010-01-12 13:13:20.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1604167" lon="-0.0264139"/>
         </freqMeasurement>
         <freqMeasurement freq="149.963" time="2010-01-12 13:14:10.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1599056" lon="-0.0269611"/>
         </freqMeasurement>
         <freqMeasurement freq="149.941" time="2010-01-12 13:15:00.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1593972" lon="-0.0275111"/>
         </freqMeasurement>
         <freqMeasurement freq="149.921" time="2010-01-12 13:15:50.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1588861" lon="-0.0280611"/>
         </freqMeasurement>
         <freqMeasurement freq="149.9" time="2010-01-12 13:16:40.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.158375" lon="-0.0286111"/>
         </freqMeasurement>
         <freqMeasurement freq="149.88" time="2010-01-12 13:17:30.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1578667" lon="-0.0291611"/>
         </freqMeasurement>
         <freqMeasurement freq="149.861" time="2010-01-12 13:18:20.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1573556" lon="-0.0297111"/>
         </freqMeasurement>
         <freqMeasurement freq="149.842" time="2010-01-12 13:19:10.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1568444" lon="-0.0302583"/>
         </freqMeasurement>
         <freqMeasurement freq="149.824" time="2010-01-12 13:20:00.0 UTC" isActive="true">
-          <color reference="../../freqMeasurement/color"/>
+          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
           <origin lat="60.1563361" lon="-0.0308083"/>
-        </freqMeasurement>
-      </measurements>
-    </range1959ForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0">
-      <name>second freq</name>
-      <active>true</active>
-      <weight>5</weight>
-      <startDate>2010-01-12 13:35:00.0 UTC</startDate>
-      <finishDate>2010-01-12 13:40:50.0 UTC</finishDate>
-      <measurements>
-        <freqMeasurement freq="149.759" time="2010-01-12 13:35:00.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1589111" lon="-0.0446278"/>
-        </freqMeasurement>
-        <freqMeasurement freq="149.757" time="2010-01-12 13:35:50.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1594861" lon="-0.0447444"/>
-        </freqMeasurement>
-        <freqMeasurement freq="149.755" time="2010-01-12 13:36:40.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1600611" lon="-0.0448611"/>
-        </freqMeasurement>
-        <freqMeasurement freq="149.753" time="2010-01-12 13:37:30.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1606389" lon="-0.044975"/>
-        </freqMeasurement>
-        <freqMeasurement freq="149.752" time="2010-01-12 13:38:20.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1612139" lon="-0.0450917"/>
-        </freqMeasurement>
-        <freqMeasurement freq="149.75" time="2010-01-12 13:39:10.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1617889" lon="-0.0452056"/>
-        </freqMeasurement>
-        <freqMeasurement freq="149.748" time="2010-01-12 13:40:00.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1623667" lon="-0.0453222"/>
-        </freqMeasurement>
-        <freqMeasurement freq="149.747" time="2010-01-12 13:40:50.0 UTC" isActive="true">
-          <color reference="../../../../range1959ForecastContribution/measurements/freqMeasurement/color"/>
-          <origin lat="60.1629417" lon="-0.0454389"/>
         </freqMeasurement>
       </measurements>
     </range1959ForecastContribution>
@@ -3429,14 +3425,16 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.3871898" Long="-0.4147985"/>
+<shortLocation Depth="0.000" Lat="60.5066223" Long="-0.5199608"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.8692290" Long="0.1803541"/>
+<shortLocation Depth="0.000" Lat="59.8612716" Long="0.0770442"/>
 </br>
 </projection>
 <gui>
-<tote/>
+<tote>
+<primary Name="SENSOR"/>
+</tote>
 <component Type="Stepper">
 <property Name="GREEN" Value="64"/>
 <property Name="DateFormat" Value="ddHHmm"/>
@@ -3449,7 +3447,7 @@
 <property Name="Arc_Finish" Value="180"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="100112 120000"/>
+<property Name="CurrentTime" Value="100112 133316"/>
 <property Name="NumRings" Value="3"/>
 <property Name="PointSize" Value="5"/>
 <property Name="LargeStep" Value="10.0 minutes"/>
