@@ -63,9 +63,4 @@ public class FrequencyMeasurement
 		return freq;
 	}
 	
-	public Date getTime()
-	{
-		return time;
-	}
-
 }
