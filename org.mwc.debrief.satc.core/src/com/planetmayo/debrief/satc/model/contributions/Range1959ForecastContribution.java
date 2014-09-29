@@ -139,12 +139,13 @@ public class Range1959ForecastContribution extends BaseContribution
 		// sanity check on minR
 		_minR = Math.max(_minR, 100);
 		
-		for (BoundedState state : space.getBoundedStatesBetween(startDate,
-				finishDate))
+		for(FrequencyMeasurement measure: measurements)
 		{
-
+			// capture this time
+			Date subjectTime = measure.getDate();			
+		
 			// ok, get a locaiton
-			final GeoPoint loc = measurements.get(0).getLocation();
+			final GeoPoint loc = measure.getLocation();
 			final Point pt = loc.asPoint();
 
 			// yes, ok we can centre our donut on that
@@ -174,12 +175,12 @@ public class Range1959ForecastContribution extends BaseContribution
 			final LocationRange myRa = new LocationRange(thePoly);
 
 			// is there already a bounded state at this time?
-			BoundedState thisS = space.getBoundedStateAt(state.getTime());
+			BoundedState thisS = space.getBoundedStateAt(subjectTime);
 
 			if (thisS == null)
 			{
 				// nope, better create it
-				thisS = new BoundedState(state.getTime());
+				thisS = new BoundedState(subjectTime);
 				space.add(thisS);
 			}
 
