@@ -10,6 +10,9 @@ import java.util.List;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -17,6 +20,7 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -31,11 +35,114 @@ public class Range1959ForecastContribution extends BaseContribution
 	private double _fNought = 150;
 	private double _C = 3000;
 
+	private transient Double _range;
+
+	private transient Double _minR;
+
+	private transient Double _maxR;
+
 	public Range1959ForecastContribution()
 	{
 	}
 
+	public void dummyActUpon(final ProblemSpace space)
+			throws IncompatibleStateException
+	{
+
+		for (BoundedState state : space.getBoundedStatesBetween(startDate,
+				finishDate))
+		{
+
+			// ok, get a locaiton
+			final GeoPoint loc = measurements.get(0).getLocation();
+			final Point pt = loc.asPoint();
+
+			// yes, ok we can centre our donut on that
+			LinearRing outer = GeoSupport.geoRing(pt, 12000);
+			LinearRing inner = GeoSupport.geoRing(pt, 600);
+			LinearRing[] holes;
+
+			// did we generate an inner?
+			if (inner == null)
+			{
+				// nope = provide empty inner
+				holes = null;
+			}
+			else
+			{
+				holes = new LinearRing[]
+				{ inner };
+			}
+
+			// and create a polygon for it.
+			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
+
+			// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
+
+			// create a LocationRange for the poly
+			// now define the polygon
+			final LocationRange myRa = new LocationRange(thePoly);
+
+			// is there already a bounded state at this time?
+			BoundedState thisS = space.getBoundedStateAt(state.getTime());
+
+			if (thisS == null)
+			{
+				// nope, better create it
+				thisS = new BoundedState(state.getTime());
+				space.add(thisS);
+			}
+
+			// apply the range
+			thisS.constrainTo(myRa);
+		}
+	}
+
 	@Override
+	protected double cumulativeScoreFor(CoreRoute route)
+	{
+		double min = this._minR == null ? 0 : this._minR;
+		double max = this._maxR == null ? 0 : this._maxR;
+		if (!isActive() || route.getType() == LegType.ALTERING || _range == null
+				|| _range < min || _range > max)
+		{
+			return 0;
+		}
+		double sum = 0;
+		int count = 0;
+		for (FrequencyMeasurement origin : measurements)
+		{
+			Date currentDate = origin.getDate();
+			if (currentDate.compareTo(route.getStartTime()) >= 0
+					&& currentDate.compareTo(route.getEndTime()) <= 0)
+			{
+				State state = route.getStateAt(currentDate);
+				// check that the route has a state at this time (since we may not
+				// be generating states for all of our measurements)
+				if (state != null)
+				{
+					Point location = state.getLocation();
+					GeodeticCalculator calculator = GeoSupport.createCalculator();
+					calculator.setStartingGeographicPoint(location.getX(),
+							location.getY());
+					calculator.setDestinationGeographicPoint(origin.getLocation()
+							.getLon(), origin.getLocation().getLat());
+					double distance = calculator.getOrthodromicDistance();
+
+					double temp = distance - _range;
+					sum += temp * temp;
+					count++;
+				}
+			}
+		}
+		if (count == 0)
+		{
+			return 0;
+		}
+		double norm = Math.max(Math.abs(max - _range), Math.abs(min - _range));
+		return Math.sqrt(sum / count) / norm;
+	}
+
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// calculate rDotDotHz
@@ -48,48 +155,85 @@ public class Range1959ForecastContribution extends BaseContribution
 		double bDot = calculateBearingRate(space);
 
 		// calculate range
-		double range = calculateRange(rDotDotKts, bDot);
-		
+		_range = calculateRange(rDotDotKts, bDot);
+
 		// convert from kyds to m
-		range = GeoSupport.yds2m(Math.abs(range) * 1000d);
+		_range = GeoSupport.yds2m(Math.abs(_range) * 1000d);
 
 		// calculate range error
 		final double error;
 		if (bDot < 3)
 		{
-			error = 20000;
+			error = 10000;
 		}
 		else if (bDot < 5)
 		{
-			error = 10000;
+			error = 5000;
 		}
 		else if (bDot < 8)
 		{
-			error = 5000;
+			error = 3000;
 		}
 		else
 		{
-			error = 2000;
+			error = 1000;
 		}
 
 		// calculate min/max ranges
-		double minR = 600; //range - error;
-		double maxR = 12000; //range + error;
-		
+		_minR = _range - error;
+		_maxR = _range + error;
+
 		// sanity check on minR
-//		minR = Math.max(minR,  2000);
+		_minR = Math.max(_minR, 100);
 
-		// get the observation nearest to 1/2 way through the period
-		FrequencyMeasurement fm = getMidWayPoint();
+		for (BoundedState state : space.getBoundedStatesBetween(startDate,
+				finishDate))
+		{
 
-		// get the origin to use
-		Point origin = fm.getLocation().asPoint();
+			// ok, get a locaiton
+			final GeoPoint loc = measurements.get(0).getLocation();
+			final Point pt = loc.asPoint();
 
-		// get the time to use
-		Date originTime = fm.getDate();
+			// yes, ok we can centre our donut on that
+			LinearRing outer = GeoSupport.geoRing(pt, _maxR);
+			LinearRing inner = GeoSupport.geoRing(pt, _minR);
+			LinearRing[] holes;
 
-		// bound state for range bracket
-		applyConstraint(space, origin, minR, maxR, originTime);
+			// did we generate an inner?
+			if (inner == null)
+			{
+				// nope = provide empty inner
+				holes = null;
+			}
+			else
+			{
+				holes = new LinearRing[]
+				{ inner };
+			}
+
+			// and create a polygon for it.
+			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
+
+			// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
+
+			// create a LocationRange for the poly
+			// now define the polygon
+			final LocationRange myRa = new LocationRange(thePoly);
+
+			// is there already a bounded state at this time?
+			BoundedState thisS = space.getBoundedStateAt(state.getTime());
+
+			if (thisS == null)
+			{
+				// nope, better create it
+				thisS = new BoundedState(state.getTime());
+				space.add(thisS);
+			}
+
+			// apply the range
+			thisS.constrainTo(myRa);
+		}
+
 	}
 
 	public FrequencyMeasurement getMidWayPoint()
@@ -142,7 +286,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		// and create a polygon for it.
 		Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
 
-	  System.out.println("1959:" + thePoly);
+		System.out.println("1959:" + thePoly);
 
 		// create a LocationRange for the poly
 		// now define the polygon
@@ -220,7 +364,7 @@ public class Range1959ForecastContribution extends BaseContribution
 			FrequencyMeasurement frequencyMeasurement = (FrequencyMeasurement) iter
 					.next();
 			values.add(frequencyMeasurement.getFrequency());
-			long millis = frequencyMeasurement.getTime().getTime();
+			long millis = frequencyMeasurement.getDate().getTime();
 			double mins = millis / 1000 / 60;
 			times.add(mins);
 		}
@@ -286,18 +430,19 @@ public class Range1959ForecastContribution extends BaseContribution
 	public void addMeasurement(FrequencyMeasurement measure)
 	{
 		// extend the time period accordingly
+		final Date theTime = measure.getDate();
 		if (this.getStartDate() == null)
 		{
-			this.setStartDate(measure.getTime());
-			this.setFinishDate(measure.getTime());
+			this.setStartDate(theTime);
+			this.setFinishDate(theTime);
 		}
 		else
 		{
-			long newTime = measure.getTime().getTime();
+			long newTime = theTime.getTime();
 			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure.getTime());
+				this.setStartDate(theTime);
 			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure.getTime());
+				this.setFinishDate(theTime);
 		}
 		measurements.add(measure);
 		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(),
