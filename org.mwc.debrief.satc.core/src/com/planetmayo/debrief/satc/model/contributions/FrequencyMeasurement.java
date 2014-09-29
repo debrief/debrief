@@ -13,59 +13,59 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
  */
 public class FrequencyMeasurement
 {
-	private double _freq;
-	private final Date _time;
-	private Color _color;
-	private boolean _isActive;
-	private final GeoPoint _theLoc;
+	private double freq;
+	private final Date time;
+	private Color color;
+	private boolean isActive;
+	private final GeoPoint origin;
 
 	public FrequencyMeasurement(Date time, GeoPoint theLoc, double freq)
 	{
-		_time = time;
-		_color = java.awt.Color.red;
-		_isActive = true;
-		_theLoc = theLoc;
-		_freq = freq;
+		this.time = time;
+		this.color = java.awt.Color.red;
+		this.isActive = true;
+		this.origin = theLoc;
+		this.freq = freq;
 	}
 
 	public GeoPoint getLocation()
 	{
-		return _theLoc;
+		return origin;
 	}
 	
 	public java.awt.Color getColor()
 	{
-		return _color;
+		return color;
 	}
 
 	public void setColor(java.awt.Color color)
 	{
-		_color = color;
+		this.color = color;
 	}
 
 	public Date getDate()
 	{
-		return _time;
+		return time;
 	}
 
 	public boolean isActive()
 	{
-		return _isActive;
+		return isActive;
 	}
 
 	public void setActive(boolean active)
 	{
-		_isActive = active;
+		this.isActive = active;
 	}
 
 	public double getFrequency()
 	{
-		return _freq;
+		return freq;
 	}
 	
 	public Date getTime()
 	{
-		return _time;
+		return time;
 	}
 
 }

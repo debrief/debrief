@@ -389,7 +389,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		private final GeoPoint origin;
 		private final double bearingAngle;
 		private final Date time;
-		private boolean _isActive = true;
+		private boolean isActive = true;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
@@ -430,12 +430,12 @@ public class BearingMeasurementContribution extends BaseContribution
 
 		public boolean isActive()
 		{
-			return _isActive;
+			return isActive;
 		}
 
 		public void setActive(boolean active)
 		{
-			_isActive = active;
+			isActive = active;
 		}
 
 	}
