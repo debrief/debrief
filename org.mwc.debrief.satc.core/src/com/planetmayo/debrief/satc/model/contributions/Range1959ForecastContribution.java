@@ -51,59 +51,6 @@ public class Range1959ForecastContribution extends BaseContribution
 	{
 	}
 
-	public void dummyActUpon(final ProblemSpace space)
-			throws IncompatibleStateException
-	{
-
-		for (BoundedState state : space.getBoundedStatesBetween(startDate,
-				finishDate))
-		{
-
-			// ok, get a locaiton
-			final GeoPoint loc = measurements.get(0).getLocation();
-			final Point pt = loc.asPoint();
-
-			// yes, ok we can centre our donut on that
-			LinearRing outer = GeoSupport.geoRing(pt, 12000);
-			LinearRing inner = GeoSupport.geoRing(pt, 600);
-			LinearRing[] holes;
-
-			// did we generate an inner?
-			if (inner == null)
-			{
-				// nope = provide empty inner
-				holes = null;
-			}
-			else
-			{
-				holes = new LinearRing[]
-				{ inner };
-			}
-
-			// and create a polygon for it.
-			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
-
-			// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
-
-			// create a LocationRange for the poly
-			// now define the polygon
-			final LocationRange myRa = new LocationRange(thePoly);
-
-			// is there already a bounded state at this time?
-			BoundedState thisS = space.getBoundedStateAt(state.getTime());
-
-			if (thisS == null)
-			{
-				// nope, better create it
-				thisS = new BoundedState(state.getTime());
-				space.add(thisS);
-			}
-
-			// apply the range
-			thisS.constrainTo(myRa);
-		}
-	}
-
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
@@ -192,8 +139,6 @@ public class Range1959ForecastContribution extends BaseContribution
 		// sanity check on minR
 		_minR = Math.max(_minR, 100);
 		
-		System.out.println("1959:" + this.getName() + " range:" + (int)_range.doubleValue() + " min:" + (int)_minR.doubleValue() + " max:" + (int)_maxR.doubleValue());
-
 		for (BoundedState state : space.getBoundedStatesBetween(startDate,
 				finishDate))
 		{
@@ -321,7 +266,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		return Math.toDegrees(bDotRads);
 	}
 
-	public double calculateFreqRate()
+	private double calculateFreqRate()
 	{
 		double freq = 0;
 
@@ -361,7 +306,7 @@ public class Range1959ForecastContribution extends BaseContribution
 	 * @return
 	 * @throws Exception
 	 */
-	public double getSlope(ArrayList<Double> x_values, ArrayList<Double> y_values)
+	private double getSlope(ArrayList<Double> x_values, ArrayList<Double> y_values)
 			throws IllegalArgumentException
 	{
 
@@ -394,7 +339,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	public void clear()
+	private void clear()
 	{
 		measurements.clear();
 		super.setStartDate(null);
@@ -428,17 +373,12 @@ public class Range1959ForecastContribution extends BaseContribution
 				measurements.size());
 	}
 
-	public int size()
-	{
-		return measurements.size();
-	}
-
 	/**
 	 * whether this contribution has any measurements yet
 	 * 
 	 * @return
 	 */
-	public boolean hasData()
+	private boolean hasData()
 	{
 		return measurements.size() > 0;
 	}
@@ -453,7 +393,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		this.fNought = fNought;
 	}
 
-	public void loadFrom(List<String> lines)
+	private void loadFrom(List<String> lines)
 	{
 		// load from this source
 		// ;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B
