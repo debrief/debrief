@@ -244,7 +244,7 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	}
 
-	public FrequencyMeasurement getMidWayPoint()
+	private FrequencyMeasurement getMidWayPoint()
 	{
 		long midTime = this.getStartDate().getTime()
 				+ (this.getFinishDate().getTime() - this.getStartDate().getTime()) / 2;
@@ -282,23 +282,18 @@ public class Range1959ForecastContribution extends BaseContribution
 		return bestM;
 	}
 
-	private LinearRing getRing(Point pt, double rangeM)
-	{
-		// ok, now we create the outer circle
-		return GeoSupport.geoRing(pt, rangeM);
-	}
 
-	public double calcRDotKts(double rDotDotHz)
+	private double calcRDotKts(double rDotDotHz)
 	{
 		return rDotDotHz * speedSound / fNought;
 	}
 
-	public double calculateRange(double rDotDotKts, double bDot)
+	private double calculateRange(double rDotDotKts, double bDot)
 	{
 		return 110.85 * rDotDotKts / Math.pow(bDot, 2);
 	}
 
-	public double calculateBearingRate(ProblemSpace space)
+	private double calculateBearingRate(ProblemSpace space)
 	{
 		// get the states for our time period
 		// get a few bounded states
@@ -546,6 +541,7 @@ public class Range1959ForecastContribution extends BaseContribution
 			_freq = new Range1959ForecastContribution();
 		}
 		
+		@SuppressWarnings("deprecation")
 		@Test
 		public void testLoadFromOne() throws Exception
 		{
@@ -592,6 +588,7 @@ public class Range1959ForecastContribution extends BaseContribution
 			// check the new constraint is in there.
 		}
 		
+		@SuppressWarnings("deprecation")
 		@Test
 		public void testMidPointDerivation()
 		{
@@ -617,6 +614,7 @@ public class Range1959ForecastContribution extends BaseContribution
 			space.add(state);
 		}
 
+		@SuppressWarnings("deprecation")
 		@Test
 		public void testLoadFromTwo() throws Exception
 		{
