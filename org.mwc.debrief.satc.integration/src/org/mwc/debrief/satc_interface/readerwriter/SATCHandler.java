@@ -52,7 +52,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	private String _name;
 
 	private Layers _theLayers;
-	
+
 	private Color _myColor = Color.green;
 
 	private CharArrayWriter _cdataCharacters;
@@ -94,7 +94,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			@Override
 			public void setValue(String name, boolean value)
 			{
-				_onlyPlotEnds  = value;
+				_onlyPlotEnds = value;
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(LIVE_RUNNING)
@@ -115,7 +115,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 		});
 		addHandler(new ColourHandler()
 		{
-			
+
 			@Override
 			public void setColour(Color res)
 			{
@@ -149,44 +149,56 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	public void elementClosed()
 	{
 		// create the solver
-		ISolversManager solvMgr = SATC_Activator.getDefault().getService(ISolversManager.class, true);
-		ISolver newSolvr = solvMgr.createSolver(_name);
-		SATC_Solution solution = new SATC_Solution(newSolvr);
+		SATC_Activator activator = SATC_Activator.getDefault();
 
-		// and the preferences
-		solution.setShowLocationConstraints(_showBounds);
-		solution.setOnlyPlotLegEnds(_onlyPlotEnds);
-		solution.setShowSolutions(_showSolutions);
-		solution.setColor(_myColor);
-		solution.getSolver().setLiveRunning(_liveRunning);
-
-		// ok, repopulate the solver from the contents
-		if (_cdataCharacters.size() > 0)
+		if (activator != null)
 		{
-			try
+
+			ISolversManager solvMgr = activator.getService(ISolversManager.class,
+					true);
+			ISolver newSolvr = solvMgr.createSolver(_name);
+			SATC_Solution solution = new SATC_Solution(newSolvr);
+
+			// and the preferences
+			solution.setShowLocationConstraints(_showBounds);
+			solution.setOnlyPlotLegEnds(_onlyPlotEnds);
+			solution.setShowSolutions(_showSolutions);
+			solution.setColor(_myColor);
+			solution.getSolver().setLiveRunning(_liveRunning);
+
+			// ok, repopulate the solver from the contents
+			if (_cdataCharacters.size() > 0)
 			{
-				InputStream inputStream = new ByteArrayInputStream(_cdataCharacters
-						.toString().getBytes("utf-8"));
-				XStreamReader reader = XStreamIO.newReader(inputStream, "Unknown");
-				if (reader.isLoaded())
+				try
 				{
-					solution.getSolver().load(reader);
+					InputStream inputStream = new ByteArrayInputStream(_cdataCharacters
+							.toString().getBytes("utf-8"));
+					XStreamReader reader = XStreamIO.newReader(inputStream, "Unknown");
+					if (reader.isLoaded())
+					{
+						solution.getSolver().load(reader);
+					}
+				}
+				catch (UnsupportedEncodingException e)
+				{
+					SATC_Activator.log(Status.ERROR,
+							"Problem laoding SATC Solution from XML", e);
 				}
 			}
-			catch (UnsupportedEncodingException e)
-			{
-				SATC_Activator.log(Status.ERROR,
-						"Problem laoding SATC Solution from XML", e);
-			}
+
+			// ok, the solver knows it's contributions, but we've got update to
+			// Debrief one.
+			solution.selfScan();
+
+			// put it into the solution.
+
+			// and save it.
+			_theLayers.addThisLayer(solution);
 		}
-
-		// ok, the solver knows it's contributions, but we've got update to Debrief one.
-		solution.selfScan();
-		
-		// put it into the solution.
-
-		// and save it.
-		_theLayers.addThisLayer(solution);
+		else
+		{
+			System.err.println("SATC Activator not initialised, SATC will not work");
+		}
 	}
 
 	@Override
@@ -225,11 +237,10 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			newI.setAttribute(NAME, solution.getName());
 			newI.setAttribute(SHOW_BOUNDS,
 					writeThis(solution.getShowLocationConstraints()));
-			newI.setAttribute(ONLY_ENDS,
-					writeThis(solution.getOnlyPlotLegEnds()));
-			newI.setAttribute(SHOW_SOLUTIONS,
-					writeThis(solution.getShowSolutions()));
-			newI.setAttribute(LIVE_RUNNING, writeThis(solution.getSolver().isLiveRunning()));
+			newI.setAttribute(ONLY_ENDS, writeThis(solution.getOnlyPlotLegEnds()));
+			newI.setAttribute(SHOW_SOLUTIONS, writeThis(solution.getShowSolutions()));
+			newI.setAttribute(LIVE_RUNNING, writeThis(solution.getSolver()
+					.isLiveRunning()));
 			ColourHandler.exportColour(solution.getColor(), newI, doc);
 
 			// insert the CDATA child node

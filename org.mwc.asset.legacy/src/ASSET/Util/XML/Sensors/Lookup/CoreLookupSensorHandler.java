@@ -104,10 +104,10 @@ abstract class CoreLookupSensorHandler extends CoreSensorHandler
    * @param myName
    * @return the new sensor
    */
-  protected SensorType getSensor(int myId, String myName)
+  protected SensorType getSensor(int myId)
   {
     // get this instance
-    LookupSensor theSensor = createLookupSensor(myId, myName, _vdr, _tbdo.getMillis(), _mrf,
+    LookupSensor theSensor = createLookupSensor(myId, _vdr, _tbdo.getMillis(), _mrf,
                                                 _crf, _ctp, _irf, _itp);
     return theSensor;
   }
@@ -126,7 +126,6 @@ abstract class CoreLookupSensorHandler extends CoreSensorHandler
   }
 
   abstract protected LookupSensor createLookupSensor(int id,
-                                                     String name,
                                                      double VDR1, long TBDO1, double MRF1, double CRF1, Duration CTP1,
                                                      double IRF1, Duration ITP1);
 

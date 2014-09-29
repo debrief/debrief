@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name="SATC Run Plans" xmlns="http://www.mwc.org/asset"
+<Scenario Name="1936 Run Plans" xmlns="http://www.mwc.org/asset"
 	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
 	ShowActivity="false" ShowStatus="true">
 	<StepTime Units="seconds" Value="50"></StepTime>

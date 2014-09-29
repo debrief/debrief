@@ -147,6 +147,11 @@ public class GeoSupport
 		return m_sec / 0.514444444;
 	}
 	
+	public static double yds2m(double yds)
+	{
+		return yds * 0.91444;
+	}
+	
 	public static double convertToCompassAngle(double angle)
 	{
 		return MathUtils.normalizeAngle(Math.PI / 2 - angle);

@@ -48,11 +48,9 @@ abstract public  class PlainCookieSensorHandler extends CoreSensorHandler
     });
   }
 
-  protected SensorType getSensor(int myId, String myName)
+  protected SensorType getSensor(int myId)
   {
     final ASSET.Models.Sensor.Cookie.PlainCookieSensor cookieS = new PlainCookieSensor(myId, _detRange);
-    cookieS.setName(myName);
-    
     cookieS.setProducesRange(_produceRange);
 
 

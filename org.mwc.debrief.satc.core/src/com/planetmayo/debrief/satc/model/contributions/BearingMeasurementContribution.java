@@ -142,6 +142,9 @@ public class BearingMeasurementContribution extends BaseContribution
 				LineString bearingLine = GeoSupport.getFactory()
 						.createLineString(new Coordinate[] { coords[0], coords[2] });
 				thisState.setBearingLine(bearingLine);
+				
+				// also store the bearing value in the state - since it's of value in other processes (1959)
+				thisState.setBearingValue(bearing);
 			}
 		}
 
@@ -386,7 +389,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		private final GeoPoint origin;
 		private final double bearingAngle;
 		private final Date time;
-		private boolean _isActive = true;
+		private boolean isActive = true;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
@@ -427,12 +430,12 @@ public class BearingMeasurementContribution extends BaseContribution
 
 		public boolean isActive()
 		{
-			return _isActive;
+			return isActive;
 		}
 
 		public void setActive(boolean active)
 		{
-			_isActive = active;
+			isActive = active;
 		}
 
 	}

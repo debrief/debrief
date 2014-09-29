@@ -33,10 +33,9 @@ public abstract class ActiveInterceptHandler extends CoreSensorHandler
    * @param myName
    * @return the new sensor
    */
-  protected SensorType getSensor(int myId, String myName)
+  protected SensorType getSensor(int myId)
   {
     final ASSET.Models.Sensor.Initial.ActiveInterceptSensor bb = new ASSET.Models.Sensor.Initial.ActiveInterceptSensor(myId);
-    bb.setName(myName);
     return bb;
   }
 

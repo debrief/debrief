@@ -1153,7 +1153,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			SimpleDemandedStatus theDemStat = new SimpleDemandedStatus(12, 12000);
 			DetectionList theDetections = null;
 
-			LookupSensor duffSensor = new RadarLookupSensor(12, "sensor", 0, 0, 0, 0,
+			LookupSensor duffSensor = new RadarLookupSensor(12,0, 0, 0, 0,
 					null, 0, null, 0);
 			final Surface target = new Surface(TGT_ID, null, null, "fisher");
 			target.setStatus(tgtStat);
@@ -1331,11 +1331,11 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 			// ok. the radar first
 			ASSET.Models.Sensor.Lookup.RadarLookupSensor radar = new RadarLookupSensor(
-					12, "radar", 0.04, 11000, 1.2, 0, new Duration(0, Duration.SECONDS),
+					12, 0.04, 11000, 1.2, 0, new Duration(0, Duration.SECONDS),
 					0, new Duration(0, Duration.SECONDS), 9200);
 
 			ASSET.Models.Sensor.Lookup.OpticLookupSensor optic = new OpticLookupSensor(
-					333, "optic", 0.05, 10000, 1.05, 0.8, new Duration(20,
+					333,  0.05, 10000, 1.05, 0.8, new Duration(20,
 							Duration.SECONDS), 0.2, new Duration(30, Duration.SECONDS));
 
 			Helo helo = new Helo(23);
@@ -1455,11 +1455,11 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			// get the helo sensors ready
 			// ok. the radar first
 			ASSET.Models.Sensor.Lookup.RadarLookupSensor radar = new RadarLookupSensor(
-					12, "radar", 0.04, 5000, 1.2, 0, new Duration(0, Duration.SECONDS),
+					12,  0.04, 5000, 1.2, 0, new Duration(0, Duration.SECONDS),
 					0, new Duration(0, Duration.SECONDS), 9200);
 
 			ASSET.Models.Sensor.Lookup.OpticLookupSensor optic = new OpticLookupSensor(
-					333, "optic", 0.05, 5000, 1.05, 0.8, new Duration(20,
+					333, 0.05, 5000, 1.05, 0.8, new Duration(20,
 							Duration.SECONDS), 0.2, new Duration(30, Duration.SECONDS));
 
 			Helo helo = new Helo(93);
@@ -1634,7 +1634,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			SimpleDemandedStatus theDemStat = new SimpleDemandedStatus(12, 12000);
 			DetectionList theDetections = null;
 
-			LookupSensor duffSensor = new RadarLookupSensor(12, "sensor", 0, 0, 0, 0,
+			LookupSensor duffSensor = new RadarLookupSensor(12,  0, 0, 0, 0,
 					null, 0, null, 0);
 
 			final Surface target1 = new Surface(TGT1_ID, null, null, "fisher");
@@ -1846,7 +1846,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			SimpleDemandedStatus theDemStat = new SimpleDemandedStatus(12, 12000);
 			DetectionList theDetections = null;
 
-			LookupSensor duffSensor = new RadarLookupSensor(12, "sensor", 0, 0, 0, 0,
+			LookupSensor duffSensor = new RadarLookupSensor(12, 0, 0, 0, 0,
 					null, 0, null, 0);
 
 			final Surface target1 = new Surface(TGT1_ID, null, null, "fisher");

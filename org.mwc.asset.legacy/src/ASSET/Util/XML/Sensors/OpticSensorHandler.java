@@ -36,11 +36,9 @@ abstract public  class OpticSensorHandler extends CoreSensorHandler
     });
   }
 
-  protected SensorType getSensor(int myId, String myName)
+  protected SensorType getSensor(int myId)
   {
     final ASSET.Models.Sensor.Initial.OpticSensor optic = new ASSET.Models.Sensor.Initial.OpticSensor(myId);
-    optic.setName(myName);
-
     optic.setMinHeight(_myMinHeight);
 
     return optic;

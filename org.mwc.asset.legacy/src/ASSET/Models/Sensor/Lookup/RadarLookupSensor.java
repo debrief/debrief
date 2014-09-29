@@ -67,11 +67,10 @@ public class RadarLookupSensor extends LookupSensor
    * @param IRF  identification range factor
    * @param ITP  identification time period
    */
-  public RadarLookupSensor(int id, String myName,
-                           double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF, Duration ITP,
+  public RadarLookupSensor(int id, double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF, Duration ITP,
                            double K)
   {
-    super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Radar Lookup");
+    super(id, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Radar Lookup");
 
     // and produce the lookup tables
     setDefaultLookups();
@@ -496,7 +495,7 @@ public class RadarLookupSensor extends LookupSensor
     public static RadarLookupSensor getTestRadarSensor(double rp_m, double ri_m,
                                                        double cr_m, double ir_m, double max_m, double k)
     {
-      return new RadarLookupSensor(21, "radar", 0.05, 10, 1.05, 0.8, new Duration(20, Duration.SECONDS), 0.2,
+      return new RadarLookupSensor(21, 0.05, 10, 1.05, 0.8, new Duration(20, Duration.SECONDS), 0.2,
                                    new Duration(30, Duration.SECONDS), k);
     }
 

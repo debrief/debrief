@@ -484,12 +484,12 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		String brgTxt = null;
 		if (bearing == null)
 		{
-			brgTxt = "00.000";
+			brgTxt = "NULL";
 		}
 		else
 		{
 			brgTxt = MWC.Utilities.TextFormatting.GeneralFormat
-					.formatOneDecimalPlace(bearing.floatValue());
+					.formatTwoDecimalPlaces(bearing.floatValue());
 		}
 
 		String freqTxt = null;
@@ -500,7 +500,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		else
 		{
 			freqTxt = MWC.Utilities.TextFormatting.GeneralFormat
-					.formatOneDecimalPlace(freq.floatValue());
+					.formatThreeDecimalPlaces(freq.floatValue());
 		}
 		
 		String rangeTxt = null;

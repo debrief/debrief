@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name="Narrowband Tracking Scenario" xmlns="http://www.mwc.org/asset"
+<Scenario Name="1936 Run Plans" xmlns="http://www.mwc.org/asset"
 	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
 	ShowActivity="false" ShowStatus="true">
 	<StepTime Units="seconds" Value="50"></StepTime>
@@ -32,7 +32,7 @@
 			<SensorFit></SensorFit>
 			<Status Course="320" Fuel="100">
 				<Location>
-					<shortLocation Lat="60" Long="0"></shortLocation>
+					<shortLocation Lat="0" Long="0"></shortLocation>
 				</Location>
 				<Speed Value="9" Units="kts" />
 			</Status>
@@ -44,8 +44,6 @@
 				<Move Name="leg three" Course="310">
 					<Vector Value="4" Units="nm" /></Move>
 			</Waterfall>
-			<RadiatedCharacteristics>
-				<Narrowband BaseNoiseLevel="100" Frequency="150" /></RadiatedCharacteristics>
 
 
 			<SurfaceMovementCharacteristics Name=""
@@ -60,29 +58,25 @@
 		<Surface Name="SENSOR">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Working="false">
+				<TypedCookieSensor Working="true">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="25" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
-				<NarrowbandSensor Name="NB Sonar" Working="true">
-					<SteadyTime Value="0.0" Units="millis" />
-				</NarrowbandSensor>
 			</SensorFit>
-			<Status Course="40" Fuel="100">
+			<Status Course="355" Fuel="100">
 				<Location>
-					<shortLocation Lat="60.2" Long="0"></shortLocation>
+					<longLocation LongMin="0" LongSec="55" LatMin="5"
+						LongHem="W" LongDeg="0" LatSec="35.9" LatHem="N" LatDeg="0">
+					</longLocation>
+					
 				</Location>
 				<Speed Value="2.5" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Move Name="leg one" Course="200">
-					<Vector Value="3" Units="nm" /></Move>
-				<Move Name="leg two" Course="340">
-					<Vector Value="1.6" Units="nm" /></Move>
-				<Move Name="leg three" Course="60">
-					<Vector Value="2" Units="nm" /></Move>
+				<Move Name="leg two" Course="354">
+					<Vector Value="12" Units="nm" /></Move>
 			</Waterfall>
 
 

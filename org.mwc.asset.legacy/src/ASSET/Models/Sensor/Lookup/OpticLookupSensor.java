@@ -57,10 +57,10 @@ public class OpticLookupSensor extends LookupSensor
 	 * @param ITP
 	 *          identification time period
 	 */
-	public OpticLookupSensor(int id, String myName, double VDR, long TBDO, double MRF,
+	public OpticLookupSensor(int id, double VDR, long TBDO, double MRF,
 			double CRF, Duration CTP, double IRF, Duration ITP)
 	{
-		super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Optic Lookup");
+		super(id, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Optic Lookup");
 	}
 
 	protected OpticEnvironment getDefaultLookups()
@@ -468,7 +468,7 @@ public class OpticLookupSensor extends LookupSensor
 
 		public static OpticLookupSensor getTestOpticSensor()
 		{
-			return new OpticLookupSensor(12, "eyeball", 0.05, 10, 1.05, 0.8, new Duration(20,
+			return new OpticLookupSensor(12, 0.05, 10, 1.05, 0.8, new Duration(20,
 					Duration.SECONDS), 0.2, new Duration(30, Duration.SECONDS));
 		}
 

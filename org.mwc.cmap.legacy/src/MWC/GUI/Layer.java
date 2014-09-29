@@ -141,6 +141,8 @@ public interface Layer extends Serializable, Plottable
 
   public void setName(String val);
   
+  public String getName();
+  
   /** indicator flag for if the children of this layer should be displayed in 
    * an non-alphanumeric order
    * @return
