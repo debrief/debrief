@@ -116,11 +116,10 @@ public class MaintainContributionsView extends ViewPart
 				CourseContributionView.class);
 		CONTRIBUTION_PANELS.put(LocationForecastContribution.class,
 				LocationForecastContributionView.class);
-		CONTRIBUTION_PANELS.put(RangeForecastContribution.class,
-				RangeForecastContributionView.class);
-		
 		CONTRIBUTION_PANELS.put(Range1959ForecastContribution.class,
 				Ranging1959ContributionView.class);
+		CONTRIBUTION_PANELS.put(RangeForecastContribution.class,
+				RangeForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(SpeedForecastContribution.class,
 				SpeedContributionView.class);
 		CONTRIBUTION_PANELS.put(CompositeStraightLegForecastContribution.class,
