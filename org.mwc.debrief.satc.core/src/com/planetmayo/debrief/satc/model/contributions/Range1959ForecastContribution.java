@@ -73,11 +73,11 @@ public class Range1959ForecastContribution extends BaseContribution
 		}
 
 		// calculate min/max ranges
-		double minR = range - error;
-		double maxR = range + error;
+		double minR = 600; //range - error;
+		double maxR = 12000; //range + error;
 		
 		// sanity check on minR
-		minR = Math.max(minR,  0);
+//		minR = Math.max(minR,  2000);
 
 		// get the observation nearest to 1/2 way through the period
 		FrequencyMeasurement fm = getMidWayPoint();
@@ -142,7 +142,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		// and create a polygon for it.
 		Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
 
-		// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
+	  System.out.println("1959:" + thePoly);
 
 		// create a LocationRange for the poly
 		// now define the polygon
@@ -268,7 +268,7 @@ public class Range1959ForecastContribution extends BaseContribution
 	@Override
 	public ContributionDataType getDataType()
 	{
-		return ContributionDataType.MEASUREMENT;
+		return ContributionDataType.FORECAST;
 	}
 
 	public void clear()
