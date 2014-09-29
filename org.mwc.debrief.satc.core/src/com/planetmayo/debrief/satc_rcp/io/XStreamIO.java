@@ -71,6 +71,9 @@ public class XStreamIO
 		xstream.useAttributeFor(FrequencyMeasurement.class, "time");
 		xstream.useAttributeFor(FrequencyMeasurement.class, "isActive");
 		
+		xstream.useAttributeFor(Range1959ForecastContribution.class, "fNought");
+		xstream.useAttributeFor(Range1959ForecastContribution.class, "speedSound");
+		
 		xstream.useAttributeFor(BMeasurement.class, "origin");
 		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
 		xstream.useAttributeFor(BMeasurement.class, "isActive");
