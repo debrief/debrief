@@ -22,10 +22,12 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
@@ -57,14 +59,21 @@ public class XStreamIO
 		aliasFor(xstream, SpeedAnalysisContribution.class);
 		aliasFor(xstream, SpeedForecastContribution.class);
 		aliasFor(xstream, CompositeStraightLegForecastContribution.class);
+		aliasFor(xstream, Range1959ForecastContribution.class);
 		aliasFor(xstream, StraightLegForecastContribution.class);
 
 		xstream.alias("bmeasurement", BMeasurement.class);
 		xstream.alias("rorigin", ROrigin.class);
 		xstream.alias("fmeasurement", FMeasurement.class);
+		xstream.alias("freqMeasurement", FrequencyMeasurement.class);
 
+		xstream.useAttributeFor(FrequencyMeasurement.class, "freq");
+		xstream.useAttributeFor(FrequencyMeasurement.class, "time");
+		xstream.useAttributeFor(FrequencyMeasurement.class, "isActive");
+		
 		xstream.useAttributeFor(BMeasurement.class, "origin");
 		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
+		xstream.useAttributeFor(BMeasurement.class, "isActive");
 		xstream.useAttributeFor(BMeasurement.class, "time");
 		xstream.useAttributeFor(BMeasurement.class, "range");
 
