@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Thu Sep 25 14:31:08 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Mon Sep 29 09:52:41 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Thu Sep 25 08:33:52 GMT 2014"/>
 <session>
 <layers>
@@ -7,7 +7,7 @@
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="true" WormInHole="true">
+<sensor LineThickness="1" Name="NB_BRG" TrackName="SENSOR" Visible="false" WormInHole="true">
 <colour Value="BLUE"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="180.000" Dtg="100112 120000" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label="SUBJECT held on NB_BRG" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <centre>
@@ -1669,7 +1669,7 @@
 </centre>
 </sensor_contact>
 </sensor>
-<TrackSegment LineStyle="Solid" Name="121200.00" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix ArrowShowing="false" Course="40.000" Dtg="100112 120000" Label="121200" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.500" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="60.2000000" Long="-0.0000000"/>
@@ -2401,7 +2401,7 @@
 <colour Value="RED"/>
 <SymbolColor Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<TrackSegment LineStyle="Solid" Name="121200.00" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix ArrowShowing="false" Course="320.000" Dtg="100112 120000" Label="121200" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="9.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="60.0000000" Long="-0.0000000"/>
@@ -3134,7 +3134,7 @@
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
-<satc_solution LiveRunning="false" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<task version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -3154,13 +3154,12 @@
       <active>true</active>
       <weight>5</weight>
       <startDate>2010-01-12 13:10:00.0 UTC</startDate>
-      <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
+      <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
       <bearingError>0.05235987755982988</bearingError>
       <runMDA>false</runMDA>
       <measurements>
-        <bmeasurement bearingAngle="4.546582701445228" time="2010-01-12 13:10:00.0 UTC" range="50000.0">
-          <origin lat="60.16245555555555" lon="-0.02421388888888889"/>
-          <__isActive>true</__isActive>
+        <bmeasurement bearingAngle="4.546582701445228" time="2010-01-12 13:10:00.0 UTC" isActive="true" range="50000.0">
+          <origin lat="60.1624556" lon="-0.0242139"/>
           <color>
             <red>0</red>
             <green>255</green>
@@ -3168,347 +3167,142 @@
             <alpha>255</alpha>
           </color>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.586725274241098" time="2010-01-12 13:10:50.0 UTC" range="50000.0">
-          <origin lat="60.161947222222224" lon="-0.02476388888888889"/>
-          <__isActive>true</__isActive>
+        <bmeasurement bearingAngle="4.670501078336826" time="2010-01-12 13:12:30.0 UTC" isActive="true" range="50000.0">
+          <origin lat="60.160925" lon="-0.0258639"/>
           <color reference="../../bmeasurement/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.628613176288962" time="2010-01-12 13:11:40.0 UTC" range="50000.0">
-          <origin lat="60.16143611111111" lon="-0.02531388888888889"/>
-          <__isActive>true</__isActive>
+        <bmeasurement bearingAngle="4.794419455228423" time="2010-01-12 13:15:00.0 UTC" isActive="true" range="50000.0">
+          <origin lat="60.1593972" lon="-0.0275111"/>
           <color reference="../../bmeasurement/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.670501078336826" time="2010-01-12 13:12:30.0 UTC" range="50000.0">
-          <origin lat="60.160925" lon="-0.025863888888888888"/>
-          <__isActive>true</__isActive>
+        <bmeasurement bearingAngle="4.834562028024292" time="2010-01-12 13:15:50.0 UTC" isActive="true" range="50000.0">
+          <origin lat="60.1588861" lon="-0.0280611"/>
           <color reference="../../bmeasurement/color"/>
         </bmeasurement>
-        <bmeasurement bearingAngle="4.71238898038469" time="2010-01-12 13:13:20.0 UTC" range="50000.0">
-          <origin lat="60.16041666666666" lon="-0.02641388888888889"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="4.752531553180559" time="2010-01-12 13:14:10.0 UTC" range="50000.0">
-          <origin lat="60.159905555555554" lon="-0.02696111111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="4.794419455228423" time="2010-01-12 13:15:00.0 UTC" range="50000.0">
-          <origin lat="60.15939722222222" lon="-0.02751111111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="4.834562028024292" time="2010-01-12 13:15:50.0 UTC" range="50000.0">
-          <origin lat="60.15888611111111" lon="-0.028061111111111113"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="4.876449930072157" time="2010-01-12 13:16:40.0 UTC" range="50000.0">
-          <origin lat="60.158375" lon="-0.02861111111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="4.914847173616032" time="2010-01-12 13:17:30.0 UTC" range="50000.0">
-          <origin lat="60.15786666666666" lon="-0.02916111111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="4.9549897464119015" time="2010-01-12 13:18:20.0 UTC" range="50000.0">
-          <origin lat="60.157355555555554" lon="-0.029711111111111112"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="4.991641660703783" time="2010-01-12 13:19:10.0 UTC" range="50000.0">
-          <origin lat="60.156844444444445" lon="-0.03025833333333333"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.030038904247657" time="2010-01-12 13:20:00.0 UTC" range="50000.0">
-          <origin lat="60.15633611111111" lon="-0.030808333333333333"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.066690818539539" time="2010-01-12 13:20:50.0 UTC" range="50000.0">
-          <origin lat="60.15585" lon="-0.03143888888888889"/>
-          <__isActive>true</__isActive>
-          <color>
-            <red>0</red>
-            <green>0</green>
-            <blue>255</blue>
-            <alpha>255</alpha>
-          </color>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.099852074327431" time="2010-01-12 13:21:40.0 UTC" range="50000.0">
-          <origin lat="60.15541944444444" lon="-0.032216666666666664"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.134758659367318" time="2010-01-12 13:22:30.0 UTC" range="50000.0">
-          <origin lat="60.15505833333333" lon="-0.03312222222222222"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.1661745859032155" time="2010-01-12 13:23:20.0 UTC" range="50000.0">
-          <origin lat="60.15477222222222" lon="-0.03413055555555555"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.195845183187119" time="2010-01-12 13:24:10.0 UTC" range="50000.0">
-          <origin lat="60.15457222222222" lon="-0.03521944444444444"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.223770451219028" time="2010-01-12 13:25:00.0 UTC" range="50000.0">
-          <origin lat="60.15446111111111" lon="-0.03636111111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.251695719250938" time="2010-01-12 13:25:50.0 UTC" range="50000.0">
-          <origin lat="60.15444166666666" lon="-0.03752222222222222"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.276130328778859" time="2010-01-12 13:26:40.0 UTC" range="50000.0">
-          <origin lat="60.154513888888886" lon="-0.03867222222222222"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.298819609054784" time="2010-01-12 13:27:30.0 UTC" range="50000.0">
-          <origin lat="60.15467777777778" lon="-0.03978611111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.321508889330711" time="2010-01-12 13:28:20.0 UTC" range="50000.0">
-          <origin lat="60.15492777777778" lon="-0.04083333333333333"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.340707511102648" time="2010-01-12 13:29:10.0 UTC" range="50000.0">
-          <origin lat="60.15525833333333" lon="-0.04178611111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.358160803622591" time="2010-01-12 13:30:00.0 UTC" range="50000.0">
-          <origin lat="60.15566111111111" lon="-0.042619444444444446"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.3756140961425345" time="2010-01-12 13:30:50.0 UTC" range="50000.0">
-          <origin lat="60.156124999999996" lon="-0.04331388888888889"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.389576730158489" time="2010-01-12 13:31:40.0 UTC" range="50000.0">
-          <origin lat="60.156638888888885" lon="-0.04385"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.403539364174444" time="2010-01-12 13:32:30.0 UTC" range="50000.0">
-          <origin lat="60.15718888888889" lon="-0.044213888888888886"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.415756668938404" time="2010-01-12 13:33:20.0 UTC" range="50000.0">
-          <origin lat="60.157758333333334" lon="-0.04439722222222222"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.4262286444503705" time="2010-01-12 13:34:10.0 UTC" range="50000.0">
-          <origin lat="60.15833333333333" lon="-0.04451388888888889"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement[14]/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.438445949214331" time="2010-01-12 13:35:00.0 UTC" range="50000.0">
-          <origin lat="60.15891111111111" lon="-0.04462777777777778"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.448917924726297" time="2010-01-12 13:35:50.0 UTC" range="50000.0">
-          <origin lat="60.15948611111111" lon="-0.04474444444444445"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.459389900238262" time="2010-01-12 13:36:40.0 UTC" range="50000.0">
-          <origin lat="60.16006111111111" lon="-0.04486111111111111"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.469861875750229" time="2010-01-12 13:37:30.0 UTC" range="50000.0">
-          <origin lat="60.16063888888889" lon="-0.044975"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.480333851262195" time="2010-01-12 13:38:20.0 UTC" range="50000.0">
-          <origin lat="60.16121388888889" lon="-0.04509166666666667"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.489060497522166" time="2010-01-12 13:39:10.0 UTC" range="50000.0">
-          <origin lat="60.161788888888886" lon="-0.045205555555555554"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.499532473034132" time="2010-01-12 13:40:00.0 UTC" range="50000.0">
-          <origin lat="60.162366666666664" lon="-0.04532222222222222"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.508259119294104" time="2010-01-12 13:40:50.0 UTC" range="50000.0">
-          <origin lat="60.16294166666667" lon="-0.04543888888888889"/>
-          <__isActive>true</__isActive>
-          <color reference="../../bmeasurement/color"/>
-        </bmeasurement>
-        <bmeasurement bearingAngle="5.511749777798093" time="2010-01-12 13:41:40.0 UTC" range="50000.0">
-          <origin lat="60.163516666666666" lon="-0.045552777777777775"/>
-          <__isActive>true</__isActive>
+        <bmeasurement bearingAngle="5.030038904247657" time="2010-01-12 13:20:00.0 UTC" isActive="true" range="50000.0">
+          <origin lat="60.1563361" lon="-0.0308083"/>
           <color reference="../../bmeasurement/color"/>
         </bmeasurement>
       </measurements>
     </bearingMeasurementContribution>
-    <compositeStraightLegForecastContribution>
-      <name>Leg One Part 1</name>
-      <active>true</active>
-      <weight>5</weight>
-      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
-      <finishDate>2010-01-12 13:20:40.0 UTC</finishDate>
-      <__myCol>
-        <red>0</red>
-        <green>255</green>
-        <blue>0</blue>
-        <alpha>255</alpha>
-      </__myCol>
-      <speed>
-        <name>auto_id:1411645636660+_839</name>
-        <active>true</active>
-        <weight>5</weight>
-        <startDate reference="../../startDate"/>
-        <finishDate reference="../../finishDate"/>
-      </speed>
-      <course>
-        <name>auto_id:1411645636660+_208</name>
-        <active>true</active>
-        <weight>5</weight>
-        <startDate reference="../../startDate"/>
-        <finishDate reference="../../finishDate"/>
-      </course>
-    </compositeStraightLegForecastContribution>
-    <compositeStraightLegForecastContribution>
-      <name>Leg One Part 2</name>
-      <active>true</active>
-      <weight>5</weight>
-      <startDate>2010-01-12 13:35:00.0 UTC</startDate>
-      <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
-      <__myCol>
-        <red>0</red>
-        <green>255</green>
-        <blue>0</blue>
-        <alpha>255</alpha>
-      </__myCol>
-      <speed>
-        <name>auto_id:1411645701580+_44</name>
-        <active>true</active>
-        <weight>5</weight>
-        <startDate reference="../../startDate"/>
-        <finishDate reference="../../finishDate"/>
-      </speed>
-      <course>
-        <name>auto_id:1411645701580+_844</name>
-        <active>true</active>
-        <weight>5</weight>
-        <startDate reference="../../startDate"/>
-        <finishDate reference="../../finishDate"/>
-      </course>
-    </compositeStraightLegForecastContribution>
-    <rangeForecastContribution>
-      <name>Leg One Part 1 Range</name>
+    <range1959ForecastContribution>
+      <name>the freq</name>
       <active>false</active>
       <weight>5</weight>
       <startDate>2010-01-12 13:10:00.0 UTC</startDate>
       <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
-      <minRangeM>5600.0</minRangeM>
-      <maxRangeM>8000.0</maxRangeM>
-      <estimate>0.0</estimate>
-      <sensorOrigins>
-        <rorigin time="2010-01-12 13:10:00.0 UTC">
-          <origin lat="60.16245555555555" lon="-0.02421388888888889"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:10:50.0 UTC">
-          <origin lat="60.161947222222224" lon="-0.02476388888888889"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:11:40.0 UTC">
-          <origin lat="60.16143611111111" lon="-0.02531388888888889"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:12:30.0 UTC">
-          <origin lat="60.160925" lon="-0.025863888888888888"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:13:20.0 UTC">
-          <origin lat="60.16041666666666" lon="-0.02641388888888889"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:14:10.0 UTC">
-          <origin lat="60.159905555555554" lon="-0.02696111111111111"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:15:00.0 UTC">
-          <origin lat="60.15939722222222" lon="-0.02751111111111111"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:15:50.0 UTC">
-          <origin lat="60.15888611111111" lon="-0.028061111111111113"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:16:40.0 UTC">
-          <origin lat="60.158375" lon="-0.02861111111111111"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:17:30.0 UTC">
-          <origin lat="60.15786666666666" lon="-0.02916111111111111"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:18:20.0 UTC">
-          <origin lat="60.157355555555554" lon="-0.029711111111111112"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:19:10.0 UTC">
-          <origin lat="60.156844444444445" lon="-0.03025833333333333"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:20:00.0 UTC">
-          <origin lat="60.15633611111111" lon="-0.030808333333333333"/>
-        </rorigin>
-      </sensorOrigins>
-    </rangeForecastContribution>
+      <measurements>
+        <freqMeasurement freq="150.069" time="2010-01-12 13:10:00.0 UTC" isActive="true">
+          <color>
+            <red>255</red>
+            <green>255</green>
+            <blue>0</blue>
+            <alpha>255</alpha>
+          </color>
+          <origin lat="60.1624556" lon="-0.0242139"/>
+        </freqMeasurement>
+        <freqMeasurement freq="150.048" time="2010-01-12 13:10:50.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1619472" lon="-0.0247639"/>
+        </freqMeasurement>
+        <freqMeasurement freq="150.027" time="2010-01-12 13:11:40.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1614361" lon="-0.0253139"/>
+        </freqMeasurement>
+        <freqMeasurement freq="150.005" time="2010-01-12 13:12:30.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.160925" lon="-0.0258639"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.984" time="2010-01-12 13:13:20.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1604167" lon="-0.0264139"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.963" time="2010-01-12 13:14:10.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1599056" lon="-0.0269611"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.941" time="2010-01-12 13:15:00.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1593972" lon="-0.0275111"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.921" time="2010-01-12 13:15:50.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1588861" lon="-0.0280611"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.9" time="2010-01-12 13:16:40.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.158375" lon="-0.0286111"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.88" time="2010-01-12 13:17:30.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1578667" lon="-0.0291611"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.861" time="2010-01-12 13:18:20.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1573556" lon="-0.0297111"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.842" time="2010-01-12 13:19:10.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1568444" lon="-0.0302583"/>
+        </freqMeasurement>
+        <freqMeasurement freq="149.824" time="2010-01-12 13:20:00.0 UTC" isActive="true">
+          <color reference="../../freqMeasurement/color"/>
+          <origin lat="60.1563361" lon="-0.0308083"/>
+        </freqMeasurement>
+      </measurements>
+      <__fNought>150.0</__fNought>
+      <__C>3000.0</__C>
+    </range1959ForecastContribution>
+    <compositeStraightLegForecastContribution>
+      <name>leg one</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
+      <__myCol>
+        <red>0</red>
+        <green>255</green>
+        <blue>0</blue>
+        <alpha>255</alpha>
+      </__myCol>
+      <speed>
+        <name>auto_id:1411980616565+_457</name>
+        <active>true</active>
+        <weight>5</weight>
+        <startDate reference="../../startDate"/>
+        <finishDate reference="../../finishDate"/>
+      </speed>
+      <course>
+        <name>auto_id:1411980616565+_661</name>
+        <active>true</active>
+        <weight>5</weight>
+        <startDate reference="../../startDate"/>
+        <finishDate reference="../../finishDate"/>
+      </course>
+    </compositeStraightLegForecastContribution>
     <rangeForecastContribution>
-      <name>Leg One Part 2 Range</name>
+      <name>mid-range range</name>
       <active>false</active>
       <weight>5</weight>
-      <startDate>2010-01-12 13:35:00.0 UTC</startDate>
-      <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
-      <minRangeM>8000.0</minRangeM>
-      <maxRangeM>11000.0</maxRangeM>
-      <estimate>0.0</estimate>
+      <startDate>2010-01-12 13:15:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:15:00.0 UTC</finishDate>
+      <minRangeM>600.0</minRangeM>
+      <maxRangeM>12000.0</maxRangeM>
       <sensorOrigins>
-        <rorigin time="2010-01-12 13:35:00.0 UTC">
-          <origin lat="60.15891111111111" lon="-0.04462777777777778"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:35:50.0 UTC">
-          <origin lat="60.15948611111111" lon="-0.04474444444444445"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:36:40.0 UTC">
-          <origin lat="60.16006111111111" lon="-0.04486111111111111"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:37:30.0 UTC">
-          <origin lat="60.16063888888889" lon="-0.044975"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:38:20.0 UTC">
-          <origin lat="60.16121388888889" lon="-0.04509166666666667"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:39:10.0 UTC">
-          <origin lat="60.161788888888886" lon="-0.045205555555555554"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:40:00.0 UTC">
-          <origin lat="60.162366666666664" lon="-0.04532222222222222"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:40:50.0 UTC">
-          <origin lat="60.16294166666667" lon="-0.04543888888888889"/>
-        </rorigin>
-        <rorigin time="2010-01-12 13:41:40.0 UTC">
-          <origin lat="60.163516666666666" lon="-0.045552777777777775"/>
+        <rorigin time="2010-01-12 13:15:00.0 UTC">
+          <origin lat="60.1593972" lon="-0.0275111"/>
         </rorigin>
       </sensorOrigins>
     </rangeForecastContribution>
+    <speedForecastContribution>
+      <name>leg one speed</name>
+      <active>false</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
+      <minSpeed>0.8745555548000001</minSpeed>
+      <maxSpeed>11.57499999</maxSpeed>
+    </speedForecastContribution>
     <courseAnalysisContribution>
       <name>Course Analysis</name>
       <active>true</active>
@@ -3529,10 +3323,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.3396812" Long="-0.4143303"/>
+<shortLocation Depth="0.000" Lat="60.4464508" Long="-0.3982712"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="60.0807042" Long="0.0400196"/>
+<shortLocation Depth="0.000" Lat="59.8294897" Long="0.0924769"/>
 </br>
 </projection>
 <gui>
