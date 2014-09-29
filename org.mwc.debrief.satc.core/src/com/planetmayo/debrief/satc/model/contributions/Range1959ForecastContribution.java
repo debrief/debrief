@@ -37,8 +37,20 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	private ArrayList<FrequencyMeasurement> measurements = new ArrayList<FrequencyMeasurement>();
 	public static final String OBSERVATIONS_NUMBER = "numObservations";
+	public static final String MIN_RANGE = "minRange";
+	public static final String MAX_RANGE = "maxRange";
+	public static final String RANGE = "range";
+	public static final String SOUND_SPEED = "speedSound";
+	public static final String F_NOUGHT = "fNought";
 
+	/** fNought for radiated source (Hz)
+	 * 
+	 */
 	private double fNought = 150;
+	
+	/** speed of sound in water (kts)
+	 * 
+	 */
 	private double speedSound = 3000;
 
 	private transient Double _range;
@@ -346,6 +358,15 @@ public class Range1959ForecastContribution extends BaseContribution
 		super.setStartDate(null);
 		super.setFinishDate(null);
 	}
+	
+	/** how many freq measuremnts we contain
+	 * 
+	 * @return
+	 */
+	public int size()
+	{
+		return measurements.size();
+	}
 
 	/**
 	 * add this new measurement
@@ -384,14 +405,33 @@ public class Range1959ForecastContribution extends BaseContribution
 		return measurements.size() > 0;
 	}
 
+	/** subject radiated freq (hz)
+	 * 
+	 * @return
+	 */
 	public double getfNought()
 	{
 		return fNought;
 	}
 
+
 	public void setfNought(double fNought)
 	{
 		this.fNought = fNought;
+	}
+
+	/** local speed of sounds (kts)
+	 * 
+	 * @return
+	 */
+	public double getSpeedSound()
+	{
+		return speedSound;
+	}
+
+	public void setSpeedSound(double speedSound)
+	{
+		this.speedSound = speedSound;
 	}
 
 	private void loadFrom(List<String> lines)
@@ -591,5 +631,39 @@ public class Range1959ForecastContribution extends BaseContribution
 			assertEquals("correct range", -8.95088, range, 0.00001);
 		}
 
+	}
+
+	/** get the calculated range (m)
+	 * 
+	 * @return
+	 */
+	public Double getRange()
+	{
+		return _range;
+	}
+
+	public void setRange(Double range)
+	{
+		this._range = range;
+	}
+
+	public Double getMinRange()
+	{
+		return _minR;
+	}
+
+	public void setMinRange(Double minR)
+	{
+		this._minR = minR;
+	}
+
+	public Double getMaxRange()
+	{
+		return _maxR;
+	}
+
+	public void setMaxRange(Double maxR)
+	{
+		this._maxR = maxR;
 	}
 }
