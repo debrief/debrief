@@ -26,7 +26,7 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Are
         super(biSlider);
         myMinNotMax = minNotMax;
         mySegmenter = segmenter;
-        myDrawer = new DefaultSliderPointer(!minNotMax, minNotMax);
+        myDrawer = new DefaultSliderPointer(!minNotMax, !minNotMax);
         myDragSupport = new DragSupport(getBiSlider(), myDrawer.getAreaGate(), this);
         myFineTunePopup = new FineTuneValueAdjuster(getBiSlider(), myMinNotMax);        
         myFineTunePopupShower = new MouseAdapter(){
@@ -40,7 +40,6 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Are
     }
     
     public void mouseDragged(MouseEvent e, Point startPoint) {
-        setShowValueLabel(true);
         CoordinateMapper mapper = getMapper();
         double currentValue = mapper.pixel2value(e.x, e.y);
         if ((e.stateMask & SWT.SHIFT) > 0){
@@ -68,7 +67,6 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Are
     }
     
     public void dragFinished() {
-        setShowValueLabel(false);
         getWritableDataModel().finishCompositeUpdate();
         getBiSlider().redraw();
     }
