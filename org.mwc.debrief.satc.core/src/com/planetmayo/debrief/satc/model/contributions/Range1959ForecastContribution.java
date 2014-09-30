@@ -42,6 +42,7 @@ public class Range1959ForecastContribution extends BaseContribution
 	public static final String RANGE = "range";
 	public static final String SOUND_SPEED = "speedSound";
 	public static final String F_NOUGHT = "fNought";
+	public static final String RANGE_PERIOD = "rangePeriod";
 
 	/** fNought for radiated source (Hz)
 	 * 
@@ -58,6 +59,8 @@ public class Range1959ForecastContribution extends BaseContribution
 	private transient Double _minR;
 
 	private transient Double _maxR;
+	
+	private transient String rangePeriod;
 
 	public Range1959ForecastContribution()
 	{
@@ -199,7 +202,25 @@ public class Range1959ForecastContribution extends BaseContribution
 			// apply the range
 			thisS.constrainTo(myRa);
 		}
+		setRange(_range);
+		setMinRange(_minR);
+		setMaxRange(_maxR);
+	}
 
+	private void setRangePeriod()
+	{
+		StringBuffer buffer = new StringBuffer();
+		if (_minR != null) {
+			buffer.append(new Integer(_minR.intValue()).toString());
+		}
+		buffer.append("-");
+		if (_maxR != null) {
+			buffer.append(new Integer(_maxR.intValue()).toString());
+		}
+		String value = buffer.toString();
+		if (!"-".equals(value)) {
+			setRangePeriod(value);
+		}
 	}
 
 	private FrequencyMeasurement getMidWayPoint()
@@ -364,6 +385,11 @@ public class Range1959ForecastContribution extends BaseContribution
 	 * @return
 	 */
 	public int size()
+	{
+		return measurements.size();
+	}
+	
+	public int getNumObservations()
 	{
 		return measurements.size();
 	}
@@ -655,6 +681,7 @@ public class Range1959ForecastContribution extends BaseContribution
 	public void setMinRange(Double minR)
 	{
 		this._minR = minR;
+		setRangePeriod();
 	}
 
 	public Double getMaxRange()
@@ -665,5 +692,16 @@ public class Range1959ForecastContribution extends BaseContribution
 	public void setMaxRange(Double maxR)
 	{
 		this._maxR = maxR;
+		setRangePeriod();
+	}
+
+	public String getRangePeriod()
+	{
+		return rangePeriod;
+	}
+
+	public void setRangePeriod(String rangePeriod)
+	{
+		this.rangePeriod = rangePeriod;
 	}
 }

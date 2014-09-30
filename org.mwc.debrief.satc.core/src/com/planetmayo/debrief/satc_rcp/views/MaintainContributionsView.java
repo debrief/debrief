@@ -8,6 +8,8 @@ import java.util.Map;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -820,6 +822,7 @@ public class MaintainContributionsView extends ViewPart
 		catch (Exception ex)
 		{
 			LogFactory.getLog().error("Failed to generate panel for " + contribution);
+			SATC_Activator.getDefault().getLog().log(new Status(IStatus.ERROR, SATC_Activator.PLUGIN_ID, ex.getMessage(), ex));
 		}
 	}
 
