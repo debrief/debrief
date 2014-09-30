@@ -33,7 +33,17 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Are
 					public void mouseDoubleClick(final MouseEvent e)
 					{
             if (myDrawer.getAreaGate().isInsideArea(e.x, e.y)){
-  						handler.adjust(myMinNotMax);
+            	// ok, is CTRL button down
+            	if((e.stateMask & SWT.CTRL) != 0)
+            	{
+            		// show our fancy little window
+              	myFineTunePopup.showAdjustmentControl();
+            	}
+            	else
+            	{
+            		// put the time in the properties window
+    						handler.adjust(myMinNotMax);
+            	}
           }
 					}};               
         getBiSlider().addMouseListener(myFineTunePopupShower);
