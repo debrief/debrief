@@ -3218,11 +3218,7 @@ and so on....</programlisting></para>
             second/millisecond proportionate to the position of the slider. Debrief can be
             configured such that the slider stops on higher resolutions by selecting the relevant
             increment from the <guibutton>Time slider increment</guibutton> list in the Time
-            Controller&apos;s drop-down menu.<tip><para>On occasion it&apos;s not possible to put 
-            the time slider markers on exactly the right time value - particularly if your plot
-            covers a long timer period.  In these circumstances, if you double-click on either the
-            start or finish arrow, their exact time is made available for editing in the 
-            Properties View (see <xref linkend="property_editing"/>)</para></tip></para>
+            Controller&apos;s drop-down menu.</para>
         </sect2>
 
         <sect2 xml:id="time_bookmarks">
@@ -3248,12 +3244,21 @@ and so on....</programlisting></para>
         <sect2 xml:id="filter_to_time_period">
           <title>Manipulating according to time period</title>
 
-          <para>The pair of sliders at the foot of the <guiicon>Time Controller</guiicon> view allow
+          <para>The pair of <indexterm>
+            <primary>Time Control</primary>
+            <secondary>Time Slider Bar</secondary>
+          </indexterm>Time Filter Bars at the foot of the <guiicon>Time Controller</guiicon> view allow
             you to set start and finish times. These times are not set in support of a single
             Debrief operation, but are used across a range of operations. When dragging the sliders,
             hold down the shift-key to move in whole segments (hours, days, as appropriate). Drag
             the shaded section to retain the period length but change its origin (again using the
-            shift-key if appropriate).</para>
+            shift-key if appropriate).<tip><para>On occasion it&apos;s not possible to put the time slider markers on exactly the right time
+                value - particularly if your plot covers a long timer period. In these
+                circumstances, if you double-click on either the start or finish arrow, their exact
+                time is made available for editing in the Properties View (see <xref
+                  linkend="property_editing"/>). Alternatively, hold the CTRL key down whilst
+                clicking on a start/end marker, and a cute little window will open to let you put
+                the time on a whole minute value.</para></tip></para>
 
           <sect3 xml:id="filter_time_period">
             <title>Filter to time period</title>
