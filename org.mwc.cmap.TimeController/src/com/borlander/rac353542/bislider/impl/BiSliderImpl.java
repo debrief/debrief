@@ -90,7 +90,7 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
     }
 
     public void freeResources() {
-        myDataModel.removeListener(this);
+    	  myDataModel.removeListener(this);
         if (myMaxPointer != null) {
             myMaxPointer.freeResources();
             myMaxPointer = null;
@@ -215,5 +215,13 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
     	}
     	return result;
     }
+
+		@Override
+		public void setShowLabels(boolean showLabels)
+		{
+			if (myUserRangePanner != null) {
+				myUserRangePanner.setShowValueLabels(showLabels);
+			}
+		}
     
 }

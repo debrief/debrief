@@ -26,21 +26,30 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Are
         super(biSlider);
         myMinNotMax = minNotMax;
         mySegmenter = segmenter;
-        myDrawer = new DefaultSliderPointer(!minNotMax, minNotMax);
+        myDrawer = new DefaultSliderPointer(!minNotMax, !minNotMax);
         myDragSupport = new DragSupport(getBiSlider(), myDrawer.getAreaGate(), this);
         myFineTunePopup = new FineTuneValueAdjuster(getBiSlider(), myMinNotMax);        
         myFineTunePopupShower = new MouseAdapter(){
 					public void mouseDoubleClick(final MouseEvent e)
 					{
             if (myDrawer.getAreaGate().isInsideArea(e.x, e.y)){
-  						handler.adjust(myMinNotMax);
+            	// ok, is CTRL button down
+            	if((e.stateMask & SWT.CTRL) != 0)
+            	{
+            		// show our fancy little window
+              	myFineTunePopup.showAdjustmentControl();
+            	}
+            	else
+            	{
+            		// put the time in the properties window
+    						handler.adjust(myMinNotMax);
+            	}
           }
 					}};               
         getBiSlider().addMouseListener(myFineTunePopupShower);
     }
     
     public void mouseDragged(MouseEvent e, Point startPoint) {
-        setShowValueLabel(true);
         CoordinateMapper mapper = getMapper();
         double currentValue = mapper.pixel2value(e.x, e.y);
         if ((e.stateMask & SWT.SHIFT) > 0){
@@ -68,7 +77,6 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Are
     }
     
     public void dragFinished() {
-        setShowValueLabel(false);
         getWritableDataModel().finishCompositeUpdate();
         getBiSlider().redraw();
     }

@@ -21,12 +21,12 @@ class UserRangePanner implements DragSupport.DragListener, Disposable {
         myBiSlider = biSlider;
         myMinPointer = minPointer;
         myMaxPointer = maxPointer;
+        setShowValueLabels(true);
 		mySegmenter = segmenter;
         myDragSupport = new DragSupport(myBiSlider, new OutsidePointersUserSelectedArea(), this);
     }
     
     public void dragFinished() {
-        setShowValueLabels(false);
         myBiSlider.getWritableDataModel().finishCompositeUpdate();
         myBiSlider.redraw();
     }
@@ -36,6 +36,8 @@ class UserRangePanner implements DragSupport.DragListener, Disposable {
     }
     
     public void freeResources() {
+    	setShowValueLabels(false);
+      myBiSlider.redraw();
         if (myDragSupport != null){
             myDragSupport.releaseControl();
             myDragSupport = null;
@@ -43,7 +45,6 @@ class UserRangePanner implements DragSupport.DragListener, Disposable {
     }
     
     public void mouseDragged(MouseEvent e, Point startPoint) {
-    	setShowValueLabels(true);
         myBiSlider.redraw();
         
         Point lastSeenAt = getLastSeenAtPoint(startPoint);
@@ -124,10 +125,17 @@ class UserRangePanner implements DragSupport.DragListener, Disposable {
 		return startPoint.equals(myCachedStartPoint) ? myCachedLastSeenAtPoint : startPoint;
 	}
 
-	private void setShowValueLabels(boolean showValueLabels){
-        myMaxPointer.setShowValueLabel(showValueLabels);
-        myMinPointer.setShowValueLabel(showValueLabels);
-    }
+	public void setShowValueLabels(boolean showValueLabels)
+	{
+		if (myMaxPointer != null)
+		{
+			myMaxPointer.setShowValueLabel(showValueLabels);
+		}
+		if (myMaxPointer != null)
+		{
+			myMinPointer.setShowValueLabel(showValueLabels);
+		}
+	}
     
     protected class OutsidePointersUserSelectedArea implements AreaGate {
         public boolean isInsideArea(int x, int y) {

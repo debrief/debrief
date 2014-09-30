@@ -1640,9 +1640,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					if (_myTemporalDataset == null)
 					{
 						_timeLabel.setText("-----");
+						_dtgRangeSlider.setShowLabels(false);
 					}
 
 					_wholePanel.setEnabled(finalEnabled);
+					_dtgRangeSlider.setShowLabels(finalEnabled);
 				}
 			}
 		});

@@ -10,4 +10,6 @@ public abstract class BiSlider extends Composite {
     public abstract BiSliderDataModel getDataModel();
     public abstract BiSliderDataModel.Writable getWritableDataModel();
     public abstract BiSliderUIModel getUIModel();
+
+		public abstract void setShowLabels(boolean showLabels);
 }

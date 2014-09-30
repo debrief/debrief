@@ -139,6 +139,7 @@ public class DTGBiSlider
 		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl,
 				_dateModel, _uiModel, fineControl);
 
+		setShowLabels(false);
 	}
 
 	public Composite getControl()
@@ -235,5 +236,12 @@ public class DTGBiSlider
 				_dateModel.getUserMaximumDate()));
 
 		return res;
+	}
+	
+	public void setShowLabels(boolean showLabels) {
+		_mySlider.setShowLabels(showLabels);
+		if (_mySlider != null && !_mySlider.isDisposed()) {
+			_mySlider.redraw();
+		}
 	}
 }

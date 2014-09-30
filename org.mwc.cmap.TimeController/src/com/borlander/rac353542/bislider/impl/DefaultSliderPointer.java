@@ -41,7 +41,7 @@ class DefaultSliderPointer extends PointerDrawerBase
 		setBelowThePoint(false);
 		myBackground = ColorManager.getInstance().getColor(127, 127, 127);
 		myForeground = ColorManager.getInstance().getColor(0, 0, 0);
-		myLabelColor = ColorManager.getInstance().getColor(0, 0, 255);
+		myLabelColor = ColorManager.getInstance().getColor(0, 0, 0);
 		setBelowThePoint(belowNotAbove);
 		setLabelAtLeft(labelAtLeftNotAtRight);
 	}
