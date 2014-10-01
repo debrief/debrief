@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
@@ -98,16 +99,21 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		
 		Composite range = new Composite(bodyGroup, SWT.NONE);
 		range.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		range.setLayout(new GridLayout(2, false));
+		range.setLayout(new GridLayout(3, false));
 		
 		rangeText = new Text(range, SWT.BORDER|SWT.READ_ONLY|SWT.TRAIL);
-		gd = new GridData(100,SWT.DEFAULT);
+		gd = new GridData(60,SWT.DEFAULT);
 		rangeText.setLayoutData(gd);
 		
 		rangeBoundsText = new Text(range, SWT.BORDER|SWT.READ_ONLY|SWT.CENTER);
-		gd = new GridData(200,SWT.DEFAULT);
+		gd = new GridData(140,SWT.DEFAULT);
 		rangeBoundsText.setLayoutData(gd);
-		
+
+		Label lastLabel = new Label(range, SWT.LEFT);
+		lastLabel.setText("Calculated data - read only");
+		gd = new GridData(220,SWT.DEFAULT);
+		lastLabel.setLayoutData(gd);
+
 		context = new DataBindingContext();
 		bindValues(context);
 	}
