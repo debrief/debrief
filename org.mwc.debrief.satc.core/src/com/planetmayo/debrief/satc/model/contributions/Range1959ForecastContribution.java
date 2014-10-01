@@ -42,12 +42,14 @@ public class Range1959ForecastContribution extends BaseContribution
 	public static final String F_NOUGHT = "fNought";
 	public static final String RANGE_BOUNDS = "rangeBounds";
 
-	/** fNought for radiated source (Hz)
+	/**
+	 * fNought for radiated source (Hz)
 	 * 
 	 */
 	private double fNought = 150;
-	
-	/** speed of sound in water (kts)
+
+	/**
+	 * speed of sound in water (kts)
 	 * 
 	 */
 	private double speedSound = 3000;
@@ -55,19 +57,19 @@ public class Range1959ForecastContribution extends BaseContribution
 	private Double calculatedRange;
 
 	private transient Double calculatedMinRange;
-	
-	private transient Double calculatedMaxRange;
-	
-	private String rangeBounds;
 
+	private transient Double calculatedMaxRange;
+
+	private String rangeBounds;
 
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
 		double min = this.calculatedMinRange == null ? 0 : this.calculatedMinRange;
 		double max = this.calculatedMaxRange == null ? 0 : this.calculatedMaxRange;
-		if (!isActive() || route.getType() == LegType.ALTERING || calculatedRange == null
-				|| calculatedRange < min || calculatedRange > max)
+		if (!isActive() || route.getType() == LegType.ALTERING
+				|| calculatedRange == null || calculatedRange < min
+				|| calculatedRange > max)
 		{
 			return 0;
 		}
@@ -102,7 +104,8 @@ public class Range1959ForecastContribution extends BaseContribution
 		{
 			return 0;
 		}
-		double norm = Math.max(Math.abs(max - calculatedRange), Math.abs(min - calculatedRange));
+		double norm = Math.max(Math.abs(max - calculatedRange),
+				Math.abs(min - calculatedRange));
 		return Math.sqrt(sum / count) / norm;
 	}
 
@@ -148,63 +151,61 @@ public class Range1959ForecastContribution extends BaseContribution
 
 		// sanity check on minR
 		minR = Math.max(minR, 100);
-		
+
 		// store these values
 		setRange(range);
 		setMinMaxRange(minR, maxR);
-		
-		for(FrequencyMeasurement measure: measurements)
+
+		// get the cut near the centre of the dataset
+		FrequencyMeasurement measure = measurements.get(measurements.size()/2);
+
+		// capture this time
+		Date subjectTime = measure.getDate();
+
+		// ok, get a locaiton
+		final GeoPoint loc = measure.getLocation();
+		final Point pt = loc.asPoint();
+
+		// yes, ok we can centre our donut on that
+		LinearRing outer = GeoSupport.geoRing(pt, maxR);
+		LinearRing inner = GeoSupport.geoRing(pt, minR);
+		LinearRing[] holes;
+
+		// did we generate an inner?
+		if (inner == null)
 		{
-			// capture this time
-			Date subjectTime = measure.getDate();			
-		
-			// ok, get a locaiton
-			final GeoPoint loc = measure.getLocation();
-			final Point pt = loc.asPoint();
-
-			// yes, ok we can centre our donut on that
-			LinearRing outer = GeoSupport.geoRing(pt, maxR);
-			LinearRing inner = GeoSupport.geoRing(pt, minR);
-			LinearRing[] holes;
-
-			// did we generate an inner?
-			if (inner == null)
-			{
-				// nope = provide empty inner
-				holes = null;
-			}
-			else
-			{
-				holes = new LinearRing[]
-				{ inner };
-			}
-
-			// and create a polygon for it.
-			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
-
-			// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
-
-			// create a LocationRange for the poly
-			// now define the polygon
-			final LocationRange myRa = new LocationRange(thePoly);
-
-			// is there already a bounded state at this time?
-			BoundedState thisS = space.getBoundedStateAt(subjectTime);
-
-			if (thisS == null)
-			{
-				// nope, better create it
-				thisS = new BoundedState(subjectTime);
-				space.add(thisS);
-			}
-
-			// apply the range
-			thisS.constrainTo(myRa);
+			// nope = provide empty inner
+			holes = null;
+		}
+		else
+		{
+			holes = new LinearRing[]
+			{ inner };
 		}
 
+		// and create a polygon for it.
+		Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
+
+		// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
+
+		// create a LocationRange for the poly
+		// now define the polygon
+		final LocationRange myRa = new LocationRange(thePoly);
+
+		// is there already a bounded state at this time?
+		BoundedState thisS = space.getBoundedStateAt(subjectTime);
+
+		if (thisS == null)
+		{
+			// nope, better create it
+			thisS = new BoundedState(subjectTime);
+			space.add(thisS);
+		}
+
+		// apply the range
+		thisS.constrainTo(myRa);
+
 	}
-
-
 
 	private double calcRDotKts(double rDotDotHz)
 	{
@@ -253,7 +254,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		ArrayList<Double> times = new ArrayList<Double>();
 
 		Long firstTime = null;
-		
+
 		Iterator<FrequencyMeasurement> iter = measurements.iterator();
 		while (iter.hasNext())
 		{
@@ -262,11 +263,11 @@ public class Range1959ForecastContribution extends BaseContribution
 			values.add(frequencyMeasurement.getFrequency());
 			long millis = frequencyMeasurement.getDate().getTime();
 
-			if(firstTime == null)
+			if (firstTime == null)
 			{
 				firstTime = millis;
 			}
-			
+
 			double mins = (millis - firstTime) / 1000d / 60;
 			times.add(mins);
 		}
@@ -308,8 +309,9 @@ public class Range1959ForecastContribution extends BaseContribution
 	{
 		return ContributionDataType.FORECAST;
 	}
-	
-	/** how many freq measuremnts we contain
+
+	/**
+	 * how many freq measuremnts we contain
 	 * 
 	 * @return
 	 */
@@ -317,7 +319,7 @@ public class Range1959ForecastContribution extends BaseContribution
 	{
 		return measurements.size();
 	}
-	
+
 	public int getNumObservations()
 	{
 		return measurements.size();
@@ -360,7 +362,8 @@ public class Range1959ForecastContribution extends BaseContribution
 		return measurements.size() > 0;
 	}
 
-	/** subject radiated freq (hz)
+	/**
+	 * subject radiated freq (hz)
 	 * 
 	 * @return
 	 */
@@ -369,13 +372,13 @@ public class Range1959ForecastContribution extends BaseContribution
 		return fNought;
 	}
 
-
 	public void setfNought(double fNought)
 	{
 		this.fNought = fNought;
 	}
 
-	/** local speed of sounds (kts)
+	/**
+	 * local speed of sounds (kts)
 	 * 
 	 * @return
 	 */
@@ -463,9 +466,9 @@ public class Range1959ForecastContribution extends BaseContribution
 
 		}
 	}
-	
-	/////////////////////////////////////////
-	
+
+	// ///////////////////////////////////////
+
 	protected static class Range1959ForecastContributionTest
 	{
 
@@ -476,7 +479,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		{
 			_freq = new Range1959ForecastContribution();
 		}
-		
+
 		@SuppressWarnings("deprecation")
 		@Test
 		public void testLoadFromOne() throws Exception
@@ -514,16 +517,15 @@ public class Range1959ForecastContribution extends BaseContribution
 			double range = _freq.calculateRange(rDotDotKts, bDot);
 			assertEquals("correct rDotDotHz", -0.0239763, rDotDotHz, 0.000001);
 			assertEquals("correct rDotDotKts", -0.47952, rDotDotKts, 0.00001);
-			assertEquals("correct bDot", 2.7869, bDot,
-					0.00001);
+			assertEquals("correct bDot", 2.7869, bDot, 0.00001);
 			assertEquals("correct range", -6.8439, range, 0.001);
-			
+
 			// ok, now check that the new bound is generated
 			_freq.actUpon(space);
-			
+
 			// check the new constraint is in there.
 		}
-		
+
 		private void addBearing(ProblemSpace space, String date, String time,
 				double bearingDegs) throws IncompatibleStateException
 		{
@@ -566,14 +568,14 @@ public class Range1959ForecastContribution extends BaseContribution
 			double range = _freq.calculateRange(rDotDotKts, bDot);
 			assertEquals("correct freq", -0.001943, rDotDotHz, 0.00001);
 			assertEquals("correct rDotDotKts", -0.03887, rDotDotKts, 0.0001);
-			assertEquals("correct bDot", 0.69385, bDot,
-					0.00001);
+			assertEquals("correct bDot", 0.69385, bDot, 0.00001);
 			assertEquals("correct range", -8.95088, range, 0.00001);
 		}
 
 	}
 
-	/** get the calculated range (m)
+	/**
+	 * get the calculated range (m)
 	 * 
 	 * @return
 	 */
@@ -585,13 +587,12 @@ public class Range1959ForecastContribution extends BaseContribution
 	public void setRange(Double range)
 	{
 		Double oldRange = calculatedRange;
-		
+
 		this.calculatedRange = range;
-		
+
 		firePropertyChange(RANGE, oldRange, range);
 		firePropertyChange(HARD_CONSTRAINTS, oldRange, range);
 	}
-
 
 	public void setMinMaxRange(Double minR, Double maxR)
 	{
@@ -600,15 +601,18 @@ public class Range1959ForecastContribution extends BaseContribution
 
 		// ok, now put the range into a string value
 		StringBuffer buffer = new StringBuffer();
-		if (calculatedMinRange != null) {
+		if (calculatedMinRange != null)
+		{
 			buffer.append(new Integer(calculatedMinRange.intValue()).toString());
 		}
 		buffer.append("-");
-		if (calculatedMaxRange != null) {
+		if (calculatedMaxRange != null)
+		{
 			buffer.append(new Integer(calculatedMaxRange.intValue()).toString());
 		}
 		String value = buffer.toString();
-		if (!"-".equals(value)) {
+		if (!"-".equals(value))
+		{
 			setRangeBounds(value);
 		}
 	}
@@ -622,7 +626,7 @@ public class Range1959ForecastContribution extends BaseContribution
 	{
 		String oldRange = this.rangeBounds;
 		this.rangeBounds = rangeBounds;
-		
+
 		firePropertyChange(RANGE_BOUNDS, oldRange, rangeBounds);
 		firePropertyChange(HARD_CONSTRAINTS, oldRange, rangeBounds);
 
