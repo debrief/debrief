@@ -135,7 +135,7 @@
 			skip="true">
 		</subitem>
 		<subitem
-			label="Review frequency residuals.  If you do have frequency data available, open the Frequency Residuals view to track the difference between measured and predicted frequency (taking ownship and target doppler into account)."
+			label="Review frequency residuals.  If you do are using data that contains frequency measurements, open the Frequency Residuals view to track the difference between measured and predicted frequency (taking ownship and target doppler into account)."
 			skip="true">
 			<command required="false"
 				serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.debrief.track_shift.views.FrequencyResidualsView)" />
