@@ -223,5 +223,16 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
 				myUserRangePanner.setShowValueLabels(showLabels);
 			}
 		}
+
+		@Override
+		public void resetMinMaxPointers()
+		{
+			if (myMinPointer != null && !isDisposed()) {
+				myMinPointer.reset();
+			}
+			if (myMaxPointer != null && !isDisposed()) {
+				myMaxPointer.reset();
+			}
+		}
     
 }

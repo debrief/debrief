@@ -130,4 +130,18 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Are
         return myDrawer.getAreaGate().isInsideArea(x, y);
     }
 
+		public void reset()
+		{
+			if (!getBiSlider().isDisposed()) {
+				getWritableDataModel().startCompositeUpdate();
+				if (myMinNotMax) {
+					setDataModelUserValue(getWritableDataModel().getTotalMinimum());
+				} else {
+					setDataModelUserValue(getWritableDataModel().getTotalMaximum());
+				}
+				getWritableDataModel().finishCompositeUpdate();
+				getBiSlider().redraw();
+			}
+		}
+
 }

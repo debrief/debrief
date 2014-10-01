@@ -1641,6 +1641,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					{
 						_timeLabel.setText("-----");
 						_dtgRangeSlider.setShowLabels(false);
+						_dtgRangeSlider.resetMinMaxPointers();
 					}
 
 					_wholePanel.setEnabled(finalEnabled);
