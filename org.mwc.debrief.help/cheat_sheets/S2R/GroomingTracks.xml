@@ -57,7 +57,7 @@
 			this (fictional) example, you have your blue ownship track .
 			Unfortunately this track has a period of missing data. There are also
 			several jumps in the data - shown about 2/3 of the way along it.
-			Note: jumps can occur when an inertial navigation system receives and
+			Note: jumps can occur when an inertial navigation system receives an
 			external update. We&apos;ll fix these first.</description>
 	</item>
 	<item title="Getting a feel for the data">
