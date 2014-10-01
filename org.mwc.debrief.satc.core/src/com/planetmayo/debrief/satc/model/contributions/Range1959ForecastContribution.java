@@ -157,8 +157,12 @@ public class Range1959ForecastContribution extends BaseContribution
 		setMinMaxRange(minR, maxR);
 
 		// get the cut near the centre of the dataset
-		FrequencyMeasurement measure = measurements.get(measurements.size()/2);
+		FrequencyMeasurement measure = measurements.get(measurements.size() / 2);
 
+		// NOTE: the following line is from when we applied a range forecast at
+		// every point.
+		// for (FrequencyMeasurement measure : measurements)
+		// {
 		// capture this time
 		Date subjectTime = measure.getDate();
 
@@ -204,7 +208,7 @@ public class Range1959ForecastContribution extends BaseContribution
 
 		// apply the range
 		thisS.constrainTo(myRa);
-
+		// }  // end of looping through all frequency measurements
 	}
 
 	private double calcRDotKts(double rDotDotHz)
