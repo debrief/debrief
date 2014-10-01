@@ -162,7 +162,8 @@
 			<b>Control</b>
 			key and click on row 05:21:30. As you do this, the Interpolate
 			(calculator) button in the grid editor toolbar should become enabled.
-			Click on the interpolate button and the data will be smoothed. You
+			Click on the interpolate button and the bearings for the selected data
+			points will be smoothed along a curve. You
 			may select
 			<b>Undo</b>
 			from the edit menu to undo an interpolation operation.
