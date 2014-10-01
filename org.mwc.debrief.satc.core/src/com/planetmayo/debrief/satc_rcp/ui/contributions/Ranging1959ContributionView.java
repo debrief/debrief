@@ -31,7 +31,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	private Text speedSoundText;
 	private Text fNoughtText;
 	private Text rangeText;
-	private Text rangePeriodText;
+	private Text rangeBoundsText;
 
 	public Ranging1959ContributionView(Composite parent, Range1959ForecastContribution contribution,
 			IContributions contributions)
@@ -85,7 +85,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		});
 		// add FNought
 		gd = new GridData(90, SWT.DEFAULT);
-		UIUtils.createLabel(speed, "F-Nought(Hz):", gd);
+		UIUtils.createLabel(speed, "F0 (Hz):", gd);
 		
 		fNoughtText = new Text(speed, SWT.BORDER|SWT.TRAIL);
 		gd = new GridData(100,SWT.DEFAULT);
@@ -93,7 +93,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		fNoughtText.addVerifyListener(new DoubleVerifier());
 		
 		// now add the range
-		UIUtils.createLabel(bodyGroup, "Calculated Range(m):", new GridData(120, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "1959 Range(m):", new GridData(120, SWT.DEFAULT));
 		UIUtils.createSpacer(bodyGroup, new GridData(1, SWT.DEFAULT));
 		
 		Composite range = new Composite(bodyGroup, SWT.NONE);
@@ -104,9 +104,9 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		gd = new GridData(100,SWT.DEFAULT);
 		rangeText.setLayoutData(gd);
 		
-		rangePeriodText = new Text(range, SWT.BORDER|SWT.READ_ONLY|SWT.TRAIL);
+		rangeBoundsText = new Text(range, SWT.BORDER|SWT.READ_ONLY|SWT.CENTER);
 		gd = new GridData(200,SWT.DEFAULT);
-		rangePeriodText.setLayoutData(gd);
+		rangeBoundsText.setLayoutData(gd);
 		
 		context = new DataBindingContext();
 		bindValues(context);
@@ -135,9 +135,9 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		
 		// bind range period
 		IObservableValue rangePeriodValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.RANGE_PERIOD);
+				Range1959ForecastContribution.RANGE_BOUNDS);
 		ISWTObservableValue rangePeriodTextValue = WidgetProperties.text(SWT.FocusOut)
-				.observe(rangePeriodText);
+				.observe(rangeBoundsText);
 		
 		context.bindValue(rangePeriodTextValue, rangePeriodValue);
 	}
