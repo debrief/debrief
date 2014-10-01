@@ -8,8 +8,8 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-@XStreamAlias("task")
-public class TaskDescription
+@XStreamAlias("solution")
+public class SolutionDescription
 {	
 	private VehicleType vehicleType;
 	

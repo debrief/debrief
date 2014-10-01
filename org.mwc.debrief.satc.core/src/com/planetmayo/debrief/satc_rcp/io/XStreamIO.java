@@ -46,7 +46,7 @@ public class XStreamIO
 	{
 		xstream = new XStream();
 		xstream.registerConverter(new DebriefDateConverter(), XStream.PRIORITY_VERY_HIGH);
-		xstream.processAnnotations(TaskDescription.class);
+		xstream.processAnnotations(SolutionDescription.class);
 
 		aliasFor(xstream, ATBForecastContribution.class);
 		aliasFor(xstream, BearingMeasurementContribution.class);
@@ -73,6 +73,8 @@ public class XStreamIO
 		
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "fNought");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "speedSound");
+		xstream.useAttributeFor(Range1959ForecastContribution.class, "calculatedRange");
+		xstream.useAttributeFor(Range1959ForecastContribution.class, "rangeBounds");
 		
 		xstream.useAttributeFor(BMeasurement.class, "origin");
 		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
@@ -89,7 +91,7 @@ public class XStreamIO
 		xstream.useAttributeFor(FMeasurement.class, "frequency");
 
 		xstream.useAttributeFor(GeoPoint.class, "lat");
-		xstream.useAttributeFor(GeoPoint.class, "lon");
+		xstream.useAttributeFor(GeoPoint.class, "lon");		
 	}
 
 	private static void aliasFor(XStream xstream, Class<?> klass)
@@ -113,7 +115,7 @@ public class XStreamIO
 	public static class XStreamWriter implements ISolver.Writer
 	{
 
-		private final TaskDescription description = new TaskDescription();
+		private final SolutionDescription description = new SolutionDescription();
 
 		@Override
 		public void writeContributions(List<BaseContribution> contributions)
@@ -154,7 +156,7 @@ public class XStreamIO
 
 	public static class XStreamReader implements ISolver.Reader
 	{
-		private TaskDescription description;
+		private SolutionDescription description;
 		private boolean loaded;
 
 		public XStreamReader(InputStream inputStream, String fileName)
@@ -163,9 +165,9 @@ public class XStreamIO
 			{
 				Object object = xstream.fromXML(new InputStreamReader(inputStream,
 						"utf-8"));
-				if (object instanceof TaskDescription)
+				if (object instanceof SolutionDescription)
 				{
-					description = (TaskDescription) object;
+					description = (SolutionDescription) object;
 					if (description.getVersion() != CURRENT_VERSION)
 					{
 						LogFactory.getLog().warn(
@@ -183,7 +185,7 @@ public class XStreamIO
 			catch (IOException ex)
 			{
 				description = null;
-				LogFactory.getLog().error("Can't load task from xml", ex);
+				LogFactory.getLog().error("Can't load SATC Solution from xml", ex);
 			}
 			finally
 			{

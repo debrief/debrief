@@ -16,7 +16,7 @@ public class StraightLegForecastContribution extends BaseContribution implements
 	private static final long serialVersionUID = 1L;
 
 	
-	private Color _myCol = null;
+	private Color color = null;
 	
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -47,9 +47,9 @@ public class StraightLegForecastContribution extends BaseContribution implements
 		}
 
 		// share the good news about the color change
-		Color oldCol = _myCol;
-		_myCol = newCol;
-		firePropertyChange(COLOR, oldCol, _myCol);
+		Color oldCol = color;
+		color = newCol;
+		firePropertyChange(COLOR, oldCol, color);
 		
 		// check that we have at least one state between two straight legs
 		List<BoundedState> previousState = new ArrayList<BoundedState>(
@@ -143,7 +143,7 @@ public class StraightLegForecastContribution extends BaseContribution implements
 	
 	public Color getColor()
 	{
-		return _myCol;
+		return color;
 	}
 	
 	@Override

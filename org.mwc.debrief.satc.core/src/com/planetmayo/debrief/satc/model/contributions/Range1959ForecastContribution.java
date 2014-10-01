@@ -37,11 +37,10 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	private ArrayList<FrequencyMeasurement> measurements = new ArrayList<FrequencyMeasurement>();
 	public static final String OBSERVATIONS_NUMBER = "numObservations";
-	public static final String MIN_RANGE = "minRange";
-	public static final String MAX_RANGE = "maxRange";
 	public static final String RANGE = "range";
 	public static final String SOUND_SPEED = "speedSound";
 	public static final String F_NOUGHT = "fNought";
+	public static final String RANGE_BOUNDS = "rangeBounds";
 
 	/** fNought for radiated source (Hz)
 	 * 
@@ -53,23 +52,22 @@ public class Range1959ForecastContribution extends BaseContribution
 	 */
 	private double speedSound = 3000;
 
-	private transient Double _range;
+	private Double calculatedRange;
 
-	private transient Double _minR;
+	private transient Double calculatedMinRange;
+	
+	private transient Double calculatedMaxRange;
+	
+	private String rangeBounds;
 
-	private transient Double _maxR;
-
-	public Range1959ForecastContribution()
-	{
-	}
 
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
-		double min = this._minR == null ? 0 : this._minR;
-		double max = this._maxR == null ? 0 : this._maxR;
-		if (!isActive() || route.getType() == LegType.ALTERING || _range == null
-				|| _range < min || _range > max)
+		double min = this.calculatedMinRange == null ? 0 : this.calculatedMinRange;
+		double max = this.calculatedMaxRange == null ? 0 : this.calculatedMaxRange;
+		if (!isActive() || route.getType() == LegType.ALTERING || calculatedRange == null
+				|| calculatedRange < min || calculatedRange > max)
 		{
 			return 0;
 		}
@@ -94,7 +92,7 @@ public class Range1959ForecastContribution extends BaseContribution
 							.getLon(), origin.getLocation().getLat());
 					double distance = calculator.getOrthodromicDistance();
 
-					double temp = distance - _range;
+					double temp = distance - calculatedRange;
 					sum += temp * temp;
 					count++;
 				}
@@ -104,7 +102,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		{
 			return 0;
 		}
-		double norm = Math.max(Math.abs(max - _range), Math.abs(min - _range));
+		double norm = Math.max(Math.abs(max - calculatedRange), Math.abs(min - calculatedRange));
 		return Math.sqrt(sum / count) / norm;
 	}
 
@@ -120,10 +118,10 @@ public class Range1959ForecastContribution extends BaseContribution
 		double bDot = calculateBearingRate(space);
 
 		// calculate range
-		_range = calculateRange(rDotDotKts, bDot);
+		double range = calculateRange(rDotDotKts, bDot);
 
 		// convert from kyds to m
-		_range = GeoSupport.yds2m(Math.abs(_range) * 1000d);
+		range = GeoSupport.yds2m(Math.abs(range) * 1000d);
 
 		// calculate range error
 		final double error;
@@ -145,11 +143,15 @@ public class Range1959ForecastContribution extends BaseContribution
 		}
 
 		// calculate min/max ranges
-		_minR = _range - error;
-		_maxR = _range + error;
+		double minR = range - error;
+		double maxR = range + error;
 
 		// sanity check on minR
-		_minR = Math.max(_minR, 100);
+		minR = Math.max(minR, 100);
+		
+		// store these values
+		setRange(range);
+		setMinMaxRange(minR, maxR);
 		
 		for(FrequencyMeasurement measure: measurements)
 		{
@@ -161,8 +163,8 @@ public class Range1959ForecastContribution extends BaseContribution
 			final Point pt = loc.asPoint();
 
 			// yes, ok we can centre our donut on that
-			LinearRing outer = GeoSupport.geoRing(pt, _maxR);
-			LinearRing inner = GeoSupport.geoRing(pt, _minR);
+			LinearRing outer = GeoSupport.geoRing(pt, maxR);
+			LinearRing inner = GeoSupport.geoRing(pt, minR);
 			LinearRing[] holes;
 
 			// did we generate an inner?
@@ -202,43 +204,6 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	}
 
-	private FrequencyMeasurement getMidWayPoint()
-	{
-		long midTime = this.getStartDate().getTime()
-				+ (this.getFinishDate().getTime() - this.getStartDate().getTime()) / 2;
-
-		Iterator<FrequencyMeasurement> iter = measurements.iterator();
-		long bestDiff = -1;
-		FrequencyMeasurement bestM = null;
-		while (iter.hasNext())
-		{
-			FrequencyMeasurement thisM = (FrequencyMeasurement) iter.next();
-			long thisDiff = Math.abs(thisM.getDate().getTime() - midTime);
-
-			if (bestM == null)
-			{
-				// ok, this is the first one
-				bestM = thisM;
-				bestDiff = thisDiff;
-			}
-			else
-			{
-				// test it
-				if (thisDiff < bestDiff)
-				{
-					bestDiff = thisDiff;
-					bestM = thisM;
-				}
-				else
-				{
-					// ok, we've passed the centre - drop out
-					break;
-				}
-			}
-		}
-
-		return bestM;
-	}
 
 
 	private double calcRDotKts(double rDotDotHz)
@@ -339,24 +304,9 @@ public class Range1959ForecastContribution extends BaseContribution
 	}
 
 	@Override
-	protected double calcError(State thisState)
-	{
-		double delta = 0;
-
-		return delta;
-	}
-
-	@Override
 	public ContributionDataType getDataType()
 	{
 		return ContributionDataType.FORECAST;
-	}
-
-	private void clear()
-	{
-		measurements.clear();
-		super.setStartDate(null);
-		super.setFinishDate(null);
 	}
 	
 	/** how many freq measuremnts we contain
@@ -364,6 +314,11 @@ public class Range1959ForecastContribution extends BaseContribution
 	 * @return
 	 */
 	public int size()
+	{
+		return measurements.size();
+	}
+	
+	public int getNumObservations()
 	{
 		return measurements.size();
 	}
@@ -569,21 +524,6 @@ public class Range1959ForecastContribution extends BaseContribution
 			// check the new constraint is in there.
 		}
 		
-		@SuppressWarnings("deprecation")
-		@Test
-		public void testMidPointDerivation()
-		{
-			_freq.loadFrom(TestSupport.getFreqDataOne());
-			FrequencyMeasurement thisM = _freq.getMidWayPoint();
-			assertEquals("found mid way", "12 Jan 2010 13:15:00 GMT", thisM.getDate().toGMTString());
-			_freq.clear();
-			
-			_freq.loadFrom(TestSupport.getFreqDataTwo());
-			thisM = _freq.getMidWayPoint();
-			assertEquals("found mid way", "12 Jan 2010 13:37:30 GMT", thisM.getDate().toGMTString());
-
-		}
-
 		private void addBearing(ProblemSpace space, String date, String time,
 				double bearingDegs) throws IncompatibleStateException
 		{
@@ -639,31 +579,52 @@ public class Range1959ForecastContribution extends BaseContribution
 	 */
 	public Double getRange()
 	{
-		return _range;
+		return calculatedRange;
 	}
 
 	public void setRange(Double range)
 	{
-		this._range = range;
+		Double oldRange = calculatedRange;
+		
+		this.calculatedRange = range;
+		
+		firePropertyChange(RANGE, oldRange, range);
+		firePropertyChange(HARD_CONSTRAINTS, oldRange, range);
 	}
 
-	public Double getMinRange()
+
+	public void setMinMaxRange(Double minR, Double maxR)
 	{
-		return _minR;
+		this.calculatedMinRange = minR;
+		this.calculatedMaxRange = maxR;
+
+		// ok, now put the range into a string value
+		StringBuffer buffer = new StringBuffer();
+		if (calculatedMinRange != null) {
+			buffer.append(new Integer(calculatedMinRange.intValue()).toString());
+		}
+		buffer.append("-");
+		if (calculatedMaxRange != null) {
+			buffer.append(new Integer(calculatedMaxRange.intValue()).toString());
+		}
+		String value = buffer.toString();
+		if (!"-".equals(value)) {
+			setRangeBounds(value);
+		}
 	}
 
-	public void setMinRange(Double minR)
+	public String getRangeBounds()
 	{
-		this._minR = minR;
+		return rangeBounds;
 	}
 
-	public Double getMaxRange()
+	public void setRangeBounds(String rangeBounds)
 	{
-		return _maxR;
-	}
+		String oldRange = this.rangeBounds;
+		this.rangeBounds = rangeBounds;
+		
+		firePropertyChange(RANGE_BOUNDS, oldRange, rangeBounds);
+		firePropertyChange(HARD_CONSTRAINTS, oldRange, rangeBounds);
 
-	public void setMaxRange(Double maxR)
-	{
-		this._maxR = maxR;
 	}
 }
