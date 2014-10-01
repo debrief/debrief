@@ -483,14 +483,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private boolean _LabelAtStart = true;
 
-	private HiResDate _lastLabelFrequency = new HiResDate(0,
-			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	private HiResDate _lastLabelFrequency = null;
 
-	private HiResDate _lastSymbolFrequency = new HiResDate(0,
-			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	private HiResDate _lastSymbolFrequency = null;
 
-	private HiResDate _lastArrowFrequency = new HiResDate(0,
-			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	private HiResDate _lastArrowFrequency = null;
 
 	private HiResDate _lastDataFrequency = new HiResDate(0,
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);

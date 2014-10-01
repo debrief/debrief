@@ -269,8 +269,8 @@
            <command
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/SelectSegment.png"
-              label="Drag &amp;TMA Segment"
-              tooltip="Drag TMA Segment"
+              label="Drag &amp;Track Segment"
+              tooltip="Drag Track Segment"
               style="radio"
               id="org.mwc.debrief.core.DragSegment">
            	  <parameter
