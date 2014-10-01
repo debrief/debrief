@@ -699,9 +699,7 @@ public class SATC_Solution extends BaseLayer implements
 						// is it one of ours?
 						if (dataMgr != null)
 						{
-							{
 								dataMgr.fireTrackShift(wl);
-							}
 						}
 					}
 				}
