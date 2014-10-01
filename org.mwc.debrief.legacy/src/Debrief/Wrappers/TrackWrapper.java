@@ -1267,6 +1267,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else
 		{
 			final Enumeration<Editable> it = getPositions();
+			
 			while (it.hasMoreElements())
 			{
 				final FixWrapper fw = (FixWrapper) it.nextElement();
@@ -1334,6 +1335,22 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // whether we have any sensors
 
 		} // whether we're visible
+		
+		// SPECIAL CASE: if we're a DR track, the positions all 
+		// have the same value
+		if(res != null)
+		{
+			// have we ended up with an empty area?
+			if(res.getHeight() == 0)
+			{
+				// ok - force a bounds update
+				sortOutRelativePositions();
+
+				// and retrieve the bounds of hte first segment
+				res = this.getSegments().first().getBounds();
+			}
+		}
+	
 
 		return res;
 	}
