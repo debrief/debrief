@@ -140,6 +140,7 @@ public class DTGBiSlider
 				_dateModel, _uiModel, fineControl);
 
 		setShowLabels(false);
+		resetMinMaxPointers();
 	}
 
 	public Composite getControl()
@@ -240,8 +241,20 @@ public class DTGBiSlider
 	
 	public void setShowLabels(boolean showLabels) {
 		_mySlider.setShowLabels(showLabels);
+		redrawInternal();
+	}
+
+	private void redrawInternal()
+	{
 		if (_mySlider != null && !_mySlider.isDisposed()) {
 			_mySlider.redraw();
 		}
+	}
+
+	public void resetMinMaxPointers()
+	{
+		_mySlider.resetMinMaxPointers();
+		redrawInternal();
+		
 	}
 }

@@ -12,4 +12,7 @@ public abstract class BiSlider extends Composite {
     public abstract BiSliderUIModel getUIModel();
 
 		public abstract void setShowLabels(boolean showLabels);
+
+		public abstract void resetMinMaxPointers();
+		
 }
