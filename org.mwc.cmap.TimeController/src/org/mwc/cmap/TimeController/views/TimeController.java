@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.TimerTask;
 import java.util.Vector;
 
 import junit.framework.TestCase;
@@ -35,6 +36,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -514,16 +517,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		lBwd.setToolTipText("Move backward large step");
 		// lBwd.setImage(TimeControllerPlugin.getImage("icons/control_rewind_blue.png"));
 		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
-		lBwd.addSelectionListener(new TimeButtonSelectionListener(false,
-				new Boolean(true)));
+		//lBwd.addSelectionListener(new TimeButtonSelectionListener(false,
+		//		new Boolean(true)));
+		TimeButtonListener listener = new TimeButtonListener(false, new Boolean(true));
+		addTimeButtonListener(lBwd, listener);
+		
 		final Button sBwd = new Button(_btnPanel, SWT.NONE);
 		// sBwd.setText("<");
 		sBwd.setToolTipText("Move backward small step");
 		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
 		// sBwd.setImage(TimeControllerPlugin.getImage("icons/control_back_blue.png"));
-		sBwd.addSelectionListener(new TimeButtonSelectionListener(false,
-				new Boolean(false)));
-
+		//sBwd.addSelectionListener(new TimeButtonSelectionListener(false,
+		//		new Boolean(false)));
+		listener = new TimeButtonListener(false, new Boolean(false));
+		addTimeButtonListener(sBwd, listener);
+		
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
 		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
 		_playButton.setToolTipText(PLAY_TEXT);
@@ -568,16 +576,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// _forwardButton.setImage(TimeControllerPlugin.getImage("icons/control_forward_blue.png"));
 		_forwardButton.setImage(TimeControllerPlugin
 				.getImage("icons/media_forward.png"));
-		_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true,
-				new Boolean(false)));
+		//_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true,
+		//		new Boolean(false)));
+		listener = new TimeButtonListener(true, new Boolean(false));
+		addTimeButtonListener(_forwardButton, listener);
+		
 		_forwardButton.setToolTipText("Move forward small step");
 
 		final Button lFwd = new Button(_btnPanel, SWT.NONE);
 		// lFwd.setImage(TimeControllerPlugin.getImage("icons/control_fastforward_blue.png"));
 		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
 		lFwd.setToolTipText("Move forward large step");
-		lFwd.addSelectionListener(new TimeButtonSelectionListener(true,
-				new Boolean(true)));
+		//lFwd.addSelectionListener(new TimeButtonSelectionListener(true,
+		//		new Boolean(true)));
+		listener = new TimeButtonListener(true, new Boolean(true));
+		addTimeButtonListener(lFwd, listener);
+		
+		
 		final Button eFwd = new Button(_btnPanel, SWT.NONE);
 		// eFwd.setImage(TimeControllerPlugin.getImage("icons/control_end_blue.png"));
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
@@ -605,6 +620,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_buttonList.put("sFwd", _forwardButton);
 		_buttonList.put("lFwd", lFwd);
 		_buttonList.put("eFwd", eFwd);
+	}
+
+	private void addTimeButtonListener(final Button button,
+			final TimeButtonListener listener)
+	{
+		button.addListener(SWT.MouseDown, listener);
+		button.addListener(SWT.MouseUp, listener);
+		button.addDisposeListener(new DisposeListener()
+		{
+			
+			@Override
+			public void widgetDisposed(DisposeEvent e)
+			{
+				listener.purge();
+				button.removeListener(SWT.MouseDown, listener);
+				button.removeListener(SWT.MouseUp, listener);
+			}
+		});
 	}
 
 	boolean _alreadyProcessingChange = false;
@@ -2601,6 +2634,77 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		public void widgetDefaultSelected(final SelectionEvent e)
 		{
+		}
+	}
+
+	/**
+	 * convenience class to help us manage the fwd/bwd step buttons
+	 * 
+	 * issue https://github.com/debrief/debrief/issues/710
+	 * 
+	 * @author Ian.Mayo
+	 * @author snpe
+	 */
+	private class TimeButtonListener implements Listener
+	{
+		private static final long DELAY = 300;
+		
+		private final boolean _fwd;
+
+		private final Boolean _large;
+		
+		private java.util.Timer _timer;
+		
+		public TimeButtonListener(final boolean fwd, final Boolean large)
+		{
+			_fwd = fwd;
+			_large = large;
+		}
+
+		public void process()
+		{
+			try
+			{
+				processClick(_large, _fwd);
+			}
+			catch (final RuntimeException e1)
+			{
+				CorePlugin
+						.logError(Status.ERROR, "Failed when trying to time step", e1);
+				purge();
+			}
+		}
+
+		@Override
+		public void handleEvent(Event event)
+		{
+			int type = event.type;
+			if (type == SWT.MouseDown) {
+				purge();
+				process();
+				_timer = new java.util.Timer();
+				TimerTask task = new TimerTask()
+				{
+					
+					@Override
+					public void run()
+					{
+						process();
+					}
+				};
+				_timer.scheduleAtFixedRate(task, DELAY, DELAY);
+			}
+			if (type == SWT.MouseUp) {
+				purge();
+			}
+		}
+		
+		public void purge() {
+			if (_timer != null) {
+				_timer.cancel();
+				_timer.purge();
+				_timer = null;
+			}
 		}
 	}
 
