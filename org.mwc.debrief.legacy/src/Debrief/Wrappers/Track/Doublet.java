@@ -291,9 +291,9 @@ public final class Doublet implements Comparable<Doublet>
 	{
 		double predictedFreq = 0;
 
-		if (_targetTrack instanceof RelativeTMASegment)
+		if (_targetTrack instanceof CoreTMASegment)
 		{
-			final RelativeTMASegment rt = (RelativeTMASegment) _targetTrack;
+			final CoreTMASegment rt = (CoreTMASegment) _targetTrack;
 			final double theBearingDegs = getCalculatedBearing(null, null);
 			final double theBearingRads = MWC.Algorithms.Conversions
 					.Degs2Rads(theBearingDegs);
