@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Wed Oct 01 08:11:26 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Wed Oct 01 09:51:06 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Thu Sep 25 08:33:52 GMT 2014"/>
 <session>
 <layers>
@@ -3112,11 +3112,11 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
-<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="20000" ScaleStep="5000" Visible="true">
+<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
-<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowAlterationBounds="false" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -3427,10 +3427,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.3871898" Long="-0.4020466"/>
+<shortLocation Depth="0.000" Lat="60.3029572" Long="-0.3333814"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.8692290" Long="0.1676022"/>
+<shortLocation Depth="0.000" Lat="59.9883599" Long="0.0127889"/>
 </br>
 </projection>
 <gui>
