@@ -146,7 +146,14 @@
 			Once you&apos;re happy with the first solution it&apos;s time to move
 			on. It would appear from the sensor data that the turn is represented
 			by about 13 cuts before a further straight line section of data.
-			So, on the plot, now click on the first sensor cut of the second steady
+			As you look at the fan of sensor data, you can see there&apos;s an early block
+			of bearing lines that a roughly parallel. Then towards the end of the track
+			the bearing lines appear to converge steadily  around a single point.
+			In between these two periods of steady data, the lines jump around a little,
+			representing the period where the subject vessel is changing course 
+			and/or speed.
+			<br/>  
+			Now, let&apos;s work with the plot again. Click on the first sensor cut of the second steady
 			set of bearings - that cut will be highlighted in the
 			<b>Outline View</b>.
 			Now scroll down to the end of the data and shift-click the last
