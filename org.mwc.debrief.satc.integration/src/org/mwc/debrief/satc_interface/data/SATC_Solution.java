@@ -692,13 +692,14 @@ public class SATC_Solution extends BaseLayer implements
 				{
 					final IWorkbenchPage page = win.getActivePage();
 					final IEditorPart editor = page.getActiveEditor();
-					final TrackDataProvider dataMgr = (TrackDataProvider) editor
-							.getAdapter(TrackDataProvider.class);
-					// is it one of ours?
-					if (dataMgr != null)
+					if (editor != null)
 					{
+						final TrackDataProvider dataMgr = (TrackDataProvider) editor
+								.getAdapter(TrackDataProvider.class);
+						// is it one of ours?
+						if (dataMgr != null)
 						{
-							dataMgr.fireTrackShift(wl);
+								dataMgr.fireTrackShift(wl);
 						}
 					}
 				}
