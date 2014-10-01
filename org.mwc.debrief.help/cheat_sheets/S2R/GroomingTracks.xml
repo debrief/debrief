@@ -84,6 +84,8 @@
 	</item>
 	<item title="Zoom in on jump">
 		<description>
+			If you look at the Blue track, you will see several instances where
+			there is a large step (jump) in the data.  We&apos;re going to fix those.
 			Start off by zooming in on the jumps shown near the bottom of the blue
 			track. The zoom in button is the magnifying glass with a plus sign
 			inside it
