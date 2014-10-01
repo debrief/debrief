@@ -78,6 +78,7 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -291,6 +292,8 @@ public class SATC_Solution extends BaseLayer implements
 				{
 						prop("ShowLocationConstraints",
 								"whether to display location constraints", FORMAT),
+  					prop("ShowAlterationStates",
+										"whether to states during alteration", FORMAT),
 						prop("OnlyPlotLegEnds",
 								"whether to only plot location bounds at leg ends", FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
@@ -417,6 +420,8 @@ public class SATC_Solution extends BaseLayer implements
 	private boolean _showLocationBounds = false;
 
 	private boolean _onlyPlotLegEnds = false;
+	
+	private boolean _showAlteringBounds = false;
 
 	private boolean _showSolutions = true;
 
@@ -847,6 +852,16 @@ public class SATC_Solution extends BaseLayer implements
 		return _showLocationBounds;
 	}
 
+	public boolean getShowAlterationStates()
+	{
+		return _showAlteringBounds;
+	}
+
+	public void setShowAlterationStates(boolean showAlteringBounds)
+	{
+		this._showAlteringBounds = showAlteringBounds;
+	}
+
 	public boolean getShowSolutions()
 	{
 		return _showSolutions;
@@ -1071,6 +1086,10 @@ public class SATC_Solution extends BaseLayer implements
 				.hasNext();)
 		{
 			final BoundedState thisS = iterator.next();
+			
+			// we don't plot altering states
+			if(!getShowAlterationStates() && (thisS.getStateType() == BoundedStateType.ALTERING))
+				continue;
 
 			// do some fancy tests for if users only want the
 			// states that appear at leg ends
