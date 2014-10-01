@@ -90,7 +90,7 @@ Drag in this file of 3rd party data, again selecting OTG during the import.   Yo
 		<description>We&apos;ll start off by moving the third party track segment down to the right region. To do this, click on the &apos;Drag whole feature&apos; toolbar button: it&apos;s a cursor arrow with a rectangle to its top-right. Now move your hand-shaped cursor over the &apos;rogue&apos; green track. You&apos;ll see your hand-shaped cursor turn green as it passes over something that can be dragged.  When its green over the rogue track, click the mouse and drag it down near the start of the blue track (Hint, put it just below the &apos;g&apos; of the blue track title.  Trust me, I know where it&apos;s going to go...).</description>
 	</item>	
 	<item title="Fit to window">
-		<description>Now click on the 'Fit to Window' toolbar button, it's the green diagonal arrows. The plot will now zoom in and you'll see the data in more detail</description>
+		<description>Now click on the <b>Fit to Window</b> toolbar button, it&apos;s the green diagonal arrows. The plot will now zoom in and you&apos;ll see the data in more detail</description>
 	</item>
 	<item title="Zoom in on blue hole">
 		<description>Next we&apos;re going to zoom in on where the green segment is to be inserted.  To do this, select <b>Zoom in</b> from the toolbar.  Once the zoom button is clicked, drag a rectangle around the top 1/3 of the blue track.  Once zoomed in, you&apos;ll clearly see the jump where our missing data is to go.  </description>

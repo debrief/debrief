@@ -14,10 +14,10 @@
 			<b>DR</b>
 			mode when asked). Perform a Fit to Window once loaded to have a look
 			at the track. Next, drag in
-			<b>sensor.dsf</b>
-			. Now,
-			<b>don&apos;t worry </b>
-			if it doesn&apos;t appear on the plot - this is by intention.
+			<b>sensor.dsf</b>.  The Sensor Import Wizard will offer you some
+			customisations, but you can ignore them.
+			Now, <b>don&apos;t worry </b>
+			if the sensor data doesn&apos;t appear on the plot - this is by intention.
 		</description>
 	</item>
 	<item title="Make sensor data visible">
