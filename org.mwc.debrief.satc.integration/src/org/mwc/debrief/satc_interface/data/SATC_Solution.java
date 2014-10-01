@@ -674,6 +674,41 @@ public class SATC_Solution extends BaseLayer implements
 				_constrainListener);
 		_myLayers = null;
 	}
+	
+	@Override
+	public WorldArea getBounds()
+	{
+		WorldArea res = null;
+	
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			final CompositeRoute route = _newRoutes[0];
+			
+			Collection<CoreRoute> legs = route.getLegs();
+			for (Iterator<CoreRoute> iterator = legs.iterator(); iterator.hasNext();)
+			{
+				CoreRoute thisRoute = (CoreRoute) iterator.next();
+				
+				// get the end points for this leg
+				final WorldLocation start = conversions.toLocation(thisRoute.getStartPoint().getCoordinate());
+				final WorldLocation end = conversions.toLocation(thisRoute.getEndPoint().getCoordinate());
+
+				// is this the first area?
+				if(res == null)
+				{
+					res = new WorldArea(start,end);
+				}
+				else
+				{
+					res.extend(new WorldArea(start, end));
+				}
+			}
+		}
+		
+		return res;
+	}
 
 	protected void fireRepaint()
 	{
