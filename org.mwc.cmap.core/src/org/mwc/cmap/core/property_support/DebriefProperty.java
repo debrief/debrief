@@ -339,7 +339,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 
 		if (_myHelper != null)
 		{
-			res = _myHelper.translateToSWT(res);
+			if(res != null)
+				res = _myHelper.translateToSWT(res);
 		}
 
 		return res;
