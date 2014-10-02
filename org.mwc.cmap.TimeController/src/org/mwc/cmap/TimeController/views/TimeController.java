@@ -502,40 +502,26 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_btnPanel = new Composite(_wholePanel, SWT.BORDER);
 		_btnPanel.setLayout(new GridLayout(7, true));
 
-		// FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
-		// btnFiller.marginHeight = 0;
-		// _btnPanel.setLayout(btnFiller);
-
 		final Button eBwd = new Button(_btnPanel, SWT.NONE);
-		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
+		addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false, null, false));
 		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
 		eBwd.setToolTipText("Move to start of dataset");
-		// eBwd.setImage(TimeControllerPlugin.getImage("icons/control_start_blue.png"));
 
 		final Button lBwd = new Button(_btnPanel, SWT.NONE);
-		// lBwd.setText("<<");
-		lBwd.setToolTipText("Move backward large step");
-		// lBwd.setImage(TimeControllerPlugin.getImage("icons/control_rewind_blue.png"));
+		lBwd.setToolTipText("Move backward large step (hold to repeat)");
 		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
-		//lBwd.addSelectionListener(new TimeButtonSelectionListener(false,
-		//		new Boolean(true)));
-		TimeButtonListener listener = new TimeButtonListener(false, new Boolean(true));
+		RepeatingTimeButtonListener listener = new RepeatingTimeButtonListener(false, new Boolean(true), true);
 		addTimeButtonListener(lBwd, listener);
 		
 		final Button sBwd = new Button(_btnPanel, SWT.NONE);
-		// sBwd.setText("<");
-		sBwd.setToolTipText("Move backward small step");
+		sBwd.setToolTipText("Move backward small step (hold to repeat)");
 		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
-		// sBwd.setImage(TimeControllerPlugin.getImage("icons/control_back_blue.png"));
-		//sBwd.addSelectionListener(new TimeButtonSelectionListener(false,
-		//		new Boolean(false)));
-		listener = new TimeButtonListener(false, new Boolean(false));
+		listener = new RepeatingTimeButtonListener(false, new Boolean(false), true);
 		addTimeButtonListener(sBwd, listener);
 		
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
 		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
 		_playButton.setToolTipText(PLAY_TEXT);
-		// _playButton.setImage(TimeControllerPlugin.getImage("icons/control_play_blue.png"));
 		_playListener = new SelectionAdapter()
 		{
 			public void widgetSelected(final SelectionEvent e)
@@ -546,16 +532,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				// ImageDescriptor thisD;
 				if (playing)
 				{
-					// thisD = TimeControllerPlugin
-					// .getImageDescriptor("icons/media_pause.png");
 					startPlaying();
 					tipTxt = PAUSE_TEXT;
 					imageTxt = "icons/media_pause.png";
 				}
 				else
 				{
-					// thisD = TimeControllerPlugin
-					// .getImageDescriptor("icons/media_play.png");
 					stopPlaying();
 					tipTxt = PLAY_TEXT;
 					imageTxt = "icons/media_play.png";
@@ -573,31 +555,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_playButton.addSelectionListener(_playListener);
 
 		_forwardButton = new Button(_btnPanel, SWT.NONE);
-		// _forwardButton.setImage(TimeControllerPlugin.getImage("icons/control_forward_blue.png"));
 		_forwardButton.setImage(TimeControllerPlugin
 				.getImage("icons/media_forward.png"));
-		//_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true,
-		//		new Boolean(false)));
-		listener = new TimeButtonListener(true, new Boolean(false));
+		listener = new RepeatingTimeButtonListener(true, new Boolean(false), true);
 		addTimeButtonListener(_forwardButton, listener);
 		
-		_forwardButton.setToolTipText("Move forward small step");
+		_forwardButton.setToolTipText("Move forward small step (hold to repeat)");
 
 		final Button lFwd = new Button(_btnPanel, SWT.NONE);
-		// lFwd.setImage(TimeControllerPlugin.getImage("icons/control_fastforward_blue.png"));
 		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
-		lFwd.setToolTipText("Move forward large step");
-		//lFwd.addSelectionListener(new TimeButtonSelectionListener(true,
-		//		new Boolean(true)));
-		listener = new TimeButtonListener(true, new Boolean(true));
+		lFwd.setToolTipText("Move forward large step (hold to repeat)");
+		listener = new RepeatingTimeButtonListener(true, new Boolean(true), true);
 		addTimeButtonListener(lFwd, listener);
 		
 		
 		final Button eFwd = new Button(_btnPanel, SWT.NONE);
-		// eFwd.setImage(TimeControllerPlugin.getImage("icons/control_end_blue.png"));
+		addTimeButtonListener(eFwd, new RepeatingTimeButtonListener(true, null, false));
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
 		eFwd.setToolTipText("Move to end of dataset");
-		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
 		final GridDataFactory btnGd = GridDataFactory.fillDefaults().grab(true,
 				false);
@@ -623,7 +598,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	}
 
 	private void addTimeButtonListener(final Button button,
-			final TimeButtonListener listener)
+			final RepeatingTimeButtonListener listener)
 	{
 		button.addListener(SWT.MouseDown, listener);
 		button.addListener(SWT.MouseUp, listener);
@@ -2605,60 +2580,35 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * convenience class to help us manage the fwd/bwd step buttons
 	 * 
-	 * @author Ian.Mayo
-	 */
-	private class TimeButtonSelectionListener implements SelectionListener
-	{
-		private final boolean _fwd;
-
-		private final Boolean _large;
-
-		public TimeButtonSelectionListener(final boolean fwd, final Boolean large)
-		{
-			_fwd = fwd;
-			_large = large;
-		}
-
-		public void widgetSelected(final SelectionEvent e)
-		{
-			try
-			{
-				processClick(_large, _fwd);
-			}
-			catch (final RuntimeException e1)
-			{
-				CorePlugin
-						.logError(Status.ERROR, "Failed when trying to time step", e1);
-			}
-		}
-
-		public void widgetDefaultSelected(final SelectionEvent e)
-		{
-		}
-	}
-
-	/**
-	 * convenience class to help us manage the fwd/bwd step buttons
-	 * 
 	 * issue https://github.com/debrief/debrief/issues/710
 	 * 
 	 * @author Ian.Mayo
 	 * @author snpe
 	 */
-	private class TimeButtonListener implements Listener
+	private class RepeatingTimeButtonListener implements Listener
 	{
 		private static final long DELAY = 300;
 		
-		private final boolean _fwd;
+		protected final boolean _fwd;
 
-		private final Boolean _large;
-		
+		protected final Boolean _large;
+
+		private boolean _doRepeat;
+
 		private java.util.Timer _timer;
 		
-		public TimeButtonListener(final boolean fwd, final Boolean large)
+		
+		/**
+		 * 
+		 * @param fwd whether this button moves forward or backwards
+		 * @param large whether this button moves in large or small steps
+		 * @param doRepeat whether this button repeats if held down
+		 */
+		public RepeatingTimeButtonListener(final boolean fwd, final Boolean large, final boolean doRepeat)
 		{
 			_fwd = fwd;
 			_large = large;
+			_doRepeat = doRepeat;
 		}
 
 		public void process()
@@ -2675,30 +2625,41 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		}
 
-		@Override
 		public void handleEvent(Event event)
 		{
 			int type = event.type;
 			if (type == SWT.MouseDown) {
+				// clear any previous timers
 				purge();
+				
+				// fire a single step
 				process();
-				_timer = new java.util.Timer();
-				TimerTask task = new TimerTask()
+				
+				// do we need a repeating behaviour?
+				if(_doRepeat)
 				{
-					
-					@Override
-					public void run()
-					{
-						process();
-					}
-				};
-				_timer.scheduleAtFixedRate(task, DELAY, DELAY);
+					// initiate a timer to give repeating behaviour
+					_timer = new java.util.Timer();
+					TimerTask task = new TimerTask()
+					{						
+						@Override
+						public void run()
+						{
+							// fire a single step
+							process();
+						}
+					};
+					_timer.scheduleAtFixedRate(task, DELAY, DELAY);					
+				}
 			}
 			if (type == SWT.MouseUp) {
 				purge();
 			}
 		}
 		
+		/** clear any active timer
+		 * 
+		 */
 		public void purge() {
 			if (_timer != null) {
 				_timer.cancel();
