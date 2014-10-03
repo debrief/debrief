@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -100,6 +101,7 @@ import org.osgi.framework.Bundle;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -119,6 +121,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
 import MWC.TacticalData.IRollingNarrativeProvider;
 
 /**
@@ -1084,8 +1087,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 												.getPrimaryTrack());
 
 										// plot it
-										_layerPainterManager.getCurrentHighlighter().highlightIt(
-												dest.getProjection(), dest, list, watch, isPrimary);
+										if (_myOperations != null
+												&& _myOperations.getPeriod() != null)
+										{
+											Watchable w = findWatchInPeriod(list, watch);
+											_layerPainterManager.getCurrentHighlighter().highlightIt(
+													dest.getProjection(), dest, list, w, isPrimary);
+										}
 									}
 
 								}
@@ -1583,5 +1591,47 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	public void outlinePageClosed()
 	{
 		_outlinePage = null;
+	}
+
+	private Watchable findWatchInPeriod(final WatchableList list,
+			final Watchable watch)
+	{
+		Watchable w = watch;
+		TimePeriod period = _myOperations.getPeriod();
+		if (!period.contains(watch.getTime()))
+		{
+			WorldLocation _zeroLocation = new WorldLocation(0, 0, 0);
+			Editable last = null;
+			Editable first = null;
+			if (list instanceof TrackWrapper) {
+				TrackWrapper tw = (TrackWrapper) list;
+				Collection<Editable> items = tw.getItemsBetween(period.getStartDTG(), period.getEndDTG());
+				Iterator<Editable> iter = items.iterator();
+				if (iter.hasNext()) {
+					first = iter.next();
+					last = first;
+				}
+				while (iter.hasNext()) {
+					last = iter.next();
+				}
+			}
+			if (watch.getTime().greaterThan(period.getEndDTG())) 
+			{
+				if (last instanceof FixWrapper) {
+					_zeroLocation = ((FixWrapper)last).getLocation();
+				}
+				w = new FixWrapper(new Fix(period.getEndDTG(), _zeroLocation, 0.0,
+						0.0));
+			} 
+			else 
+			{
+				if (first instanceof FixWrapper) {
+					_zeroLocation = ((FixWrapper)first).getLocation();
+				}
+				w = new FixWrapper(new Fix(period.getStartDTG(), _zeroLocation, 0.0,
+						0.0));
+			}
+		}
+		return w;
 	}
 }
