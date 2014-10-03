@@ -25,11 +25,9 @@ import ASSET.Util.SupportTesting;
 import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
-import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-import MWC.TacticalData.Fix;
 
 public class NarrowbandSensor extends InitialSensor
 {
