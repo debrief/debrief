@@ -59,8 +59,8 @@ public class FrequencyCalcs
 	private static double calcObservedFreqCollate(double f0, double C, double bearing, double rxCourse, double rxSpeed, double txCourse, double txSpeed)
 	{
 		// collate the data
-		double rxSpeedAlong = rxSpeed * Math.cos(rxCourse - bearing);
-		double txSpeedAlong = txSpeed * Math.cos(txCourse - bearing);
+		double rxSpeedAlong = rxSpeed * Math.cos(-(bearing - rxCourse));
+		double txSpeedAlong = txSpeed * Math.cos(txCourse- bearing);
 		
 		return calcObservedFreqCore(f0, C, rxSpeedAlong, txSpeedAlong);
 	}
@@ -132,6 +132,38 @@ public class FrequencyCalcs
 	static public final class testCalc extends junit.framework.TestCase
 	{
 
+		public void testDemoFigures()
+		{
+			// (figures as provided by Iain)
+			double osKts = 2.5;
+			double osDegs = 208.2;
+			double tgtKts = 9;
+			double tgtDegs = 350.17;
+			double bearing = 260.47;
+			double Ckts = 2951;
+			double f0 = 150;
+			
+			double osMS = new WorldSpeed(osKts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
+			double tgtMS = new WorldSpeed(tgtKts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
+			double osRads = Math.toRadians(osDegs);
+			double tgtRads = Math.toRadians(tgtDegs);
+			double brgRads = Math.toRadians(bearing);
+			double Cms = new WorldSpeed(Ckts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
+			
+			double relBrg = bearing - osDegs;
+			double OSL = osKts * Math.cos(Math.toRadians(-relBrg));
+			double ATB = tgtDegs - bearing;
+			double TSL = tgtKts * Math.cos(Math.toRadians(ATB));
+
+			assertEquals("correct OSL", 1.5298, OSL, 0.0001);			
+			assertEquals("correct TSL", 0.04712, TSL, 0.0001);
+			
+			double res = FrequencyCalcs.calcObservedFreqCollate(f0, Cms, brgRads, osRads, osMS, tgtRads, tgtMS);
+			
+			assertEquals("correct obs", 150.0750, res, 0.001);
+			
+		}
+		
 		public void testBasics()
 		{
 			final double C_MS = 2900;
