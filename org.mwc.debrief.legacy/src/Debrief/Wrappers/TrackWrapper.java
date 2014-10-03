@@ -308,6 +308,125 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the parent tracks for the supplied items
 	 * @param subjects
 	 *          the actual selected items
+	 * @return sufficient information to undo the merge
+	 */
+	public static int mergeTracksInPlace(final Editable target,
+			final Layers theLayers, final Layer[] parents, final Editable[] subjects)
+	{
+		// where we dump the new data points
+		Layer receiver = (Layer) target;
+
+		// check that the legs don't overlap
+		String failedMsg = checkTheyAreNotOverlapping(subjects);
+
+		// how did we get on?
+		if (failedMsg != null)
+		{
+			MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg
+					+ " overlap in time. Please correct this and retry",
+					MessageProvider.ERROR);
+			return MessageProvider.ERROR;
+		}
+
+		// right, if the target is a TMA track, we have to change it into a
+		// proper
+		// track, since
+		// the merged tracks probably contain manoeuvres
+		if (target instanceof CoreTMASegment)
+		{
+			final CoreTMASegment tma = (CoreTMASegment) target;
+			final TrackSegment newSegment = new TrackSegment(tma);
+
+			// now do some fancy footwork to remove the target from the wrapper,
+			// and
+			// replace it with our new segment
+			newSegment.getWrapper().removeElement(target);
+			newSegment.getWrapper().add(newSegment);
+
+			// store the new segment into the receiver
+			receiver = newSegment;
+		}
+
+		// ok, loop through the subjects, adding them onto the target
+		for (int i = 0; i < subjects.length; i++)
+		{
+			final Layer thisL = (Layer) subjects[i];
+			final TrackWrapper thisP = (TrackWrapper) parents[i];
+			// is this the target item (note we're comparing against the item
+			// passed
+			// in, not our
+			// temporary receiver, since the receiver may now be a tracksegment,
+			// not a
+			// TMA segment
+			if (thisL != target)
+			{
+				// is it a plain segment?
+				if (thisL instanceof TrackWrapper)
+				{
+					// pass down through the positions/segments
+					final Enumeration<Editable> pts = thisL.elements();
+
+					while (pts.hasMoreElements())
+					{
+						final Editable obj = pts.nextElement();
+						if (obj instanceof SegmentList)
+						{
+							final SegmentList sl = (SegmentList) obj;
+							final Enumeration<Editable> segs = sl.elements();
+							while (segs.hasMoreElements())
+							{
+								final TrackSegment ts = (TrackSegment) segs.nextElement();
+								receiver.add(ts);
+							}
+						}
+						else
+						{
+							final Layer ts = (Layer) obj;
+							receiver.append(ts);
+						}
+					}
+				}
+				else
+				{
+					// get it's data, and add it to the target
+					receiver.append(thisL);
+				}
+
+				// and remove the layer from it's parent
+				if (thisL instanceof TrackSegment)
+				{
+					thisP.removeElement(thisL);
+
+					// does this just leave an empty husk?
+					if (thisP.numFixes() == 0)
+					{
+						// may as well ditch it anyway
+						theLayers.removeThisLayer(thisP);
+					}
+
+				}
+				else
+				{
+					// we'll just remove it from the top level layer
+					theLayers.removeThisLayer(thisL);
+				}
+			}
+
+		}
+
+		return MessageProvider.OK;
+	}
+
+	/**
+	 * perform a merge of the supplied tracks.
+	 * 
+	 * @param target
+	 *          the final recipient of the other items
+	 * @param theLayers
+	 * @param parents
+	 *          the parent tracks for the supplied items
+	 * @param subjects
+	 *          the actual selected items
 	 * @param _newName
 	 *          name to give to the merged object
 	 * @return sufficient information to undo the merge
@@ -347,7 +466,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					if (obj instanceof SegmentList)
 					{
 						final SegmentList sl = (SegmentList) obj;
-						TrackSegment newT = new TrackSegment(); 
+						TrackSegment newT = new TrackSegment();
 						duplicateFixes(sl, newT);
 						newTrack.add(newT);
 					}
@@ -356,7 +475,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						TrackSegment ts = (TrackSegment) obj;
 
 						// ok, duplicate the fixes in this segment
-						TrackSegment newT = new TrackSegment(); 
+						TrackSegment newT = new TrackSegment();
 						duplicateFixes(ts, newT);
 
 						// and add it to the new track
@@ -369,7 +488,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				TrackSegment ts = (TrackSegment) thisL;
 
 				// ok, duplicate the fixes in this segment
-				TrackSegment newT = new TrackSegment(); 
+				TrackSegment newT = new TrackSegment();
 				duplicateFixes(ts, newT);
 
 				// and add it to the new track
@@ -378,8 +497,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			else if (thisL instanceof SegmentList)
 			{
 				SegmentList sl = (SegmentList) thisL;
-				TrackSegment newT = new TrackSegment(); 
-				
+				TrackSegment newT = new TrackSegment();
+
 				// ok, duplicate the fixes in this segment
 				duplicateFixes(sl, newT);
 
@@ -395,7 +514,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	private static void duplicateFixes(SegmentList sl, TrackSegment target)
-	{		
+	{
 		final Enumeration<Editable> segs = sl.elements();
 		while (segs.hasMoreElements())
 		{
@@ -409,7 +528,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 			else
 			{
-				duplicateFixes(segment, target);			
+				duplicateFixes(segment, target);
 			}
 		}
 	}
@@ -1264,7 +1383,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else
 		{
 			final Enumeration<Editable> it = getPositions();
-			
+
 			while (it.hasMoreElements())
 			{
 				final FixWrapper fw = (FixWrapper) it.nextElement();
@@ -1332,13 +1451,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // whether we have any sensors
 
 		} // whether we're visible
-		
-		// SPECIAL CASE: if we're a DR track, the positions all 
+
+		// SPECIAL CASE: if we're a DR track, the positions all
 		// have the same value
-		if(res != null)
+		if (res != null)
 		{
 			// have we ended up with an empty area?
-			if(res.getHeight() == 0)
+			if (res.getHeight() == 0)
 			{
 				// ok - force a bounds update
 				sortOutRelativePositions();
@@ -1347,7 +1466,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				res = this.getSegments().first().getBounds();
 			}
 		}
-	
 
 		return res;
 	}

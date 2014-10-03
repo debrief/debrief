@@ -74,14 +74,15 @@ public class TrackWrapper_Support
 		 * property support
 		 * 
 		 */
-		private transient PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
+		private transient PropertyChangeSupport _pSupport = new PropertyChangeSupport(
+				this);
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		protected  TrackWrapper _myTrack;
+		protected TrackWrapper _myTrack;
 
 		@Override
 		public void addPropertyChangeListener(final PropertyChangeListener listener)
@@ -103,8 +104,8 @@ public class TrackWrapper_Support
 		}
 
 		@Override
-		public void firePropertyChange(final String propertyChanged, final Object oldValue,
-				final Object newValue)
+		public void firePropertyChange(final String propertyChanged,
+				final Object oldValue, final Object newValue)
 		{
 			_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
 		}
@@ -137,7 +138,8 @@ public class TrackWrapper_Support
 		}
 
 		@Override
-		public void removePropertyChangeListener(final PropertyChangeListener listener)
+		public void removePropertyChangeListener(
+				final PropertyChangeListener listener)
 		{
 			_pSupport.removePropertyChangeListener(listener);
 		}
@@ -233,7 +235,8 @@ public class TrackWrapper_Support
 				// just add the reset color field first
 				final Class<SegmentList> c = SegmentList.class;
 				MethodDescriptor[] mds =
-				{ method(c, "revealAllPositions", null, "Reveal all positions") };
+				{ method(c, "mergeAllSegments", null, "Merge all track segments"),
+						method(c, "revealAllPositions", null, "Reveal all positions") };
 
 				final MethodDescriptor[] oldMeds = super.getMethodDescriptors();
 				// we now need to combine the two sets
@@ -286,6 +289,48 @@ public class TrackWrapper_Support
 		{
 			System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO SEGMENT LIST");
 		}
+		
+		@FireExtended
+		public void mergeAllSegments()
+		{
+			final Collection<Editable> segs = getData();
+			TrackSegment first = null;
+			for (final Iterator<Editable> iterator = segs.iterator(); iterator.hasNext();)
+			{
+				final TrackSegment segment = (TrackSegment) iterator.next();
+
+				if (first == null)
+				{
+					// aaah, now, if this is a TMA segment we've got to replace it with
+					// a normal track segment. You can't join new track sections onto the
+					// end
+					// of a tma segment
+					if (segment instanceof CoreTMASegment)
+					{
+						final CoreTMASegment tma = (CoreTMASegment) segment;
+						first = new TrackSegment(tma);
+					}
+					else
+					{
+						// cool, just go ahead
+						first = segment;
+					}
+				}
+				else
+				{
+					first.append((Layer) segment);
+				}
+			}
+
+			// ditch the segments
+			this.removeAllElements();
+
+			// and put the first one back in
+			this.addSegment(first);
+
+			// and fire some kind of update...
+		}
+
 
 		public void addSegment(final TrackSegment segment)
 		{
@@ -353,7 +398,8 @@ public class TrackWrapper_Support
 
 			// update our segments
 			final Collection<Editable> items = getData();
-			for (final Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+			for (final Iterator<Editable> iterator = items.iterator(); iterator
+					.hasNext();)
 			{
 				final TrackSegment seg = (TrackSegment) iterator.next();
 				seg.setWrapper(_myTrack);
