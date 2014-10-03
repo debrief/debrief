@@ -86,12 +86,27 @@ public class MergeTracks implements RightClickContextItemGenerator
 			// right,stick in a separator
 			parent.add(new Separator());
 
+			// get the first item
 			final Editable editable = subjects[0];
+
+			// ok, and let us do it in place
+			final Action doMergeInPlace = new Action("Merge track segments - in place")
+			{
+				public void run()
+				{
+					final IUndoableOperation theAction = new MergeTracksInPlaceOperation("Merge tracks in place",
+							editable, theLayers, parentLayers, subjects);
+
+					CorePlugin.run(theAction);
+				}
+			};
+			parent.add(doMergeInPlace);
+
 			if(targetTrackName == null)
 			{
 				targetTrackName = editable.getName() + " (Merged)";
 			}
-			final String title = "Merge tracks into " + targetTrackName;
+			final String title = "Merge track segments - into new track: " + targetTrackName;
 			final TrackWrapper newTrack = new TrackWrapper();
 			newTrack.setName(targetTrackName);
 			// create this operation
@@ -106,6 +121,8 @@ public class MergeTracks implements RightClickContextItemGenerator
 				}
 			};
 			parent.add(doMerge);
+			
+			
 		}
 		else
 		{
@@ -162,18 +179,19 @@ public class MergeTracks implements RightClickContextItemGenerator
 		}
 	}
 
+	
 	private static class MergeTracksOperation extends CMAPOperation
 	{
 
 		/**
 		 * the parent to update on completion
 		 */
-		private final Layers _layers;
-		private final Layer[] _parents;
-		private final Editable[] _subjects;
-		private final TrackWrapper _target;
+		protected final Layers _layers;
+		protected final Layer[] _parents;
+		protected final Editable[] _subjects;
+		protected final Editable _target;
 
-		public MergeTracksOperation(final String title, final TrackWrapper target,
+		public MergeTracksOperation(final String title, final Editable target,
 				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
 		{
 			super(title);
@@ -186,7 +204,8 @@ public class MergeTracks implements RightClickContextItemGenerator
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			final int res = TrackWrapper.mergeTracks(_target, _layers, _subjects);
+			
+			final int res = TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects);
 			
 			// ok, we can also hide the parent
 			
@@ -228,6 +247,38 @@ public class MergeTracks implements RightClickContextItemGenerator
 					"Undo not permitted for merge operation", null);
 			return null;
 		}
+	}
+	
+	private static class MergeTracksInPlaceOperation extends MergeTracksOperation
+	{
+		public MergeTracksInPlaceOperation(final String title, final Editable target,
+				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
+		{
+			super(title, target, theLayers, parentLayers, subjects);
+		}
+		
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
+				throws ExecutionException
+		{
+			
+			final int res = TrackWrapper.mergeTracksInPlace(_target, _layers, _parents, _subjects);
+			
+			// ok, we can also hide the parent
+			
+			if (res == IStatus.OK)
+			{
+				// and talk about the UI update
+				fireModified();
+			}
+			
+			return Status.OK_STATUS;
+		}
+
+		private void fireModified()
+		{
+			_layers.fireExtended(null,  _parents[0]);
+		}
+
 	}
 
 	private static class ConvertTrackOperation extends CMAPOperation
