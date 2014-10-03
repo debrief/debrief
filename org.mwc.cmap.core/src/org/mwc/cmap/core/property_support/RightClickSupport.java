@@ -1316,7 +1316,7 @@ public class RightClickSupport
 			RightClickSupport.getDropdownListFor(menu, editables, null, null, null,
 					true);
 
-			assertEquals("Has items", 2, menu.getSize());
+			assertEquals("Has items", 4, menu.getSize());
 
 		}
 
@@ -1334,7 +1334,7 @@ public class RightClickSupport
 
 			boolean foundTransparent = false;
 
-			assertEquals("Has items", 2, menu.getSize());
+			assertEquals("Has items", 4, menu.getSize());
 			IContributionItem[] items = menu.getItems();
 			for (int i = 0; i < items.length; i++)
 			{

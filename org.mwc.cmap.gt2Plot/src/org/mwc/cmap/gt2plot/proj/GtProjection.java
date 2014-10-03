@@ -401,6 +401,10 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public void setDataArea(final WorldArea theArea)
 	{
+		if (theArea == null)
+		{
+			return;
+		}
 		// trim the area to sensible bounds
 		theArea.trim();
 
