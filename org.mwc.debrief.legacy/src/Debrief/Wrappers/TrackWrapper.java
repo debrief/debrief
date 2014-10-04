@@ -1819,23 +1819,37 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						// is this one visible?
 						if (!res.getVisible())
 						{
+							
+
 							// right, the one we found isn't visible. duplicate the
 							// set, so that
 							// we can remove items
 							// without affecting the parent
-							set = new TreeSet<Editable>(set);
+							TreeSet<Editable> tmpSet = new TreeSet<Editable>(set);
 
 							// ok, start looping back until we find one
-							while ((!res.getVisible()) && (set.size() > 0))
+							while ((!res.getVisible()) && (tmpSet.size() > 0))
 							{
-
 								// the first one wasn't, remove it
-								set.remove(res);
-								if (set.size() > 0)
+								tmpSet.remove(res);
+								if (tmpSet.size() > 0)
 								{
-									res = (FixWrapper) set.first();
+									res = (FixWrapper) tmpSet.first();
 								}
 							}
+
+							// SPECIAL CASE: when the time period is after
+							// the end of the filtered period, the above logic will
+							// result in the very last point on the list being 
+							// selected.  In truth, the first point on the 
+							// list is closer to the requested time.
+							// when this happens, return the first item in the 
+							// original list.
+							if(tmpSet.size() == 0)
+							{
+								res = (FixWrapper) set.first();
+							}
+							
 						}
 
 					}
