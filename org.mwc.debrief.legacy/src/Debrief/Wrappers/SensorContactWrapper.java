@@ -518,6 +518,9 @@ public final class SensorContactWrapper extends
 	public final int compareTo(final Plottable o)
 	{
 		final SensorContactWrapper other = (SensorContactWrapper) o;
+		if (_DTG == null || other == null || other._DTG == null) {
+			return 1;
+		}
 		int res = 0;
 		if (_DTG.lessThan(other._DTG))
 			res = -1;
