@@ -105,6 +105,10 @@ import MWC.Utilities.Timer.TimerListener;
 public class TimeController extends ViewPart implements ISelectionProvider,
 		TimerListener, RelativeProjectionParent
 {
+	private static final String ICONS_MEDIA_PAUSE = "icons/media_pause.png";
+
+	private static final String ICONS_MEDIA_PLAY = "icons/media_play.png";
+
 	private static final String DUFF_TIME_TEXT = "--------------------------";
 
 	private static final String PAUSE_TEXT = "Pause automatically moving forward";
@@ -520,7 +524,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		addTimeButtonListener(sBwd, listener);
 		
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
+		_playButton.setImage(TimeControllerPlugin.getImage(ICONS_MEDIA_PLAY));
 		_playButton.setToolTipText(PLAY_TEXT);
 		_playListener = new SelectionAdapter()
 		{
@@ -534,13 +538,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				{
 					startPlaying();
 					tipTxt = PAUSE_TEXT;
-					imageTxt = "icons/media_pause.png";
+					imageTxt = ICONS_MEDIA_PAUSE;
 				}
 				else
 				{
 					stopPlaying();
 					tipTxt = PLAY_TEXT;
-					imageTxt = "icons/media_play.png";
+					imageTxt = ICONS_MEDIA_PLAY;
 
 				}
 				
@@ -905,7 +909,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				 * controller buttons appeared to break. It remains responsive this
 				 * way...
 				 */
-				final TimePeriod timeP = _myTemporalDataset.getPeriod();
+				TimePeriod timeP = _myTemporalDataset.getPeriod();
+				if (_filterToSelectionAction != null && _filterToSelectionAction.isChecked()) {
+					TimePeriod filteredPeriod = _controllablePeriod.getPeriod();
+					if (filteredPeriod != null) {
+						timeP = filteredPeriod;
+					}
+				}
 
 				if (timeP != null)
 				{
@@ -915,12 +925,43 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// yes, fire the new DTG
 						fireNewTime(newDTG);
 					}
+					else
+					{
+						if (newDTG.greaterThan(timeP.getEndDTG()))
+						{
+							fireNewTime(timeP.getEndDTG());
+						}
+						else
+						{
+							fireNewTime(timeP.getStartDTG());
+						}
+						stopPlayingTimer();
+					}
 				}
 			}
 		}
 
 		// CorePlugin.logError(Status.INFO, "Step complete", null);
 
+	}
+
+	private void stopPlayingTimer()
+	{
+		if (getTimer().isRunning())
+		{
+			stopPlaying();
+			Display.getDefault().asyncExec(new Runnable()
+			{
+
+				@Override
+				public void run()
+				{
+					_playButton.setToolTipText(PLAY_TEXT);
+					_playButton.setImage(TimeControllerPlugin
+							.getImage(ICONS_MEDIA_PLAY));
+				}
+			});
+		}
 	}
 
 	private boolean _firingNewTime = false;
@@ -2130,6 +2171,35 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_filterToSelectionAction = new Action("Filter to period",
 				Action.AS_CHECK_BOX)
 		{
+
+			@Override
+			public void run()
+			{
+				super.run();
+				if (isChecked())
+				{
+					final HiResDate tNow = _myTemporalDataset.getTime();
+					if (tNow != null)
+					{
+						TimePeriod period = _controllablePeriod.getPeriod();
+						if (period != null)
+						{
+							if (!period.contains(tNow))
+							{
+								if (tNow.greaterThan(period.getEndDTG()))
+								{
+									fireNewTime(period.getEndDTG());
+								}
+								else
+								{
+									fireNewTime(period.getStartDTG());
+								}
+							}
+							stopPlayingTimer();
+						}
+					}
+				}
+			}
 
 		};
 		_filterToSelectionAction
