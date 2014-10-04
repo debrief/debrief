@@ -401,6 +401,11 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public void setDataArea(final WorldArea theArea)
 	{
+		if (theArea == null)
+		{
+			CorePlugin.logError(Status.WARNING, "GtProjection received null in setDataArea - maintainer to be informed", null, true);
+			return;
+		}
 		// trim the area to sensible bounds
 		theArea.trim();
 

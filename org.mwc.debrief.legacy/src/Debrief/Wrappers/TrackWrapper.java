@@ -2980,6 +2980,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private void setFixes(final FixSetter setter, final HiResDate theVal)
 	{
+		if (theVal == null)
+		{
+			return;
+		}
 		final long freq = theVal.getMicros();
 
 		// briefly check if we are revealing/hiding all times (ie if freq is 1
@@ -3284,6 +3288,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// set the "showPositions" parameter, as long as we are
 		// not setting the symbols off
+		if (theVal == null)
+		{
+			return;
+		}
 		if (theVal.getMicros() != 0.0)
 		{
 			this.setPositionsVisible(true);

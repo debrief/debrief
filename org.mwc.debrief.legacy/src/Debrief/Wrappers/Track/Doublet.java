@@ -48,20 +48,6 @@ public final class Doublet implements Comparable<Doublet>
 			res = convertAndTest(150, 158, 9, 300);
 			assertEquals("right freq", -0.906, res, 0.01);
 		}
-
-		// TODO FIX-TEST
-		public void testDopplerShiftHighLevel()
-		{
-			final WorldLocation loc1 = new WorldLocation(50, 0, 0);
-			final WorldLocation loc2 = new WorldLocation(51, 1, 0);
-			final WorldVector sep = loc2.subtract(loc1);
-			final double dLat = Math.cos(sep.getBearing()) * sep.getRange();
-			final double dLong = Math.sin(sep.getBearing()) * sep.getRange();
-
-			assertEquals(dLat, 1d, 0.0001d);
-			assertEquals(dLong, 0.63607d, 0.0001d);
-		}
-
 	}
 
 	public static final double INVALID_BASE_FREQUENCY = -1d;

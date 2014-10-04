@@ -56,7 +56,7 @@ public class NarrowbandSensor extends InitialSensor
 	 * whether this sensor can record bearing
 	 * 
 	 */
-	private Boolean _hasBearing;
+	private Boolean _hasBearing = true;
 
 	/**
 	 * constant used to indicate that course has not yet been assigned
