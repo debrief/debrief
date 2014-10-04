@@ -198,7 +198,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
 			assertEquals("correct number before", 7, sw._myContacts.size());
 
-			final Date startDate = DateFormat.getDateTimeInstance().parse(
+			final Date startDate = new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
 					"July 7, 2011 12:34:00 PM GMT");
 
 			sw.decimate(new HiResDate(60000), startDate.getTime());
