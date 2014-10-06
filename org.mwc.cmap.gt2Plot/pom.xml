@@ -9,6 +9,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.cmap.gt2Plot</artifactId>
-  <version>1.0.10</version>
+  <version>1.0.11</version>
   <packaging>eclipse-plugin</packaging>
 </project>
