@@ -115,7 +115,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", "m");
+		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", " m");
 		IObservableValue errorValue = BeansObservables.observeValue(
 				contribution, Range1959ForecastContribution.RANGE);
 		IObservableValue observationNumberValue = BeansObservables.observeValue(
