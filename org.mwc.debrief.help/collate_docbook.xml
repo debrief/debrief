@@ -152,7 +152,7 @@
 	
 	<target name="printed_cheatsheets" description="produce pdf version of cheat sheets">
 		<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
-		<java jar="${saxonhe-classpath}" >
+		<java fork="true" jar="${saxonhe-classpath}" dir="cheat_sheets" >
 			<arg value="-o:dita/map.ditamap"/>
 			<arg value="-it:root"/>
 			<arg value="printed_version.xsl"/>
