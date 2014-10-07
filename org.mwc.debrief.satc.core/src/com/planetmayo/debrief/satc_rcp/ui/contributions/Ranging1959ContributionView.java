@@ -24,6 +24,8 @@ import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribu
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
 
 public class Ranging1959ContributionView extends BaseContributionView<Range1959ForecastContribution>
 {
@@ -93,7 +95,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		fNoughtText.addVerifyListener(new DoubleVerifier());
 		
 		// now add the range
-		UIUtils.createLabel(bodyGroup, "1959 Range(m):", new GridData(120, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "1959 Range(Yds):", new GridData(120, SWT.DEFAULT));
 		UIUtils.createSpacer(bodyGroup, new GridData(1, SWT.DEFAULT));
 		
 		Composite range = new Composite(bodyGroup, SWT.NONE);
@@ -115,7 +117,20 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", " m");
+		final String suffix = " Yds";
+		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", suffix) {
+
+			@Override
+			public Object convert(Object from)
+			{
+				if (from instanceof Double) {
+					int value = new MeterToYds().safeConvert((Double)from).intValue();
+					return new Integer(value).toString() + suffix;
+				}
+				return super.convert(from);
+			}
+			
+		};
 		IObservableValue errorValue = BeansObservables.observeValue(
 				contribution, Range1959ForecastContribution.RANGE);
 		IObservableValue observationNumberValue = BeansObservables.observeValue(
@@ -133,13 +148,23 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		// bind range
 		bindRange(context);
 		
-		// bind range period
+		// bind range bounds
+		bindRangeBounds(context);
+	}
+
+	private void bindRangeBounds(DataBindingContext context)
+	{
 		IObservableValue rangePeriodValue = BeansObservables.observeValue(contribution,
 				Range1959ForecastContribution.RANGE_BOUNDS);
 		ISWTObservableValue rangePeriodTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(rangeBoundsText);
 		
-		context.bindValue(rangePeriodTextValue, rangePeriodValue);
+		IConverter modelToUI = new ModelToUIRangeBoundsConverter();
+		
+		IConverter uiToModel = new UIToModelRangeBoundsConverter();
+		context.bindValue(rangePeriodTextValue, rangePeriodValue, 
+				UIUtils.converterStrategy(uiToModel),
+				UIUtils.converterStrategy(modelToUI));
 	}
 
 	private void bindFNought(DataBindingContext context)
@@ -181,9 +206,9 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		ISWTObservableValue rangeTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(rangeText);
 		
-		IConverter modelToUI = new ModelToUIDoubleConverter();
+		IConverter modelToUI = new ModelToUIRangeConverter();
 		
-		IConverter uiToModel = new UIToModelDoubleConverter();
+		IConverter uiToModel = new UIToModelRangeConverter();
 		
 		context.bindValue(rangeTextValue, rangeValue,
 				UIUtils.converterStrategy(uiToModel),
@@ -240,6 +265,74 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		}
 	}
 	
+	private class ModelToUIRangeConverter implements IConverter
+	{
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+
+		@Override
+		public Object getFromType()
+		{
+			return Double.class;
+		}
+
+		@Override
+		public Object convert(Object fromObject)
+		{
+			if (fromObject == null)
+			{
+				return null;
+			}
+			//int value = ((Double) fromObject).intValue();
+			int value = new MeterToYds().safeConvert((Double)fromObject).intValue();
+			return new String(new Integer(value).toString());
+		}
+	}
+
+	private class ModelToUIRangeBoundsConverter implements IConverter
+	{
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+
+		@Override
+		public Object getFromType()
+		{
+			return String.class;
+		}
+
+		@Override
+		public Object convert(Object fromObject)
+		{
+			if (!(fromObject instanceof String) )
+			{
+				return "";
+			}
+			String[] elements = ((String) fromObject).split("-");
+			if (elements == null || elements.length != 2) {
+				return "";
+			}
+			try
+			{
+				Double v0 = new Double(elements[0]);
+				Double v1 = new Double(elements[1]);
+				int i0 = new MeterToYds().safeConvert(v0).intValue();
+				int i1 = new MeterToYds().safeConvert(v1).intValue();
+				return new String(new Integer(i0).toString() + "-" + new Integer(i1).toString());
+			}
+			catch (NumberFormatException e)
+			{
+				return fromObject;
+			}
+		}
+	}
+
+	
 	private class ModelToUIFNoughtConverter implements IConverter
 	{
 		@Override
@@ -291,6 +384,60 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 				return null;
 			}
 			double value = new Double((String)fromObject).doubleValue();
+			return new Double(value);
+		}
+
+	}
+
+	// read-only
+	private class UIToModelRangeBoundsConverter implements IConverter
+	{
+		
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+		
+		@Override
+		public Object getFromType()
+		{
+			return String.class;
+		}
+		
+		@Override
+		public Object convert(Object fromObject)
+		{
+			return fromObject;
+		}
+
+	}
+
+	private class UIToModelRangeConverter implements IConverter
+	{
+		
+		@Override
+		public Object getToType()
+		{
+			return Double.class;
+		}
+		
+		@Override
+		public Object getFromType()
+		{
+			return String.class;
+		}
+		
+		@Override
+		public Object convert(Object fromObject)
+		{
+			String s = (String) fromObject;
+			if (fromObject == null || s.isEmpty()) {
+				return null;
+			}
+			//double value = new Double((String)fromObject).doubleValue();
+			Double value = new Double((String)fromObject);
+			value = new YdsToMeter().safeConvert(value);
 			return new Double(value);
 		}
 

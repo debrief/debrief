@@ -19,12 +19,26 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.NullToBooleanConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterFrom;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterTo;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
 
 public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
 {
-	private PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
-			Object.class, " m");
+	//private PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
+	//		Object.class, " m");
+	final String suffix = " Yds";
+	private PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, "", suffix) {
 
+		@Override
+		public Object convert(Object from)
+		{
+			if (from instanceof Double) {
+				int value = new MeterToYds().safeConvert((Double)from).intValue();
+				return new Integer(value).toString() + suffix;
+			}
+			return super.convert(from);
+		}
+		
+	};
 	public RangeForecastContributionView(Composite parent,
 			RangeForecastContribution contribution, IContributions contributions)
 	{
@@ -38,13 +52,15 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
 		
-		int[] borders = {0, 1000, 3000, 7000, 17000, 40000};
+		double MAX_SELECTABLE_RANGE_YDS = new MeterToYds().safeConvert(new Double(RangeForecastContribution.MAX_SELECTABLE_RANGE_M));
+		
+		int[] borders = {0, 1000, 3000, 7000, 17000, (int)MAX_SELECTABLE_RANGE_YDS};
 		int[] increments = {50, 100, 200, 500, 1000};
 		context.bindValue(sliderValue, modelValue,
 				UIUtils.converterStrategy(new ScaleConverterFrom(increments, borders)),
 				UIUtils.converterStrategy(new ScaleConverterTo(increments, borders))
 		);
-		double defaultValue = maxValue ? RangeForecastContribution.MAX_SELECTABLE_RANGE_M : 0;
+		double defaultValue = maxValue ? MAX_SELECTABLE_RANGE_YDS : 0;
 		context.bindValue(sliderEnabled, modelValue, null, 
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
 		if (checkBox != null) 
