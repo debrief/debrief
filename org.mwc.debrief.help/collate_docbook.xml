@@ -151,12 +151,18 @@
 	</target>
 	
 	<target name="printed_cheatsheets" description="produce pdf version of cheat sheets">
+		<!-- record the Saxon location -->
 		<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
+		
+		<!-- and run the XSL transform -->		
 		<java fork="true" jar="${saxonhe-classpath}" dir="cheat_sheets" >
 			<arg value="-o:dita/map.ditamap"/>
 			<arg value="-it:root"/>
 			<arg value="printed_version.xsl"/>
 		</java>
+		
+		<!-- and now the DITA transform -->
+		
 	</target>
 
 	<target name="docbook_to_pdf" description="Generate html from docbook">
