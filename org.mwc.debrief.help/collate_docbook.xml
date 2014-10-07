@@ -20,6 +20,7 @@
 	<property name="input-xml" value="${webhelpDir}/ng_help.xml" />
 	<property name="input-images-dirs" value="${webhelpDir}/images/** ${webhelpDir}/figures/**" />
 	<property name="xslt-processor-classpath" value="${contribDir}/saxon6_5_5/saxon.jar" />
+	<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
 	<property name="webhelp.indexer.language" value="en" />
 	<property name="validate-against-dtd" value="false" />
 	<property name="output-dir" value="${webhelpOutput}" />
@@ -147,6 +148,15 @@
 			<fileset file="lib/index.html" />
 		</ftp>
 
+	</target>
+	
+	<target name="printed_cheatsheets" description="produce pdf version of cheat sheets">
+		<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
+		<java jar="${saxonhe-classpath}" >
+			<arg value="-o:dita/map.ditamap"/>
+			<arg value="-it:root"/>
+			<arg value="printed_version.xsl"/>
+		</java>
 	</target>
 
 	<target name="docbook_to_pdf" description="Generate html from docbook">
