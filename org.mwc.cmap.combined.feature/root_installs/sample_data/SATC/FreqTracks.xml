@@ -3116,11 +3116,7 @@
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
-<<<<<<< HEAD
 <satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowAlterationBounds="false" ShowBounds="true" ShowSolutions="true">
-=======
-<satc_solution LiveRunning="false" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
->>>>>>> master
 <colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
