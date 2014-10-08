@@ -40,7 +40,8 @@ public class Range1959ForecastContribution extends BaseContribution
 	public static final String RANGE = "range";
 	public static final String SOUND_SPEED = "speedSound";
 	public static final String F_NOUGHT = "fNought";
-	public static final String RANGE_BOUNDS = "rangeBounds";
+	public static final String MIN_RANGE = "minRange";
+	public static final String MAX_RANGE = "maxRange";
 
 	/** fNought for radiated source (Hz)
 	 * 
@@ -54,18 +55,16 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	private Double calculatedRange;
 
-	private transient Double calculatedMinRange;
-	
-	private transient Double calculatedMaxRange;
-	
-	private String rangeBounds;
+	private Double maxRangeM;
+
+	private Double minRangeM;
 
 
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
-		double min = this.calculatedMinRange == null ? 0 : this.calculatedMinRange;
-		double max = this.calculatedMaxRange == null ? 0 : this.calculatedMaxRange;
+		double min = this.getMinRange() == null ? 0 : this.getMinRange();
+		double max = this.getMaxRange() == null ? 0 : this.getMaxRange();
 		if (!isActive() || route.getType() == LegType.ALTERING || calculatedRange == null
 				|| calculatedRange < min || calculatedRange > max)
 		{
@@ -151,7 +150,8 @@ public class Range1959ForecastContribution extends BaseContribution
 		
 		// store these values
 		setRange(range);
-		setMinMaxRange(minR, maxR);
+		setMinRange(minR);
+		setMaxRange(maxR);
 		
 		for(FrequencyMeasurement measure: measurements)
 		{
@@ -592,39 +592,30 @@ public class Range1959ForecastContribution extends BaseContribution
 		firePropertyChange(HARD_CONSTRAINTS, oldRange, range);
 	}
 
-
-	public void setMinMaxRange(Double minR, Double maxR)
+	public void setMaxRange(Double maxRngM)
 	{
-		this.calculatedMinRange = minR;
-		this.calculatedMaxRange = maxR;
-
-		// ok, now put the range into a string value
-		StringBuffer buffer = new StringBuffer();
-		if (calculatedMinRange != null) {
-			buffer.append(new Integer(calculatedMinRange.intValue()).toString());
-		}
-		buffer.append("-");
-		if (calculatedMaxRange != null) {
-			buffer.append(new Integer(calculatedMaxRange.intValue()).toString());
-		}
-		String value = buffer.toString();
-		if (!"-".equals(value)) {
-			setRangeBounds(value);
-		}
+		Double oldMaxRange = maxRangeM;
+		this.maxRangeM = maxRngM;
+		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
+		firePropertyChange(HARD_CONSTRAINTS, oldMaxRange, maxRngM);
 	}
 
-	public String getRangeBounds()
+	public void setMinRange(Double minRngM)
 	{
-		return rangeBounds;
+		Double oldMinRange = minRangeM;
+		this.minRangeM = minRngM;
+		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
+		firePropertyChange(HARD_CONSTRAINTS, oldMinRange, minRngM);
+	}
+	
+
+	public Double getMaxRange()
+	{
+		return maxRangeM;
 	}
 
-	public void setRangeBounds(String rangeBounds)
+	public Double getMinRange()
 	{
-		String oldRange = this.rangeBounds;
-		this.rangeBounds = rangeBounds;
-		
-		firePropertyChange(RANGE_BOUNDS, oldRange, rangeBounds);
-		firePropertyChange(HARD_CONSTRAINTS, oldRange, rangeBounds);
-
+		return minRangeM;
 	}
 }
