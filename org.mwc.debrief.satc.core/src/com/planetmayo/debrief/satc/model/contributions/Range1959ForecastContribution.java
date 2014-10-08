@@ -64,6 +64,7 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	private Double minRangeM;
 
+
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
@@ -110,6 +111,65 @@ public class Range1959ForecastContribution extends BaseContribution
 		return Math.sqrt(sum / count) / norm;
 	}
 
+	
+//	@Override
+//	protected double cumulativeScoreFor(CoreRoute route)
+//	{
+//		double res = 0;
+//
+//		// what is the time nearest to the centre of our data?
+//		long centreTime = this.getStartDate().getTime()
+//				+ (this.getFinishDate().getTime() - this.getStartDate().getTime()) / 2;
+//
+//		// now find the route state nearest to this one
+//		State nearest = null;
+//		for (State state : route.getStates())
+//		{
+//			long thisTime = state.getTime().getTime();
+//			if (nearest == null)
+//			{
+//				nearest = state;
+//			}
+//			else
+//			{
+//				if (Math.abs(thisTime - centreTime) < Math.abs(nearest.getTime()
+//						.getTime() - centreTime))
+//				{
+//					nearest = state;
+//				}
+//				else
+//				{
+//					// we're getting further away. drop out
+//					break;
+//				}
+//			}
+//		}
+//
+//		// check that the route has a state at this time (since we may not
+//		// be generating states for all of our measurements)
+//		if (nearest != null)
+//		{
+//			// get the cut near the centre of the dataset
+//			FrequencyMeasurement origin = measurements.get(measurements.size() / 2);
+//
+//			Point location = nearest.getLocation();
+//			GeodeticCalculator calculator = GeoSupport.createCalculator();
+//			calculator.setStartingGeographicPoint(location.getX(), location.getY());
+//			calculator.setDestinationGeographicPoint(origin.getLocation().getLon(),
+//					origin.getLocation().getLat());
+//			double distance = calculator.getOrthodromicDistance();
+//
+//			double temp = distance - calculatedRange;
+//			res = temp * temp;
+//
+//			double norm = Math.max(Math.abs(getMaxRange() - calculatedRange),
+//					Math.abs(getMinRange() - calculatedRange));
+//			
+//			res = Math.sqrt(res) / norm;
+//		}
+//		return res;
+//	}
+
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// calculate rDotDotHz
@@ -151,12 +211,13 @@ public class Range1959ForecastContribution extends BaseContribution
 		double maxR = range + error;
 
 		// output some diagnostics data
-		DecimalFormat ff = new DecimalFormat("0.00");
-		String message = "1959 calculation, name:" + this.getName() + " rDotDot Hz:" + ff.format(rDotDotHz) + 
-				" rDotDot Kts " + ff.format(rDotDotKts) + " bDot:" + ff.format(bDot) + 
-				" range (m):" + ff.format(range) + " error:" + (int)range;  				
+		DecimalFormat ff = new DecimalFormat("0.0000");
+		String message = "1959 calculation, name:" + this.getName()
+				+ " rDotDot Hz:" + ff.format(rDotDotHz) + " rDotDot Kts "
+				+ ff.format(rDotDotKts) + " bDot:" + ff.format(bDot) + " range (m):"
+				+ ff.format(range) + " error:" + (int) error;
 		SATC_Activator.log(Status.INFO, message, null);
-		
+
 		// sanity check on minR
 		minR = Math.max(minR, 100);
 
@@ -164,7 +225,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		setRange(range);
 		setMinRange(minR);
 		setMaxRange(maxR);
-		
+
 		// get the cut near the centre of the dataset
 		FrequencyMeasurement measure = measurements.get(measurements.size() / 2);
 
@@ -622,7 +683,6 @@ public class Range1959ForecastContribution extends BaseContribution
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldMinRange, minRngM);
 	}
-	
 
 	public Double getMaxRange()
 	{
