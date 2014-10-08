@@ -82,19 +82,19 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 	{
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
-		IObservableValue minSpeedValue = BeansObservables.observeValue(
+		IObservableValue minRangeValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MIN_RANGE);
-		IObservableValue maxSpeedValue = BeansObservables.observeValue(
+		IObservableValue maxRangeValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MAX_RANGE);
 		MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(
-				minSpeedValue, maxSpeedValue);
+				minRangeValue, maxRangeValue);
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter);
 		bindCommonDates(context);
 		
-		bindSliderForRange(context, minSpeedValue, minSlider, minLabel, null, false);
-		bindSliderForRange(context, maxSpeedValue, maxSlider, maxLabel, null, true);
+		bindSliderForRange(context, minRangeValue, minSlider, minLabel, null, false);
+		bindSliderForRange(context, maxRangeValue, maxSlider, maxLabel, null, true);
 		bindSliderForRange(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, false);
-		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
+		bindMaxMinEstimate(estimateValue, minRangeValue, maxRangeValue);
 	}
 
 
