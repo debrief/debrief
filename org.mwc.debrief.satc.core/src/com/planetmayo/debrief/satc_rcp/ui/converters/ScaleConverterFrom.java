@@ -2,6 +2,8 @@ package com.planetmayo.debrief.satc_rcp.ui.converters;
 
 import org.eclipse.core.databinding.conversion.IConverter;
 
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
+
 public class ScaleConverterFrom implements IConverter {
 	
 	protected int[] increments;
@@ -19,10 +21,14 @@ public class ScaleConverterFrom implements IConverter {
 
 	@Override
 	public Object convert(Object value) {
-		if (value == null) {
+		if (! (value instanceof Integer)) {
 			return null;
 		}
-		int val = (Integer) value;
+		//int val = (Integer) value;
+		Double v = ((Integer) value).doubleValue();
+		Double d = new YdsToMeter().safeConvert(v);
+		int val = d.intValue();
+		
 		int current = 0;
 		int result = startValue;
 		for (int i = 0; i < values.length; i++) {
