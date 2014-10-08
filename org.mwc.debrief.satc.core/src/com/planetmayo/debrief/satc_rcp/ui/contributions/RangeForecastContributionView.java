@@ -1,9 +1,12 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import java.text.DecimalFormat;
+
 import junit.framework.TestCase;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Button;
@@ -22,26 +25,12 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterFrom;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterTo;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
 
 public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
 {
-	//private PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
-	//		Object.class, " m");
-	final String suffix = " Yds";
-	private PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, "", suffix) {
 
-		@Override
-		public Object convert(Object from)
-		{
-			if (from instanceof Double) {
-				int value = new MeterToYds().safeConvert((Double)from).intValue();
-				return new Integer(value).toString() + suffix;
-			}
-			return super.convert(from);
-		}
-		
-	};
 	public RangeForecastContributionView(Composite parent,
 			RangeForecastContribution contribution, IContributions contributions)
 	{
@@ -73,6 +62,8 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 					UIUtils.converterStrategy(new BooleanToNullConverter<Double>(defaultValue)),
 					UIUtils.converterStrategy(new NullToBooleanConverter()));			
 		}
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, "", " Yds", new DecimalFormat("0"));
+		labelsConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
 		context.bindValue(labelValue, modelValue, null,
 				UIUtils.converterStrategy(labelsConverter));		
 	}
@@ -80,6 +71,10 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
+		DecimalFormat rangeFormat = new DecimalFormat("0");
+		final PrefixSuffixLabelConverter minMaxConverter = new PrefixSuffixLabelConverter(Object.class, "", "", rangeFormat);
+		minMaxConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
+		
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
 		IObservableValue minRangeValue = BeansObservables.observeValue(
@@ -87,8 +82,10 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 		IObservableValue maxRangeValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MAX_RANGE);
 		MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(
-				minRangeValue, maxRangeValue);
-		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter);
+				minRangeValue, maxRangeValue, minMaxConverter, " Yds");
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, "", " Yds", rangeFormat);
+		labelsConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
+		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter, minMaxConverter);
 		bindCommonDates(context);
 		
 		bindSliderForRange(context, minRangeValue, minSlider, minLabel, null, false);

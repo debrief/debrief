@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -23,13 +24,17 @@ import org.eclipse.swt.widgets.Text;
 import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
 
 public class Ranging1959ContributionView extends BaseContributionView<Range1959ForecastContribution>
 {
 
+	private static final DecimalFormat rangeFormat = new DecimalFormat("0");
+	
 	private Text speedSoundText;
 	private Text fNoughtText;
 	private Text rangeText;
@@ -117,20 +122,9 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		final String suffix = " Yds";
-		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", suffix) {
-
-			@Override
-			public Object convert(Object from)
-			{
-				if (from instanceof Double) {
-					int value = new MeterToYds().safeConvert((Double)from).intValue();
-					return new Integer(value).toString() + suffix;
-				}
-				return super.convert(from);
-			}
-			
-		};
+		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", " Yds", rangeFormat);
+		labelConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
+		
 		IObservableValue errorValue = BeansObservables.observeValue(
 				contribution, Range1959ForecastContribution.RANGE);
 		IObservableValue observationNumberValue = BeansObservables.observeValue(
@@ -154,17 +148,17 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 
 	private void bindRangeBounds(DataBindingContext context)
 	{
-		IObservableValue rangePeriodValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.RANGE_BOUNDS);
-		ISWTObservableValue rangePeriodTextValue = WidgetProperties.text(SWT.FocusOut)
+		PrefixSuffixLabelConverter minMaxConverter = new PrefixSuffixLabelConverter(Object.class, "", "", rangeFormat);
+		minMaxConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
+		
+		IObservableValue minRangeValue = BeansObservables.observeValue(contribution, Range1959ForecastContribution.MIN_RANGE);
+		IObservableValue maxRangeValue = BeansObservables.observeValue(contribution, Range1959ForecastContribution.MAX_RANGE);
+		
+		IObservableValue rangeBoundsValue = new MinMaxLimitObservable(minRangeValue, maxRangeValue, 
+				minMaxConverter);
+		ISWTObservableValue rangeBoundsTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(rangeBoundsText);
-		
-		IConverter modelToUI = new ModelToUIRangeBoundsConverter();
-		
-		IConverter uiToModel = new UIToModelRangeBoundsConverter();
-		context.bindValue(rangePeriodTextValue, rangePeriodValue, 
-				UIUtils.converterStrategy(uiToModel),
-				UIUtils.converterStrategy(modelToUI));
+		context.bindValue(rangeBoundsTextValue, rangeBoundsValue);
 	}
 
 	private void bindFNought(DataBindingContext context)
@@ -292,47 +286,6 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		}
 	}
 
-	private class ModelToUIRangeBoundsConverter implements IConverter
-	{
-		@Override
-		public Object getToType()
-		{
-			return String.class;
-		}
-
-		@Override
-		public Object getFromType()
-		{
-			return String.class;
-		}
-
-		@Override
-		public Object convert(Object fromObject)
-		{
-			if (!(fromObject instanceof String) )
-			{
-				return "";
-			}
-			String[] elements = ((String) fromObject).split("-");
-			if (elements == null || elements.length != 2) {
-				return "";
-			}
-			try
-			{
-				Double v0 = new Double(elements[0]);
-				Double v1 = new Double(elements[1]);
-				int i0 = new MeterToYds().safeConvert(v0).intValue();
-				int i1 = new MeterToYds().safeConvert(v1).intValue();
-				return new String(new Integer(i0).toString() + "-" + new Integer(i1).toString());
-			}
-			catch (NumberFormatException e)
-			{
-				return fromObject;
-			}
-		}
-	}
-
-	
 	private class ModelToUIFNoughtConverter implements IConverter
 	{
 		@Override
@@ -385,30 +338,6 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 			}
 			double value = new Double((String)fromObject).doubleValue();
 			return new Double(value);
-		}
-
-	}
-
-	// read-only
-	private class UIToModelRangeBoundsConverter implements IConverter
-	{
-		
-		@Override
-		public Object getToType()
-		{
-			return String.class;
-		}
-		
-		@Override
-		public Object getFromType()
-		{
-			return String.class;
-		}
-		
-		@Override
-		public Object convert(Object fromObject)
-		{
-			return fromObject;
 		}
 
 	}

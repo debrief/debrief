@@ -3300,7 +3300,7 @@
         <finishDate reference="../../finishDate"/>
       </course>
     </compositeStraightLegForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" rangeBounds="100-16457">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" minRangeM="100" maxRangeM="16457">
       <name>leg one freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3366,7 +3366,7 @@
         </freqMeasurement>
       </measurements>
     </range1959ForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" rangeBounds="100-18857">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" minRangeM="100" maxRangeM="18857">
       <name>leg two freq</name>
       <active>true</active>
       <weight>5</weight>
