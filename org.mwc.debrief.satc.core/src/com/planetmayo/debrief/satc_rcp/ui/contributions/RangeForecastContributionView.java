@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -20,6 +22,7 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterFrom;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterTo;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
 
 public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
 {
@@ -116,5 +119,18 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 	protected String getTitlePrefix()
 	{
 		return "Range Forecast - ";
+	}
+	
+	/** quick test for units conversions
+	 * 
+	 */
+	public static class TestConvert extends TestCase
+	{
+		public void testBoth(){
+			YdsToMeter y2m = new YdsToMeter();
+			MeterToYds m2y = new MeterToYds();
+			assertEquals("yards to meters worked", 1852, y2m.safeConvert(2025.37), 0.01);
+			assertEquals("metesr to yds worked", 2025.37, m2y.safeConvert(1852), 0.01);
+		}
 	}
 }
