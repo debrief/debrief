@@ -4,6 +4,7 @@ public class UnitConverter
 {
 	public static final UnitConverter SPEED_KTS = new UnitConverter(new MSecToKts(), new KtsToMSec());
 	public static final UnitConverter ANGLE_DEG = new UnitConverter(new RadsToDeg(), new DegToRads());
+	public static final UnitConverter RANGE_YDS = new UnitConverter(new MeterToYds(), new YdsToMeter());
 	
 	private final AbstractUnitConverter modelToUI;
 	private final AbstractUnitConverter uiToModel;
