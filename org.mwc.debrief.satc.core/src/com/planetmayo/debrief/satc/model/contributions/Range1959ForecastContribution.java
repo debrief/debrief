@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.eclipse.core.runtime.Status;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +29,7 @@ import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -149,6 +152,13 @@ public class Range1959ForecastContribution extends BaseContribution
 		double minR = range - error;
 		double maxR = range + error;
 
+		// output some diagnostics data
+		DecimalFormat ff = new DecimalFormat("0.00");
+		String message = "1959 calculation, name:" + this.getName() + " rDotDot Hz:" + ff.format(rDotDotHz) + 
+				" rDotDot Kts " + ff.format(rDotDotKts) + " bDot:" + ff.format(bDot) + 
+				" range (m):" + ff.format(range) + " error:" + (int)range;  				
+		SATC_Activator.log(Status.INFO, message, null);
+		
 		// sanity check on minR
 		minR = Math.max(minR, 100);
 
