@@ -2,6 +2,8 @@ package com.planetmayo.debrief.satc_rcp.ui.converters.units;
 
 public class YdsToMeter extends AbstractUnitConverter
 {
+  final static private double FT_M_CONV = 0.3048;
+
 	public YdsToMeter()
 	{
 		super(false);
@@ -10,6 +12,6 @@ public class YdsToMeter extends AbstractUnitConverter
 	@Override
 	public Double safeConvert(Number obj)
 	{		
-		return MWC.Algorithms.Conversions.ft2m(obj.doubleValue()*3);
+		return (obj.doubleValue()*3) * FT_M_CONV;
 	}	
 }
