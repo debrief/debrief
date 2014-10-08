@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Wed Oct 08 05:30:19 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Wed Oct 08 14:38:34 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Wed Oct 08 04:39:26 GMT 2014"/>
 <session>
 <layers>
@@ -3112,7 +3112,7 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
-<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
+<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="20000" ScaleStep="5000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
@@ -3300,7 +3300,7 @@
         <finishDate reference="../../finishDate"/>
       </course>
     </compositeStraightLegForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" minRangeM="100" maxRangeM="16457">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" maxRangeM="16457.628589132764" minRangeM="100.0">
       <name>leg one freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3366,7 +3366,7 @@
         </freqMeasurement>
       </measurements>
     </range1959ForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" minRangeM="100" maxRangeM="18857">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" maxRangeM="18857.12702730661" minRangeM="100.0">
       <name>leg two freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3409,7 +3409,7 @@
     </range1959ForecastContribution>
     <rangeForecastContribution>
       <name>first range</name>
-      <active>true</active>
+      <active>false</active>
       <weight>5</weight>
       <startDate>2010-01-12 13:10:00.0 UTC</startDate>
       <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
