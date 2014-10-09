@@ -15,7 +15,8 @@
          <br/>By default, SATC is in <b>Low</b> precision. This instructs SATC to use fairly relaxed constraints, and come up
          with an answer within a few seconds.  In this scenario we have quite sparse bearing data, and the ownship
          maneouvres mean that there aren&apos;t very many candidate solutions.
-         <br/>At the time of writing (April 2014), a solution of 9.0kts on 269 degrees is returned.  If you wish, you can try using a high precision.
+         <br/>At the time of writing (April 2014), a solution of 9.0kts on 269 degrees is returned.  If you wish, you 
+         can try using a high precision. (Then you&apos;ll have to click on <b>Calculate Solution</b> to make it fire). <br/>
          I don&apos;t think you will get a better solution, but you will notice that the <b>Performance</b> graph (at the bottom of
          the (<b>Maintain Contributions</b> view) growing more slowly as SATC homes
          in on a particular solution.  You will see that the x-axis (on the bottom) shows more cycles have been
