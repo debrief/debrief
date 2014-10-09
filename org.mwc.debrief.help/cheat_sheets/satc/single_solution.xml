@@ -9,7 +9,9 @@
    <item
          title="Calculate the solution">
       <description>
-         It&apos;s quite easy really, just click on <b>Calculate Solution</b>. 
+      	 Right, we&apos;re going to having an effect on the plot again now, so check you can see the ownship track and the rough area where
+      	 the target should be.<br/>
+         To generate the solution, just click on <b>Calculate Solution</b>. 
          Within a second or so you will see a new track appear on the plot (though you may need to zoom out a little).
          <br/>The track will be the same color as you specified for the bearing data in the Bearing Import Wizard.
          <br/>By default, SATC is in <b>Low</b> precision. This instructs SATC to use fairly relaxed constraints, and come up
