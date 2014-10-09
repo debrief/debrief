@@ -21,7 +21,7 @@
       <description>
          You should now see the Debrief editor, with a blue ownship track.<br/> Next, we will load the ownship sensor (sonar) data,
           by dragging in the <b>L1_OwnshipSensor.dsf</b> file. 
-         Follow the Wizard steps to load the sensor data, give it a color, and indicate that Yes, you wish it to be visible.
+         Follow the Wizard steps to name the sensor ("Plain" is fine), give it a color, and indicate that Yes, you wish it to be visible.
       </description>
    </item>
    <item title="Check sensor data is visible">
