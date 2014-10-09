@@ -14,7 +14,7 @@
    <item title="Load ownship track">
       <description>
          From the SATC sub-folder, drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area. (Or, right click it, 
-         and select "Open With > Debrief Plot Editor").
+         and select "Open With > Debrief Plot Editor").  If Debrief does ask you, the track should be loaded in "Over the Ground" mode.
       </description>
    </item>
    <item title="Load ownship sensor data">
