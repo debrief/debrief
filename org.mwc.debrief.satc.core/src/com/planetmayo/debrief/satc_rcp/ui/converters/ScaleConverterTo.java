@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc_rcp.ui.converters;
 
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
+
 public class ScaleConverterTo extends ScaleConverterFrom {
 	
 	public ScaleConverterTo(int[] increments, int[] borders) {
@@ -8,10 +10,12 @@ public class ScaleConverterTo extends ScaleConverterFrom {
 
 	@Override
 	public Object convert(Object value) {
-		if (value == null) {
+		if (! (value instanceof Double) ) {
 			return null;
 		}
-		int val = ((Double) value).intValue();
+		Double d = new MeterToYds().safeConvert((Double)value);
+		//int val = ((Double) value).intValue();
+		int val = d.intValue();
 		int current = startValue;
 		int result = 0;
 		for (int i = 0; i < values.length; i++) {

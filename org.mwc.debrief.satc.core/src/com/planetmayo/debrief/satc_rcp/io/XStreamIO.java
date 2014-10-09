@@ -74,7 +74,8 @@ public class XStreamIO
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "fNought");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "speedSound");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "calculatedRange");
-		xstream.useAttributeFor(Range1959ForecastContribution.class, "rangeBounds");
+		xstream.useAttributeFor(Range1959ForecastContribution.class, "minRangeM");
+		xstream.useAttributeFor(Range1959ForecastContribution.class, "maxRangeM");
 		
 		xstream.useAttributeFor(BMeasurement.class, "origin");
 		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
