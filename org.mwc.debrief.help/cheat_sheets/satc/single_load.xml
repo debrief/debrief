@@ -3,7 +3,7 @@
  xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Loading a simple scenario">
    <intro>
       <description>
-        Before we can produce target solutions, we need need to load some ownship data. We&apos;ll do that using these steps.
+        Before we can produce target solutions, we need to load some ownship data. We&apos;ll do that using these steps.
       </description>
    </intro>
    <item title="Find SATC subfolder">
