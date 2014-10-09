@@ -1084,12 +1084,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 												.getPrimaryTrack());
 
 										// plot it
-										if (_myOperations != null
-												&& _myOperations.getPeriod() != null)
-										{
-											_layerPainterManager.getCurrentHighlighter().highlightIt(
-													dest.getProjection(), dest, list, watch, isPrimary);
-										}
+										_layerPainterManager.getCurrentHighlighter().highlightIt(
+												dest.getProjection(), dest, list, watch, isPrimary);
 									}
 
 								}
