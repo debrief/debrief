@@ -170,7 +170,7 @@
 	<item title="Refine second solution">
 		<description>
 			Now, find the new solution in the Outline View and set it as the
-			secondary track.  As you mark it as secondary, you will see
+			secondary track (it will be easy to spot since it&apos; the track with the "later" value in the name).  As you mark it as secondary, you will see
 			it get listed in the Track Tote. Once the new solution is marked as secondary you are
 			able to start dragging/refining this solution. Give it a go.
 		</description>
