@@ -26,7 +26,7 @@
       <description>
          The data we&apos;re using here is from a simulation tool.  That means we also have the target track.  
          So, try dragging in <b>L1_SubjectTrack.rep</b>
-         and comparing the SATC solution with the truth track.
+         and comparing the SATC solution with the truth track.  (Select "Over the ground as the import mode, if necessary")
          <br/>You will see that SATC is quite close to the truth, with a greater error to the 
          West, near the start. This is because of the low bearing 
          rate near the start - both tracks appear to be on a roughly parallel course.
