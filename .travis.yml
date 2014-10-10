@@ -1,4 +1,5 @@
 language: java
 jdk: oraclejdk7
-install: mvn validate
+install: mvn --version
 script: mvn clean verify -U -B -fae
+after_failure: "cat /home/travis/build/debrief/debrief/org.mwc.cmap.tests/target/work/data/.metadata/.log."
