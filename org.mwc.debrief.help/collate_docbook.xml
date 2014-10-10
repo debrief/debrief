@@ -171,7 +171,7 @@
 	           specify them base on your needs -->
 			<property name="args.input" location="cheat_sheets/dita/map.ditamap" />
 			<property name="output.dir" location="cheat_sheets/dita" />
-			<property name="transtype" value="xhtml" />
+			<property name="transtype" value="debrief" />
 		</ant>
 
 	</target>
