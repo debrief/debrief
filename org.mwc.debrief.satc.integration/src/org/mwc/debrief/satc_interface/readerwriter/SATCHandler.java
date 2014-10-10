@@ -45,6 +45,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	private static final String SHOW_BOUNDS = "ShowBounds";
 	private static final String ONLY_ENDS = "OnlyPlotEnds";
 	private static final String SHOW_SOLUTIONS = "ShowSolutions";
+	private static final String SHOW_ALTERATIONS = "ShowAlterationBounds";
 	private static final String LIVE_RUNNING = "LiveRunning";
 
 	protected String _myContents;
@@ -60,6 +61,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	protected boolean _showSolutions = false;
 
 	protected boolean _showBounds = false;
+	protected boolean _showAlterations = false;
 	protected boolean _liveRunning = true;
 
 	protected boolean _onlyPlotEnds = false;
@@ -87,6 +89,14 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			public void setValue(String name, boolean value)
 			{
 				_showBounds = value;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(SHOW_ALTERATIONS)
+		{
+			@Override
+			public void setValue(String name, boolean value)
+			{
+				_showAlterations = value;
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(ONLY_ENDS)
@@ -162,6 +172,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			// and the preferences
 			solution.setShowLocationConstraints(_showBounds);
 			solution.setOnlyPlotLegEnds(_onlyPlotEnds);
+			solution.setShowAlterationStates(_showAlterations);
 			solution.setShowSolutions(_showSolutions);
 			solution.setColor(_myColor);
 			solution.getSolver().setLiveRunning(_liveRunning);
@@ -239,6 +250,7 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 					writeThis(solution.getShowLocationConstraints()));
 			newI.setAttribute(ONLY_ENDS, writeThis(solution.getOnlyPlotLegEnds()));
 			newI.setAttribute(SHOW_SOLUTIONS, writeThis(solution.getShowSolutions()));
+			newI.setAttribute(SHOW_ALTERATIONS, writeThis(solution.getShowAlterationStates()));
 			newI.setAttribute(LIVE_RUNNING, writeThis(solution.getSolver()
 					.isLiveRunning()));
 			ColourHandler.exportColour(solution.getColor(), newI, doc);
