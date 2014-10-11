@@ -2,3 +2,4 @@
 *.ditamap
 /temp/
 /dita.xml.properties
+*.list
