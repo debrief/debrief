@@ -1,59 +1,19 @@
-/* =======================================
-* JFreeChart : a Java Chart Class Library
-* =======================================
-*
-* Project Info:  http://www.object-refinery.com/jfreechart/index.html
-* Project Lead:  David Gilbert (david.gilbert@object-refinery.com);
-*
-* (C) Copyright 2000-2002, by Simba Management Limited and Contributors.
-*
-* This library is free software; you can redistribute it and/or modify it under the terms
-* of the GNU Lesser General Public License as published by the Free Software Foundation;
-* either version 2.1 of the License, or (at your option) any later version.
-*
-* This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-* Boston, MA 02111-1307, USA.
-*
-* -----------------------
-* HorizontalDateAxis.java
-* -----------------------
-* (C) Copyright 2000-2002, by Simba Management Limited and Contributors.
-*
-* Original Author:  David Gilbert (for Simba Management Limited);
-* Contributor(s):   David Li;
-*                   Jonathan Nash;
-*
-* $Id: HorizontalDateAxis.java,v 1.3 2007/01/04 16:32:07 ian.mayo Exp $
-*
-* Changes (from 23-Jun-2001)
-* --------------------------
-* 23-Jun-2001 : Modified to work with null data source (DG);
-* 18-Sep-2001 : Updated header (DG);
-* 07-Nov-2001 : Updated configure() method (DG);
-* 30-Nov-2001 : Cleaned up default values in constructor (DG);
-* 12-Dec-2001 : Grid lines bug fix (DG);
-* 16-Jan-2002 : Added an optional crosshair, based on the implementation by Jonathan Nash (DG);
-* 20-Feb-2002 : Modified x-coordinate for vertical tick labels (DG);
-* 25-Feb-2002 : Updated import statements (DG);
-* 19-Apr-2002 : Added facility to set axis visibility on or off.  Also drawVerticalString(...) is
-*               now drawRotatedString(...) in RefineryUtilities (DG);
-* 22-Apr-2002 : Changed autoAdjustRange() from public to protected (DG);
-* 25-Jul-2002 : Changed the auto-range calculation to use the lower and upper margin percentages,
-*               which have been moved up one level from NumberAxis to ValueAxis (DG);
-* 05-Aug-2002 : Modified check for fit of tick labels to take into account the insets (DG);
-* 03-Sep-2002 : Added check for null label in reserveAxisArea method, suggested by Achilleus
-*               Mantzios (DG);
-* 05-Sep-2002 : Updated constructor to reflect changes in the Axis class, and changed the draw
-*               method to observe tickMarkPaint (DG);
-* 19-Sep-2002 : Fixed errors reported by Checkstyle (DG);
-* 04-Oct-2002 : Changed auto tick mechanism to parallel that used by the number axis classes (DG);
-*
-*/
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation;
+ *    version 2.1 of the License.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    Lesser General Public License for more details.
+ */
 
 package MWC.GUI.JFreeChart;
 
