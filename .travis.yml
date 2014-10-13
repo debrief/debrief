@@ -6,7 +6,7 @@ before_script:
 - sh -e /etc/init.d/xvfb start
 - sleep 3
 script: mvn clean verify -U -B -fae
-after_success: ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-linux.gtk.x86_64.tar.gz
+after_success: ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.tar.gz
 deploy:
   provider: releases
   skip_cleanup: true
