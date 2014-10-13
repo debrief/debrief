@@ -2,24 +2,22 @@ language: java
 jdk: oraclejdk7
 install: mvn --version
 before_script:
-  - "export DISPLAY=:99"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 
+- export DISPLAY=:99
+- sh -e /etc/init.d/xvfb start
+- sleep 3
 script: mvn clean verify -U -B -fae
 after_success: ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-linux.gtk.x86_64.tar.gz
 deploy:
   provider: releases
-  api-key: 
-    secure: "J54WSEpGPeqTbwA5oGNpnQ6tQCu4o4OB3yI3WhovNYVe4PXWN4PFlyBJQ+/3q4eLsfNU2N6SByCWT6/FIEC8ByiWvQg4uO/tamgFXk2boyIuK0P7+P2PObFr6pIqcZ4+ycB6Y+b8uehXSAEK7DxOYHvPg47AVj1Xq22YuISZEXY="
-  file: 
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-linux.gtk.x86.tar.gz
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-linux.gtk.x86_64.tar.gz
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-win32.win32.x86.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-win32.win32.x86_64.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-macosx.cocoa.x86_64.tar.gz
+  api-key:
+    secure: Q0bwjsbs+rql3Hoxtf18CMYU0D+HccMbmxMyzhOBW7TJoF5sRu6Y5Xjvn0jI7olBh6Wmd5uLYbdTfGBioPfevDalAaB7nxdpHUhMGWtLm6v55TeRArnNMzcihrdM09hro/vyAfaljLQ2CpRYVtn3mynp51XnlXRM6rfq28esRp0=
+  file:
+  - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-linux.gtk.x86.tar.gz
+  - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-linux.gtk.x86_64.tar.gz
+  - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-win32.win32.x86.zip
+  - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-win32.win32.x86_64.zip
+  - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-macosx.cocoa.x86_64.tar.gz
   skip_cleanup: true
   on:
     tags: true
     all_branches: true
-
-
