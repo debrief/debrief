@@ -3,7 +3,7 @@
  xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Loading a simple scenario">
    <intro>
       <description>
-        Before we can produce target solutions, we need need to load some ownship data. We&apos;ll do that using these steps.
+        Before we can produce target solutions, we need to load some ownship data. We&apos;ll do that using these steps.
       </description>
    </intro>
    <item title="Find SATC subfolder">
@@ -14,14 +14,14 @@
    <item title="Load ownship track">
       <description>
          From the SATC sub-folder, drag the <b>L1_OwnshipTrack.rep</b> file into the Debrief plot area. (Or, right click it, 
-         and select "Open With > Debrief Plot Editor").
+         and select "Open With > Debrief Plot Editor").  If Debrief does ask you, the track should be loaded in "Over the Ground" mode.
       </description>
    </item>
    <item title="Load ownship sensor data">
       <description>
          You should now see the Debrief editor, with a blue ownship track.<br/> Next, we will load the ownship sensor (sonar) data,
           by dragging in the <b>L1_OwnshipSensor.dsf</b> file. 
-         Follow the Wizard steps to load the sensor data, give it a color, and indicate that Yes, you wish it to be visible.
+         Follow the Wizard steps to name the sensor ("Plain" is fine), give it a color, and indicate that Yes, you wish it to be visible.
       </description>
    </item>
    <item title="Check sensor data is visible">

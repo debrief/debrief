@@ -2,7 +2,6 @@ package MWC.Algorithms;
 
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-import MWC.TacticalData.Fix;
 
 public class FrequencyCalcs
 {
@@ -40,27 +39,26 @@ public class FrequencyCalcs
 	}
 
 
-	public static double getObservedFreq(double f0, double speedOfSoundKts,
-			Fix hostFix, Fix tgtFix)
+	public static double getObservedFreq(double f0, double speedOfSoundKts, double rxSpeedKts, double rxCourseDegs, 
+			double txSpeedKts, double txCourseDegs, double bearingDegs)
 	{
 		// collate the data
 		double C = new WorldSpeed(speedOfSoundKts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
-		double rxSpeed = new WorldSpeed(hostFix.getSpeed()*3, WorldSpeed.ft_sec).getValueIn(WorldSpeed.M_sec);
-		double txSpeed = new WorldSpeed(tgtFix.getSpeed()*3, WorldSpeed.ft_sec).getValueIn(WorldSpeed.M_sec);
+		double rxSpeed = new WorldSpeed(rxSpeedKts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
+		double txSpeed = new WorldSpeed(txSpeedKts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
 		
-		double rxCrse = hostFix.getCourse();
-		double txCourse = tgtFix.getCourse();
+		double bearingRads = Math.toRadians(bearingDegs);
+		double rxCrse = Math.toRadians(rxCourseDegs);
+		double txCrse = Math.toRadians(txCourseDegs);
 		
-		double bearing = tgtFix.getLocation().bearingFrom(hostFix.getLocation());
-		
-		return calcObservedFreqCollate(f0, C, bearing, rxCrse, rxSpeed, txCourse, txSpeed);
+		return calcObservedFreqCollate(f0, C, bearingRads, rxCrse, rxSpeed, txCrse, txSpeed);
 	}
 	
 	private static double calcObservedFreqCollate(double f0, double C, double bearing, double rxCourse, double rxSpeed, double txCourse, double txSpeed)
 	{
 		// collate the data
-		double rxSpeedAlong = rxSpeed * Math.cos(rxCourse - bearing);
-		double txSpeedAlong = txSpeed * Math.cos(txCourse - bearing);
+		double rxSpeedAlong = rxSpeed * Math.cos(-(bearing - rxCourse));
+		double txSpeedAlong = txSpeed * Math.cos(txCourse- bearing);
 		
 		return calcObservedFreqCore(f0, C, rxSpeedAlong, txSpeedAlong);
 	}
@@ -132,85 +130,36 @@ public class FrequencyCalcs
 	static public final class testCalc extends junit.framework.TestCase
 	{
 
-		public void testBasics()
+		public void testDemoFigures()
 		{
-			final double C_MS = 2900;
-			final double f0 = 150;
+			// (figures as provided by Iain)
+			double osKts = 2.5;
+			double osDegs = 208.2;
+			double tgtKts = 9;
+			double tgtDegs = 350.17;
+			double bearing = 260.47;
+			double Ckts = 2951;
+			double f0 = 150;
 			
-			double res = calcObservedFreqCore(f0, C_MS, 0.707, 0.707); 
-			assertEquals("correct raw calc", 150.0, res);
-
-			res = calcObservedFreqCollate(f0, C_MS, Math.PI/4, 0, 1, 0, 1);
-			assertEquals("correct raw calc", 150.0, res);
+			double osMS = new WorldSpeed(osKts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
+			double tgtMS = new WorldSpeed(tgtKts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
+			double osRads = Math.toRadians(osDegs);
+			double tgtRads = Math.toRadians(tgtDegs);
+			double brgRads = Math.toRadians(bearing);
+			double Cms = new WorldSpeed(Ckts, WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
 			
+			double relBrg = bearing - osDegs;
+			double OSL = osKts * Math.cos(Math.toRadians(-relBrg));
+			double ATB = tgtDegs - bearing;
+			double TSL = tgtKts * Math.cos(Math.toRadians(ATB));
+
+			assertEquals("correct OSL", 1.5298, OSL, 0.0001);			
+			assertEquals("correct TSL", 0.04712, TSL, 0.0001);
 			
-			final double C_KTS = new WorldSpeed(C_MS,WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts);
-			WorldLocation rxLoc = new WorldLocation(0,0,0);
-			WorldLocation tgtLoc = new WorldLocation(1,1,0);
-			Fix host = new Fix(null, rxLoc, 0, new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			Fix tgt = new Fix(null, tgtLoc, 0, new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
+			double res = FrequencyCalcs.calcObservedFreqCollate(f0, Cms, brgRads, osRads, osMS, tgtRads, tgtMS);
 			
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertEquals("correct raw calc", 150.0, res);
-
-			// move receiver away
-			host = new Fix(null, rxLoc, Math.toRadians(355), new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res < 150d);
+			assertEquals("correct obs", 150.0750, res, 0.001);
 			
-			// move receiver towards
-			host = new Fix(null, rxLoc, Math.toRadians(5), new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res > 150d);
-			
-			// reflected angle
-			host = new Fix(null, rxLoc, Math.toRadians(85), new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res > 150d);
-
-
-			// accelerate receiver 
-			host = new Fix(null, rxLoc, Math.toRadians(0), new WorldSpeed(2, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res > 150d);
-
-			// decelerate receiver 
-			host = new Fix(null, rxLoc, Math.toRadians(0), new WorldSpeed(0.5, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res < 150d);
-
-			// back to start
-			host = new Fix(null, rxLoc, Math.toRadians(0), new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res == 150d);
-			
-			// move target towards
-			tgt = new Fix(null, tgtLoc, Math.toRadians(355), new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res > 150d);
-			
-			// move target away
-			tgt = new Fix(null, tgtLoc, Math.toRadians(5), new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res < 150d);
-			
-			// reflected angle
-			tgt = new Fix(null, tgtLoc, Math.toRadians(85), new WorldSpeed(1, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res < 150d);
-
-
-			// accelerate target 
-			tgt = new Fix(null, tgtLoc, Math.toRadians(0), new WorldSpeed(2, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res < 150d);
-
-			// decelerate target 
-			tgt = new Fix(null, tgtLoc, Math.toRadians(0), new WorldSpeed(0.5, WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec/3));
-			res = getObservedFreq(f0, C_KTS, host, tgt);			
-			assertTrue("correct raw calc", res > 150d);
-
-
 		}
 		
 		public void testDopplerShiftLowLevel()

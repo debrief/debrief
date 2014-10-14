@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Wed Oct 08 05:30:19 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Wed Oct 08 14:38:34 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Wed Oct 08 04:39:26 GMT 2014"/>
 <session>
 <layers>
@@ -3116,7 +3116,7 @@
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
-<satc_solution LiveRunning="false" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowAlterationBounds="false" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -3300,7 +3300,7 @@
         <finishDate reference="../../finishDate"/>
       </course>
     </compositeStraightLegForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" minRangeM="100" maxRangeM="16457">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" maxRangeM="16457.628589132764" minRangeM="100.0">
       <name>leg one freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3366,7 +3366,7 @@
         </freqMeasurement>
       </measurements>
     </range1959ForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" minRangeM="100" maxRangeM="18857">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" maxRangeM="18857.12702730661" minRangeM="100.0">
       <name>leg two freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3409,7 +3409,7 @@
     </range1959ForecastContribution>
     <rangeForecastContribution>
       <name>first range</name>
-      <active>true</active>
+      <active>false</active>
       <weight>5</weight>
       <startDate>2010-01-12 13:10:00.0 UTC</startDate>
       <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
@@ -3478,10 +3478,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.3871898" Long="-0.4020466"/>
+<shortLocation Depth="0.000" Lat="60.3029572" Long="-0.3333814"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.8692290" Long="0.1676022"/>
+<shortLocation Depth="0.000" Lat="59.9883599" Long="0.0127889"/>
 </br>
 </projection>
 <gui>

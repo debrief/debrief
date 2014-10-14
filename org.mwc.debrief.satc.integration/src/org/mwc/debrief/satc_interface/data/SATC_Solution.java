@@ -64,6 +64,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
@@ -78,6 +79,7 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -89,11 +91,12 @@ public class SATC_Solution extends BaseLayer implements
 		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
 		BaseLayer.ProvidesRange, ISecondaryTrack, NonColoredWatchable
 {
-	
-	/** utility class to work through a route
+
+	/**
+	 * utility class to work through a route
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
 	private static class DoPaint implements RouteStepper
 	{
@@ -291,6 +294,8 @@ public class SATC_Solution extends BaseLayer implements
 				{
 						prop("ShowLocationConstraints",
 								"whether to display location constraints", FORMAT),
+						prop("ShowAlterationStates", "whether to states during alteration",
+								FORMAT),
 						prop("OnlyPlotLegEnds",
 								"whether to only plot location bounds at leg ends", FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
@@ -417,6 +422,8 @@ public class SATC_Solution extends BaseLayer implements
 	private boolean _showLocationBounds = false;
 
 	private boolean _onlyPlotLegEnds = false;
+
+	private boolean _showAlteringBounds = false;
 
 	private boolean _showSolutions = true;
 
@@ -546,9 +553,31 @@ public class SATC_Solution extends BaseLayer implements
 
 						final AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs,
 								speed, origin, startTime, endTime);
+
+						// quick check to see if we have some frequency data
+						IContributions conts = _mySolver.getContributions();
+						Iterator<BaseContribution> iter = conts.iterator();
+						while (iter.hasNext())
+						{
+							BaseContribution cont = (BaseContribution) iter.next();
+							if (cont instanceof Range1959ForecastContribution)
+							{
+								// ok, does it overlap this leg?
+								if (cont.getStartDate().before(straight.getEndTime())
+										&& cont.getFinishDate().after(straight.getStartTime()))
+								{
+									// ok, retrieve the frequency
+									Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
+									double freq = freqC.getfNought();
+									abs.setBaseFrequency(freq);
+								}
+							}
+						}
+
 						abs.setName(straight.getName());
 						newT.add(abs);
 						abs.setName(straight.getName());
+
 					}
 					else if (thisLeg instanceof AlteringRoute)
 					{
@@ -583,10 +612,10 @@ public class SATC_Solution extends BaseLayer implements
 						DebriefPlugin.logError(IStatus.ERROR,
 								"Unexpected type of route encountered:" + thisLeg, null);
 				}
-				
+
 				// and store it
 				_myLayers.addThisLayer(newT);
-				
+
 				// and hide ourselves
 				setVisible(false);
 
@@ -635,17 +664,17 @@ public class SATC_Solution extends BaseLayer implements
 						final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
 								theLoc, theCourse, theSpeed);
 						final FixWrapper newFW = new FixWrapper(newF);
-						
+
 						// reset the label
 						newFW.resetName();
-						
+
 						newT.addFix(newFW);
 					}
 				}
 
 				// and store it
 				_myLayers.addThisLayer(newT);
-				
+
 				// and hide ourselves
 				setVisible(false);
 			}
@@ -668,6 +697,43 @@ public class SATC_Solution extends BaseLayer implements
 		_mySolver.getBoundsManager().removeConstrainSpaceListener(
 				_constrainListener);
 		_myLayers = null;
+	}
+
+	@Override
+	public WorldArea getBounds()
+	{
+		WorldArea res = null;
+
+		// check if we have any solutions
+		if ((_newRoutes != null) && (_newRoutes.length >= 0))
+		{
+			// ok, collate some data
+			final CompositeRoute route = _newRoutes[0];
+
+			Collection<CoreRoute> legs = route.getLegs();
+			for (Iterator<CoreRoute> iterator = legs.iterator(); iterator.hasNext();)
+			{
+				CoreRoute thisRoute = (CoreRoute) iterator.next();
+
+				// get the end points for this leg
+				final WorldLocation start = conversions.toLocation(thisRoute
+						.getStartPoint().getCoordinate());
+				final WorldLocation end = conversions.toLocation(thisRoute
+						.getEndPoint().getCoordinate());
+
+				// is this the first area?
+				if (res == null)
+				{
+					res = new WorldArea(start, end);
+				}
+				else
+				{
+					res.extend(new WorldArea(start, end));
+				}
+			}
+		}
+
+		return res;
 	}
 
 	protected void fireRepaint()
@@ -699,7 +765,7 @@ public class SATC_Solution extends BaseLayer implements
 						// is it one of ours?
 						if (dataMgr != null)
 						{
-								dataMgr.fireTrackShift(wl);
+							dataMgr.fireTrackShift(wl);
 						}
 					}
 				}
@@ -845,6 +911,16 @@ public class SATC_Solution extends BaseLayer implements
 	public boolean getShowLocationConstraints()
 	{
 		return _showLocationBounds;
+	}
+
+	public boolean getShowAlterationStates()
+	{
+		return _showAlteringBounds;
+	}
+
+	public void setShowAlterationStates(boolean showAlteringBounds)
+	{
+		this._showAlteringBounds = showAlteringBounds;
 	}
 
 	public boolean getShowSolutions()
@@ -1053,7 +1129,7 @@ public class SATC_Solution extends BaseLayer implements
 			dest.setColor(_myColor);
 			if (_newRoutes != null)
 			{
-				if(_showSolutions)
+				if (_showSolutions)
 					paintThese(dest, _newRoutes);
 			}
 		}
@@ -1071,6 +1147,11 @@ public class SATC_Solution extends BaseLayer implements
 				.hasNext();)
 		{
 			final BoundedState thisS = iterator.next();
+
+			// we don't plot altering states
+			if (!getShowAlterationStates()
+					&& (thisS.getStateType() == BoundedStateType.ALTERING))
+				continue;
 
 			// do some fancy tests for if users only want the
 			// states that appear at leg ends
@@ -1192,48 +1273,93 @@ public class SATC_Solution extends BaseLayer implements
 			// loop through the legs
 			final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
 			while (legs.hasNext())
-			{
-				final TrackSegment ts = new TrackSegment();
-
+			{				
 				final CoreRoute thisLeg = legs.next();
+				
+				TrackSegment ts;
 
-				// ok, loop through the states
-				final Iterator<State> iter = thisLeg.getStates().iterator();
-				while (iter.hasNext())
+				if (thisLeg instanceof StraightRoute)
 				{
-					final State state = iter.next();
-					final WorldLocation theLoc = conversions.toLocation(state
-							.getLocation().getCoordinate());
-					final double theCourse = state.getCourse();
-					final double theSpeed = new WorldSpeed(state.getSpeed(),
-							WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec / 3);
-					final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
-							theLoc, theCourse, theSpeed);
-					final FixWrapper newFW = new FixWrapper(newF)
-					{
+					final StraightRoute straight = (StraightRoute) thisLeg;
 
-						/**
+					// ok - produce a TMA leg
+					final double courseDegs = Math.toDegrees(straight.getCourse());
+					final WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
+							WorldSpeed.M_sec);
+					final WorldLocation origin = conversions.toLocation(straight
+							.getStartPoint().getCoordinate());
+					final HiResDate startTime = new HiResDate(straight.getStartTime()
+							.getTime());
+					final HiResDate endTime = new HiResDate(straight.getEndTime()
+							.getTime());
+
+					final AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs,
+							speed, origin, startTime, endTime);
+
+					// quick check to see if we have some frequency data
+					IContributions conts = _mySolver.getContributions();
+					Iterator<BaseContribution> iter = conts.iterator();
+					while (iter.hasNext())
+					{
+						BaseContribution cont = (BaseContribution) iter.next();
+						if (cont instanceof Range1959ForecastContribution)
+						{
+							// ok, does it overlap this leg?
+							if (cont.getStartDate().before(straight.getEndTime())
+									&& cont.getFinishDate().after(straight.getStartTime()))
+							{
+								// ok, retrieve the frequency
+								Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
+								double freq = freqC.getfNought();
+								abs.setBaseFrequency(freq);
+							}
+						}
+					}
+
+					abs.setName(straight.getName());	
+					ts = abs;
+
+				}
+				else
+				{
+					ts = new TrackSegment();
+
+					// ok, loop through the states
+					final Iterator<State> iter = thisLeg.getStates().iterator();
+					while (iter.hasNext())
+					{
+						final State state = iter.next();
+						final WorldLocation theLoc = conversions.toLocation(state
+								.getLocation().getCoordinate());
+						final double theCourse = state.getCourse();
+						final double theSpeed = new WorldSpeed(state.getSpeed(),
+								WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec / 3);
+						final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
+								theLoc, theCourse, theSpeed);
+						final FixWrapper newFW = new FixWrapper(newF)
+						{
+							/**
 						 * 
 						 */
-						private static final long serialVersionUID = 1L;
+							private static final long serialVersionUID = 1L;
 
-						@Override
-						public String getMultiLineName()
-						{
-							return super.getName();
-						}
+							@Override
+							public String getMultiLineName()
+							{
+								return super.getName();
+							}
 
-					};
-					final Color thisCol;
+						};
+						final Color thisCol;
 
-					if (state.getColor() == null)
-						thisCol = Color.red;
-					else
-						thisCol = state.getColor();
-					newFW.setColor(thisCol);
-					ts.addFix(newFW);
+						if (state.getColor() == null)
+							thisCol = Color.red;
+						else
+							thisCol = state.getColor();
+						newFW.setColor(thisCol);
+						ts.addFix(newFW);
+					}
 				}
-
 				res.add(ts);
 			}
 		}
