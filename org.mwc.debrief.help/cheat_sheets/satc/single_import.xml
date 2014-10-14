@@ -42,7 +42,7 @@
       title="Manually tune the TMA solution">
       <description>
          So, we should now just have the <b>OWNSHIP</b> and <b>Single Leg TMA</b> tracks visible.  Let&apos;s try adjusting the solution. We 
-         do this just like we do for normal Single-Sided Reconstruction: click on the <b>Drag TMA Segment</b> arrow button in the Debrief toolbar.
+         do this just like we do for normal Single-Sided Reconstruction: click on the <b>Drag Track Segment</b> arrow button in the Debrief toolbar.
          <br/>As you click it, you will see the <b>Bearing Residuals</b> view open.  Next, make the <b>OWNSHIP</b> track as the Primary track, and 
          the <b>Single Leg TMA</b> track as the secondary track (using the mini-toolbar above the <b>Outline View</b>). Now you can drag the yellow track
          and see the error residuals move.  
