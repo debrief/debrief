@@ -41,11 +41,9 @@ import ASSET.Util.SupportTesting;
 import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
-import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-import MWC.TacticalData.Fix;
 
 public class NarrowbandSensor extends InitialSensor
 {
@@ -209,25 +207,27 @@ public class NarrowbandSensor extends InitialSensor
 		      res = new DetectionEvent(time, host.getId(), host.getStatus().getLocation(), this, null, null, null, null,
 		      						null, target.getCategory(), new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)), new Float(target.getStatus().getCourse()), target);
 				}
-				
 				// get the f-nought
 				double f0 = nbNoise.getFrequency();
 
-				// now apply the doppler to get the measured freq
 				final double speedOfSoundKts = 2951;
 
+				// start preparing the data
 				Status hS = host.getStatus();
 				Status tS = target.getStatus();
-				Fix hostFix = new Fix(new HiResDate(hS.getTime()), hS.getLocation(),
-						Math.toRadians(hS.getCourse()), hS.getSpeed().getValueIn(
-								WorldSpeed.ft_sec / 3));
-				Fix tgtFix = new Fix(new HiResDate(tS.getTime()), tS.getLocation(),
-						Math.toRadians(tS.getCourse()), tS.getSpeed().getValueIn(
-								WorldSpeed.ft_sec / 3));
+				
+				double rxSpeedKts = hS.getSpeed().getValueIn(WorldSpeed.Kts);
+				double txSpeedKts = tS.getSpeed().getValueIn(WorldSpeed.Kts);
+				
+				double rxCourseDegs = hS.getCourse();
+				double txCourseDegs = tS.getCourse();
+				
+				double bearingDegs = Math.toDegrees(target.getStatus().getLocation().bearingFrom(host.getStatus().getLocation()));
 
 				// what's the observed freq?
-				double freq = FrequencyCalcs.getObservedFreq(f0, speedOfSoundKts,
-						hostFix, tgtFix);
+				double freq = FrequencyCalcs.getObservedFreq(f0, speedOfSoundKts, rxSpeedKts, rxCourseDegs, 
+						txSpeedKts, txCourseDegs, bearingDegs);
+				
 				res.setFreq((float) freq);
 			}
 

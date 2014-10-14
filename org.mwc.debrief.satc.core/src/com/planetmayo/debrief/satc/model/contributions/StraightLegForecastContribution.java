@@ -24,6 +24,7 @@ import java.util.ListIterator;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution.HasColor;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
@@ -124,7 +125,7 @@ public class StraightLegForecastContribution extends BaseContribution implements
 		{
 			try 
 			{
-				space.add(new BoundedState(new Date(a)));
+				space.add(new BoundedState(new Date(a), BoundedStateType.ALTERING));
 				stateCreated = true;
 			} 
 			catch (IncompatibleStateException ex) 
@@ -135,7 +136,7 @@ public class StraightLegForecastContribution extends BaseContribution implements
 		{
 			try 
 			{
-				space.add(new BoundedState(new Date((endPrevious.getTime() + startNext.getTime()) / 2)));
+				space.add(new BoundedState(new Date((endPrevious.getTime() + startNext.getTime()) / 2), BoundedStateType.ALTERING));
 			} 
 			catch (IncompatibleStateException ex) 
 			{				

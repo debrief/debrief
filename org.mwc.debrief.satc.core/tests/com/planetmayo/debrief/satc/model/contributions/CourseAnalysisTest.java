@@ -65,7 +65,7 @@ public class CourseAnalysisTest extends ModelTestBase
 		
 		 cr = new CourseRange(Math.toRadians(315), Math.toRadians(45));
 		 cr2 = cr.generateInverse();
-		assertEquals(495, Math.toDegrees(cr2.getMin()),0.0001);
+		assertEquals(135, Math.toDegrees(cr2.getMin()),0.0001);
 		assertEquals(225, Math.toDegrees(cr2.getMax()),0.00001);
 		
 	}
@@ -378,7 +378,5 @@ public class CourseAnalysisTest extends ModelTestBase
 
 		assertNotNull("last course is still null", lastStateWithCourse);
 		assertEquals("correct min",77, Math.toDegrees( lastStateWithCourse.getCourse().getMin()), 0.001);
-	}
-	
-	
+	}	
 }

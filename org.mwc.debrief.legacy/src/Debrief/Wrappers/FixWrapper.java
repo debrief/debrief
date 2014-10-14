@@ -542,12 +542,16 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	@Override
 	public final Color getColor()
 	{
+		Color res = Color.RED;
 		if (super.getColor() == null)
-		{
-			return _trackWrapper.getColor();
+		{			
+			if(_trackWrapper != null)
+				res = _trackWrapper.getColor();
 		}
 		else
-			return super.getColor();
+			res = super.getColor();
+		
+		return res;
 	}
 
 	/**

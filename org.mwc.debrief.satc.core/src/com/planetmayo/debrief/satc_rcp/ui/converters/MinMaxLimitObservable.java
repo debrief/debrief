@@ -39,6 +39,7 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 	private Object cachedValue;
 	private boolean updating;
 	private boolean intervalMode;
+	private String suffix;
 
 	private class PrivateInterface implements IChangeListener, IStaleListener,
 			IDisposeListener
@@ -64,17 +65,24 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 	public MinMaxLimitObservable(IObservableValue minObservable,
 			IObservableValue maxObservable)
 	{
-		this(minObservable, maxObservable, null);
+		this(minObservable, maxObservable, null, null);
+	}
+	
+	public MinMaxLimitObservable(IObservableValue minObservable,
+			IObservableValue maxObservable, IConverter converter)
+	{
+		this(minObservable, maxObservable, converter, null);
 	}
 	
 	public MinMaxLimitObservable(IObservableValue minObservable, 
-			IObservableValue maxObservable, IConverter converter) 
+			IObservableValue maxObservable, IConverter converter, String suffix) 
 	{
 		super(minObservable.getRealm());
 		this.minObservable = minObservable;
 		this.maxObservable = maxObservable;
 		this.converter = converter;
-		this.intervalMode = minObservable != null && maxObservable != null; 
+		this.intervalMode = minObservable != null && maxObservable != null;
+		this.suffix = suffix == null ? "" : suffix;
 				
 		privateInterface = new PrivateInterface();
 		minObservable.addDisposeListener(privateInterface);
@@ -176,7 +184,7 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 		{
 			return "> " + minString;
 		}		
-		return minString + (maxString.equals(minString) ? "" : " - " + maxString);
+		return minString + (maxString.equals(minString) ? "" : " - " + maxString) + suffix;
 	}
 
 	protected void doSetValue(Object value)

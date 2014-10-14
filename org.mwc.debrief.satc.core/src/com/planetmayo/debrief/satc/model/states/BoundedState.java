@@ -24,7 +24,23 @@ import com.vividsolutions.jts.geom.LineString;
 
 public class BoundedState implements Comparable<BoundedState>
 {
+	/** allow different types of bounded state - used
+	 * as a way of highlighting states that were generated
+	 * to support assessing track in alterations.
+	 *
+	 */
+	public static enum BoundedStateType
+	{
+		LEG, ALTERING;
+	}
+	
 	private final Date _time;
+
+	
+	/** type of state
+	 * 
+	 */
+	private final BoundedStateType _stateType;
 
 	private SpeedRange _speed;
 
@@ -52,11 +68,17 @@ public class BoundedState implements Comparable<BoundedState>
 
 	public BoundedState(Date time)
 	{
+		this(time, BoundedStateType.LEG);
+	}
+	
+	public BoundedState(Date time, BoundedStateType type)
+	{		
+		_stateType = type;
+		_time = time;
 		if (time == null)
 		{
 			throw new IllegalArgumentException("time can't be null");
 		}
-		_time = time;
 	}
 
 	@Override
@@ -246,4 +268,8 @@ public class BoundedState implements Comparable<BoundedState>
 		_bearing = bearing;
 	}
 
+	public BoundedStateType getStateType()
+	{
+		return _stateType;
+	}
 }

@@ -16,6 +16,10 @@
  */
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import java.text.DecimalFormat;
+
+import junit.framework.TestCase;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -35,11 +39,12 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.NullToBooleanConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterFrom;
 import com.planetmayo.debrief.satc_rcp.ui.converters.ScaleConverterTo;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
 
 public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
 {
-	private PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
-			Object.class, " m");
 
 	public RangeForecastContributionView(Composite parent,
 			RangeForecastContribution contribution, IContributions contributions)
@@ -54,13 +59,15 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
 		
-		int[] borders = {0, 1000, 3000, 7000, 17000, 40000};
+		double MAX_SELECTABLE_RANGE_YDS = new MeterToYds().safeConvert(new Double(RangeForecastContribution.MAX_SELECTABLE_RANGE_M));
+		
+		int[] borders = {0, 1000, 3000, 7000, 17000, (int)MAX_SELECTABLE_RANGE_YDS};
 		int[] increments = {50, 100, 200, 500, 1000};
 		context.bindValue(sliderValue, modelValue,
 				UIUtils.converterStrategy(new ScaleConverterFrom(increments, borders)),
 				UIUtils.converterStrategy(new ScaleConverterTo(increments, borders))
 		);
-		double defaultValue = maxValue ? RangeForecastContribution.MAX_SELECTABLE_RANGE_M : 0;
+		double defaultValue = maxValue ? MAX_SELECTABLE_RANGE_YDS : 0;
 		context.bindValue(sliderEnabled, modelValue, null, 
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
 		if (checkBox != null) 
@@ -70,6 +77,8 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 					UIUtils.converterStrategy(new BooleanToNullConverter<Double>(defaultValue)),
 					UIUtils.converterStrategy(new NullToBooleanConverter()));			
 		}
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, "", " Yds", new DecimalFormat("0"));
+		labelsConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
 		context.bindValue(labelValue, modelValue, null,
 				UIUtils.converterStrategy(labelsConverter));		
 	}
@@ -77,21 +86,27 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
+		DecimalFormat rangeFormat = new DecimalFormat("0");
+		final PrefixSuffixLabelConverter minMaxConverter = new PrefixSuffixLabelConverter(Object.class, "", "", rangeFormat);
+		minMaxConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
+		
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
-		IObservableValue minSpeedValue = BeansObservables.observeValue(
+		IObservableValue minRangeValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MIN_RANGE);
-		IObservableValue maxSpeedValue = BeansObservables.observeValue(
+		IObservableValue maxRangeValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MAX_RANGE);
 		MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(
-				minSpeedValue, maxSpeedValue);
-		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter);
+				minRangeValue, maxRangeValue, minMaxConverter, " Yds");
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, "", " Yds", rangeFormat);
+		labelsConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
+		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter, minMaxConverter);
 		bindCommonDates(context);
 		
-		bindSliderForRange(context, minSpeedValue, minSlider, minLabel, null, false);
-		bindSliderForRange(context, maxSpeedValue, maxSlider, maxLabel, null, true);
+		bindSliderForRange(context, minRangeValue, minSlider, minLabel, null, false);
+		bindSliderForRange(context, maxRangeValue, maxSlider, maxLabel, null, true);
 		bindSliderForRange(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, false);
-		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
+		bindMaxMinEstimate(estimateValue, minRangeValue, maxRangeValue);
 	}
 
 
@@ -116,5 +131,18 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 	protected String getTitlePrefix()
 	{
 		return "Range Forecast - ";
+	}
+	
+	/** quick test for units conversions
+	 * 
+	 */
+	public static class TestConvert extends TestCase
+	{
+		public void testBoth(){
+			YdsToMeter y2m = new YdsToMeter();
+			MeterToYds m2y = new MeterToYds();
+			assertEquals("yards to meters worked", 1852, y2m.safeConvert(2025.37), 0.01);
+			assertEquals("metesr to yds worked", 2025.37, m2y.safeConvert(1852), 0.01);
+		}
 	}
 }

@@ -292,7 +292,7 @@ public class MaintainContributionsView extends ViewPart
 		fillAnalystContributionsGroup(group);
 
 		final ScrolledComposite scrolled = new ScrolledComposite(group,
-				SWT.V_SCROLL);
+				SWT.V_SCROLL|SWT.H_SCROLL);
 		scrolled.setLayoutData(new GridData(GridData.FILL_BOTH));
 		contList = UIUtils.createScrolledBody(scrolled, SWT.NONE);
 		contList.setLayout(new GridLayout(1, false));
@@ -320,18 +320,40 @@ public class MaintainContributionsView extends ViewPart
 		gridData.grabExcessHorizontalSpace = true;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		GridLayout layout = new GridLayout(5, false);
+		GridLayout layout = new GridLayout(1, false);
 		group.setLayoutData(gridData);
 		group.setLayout(layout);
 		group.setText("Preferences");
+		
+		final ScrolledComposite scrolled = new ScrolledComposite(group,
+				SWT.H_SCROLL);
+		scrolled.setLayoutData(new GridData(GridData.FILL_BOTH));
+		final Composite preferencesComposite = UIUtils.createScrolledBody(scrolled, SWT.NONE);
+		preferencesComposite.setLayout(new GridLayout(5, false));
 
-		liveConstraints = new Button(group, SWT.TOGGLE);
+		scrolled.addListener(SWT.Resize, new Listener()
+		{
+
+			@Override
+			public void handleEvent(Event e)
+			{
+				scrolled.setMinSize(preferencesComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			}
+		});
+		scrolled.setAlwaysShowScrollBars(true);
+		scrolled.setContent(preferencesComposite);
+		scrolled.setMinSize(preferencesComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolled.setExpandHorizontal(true);
+		scrolled.setExpandVertical(true);
+
+
+		liveConstraints = new Button(preferencesComposite, SWT.TOGGLE);
 		liveConstraints.setText("Auto-Recalc of Constraints");
 		liveConstraints.setEnabled(false);
 		liveConstraints.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
 
-		recalculate = new Button(group, SWT.DEFAULT);
+		recalculate = new Button(preferencesComposite, SWT.DEFAULT);
 		recalculate.setText("Calculate Solution");
 		recalculate.setEnabled(false);
 		recalculate.addSelectionListener(new SelectionAdapter()
@@ -351,7 +373,7 @@ public class MaintainContributionsView extends ViewPart
 		recalculate.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER
 				| GridData.VERTICAL_ALIGN_CENTER));
 
-		cancelGeneration = new Button(group, SWT.PUSH);
+		cancelGeneration = new Button(preferencesComposite, SWT.PUSH);
 		cancelGeneration.setText("Cancel");
 		cancelGeneration.setVisible(false);
 		cancelGeneration.addSelectionListener(new SelectionAdapter()
@@ -367,7 +389,7 @@ public class MaintainContributionsView extends ViewPart
 			}
 		});
 
-		suppressCuts = new Button(group, SWT.CHECK);
+		suppressCuts = new Button(preferencesComposite, SWT.CHECK);
 		suppressCuts.setText("Suppress Cuts");
 		suppressCuts.setVisible(true);
 		suppressCuts.setEnabled(false);
@@ -385,7 +407,7 @@ public class MaintainContributionsView extends ViewPart
 			}
 		});
 
-		Composite precisionPanel = new Composite(group, SWT.NONE);
+		Composite precisionPanel = new Composite(preferencesComposite, SWT.NONE);
 		precisionPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
 				| GridData.GRAB_HORIZONTAL | GridData.VERTICAL_ALIGN_CENTER));
 

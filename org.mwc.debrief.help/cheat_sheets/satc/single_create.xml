@@ -20,7 +20,7 @@
          title="Select a block of sensor cuts">
       <description>
          Ok, we&apos;ve found the sensor data. Now right-click on this item (<b>Sensor:Plain (11 items)</b>), and
-         select <b>Semi Auto TMA</b> / <b>Create new solution from these bearings</b>
+         select <b>Semi Auto TMA</b> / <b>Create new scenario from these bearings</b>
       </description>
    </item>
    <item
@@ -80,8 +80,8 @@
    <item
       title="Get ready to specify a target leg">
       <description>
-         <br/>Note that in this sample data, we have a maximum range value for the bearings, of 12kyds.  
-         In the absence of a range estimate they will be drawn out to 30 kyds.
+         <br/>Note that in this sample data, the imported bearings have a maximum range of 12kyds.  
+         In the absence of a range estimate SATC  will restrict them to 30 kyds, to stop your PC doing the Ferranti Reset.
          <br/>Also, before we continue, we need to reset Debrief to a predictable state, so please restore the <b>Bearing Measurement</b> analyst contribution to 3 degrees, and also clear the <b>ShowLocationConstraints</b> 
          checkbox for in the <b>Properties</b> View for the <b>Single Leg</b> scenario.
       </description>

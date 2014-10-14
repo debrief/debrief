@@ -17,6 +17,7 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -33,17 +34,24 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
 
 public class Ranging1959ContributionView extends BaseContributionView<Range1959ForecastContribution>
 {
 
+	private static final DecimalFormat rangeFormat = new DecimalFormat("0");
+	
 	private Text speedSoundText;
 	private Text fNoughtText;
 	private Text rangeText;
@@ -109,21 +117,26 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		fNoughtText.addVerifyListener(new DoubleVerifier());
 		
 		// now add the range
-		UIUtils.createLabel(bodyGroup, "1959 Range(m):", new GridData(120, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "1959 Range(Yds):", new GridData(120, SWT.DEFAULT));
 		UIUtils.createSpacer(bodyGroup, new GridData(1, SWT.DEFAULT));
 		
 		Composite range = new Composite(bodyGroup, SWT.NONE);
 		range.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		range.setLayout(new GridLayout(2, false));
+		range.setLayout(new GridLayout(3, false));
 		
 		rangeText = new Text(range, SWT.BORDER|SWT.READ_ONLY|SWT.TRAIL);
-		gd = new GridData(100,SWT.DEFAULT);
+		gd = new GridData(60,SWT.DEFAULT);
 		rangeText.setLayoutData(gd);
 		
 		rangeBoundsText = new Text(range, SWT.BORDER|SWT.READ_ONLY|SWT.CENTER);
-		gd = new GridData(200,SWT.DEFAULT);
+		gd = new GridData(140,SWT.DEFAULT);
 		rangeBoundsText.setLayoutData(gd);
-		
+
+		Label lastLabel = new Label(range, SWT.LEFT);
+		lastLabel.setText("Calculated data - read only");
+		gd = new GridData(220,SWT.DEFAULT);
+		lastLabel.setLayoutData(gd);
+
 		context = new DataBindingContext();
 		bindValues(context);
 	}
@@ -131,7 +144,9 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", "m");
+		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "", " Yds", rangeFormat);
+		labelConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
+		
 		IObservableValue errorValue = BeansObservables.observeValue(
 				contribution, Range1959ForecastContribution.RANGE);
 		IObservableValue observationNumberValue = BeansObservables.observeValue(
@@ -149,13 +164,23 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		// bind range
 		bindRange(context);
 		
-		// bind range period
-		IObservableValue rangePeriodValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.RANGE_BOUNDS);
-		ISWTObservableValue rangePeriodTextValue = WidgetProperties.text(SWT.FocusOut)
-				.observe(rangeBoundsText);
+		// bind range bounds
+		bindRangeBounds(context);
+	}
+
+	private void bindRangeBounds(DataBindingContext context)
+	{
+		PrefixSuffixLabelConverter minMaxConverter = new PrefixSuffixLabelConverter(Object.class, "", "", rangeFormat);
+		minMaxConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
 		
-		context.bindValue(rangePeriodTextValue, rangePeriodValue);
+		IObservableValue minRangeValue = BeansObservables.observeValue(contribution, Range1959ForecastContribution.MIN_RANGE);
+		IObservableValue maxRangeValue = BeansObservables.observeValue(contribution, Range1959ForecastContribution.MAX_RANGE);
+		
+		IObservableValue rangeBoundsValue = new MinMaxLimitObservable(minRangeValue, maxRangeValue, 
+				minMaxConverter);
+		ISWTObservableValue rangeBoundsTextValue = WidgetProperties.text(SWT.FocusOut)
+				.observe(rangeBoundsText);
+		context.bindValue(rangeBoundsTextValue, rangeBoundsValue);
 	}
 
 	private void bindFNought(DataBindingContext context)
@@ -197,9 +222,9 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		ISWTObservableValue rangeTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(rangeText);
 		
-		IConverter modelToUI = new ModelToUIDoubleConverter();
+		IConverter modelToUI = new ModelToUIRangeConverter();
 		
-		IConverter uiToModel = new UIToModelDoubleConverter();
+		IConverter uiToModel = new UIToModelRangeConverter();
 		
 		context.bindValue(rangeTextValue, rangeValue,
 				UIUtils.converterStrategy(uiToModel),
@@ -256,6 +281,33 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		}
 	}
 	
+	private class ModelToUIRangeConverter implements IConverter
+	{
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+
+		@Override
+		public Object getFromType()
+		{
+			return Double.class;
+		}
+
+		@Override
+		public Object convert(Object fromObject)
+		{
+			if (fromObject == null)
+			{
+				return null;
+			}
+			//int value = ((Double) fromObject).intValue();
+			int value = new MeterToYds().safeConvert((Double)fromObject).intValue();
+			return new String(new Integer(value).toString());
+		}
+	}
+
 	private class ModelToUIFNoughtConverter implements IConverter
 	{
 		@Override
@@ -312,6 +364,36 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 
 	}
 
+	private class UIToModelRangeConverter implements IConverter
+	{
+		
+		@Override
+		public Object getToType()
+		{
+			return Double.class;
+		}
+		
+		@Override
+		public Object getFromType()
+		{
+			return String.class;
+		}
+		
+		@Override
+		public Object convert(Object fromObject)
+		{
+			String s = (String) fromObject;
+			if (fromObject == null || s.isEmpty()) {
+				return null;
+			}
+			//double value = new Double((String)fromObject).doubleValue();
+			Double value = new Double((String)fromObject);
+			value = new YdsToMeter().safeConvert(value);
+			return new Double(value);
+		}
+
+	}
+
 	private class DoubleVerifier implements VerifyListener
 	{
 
@@ -359,5 +441,4 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		}
 
 	}
-
 }

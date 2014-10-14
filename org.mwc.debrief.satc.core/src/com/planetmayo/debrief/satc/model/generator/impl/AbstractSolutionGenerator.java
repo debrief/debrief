@@ -152,7 +152,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 
 		// remember the last state
 		BoundedState lastState = null;
-		ScoredState thisSorted = null;
+		ScoredState statesToDitch = null;
 
 		Iterator<BoundedState> iter = states.iterator();
 		while (iter.hasNext())
@@ -173,17 +173,17 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 						final Geometry overlap = boundedState.getLocation().getGeometry()
 								.intersection(lastState.getLocation().getGeometry());
 						final double area = overlap.getArea();
-						thisSorted = new ScoredState(-area, boundedState);
-						sortedStates.add(thisSorted);
+						statesToDitch = new ScoredState(-area, boundedState);
+						sortedStates.add(statesToDitch);
 					}
 					else
 					{
 						// we've just changed leg. Make sure the previous state isn't a
 						// candidate
 						// for removal
-						if (thisSorted != null)
+						if (statesToDitch != null)
 						{
-							sortedStates.remove(thisSorted);
+							sortedStates.remove(statesToDitch);
 						}
 					}
 				}
@@ -197,7 +197,11 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 		}
 
 		// ok - remove the last state from the list - we need it
-		sortedStates.remove(thisSorted);
+		if (statesToDitch != null)
+		{
+			sortedStates.remove(statesToDitch);
+		}
+		
 		return sortedStates;
 	}
 

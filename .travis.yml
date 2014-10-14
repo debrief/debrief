@@ -1,0 +1,22 @@
+language: java
+jdk: oraclejdk7
+install: mvn --version
+before_script:
+- export DISPLAY=:99
+- sh -e /etc/init.d/xvfb start
+- sleep 3
+script: mvn clean verify -U -B -fae
+after_success: ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.tar.gz
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: KCCJkP6ELz9pIGkBmSRbazRzhKZPq7T58tEIZbthtVv+KoM/JWdN10h3IK/N5Oqdeb2/P5u+93ml1wlU9PkbuwxQ4mpUbaAW41G/9mbEF7U2JLEtS9xSxeIfEBIEtuHxdlECjsgMCLm2lh3CVxbu3S2y9jDnpt35rbh6AN3B44w=
+  file: 
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.tar.gz
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.tar.gz
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+  on:
+     tags: true
+     all_branches: true

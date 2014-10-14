@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Wed Oct 01 08:11:26 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
-<details Text="Saved with Debrief version dated Thu Sep 25 08:33:52 GMT 2014"/>
+<plot Created="Wed Oct 08 14:38:34 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<details Text="Saved with Debrief version dated Wed Oct 08 04:39:26 GMT 2014"/>
 <session>
 <layers>
 <track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
@@ -3116,7 +3116,7 @@
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
-<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowBounds="false" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowAlterationBounds="false" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -3300,7 +3300,7 @@
         <finishDate reference="../../finishDate"/>
       </course>
     </compositeStraightLegForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" rangeBounds="100-16457">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="6457.628589132763" maxRangeM="16457.628589132764" minRangeM="100.0">
       <name>leg one freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3366,7 +3366,7 @@
         </freqMeasurement>
       </measurements>
     </range1959ForecastContribution>
-    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" rangeBounds="100-18857">
+    <range1959ForecastContribution fNought="150.0" speedSound="3000.0" calculatedRange="8857.127027306611" maxRangeM="18857.12702730661" minRangeM="100.0">
       <name>leg two freq</name>
       <active>true</active>
       <weight>5</weight>
@@ -3407,6 +3407,57 @@
         </freqMeasurement>
       </measurements>
     </range1959ForecastContribution>
+    <rangeForecastContribution>
+      <name>first range</name>
+      <active>false</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
+      <minRangeM>4000.0</minRangeM>
+      <maxRangeM>14000.0</maxRangeM>
+      <estimate>8000.0</estimate>
+      <sensorOrigins>
+        <rorigin time="2010-01-12 13:10:00.0 UTC">
+          <origin lat="60.1624556" lon="-0.0242139"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:10:50.0 UTC">
+          <origin lat="60.1619472" lon="-0.0247639"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:11:40.0 UTC">
+          <origin lat="60.1614361" lon="-0.0253139"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:12:30.0 UTC">
+          <origin lat="60.160925" lon="-0.0258639"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:13:20.0 UTC">
+          <origin lat="60.1604167" lon="-0.0264139"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:14:10.0 UTC">
+          <origin lat="60.1599056" lon="-0.0269611"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:15:00.0 UTC">
+          <origin lat="60.1593972" lon="-0.0275111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:15:50.0 UTC">
+          <origin lat="60.1588861" lon="-0.0280611"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:16:40.0 UTC">
+          <origin lat="60.158375" lon="-0.0286111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:17:30.0 UTC">
+          <origin lat="60.1578667" lon="-0.0291611"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:18:20.0 UTC">
+          <origin lat="60.1573556" lon="-0.0297111"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:19:10.0 UTC">
+          <origin lat="60.1568444" lon="-0.0302583"/>
+        </rorigin>
+        <rorigin time="2010-01-12 13:20:00.0 UTC">
+          <origin lat="60.1563361" lon="-0.0308083"/>
+        </rorigin>
+      </sensorOrigins>
+    </rangeForecastContribution>
     <courseAnalysisContribution>
       <name>Course Analysis</name>
       <active>true</active>
@@ -3427,10 +3478,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.3871898" Long="-0.4020466"/>
+<shortLocation Depth="0.000" Lat="60.3029572" Long="-0.3333814"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.8692290" Long="0.1676022"/>
+<shortLocation Depth="0.000" Lat="59.9883599" Long="0.0127889"/>
 </br>
 </projection>
 <gui>
