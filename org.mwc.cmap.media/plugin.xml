@@ -129,7 +129,7 @@
         <menuContribution locationURI="toolbar:org.mwc.cmap.media.toolbar?after=additions"> 
             <command
               commandId="org.mwc.cmap.media.actions.NewVideoPlayerAction"
-              icon="icons/player.gif"
+              icon="icons/24px/player.gif"
               style="push"
               id="org.mwc.cmap.media.actions.NewVideoPlayerAction">
             </command>

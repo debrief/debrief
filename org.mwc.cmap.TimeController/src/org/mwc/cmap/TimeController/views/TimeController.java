@@ -121,9 +121,9 @@ import MWC.Utilities.Timer.TimerListener;
 public class TimeController extends ViewPart implements ISelectionProvider,
 		TimerListener, RelativeProjectionParent
 {
-	private static final String ICONS_MEDIA_PAUSE = "icons/media_pause.png";
+	private static final String ICONS_MEDIA_PAUSE = "icons/24px/media_pause.png";
 
-	private static final String ICONS_MEDIA_PLAY = "icons/media_play.png";
+	private static final String ICONS_MEDIA_PLAY = "icons/24px/media_play.png";
 
 	private static final String DUFF_TIME_TEXT = "--------------------------";
 
@@ -524,18 +524,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		final Button eBwd = new Button(_btnPanel, SWT.NONE);
 		addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false, null, false));
-		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
+		eBwd.setImage(TimeControllerPlugin.getImage("icons/24px/media_beginning.png"));
 		eBwd.setToolTipText("Move to start of dataset");
 
 		final Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setToolTipText("Move backward large step (hold to repeat)");
-		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
+		lBwd.setImage(TimeControllerPlugin.getImage("icons/24px/media_rewind.png"));
 		RepeatingTimeButtonListener listener = new RepeatingTimeButtonListener(false, new Boolean(true), true);
 		addTimeButtonListener(lBwd, listener);
 		
 		final Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setToolTipText("Move backward small step (hold to repeat)");
-		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
+		sBwd.setImage(TimeControllerPlugin.getImage("icons/24px/media_back.png"));
 		listener = new RepeatingTimeButtonListener(false, new Boolean(false), true);
 		addTimeButtonListener(sBwd, listener);
 		
@@ -576,14 +576,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		_forwardButton = new Button(_btnPanel, SWT.NONE);
 		_forwardButton.setImage(TimeControllerPlugin
-				.getImage("icons/media_forward.png"));
+				.getImage("icons/24px/media_forward.png"));
 		listener = new RepeatingTimeButtonListener(true, new Boolean(false), true);
 		addTimeButtonListener(_forwardButton, listener);
 		
 		_forwardButton.setToolTipText("Move forward small step (hold to repeat)");
 
 		final Button lFwd = new Button(_btnPanel, SWT.NONE);
-		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
+		lFwd.setImage(TimeControllerPlugin.getImage("icons/24px/media_fast_forward.png"));
 		lFwd.setToolTipText("Move forward large step (hold to repeat)");
 		listener = new RepeatingTimeButtonListener(true, new Boolean(true), true);
 		addTimeButtonListener(lFwd, listener);
@@ -591,7 +591,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		
 		final Button eFwd = new Button(_btnPanel, SWT.NONE);
 		addTimeButtonListener(eFwd, new RepeatingTimeButtonListener(true, null, false));
-		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
+		eFwd.setImage(TimeControllerPlugin.getImage("icons/24px/media_end.png"));
 		eFwd.setToolTipText("Move to end of dataset");
 
 		final GridDataFactory btnGd = GridDataFactory.fillDefaults().grab(true,
