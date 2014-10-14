@@ -463,7 +463,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * how far the mouse has to be dragged before it's registered as a drag
 	 * operation
 	 */
-	private final int JITTER = 6;
+	private final int JITTER = 9;
 
 	/**
 	 * track drag operations
