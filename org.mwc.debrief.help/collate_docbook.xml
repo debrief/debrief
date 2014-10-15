@@ -20,11 +20,12 @@
 	<property name="input-xml" value="${webhelpDir}/ng_help.xml" />
 	<property name="input-images-dirs" value="${webhelpDir}/images/** ${webhelpDir}/figures/**" />
 	<property name="xslt-processor-classpath" value="${contribDir}/saxon6_5_5/saxon.jar" />
+	<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
 	<property name="webhelp.indexer.language" value="en" />
 	<property name="validate-against-dtd" value="false" />
 	<property name="output-dir" value="${webhelpOutput}" />
-	
-	
+
+
 	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
 
 	<target name="clear_output" description="ditch the existing output files">
@@ -94,13 +95,13 @@
 		<!-- see contribs/docbook-xsl-1.78.1/webhelp/build.xml -->
 		<delete dir="${webhelpDest}" />
 		<mkdir dir="${webhelpDest}" />
-		
+
 		<echo message="Running DocBook build task" />
-		<antcall target="webhelp" >
-			<param name="stylesheet-path" value="docbook/webhelp_style.xsl" />			
+		<antcall target="webhelp">
+			<param name="stylesheet-path" value="docbook/webhelp_style.xsl" />
 		</antcall>
-		
-		
+
+
 		<echo message="Copying images" />
 		<copy todir="${webhelpDest}/figures" preservelastmodified="yes">
 			<fileset dir="${helpDir}\docbook/figures" />
@@ -108,18 +109,18 @@
 		<copy todir="${webhelpDest}/images" preservelastmodified="yes">
 			<fileset dir="${helpDir}/docbook/images" />
 		</copy>
-		
+
 		<!-- move the Debrief logo into the help content -->
 		<copy description="replace header logo" todir="${webhelpDest}/common/images" overwrite="yes" failonerror="yes">
 			<fileset file="${helpDir}/docbook/figures/logo.png" />
 		</copy>
-		
+
 		<!-- move the favicon in, to replace the DocBook one -->
 		<copy description="replace favicon" todir="${webhelpDest}" overwrite="yes" failonerror="yes">
 			<fileset file="${helpDir}/docbook/figures/favicon.ico" />
 		</copy>
-		
-		
+
+
 	</target>
 
 	<target name="docbook_to_internet">
@@ -148,6 +149,33 @@
 		</ftp>
 
 	</target>
+
+	<target name="cheat2dita" description="produce pdf version of cheat sheets">
+		<!-- record the Saxon location -->
+		<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
+
+		<!-- and run the XSL transformv -->
+		<java fork="true" jar="${saxonhe-classpath}" dir="cheat_sheets">
+			<arg value="-o:dita/map.ditamap" />
+			<arg value="-it:root" />
+			<arg value="printed_version.xsl" />
+		</java> 
+	</target>
+	
+	<target name="dita2pdf" description="produce pdf version of cheat sheets">
+		<!-- and now the DITA transform -->
+		<property name="dita.dir" value="${contribDir}/DITA-OT1.8.5" />
+
+		<ant antfile="${dita.dir}${file.separator}build.xml">
+			<!-- please refer to the toolkit's document for supported parameters, and 
+	           specify them base on your needs -->
+			<property name="args.input" location="cheat_sheets/dita/map.ditamap" />
+			<property name="output.dir" location="cheat_sheets/dita" />
+			<property name="transtype" value="debrief" />
+		</ant>
+
+	</target>
+
 
 	<target name="docbook_to_pdf" description="Generate html from docbook">
 
