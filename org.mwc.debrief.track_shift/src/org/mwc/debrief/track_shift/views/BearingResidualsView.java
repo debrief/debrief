@@ -54,7 +54,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 			}
 		};
 		flipCourse.setChecked(false);
-		flipCourse.setToolTipText("Plot absolute data on +/- 180 axes");
+		flipCourse.setToolTipText("Use +/- 180 scale for absolute data");
 		flipCourse.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/swapAxis.jpeg"));
 
