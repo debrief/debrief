@@ -96,7 +96,7 @@
    -->
    
    <extension point="org.eclipse.ui.menus">
-        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
+        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.mwc.debrief.core.EditorView">
        		<toolbar
                id="org.mwc.cmap.media.toolbar"
                label="Media Player">
