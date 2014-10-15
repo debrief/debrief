@@ -131,7 +131,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private static final String PLAY_TEXT = "Start automatically moving forward";
 
-	private static final String TOOLBOX_PROPERTIES = "ToolboxProperties";
+	private static final String OP_LIST_MARKER_ID = "OPERATION_LIST_MARKER";
 
 	private PartMonitor _myPartMonitor;
 
@@ -210,11 +210,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * module to look after the limits of the slider
 	 */
 	SliderRangeManagement _slideManager = null;
-
-	/**
-	 * the action which stores the current DTG as a bookmark
-	 */
-	private Action _setAsBookmarkAction;
 
 	/**
 	 * when the user clicks on us, we set our properties as a selection. Remember
@@ -1573,7 +1568,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					// ignore, we already know about it
 				}
 				else
-					menuManager.insertBefore(TOOLBOX_PROPERTIES, newAction);
+					menuManager.insertBefore(OP_LIST_MARKER_ID, newAction);
 			}
 
 		}
@@ -2167,22 +2162,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		// and another separator
 		toolManager.add(new Separator());
-
-		// now the add-bookmark item
-		_setAsBookmarkAction = new Action("Add DTG as bookmark",
-				Action.AS_PUSH_BUTTON)
-		{
-			public void runWithEvent(final Event event)
-			{
-				addMarker();
-			}
-		};
-		_setAsBookmarkAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/bkmrk_nav.gif"));
-		_setAsBookmarkAction
-				.setToolTipText("Add this DTG to the list of bookmarks");
-		menuManager.add(_setAsBookmarkAction);
-
+		
 		// let user indicate whether we should be filtering to window
 		_filterToSelectionAction = new Action("Filter to period",
 				Action.AS_CHECK_BOX)
@@ -2224,6 +2204,30 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_filterToSelectionAction
 				.setToolTipText("Filter plot data to selected time period");
 		menuManager.add(_filterToSelectionAction);
+		toolManager.add(_filterToSelectionAction);
+
+		// and another separator
+		menuManager.add(new Separator());
+
+		// now the add-bookmark item
+		final Action _setAsBookmarkAction = new Action("Add DTG as bookmark",
+				Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(final Event event)
+			{
+				addMarker();
+			}
+		};
+		_setAsBookmarkAction.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/bkmrk_nav.gif"));
+		_setAsBookmarkAction
+				.setToolTipText("Add this DTG to the list of bookmarks");
+		_setAsBookmarkAction.setId(OP_LIST_MARKER_ID); // give it an id, so we can
+		menuManager.add(_setAsBookmarkAction);
+		// refer to this later on.
+
+		// and another separator
+		menuManager.add(new Separator());
 
 		// now our own menu editor
 		final Action toolboxProperties = new Action(
@@ -2237,8 +2241,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
 		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/properties.gif"));
-		toolboxProperties.setId(TOOLBOX_PROPERTIES); // give it an id, so we can
-		// refer to this later on.
 
 		menuManager.add(toolboxProperties);
 		toolManager.add(toolboxProperties);
