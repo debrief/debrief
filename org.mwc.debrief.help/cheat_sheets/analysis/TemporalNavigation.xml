@@ -9,13 +9,13 @@
 	<item title="Check you have some data" skip="true"
 		href="/org.eclipse.platform.doc.user/concepts/cnav.htm">
 		<description>In the top left hand corner of Debrief you should find
-			the Navigator window. If it isn't there, select "Navigator" from
-			Debrief's Window/Show View menu. Also check you have our sample
-			data-files - it they're not there, find how to load them from the
+			the Navigator window. If it isn&apos;t there, select "Navigator" from
+			Debrief&apos;s Window/Show View menu. Also check you have our sample
+			data-files - it they&apos;re not there, find how to load them from the
 			"Loading sample data" cheat-sheet.</description>
 	</item>
 	<item title="Open the sample plot-file">
-		<description>Double-click on 'sample.xml' in the Navigator window, and
+		<description>Double-click on &apos;sample.xml&apos; in the Navigator window, and
 			the sample plot will open.</description>
 	</item>
 	<item title="Fit to window"
@@ -26,8 +26,8 @@
 	<item title="View the time controller"
 		href="/org.mwc.debrief.help/html/legacy/start_up.html#debrief_views">
 		<description>In the top section of the left hand column in Debrief is
-			the Time Controller. If it's not at the top, click on it's tab to
-			highlight it. If it's not visible at all, open it by selecting "Time
+			the Time Controller. If it&apos;s not at the top, click on it&apos;s tab to
+			highlight it. If it&apos;s not visible at all, open it by selecting "Time
 			Controller" from the "Window/Show View" drop-down menu.</description>
 	</item>
 	<item title="What am I looking at?"
@@ -35,9 +35,9 @@
 		<description>The Time Controller is quite a busy part of the
 			application, used for a range of time-related tasks. Click on the
 			help button for this step to gain an overview of the different
-			components - and come back to this cheat-sheet once you've finished.</description>
+			components - and come back to this cheat-sheet once you&apos;ve finished.</description>
 	</item>
-	<item title="Check we're in normal stepping mode">
+	<item title="Check we&apos;re in normal stepping mode">
 		<description>Before we start moving through the data, just check that
 			we&apos;re in &apos;normal&apos; time stepping mode. There are two
 			stepping modes: normal and snail - make sure we&apos;re not in the
@@ -57,7 +57,7 @@
 		<description>Now drag the time-slider, and notice the white highlight
 			rectangle move along the vessel tracks, with the current time shown
 			in green-on-black text. If you also have the Track Tote view open,
-			notice how it's updating to reflect the current time.</description>
+			notice how it&apos;s updating to reflect the current time.</description>
 	</item>
 	<item title="Experiment with the time format options"
 		href="/org.mwc.debrief.help/html/legacy/controlling_time.html#stepper_display_modes">
@@ -86,15 +86,15 @@
 		</description>
 	</item>
 	<item title="Work with time periods">
-		<description>There's one part of the Time Controller we haven't
-			covered yet - that's the time period selector. As its name suggests,
-			this is used to select a period of time. It doesn't work in quite the
+		<description>There&apos;s one part of the Time Controller we haven&apos;t
+			covered yet - that&apos;s the time period selector. As its name suggests,
+			this is used to select a period of time. It doesn&apos;t work in quite the
 			same way as the time-slider however, because typically nothing
 			happens when you adjust it. It is typically used to select a
-			time-period to be used in a subsequent operation. Here's an example:
+			time-period to be used in a subsequent operation. Here&apos;s an example:
 			select a time period of 120700 to 121000. Now select "Export
-			calculated data to clipboard" from the Time Controller's drop-down
-			menu. Three hour's worth of calculated data have just been copied
+			calculated data to clipboard" from the Time Controller&apos;s drop-down
+			menu. Three hour&apos;s worth of calculated data have just been copied
 			onto your system clipboard, ready to be pasted into Excel.  </description>
 	</item>
 	<item title="Control the visible time period">
@@ -128,36 +128,36 @@
 			to let you move it just a small amount. 
 		</description>
 	</item>
-	<item title="Time Controller's editable properties">
-		<description>The Time Controller's drop down menu contains a series of
-			child menus. In some of these you'll see an 'Edit properties'
+	<item title="Time Controller&apos;s editable properties">
+		<description>The Time Controller&apos;s drop down menu contains a series of
+			child menus. In some of these you&apos;ll see an &apos;Edit properties&apos;
 			element. These let you control various aspects of temporal data
-			analysis. Once you've selected an item from the properties drop-down
+			analysis. Once you&apos;ve selected an item from the properties drop-down
 			its attributes will become editable on the properties view (so open
-			it, if it's not visible). Note - the item only appears on the
+			it, if it&apos;s not visible). Note - the item only appears on the
 			properties window if the Time Controller is the active view, that is
-			it's the most recently selected view as indicated by it's blue
+			it&apos;s the most recently selected view as indicated by it&apos;s blue
 			highlight.</description>
 	</item>
 	<item title="Bookmarking the current time ">
 		<description>So, just one part of the time controller left to cover
 			now, bookmarking a particular time or event. Debrief NG lets you
 			insert a bookmark attached to a particular DTG in the current plot.
-			Let's say you're analysing a particular exercise and want to record a
+			Let&apos;s say you&apos;re analysing a particular exercise and want to record a
 			couple of interactions. In Normal view mode, move the time-slider to
 			121011 hrs - the point when RED first react to BLUE. Now select "Add
-			DTG as bookmark" from the Time-Controller's drop-down menu. A dialog
+			DTG as bookmark" from the Time-Controller&apos;s drop-down menu. A dialog
 			box will open inviting you to add a remark for that DTG. Enter "First
 			contact", then press "OK". Now move to 121131 and enter a bookmark
 			title "Plotlock start". Hmm, where are those bookmarks? Open the
-			Bookmarks view from the "Window/Show view" menu - and you'll see your
+			Bookmarks view from the "Window/Show view" menu - and you&apos;ll see your
 			two bookmarks. Double-click on either of them to move to that time.
 			Now save and close your plot. Note that the bookmarks remain
 			effective, and you can store as many bookmarks as you like, across as
 			many analysis plots as you like.</description>
 	</item>
 	<item title="Done">
-		<description>Well done, you've now mastered one of the most complex
+		<description>Well done, you&apos;ve now mastered one of the most complex
 			parts of Debrief - all downhill from now on...</description>
 	</item>
 </cheatsheet>
