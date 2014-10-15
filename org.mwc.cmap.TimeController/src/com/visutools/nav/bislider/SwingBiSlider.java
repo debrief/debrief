@@ -5,7 +5,7 @@
  *    (C) 2000-2014, PlanetMayo Ltd
  *
  *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
+ *    modify it under the terms of the Eclipse Public License v1.0
  *    License as published by the Free Software Foundation;
  *    version 2.1 of the License.
  *
@@ -98,7 +98,7 @@ import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
  * <br>
  *
  * @author    Frederic Vernier, Frederic.Vernier@laposte.net
- * @created   16 février 2004
+ * @created   16 fï¿½vrier 2004
  * @version   1.4.1
  */
 

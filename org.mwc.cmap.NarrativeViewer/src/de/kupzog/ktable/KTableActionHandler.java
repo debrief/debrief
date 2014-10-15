@@ -5,7 +5,7 @@
  *    (C) 2000-2014, PlanetMayo Ltd
  *
  *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
+ *    modify it under the terms of the Eclipse Public License v1.0
  *    License as published by the Free Software Foundation;
  *    version 2.1 of the License.
  *
@@ -273,7 +273,7 @@ public class KTableActionHandler {
 		protected KTablePasteAction() {
 			setId("KTablePasteActionHandler");//$NON-NLS-1$
 			setEnabled(false);
-			setText("Einfügen");
+			setText("Einfï¿½gen");
 		}
 
 		public void run() {
@@ -477,17 +477,17 @@ public class KTableActionHandler {
 
 	private String maskHtmlChars(String text) {
 		text = text.replaceAll("&", "&amp;");
-		text = text.replaceAll("ä", "&auml;");
-		text = text.replaceAll("Ä", "&Auml;");
-		text = text.replaceAll("ö", "&ouml;");
-		text = text.replaceAll("Ö", "&Ouml;");
-		text = text.replaceAll("ü", "&uuml;");
-		text = text.replaceAll("Ü", "&Uuml;");
-		text = text.replaceAll("ß", "&szlig;");
+		text = text.replaceAll("ï¿½", "&auml;");
+		text = text.replaceAll("ï¿½", "&Auml;");
+		text = text.replaceAll("ï¿½", "&ouml;");
+		text = text.replaceAll("ï¿½", "&Ouml;");
+		text = text.replaceAll("ï¿½", "&uuml;");
+		text = text.replaceAll("ï¿½", "&Uuml;");
+		text = text.replaceAll("ï¿½", "&szlig;");
 		text = text.replaceAll("\"", "&quot;");
 		text = text.replaceAll("<", "&lt");
 		text = text.replaceAll(">", "&gt");
-		text = text.replaceAll("€", "&euro;");
+		text = text.replaceAll("ï¿½", "&euro;");
 		return text;
 	}
 
