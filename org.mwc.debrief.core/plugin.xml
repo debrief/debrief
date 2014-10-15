@@ -604,89 +604,13 @@
                      </with>
           	  </visibleWhen>
           	</command>
-		</menuContribution>
-		
+		</menuContribution>		
         <menuContribution locationURI="menu:org.mwc.debrief.core.EditorShapes?after=shapes"> 
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
               icon="icons/auto_layer.gif"
               style="toggle"
               id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
-              icon="icons/track_segment.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
-              icon="icons/vector.png"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertVector">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
-              icon="icons/line.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertLine">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
-              icon="icons/label.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertLabel">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
-              icon="icons/rectangle.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
            	  <visibleWhen
                  checkEnabled="false">
                      <with
@@ -726,6 +650,96 @@
                           </equals>
                      </with>
           	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
+              icon="icons/line.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLine">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+              icon="icons/rectangle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>         	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
+              icon="icons/wheel.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertWheel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
+              icon="icons/circle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertCircle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
+              icon="icons/arc.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertArc">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
+              icon="icons/label.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLabel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
@@ -741,8 +755,7 @@
                           </equals>
                      </with>
           	  </visibleWhen>
-          	</command>
-          	
+          	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
               icon="icons/range_rings.png"
@@ -758,12 +771,11 @@
                      </with>
           	  </visibleWhen>
           	</command>
-          	
           	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
-              icon="icons/wheel.png"
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+              icon="icons/track_segment.gif"
               style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertWheel">
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
            	  <visibleWhen
                  checkEnabled="false">
                      <with
@@ -774,12 +786,11 @@
                      </with>
           	  </visibleWhen>
           	</command>
-          	
           	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
-              icon="icons/circle.gif"
+              commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
+              icon="icons/vector.png"
               style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertCircle">
+              id="org.mwc.debrief.core.creators.shapes.InsertVector">
            	  <visibleWhen
                  checkEnabled="false">
                      <with
@@ -789,23 +800,7 @@
                           </equals>
                      </with>
           	  </visibleWhen>
-          	</command>
-          	
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
-              icon="icons/arc.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertArc">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
+          	</command> 
         </menuContribution>
         
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorShapes?after=shapes"> 
@@ -825,81 +820,6 @@
           	  </visibleWhen>
           	</command>
           	<command
-              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
-              icon="icons/track_segment.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
-              icon="icons/vector.png"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertVector">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
-              icon="icons/line.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertLine">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
-              icon="icons/label.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertLabel">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
-              icon="icons/rectangle.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertEllipse"
               icon="icons/ellipse.gif"
               style="push"
@@ -928,6 +848,96 @@
                           </equals>
                      </with>
           	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
+              icon="icons/line.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLine">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+              icon="icons/rectangle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>         	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
+              icon="icons/wheel.png"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertWheel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
+              icon="icons/circle.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertCircle">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
+              icon="icons/arc.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertArc">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
+          	</command>          	
+          	<command
+              commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
+              icon="icons/label.gif"
+              style="push"
+              id="org.mwc.debrief.core.creators.shapes.InsertLabel">
+           	  <visibleWhen
+                 checkEnabled="false">
+                     <with
+                         variable="activeEditorId">
+                          <equals
+                             value="org.mwc.debrief.PlotEditor">
+                          </equals>
+                     </with>
+          	  </visibleWhen>
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
@@ -943,8 +953,7 @@
                           </equals>
                      </with>
           	  </visibleWhen>
-          	</command>
-          	
+          	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
               icon="icons/range_rings.png"
@@ -960,12 +969,11 @@
                      </with>
           	  </visibleWhen>
           	</command>
-          	
           	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
-              icon="icons/wheel.png"
+              commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+              icon="icons/track_segment.gif"
               style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertWheel">
+              id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
            	  <visibleWhen
                  checkEnabled="false">
                      <with
@@ -976,28 +984,11 @@
                      </with>
           	  </visibleWhen>
           	</command>
-          	
           	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
-              icon="icons/circle.gif"
+              commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
+              icon="icons/vector.png"
               style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertCircle">
-           	  <visibleWhen
-                 checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
-          	  </visibleWhen>
-          	</command>
-          	
-          	<command
-              commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
-              icon="icons/arc.gif"
-              style="push"
-              id="org.mwc.debrief.core.creators.shapes.InsertArc">
+              id="org.mwc.debrief.core.creators.shapes.InsertVector">
            	  <visibleWhen
                  checkEnabled="false">
                      <with
