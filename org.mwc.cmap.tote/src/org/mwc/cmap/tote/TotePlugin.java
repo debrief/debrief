@@ -24,6 +24,12 @@ import java.util.*;
  * The main plugin class to be used in the desktop.
  */
 public class TotePlugin extends AbstractUIPlugin {
+	
+	
+	public static final String IMG_LOCATION="icons/";
+	public static final String IMG_SHOW_UNIT_COLUMN=IMG_LOCATION+"icon_showunit.gif";
+	
+
 	//The shared instance.
 	private static TotePlugin plugin;
 	//Resource bundle.
