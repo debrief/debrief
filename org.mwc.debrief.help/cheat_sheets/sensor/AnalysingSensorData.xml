@@ -13,7 +13,7 @@
 		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.  To these tracks you&apos;re going to add the sensor data</description>
 	</item>
 	<item title="Drag in the SSK track">
-		<description>From the Navigator window, drag the SSK sensor data file  (sen_ssk_sensor.rep) onto the plot.</description>
+		<description>From the Navigator window, drag the SSK sensor data file  (sen_ssk_sensor.rep) onto the plot. You can accept the default options in the import wizard.</description>
 	</item>
 	<item title="And now the FF track">
 		<description>Next, drag the SSK sensor data file  (sen_frig_sensor.rep) onto the plot.  No, there hasn&apos;t been a visible change to the plot, but be assured, the data is there.</description>
