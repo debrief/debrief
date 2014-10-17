@@ -1,5 +1,7 @@
 package org.mwc.cmap.xyplot.wizards;
 
+import java.text.DecimalFormat;
+
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
@@ -23,12 +25,16 @@ public class DopplerPlotWizard implements CalculationWizard
 
 		final String imagePath = "images/UnderwaterPropagation.png";
 		final String taskTitle = "Generate Doppler Plot";
+		
+		DecimalFormat fFormat= new DecimalFormat("0.0000");
+		DecimalFormat cFormat= new DecimalFormat("0.0");
+		
 
-		final EnterStringPage getf0 = new EnterStringPage(null, " 150.0 ",
+		final EnterStringPage getf0 = new EnterStringPage(null, " " + fFormat.format(calc.getFNought()) + " ",
 				taskTitle, "Please enter a f-Nought (Hz) for [" + primary + "]",
 				"(e.g. 150)",
 				imagePath, null, false);
-		final EnterStringPage getSoundSpeed = new EnterStringPage(null, " 2000 ",
+		final EnterStringPage getSoundSpeed = new EnterStringPage(null, " " +  cFormat.format(calc.getSpeedOfSound()) + " ",
 				taskTitle, "Please enter the Speed of Sound in Water (kts)",
 				"(e.g. 2000)",
 				imagePath, null, false);
@@ -42,8 +48,8 @@ public class DopplerPlotWizard implements CalculationWizard
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
-			calc.setFNought(getf0.getString());
-			calc.setSpeedOfSound(getSoundSpeed.getString());
+			calc.setFNought(Double.parseDouble(getf0.getString()));
+			calc.setSpeedOfSound(Double.parseDouble(getSoundSpeed.getString()));
 		}
 		
 		// ok, return the dialog ok/cancel value

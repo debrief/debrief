@@ -24,13 +24,9 @@ import MWC.GenericData.Watchable;
 public class dopplerCalc extends plainCalc
 {
 
-	/**
-	 * remember what units the user prefers
-	 */
-	static String _myUnits = null;
+	private double _fNought = 150;
 
-	protected static final java.text.NumberFormat _decFormatter = new java.text.DecimalFormat(
-			"0.00");
+	private double _C = 2000;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -50,12 +46,7 @@ public class dopplerCalc extends plainCalc
 		double freq = 0.0;
 		if ((primary != null) && (secondary != null) && (primary != secondary))
 		{
-			// collate the data we need
-			// get the f-nought
-			double f0 = 150;
-
-			final double speedOfSoundKts = 2951;
-			
+	
 			double rxSpeedKts = primary.getSpeed();
 			double txSpeedKts = secondary.getSpeed();;
 			
@@ -65,7 +56,7 @@ public class dopplerCalc extends plainCalc
 			double bearingDegs = Math.toDegrees(primary.getLocation().bearingFrom(secondary.getLocation()));
 
 			// what's the observed freq?
-			freq = FrequencyCalcs.getObservedFreq(f0, speedOfSoundKts, rxSpeedKts, rxCourseDegs, 
+			freq = FrequencyCalcs.getObservedFreq(_fNought, _C, rxSpeedKts, rxCourseDegs, 
 					txSpeedKts, txCourseDegs, bearingDegs);
 		}
 		return freq;
@@ -89,6 +80,25 @@ public class dopplerCalc extends plainCalc
 		
     return _myPattern.format(
        calculate(primary, secondary, time));
+	}
+
+	public void setFNought(double value)
+	{
+		_fNought = value;
+	}
+	public double getFNought()
+	{
+		return _fNought;
+	}
+
+	public void setSpeedOfSound(double value)
+	{
+		_C = value;
+	}
+	
+	public double getSpeedOfSound()
+	{
+		return _C;
 	}
 	
 
