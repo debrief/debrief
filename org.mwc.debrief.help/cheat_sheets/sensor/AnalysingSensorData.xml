@@ -7,16 +7,16 @@
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If it isn&apos;t there, select "Navigator" from Debrief&apos;s Window/Show View menu.  Also check you have our sample data-files - it they&apos;re not there, find how to load them from the "Loading sample data" cheat-sheet.</description>
 	</item>
 	<item title="Open the sample sensor tracks">
-		<description>Double-click on the "sen_tracks.rep" file, and you will see the red and blue vessel tracks.</description>
+		<description>Double-click on the "sen_tracks.rep" file  and you will see the red and blue vessel tracks (select &apos;Over The Ground&apos; for both tracks if the import dialog pops open).</description>
 	</item>
 	<item title="Fit to window" href="\org.mwc.debrief.help\html\legacy\moving_around.html#Fit_To_Win">
 		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.  To these tracks you&apos;re going to add the sensor data</description>
 	</item>
 	<item title="Drag in the SSK track">
-		<description>From the Navigator window, drag the SSK sensor data file  (sen_ssk_sensor.rep) onto the plot.</description>
+		<description>From the Navigator window, drag the SSK sensor data file  (sen_ssk_sensor.dsf) onto the plot. You can accept the default options in the import wizard.</description>
 	</item>
 	<item title="And now the FF track">
-		<description>Next, drag the SSK sensor data file  (sen_frig_sensor.rep) onto the plot.  No, there hasn&apos;t been a visible change to the plot, but be assured, the data is there.</description>
+		<description>Next, drag the SSK sensor data file  (sen_frig_sensor.dsf) onto the plot.  No, there hasn&apos;t been a visible change to the plot, but be assured, the data is there.</description>
 	</item>
 	<item title="View the sensor data">
 		<description>From the Outline View, expand the &apos;tree&apos; for each track (they&apos;re called &apos;Frigate&apos; and &apos;New_SSK&apos;).  Within each track you will see named blocks of sensor data.  Make each block of sensor data visible by selecting it, then clicking on the &apos;make visible&apos; toolbar button. As you make each set of data visible you should see its bearing fan appear. Overall there are three blocks of sensor data across the two tracks.</description>
