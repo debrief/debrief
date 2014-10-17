@@ -654,7 +654,7 @@ public class ToteView extends ViewPart
 
 	private void fillLocalToolBar(final IToolBarManager manager)
 	{
-		// manager.add(action1);
+		 manager.add(_showUnits);
 		// manager.add(action2);
 		// manager.add(_followTimeToggle);
 	}
