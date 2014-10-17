@@ -55,6 +55,7 @@ import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
+import Debrief.Tools.Tote.Calculations.dopplerCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
@@ -111,6 +112,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 					new bearingCalc(), new CourseFormatter(), true, 360));
 			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new bearingRateCalc(), new BearingRateFormatter(), true, 180));
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
+					new dopplerCalc(), null, true, 0));
 
 			// provide extra formatting to the y-axis if we're plotting in uk format
 			// (-180...+180).
