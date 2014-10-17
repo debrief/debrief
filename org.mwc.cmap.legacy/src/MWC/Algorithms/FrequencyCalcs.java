@@ -167,7 +167,7 @@ public class FrequencyCalcs
 			double ATB = tgtDegs - bearing;
 			double TSL = tgtKts * Math.cos(Math.toRadians(ATB));
 
-			assertEquals("correct OSL", 1.5298, OSL, 0.0001);			
+			assertEquals("correct OSL", 2.5298, OSL, 0.0001);			
 			assertEquals("correct TSL", 0.04712, TSL, 0.0001);
 			
 			double res = FrequencyCalcs.calcObservedFreqCollate(f0, Cms, brgRads, osRads, osMS, tgtRads, tgtMS);
