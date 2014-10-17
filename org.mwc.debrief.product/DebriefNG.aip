@@ -1926,6 +1926,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_en_GB.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DigCertStoreComponent">
     <ROW TimeStampUrl="http://timestamp.verisign.com/scripts/timstamp.dll" SignerDescription="[|ProductName]" SignOptions="7" SignTool="0" Thumbprint="b92591bea7205f4d5721074b746855da352ee2ca Subject: Planetmayo Ltd&#10;Issuer: Go Daddy Secure Certificate Authority - G2&#10;Valid from 08/18/2014 to 08/18/2015"/>
@@ -1987,6 +1988,12 @@
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiExtComponent">
+    <ROW Extension="rep" Component_="DebriefNG.exe" ProgId_="[|Manufacturer].[|ProductName].rep" Feature_="MainFeature" Options="32"/>
+    <ROW Extension="dsf" Component_="DebriefNG.exe" ProgId_="[|Manufacturer].[|ProductName].dsf" Feature_="MainFeature" Options="32"/>
+    <ROW Extension="dtf" Component_="DebriefNG.exe" ProgId_="[|Manufacturer].[|ProductName].dtf" Feature_="MainFeature" Options="32"/>
+    <ROW Extension="xml" Component_="DebriefNG.exe" ProgId_="[|Manufacturer].[|ProductName].xml" Feature_="MainFeature" Options="32"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="SystemFoldermsiexec.exe" SourcePath="&lt;AI_RES&gt;uninstall.ico" Index="0"/>
   </COMPONENT>
@@ -2006,6 +2013,12 @@
     <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT40Display]" DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]" DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiProgIdComponent">
+    <ROW ProgId="[|Manufacturer].[|ProductName].dsf" Description="Debrief Sensor Format"/>
+    <ROW ProgId="[|Manufacturer].[|ProductName].dtf" Description="Debrief Track File"/>
+    <ROW ProgId="[|Manufacturer].[|ProductName].rep" Description="Debrief Track File"/>
+    <ROW ProgId="[|Manufacturer].[|ProductName].xml" Description="Debrief Plot File"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
@@ -2023,5 +2036,11 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiVerbComponent">
+    <ROW Extension_="rep" Component_="DebriefNG.exe" Verb="open" Sequence="0" Command="&amp;Open in Debrief" Argument="--launcher.openFile &quot;%1&quot;"/>
+    <ROW Extension_="dsf" Component_="DebriefNG.exe" Verb="open" Sequence="0" Command="&amp;Open in Debrief" Argument="--launcher.openFile &quot;%1&quot;"/>
+    <ROW Extension_="dtf" Component_="DebriefNG.exe" Verb="open" Sequence="0" Command="&amp;Open in Debrief" Argument="--launcher.openFile &quot;%1&quot;"/>
+    <ROW Extension_="xml" Component_="DebriefNG.exe" Verb="open" Sequence="0" Command="&amp;Open in Debrief" Argument="--launcher.openFile &quot;%1&quot;"/>
   </COMPONENT>
 </DOCUMENT>
