@@ -23,6 +23,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -46,6 +47,8 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 import org.mwc.cmap.xyplot.views.XYPlotView.DatasetProvider;
+import org.mwc.cmap.xyplot.wizards.CalculationWizard;
+import org.mwc.cmap.xyplot.wizards.DopplerPlotWizard;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
@@ -112,8 +115,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 					new bearingCalc(), new CourseFormatter(), true, 360));
 			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new bearingRateCalc(), new BearingRateFormatter(), true, 180));
-			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
-					new dopplerCalc(), null, true, 0));
+			_theOperations.addElement(new WizardCalculationHolder(
+					new dopplerCalc(), null, true, 0, new DopplerPlotWizard()));
 
 			// provide extra formatting to the y-axis if we're plotting in uk format
 			// (-180...+180).
@@ -137,6 +140,26 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			_pastSelections = new HashMap<String, Integer>();
 	}
 
+	protected static class WizardCalculationHolder extends ShowTimeVariablePlot3.CalculationHolder
+	{
+
+		private CalculationWizard _wizard;
+
+		public WizardCalculationHolder(toteCalculation theCalcVal,
+				formattingOperation theFormatterVal, boolean isRelative, double clipMax, CalculationWizard wizard)
+		{
+			super(theCalcVal, theFormatterVal, isRelative, clipMax);
+			
+			_wizard = wizard;
+		}
+
+		public int open(toteCalculation calc)
+		{
+			return _wizard.open(calc);
+		}
+		
+	}
+	
 	ShowTimeVariablePlot3.CalculationHolder getChoice()
 	{
 
@@ -367,6 +390,19 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 									// if it's relative, we use the primary track name in the
 									// title
 									theTitle = thePrimary.getName() + " " + theTitle;
+								}
+							}
+							
+							
+							// lastly, see if there is a wizard
+							if(theHolder instanceof WizardCalculationHolder)
+							{
+								WizardCalculationHolder wc = (WizardCalculationHolder) theHolder;
+								int res = wc.open(theHolder._theCalc);
+								if(res == WizardDialog.CANCEL)
+								{
+									// ok, drop out#
+									return;
 								}
 							}
 
