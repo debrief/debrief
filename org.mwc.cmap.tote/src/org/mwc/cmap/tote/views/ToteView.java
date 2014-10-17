@@ -413,7 +413,7 @@ public class ToteView extends ViewPart
 		// let the parent do its bits
 		super.init(site, memento);
 
-		_showUnits = new Action("Show calc units column.", Action.AS_CHECK_BOX)
+		_showUnits = new Action("Show calc units column", Action.AS_CHECK_BOX)
 		{
 			public void run()
 			{
