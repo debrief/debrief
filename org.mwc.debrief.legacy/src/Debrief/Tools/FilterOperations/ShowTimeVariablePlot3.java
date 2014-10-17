@@ -1380,7 +1380,13 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	{
 	}
 
-	static public final class CalculationHolder
+	public interface CalculationWizard
+	{
+		public int open(toteCalculation calc, WatchableList primary, Editable[] subjects);
+	}
+
+	
+	static public class CalculationHolder
 	{
 		public final toteCalculation _theCalc;
 
@@ -1390,14 +1396,24 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 		public final double _clipMax;
 
+		private CalculationWizard _wizard;
+
 		public CalculationHolder(final toteCalculation theCalcVal,
 				final formattingOperation theFormatterVal, final boolean isRelative,
 				final double clipMax)
+		{
+			this(theCalcVal, theFormatterVal, isRelative, clipMax, null);
+		}
+
+		public CalculationHolder(final toteCalculation theCalcVal,
+				final formattingOperation theFormatterVal, final boolean isRelative,
+				final double clipMax, CalculationWizard wizard)
 		{
 			_theCalc = theCalcVal;
 			_theFormatter = theFormatterVal;
 			_isRelative = isRelative;
 			_clipMax = clipMax;
+			_wizard = wizard;
 		}
 
 		/**
@@ -1415,6 +1431,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 		public final String toString()
 		{
 			return _theCalc.toString();
+		}
+
+		public CalculationWizard getWizard()
+		{
+			return _wizard;
 		}
 	}
 }
