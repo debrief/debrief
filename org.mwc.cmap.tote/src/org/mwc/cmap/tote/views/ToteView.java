@@ -65,6 +65,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.tote.TotePlugin;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
 import Debrief.Tools.Tote.toteCalculation;
@@ -420,6 +421,7 @@ public class ToteView extends ViewPart
 				redoTableAfterTrackChanges();
 			}
 		};
+		_showUnits.setImageDescriptor(TotePlugin.getImageDescriptor(TotePlugin.IMG_SHOW_UNIT_COLUMN));
 
 		// are we showing the units column?
 		if (memento != null)
