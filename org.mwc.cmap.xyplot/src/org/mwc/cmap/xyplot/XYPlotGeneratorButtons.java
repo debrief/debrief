@@ -47,11 +47,11 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 import org.mwc.cmap.xyplot.views.XYPlotView.DatasetProvider;
-import org.mwc.cmap.xyplot.wizards.CalculationWizard;
 import org.mwc.cmap.xyplot.wizards.DopplerPlotWizard;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationWizard;
 import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
@@ -103,20 +103,20 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 			_theOperations = new Vector<CalculationHolder>(0, 1);
 
-			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
-					new depthCalc(), new DepthFormatter(), false, 0));
-			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
-					new courseCalc(), new CourseFormatter(), false, 360));
-			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
-					new speedCalc(), null, false, 0));
-			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
-					new rangeCalc(), null, true, 0));
-			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
-					new bearingCalc(), new CourseFormatter(), true, 360));
-			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
-					new bearingRateCalc(), new BearingRateFormatter(), true, 180));
-			_theOperations.addElement(new WizardCalculationHolder(
-					new dopplerCalc(), null, true, 0, new DopplerPlotWizard()));
+			_theOperations.addElement(new CalculationHolder(new depthCalc(),
+					new DepthFormatter(), false, 0));
+			_theOperations.addElement(new CalculationHolder(new courseCalc(),
+					new CourseFormatter(), false, 360));
+			_theOperations.addElement(new CalculationHolder(new speedCalc(), null,
+					false, 0));
+			_theOperations.addElement(new CalculationHolder(new rangeCalc(), null,
+					true, 0));
+			_theOperations.addElement(new CalculationHolder(new bearingCalc(),
+					new CourseFormatter(), true, 360));
+			_theOperations.addElement(new CalculationHolder(new bearingRateCalc(),
+					new BearingRateFormatter(), true, 180));
+			_theOperations.addElement(new CalculationHolder(new dopplerCalc(), null,
+					true, 0, new DopplerPlotWizard()));
 
 			// provide extra formatting to the y-axis if we're plotting in uk format
 			// (-180...+180).
@@ -140,26 +140,6 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			_pastSelections = new HashMap<String, Integer>();
 	}
 
-	protected static class WizardCalculationHolder extends ShowTimeVariablePlot3.CalculationHolder
-	{
-
-		private CalculationWizard _wizard;
-
-		public WizardCalculationHolder(toteCalculation theCalcVal,
-				formattingOperation theFormatterVal, boolean isRelative, double clipMax, CalculationWizard wizard)
-		{
-			super(theCalcVal, theFormatterVal, isRelative, clipMax);
-			
-			_wizard = wizard;
-		}
-
-		public int open(toteCalculation calc)
-		{
-			return _wizard.open(calc);
-		}
-		
-	}
-	
 	ShowTimeVariablePlot3.CalculationHolder getChoice()
 	{
 
@@ -367,6 +347,16 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// is this a relative calculation?
 							if (theHolder._isRelative)
 							{
+								// hmm, double check we have more than one track
+								if (subjects.length < 2)
+								{
+									final String title = "XY Plot";
+									final String message = "You must have more than one track selected for this operation";
+									MessageDialog.openError(
+											Display.getCurrent().getActiveShell(), title, message);
+									return;
+								}
+
 								// retrieve the necessary input data
 								tmpPrimary = getPrimary(subjects);
 							}
@@ -392,14 +382,13 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 									theTitle = thePrimary.getName() + " " + theTitle;
 								}
 							}
-							
-							
+
 							// lastly, see if there is a wizard
-							if(theHolder instanceof WizardCalculationHolder)
+							CalculationWizard wizard = theHolder.getWizard();
+							if (wizard != null)
 							{
-								WizardCalculationHolder wc = (WizardCalculationHolder) theHolder;
-								int res = wc.open(theHolder._theCalc);
-								if(res == WizardDialog.CANCEL)
+								int res = wizard.open(theHolder._theCalc, thePrimary, subjects);
+								if (res == WizardDialog.CANCEL)
 								{
 									// ok, drop out#
 									return;
@@ -461,7 +450,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 								return;
 							}
 
-							// NOTE: next section commented out.  When doing a relative
+							// NOTE: next section commented out. When doing a relative
 							// calculation, it was causing the whole period to be shown
 							// - not just the period selected in the Time Controller
 							//
@@ -511,13 +500,13 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							{
 								// show the error message
 								CorePlugin.errorDialog("Generate XY Plot", ex.getMessage());
-								
+
 								// and remove the view from the screen
 								page.hideView(newPart);
-								
+
 								// lastly - try to ditch the view
 								newPart.dispose();
-								
+
 								return;
 							}
 
