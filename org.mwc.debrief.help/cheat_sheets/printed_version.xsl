@@ -4,7 +4,7 @@
     exclude-result-prefixes="xs debrief"
     version="2.0">
     
-    <xsl:output method="xml" indent="yes" omit-xml-declaration="no" />
+    <xsl:output method="xml" indent="yes" omit-xml-declaration="no"  doctype-public="-//OASIS//DTD DITA Map//EN" doctype-system="map.dtd"/>
     
     <debrief:order>
         <debrief:value>intro_composite.xml</debrief:value>
@@ -14,16 +14,16 @@
     </debrief:order>
     
     <xsl:template match="/" name="root">
-        <map class="- map/map "  domains="(topic delay-d)                          (map mapgroup-d)                           (topic indexing-d)                          (map glossref-d)                          (topic hi-d)                           (topic ut-d)                           (topic hazard-d)                          (topic abbrev-d)                          (topic pr-d)                           (topic sw-d)                          (topic ui-d)                         ">
-            <title class="- topic/title ">Debrief Topic Map</title>
+        <map>
+            <title>Debrief Topic Map</title>
             <xsl:for-each select="collection(iri-to-uri('../cheat_sheets/?select=[a-zA-Z]*_composite.xml;recurse=yes'))">
                 <xsl:sort  select="count(document('')//debrief:order/debrief:value[. = tokenize(document-uri(current()),'/')[last()]]/preceding-sibling::debrief:value)"></xsl:sort>
                 
-                <xsl:result-document href="{tokenize(document-uri(/),'/')[last()]}.dita">
+                <xsl:result-document href="dita/{tokenize(document-uri(/),'/')[last()]}.dita" doctype-public="-//OASIS//DTD DITA Task//EN" doctype-system="task.dtd">
                     <xsl:apply-templates select="/compositeCheatsheet"></xsl:apply-templates>
                 </xsl:result-document>
                 
-                <topicref class="- map/topicref " href="{tokenize(document-uri(/),'/')[last()]}.dita" type="task"></topicref>
+                <topicref href="dita/{tokenize(document-uri(/),'/')[last()]}.dita" type="task"></topicref>
             </xsl:for-each>
         </map>
     </xsl:template>
@@ -33,11 +33,11 @@
     </xsl:template>
     
     <xsl:template match="taskGroup">
-        <task id="{generate-id(.)}" class="- topic/topic task/task " domains="(topic task)                            (topic hi-d)                             (topic ut-d)                             (topic indexing-d)                            (topic hazard-d)                            (topic abbrev-d)                            (topic pr-d)                             (topic sw-d)                            (topic ui-d)                            (topic task strictTaskbody-c)    ">
-            <title class="- topic/title ">
+        <task id="{generate-id(.)}">
+            <title>
                 <xsl:apply-templates select="@name"/>
             </title>
-            <shortdesc class="- topic/shortdesc ">
+            <shortdesc>
                 <xsl:apply-templates select="intro"/>
             </shortdesc>
             <xsl:choose>
@@ -47,18 +47,18 @@
                 <xsl:otherwise>
                     <xsl:for-each select="task">
                         <xsl:variable name="path" select="param[@name='path']/@value"></xsl:variable>
-                        <task id="{generate-id(.)}"  class="- topic/topic task/task "  domains="(topic task)                            (topic hi-d)                             (topic ut-d)                             (topic indexing-d)                            (topic hazard-d)                            (topic abbrev-d)                            (topic pr-d)                             (topic sw-d)                            (topic ui-d)                            (topic task strictTaskbody-c)    ">
-                            <title  class="- topic/title ">
+                        <task id="{generate-id(.)}">
+                            <title>
                                 <xsl:apply-templates select="document($path)//cheatsheet/@title"></xsl:apply-templates>
                             </title>
-                            <shortdesc  class="- topic/shortdesc ">
+                            <shortdesc>
                                 <xsl:apply-templates select="document($path)//cheatsheet/intro/description"/>
                             </shortdesc>
-                            <taskbody class="- topic/body task/taskbody ">             
-                                <steps class="- topic/ol task/steps ">
+                            <taskbody>             
+                                <steps>
                                     <xsl:apply-templates select="document($path)//cheatsheet"></xsl:apply-templates>                                    
                                 </steps>
-                                <result class="- topic/section task/result ">
+                                <result>
                                     <xsl:apply-templates select="onCompletion"/>
                                 </result>
                             </taskbody>
@@ -71,14 +71,14 @@
     
     <xsl:template match="cheatsheet">     
         <xsl:for-each select="item">
-            <step id="{generate-id(.)}" class="- topic/li task/step ">
-                <cmd class="- topic/ph task/cmd ">
+            <step id="{generate-id(.)}">
+                <cmd>
                     <xsl:apply-templates select="@title"/>
                 </cmd>
-                <info class="- topic/itemgroup task/info ">
+                <info>
                     <xsl:apply-templates select="description"></xsl:apply-templates>
                 </info>
-                <stepxmp class="- topic/itemgroup task/stepxmp ">
+                <stepxmp>
                     <xsl:choose>
                         <xsl:when test="@skip = 'true'">optional</xsl:when>
                     </xsl:choose> 
@@ -88,7 +88,7 @@
     </xsl:template>
     
     <xsl:template match="b">
-        <b class="+ topic/ph hi-d/b "><xsl:apply-templates></xsl:apply-templates></b>
+        <b><xsl:apply-templates></xsl:apply-templates></b>
     </xsl:template>
     
     <xsl:template match="text()">
@@ -100,7 +100,7 @@
     <xsl:template match="text()[preceding-sibling::i[.='NoPrint'][1]][following-sibling::i[.='NoPrint'][1] ] | *[preceding-sibling::i[.='NoPrint'][1]][following-sibling::i[.='NoPrint'][1] ]"></xsl:template>
     
     <xsl:template match="br">
-        <ph class="- topic/ph "></ph>
+        <ph></ph>
     </xsl:template>
     
     <xsl:template match="i">
