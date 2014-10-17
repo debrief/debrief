@@ -13,10 +13,10 @@
 		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.  To these tracks you&apos;re going to add the sensor data</description>
 	</item>
 	<item title="Drag in the SSK track">
-		<description>From the Navigator window, drag the SSK sensor data file  (sen_ssk_sensor.rep) onto the plot. You can accept the default options in the import wizard.</description>
+		<description>From the Navigator window, drag the SSK sensor data file  (sen_ssk_sensor.dsf) onto the plot. You can accept the default options in the import wizard.</description>
 	</item>
 	<item title="And now the FF track">
-		<description>Next, drag the SSK sensor data file  (sen_frig_sensor.rep) onto the plot.  No, there hasn&apos;t been a visible change to the plot, but be assured, the data is there.</description>
+		<description>Next, drag the SSK sensor data file  (sen_frig_sensor.dsf) onto the plot.  No, there hasn&apos;t been a visible change to the plot, but be assured, the data is there.</description>
 	</item>
 	<item title="View the sensor data">
 		<description>From the Outline View, expand the &apos;tree&apos; for each track (they&apos;re called &apos;Frigate&apos; and &apos;New_SSK&apos;).  Within each track you will see named blocks of sensor data.  Make each block of sensor data visible by selecting it, then clicking on the &apos;make visible&apos; toolbar button. As you make each set of data visible you should see its bearing fan appear. Overall there are three blocks of sensor data across the two tracks.</description>
