@@ -1375,6 +1375,10 @@ and so on....</programlisting></para>
                 <guibutton>CTRL</guibutton> key and roll your mouse backwards and forwards to zoom
               in and out of the plot</para>
           </tip>
+          <tip>
+            <para>And another tip, for free: when the plot is selected you can use the
+                <guibutton>tab</guibutton> key to cycle through the above drag modes.</para>
+          </tip>
         </sect2>
 
         <sect2 xml:id="the_click_btns">
