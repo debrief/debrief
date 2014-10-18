@@ -33,6 +33,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
@@ -58,7 +60,13 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -70,7 +78,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.cheatsheets.OpenCheatSheetAction;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
@@ -95,9 +105,23 @@ import org.mwc.cmap.core.wizards.EnterRangePage;
 import org.mwc.cmap.core.wizards.EnterStringPage;
 import org.mwc.cmap.core.wizards.SelectColorPage;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.plotViewer.actions.Pan;
+import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
+import org.mwc.cmap.plotViewer.actions.RangeBearing;
+import org.mwc.cmap.plotViewer.actions.RangeBearing.RangeBearingMode;
+import org.mwc.cmap.plotViewer.actions.ZoomIn;
+import org.mwc.cmap.plotViewer.actions.ZoomIn.ZoomInMode;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.actions.DragComponent;
+import org.mwc.debrief.core.actions.DragComponent.DragComponentMode;
+import org.mwc.debrief.core.actions.DragFeature;
+import org.mwc.debrief.core.actions.DragFeature.DragFeatureMode;
+import org.mwc.debrief.core.actions.DragSegment;
+import org.mwc.debrief.core.actions.DragSegment.DragSegmentMode;
+import org.mwc.debrief.core.actions.RadioHandler;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.interfaces.IPlotLoader.BaseLoader;
@@ -198,6 +222,75 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	private org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
 
 	private PlotOutlinePage _outlinePage;
+
+	private TraverseListener dragModeListener = new TraverseListener()
+	{
+
+		@Override
+		public void keyTraversed(TraverseEvent e)
+		{
+			if (getChart() == null)
+			{
+				return;
+			}
+			Control control = getChart().getCanvasControl();
+			if (control == null || control.isDisposed() || !control.isVisible()) {
+				return;
+			}
+			if (e.detail == SWT.TRAVERSE_TAB_NEXT)
+			{
+				PlotMouseDragger dragMode = getChart().getDragMode();
+				if (dragMode != null)
+				{
+					try
+					{
+						String currentState = null;
+						ExecutionEvent executionEvent = new ExecutionEvent();
+						if (dragMode instanceof DragSegmentMode)
+						{
+							new DragComponent().execute(executionEvent);
+							currentState = RadioHandler.DRAG_COMPONENT;
+						}
+						else if (dragMode instanceof DragComponentMode)
+						{
+							new DragFeature().execute(executionEvent);
+							currentState = RadioHandler.DRAG_FEATURE;
+						}
+						else if (dragMode instanceof DragFeatureMode)
+						{
+							new RangeBearing().execute(executionEvent);
+							currentState = RadioHandler.RANGE_BEARING;
+						}
+						else if (dragMode instanceof RangeBearingMode)
+						{
+							new Pan().execute(executionEvent);
+							currentState = RadioHandler.PAN;
+						}
+						else if (dragMode instanceof PanMode)
+						{
+							new ZoomIn().execute(executionEvent);
+							currentState = RadioHandler.ZOOM_IN;
+						}
+						else if (dragMode instanceof ZoomInMode)
+						{
+							new DragSegment().execute(executionEvent);
+							currentState = RadioHandler.DRAG_SEGMENT;
+						}
+						if (currentState != null)
+						{
+							ICommandService service = (ICommandService) getSite().getService(ICommandService.class);
+							Command command = service.getCommand(RadioHandler.ID);
+							HandlerUtil.updateRadioState(command, currentState);
+						}
+					}
+					catch (Exception e1)
+					{
+						CorePlugin.logError(Status.WARNING, "Cannot change drag mode:", e1);
+					}
+				}
+			}
+		}
+	};
 
 	/**
 	 * constructor - quite simple really.
@@ -1115,6 +1208,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 
 		};
+		final Control control = res.getCanvasControl();
+		if (control != null && !control.isDisposed()) {
+			control.addTraverseListener(dragModeListener);
+			control.addDisposeListener(new DisposeListener()
+			{
+				
+				@Override
+				public void widgetDisposed(DisposeEvent e)
+				{
+					control.removeTraverseListener(dragModeListener);
+					control.removeDisposeListener(this);
+				}
+			});
+		}
 		return res;
 	}
 
