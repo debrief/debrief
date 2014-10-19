@@ -35,9 +35,9 @@ public abstract class CalculationLoaderManager
 
 	// Extension point tag and attributes in plugin.xml
 	private final String EXTENSION_POINT_ID;
+	/*TESTING*/
 
 	private final String EXTENSION_TAG;
-	/**Testing*/
 
 	private final String PLUGIN_ID;
 
