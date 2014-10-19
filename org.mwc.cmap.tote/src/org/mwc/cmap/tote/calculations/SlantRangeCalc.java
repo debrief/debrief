@@ -24,7 +24,7 @@ import MWC.GenericData.Watchable;
 public class SlantRangeCalc extends rangeCalc
 {
 
-	private static final String SLANT_RANGE_MARKER = " \\";
+	private static final String SLANT_RANGE_MARKER = " \\";/**testing*/
 
 	/** override our paren't calculate method so we can choose whether to show slant range
 	 * 
