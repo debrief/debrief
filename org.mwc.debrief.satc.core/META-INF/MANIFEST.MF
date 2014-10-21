@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief SATC
 Bundle-SymbolicName: org.mwc.debrief.satc.core;singleton:=true
-Bundle-Version: 1.0.10
+Bundle-Version: 1.0.11
 Bundle-Activator: com.planetmayo.debrief.satc_rcp.SATC_Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
