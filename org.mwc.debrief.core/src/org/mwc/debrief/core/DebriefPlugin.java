@@ -70,6 +70,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 	// The shared instance.
 	private static DebriefPlugin plugin;
+	
+	private boolean initialized = false;
 
 	/**
 	 * Returns the shared instance.
@@ -192,6 +194,16 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	{
 		super.start(context);
 
+		//initialize();
+
+	}
+
+	public void initialize()
+	{
+		if (initialized) {
+			return;
+		}
+		initialized = true;
 		// also provide someps extra functionality to the right-click editor
 		RightClickSupport.addRightClickGenerator(new GenerateTrack());
 		RightClickSupport.addRightClickGenerator(new GroupTracks());
@@ -238,7 +250,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		
 		CompositeTrackWrapper.setNewLegHelper(triggerNewLeg);
 		CompositeTrackWrapper.initialise(CorePlugin.getToolParent());
-
 	}
 
 	/**
@@ -250,5 +261,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
+		initialized = false;
 	}
 }
