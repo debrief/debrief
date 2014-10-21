@@ -9,6 +9,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.cmap.NarrativeViewer</artifactId>
-  <version>1.0.20</version>
+  <version>1.0.21</version>
   <packaging>eclipse-plugin</packaging>
 </project>
