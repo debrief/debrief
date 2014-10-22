@@ -162,13 +162,15 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
 
+	/** only let the initialise method get called once
+	 * 
+	 */
+	private boolean initialized = false;
+	
 	/** special-case handler that ensures that XY Plot views are 
 	 * closed when the app closes. XY-Plot views are "special" views
 	 * because we don't wish them to persist between sessions.
 	 */
-	
-	private boolean initialized = false;
-	
 	private  IWorkbenchListener workbenchListener = new IWorkbenchListener()
 	{
 
