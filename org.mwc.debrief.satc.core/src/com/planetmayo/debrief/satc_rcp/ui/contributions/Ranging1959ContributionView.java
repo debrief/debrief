@@ -79,7 +79,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		initializeWidgets();
 		
 		// add sound speed
-		UIUtils.createLabel(bodyGroup, "C(kts):", new GridData(70, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Sound Speed (m/s):", new GridData(130, SWT.DEFAULT));
 		UIUtils.createSpacer(bodyGroup, new GridData(45, SWT.DEFAULT));
 		
 		// add the speed
