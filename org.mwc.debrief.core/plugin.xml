@@ -95,7 +95,7 @@
 	</extension>
 
     <extension point="org.eclipse.ui.menus">
-        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
+        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=debrief">
        		<toolbar
                id="org.mwc.debrief.core.EditorFeatures"
                label="Add Features">
@@ -1463,8 +1463,18 @@
 			icon="icons/sample.gif" id="org.mwc.debrief.core.wizards.NewPlotWizard"
 			name="Debrief Plot" />
 	</extension>
+	
+	<extension
+         id="Debrief"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.mwc.debrief.core.rcp.application.DebriefApplication">
+         </run>
+      </application>
+   </extension>
 	<extension id="Debrief" point="org.eclipse.core.runtime.products">
-		<product application="org.eclipse.ui.ide.workbench"
+		<product application="org.mwc.debrief.core.Debrief"
 			description="Debrief Maritime Analysis Software" name="DebriefNG">
 			<property name="appName" value="DebriefNG" />
 			<property name="preferenceCustomization" value="plugin_customization.ini"/>
@@ -1524,6 +1534,12 @@
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
 				<hiddenToolBarItem id="org.eclipse.search.OpenSearchDialogPage"/>
+				<hiddenToolBarItem id="org.eclipse.ui.navigate.back"/>
+				<hiddenToolBarItem id="org.eclipse.ui.navigate.forward"/>
+				<hiddenToolBarItem id="org.eclipse.ui.navigate.up"/>
+				<hiddenToolBarItem id="org.eclipse.debug.ui.launchActionSet"/>
+				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
      	</perspectiveExtension>
      	<perspectiveExtension
      		targetID="org.eclipse.ui.resourcePerspective">

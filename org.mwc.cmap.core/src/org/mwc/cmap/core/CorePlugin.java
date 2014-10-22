@@ -162,6 +162,11 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
 
+	/** only let the initialise method get called once
+	 * 
+	 */
+	private boolean initialized = false;
+	
 	/** special-case handler that ensures that XY Plot views are 
 	 * closed when the app closes. XY-Plot views are "special" views
 	 * because we don't wish them to persist between sessions.
@@ -212,6 +217,15 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	{
 		super.start(context);
 		
+		//initialize();
+	}
+
+	public void initialize() throws CoreException
+	{
+		if (initialized) {
+			return;
+		}
+		initialized = true;
 		// we have an ongoing problem with the window that RCP provides for a floated XY
 		// Plot staying behind after the view itself has closed, and 
 		// after the app has closed/re-opened.
@@ -278,6 +292,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		PlatformUI.getWorkbench().removeWorkbenchListener(workbenchListener);
 		plugin = null;
 		resourceBundle = null;
+		initialized = false;
 	}
 
 	/**
