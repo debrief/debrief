@@ -1500,6 +1500,8 @@
      			<hiddenMenuItem id="org.eclipse.ui.edit.addBookmark"/>
 				<hiddenMenuItem id="org.eclipse.ui.edit.addTask"/>
 				<hiddenMenuItem id="org.eclipse.ui.project.buildAll"/>
+				<hiddenMenuItem id="org.eclipse.ui.project.openProject"/>
+				<hiddenMenuItem id="org.eclipse.ui.project.closeProject"/>
 				<hiddenMenuItem id="org.eclipse.ui.project.buildProject"/>
 				<hiddenMenuItem id="org.eclipse.ui.project.cleanAction"/>
 				<hiddenMenuItem id="org.eclipse.ui.project.buildAutomatically"/>
