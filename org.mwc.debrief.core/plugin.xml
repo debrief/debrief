@@ -1522,6 +1522,7 @@
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.windows"/>
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.unix"/>
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.macOS9"/>
+				<hiddenMenuItem id="project"/>
 				<hiddenToolBarItem id="org.eclipse.debug.ui.commands.RunToLine"/>
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
@@ -1530,6 +1531,7 @@
 				<hiddenToolBarItem id="org.eclipse.ui.navigate.forward"/>
 				<hiddenToolBarItem id="org.eclipse.ui.navigate.up"/>
 				<hiddenToolBarItem id="org.eclipse.debug.ui.launchActionSet"/>
+				<hiddenToolBarItem id="org.eclipse.ui.NavigateActionSet"/>
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.navigation"/>
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
 				<hiddenToolBarItem id="org.eclipse.ui.workbench.navigate"/>
@@ -1562,6 +1564,7 @@
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.windows"/>
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.unix"/>
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.macOS9"/>
+				<hiddenMenuItem id="project"/>
 				<hiddenToolBarItem id="org.eclipse.debug.ui.commands.RunToLine"/>
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
@@ -1570,6 +1573,7 @@
 				<hiddenMenuItem id="org.eclipse.ui.navigate.forward"/>
 				<hiddenToolBarItem id="org.eclipse.ui.navigate.up"/>
 				<hiddenToolBarItem id="org.eclipse.debug.ui.launchActionSet"/>
+				<hiddenToolBarItem id="org.eclipse.ui.NavigateActionSet"/>
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.navigation"/>
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
 				<hiddenToolBarItem id="org.eclipse.ui.workbench.navigate"/>
