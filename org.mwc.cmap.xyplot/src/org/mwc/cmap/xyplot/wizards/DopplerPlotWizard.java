@@ -10,6 +10,7 @@ import org.mwc.cmap.core.wizards.EnterStringPage;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationWizard;
 import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.dopplerCalc;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GenericData.WatchableList;
 
@@ -34,8 +35,8 @@ public class DopplerPlotWizard implements CalculationWizard
 				taskTitle, "Please enter a f-Nought (Hz) for [" + primary + "]",
 				"(e.g. 150)",
 				imagePath, null, false);
-		final EnterStringPage getSoundSpeed = new EnterStringPage(null, " " +  cFormat.format(calc.getSpeedOfSound()) + " ",
-				taskTitle, "Please enter the Speed of Sound in Water (kts)",
+		final EnterStringPage getSoundSpeed = new EnterStringPage(null, " " +  cFormat.format(Conversions.Kts2Mps(calc.getSpeedOfSound())) + " ",
+				taskTitle, "Please enter the Speed of Sound in Water (m/sec)",
 				"(e.g. 2000)",
 				imagePath, null, false);
 		wizard.addWizard(getf0);
@@ -49,7 +50,7 @@ public class DopplerPlotWizard implements CalculationWizard
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
 			calc.setFNought(Double.parseDouble(getf0.getString()));
-			calc.setSpeedOfSound(Double.parseDouble(getSoundSpeed.getString()));
+			calc.setSpeedOfSound(Conversions.Mps2Kts(Double.parseDouble(getSoundSpeed.getString())));
 		}
 		
 		// ok, return the dialog ok/cancel value
