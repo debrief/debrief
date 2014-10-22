@@ -1524,6 +1524,15 @@
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
 				<hiddenToolBarItem id="org.eclipse.search.OpenSearchDialogPage"/>
+				<hiddenToolBarItem id="org.eclipse.ui.navigate.back"/>
+				<hiddenToolBarItem id="org.eclipse.ui.navigate.forward"/>
+				<hiddenToolBarItem id="org.eclipse.ui.navigate.up"/>
+				<hiddenToolBarItem id="org.eclipse.debug.ui.launchActionSet"/>
+				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+				<hiddenToolBarItem id="org.eclipse.ui.workbench.navigate"/>
+				<hiddenToolBarItem id="org.eclipse.ui.workbench.file"/>
+				<hiddenToolBarItem id="org.eclipse.ui.workbench.help"/>
      	</perspectiveExtension>
      	<perspectiveExtension
      		targetID="org.eclipse.ui.resourcePerspective">
@@ -1555,6 +1564,15 @@
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
 				<hiddenToolBarItem id="org.eclipse.search.OpenSearchDialogPage"/>
+				<hiddenMenuItem id="org.eclipse.ui.navigate.back"/>
+				<hiddenMenuItem id="org.eclipse.ui.navigate.forward"/>
+				<hiddenToolBarItem id="org.eclipse.ui.navigate.up"/>
+				<hiddenToolBarItem id="org.eclipse.debug.ui.launchActionSet"/>
+				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+				<hiddenToolBarItem id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+				<hiddenToolBarItem id="org.eclipse.ui.workbench.navigate"/>
+				<hiddenToolBarItem id="org.eclipse.ui.workbench.file"/>
+				<hiddenToolBarItem id="org.eclipse.ui.workbench.help"/>
      	</perspectiveExtension>
  	</extension>
 
