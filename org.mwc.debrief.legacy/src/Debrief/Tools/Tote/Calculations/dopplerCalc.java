@@ -24,9 +24,15 @@ import MWC.GenericData.Watchable;
 public class dopplerCalc extends plainCalc
 {
 
+	/**
+	 * f-nought
+	 */
 	private double _fNought = 150;
 
-	private double _C = 2000;
+	/** speed of sound (kts)
+	 * 
+	 */
+	private double _C = 3032;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
