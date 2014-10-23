@@ -19,7 +19,7 @@ Before we get started with loading and manipulating data, we&apos;re going to le
          </intro>
          <onCompletion>
             <b>Conclusion</b><br/>
-            Ok, that's the boring school work out of the way. The rest of this cheat-sheet is all conducted here in Debrief.
+            Ok, that&apos;s the boring school work out of the way. The rest of this cheat-sheet is all conducted here in Debrief.
          </onCompletion>
          <param name="path" value="overall_intro.xml"/>
          
@@ -48,7 +48,7 @@ You now have a Debrief <b>Project</b>, to contain your tutorial data.
             <intro>
                There are two ways to load the sample data. We&apos;re probably going to end up modifying the sample data, 
                so you shouldn&apos;t
-               do that if you&apos;re working on a set of sample data that's shared with other users  (since you 
+               do that if you&apos;re working on a set of sample data that&apos;s shared with other users  (since you 
                would be modifying the <b>master</b> copy of the data). Start off by considering if your Debrief installation folder
                is on your local machine, or on a Network Shared Folder.
             </intro>
@@ -140,7 +140,7 @@ You now have a Debrief <b>Project</b>, to contain your tutorial data.
          </task>
          <task kind="cheatsheet" name="Fun with legs" skip="false">
             <intro>
-               We still haven't got enough information to produce a solution, so it's time to provide some leg-related knowledge
+               We still haven&apos;t got enough information to produce a solution, so it&apos;s time to provide some leg-related knowledge
             </intro>
             <onCompletion>
                And that&apos;s all for the walkthrough of Debrief&apos;s Semi-Automatic Track Construction.  You&apos;re now on your own.

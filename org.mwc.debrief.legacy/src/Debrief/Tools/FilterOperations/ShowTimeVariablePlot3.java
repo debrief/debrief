@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 package Debrief.Tools.FilterOperations;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -1366,7 +1380,13 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	{
 	}
 
-	static public final class CalculationHolder
+	public interface CalculationWizard
+	{
+		public int open(toteCalculation calc, WatchableList primary, Editable[] subjects);
+	}
+
+	
+	static public class CalculationHolder
 	{
 		public final toteCalculation _theCalc;
 
@@ -1376,14 +1396,24 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 		public final double _clipMax;
 
+		private CalculationWizard _wizard;
+
 		public CalculationHolder(final toteCalculation theCalcVal,
 				final formattingOperation theFormatterVal, final boolean isRelative,
 				final double clipMax)
+		{
+			this(theCalcVal, theFormatterVal, isRelative, clipMax, null);
+		}
+
+		public CalculationHolder(final toteCalculation theCalcVal,
+				final formattingOperation theFormatterVal, final boolean isRelative,
+				final double clipMax, CalculationWizard wizard)
 		{
 			_theCalc = theCalcVal;
 			_theFormatter = theFormatterVal;
 			_isRelative = isRelative;
 			_clipMax = clipMax;
+			_wizard = wizard;
 		}
 
 		/**
@@ -1401,6 +1431,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 		public final String toString()
 		{
 			return _theCalc.toString();
+		}
+
+		public CalculationWizard getWizard()
+		{
+			return _wizard;
 		}
 	}
 }

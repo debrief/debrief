@@ -1,11 +1,17 @@
-/*****************************************************************************
- *                          J3D.org Copyright (c) 2000
- *                                Java Source
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
  *
- * This source is licensed under the GNU LGPL v2.1
- * Please read http://www.gnu.org/copyleft/lgpl.html for more information
+ *    (C) 2000-2014, PlanetMayo Ltd
  *
- ****************************************************************************/
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 
 package MWC.GUI.ETOPO;
 

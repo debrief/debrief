@@ -1,9 +1,16 @@
 /*
- * Desciption: Interface for classes which listen to a running scenario - possible to keep
- * "score" of performance or to act as a referee
- * User: administrator
- * Date: Nov 6, 2001
- * Time: 8:21:34 AM
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
 package ASSET.Scenario.Observers;
 

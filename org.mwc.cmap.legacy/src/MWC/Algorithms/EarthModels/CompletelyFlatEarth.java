@@ -1,11 +1,16 @@
-/**
- * MWC.Algorithms.EarthModels.CompletelyFlatEarth
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
  *
- * This is a genuine flat earth algorithm which takes no account
- * of the curvature of the earth: thus a degree of longitude is as long at
- * 40 degs north as at the equator.
+ *    (C) 2000-2014, PlanetMayo Ltd
  *
- * This algorithm has been created for simplicity whilst testing
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
 package MWC.Algorithms.EarthModels;
 

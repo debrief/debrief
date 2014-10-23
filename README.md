@@ -1,4 +1,7 @@
-### Active Issues
+### Project Status
+
+[![Continuous Build Status](https://travis-ci.org/debrief/debrief.svg?branch=master)](https://travis-ci.org/debrief/debrief/builds)
+
 [![Issues that are ready to be worked on](https://badge.waffle.io/debrief/debrief.png?label=ready&title=Ready)](http://waffle.io/debrief/debrief)
 
 [![Issues that are in progress](https://badge.waffle.io/debrief/debrief.png?label=in progress&title=In progress)](http://waffle.io/debrief/debrief)

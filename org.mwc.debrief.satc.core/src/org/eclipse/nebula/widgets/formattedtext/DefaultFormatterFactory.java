@@ -1,13 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2005, 2009 Eric Wuillai.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
  *
- * Contributors:
- *     Eric Wuillai (eric@wdev91.com) - initial API and implementation
- *******************************************************************************/
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 package org.eclipse.nebula.widgets.formattedtext;
 
 import java.util.Date;

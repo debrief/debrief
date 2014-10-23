@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 package ASSET.Participants;
 
 import MWC.GenericData.TimePeriod;
@@ -156,12 +170,12 @@ public class Status implements java.io.Serializable
 		String res;
 		if (thisDepth < 0.001)
 		{
-			res = _df.format(this.getCourse()) + "° "
+			res = _df.format(this.getCourse()) + "ï¿½ "
 					+ _df.format(this.getSpeed().getValueIn(WorldSpeed.Kts)) + "kts";
 		}
 		else
 		{
-			res = _df.format(this.getCourse()) + "° "
+			res = _df.format(this.getCourse()) + "ï¿½ "
 					+ _df.format(this.getSpeed().getValueIn(WorldSpeed.Kts)) + "kts "
 					+ _df.format(-this.getLocation().getDepth()) + "m";
 		}

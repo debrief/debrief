@@ -1,26 +1,16 @@
-/* **********************************************************************
- * 
- *    Use, duplication, or disclosure by the Government is subject to
- * 	     restricted rights as set forth in the DFARS.
- *  
- * 			   BBNT Solutions LLC
- * 			      A Part of  
- * 			         GTE      
- * 			  10 Moulton Street
- * 			 Cambridge, MA 02138
- * 			    (617) 873-3000
- *  
- * 	  Copyright 1998, 2000 by BBNT Solutions LLC,
- * 		A part of GTE, all rights reserved.
- *  
- * **********************************************************************
- * 
- * $Source: i:/mwc/coag/asset/cvsroot/util/MWC/GUI/ETOPO/MWCETOPOLayer.java,v $
- * $Revision: 1.2 $
- * $Date: 2004/05/25 15:25:43 $
- * $Author: Ian.Mayo $
- * 
- * **********************************************************************
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
 
 package MWC.GUI.ETOPO;

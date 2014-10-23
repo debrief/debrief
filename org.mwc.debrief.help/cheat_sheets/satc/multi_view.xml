@@ -32,7 +32,7 @@
       <description>         
          Whilst the first two target legs have been coloured, the last one hasn&apos;t. Let&apos;s do it now. 
          <br/><br/>
-         Expand the sensor data
+         Expand the <b>Ownship</b> sensor data
          in the Outline View, and select the sensor cuts from <b>100112 134230</b> until the end of the
          dataset, at <b>100112 140000</b>.  Now use the <b>Properties</b> view to change the color of these cuts to <b>Yellow</b> 
          (or obviously you could right-click and select Color > Yellow).
@@ -54,16 +54,22 @@
       title="Rename the scenario">
       <description>         
          To make it easier to navigate the data, please use the <b>Properties</b> view to rename 
-         the new scenario to <b>Tutorial Scenario</b>
+         the new scenario (<b>121200.00</b>) to <b>Tutorial Scenario</b>
       </description>
    </item>
    <item
       title="Try to generate a solution">
       <description>         
          Hey, why not try to generate a solution.  Just click on <b>Calculate Solution</b> at the top of the
-         <b>Maintain Contributions</b> view.  You will see Debrief do a couple of seconds of processing, and then stop.
-         This is because Debrief doesn&apos;t have enough information to generate a solution.  It needs to know
-         one or more straight legs.         
+         <b>Maintain Contributions</b> view.  
+         You will see Debrief do a couple of seconds of processing, and then stop.
+         <br/>
+         Can&apos;t you see the solution? Try hiding the <b>OWNSHIP</b> sensor data - 
+         switch it off.
+         <br/>
+         Still can&apos;t see it?  Oh, this
+          is because Debrief doesn&apos;t have enough information to generate a solution.  It needs to know
+         one or more straight legs.  But, leave the <b>OWNSHIP</b> sensor data hidden, for when we do have some data.
       </description>
    </item>
 </cheatsheet>

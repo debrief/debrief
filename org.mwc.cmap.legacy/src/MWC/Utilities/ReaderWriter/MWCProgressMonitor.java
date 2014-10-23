@@ -1,11 +1,16 @@
 /*
- * @(#)ProgressMonitor.java	1.22 00/02/02
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
  *
- * Copyright 1997-2000 Sun Microsystems, Inc. All Rights Reserved.
+ *    (C) 2000-2014, PlanetMayo Ltd
  *
- * This software is the proprietary information of Sun Microsystems, Inc.
- * Use is subject to license terms.
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
  *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
 
 

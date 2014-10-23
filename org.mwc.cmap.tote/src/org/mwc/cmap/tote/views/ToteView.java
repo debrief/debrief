@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 package org.mwc.cmap.tote.views;
 
 import java.beans.PropertyChangeEvent;
@@ -47,10 +61,11 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.tote.TotePlugin;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
 import Debrief.Tools.Tote.toteCalculation;
@@ -399,14 +414,14 @@ public class ToteView extends ViewPart
 		// let the parent do its bits
 		super.init(site, memento);
 
-		_showUnits = new Action("Show calc units column.", Action.AS_CHECK_BOX)
+		_showUnits = new Action("Show calc units column", Action.AS_CHECK_BOX)
 		{
 			public void run()
 			{
 				redoTableAfterTrackChanges();
 			}
 		};
-
+		_showUnits.setImageDescriptor(TotePlugin.getImageDescriptor(TotePlugin.IMG_SHOW_UNIT_COLUMN));
 		// are we showing the units column?
 		if (memento != null)
 		{
@@ -640,7 +655,7 @@ public class ToteView extends ViewPart
 
 	private void fillLocalToolBar(final IToolBarManager manager)
 	{
-		// manager.add(action1);
+		 manager.add(_showUnits);
 		// manager.add(action2);
 		// manager.add(_followTimeToggle);
 	}

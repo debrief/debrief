@@ -30,7 +30,7 @@
          that is the DTG of the first item in the bearing data.
          <br/>
          You will also see that the <b>Maintain Contributions</b> view has opened - you will use this to create and manage your
-         scenario data.  If you didn't read about the SATC user interface
+         scenario data.  If you didn&apos;t read about the SATC user interface
          via the help page earlier on, please read it now using the <b>Click to perform</b> link provided below.
       </description>
       <command
@@ -70,7 +70,7 @@
          has an estimate value of <b>+/- 3 degs</b>. This means the algorithm will only offer solutions that are within 3 degrees of these bearing measurements.
          <br/>You can view these measurements.  First, select the <b>Single Leg</b> in the <b>Outline View</b>.  Then, in the <b>Properties Window</b>, tick the <b>ShowLocationConstraints</b> item.
          <br/>A set of "pie-slices" will now appear on the plot, showing the 3 degree allowable error on each bearing measurement.  If you expand the <b>Bearing Measurement - Bearing Data</b> contribution
-         in the <b>Maintain Contributions</b> view, you will see that it is possible to change the error value on this bearing data by moving the slider. As you move the slider you will see
+         in the <b>Maintain Contributions</b> view, you will see that it is possible to change the error value on this bearing data by moving the slider. As you move and release the slider you will see
          the pie slices expand and contract.
          <br/><br/>Note: the <b>Preferences</b> area of the <b>Maintain Contributions</b> view includes the <b>Auto-Recalc of Constraints</b> two-state
          button.  This button is normally depressed. But, if you have a complex scenario that takes some time to update, you may wish to un-check this button.

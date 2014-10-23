@@ -42,8 +42,8 @@
       title="Manually tune the TMA solution">
       <description>
          So, we should now just have the <b>OWNSHIP</b> and <b>Single Leg TMA</b> tracks visible.  Let&apos;s try adjusting the solution. We 
-         do this just like we do for normal Single-Sided Reconstruction: click on the <b>Drag TMA Segment</b> arrow button in the Debrief toolbar.
-         <br/>As you click it, you will see the <b>Bearing Residuals</b> view open.  Next, make the <b>OWNSHIP</b> track as the Primary track, and 
+         do this just like we do for normal Single-Sided Reconstruction: click on the <b>Drag Track Segment</b> arrow button in the Debrief toolbar.
+         <br/>As you click it, you will see the <b>Bearing Residuals</b> view open.  Next, mark the <b>OWNSHIP</b> track as the Primary track, and 
          the <b>Single Leg TMA</b> track as the secondary track (using the mini-toolbar above the <b>Outline View</b>). Now you can drag the yellow track
          and see the error residuals move.  
          <br/><br/><b>Note:</b> the <b>Absolute</b> values graph is easier to read in this instance if you select the <b>Plot absolute data on +/- 180 axes
@@ -69,13 +69,13 @@
          both loaded in Debrief.  We can 
          now use the application to calculate the distance between the two tracks.
          <br/><br/>
-         Select <b>Track:Single Leg_TMA</b> and <b>Track:Subject</b> in the Outline View (use &lt;ctrl&gt; to multi-select).  
+         Select <b>Track:Single Leg_0</b> and <b>Track:Subject</b> in the Outline View (use &lt;ctrl&gt; to multi-select).  
          Now, right click on either of them, and select <b>View XY Plot</b>.          
          <br/><br/>
          From the dialog that opens, select <b>Range</b> as the attribute to view, then select <b>Track:Subject</b> as the primary track.
          <br/><br/>
          You will see a graph open. This will show that the start of the track has an error of around 140 yds, reducing to 60 near the end.  This seems
-         quite good considering the target range from 8000 to 3000 yards from ownship. 
+         quite good considering the target ranges from 8000 to 3000 yards from ownship. 
       </description>
    </item>
    

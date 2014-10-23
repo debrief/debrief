@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
 package org.mwc.debrief.core.actions;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -12,6 +26,14 @@ import org.mwc.cmap.plotViewer.actions.ZoomIn;
 public class RadioHandler extends AbstractHandler
 {
 
+	public static final String DRAG_SEGMENT = "DragSegment";
+	public static final String DRAG_COMPONENT = "DragComponent";
+	public static final String DRAG_FEATURE = "DragFeature";
+	public static final String RANGE_BEARING = "RangeBearing";
+	public static final String PAN = "Pan";
+	public static final String ZOOM_IN = "ZoomIn";
+	public static final String ID = "org.mwc.debrief.core.RadioHandler";
+
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException
 	{
@@ -20,22 +42,22 @@ public class RadioHandler extends AbstractHandler
 
 		String currentState = event.getParameter(RadioState.PARAMETER_ID);
 
-		if ("ZoomIn".equals(currentState))
+		if (ZOOM_IN.equals(currentState))
 		{
 			new ZoomIn().execute(event);
-		} else if ("Pan".equals(currentState))
+		} else if (PAN.equals(currentState))
 		{
 			new Pan().execute(event);
-		} else if ("RangeBearing".equals(currentState))
+		} else if (RANGE_BEARING.equals(currentState))
 		{
 			new RangeBearing().execute(event);
-		} else if ("DragFeature".equals(currentState))
+		} else if (DRAG_FEATURE.equals(currentState))
 		{
 			new DragFeature().execute(event);
-		} else if ("DragComponent".equals(currentState))
+		} else if (DRAG_COMPONENT.equals(currentState))
 		{
 			new DragComponent().execute(event);
-		} else if ("DragSegment".equals(currentState))
+		} else if (DRAG_SEGMENT.equals(currentState))
 		{
 			new DragSegment().execute(event);
 		}
