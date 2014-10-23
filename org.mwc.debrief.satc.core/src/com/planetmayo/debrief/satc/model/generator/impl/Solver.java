@@ -314,6 +314,11 @@ public class Solver extends ModelObject implements ISolver
 		{
 			run();
 		}
+
+		@Override
+		public void modified()
+		{
+		}
 	}
 	
 	private class BoundsManagerToSolutionGeneratorBinding extends SteppingAdapter

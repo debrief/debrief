@@ -28,4 +28,9 @@ public class ContributionChangedAdapter implements IContributionsChangedListener
 	public void removed(BaseContribution contribution)
 	{
 	}
+
+	@Override
+	public void modified()
+	{
+	}
 }
