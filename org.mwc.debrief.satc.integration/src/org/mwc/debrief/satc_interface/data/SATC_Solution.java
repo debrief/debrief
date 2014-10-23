@@ -982,6 +982,7 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void listenToSolver(final ISolver solver)
 	{
+		final SATC_Solution safeLink = this;
 
 		_gaStepListener = new IGASolutionsListener()
 		{
@@ -1088,6 +1089,15 @@ public class SATC_Solution extends BaseLayer implements
 				}
 
 				fireExtended();
+			}
+
+			@Override
+			public void modified()
+			{
+				/** ok, tell the layers to be dirty
+				 * 
+				 */
+				_myLayers.fireModified(safeLink);
 			}
 		};
 
