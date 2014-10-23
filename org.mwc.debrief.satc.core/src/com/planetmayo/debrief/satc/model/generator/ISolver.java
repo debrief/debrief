@@ -14,6 +14,7 @@
  */
 package com.planetmayo.debrief.satc.model.generator;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.Precision;
@@ -132,6 +133,9 @@ public interface ISolver
   void save(Writer writer);
   
   void load(Reader reader);
+  
+  public void addPropertyChangeListener(PropertyChangeListener listener);
+  public void removePropertyChangeListener(PropertyChangeListener listener);
   
   public interface Writer 
   {

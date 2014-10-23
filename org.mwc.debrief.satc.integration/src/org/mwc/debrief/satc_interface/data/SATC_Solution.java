@@ -19,6 +19,8 @@ import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -468,6 +470,11 @@ public class SATC_Solution extends BaseLayer implements
 
 	private PlainSymbol mySymbol;
 
+	/** high level property change listener, used to mark the plot
+	 * as dirty
+	 */
+	private final PropertyChangeListener _globalListener;
+
 	/**
 	 * wrap the provided solution
 	 * 
@@ -477,6 +484,16 @@ public class SATC_Solution extends BaseLayer implements
 	{
 		super.setName(newSolution.getName());
 
+		_globalListener = new PropertyChangeListener()
+		{
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				fireModified();
+			}
+		};
+
 		_mySolver = newSolution;
 
 		// clear the solver, just to be sure
@@ -484,6 +501,12 @@ public class SATC_Solution extends BaseLayer implements
 
 		// and listen for changes
 		listenToSolver(_mySolver);
+	}
+
+	protected void fireModified()
+	{
+		if(_myLayers != null)
+			_myLayers.fireModified(this);
 	}
 
 	public void addContribution(final BaseContribution cont)
@@ -710,6 +733,7 @@ public class SATC_Solution extends BaseLayer implements
 				_contributionsListener);
 		_mySolver.getBoundsManager().removeConstrainSpaceListener(
 				_constrainListener);
+		_mySolver.removePropertyChangeListener(_globalListener);
 		_myLayers = null;
 	}
 
@@ -982,7 +1006,6 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void listenToSolver(final ISolver solver)
 	{
-
 		_gaStepListener = new IGASolutionsListener()
 		{
 			@Override
@@ -1089,6 +1112,12 @@ public class SATC_Solution extends BaseLayer implements
 
 				fireExtended();
 			}
+
+			@Override
+			public void modified()
+			{
+				fireModified();
+			}
 		};
 
 		_constrainListener = new IConstrainSpaceListener()
@@ -1121,6 +1150,9 @@ public class SATC_Solution extends BaseLayer implements
 			{
 			}
 		};
+
+		// also listen for any other changes
+		solver.addPropertyChangeListener(_globalListener);
 
 		solver.getSolutionGenerator().addReadyListener(_gaStepListener);
 		solver.getContributions().addContributionsChangedListener(
@@ -1287,9 +1319,9 @@ public class SATC_Solution extends BaseLayer implements
 			// loop through the legs
 			final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
 			while (legs.hasNext())
-			{				
+			{
 				final CoreRoute thisLeg = legs.next();
-				
+
 				TrackSegment ts;
 
 				if (thisLeg instanceof StraightRoute)
@@ -1330,7 +1362,7 @@ public class SATC_Solution extends BaseLayer implements
 						}
 					}
 
-					abs.setName(straight.getName());	
+					abs.setName(straight.getName());
 					ts = abs;
 
 				}
