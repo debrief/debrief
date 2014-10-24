@@ -159,7 +159,7 @@ import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.ISecondaryTrack;
 import MWC.GUI.Editable;
 import MWC.GUI.JFreeChart.BearingRateFormatter;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
@@ -841,9 +841,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 								// temp switch on interpolation
 								Boolean oldInterp = null;
-								if (primaryTrack instanceof TrackWrapper)
+								if (primaryTrack instanceof ISecondaryTrack)
 								{
-									final TrackWrapper tw = (TrackWrapper) primaryTrack;
+									final ISecondaryTrack tw = (ISecondaryTrack) primaryTrack;
 									oldInterp = tw.getInterpolatePoints();
 									tw.setInterpolatePoints(true);
 								}
@@ -854,7 +854,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 								// and restore the interpolate points setting
 								if (oldInterp != null)
 								{
-									final TrackWrapper tw = (TrackWrapper) primaryTrack;
+									final ISecondaryTrack tw = (ISecondaryTrack) primaryTrack;
 									tw.setInterpolatePoints(oldInterp.booleanValue());
 								}
 
