@@ -1552,6 +1552,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return res;
 	}
 
+	@Override
 	public final boolean getInterpolatePoints()
 	{
 		return _interpolatePoints;
@@ -3090,6 +3091,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
+	@Override
 	public final void setInterpolatePoints(final boolean val)
 	{
 		_interpolatePoints = val;

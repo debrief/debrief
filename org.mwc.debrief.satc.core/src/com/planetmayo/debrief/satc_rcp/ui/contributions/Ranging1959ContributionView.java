@@ -41,6 +41,8 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.KtsToMSec;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.MSecToKts;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.YdsToMeter;
@@ -79,7 +81,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		initializeWidgets();
 		
 		// add sound speed
-		UIUtils.createLabel(bodyGroup, "C(kts):", new GridData(70, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Sound Speed (m/s):", new GridData(130, SWT.DEFAULT));
 		UIUtils.createSpacer(bodyGroup, new GridData(45, SWT.DEFAULT));
 		
 		// add the speed
@@ -90,21 +92,8 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		speedSoundText = new Text(speed, SWT.BORDER|SWT.TRAIL);
 		GridData gd = new GridData(100, SWT.DEFAULT);
 		speedSoundText.setLayoutData(gd);
-		speedSoundText.addListener(SWT.Verify, new Listener()
-		{
-		   public void handleEvent(Event e) {
-		      String string = e.text;
-		      char[] chars = new char[string.length()];
-		      string.getChars(0, chars.length, chars, 0);
-		      for (int i = 0; i < chars.length; i++) {
-		         if (!('0' <= chars[i] && chars[i] <= '9')) {
-		            e.doit = false;
-		            Display.getCurrent().beep();
-		            return;
-		         }
-		      }
-		   }
-		});
+		speedSoundText.addVerifyListener(new DoubleVerifier());
+		
 		// add FNought
 		gd = new GridData(90, SWT.DEFAULT);
 		UIUtils.createLabel(speed, "F0 (Hz):", gd);
@@ -190,7 +179,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		
 		IConverter modelToUI = new ModelToUIFNoughtConverter();
 		
-		IConverter uiToModel = new UIToModelDoubleConverter();
+		IConverter uiToModel = new MsToKtsConverter();
 		
 		context.bindValue(fNoughtTextValue, fNoughtValue,
 				UIUtils.converterStrategy(uiToModel),
@@ -204,9 +193,9 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 		ISWTObservableValue soundTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(speedSoundText);
 		
-		IConverter modelToUI = new ModelToUIDoubleConverter();
+		IConverter modelToUI = new KtsToMsConverter();
 		
-		IConverter uiToModel = new UIToModelDoubleConverter();
+		IConverter uiToModel = new MsToKtsConverter();
 		
 		context.bindValue(soundTextValue, soundValue,
 				UIUtils.converterStrategy(uiToModel),
@@ -251,32 +240,6 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	@Override
 	protected void createLimitAndEstimateSliders()
 	{
-	}
-	
-	private class ModelToUIDoubleConverter implements IConverter
-	{
-		@Override
-		public Object getToType()
-		{
-			return String.class;
-		}
-
-		@Override
-		public Object getFromType()
-		{
-			return Double.class;
-		}
-
-		@Override
-		public Object convert(Object fromObject)
-		{
-			if (fromObject == null)
-			{
-				return null;
-			}
-			int value = ((Double) fromObject).intValue(); 
-			return new String(new Integer(value).toString());
-		}
 	}
 	
 	private class ModelToUIRangeConverter implements IConverter
@@ -334,8 +297,40 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	}
 
 
-	private class UIToModelDoubleConverter implements IConverter
+	private class KtsToMsConverter implements IConverter
 	{
+		final DecimalFormat df = new DecimalFormat("0.0");
+		final KtsToMSec converter = new KtsToMSec();
+	
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+	
+		@Override
+		public Object getFromType()
+		{
+			return Double.class;
+		}
+	
+		@Override
+		public Object convert(Object fromObject)
+		{
+			if (fromObject == null)
+			{
+				return null;
+			}
+			Double kts = (Double) fromObject;
+			Double ms = (Double) converter.convert(kts);
+			String res = df.format(ms);
+			return res;
+		}
+	}
+
+	private class MsToKtsConverter implements IConverter
+	{
+		final MSecToKts converter = new MSecToKts();
 		
 		@Override
 		public Object getToType()
@@ -356,8 +351,10 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 			if (fromObject == null || s.isEmpty()) {
 				return null;
 			}
-			double value = new Double((String)fromObject).doubleValue();
-			return new Double(value);
+			
+			double ms = new Double((String)fromObject).doubleValue();
+			Double kts = (Double) converter.convert(ms);			
+			return new Double(kts);
 		}
 
 	}

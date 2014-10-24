@@ -36,5 +36,10 @@ public interface IContributionsChangedListener
 	 * @param contribution
 	 */
 	public void removed(BaseContribution contribution);
+	
+	/** a contribution has been modified
+	 * 
+	 */
+	public void modified();
 
 }

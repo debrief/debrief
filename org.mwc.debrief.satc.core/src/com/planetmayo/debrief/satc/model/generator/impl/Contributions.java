@@ -14,6 +14,7 @@
  */
 package com.planetmayo.debrief.satc.model.generator.impl;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeListenerProxy;
 import java.beans.PropertyChangeSupport;
@@ -42,12 +43,26 @@ public class Contributions implements IContributions
 
 	private final PropertyChangeSupport support;
 
+	private PropertyChangeListener _globalChangeListener;
+
 	public Contributions()
 	{
 		contributions = new ConcurrentSkipListSet<BaseContribution>();
 		contributionListeners = Collections
 				.synchronizedSet(new HashSet<IContributionsChangedListener>());
 		support = new PropertyChangeSupport(this);
+		
+		_globalChangeListener = new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				for (IContributionsChangedListener listener : cloneListeners())
+				{
+					listener.modified();
+				}
+			}
+		};
 	}
 
 	@Override
@@ -79,6 +94,10 @@ public class Contributions implements IContributions
 						(PropertyChangeListener) proxy.getListener());
 			}
 		}
+		
+		// add our generic listener
+		contribution.addPropertyChangeListener(_globalChangeListener);
+		
 		fireContributionAdded(contribution);
 	}
 
@@ -104,6 +123,9 @@ public class Contributions implements IContributions
 						(PropertyChangeListener) proxy.getListener());
 			}
 		}
+		
+		contribution.removePropertyChangeListener(_globalChangeListener);
+		
 		fireContributionRemoved(contribution);
 	}
 

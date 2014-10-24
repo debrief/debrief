@@ -141,18 +141,21 @@ public class rangeCalc extends plainCalc
 			final String theUnits = getUnits();
 
 			theRng = convertRange(range, theUnits);
-
 		}
 		return theRng;
 	}
-	
-	/** convert the range to the supplied units
+
+	/**
+	 * convert the range to the supplied units
 	 * 
-	 * @param range range (in degrees)
-	 * @param theUnits target units
+	 * @param range
+	 *          range (in degrees)
+	 * @param theUnits
+	 *          target units
 	 * @return converted value
 	 */
-	public static final double convertRange(final double range, final String theUnits)
+	public static final double convertRange(final double range,
+			final String theUnits)
 	{
 		double theRng = 0;
 		// do the units conversion
@@ -162,8 +165,7 @@ public class rangeCalc extends plainCalc
 		{
 			theRng = MWC.Algorithms.Conversions.Degs2Yds(range);
 		}
-		else if (theUnits
-				.equals(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS))
+		else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS))
 		{
 			theRng = MWC.Algorithms.Conversions.Degs2Yds(range) / 1000.0;
 		}
@@ -257,9 +259,9 @@ public class rangeCalc extends plainCalc
 		if (_myUnits == null)
 			_myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
 
-		return _myUnits;		
+		return _myUnits;
 	}
-	
+
 	/**
 	 * ok, find out what units to use for the range
 	 * 

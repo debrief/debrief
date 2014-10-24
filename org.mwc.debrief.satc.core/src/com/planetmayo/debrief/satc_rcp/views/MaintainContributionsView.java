@@ -667,6 +667,11 @@ public class MaintainContributionsView extends ViewPart
 					{
 						addContribution(contribution, true);
 					}
+
+					@Override
+					public void modified()
+					{
+					}
 				});
 		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),
 				IGASolutionsListener.class, new SteppingAdapter()

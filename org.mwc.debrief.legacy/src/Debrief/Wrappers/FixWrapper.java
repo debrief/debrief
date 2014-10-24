@@ -451,8 +451,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * produce an interpolated fix between the two supplied ones
 	 * 
 	 */
-	static public FixWrapper interpolateFix(final FixWrapper previous,
-			final FixWrapper next, final HiResDate dtg)
+	static public FixWrapper interpolateFix(final Watchable previous,
+			final Watchable next, final HiResDate dtg)
 	{
 		FixWrapper res = null;
 
@@ -507,7 +507,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		final Fix tmpFix = new Fix(dtg, newLoc, newCourse, MWC.Algorithms.Conversions.Kts2Yps(newSpeed));
 
 		res = new InterpolatedFixWrapper(tmpFix);
-		res.setTrackWrapper(previous.getTrackWrapper());
+		if(previous instanceof FixWrapper)
+		{
+			FixWrapper prev = (FixWrapper) previous;
+			res.setTrackWrapper(prev.getTrackWrapper());
+		}
 
 		// don't forget to indicate it's interpolated
 		res.setLabel(INTERPOLATED_FIX);

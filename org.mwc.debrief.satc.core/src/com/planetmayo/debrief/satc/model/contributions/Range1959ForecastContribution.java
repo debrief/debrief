@@ -379,6 +379,9 @@ public class Range1959ForecastContribution extends BaseContribution
 
 		if (x_values.size() != y_values.size())
 			throw new IllegalArgumentException("The arrays aren't the same lenth");
+		
+		if ((x_values.size() == 0) ||(y_values.size() == 0))
+			throw new IllegalArgumentException("We can't handle zero length arrays (div/0)");
 
 		SimpleRegression sr = new SimpleRegression();
 		for (int i = 0; i < x_values.size(); i++)

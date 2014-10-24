@@ -19,6 +19,8 @@ import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -469,6 +471,17 @@ public class SATC_Solution extends BaseLayer implements
 	private PlainSymbol mySymbol;
 
 	/**
+	 * high level property change listener, used to mark the plot as dirty
+	 */
+	private final PropertyChangeListener _globalListener;
+
+	/**
+	 * whether we interpolate our points during a getNearest() call
+	 * 
+	 */
+	private boolean _interpolatePoints = false;
+
+	/**
 	 * wrap the provided solution
 	 * 
 	 * @param newSolution
@@ -477,6 +490,16 @@ public class SATC_Solution extends BaseLayer implements
 	{
 		super.setName(newSolution.getName());
 
+		_globalListener = new PropertyChangeListener()
+		{
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				fireModified();
+			}
+		};
+
 		_mySolver = newSolution;
 
 		// clear the solver, just to be sure
@@ -484,6 +507,12 @@ public class SATC_Solution extends BaseLayer implements
 
 		// and listen for changes
 		listenToSolver(_mySolver);
+	}
+
+	protected void fireModified()
+	{
+		if (_myLayers != null)
+			_myLayers.fireModified(this);
 	}
 
 	public void addContribution(final BaseContribution cont)
@@ -710,6 +739,7 @@ public class SATC_Solution extends BaseLayer implements
 				_contributionsListener);
 		_mySolver.getBoundsManager().removeConstrainSpaceListener(
 				_constrainListener);
+		_mySolver.removePropertyChangeListener(_globalListener);
 		_myLayers = null;
 	}
 
@@ -798,7 +828,15 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getEndDTG()
 	{
-		return new HiResDate(_mySolver.getProblemSpace().getFinishDate());
+		// handle instance where problem space is undefined,
+		// so we don't have a start date
+		Date startD = _mySolver.getProblemSpace().getFinishDate();
+		final HiResDate res;
+		if (startD == null)
+			res = null;
+		else
+			res = new HiResDate(startD);
+		return res;
 	}
 
 	@Override
@@ -888,6 +926,7 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			// ok, collate some data
 			final CompositeRoute route = _newRoutes[0];
+			State before = null;
 
 			final Iterator<CoreRoute> legs = route.getLegs().iterator();
 			while (legs.hasNext())
@@ -897,16 +936,45 @@ public class SATC_Solution extends BaseLayer implements
 				while (states.hasNext())
 				{
 					final State state = states.next();
+
 					// does it even have a location?
 					if (state.getLocation() != null)
 					{
-						if (state.getTime().getTime() > time)
+						if (state.getTime().getTime() >= time)
 						{
 
-							items.add(wrapThis(state));
+							Watchable wrapped = null;
+
+							// should we be interpolating?
+							if (getInterpolatePoints())
+							{
+								// yes. do we have a previous location?
+								if (before != null)
+								{
+									// yes, get interpolating
+									WrappedState beforeWrapped = wrapThis(before);
+									WrappedState thisWrapped = wrapThis(state);
+									wrapped = FixWrapper.interpolateFix(beforeWrapped,
+											thisWrapped, DTG);
+								}
+								else
+								{
+									// this is our first item, just wrap it
+									wrapped = wrapThis(state);
+								}
+							}
+							else
+							{
+								// nope, we're done :-)
+								wrapped = wrapThis(state);
+							}
+
+							items.add(wrapped);
 							return items.toArray(new Watchable[]
 							{});
 						}
+
+						before = state;
 					}
 				}
 			}
@@ -959,7 +1027,15 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getStartDTG()
 	{
-		return new HiResDate(_mySolver.getProblemSpace().getStartDate());
+		// handle instance where problem space is undefined,
+		// so we don't have a start date
+		Date startD = _mySolver.getProblemSpace().getStartDate();
+		final HiResDate res;
+		if (startD == null)
+			res = null;
+		else
+			res = new HiResDate(startD);
+		return res;
 	}
 
 	@Override
@@ -982,7 +1058,6 @@ public class SATC_Solution extends BaseLayer implements
 
 	private void listenToSolver(final ISolver solver)
 	{
-
 		_gaStepListener = new IGASolutionsListener()
 		{
 			@Override
@@ -1089,6 +1164,12 @@ public class SATC_Solution extends BaseLayer implements
 
 				fireExtended();
 			}
+
+			@Override
+			public void modified()
+			{
+				fireModified();
+			}
 		};
 
 		_constrainListener = new IConstrainSpaceListener()
@@ -1121,6 +1202,9 @@ public class SATC_Solution extends BaseLayer implements
 			{
 			}
 		};
+
+		// also listen for any other changes
+		solver.addPropertyChangeListener(_globalListener);
 
 		solver.getSolutionGenerator().addReadyListener(_gaStepListener);
 		solver.getContributions().addContributionsChangedListener(
@@ -1287,9 +1371,9 @@ public class SATC_Solution extends BaseLayer implements
 			// loop through the legs
 			final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
 			while (legs.hasNext())
-			{				
+			{
 				final CoreRoute thisLeg = legs.next();
-				
+
 				TrackSegment ts;
 
 				if (thisLeg instanceof StraightRoute)
@@ -1330,7 +1414,7 @@ public class SATC_Solution extends BaseLayer implements
 						}
 					}
 
-					abs.setName(straight.getName());	
+					abs.setName(straight.getName());
 					ts = abs;
 
 				}
@@ -1500,5 +1584,17 @@ public class SATC_Solution extends BaseLayer implements
 	private WrappedState wrapThis(final State state)
 	{
 		return new WrappedState(state);
+	}
+
+	@Override
+	public final void setInterpolatePoints(final boolean val)
+	{
+		_interpolatePoints = val;
+	}
+
+	@Override
+	public final boolean getInterpolatePoints()
+	{
+		return _interpolatePoints;
 	}
 }
