@@ -450,20 +450,20 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 								return;
 							}
 
-							// NOTE: next section commented out. When doing a relative
-							// calculation, it was causing the whole period to be shown
-							// - not just the period selected in the Time Controller
-							//
-							//
 							// aah. does the primary track have it's own time period?
-							// if (thePrimary != null)
-							// {
-							// if (thePrimary.getStartDTG() != null)
-							// startTime = thePrimary.getStartDTG();
-							//
-							// if (thePrimary.getEndDTG() != null)
-							// endTime = thePrimary.getEndDTG();
-							// }
+							if (thePrimary != null)
+							{
+								// ok trim the time period to the shorter of the primary period and the time controller period								
+								if (thePrimary.getStartDTG() != null)
+								{
+									startTime = (startTime.greaterThan(thePrimary.getStartDTG()))? startTime : thePrimary.getStartDTG();
+								}
+
+								if (thePrimary.getEndDTG() != null)
+								{
+									endTime = (endTime.lessThan(thePrimary.getEndDTG()))? endTime : thePrimary.getEndDTG();
+								}
+							}
 
 							final HiResDate finalStart = startTime;
 							final HiResDate finalEnd = endTime;
