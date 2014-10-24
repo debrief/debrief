@@ -27,4 +27,17 @@ public interface ISecondaryTrack extends WatchableList {
 	 */
 	Enumeration<Editable> segments();
 
+	/** specify if this track should interpolate points when
+	 * receiving a "getNEarestTo" call
+	 * 
+	 * @param val yes/no
+	 */
+	public abstract void setInterpolatePoints(final boolean val);
+
+	/** is this track configured to interpolate points?
+	 * 
+	 * @return yes/no
+	 */
+	public abstract boolean getInterpolatePoints();
+
 }
