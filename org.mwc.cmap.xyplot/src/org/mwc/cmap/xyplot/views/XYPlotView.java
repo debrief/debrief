@@ -1208,7 +1208,10 @@ public class XYPlotView extends ViewPart
 				// store the dataset
 				_dataset = ds;
 
-				_thePlot.setDataset((XYDataset) _dataset);
+				// if we failed in plot creation (maybe a track was empty),
+				// then _thePlot may not have been created.
+				if (_thePlot != null)
+					_thePlot.setDataset((XYDataset) _dataset);
 			}
 		}
 	}
