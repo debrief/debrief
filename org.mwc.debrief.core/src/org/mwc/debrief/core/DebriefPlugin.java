@@ -67,6 +67,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	public static final String TIME_BAR = "org.mwc.debrief.TimeBar";
 	public static final String SATC_MAINTAIN_CONTRIBUTIONS = "com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView";
 
+	public static final String RESET_PERSPECTIVE_TIMESTAMP = "resetPerspectiveTimestamp";
+	public static final long RESET_PERSPECTIVE_TIMESTAMP_DEFAULT_VALUE = 0;
 
 	// The shared instance.
 	private static DebriefPlugin plugin;
@@ -250,5 +252,9 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
+	}
+	
+	public long getResetPerspectiveTimestamp() {
+		return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE_TIMESTAMP);
 	}
 }
