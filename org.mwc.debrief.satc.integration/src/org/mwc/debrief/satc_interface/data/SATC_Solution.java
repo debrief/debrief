@@ -470,10 +470,16 @@ public class SATC_Solution extends BaseLayer implements
 
 	private PlainSymbol mySymbol;
 
-	/** high level property change listener, used to mark the plot
-	 * as dirty
+	/**
+	 * high level property change listener, used to mark the plot as dirty
 	 */
 	private final PropertyChangeListener _globalListener;
+
+	/**
+	 * whether we interpolate our points during a getNearest() call
+	 * 
+	 */
+	private boolean _interpolatePoints = false;
 
 	/**
 	 * wrap the provided solution
@@ -505,7 +511,7 @@ public class SATC_Solution extends BaseLayer implements
 
 	protected void fireModified()
 	{
-		if(_myLayers != null)
+		if (_myLayers != null)
 			_myLayers.fireModified(this);
 	}
 
@@ -826,7 +832,7 @@ public class SATC_Solution extends BaseLayer implements
 		// so we don't have a start date
 		Date startD = _mySolver.getProblemSpace().getFinishDate();
 		final HiResDate res;
-		if(startD == null)
+		if (startD == null)
 			res = null;
 		else
 			res = new HiResDate(startD);
@@ -920,6 +926,7 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			// ok, collate some data
 			final CompositeRoute route = _newRoutes[0];
+			State before = null;
 
 			final Iterator<CoreRoute> legs = route.getLegs().iterator();
 			while (legs.hasNext())
@@ -929,16 +936,45 @@ public class SATC_Solution extends BaseLayer implements
 				while (states.hasNext())
 				{
 					final State state = states.next();
+
 					// does it even have a location?
 					if (state.getLocation() != null)
 					{
 						if (state.getTime().getTime() >= time)
 						{
 
-							items.add(wrapThis(state));
+							Watchable wrapped = null;
+
+							// should we be interpolating?
+							if (getInterpolatePoints())
+							{
+								// yes. do we have a previous location?
+								if (before != null)
+								{
+									// yes, get interpolating
+									WrappedState beforeWrapped = wrapThis(before);
+									WrappedState thisWrapped = wrapThis(state);
+									wrapped = FixWrapper.interpolateFix(beforeWrapped,
+											thisWrapped, DTG);
+								}
+								else
+								{
+									// this is our first item, just wrap it
+									wrapped = wrapThis(state);
+								}
+							}
+							else
+							{
+								// nope, we're done :-)
+								wrapped = wrapThis(state);
+							}
+
+							items.add(wrapped);
 							return items.toArray(new Watchable[]
 							{});
 						}
+
+						before = state;
 					}
 				}
 			}
@@ -995,7 +1031,7 @@ public class SATC_Solution extends BaseLayer implements
 		// so we don't have a start date
 		Date startD = _mySolver.getProblemSpace().getStartDate();
 		final HiResDate res;
-		if(startD == null)
+		if (startD == null)
 			res = null;
 		else
 			res = new HiResDate(startD);
@@ -1548,5 +1584,17 @@ public class SATC_Solution extends BaseLayer implements
 	private WrappedState wrapThis(final State state)
 	{
 		return new WrappedState(state);
+	}
+
+	@Override
+	public final void setInterpolatePoints(final boolean val)
+	{
+		_interpolatePoints = val;
+	}
+
+	@Override
+	public final boolean getInterpolatePoints()
+	{
+		return _interpolatePoints;
 	}
 }
