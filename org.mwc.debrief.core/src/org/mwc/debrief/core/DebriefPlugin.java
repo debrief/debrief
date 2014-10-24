@@ -70,6 +70,9 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	public static final String RESET_PERSPECTIVE_TIMESTAMP = "resetPerspectiveTimestamp";
 	public static final long RESET_PERSPECTIVE_TIMESTAMP_DEFAULT_VALUE = 0;
 
+	public static final String CREATE_PROJECT = "createProject";
+	public static final String CREATE_PROJECT_DEFAULT_VALUE = "true";
+
 	// The shared instance.
 	private static DebriefPlugin plugin;
 
@@ -256,5 +259,13 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	
 	public long getResetPerspectiveTimestamp() {
 		return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE_TIMESTAMP);
+	}
+	
+	public boolean getCreateProject() {
+		String createProject = getDefault().getPreferenceStore().getString(CREATE_PROJECT);
+		if (createProject == null || createProject.isEmpty()) {
+			createProject = Boolean.TRUE.toString();
+		}
+		return (Boolean.TRUE.toString().equals(createProject));
 	}
 }
