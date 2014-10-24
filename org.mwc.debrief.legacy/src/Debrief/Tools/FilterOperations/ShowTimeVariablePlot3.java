@@ -652,6 +652,16 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				// is it
 				if (thisSecondaryTrack == primaryTrack)
 				{
+					// just double check that we have primary data
+					final Collection<Editable> ss = thisSecondaryTrack.getItemsBetween(start_time,
+							end_time);
+
+					if(ss == null)
+					{
+						throw new RuntimeException("Insufficient points found in primary track." +
+								"\nPlease check coverage of time controller bars"); 
+					}
+					
 					// drop out, and wait for the next cycle
 					continue;
 				}
