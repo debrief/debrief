@@ -932,7 +932,7 @@ public class SATC_Solution extends BaseLayer implements
 					// does it even have a location?
 					if (state.getLocation() != null)
 					{
-						if (state.getTime().getTime() > time)
+						if (state.getTime().getTime() >= time)
 						{
 
 							items.add(wrapThis(state));
