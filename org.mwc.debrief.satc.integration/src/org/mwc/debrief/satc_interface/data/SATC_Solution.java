@@ -822,7 +822,15 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getEndDTG()
 	{
-		return new HiResDate(_mySolver.getProblemSpace().getFinishDate());
+		// handle instance where problem space is undefined,
+		// so we don't have a start date
+		Date startD = _mySolver.getProblemSpace().getFinishDate();
+		final HiResDate res;
+		if(startD == null)
+			res = null;
+		else
+			res = new HiResDate(startD);
+		return res;
 	}
 
 	@Override
@@ -983,7 +991,15 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getStartDTG()
 	{
-		return new HiResDate(_mySolver.getProblemSpace().getStartDate());
+		// handle instance where problem space is undefined,
+		// so we don't have a start date
+		Date startD = _mySolver.getProblemSpace().getStartDate();
+		final HiResDate res;
+		if(startD == null)
+			res = null;
+		else
+			res = new HiResDate(startD);
+		return res;
 	}
 
 	@Override
