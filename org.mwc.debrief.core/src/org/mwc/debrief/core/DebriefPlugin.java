@@ -262,10 +262,13 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	}
 	
 	public boolean getCreateProject() {
+		// check settings system properrty on command line
+		// for tycho/travis test we need add -DcreateProject=false
 		String createProjectProperty = System.getProperty(PrefsPage.PreferenceConstants.CREATE_PROJECT, "true");
 		if ("false".equals(createProjectProperty)) {
 			return false;
 		}
+		// check standard Debrief preference
 		String createProject = getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.CREATE_PROJECT);
 		if (createProject == null || createProject.isEmpty()) {
 			createProject = Boolean.TRUE.toString();
