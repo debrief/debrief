@@ -17,7 +17,6 @@
 			on.<i>NoPrint</i>
 		</intro>
 		<onCompletion>
-			<b>Conclusion</b>
 		</onCompletion>
 		<task kind="cheatsheet" name="Concepts" skip="false">
 			<intro>
@@ -27,8 +26,6 @@
 				going to learn some of the background terms and concepts.
 			</intro>
 			<onCompletion>
-				<b>Conclusion</b>
-				<br />
 				Ok, that&apos;s the boring school work out of the way. The rest of
 				this cheat-sheet is all conducted here in Debrief.
 			</onCompletion>
@@ -56,8 +53,6 @@
 					can skip this step.
 				</intro>
 				<onCompletion>
-					<b>Conclusion</b>
-					<br />
 					You now have a Debrief
 					<b>Project</b>
 					, to contain your tutorial data.
@@ -95,8 +90,6 @@
 						. If there is one there, you can skip this step.
 					</intro>
 					<onCompletion>
-						<b>Conclusion</b>
-						&lt;br&gt;
 						Ok, you&apos;ve found the Debrief
 						<b>Sample Data</b>.
 						You&apos;re ready for the tutorial now.
@@ -125,8 +118,6 @@
 						.
 					</intro>
 					<onCompletion>
-						<b>Conclusion</b>
-						<br />
 						Ok, you&apos;ve found the Debrief
 						<b>Sample Data</b>.
 						You&apos;re ready for the tutorial now.
