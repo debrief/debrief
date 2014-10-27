@@ -129,17 +129,12 @@ public class CreateProjectDialog extends TitleAreaDialog
 		
 		addDebriefSamplesButton.setText("Add Debrief Samples");
 		addDebriefSamplesButton.setSelection(false);
-		
-		Composite composite = new Composite(contents, SWT.NONE);
-		gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
-		gd.horizontalSpan = 2;
-		composite.setLayoutData(gd);
-		composite.setLayout(new GridLayout());
-		
+	
 		if (showAskMeButton)
 		{
-			final Button askMeNextTime = new Button(composite, SWT.CHECK);
+			final Button askMeNextTime = new Button(contents, SWT.CHECK);
 			gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+			gd.horizontalSpan = 2;
 			askMeNextTime.setLayoutData(gd);
 
 			askMeNextTime.setText("Ask me next time?");
