@@ -44,6 +44,7 @@ import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts;
 import org.mwc.debrief.core.ContextOperations.TrimTrack;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
+import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.osgi.framework.BundleContext;
 
@@ -70,8 +71,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	public static final String RESET_PERSPECTIVE = "resetPerspective";
 	public static final long RESET_PERSPECTIVE_DEFAULT_VALUE = 0;
 
-	public static final String CREATE_PROJECT = "createProject";
-	public static final String CREATE_PROJECT_DEFAULT_VALUE = "true";
 	public static final String INTROVIEW = "org.eclipse.ui.internal.introview";
 
 	// The shared instance.
@@ -263,11 +262,11 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	}
 	
 	public boolean getCreateProject() {
-		String createProjectProperty = System.getProperty(CREATE_PROJECT, "true");
+		String createProjectProperty = System.getProperty(PrefsPage.PreferenceConstants.CREATE_PROJECT, "true");
 		if ("false".equals(createProjectProperty)) {
 			return false;
 		}
-		String createProject = getDefault().getPreferenceStore().getString(CREATE_PROJECT);
+		String createProject = getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.CREATE_PROJECT);
 		if (createProject == null || createProject.isEmpty()) {
 			createProject = Boolean.TRUE.toString();
 		}
