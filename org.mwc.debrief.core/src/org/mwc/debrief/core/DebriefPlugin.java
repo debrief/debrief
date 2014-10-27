@@ -73,6 +73,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 	public static final String INTROVIEW = "org.eclipse.ui.internal.introview";
 
+	private static final String BUILD_MODE = "buildMode";
+
 	// The shared instance.
 	private static DebriefPlugin plugin;
 
@@ -262,10 +264,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	}
 	
 	public boolean getCreateProject() {
-		// check settings system properrty on command line
-		// for tycho/travis test we need add -DcreateProject=false
-		String createProjectProperty = System.getProperty(PrefsPage.PreferenceConstants.CREATE_PROJECT, "true");
-		if ("false".equals(createProjectProperty)) {
+		if (isRunningTests()) {
 			return false;
 		}
 		// check standard Debrief preference
@@ -274,5 +273,16 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 			createProject = Boolean.TRUE.toString();
 		}
 		return (Boolean.TRUE.toString().equals(createProject));
+	}
+
+	public boolean isRunningTests()
+	{
+		// check settings system property on command line
+		// for tycho/travis test we need add -DbuildMode=true
+		String buildMode = System.getProperty(BUILD_MODE, "false");
+		if ("true".equals(buildMode)) {
+			return true;
+		}
+		return false;
 	}
 }
