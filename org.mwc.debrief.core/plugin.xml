@@ -98,7 +98,7 @@
         <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
        		<toolbar
                id="org.mwc.debrief.core.createProject"
-               label="CreateProject">
+               label="Create Project">
        		  <separator name="features" visible="true"/> 
               <separator name="sep3" visible="true"/>
 			  <separator name="additions" visible="true"/>   
@@ -277,7 +277,7 @@
               commandId="org.mwc.debrief.core.createProject"
               icon="icons/CreateProject.gif"
               label="Create Project"
-              tooltip="createProject"
+              tooltip="Create folders to contain your Debrief working files"
               style="push"
               id="org.mwc.debrief.core.createProject">
           	</command>

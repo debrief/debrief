@@ -67,11 +67,12 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	public static final String TIME_BAR = "org.mwc.debrief.TimeBar";
 	public static final String SATC_MAINTAIN_CONTRIBUTIONS = "com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView";
 
-	public static final String RESET_PERSPECTIVE_TIMESTAMP = "resetPerspectiveTimestamp";
-	public static final long RESET_PERSPECTIVE_TIMESTAMP_DEFAULT_VALUE = 0;
+	public static final String RESET_PERSPECTIVE = "resetPerspective";
+	public static final long RESET_PERSPECTIVE_DEFAULT_VALUE = 0;
 
 	public static final String CREATE_PROJECT = "createProject";
 	public static final String CREATE_PROJECT_DEFAULT_VALUE = "true";
+	public static final String INTROVIEW = "org.eclipse.ui.internal.introview";
 
 	// The shared instance.
 	private static DebriefPlugin plugin;
@@ -257,8 +258,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		resourceBundle = null;
 	}
 	
-	public long getResetPerspectiveTimestamp() {
-		return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE_TIMESTAMP);
+	public long getResetPerspectivePreference() {
+		return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE);
 	}
 	
 	public boolean getCreateProject() {

@@ -14,267 +14,28 @@
  */
 package org.mwc.debrief.core;
 
-import java.awt.Dialog;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionChangeHandler;
-import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.osgi.service.datalocation.Location;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IStartup;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.WorkbenchWindow;
-import org.mwc.debrief.core.dialogs.CreateProjectDialog;
 
 public class Startup implements IStartup
 {
-
-	private static final String RESET_PERSPECTIVE = ".resetPerspective";
-	private static final String INTROVIEW = "org.eclipse.ui.internal.introview";
 
 	@Override
 	public void earlyStartup()
 	{
 		removePerspective();
 		removePreferencePages();
-		testResetPerspective();
+		new ResetPerspective().resetPerspective();;
 		if (DebriefPlugin.getDefault().getCreateProject()) {
-			createStartProject();
+			new CreateDebriefProject().createStartProject();
 		}
-	}
-
-	private void createStartProject()
-	{
-		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		if (projects.length > 0)
-		{
-			return;
-		}
-		Display.getDefault().asyncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				final WorkbenchWindow window = (WorkbenchWindow) PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-				if (window == null)
-				{
-					return;
-				}
-				final IWorkbenchPage page = window.getActivePage();
-				// first start
-				if (page.findView(INTROVIEW) != null && !window.getCoolBarVisible() && !window.getPerspectiveBarVisible())
-				{
-					IViewReference viewRef = page.findViewReference(INTROVIEW);
-					if (page.getPartState(viewRef) == IWorkbenchPage.STATE_MAXIMIZED)
-					{
-						window.addPropertyChangeListener(new IPropertyChangeListener()
-						{
-
-							@Override
-							public void propertyChange(PropertyChangeEvent event)
-							{
-								String property = event.getProperty();
-								if (WorkbenchWindow.PROP_COOLBAR_VISIBLE.equals(property) || WorkbenchWindow.PROP_COOLBAR_VISIBLE.equals(property))
-								{
-									Object newValue = event.getNewValue();
-									if (newValue instanceof Boolean
-											&& ((Boolean) newValue).booleanValue())
-									{
-										createProject();
-										window.removePropertyChangeListener(this);
-									}
-								}
-							}
-
-						});
-					}
-					else
-					{
-						createProject();
-					}
-				}
-				else
-				{
-					createProject();
-				}
-			}
-		});
-
-	}
-
-	private void createProject()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			
-			@Override
-			public void run()
-			{
-				Shell shell = PlatformUI.getWorkbench().getModalDialogShellProvider().getShell();
-				CreateProjectDialog dialog = new CreateProjectDialog(shell, true);
-				dialog.open();
-				
-			}
-		});
-	}
-	
-	private void testResetPerspective()
-	{
-		Location installLocation = Platform.getInstallLocation();
-		if (installLocation == null)
-		{
-			setResetPerspectiveTimestamp();
-			return;
-		}
-		String installFileStr = installLocation.getURL().getFile();
-		if (installFileStr == null)
-		{
-			setResetPerspectiveTimestamp();
-			return;
-		}
-		try
-		{
-			File installDir = new File(installFileStr);
-			if (installDir.isDirectory())
-			{
-				File sampleData = new File(installDir, "sample_data");
-				if (!sampleData.isDirectory()) {
-					setResetPerspectiveTimestamp();
-					return;
-				}
-				final File resetPerspectiveFile = new File(sampleData, RESET_PERSPECTIVE);
-				if (resetPerspectiveFile.isFile())
-				{
-					final String info = readFile(resetPerspectiveFile);
-					final long timestamp = resetPerspectiveFile.lastModified();
-					final long resetPerspectivePreference = DebriefPlugin.getDefault()
-							.getResetPerspectiveTimestamp();
-					if (timestamp > resetPerspectivePreference)
-					{
-							Display.getDefault().asyncExec(new Runnable()
-							{
-								
-								@Override
-								public void run()
-								{
-									IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-									if (window == null) {
-										return;
-									}
-									final IWorkbenchPage page = window.getActivePage();
-									// first start
-									if ( !(resetPerspectivePreference == 0 && page.findView(INTROVIEW) != null)) {
-										page.resetPerspective();
-										showDialog(window.getShell(), info);
-										resetPerspectiveFile.delete();
-									}
-								}
-							});
-					}
-				}
-			}
-		}
-		finally
-		{
-			setResetPerspectiveTimestamp();
-		}
-	}
-
-	private String readFile(File file)
-	{
-		String info = null;
-		BufferedReader reader = null;
-		try
-		{
-			reader = new BufferedReader(new FileReader(file));
-			String line = null;
-			StringBuilder stringBuilder = new StringBuilder();
-			String ls = System.getProperty("line.separator");
-			while ((line = reader.readLine()) != null)
-			{
-				stringBuilder.append(line);
-				stringBuilder.append(ls);
-			}
-			info = stringBuilder.toString();
-		}
-		catch (Exception e)
-		{
-			// ignore; return default message
-		}
-		finally
-		{
-			if (reader != null)
-			{
-				try
-				{
-					reader.close();
-				}
-				catch (IOException e)
-				{
-					// ignore
-				}
-			}
-		}
-
-		if (info == null || info.isEmpty())
-		{
-			info = "Your user interface has been reset to include new Debrief features";
-		}
-		return info;
-	}
-
-	protected void showDialog(Shell shell, final String info)
-	{
-		final PopupDialog dialog = new PopupDialog(shell, PopupDialog.HOVER_SHELLSTYLE,
-				true, false, false, false, false, null, 
-				null) {
-
-			@Override
-			protected Control createDialogArea(Composite parent)
-			{
-				GridData gd = new GridData(GridData.FILL_BOTH);
-				StyledText text = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY
-						| SWT.WRAP);
-				text.setLayoutData(gd);
-				text.setForeground(parent.getDisplay().getSystemColor(
-						SWT.COLOR_INFO_FOREGROUND));
-				text.setBackground(parent.getDisplay().getSystemColor(
-						SWT.COLOR_INFO_BACKGROUND));
-				text.setText(info);
-				text.setEditable(false);
-				return text;
-			}
-		};
-		dialog.open();
-	}
-
-	private void setResetPerspectiveTimestamp()
-	{
-		String value = new Long(System.currentTimeMillis()).toString();
-		DebriefPlugin.getDefault().getPreferenceStore().putValue(DebriefPlugin.RESET_PERSPECTIVE_TIMESTAMP, value);
 	}
 
 	private void removePreferencePages()
