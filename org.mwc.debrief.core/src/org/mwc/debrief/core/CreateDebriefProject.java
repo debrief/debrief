@@ -66,7 +66,7 @@ public class CreateDebriefProject
 							{
 								String property = event.getProperty();
 								if (WorkbenchWindow.PROP_COOLBAR_VISIBLE.equals(property)
-										|| WorkbenchWindow.PROP_COOLBAR_VISIBLE.equals(property))
+										|| WorkbenchWindow.PROP_PERSPECTIVEBAR_VISIBLE.equals(property))
 								{
 									Object newValue = event.getNewValue();
 									if (newValue instanceof Boolean
