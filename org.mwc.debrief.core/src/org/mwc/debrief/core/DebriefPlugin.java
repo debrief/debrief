@@ -263,6 +263,10 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	}
 	
 	public boolean getCreateProject() {
+		String createProjectProperty = System.getProperty(CREATE_PROJECT, "true");
+		if ("false".equals(createProjectProperty)) {
+			return false;
+		}
 		String createProject = getDefault().getPreferenceStore().getString(CREATE_PROJECT);
 		if (createProject == null || createProject.isEmpty()) {
 			createProject = Boolean.TRUE.toString();
