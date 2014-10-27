@@ -20,8 +20,9 @@
 			button once to zoom out, or put plot into <b>Zoom In</b> mode by clicking on the Zoom In
 			button. Now, when you drag an area, the map will zoom in on that viewport.<br/>
 			Lastly, to make sure all of the data is visible, click on the &quot;Fit-to-Window&quot;
-			toolbar button. Read more about the toolbar buttons by clicking on the help-link to the
-			right of this text.  </description>
+			toolbar button. <i>NoPrint</i>Read more about the toolbar buttons by clicking on the help-link to the
+			right of this text.<i>NoPrint</i><i>Read more about the toolbar buttons in the <b>Moving around the view</b> section
+			of the Debrief User Guide.</i>  </description>
 	</item>
 	<item title="View the data in tree form">
 		<description> In addition to viewing your data on the 2D plot, the <b>Outline View</b>
@@ -66,7 +67,7 @@
 			plot name), then press undo.</description>
 	</item>
 	<item title="Edit a position">
-		<description>To select a position within a track, just double-click on it - its editable
+		<description>To select a position within a track, just double-click on that position - its editable
 			attributes will appear in the properties window. You can now change the symbol or label
 			(<b>LabelShowing</b> or <b>SymbolShowing</b>, 
 			visibility, or the color (<b>Color</b>) that position will be plotted in. Note: you may have to scroll up &amp; down the 

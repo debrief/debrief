@@ -42,8 +42,9 @@
 	<item title="Select the time period of interest"
 		href="/org.mwc.debrief.help/html/legacy/controlling_time.html#time_controller">
 		<description>Right, select the period 120800 to 121100 using the
-			time-period selector at the bottom of the Time Controller (click help
-			button above for more advice on the time controller). Remember that
+			time-period selector at the bottom of the Time Controller (<i>NoPrint</i>click help
+			button above for more advice on the time controller<i>NoPrint</i><i>See the <b>Controlling Time</b>
+			part of the Debrief User Guide for more detail on the Time Controller</i>). Remember that
 			holding down the shift-key makes the sliders move in one-hour jumps.</description>
 	</item>
 	<item title="Open the Outline View" href="/org.mwc.debrief.help/html/legacy/layer_mgr.html"

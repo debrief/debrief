@@ -4,3 +4,4 @@
 /dita.xml.properties
 *.list
 /out/
+*.pdf

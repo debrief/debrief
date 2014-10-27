@@ -44,9 +44,9 @@
 			Controller view and drag the time slider back and forth we&apos;ll
 			see the current position highlight moving from top-right to bottom
 			left. Thus, the NW block of sensor data is to the Starboard of the
-			track. (Use
+			track. <i>NoPrint</i>(Use
 			<b>Click to perform</b>
-			below if you wish, to open the Time Controller).
+			below if you wish, to open the Time Controller)<i>NoPrint</i>.
 		</description>
 		<command required="false"
 			serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.cmap.TimeController.views.TimeController)" />

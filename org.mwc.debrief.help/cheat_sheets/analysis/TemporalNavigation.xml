@@ -33,9 +33,10 @@
 	<item title="What am I looking at?"
 		href="/org.mwc.debrief.help/html/legacy/controlling_time.html" skip="true">
 		<description>The Time Controller is quite a busy part of the
-			application, used for a range of time-related tasks. Click on the
+			application, used for a range of time-related tasks. <i>NoPrint</i>Click on the
 			help button for this step to gain an overview of the different
-			components - and come back to this cheat-sheet once you&apos;ve finished.</description>
+			components - and come back to this cheat-sheet once you&apos;ve finished.<i>NoPrint</i>
+			<i>Have a read of the <b>Controlling Time</b> section of the Debrief User Guide</i></description>
 	</item>
 	<item title="Check we&apos;re in normal stepping mode">
 		<description>Before we start moving through the data, just check that

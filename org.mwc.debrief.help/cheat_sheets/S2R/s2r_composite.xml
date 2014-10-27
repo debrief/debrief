@@ -8,13 +8,14 @@
 			<b>A Debrief walkthrough</b>
 			cheat-sheet, so you
 			know how to configure Debrief and how to load your data.
-			If you haven&apos;t completed the Debrief walkthrough,
+			If you haven&apos;t completed the Debrief walkthrough,<i>NoPrint</i>
 			click on
 			<b>Restore Welcome</b>
 			at the top of this window (or select
 			<b>Welcome</b>
 			from the Help menu),
-			navigate to the Tutorials tab, and start the Debrief walkthrough.
+			navigate to the Tutorials tab, and start the Debrief walkthrough.<i>NoPrint</i>
+			<i>now is the perfect time to do it.</i>
 		</intro>
 		<task kind="cheatsheet" name="Tidying the ownship track" skip="false">
 			<intro>
