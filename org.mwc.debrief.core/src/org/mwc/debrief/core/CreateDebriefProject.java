@@ -26,6 +26,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchWindow;
 import org.mwc.debrief.core.dialogs.CreateProjectDialog;
 
+@SuppressWarnings("restriction")
 public class CreateDebriefProject
 {
 
