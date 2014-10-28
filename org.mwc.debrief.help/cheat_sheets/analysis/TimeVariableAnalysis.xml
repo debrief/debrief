@@ -25,7 +25,7 @@
 			the "Loading sample data" cheat-sheet.</description>
 	</item>
 	<item title="Open the sample plot-file">
-		<description>Double-click on &apos;sample.xml&apos; in the Navigator
+		<description>Double-click on &apos;sample.dpf&apos; in the Navigator
 			window, and the sample plot will open.</description>
 	</item>
 	<item title="Fit to window"
