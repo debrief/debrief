@@ -12,7 +12,7 @@
 			"Loading sample data" cheat-sheet.</description>
 	</item>
 	<item title="Open the sample plot-file">
-		<description>If it&apos;s not already open, double-click on &apos;sample.xml&apos; in the
+		<description>If it&apos;s not already open, double-click on &apos;sample.dpf&apos; in the
 			Navigator window, and the sample plot will open.</description>
 	</item>
 	<item href="/org.mwc.debrief.help/html/legacy/moving_around.html" title="Fit to window">
@@ -54,7 +54,7 @@
 	<item title="Undo the change">
 		<description>Oops, it appears we shouldn&apos;t have changed the label color, it
 			doesn&apos;t meet NATO MilStd 12332 Sub-para 14g (2002 version). To undo a change, first
-			click on the tab at the top of the <b>sample.xml</b> plot (to tell Debrief which plot
+			click on the tab at the top of the <b>sample.dpf</b> plot (to tell Debrief which plot
 			we&apos;re undoing). Now click on the Edit menu, and select Undo (it&apos;s the first
 			item). The color of the label will now change back. Look on the Edit menu again, and
 			you&apos;ll see there&apos;s now a &quot;Redo&quot; command available - just in case

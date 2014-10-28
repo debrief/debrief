@@ -15,8 +15,6 @@
         name="Debrief Plot Editor">
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot">
 			</contentTypeBinding>
-			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotDpf">
-			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
 			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
@@ -34,15 +32,6 @@
 		<content-type base-type="org.eclipse.core.runtime.xml"
 			file-extensions="xml,dpf" id="org.mwc.debrief.contenttype.DebriefPlot"
 			name="Debrief Plot File" priority="normal">
-			<describer
-				class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
-				<parameter name="element" value="plot">
-				</parameter>
-			</describer>
-		</content-type>
-		<content-type base-type="org.eclipse.core.runtime.xml"
-			file-extensions="dpf" id="org.mwc.debrief.contenttype.DebriefPlotDpf"
-			name="Debrief Plot DPF File" priority="normal">
 			<describer
 				class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
 				<parameter name="element" value="plot">

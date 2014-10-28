@@ -48,7 +48,7 @@
 			You&apos;ll be asked if you want to save it, press
 			<b>don&apos;t save</b>
 			. Now drag across
-			<b>sample.xml</b>.
+			<b>sample.dpf</b>.
 			You&apos;ll see that this plot contains more complex graphical
 			features.
 		</description>
@@ -59,15 +59,16 @@
 			type (
 			<b>.rep</b>
 			) and the Debrief file type (
-			<b>.xml</b>).
+			<b>.dpf</b>).
 			The Replay file format is a very simple, column oriented text format
 			that&apos;s ideal for passing around track data. But, it isn&apos;t
 			suited to storing formatting data or user preferences. This is where
-			the Debrief xml file type comes in. Whilst it&apos;s still a textual
-			file format, it has a rich structure that allows it to store a wide
+			the Debrief DPF file type comes in. Whilst it&apos;s still a textual
+			file format, it&apos; XML structure that allows it to store a wide
 			range of data types and subjects. Thus a typical flow for data is
 			that it enters Debrief in REP format, the analyst creates a custom
-			plot based on this data, and then stores the plot as an XML file.
+			plot based on this data, and then stores the plot in XML format
+			as a DPF file.
 		</description>
 	</item>
 	<item
