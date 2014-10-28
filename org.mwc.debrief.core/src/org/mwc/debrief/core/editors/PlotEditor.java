@@ -1255,7 +1255,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			// right, have a look at it.
 			if ( (ext == null) || (!ext.equalsIgnoreCase("xml") && !ext.equalsIgnoreCase("dpf")) )
 			{
-				String msg = "Debrief stores data in a structured (xml) file format,";
+				String msg = "Debrief stores data in a structured (xml) text format,";
 				msg += "\nwhich is different to the format you've used to load the data.";
 				msg += "\nThus you must specify an existing (or new) folder to "
 						+ "store the plot,\nand provide new filename.";
