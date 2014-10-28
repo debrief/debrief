@@ -268,7 +268,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 			return false;
 		}
 		// check standard Debrief preference
-		String createProject = getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.CREATE_PROJECT);
+		String createProject = getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.DONT_ASK_ABOUT_PROJECT);
 		if (createProject == null || createProject.isEmpty()) {
 			createProject = Boolean.TRUE.toString();
 		}

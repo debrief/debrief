@@ -33,7 +33,8 @@ public class PreferenceInitializer extends
 		store.setDefault(PrefsPage.PreferenceConstants.AUTO_SELECT, true);
 		store.setDefault(PrefsPage.PreferenceConstants.CALC_SLANT_RANGE, false);
 		store.setDefault(PrefsPage.PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS, true);
-		store.setDefault(PrefsPage.PreferenceConstants.CREATE_PROJECT, true);
+		store.setDefault(PrefsPage.PreferenceConstants.DONT_ASK_ABOUT_PROJECT
+				, true);
 	}
 
 }

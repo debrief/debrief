@@ -17,6 +17,7 @@ package org.mwc.debrief.core.dialogs;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -38,7 +39,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -148,7 +148,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 				{
 					Boolean askMe = askMeNextTime.getSelection();
 					DebriefPlugin.getDefault().getPreferenceStore()
-							.putValue(PrefsPage.PreferenceConstants.CREATE_PROJECT, askMe.toString());
+							.putValue(PrefsPage.PreferenceConstants.DONT_ASK_ABOUT_PROJECT, askMe.toString());
 				}
 
 			});
@@ -226,7 +226,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 	}
 	
 	private void importSamples(IProject project)
-			throws InvocationTargetException, InterruptedException
+			throws InvocationTargetException, InterruptedException, CoreException
 	{
 		Location installLocation = Platform.getInstallLocation();
 		if (installLocation == null)
@@ -237,8 +237,10 @@ public class CreateProjectDialog extends TitleAreaDialog
 		File installFile = new File(installFileStr, "sample_data");
 		if (installFile.isDirectory())
 		{
+			IFolder sampleData = project.getFolder("sample_data");
+			sampleData.create(true, true, new NullProgressMonitor());
 			ImportOperation importOperation = new ImportOperation(
-					project.getFullPath(), installFile,
+					sampleData.getFullPath(), installFile,
 					FileSystemStructureProvider.INSTANCE, overwriteQuery);
 			importOperation.setCreateContainerStructure(false);
 			importOperation.run(new NullProgressMonitor());
