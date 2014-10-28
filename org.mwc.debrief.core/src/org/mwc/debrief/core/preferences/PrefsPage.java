@@ -51,7 +51,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 		addField(new BooleanFieldEditor(PreferenceConstants.AUTO_SELECT, "Select newly created items in Properties View", getFieldEditorParent()));		
 		addField(new BooleanFieldEditor(PreferenceConstants.CALC_SLANT_RANGE, "Use Slant range in Tote range calculations", getFieldEditorParent()));		
 		addField(new BooleanFieldEditor(PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS, "Don't Show current details in properties window when dragging TMA solution", getFieldEditorParent()));		
-		addField(new BooleanFieldEditor(PreferenceConstants.DONT_ASK_ABOUT_PROJECT, "Invite user to create Debrief project if none present", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.ASK_ABOUT_PROJECT, "Invite user to create Debrief project if none present", getFieldEditorParent()));
 	}
 
 	/*
@@ -71,7 +71,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 		public static final String AUTO_SELECT = "AUTO_SELECT";
 		public static final String CALC_SLANT_RANGE = "CALC_SLANT_RANGE";
 		public static final String DONT_SHOW_DRAG_IN_PROPS = "DONT_SHOW_DRAG_IN_PROPS";
-		public static final String DONT_ASK_ABOUT_PROJECT = "createProject";
+		public static final String ASK_ABOUT_PROJECT = "createProject";
 	}
 
 }
