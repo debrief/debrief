@@ -97,6 +97,13 @@
     <extension point="org.eclipse.ui.menus">
         <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
        		<toolbar
+               id="org.mwc.debrief.core.createProject"
+               label="Create Project">
+       		  <separator name="features" visible="true"/> 
+              <separator name="sep3" visible="true"/>
+			  <separator name="additions" visible="true"/>   
+       		</toolbar>
+       		<toolbar
                id="org.mwc.debrief.core.EditorFeatures"
                label="Add Features">
        		  <separator name="features" visible="true"/> 
@@ -266,6 +273,14 @@
         </menuContribution>
         
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio"> 
+           <command
+              commandId="org.mwc.debrief.core.createProject"
+              icon="icons/CreateProject.gif"
+              label="Create Project"
+              tooltip="Create folders to contain your Debrief working files"
+              style="push"
+              id="org.mwc.debrief.core.createProject">
+          	</command>
            <command
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/SelectSegment.png"
@@ -1080,6 +1095,12 @@
              defaultHandler="org.mwc.debrief.core.actions.ExportAsRTFHandler"
              id="org.mwc.debrief.core.exportAsRTF"
              name="Export image as WMF embedded in RTF">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.actions.CreateProjectHandler"
+             id="org.mwc.debrief.core.createProject"
+             name="Create Project">
        </command>
        
        <command
