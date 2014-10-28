@@ -11456,42 +11456,73 @@ end</screen>
         </section>
       </section>
     </chapter>
-
   </part>
-
   <!-- ********************************************************************** -->
-
+  
   <!-- ********************************************************************** -->
-
-  <!--   GLOSSARY                                                            -->
-
+  
+  <!--   ACKNOWLEDGEMENTS                                                            -->
+  
   <!-- ********************************************************************** -->
-
+  
   <!-- ********************************************************************** -->
-  <part>
+  
+  <acknowledgements  xml:id="acknowledgements">
     <title>Acknowledgements</title>
-    <chapter>
-      <sect1  xml:id="third_party_libs"><title>Third Party Libraries</title>
-        <para>Debrief uses a licensed copy of the WMFWriter library from Piet Jonas (<link
+    <formalpara>
+      <title>Third Party Libraries</title>
+      <para>Debrief uses a licensed copy of the WMFWriter library from Piet Jonas (<link
           xlink:href="http://piet.jonas.com/WMFWriter/WMFWriter.html"
-            >http://piet.jonas.com/WMFWriter/WMFWriter.html</link> ).</para>
-        <para>Debrief also uses these Open Source libraries:<itemizedlist>
-          <listitem><para>XStream - http://xstream.codehaus.org/</para></listitem>
-          <listitem><para>Apache Commons - http://commons.apache.org/</para></listitem>
-          <listitem><para>JDOM - http://www.jdom.org/</para></listitem>
-          <listitem><para>Java Topology Suite - http://tsusiatsoftware.net/jts/main.html</para></listitem>
-          <listitem><para>JFreeChart - http://www.jfree.org/jfreechart/</para></listitem>
-          <listitem><para>Michael Flanagans Scientific Library - http://www.ee.ucl.ac.uk/~mflanaga/java/Joda-Time </para></listitem>
-          <listitem><para>Date/Time support - http://www.joda.org/joda-time/
-          </para></listitem>
-          <listitem><para>Xuggle Media Player - http://www.xuggle.com/
-          </para></listitem>
-          <listitem><para>Watchmaker for Evolutionary Computation - http://watchmaker.uncommons.org/</para></listitem>
+          >http://piet.jonas.com/WMFWriter/WMFWriter.html</link> ).</para>
+    </formalpara>
+    <formalpara>
+      <title>Open Source Libraries</title>
+      <para>Debrief also uses these Open Source libraries:<itemizedlist>
+          <listitem>
+            <para>XStream - <link xlink:href="http://xstream.codehaus.org/"
+                >http://xstream.codehaus.org/</link></para>
+          </listitem>
+          <listitem>
+            <para>Apache Commons - <link xlink:href="http://commons.apache.org/"
+                >http://commons.apache.org/</link></para>
+          </listitem>
+          <listitem>
+            <para>JDOM - <link xlink:href="http://www.jdom.org/">http://www.jdom.org/</link></para>
+          </listitem>
+          <listitem>
+            <para>Java Topology Suite - <link xlink:href="http://tsusiatsoftware.net/jts/main.html"
+                >http://tsusiatsoftware.net/jts/main.html</link></para>
+          </listitem>
+          <listitem>
+            <para>JFreeChart - <link xlink:href="http://www.jfree.org/jfreechart/"
+                >http://www.jfree.org/jfreechart/</link></para>
+          </listitem>
+          <listitem>
+            <para>Michael Flanagans Scientific Library - <link
+                xlink:href="http://www.ee.ucl.ac.uk/~mflanaga/java"
+                >http://www.ee.ucl.ac.uk/~mflanaga/java</link></para>
+          </listitem>
+          <listitem>
+            <para>Date/Time support - <link xlink:href="http://www.joda.org/joda-time/"
+                >http://www.joda.org/joda-time/</link>
+            </para>
+          </listitem>
+          <listitem>
+            <para>Xuggle Media Player - <link xlink:href="http://www.xuggle.com/"
+                >http://www.xuggle.com/</link>
+            </para>
+          </listitem>
+          <listitem>
+            <para>Watchmaker for Evolutionary Computation - <link
+                xlink:href="http://watchmaker.uncommons.org/"
+                >http://watchmaker.uncommons.org/</link></para>
+          </listitem>
         </itemizedlist></para>
-      </sect1>
-      <sect1><title>License</title>
-        <para>
-          <programlisting>
+    </formalpara>
+    <formalpara>
+      <title>License</title>
+      <para> Debrief is an Open Source application, offering a set of benefits (<xref
+        linkend="SwitchToOpen"/>) <programlisting>
 <![CDATA[            
 /*
  *    Debrief - the Open Source Maritime Analysis Application
@@ -11509,9 +11540,19 @@ end</screen>
  */
 ]]>            
           </programlisting>
-        </para></sect1>
-    </chapter>
-  </part>
+      </para>
+    </formalpara>
+  </acknowledgements>
+
+  <!-- ********************************************************************** -->
+
+  <!-- ********************************************************************** -->
+
+  <!--   GLOSSARY                                                            -->
+
+  <!-- ********************************************************************** -->
+
+  <!-- ********************************************************************** -->
 
   <appendix xml:id="app_glossary">
     <title>Debrief Glossary</title>

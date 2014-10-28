@@ -32,6 +32,10 @@ public class Startup implements IStartup
 	{
 		removePerspective();
 		removePreferencePages();
+		new ResetPerspective().resetPerspective();;
+		if (DebriefPlugin.getDefault().getCreateProject()) {
+			new CreateDebriefProject().createStartProject();
+		}
 	}
 
 	private void removePreferencePages()
