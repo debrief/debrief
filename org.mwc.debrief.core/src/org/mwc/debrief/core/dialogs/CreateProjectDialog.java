@@ -100,7 +100,8 @@ public class CreateProjectDialog extends TitleAreaDialog
 		Composite contents = new Composite(parentComposite, SWT.NONE);
 		contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setTitle("Create a project");
-		setMessage("Create a project");
+		setMessage("Debrief requires a project to store your data in, which will stored be in the .DebriefNG folder in\nyour home directory." +
+				"Debrief can also provide you with some sample data, for use in the tutorials.");
 
 		new Label(contents, SWT.LEFT).setText("Project name:");
 
@@ -129,7 +130,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 		gd.horizontalSpan = 2;
 		addDebriefSamplesButton.setLayoutData(gd);
 		
-		addDebriefSamplesButton.setText("Add Debrief Samples");
+		addDebriefSamplesButton.setText("Add Debrief Samples (required for self-teach tutorials)");
 		addDebriefSamplesButton.setSelection(false);
 	
 		if (showAskMeButton)
@@ -139,7 +140,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 			gd.horizontalSpan = 2;
 			askMeNextTime.setLayoutData(gd);
 
-			askMeNextTime.setText("Ask me next time?");
+			askMeNextTime.setText("Always check at startup");
 			askMeNextTime.setSelection(true);
 			askMeNextTime.addSelectionListener(new SelectionAdapter()
 			{
@@ -149,7 +150,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 				{
 					Boolean askMe = askMeNextTime.getSelection();
 					CorePlugin.getDefault().getPreferenceStore()
-							.putValue(PrefsPage.PreferenceConstants.DONT_ASK_ABOUT_PROJECT, askMe.toString());
+							.putValue(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT, askMe.toString());
 				}
 
 			});
