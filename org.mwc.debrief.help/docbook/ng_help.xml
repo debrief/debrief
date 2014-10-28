@@ -958,7 +958,7 @@ Naval Undersea Warfare Center (NUWC)
               to the active editor. Initially the active editor will always be the Debrief plot, but
               the extensibility of Debrief NG means other types of editor can be implemented. Tabs
               at the top of the editor area indicate the names of files that are currently open for
-              editing (<filename>Sample.xml</filename> in the previous screenshot). An asterisk (*)
+              editing (<filename>Sample.dpf</filename> in the previous screenshot). An asterisk (*)
               indicates that an editor has unsaved changes. By default, editors are stacked in the
               editor area, but you can choose to tile them (by dragging the tabbed plot-name) in
               order to view source files simultaneously.</para>
@@ -1156,10 +1156,10 @@ Naval Undersea Warfare Center (NUWC)
             user-interface settings (such as the current viewport on the data).</para>
 
           <para>Thus, whilst you may load data from a <emphasis>.REP</emphasis> Replay file, any
-            modifications made to the plot must be stored in a Debrief plot file
-              (<emphasis>.xml</emphasis>). No changes are save to REP files by the Debrief plot
+            modifications made to the plot must be stored in a Debrief Plot File
+              (<emphasis>.dpf</emphasis>). No changes are save to REP files by the Debrief plot
             editor (though it possible to make textual changes to REP files using Debrief&apos;s built-in
-            text editor). XML is a file format capable of storing structured information in
+            text editor). DPF files use the XML storage format, capable of storing structured information in
             predefined types, as in the following
             example:<programlisting width="70">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
    &lt;plot Created="Tue Nov 18 09:54:38 GMT 2008" Name="Debrief Plot"&gt;
@@ -2320,12 +2320,12 @@ and so on....</programlisting></para>
               linkend="g_layer">layers</glossterm>. This problem is overcome by the use of the
               <application>Debrief</application>
             <glossterm linkend="g_plot_file">Plot-File</glossterm> format, an application defined
-            using <link linkend="intro_xml">XML</link> (see <xref linkend="g_xml"/>). Have a quick
+            using XML (see <xref linkend="g_xml"/>). Have a quick
             read about <glossterm linkend="g_xml">XML</glossterm> in the Reference Guide or Glossary
             if you&apos;re not aware of it and are sufficiently interested, otherwise, here&apos;s an
             overview: <itemizedlist>
               <listitem>
-                <para>Debrief stores plots using XML</para>
+                <para>Debrief stores plots in XML format with a custom DPF suffix</para>
               </listitem>
 
               <listitem>
@@ -2344,8 +2344,8 @@ and so on....</programlisting></para>
             </itemizedlist></para>
 
           <para>Whilst a plot is typically created from an REP file, it may not be saved back into
-            that REP file - it must be saved as an XML Plot-File. To save your work as an <glossterm
-              linkend="g_xml">XML</glossterm> file, click on the Save button: <guiicon>
+            that REP file - it must be saved as an DPF Plot-File. To save your work as an <glossterm
+              linkend="g_xml">DPF</glossterm> file, click on the Save button: <guiicon>
               <inlinemediaobject>
                 <imageobject>
                   <imagedata fileref="figures/SaveBtn.png"/>
@@ -2354,7 +2354,7 @@ and so on....</programlisting></para>
             </guiicon> from the Workbench toolbar or the <guimenu>File</guimenu> menu. A file dialog
             will open (see below), allowing you to save the current session as a
               <application>Debrief</application>
-            <glossterm linkend="g_plot_file">Plot-File</glossterm> ( <filename>xml</filename>).<note>
+            <glossterm linkend="g_plot_file">Plot-File</glossterm> ( <filename>DPF</filename>).<note>
               <para>Debrief will only let you save the new plot into one of your project folders, so
                 you must both select a folder and a provide a filename for the new file. Usefully,
                 Debrief guesses that you probably want to name the plot the same as the REP file
@@ -2393,7 +2393,7 @@ and so on....</programlisting></para>
             <para>The save operation itself is conducted in a two-stage process. If the operation
               entails saving over an existing file (when you just do a plain Save, or Save As
               over-writing an older version) Debrief first writes the plot to a subtly different
-              filename in the same directory (<filename>plot.xml</filename> would get saved to
+              filename in the same directory (<filename>plot.dpf</filename> would get saved to
                 <filename>~plot.tmp</filename>). If the save operation completes successfully then
               the older file is deleted and the temporary file renamed to the originally requested
               filename. Thus, your existing file only gets overwritten on successful completion of
@@ -2405,7 +2405,7 @@ and so on....</programlisting></para>
           <title>Adding more data to a plot</title>
 
           <para>With a plot already open, you are able to drag a <application>Debrief</application>
-            <filename>XML</filename> or <filename>REP</filename> file into its chart, adding the
+            <filename>DPF</filename> or <filename>REP</filename> file into its chart, adding the
             content to the existing session. Dragging multiple files onto the plot area adds them
             all to the existing session. To create a composite plot like this, you can start by
             using Debrief&apos;s <emphasis>New Plot Wizard</emphasis> (see relevant Cheat Sheet, <xref
@@ -3548,7 +3548,7 @@ and so on....</programlisting></para>
 
           <para>Unfortunately there is not any 3-d data in the sample plots we&apos;ve been using so far,
             but another sample file does. Close the current session, open a new, blank, one, and
-            load the data-file named <filename>sen_tracks.xml</filename>. This is a datafile
+            load the data-file named <filename>sen_tracks.dpf</filename>. This is a datafile
             produced using <glossterm linkend="g_asset">ASSET</glossterm>, a simulator under
             development at PlanetMayo.</para>
 
@@ -5203,8 +5203,8 @@ and so on....</programlisting></para>
             drop this file into <application>Debrief</application> sessions. This should give us a
             simplified set of VPF layers.</para>
 
-          <para>When you drag/drop an <glossterm linkend="g_xml">XML</glossterm> file into an
-            existing session, the Layers in the <glossterm linkend="g_xml">XML</glossterm> file are
+          <para>When you drag/drop a <glossterm linkend="g_xml">DPF</glossterm> file into an
+            existing session, the Layers in the <glossterm linkend="g_xml">DPF</glossterm> file are
             copied into the existing session, although the projection, Tote, and GUI parameters are
             ignored.</para>
         </sect2>
@@ -5220,7 +5220,7 @@ and so on....</programlisting></para>
             layers/features of interest are made visible and set to your desired colours.</para>
 
           <para>Finally save the view to a plot file in an easily accessible location - call it
-              <filename>default_layers.xml</filename></para>
+              <filename>default_layers.dpf</filename></para>
         </sect2>
 
         <sect2 xml:id="how_to_create_default_layers">
@@ -5230,7 +5230,7 @@ and so on....</programlisting></para>
             your <glossterm linkend="g_layer">layer</glossterm>s.</para>
 
           <para>Open a text editor (such as <application>Notepad</application> in <application>MS
-              Windows</application>), and load your new xml file into it.</para>
+              Windows</application>), and load your new .DPF file into it.</para>
 
           <para>The contents of the file should be something like that shown below:</para>
 
@@ -5384,9 +5384,9 @@ and so on....</programlisting></para>
             session to instantly give you your "favourite" set of layers.</para>
 
           <para>To test it, follow the steps described above (or copy the text I&apos;ve just given you
-            into a blank text file and save it as <filename>default_layers.xml</filename>). Then
+            into a blank text file and save it as <filename>default_layers.dpf</filename>). Then
             create a new <application>Debrief</application> session, load one of your demo tracks (
-              <filename>boat1.rep</filename>), then drag in <filename>default_layers.xml</filename>.
+              <filename>boat1.rep</filename>), then drag in <filename>default_layers.dpf</filename>.
             Zoom out, and have a look at the lovely, pre-formatted data.</para>
         </sect2>
       </sect1>
@@ -6019,7 +6019,7 @@ and so on....</programlisting></para>
         <para>Data is loaded by one of two methods: drag/drop of a specific chart file, or via a
           chart library.</para>
         <para>Any shp or tif file can be dragged into Debrief - provided the prj sidecar files are
-          present. When saving the plot Debrief will record the path to the datafile in the xml file
+          present. When saving the plot Debrief will record the path to the datafile in the .dpf file
           in order that it can be reloaded at the next session.</para>
         <para>Separately, Debrief can provide a folio of charts<indexterm>
             <primary>Charts</primary>
@@ -7919,7 +7919,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
           <para>Since Winter 2010, DebriefNG can be opened by <indexterm>
               <primary>Right-clicking</primary>
-            </indexterm> on a Debrief data file (rep (<xref linkend="replay_file_format"/>) or xml
+            </indexterm> on a Debrief data file (rep (<xref linkend="replay_file_format"/>) or DPF
               (<xref linkend="debrief_file_format"/>)). But, first DebriefNG must be associated with
             files of that file-type, via Windows Explorer. Do this as follows<footnote>
               <para>Note, across the range of versions of MS Windows a variety of user interface
@@ -7945,11 +7945,12 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               </listitem>
 
               <listitem>
-                <para>Now repeat this process for a Debrief <filename>XML</filename> file , though
-                  there&apos;s a chance you don&apos;t wish to select &apos;<guilabel>Always use this
-                    application</guilabel>&apos; - xml files are used by a range of applications and you
-                  may end up in trouble if you&apos;re trying to open data files for other applications
-                  with Debrief.</para>
+                <para>Now repeat this process for a Debrief <filename>dpf</filename> file , you can
+                  select &apos;<guilabel>Always use this
+                  application</guilabel>&apos; - since dpf files aren&apos; used by many applications.
+                  Debrief did use the <filename>xml</filename> suffix, but that related to lots 
+                  of files - so in Oct 2014 we adopted <filename>.dpf</filename>.
+                </para>
               </listitem>
             </orderedlist></para>
         </sect2>
@@ -8755,7 +8756,7 @@ and entry type can be multi-word if surrounded by quotes (").
         <sect2 xml:id="more_file_format">
           <title>Introduction</title>
 
-          <para><glossterm linkend="g_xml">XML</glossterm>
+          <para><glossterm linkend="g_xml">DPF</glossterm>
             <indexterm>
               <primary>File Format</primary>
 
@@ -8763,7 +8764,7 @@ and entry type can be multi-word if surrounded by quotes (").
             </indexterm> is the Extensible Markup Language. Like its predecessor SGML, <glossterm
               linkend="g_xml">XML</glossterm> is a meta-language used to define other languages. The
             article in the Reference Guide taken from MSDN gives some background to <glossterm
-              linkend="g_xml">XML</glossterm> (see <xref linkend="intro_xml"/>).</para>
+              linkend="g_xml">XML</glossterm></para>
         </sect2>
 
         <sect2 xml:id="more_adopting_xml">
@@ -8836,7 +8837,11 @@ and entry type can be multi-word if surrounded by quotes (").
                   <imagedata fileref="figures/XMLStructure.gif" width="100%"/>
                 </imageobject>
               </mediaobject>
-            </figure></para>
+          </figure>
+            <note><para>In Autumn 2014 the <filename>dpf</filename> suffix was adopted. The data is 
+            still stored in XML format, but the adoption of a unique suffix makes it 
+            easier to find Debrief files from a File Explorer.</para></note>
+          </para>
         </sect2>
       </sect1>
 
@@ -9179,146 +9184,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
         </sect2>
       </sect1>
 
-      <sect1 xml:id="intro_xml">
-        <title>Introduction to XML</title>
-
-        <para>Extensible Markup Language ( <glossterm linkend="g_xml">XML</glossterm>) is a
-          meta-markup language that provides a format for describing structured data. This
-          facilitates more precise declarations of content and more meaningful search results across
-          multiple platforms. In addition, XML will enable a new generation of Web-based data
-          viewing and manipulation applications.</para>
-
-        <sect2 xml:id="more_xml">
-          <title>Extensible</title>
-
-          <para>In XML you can define an unlimited set of tags. While HTML tags can be used to
-            display a word in bold or italic, XML provides a framework for tagging structured data.
-            An XML element can declare its associated data to be a retail price, a sales tax, a book
-            title, the amount of precipitation, or any other desired data element. As XML tags are
-            adopted throughout an organization&apos;s intranet, and by others across the Internet, there
-            will be a corresponding ability to search for and manipulate data regardless of the
-            applications within which it is found. Once data has been located, it can be delivered
-            over the wire and presented in a browser such as Internet Explorer 5 in any number of
-            ways, or it can be handed off to other applications for further processing and
-            viewing.</para>
-        </sect2>
-
-        <sect2 xml:id="xml_structure">
-          <title>Structural representation of data</title>
-
-          <para>XML provides a structural representation of data that has proved broadly
-            implementable and easy to deploy. Industrial implementations in the Standard Generalized
-            Markup Language (SGML) community and elsewhere demonstrate the intrinsic quality and
-            industrial strength of XML&apos;s tree-structured data format.</para>
-
-          <para>XML is a subset of SGML that is optimized for delivery over the Web; it is defined
-            by the World Wide Web Consortium, ensuring that structured data will be uniform and
-            independent of applications or vendors. This resulting interoperability is kick-starting
-            a new generation of business and electronic-commerce Web applications.</para>
-
-          <para>XML, which provides a data standard that can encode the content, semantics, and
-            schemata for a wide variety of cases ranging from simple to complex, can be used to mark
-            up the following: <itemizedlist>
-              <listitem>
-                <para>An ordinary document.</para>
-              </listitem>
-
-              <listitem>
-                <para>A structured record, such as an appointment record or purchase order.</para>
-              </listitem>
-
-              <listitem>
-                <para>An object with data and methods, such as the persistent form of a Java object
-                  or ActiveX control.</para>
-              </listitem>
-
-              <listitem>
-                <para>A data record, such as the result set of a query.</para>
-              </listitem>
-
-              <listitem>
-                <para>Meta-content about a Web site, such as Channel Definition Format (CDF).</para>
-              </listitem>
-
-              <listitem>
-                <para>Graphical presentation, such as an application&apos;s user interface.</para>
-              </listitem>
-
-              <listitem>
-                <para>Standard schema entities and types.</para>
-              </listitem>
-
-              <listitem>
-                <para>All links between information and people on the Web.</para>
-              </listitem>
-            </itemizedlist></para>
-
-          <para>Once the data is on the client desktop, it can be manipulated, edited, and presented
-            in multiple views, without return trips to the server. Servers can now become more
-            scalable, due to lower computational and bandwidth loads. Also, since data is exchanged
-            in the XML format, it can be easily merged from different sources.</para>
-
-          <para>XML is valuable to the Internet, as well as to large corporate intranet environments
-            because it provides interoperability using a flexible, open, standards-based format,
-            with new ways of accessing legacy databases and delivering data to Web clients.
-            Applications can be built more quickly, are easier to maintain, and can easily provide
-            multiple views on the structured data.</para>
-        </sect2>
-
-        <sect2 xml:id="more_xml_data">
-          <title>Data is separated from the presentation and the process</title>
-
-          <para>The power and beauty of XML is that it maintains the separation of the user
-            interface from the structured data. Hypertext Markup Language (HTML) specifies how to
-            display data in a browser, XML defines the content. For example, in HTML you use tags to
-            tell the browser to display data as bold or italic; in XML you only use tags to describe
-            data, such as city name, temperature, and barometric pressure. In XML, you use
-            stylesheets such as Extensible Style Language (XSL) and Cascading Style Sheets (CSS) to
-            present the data in a browser. XML separates the data from the presentation and the
-            process, enabling you to display and process the data as you wish by applying different
-            style sheets and applications.</para>
-
-          <para>This separation of data from presentation enables the seamless integration of data
-            from diverse sources. Customer Information, purchase orders, research results, bill
-            payments, medical records, catalog data, and other information can be converted to XML
-            on the middle tier, allowing data to be exchanged online as easily as HTML pages display
-            data today. Data encoded in XML can then be delivered over the Web to the desktop. No
-            retrofitting is necessary for legacy information stored in mainframe databases or
-            documents, and because HTTP is used to deliver XML over the wire, no changes are
-            required for this function.</para>
-
-          <para>XML documents are easy to create; if you are familiar with HTML, you can quickly
-            learn to create one. In this example, XML is used to describe a weather report:
-            <screen>              <markup>
-                &lt;weather-report&gt;
-                &lt;date&gt;March 25, 1998&lt;/date&gt;
-                &lt;time&gt;08:00&lt;/time&gt;
-                &lt;area&gt;
-                &lt;city&gt;Seattle&lt;/city&gt;
-                &lt;state&gt;WA&lt;/state&gt;
-                &lt;region&gt;West Coast&lt;/region&gt;
-                &lt;country&gt;USA&lt;/country&gt;
-                &lt;/area&gt;
-                &lt;measurements&gt;
-                &lt;skies&gt;partly cloudy&lt;/skies&gt;
-                &lt;temperature&gt;46&lt;/temperature&gt;
-                &lt;wind&gt;
-                &lt;direction&gt;SW&lt;/direction&gt;
-                &lt;windspeed&gt;6&lt;/windspeed&gt;
-                &lt;/wind&gt;
-                &lt;h-index&gt;51&lt;/h-index&gt;
-                &lt;humidity&gt;87&lt;/humidity&gt;
-                &lt;visibility&gt;10&lt;/visibility&gt;
-                &lt;uv-index&gt;1&lt;/uv-index&gt;
-                &lt;/measurements&gt;
-                &lt;/weather-report&gt;
-             </markup>          </screen></para>
-
-          <para>You can display this data in many different ways, or hand it off to other
-            applications for further processing. You can also apply a style sheet to display this
-            information in a browser.</para>
-        </sect2>
-      </sect1>
+      
     </chapter>
     <chapter xml:id="GeoToolsRef">
       <title>GeoTools in Debrief</title>
@@ -11950,7 +11816,7 @@ range = Range to target from ownship (yds)</markup>
                 <para>The settings of any controls used in Debrief (time on the Tote,
                   primary/secondary tracks, etc)</para>
               </listitem>
-            </itemizedlist> Plot-Files end with an XML suffix and may be viewed in
+            </itemizedlist> Plot-Files end with an <filename>DPF</filename> suffix and may be viewed in
               <application>Internet Explorer</application> or edited using
               <application>Notepad</application>.</para>
         </glossdef>
@@ -12138,8 +12004,7 @@ brg = Bearing to target from ownship (degs)
         <glossterm>XML</glossterm>
 
         <glossdef>
-          <para>The eXtensible Markup Language, as recommend by the World Wide Web consortium. See
-            the XML description of the Debrief reference guide, <xref linkend="intro_xml"/>.</para>
+          <para>The eXtensible Markup Language, as recommend by the World Wide Web consortium.</para>
         </glossdef>
       </glossentry>
     </glossary>
