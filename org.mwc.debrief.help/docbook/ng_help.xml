@@ -11471,11 +11471,11 @@ end</screen>
   <part>
     <title>Acknowledgements</title>
     <chapter>
-      <sect1>
+      <sect1  xml:id="third_party_libs"><title>Third Party Libraries</title>
         <para>Debrief uses a licensed copy of the WMFWriter library from Piet Jonas (<link
           xlink:href="http://piet.jonas.com/WMFWriter/WMFWriter.html"
             >http://piet.jonas.com/WMFWriter/WMFWriter.html</link> ).</para>
-        <para>Debrief also uses these Open Source libraries:<orderedlist>
+        <para>Debrief also uses these Open Source libraries:<itemizedlist>
           <listitem><para>XStream - http://xstream.codehaus.org/</para></listitem>
           <listitem><para>Apache Commons - http://commons.apache.org/</para></listitem>
           <listitem><para>JDOM - http://www.jdom.org/</para></listitem>
@@ -11487,8 +11487,29 @@ end</screen>
           <listitem><para>Xuggle Media Player - http://www.xuggle.com/
           </para></listitem>
           <listitem><para>Watchmaker for Evolutionary Computation - http://watchmaker.uncommons.org/</para></listitem>
-        </orderedlist></para>
+        </itemizedlist></para>
       </sect1>
+      <sect1><title>License</title>
+        <para>
+          <programlisting>
+<![CDATA[            
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2014, PlanetMayo Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
+]]>            
+          </programlisting>
+        </para></sect1>
     </chapter>
   </part>
 
