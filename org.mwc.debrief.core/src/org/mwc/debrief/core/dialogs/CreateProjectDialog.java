@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
 import org.eclipse.ui.wizards.datatransfer.ImportOperation;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
@@ -147,7 +148,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 				public void widgetSelected(SelectionEvent e)
 				{
 					Boolean askMe = askMeNextTime.getSelection();
-					DebriefPlugin.getDefault().getPreferenceStore()
+					CorePlugin.getDefault().getPreferenceStore()
 							.putValue(PrefsPage.PreferenceConstants.DONT_ASK_ABOUT_PROJECT, askMe.toString());
 				}
 
