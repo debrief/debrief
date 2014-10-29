@@ -112,4 +112,22 @@
       <contexts
             file="HelpContexts.xml"  plugin="org.mwc.debrief.help"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+          <menuContribution locationURI="menu:help?before=about"> 
+          <command
+              commandId="org.mwc.debrief.core.operations.Acknowledgements"
+              style="push"
+              id="org.mwc.debrief.core.operations.Acknowledgements">
+          </command>
+              </menuContribution>
+   </extension>
+   <extension
+          point="org.eclipse.ui.commands">
+    <command
+             defaultHandler="org.mwc.debrief.help.action.AcknowledgementHandler"
+             id="org.mwc.debrief.core.operations.Acknowledgements"
+             name="Acknowledgements">
+       </command>
+    </extension>
 </plugin>
