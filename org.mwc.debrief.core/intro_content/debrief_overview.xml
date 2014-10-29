@@ -18,7 +18,7 @@
 				</text>
 			</link>
 			<link style-id="content-link" label="Acknowledgements"
-				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/index.html#Acknowledgements"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/index.html%23acknowledgements"
 				id="debrief-acknowledgements">
 				<text>Third Party Libraries used in support of Debrief, together with Debrief's Open Source License</text>
 			</link>

@@ -39,7 +39,7 @@ public class AcknowledgementHandler extends AbstractHandler
 				.getWorkbench()
 				.getHelpSystem()
 				.displayHelpResource(
-						"/org.mwc.debrief.help/html/legacy/index.html#Acknowledgements");
+						"/org.mwc.debrief.help/html/legacy/index.html#acknowledgements");
 		return null;
 	}
 
