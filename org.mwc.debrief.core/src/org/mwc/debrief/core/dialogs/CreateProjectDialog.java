@@ -131,7 +131,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 		addDebriefSamplesButton.setLayoutData(gd);
 		
 		addDebriefSamplesButton.setText("Add Debrief Samples (required for self-teach tutorials)");
-		addDebriefSamplesButton.setSelection(false);
+		addDebriefSamplesButton.setSelection(true);
 	
 		if (showAskMeButton)
 		{

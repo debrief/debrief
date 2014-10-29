@@ -6,28 +6,29 @@
 		<description>Debrief NG stores it&apos;s data in a local folder called a Project. While
 			these are frequently created afresh to store new analysis data, it&apos;s also possible
 			to denote your existing data directories as sub-folders (via links). This tutorial leads
-			you through generating links to your existing data folders. If you&apos;ve installed
-			Debrief in the past, chances are you still have a Debrief installation folder (in
-			C:\Program Files\Debrief 2003). If you do still have this folder, you can usefully link
-			it in within this tutorial to provide some sample data. If you don&apos;t have an
-			existing Debrief installation, then add the folder called <b>sample_data</b> located in
-			the top-level folder of your Debrief NG installation (typically in c:\DebriefNG under MS
-			Windows if you have Debrief installed locally, or in the Debrief\DebriefNG folder
-			if you are on a site using a Programs folder from a shared
-			network drive).</description>
+			you through generating links to your existing data folders. But, if the "Create Project" 
+			form opened at application startup, you
+			provided a project name, and indicated that you would like sample data to be imported,
+			then you can skip the following steps and move on to the next cheat sheet.</description>
 	</intro>
-	<item title="Check Navigator is open">
+	<item
+       skip="true"
+       title="Check Navigator is open">
 		<description>In the top left hand corner of Debrief you should find the Navigator window. If
 			it isn&apos;t there, select <b>Navigator</b> from Debrief&apos;s Window/Show View
 			menu.</description>
 	</item>
-	<item title="Check you have a workspace">
+	<item
+       skip="true"
+       title="Check you have a workspace">
 		<description>Before you can link in existing data, you need to define a project for your
 			work. This is a parent folder within which your links are stored. If your Navigator
-			window is empty, you must follow the <b>Generating a project</b> cheat-sheet accessed
-			from the Help/Cheat Sheets menu.</description>
+			window is empty, you must follow the <b>Generating a project</b> cheat-sheet <i>NoPrint</i>accessed
+			from the Help/Cheat Sheets menu<i>NoPrint</i><i>Earlier in this document</i>.</description>
 	</item>
-	<item title="Add a new Folder">
+	<item
+       skip="true"
+       title="Add a new Folder">
 		<description>Right-click on your current project in the Navigator view, then select
 				<b>Folder</b> from the <b>New</b> sub-menu. The New Folder wizard will open. Instead
 			of creating a fresh child folder to store our data, we&apos;re going to link to an
@@ -41,7 +42,9 @@
 			org.mwc.cmap.combined.feature/root_installs (if you are running a development version of
 			Debrief).</description>
 	</item>
-	<item title="Done">
+	<item
+       skip="true"
+       title="Done">
 		<description>Well done, there you are. Just repeat this process to add any other data
 			directories you want to load data from. You&apos;ve probably just created a link to the
 			sample data, but you may also wish to create a link to a shared working
