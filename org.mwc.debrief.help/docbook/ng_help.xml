@@ -911,6 +911,10 @@ Naval Undersea Warfare Center (NUWC)
               </mediaobject>
             </screenshot>
           </figure>
+          <para>Debrief requires you to have a working folder (project) to store your data in.  As a
+            convenience, when you open Debrief it will check if there are any projects present. If
+            none are present, you will be invited to create a project folder. Debrief will also
+            offer to copy in some sample data.</para>
 
           <para>The Debrief user-interface follows the Workbench convention, whereby a users edits
             individual files in an <emphasis>Editor</emphasis> assisted by a series of supporting
