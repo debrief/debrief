@@ -53,16 +53,21 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 
 	/**
 	 * @param parent
+	 *          menu
 	 * @param theLayers
+	 *          the whole layers
 	 * @param parentLayers
+	 *          the parent layers for the selected items
 	 * @param subjects
+	 *          the selected items
 	 */
 	public void generate(final IMenuManager parent, final Layers theLayers,
 			final Layer[] parentLayers, final Editable[] subjects)
 	{
-		// we're only going to work with one item
 		Collection<Editable> points = null;
 		String tmpTitle = null;
+
+		// how many items are selected?
 		if (subjects.length == 1)
 		{
 			// is it a track?
@@ -257,6 +262,15 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			ArrayList<Leg> legs = getLegs(_points);
 
 			// did we find any?
+			if (legs.size() == 0)
+			{
+				CorePlugin.showMessage("Remove jumps",
+						"No jumps were detected in the track segment\n\n" +
+						"A jump is detected when a step has a calculated speed\n" +
+						"three times larger than the previous step.");
+			}
+
+			// ok, apply the offsets
 			applyOffsets(legs, _points, _newFixes);
 
 			// sorted, do the update
