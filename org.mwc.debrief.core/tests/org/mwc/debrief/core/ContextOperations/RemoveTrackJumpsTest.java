@@ -31,22 +31,39 @@ public class RemoveTrackJumpsTest
 		// ok, generate the set of positions
 		WorldLocation origin = new WorldLocation(1,1,0);
 		HiResDate startTime = new HiResDate(2000);
-		FixWrapper last = new FixWrapper(new Fix(startTime , origin, 0, 0));
+		FixWrapper last = new FixWrapper(new Fix(startTime , origin, 0, 6));
 		FixWrapper startP = last;
 		_lockPoints.add(startP.getLocation());
 		_positions.add(startP);
-		last = createNext(last, _positions, 2000, 30, 6);
-		last = createNext(last, _positions, 2000, 40, 6);
-		last = createNext(last, _positions, 2000, 50, 6);
-		last = createNext(last, _positions, 2000, 60, 6);
-		startP = last = createNext(startP, _positions, 10000, 110, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		last = createNext(last, _positions, 2000, 0, 6);
+		startP = last = createNext(startP, _positions, 18000, 90, 8);
+		_lockPoints.add(startP.getLocation());
+		last = createNext(last, _positions, 2000, 180, 6);
+		last = createNext(last, _positions, 2000, 180, 6);
+		last = createNext(last, _positions, 2000, 180, 6);
+		last = createNext(last, _positions, 2000, 180, 6);
+		last = createNext(last, _positions, 2000, 180, 6);
+		last = createNext(last, _positions, 2000, 180, 6);
+		last = createNext(last, _positions, 2000, 180, 6);
+		last = createNext(last, _positions, 2000, 180, 6);
+		startP = last = createNext(startP, _positions, 18000, 90, 4);
 		_lockPoints.add(startP.getLocation());
 		last = createNext(last, _positions, 2000, 100, 6);
 		last = createNext(last, _positions, 2000, 120, 6);
 		last = createNext(last, _positions, 2000, 140, 6);
 		last = createNext(last, _positions, 2000, 160, 6);
 		last = createNext(last, _positions, 2000, 180, 6);
-		startP = last = createNext(startP, _positions, 12000, 80, 6);
+		last = createNext(last, _positions, 2000, 160, 6);
+		last = createNext(last, _positions, 2000, 150, 6);
+		last = createNext(last, _positions, 2000, 140, 6);
+		startP = last = createNext(startP, _positions, 18000, 80, 6);
 		_lockPoints.add(startP.getLocation());
 	}
 

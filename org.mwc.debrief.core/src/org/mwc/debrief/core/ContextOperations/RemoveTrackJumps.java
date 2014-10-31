@@ -156,44 +156,89 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			_points = points;
 		}
 
+		/**
+		 * store the limits of a leg
+		 * 
+		 * @author ian
+		 * 
+		 */
 		static class Leg
 		{
+			/**
+			 * the start of the leg
+			 * 
+			 */
 			final long startTime;
+
+			/**
+			 * the end of the leg
+			 * 
+			 */
 			final long endTime;
+
+			/**
+			 * the offset from where the last point should be, to where it is measured
+			 * as
+			 * 
+			 */
 			final WorldVector offset;
 
-			public Leg(FixWrapper startP, FixWrapper jumpP, FixWrapper lockP)
+			/**
+			 * define a leg, used for removing jumps
+			 * 
+			 * @param startP
+			 *          the start-point (presumed to be a GPS fix)
+			 * @param prevP
+			 *          the point immediately before the jump point
+			 * @param jumpP
+			 *          the point before the jump
+			 * @param lockP
+			 *          the point after the jump (presumed to be a GPS fix)
+			 */
+			public Leg(FixWrapper startP, FixWrapper prevP, FixWrapper jumpP,
+					FixWrapper lockP)
 			{
 				startTime = startP.getTime().getDate().getTime();
 				endTime = lockP.getTime().getDate().getTime();
 
 				// ok, calculate the offset
-				offset = lockP.getLocation().subtract(jumpP.getLocation());
+				WorldVector lastStep = jumpP.getLocation()
+						.subtract(prevP.getLocation());
+				offset = lockP.getLocation()
+						.subtract(jumpP.getLocation().add(lastStep));
 			}
 
+			/**
+			 * is this time in our time period. Note, we deliberately exclude the
+			 * first & last times, since those positions don't have an offset applied
+			 * 
+			 * @param theTime
+			 *          the time we're testing against
+			 * @return yes/no
+			 */
 			public boolean contains(long theTime)
 			{
-				boolean res = ((theTime >= startTime) && (theTime <= endTime));
-
-				return res;
+				return ((theTime > startTime) && (theTime < endTime));
 			}
 
-			public WorldVector offsetFor(FixWrapper thisP)
+			/**
+			 * calculate the offset to apply to the supplied position
+			 * 
+			 * @param time
+			 * @return
+			 */
+			public WorldVector offsetFor(final long time)
 			{
 				WorldVector res = null;
-				long thisT = thisP.getDateTimeGroup().getDate().getTime();
 
 				// just check this isn't the start or end time
-				if ((thisT != startTime) && (thisT != endTime))
+				if ((time != startTime) && (time != endTime))
 				{
 					// ok, how far along time period are we
-					double tDelta = thisT - startTime;
+					double tDelta = time - startTime;
 					double proportion = tDelta / (endTime - startTime);
-					double newDistance = offset.getRange()
-							* proportion;
+					double newDistance = offset.getRange() * proportion;
 
-					System.out.println("td:" + (long)tDelta + " prop:"+ proportion + " newD:" + newDistance);
-					
 					// generate the offset
 					res = new WorldVector(offset.getBearing(), newDistance, 0);
 				}
@@ -237,8 +282,9 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 				if (relevantLeg != null)
 				{
 					// ok, find the offset vector
-					WorldVector offset = relevantLeg.offsetFor(thisP);
-					
+					WorldVector offset = relevantLeg.offsetFor(thisP.getTime().getDate()
+							.getTime());
+
 					if (offset != null)
 					{
 						// store the old existing location
@@ -251,6 +297,15 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			}
 		}
 
+		/**
+		 * which leg is this position in?
+		 * 
+		 * @param thisP
+		 *          the position
+		 * @param legs
+		 *          the lsit of legs
+		 * @return
+		 */
 		static Leg findLegFor(FixWrapper thisP, ArrayList<Leg> legs)
 		{
 			HiResDate theTime = thisP.getTime();
@@ -273,11 +328,9 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 
 		static ArrayList<Leg> getLegs(Collection<Editable> points)
 		{
-			WorldSpeed THRESHOLD_SPEED = new WorldSpeed(16, WorldSpeed.Kts);
-
 			ArrayList<Leg> legs = new ArrayList<Leg>();
 
-			FixWrapper startP, jumpP, lockP;
+			FixWrapper startP;
 
 			// get the points
 			Iterator<Editable> iter = points.iterator();
@@ -286,6 +339,7 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			startP = (FixWrapper) iter.next();
 
 			// remember the previous position
+			FixWrapper prevprev = null;
 			FixWrapper prev = startP;
 
 			while (iter.hasNext())
@@ -307,18 +361,25 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 						delta.getValueIn(WorldDistance.MINUTES) / timeDeltaHours,
 						WorldSpeed.Kts);
 
-				// is this so fast that it can only be a jump?
-				if (speedTravelled.greaterThan(THRESHOLD_SPEED))
+				// is there a previous position?
+				if (prev != null)
 				{
-					// ok, we've found a jump
-					jumpP = prev;
-					lockP = fix;
-					legs.add(new Leg(startP, jumpP, lockP));
+					// what was the previous speed?
+					double thisSpeedKts = speedTravelled.getValueIn(WorldSpeed.Kts);
+					double lastSpdKts = prev.getSpeed();
 
-					// ok, the lock point becomes the first point of the next leg
-					startP = lockP;
+					// is this so fast that it can only be a jump?
+					if (thisSpeedKts > 3 * lastSpdKts)
+					{
+						// ok, we've found a jump
+						legs.add(new Leg(startP, prevprev, prev, fix));
+
+						// ok, the lock point becomes the first point of the next leg
+						startP = fix;
+					}
 				}
 				// ok, now move along the bed
+				prevprev = prev;
 				prev = fix;
 			}
 
