@@ -95,7 +95,7 @@
 	</extension>
 
     <extension point="org.eclipse.ui.menus">
-        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
+        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=group.file">
        		<toolbar
                id="org.mwc.debrief.core.createProject"
                label="Create Project">
@@ -125,7 +125,6 @@
 			  <separator name="sep1" visible="true"/>
 			  <separator name="additions"  visible="true"/> 
        		</toolbar>
-       		
         </menuContribution>
         
         <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
@@ -272,8 +271,8 @@
           	</command>
         </menuContribution>
         
-        <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio"> 
-           <command
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.createProject?before=additions"> 
+        	<command
               commandId="org.mwc.debrief.core.createProject"
               icon="icons/CreateProject.gif"
               label="Create Project"
@@ -281,6 +280,9 @@
               style="push"
               id="org.mwc.debrief.core.createProject">
           	</command>
+        </menuContribution>
+        
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio">
            <command
               commandId="org.mwc.debrief.core.RadioHandler"
               icon="icons/SelectSegment.png"
