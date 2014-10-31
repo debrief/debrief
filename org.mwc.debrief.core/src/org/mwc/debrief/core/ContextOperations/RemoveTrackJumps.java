@@ -158,21 +158,23 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 
 		private static class Leg
 		{
-			final FixWrapper _startP;
-			final FixWrapper _jumpP;
-			final FixWrapper _lockP;
-			
+			long startTime;
+			long endTime;
+			WorldVector offset;
+
 			public Leg(FixWrapper startP, FixWrapper jumpP, FixWrapper lockP)
 			{
-				_startP = startP;
-				_jumpP = jumpP;
-				_lockP = lockP;
+				startTime = startP.getTime().getDate().getTime();
+				endTime = lockP.getTime().getDate().getTime();
+
+				// ok, calculate the offset
+				offset = lockP.getLocation().subtract(jumpP.getLocation());
 			}
 
-			public boolean contains(HiResDate theTime)
+			public boolean contains(long theTime)
 			{
-				boolean res = (_startP.getTime().greaterThanOrEqualTo(theTime) && _lockP.getTime().lessThanOrEqualTo(theTime));
-					
+				boolean res = ((theTime >= startTime) && (theTime <= endTime));
+
 				return res;
 			}
 
@@ -180,54 +182,75 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			{
 				// ok, how far along time period are we
 				long tDelta = thisP.getDateTimeGroup().getDate().getTime();
-				
-				return null;
+
+				double proportion = tDelta / (endTime = startTime);
+
+				WorldVector thisO = new WorldVector(offset.getBearing(),
+						offset.getRange() * proportion, 0);
+
+				return thisO;
 			}
 		}
 
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
+			// get ready to store the old positions
+			_newFixes = new HashMap<FixWrapper, WorldLocation>();
 
 			// PART ONE - FIND THE JUMPS
 			ArrayList<Leg> legs = getLegs(_points);
 
-			// now pass through again, applying the offset
-			Iterator<Editable> iter = _points.iterator();
-			while(iter.hasNext())
-			{
-				FixWrapper thisP = (FixWrapper) iter.next();
-				
-				// find the correct leg
-				Leg relevantLeg = findLegFor(thisP, legs);
-				
-				// is it in a leg?
-				if(relevantLeg != null)
-				{
-					// ok, find the offset vector
-					WorldVector offset = relevantLeg.offsetFor(thisP);
-				}
-			}
-			
-			
+			// did we find any?
+
+			applyOffsets(legs, _points, _newFixes);
+
 			// sorted, do the update
-			_layers.fireModified(_track);
+			if (_layers != null)
+				_layers.fireModified(_track);
 
 			return Status.OK_STATUS;
 		}
 
-		private Leg findLegFor(FixWrapper thisP, ArrayList<Leg> legs)
+		private static void applyOffsets(ArrayList<Leg> legs,
+				Collection<Editable> points, HashMap<FixWrapper, WorldLocation> fixes)
+		{
+			// now pass through again, applying the offset
+			Iterator<Editable> iter = points.iterator();
+			while (iter.hasNext())
+			{
+				FixWrapper thisP = (FixWrapper) iter.next();
+
+				// find the correct leg
+				Leg relevantLeg = findLegFor(thisP, legs);
+
+				// is it in a leg?
+				if (relevantLeg != null)
+				{
+					// ok, find the offset vector
+					WorldVector offset = relevantLeg.offsetFor(thisP);
+
+					// store the old existing location
+					fixes.put(thisP, thisP.getLocation());
+
+					// and apply the new offset
+					thisP.setLocation(thisP.getLocation().add(offset));
+				}
+			}
+		}
+
+		private static Leg findLegFor(FixWrapper thisP, ArrayList<Leg> legs)
 		{
 			HiResDate theTime = thisP.getTime();
-			
+
 			Leg res = null;
-			
+
 			// loop through the legs
-			for (Iterator iterator = legs.iterator(); iterator.hasNext();)
+			for (Iterator<Leg> iterator = legs.iterator(); iterator.hasNext();)
 			{
 				Leg leg = (Leg) iterator.next();
-				
-				if(leg.contains(theTime))
+
+				if (leg.contains(theTime.getDate().getTime()))
 				{
 					res = leg;
 					break;
@@ -239,7 +262,7 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 		private static ArrayList<Leg> getLegs(Collection<Editable> points)
 		{
 			WorldSpeed THRESHOLD_SPEED = new WorldSpeed(200, WorldSpeed.Kts);
-			
+
 			ArrayList<Leg> legs = new ArrayList<Leg>();
 
 			FixWrapper startP, jumpP, lockP;
@@ -252,30 +275,34 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 
 			// remember the previous position
 			FixWrapper prev = startP;
-			
+
 			while (iter.hasNext())
 			{
 				FixWrapper fix = (FixWrapper) iter.next();
-				
+
 				// ok, what's the distance from the previous position
 				double locDeltaDegs = fix.getLocation().rangeFrom(prev.getLocation());
-				WorldDistance delta = new WorldDistance(locDeltaDegs, WorldDistance.DEGS);
-				
+				WorldDistance delta = new WorldDistance(locDeltaDegs,
+						WorldDistance.DEGS);
+
 				// and how long did it take?
-				long timeDeltaMillis = fix.getDateTimeGroup().getDate().getTime() - prev.getDateTimeGroup().getDate().getTime();
+				long timeDeltaMillis = fix.getDateTimeGroup().getDate().getTime()
+						- prev.getDateTimeGroup().getDate().getTime();
 				long timeDeltaHours = timeDeltaMillis / 1000 / 60 / 60;
-				
+
 				// what's the effective speed
-				WorldSpeed speedTravelled = new WorldSpeed(delta.getValueIn(WorldDistance.MINUTES) / timeDeltaHours, WorldSpeed.Kts);
-				
+				WorldSpeed speedTravelled = new WorldSpeed(
+						delta.getValueIn(WorldDistance.MINUTES) / timeDeltaHours,
+						WorldSpeed.Kts);
+
 				// is this so fast that it can only be a jump?
-				if(speedTravelled.greaterThan(THRESHOLD_SPEED))
+				if (speedTravelled.greaterThan(THRESHOLD_SPEED))
 				{
 					// ok, we've found a jump
 					jumpP = prev;
 					lockP = fix;
 					legs.add(new Leg(startP, jumpP, lockP));
-					
+
 					// ok, the lock point becomes the first point of the next leg
 					startP = lockP;
 				}
@@ -290,19 +317,17 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			// loop through the positions
 			for (Iterator<Editable> iterator = _points.iterator(); iterator.hasNext();)
 			{
-				FixWrapper type = (FixWrapper) iterator.next();
+				FixWrapper fix = (FixWrapper) iterator.next();
 				// get this location
-				WorldLocation loc = _newFixes.get(type);
+				WorldLocation loc = _newFixes.get(fix);
 
 				// put the location back in
-				type.setLocation(loc);
+				fix.setLocation(loc);
 			}
 
 			// and clear the new tracks item
 			_newFixes.clear();
-			;
 			_newFixes = null;
-
 			_layers.fireModified(_track);
 
 			return Status.OK_STATUS;
