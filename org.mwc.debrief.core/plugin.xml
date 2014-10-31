@@ -1159,6 +1159,7 @@
     </extension>
     <extension point="org.mwc.cmap.core.RightClickSupport">
         <helper class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
+        <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>
     </extension>
 
 </plugin>
