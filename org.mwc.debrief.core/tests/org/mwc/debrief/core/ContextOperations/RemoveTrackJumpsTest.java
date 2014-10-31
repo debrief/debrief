@@ -7,6 +7,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mwc.debrief.core.ContextOperations.RemoveTrackJumps.RemoveJumps;
+import org.mwc.debrief.core.ContextOperations.RemoveTrackJumps.RemoveJumps.Leg;
 
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
@@ -38,14 +39,14 @@ public class RemoveTrackJumpsTest
 		last = createNext(last, _positions, 2000, 40, 6);
 		last = createNext(last, _positions, 2000, 50, 6);
 		last = createNext(last, _positions, 2000, 60, 6);
-		startP = last = createNext(startP, _positions, 10000, 90, 6);
+		startP = last = createNext(startP, _positions, 10000, 110, 6);
 		_lockPoints.add(startP.getLocation());
 		last = createNext(last, _positions, 2000, 100, 6);
 		last = createNext(last, _positions, 2000, 120, 6);
 		last = createNext(last, _positions, 2000, 140, 6);
 		last = createNext(last, _positions, 2000, 160, 6);
 		last = createNext(last, _positions, 2000, 180, 6);
-		startP = last = createNext(startP, _positions, 12000, 90, 6);
+		startP = last = createNext(startP, _positions, 12000, 80, 6);
 		_lockPoints.add(startP.getLocation());
 	}
 
@@ -57,16 +58,14 @@ public class RemoveTrackJumpsTest
 	{
 		// how far did it travel?
 		WorldSpeed spd = new WorldSpeed(speedKts, WorldSpeed.Kts);
-		double dist = (timeDelta / 1000) *  spd.getValueIn(WorldSpeed.M_sec);
-		double distDegs = new WorldDistance(dist, WorldDistance.METRES).getValueIn(WorldDistance.DEGS);
+		double distM = (timeDelta / 1000) *  spd.getValueIn(WorldSpeed.M_sec);
+		WorldDistance dist = new WorldDistance(distM, WorldDistance.METRES);
 		double dirRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
 		
-		WorldVector offset = new WorldVector(dirRads, distDegs, 0);
+		WorldVector offset = new WorldVector(dirRads, dist.getValueIn(WorldDistance.DEGS), 0);
 		WorldLocation newLoc = last.getLocation().add(offset);
 		
 		long newTime = last.getTime().getDate().getTime() + timeDelta;
-		
-		
 		FixWrapper res = new FixWrapper(new Fix(new HiResDate(newTime), newLoc, dirRads, spd.getValueIn(WorldSpeed.ft_sec)/3));
 		
 		positions.add(res);
@@ -74,9 +73,15 @@ public class RemoveTrackJumpsTest
 		return res;
 	}
 
-
 	@Test
 	public void testFindLegs() throws ExecutionException
+	{	
+		ArrayList<Leg> legs = RemoveJumps.getLegs(_positions);
+		junit.framework.Assert.assertEquals("found legs", 2, legs.size());
+	}
+	
+	@Test
+	public void testPerform() throws ExecutionException
 	{
 		
 		System.out.println("GEOMETRYCOLLECTION (");
