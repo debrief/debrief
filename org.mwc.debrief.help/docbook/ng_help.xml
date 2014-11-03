@@ -2571,6 +2571,55 @@ and so on....</programlisting></para>
             that its series of purely calculated positions, and not based on any observed
             measurements.</para>
         </sect2>
+        <sect2 xml:id="RemoveJumpsUser">
+          <title>Removing Jumps</title>
+          <indexterm>
+            <primary>Track sections</primary>            
+            <secondary>Remove jumps (introduction)</secondary>
+          </indexterm>
+          <indexterm>
+            <primary>Jumps</primary>            
+            <secondary>Remove jumps (introduction)</secondary>
+          </indexterm>
+          <para>A consequence of submarine dived inertial navigation is that the recorded track
+          shows large jumps each time a GPS position fix is introduced, correcting the 
+          accumulated drift whilst dived.</para>
+          <para>Debrief is able to automatically remove jumps, transforming less accurate track 
+            periods so that they tidily match high-confidence (but infrequent) GPS fixes. A jump is determined as
+          two consecutive updates where the speed in the second update is 3 or more times larger than 
+          that in the previous update. The following fictional diagram shows a period of drift, with
+          two green markers indicating the start/end of the dived period.  A 
+          GPS fix was obtained at the green marker near the Nort-East.  Then the submarine dived, and the 
+          drift error grew cumulatively.  The next GPS fix was obtained at the time of the green marker
+          near the South West.
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/JumpOne.png" scalefit="1" width="100%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot></para>
+          <para>To remove jumps for this period, the analyst opens the Outline View, and the selects period representing the 
+          drift section of track, from the first green marker to the second green marker (inclusive).
+            <tip><para>Use the shift-key to select a continuous sequence of items</para></tip> After right-clicking
+          on this period of position data the analyst will select <guibutton>Remove jumps in selected positions</guibutton>.
+          The algorithm determines the size of the large jump at the end of the period, then works through the selected
+          positions, applying a proportion of that large jump to each position. <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/JumpTwo.png" scalefit="1" width="100%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+            In addition to selecting a discrete period of positions, it is possible to right-click on a track&apos;s 
+            <emphasis>Positions</emphasis> element in the Outline View, then selecting 
+            <guibutton>Remove jumps for selected track</guibutton>.  But, please note that this will
+            probably give a sub-optimal solution.  When the whole track is selected, Debrief uses the first
+            point in that track as the first lock point.  For a more accurate tidied track, manually select
+            the positions, ensuring a real GPS fix is used as the first point.
+          <note><para>Read more about the algorithm underpinning Remove Jumps in Chapter 3 of 
+            the Reference Guide <xref linkend="RemoveJumpsRef"/></para></note></para>
+        </sect2>
       </sect1>
 
       <sect1 xml:id="GridEditor">
@@ -9553,6 +9602,65 @@ departure / d.lat = tan (course)</markup>
         </sect2>
       </sect1>
 
+      <sect1 xml:id="RemoveJumpsRef">
+        <title>Remove Jumps</title>
+        <sect2><title>Background</title>
+          <indexterm>
+            <primary>Track sections</primary>            
+            <secondary>Remove jumps (algorithm)</secondary>
+          </indexterm>
+          
+        <para>
+          <note><para>Read the user perspective on removing jumps in the user guide (<xref  linkend="RemoveJumpsUser"/>)</para></note>
+          The initial strategy to remove drift was to find the range/direction of the jump from the last dived 
+          point to the first GPS fix.  But, during implementation it became clear that this
+          wouldn't work.  What was actually needed was to "plot-on" the last dived point to 
+          derive where the dived track would be at the time of the GPS fix.  
+          The following diagram shows a stylized representation of a period of dived drift.
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/JumpRefOne.png" scalefit="1" width="100%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          In the diagram, the measured track is AEF, but the true track was AF. 
+          We can see that the correct location for B is B&apos;, C is C&apos;, and so on.  
+          So, the vector necessary to transform B to B&apos; is 135 degs length 1.41 (sqrt(2)).  
+          This correct vector can be obtained by producing the virtual point F&apos;, which is 
+          defined as “where would F be if there hadn’t been a jump”. 
+          Using F&apos;-F as the offset vector gives the correct result.          
+        </para>
+        </sect2>
+        <sect2><title>Algorithm</title>
+          <para>
+            <orderedlist>
+              <listitem><para>Analyst selects period of data.</para></listitem>
+              <listitem><para>The first position is stored as a “lock point”.</para></listitem>
+              <listitem><para>Loop forwards through data, looking for large position deltas (where 
+                calculated speed equates to 3 or more time the measured speed travelled 
+                in the previous step).</para></listitem>
+              <listitem><para>Each time we find a jump, the position after the jump is a “lock point”, the 
+                position before jump is the “jump point”.  The delta between the two is the “jump offset”.</para></listitem>
+              <listitem><para>From the first lock-point, move forwards through the data until you find a
+                jump point. If a jump point is found, pass through those points, applying the relative sliced 
+                jump offset to each point.</para></listitem>
+            </orderedlist>
+            The diagram belows shows the results of remove jumps.  The yellow track ABCDEFG is the recorded track.  
+            The points A,C,E,G are the lock-points (GPS fixes). The blue track is the track after running remove jumps.
+            Note that AC is longer than AB, so the algorithm has rotated and scaled AB.  Similarly, CE is shorter 
+            than CD and gets scaled to produce CE.  EG shows how a complex shape gets transformed to fit the lock points.
+            
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/JumpRefTwo.png" scalefit="1" width="100%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </para>
+        </sect2>
+      </sect1>
       <sect1 xml:id="contouring_algorithm">
         <title>Contouring algorithm</title>
 
