@@ -132,7 +132,130 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 
 	}
 
-	static class RemoveJumps extends CMAPOperation
+	static ArrayList<Leg> getLegs(final Collection<Editable> points)
+	{
+		// prepare to store the legs
+		ArrayList<Leg> legs = new ArrayList<Leg>();
+
+		// get the points
+		Iterator<Editable> iter = points.iterator();
+
+		// store the first point as a start
+		FixWrapper startP = (FixWrapper) iter.next();
+
+		// remember the previous position
+		FixWrapper prevprev = null;
+		FixWrapper prev = startP;
+
+		while (iter.hasNext())
+		{
+			FixWrapper fix = (FixWrapper) iter.next();
+
+			// ok, what's the distance from the previous position
+			double locDeltaDegs = fix.getLocation().rangeFrom(prev.getLocation());
+			WorldDistance delta = new WorldDistance(locDeltaDegs, WorldDistance.DEGS);
+
+			// and how long did it take?
+			double timeDeltaMillis = fix.getDateTimeGroup().getDate().getTime()
+					- prev.getDateTimeGroup().getDate().getTime();
+			double timeDeltaHours = timeDeltaMillis / 1000 / 60 / 60d;
+
+			// what's the effective speed
+			WorldSpeed speedTravelled = new WorldSpeed(
+					delta.getValueIn(WorldDistance.MINUTES) / timeDeltaHours,
+					WorldSpeed.Kts);
+
+			// is there a previous position?
+			if (prev != null)
+			{
+				// what was the previous speed?
+				double thisSpeedKts = speedTravelled.getValueIn(WorldSpeed.Kts);
+				double lastSpdKts = prev.getSpeed();
+
+				// is this so fast that it can only be a jump?
+				if (thisSpeedKts > 3 * lastSpdKts)
+				{
+					// ok, we've found a jump
+					legs.add(new Leg(startP, prevprev, prev, fix));
+
+					// ok, the lock point becomes the first point of the next leg
+					startP = fix;
+				}
+			}
+			// ok, now move along the bed
+			prevprev = prev;
+			prev = fix;
+		}
+
+		return legs;
+	}
+
+	/**
+	 * which leg is this position in?
+	 * 
+	 * @param thisP
+	 *          the position
+	 * @param legs
+	 *          the lsit of legs
+	 * @return
+	 */
+	static Leg findLegFor(FixWrapper thisP, ArrayList<Leg> legs)
+	{
+		HiResDate theTime = thisP.getTime();
+
+		Leg res = null;
+
+		// loop through the legs
+		for (Iterator<Leg> iterator = legs.iterator(); iterator.hasNext();)
+		{
+			Leg leg = (Leg) iterator.next();
+
+			if (leg.contains(theTime.getDate().getTime()))
+			{
+				res = leg;
+				break;
+			}
+		}
+		return res;
+	}
+
+	protected void showMessage(String title, String txt)
+	{
+		CorePlugin.showMessage(title, txt);
+	}
+
+	static void applyOffsets(ArrayList<Leg> legs, Collection<Editable> points,
+			HashMap<FixWrapper, WorldLocation> fixes)
+	{
+		// now pass through again, applying the offset
+		Iterator<Editable> iter = points.iterator();
+		while (iter.hasNext())
+		{
+			FixWrapper thisP = (FixWrapper) iter.next();
+
+			// find the correct leg
+			Leg relevantLeg = findLegFor(thisP, legs);
+
+			// is it in a leg?
+			if (relevantLeg != null)
+			{
+				// ok, find the offset vector
+				WorldVector offset = relevantLeg.offsetFor(thisP.getTime().getDate()
+						.getTime());
+
+				if (offset != null)
+				{
+					// store the old existing location
+					fixes.put(thisP, thisP.getLocation());
+
+					// and apply the new offset
+					thisP.setLocation(thisP.getLocation().add(offset));
+				}
+			}
+		}
+	}
+
+	class RemoveJumps extends CMAPOperation
 	{
 
 		/**
@@ -161,97 +284,6 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			_points = points;
 		}
 
-		/**
-		 * store the limits of a leg
-		 * 
-		 * @author ian
-		 * 
-		 */
-		static class Leg
-		{
-			/**
-			 * the start of the leg
-			 * 
-			 */
-			final long startTime;
-
-			/**
-			 * the end of the leg
-			 * 
-			 */
-			final long endTime;
-
-			/**
-			 * the offset from where the last point should be, to where it is measured
-			 * as
-			 * 
-			 */
-			final WorldVector offset;
-
-			/**
-			 * define a leg, used for removing jumps
-			 * 
-			 * @param startP
-			 *          the start-point (presumed to be a GPS fix)
-			 * @param prevP
-			 *          the point immediately before the jump point
-			 * @param jumpP
-			 *          the point before the jump
-			 * @param lockP
-			 *          the point after the jump (presumed to be a GPS fix)
-			 */
-			public Leg(FixWrapper startP, FixWrapper prevP, FixWrapper jumpP,
-					FixWrapper lockP)
-			{
-				startTime = startP.getTime().getDate().getTime();
-				endTime = lockP.getTime().getDate().getTime();
-
-				// ok, calculate the offset
-				WorldVector lastStep = jumpP.getLocation()
-						.subtract(prevP.getLocation());
-				offset = lockP.getLocation()
-						.subtract(jumpP.getLocation().add(lastStep));
-			}
-
-			/**
-			 * is this time in our time period. Note, we deliberately exclude the
-			 * first & last times, since those positions don't have an offset applied
-			 * 
-			 * @param theTime
-			 *          the time we're testing against
-			 * @return yes/no
-			 */
-			public boolean contains(long theTime)
-			{
-				return ((theTime > startTime) && (theTime < endTime));
-			}
-
-			/**
-			 * calculate the offset to apply to the supplied position
-			 * 
-			 * @param time
-			 * @return
-			 */
-			public WorldVector offsetFor(final long time)
-			{
-				WorldVector res = null;
-
-				// just check this isn't the start or end time
-				if ((time != startTime) && (time != endTime))
-				{
-					// ok, how far along time period are we
-					double tDelta = time - startTime;
-					double proportion = tDelta / (endTime - startTime);
-					double newDistance = offset.getRange() * proportion;
-
-					// generate the offset
-					res = new WorldVector(offset.getBearing(), newDistance, 0);
-				}
-
-				return res;
-			}
-		}
-
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
@@ -264,140 +296,26 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			// did we find any?
 			if (legs.size() == 0)
 			{
-				CorePlugin.showMessage("Remove jumps",
-						"No jumps were detected in the track segment\n\n" +
-						"A jump is detected when a step has a calculated speed\n" +
-						"three times larger than the previous step.");
+				showMessage("Remove jumps",
+						"No jumps were detected in the track segment\n\n"
+								+ "A jump is detected when a step has a calculated speed\n"
+								+ "three times larger than the previous step.");
+				
+				// ok, return cancel - since this isn't an operation that we can undo
+				return Status.CANCEL_STATUS;
 			}
-
-			// ok, apply the offsets
-			applyOffsets(legs, _points, _newFixes);
-
-			// sorted, do the update
-			if (_layers != null)
-				_layers.fireModified(_track);
-
-			return Status.OK_STATUS;
-		}
-
-		static void applyOffsets(ArrayList<Leg> legs, Collection<Editable> points,
-				HashMap<FixWrapper, WorldLocation> fixes)
-		{
-			// now pass through again, applying the offset
-			Iterator<Editable> iter = points.iterator();
-			while (iter.hasNext())
+			else
 			{
-				FixWrapper thisP = (FixWrapper) iter.next();
 
-				// find the correct leg
-				Leg relevantLeg = findLegFor(thisP, legs);
+				// PART TWO apply the offsets
+				applyOffsets(legs, _points, _newFixes);
 
-				// is it in a leg?
-				if (relevantLeg != null)
-				{
-					// ok, find the offset vector
-					WorldVector offset = relevantLeg.offsetFor(thisP.getTime().getDate()
-							.getTime());
-
-					if (offset != null)
-					{
-						// store the old existing location
-						fixes.put(thisP, thisP.getLocation());
-
-						// and apply the new offset
-						thisP.setLocation(thisP.getLocation().add(offset));
-					}
-				}
-			}
-		}
-
-		/**
-		 * which leg is this position in?
-		 * 
-		 * @param thisP
-		 *          the position
-		 * @param legs
-		 *          the lsit of legs
-		 * @return
-		 */
-		static Leg findLegFor(FixWrapper thisP, ArrayList<Leg> legs)
-		{
-			HiResDate theTime = thisP.getTime();
-
-			Leg res = null;
-
-			// loop through the legs
-			for (Iterator<Leg> iterator = legs.iterator(); iterator.hasNext();)
-			{
-				Leg leg = (Leg) iterator.next();
-
-				if (leg.contains(theTime.getDate().getTime()))
-				{
-					res = leg;
-					break;
-				}
-			}
-			return res;
-		}
-
-		static ArrayList<Leg> getLegs(Collection<Editable> points)
-		{
-			ArrayList<Leg> legs = new ArrayList<Leg>();
-
-			FixWrapper startP;
-
-			// get the points
-			Iterator<Editable> iter = points.iterator();
-
-			// store the first point as a start
-			startP = (FixWrapper) iter.next();
-
-			// remember the previous position
-			FixWrapper prevprev = null;
-			FixWrapper prev = startP;
-
-			while (iter.hasNext())
-			{
-				FixWrapper fix = (FixWrapper) iter.next();
-
-				// ok, what's the distance from the previous position
-				double locDeltaDegs = fix.getLocation().rangeFrom(prev.getLocation());
-				WorldDistance delta = new WorldDistance(locDeltaDegs,
-						WorldDistance.DEGS);
-
-				// and how long did it take?
-				double timeDeltaMillis = fix.getDateTimeGroup().getDate().getTime()
-						- prev.getDateTimeGroup().getDate().getTime();
-				double timeDeltaHours = timeDeltaMillis / 1000 / 60 / 60d;
-
-				// what's the effective speed
-				WorldSpeed speedTravelled = new WorldSpeed(
-						delta.getValueIn(WorldDistance.MINUTES) / timeDeltaHours,
-						WorldSpeed.Kts);
-
-				// is there a previous position?
-				if (prev != null)
-				{
-					// what was the previous speed?
-					double thisSpeedKts = speedTravelled.getValueIn(WorldSpeed.Kts);
-					double lastSpdKts = prev.getSpeed();
-
-					// is this so fast that it can only be a jump?
-					if (thisSpeedKts > 3 * lastSpdKts)
-					{
-						// ok, we've found a jump
-						legs.add(new Leg(startP, prevprev, prev, fix));
-
-						// ok, the lock point becomes the first point of the next leg
-						startP = fix;
-					}
-				}
-				// ok, now move along the bed
-				prevprev = prev;
-				prev = fix;
+				// sorted, do the update
+				if (_layers != null)
+					_layers.fireModified(_track);
+				return Status.OK_STATUS;
 			}
 
-			return legs;
 		}
 
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
@@ -424,6 +342,105 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 			_layers.fireModified(_track);
 
 			return Status.OK_STATUS;
+		}
+	}
+
+	/**
+	 * store the limits of a leg
+	 * 
+	 * @author ian
+	 * 
+	 */
+	static class Leg
+	{
+		/**
+		 * the start of the leg
+		 * 
+		 */
+		final long startTime;
+
+		/**
+		 * the end of the leg
+		 * 
+		 */
+		final long endTime;
+
+		/**
+		 * the offset from where the last point should be, to where it is measured
+		 * as
+		 * 
+		 */
+		final WorldVector offset;
+
+		/**
+		 * define a leg, used for removing jumps
+		 * 
+		 * @param startP
+		 *          the start-point (presumed to be a GPS fix)
+		 * @param prevP
+		 *          the point immediately before the jump point
+		 * @param jumpP
+		 *          the point before the jump
+		 * @param lockP
+		 *          the point after the jump (presumed to be a GPS fix)
+		 */
+		public Leg(FixWrapper startP, FixWrapper prevP, FixWrapper jumpP,
+				FixWrapper lockP)
+		{
+			startTime = startP.getTime().getDate().getTime();
+			endTime = lockP.getTime().getDate().getTime();
+			long jumpTime = jumpP.getTime().getDate().getTime();
+			long prevTime = prevP.getTime().getDate().getTime();
+
+			// ok, calculate the offset to the previous location
+			WorldVector lastStep = jumpP.getLocation().subtract(prevP.getLocation());
+
+			// now calculate the proportional time step to get the new location
+			double nextStepProp = (endTime - jumpTime)
+					/ (double) (jumpTime - prevTime);
+
+			WorldVector newOffset = new WorldVector(lastStep.getBearing(),
+					nextStepProp * lastStep.getRange(), 0);
+
+			offset = lockP.getLocation().subtract(jumpP.getLocation().add(newOffset));
+		}
+
+		/**
+		 * is this time in our time period. Note, we deliberately exclude the first
+		 * & last times, since those positions don't have an offset applied
+		 * 
+		 * @param theTime
+		 *          the time we're testing against
+		 * @return yes/no
+		 */
+		public boolean contains(long theTime)
+		{
+			return ((theTime > startTime) && (theTime < endTime));
+		}
+
+		/**
+		 * calculate the offset to apply to the supplied position
+		 * 
+		 * @param time
+		 * @return
+		 */
+		public WorldVector offsetFor(final long time)
+		{
+			WorldVector res = null;
+
+			// just check this isn't the start or end time
+			if ((time != startTime) && (time != endTime))
+			{
+				// ok, how far along time period are we
+				double tDelta = time - startTime;
+				double proportion = tDelta / (endTime - startTime);
+				double newDistance = offset.getRange() * proportion;
+
+				// generate the offset
+				res = new WorldVector(offset.getBearing(), newDistance, 0);
+			}
+
+			return res;
 		}
 	}
 

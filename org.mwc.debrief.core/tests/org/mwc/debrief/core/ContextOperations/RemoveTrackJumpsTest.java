@@ -7,7 +7,6 @@ import org.eclipse.core.commands.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mwc.debrief.core.ContextOperations.RemoveTrackJumps.RemoveJumps;
-import org.mwc.debrief.core.ContextOperations.RemoveTrackJumps.RemoveJumps.Leg;
 
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
@@ -93,8 +92,8 @@ public class RemoveTrackJumpsTest
 	@Test
 	public void testFindLegs() throws ExecutionException
 	{	
-		ArrayList<Leg> legs = RemoveJumps.getLegs(_positions);
-		junit.framework.Assert.assertEquals("found legs", 2, legs.size());
+		ArrayList<RemoveTrackJumps.Leg> legs = RemoveTrackJumps.getLegs(_positions);
+		junit.framework.Assert.assertEquals("found legs", 3, legs.size());
 	}
 	
 	@Test
@@ -108,11 +107,10 @@ public class RemoveTrackJumpsTest
 		
 		System.out.println(" , ");
 		
-		RemoveJumps rj = new RemoveJumps("test", null, null, _positions);
+		RemoveJumps rj = new RemoveTrackJumps().new RemoveJumps("test", null, null, _positions);
 		rj.execute(null, null);
 		emitLine(_positions);
-		
-		
+				
 		System.out.println(" )");
 	}
 
