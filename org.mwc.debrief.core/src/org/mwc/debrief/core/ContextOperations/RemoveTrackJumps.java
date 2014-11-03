@@ -132,42 +132,47 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 
 	}
 
+	/** find the legs in the block of data
+	 * 
+	 * @param points
+	 * @return
+	 */
 	static ArrayList<Leg> getLegs(final Collection<Editable> points)
 	{
 		// prepare to store the legs
-		ArrayList<Leg> legs = new ArrayList<Leg>();
+		final ArrayList<Leg> legs = new ArrayList<Leg>();
 
 		// get the points
-		Iterator<Editable> iter = points.iterator();
+		final Iterator<Editable> iter = points.iterator();
 
 		// store the first point as a start
 		FixWrapper startP = (FixWrapper) iter.next();
 
-		// remember the previous position
+		// remember the previous position (which we use to "plot on" the last point)
 		FixWrapper prevprev = null;
 		FixWrapper prev = startP;
 
 		while (iter.hasNext())
 		{
-			FixWrapper fix = (FixWrapper) iter.next();
-
-			// ok, what's the distance from the previous position
-			double locDeltaDegs = fix.getLocation().rangeFrom(prev.getLocation());
-			WorldDistance delta = new WorldDistance(locDeltaDegs, WorldDistance.DEGS);
-
-			// and how long did it take?
-			double timeDeltaMillis = fix.getDateTimeGroup().getDate().getTime()
-					- prev.getDateTimeGroup().getDate().getTime();
-			double timeDeltaHours = timeDeltaMillis / 1000 / 60 / 60d;
-
-			// what's the effective speed
-			WorldSpeed speedTravelled = new WorldSpeed(
-					delta.getValueIn(WorldDistance.MINUTES) / timeDeltaHours,
-					WorldSpeed.Kts);
+			final FixWrapper fix = (FixWrapper) iter.next();
 
 			// is there a previous position?
 			if (prev != null)
 			{
+				// ok, what's the distance from the previous position
+				final double locDeltaDegs = fix.getLocation().rangeFrom(prev.getLocation());
+				final WorldDistance delta = new WorldDistance(locDeltaDegs, WorldDistance.DEGS);
+
+				// and how long did it take?
+				final double timeDeltaMillis = fix.getDateTimeGroup().getDate().getTime()
+						- prev.getDateTimeGroup().getDate().getTime();
+				final double timeDeltaHours = timeDeltaMillis / 1000 / 60 / 60d;
+				
+				// what's the effective speed
+				final WorldSpeed speedTravelled = new WorldSpeed(
+						delta.getValueIn(WorldDistance.MINUTES) / timeDeltaHours,
+						WorldSpeed.Kts);
+
 				// what was the previous speed?
 				double thisSpeedKts = speedTravelled.getValueIn(WorldSpeed.Kts);
 				double lastSpdKts = prev.getSpeed();
@@ -182,6 +187,7 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 					startP = fix;
 				}
 			}
+			
 			// ok, now move along the bed
 			prevprev = prev;
 			prev = fix;
