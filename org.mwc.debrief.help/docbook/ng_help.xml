@@ -2571,6 +2571,38 @@ and so on....</programlisting></para>
             that its series of purely calculated positions, and not based on any observed
             measurements.</para>
         </sect2>
+        <sect2 xml:id="RemoveJumpsUser">
+          <title>Removing Jumps</title>
+          <para>A consequence of submarine dived inertial navigation is that the recorded track
+          shows large jumps each time a GPS position fix is introduced, correcting the 
+          accumulated drift whilst dived.</para>
+          <para>Debrief is able to automatically remove jumps, transforming less accurate track 
+            periods so that they tidily match high-confidence GPS fixes. A jump is determined as
+          two consecutive updates where the speed in the second update is 3 or more times larger than 
+          that in the previous update. The following fictional diagram shows a period of drift.  A 
+          GPS fix was obtained at the green marker near the Nort-East.  Then the submarine dived, and the 
+          drift error grew cumulatively.  The next GPS fix was obtained at the time of the green marker
+          near the South West.
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/JumpOne.png" scalefit="1" width="100%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot></para>
+          <para>To remove jumps for this period, the analyst opens the Outline View, and the period representing the 
+          drift section of track, from the first green marker to the second green marker (inclusive).  After right-clicking
+          on this period of positiion data the analyst will select <guibutton>Remove jumps in selected positions</guibutton>.
+          The algorithm determines the size of the large jump at the end of the period, then works through the selected
+          positions, applying a proportion of that large jump to each position. <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/JumpTwo.png" scalefit="1" width="100%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <note><para>Read more about the implementation of Remove Jumps in the reference section<xref linkend="RemoveJumpsRef"/></para></note></para>
+        </sect2>
       </sect1>
 
       <sect1 xml:id="GridEditor">
@@ -9553,6 +9585,12 @@ departure / d.lat = tan (course)</markup>
         </sect2>
       </sect1>
 
+      <sect1 xml:id="RemoveJumpsRef">
+        <title>Remove Jumps</title>
+        <para>
+          <note><para>Read the user perspective on removing jumps in the user guiide (<xref  linkend="RemoveJumpsUser"/>)</para></note>
+        </para>
+      </sect1>
       <sect1 xml:id="contouring_algorithm">
         <title>Contouring algorithm</title>
 
