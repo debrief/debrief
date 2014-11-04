@@ -2599,12 +2599,13 @@ and so on....</programlisting></para>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
-          <para>To remove jumps for this period, the analyst opens the Outline View, and the selects period representing the 
+          <para>To remove jumps for this period, the analyst opens the Outline View, then selects positions
+            for the whole period representing the 
           drift section of track, from the first green marker to the second green marker (inclusive).
             <tip><para>Use the shift-key to select a continuous sequence of items</para></tip> After right-clicking
           on this period of position data the analyst will select <guibutton>Remove jumps in selected positions</guibutton>.
           The algorithm determines the size of the large jump at the end of the period, then works through the selected
-          positions, applying a proportion of that large jump to each position. <screenshot>
+          positions, applying a proportion of that large jump to each position, ensuring the green positions remain unchanged. <screenshot>
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/JumpTwo.png" scalefit="1" width="100%"/>
