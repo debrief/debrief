@@ -119,9 +119,33 @@ import MWC.Utilities.Timer.TimerListener;
 public class TimeController extends ViewPart implements ISelectionProvider,
 		TimerListener, RelativeProjectionParent
 {
-	private static final String ICONS_MEDIA_PAUSE = "icons/media_pause.png";
+	private static final String ICON_BKMRK_NAV = "icons/bkmrk_nav.gif";
 
-	private static final String ICONS_MEDIA_PLAY = "icons/media_play.png";
+	private static final String ICON_FILTER_TO_PERIOD = "icons/filter_to_period.gif";
+
+	private static final String ICON_LOCK_VIEW2 = "icons/lock_view2.png";
+
+	private static final String ICON_LOCK_VIEW1 = "icons/lock_view1.png";
+
+	private static final String ICON_LOCK_VIEW = "icons/lock_view.png";
+
+	private static final String ICON_PROPERTIES = "icons/properties.gif";
+
+	private static final String ICON_MEDIA_END = "icons/24/media_end.png";
+
+	private static final String ICON_MEDIA_FAST_FORWARD = "icons/24/media_fast_forward.png";
+
+	private static final String ICON_MEDIA_FORWARD = "icons/24/media_forward.png";
+
+	private static final String ICON_MEDIA_BACK = "icons/24/media_back.png";
+
+	private static final String ICON_MEDIA_REWIND = "icons/24/media_rewind.png";
+
+	private static final String ICON_MEDIA_BEGINNING = "icons/24/media_beginning.png";
+
+	private static final String ICON_MEDIA_PAUSE = "icons/24/media_pause.png";
+
+	private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
 
 	private static final String DUFF_TIME_TEXT = "--------------------------";
 
@@ -517,23 +541,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		final Button eBwd = new Button(_btnPanel, SWT.NONE);
 		addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false, null, false));
-		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
+		eBwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_BEGINNING));
 		eBwd.setToolTipText("Move to start of dataset");
 
 		final Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setToolTipText("Move backward large step (hold to repeat)");
-		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
+		lBwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_REWIND));
 		RepeatingTimeButtonListener listener = new RepeatingTimeButtonListener(false, new Boolean(true), true);
 		addTimeButtonListener(lBwd, listener);
 		
 		final Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setToolTipText("Move backward small step (hold to repeat)");
-		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
+		sBwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_BACK));
 		listener = new RepeatingTimeButtonListener(false, new Boolean(false), true);
 		addTimeButtonListener(sBwd, listener);
 		
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-		_playButton.setImage(TimeControllerPlugin.getImage(ICONS_MEDIA_PLAY));
+		_playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
 		_playButton.setToolTipText(PLAY_TEXT);
 		_playListener = new SelectionAdapter()
 		{
@@ -547,13 +571,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				{
 					startPlaying();
 					tipTxt = PAUSE_TEXT;
-					imageTxt = ICONS_MEDIA_PAUSE;
+					imageTxt = ICON_MEDIA_PAUSE;
 				}
 				else
 				{
 					stopPlaying();
 					tipTxt = PLAY_TEXT;
-					imageTxt = ICONS_MEDIA_PLAY;
+					imageTxt = ICON_MEDIA_PLAY;
 
 				}
 				
@@ -569,14 +593,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		_forwardButton = new Button(_btnPanel, SWT.NONE);
 		_forwardButton.setImage(TimeControllerPlugin
-				.getImage("icons/media_forward.png"));
+				.getImage(ICON_MEDIA_FORWARD));
 		listener = new RepeatingTimeButtonListener(true, new Boolean(false), true);
 		addTimeButtonListener(_forwardButton, listener);
 		
 		_forwardButton.setToolTipText("Move forward small step (hold to repeat)");
 
 		final Button lFwd = new Button(_btnPanel, SWT.NONE);
-		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
+		lFwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FAST_FORWARD));
 		lFwd.setToolTipText("Move forward large step (hold to repeat)");
 		listener = new RepeatingTimeButtonListener(true, new Boolean(true), true);
 		addTimeButtonListener(lFwd, listener);
@@ -584,7 +608,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		
 		final Button eFwd = new Button(_btnPanel, SWT.NONE);
 		addTimeButtonListener(eFwd, new RepeatingTimeButtonListener(true, null, false));
-		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
+		eFwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_END));
 		eFwd.setToolTipText("Move to end of dataset");
 
 		final GridDataFactory btnGd = GridDataFactory.fillDefaults().grab(true,
@@ -967,7 +991,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				{
 					_playButton.setToolTipText(PLAY_TEXT);
 					_playButton.setImage(TimeControllerPlugin
-							.getImage(ICONS_MEDIA_PLAY));
+							.getImage(ICON_MEDIA_PLAY));
 				}
 			});
 		}
@@ -2198,7 +2222,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		};
 		_filterToSelectionAction
 				.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
-						.getImageDescriptor("icons/filter_to_period.gif"));
+						.getImageDescriptor(ICON_FILTER_TO_PERIOD));
 		_filterToSelectionAction
 				.setToolTipText("Filter plot data to selected time period");
 		menuManager.add(_filterToSelectionAction);
@@ -2217,7 +2241,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		};
 		_setAsBookmarkAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/bkmrk_nav.gif"));
+				.getImageDescriptor(ICON_BKMRK_NAV));
 		_setAsBookmarkAction
 				.setToolTipText("Add this DTG to the list of bookmarks");
 		_setAsBookmarkAction.setId(OP_LIST_MARKER_ID); // give it an id, so we can
@@ -2238,7 +2262,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		};
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
 		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
-				.getImageDescriptor("icons/properties.gif"));
+				.getImageDescriptor(ICON_PROPERTIES));
 
 		menuManager.add(toolboxProperties);
 		toolManager.add(toolboxProperties);
@@ -2340,7 +2364,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		};
 		highlighterProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
-				.getImageDescriptor("icons/properties.gif"));
+				.getImageDescriptor(ICON_PROPERTIES));
 
 		// and store it on both menus
 		highlighterMenu.add(highlighterProperties);
@@ -2393,8 +2417,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					});
 				}
 			};
-			final String descPath = "icons/" + painter.toString().toLowerCase()
-					+ ".gif";
+			final String descPath = "icons/16/" + painter.toString().toLowerCase()
+					+ ".png";
 			changePainter.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 					.getImageDescriptor(descPath));
 
@@ -2432,7 +2456,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		};
 		currentPainterProperties
 				.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
-						.getImageDescriptor("icons/properties.gif"));
+						.getImageDescriptor(ICON_PROPERTIES));
 
 		// and store it on both menus
 		displayMenu.add(currentPainterProperties);
@@ -2454,7 +2478,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		};
 		_normalPlottingMode.setImageDescriptor(TimeControllerPlugin
-				.getImageDescriptor("icons/lock_view.png"));
+				.getImageDescriptor(ICON_LOCK_VIEW));
 		displayMenu.add(_normalPlottingMode);
 
 		_primaryCentredNorthOrientedPlottingMode = new Action(
@@ -2480,7 +2504,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		};
 		_primaryCentredNorthOrientedPlottingMode
 				.setImageDescriptor(TimeControllerPlugin
-						.getImageDescriptor("icons/lock_view1.png"));
+						.getImageDescriptor(ICON_LOCK_VIEW1));
 		displayMenu.add(_primaryCentredNorthOrientedPlottingMode);
 
 		_primaryCentredPrimaryOrientedPlottingMode = new Action(
@@ -2495,7 +2519,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		};
 		_primaryCentredPrimaryOrientedPlottingMode
 				.setImageDescriptor(TimeControllerPlugin
-						.getImageDescriptor("icons/lock_view2.png"));
+						.getImageDescriptor(ICON_LOCK_VIEW2));
 		// no, let's not offer primary centred, primary oriented view
 		// displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
 
