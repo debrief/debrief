@@ -144,10 +144,10 @@ abstract public class DatePropertyEditor extends
   static protected final String NULL_TIME = "HH:mm:ss";
 
   /**
-   * static formats
+   * date formats
    */
-  static protected DateFormat _dateF = new SimpleDateFormat(NULL_DATE);
-  static protected DateFormat _timeF = new SimpleDateFormat(NULL_TIME);
+  protected DateFormat _dateF = new SimpleDateFormat(NULL_DATE);
+  protected DateFormat _timeF = new SimpleDateFormat(NULL_TIME);
 
 
   /////////////////////////////////////////////////////////////
