@@ -49,7 +49,7 @@ public class GridWizardPage extends CoreEditableWizardPage
 		}
 
 		@Override
-		public String[] getTags()
+		public synchronized String[] getTags()
 		{
 			if (_myDistances == null)
 			{

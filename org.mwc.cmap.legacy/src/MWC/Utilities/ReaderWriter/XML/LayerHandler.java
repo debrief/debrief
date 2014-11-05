@@ -202,7 +202,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 	}
 
-	protected static void checkExporters()
+	protected synchronized static void checkExporters()
 	{
 		if (_myExporters == null)
 		{

@@ -371,7 +371,7 @@ public class ImportReplay extends PlainImporterBase
 		initialiseColours();
 	}
 
-	private static void initialiseColours()
+	private synchronized static void initialiseColours()
 	{
 		// create a list of colours
 		if (colors == null)
