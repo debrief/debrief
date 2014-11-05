@@ -281,6 +281,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				double minT = Math.min(maxValue.doubleValue(), newValue.doubleValue());
 				double maxT = Math.max(maxValue.doubleValue(), newValue.doubleValue());
 				if (estimateValue != null)
+				{
 					if (estimateValue.doubleValue()> maxT)
 					{
 						estimate.setValue(maxT);
@@ -289,6 +290,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 					{
 						estimate.setValue(minT);
 					}
+				}
 			}
 		});
 		max.addValueChangeListener(new IValueChangeListener()
