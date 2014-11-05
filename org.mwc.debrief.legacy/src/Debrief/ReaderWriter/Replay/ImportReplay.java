@@ -315,7 +315,7 @@ public class ImportReplay extends PlainImporterBase
 	/**
 	 * the format we use to parse text
 	 */
-	private static final java.text.DateFormat dateFormat = new java.text.SimpleDateFormat(
+	private final java.text.DateFormat dateFormat = new java.text.SimpleDateFormat(
 			"yyMMdd HHmmss.SSS");
 
 	private static Vector<PlainLineImporter> _theImporters;
