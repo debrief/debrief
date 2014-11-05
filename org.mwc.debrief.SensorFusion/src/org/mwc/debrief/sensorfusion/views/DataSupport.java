@@ -476,7 +476,7 @@ public class DataSupport
 
 		// aaah, but is it a jump?
 		boolean connectToPrevious = true;
-		if (_previousVal != Double.NaN)
+		if (! Double.isNaN(_previousVal))
 		{
 			final double delta = Math.abs(val - _previousVal);
 			if (delta > 100)
