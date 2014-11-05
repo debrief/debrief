@@ -65,7 +65,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
 
   /** the format to use for the data field
    */
-  private static final DateFormat _dateF = new SimpleDateFormat("yyyy/MM/dd");
+  private final DateFormat _dateF = new SimpleDateFormat("yyyy/MM/dd");
 
 
   ///////////////////////////////////
@@ -294,7 +294,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     super.doClose();
   }
 
-  protected final void refreshForm()
+  protected synchronized final void refreshForm()
   {
     // set the location
     OriginLabel.setText(MWC.Utilities.TextFormatting.BriefFormatLocation.toString(ImportRangeDataPanel._theOrigin));
@@ -302,8 +302,13 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     // set the filename
     FilenameLabel.setText(super._theFilename);
 
-    // set the DTG
-    _theDate.setText(_dateF.format(new Date(ImportRangeDataPanel._theDTG)));
+    // special case - in constructor we may get called before the _dateF
+    // has been initialised
+    if(_dateF != null)
+    {
+    	// set the DTG
+    	_theDate.setText(_dateF.format(new Date(ImportRangeDataPanel._theDTG)));
+    }
 
   }
 

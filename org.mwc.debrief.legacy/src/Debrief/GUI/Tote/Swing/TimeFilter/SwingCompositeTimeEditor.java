@@ -86,12 +86,12 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
   /**
    * format the date (yy/mm/dd) part of the date
    */
-  private static final SimpleDateFormat _dateF = new SimpleDateFormat("dd/MM/yy");
+  private final SimpleDateFormat _dateF = new SimpleDateFormat("dd/MM/yy");
 
   /**
    * format the time (hh:mm:ss) part of the DTG
    */
-  private static final SimpleDateFormat _timeF = new SimpleDateFormat("HH:mm:ss");
+  private final SimpleDateFormat _timeF = new SimpleDateFormat("HH:mm:ss");
 
 
   /**
