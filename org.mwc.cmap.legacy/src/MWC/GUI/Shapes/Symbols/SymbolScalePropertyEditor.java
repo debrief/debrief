@@ -103,14 +103,6 @@ public class SymbolScalePropertyEditor extends PropertyEditorSupport
       final String val = (String) p1;
       setAsText(val);
     }
-
-    // check we have worked correctly
-    if(_mySize == null)
-    {
-      // throw an error - this should only occur during development
-      System.out.println("CRASH ME: " + _mySize.toString());
-
-    }
   }
 
   public void setAsText(final String val)
