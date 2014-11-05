@@ -423,24 +423,26 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 				final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
 
+				System.err.println("XY Plot of HiRes data support is incomplete. Tick formatter (below) is missing.");
+				
 				// ok, simple enough for us...
-				final NumberAxis nAxis = new NumberAxis("time (secs.micros)")
-				{
-					/**
-                                        *
-                                        */
-					private static final long serialVersionUID = 1L;
-
-					@SuppressWarnings("unused")
-					public String getTickLabel(final double currentTickValue)
-					{
-						final long time = (long) currentTickValue;
-						final Date dtg = new HiResDate(0, time).getDate();
-						final String res = _secFormat.format(dtg) + "."
-								+ DebriefFormatDateTime.formatMicros(new HiResDate(0, time));
-						return res;
-					}
-				};
+				final NumberAxis nAxis = new NumberAxis("time (secs.micros)");
+//				{
+//					/**
+//                                        *
+//                                        */
+//					private static final long serialVersionUID = 1L;
+//
+//					@SuppressWarnings("unused")
+//					public String getTickLabel(final double currentTickValue)
+//					{
+//						final long time = (long) currentTickValue;
+//						final Date dtg = new HiResDate(0, time).getDate();
+//						final String res = _secFormat.format(dtg) + "."
+//								+ DebriefFormatDateTime.formatMicros(new HiResDate(0, time));
+//						return res;
+//					}
+//				};
 				nAxis.setAutoRangeIncludesZero(false);
 				xAxis = nAxis;
 
