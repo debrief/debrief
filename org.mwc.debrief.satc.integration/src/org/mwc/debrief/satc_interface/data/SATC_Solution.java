@@ -1254,6 +1254,9 @@ public class SATC_Solution extends BaseLayer implements
 			// do some fancy tests for if users only want the
 			// states that appear at leg ends
 			final boolean isLastOne = !iterator.hasNext();
+			
+			// note, we don't use .equals in the next line, since 
+			// getMemberOf could legitimately return an null
 			final boolean isDifferentLeg = thisS.getMemberOf() != lastName;
 			final boolean isLegEnd = isLastOne || isDifferentLeg;
 
