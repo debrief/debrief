@@ -451,14 +451,10 @@ public class RightClickCutCopyAdaptor
 	// ///////////////////////////////////////////////
 	public static class CopyItem extends CutItem
 	{
-		private final String _originalName;
-
 		public CopyItem(final Editable[] data, final Clipboard clipboard, final Layer[] theParent,
 				final Layers theLayers, final Layer[] updateLayer)
 		{
 			super(data, clipboard, theParent, theLayers, updateLayer);
-
-			_originalName = data[0].getName();
 
 			super.setText(toString());
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
@@ -472,7 +468,7 @@ public class RightClickCutCopyAdaptor
 			if (_data.length > 1)
 				res += _data.length + " selected items";
 			else
-				res += _originalName;
+				res += _data[0].getName();
 			return res;
 		}
 
