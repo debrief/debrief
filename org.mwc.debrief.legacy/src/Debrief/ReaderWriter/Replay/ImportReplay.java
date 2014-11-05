@@ -418,7 +418,7 @@ public class ImportReplay extends PlainImporterBase
 	/**
 	 * function to initialise the list of importers
 	 */
-	private static void checkImporters()
+	private synchronized static void checkImporters()
 	{
 		if (_theImporters == null)
 		{

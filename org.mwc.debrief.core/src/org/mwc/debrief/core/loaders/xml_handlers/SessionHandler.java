@@ -126,7 +126,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 	 * see if any extra right click handlers are defined
 	 * 
 	 */
-	private static ArrayList<LayerHandlerExtension> loadLoaderExtensions(
+	private synchronized static ArrayList<LayerHandlerExtension> loadLoaderExtensions(
 			final Layers theLayers)
 	{
 		if (_extensionLoaders == null)
