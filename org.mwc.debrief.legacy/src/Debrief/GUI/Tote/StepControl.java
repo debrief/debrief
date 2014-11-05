@@ -1274,7 +1274,7 @@ abstract public class StepControl implements Editable,
   // property editor to return the painters as a combo box
   ////////////////////////////////////////////////////////////
 
-  public static final class TagListEditor extends PropertyEditorSupport
+  public final class TagListEditor extends PropertyEditorSupport
   {
 
     // the working copy we are editing
