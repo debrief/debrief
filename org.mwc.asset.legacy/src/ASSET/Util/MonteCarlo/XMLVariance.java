@@ -273,7 +273,7 @@ public final class XMLVariance
 	{
 		System.err.println("IMPLEMENT PROPER CLONE METHOD");
 		// todo:IMPLEMENT PROPER CLONE METHOD
-		return this.clone();
+		return this;
 	}
 
 	/**

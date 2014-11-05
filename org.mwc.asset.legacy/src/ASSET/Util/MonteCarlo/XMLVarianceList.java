@@ -64,7 +64,7 @@ public class XMLVarianceList
   {
     System.err.println("SHOULD USE PROPER CLONE METHOD");
     // todo: IMPLEMENT PROPER CLONE METHYOD
-    return this.clone();
+    return this;
   }
 
 
