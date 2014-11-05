@@ -739,7 +739,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
 	}
 
-	public static String toStringHiRes(final HiResDate time, final String pattern)
+	public synchronized static String toStringHiRes(final HiResDate time, final String pattern)
 			throws IllegalArgumentException
 	{
 		// so, have a look at the data

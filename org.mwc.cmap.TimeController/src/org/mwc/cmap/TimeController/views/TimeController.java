@@ -1861,7 +1861,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private static String _myFormatString = null;
 
-	public static String toStringHiRes(final HiResDate time, final String pattern)
+	public synchronized static String toStringHiRes(final HiResDate time, final String pattern)
 			throws IllegalArgumentException
 	{
 		// so, have a look at the data

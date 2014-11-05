@@ -140,7 +140,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		}
 	}
 
-	private static void initialiseHelpers()
+	private synchronized static void initialiseHelpers()
 	{
 		if (_myHelperList == null)
 		{

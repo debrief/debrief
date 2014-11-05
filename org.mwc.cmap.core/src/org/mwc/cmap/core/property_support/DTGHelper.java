@@ -45,7 +45,7 @@ public class DTGHelper extends EditorHelper
 
 	protected final static String UNSET = "unset";
 
-	protected static void checkDateFormat()
+	protected synchronized static void checkDateFormat()
 	{
 		if (_dateFormat == null)
 		{

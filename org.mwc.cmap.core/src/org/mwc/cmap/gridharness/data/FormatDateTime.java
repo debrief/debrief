@@ -26,7 +26,7 @@ public class FormatDateTime {
 		return toStringLikeThis(theVal, DEFAULT_PATTERN);
 	}
 
-	static public String toStringLikeThis(final long theVal, final String thePattern) {
+	static synchronized public String toStringLikeThis(final long theVal, final String thePattern) {
 		final java.util.Date theTime = new java.util.Date(theVal);
 		String res;
 
