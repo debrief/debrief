@@ -220,7 +220,7 @@ abstract public class DatePropertyEditor extends
   /**
    * extract the values currently stored in the text boxes
    */
-  public Object getValue()
+  public synchronized Object getValue()
   {
     HiResDate res = null;
 

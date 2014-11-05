@@ -345,17 +345,17 @@ public class XMLHandler extends HandlerBase
     return Long.toString(val);
   }
 
-  static public String writeThis(final double val)
+  static synchronized public String writeThis(final double val)
   {
     return shortFormat.format(val);
   }
 
-  static public String writeThis(final Date val)
+  static synchronized public String writeThis(final Date val)
   {
     return RNdateFormat.format(val);
   }
 
-  static public String writeThisLong(final double val)
+  static synchronized public String writeThisLong(final double val)
   {
     return longFormat.format(val);
   }

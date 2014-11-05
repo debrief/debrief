@@ -307,7 +307,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
 
   }
 
-  void checkDTG()
+  synchronized void checkDTG()
   {
     try{
       _theDTG = _dateF.parse(_theDate.getText()).getTime();

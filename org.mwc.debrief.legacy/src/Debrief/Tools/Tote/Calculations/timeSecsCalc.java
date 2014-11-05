@@ -95,8 +95,8 @@ import java.util.TimeZone;
 
 public final class timeSecsCalc extends plainCalc
 {
-  private static java.text.SimpleDateFormat _myDateFormat = null;
-  private static java.text.SimpleDateFormat _milliSecsFormat = null;
+  private java.text.SimpleDateFormat _myDateFormat = null;
+  private java.text.SimpleDateFormat _milliSecsFormat = null;
 
 
   /////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ public final class timeSecsCalc extends plainCalc
     return res;
   }
 
-  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
+  public synchronized final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
   {
     String res = NOT_APPLICABLE;
     long val = 0;

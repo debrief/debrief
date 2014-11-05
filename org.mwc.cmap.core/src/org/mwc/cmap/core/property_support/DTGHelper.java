@@ -148,7 +148,7 @@ public class DTGHelper extends EditorHelper
 			return res;
 		}
 
-		public HiResDate getValue()
+		public synchronized HiResDate getValue()
 		{
 			HiResDate res = _originalVal;
 			try

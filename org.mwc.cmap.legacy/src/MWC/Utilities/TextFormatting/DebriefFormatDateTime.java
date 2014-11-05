@@ -56,7 +56,7 @@ public class DebriefFormatDateTime
 	 * we use static instances of patterns. just initialise them once
 	 * 
 	 */
-	private static void initialisePatterns()
+	private synchronized static void initialisePatterns()
 	{
 		if (_dfMillis == null)
 		{
@@ -226,7 +226,7 @@ public class DebriefFormatDateTime
 	/**
 	 * parse a date string using our format
 	 */
-	public static HiResDate parseThis(final String rawText)
+	public synchronized static HiResDate parseThis(final String rawText)
 	{
 		// make sure our two and four-digit date bits are initialised
 		initialisePatterns();
