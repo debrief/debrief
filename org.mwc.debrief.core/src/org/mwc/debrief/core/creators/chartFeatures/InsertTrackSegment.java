@@ -136,7 +136,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 			res = val[0].toString();
 
 			// hmm, is it our add layer command?
-			if (res == NEW_LAYER_COMMAND)
+			if (res.equals(NEW_LAYER_COMMAND))
 			{
 				// better create one. Ask the user
 
@@ -167,11 +167,11 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 
 						// keep popping open the dialog until we get valid date, or user
 						// presses cancel
-						while ((startDate == null) && (inp.open() == InputDialog.OK))
+						while ((startDate.equals(null)) && (inp.open() == InputDialog.OK))
 						{
 							final String startDateTxt = inp.getValue();
 							startDate = DebriefFormatDateTime.parseThis(startDateTxt);
-							if (startDate != null)
+							if (!startDate.equals(null))
 							{
 								// get the centre of the visible area
 								final WorldLocation wc = getCentre(theChart);
