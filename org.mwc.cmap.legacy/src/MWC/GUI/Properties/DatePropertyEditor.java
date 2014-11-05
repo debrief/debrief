@@ -174,7 +174,7 @@ abstract public class DatePropertyEditor extends
   /**
    * store the new value
    */
-  public void setValue(final Object p1)
+  public synchronized void setValue(final Object p1)
   {
     // check the formats are in the correct time zone
     _dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -258,7 +258,7 @@ abstract public class DatePropertyEditor extends
    * put the data into the text fields, if they have been
    * created yet
    */
-  public void resetData()
+  public synchronized void resetData()
   {
     if (_myVal == null)
     {

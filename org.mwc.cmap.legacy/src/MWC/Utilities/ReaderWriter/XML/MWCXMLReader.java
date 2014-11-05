@@ -278,7 +278,7 @@ public class MWCXMLReader extends DefaultHandler {
 	// ////////////////////////////////////////////////////////
 	// date formatter access
 	// ///////////////////////////////////////////////////////
-	public static DateFormat getRNDateFormatter() {
+	public synchronized static DateFormat getRNDateFormatter() {
 		if (RNdateFormat == null) {
 			RNdateFormat = new SimpleDateFormat("yyMMdd HHmmss.SSS");
 			RNdateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
