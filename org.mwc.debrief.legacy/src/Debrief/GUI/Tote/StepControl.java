@@ -337,7 +337,7 @@ abstract public class StepControl implements Editable,
   /**
    * the list of highlighters we know about
    */
-  static Vector<PlotHighlighter> _myHighlighters;
+  Vector<PlotHighlighter> _myHighlighters;
 
   /**
    * the highlighter currently selected
