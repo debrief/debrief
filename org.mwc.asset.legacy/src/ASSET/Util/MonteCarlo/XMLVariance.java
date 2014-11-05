@@ -279,8 +279,12 @@ public final class XMLVariance
 	/**
 	 * equals operator
 	 */
-	public final boolean equals(final XMLVariance other)
+	public final boolean equals(final Object arg0)
 	{
+		if(arg0 == null)
+			return false;
+		
+		XMLVariance other = (XMLVariance) arg0;
 		boolean res = true;
 
 		if (!_myName.equals(other._myName))

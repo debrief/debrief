@@ -144,8 +144,13 @@ public class Status implements java.io.Serializable
 	// member methods
 	// //////////////////////////////////////////////////////
 
-	public boolean equals(final Status other)
+	public boolean equals(final Object arg0)
 	{
+		if(arg0 == null)
+			return false;
+		
+		Status other = (Status) arg0;
+		
 		boolean res = false;
 		if ((other.getLocation().equals(getLocation()))
 				&& (other.getCourse() == getCourse())
