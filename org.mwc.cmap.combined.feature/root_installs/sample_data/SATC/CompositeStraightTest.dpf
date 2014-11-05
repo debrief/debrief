@@ -4107,7 +4107,7 @@
 </TrackSegment>
 </track>
 <satc_solution LiveRunning="false" NAME="121213.14" OnlyPlotEnds="false" ShowBounds="true" ShowSolutions="true">
-<colour Value="GREEN"/><![CDATA[<task version="1">
+<colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
     <minSpeedMS>1.028888888</minSpeedMS>
@@ -4864,12 +4864,12 @@
       <weight>5</weight>
       <startDate>2010-01-12 12:13:14.0 UTC</startDate>
       <finishDate>2010-01-12 12:31:14.0 UTC</finishDate>
-      <__myCol>
+      <color>
         <red>255</red>
         <green>165</green>
         <blue>0</blue>
         <alpha>255</alpha>
-      </__myCol>
+      </color>
       <speed>
         <name>auto_id:1412008123946+_255</name>
         <active>true</active>
@@ -4891,12 +4891,12 @@
       <weight>5</weight>
       <startDate>2010-01-12 12:34:14.0 UTC</startDate>
       <finishDate>2010-01-12 12:37:29.0 UTC</finishDate>
-      <__myCol>
+      <color>
         <red>255</red>
         <green>0</green>
         <blue>255</blue>
         <alpha>255</alpha>
-      </__myCol>
+      </color>
       <speed>
         <name>auto_id:1412008134786+_982</name>
         <active>true</active>
@@ -4938,7 +4938,7 @@
       <weight>5</weight>
     </speedAnalysisContribution>
   </contributions>
-</task>]]></satc_solution>
+</solution>]]></satc_solution>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
