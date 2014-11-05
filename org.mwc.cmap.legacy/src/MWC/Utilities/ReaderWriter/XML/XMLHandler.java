@@ -48,7 +48,7 @@ public class XMLHandler extends HandlerBase
   /**
    * date formatter to be used by child classes
    */
-  static public java.text.DateFormat RNdateFormat =
+  static protected java.text.DateFormat RNdateFormat =
     new java.text.SimpleDateFormat("yyMMdd HHmmss.SSS");
 
   /**
