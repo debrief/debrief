@@ -158,13 +158,13 @@ public class ColorPropertyEditor extends
     final String selectedColor = _theList.getSelectedItem().toString();
 
     // is it the custom item?
-    if(selectedColor == CUSTOM_LABEL)
+    if(selectedColor.equals(CUSTOM_LABEL))
     {
       // see if the colour is our "custom" colour. If so,
       // popup the custom dialog
       final Color theCol = JColorChooser.showDialog(null, "Select Color", (Color)this.getValue());
 
-      if(theCol != null)
+      if(!theCol.equals(null))
       {
         setValue(theCol);
       }
