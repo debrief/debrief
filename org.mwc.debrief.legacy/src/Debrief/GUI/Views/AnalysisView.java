@@ -328,6 +328,7 @@ import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.GUI.Tools.Chart.DblClickEdit;
@@ -670,7 +671,7 @@ abstract public class AnalysisView extends PlainView implements
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
-						return new ShapeWrapper("new polygon", null, java.awt.Color.red,
+						return new ShapeWrapper("new polygon", new PolygonShape(null), java.awt.Color.red,
 								null);
 					}
 				}, null, ' '));
@@ -765,9 +766,10 @@ abstract public class AnalysisView extends PlainView implements
 
 		// clear the file drop listener
 		if (_dropSupport != null)
+		{
 			_dropSupport.removeComponent(getChart().getPanel());
-
-		_dropSupport.removeFileDropListener(this);
+			_dropSupport.removeFileDropListener(this);
+		}
 
 		// now remove references to the tools themselves
 		_theTools.removeAllElements();
