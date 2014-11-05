@@ -25,8 +25,8 @@ import MWC.GUI.Editable;
 import MWC.GUI.S57.features.AreaFeature;
 import MWC.GUI.S57.features.LineFeature;
 import MWC.GUI.S57.features.PointFeature;
-import MWC.GUI.S57.features.S57Feature;
 import MWC.GUI.S57.features.PointFeature.PointPainter;
+import MWC.GUI.S57.features.S57Feature;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -865,8 +865,8 @@ public class S57Database
 
 			if (_pendingFeatureRecord == null)
 				System.err.println("NO PENDING VECTOR WAITING");
-
-			_pendingFeatureRecord.addFeatureToSpatialPointer(name, ornt, usage, mask);
+			else
+				_pendingFeatureRecord.addFeatureToSpatialPointer(name, ornt, usage, mask);
 		}
 	}
 
@@ -884,8 +884,8 @@ public class S57Database
 
 			if (_pendingFeatureRecord == null)
 				System.err.println("NO PENDING VECTOR WAITING");
-
-			_pendingFeatureRecord.addFeatureToFeaturePointer(lnam, rind, comt);
+			else
+				_pendingFeatureRecord.addFeatureToFeaturePointer(lnam, rind, comt);
 		}
 	}
 
@@ -900,8 +900,8 @@ public class S57Database
 
 			if (_pendingFeatureRecord == null)
 				System.err.println("NO PENDING FEATURE WAITING");
-
-			_pendingFeatureRecord.addFeatureAttribute(attl, atvl);
+			else
+				_pendingFeatureRecord.addFeatureAttribute(attl, atvl);
 		}
 	}
 
@@ -916,8 +916,8 @@ public class S57Database
 
 			if (_pendingFeatureRecord == null)
 				System.err.println("NO PENDING FEATURE WAITING");
-
-			_pendingFeatureRecord.setFeatureID(fidn, fids);
+			else
+				_pendingFeatureRecord.setFeatureID(fidn, fids);
 		}
 	}
 
@@ -954,8 +954,8 @@ public class S57Database
 
 			if (_pendingVectorRecord == null)
 				System.err.println("NO PENDING VECTOR WAITING");
-
-			_pendingVectorRecord.addVectorAttributes(attl, atvl);
+			else
+				_pendingVectorRecord.addVectorAttributes(attl, atvl);
 		}
 	}
 
@@ -972,8 +972,8 @@ public class S57Database
 
 			if (_pendingVectorRecord == null)
 				System.err.println("NO PENDING VECTOR WAITING");
-
-			_pendingVectorRecord.addVectorPointer(name, usage, topi, mask);
+			else
+				_pendingVectorRecord.addVectorPointer(name, usage, topi, mask);
 		}
 	}
 
