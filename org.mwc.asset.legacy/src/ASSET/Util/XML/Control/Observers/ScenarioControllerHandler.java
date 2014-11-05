@@ -77,13 +77,6 @@ abstract public class ScenarioControllerHandler extends
 
 		addHandler(new ScenarioGeneratorHandler()
 		{
-			@SuppressWarnings("unused")
-			public void setScenarioGenerator(Object genny)
-			{
-				// don't bother doing anything, we're just including this to stop an
-				// error being thrown
-				// later on
-			}
 		});
 	}
 
