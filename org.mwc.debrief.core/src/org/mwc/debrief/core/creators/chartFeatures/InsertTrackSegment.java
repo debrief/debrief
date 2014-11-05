@@ -167,11 +167,11 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 
 						// keep popping open the dialog until we get valid date, or user
 						// presses cancel
-						while ((startDate.equals(null)) && (inp.open() == InputDialog.OK))
+						while ((startDate == null) && (inp.open() == InputDialog.OK))
 						{
 							final String startDateTxt = inp.getValue();
 							startDate = DebriefFormatDateTime.parseThis(startDateTxt);
-							if (!startDate.equals(null))
+							if (!(startDate == null))
 							{
 								// get the centre of the visible area
 								final WorldLocation wc = getCentre(theChart);
