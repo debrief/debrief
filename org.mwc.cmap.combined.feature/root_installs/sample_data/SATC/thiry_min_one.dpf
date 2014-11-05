@@ -1334,7 +1334,7 @@
 </TrackSegment>
 </track>
 <satc_solution AutoSolutions="true" NAME="121200.00" ShowBounds="false" ShowSolutions="true">
-<colour Value="GREEN"/><![CDATA[<task version="1">
+<colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>Medium Tanker</name>
     <minSpeedMS>0.514444444</minSpeedMS>
@@ -1359,239 +1359,239 @@
       <measurements>
         <bmeasurement bearingAngle="-2.035053907825388" time="2010-01-12 12:00:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0512972" lon="0.0215972"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.0472712125893486" time="2010-01-12 12:00:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0499306" lon="0.0207583"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.101376419401173" time="2010-01-12 12:01:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0488028" lon="0.0195278"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.134537675189065" time="2010-01-12 12:01:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0482417" lon="0.0189139"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.1694442602289516" time="2010-01-12 12:02:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0476778" lon="0.0183"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.253220064324679" time="2010-01-12 12:02:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.04655" lon="0.0170722"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.3038346126325147" time="2010-01-12 12:03:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0459889" lon="0.0164583"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.3596851486963333" time="2010-01-12 12:03:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.045425" lon="0.0158444"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.424262331020124" time="2010-01-12 12:03:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0448611" lon="0.0152306"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.5778513051956247" time="2010-01-12 12:04:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0437361" lon="0.014"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.66860842629933" time="2010-01-12 12:04:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0431722" lon="0.0133861"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.7680921936630063" time="2010-01-12 12:05:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0426083" lon="0.0127722"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.9949849964222692" time="2010-01-12 12:05:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0414833" lon="0.0115444"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-3.1154127148098785" time="2010-01-12 12:06:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0409194" lon="0.0109306"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="3.045599544730105" time="2010-01-12 12:06:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0403556" lon="0.0103167"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.811725424962865" time="2010-01-12 12:07:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0392306" lon="0.0090861"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.705260340591211" time="2010-01-12 12:07:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0386667" lon="0.0084722"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.522000769131806" time="2010-01-12 12:08:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0375389" lon="0.0072444"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.443460952792061" time="2010-01-12 12:08:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0369778" lon="0.0066306"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.3701571242082995" time="2010-01-12 12:08:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0364139" lon="0.0060167"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.1537362969610028" time="2010-01-12 12:09:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0347222" lon="0.004175"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.0158552860534504" time="2010-01-12 12:10:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.03345" lon="0.0031528"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.9565140914856434" time="2010-01-12 12:10:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0326167" lon="0.0031472"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.9006635554218247" time="2010-01-12 12:11:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0317861" lon="0.0031917"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.8465583486100006" time="2010-01-12 12:11:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0309528" lon="0.0032389"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.7470745812463238" time="2010-01-12 12:12:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0292889" lon="0.0033278"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.6144295580947547" time="2010-01-12 12:13:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0267944" lon="0.0034639"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.5393804002589986" time="2010-01-12 12:13:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0251278" lon="0.0035556"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.5044738152191122" time="2010-01-12 12:14:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0242972" lon="0.0036"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.514945790731078" time="2010-01-12 12:15:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0230417" lon="0.0062333"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.5742869852988854" time="2010-01-12 12:16:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0230667" lon="0.0079"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.6091935703387719" time="2010-01-12 12:16:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0230806" lon="0.0087333"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.6441001553786583" time="2010-01-12 12:16:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0230944" lon="0.0095667"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.7243853009703975" time="2010-01-12 12:17:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0231222" lon="0.0112333"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.7697638615222502" time="2010-01-12 12:17:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0231361" lon="0.0120667"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.8168877513260968" time="2010-01-12 12:18:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.02315" lon="0.0129"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="1.9233528356977512" time="2010-01-12 12:18:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0231778" lon="0.0145667"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.0402898955813713" time="2010-01-12 12:19:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0232056" lon="0.0162333"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.1694442602289516" time="2010-01-12 12:20:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0232333" lon="0.0179"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.2444934180647076" time="2010-01-12 12:20:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0232472" lon="0.0187333"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.33001455141243" time="2010-01-12 12:20:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0232611" lon="0.0195667"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.4277529895241123" time="2010-01-12 12:21:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.023275" lon="0.0203972"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.535963403147761" time="2010-01-12 12:21:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0232889" lon="0.0212306"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.652900463031381" time="2010-01-12 12:21:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0233028" lon="0.0220639"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="2.7768188399229783" time="2010-01-12 12:22:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0233167" lon="0.0228972"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="3.005456971934235" time="2010-01-12 12:22:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0233444" lon="0.0245639"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-3.089232776029963" time="2010-01-12 12:23:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0233694" lon="0.0262306"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-3.0106929596902186" time="2010-01-12 12:23:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0233833" lon="0.0270639"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.9408797896104453" time="2010-01-12 12:24:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0233972" lon="0.0278972"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.7628562059070236" time="2010-01-12 12:25:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0208722" lon="0.0300528"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.7558748888990463" time="2010-01-12 12:26:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0200389" lon="0.0300139"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.7401669256310974" time="2010-01-12 12:26:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.018375" lon="0.0299389"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.731440279371126" time="2010-01-12 12:27:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0175417" lon="0.0299028"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.7227136331111543" time="2010-01-12 12:27:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0167111" lon="0.0298639"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.7035150113392166" time="2010-01-12 12:28:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0150444" lon="0.0297889"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.682571060315284" time="2010-01-12 12:28:40.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0133806" lon="0.0297139"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.6720990848033184" time="2010-01-12 12:29:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0125472" lon="0.0296778"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.6598817800393584" time="2010-01-12 12:29:20.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.0117139" lon="0.0296389"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
         <bmeasurement bearingAngle="-2.6337018412594433" time="2010-01-12 12:30:00.0 UTC" theRange="0.041144708433918896">
           <origin lat="0.01005" lon="0.0295639"/>
-          <__isActive>true</__isActive>
+          <isActive>true</isActive>
         </bmeasurement>
       </measurements>
     </bearingMeasurementContribution>
@@ -1642,7 +1642,7 @@
       <weight>5</weight>
     </speedAnalysisContribution>
   </contributions>
-</task>]]></satc_solution>
+</solution>]]></satc_solution>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
