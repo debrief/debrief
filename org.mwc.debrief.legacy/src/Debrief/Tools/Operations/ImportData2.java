@@ -310,13 +310,14 @@ public final class ImportData2 extends PlainTool {
           // now try again
           _theSession = _theApplication.getCurrentSession();
 
-          // check it worked
-          if(_theSession == null)
-          {
-            MWC.GUI.Dialogs.DialogFactory.showMessage("Import data","Import data - create session failed!");
-          }
-
         }
+      }
+      
+      // check it worked
+      if(_theSession == null)
+      {
+        MWC.GUI.Dialogs.DialogFactory.showMessage("Import data","Import data - create session failed!");
+        return;
       }
 
       // we are now sure that we have a session, add the new data to it
