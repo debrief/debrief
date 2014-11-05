@@ -164,7 +164,7 @@ public class ColorPropertyEditor extends
       // popup the custom dialog
       final Color theCol = JColorChooser.showDialog(null, "Select Color", (Color)this.getValue());
 
-      if(!theCol.equals(null))
+      if(!(theCol == null))
       {
         setValue(theCol);
       }
