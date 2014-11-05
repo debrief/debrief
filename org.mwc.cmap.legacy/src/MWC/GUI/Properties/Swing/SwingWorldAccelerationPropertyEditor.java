@@ -108,11 +108,6 @@ public class SwingWorldAccelerationPropertyEditor extends
    */
   protected java.beans.PropertyChangeSupport _pSupport = new java.beans.PropertyChangeSupport(this);
 
-  /**
-   * the amount of columns the users wants us to create
-   */
-  protected int _numColumns = 3;
-
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
