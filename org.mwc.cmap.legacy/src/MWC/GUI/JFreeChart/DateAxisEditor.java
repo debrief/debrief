@@ -110,7 +110,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		return theUnit;
 	}
 
-	protected void checkCreated()
+	protected synchronized void checkCreated()
 	{
 		// have they been created?
 		if (_theData == null)

@@ -488,26 +488,34 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// ok, try to retrieve the view
 							final IViewReference plotRef = page.findViewReference(plotId,
 									theTitle);
-							final XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-
-							try
+							if(plotRef == null)
 							{
-								plotter.showPlot(theTitle, prov, myOperation.toString() + " ("
-										+ myOperation.getUnits() + ")", theHolder._theFormatter,
-										thePlotId);
+								CorePlugin.logError(Status.ERROR, "Faled to find existing plot", null);
 							}
-							catch (RuntimeException ex)
+							else
 							{
-								// show the error message
-								CorePlugin.errorDialog("Generate XY Plot", ex.getMessage());
 
-								// and remove the view from the screen
-								page.hideView(newPart);
+								final XYPlotView plotter = (XYPlotView) plotRef.getView(true);
 
-								// lastly - try to ditch the view
-								newPart.dispose();
+								try
+								{
+									plotter.showPlot(theTitle, prov, myOperation.toString() + " ("
+											+ myOperation.getUnits() + ")", theHolder._theFormatter,
+											thePlotId);
+								}
+								catch (RuntimeException ex)
+								{
+									// show the error message
+									CorePlugin.errorDialog("Generate XY Plot", ex.getMessage());
 
-								return;
+									// and remove the view from the screen
+									page.hideView(newPart);
+
+									// lastly - try to ditch the view
+									newPart.dispose();
+
+									return;
+								}
 							}
 
 						}

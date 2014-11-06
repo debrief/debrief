@@ -19,8 +19,19 @@ import MWC.GenericData.WorldLocation;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.vividsolutions.jts.geom.Coordinate;
 
+/** convenience methods to move between SATC and Debrief location models
+ * 
+ * @author ian
+ *
+ */
 public class conversions
 {
+	/** declare private constructor, to prevent accidental declaration
+	 * 
+	 */
+	private conversions(){		
+	}
+	
 	public static GeoPoint toPoint(WorldLocation loc)
 	{
 		GeoPoint res = new GeoPoint(loc.getLat(), loc.getLong());

@@ -19,16 +19,17 @@
 				grouped into individual projects: thus you can quickly switch
 				between concurrent analysis tasks. Debrief&apos;s provision of
 				projects allows you to quickly drag and drop Debrief data-files and
-				plots.
+				plots into the editor.
 			</intro>
 			<onCompletion>
 				Right, Debrief now knows where to find your data. In the next series of
 				steps you will load and examine some data.
 			</onCompletion>
-			<task kind="cheatsheet" name="Generating a project" skip="false">
+			<task kind="cheatsheet" name="Generating a project" skip="true">
 				<intro>
 					Right, we&apos;ll start off by creating a Project that will contain our
-					work
+					work.  But, if the "Create Project" dialog prompted you to create a project,
+					and load some sample data - then you can skip this part.
 				</intro>
 				<onCompletion>
 					You&apos;ve now created a project into which you can store your Debrief data
@@ -65,12 +66,8 @@
 				<intro>
 					Debrief can plot information from library datasets to add context
 					to the current view.
-					Because of their typical size, these datasets are not distributed with
+					Because of their typical size, some of these datasets are not distributed with
 					Debrief, but should be obtained separately.
-					<br />
-					If you don&apos;t hold a VPF CD, or the ~200Mb
-					<b>ETOPO.RAW</b>
-					file, you may skip this task.
 				</intro>
 				<onCompletion>
 				</onCompletion>

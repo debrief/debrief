@@ -92,11 +92,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}
 		if (straightLegs != null)
 		{
-			if (straightLegs != null)
-			{
-				straightLegs.clear();
-				straightLegs = null;
-			}
+			straightLegs.clear();
+			straightLegs = null;
 		}
 	}
 

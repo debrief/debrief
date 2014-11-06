@@ -37,7 +37,7 @@ public class ImageLoader implements Runnable
 {
 	private static ImageLoader instance;
 
-	public static ImageLoader getInstance()
+	public synchronized static ImageLoader getInstance()
 	{
 		if (instance == null)
 		{

@@ -118,7 +118,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 					res = val[0].toString();
 
 					// hmm, is it our add layer command?
-					if (res == NEW_LAYER_COMMAND)
+					if (res.equals(NEW_LAYER_COMMAND))
 					{
 						// better create one. Ask the user
 

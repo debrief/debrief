@@ -203,7 +203,7 @@ public class Category implements java.io.Serializable
 		return _environments;
 	}
 
-	static private void checkLists()
+	static synchronized private void checkLists()
 	{
 		if (_types == null)
 		{

@@ -132,8 +132,6 @@ public class ControlPointersLayer {
 		}
 		
 		public void layout(IFigure container) {
-			assert container == ControlPointersLayer.this;
-			//System.out.println("ControlPointersLayer.Layout.layout()");
 			
 			ControlUISuite suite = getSuite(container);
 			ControlUIModel positions = myControl.selectControl(suite);

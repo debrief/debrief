@@ -916,7 +916,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		return docsToDownload;
 	}
 
-	private String collateDateFilter(final HiResDate start, final HiResDate end)
+	private synchronized String collateDateFilter(final HiResDate start, final HiResDate end)
 	{
 
 		final SearchRequest request = new SearchRequest();

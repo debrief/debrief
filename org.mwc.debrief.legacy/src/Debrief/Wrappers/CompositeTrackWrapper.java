@@ -484,6 +484,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 				theCalc = new FromRangeTime();
 				break;
 			case PlanningLegCalcModelPropertyEditor.SPEED_TIME:
+			default:
 				theCalc = new FromSpeedTime();
 				break;
 			}

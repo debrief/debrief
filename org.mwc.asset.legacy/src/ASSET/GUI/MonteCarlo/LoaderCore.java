@@ -178,14 +178,15 @@ abstract class LoaderCore
         writeScenarioToDisk(mutatedScenario, tmpFile);
         writeMessage("Working scenario written to disk");
         writeMessage("  " + tmpFile.getCanonicalPath());
+        // and load the temp working scenario
+        loadScenario(tmpFile);
+
       }
       catch (IOException e)
       {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
 
-      // and load the temp working scenario
-      loadScenario(tmpFile);
     }
     else
     {

@@ -148,8 +148,11 @@ public class NewSolutionWizard extends Wizard
 				_tma = new TMAWrapper(namePage.getString());
 			}
 
-		// make the wrapper visible, so the new data can be seen
-		_tma.setVisible(true);
+		if(_tma != null)
+		{
+			// make the wrapper visible, so the new data can be seen
+			_tma.setVisible(true);
+		}
 
 		return _tma;
 	}

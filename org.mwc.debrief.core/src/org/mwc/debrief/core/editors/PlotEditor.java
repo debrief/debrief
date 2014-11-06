@@ -1253,20 +1253,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 
 			// right, have a look at it.
-			if ((ext == null) || (!ext.equalsIgnoreCase("xml")))
+			if ( (ext == null) || (!ext.equalsIgnoreCase("xml") && !ext.equalsIgnoreCase("dpf")) )
 			{
-				String msg = "Debrief stores data in a structured (xml) file format,";
+				String msg = "Debrief stores data in a structured (xml) text format,";
 				msg += "\nwhich is different to the format you've used to load the data.";
-				msg += "\nThus you must specify a new folder to "
-						+ "store the plot, and a new filename.";
-				msg += "\nNote: it's important that you give the file a .xml file suffix";
+				msg += "\nThus you must specify an existing (or new) folder to "
+						+ "store the plot,\nand provide new filename.";
+				msg += "\nNote: it's important that you give the file a .dpf file suffix";
 				final MessageDialog md = new MessageDialog(getEditorSite().getShell(),
 						"Save as", null, msg, MessageDialog.WARNING, new String[]
 						{ "Ok" }, 0);
 				md.open();
 
 				// not, we have to do a save-as
-				doSaveAs("Can't store this file-type, select a target folder, and remember to save as Debrief plot-file (*.xml)");
+				doSaveAs("Can't store this file-type, select a target folder, and remember to save as Debrief plot-file (*.dpf)");
 			}
 			else
 			{
@@ -1285,7 +1285,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					// success.
 
 					// 1. create the temp file
-					final File tmpFile = File.createTempFile("DebNG_tmp", ".xml");
+					final File tmpFile = File.createTempFile("DebNG_tmp", ".dpf");
 					tmpFile.createNewFile();
 					tmpFile.deleteOnExit();
 
@@ -1574,7 +1574,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			final IPath oldPath = oldFile.getFullPath();
 			final IPath newStart = oldPath.removeFileExtension();
-			final IPath newPath = newStart.addFileExtension("xml");
+			final IPath newPath = newStart.addFileExtension("dpf");
 			final File asFile = newPath.toFile();
 			final String newName = asFile.getName();
 			dialog.setOriginalName(newName);
@@ -1586,7 +1586,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			final URI uri = fi.getURI();
 			final File thisFile = new File(uri.getPath());
 			String newPath = fileNamePartOf(thisFile.getAbsolutePath());
-			newPath += ".xml";
+			newPath += ".dpf";
 			dialog.setOriginalName(newPath);
 		}
 

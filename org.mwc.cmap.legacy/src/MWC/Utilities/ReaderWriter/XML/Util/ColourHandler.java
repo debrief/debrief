@@ -94,7 +94,7 @@ abstract public class ColourHandler extends MWCXMLReader
 
 	}
 
-	private static void checkColours()
+	private synchronized static void checkColours()
 	{
 		if (_myColours == null)
 		{

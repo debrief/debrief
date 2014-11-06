@@ -188,8 +188,13 @@ public class Gene implements Comparable<Gene>
   /**
    * comparison operator
    */
-  public boolean equals(final Gene other)
+  public boolean equals(final Object arg0)
   {
+  	if(arg0 == null)
+  		return false;
+  	
+  	Gene other = (Gene) arg0;
+  	
     boolean res = true;
     if (_myList.size() != other._myList.size())
     {

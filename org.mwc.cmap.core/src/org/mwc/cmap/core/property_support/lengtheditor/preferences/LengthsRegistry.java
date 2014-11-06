@@ -46,7 +46,7 @@ public class LengthsRegistry {
 		setFileName(CorePlugin.getDefault().getPreferenceStore().getString(FILE_NAME));
 	}
 
-	public static LengthsRegistry getRegistry() {
+	public synchronized static LengthsRegistry getRegistry() {
 		if (ourInstance == null) {
 			ourInstance = new LengthsRegistry();
 			ourInstance.load();

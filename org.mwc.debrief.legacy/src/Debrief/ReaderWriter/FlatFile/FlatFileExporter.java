@@ -87,7 +87,8 @@ public class FlatFileExporter
 			{
 				try
 				{
-					out.close();
+					if(out != null)
+						out.close();
 				}
 				catch (final IOException e)
 				{

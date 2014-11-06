@@ -22,11 +22,17 @@ public class FormatDateTime {
 	public static final String DEFAULT_TIME_ZONE_ID = "GMT";
 	static private SimpleDateFormat _df = null;
 
+	// private constructor, to stop anybody accidentally declaring it
+	private FormatDateTime()
+	{
+		
+	}
+	
 	static public String toString(final long theVal) {
 		return toStringLikeThis(theVal, DEFAULT_PATTERN);
 	}
 
-	static public String toStringLikeThis(final long theVal, final String thePattern) {
+	static synchronized public String toStringLikeThis(final long theVal, final String thePattern) {
 		final java.util.Date theTime = new java.util.Date(theVal);
 		String res;
 

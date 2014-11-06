@@ -399,7 +399,7 @@ public class SwingGrabControl extends JPanel
 
     private static java.text.DateFormat df = new java.text.SimpleDateFormat("hh:mm:ss.SSS");
 
-    public void paint(final Graphics g)
+    public synchronized void paint(final Graphics g)
     {
       if (!updater.isAlive())
         updater.start();

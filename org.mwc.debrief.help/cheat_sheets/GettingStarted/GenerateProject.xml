@@ -14,7 +14,7 @@
    </item>
    <item skip="true" title="Learn about the Show View menu">
       <description> Was the navigator view already open? If it was then you&apos;ve missed out on
-         the Show View menu. Just open the Window menu from the top of Debrief, and select <b>Show
+         the Show View menu. To open a view, just open the Window menu from the top of Debrief, and select <b>Show
             view</b>. A list of Debrief-specific views will open. So, in the future, if you&apos;re
          directed to a view but you can&apos;t find it, just remember you can open any view from
          this menu, </description>
@@ -38,8 +38,9 @@
       <description>If the navigator window is empty, then you need to create a project. If the
          window already contains a folder-icon (possibly containing sample data) then hey, you&apos;re
          ready to go, well done! <i>NoPrint</i>Return to the Welcome page and select another tutorial (such as
-         &apos;Getting your data into Debrief&apos;. Otherwise, tick the &apos;Complete&apos; box below and continue
-         with this tutorial.<i>NoPrint</i></description>
+         &apos;Getting your data into Debrief&apos;). Otherwise, tick the &apos;Complete&apos; box below and continue
+         with this tutorial.<i>NoPrint</i><i> You can now move on to the next cheat sheet. But, if you have 
+         to create a project please move on to the next step.</i></description>
    </item>
    <item title="Create a &apos;General&apos; project" dialog="true">
       <description>Right-click in the Navigator view, and select <b>Project...</b> from the

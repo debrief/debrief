@@ -70,38 +70,10 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-		/** Is the value currently selected. */
-    protected boolean selected;
-    /** True if has focus. */
-    protected boolean hasFocus;
-    /** True if draws focus border around icon as well. */
-    private final boolean drawsFocusBorderAroundIcon;
-
-    // Icons
-    /** Icon used to show non-leaf nodes that aren't expanded. */
-    transient protected Icon closedIcon;
-
-    /** Icon used to show leaf nodes. */
-    transient protected Icon leafIcon;
-
-    /** Icon used to show non-leaf nodes that are expanded. */
-    transient protected Icon openIcon;
+		private boolean drawsFocusBorderAroundIcon;
 
     // Colors
-    /** Color to use for the foreground for selected nodes. */
-    protected Color textSelectionColor;
 
-    /** Color to use for the foreground for non-selected nodes. */
-    protected Color textNonSelectionColor;
-
-    /** Color to use for the background when a node is selected. */
-    protected Color backgroundSelectionColor;
-
-    /** Color to use for the background when the node isn't selected. */
-    protected Color backgroundNonSelectionColor;
-
-    /** Color to use for the background when the node isn't selected. */
-    protected Color borderSelectionColor;
 
     /**
       * Returns a new instance of DefaultTreeCellRenderer.  Alignment is

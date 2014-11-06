@@ -9,9 +9,22 @@
 			datasets such as ETOPO-2
 		</description>
 	</intro>
+	<item		
+		title="Locating the coastline file">
+		<description>
+			In your Debrief installation directory is a file named <b>world.dat</b>.
+			This is a fairly coarse global coastline.  For Debrief to plot coastlines
+			we need to tell Debrief where the file is.
+			<br/>
+			So, go into <b>Window/Preferences</b>, then open up <b>Maritime Analysis</b>,
+			then <b>Coastline file location</b>. Lastly, click on <b>Browse</b>
+			to navigate to the <b>World.dat</b> file in your Debrief installation 
+			folder.
+		</description>
+	</item>
 	<item
 		href="/org.mwc.debrief.help/html/legacy/external_datasets.html#getting_vpf"
-		title="How to configure VPF library datasets">
+		title="How to configure VPF library datasets" skip="true">
 		<description>
 			The steps to configure VPF and Etopo are covered in Debrief&apos;s
 			user manual. <i>NoPrint</i>If you wish to learn this at this stage, use the
@@ -21,18 +34,22 @@
 			Here&apos;s a
 			clue though, you go into the
 			<b>Maritime Analysis</b>
-			section of the Preferences.
+			section of the Preferences. <br/> VPF is distributed as 4 CD-ROMS. If 
+			you don&apos;t hold the CDs you can skip this step.
 		</description>
 	</item>
 	<item href="/org.mwc.debrief.help/html/legacy/etopo_data.html#etopo_install"
-		title="How to configure ETOPO library data">
+		title="How to configure ETOPO library data" skip="true">
 		<description>
 			<i>NoPrint</i>
 			Use the help link to the side of this text to open the guidance on
 			how to configure the location of the ETOPO data.
 			<i>NoPrint</i>
-			<i>Please read the relevant section of the Debrief User Guide for how
-				to specify use the Debrief/Preferences dialog the location of the ETOPO dataset.</i>
+			<i>Please read the relevant section of the Debrief user manual for how
+				to specify use the Debrief/Preferences dialog the location of the ETOPO dataset.
+				</i> 
+				<br/>ETOPO is distributed as a ~200Mb data-file.  If 
+			you don&apos;t hold the data-file you can skip this step.
 		</description>
 	</item>
 </cheatsheet>

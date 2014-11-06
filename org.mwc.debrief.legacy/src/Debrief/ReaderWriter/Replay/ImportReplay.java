@@ -315,7 +315,7 @@ public class ImportReplay extends PlainImporterBase
 	/**
 	 * the format we use to parse text
 	 */
-	private static final java.text.DateFormat dateFormat = new java.text.SimpleDateFormat(
+	private final java.text.DateFormat dateFormat = new java.text.SimpleDateFormat(
 			"yyMMdd HHmmss.SSS");
 
 	private static Vector<PlainLineImporter> _theImporters;
@@ -371,7 +371,7 @@ public class ImportReplay extends PlainImporterBase
 		initialiseColours();
 	}
 
-	private static void initialiseColours()
+	private synchronized static void initialiseColours()
 	{
 		// create a list of colours
 		if (colors == null)
@@ -418,7 +418,7 @@ public class ImportReplay extends PlainImporterBase
 	/**
 	 * function to initialise the list of importers
 	 */
-	private static void checkImporters()
+	private synchronized static void checkImporters()
 	{
 		if (_theImporters == null)
 		{

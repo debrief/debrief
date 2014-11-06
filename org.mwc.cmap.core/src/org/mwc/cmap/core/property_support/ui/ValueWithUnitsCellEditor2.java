@@ -22,11 +22,6 @@ import org.mwc.cmap.core.CorePlugin;
 
 public class ValueWithUnitsCellEditor2 extends CellEditor
 {
-	/**
-	 * the control we're using
-	 * 
-	 */
-	private ValueWithUnitsControl _myControl;
 
 	/**
 	 * constructor
@@ -45,36 +40,44 @@ public class ValueWithUnitsCellEditor2 extends CellEditor
 	{
 		super(parent);
 
-		if (_myControl != null)
-			_myControl.init(textTip, comboTip, model);
+		if (getMyControl() != null)
+			getMyControl().init(textTip, comboTip, model);
 		else
 			CorePlugin.logError(Status.ERROR, "trying to create ValueWithUnitsCellEditor2 with corrupted control", null);
+	}
+	
+	protected ValueWithUnitsControl getMyControl()
+	{
+		return (ValueWithUnitsControl) super.getControl();
 	}
 
 	@Override
 	protected Control createControl(final Composite parent)
 	{
-		if (_myControl == null)
-			_myControl = new ValueWithUnitsControl(parent);
-		return _myControl;
+		ValueWithUnitsControl control = getMyControl();
+		if (control == null)
+		{
+			control = new ValueWithUnitsControl(parent);
+		}
+		return control;
 	}
 
 	@Override
 	protected Object doGetValue()
 	{
-		return _myControl.getData();
+		return getMyControl().getData();
 	}
 
 	@Override
 	protected void doSetFocus()
 	{
-		_myControl.setFocus();
+		getMyControl().setFocus();
 	}
 
 	@Override
 	protected void doSetValue(final Object value)
 	{
-		_myControl.setData(value);
+		getMyControl().setData(value);
 	}
 
 }

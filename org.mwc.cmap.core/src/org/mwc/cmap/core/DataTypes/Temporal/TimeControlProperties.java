@@ -77,15 +77,15 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 	/**
 	 * static instances of our properties
 	 */
-	private static PropertyDescriptor LARGE_STEP = null;
+	private PropertyDescriptor LARGE_STEP = null;
 
-	private static PropertyDescriptor SMALL_STEP = null;
+	private PropertyDescriptor SMALL_STEP = null;
 
-	private static PropertyDescriptor AUTO_STEP = null;
+	private PropertyDescriptor AUTO_STEP = null;
 
-	private static PropertyDescriptor DTG_FORMAT = null;
+	private PropertyDescriptor DTG_FORMAT = null;
 
-	private static PropertyDescriptor[] PROPERTY_DESCRIPTORS = null;
+	private PropertyDescriptor[] PROPERTY_DESCRIPTORS = null;
 
 	// //////////////////////////////////////////////////////////////
 	// constructor
@@ -120,7 +120,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		return this;
 	}
 
-	public IPropertyDescriptor[] getPropertyDescriptors()
+	public synchronized IPropertyDescriptor[] getPropertyDescriptors()
 	{
 		if (LARGE_STEP == null)
 		{

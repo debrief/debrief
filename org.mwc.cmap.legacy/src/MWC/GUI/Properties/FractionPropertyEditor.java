@@ -119,14 +119,6 @@ public class FractionPropertyEditor extends PropertyEditorSupport
       final String val = (String) p1;
       setAsText(val);
     }
-
-    // check we have worked correctly
-    if(_myFrac == null)
-    {
-      // throw an error - this should only occur during development
-      MWC.Utilities.Errors.Trace.trace("CRASH ME: " + _myFrac.toString());
-
-    }
   }
 
   public void setAsText(final String val)

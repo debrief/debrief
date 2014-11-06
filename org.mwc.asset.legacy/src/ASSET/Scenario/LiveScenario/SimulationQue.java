@@ -168,13 +168,13 @@ public class SimulationQue implements ISimulationQue
 					String thisState = _theState.getCurrent(thisS).getValue().toString();
 
 					// check the state
-					if (thisState == MockSimulation.RUNNING)
+					if (thisState.equals(MockSimulation.RUNNING))
 					{
 						worthRunning = true;
 						// right there's one running, let's just leave it
 						break;
 					}
-					else if (thisState == MockSimulation.WAITING)
+					else if (thisState.equals(MockSimulation.WAITING))
 					{
 						worthRunning = true;
 						// right this one's waiting to start - get it going

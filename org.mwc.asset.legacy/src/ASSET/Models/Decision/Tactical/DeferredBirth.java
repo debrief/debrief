@@ -170,42 +170,46 @@ public class DeferredBirth extends CoreDecision implements Serializable
 
 		// get the participant
 		int platformId = status.getId();
-		ParticipantType thisP = monitor.getThisParticipant(platformId);
 
-		// have we been called yet
-		if (_expiryTime == -1)
+		if (monitor != null)
 		{
-			// no, initialise ourseves
-			_expiryTime = newTime + _myDuration.getMillis();
-			_originalStatus = demStatus;
-		}
+			ParticipantType thisP = monitor.getThisParticipant(platformId);
 
-		// now check whether we have any remaining wait
-		if (newTime >= _expiryTime)
-		{
-			// all done!
-			// restore the prior status
-			res = _originalStatus;
-			_originalStatus = null;
-
-			if (!thisP.getAlive())
+			// have we been called yet
+			if (_expiryTime == -1)
 			{
-				// set the status as the current time - otherwise we jump forward
-				// absolutely miles
-				thisP.getStatus().setTime(newTime);
-
-				// ok, wake it up
-				thisP.setAlive(true);
+				// no, initialise ourseves
+				_expiryTime = newTime + _myDuration.getMillis();
+				_originalStatus = demStatus;
 			}
-		}
-		else
-		{
-			// just double check it's asleep
-			thisP.setAlive(false);
-			activity = "Still waiting";
-		}
 
-		super.setLastActivity(activity);
+			// now check whether we have any remaining wait
+			if (newTime >= _expiryTime)
+			{
+				// all done!
+				// restore the prior status
+				res = _originalStatus;
+				_originalStatus = null;
+
+				if (!thisP.getAlive())
+				{
+					// set the status as the current time - otherwise we jump forward
+					// absolutely miles
+					thisP.getStatus().setTime(newTime);
+
+					// ok, wake it up
+					thisP.setAlive(true);
+				}
+			}
+			else
+			{
+				// just double check it's asleep
+				thisP.setAlive(false);
+				activity = "Still waiting";
+			}
+
+			super.setLastActivity(activity);
+		}
 
 		return res;
 	}
@@ -391,7 +395,7 @@ public class DeferredBirth extends CoreDecision implements Serializable
 			return new DeferredBirth(null, "my name");
 		}
 
-	  // TODO FIX-TEST
+		// TODO FIX-TEST
 		public void NtestSimple()
 		{
 			Duration dur = new Duration(12, Duration.SECONDS);
@@ -405,7 +409,38 @@ public class DeferredBirth extends CoreDecision implements Serializable
 			DemandedStatus res = new SimpleDemandedStatus(0, stat);
 
 			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
+			ScenarioActivityMonitor monitor = new ScenarioActivityMonitor()
+			{
+
+				@Override
+				public ParticipantType getThisParticipant(int id)
+				{
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public Integer[] getListOfParticipants()
+				{
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public void detonationAt(int id, WorldLocation loc, double power)
+				{
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void createParticipant(ParticipantType newPart)
+				{
+					// TODO Auto-generated method stub
+
+				}
+			};
+			res = wt.decide(stat, null, res, null, monitor, stat.getTime());
 
 			// have we set the correct expiry time?
 			assertEquals("correct expiry time set", 13000, wt._expiryTime, 0);

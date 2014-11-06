@@ -214,10 +214,7 @@ public final class ImportFix implements PlainLineImporter
 		// trouble - the track name may have been quoted, in which case we will
 		// pull
 		// in the remaining fields aswell
-		theTrackName = checkForQuotedTrackName(st);
-
-		// trim the track name, just in case
-		theTrackName.trim();
+		theTrackName = checkForQuotedTrackName(st).trim();
 
 		theSymbology = st.nextToken(normalDelimiters);
 

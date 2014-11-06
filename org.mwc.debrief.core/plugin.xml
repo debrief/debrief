@@ -10,27 +10,47 @@
 		<editor
         class="org.mwc.debrief.core.editors.PlotEditor"
         contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
-        icon="icons/debrief_icon.gif"
+        icon="icons/16/plot_file.png"
         id="org.mwc.debrief.PlotEditor"
         name="Debrief Plot Editor">
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot">
 			</contentTypeBinding>
-			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX">
 			</contentTypeBinding>
-			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
+		</editor>
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors">
+		<editor
+        class="org.mwc.debrief.core.editors.PlotEditor"
+        contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
+        icon="icons/16/track_file.png"
+        id="org.mwc.debrief.TrackEditor"
+        name="Debrief Plot Editor">
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
 			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackFile">
 			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive">
 			</contentTypeBinding>
-			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX">
+		</editor>
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors">
+		<editor
+        class="org.mwc.debrief.core.editors.PlotEditor"
+        contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
+        icon="icons/16/sensor_file.png"
+        id="org.mwc.debrief.SensorEditor"
+        name="Debrief Plot Editor">
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
 			</contentTypeBinding>
 		</editor>
 	</extension>
 
 	<extension point="org.eclipse.core.contenttype.contentTypes">
 		<content-type base-type="org.eclipse.core.runtime.xml"
-			file-extensions="xml" id="org.mwc.debrief.contenttype.DebriefPlot"
+			file-extensions="xml,dpf" id="org.mwc.debrief.contenttype.DebriefPlot"
 			name="Debrief Plot File" priority="normal">
 			<describer
 				class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
@@ -50,7 +70,7 @@
 		<content-type id="org.mwc.debrief.contenttype.ReplayTrackFile"
 			file-extensions="rep" name="Replay Track File" priority="normal">
 		</content-type>
-		<content-type id="org.mwc.debrief.contenttype.ReplaySensorFile"
+		<content-type base-type="org.eclipse.core.runtime.text" id="org.mwc.debrief.contenttype.ReplaySensorFile" 
 			file-extensions="dsf" name="Debrief Sensor File" priority="normal">
 		</content-type>
 		<content-type id="org.mwc.debrief.contenttype.WorldImageFile"
@@ -75,7 +95,7 @@
 	</extension>
 	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
 		<loader class="org.mwc.debrief.core.loaders.XMLLoader"
-			extensions="xml" name="Debrief XML Loader" />
+			extensions="xml;dpf" name="Debrief XML Loader" />
 	</extension>
 	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
 		<loader class="org.mwc.debrief.core.loaders.KMLLoader"
@@ -95,7 +115,14 @@
 	</extension>
 
     <extension point="org.eclipse.ui.menus">
-        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=org.eclipse.ui.workbench.navigate">
+        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=group.file">
+       		<toolbar
+               id="org.mwc.debrief.core.createProject"
+               label="Create Project">
+       		  <separator name="features" visible="true"/> 
+              <separator name="sep3" visible="true"/>
+			  <separator name="additions" visible="true"/>   
+       		</toolbar>
        		<toolbar
                id="org.mwc.debrief.core.EditorFeatures"
                label="Add Features">
@@ -118,7 +145,6 @@
 			  <separator name="sep1" visible="true"/>
 			  <separator name="additions"  visible="true"/> 
        		</toolbar>
-       		
         </menuContribution>
         
         <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
@@ -146,7 +172,7 @@
         <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=viewRadio"> 
             <command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/SelectSegment.png"
+              icon="icons/16/SelectSegment.png"
               label="Drag &amp;TMA Segment"
               style="radio"
               id="org.mwc.debrief.core.DragSegment">
@@ -167,7 +193,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/SelectComponent.png"
+              icon="icons/16/SelectComponent.png"
               label="Drag &amp;Component"
               style="radio"
               id="org.mwc.debrief.core.DragComponent">
@@ -188,7 +214,7 @@
           	
             <command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/SelectFeature.png"
+              icon="icons/16/SelectFeature.png"
               label="&amp;Drag Whole Feature"
               style="radio"
               id="org.mwc.debrief.core.DragFeature">
@@ -209,7 +235,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/rng_brg.gif"
+              icon="icons/16/rng_brg.png"
               label="Measure range &amp;bearing"
               style="radio"
               id="org.mwc.debrief.core.RangeBearing">
@@ -230,7 +256,7 @@
           	
             <command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/hand.png"
+              icon="icons/16/hand.png"
               label="&amp;Pan"
               style="radio"
               id="org.mwc.debrief.core.Pan">
@@ -248,7 +274,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/zoomin.gif"
+              icon="icons/16/zoomin.png"
               label="Zoom &amp;In"
               style="radio"
               id="org.mwc.debrief.core.ZoomIn">
@@ -265,10 +291,21 @@
           	</command>
         </menuContribution>
         
-        <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio"> 
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.createProject?before=additions"> 
+        	<command
+              commandId="org.mwc.debrief.core.createProject"
+              icon="icons/24/CreateProject.png"
+              label="Create Project"
+              tooltip="Create folders to contain your Debrief working files"
+              style="push"
+              id="org.mwc.debrief.core.createProject">
+          	</command>
+        </menuContribution>
+        
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=viewRadio">
            <command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/SelectSegment.png"
+              icon="icons/24/SelectSegment.png"
               label="Drag &amp;Track Segment"
               tooltip="Drag Track Segment"
               style="radio"
@@ -290,7 +327,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/SelectComponent.png"
+              icon="icons/24/SelectComponent.png"
               label="Drag &amp;Component"
               tooltip="Drag Component"
               style="radio"
@@ -312,7 +349,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/SelectFeature.png"
+              icon="icons/24/SelectFeature.png"
               label="&amp;Drag Whole Feature"
               tooltip="Drag Whole Feature"
               style="radio"
@@ -334,7 +371,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/rng_brg.gif"
+              icon="icons/24/rng_brg.png"
               label="Measure range &amp;bearing"
               tooltip="Measure range bearing"
               style="radio"
@@ -356,7 +393,7 @@
            
            <command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/hand.png"
+              icon="icons/24/hand.png"
               label="&amp;Pan"
               tooltip="Pan"
               style="radio"
@@ -375,7 +412,7 @@
            
            <command
               commandId="org.mwc.debrief.core.RadioHandler"
-              icon="icons/zoomin.gif"
+              icon="icons/24/zoomin.png"
               style="radio"
               tooltip="Zoom In"
               id="org.mwc.debrief.core.ZoomIn">
@@ -395,7 +432,7 @@
         <menuContribution locationURI="menu:org.mwc.debrief.core.EditorView?after=additions"> 
             <command
               commandId="org.mwc.debrief.core.ZoomOut"
-              icon="icons/zoomout.gif"
+              icon="icons/16/zoomout.png"
               style="push"
               id="org.mwc.debrief.core.ZoomOut">
               <visibleWhen
@@ -407,7 +444,7 @@
             </command>
           	<command
               commandId="org.mwc.debrief.core.FitToWindow"
-              icon="icons/fit_to_win.gif"
+              icon="icons/16/fit_to_win.png"
               style="push"
               id="org.mwc.debrief.core.FitToWindow">
            	  <visibleWhen
@@ -420,7 +457,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.Redraw"
-              icon="icons/repaint.gif"
+              icon="icons/16/repaint.png"
               style="push"
               id="org.mwc.debrief.core.Redraw">
            	  <visibleWhen
@@ -439,7 +476,7 @@
             </separator>
             <command
               commandId="org.mwc.debrief.core.ZoomOut"
-              icon="icons/zoomout.gif"
+              icon="icons/24/zoomout.png"
               style="push"
               id="org.mwc.debrief.core.ZoomOut">
            	  <visibleWhen
@@ -454,7 +491,7 @@
          <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=additions">
           	<command
               commandId="org.mwc.debrief.core.FitToWindow"
-              icon="icons/fit_to_win.gif"
+              icon="icons/24/fit_to_win.png"
               style="push"
               id="org.mwc.debrief.core.FitToWindow">
            	  <visibleWhen
@@ -467,7 +504,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.Redraw"
-              icon="icons/repaint.gif"
+              icon="icons/24/repaint.png"
               style="push"
               id="org.mwc.debrief.core.Redraw">
            	  <visibleWhen
@@ -482,7 +519,7 @@
         <menuContribution locationURI="menu:org.mwc.debrief.core.EditorFeatures?after=features"> 
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
-              icon="icons/scale.gif"
+              icon="icons/16/scale.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertScale">
            	  <visibleWhen
@@ -498,7 +535,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
-              icon="icons/grid4w.gif"
+              icon="icons/16/grid4w.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid">
            	  <visibleWhen
@@ -514,7 +551,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
-              icon="icons/grid.gif"
+              icon="icons/16/grid.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertGrid">
            	  <visibleWhen
@@ -530,7 +567,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
-              icon="icons/local_grid.gif"
+              icon="icons/16/local_grid.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid">
            	  <visibleWhen
@@ -546,7 +583,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
-              icon="icons/coast.gif"
+              icon="icons/16/coast.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline">
            	  <visibleWhen
@@ -562,7 +599,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
-              icon="icons/etopo.gif"
+              icon="icons/16/etopo.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO">
            	  <visibleWhen
@@ -578,7 +615,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
-              icon="icons/library.gif"
+              icon="icons/16/library.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary">
            	  <visibleWhen
@@ -591,7 +628,7 @@
           	
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
-              icon="icons/vpf.gif"
+              icon="icons/16/vpf.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers">
            	  <visibleWhen
@@ -608,7 +645,7 @@
         <menuContribution locationURI="menu:org.mwc.debrief.core.EditorShapes?after=shapes"> 
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
-              icon="icons/auto_layer.gif"
+              icon="icons/16/auto_layer.png"
               style="toggle"
               id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget">
            	  <visibleWhen
@@ -623,7 +660,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertEllipse"
-              icon="icons/ellipse.gif"
+              icon="icons/16/ellipse.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertEllipse">
            	  <visibleWhen
@@ -638,7 +675,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertPolygon"
-              icon="icons/polygon.gif"
+              icon="icons/16/polygon.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.Insertploygon">
            	  <visibleWhen
@@ -653,7 +690,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
-              icon="icons/line.gif"
+              icon="icons/16/line.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertLine">
            	  <visibleWhen
@@ -668,7 +705,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
-              icon="icons/rectangle.gif"
+              icon="icons/16/rectangle.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
            	  <visibleWhen
@@ -683,7 +720,7 @@
           	</command>         	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
-              icon="icons/wheel.png"
+              icon="icons/16/wheel.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertWheel">
            	  <visibleWhen
@@ -698,7 +735,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
-              icon="icons/circle.gif"
+              icon="icons/16/circle.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertCircle">
            	  <visibleWhen
@@ -713,7 +750,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
-              icon="icons/arc.gif"
+              icon="icons/16/arc.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertArc">
            	  <visibleWhen
@@ -728,7 +765,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
-              icon="icons/label.gif"
+              icon="icons/16/label.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertLabel">
            	  <visibleWhen
@@ -743,7 +780,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
-              icon="icons/furthest_circles.png"
+              icon="icons/16/furthest_circles.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles">
            	  <visibleWhen
@@ -758,7 +795,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
-              icon="icons/range_rings.png"
+              icon="icons/16/range_rings.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertRangeRings">
            	  <visibleWhen
@@ -773,7 +810,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
-              icon="icons/track_segment.gif"
+              icon="icons/16/track_segment.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
            	  <visibleWhen
@@ -788,7 +825,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
-              icon="icons/vector.png"
+              icon="icons/16/vector.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertVector">
            	  <visibleWhen
@@ -806,7 +843,7 @@
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorShapes?after=shapes"> 
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
-              icon="icons/auto_layer.gif"
+              icon="icons/24/auto_layer.png"
               style="toggle"
               id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget">
            	  <visibleWhen
@@ -821,7 +858,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertEllipse"
-              icon="icons/ellipse.gif"
+              icon="icons/24/ellipse.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertEllipse">
            	  <visibleWhen
@@ -836,7 +873,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertPolygon"
-              icon="icons/polygon.gif"
+              icon="icons/24/polygon.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.Insertploygon">
            	  <visibleWhen
@@ -851,7 +888,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertLine"
-              icon="icons/line.gif"
+              icon="icons/24/line.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertLine">
            	  <visibleWhen
@@ -866,7 +903,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertRectangle"
-              icon="icons/rectangle.gif"
+              icon="icons/24/rectangle.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
            	  <visibleWhen
@@ -881,7 +918,7 @@
           	</command>         	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertWheel"
-              icon="icons/wheel.png"
+              icon="icons/24/wheel.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertWheel">
            	  <visibleWhen
@@ -896,7 +933,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertCircle"
-              icon="icons/circle.gif"
+              icon="icons/24/circle.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertCircle">
            	  <visibleWhen
@@ -911,7 +948,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertArc"
-              icon="icons/arc.gif"
+              icon="icons/24/arc.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertArc">
            	  <visibleWhen
@@ -926,7 +963,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertLabel"
-              icon="icons/label.gif"
+              icon="icons/24/label.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertLabel">
            	  <visibleWhen
@@ -941,7 +978,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
-              icon="icons/furthest_circles.png"
+              icon="icons/24/furthest_circles.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles">
            	  <visibleWhen
@@ -956,7 +993,7 @@
           	</command>          	
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
-              icon="icons/range_rings.png"
+              icon="icons/24/range_rings.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertRangeRings">
            	  <visibleWhen
@@ -971,7 +1008,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
-              icon="icons/track_segment.gif"
+              icon="icons/24/track_segment.png"
               style="push"
               id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
            	  <visibleWhen
@@ -986,7 +1023,7 @@
           	</command>
           	<command
               commandId="org.mwc.debrief.core.creators.shapes.InsertVector"
-              icon="icons/vector.png"
+              icon="icons/24/vector.png"
               style="push"
               id="org.mwc.debrief.core.creators.shapes.InsertVector">
            	  <visibleWhen
@@ -1004,7 +1041,7 @@
         <menuContribution locationURI="menu:file?after=additions"> 
           <command
               commandId="org.mwc.debrief.core.operations.ExportGPX"
-              icon="icons/export_gpx.png"
+              icon="icons/16/export_gpx.png"
               style="push"
               id="org.mwc.debrief.core.operations.ExportGPX">
            	  <visibleWhen
@@ -1016,7 +1053,7 @@
           </command>
           <command
               commandId="org.mwc.cmap.plotViewer.actions.ExportWMF"
-              icon="icons/photo_scenery.png"
+              icon="icons/16/photo_scenery.png"
               style="push"
               id="org.mwc.cmap.plotViewer.actions.ExportWMF">
            	  <visibleWhen
@@ -1029,7 +1066,7 @@
           
           <command
               commandId="org.mwc.debrief.core.exportAsRTF"
-              icon="icons/Ex_2word_256_1.gif"
+              icon="icons/16/Ex_2word_256_1.png"
               style="push"
               id="org.mwc.debrief.core.exportAsRTF">
            	  <visibleWhen
@@ -1080,6 +1117,12 @@
              defaultHandler="org.mwc.debrief.core.actions.ExportAsRTFHandler"
              id="org.mwc.debrief.core.exportAsRTF"
              name="Export image as WMF embedded in RTF">
+       </command>
+       
+       <command
+             defaultHandler="org.mwc.debrief.core.actions.CreateProjectHandler"
+             id="org.mwc.debrief.core.createProject"
+             name="Create Project">
        </command>
        
        <command
@@ -1268,195 +1311,6 @@
              name="Export GPX">
        </command>
     </extension>
-    <!--
-	<extension point="org.eclipse.ui.actionSets">
-		<actionSet id="org.mwc.debrief.core" label="Debrief Actions">
-			
-			<menu id="org.mwc.debrief.core.EditorView" label="&amp;View"
-				path="additions">
-				<groupMarker name="viewRadio" />
-				<groupMarker name="view" />
-				<separator name="sep1" />
-				<groupMarker name="additions" />
-			</menu>
-			<menu id="org.mwc.debrief.core.EditorShapes" label="&amp;Drawing"
-				path="additions">
-				<groupMarker name="shapes" />
-				<separator name="sep1" />
-				<groupMarker name="additions" />
-			</menu>
-			<menu id="org.mwc.debrief.core.EditorFeatures" label="&amp;Chart Features"
-				path="additions">
-				<groupMarker name="features" />
-				<separator name="sep1" />
-				<groupMarker name="additions" />
-			</menu>
-			
-
-			<action class="org.mwc.cmap.plotViewer.actions.ZoomIn" icon="icons/zoomin.gif"
-				id="org.mwc.debrief.core.ZoomIn" label="Zoom &amp;In"
-				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
-				state="true" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
-			
-			<action class="org.mwc.cmap.plotViewer.actions.Pan" icon="icons/hand.png"
-				id="org.mwc.debrief.core.Pan" label="&amp;Pan"
-				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
-				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
-			<action class="org.mwc.cmap.plotViewer.actions.RangeBearing"
-				icon="icons/rng_brg.gif" id="org.mwc.debrief.core.RangeBearing"
-				label="Measure range &amp;bearing" menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
-				style="radio" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
-			
-			
-
-			
-			<action class="org.mwc.cmap.plotViewer.actions.ZoomOut" icon="icons/zoomout.gif"
-				id="org.mwc.debrief.core.ZoomOut" label="Zoom &amp;Out"
-				menubarPath="org.mwc.debrief.core.EditorView/view" style="push"
-				toolbarPath="org.mwc.debrief.core.EditorView/view" />
-			<action class="org.mwc.cmap.plotViewer.actions.FitToWindow"
-				icon="icons/fit_to_win.gif" id="org.mwc.debrief.core.FitToWindow"
-				label="&amp;Fit to window" menubarPath="org.mwc.debrief.core.EditorView/additions"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorView/additions" />
-			<action class="org.mwc.cmap.plotViewer.actions.Redraw" icon="icons/repaint.gif"
-				id="org.mwc.debrief.core.Redraw" label="&amp;Redraw"
-				menubarPath="org.mwc.debrief.core.EditorView/additions" style="push"
-				toolbarPath="org.mwc.debrief.core.EditorView/additions" />
-			
-			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
-				icon="icons/vpf.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
-				label="&amp;VPF Layers" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-
-			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
-				icon="icons/library.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
-				label="&amp;Chart Library" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
-				icon="icons/etopo.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
-				label="&amp;ETOPO" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-
-
-			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
-				icon="icons/coast.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
-				label="&amp;Coastline" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-
-			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
-				icon="icons/local_grid.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
-				label="&amp;Local Grid" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-
-			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
-				icon="icons/grid.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
-				label="&amp;Grid" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-
-
-			<action class="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
-				icon="icons/grid4w.gif" id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
-				label="&amp;4W Grid" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-
-
-			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
-				icon="icons/scale.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
-				label="&amp;Scale" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
-				style="push" />
-
-			
-			<action class="org.mwc.debrief.core.creators.shapes.InsertArc"
-				icon="icons/arc.gif" id="org.mwc.debrief.core.creators.shapes.InsertArc"
-				label="&amp;Arc" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertCircle"
-				icon="icons/circle.gif" id="org.mwc.debrief.core.creators.shapes.InsertCircle"
-				label="&amp;Circle" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertWheel"
-				icon="icons/wheel.png" id="org.mwc.debrief.core.creators.shapes.InsertWheel"
-				label="&amp;Wheel" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
-				icon="icons/range_rings.png" id="org.mwc.debrief.core.creators.shapes.InsertRangeRings"
-				label="&amp;Range Rings" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
-				icon="icons/furthest_circles.png" id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
-				label="&amp;Furthest On Circles" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertPolygon"
-				icon="icons/polygon.gif" id="org.mwc.debrief.core.creators.shapes.InsertPolygon"
-				label="&amp;Polygon" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertEllipse"
-				icon="icons/ellipse.gif" id="org.mwc.debrief.core.creators.shapes.InsertEllipse"
-				label="&amp;Ellipse" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertRectangle"
-				icon="icons/rectangle.gif" id="org.mwc.debrief.core.creators.shapes.InsertRectangle"
-				label="&amp;Rectangle" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertLabel"
-				icon="icons/label.gif" id="org.mwc.debrief.core.creators.shapes.InsertLabel"
-				label="&amp;Label" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-			<action class="org.mwc.debrief.core.creators.shapes.InsertLine"
-				icon="icons/line.gif" id="org.mwc.debrief.core.creators.shapes.InsertLine"
-				label="&amp;Line" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-				
-				<action class="org.mwc.debrief.core.creators.shapes.InsertVector"
-				icon="icons/vector.png" id="org.mwc.debrief.core.creators.shapes.InsertVector"
-				label="&amp;Vector" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-			
-				<action
-				class="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
-				icon="icons/track_segment.gif"
-				id="org.mwc.debrief.core.creators.chartFeatures.InsertLine"
-				label="&amp;Track Segment"
-				menubarPath="org.mwc.debrief.core.EditorShapes/shapes" style="push"
-				toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
-			
-
-			<action class="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
-				icon="icons/auto_layer.gif" id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
-				label="&amp;Manually select target layer" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-				state="true" style="toggle" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
-
-
-			<action class="org.mwc.cmap.plotViewer.actions.ExportWMF"
-				icon="icons/photo_scenery.png" id="org.mwc.debrief.core.ExportWMF"
-				label="&amp;Export WMF" menubarPath="file/additions" style="push" />
-				
-			<action class="org.mwc.debrief.core.operations.ExportGPX"
-				icon="icons/export_gpx.png" id="org.mwc.debrief.core.ExportGPX"
-				label="&amp;Export to GPX" menubarPath="file/additions" style="push" />
-		</actionSet>
-	</extension>
-	-->
-
 
 	<extension point="org.eclipse.ui.newWizards">
 		<wizard category="org.mwc.cmap.core" class="org.mwc.debrief.core.wizards.NewPlotWizard"
@@ -1523,6 +1377,7 @@
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.unix"/>
 				<hiddenMenuItem id="org.eclipse.ui.edit.text.delimiter.macOS9"/>
 				<hiddenMenuItem id="project"/>
+				<hiddenMenuItem id="navigate"/>
 				<hiddenToolBarItem id="org.eclipse.debug.ui.commands.RunToLine"/>
 				<hiddenToolBarItem id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 				<hiddenToolBarItem id="org.eclipse.search.searchActionSet"/>
@@ -1702,8 +1557,6 @@
           point="org.mwc.cmap.core.RightClickSupport">
           <helper
                 class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
+   		  <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>                
     </extension>
-   
-   
-
 </plugin>

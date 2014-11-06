@@ -689,7 +689,7 @@ public class SwingCanvas extends javax.swing.JComponent
     _theDest.setColor(theCol);
   }
 
-  static public java.awt.BasicStroke getStrokeFor(final int style)
+  static synchronized public java.awt.BasicStroke getStrokeFor(final int style)
   {
     if (_myLineStyles == null)
     {

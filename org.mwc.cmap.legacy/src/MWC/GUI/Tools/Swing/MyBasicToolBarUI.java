@@ -68,7 +68,6 @@ import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
  */
 public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 {
-  protected JToolBar toolBar;
   private boolean floating;
   private int floatingX;
   private int floatingY;
@@ -76,18 +75,9 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
   protected DragWindow dragWindow;
   private Container dockingSource;
   private int dockingSensitivity = 0;
-  protected int focusedCompIndex = -1;
 
-  protected Color dockingColor = null;
-  protected Color floatingColor = null;
-  protected Color dockingBorderColor = null;
-  protected Color floatingBorderColor = null;
 
-  protected MouseInputListener dockingListener;
-  protected PropertyChangeListener propertyListener;
 
-  protected ContainerListener toolBarContListener;
-  protected FocusListener toolBarFocusListener;
 
   /**
    * As of Java 2 platform v1.3 this previously undocumented field is no

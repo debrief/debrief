@@ -5,7 +5,7 @@
    <intro>
       <description>
          We&apos;ve got a Debrief plot file pre-prepared to let you avoid 
-         some of the steps in the single-leg tutorial, called  <b>L2_Scenario.xml</b>.
+         some of the steps in the single-leg tutorial, called  <b>L2_Scenario.dpf</b>.
       </description>
    </intro>
    <item
@@ -19,7 +19,7 @@
          title="Drag in the file">
       <description>         
          Before you load the data-file, close any existing Debrief plots, then drag 
-         in the <b>L2_Scenario.xml</b> data-file from the SATC folder we used in the previous tutorial.
+         in the <b>L2_Scenario.dpf</b> data-file from the SATC folder we used in the previous tutorial.
          <br/><br/>
          You will see a Blue Ownship track, with a bearing fan in nice pretty shades of green, purple and red.
       </description>

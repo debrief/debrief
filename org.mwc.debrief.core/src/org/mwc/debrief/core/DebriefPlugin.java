@@ -44,6 +44,7 @@ import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts;
 import org.mwc.debrief.core.ContextOperations.TrimTrack;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
+import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.osgi.framework.BundleContext;
 
@@ -67,6 +68,12 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	public static final String TIME_BAR = "org.mwc.debrief.TimeBar";
 	public static final String SATC_MAINTAIN_CONTRIBUTIONS = "com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView";
 
+	public static final String RESET_PERSPECTIVE = "resetPerspective";
+	public static final long RESET_PERSPECTIVE_DEFAULT_VALUE = 0;
+
+	public static final String INTROVIEW = "org.eclipse.ui.internal.introview";
+
+	private static final String BUILD_MODE = "buildMode";
 
 	// The shared instance.
 	private static DebriefPlugin plugin;
@@ -250,5 +257,32 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
+	}
+	
+	public long getResetPerspectivePreference() {
+		return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE);
+	}
+	
+	public boolean getCreateProject() {
+		if (isRunningTests()) {
+			return false;
+		}
+		// check standard Debrief preference
+		String createProject = CorePlugin.getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT);
+		if (createProject == null || createProject.isEmpty()) {
+			createProject = Boolean.TRUE.toString();
+		}
+		return (Boolean.TRUE.toString().equals(createProject));
+	}
+
+	public boolean isRunningTests()
+	{
+		// check settings system property on command line
+		// for tycho/travis test we need add -DbuildMode=true
+		String buildMode = System.getProperty(BUILD_MODE, "false");
+		if ("true".equals(buildMode)) {
+			return true;
+		}
+		return false;
 	}
 }

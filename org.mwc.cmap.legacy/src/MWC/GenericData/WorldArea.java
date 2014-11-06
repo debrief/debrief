@@ -507,36 +507,21 @@ public final class WorldArea implements Serializable
 		 * Math.max(_topLeft._theDepth, _bottomRight._theDepth); minDepth =
 		 * Math.min(_topLeft._theDepth, _bottomRight._theDepth);
 		 */
+		// update the values
+		_topLeft._theLat = maxLat;
+		_topLeft._theLong = minLong;
+		_topLeft._theDepth = maxDepth;
+		_bottomRight._theLat = minLat;
+		_bottomRight._theLong = maxLong;
+		_bottomRight._theDepth = minDepth;
 
-		// see if we need to create new values
-		if ((_topLeft == null) || (_bottomRight == null))
-		{
-			// assign new values
-			_topLeft = new WorldLocation(maxLat, minLong, maxDepth);
-			_bottomRight = new WorldLocation(minLat, maxLong, minDepth);
+		_topRight._theLat = maxLat;
+		_topRight._theLong = maxLong;
+		_topRight._theDepth = maxDepth;
+		_bottomLeft._theLat = minLat;
+		_bottomLeft._theLong = minLong;
+		_bottomLeft._theDepth = minDepth;
 
-			_topRight = new WorldLocation(maxLat, maxLong, maxDepth);
-			_bottomLeft = new WorldLocation(minLat, minLong, minDepth);
-
-		}
-		else
-		{
-			// update the values
-			_topLeft._theLat = maxLat;
-			_topLeft._theLong = minLong;
-			_topLeft._theDepth = maxDepth;
-			_bottomRight._theLat = minLat;
-			_bottomRight._theLong = maxLong;
-			_bottomRight._theDepth = minDepth;
-
-			_topRight._theLat = maxLat;
-			_topRight._theLong = maxLong;
-			_topRight._theDepth = maxDepth;
-			_bottomLeft._theLat = minLat;
-			_bottomLeft._theLong = minLong;
-			_bottomLeft._theDepth = minDepth;
-
-		}
 
 	}
 

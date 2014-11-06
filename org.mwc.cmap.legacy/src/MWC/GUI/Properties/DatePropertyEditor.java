@@ -144,10 +144,10 @@ abstract public class DatePropertyEditor extends
   static protected final String NULL_TIME = "HH:mm:ss";
 
   /**
-   * static formats
+   * date formats
    */
-  static protected DateFormat _dateF = new SimpleDateFormat(NULL_DATE);
-  static protected DateFormat _timeF = new SimpleDateFormat(NULL_TIME);
+  protected DateFormat _dateF = new SimpleDateFormat(NULL_DATE);
+  protected DateFormat _timeF = new SimpleDateFormat(NULL_TIME);
 
 
   /////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ abstract public class DatePropertyEditor extends
   /**
    * store the new value
    */
-  public void setValue(final Object p1)
+  public synchronized void setValue(final Object p1)
   {
     // check the formats are in the correct time zone
     _dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -220,7 +220,7 @@ abstract public class DatePropertyEditor extends
   /**
    * extract the values currently stored in the text boxes
    */
-  public Object getValue()
+  public synchronized Object getValue()
   {
     HiResDate res = null;
 
@@ -258,7 +258,7 @@ abstract public class DatePropertyEditor extends
    * put the data into the text fields, if they have been
    * created yet
    */
-  public void resetData()
+  public synchronized void resetData()
   {
     if (_myVal == null)
     {

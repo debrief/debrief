@@ -228,6 +228,9 @@ public final class WorldPath implements java.io.Serializable
    */
   public final boolean equals(final Object obj)
   {
+  	if(obj == null)
+  		return false;
+  	
     final WorldPath other = (WorldPath) obj;
 
     boolean equals = true;
