@@ -10,20 +10,40 @@
 		<editor
         class="org.mwc.debrief.core.editors.PlotEditor"
         contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
-        icon="icons/debrief_icon.gif"
+        icon="icons/16/plot_file.png"
         id="org.mwc.debrief.PlotEditor"
         name="Debrief Plot Editor">
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot">
 			</contentTypeBinding>
-			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX">
 			</contentTypeBinding>
-			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
+		</editor>
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors">
+		<editor
+        class="org.mwc.debrief.core.editors.PlotEditor"
+        contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
+        icon="icons/16/track_file.png"
+        id="org.mwc.debrief.TrackEditor"
+        name="Debrief Plot Editor">
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
 			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackFile">
 			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive">
 			</contentTypeBinding>
-			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX">
+		</editor>
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors">
+		<editor
+        class="org.mwc.debrief.core.editors.PlotEditor"
+        contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
+        icon="icons/16/sensor_file.png"
+        id="org.mwc.debrief.SensorEditor"
+        name="Debrief Plot Editor">
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
 			</contentTypeBinding>
 		</editor>
 	</extension>
@@ -50,7 +70,7 @@
 		<content-type id="org.mwc.debrief.contenttype.ReplayTrackFile"
 			file-extensions="rep" name="Replay Track File" priority="normal">
 		</content-type>
-		<content-type id="org.mwc.debrief.contenttype.ReplaySensorFile"
+		<content-type base-type="org.eclipse.core.runtime.text" id="org.mwc.debrief.contenttype.ReplaySensorFile" 
 			file-extensions="dsf" name="Debrief Sensor File" priority="normal">
 		</content-type>
 		<content-type id="org.mwc.debrief.contenttype.WorldImageFile"
