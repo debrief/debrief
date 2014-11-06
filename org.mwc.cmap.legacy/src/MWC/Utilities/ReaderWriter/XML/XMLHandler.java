@@ -48,7 +48,7 @@ public class XMLHandler extends HandlerBase
   /**
    * date formatter to be used by child classes
    */
-  static public java.text.DateFormat RNdateFormat =
+  static protected java.text.DateFormat RNdateFormat =
     new java.text.SimpleDateFormat("yyMMdd HHmmss.SSS");
 
   /**
@@ -345,17 +345,17 @@ public class XMLHandler extends HandlerBase
     return Long.toString(val);
   }
 
-  static public String writeThis(final double val)
+  static synchronized public String writeThis(final double val)
   {
     return shortFormat.format(val);
   }
 
-  static public String writeThis(final Date val)
+  static synchronized public String writeThis(final Date val)
   {
     return RNdateFormat.format(val);
   }
 
-  static public String writeThisLong(final double val)
+  static synchronized public String writeThisLong(final double val)
   {
     return longFormat.format(val);
   }

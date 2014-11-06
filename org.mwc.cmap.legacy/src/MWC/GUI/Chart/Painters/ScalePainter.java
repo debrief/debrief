@@ -233,7 +233,7 @@ public class ScalePainter implements Plottable, Serializable
   /**
    * setup the list of units converters
    */
-  private void setupUnits()
+  private synchronized void setupUnits()
   {
   	
   	// just check it hasn't already been generated

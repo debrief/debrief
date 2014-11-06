@@ -173,7 +173,7 @@ public class DragSegment extends DragFeature
 
 	}
 
-	public static Vector<Action> getDragModes()
+	public synchronized static Vector<Action> getDragModes()
 	{
 		if (_dragModes == null)
 		{

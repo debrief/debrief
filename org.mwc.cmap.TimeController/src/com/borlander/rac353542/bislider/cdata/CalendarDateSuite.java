@@ -53,7 +53,7 @@ public class CalendarDateSuite {
 
     public DataObjectLabelProvider createLabelProvider() {
         return new DataObjectLabelProvider(CALENDAR_DATE) {
-            public String getLabel(Object dataObject) {
+            public synchronized String getLabel(Object dataObject) {
                 Date date = (Date) dataObject;
                 return ourDateFormat.format(date);
             }

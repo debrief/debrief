@@ -89,7 +89,7 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		}
 	}
 
-	private static void initialiseHelpers()
+	private synchronized static void initialiseHelpers()
 	{
 		if (_myHelperList == null)
 		{

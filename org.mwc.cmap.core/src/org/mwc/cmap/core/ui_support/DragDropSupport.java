@@ -378,7 +378,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
 						// get some more data
 						boolean inComplete = true;
-						while ((firstLine.length() < 200) && (inComplete))
+						while ((firstLine != null) && (firstLine.length() < 200) && (inComplete))
 						{
 							final String newLine = re.readLine();
 							if (newLine == null)

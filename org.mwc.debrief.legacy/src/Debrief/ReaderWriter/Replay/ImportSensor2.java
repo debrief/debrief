@@ -159,11 +159,7 @@ final class ImportSensor2 implements PlainLineImporter {
     theSymbology = st.nextToken(normalDelimiters);
 
     // now the sensor offsets
-    final String next = st.nextToken();
-
-    // let's trim this string aswell, just so we're sure N is the first letter
-    // if that's its destiny
-    next.trim();
+    final String next = st.nextToken().trim();
 
     try
     {

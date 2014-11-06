@@ -278,7 +278,7 @@ public class MWCXMLReader extends DefaultHandler {
 	// ////////////////////////////////////////////////////////
 	// date formatter access
 	// ///////////////////////////////////////////////////////
-	public static DateFormat getRNDateFormatter() {
+	public synchronized static DateFormat getRNDateFormatter() {
 		if (RNdateFormat == null) {
 			RNdateFormat = new SimpleDateFormat("yyMMdd HHmmss.SSS");
 			RNdateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -286,7 +286,7 @@ public class MWCXMLReader extends DefaultHandler {
 		return RNdateFormat;
 	}
 
-	static DateFormat getXMLDateFormatter() {
+	synchronized static DateFormat getXMLDateFormatter() {
 		if (_XMLDateFormat == null) {
 			_XMLDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			_XMLDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));

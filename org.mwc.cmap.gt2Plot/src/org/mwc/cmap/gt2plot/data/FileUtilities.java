@@ -181,7 +181,8 @@ public class FileUtilities {
             }
             return sb.toString();
         } finally {
-            br.close();
+        	if(br != null)
+        		br.close();
         }
     }
 
@@ -214,6 +215,7 @@ public class FileUtilities {
             }
             return lines;
         } finally {
+        	if(br != null)
             br.close();
         }
     }
@@ -231,6 +233,7 @@ public class FileUtilities {
             bw = new BufferedWriter(new FileWriter(file));
             bw.write(text);
         } finally {
+        	if(bw != null)
             bw.close();
         }
     }
@@ -262,6 +265,7 @@ public class FileUtilities {
                 bw.write("\n"); //$NON-NLS-1$
             }
         } finally {
+        	if(bw != null)
             bw.close();
         }
     }

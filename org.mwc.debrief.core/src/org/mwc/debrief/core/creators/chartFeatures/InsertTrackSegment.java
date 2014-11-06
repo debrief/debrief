@@ -136,7 +136,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 			res = val[0].toString();
 
 			// hmm, is it our add layer command?
-			if (res == NEW_LAYER_COMMAND)
+			if (res.equals(NEW_LAYER_COMMAND))
 			{
 				// better create one. Ask the user
 
@@ -171,7 +171,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 						{
 							final String startDateTxt = inp.getValue();
 							startDate = DebriefFormatDateTime.parseThis(startDateTxt);
-							if (startDate != null)
+							if (!(startDate == null))
 							{
 								// get the centre of the visible area
 								final WorldLocation wc = getCentre(theChart);

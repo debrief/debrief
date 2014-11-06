@@ -365,18 +365,25 @@ public class TimeBarView extends ViewPart {
 			});
 		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
+		{
+			public void eventTriggered(final String type, final Object part,
+					final IWorkbenchPart parentPart)
+			{
+				final TimeProvider provider = ((TimeController) part)
+						.getTimeProvider();
+				if (provider != null)
 				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
+					if (provider.equals(_timeProvider))
+						return;
+					else
 					{
-						final TimeProvider provider = ((TimeController) part).getTimeProvider();						
-						if (provider != null && provider.equals(_timeProvider))
-							return;						
 						_timeProvider = provider;
-						_timeProvider.addListener(_temporalListener, 
+						_timeProvider.addListener(_temporalListener,
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 					}
-			});
+				}
+			}
+		});
 		
 		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()

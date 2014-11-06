@@ -165,6 +165,8 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 				if (boundedState.getLocation() != null)
 				{
 					// ok, are in the same leg as the previous?
+					// note: we can't use .equals here, since getMemberOf may legitimately
+					// be null
 					if (boundedState.getMemberOf() == lastState.getMemberOf())
 					{
 						// ok - we're in the same leg - what's the overlap

@@ -249,15 +249,6 @@ public class DateTimeFormatter extends AbstractFormatter
 	 */
 	public DateTimeFormatter(String editPattern, String displayPattern, Locale loc)
 	{
-		// Set the default value
-		calendar = Calendar.getInstance(loc);
-		if (yearStart == -1)
-		{
-			calendar.setTime(sdfDisplay.get2DigitYearStart());
-			yearStart = calendar.get(Calendar.YEAR) % 100;
-		}
-		calendar.setTimeInMillis(0);
-
 		// Creates the formatter for the edit value
 		if (editPattern == null)
 		{
@@ -272,6 +263,15 @@ public class DateTimeFormatter extends AbstractFormatter
 		}
 		sdfDisplay = new SimpleDateFormat(displayPattern, loc);
 		locale = loc;
+
+		// Set the default value
+		calendar = Calendar.getInstance(loc);
+		if (yearStart == -1)
+		{
+			calendar.setTime(sdfDisplay.get2DigitYearStart());
+			yearStart = calendar.get(Calendar.YEAR) % 100;
+		}
+		calendar.setTimeInMillis(0);
 
 		// Instantiate the key listener
 		klistener = new KeyListener()

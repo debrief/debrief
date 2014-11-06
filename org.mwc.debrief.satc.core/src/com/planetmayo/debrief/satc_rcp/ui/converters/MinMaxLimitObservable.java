@@ -65,15 +65,15 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 	{
 		this(minObservable, maxObservable, null, null);
 	}
-	
+
 	public MinMaxLimitObservable(IObservableValue minObservable,
 			IObservableValue maxObservable, IConverter converter)
 	{
 		this(minObservable, maxObservable, converter, null);
 	}
-	
-	public MinMaxLimitObservable(IObservableValue minObservable, 
-			IObservableValue maxObservable, IConverter converter, String suffix) 
+
+	public MinMaxLimitObservable(IObservableValue minObservable,
+			IObservableValue maxObservable, IConverter converter, String suffix)
 	{
 		super(minObservable.getRealm());
 		this.minObservable = minObservable;
@@ -81,10 +81,12 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 		this.converter = converter;
 		this.intervalMode = minObservable != null && maxObservable != null;
 		this.suffix = suffix == null ? "" : suffix;
-				
+
 		privateInterface = new PrivateInterface();
-		minObservable.addDisposeListener(privateInterface);
-		maxObservable.addDisposeListener(privateInterface);
+		if (minObservable != null)
+			minObservable.addDisposeListener(privateInterface);
+		if (maxObservable != null)
+			maxObservable.addDisposeListener(privateInterface);
 	}
 
 	public Object getValueType()
@@ -96,12 +98,14 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 	{
 		cachedValue = doGetValue();
 
-		if (minObservable != null) {
+		if (minObservable != null)
+		{
 			minObservable.addChangeListener(privateInterface);
 			minObservable.addStaleListener(privateInterface);
 		}
 
-		if (maxObservable != null) {
+		if (maxObservable != null)
+		{
 			maxObservable.addChangeListener(privateInterface);
 			maxObservable.addStaleListener(privateInterface);
 		}
@@ -143,46 +147,47 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 		String maxString = "";
 		Object minValue = minObservable == null ? null : minObservable.getValue();
 		Object maxValue = maxObservable == null ? null : maxObservable.getValue();
-		
-		if (minValue == null && maxValue == null) 
+
+		if (minValue == null && maxValue == null)
 		{
-			return null; 
+			return null;
 		}
-		if (minValue != null) 
+		if (minValue != null)
 		{
 			if (converter != null)
 			{
 				minString = converter.convert(minValue).toString();
 			}
-			else 
+			else
 			{
 				minString = "" + ((Number) minValue).intValue();
 			}
 		}
-		if (maxValue != null) 
+		if (maxValue != null)
 		{
 			if (converter != null)
 			{
 				maxString = converter.convert(maxValue).toString();
 			}
-			else 
+			else
 			{
 				maxString = "" + ((Number) maxValue).intValue();
 			}
 		}
-		if (! intervalMode) 
+		if (!intervalMode)
 		{
 			return minString + maxString;
 		}
-		if (minString.isEmpty()) 
+		if (minString.isEmpty())
 		{
 			return "< " + maxString;
 		}
-		if (maxString.isEmpty()) 
+		if (maxString.isEmpty())
 		{
 			return "> " + minString;
-		}		
-		return minString + (maxString.equals(minString) ? "" : " - " + maxString) + suffix;
+		}
+		return minString + (maxString.equals(minString) ? "" : " - " + maxString)
+				+ suffix;
 	}
 
 	protected void doSetValue(Object value)

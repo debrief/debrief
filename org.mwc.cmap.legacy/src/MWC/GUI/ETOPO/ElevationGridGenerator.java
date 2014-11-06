@@ -329,6 +329,7 @@ public class ElevationGridGenerator extends GeometryGenerator
 
             case GeometryData.TRIANGLE_FANS:
                 ret_val = facetCount * 4;
+                break;
 
             case GeometryData.INDEXED_TRIANGLES:
             case GeometryData.INDEXED_QUADS:

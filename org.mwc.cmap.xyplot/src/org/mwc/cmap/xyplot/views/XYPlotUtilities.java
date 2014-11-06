@@ -39,7 +39,7 @@ public class XYPlotUtilities
 		new TextTransfer().setClipboardContents(dataStr.toString());		
 	}
 	
-	private static String textMatrix(final String plotTitle,
+	private synchronized static String textMatrix(final String plotTitle,
 			final TimeSeriesCollection dataset)
 	{
 		StringBuffer dataStr = new StringBuffer();
@@ -87,7 +87,7 @@ public class XYPlotUtilities
 	
 	static public final class XYPlotUtilitiesTest extends junit.framework.TestCase
 	{
-		public void testTwoSeriesDataset()
+		public synchronized void testTwoSeriesDataset()
 		{
 			final TimeSeriesCollection dataset = new TimeSeriesCollection();
 			final TimeSeries series1 = new TimeSeries("name1");

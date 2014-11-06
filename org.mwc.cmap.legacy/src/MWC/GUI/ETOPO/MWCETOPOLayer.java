@@ -259,7 +259,7 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 	}
 
 	/* returns a color based on slope and elevation */
-	protected Color getColor(final short elevation, final byte slopeVal)
+	protected synchronized Color getColor(final short elevation, final byte slopeVal)
 	{
 		// build first time
 		if (slopeColors == null)

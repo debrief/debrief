@@ -45,7 +45,7 @@ public class FormatRNDateTime
 														"HHmm");
 	}
 	
-	static public String toStringLikeThis(final long theVal,
+	static synchronized public String toStringLikeThis(final long theVal,
 																				final String thePattern)
 	{
     final java.util.Date theTime = new java.util.Date(theVal);

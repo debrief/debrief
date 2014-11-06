@@ -830,7 +830,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		}
 	}
 
-	static public java.awt.BasicStroke getStrokeFor(final int style)
+	static synchronized public java.awt.BasicStroke getStrokeFor(final int style)
 	{
 		if (_myLineStyles == null)
 		{
