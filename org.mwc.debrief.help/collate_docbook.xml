@@ -87,9 +87,6 @@
 		<antcall target="docbook_to_pdf">
 		</antcall>
 
-		<!-- don't forget the cheat sheet -->
-		<antcall target="dita2pdf"/>
-
 	</target>
 
 
