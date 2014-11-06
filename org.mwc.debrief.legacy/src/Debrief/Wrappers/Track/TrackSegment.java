@@ -26,6 +26,10 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
+
 import junit.framework.TestCase;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -468,19 +472,29 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					+ " fixes from second segment", null);
 
 			// extra diagnostics
+			StringBuffer buff = new StringBuffer();
+			buff.append("\n");
 			for (int i = 0; i < allElements.length; i++)
 			{
 				final FixWrapper fixWrapper = allElements[i];
-				_myParent.logError(
-						ToolParent.INFO,
+				buff.append(
 						"item: "
 								+ i
-								+ " is "
-								+ fixWrapper.getLocation()
-								+ " at:"
+								+ " ,lat:,"
+								+ fixWrapper.getLocation().getLat()
+								+ " ,lon:,"
+								+ fixWrapper.getLocation().getLong()
+								+ " ,course:,"
+								+ fixWrapper.getCourseDegs()
+								+ " ,speed:,"
+								+ fixWrapper.getFix().getSpeed()
+								+ " ,at:,"
 								+ DebriefFormatDateTime.toString(fixWrapper.getTime().getDate()
-										.getTime()), null);
+										.getTime()) + "\n");
 			}
+			_myParent.logError(
+					ToolParent.INFO, buff.toString(), null);
+			
 
 		}
 
@@ -497,10 +511,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
 		}
+		
+		UnivariateInterpolator interpolator = new SplineInterpolator();
+		UnivariateFunction latInterp = interpolator.interpolate(times, lats);
+		UnivariateFunction longInterp = interpolator.interpolate(times, longs);
+		UnivariateFunction depthInterp = interpolator.interpolate(times, depths);
+		
 
-		final CubicSpline latSpline = new CubicSpline(times, lats);
-		final CubicSpline longSpline = new CubicSpline(times, longs);
-		final CubicSpline depthSpline = new CubicSpline(times, depths);
+//		final CubicSpline latSpline = new CubicSpline(times, lats);
+//		final CubicSpline longSpline = new CubicSpline(times, longs);
+//		final CubicSpline depthSpline = new CubicSpline(times, depths);
 
 		// what's the interval?
 		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
@@ -548,29 +568,39 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		// - so that we can generate the correct course and speed for the last
 		// DR
 		// entry
+		StringBuffer buff = new StringBuffer();
 		for (long tNow = tStart; tNow <= tEnd; tNow += tDelta)
 		{
-
 			// debug. get a human-readable date
 			final HiResDate tmpD = new HiResDate(tNow);
 
-			final double thisLat = latSpline.interpolate(tNow);
-			final double thisLong = longSpline.interpolate(tNow);
-			final double thisDepth = depthSpline.interpolate(tNow);
+			final double thisLat = latInterp.value(tNow);
+			final double thisLong = longInterp.value(tNow);
+			final double thisDepth = depthInterp.value(tNow);
+			
+			buff.append(
+							 " lat:,"
+							+ thisLat
+							+ " ,lon:,"
+							+ thisLong
+							+ " ,at:,"
+							+ tmpD.toString() + "\n");
+
+			
 
 			// create the new location
 			final WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
 
 			// diagnostics
-			if (_myParent != null)
-			{
-				_myParent.logError(
-						ToolParent.INFO,
-						"new point is: " + newLocation + "  at  "
-								+ DebriefFormatDateTime.toString(tmpD.getDate().getTime()),
-						null);
-			}
+//			if (_myParent != null)
+//			{
+//				_myParent.logError(
+//						ToolParent.INFO,
+//						"new point is: " + newLocation + "  at  "
+//								+ DebriefFormatDateTime.toString(tmpD.getDate().getTime()),
+//						null);
+//			}
 
 			final WorldVector offset = newLocation.subtract(origin.getLocation());
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
@@ -630,7 +660,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// move along the bus, please (used if we're doing a DR Track).
 			origin = fw;
 		}
-
+		_myParent.logError(
+				ToolParent.INFO, buff.toString(), null);
+		
 		// aaah, special case. If we are generating a DR track, we need to put
 		// the
 		// next course and speed
