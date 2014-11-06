@@ -1,7 +1,3 @@
-*.xml.dita
-*.ditamap
-/temp/
+/dita.list
 /dita.xml.properties
-*.list
-/out/
-*.pdf
+/map.ditamap
