@@ -705,7 +705,10 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 		if (res == null)
 		{
-			final ImageDescriptor desc = getImageDescriptor("icons/" + name);
+			ImageDescriptor desc = getImageDescriptor("icons/16/" + name.replace(".gif", ".png"));
+			if (desc == null) {
+				desc = getImageDescriptor("icons/" + name);
+			}
 			getRegistry().put(name, desc);
 			res = getRegistry().get(name);
 		}
