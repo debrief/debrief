@@ -47,11 +47,11 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		else if (editable instanceof SensorWrapper)
 			res = CorePlugin.getImageDescriptor("icons/SensorFit.png");
 		else if (editable instanceof ChartFolio)
-			res = DebriefPlugin.getImageDescriptor("icons/library.gif");
+			res = DebriefPlugin.getImageDescriptor("icons/16/library.png");
 		else if (editable instanceof ExternallyManagedDataLayer)
-			res = CorePlugin.getImageDescriptor("icons/map.png");
+			res = DebriefPlugin.getImageDescriptor("icons/16/map.png");
 		else if (editable instanceof ChartBoundsWrapper)
-			res = CorePlugin.getImageDescriptor("icons/map.png");
+			res = DebriefPlugin.getImageDescriptor("icons/16/map.png");
 		else if (editable instanceof SensorContactWrapper)
 			res = CorePlugin.getImageDescriptor("icons/active16.png");
 		else if (editable instanceof NarrativeWrapper)
