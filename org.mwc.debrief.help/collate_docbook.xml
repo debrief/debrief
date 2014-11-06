@@ -150,38 +150,6 @@
 
 	</target>
 
-	<target name="cheat2dita" description="produce pdf version of cheat sheets">
-		<!-- record the Saxon location -->
-		<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
-
-		<!-- and run the XSL transformv -->
-		<java fork="true" jar="${saxonhe-classpath}" dir="cheat_sheets">
-			<arg value="-o:dita/map.ditamap" />
-			<arg value="-it:root" />
-			<arg value="printed_version.xsl" />
-		</java> 
-	</target>
-	
-	<target name="dita2pdf" description="produce pdf version of cheat sheets" depends="cheat2dita">
-		<!-- and now the DITA transform -->
-		<property name="dita.dir" value="${contribDir}/DITA-OT1.8.5" />
-
-		<ant antfile="${dita.dir}${file.separator}build.xml">
-			<!-- please refer to the toolkit's document for supported parameters, and 
-	           specify them base on your needs -->
-			<property name="args.input" location="cheat_sheets/dita/map.ditamap" />
-			<property name="output.dir" location="cheat_sheets/dita" />
-			<property name="transtype" value="debrief" />
-		</ant>
-		
-		<!-- delete any existing tutorial file -->
-		<delete file="${pdfDestination}/DebriefTutorial.pdf" description="delete existing file" />
-
-		<!-- lastly, move the doc to its target -->		
-		<move file="${helpDir}/cheat_sheets/dita/map.pdf"  tofile="${pdfDestination}/DebriefTutorial.pdf" failonerror="true" />
-	</target>
-
-
 	<target name="docbook_to_pdf" description="Generate html from docbook">
 
 		<property name="fopVersion" value="fop-1.0" description="the current version of FOP" />
