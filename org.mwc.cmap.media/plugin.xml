@@ -109,39 +109,40 @@
         <menuContribution locationURI="menu:org.mwc.cmap.media.menu?after=additions"> 
             <command
               commandId="org.mwc.cmap.media.actions.NewVideoPlayerAction"
-              icon="icons/player.gif"
+              icon="icons/16/player.png"
               style="push"
               id="org.mwc.cmap.media.actions.NewVideoPlayerAction">
             </command>
             <command
               commandId="org.mwc.cmap.media.actions.NewImagesViewAction"
-              icon="icons/images16.gif"
+              icon="icons/16/images16.png"
               style="push"
               id="org.mwc.cmap.media.actions.NewImagesViewAction">
             </command>
             <command
               commandId="org.mwc.cmap.media.actions.OpenTestHarnessAction"
-              icon="icons/openbrwsr.gif"
+              icon="icons/16/openbrwsr.png"
               style="push"
+              
               id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
             </command>
         </menuContribution>
         <menuContribution locationURI="toolbar:org.mwc.cmap.media.toolbar?after=additions"> 
             <command
               commandId="org.mwc.cmap.media.actions.NewVideoPlayerAction"
-              icon="icons/player.gif"
+              icon="icons/24/player.png"
               style="push"
               id="org.mwc.cmap.media.actions.NewVideoPlayerAction">
             </command>
             <command
               commandId="org.mwc.cmap.media.actions.NewImagesViewAction"
-              icon="icons/images16.gif"
+              icon="icons/24/images16.png"
               style="push"
               id="org.mwc.cmap.media.actions.NewImagesViewAction">
             </command>
             <command
               commandId="org.mwc.cmap.media.actions.OpenTestHarnessAction"
-              icon="icons/openbrwsr.gif"
+              icon="icons/24/openbrwsr.png"
               style="push"
               id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
             </command>
@@ -149,7 +150,7 @@
          <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions"> 
             <command
               commandId="org.mwc.cmap.media.actions.OpenVideoPlayerAction"
-              icon="icons/player.gif"
+              icon="icons/16/player.png"
               style="push"
               id="org.mwc.cmap.media.actions.OpenVideoPlayerAction">
               <visibleWhen>
@@ -177,7 +178,7 @@
             </command>
             <command
               commandId="org.mwc.cmap.media.actions.OpenImagesViewAction"
-              icon="icons/images16.gif"
+              icon="icons/16/images16.png"
               style="push"
               id="org.mwc.cmap.media.actions.OpenImagesViewAction">
               <visibleWhen>
