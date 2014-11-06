@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot Created="Thu Nov 06 14:11:34 GMT 2014" Name="Debrief Plot" PlotId="1385027164422">
+<details Text="Saved with Debrief version dated Fri Oct 31 11:40:55 GMT 2014"/>
+<session>
+<layers>
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="121200.00_0" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="true">
+<colour Value="BLUE"/>
+<SymbolColor Value="CYAN"/>
+<font Bold="false" Family="Sans Serif" Italic="true" Size="9"/>
+<AbsoluteTMASegment BaseFrequency="0.000" CourseDegs="347.552" LineStyle="Solid" Name="121312.00" Visible="true">
+<fix ArrowShowing="false" Course="347.552" Dtg="100112 131200" Label="1312" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.349" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.1611560" Long="-0.1497863"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="347.552" Dtg="100112 131300" Label="1313" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.349" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.1628782" Long="-0.1505504"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="347.552" Dtg="100112 131400" Label="1314" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.349" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.1646003" Long="-0.1513144"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="347.552" Dtg="100112 131500" Label="1315" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.349" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.1663225" Long="-0.1520786"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="347.552" Dtg="100112 131600" Label="1316" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.349" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.1680446" Long="-0.1528427"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="347.552" Dtg="100112 131700" Label="1317" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.349" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.1697668" Long="-0.1536070"/>
+</centre>
+</fix>
+<Speed Units="kts" Value="6.349"/>
+<Origin>
+<shortLocation Depth="0.000" Lat="60.1611560" Long="-0.1497863"/>
+</Origin>
+</AbsoluteTMASegment>
+<AbsoluteTMASegment BaseFrequency="0.000" CourseDegs="309.813" LineStyle="Solid" Name="leg two" Visible="true">
+<fix ArrowShowing="false" Course="309.813" Dtg="100112 132550" Label="1325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="52.359" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.1947235" Long="-0.1782543"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="309.813" Dtg="100112 132650" Label="1326" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="52.359" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.2040359" Long="-0.2007338"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="309.813" Dtg="100112 132750" Label="1327" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="52.359" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.2133483" Long="-0.2232197"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="309.813" Dtg="100112 132850" Label="1328" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="52.359" SymbolShowing="true" Visible="true">
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="60.2226607" Long="-0.2457119"/>
+</centre>
+</fix>
+<Speed Units="kts" Value="52.359"/>
+<Origin>
+<shortLocation Depth="0.000" Lat="60.1947235" Long="-0.1782543"/>
+</Origin>
+</AbsoluteTMASegment>
+<SegmentList/>
+</track>
+</layers>
+<projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
+<tl>
+<shortLocation Depth="0.000" Lat="60.2237953" Long="-0.2488841"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="60.1597688" Long="-0.0952580"/>
+</br>
+</projection>
+<gui>
+<tote/>
+<component Type="Stepper">
+<property Name="GREEN" Value="64"/>
+<property Name="DateFormat" Value="ddHHmm"/>
+<property Name="ShadeArcs" Value="false"/>
+<property Name="Radius" Value="3000.000"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="RectHighlight_Size" Value="5"/>
+<property Name="RectHighlight_Color" Value="255,255,255"/>
+<property Name="BLUE" Value="64"/>
+<property Name="Arc_Finish" Value="180"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="RED" Value="64"/>
+<property Name="CurrentTime" Value="100112 134228"/>
+<property Name="NumRings" Value="3"/>
+<property Name="PointSize" Value="5"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="UseTrackColor" Value="false"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="JustPrimary" Value="false"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="Arcs" Value="-180"/>
+</component>
+<Background>
+<colour Value="LIGHT_GREY"/>
+</Background>
+</gui>
+</session>
+</plot>
