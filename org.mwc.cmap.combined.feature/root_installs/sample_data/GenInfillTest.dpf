@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Fri Nov 07 14:50:02 GMT 2014" Name="Debrief Plot" PlotId="1385027164422">
+<plot Created="Fri Nov 07 15:25:57 GMT 2014" Name="Debrief Plot" PlotId="1385027164422">
 <details Text="Saved with Debrief version dated Fri Oct 31 11:40:55 GMT 2014"/>
 <session>
 <layers>
@@ -17,31 +17,31 @@
 <fix ArrowShowing="false" Course="304.199" Dtg="100112 131300" Label="1313" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.067" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1628554" Long="-0.1331641"/>
+<shortLocation Depth="0.000" Lat="60.1628555" Long="-0.1331644"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="304.199" Dtg="100112 131400" Label="1314" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.067" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1645832" Long="-0.1382744"/>
+<shortLocation Depth="0.000" Lat="60.1645834" Long="-0.1382749"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="304.199" Dtg="100112 131500" Label="1315" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.067" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1663111" Long="-0.1433850"/>
+<shortLocation Depth="0.000" Lat="60.1663113" Long="-0.1433857"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="304.199" Dtg="100112 131600" Label="1316" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.067" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1680389" Long="-0.1484958"/>
+<shortLocation Depth="0.000" Lat="60.1680392" Long="-0.1484968"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="304.199" Dtg="100112 131700" Label="1317" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.067" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1697668" Long="-0.1536070"/>
+<shortLocation Depth="0.000" Lat="60.1697671" Long="-0.1536082"/>
 </centre>
 </fix>
 <Speed Units="kts" Value="11.067"/>
@@ -49,84 +49,84 @@
 <shortLocation Depth="0.000" Lat="60.1611276" Long="-0.1280541"/>
 </Origin>
 </AbsoluteTMASegment>
-<TrackSegment LineStyle="Dotted" Name="infill_1449" PlotRelative="true" Visible="true">
-<fix ArrowShowing="false" Course="340.775" Dtg="100112 131800" Label="1318" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.710" SymbolShowing="true" Visible="true">
+<DynamicInfillSegment AfterLeg="leg two" BeforeLeg="121312.00" LineStyle="Dotted" Name="infill_1524" Visible="true">
+<fix ArrowShowing="false" Course="317.550" Dtg="100112 131800" Label="1318" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.652" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1719042" Long="-0.1569771"/>
+<shortLocation Depth="0.000" Lat="60.1715124" Long="-0.1577267"/>
 </centre>
 </fix>
-<fix ArrowShowing="false" Course="351.752" Dtg="100112 131900" Label="1319" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.380" SymbolShowing="true" Visible="true">
+<fix ArrowShowing="false" Course="322.217" Dtg="100112 131900" Label="1319" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.246" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1744510" Long="-0.1587627"/>
+<shortLocation Depth="0.000" Lat="60.1732857" Long="-0.1609879"/>
 </centre>
 </fix>
-<fix ArrowShowing="false" Course="355.273" Dtg="100112 132000" Label="1320" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.045" SymbolShowing="true" Visible="true">
+<fix ArrowShowing="false" Course="323.127" Dtg="100112 132000" Label="1320" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.354" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1773046" Long="-0.1595944"/>
+<shortLocation Depth="0.000" Lat="60.1750961" Long="-0.1638096"/>
 </centre>
 </fix>
-<fix ArrowShowing="false" Course="352.683" Dtg="100112 132100" Label="1321" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.467" SymbolShowing="true" Visible="true">
+<fix ArrowShowing="false" Course="320.258" Dtg="100112 132100" Label="1321" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.949" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1803623" Long="-0.1601028"/>
+<shortLocation Depth="0.000" Lat="60.1769525" Long="-0.1666095"/>
 </centre>
 </fix>
-<fix ArrowShowing="false" Course="344.563" Dtg="100112 132200" Label="1322" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.795" SymbolShowing="true" Visible="true">
+<fix ArrowShowing="false" Course="314.735" Dtg="100112 132200" Label="1322" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.104" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1835215" Long="-0.1609187"/>
+<shortLocation Depth="0.000" Lat="60.1788639" Long="-0.1698053"/>
 </centre>
 </fix>
-<fix ArrowShowing="false" Course="331.594" Dtg="100112 132300" Label="1323" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.501" SymbolShowing="true" Visible="true">
+<fix ArrowShowing="false" Course="308.169" Dtg="100112 132300" Label="1323" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.932" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1866796" Long="-0.1626726"/>
+<shortLocation Depth="0.000" Lat="60.1808393" Long="-0.1738145"/>
 </centre>
 </fix>
-<fix ArrowShowing="false" Course="316.054" Dtg="100112 132400" Label="1324" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="14.240" SymbolShowing="true" Visible="true">
+<fix ArrowShowing="false" Course="301.876" Dtg="100112 132400" Label="1324" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="14.522" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1897339" Long="-0.1659953"/>
+<shortLocation Depth="0.000" Lat="60.1828876" Long="-0.1790551"/>
 </centre>
 </fix>
-<fix ArrowShowing="false" Course="316.054" Dtg="100112 132500" Label="1325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="14.240" SymbolShowing="true" Visible="true">
+<fix ArrowShowing="false" Course="301.876" Dtg="100112 132500" Label="1325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="14.522" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1925819" Long="-0.1715174"/>
+<shortLocation Depth="0.000" Lat="60.1850179" Long="-0.1859446"/>
 </centre>
 </fix>
-</TrackSegment>
+</DynamicInfillSegment>
 <AbsoluteTMASegment BaseFrequency="0.000" CourseDegs="293.598" LineStyle="Solid" Name="leg two" Visible="true">
 <fix ArrowShowing="false" Course="293.598" Dtg="100112 132550" Label="1325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="20.557" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1947235" Long="-0.1782543"/>
+<shortLocation Depth="0.000" Lat="60.1868622" Long="-0.1932469"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="293.598" Dtg="100112 132650" Label="1326" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="20.557" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1970094" Long="-0.1887823"/>
+<shortLocation Depth="0.000" Lat="60.1891481" Long="-0.2037723"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="293.598" Dtg="100112 132750" Label="1327" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="20.557" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.1992953" Long="-0.1993110"/>
+<shortLocation Depth="0.000" Lat="60.1914340" Long="-0.2142984"/>
 </centre>
 </fix>
 <fix ArrowShowing="false" Course="293.598" Dtg="100112 132850" Label="1328" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="20.557" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="60.2015812" Long="-0.2098405"/>
+<shortLocation Depth="0.000" Lat="60.1937199" Long="-0.2248253"/>
 </centre>
 </fix>
 <Speed Units="kts" Value="20.557"/>
 <Origin>
-<shortLocation Depth="0.000" Lat="60.1947235" Long="-0.1782543"/>
+<shortLocation Depth="0.000" Lat="60.1868622" Long="-0.1932469"/>
 </Origin>
 </AbsoluteTMASegment>
 <SegmentList/>
@@ -134,10 +134,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.2237953" Long="-0.2488841"/>
+<shortLocation Depth="0.000" Lat="60.2141945" Long="-0.2732109"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="60.1597688" Long="-0.0952580"/>
+<shortLocation Depth="0.000" Lat="60.1406014" Long="-0.0796685"/>
 </br>
 </projection>
 <gui>
