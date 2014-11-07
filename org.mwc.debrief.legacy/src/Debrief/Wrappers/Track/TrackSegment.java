@@ -133,7 +133,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			System.out.println("========");
 
 			// cause the monster problem
-			newFix6.setDateTimeGroup(new HiResDate(15000));
+			newFix6.setDateTimeGroup(new HiResDate(210000));
 
 			// try the mini algorithm first
 			final FixWrapper[] items = getLastElementsFrom(ts1, 2);
@@ -147,6 +147,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			}
 			catch (final RuntimeException re)
 			{
+				re.printStackTrace();
 				fail("runtime exception thrown!!!");
 			}
 
@@ -512,14 +513,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					+ ", " + depths[i]);
 		}
 
-//		UnivariateInterpolator interpolator = new SplineInterpolator();
-//		UnivariateFunction latInterp = interpolator.interpolate(times, lats);
-//		UnivariateFunction longInterp = interpolator.interpolate(times, longs);
-//		UnivariateFunction depthInterp = interpolator.interpolate(times, depths);
+		UnivariateInterpolator interpolator = new SplineInterpolator();
+		UnivariateFunction latInterp = interpolator.interpolate(times, lats);
+		UnivariateFunction longInterp = interpolator.interpolate(times, longs);
+		UnivariateFunction depthInterp = interpolator.interpolate(times, depths);
 
-		final CubicSpline latSpline = new CubicSpline(times, lats);
-		final CubicSpline longSpline = new CubicSpline(times, longs);
-		final CubicSpline depthSpline = new CubicSpline(times, depths);		
+//		final CubicSpline latSpline = new CubicSpline(times, lats);
+//		final CubicSpline longSpline = new CubicSpline(times, longs);
+//		final CubicSpline depthSpline = new CubicSpline(times, depths);		
 		
 		// what's the interval?
 		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
@@ -573,9 +574,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// debug. get a human-readable date
 			final HiResDate tmpD = new HiResDate(tNow);
 
-			final double thisLat = latSpline.interpolate(tNow);
-			final double thisLong = longSpline.interpolate(tNow);
-			final double thisDepth = depthSpline.interpolate(tNow);
+			final double thisLat = latInterp.value(tNow);
+			final double thisLong = longInterp.value(tNow);
+			final double thisDepth = depthInterp.value(tNow);
 
 			System.err.println("0," + tNow + ", " + thisLat + ", " + thisLong + ", "
 					+ thisDepth);
