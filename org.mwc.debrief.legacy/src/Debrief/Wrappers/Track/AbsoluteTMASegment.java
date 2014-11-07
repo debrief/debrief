@@ -248,7 +248,8 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		if (newCourse < 0)
 			newCourse += 360;
 		_dragMsg = "[" + newCourse + "\u00B0]";
-
+		
+		fireAdjusted();
 	}
 
 	public void setTime_Start(final HiResDate timeStart)
@@ -330,6 +331,8 @@ public class AbsoluteTMASegment extends CoreTMASegment
 				+ (int) newCourse + "\u00B0]";
 
 		super.firePropertyChange("Course", newCourse, newCourse);
+		
+		fireAdjusted();
 
 	}
 
@@ -346,6 +349,9 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
 		// clear the drag message, there's nothing to show message
 		_dragMsg = null;
+		
+		fireAdjusted();
+
 	}
 
 	/**
@@ -404,6 +410,8 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
 		// tell the segment it's being stretched
 		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts]";
+
+		fireAdjusted();
 
 	}
 

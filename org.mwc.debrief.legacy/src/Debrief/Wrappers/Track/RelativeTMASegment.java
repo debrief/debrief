@@ -426,6 +426,8 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		_dragMsg = "[" + spdTxt + " kts " + (int) this.getCourse() + "\u00B0]";
 
+		// tell any listeners that we've moved
+		fireAdjusted();
 	}
 
 	public double getDetectionBearing()
@@ -664,6 +666,9 @@ public class RelativeTMASegment extends CoreTMASegment
 			newCourse += 360;
 		_dragMsg = "[" + newCourse + "\u00B0]";
 
+		// tell any listeners that we've moved
+		fireAdjusted();
+
 	}
 
 	/**
@@ -786,6 +791,9 @@ public class RelativeTMASegment extends CoreTMASegment
 			this.add(newItem);
 		}
 
+		// tell any listeners that we've changed
+		super.fireAdjusted();
+		
 	}
 
 	@FireExtended
@@ -885,6 +893,9 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// and sort out the new offset
 		this._offset = newOffset;
+
+		// tell any listeners that we've changed
+		super.fireAdjusted();
 
 	}
 
@@ -1029,6 +1040,8 @@ public class RelativeTMASegment extends CoreTMASegment
 		// tell the segment it's being stretched
 		_dragMsg = "[" + spdTxt + " kts " + (int) newCourse + "\u00B0]";
 
+		// tell any listeners that we've moved
+		fireAdjusted();
 	}
 
 	@Override
@@ -1043,6 +1056,8 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// clear the drag message, there's nothing to show message
 		_dragMsg = null;
+		// tell any listeners that we've moved
+		fireAdjusted();
 	}
 
 	/**
@@ -1117,7 +1132,9 @@ public class RelativeTMASegment extends CoreTMASegment
 				.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
 
 		_dragMsg = "[" + spdTxt + " kts]";
-
+		
+		// tell any listeners that we've moved
+		fireAdjusted();
 	}
 
 	/**

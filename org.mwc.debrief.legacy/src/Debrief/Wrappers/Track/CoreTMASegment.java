@@ -44,6 +44,12 @@ abstract public class CoreTMASegment extends TrackSegment
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/** event name for when track is dragged
+	 * 
+	 */
+	public static final String ADJUSTED = "Adjusted";
+	
 	/**
 	 * steady course (Degs)
 	 * 
@@ -222,6 +228,12 @@ abstract public class CoreTMASegment extends TrackSegment
 
 	@Override
 	abstract public void rotate(double brg, final WorldLocation origin);
+	
+	
+	protected void fireAdjusted()
+	{
+		super.firePropertyChange(ADJUSTED, null, System.currentTimeMillis());
+	}
 
 	public void setBaseFrequency(final double baseFrequency)
 	{
