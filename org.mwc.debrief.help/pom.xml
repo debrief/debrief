@@ -23,6 +23,11 @@
             <configuration>
                 <target>
                   <ant target="docbook_to_eclipse" antfile="collate_docbook.xml" />
+		  <exec dir="${basedir}" executable="chmod">
+                    <arg value="0775"/>
+                    <arg value="dita2pdf.sh"/>
+                  </exec>
+                  <exec dir="${basedir}" executable="./dita2pdf.sh"/>
                 </target>
             </configuration>
             <goals>
