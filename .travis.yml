@@ -6,7 +6,7 @@ before_script:
 - sh -e /etc/init.d/xvfb start
 - sleep 3
 script: mvn clean verify -U -B -fae
-after_success: ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature
+after_success: ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
 deploy:
   provider: releases
   skip_cleanup: true
