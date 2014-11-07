@@ -167,7 +167,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			assertEquals("correct len", 4, ts0.size());
 			ts0.trimTo(newP);
 			assertEquals("correct new len", 1, ts0.size());
-			
+
 			ts0 = getDummyList();
 			newP = new TimePeriod.BaseTimePeriod(new HiResDate(15000), new HiResDate(
 					40000));
@@ -477,24 +477,21 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			for (int i = 0; i < allElements.length; i++)
 			{
 				final FixWrapper fixWrapper = allElements[i];
-				buff.append(
-						"item: "
-								+ i
-								+ " ,lat:,"
-								+ fixWrapper.getLocation().getLat()
-								+ " ,lon:,"
-								+ fixWrapper.getLocation().getLong()
-								+ " ,course:,"
-								+ fixWrapper.getCourseDegs()
-								+ " ,speed:,"
-								+ fixWrapper.getFix().getSpeed()
-								+ " ,at:,"
-								+ DebriefFormatDateTime.toString(fixWrapper.getTime().getDate()
-										.getTime()) + "\n");
+				buff.append("item: "
+						+ i
+						+ " ,lat:,"
+						+ fixWrapper.getLocation().getLat()
+						+ " ,lon:,"
+						+ fixWrapper.getLocation().getLong()
+						+ " ,course:,"
+						+ fixWrapper.getCourseDegs()
+						+ " ,speed:,"
+						+ fixWrapper.getFix().getSpeed()
+						+ " ,at:,"
+						+ DebriefFormatDateTime.toString(fixWrapper.getTime().getDate()
+								.getTime()) + "\n");
 			}
-			_myParent.logError(
-					ToolParent.INFO, buff.toString(), null);
-			
+			_myParent.logError(ToolParent.INFO, buff.toString(), null);
 
 		}
 
@@ -510,10 +507,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			lats[i] = fw.getLocation().getLat();
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
-			
-			System.err.println(i + "," + times[i] + ", " + lats[i] + ", " + longs[i] + ", " + depths[i]);
+
+			System.err.println(i + "," + times[i] + ", " + lats[i] + ", " + longs[i]
+					+ ", " + depths[i]);
 		}
-		
+
 		UnivariateInterpolator interpolator = new SplineInterpolator();
 		UnivariateFunction latInterp = interpolator.interpolate(times, lats);
 		UnivariateFunction longInterp = interpolator.interpolate(times, longs);
@@ -574,37 +572,30 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			final double thisLat = latInterp.value(tNow);
 			final double thisLong = longInterp.value(tNow);
 			final double thisDepth = depthInterp.value(tNow);
-			
-			System.err.println("0," + tNow + ", " + thisLat + ", " + thisLong + ", " + thisDepth);
-			
-			
-			buff.append(
-							 " lat:,"
-							+ thisLat
-							+ " ,lon:,"
-							+ thisLong
-							+ " ,at:,"
-							+ tmpD.toString() + "\n");
 
-			
+			System.err.println("0," + tNow + ", " + thisLat + ", " + thisLong + ", "
+					+ thisDepth);
+
+			buff.append(" lat:," + thisLat + " ,lon:," + thisLong + " ,at:,"
+					+ tmpD.toString() + "\n");
 
 			// create the new location
 			final WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
 
 			// diagnostics
-//			if (_myParent != null)
-//			{
-//				_myParent.logError(
-//						ToolParent.INFO,
-//						"new point is: " + newLocation + "  at  "
-//								+ DebriefFormatDateTime.toString(tmpD.getDate().getTime()),
-//						null);
-//			}
+			// if (_myParent != null)
+			// {
+			// _myParent.logError(
+			// ToolParent.INFO,
+			// "new point is: " + newLocation + "  at  "
+			// + DebriefFormatDateTime.toString(tmpD.getDate().getTime()),
+			// null);
+			// }
 
 			final WorldVector offset = newLocation.subtract(origin.getLocation());
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
-			
+
 			// start off with the course
 			double thisCourseRads = offset.getBearing();
 
@@ -660,9 +651,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// move along the bus, please (used if we're doing a DR Track).
 			origin = fw;
 		}
-		_myParent.logError(
-				ToolParent.INFO, buff.toString(), null);
-		
+		if (_myParent != null)
+			_myParent.logError(ToolParent.INFO, buff.toString(), null);
+
 		// aaah, special case. If we are generating a DR track, we need to put
 		// the
 		// next course and speed
