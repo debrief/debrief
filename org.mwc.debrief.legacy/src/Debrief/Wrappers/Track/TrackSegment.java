@@ -510,17 +510,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			lats[i] = fw.getLocation().getLat();
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
+			
+			System.err.println(i + "," + times[i] + ", " + lats[i] + ", " + longs[i] + ", " + depths[i]);
 		}
 		
 		UnivariateInterpolator interpolator = new SplineInterpolator();
 		UnivariateFunction latInterp = interpolator.interpolate(times, lats);
 		UnivariateFunction longInterp = interpolator.interpolate(times, longs);
 		UnivariateFunction depthInterp = interpolator.interpolate(times, depths);
-		
-
-//		final CubicSpline latSpline = new CubicSpline(times, lats);
-//		final CubicSpline longSpline = new CubicSpline(times, longs);
-//		final CubicSpline depthSpline = new CubicSpline(times, depths);
 
 		// what's the interval?
 		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
@@ -577,6 +574,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			final double thisLat = latInterp.value(tNow);
 			final double thisLong = longInterp.value(tNow);
 			final double thisDepth = depthInterp.value(tNow);
+			
+			System.err.println("0," + tNow + ", " + thisLat + ", " + thisLong + ", " + thisDepth);
+			
 			
 			buff.append(
 							 " lat:,"
