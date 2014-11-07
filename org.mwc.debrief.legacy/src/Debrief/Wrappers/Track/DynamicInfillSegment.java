@@ -10,6 +10,7 @@ import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
@@ -30,24 +31,15 @@ public class DynamicInfillSegment extends TrackSegment
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final TrackSegment _before;
-	private final TrackSegment _after;
-	private PropertyChangeListener _moveListener;
+	private TrackSegment _before;
+	private TrackSegment _after;
+	private final PropertyChangeListener _moveListener;
 	private ErrorLogger _myParent;
+	private String _beforeName;
+	private String _afterName;
 
-	/**
-	 * create an infill track segment between the two supplied tracks
-	 * 
-	 * @param trackOne
-	 * @param trackTwo
-	 */
-	public DynamicInfillSegment(final TrackSegment before,
-			final TrackSegment after)
+	public DynamicInfillSegment()
 	{
-		// ok, remember the tracks
-		_before = before;
-		_after = after;
-
 		_moveListener = new PropertyChangeListener()
 		{
 
@@ -57,6 +49,28 @@ public class DynamicInfillSegment extends TrackSegment
 				reconstruct();
 			}
 		};
+	}
+	
+	/**
+	 * create an infill track segment between the two supplied tracks
+	 * 
+	 * @param trackOne
+	 * @param trackTwo
+	 */
+	public DynamicInfillSegment(final TrackSegment before,
+			final TrackSegment after)
+	{
+		this();
+		
+		// ok, and start listening
+		configure(before, after);
+	}
+
+	private void configure(final TrackSegment before, final TrackSegment after)
+	{
+		// ok, remember the tracks
+		_before = before;
+		_after = after;
 
 		// also, we need to listen out for changes in these tracks
 		_before.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
@@ -64,6 +78,59 @@ public class DynamicInfillSegment extends TrackSegment
 		
 		// ok, produce an initial version
 		reconstruct();
+	}
+
+	/** restore from file, where we only know the names of the legs
+	 * 
+	 * @param beforeName
+	 * @param afterName
+	 */
+	public DynamicInfillSegment(String beforeName, String afterName)
+	{
+		this();
+		_beforeName = beforeName;
+		_afterName = afterName;
+	}
+	
+
+	/** we're overriding this method, since it's part of the rendering cycle, and we're confident
+	 * that rendering will only happen once the data is loaded and collated.
+	 */
+	public boolean getVisible()
+	{
+		// ok, do we know our tracks?
+		if(_before == null)
+		{
+			TrackSegment before = findSegment(_beforeName);
+			TrackSegment after = findSegment(_afterName);
+			
+			// ok, now we're ready
+			configure(before, after);
+		}
+		
+		return super.getVisible();
+	}
+
+	/** find the named segment
+	 * 
+	 * @param name name of the segment to find
+	 * @return the matching segment
+	 */
+	private TrackSegment findSegment(String name)
+	{
+		TrackSegment res = null;
+		SegmentList segs = super.getWrapper().getSegments();
+		Enumeration<Editable> numer = segs.elements();
+		while (numer.hasMoreElements())
+		{
+			Editable editable = (Editable) numer.nextElement();
+			if(editable.getName().equals(name))
+			{
+				res = (TrackSegment) editable;
+				break;
+			}
+		}
+		return res;
 	}
 
 	protected void reconstruct()
@@ -370,6 +437,17 @@ public class DynamicInfillSegment extends TrackSegment
 		}
 
 		return res;
+	}
+
+	public String getBeforeName()
+	{
+		return _before.getName();
+	}
+
+
+	public String getAfterName()
+	{
+		return _after.getName();
 	}
 
 }
