@@ -56,6 +56,13 @@ abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.
       	addThisSegment(segment);
       }
     });
+    addHandler(new DynamicInfillSegmentHandler()
+    {
+      public void addSegment(final TrackSegment segment)
+      {
+      	addThisSegment(segment);
+      }
+    });
 
     addHandler(new TrackSegmentHandler()
     {
