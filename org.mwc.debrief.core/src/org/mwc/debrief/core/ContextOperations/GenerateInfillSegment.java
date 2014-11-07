@@ -32,6 +32,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -188,7 +189,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			{
 				// cool, go for it
 				// generate the new track segment
-				final TrackSegment newSeg = new TrackSegment(trackOne, trackTwo);
+				final TrackSegment newSeg = new DynamicInfillSegment(trackOne, trackTwo);
 
 				// aah, but, no but, are there points in the segment
 				if (newSeg.getData().size() > 0)
