@@ -19,6 +19,6 @@
 			<attribute name="javadoc_location" value="jar:file:/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/commons-math3-3.3.jar"/>
+	<classpathentry kind="lib" path="libs/commons-math3-3.3.jar" sourcepath="/contribs/commons-math3-3.3-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
