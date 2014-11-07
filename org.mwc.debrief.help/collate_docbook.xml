@@ -15,6 +15,7 @@
 	<property name="webhelpOutput" value="html/webhelp" />
 	<property name="webhelpDest" value="${helpDir}/html/webhelp" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
+	<property name="pdfDestination" value="../org.mwc.cmap.combined.feature/root_installs" />
 
 	<property name="webhelpDir" value="${rootDir}/org.mwc.debrief.help/docbook" />
 	<property name="input-xml" value="${webhelpDir}/ng_help.xml" />
@@ -34,8 +35,7 @@
 
 	<target name="docbook_to_eclipse" description="Generate html from docbook">
 		<!-- clear the output directories -->
-		<antcall target="clear_output">
-		</antcall>
+		<antcall target="clear_output"/>
 
 		<!-- generate the output -->
 		<mkdir dir="${helpDest}" />
@@ -150,33 +150,6 @@
 
 	</target>
 
-	<target name="cheat2dita" description="produce pdf version of cheat sheets">
-		<!-- record the Saxon location -->
-		<property name="saxonhe-classpath" value="${contribDir}/SaxonHE9-6-0-1J/saxon9he.jar" />
-
-		<!-- and run the XSL transformv -->
-		<java fork="true" jar="${saxonhe-classpath}" dir="cheat_sheets">
-			<arg value="-o:dita/map.ditamap" />
-			<arg value="-it:root" />
-			<arg value="printed_version.xsl" />
-		</java> 
-	</target>
-	
-	<target name="dita2pdf" description="produce pdf version of cheat sheets">
-		<!-- and now the DITA transform -->
-		<property name="dita.dir" value="${contribDir}/DITA-OT1.8.5" />
-
-		<ant antfile="${dita.dir}${file.separator}build.xml">
-			<!-- please refer to the toolkit's document for supported parameters, and 
-	           specify them base on your needs -->
-			<property name="args.input" location="cheat_sheets/dita/map.ditamap" />
-			<property name="output.dir" location="cheat_sheets/dita" />
-			<property name="transtype" value="debrief" />
-		</ant>
-
-	</target>
-
-
 	<target name="docbook_to_pdf" description="Generate html from docbook">
 
 		<property name="fopVersion" value="fop-1.0" description="the current version of FOP" />
@@ -184,7 +157,6 @@
 		<property name="docName" value="DebriefNG.pdf" description="The Debrief document file" />
 		<property name="xml.dir" value="docbook" description="where our docbook sources are" />
 
-		<property name="pdfDestination" value="../org.mwc.cmap.combined.feature/root_installs" />
 		<echo message="Ditching old pdf" />
 		<delete file="${pdfDestination}/${docName}" />
 

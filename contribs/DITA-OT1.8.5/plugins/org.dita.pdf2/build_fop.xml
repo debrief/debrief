@@ -5,7 +5,7 @@
 -->
 <project name="org.dita.pdf2.fop">
 
-  <property name="fop.home" value="${dita.plugin.org.dita.pdf2.dir}/fop"/>
+  <property name="fop.home" value="../contribs/fop-1.0"/>
 
   <condition property="hasFopLib">
     <available classname="org.apache.fop.tools.anttasks.Fop">

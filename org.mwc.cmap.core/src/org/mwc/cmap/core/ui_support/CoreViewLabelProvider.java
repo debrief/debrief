@@ -45,6 +45,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.CoastPainter;
+import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
@@ -351,6 +352,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 				imageKey = "layer.gif";
 			else if (editable instanceof GridPainter)
 				imageKey = "grid.gif";
+			else if (editable instanceof Grid4WPainter)
+				imageKey = "grid4w.gif";
 			else if (editable instanceof ScalePainter)
 				imageKey = "scale.gif";
 			else if (editable instanceof CoastPainter)

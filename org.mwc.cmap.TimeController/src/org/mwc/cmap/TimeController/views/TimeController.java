@@ -2329,8 +2329,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 				}
 			};
-			final String descPath = "icons/" + highlighter.toString().toLowerCase()
-					+ ".gif";
+			String descPath = "icons/" + highlighter.toString().toLowerCase() + ".png";
+			descPath = descPath.replace(" ", "_");
 			thisOne.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 					.getImageDescriptor(descPath));
 
