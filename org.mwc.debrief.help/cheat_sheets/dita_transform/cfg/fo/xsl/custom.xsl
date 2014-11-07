@@ -152,10 +152,10 @@
 									<fo:table-cell>
 										<fo:block text-align="left" xsl:use-attribute-sets=	"__frontmatter__title">
 											<fo:block padding-top="1cm">
-											Debrief Cheat Sheets
+											Debrief Tutorial
 											</fo:block>
 										</fo:block>
-										<fo:block text-align="left">Welcome to the Debrief Cheat Sheets. This is a set of self-teach tutorials that you will use to learn about Debrief. In working through the tutorials you'll encounter the breadth of the Debrief applicaftion, ready for using the tool for your own analysis.</fo:block>
+										<fo:block text-align="left">Welcome to the Debrief Tutorial. This tutorial comprises a set of self-teach tutorials (Cheat Sheets) that you will use to learn about Debrief. In working through the tutorials you'll encounter the breadth of the Debrief applicaftion, ready for using the tool for your own analysis.</fo:block>
 									</fo:table-cell>
 								</fo:table-row>
 							</fo:table-body>
