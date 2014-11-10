@@ -143,7 +143,9 @@ public class DynamicInfillSegment extends TrackSegment
 		this.removeAllElements();
 
 		// remember if it's DR or OTG
-		final boolean isDR = false; // false;// _before.getPlotRelative();
+		// no, always force non-DR, since we're using Lat/Long curves
+		// from splines
+		final boolean isDR = false; 
 
 		this.setPlotRelative(isDR);
 
