@@ -294,7 +294,7 @@
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.createProject?before=additions"> 
         	<command
               commandId="org.mwc.debrief.core.createProject"
-              icon="icons/24/CreateProject.png"
+              icon="icons/24/create_project.png"
               label="Create Project"
               tooltip="Create folders to contain your Debrief working files"
               style="push"
