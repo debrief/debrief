@@ -50,7 +50,7 @@ public class DynamicInfillSegment extends TrackSegment
 			}
 		};
 	}
-	
+
 	/**
 	 * create an infill track segment between the two supplied tracks
 	 * 
@@ -61,7 +61,7 @@ public class DynamicInfillSegment extends TrackSegment
 			final TrackSegment after)
 	{
 		this();
-		
+
 		// ok, and start listening
 		configure(before, after);
 	}
@@ -75,12 +75,13 @@ public class DynamicInfillSegment extends TrackSegment
 		// also, we need to listen out for changes in these tracks
 		_before.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
 		_after.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
-		
+
 		// ok, produce an initial version
 		reconstruct();
 	}
 
-	/** restore from file, where we only know the names of the legs
+	/**
+	 * restore from file, where we only know the names of the legs
 	 * 
 	 * @param beforeName
 	 * @param afterName
@@ -91,29 +92,32 @@ public class DynamicInfillSegment extends TrackSegment
 		_beforeName = beforeName;
 		_afterName = afterName;
 	}
-	
 
-	/** we're overriding this method, since it's part of the rendering cycle, and we're confident
-	 * that rendering will only happen once the data is loaded and collated.
+	/**
+	 * we're overriding this method, since it's part of the rendering cycle, and
+	 * we're confident that rendering will only happen once the data is loaded and
+	 * collated.
 	 */
 	public boolean getVisible()
 	{
 		// ok, do we know our tracks?
-		if(_before == null)
+		if (_before == null)
 		{
 			TrackSegment before = findSegment(_beforeName);
 			TrackSegment after = findSegment(_afterName);
-			
+
 			// ok, now we're ready
 			configure(before, after);
 		}
-		
+
 		return super.getVisible();
 	}
 
-	/** find the named segment
+	/**
+	 * find the named segment
 	 * 
-	 * @param name name of the segment to find
+	 * @param name
+	 *          name of the segment to find
 	 * @return the matching segment
 	 */
 	private TrackSegment findSegment(String name)
@@ -124,7 +128,7 @@ public class DynamicInfillSegment extends TrackSegment
 		while (numer.hasMoreElements())
 		{
 			Editable editable = (Editable) numer.nextElement();
-			if(editable.getName().equals(name))
+			if (editable.getName().equals(name))
 			{
 				res = (TrackSegment) editable;
 				break;
@@ -139,13 +143,13 @@ public class DynamicInfillSegment extends TrackSegment
 		this.removeAllElements();
 
 		// remember if it's DR or OTG
-		final boolean isDR = _before.getPlotRelative();
+		final boolean isDR = false; // false;// _before.getPlotRelative();
 
 		this.setPlotRelative(isDR);
 
 		// now the num to use
 		final int oneUse = 2;
-		final int twoUse = 2;
+		final int twoUse = 3;
 
 		// generate the data for the splines
 		final FixWrapper[] oneElements = getLastElementsFrom(_before, oneUse);
@@ -238,6 +242,11 @@ public class DynamicInfillSegment extends TrackSegment
 		// relative solution
 		FixWrapper origin = oneElements[oneElements.length - 1];
 
+		// remember how the previous track is styled
+		final String labelFormat = origin.getLabelFormat();
+		final boolean labelOn = origin.getLabelShowing();
+		final Integer labelLoc = origin.getLabelLocation();
+
 		if (_myParent != null)
 		{
 			if (origin.getLocation() == null)
@@ -250,6 +259,8 @@ public class DynamicInfillSegment extends TrackSegment
 
 		boolean first = true;
 
+		System.out.println("===");
+
 		// get going then! Note, we go past the end of the required data,
 		// - so that we can generate the correct course and speed for the last
 		// DR
@@ -260,7 +271,6 @@ public class DynamicInfillSegment extends TrackSegment
 			final double thisLat = latInterp.value(tNow);
 			final double thisLong = longInterp.value(tNow);
 			final double thisDepth = depthInterp.value(tNow);
-
 
 			// create the new location
 			final WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
@@ -282,16 +292,21 @@ public class DynamicInfillSegment extends TrackSegment
 			while (thisCourseRads < 0)
 				thisCourseRads += Math.PI * 2;
 
-			if (first)
+			// is this a relative track? if it is, we need
+			// to push the speed/course back into the previous leg
+			if (this.getPlotRelative())
 			{
-				// we don't edit the origin, it's from another track
-				first = false;
-			}
-			else
-			{
-				// over-write the course and speed of the previous entry
-				origin.setSpeed(thisSpeedKts);
-				origin.setCourse(thisCourseRads);
+				if (first)
+				{
+					// we don't edit the origin, it's from another track
+					first = false;
+				}
+				else
+				{
+					// over-write the course and speed of the previous entry
+					origin.setSpeed(thisSpeedKts);
+					origin.setCourse(thisCourseRads);
+				}
 			}
 
 			// put course in the +ve domain
@@ -305,11 +320,19 @@ public class DynamicInfillSegment extends TrackSegment
 			final Fix newFix = new Fix(new HiResDate(tNow), newLocation,
 					thisCourseRads, theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
 
+			System.out.println("T:" + new HiResDate(tNow) + " Speed:"
+					+ theSpeed.getValueIn(WorldSpeed.Kts));
+
 			final FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
 
 			// and sort out the time lable
 			fw.resetName();
+
+			// and copy the other formatting
+			fw.setLabelFormat(labelFormat);
+			fw.setLabelLocation(labelLoc);
+			fw.setLabelShowing(labelOn);
 
 			// only add it if we're still in the time period. We generate one
 			// position
@@ -443,7 +466,6 @@ public class DynamicInfillSegment extends TrackSegment
 	{
 		return _before.getName();
 	}
-
 
 	public String getAfterName()
 	{
