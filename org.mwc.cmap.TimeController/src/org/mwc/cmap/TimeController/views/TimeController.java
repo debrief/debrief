@@ -129,7 +129,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private static final String ICON_LOCK_VIEW = "icons/lock_view.png";
 
-	private static final String ICON_PROPERTIES = "icons/properties.gif";
+	private static final String ICON_PROPERTIES = "icons/16/properties.png";
 
 	private static final String ICON_MEDIA_END = "icons/24/media_end.png";
 

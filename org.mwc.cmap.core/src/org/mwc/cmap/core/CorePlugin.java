@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
@@ -705,9 +706,13 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 		if (res == null)
 		{
-			ImageDescriptor desc = getImageDescriptor("icons/16/" + name.replace(".gif", ".png"));
-			if (desc == null) {
-				desc = getImageDescriptor("icons/" + name);
+			ImageDescriptor desc = getImageDescriptor("icons/16/" + name);
+			if (desc == null)
+			{
+				final Status status = new Status(IStatus.WARNING, "org.mwc.cmap.core",
+						"Missing image " + name);
+				getDefault().getLog().log(status);
+				return null;
 			}
 			getRegistry().put(name, desc);
 			res = getRegistry().get(name);
