@@ -121,7 +121,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 {
 	private static final String ICON_BKMRK_NAV = "icons/bkmrk_nav.gif";
 
-	private static final String ICON_FILTER_TO_PERIOD = "icons/filter_to_period.gif";
+	private static final String ICON_FILTER_TO_PERIOD = "icons/16/filter.png";
 
 	private static final String ICON_LOCK_VIEW2 = "icons/lock_view2.png";
 
@@ -2221,7 +2221,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		};
 		_filterToSelectionAction
-				.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+				.setImageDescriptor(CorePlugin
 						.getImageDescriptor(ICON_FILTER_TO_PERIOD));
 		_filterToSelectionAction
 				.setToolTipText("Filter plot data to selected time period");
@@ -2261,7 +2261,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		};
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
-		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+		toolboxProperties.setImageDescriptor(CorePlugin
 				.getImageDescriptor(ICON_PROPERTIES));
 
 		menuManager.add(toolboxProperties);
@@ -2363,7 +2363,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 			}
 		};
-		highlighterProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+		highlighterProperties.setImageDescriptor(CorePlugin
 				.getImageDescriptor(ICON_PROPERTIES));
 
 		// and store it on both menus
@@ -2455,7 +2455,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		};
 		currentPainterProperties
-				.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+				.setImageDescriptor(CorePlugin
 						.getImageDescriptor(ICON_PROPERTIES));
 
 		// and store it on both menus
