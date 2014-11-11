@@ -137,8 +137,8 @@ public class TimeBarView extends ViewPart {
 		_zoomInAction.setText("Zoom in");
 		_zoomInAction
 				.setToolTipText("Zoom in");
-		_zoomInAction.setImageDescriptor(Activator
-				.getImageDescriptor("icons/zoomin.gif"));
+		_zoomInAction.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/zoomin.png"));
 		
 		_zoomOutAction = new Action("Zoom out", Action.AS_PUSH_BUTTON)
 		{
@@ -150,8 +150,8 @@ public class TimeBarView extends ViewPart {
 		_zoomOutAction.setText("Zoom out");
 		_zoomOutAction
 				.setToolTipText("Zoom out");
-		_zoomOutAction.setImageDescriptor(Activator
-				.getImageDescriptor("icons/zoomout.gif"));
+		_zoomOutAction.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/zoomout.png"));
 		
 		_fitToWindowAction = new Action("Fit to Window", Action.AS_PUSH_BUTTON)
 		{
@@ -164,7 +164,7 @@ public class TimeBarView extends ViewPart {
 		_fitToWindowAction
 				.setToolTipText("Fit to Window");
 		_fitToWindowAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/fit_to_win.gif"));
+				.getImageDescriptor("icons/16/fit_to_win.png"));
 		
 	}
 	
