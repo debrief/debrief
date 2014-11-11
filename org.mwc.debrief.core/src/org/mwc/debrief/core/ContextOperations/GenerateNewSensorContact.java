@@ -118,38 +118,41 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 			// sort out the current time
 			final IWorkbench wb = PlatformUI.getWorkbench();
 			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			final IWorkbenchPage page = win.getActivePage();
-			final IEditorPart editor = page.getActiveEditor();
-			if (editor != null)
+			if(win != null)
 			{
-				final Object objTime = editor.getAdapter(TimeProvider.class);
-				if (objTime != null)
+				final IWorkbenchPage page = win.getActivePage();
+				final IEditorPart editor = page.getActiveEditor();
+				if (editor != null)
 				{
-					final TimeProvider timer = (TimeProvider)objTime;
-					final HiResDate tNow = timer.getTime();
-
-					// ok, do I know how to create a TMA segment from this?
-					final Editable onlyOne = subjects[0];
-					if (onlyOne instanceof SensorWrapper)
+					final Object objTime = editor.getAdapter(TimeProvider.class);
+					if (objTime != null)
 					{
-						final SensorWrapper tw = (SensorWrapper) onlyOne;
-						// cool wrap it in an action.
-						_myAction = new Action("Generate contact for this sensor")
-						{
-							@Override
-							public void run()
-							{
-								// get the supporting data
-								final NewContactWizard wizard = new NewContactWizard(tNow, null, tw);
-								runOperation(theLayers, wizard);
-							}
-						};
-					}
-				}
+						final TimeProvider timer = (TimeProvider)objTime;
+						final HiResDate tNow = timer.getTime();
 
-				// go for it, or not...
-				if (_myAction != null)
-					parent.add(_myAction);
+						// ok, do I know how to create a TMA segment from this?
+						final Editable onlyOne = subjects[0];
+						if (onlyOne instanceof SensorWrapper)
+						{
+							final SensorWrapper tw = (SensorWrapper) onlyOne;
+							// cool wrap it in an action.
+							_myAction = new Action("Generate contact for this sensor")
+							{
+								@Override
+								public void run()
+								{
+									// get the supporting data
+									final NewContactWizard wizard = new NewContactWizard(tNow, null, tw);
+									runOperation(theLayers, wizard);
+								}
+							};
+						}
+					}
+
+					// go for it, or not...
+					if (_myAction != null)
+						parent.add(_myAction);
+				}
 			}
 		}
 
