@@ -1,7 +1,7 @@
 ECHO CREATING DEBRIEF REGISTRY
 
 SET ICON_PATH=%~dp0\file_icons
-SET CMD_TRACK_FILE="%~dp0\DebriefNG.exe --launcher.openFile %%1 %%*"
+SET FILE_COMMAND="%~dp0\DebriefNG.exe --launcher.openFile %%1 %%*"
 
 SET FILE_APP=HKEY_CURRENT_USER\Software\Classes\Applications
 SET FILE_EXT=HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts
@@ -13,7 +13,8 @@ SET EXT=.dpf
 REG DELETE %FILE_APP%\%APP% /F
 REG DELETE %FILE_EXT%\%EXT% /F
 
-REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %CMD_TRACK_FILE%
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "plot file"
+REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
 REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\plot_file.ico
 REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
 REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
@@ -28,7 +29,8 @@ SET EXT=.dsf
 REG DELETE %FILE_APP%\%APP% /F
 REG DELETE %FILE_EXT%\%EXT% /F
 
-REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %CMD_TRACK_FILE%
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "sensor file"
+REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
 REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\sensor_file.ico
 REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
 REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
@@ -42,7 +44,8 @@ SET EXT=.rep
 REG DELETE %FILE_APP%\%APP% /F
 REG DELETE %FILE_EXT%\%EXT% /F
 
-REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %CMD_TRACK_FILE%
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "track file"
+REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
 REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\track_file.ico
 REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
 REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
