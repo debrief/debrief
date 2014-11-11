@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/flanagan.jar"/>
+	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/commons-math3-3.3.jar" sourcepath="/contribs/commons-math3-3.3-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

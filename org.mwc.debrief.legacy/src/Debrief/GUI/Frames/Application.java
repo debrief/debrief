@@ -1026,4 +1026,16 @@ public abstract class Application implements ToolParent, ActionListener,
 		System.err.println("Error:" + text);
 	}
 
+	/**
+	 * @param status
+	 * @param text
+	 * @param e
+	 */
+	public static void logError2(final int status, final String text, final Exception e)
+	{
+		if(_substituteParent != null)
+			_substituteParent.logError(status, text, e);
+		System.err.println("Error:" + text);
+	}
+
 }

@@ -35,6 +35,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -200,6 +201,11 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			AbsoluteTMASegmentHandler.exportThisTMASegment(doc, trk,
 					(AbsoluteTMASegment) segment);
 		}
+		else if (segment instanceof DynamicInfillSegment)
+		{
+			DynamicInfillSegmentHandler.exportThisSegment(doc, trk,
+					(DynamicInfillSegment) segment);
+		}
 		else if (segment instanceof PlanningSegment.ClosingSegment)
 		{
 			PlanningSegmentHandler.exportThisClosingSegment(doc, trk,
@@ -271,6 +277,14 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		});
 
 		addHandler(new AbsoluteTMASegmentHandler()
+		{
+			public void addSegment(final TrackSegment segment)
+			{
+				addThis(segment);
+			}
+		});
+
+		addHandler(new DynamicInfillSegmentHandler()
 		{
 			public void addSegment(final TrackSegment segment)
 			{

@@ -183,7 +183,10 @@ public final class StackedDotHelper
 
 											// and find any matching items
 											final SortedSet<Editable> items = ts.tailSet(index);
-											targetFix = (FixWrapper) items.first();
+											if(items.size() > 0)
+											{
+												targetFix = (FixWrapper) items.first();
+											}
 										}
 
 									}
@@ -191,7 +194,7 @@ public final class StackedDotHelper
 							}
 
 							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-							if ((matches != null) && (matches.length > 0))
+							if ((matches != null) && (matches.length > 0) && (targetFix != null))
 							{
 								final FixWrapper hostFix = (FixWrapper) matches[0];
 

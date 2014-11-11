@@ -44,6 +44,8 @@ public class TrackWrapper_Support
 			Layer, SupportsPropertyListeners
 	{
 
+		public final static String WRAPPER_CHANGED = "WrapperChanged";
+		
 		/**
 		 * class containing editable details of a track
 		 */
@@ -167,7 +169,14 @@ public class TrackWrapper_Support
 
 		public void setWrapper(final TrackWrapper wrapper)
 		{
+			TrackWrapper oldWrap = _myTrack;
+			
 			_myTrack = wrapper;
+			
+			/** tell anybody who is interested
+			 * 
+			 */
+			_pSupport.firePropertyChange(WRAPPER_CHANGED, _myTrack, oldWrap);
 		}
 
 	}
@@ -365,6 +374,17 @@ public class TrackWrapper_Support
 				final TrackSegment first = (TrackSegment) getData().iterator().next();
 				first.setName("Positions");
 			}
+		}
+		
+		
+
+		@Override
+		public void removeElement(Editable p)
+		{
+			super.removeElement(p);
+
+			TrackSegment seg = (TrackSegment) p;
+			seg.setWrapper(null);
 		}
 
 		@Override

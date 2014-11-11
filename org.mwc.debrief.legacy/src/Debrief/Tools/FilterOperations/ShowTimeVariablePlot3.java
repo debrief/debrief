@@ -120,9 +120,7 @@ package Debrief.Tools.FilterOperations;
 //
 
 import java.awt.Color;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -149,6 +147,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.StepControl;
 import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
@@ -161,6 +160,7 @@ import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Wrappers.ISecondaryTrack;
 import MWC.GUI.Editable;
+import MWC.GUI.ToolParent;
 import MWC.GUI.JFreeChart.BearingRateFormatter;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
@@ -178,7 +178,6 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.Utilities.Errors.Trace;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class ShowTimeVariablePlot3 implements FilterOperation
 {
@@ -421,7 +420,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			if (HiResDate.inHiResProcessingMode())
 			{
 
-				final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
+//				final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
 
 				System.err.println("XY Plot of HiRes data support is incomplete. Tick formatter (below) is missing.");
 				
@@ -660,8 +659,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 					if(ss == null)
 					{
-						throw new RuntimeException("Insufficient points found in primary track." +
-								"\nPlease check coverage of time controller bars"); 
+					  Application.logError2(ToolParent.WARNING, "Insufficient points found in primary track." +
+								"\nPlease check coverage of time controller bars", null); 
+						return null;
 					}
 					
 					// drop out, and wait for the next cycle
@@ -684,8 +684,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			// at the end of this method to stop us adding empty data series to the collection.
 			if(ss == null)
 			{
-				throw new RuntimeException("Insufficient points found in primary (or secondary) track." +
-						"\nPlease check coverage of time controller bars"); 
+			  Application.logError2(ToolParent.WARNING, "Insufficient points found in primary track." +
+						"\nPlease check coverage of time controller bars", null); 
+				return null;
 			}
 			else
 			{

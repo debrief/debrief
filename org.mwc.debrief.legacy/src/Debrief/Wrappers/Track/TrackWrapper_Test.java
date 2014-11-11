@@ -20,6 +20,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
+import flanagan.interpolation.CubicSpline;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -65,9 +67,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	private static final String TRACK_NAME = "test track";
 
-	public static FixWrapper createFix(final int timeMillis, final int vLatDeg, final int vLatMin,
-			final double vLatSec, final int vLongDeg, final int vLongMin, final double vLongSec,
-			final int crseDegs, final int spdKts)
+	public static FixWrapper createFix(final int timeMillis, final int vLatDeg,
+			final int vLatMin, final double vLatSec, final int vLongDeg,
+			final int vLongMin, final double vLongSec, final int crseDegs,
+			final int spdKts)
 	{
 		final double vLat = vLatDeg + (vLatMin / 60d) + (vLatSec / 3600d);
 		final double vLong = vLongDeg + (vLongMin / 60d) + (vLongSec / 3600d);
@@ -81,8 +84,26 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		return theFix;
 	}
 
-	public static FixWrapper createFix(final int timeMillis, final int vLat, final int vLong,
-			final int crseDegs, final int spdKts)
+	private TrackSegment getDummyList()
+	{
+		final TrackSegment ts0 = new TrackSegment();
+		final FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
+				new WorldLocation(1, -1, 3), 1, 2));
+		final FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(20000),
+				new WorldLocation(1, 0, 3), 1, 2));
+		final FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(30000),
+				new WorldLocation(1, 1, 3), 1, 2));
+		final FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(40000),
+				new WorldLocation(1, 2, 3), 1, 2));
+		ts0.addFix(newFix1);
+		ts0.addFix(newFix2);
+		ts0.addFix(newFix3);
+		ts0.addFix(newFix4);
+		return ts0;
+	}
+
+	public static FixWrapper createFix(final int timeMillis, final int vLat,
+			final int vLong, final int crseDegs, final int spdKts)
 	{
 		final FixWrapper theFix = createFix(timeMillis, vLat, vLong);
 		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
@@ -94,7 +115,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		return theFix;
 	}
 
-	public static FixWrapper createFix(final long timeMillis, final double vLat, final double vLong)
+	public static FixWrapper createFix(final long timeMillis, final double vLat,
+			final double vLong)
 	{
 		final FixWrapper fw = new FixWrapper(new Fix(new HiResDate(timeMillis),
 				new WorldLocation(vLat, vLong, 0), 1, 1));
@@ -234,7 +256,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// give the fixes some names, so we can track them
 		_fw1.setLabel("fw1");
 		_fw2.setLabel("fw2");
-		
+
 		_tw = new TrackWrapper();
 		_tw.setName(TRACK_NAME);
 		_tw.addFix(createFix(100000, 1, 1));
@@ -498,8 +520,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 49, tw.numFixes());
-		assertEquals("has all sensor cuts", 7, countCuts(tw.getSensors()
-				.elements()));
+		assertEquals("has all sensor cuts", 7,
+				countCuts(tw.getSensors().elements()));
 		assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()
 				.elements()));
 
@@ -643,11 +665,12 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		ts2.addFix(createFix(120000, 1, 0, 0d, 1, 0, 11d, 90, 12));
 		ts2.addFix(createFix(130000, 1, 0, 0d, 1, 0, 12d, 90, 12));
 
-		// the test was broken after adding this line to the TrackSegment constructor:
-		// 458: tDelta = Math.max(tDelta, 10000);		
+		// the test was broken after adding this line to the TrackSegment
+		// constructor:
+		// 458: tDelta = Math.max(tDelta, 10000);
 		// tDelta is the time loop step
 		// Fixed the test: increased second track times.
-		final TrackSegment infill = new TrackSegment(ts1, ts2);
+		final TrackSegment infill = new DynamicInfillSegment(ts1, ts2);
 
 		// check there are the correct number of items
 		assertEquals("wrong num entries", 7, infill.size());
@@ -671,34 +694,35 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		ts2.addFix(createFix(120000, 1, 0, 0d, 1, 0, 11d, 90, 12));
 		ts2.addFix(createFix(130000, 1, 0, 0d, 1, 0, 12d, 90, 12));
 
-		// the test was broken after adding this line to the TrackSegment constructor:
-		// 458: tDelta = Math.max(tDelta, 10000);		
+		// the test was broken after adding this line to the TrackSegment
+		// constructor:
+		// 458: tDelta = Math.max(tDelta, 10000);
 		// tDelta is the time loop step
 		// Fixed the test: increased second track times.
-		final TrackSegment infill = new TrackSegment(ts1, ts2);
+		final TrackSegment infill = new DynamicInfillSegment(ts1, ts2);
 
 		// check there are the correct number of items
 		assertEquals("wrong num entries", 7, infill.size());
-		
-		Enumeration<Editable> numer = infill.elements();		
-		double minCourse = Math.toRadians(90);
-		double maxCourse = Math.toRadians(135);
-		
-		while (numer.hasMoreElements())
-		{
-			FixWrapper thisF = (FixWrapper) numer.nextElement();
 
-			// TODO: investigate splines to ensure the turn only include decrease or 
-			// increase in speed, not both (Github Issue# 664)
-			
-			// check they maintain the speed
-		//	assertEquals("correct speed", 12, thisF.getSpeed(), 0.002);
+//		Enumeration<Editable> numer = infill.elements();
+//		double minCourse = Math.toRadians(90);
+//		double maxCourse = Math.toRadians(135);
+//
+//		while (numer.hasMoreElements())
+//		{
+//			FixWrapper thisF = (FixWrapper) numer.nextElement();
+//
+//			// TODO: investigate splines to ensure the turn only include decrease or
+//			// increase in speed, not both (Github Issue# 664)
+//
+//			// check they maintain the speed
+////			assertEquals("correct speed", 12, thisF.getSpeed(), 0.002);
+//
+//			// check the speed doesn't go outside the provided range
+////			assertTrue("correct course", thisF.getCourse() >= minCourse);
+////			assertTrue("correct course", thisF.getCourse() <= maxCourse);
+//		}
 
-			// check the speed doesn't go outside the provided range
-	//		assertTrue("correct course", thisF.getCourse() >= minCourse);
-	//		assertTrue("correct course", thisF.getCourse() <= maxCourse);
-		}
-		
 	}
 
 	/**
@@ -1083,8 +1107,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
 		final FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
 		final WorldVector vector = new WorldVector(0, 1, 0);
-		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
-				WorldSpeed.Kts), vector, null)
+		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(
+				12, WorldSpeed.Kts), vector, null)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -1133,8 +1157,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final FixWrapper f1 = createFix(0, 1, 1, 270, 12);
 		final FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
 		final WorldVector vector = new WorldVector(0, 1, 0);
-		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
-				WorldSpeed.Kts), vector, null)
+		final RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(
+				12, WorldSpeed.Kts), vector, null)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -1448,21 +1472,23 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("track starts correctly", 6, trackLength());
 		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
 		assertEquals("have right num tracks", 2, theLayers.size());
-		assertEquals("fix starts in place", "test track", _fw1.getTrackWrapper().getName());
+		assertEquals("fix starts in place", "test track", _fw1.getTrackWrapper()
+				.getName());
 
 		// do a merge
 		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
 		final TrackWrapper newTarget = new TrackWrapper();
 		newTarget.setName("Merged");
-		
+
 		TrackWrapper.mergeTracks(newTarget, theLayers, subjects);
 
 		// have a look at the results
 		assertEquals("new track got created", 3, theLayers.size());
 		assertEquals("track 3 is longer", 11, newTarget.numFixes());
 		assertEquals("new track has correct name", "Merged", newTarget.getName());
-		assertEquals("original fix still in place", "test track", _fw1.getTrackWrapper().getName());
+		assertEquals("original fix still in place", "test track", _fw1
+				.getTrackWrapper().getName());
 	}
 
 	public void testTrackMerge2()
@@ -1521,7 +1547,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// do a merge
 		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
-		TrackWrapper.mergeTracks(_tw,  theLayers, subjects);
+		TrackWrapper.mergeTracks(_tw, theLayers, subjects);
 
 		// have a look at the results
 		assertEquals("track starts correctly", 6, trackLength());
@@ -1567,7 +1593,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.add(ts1);
 		tw.add(ts2);
 		tw.add(ts3);
-		
+
 		Editable[] items = new TrackSegment[3];
 		int ctr = 0;
 		items[ctr++] = ts1;
@@ -1577,7 +1603,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		TrackWrapper newTrack = new TrackWrapper();
 		newTrack.setName("Merged");
 		Layers theLayers = new Layers();
-		
+
 		TrackWrapper.mergeTracks(newTrack, theLayers, items);
 		// do the merge
 
@@ -1612,16 +1638,17 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// do a merge
 		final Editable[] subjects = new Editable[]
 		{ _tw, ts2 };
-		
+
 		TrackWrapper result = new TrackWrapper();
 		result.setName("Merged");
-		
+
 		TrackWrapper.mergeTracks(result, theLayers, subjects);
 
 		// have a look at the results
 		assertEquals("track 3 is longer", 11, result.numFixes());
 		assertEquals("track got created", 3, theLayers.size());
-		assertEquals("fix has new parent", "test track", _fw1.getTrackWrapper().getName());
+		assertEquals("fix has new parent", "test track", _fw1.getTrackWrapper()
+				.getName());
 	}
 
 	/**
@@ -1713,7 +1740,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	private TrackWrapper getDummyTrack()
 	{
 		final TrackWrapper tw = new TrackWrapper();
-	
+
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 				loc_1.add(new WorldVector(33, new WorldDistance(100,
@@ -1763,7 +1790,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		sw.add(scw2);
 		sw.add(scw3);
 		tw.add(sw);
-	
+
 		final TMAWrapper mwa = new TMAWrapper("bb");
 		final TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
 				new HiResDate(130), null, 0, 0, 0, null, null, null, null);
@@ -1786,7 +1813,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		mw.add(tcw2);
 		mw.add(tcw3);
 		tw.add(mw);
-	
+
 		return tw;
 	}
 
@@ -1803,7 +1830,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("contains correct number of entries", 3, ctr);
 		assertEquals("contains correct number of sensor entries", 6, sCtr);
 		assertEquals("contains correct number of sensor entries", 5, tCtr);
-	
+
 		tw = getDummyTrack();
 		startH = new HiResDate(350, 0);
 		endH = new HiResDate(550, 0);
@@ -1814,7 +1841,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("contains correct number of entries", 2, ctr);
 		assertEquals("contains correct number of sensor entries", 1, sCtr);
 		assertEquals("contains correct number of sensor entries", 1, tCtr);
-	
+
 		tw = getDummyTrack();
 		startH = new HiResDate(0, 0);
 		endH = new HiResDate(450, 0);
@@ -1830,7 +1857,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	public void testGetItemsBetween_Second()
 	{
 		final TrackWrapper tw = new TrackWrapper();
-	
+
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 1), loc_1,
 				0, 0));
@@ -1860,119 +1887,119 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		fw5.setLabelShowing(true);
 		fw6.setLabelShowing(true);
 		fw7.setLabelShowing(true);
-	
+
 		Collection<Editable> col = tw.getItemsBetween(new HiResDate(0, 3),
 				new HiResDate(0, 5));
 		assertEquals("found correct number of items", 3, col.size());
-	
+
 		// make the fourth item not visible
 		fw4.setVisible(false);
-	
+
 		col = tw.getUnfilteredItems(new HiResDate(0, 3), new HiResDate(0, 5));
 		assertEquals("found correct number of items", 2, col.size());
-	
+
 		final Watchable[] pts2 = tw.getNearestTo(new HiResDate(0, 3));
 		assertEquals("found something", 1, pts2.length);
 		assertEquals("found the third item", fw3, pts2[0]);
-	
+
 		final Watchable[] pts = tw.getNearestTo(new HiResDate(0, 1));
 		assertEquals("found something", 1, pts.length);
 		assertEquals("found the first item", fw1, pts[0]);
-	
+
 	}
 
 	public final void testGettingTimes()
 	{
 		// Enumeration<SensorContactWrapper>
 		final TrackWrapper tw = new TrackWrapper();
-	
+
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final WorldLocation loc_2 = new WorldLocation(1, 1, 0);
-		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 100),
-				loc_1, 0, 0));
-		final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 300),
-				loc_2, 0, 0));
-		final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 500),
-				loc_2, 0, 0));
-		final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 700),
-				loc_2, 0, 0));
-	
+		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 100), loc_1,
+				0, 0));
+		final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 300), loc_2,
+				0, 0));
+		final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 500), loc_2,
+				0, 0));
+		final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 700), loc_2,
+				0, 0));
+
 		// check returning empty data
 		Collection<Editable> coll = tw.getItemsBetween(new HiResDate(0, 0),
 				new HiResDate(0, 40));
 		assertEquals("Return empty when empty", coll, null);
-	
+
 		tw.addFix(fw1);
-	
+
 		// check returning single field
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
 		assertEquals("Return empty when out of range", coll, null);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 520), new HiResDate(0, 540));
 		assertEquals("Return empty when out of range", coll, null);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 140));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 100), new HiResDate(0, 100));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		tw.addFix(fw2);
-	
+
 		// check returning with fields
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
 		assertEquals("Return empty when out of range", coll, null);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 520), new HiResDate(0, 540));
 		assertEquals("Return empty when out of range", coll, null);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 140));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 440));
 		assertEquals("Return valid point", coll.size(), 2);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 150), new HiResDate(0, 440));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 300), new HiResDate(0, 440));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		tw.addFix(fw3);
-	
+
 		// check returning with fields
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
 		assertEquals("Return empty when out of range", coll, null);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 520), new HiResDate(0, 540));
 		assertEquals("Return empty when out of range", coll, null);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 140));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 440));
 		assertEquals("Return valid point", coll.size(), 2);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 150), new HiResDate(0, 440));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 300), new HiResDate(0, 440));
 		assertEquals("Return valid point", coll.size(), 1);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 100), new HiResDate(0, 300));
 		assertEquals("Return valid point", coll.size(), 2);
-	
+
 		coll = tw.getItemsBetween(new HiResDate(0, 300), new HiResDate(0, 500));
 		assertEquals("Return valid point", coll.size(), 2);
-	
+
 		tw.addFix(fw4);
-	
+
 	}
 
 	public final void testInterpolation()
 	{
 		final TrackWrapper tw = new TrackWrapper();
-	
+
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 				loc_1.add(new WorldVector(33, new WorldDistance(100,
@@ -1999,72 +2026,71 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// tw.addFix(fw3);
 		tw.addFix(fw4);
 		tw.addFix(fw5);
-	
+
 		// check that we're not interpolating
 		assertFalse("interpolating switched off by default",
 				tw.getInterpolatePoints());
-	
+
 		// ok, get on with it.
 		Watchable[] list = tw.getNearestTo(new HiResDate(200, 20000));
 		assertNotNull("found list", list);
 		assertEquals("contains something", list.length, 1);
 		assertEquals("right answer", list[0], fw2);
-	
+
 		// and the end
 		list = tw.getNearestTo(new HiResDate(500, 50000));
 		assertNotNull("found list", list);
 		assertEquals("contains something", list.length, 1);
 		assertEquals("right answer", list[0], fw5);
-	
+
 		// and now an in-between point
 		// ok, get on with it.
 		list = tw.getNearestTo(new HiResDate(230, 23000));
 		assertNotNull("found list", list);
 		assertEquals("contains something", list.length, 1);
 		assertEquals("right answer", list[0], fw4);
-	
+
 		// ok, with interpolation on
 		tw.setInterpolatePoints(true);
-	
+
 		assertTrue("interpolating now switched on", tw.getInterpolatePoints());
-	
+
 		// ok, get on with it.
 		list = tw.getNearestTo(new HiResDate(200, 20000));
 		assertNotNull("found list", list);
 		assertEquals("contains something", list.length, 1);
 		assertEquals("right answer", list[0], fw2);
-	
+
 		// and the end
 		list = tw.getNearestTo(new HiResDate(500, 50000));
 		assertNotNull("found list", list);
 		assertEquals("contains something", list.length, 1);
 		assertEquals("right answer", list[0], fw5);
-	
+
 		// hey
-	
+
 		// and now an in-between point
 		// ok, get on with it.
 		list = tw.getNearestTo(new HiResDate(300, 30000));
 		assertNotNull("found list", list);
 		assertEquals("contains something", list.length, 1);
-	
+
 		// have a look at them
 		final FixWrapper res = (FixWrapper) list[0];
 		final WorldVector rangeError = res.getFixLocation().subtract(
 				fw3.getFixLocation());
-		assertEquals("right answer", 0,
-				Conversions.Degs2m(rangeError.getRange()), 0.0001);
-		 assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0.00000000001);
-		 assertEquals("right course", res.getCourse(), fw3.getCourse(),
-		 0);
-	
+		assertEquals("right answer", 0, Conversions.Degs2m(rangeError.getRange()),
+				0.0001);
+		assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0.00000000001);
+		assertEquals("right course", res.getCourse(), fw3.getCourse(), 0);
+
 	}
 
 	public final void testMyParams()
 	{
 		TrackWrapper ed = new TrackWrapper();
 		ed.setName("blank");
-	
+
 		editableTesterSupport.testParams(ed, this);
 		ed = null;
 	}
@@ -2074,13 +2100,13 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final TrackWrapper tw = new TrackWrapper();
 		tw.setColor(Color.RED);
 		tw.setName("test track");
-	
+
 		/**
-		 * intention of this test: line is broken into three segments (red,
-		 * yellow, green). - first of 2 points, next of 2 points, last of 3 points
-		 * (14 values)
+		 * intention of this test: line is broken into three segments (red, yellow,
+		 * green). - first of 2 points, next of 2 points, last of 3 points (14
+		 * values)
 		 */
-	
+
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 				loc_1.add(new WorldVector(33, new WorldDistance(100,
@@ -2112,21 +2138,22 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.addFix(fw3);
 		tw.addFix(fw4);
 		tw.addFix(fw5);
-	
+
 		callCount = 0;
 		pointCount = 0;
-	
+
 		assertNull("our array of points starts empty", tw.debug_GetPoints());
 		assertEquals("our point array counter is zero", tw.debug_GetPointCtr(), 0);
-	
+
 		final CanvasType dummyDest = new TestMockCanvas();
-	
+
 		tw.paint(dummyDest);
-	
+
 		assertEquals("our array has correct number of points", 10,
 				tw.debug_GetPoints().length);
-		assertEquals("the pointer counter has been reset", 0, tw.debug_GetPointCtr());
-	
+		assertEquals("the pointer counter has been reset", 0,
+				tw.debug_GetPointCtr());
+
 		// check it got called the correct number of times
 		assertEquals("We didnt paint enough polygons", 3, callCount);
 		assertEquals("We didnt paint enough polygons points", 14, pointCount);
@@ -2137,13 +2164,13 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final TrackWrapper tw = new TrackWrapper();
 		tw.setColor(Color.RED);
 		tw.setName("test track");
-	
+
 		/**
 		 * intention of this test: line is broken into two segments - one of two
-		 * points, the next of three, thus two polygons should be drawn - 10
-		 * points total (4 then 6).
+		 * points, the next of three, thus two polygons should be drawn - 10 points
+		 * total (4 then 6).
 		 */
-	
+
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 				loc_1.add(new WorldVector(33, new WorldDistance(100,
@@ -2176,25 +2203,26 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.addFix(fw3);
 		tw.addFix(fw4);
 		tw.addFix(fw5);
-	
+
 		callCount = 0;
 		pointCount = 0;
-	
+
 		assertNull("our array of points starts empty", tw.debug_GetPoints());
 		assertEquals("our point array counter is zero", tw.debug_GetPointCtr(), 0);
-	
+
 		final CanvasType dummyDest = new TestMockCanvas();
-	
+
 		tw.paint(dummyDest);
-	
+
 		assertEquals("our array has correct number of points", 10,
 				tw.debug_GetPoints().length);
-		assertEquals("the pointer counter has been reset", 0, tw.debug_GetPointCtr());
-	
+		assertEquals("the pointer counter has been reset", 0,
+				tw.debug_GetPointCtr());
+
 		// check it got called the correct number of times
 		assertEquals("We didnt paint enough polygons", 2, callCount);
 		assertEquals("We didnt paint enough polygons points", 10, pointCount);
-	
+
 	}
 
 	public void testPaintingVisChange()
@@ -2202,12 +2230,12 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		final TrackWrapper tw = new TrackWrapper();
 		tw.setColor(Color.RED);
 		tw.setName("test track");
-	
+
 		/**
 		 * intention of this test: line is broken into two segments of two points,
 		 * thus two polygons should be drawn, each with 4 points - 8 points total.
 		 */
-	
+
 		final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 		final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 				loc_1.add(new WorldVector(33, new WorldDistance(100,
@@ -2240,25 +2268,109 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		tw.addFix(fw3);
 		tw.addFix(fw4);
 		tw.addFix(fw5);
-	
+
 		callCount = 0;
 		pointCount = 0;
-	
+
 		assertNull("our array of points starts empty", tw.debug_GetPoints());
 		assertEquals("our point array counter is zero", tw.debug_GetPointCtr(), 0);
-	
+
 		final CanvasType dummyDest = new TestMockCanvas();
-	
+
 		tw.paint(dummyDest);
-	
+
 		assertEquals("our array has correct number of points", 10,
 				tw.debug_GetPoints().length);
-		assertEquals("the pointer counter has been reset", 0, tw.debug_GetPointCtr());
-	
+		assertEquals("the pointer counter has been reset", 0,
+				tw.debug_GetPointCtr());
+
 		// check it got called the correct number of times
 		assertEquals("We didnt paint enough polygons", 2, callCount);
 		assertEquals("We didnt paint enough polygons points", 8, pointCount);
-	
+
+	}
+
+	public void testDynamicInfill()
+	{
+		final TrackSegment ts0 = getDummyList();
+
+		final TrackSegment ts1 = new TrackSegment();
+		final FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(150000),
+				new WorldLocation(3, 4, 3), 1, 2));
+		final FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(160000),
+				new WorldLocation(4, 4, 3), 1, 2));
+		final FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(170000),
+				new WorldLocation(5, 4, 3), 1, 2));
+		final FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(180000),
+				new WorldLocation(6, 4, 3), 1, 2));
+		ts1.addFix(newFix5);
+		ts1.addFix(newFix6);
+		ts1.addFix(newFix7);
+		ts1.addFix(newFix8);
+
+		TrackSegment newS = new DynamicInfillSegment(ts0, ts1);
+		assertEquals("got lots of points", 10, newS.size());
+
+		// have a look at the generated points
+		final Enumeration<Editable> pts = newS.elements();
+		while (pts.hasMoreElements())
+		{
+			final Editable editable = (Editable) pts.nextElement();
+			final FixWrapper fix = (FixWrapper) editable;
+			System.out.println(fix.getLocation().getLat() + ", "
+					+ fix.getLocation().getLong() + " , "
+					+ fix.getDateTimeGroup().getDate().getTime());
+		}
+		System.out.println("========");
+
+		// cause the monster problem
+		newFix6.setDateTimeGroup(new HiResDate(210000));
+		newFix7.setDateTimeGroup(new HiResDate(230000));
+		newFix7.setDateTimeGroup(new HiResDate(250000));
+
+		// try the mini algorithm first
+		final FixWrapper[] items = DynamicInfillSegment.getLastElementsFrom(ts1, 2);
+		assertTrue("times should not be the same ",
+				items[0].getDateTimeGroup() != items[1].getDateTimeGroup());
+
+		try
+		{
+			newS = new DynamicInfillSegment(ts0, ts1);
+			assertEquals("got lots of points", 10, newS.size());
+		}
+		catch (final RuntimeException re)
+		{
+			re.printStackTrace();
+			fail("runtime exception thrown!!!");
+		}
+
+	}
+
+	public void testInfillSpline()
+	{
+		// generate the location spline
+		final double[] times = new double[]
+		{ 3d, 4d, 8d, 9d };
+		final double[] lats = new double[]
+		{ 1d, 1d, 3d, 4d };
+		final double[] longs = new double[]
+		{ 1d, 2d, 4d, 4d };
+
+		final CubicSpline latSpline = new CubicSpline(times, lats);
+		final CubicSpline longSpline = new CubicSpline(times, longs);
+
+		for (int t = 0; t < 4; t++)
+		{
+			System.out.println(longs[t] + ", " + lats[t] + "," + times[t]);
+		}
+
+		for (long t = 50; t < 80; t++)
+		{
+			final double tNow = t / 10d;
+			final double thisLat = latSpline.interpolate(tNow);
+			final double thisLong = longSpline.interpolate(tNow);
+			System.out.println(thisLong + ", " + thisLat + ", " + tNow);
+		}
 	}
 
 }

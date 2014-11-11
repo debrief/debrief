@@ -146,23 +146,26 @@ public class RotateDragMode extends DragMode
 				final FixWrapper last = (FixWrapper) seg.last();
 				final WorldLocation firstLoc = first.getFixLocation();
 				final WorldLocation lastLoc = last.getFixLocation();
-				final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
-				final WorldLocation centreLoc = lineBounds.getCentre();
+				if ((firstLoc != null) && (lastLoc != null))
+				{
+					final WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
+					final WorldLocation centreLoc = lineBounds.getCentre();
 
-				final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
-				final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
-				final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
+					final WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
+					final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
+					final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-				final DraggableItem dragCentre = getCentreOperation(seg, track,
-						theLayers);
-				final DraggableItem dragStart = getEndOperation(cursorLoc, seg, last,
-						track, theLayers);
-				final DraggableItem dragEnd = getEndOperation(cursorLoc, seg, first,
-						track, theLayers);
+					final DraggableItem dragCentre = getCentreOperation(seg, track,
+							theLayers);
+					final DraggableItem dragStart = getEndOperation(cursorLoc, seg, last,
+							track, theLayers);
+					final DraggableItem dragEnd = getEndOperation(cursorLoc, seg, first,
+							track, theLayers);
 
-				currentNearest.checkMe(dragStart, firstDist, null, thisLayer);
-				currentNearest.checkMe(dragEnd, lastDist, null, thisLayer);
-				currentNearest.checkMe(dragCentre, centreDist, null, thisLayer);
+					currentNearest.checkMe(dragStart, firstDist, null, thisLayer);
+					currentNearest.checkMe(dragEnd, lastDist, null, thisLayer);
+					currentNearest.checkMe(dragCentre, centreDist, null, thisLayer);
+				}
 			
 			}
 		}

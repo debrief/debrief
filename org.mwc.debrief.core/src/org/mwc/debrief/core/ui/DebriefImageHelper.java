@@ -61,7 +61,7 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		else if (editable instanceof CoreTMASegment)
 			res = DebriefPlugin.getImageDescriptor("icons/16/tma_segment.png");
 		else if (editable instanceof TrackSegment)
-			res = DebriefPlugin.getImageDescriptor("icons/16/track_segment.gif");
+			res = DebriefPlugin.getImageDescriptor("icons/16/track_segment.png");
 		else if (editable instanceof FixWrapper)
 			res = DebriefPlugin.getImageDescriptor("icons/16/fix.png");
 		else if (editable instanceof ShapeWrapper)
