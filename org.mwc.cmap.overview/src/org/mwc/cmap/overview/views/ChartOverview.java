@@ -109,6 +109,18 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			{
 				return _targetViewport;
 			}
+
+			@Override
+			public void canvasResized()
+			{
+				// just check we have a plot
+				if(_targetLayers != null)
+				{
+					super.canvasResized();
+				}
+			}
+			
+			
 		};
 
 		// use our special dragger
