@@ -1342,7 +1342,7 @@
 
 	<extension point="org.eclipse.ui.perspectives">
 		<perspective class="org.mwc.debrief.core.DebriefPerspectiveFactory"
-			icon="icons/debrief_icon.gif" id="org.mwc.debrief.core.Perspective"
+			icon="icons/16/debrief_icon.png" id="org.mwc.debrief.core.Perspective"
 			name="Tactical Analysis" />
 	</extension>
 	
