@@ -49,19 +49,19 @@ public class DynamicInfillSegment extends TrackSegment
 	 * our internal class that listens to tracks moving
 	 * 
 	 */
-	private final PropertyChangeListener _moveListener;
+	private transient final PropertyChangeListener _moveListener;
 
 	/**
 	 * our internal class that listens to tracks moving
 	 * 
 	 */
-	private final PropertyChangeListener _wrapperListener;
+	private transient final PropertyChangeListener _wrapperListener;
 
 	/**
 	 * a utility logger
 	 * 
 	 */
-	private final ErrorLogger _myParent;
+	private transient final ErrorLogger _myParent;
 
 	/**
 	 * for XML restore, we only have the name of the previous track. Store it.
@@ -98,8 +98,8 @@ public class DynamicInfillSegment extends TrackSegment
 		};
 
 		_myParent = Trace.getParent();
-		
-		// we have to be in absolute mode, due to the way we use spline positions  
+
+		// we have to be in absolute mode, due to the way we use spline positions
 		super.setPlotRelative(false);
 	}
 
@@ -371,7 +371,7 @@ public class DynamicInfillSegment extends TrackSegment
 
 			// how far have we travelled since the last location?
 			final WorldVector offset = newLocation.subtract(origin.getLocation());
-			
+
 			// how long since the last position?
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
 
@@ -460,12 +460,9 @@ public class DynamicInfillSegment extends TrackSegment
 
 	private void startWatching(TrackSegment segment)
 	{
-		if (segment != null)
-		{
-			segment.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
-			segment.addPropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
-					_wrapperListener);
-		}
+		segment.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+		segment.addPropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
+				_wrapperListener);
 	}
 
 	/**
@@ -557,11 +554,19 @@ public class DynamicInfillSegment extends TrackSegment
 		return res;
 	}
 
+	/** accessor, used for file storage
+	 * 
+	 * @return
+	 */
 	public String getBeforeName()
 	{
 		return _before.getName();
 	}
 
+	/** accessor, used for file storage
+	 * 
+	 * @return
+	 */
 	public String getAfterName()
 	{
 		return _after.getName();
