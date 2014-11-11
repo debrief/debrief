@@ -182,12 +182,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -203,12 +200,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -224,12 +218,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -245,12 +236,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -316,12 +304,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -338,12 +323,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -362,9 +344,17 @@
                  checkEnabled="false">
                      <with
                          variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
+                          <or>
+                          	<equals
+                                 value="org.mwc.debrief.PlotEditor">
+                          	</equals>
+                            <equals
+                                value="org.mwc.debrief.TrackEditor">
+                          	</equals>
+                          	<equals
+                                value="org.mwc.debrief.SensorEditor">
+                          	</equals>
+                          </or>
                      </with>
           	  </visibleWhen>
           	</command>
@@ -382,12 +372,9 @@
               </parameter>
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
            </command>
            
@@ -524,12 +511,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertScale">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -540,12 +524,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -556,12 +537,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertGrid">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -572,12 +550,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -588,12 +563,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -604,12 +576,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	
@@ -633,12 +602,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
 		</menuContribution>		
@@ -650,12 +616,9 @@
               id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -665,12 +628,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertEllipse">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -680,12 +640,9 @@
               id="org.mwc.debrief.core.creators.shapes.Insertploygon">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -695,12 +652,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertLine">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -710,12 +664,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>         	
           	<command
@@ -725,12 +676,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertWheel">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -740,12 +688,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertCircle">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -755,12 +700,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertArc">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -770,12 +712,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertLabel">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -785,12 +724,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -800,12 +736,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertRangeRings">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -815,12 +748,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -830,12 +760,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertVector">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command> 
         </menuContribution>
@@ -848,12 +775,9 @@
               id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -863,12 +787,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertEllipse">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -878,12 +799,9 @@
               id="org.mwc.debrief.core.creators.shapes.Insertploygon">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -893,12 +811,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertLine">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -908,12 +823,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertRectangle">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>         	
           	<command
@@ -923,12 +835,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertWheel">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -938,12 +847,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertCircle">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -953,12 +859,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertArc">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -968,12 +871,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertLabel">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -983,12 +883,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>          	
           	<command
@@ -998,12 +895,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertRangeRings">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -1013,12 +907,9 @@
               id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
           	<command
@@ -1028,12 +919,9 @@
               id="org.mwc.debrief.core.creators.shapes.InsertVector">
            	  <visibleWhen
                  checkEnabled="false">
-                     <with
-                         variable="activeEditorId">
-                          <equals
-                             value="org.mwc.debrief.PlotEditor">
-                          </equals>
-                     </with>
+                     <reference
+                       definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
           	  </visibleWhen>
           	</command>
         </menuContribution>
@@ -1086,9 +974,17 @@
               id="org.mwc.debrief.activePlotEditor">
            <with
                  variable="activeEditorId">
-              <equals
-                    value="org.mwc.debrief.PlotEditor">
-              </equals>
+              	 <or>
+                    <equals
+                        value="org.mwc.debrief.PlotEditor">
+                    </equals>
+                    <equals
+                        value="org.mwc.debrief.TrackEditor">
+                    </equals>
+                    <equals
+                        value="org.mwc.debrief.SensorEditor">
+                    </equals>
+                  </or>
            </with>
         </definition>
      </extension>
@@ -1106,7 +1002,13 @@
               <equals
                     value="org.mwc.asset.ASSETPlotEditor">
               </equals>
-              </or>
+              <equals
+                    value="org.mwc.debrief.TrackEditor">
+             </equals>
+             <equals
+                   value="org.mwc.debrief.SensorEditor">
+             </equals>
+             </or>
            </with>
         </definition>
      </extension>
