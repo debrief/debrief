@@ -2551,17 +2551,23 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Track sections</primary>
-
               <secondary>Combine</secondary>
             </indexterm>On occasion, once a series of track segments have been built up (or created
-            using the Generate TMA wizard) you may with to combine them in order to make their
+            using the Generate TMA wizard) you may wish to <emphasis>combine</emphasis> them in order to make their
             management easier. If you wish to keep them as individual entities instead of merging
-            them into a single new track segment, you may Combine the track segments. Performing
+            them into a single new track segment, you may combine the track segments
+            (available when you right-click on more than one TMA Solution). Performing
             this operation puts the segments into a single parent track whilst retaining them within
-            this as single entities. This is particularly relevant for TMA Track Segments, for which
-            you may wish to refine your estimates of course/speed.</para>
+            this as single entities. This is particularly relevant for TMA Track Segments, since you
+            may wish to continue dragging them individually as you refine your estimates of course/speed.</para>
+            </sect2>
+        <sect2 xml:id="GenerateInfill">
+          <title>Generating infill segments</title>
 
-          <para>In addition to combining periods of track, Debrief is able to generate sections of
+          <para><indexterm>
+              <primary>Track sections</primary>
+              <secondary>Generate infill</secondary></indexterm>
+          <para>In addition to combining periods of track (legs), Debrief is able to generate sections of
             track to join existing sections. It performs this using a series of Cubic Spline
             calculations. The Splines cover Lat, Long, Depth, Course and Speed. In this way, the
             infill segment introduces track points that provide a smooth transition in the above
@@ -2569,7 +2575,14 @@ and so on....</programlisting></para>
             the infill section is taken from the time interval between the first two points of the
             second segment. On the plot, the infill segment is shown as a dotted line, to indicate
             that its series of purely calculated positions, and not based on any observed
-            measurements.</para>
+            measurements.
+            <tip><para>These infill sections are actually dynamic.  So, as you move/drag your 
+            manual TMA legs around, Debrief will recalculate their positions each time you 
+            drop the track. Go on, have a go. It&apos;s really flash.</para></tip>
+            <note><para>If you delete the track segment either side of the dynamic infill track section,
+            then the infill section will also be deleted - since its positions can no longer
+            be calculated.</para></note></para>
+            </para>
         </sect2>
         <sect2 xml:id="RemoveJumpsUser">
           <title>Removing Jumps</title>
