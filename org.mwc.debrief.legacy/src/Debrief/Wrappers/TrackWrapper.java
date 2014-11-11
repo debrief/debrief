@@ -2589,6 +2589,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				continue;
 			}
 
+			// does it have visible data points?
+			if(thisE.size() == 0)
+			{
+				continue;
+			}
+			
 			// is the first track a DR track?
 			if (thisE.getPlotRelative())
 			{
@@ -3496,7 +3502,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * if we've got a relative track segment, it only learns where its individual
 	 * fixes are once they've been initialised. This is where we do it.
 	 */
-	private void sortOutRelativePositions()
+	public void sortOutRelativePositions()
 	{
 		final Enumeration<Editable> segments = _thePositions.elements();
 		while (segments.hasMoreElements())
