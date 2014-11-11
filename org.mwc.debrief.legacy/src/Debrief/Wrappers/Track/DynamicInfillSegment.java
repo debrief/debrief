@@ -10,6 +10,7 @@ import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -22,7 +23,6 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class DynamicInfillSegment extends TrackSegment
@@ -50,6 +50,12 @@ public class DynamicInfillSegment extends TrackSegment
 	 * 
 	 */
 	private final PropertyChangeListener _moveListener;
+
+	/**
+	 * our internal class that listens to tracks moving
+	 * 
+	 */
+	private final PropertyChangeListener _wrapperListener;
 
 	/**
 	 * a utility logger
@@ -82,7 +88,19 @@ public class DynamicInfillSegment extends TrackSegment
 			}
 		};
 
+		_wrapperListener = new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				wrapperChange();
+			}
+		};
+
 		_myParent = Trace.getParent();
+		
+		// we have to be in absolute mode, due to the way we use spline positions  
+		super.setPlotRelative(false);
 	}
 
 	/**
@@ -126,11 +144,43 @@ public class DynamicInfillSegment extends TrackSegment
 		_after = after;
 
 		// also, we need to listen out for changes in these tracks
-		_before.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
-		_after.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+		startWatching(_before);
+		startWatching(_after);
 
 		// ok, produce an initial version
 		reconstruct();
+	}
+
+	/**
+	 * one of our tracks has had it's wrapper change. handle this
+	 * 
+	 */
+	private final void wrapperChange()
+	{
+
+		boolean codeRed = false;
+
+		// check the before leg
+		if ((_before != null) && (_before.getWrapper() == null))
+		{
+			codeRed = true;
+		}
+
+		// check the after leg
+		if ((_after != null) && (_after.getWrapper() == null))
+		{
+			codeRed = true;
+		}
+
+		// are we in trouble
+		if (codeRed)
+		{
+			// ok, burn everything!
+			clear();
+
+			// and remove ourselves from our parent
+			getWrapper().removeElement(this);
+		}
 	}
 
 	/**
@@ -154,17 +204,31 @@ public class DynamicInfillSegment extends TrackSegment
 			else
 			{
 				// clear the listeners, just in case
-				if(_before != null)
+				if (_before != null)
 				{
-					_before.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+					_before.removePropertyChangeListener(CoreTMASegment.ADJUSTED,
+							_moveListener);
 				}
-				if(_after != null)
+				if (_after != null)
 				{
-					_after.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);					
+					_after.removePropertyChangeListener(CoreTMASegment.ADJUSTED,
+							_moveListener);
 				}
-				
+
 				// we'd better hide ourselves too
 				setVisible(false);
+			}
+		}
+		else
+		{
+			// just double-check if we still need to be generated
+			if (this.size() == 0)
+			{
+				// ok, tell the track to sort out the relative tracks
+				this.getWrapper().sortOutRelativePositions();
+
+				// and regenerate our positions
+				reconstruct();
 			}
 		}
 
@@ -175,16 +239,12 @@ public class DynamicInfillSegment extends TrackSegment
 	public String getName()
 	{
 		String res = super.getName();
-		
-		if(_before == null)
+
+		if (this.size() == 0)
 		{
-			res += " [previous track missing]";
+			res += " [Recalculating]";
 		}
-		if(_after == null)
-		{
-			res += " [following track missing]";
-		}
-		
+
 		return res;
 	}
 
@@ -212,20 +272,14 @@ public class DynamicInfillSegment extends TrackSegment
 		return res;
 	}
 
-	/** recalculate our set of positions
+	/**
+	 * recalculate our set of positions
 	 * 
 	 */
 	protected void reconstruct()
 	{
 		// ok, clear ourselves out
 		this.removeAllElements();
-
-		// remember if it's DR or OTG
-		// no, always force non-DR, since we're using Lat/Long curves
-		// from splines
-		final boolean isDR = false;
-
-		this.setPlotRelative(isDR);
 
 		// now the num to use
 		final int oneUse = 2;
@@ -238,37 +292,6 @@ public class DynamicInfillSegment extends TrackSegment
 		System.arraycopy(oneElements, 0, allElements, 0, oneUse);
 		System.arraycopy(twoElements, 0, allElements, oneUse, twoUse);
 
-		if (_myParent != null)
-		{
-			_myParent.logError(ToolParent.INFO, "extracted " + oneElements.length
-					+ " fixes from first segment", null);
-			_myParent.logError(ToolParent.INFO, "extracted " + twoElements.length
-					+ " fixes from second segment", null);
-
-			// extra diagnostics
-			StringBuffer buff = new StringBuffer();
-			buff.append("\n");
-			for (int i = 0; i < allElements.length; i++)
-			{
-				final FixWrapper fixWrapper = allElements[i];
-				buff.append("item: "
-						+ i
-						+ " ,lat:,"
-						+ fixWrapper.getLocation().getLat()
-						+ " ,lon:,"
-						+ fixWrapper.getLocation().getLong()
-						+ " ,course:,"
-						+ fixWrapper.getCourseDegs()
-						+ " ,speed:,"
-						+ fixWrapper.getFix().getSpeed()
-						+ " ,at:,"
-						+ DebriefFormatDateTime.toString(fixWrapper.getTime().getDate()
-								.getTime()) + "\n");
-			}
-			_myParent.logError(ToolParent.INFO, buff.toString(), null);
-
-		}
-
 		// generate the location spline
 		final double[] times = new double[allElements.length];
 		final double[] lats = new double[allElements.length];
@@ -278,6 +301,16 @@ public class DynamicInfillSegment extends TrackSegment
 		{
 			final FixWrapper fw = allElements[i];
 			times[i] = fw.getDTG().getDate().getTime();
+
+			// we have an occasional problem where changing details of hte
+			// before/after tracks results in us updating mid-way through their
+			// update.
+			// (since the RelativeTMA segment positions actually get generated in the
+			// paint cycle).
+			if (fw.getLocation() == null)
+			{
+				return;
+			}
 			lats[i] = fw.getLocation().getLat();
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
@@ -302,13 +335,6 @@ public class DynamicInfillSegment extends TrackSegment
 		// screwy infills generated with tiny time deltas
 		tDelta = Math.max(tDelta, 10000);
 
-		if (_myParent != null)
-		{
-			_myParent.logError(ToolParent.INFO, " using time delta of " + tDelta
-					/ 1000 + " secs based on times of first two items in second segment",
-					null);
-		}
-
 		// sort out the start & end times of the infill segment
 		final long tStart = _before.endDTG().getDate().getTime() + tDelta;
 		final long tEnd = _after.startDTG().getDate().getTime();
@@ -328,14 +354,7 @@ public class DynamicInfillSegment extends TrackSegment
 			if (origin.getLocation() == null)
 				_myParent.logError(ToolParent.INFO,
 						"origin element has empty location", null);
-			else
-				_myParent.logError(ToolParent.INFO,
-						"origin element has valid location", null);
 		}
-
-		boolean first = true;
-
-		System.out.println("===");
 
 		// get going then! Note, we go past the end of the required data,
 		// - so that we can generate the correct course and speed for the last
@@ -368,23 +387,6 @@ public class DynamicInfillSegment extends TrackSegment
 			while (thisCourseRads < 0)
 				thisCourseRads += Math.PI * 2;
 
-			// is this a relative track? if it is, we need
-			// to push the speed/course back into the previous leg
-			if (this.getPlotRelative())
-			{
-				if (first)
-				{
-					// we don't edit the origin, it's from another track
-					first = false;
-				}
-				else
-				{
-					// over-write the course and speed of the previous entry
-					origin.setSpeed(thisSpeedKts);
-					origin.setCourse(thisCourseRads);
-				}
-			}
-
 			// put course in the +ve domain
 			while (thisCourseRads < 0)
 				thisCourseRads += Math.PI * 2;
@@ -395,9 +397,6 @@ public class DynamicInfillSegment extends TrackSegment
 			// create the fix
 			final Fix newFix = new Fix(new HiResDate(tNow), newLocation,
 					thisCourseRads, theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
-
-			System.out.println("T:" + new HiResDate(tNow) + " Speed:"
-					+ theSpeed.getValueIn(WorldSpeed.Kts));
 
 			final FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
@@ -445,8 +444,38 @@ public class DynamicInfillSegment extends TrackSegment
 	{
 		super.finalize();
 
-		_before.removePropertyChangeListener(_moveListener);
-		_after.removePropertyChangeListener(_moveListener);
+		// ditch the listeners
+		clear();
+
+		_before = null;
+		_after = null;
+	}
+
+	private void clear()
+	{
+		stopWatching(_before);
+		stopWatching(_after);
+	}
+
+	private void stopWatching(TrackSegment segment)
+	{
+		if (segment != null)
+		{
+			segment.removePropertyChangeListener(CoreTMASegment.ADJUSTED,
+					_moveListener);
+			segment.removePropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
+					_wrapperListener);
+		}
+	}
+
+	private void startWatching(TrackSegment segment)
+	{
+		if (segment != null)
+		{
+			segment.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+			segment.addPropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
+					_wrapperListener);
+		}
 	}
 
 	/**
