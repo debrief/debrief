@@ -349,17 +349,17 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
 
 			if (editable instanceof Layer)
-				imageKey = "layer.gif";
+				imageKey = "layer.png";
 			else if (editable instanceof GridPainter)
-				imageKey = "grid.gif";
+				imageKey = "grid.png";
 			else if (editable instanceof Grid4WPainter)
-				imageKey = "grid4w.gif";
+				imageKey = "grid4w.png";
 			else if (editable instanceof ScalePainter)
-				imageKey = "scale.gif";
+				imageKey = "scale.png";
 			else if (editable instanceof CoastPainter)
-				imageKey = "coast.gif";
+				imageKey = "coast.png";
 			else if (editable instanceof FeaturePainter)
-				imageKey = "vpf.gif";
+				imageKey = "vpf.png";
 
 			res = PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 
@@ -370,6 +370,10 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			}
 		}
 
+		if (res == null && thirdPartyImageDescriptor != null) {
+			res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
+		}
+		
 		return res;
 	}
 

@@ -10,7 +10,7 @@
       </category>
       <view
             name="Maintain Contributions"
-            icon="icons/maintain.png"
+            icon="icons/maintain_contribution.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView"
             id="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView">

@@ -43,9 +43,9 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		ImageDescriptor res = null;
 		
 		if (editable instanceof TrackWrapper)
-			res = CorePlugin.getImageDescriptor("icons/track.png");
+			res = DebriefPlugin.getImageDescriptor("icons/16/track.png");
 		else if (editable instanceof SensorWrapper)
-			res = CorePlugin.getImageDescriptor("icons/SensorFit.png");
+			res = DebriefPlugin.getImageDescriptor("icons/16/sensor.png");
 		else if (editable instanceof ChartFolio)
 			res = DebriefPlugin.getImageDescriptor("icons/16/library.png");
 		else if (editable instanceof ExternallyManagedDataLayer)
@@ -53,23 +53,23 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		else if (editable instanceof ChartBoundsWrapper)
 			res = DebriefPlugin.getImageDescriptor("icons/16/map.png");
 		else if (editable instanceof SensorContactWrapper)
-			res = CorePlugin.getImageDescriptor("icons/active16.png");
+			res = DebriefPlugin.getImageDescriptor("icons/16/sensor_contact.png");
 		else if (editable instanceof NarrativeWrapper)
-			res = CorePlugin.getImageDescriptor("icons/narrative.jpg");
+			res = DebriefPlugin.getImageDescriptor("icons/16/narrative.png");
 		else if (editable instanceof NarrativeEntry)
-			res = CorePlugin.getImageDescriptor("icons/NarrativeItem.jpg");
+			res = DebriefPlugin.getImageDescriptor("icons/16/narrative_entry.png");
 		else if (editable instanceof CoreTMASegment)
-			res = CorePlugin.getImageDescriptor("icons/tmasegment.png");
+			res = DebriefPlugin.getImageDescriptor("icons/16/tma_segment.png");
 		else if (editable instanceof TrackSegment)
-			res = CorePlugin.getImageDescriptor("icons/tracksegment.gif");
+			res = DebriefPlugin.getImageDescriptor("icons/16/track_segment.gif");
 		else if (editable instanceof FixWrapper)
-			res = CorePlugin.getImageDescriptor("icons/Location.png");
+			res = DebriefPlugin.getImageDescriptor("icons/16/fix.png");
 		else if (editable instanceof ShapeWrapper)
-			res = CorePlugin.getImageDescriptor("icons/shape.gif");
+			res = DebriefPlugin.getImageDescriptor("icons/16/shape.png");
 		else if (editable instanceof PolygonNode)
-			res = CorePlugin.getImageDescriptor("icons/fix.gif");
+			res = DebriefPlugin.getImageDescriptor("icons/16/polygon.png");
 		else if (editable instanceof LabelWrapper)
-			res = CorePlugin.getImageDescriptor("icons/shape.gif");
+			res = DebriefPlugin.getImageDescriptor("icons/16/shape.gif");
 		 
 		return res;
 	}

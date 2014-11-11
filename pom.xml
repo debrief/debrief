@@ -39,6 +39,7 @@
     <module>org.mwc.asset.help</module>
     <module>org.mwc.asset.legacy</module>
 -->
+    <module>org.mwc.debrief.help</module>
     <module>org.mwc.cmap.LiveDataMonitor</module>
     <module>org.mwc.cmap.NarrativeViewer</module>
     <module>org.mwc.cmap.TimeController</module>
@@ -63,7 +64,6 @@
     <module>org.mwc.debrief.core</module>
     <module>org.mwc.debrief.data_feed</module>
     <module>org.mwc.debrief.data_feed_dummy</module>
-    <module>org.mwc.debrief.help</module>
     <module>org.mwc.debrief.legacy</module>
     <module>org.mwc.debrief.multipath2</module>
     <module>org.mwc.debrief.track_shift</module>

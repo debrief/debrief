@@ -5,7 +5,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Track Tote"
-            icon="icons/Calculator.gif"
+            icon="icons/tote_view.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.tote.views.ToteView"
             id="org.mwc.cmap.tote.views.ToteView">
