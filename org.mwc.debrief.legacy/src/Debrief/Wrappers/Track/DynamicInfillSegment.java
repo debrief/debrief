@@ -358,9 +358,7 @@ public class DynamicInfillSegment extends TrackSegment
 
 		// get going then! Note, we go past the end of the required data,
 		// - so that we can generate the correct course and speed for the last
-		// DR
-		// entry
-		StringBuffer buff = new StringBuffer();
+		// DR entry
 		for (long tNow = tStart; tNow <= tEnd; tNow += tDelta)
 		{
 			final double thisLat = latInterp.value(tNow);
@@ -371,7 +369,10 @@ public class DynamicInfillSegment extends TrackSegment
 			final WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
 
+			// how far have we travelled since the last location?
 			final WorldVector offset = newLocation.subtract(origin.getLocation());
+			
+			// how long since the last position?
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
 
 			// start off with the course
@@ -382,10 +383,6 @@ public class DynamicInfillSegment extends TrackSegment
 					WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
 			final double spdYps = distYds / timeSecs;
 			final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
-
-			// put course in the +ve domain
-			while (thisCourseRads < 0)
-				thisCourseRads += Math.PI * 2;
 
 			// put course in the +ve domain
 			while (thisCourseRads < 0)
@@ -422,13 +419,6 @@ public class DynamicInfillSegment extends TrackSegment
 			// move along the bus, please (used if we're doing a DR Track).
 			origin = fw;
 		}
-		if (_myParent != null)
-			_myParent.logError(ToolParent.INFO, buff.toString(), null);
-
-		// aaah, special case. If we are generating a DR track, we need to put
-		// the
-		// next course and speed
-		// into the last entry - in order to get a smooth graph.
 
 		// sort out our name
 		final String name = "infill_"
