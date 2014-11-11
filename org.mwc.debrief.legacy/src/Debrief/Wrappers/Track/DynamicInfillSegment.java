@@ -34,6 +34,95 @@ public class DynamicInfillSegment extends TrackSegment
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * get the first 'n' elements from this segment
+	 * 
+	 * @param trackOne
+	 *          the segment to get the data from
+	 * @param oneUse
+	 *          how many elements to use
+	 * @return the subset
+	 */
+	public static FixWrapper[] getFirstElementsFrom(final TrackSegment trackTwo,
+			final int num)
+	{
+		final FixWrapper[] res = new FixWrapper[num];
+
+		HiResDate lastDate = null;
+		int ctr = 0;
+
+		final Enumeration<Editable> items = trackTwo.elements();
+		for (int i = 0; i < trackTwo.size(); i++)
+		{
+			final FixWrapper next = (FixWrapper) items.nextElement();
+			final HiResDate thisDate = next.getDateTimeGroup();
+			if (lastDate != null)
+			{
+				// ok, is this a new date
+				if (thisDate.equals(lastDate))
+				{
+					// skip this cycle
+					continue;
+				}
+			}
+			lastDate = thisDate;
+
+			res[ctr++] = next;
+
+			if (ctr == num)
+				break;
+		}
+
+		return res;
+	}
+
+	/**
+	 * get the last 'n' elements from this segment
+	 * 
+	 * @param trackOne
+	 *          the segment to get the data from
+	 * @param num
+	 *          how many elements to use
+	 * @return the subset
+	 */
+	public static FixWrapper[] getLastElementsFrom(final TrackSegment trackOne,
+			final int num)
+	{
+		final FixWrapper[] res = new FixWrapper[num];
+
+		// right, careful here, we can't use points at the same time
+		final Object[] data = trackOne.getData().toArray();
+		final int theLen = data.length;
+		HiResDate lastDate = null;
+		int ctr = 0;
+		for (int i = theLen - 1; i >= 0; i--)
+		{
+			final FixWrapper fix = (FixWrapper) data[i];
+			if (lastDate != null)
+			{
+				// is this the same date?
+				final HiResDate thisDate = fix.getDateTimeGroup();
+				if (thisDate.equals(lastDate))
+				{
+					// ok, can't use it - skip to next cycle
+					continue;
+				}
+			}
+
+			lastDate = fix.getDateTimeGroup();
+
+			// ok, we must be ok
+			res[res.length - ++ctr] = fix;
+
+			// are we done?
+			if (ctr == num)
+				break;
+
+		}
+
+		return res;
+	}
+
+	/**
 	 * the segment that appears immediately before us
 	 * 
 	 */
@@ -82,7 +171,7 @@ public class DynamicInfillSegment extends TrackSegment
 		_moveListener = new PropertyChangeListener()
 		{
 			@Override
-			public void propertyChange(PropertyChangeEvent evt)
+			public void propertyChange(final PropertyChangeEvent evt)
 			{
 				reconstruct();
 			}
@@ -91,7 +180,7 @@ public class DynamicInfillSegment extends TrackSegment
 		_wrapperListener = new PropertyChangeListener()
 		{
 			@Override
-			public void propertyChange(PropertyChangeEvent evt)
+			public void propertyChange(final PropertyChangeEvent evt)
 			{
 				wrapperChange();
 			}
@@ -101,6 +190,19 @@ public class DynamicInfillSegment extends TrackSegment
 
 		// we have to be in absolute mode, due to the way we use spline positions
 		super.setPlotRelative(false);
+	}
+
+	/**
+	 * restore from file, where we only know the names of the legs
+	 * 
+	 * @param beforeName
+	 * @param afterName
+	 */
+	public DynamicInfillSegment(final String beforeName, final String afterName)
+	{
+		this();
+		_beforeName = beforeName;
+		_afterName = afterName;
 	}
 
 	/**
@@ -118,17 +220,10 @@ public class DynamicInfillSegment extends TrackSegment
 		configure(before, after);
 	}
 
-	/**
-	 * restore from file, where we only know the names of the legs
-	 * 
-	 * @param beforeName
-	 * @param afterName
-	 */
-	public DynamicInfillSegment(String beforeName, String afterName)
+	private void clear()
 	{
-		this();
-		_beforeName = beforeName;
-		_afterName = afterName;
+		stopWatching(_before);
+		stopWatching(_after);
 	}
 
 	/**
@@ -151,36 +246,73 @@ public class DynamicInfillSegment extends TrackSegment
 		reconstruct();
 	}
 
-	/**
-	 * one of our tracks has had it's wrapper change. handle this
-	 * 
-	 */
-	private final void wrapperChange()
+	@Override
+	protected void finalize() throws Throwable
 	{
+		super.finalize();
 
-		boolean codeRed = false;
+		// ditch the listeners
+		clear();
 
-		// check the before leg
-		if ((_before != null) && (_before.getWrapper() == null))
+		_before = null;
+		_after = null;
+	}
+
+	/**
+	 * find the named segment
+	 * 
+	 * @param name
+	 *          name of the segment to find
+	 * @return the matching segment
+	 */
+	private TrackSegment findSegment(final String name)
+	{
+		TrackSegment res = null;
+		final SegmentList segs = super.getWrapper().getSegments();
+		final Enumeration<Editable> numer = segs.elements();
+		while (numer.hasMoreElements())
 		{
-			codeRed = true;
+			final Editable editable = numer.nextElement();
+			if (editable.getName().equals(name))
+			{
+				res = (TrackSegment) editable;
+				break;
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * accessor, used for file storage
+	 * 
+	 * @return
+	 */
+	public String getAfterName()
+	{
+		return _after.getName();
+	}
+
+	/**
+	 * accessor, used for file storage
+	 * 
+	 * @return
+	 */
+	public String getBeforeName()
+	{
+		return _before.getName();
+	}
+
+	@Override
+	public String getName()
+	{
+		String res = super.getName();
+
+		if (this.size() == 0)
+		{
+			res += " [Recalculating]";
 		}
 
-		// check the after leg
-		if ((_after != null) && (_after.getWrapper() == null))
-		{
-			codeRed = true;
-		}
-
-		// are we in trouble
-		if (codeRed)
-		{
-			// ok, burn everything!
-			clear();
-
-			// and remove ourselves from our parent
-			getWrapper().removeElement(this);
-		}
+		return res;
 	}
 
 	/**
@@ -188,13 +320,14 @@ public class DynamicInfillSegment extends TrackSegment
 	 * we're confident that rendering will only happen once the data is loaded and
 	 * collated.
 	 */
+	@Override
 	public boolean getVisible()
 	{
 		// ok, do we know our tracks?
 		if (_before == null)
 		{
-			TrackSegment before = findSegment(_beforeName);
-			TrackSegment after = findSegment(_afterName);
+			final TrackSegment before = findSegment(_beforeName);
+			final TrackSegment after = findSegment(_afterName);
 
 			if ((before != null) && (after != null))
 			{
@@ -233,43 +366,6 @@ public class DynamicInfillSegment extends TrackSegment
 		}
 
 		return super.getVisible();
-	}
-
-	@Override
-	public String getName()
-	{
-		String res = super.getName();
-
-		if (this.size() == 0)
-		{
-			res += " [Recalculating]";
-		}
-
-		return res;
-	}
-
-	/**
-	 * find the named segment
-	 * 
-	 * @param name
-	 *          name of the segment to find
-	 * @return the matching segment
-	 */
-	private TrackSegment findSegment(String name)
-	{
-		TrackSegment res = null;
-		SegmentList segs = super.getWrapper().getSegments();
-		Enumeration<Editable> numer = segs.elements();
-		while (numer.hasMoreElements())
-		{
-			Editable editable = (Editable) numer.nextElement();
-			if (editable.getName().equals(name))
-			{
-				res = (TrackSegment) editable;
-				break;
-			}
-		}
-		return res;
 	}
 
 	/**
@@ -316,10 +412,12 @@ public class DynamicInfillSegment extends TrackSegment
 			depths[i] = fw.getLocation().getDepth();
 		}
 
-		UnivariateInterpolator interpolator = new SplineInterpolator();
-		UnivariateFunction latInterp = interpolator.interpolate(times, lats);
-		UnivariateFunction longInterp = interpolator.interpolate(times, longs);
-		UnivariateFunction depthInterp = interpolator.interpolate(times, depths);
+		final UnivariateInterpolator interpolator = new SplineInterpolator();
+		final UnivariateFunction latInterp = interpolator.interpolate(times, lats);
+		final UnivariateFunction longInterp = interpolator
+				.interpolate(times, longs);
+		final UnivariateFunction depthInterp = interpolator.interpolate(times,
+				depths);
 
 		// what's the interval?
 		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
@@ -429,25 +527,14 @@ public class DynamicInfillSegment extends TrackSegment
 		this.setLineStyle(CanvasType.DOTTED);
 	}
 
-	@Override
-	protected void finalize() throws Throwable
+	private void startWatching(final TrackSegment segment)
 	{
-		super.finalize();
-
-		// ditch the listeners
-		clear();
-
-		_before = null;
-		_after = null;
+		segment.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+		segment.addPropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
+				_wrapperListener);
 	}
 
-	private void clear()
-	{
-		stopWatching(_before);
-		stopWatching(_after);
-	}
-
-	private void stopWatching(TrackSegment segment)
+	private void stopWatching(final TrackSegment segment)
 	{
 		if (segment != null)
 		{
@@ -458,118 +545,36 @@ public class DynamicInfillSegment extends TrackSegment
 		}
 	}
 
-	private void startWatching(TrackSegment segment)
-	{
-		segment.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
-		segment.addPropertyChangeListener(BaseItemLayer.WRAPPER_CHANGED,
-				_wrapperListener);
-	}
-
 	/**
-	 * get the first 'n' elements from this segment
+	 * one of our tracks has had it's wrapper change. handle this
 	 * 
-	 * @param trackOne
-	 *          the segment to get the data from
-	 * @param oneUse
-	 *          how many elements to use
-	 * @return the subset
 	 */
-	public static FixWrapper[] getFirstElementsFrom(final TrackSegment trackTwo,
-			final int num)
+	private final void wrapperChange()
 	{
-		final FixWrapper[] res = new FixWrapper[num];
 
-		HiResDate lastDate = null;
-		int ctr = 0;
+		boolean codeRed = false;
 
-		final Enumeration<Editable> items = trackTwo.elements();
-		for (int i = 0; i < trackTwo.size(); i++)
+		// check the before leg
+		if ((_before != null) && (_before.getWrapper() == null))
 		{
-			final FixWrapper next = (FixWrapper) items.nextElement();
-			final HiResDate thisDate = next.getDateTimeGroup();
-			if (lastDate != null)
-			{
-				// ok, is this a new date
-				if (thisDate.equals(lastDate))
-				{
-					// skip this cycle
-					continue;
-				}
-			}
-			lastDate = thisDate;
-
-			res[ctr++] = next;
-
-			if (ctr == num)
-				break;
+			codeRed = true;
 		}
 
-		return res;
-	}
-
-	/**
-	 * get the last 'n' elements from this segment
-	 * 
-	 * @param trackOne
-	 *          the segment to get the data from
-	 * @param num
-	 *          how many elements to use
-	 * @return the subset
-	 */
-	public static FixWrapper[] getLastElementsFrom(final TrackSegment trackOne,
-			final int num)
-	{
-		final FixWrapper[] res = new FixWrapper[num];
-
-		// right, careful here, we can't use points at the same time
-		final Object[] data = trackOne.getData().toArray();
-		final int theLen = data.length;
-		HiResDate lastDate = null;
-		int ctr = 0;
-		for (int i = theLen - 1; i >= 0; i--)
+		// check the after leg
+		if ((_after != null) && (_after.getWrapper() == null))
 		{
-			final FixWrapper fix = (FixWrapper) data[i];
-			if (lastDate != null)
-			{
-				// is this the same date?
-				final HiResDate thisDate = fix.getDateTimeGroup();
-				if (thisDate.equals(lastDate))
-				{
-					// ok, can't use it - skip to next cycle
-					continue;
-				}
-			}
-
-			lastDate = fix.getDateTimeGroup();
-
-			// ok, we must be ok
-			res[res.length - ++ctr] = fix;
-
-			// are we done?
-			if (ctr == num)
-				break;
-
+			codeRed = true;
 		}
 
-		return res;
-	}
+		// are we in trouble
+		if (codeRed)
+		{
+			// ok, burn everything!
+			clear();
 
-	/** accessor, used for file storage
-	 * 
-	 * @return
-	 */
-	public String getBeforeName()
-	{
-		return _before.getName();
-	}
-
-	/** accessor, used for file storage
-	 * 
-	 * @return
-	 */
-	public String getAfterName()
-	{
-		return _after.getName();
+			// and remove ourselves from our parent
+			getWrapper().removeElement(this);
+		}
 	}
 
 }
