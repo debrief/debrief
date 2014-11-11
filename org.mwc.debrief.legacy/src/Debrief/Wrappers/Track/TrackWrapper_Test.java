@@ -2325,6 +2325,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// cause the monster problem
 		newFix6.setDateTimeGroup(new HiResDate(210000));
+		newFix7.setDateTimeGroup(new HiResDate(230000));
+		newFix7.setDateTimeGroup(new HiResDate(250000));
 
 		// try the mini algorithm first
 		final FixWrapper[] items = DynamicInfillSegment.getLastElementsFrom(ts1, 2);
