@@ -21,6 +21,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
@@ -31,31 +32,64 @@ public class DynamicInfillSegment extends TrackSegment
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * the segment that appears immediately before us
+	 * 
+	 */
 	private TrackSegment _before;
+
+	/**
+	 * the segment that appears immediately after us
+	 * 
+	 */
 	private TrackSegment _after;
+
+	/**
+	 * our internal class that listens to tracks moving
+	 * 
+	 */
 	private final PropertyChangeListener _moveListener;
-	private ErrorLogger _myParent;
+
+	/**
+	 * a utility logger
+	 * 
+	 */
+	private final ErrorLogger _myParent;
+
+	/**
+	 * for XML restore, we only have the name of the previous track. Store it.
+	 */
 	private String _beforeName;
+
+	/**
+	 * for XML restore, we only have the name of the following track. Store it.
+	 */
 	private String _afterName;
 
-	public DynamicInfillSegment()
+	/**
+	 * ensure important objects are defined
+	 * 
+	 */
+	protected DynamicInfillSegment()
 	{
 		_moveListener = new PropertyChangeListener()
 		{
-
 			@Override
 			public void propertyChange(PropertyChangeEvent evt)
 			{
 				reconstruct();
 			}
 		};
+
+		_myParent = Trace.getParent();
 	}
 
 	/**
 	 * create an infill track segment between the two supplied tracks
 	 * 
-	 * @param trackOne
-	 * @param trackTwo
+	 * @param before
+	 * @param after
 	 */
 	public DynamicInfillSegment(final TrackSegment before,
 			final TrackSegment after)
@@ -64,20 +98,6 @@ public class DynamicInfillSegment extends TrackSegment
 
 		// ok, and start listening
 		configure(before, after);
-	}
-
-	private void configure(final TrackSegment before, final TrackSegment after)
-	{
-		// ok, remember the tracks
-		_before = before;
-		_after = after;
-
-		// also, we need to listen out for changes in these tracks
-		_before.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
-		_after.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
-
-		// ok, produce an initial version
-		reconstruct();
 	}
 
 	/**
@@ -94,6 +114,26 @@ public class DynamicInfillSegment extends TrackSegment
 	}
 
 	/**
+	 * listen to the specified tracks
+	 * 
+	 * @param before
+	 * @param after
+	 */
+	private void configure(final TrackSegment before, final TrackSegment after)
+	{
+		// ok, remember the tracks
+		_before = before;
+		_after = after;
+
+		// also, we need to listen out for changes in these tracks
+		_before.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+		_after.addPropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+
+		// ok, produce an initial version
+		reconstruct();
+	}
+
+	/**
 	 * we're overriding this method, since it's part of the rendering cycle, and
 	 * we're confident that rendering will only happen once the data is loaded and
 	 * collated.
@@ -106,11 +146,46 @@ public class DynamicInfillSegment extends TrackSegment
 			TrackSegment before = findSegment(_beforeName);
 			TrackSegment after = findSegment(_afterName);
 
-			// ok, now we're ready
-			configure(before, after);
+			if ((before != null) && (after != null))
+			{
+				// ok, now we're ready
+				configure(before, after);
+			}
+			else
+			{
+				// clear the listeners, just in case
+				if(_before != null)
+				{
+					_before.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);
+				}
+				if(_after != null)
+				{
+					_after.removePropertyChangeListener(CoreTMASegment.ADJUSTED, _moveListener);					
+				}
+				
+				// we'd better hide ourselves too
+				setVisible(false);
+			}
 		}
 
 		return super.getVisible();
+	}
+
+	@Override
+	public String getName()
+	{
+		String res = super.getName();
+		
+		if(_before == null)
+		{
+			res += " [previous track missing]";
+		}
+		if(_after == null)
+		{
+			res += " [following track missing]";
+		}
+		
+		return res;
 	}
 
 	/**
@@ -137,6 +212,9 @@ public class DynamicInfillSegment extends TrackSegment
 		return res;
 	}
 
+	/** recalculate our set of positions
+	 * 
+	 */
 	protected void reconstruct()
 	{
 		// ok, clear ourselves out
@@ -145,7 +223,7 @@ public class DynamicInfillSegment extends TrackSegment
 		// remember if it's DR or OTG
 		// no, always force non-DR, since we're using Lat/Long curves
 		// from splines
-		final boolean isDR = false; 
+		final boolean isDR = false;
 
 		this.setPlotRelative(isDR);
 
@@ -209,10 +287,6 @@ public class DynamicInfillSegment extends TrackSegment
 		UnivariateFunction latInterp = interpolator.interpolate(times, lats);
 		UnivariateFunction longInterp = interpolator.interpolate(times, longs);
 		UnivariateFunction depthInterp = interpolator.interpolate(times, depths);
-
-		// final CubicSpline latSpline = new CubicSpline(times, lats);
-		// final CubicSpline longSpline = new CubicSpline(times, longs);
-		// final CubicSpline depthSpline = new CubicSpline(times, depths);
 
 		// what's the interval?
 		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
