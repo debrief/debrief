@@ -2567,7 +2567,7 @@ and so on....</programlisting></para>
           <para><indexterm>
               <primary>Track sections</primary>
               <secondary>Generate infill</secondary></indexterm>
-          <para>In addition to combining periods of track (legs), Debrief is able to generate sections of
+          In addition to combining periods of track (legs), Debrief is able to generate sections of
             track to join existing sections. It performs this using a series of Cubic Spline
             calculations. The Splines cover Lat, Long, Depth, Course and Speed. In this way, the
             infill segment introduces track points that provide a smooth transition in the above
@@ -2581,7 +2581,7 @@ and so on....</programlisting></para>
             drop the track. Go on, have a go. It&apos;s really flash.</para></tip>
             <note><para>If you delete the track segment either side of the dynamic infill track section,
             then the infill section will also be deleted - since its positions can no longer
-            be calculated.</para></note></para>
+            be calculated.</para></note>
             </para>
         </sect2>
         <sect2 xml:id="RemoveJumpsUser">
