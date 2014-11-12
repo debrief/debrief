@@ -54,4 +54,6 @@ REG ADD %FILE_EXT%\%EXT%\UserChoice /v "ProgId" /t REG_SZ /d Applications\%APP% 
 
 :: Adding Debrief.exe as a XML OpenWith application list.
 REG ADD %FILE_EXT%\.xml\OpenWithList /v "a" /t REG_SZ /d %APP% /F
+REG ADD %FILE_EXT%\.xml\OpenWithList /v "MRUList" /t REG_SZ /d a /F
+REG ADD %FILE_EXT%\.xml\UserChoice /v "ProgId" /t REG_SZ /d Applications\%APP% /F
 ::End
