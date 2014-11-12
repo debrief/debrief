@@ -48,7 +48,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
-import MWC.GUI.VPF.FeaturePainter;
+import MWC.GUI.VPF.VPFDatabase;
 import MWC.GenericData.ColoredWatchable;
 import MWC.GenericData.NonColoredWatchable;
 
@@ -348,9 +348,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
 
-			if (editable instanceof Layer)
-				imageKey = "layer.png";
-			else if (editable instanceof GridPainter)
+			if (editable instanceof GridPainter)
 				imageKey = "grid.png";
 			else if (editable instanceof Grid4WPainter)
 				imageKey = "grid4w.png";
@@ -358,8 +356,10 @@ public class CoreViewLabelProvider extends LabelProvider implements
 				imageKey = "scale.png";
 			else if (editable instanceof CoastPainter)
 				imageKey = "coast.png";
-			else if (editable instanceof FeaturePainter)
+			else if (editable instanceof VPFDatabase)
 				imageKey = "vpf.png";
+			else if (editable instanceof Layer)
+				imageKey = "layer.png";
 
 			res = PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 
