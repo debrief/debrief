@@ -30,7 +30,6 @@ REG DELETE %FILE_APP%\%APP% /F
 REG DELETE %FILE_EXT%\%EXT% /F
 
 REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "sensor file"
-REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
 REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\sensor_file.ico
 REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
 REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
