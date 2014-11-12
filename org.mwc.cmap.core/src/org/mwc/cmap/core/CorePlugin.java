@@ -709,7 +709,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			ImageDescriptor desc = getImageDescriptor("icons/16/" + name);
 			if (desc == null)
 			{
-				final Status status = new Status(IStatus.WARNING, "org.mwc.cmap.core",
+				final Status status = new Status(IStatus.ERROR, "org.mwc.cmap.core",
 						"Missing image " + name);
 				getDefault().getLog().log(status);
 				return null;
