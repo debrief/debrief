@@ -14,6 +14,7 @@
  */
 package MWC.TacticalData.GND;
 
+import java.awt.Color;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
@@ -173,12 +174,15 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 	private final HashMap<String, Object> _myData;
 	private final String _name;
 	private final Setter _setter;
+	private final Color _color;
 
-	public GDataItem(final String name, final HashMap<String, Object> fields, final Setter setter)
+	public GDataItem(final String name, final HashMap<String, Object> fields, final Setter setter,
+			Color color)
 	{
 		_myData = fields;
 		_name = name;
 		_setter = setter;
+		_color = color;
 	}
 
 	@Override
@@ -296,7 +300,13 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 	public TimeStampedDataItem makeCopy()
 	{
 		final HashMap<String, Object> res =new HashMap<String,Object>(_myData);
-		return new GDataItem(_name, res, _setter);
+		return new GDataItem(_name, res, _setter, _color);
+	}
+
+	@Override
+	public Color getColor()
+	{
+		return _color;
 	}
 
 }

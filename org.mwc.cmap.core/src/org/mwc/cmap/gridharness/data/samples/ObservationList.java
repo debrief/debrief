@@ -14,6 +14,7 @@
  */
 package org.mwc.cmap.gridharness.data.samples;
 
+import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collections;
@@ -151,15 +152,15 @@ public class ObservationList implements GriddableSeries
 	{
 		final Vector<TimeStampedDataItem> pts = new Vector<TimeStampedDataItem>();
 		pts.add(new Observation(new HiResDate(10000), 12, new WorldDistance2(12,
-				WorldDistance2.METRES)));
+				WorldDistance2.METRES), Color.green));
 		pts.add(new Observation(new HiResDate(20000), 10, new WorldDistance2(14,
-				WorldDistance2.METRES)));
+				WorldDistance2.METRES), Color.green));
 		pts.add(new Observation(new HiResDate(30000), 11, new WorldDistance2(15,
-				WorldDistance2.METRES)));
+				WorldDistance2.METRES), Color.green));
 		pts.add(new Observation(new HiResDate(45000), 11, new WorldDistance2(16,
-				WorldDistance2.METRES)));
+				WorldDistance2.METRES), Color.green));
 		pts.add(new Observation(new HiResDate(50000), 10, new WorldDistance2(18,
-				WorldDistance2.METRES)));
+				WorldDistance2.METRES), Color.green));
 		final ObservationList res = new ObservationList("Short Obs", pts);
 		res.addPropertyChangeListener(pcl);
 		return res;
@@ -172,7 +173,7 @@ public class ObservationList implements GriddableSeries
 		for (int i = 0; i < 3000; i++)
 		{
 			pts.add(new Observation(new HiResDate(i * 10000), 12, new WorldDistance2(
-					2d + Math.random() * 600, WorldDistance2.METRES)));
+					2d + Math.random() * 600, WorldDistance2.METRES), Color.green));
 		}
 		final ObservationList res = new ObservationList("Long Obs", pts);
 		res.addPropertyChangeListener(pcl);

@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.gridharness.data.samples;
 
+import java.awt.Color;
+
 import org.mwc.cmap.gridharness.data.WorldLocation;
 import org.mwc.cmap.gridharness.data.WorldSpeed2;
 
@@ -33,15 +35,19 @@ public class Position implements TimeStampedDataItem {
 	private WorldSpeed2 _speed;
 
 	private WorldLocation _location = WorldLocation.NULL;
+	
+	private Color _color;
 
 	public Position() {
 	}
 
-	public Position(final HiResDate time, final double latitude, final double longitude, final double course, final WorldSpeed2 speed) {
+	public Position(final HiResDate time, final double latitude, 
+			final double longitude, final double course, final WorldSpeed2 speed, Color color) {
 		_myTime = time;
 		_course = course;
 		_location = new WorldLocation(latitude, longitude);
 		_speed = speed;
+		_color = color;
 	}
 
 	public String toString() {
@@ -102,6 +108,17 @@ public class Position implements TimeStampedDataItem {
 
 	public void setDTG(final HiResDate newTime) {
 		this._myTime = newTime;
+	}
+
+	public void setColor(Color color)
+	{
+		_color = color;
+	}
+	
+	@Override
+	public Color getColor()
+	{
+		return _color;
 	}
 
 }
