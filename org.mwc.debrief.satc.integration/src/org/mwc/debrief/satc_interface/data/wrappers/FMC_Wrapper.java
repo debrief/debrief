@@ -22,28 +22,21 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import org.eclipse.core.runtime.Status;
-
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.ExcludeFromRightClickEdit;
-import MWC.GUI.Layer;
-import MWC.GUI.Plottable;
 import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Properties.BoundedInteger;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
-public class FMC_Wrapper extends ContributionWrapper implements Layer
+public class FMC_Wrapper extends CoreLayer_Wrapper<FrequencyMeasurementContribution>
 {
 	
-	public class FMC_Info extends Editable.EditorType implements Serializable
+	public class BMC_Info extends Editable.EditorType implements Serializable
 	{
 
 		/**
@@ -51,7 +44,7 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public FMC_Info(FMC_Wrapper data)
+		public BMC_Info(FMC_Wrapper data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -63,6 +56,7 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 				PropertyDescriptor[] res =
 				{ 
 						prop("Name", "name of this contribution", EditorType.FORMAT)
+						
 				};
 
 				return res;
@@ -94,14 +88,14 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 			// wrap the measurements
 			_myElements = new ArrayList<Editable>();
 
-			FrequencyMeasurementContribution bmc = getBMC();
+			FrequencyMeasurementContribution bmc = (FrequencyMeasurementContribution) getBMC();
 			ArrayList<FMeasurement> meas = bmc.getMeasurements();
 			Iterator<FMeasurement> iter = meas.iterator();
 			while (iter.hasNext())
 			{
-				FMeasurement thisM =  iter
+				CoreMeasurement thisM = (CoreMeasurement) iter
 						.next();
-				FMC_Wrapper.MeasurementEditable thisMe = new MeasurementEditable(thisM);
+				FrequencyMeasurementEditable thisMe = new FrequencyMeasurementEditable(thisM);
 				_myElements.add(thisMe);
 			}
 		}
@@ -109,7 +103,8 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 		return new IteratorWrapper(_myElements.iterator());
 	}
 
-	public class MeasurementEditable implements Plottable, ExcludeFromRightClickEdit
+	@SuppressWarnings("rawtypes")
+	public class FrequencyMeasurementEditable extends CoreLayer_Wrapper.CoreMeasurementEditable
 	{
 		// ///////////////////////////////////////////////////////////
 		// info class
@@ -122,7 +117,7 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public Meas_Info(MeasurementEditable data)
+			public Meas_Info(FrequencyMeasurementEditable data)
 			{
 				super(data, data.getName(), "");
 			}
@@ -143,44 +138,6 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 			}
 		}
 
-		private final FMeasurement _myMeas;
-		private EditorType _myEditor;
-
-		public MeasurementEditable(FMeasurement measurement)
-		{
-			_myMeas = measurement;
-		}
-
-		public Boolean getActive()
-		{
-			return _myMeas.isActive();
-		}
-
-		public void setActive(Boolean active)
-		{
-			_myMeas.setActive(active);
-
-			// fire hard constraints changed
-			getContribution().fireHardConstraintsChange();
-		}
-
-		@Override
-		public String getName()
-		{
-			return FormatRNDateTime.toString(_myMeas.getDate().getTime());
-		}
-
-		@Override
-		public String toString()
-		{
-			return getName();
-		}
-
-		@Override
-		public boolean hasEditor()
-		{
-			return true;
-		}
 
 		@Override
 		public EditorType getInfo()
@@ -189,41 +146,12 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 				_myEditor = new Meas_Info(this);
 			return _myEditor;
 		}
+		
+		private EditorType _myEditor;
 
-		@Override
-		public int compareTo(Plottable arg0)
+		public FrequencyMeasurementEditable(CoreMeasurement measurement)
 		{
-			return 0;
-		}
-
-		@Override
-		public void paint(CanvasType dest)
-		{
-
-		}
-
-		@Override
-		public WorldArea getBounds()
-		{
-			return null;
-		}
-
-		@Override
-		public boolean getVisible()
-		{
-			return getActive();
-		}
-
-		@Override
-		public void setVisible(boolean val)
-		{
-			setActive(val);
-		}
-
-		@Override
-		public double rangeFrom(WorldLocation other)
-		{
-			return INVALID_RANGE;
+			super(measurement);
 		}
 	}
 
@@ -232,78 +160,17 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 		return getBMC().getNumObservations();
 	}
 
-	private FrequencyMeasurementContribution getBMC()
+	@SuppressWarnings("rawtypes")
+	private CoreMeasurementContribution getBMC()
 	{
-		return (FrequencyMeasurementContribution) super.getContribution();
-	}
-	
-	
-
-	@Override
-	public boolean hasEditor()
-	{
-		return true;
+		return (CoreMeasurementContribution) super.getContribution();
 	}
 
 	@Override
 	public EditorType getInfo()
 	{
 		if(_myEditor == null)
-			_myEditor = new FMC_Info(this);
+			_myEditor = new BMC_Info(this);
 		return _myEditor;
 	}
-	
-	public BoundedInteger getError()
-	{
-		BearingMeasurementContribution bm = (BearingMeasurementContribution) super.getContribution();
-		return  new BoundedInteger( (int) Math.toDegrees(bm.getBearingError()),1,20);
-	}
-
-	public void setError(BoundedInteger error)
-	{
-		BearingMeasurementContribution bm = (BearingMeasurementContribution) super.getContribution();
-		bm.setBearingError(Math.toRadians(error.getCurrent()));
-	}
-
-	@Override
-	public void exportShape()
-	{
-	}
-
-	@Override
-	public void append(Layer other)
-	{
-	}
-
-	@Override
-	public void setName(String val)
-	{
-		super.getContribution().setName(val);
-	}
-
-	@Override
-	public boolean hasOrderedChildren()
-	{
-		return true;
-	}
-
-	@Override
-	public int getLineThickness()
-	{
-		return 0;
-	}
-
-	@Override
-	public void add(Editable point)
-	{
-		SATC_Activator.log(Status.ERROR,
-				"Should not be adding items to this layer", null);
-	}
-
-	@Override
-	public void removeElement(Editable point)
-	{
-
-	}
-
 }

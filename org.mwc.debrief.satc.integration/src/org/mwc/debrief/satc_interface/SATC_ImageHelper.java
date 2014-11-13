@@ -42,7 +42,7 @@ public class SATC_ImageHelper implements ViewLabelImageHelper
 			res = SATC_Interface_Activator.getImageDescriptor("icons/calculator.gif");
 		else if (editable instanceof StraightLegWrapper)
 			res = SATC_Interface_Activator.getImageDescriptor("icons/leg.png");
-		else if (editable instanceof BMC_Wrapper.MeasurementEditable)
+		else if (editable instanceof BMC_Wrapper.BearingMeasurementEditable)
 			res = SATC_Interface_Activator.getImageDescriptor("icons/bearings.gif");
 		else if (editable instanceof FMC_Wrapper.MeasurementEditable)
 			res = SATC_Interface_Activator.getImageDescriptor("icons/bearings.gif");

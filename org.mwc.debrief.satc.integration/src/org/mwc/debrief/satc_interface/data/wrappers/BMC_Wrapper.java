@@ -17,27 +17,16 @@ package org.mwc.debrief.satc_interface.data.wrappers;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
 
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.ExcludeFromRightClickEdit;
-import MWC.GUI.Plottable;
-import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Properties.BoundedInteger;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 
-public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContribution>
+public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContribution, 
+   BMeasurement, BMC_Wrapper.BearingMeasurementEditable>
 {
 	
 	public class BMC_Info extends Editable.EditorType implements Serializable
@@ -78,37 +67,14 @@ public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContributio
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Collection<Editable> _myElements;
-
 	public BMC_Wrapper(BearingMeasurementContribution contribution)
 	{
 		super(contribution);
 	}
 
-	@Override
-	public Enumeration<Editable> elements()
-	{
-		if (_myElements == null)
-		{
-			// wrap the measurements
-			_myElements = new ArrayList<Editable>();
 
-			BearingMeasurementContribution bmc = (BearingMeasurementContribution) getBMC();
-			ArrayList<BMeasurement> meas = bmc.getMeasurements();
-			Iterator<BMeasurement> iter = meas.iterator();
-			while (iter.hasNext())
-			{
-				CoreMeasurement thisM = (CoreMeasurement) iter
-						.next();
-				MeasurementEditable thisMe = new MeasurementEditable(thisM);
-				_myElements.add(thisMe);
-			}
-		}
-
-		return new IteratorWrapper(_myElements.iterator());
-	}
-
-	public class MeasurementEditable implements Plottable, ExcludeFromRightClickEdit
+	@SuppressWarnings("rawtypes")
+	public class BearingMeasurementEditable extends CoreLayer_Wrapper.CoreMeasurementEditable
 	{
 		// ///////////////////////////////////////////////////////////
 		// info class
@@ -121,7 +87,7 @@ public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContributio
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public Meas_Info(MeasurementEditable data)
+			public Meas_Info(BearingMeasurementEditable data)
 			{
 				super(data, data.getName(), "");
 			}
@@ -142,44 +108,6 @@ public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContributio
 			}
 		}
 
-		private final CoreMeasurement _myMeas;
-		private EditorType _myEditor;
-
-		public MeasurementEditable(CoreMeasurement measurement)
-		{
-			_myMeas = measurement;
-		}
-
-		public Boolean getActive()
-		{
-			return _myMeas.isActive();
-		}
-
-		public void setActive(Boolean active)
-		{
-			_myMeas.setActive(active);
-
-			// fire hard constraints changed
-			getContribution().fireHardConstraintsChange();
-		}
-
-		@Override
-		public String getName()
-		{
-			return FormatRNDateTime.toString(_myMeas.getDate().getTime());
-		}
-
-		@Override
-		public String toString()
-		{
-			return getName();
-		}
-
-		@Override
-		public boolean hasEditor()
-		{
-			return true;
-		}
 
 		@Override
 		public EditorType getInfo()
@@ -188,53 +116,15 @@ public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContributio
 				_myEditor = new Meas_Info(this);
 			return _myEditor;
 		}
+		
+		private EditorType _myEditor;
 
-		@Override
-		public int compareTo(Plottable arg0)
+		public BearingMeasurementEditable(CoreMeasurement measurement)
 		{
-			return 0;
-		}
-
-		@Override
-		public void paint(CanvasType dest)
-		{
-
-		}
-
-		@Override
-		public WorldArea getBounds()
-		{
-			return null;
-		}
-
-		@Override
-		public boolean getVisible()
-		{
-			return getActive();
-		}
-
-		@Override
-		public void setVisible(boolean val)
-		{
-			setActive(val);
-		}
-
-		@Override
-		public double rangeFrom(WorldLocation other)
-		{
-			return INVALID_RANGE;
+			super(measurement);
 		}
 	}
 
-	public int size()
-	{
-		return getBMC().getNumObservations();
-	}
-
-	private CoreMeasurementContribution getBMC()
-	{
-		return (CoreMeasurementContribution) super.getContribution();
-	}
 
 	@Override
 	public EditorType getInfo()
