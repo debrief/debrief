@@ -37,6 +37,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class BMC_Wrapper extends ContributionWrapper implements Layer
@@ -100,7 +101,7 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 			Iterator<BMeasurement> iter = meas.iterator();
 			while (iter.hasNext())
 			{
-				BearingMeasurementContribution.BMeasurement thisM = (BearingMeasurementContribution.BMeasurement) iter
+				CoreMeasurement thisM = (CoreMeasurement) iter
 						.next();
 				BMC_Wrapper.MeasurementEditable thisMe = new MeasurementEditable(thisM);
 				_myElements.add(thisMe);
@@ -144,10 +145,10 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 			}
 		}
 
-		private final BMeasurement _myMeas;
+		private final CoreMeasurement _myMeas;
 		private EditorType _myEditor;
 
-		public MeasurementEditable(BMeasurement measurement)
+		public MeasurementEditable(CoreMeasurement measurement)
 		{
 			_myMeas = measurement;
 		}

@@ -25,7 +25,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 
-public class FrequencyMeasurementContribution extends BaseContribution
+public class FrequencyMeasurementContribution extends CoreMeasurementContribution
 {
 	private static final long serialVersionUID = 1L;
 
@@ -39,15 +39,6 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// do something...
-	}
-
-	public void addEstimate(double lat, double lon, Date date, double brg,
-			double freq)
-	{
-		GeoPoint loc = new GeoPoint(lat, lon);
-		FMeasurement measure = new FMeasurement(loc, brg, date, freq);
-		addThis(measure);
-		firePropertyChange(ESTIMATE, measurements.size(), measurements.size());
 	}
 
 	/**

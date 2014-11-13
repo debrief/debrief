@@ -16,7 +16,6 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -44,13 +43,13 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
-public class BearingMeasurementContribution extends BaseContribution
+public class BearingMeasurementContribution extends CoreMeasurementContribution<BearingMeasurementContribution.BMeasurement>
 {
 	private static final long serialVersionUID = 1L;
 
 	public static final String BEARING_ERROR = "bearingError";
 	public static final String RUN_MDA = "autoDetect";
-	public static final String OBSERVATIONS_NUMBER = "numObservations";
+
 
 	/**
 	 * the allowable bearing error (in radians)
@@ -64,11 +63,6 @@ public class BearingMeasurementContribution extends BaseContribution
 	 */
 	private boolean runMDA = true;
 
-	/**
-	 * the set of measurements we store
-	 * 
-	 */
-	private ArrayList<BMeasurement> measurements = new ArrayList<BMeasurement>();
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -230,57 +224,8 @@ public class BearingMeasurementContribution extends BaseContribution
 		addMeasurement(measure);
 	}
 
-	/**
-	 * store this new measurement
-	 * 
-	 * @param measure
-	 */
-	public void addMeasurement(BMeasurement measure)
-	{
-		// extend the time period accordingly
-		if (this.getStartDate() == null)
-		{
-			this.setStartDate(measure.time);
-			this.setFinishDate(measure.time);
-		}
-		else
-		{
-			long newTime = measure.time.getTime();
-			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure.time);
-			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure.time);
-		}
-		measurements.add(measure);
-		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(),
-				measurements.size());		
-	}
 
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.MEASUREMENT;
-	}
 
-	public int getNumObservations()
-	{
-		return measurements.size();
-	}
-
-	public ArrayList<BMeasurement> getMeasurements()
-	{
-		return measurements;
-	}
-
-	/**
-	 * whether this contribution has any measurements yet
-	 * 
-	 * @return
-	 */
-	public boolean hasData()
-	{
-		return measurements.size() > 0;
-	}
 
 	public void loadFrom(List<String> lines)
 	{
@@ -397,59 +342,26 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * @author ian
 	 * 
 	 */
-	public static class BMeasurement
+	public static class BMeasurement extends CoreMeasurementContribution.CoreMeasurement
 	{
 		private static final double MAX_RANGE_METERS = 50000.;
 		private final GeoPoint origin;
 		private final double bearingAngle;
-		private final Date time;
-		private boolean isActive = true;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
 		private final double range;
 
-		/**
-		 * the (optional) color for this measurement
-		 * 
-		 */
-		private java.awt.Color color = null;
-
 		public BMeasurement(GeoPoint loc, double bearing, Date time, Double range)
 		{
+			super(time);
 			this.origin = loc;
 			this.bearingAngle = MathUtils.normalizeAngle(bearing);
-			this.time = time;
 
 			// tidying up. Give the maximum possible range for this bearing if the
 			// data is missing
 			this.range = range == null ? MAX_RANGE_METERS : range;
-		}
-
-		public java.awt.Color getColor()
-		{
-			return color;
-		}
-
-		public void setColor(java.awt.Color color)
-		{
-			this.color = color;
-		}
-
-		public Date getDate()
-		{
-			return time;
-		}
-
-		public boolean isActive()
-		{
-			return isActive;
-		}
-
-		public void setActive(boolean active)
-		{
-			isActive = active;
 		}
 
 	}
