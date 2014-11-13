@@ -117,6 +117,13 @@
     <extension point="org.eclipse.ui.menus">
         <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=group.file">
        		<toolbar
+               id="org.mwc.debrief.core.save"
+               label="Save">
+       		  <separator name="features" visible="true"/> 
+              <separator name="sep3" visible="true"/>
+			  <separator name="additions" visible="true"/>   
+       		</toolbar>
+       		<toolbar
                id="org.mwc.debrief.core.createProject"
                label="Create Project">
        		  <separator name="features" visible="true"/> 
@@ -276,6 +283,17 @@
                        definitionId="org.mwc.debrief.activeCorePlotEditor">
                      </reference>
           	  </visibleWhen>
+          	</command>
+        </menuContribution>
+        
+        <menuContribution locationURI="toolbar:org.mwc.debrief.core.save?before=additions"> 
+        	<command
+              commandId="org.eclipse.ui.file.save"
+              icon="icons/24/save.png"
+              label="Create Project"
+              tooltip="Save"
+              style="push"
+              id="org.mwc.debrief.core.save">
           	</command>
         </menuContribution>
         
