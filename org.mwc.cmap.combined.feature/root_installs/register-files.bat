@@ -1,27 +1,52 @@
+@ECHO CREATING DEBRIEF REGISTRY
+@ECHO OFF
+SET ICON_PATH=%~dp0\file_icons
+SET FILE_COMMAND="%~dp0\DebriefNG.exe --launcher.openFile %%1 %%*"
 
-ECHO CREATING DEBREIF REGISTRY
+SET FILE_APP=HKEY_CURRENT_USER\Software\Classes\Applications
+SET FILE_EXT=HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts
 
-SET WORKING_DIRECTORY=%~dp0
-SET PLUGIN_ICON_PATH=%WORKING_DIRECTORY%/file_icons
+:: Plot files Registration. (.dpf)
+SET APP=DPF.exe
+SET EXT=.dpf
 
-ECHO Debrief Installed at %WORKING_DIRECTORY%
+REG DELETE %FILE_APP%\%APP% /F
+REG DELETE %FILE_EXT%\%EXT% /F
 
-REG DELETE HKEY_CLASSES_ROOT\debriefTrackFile /F
-ASSOC .rep=debriefTrackFile
-ftype debriefTrackFile=%WORKING_DIRECTORY%DebriefNG.exe --launcher.openFile %%1 %%*
-REG ADD HKEY_CLASSES_ROOT\debriefTrackFile\DefaultIcon  /T REG_SZ /D "%PLUGIN_ICON_PATH%/track_file.ico"
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "Debrief Plot"
+REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
+REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\plot_file.ico
+REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
+REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
+REG ADD %FILE_EXT%\%EXT%\UserChoice /v "ProgId" /t REG_SZ /d Applications\%APP% /F
+::END Plot files registration
 
-REG DELETE HKEY_CLASSES_ROOT\debriefSensorFile /F
-ftype debriefSensorFile=%WORKING_DIRECTORY%DebriefNG.exe --launcher.openFile %%1 %%*
-REG ADD HKEY_CLASSES_ROOT\debriefSensorFile\DefaultIcon  /T REG_SZ /D "%PLUGIN_ICON_PATH%/sensor_file.ico"
+:: Sensor files Registration. (.dsf)
 
-REG DELETE HKEY_CLASSES_ROOT\debriefPlotFile /F
-ASSOC .dpf=debriefPlotFile
-ftype debriefPlotFile=%WORKING_DIRECTORY%DebriefNG.exe --launcher.openFile %%1 %%*
-REG ADD HKEY_CLASSES_ROOT\debriefPlotFile\DefaultIcon  /T REG_SZ /D "%PLUGIN_ICON_PATH%/plot_file.ico"
+SET APP=DSF.exe
+SET EXT=.dsf
 
-REG DELETE HKEY_CLASSES_ROOT\debriefXMLFile /F
-ASSOC .xml=debriefXMLFile
-ftype debriefXMLFile=%WORKING_DIRECTORY%DebriefNG.exe --launcher.openFile %%1 %%*
-REG ADD HKEY_CLASSES_ROOT\debriefXMLFile\DefaultIcon  /T REG_SZ /D "%PLUGIN_ICON_PATH%/plot_file.ico"
- 
+REG DELETE %FILE_APP%\%APP% /F
+REG DELETE %FILE_EXT%\%EXT% /F
+
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "Debrief Sensor Data"
+REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\sensor_file.ico
+REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
+REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
+REG ADD %FILE_EXT%\%EXT%\UserChoice /v "ProgId" /t REG_SZ /d Applications\%APP% /F
+::END Sensor files registration.
+
+::Track File registration  (.rep)
+SET APP=REP.exe
+SET EXT=.rep
+
+REG DELETE %FILE_APP%\%APP% /F
+REG DELETE %FILE_EXT%\%EXT% /F
+
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "Debrief Track Data"
+REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
+REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\track_file.ico
+REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
+REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
+REG ADD %FILE_EXT%\%EXT%\UserChoice /v "ProgId" /t REG_SZ /d Applications\%APP% /F
+::End Track File registration
