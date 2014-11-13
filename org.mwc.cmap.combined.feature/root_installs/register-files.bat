@@ -1,5 +1,5 @@
-ECHO CREATING DEBRIEF REGISTRY
-
+@ECHO CREATING DEBRIEF REGISTRY
+@ECHO OFF
 SET ICON_PATH=%~dp0\file_icons
 SET FILE_COMMAND="%~dp0\DebriefNG.exe --launcher.openFile %%1 %%*"
 
@@ -13,7 +13,7 @@ SET EXT=.dpf
 REG DELETE %FILE_APP%\%APP% /F
 REG DELETE %FILE_EXT%\%EXT% /F
 
-REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "plot file"
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "Debrief Plot"
 REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
 REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\plot_file.ico
 REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
@@ -29,7 +29,7 @@ SET EXT=.dsf
 REG DELETE %FILE_APP%\%APP% /F
 REG DELETE %FILE_EXT%\%EXT% /F
 
-REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "sensor file"
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "Debrief Sensor Data"
 REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\sensor_file.ico
 REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
 REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
@@ -43,17 +43,10 @@ SET EXT=.rep
 REG DELETE %FILE_APP%\%APP% /F
 REG DELETE %FILE_EXT%\%EXT% /F
 
-REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "track file"
+REG ADD %FILE_APP%\%APP% /v FriendlyTypeName /t REG_SZ /d  "Debrief Track Data"
 REG ADD %FILE_APP%\%APP%\shell\open\command /t REG_SZ /d  %FILE_COMMAND%
 REG ADD %FILE_APP%\%APP%\DefaultIcon /t REG_SZ /d  %ICON_PATH%\track_file.ico
 REG ADD %FILE_EXT%\%EXT% /v \"Application\" /t REG_SZ /d %APP% /F
 REG ADD %FILE_EXT%\%EXT%\OpenWithList /v "a" /t REG_SZ /d %APP% /F
 REG ADD %FILE_EXT%\%EXT%\UserChoice /v "ProgId" /t REG_SZ /d Applications\%APP% /F
-
 ::End Track File registration
-
-:: Adding Debrief.exe as a XML OpenWith application list.
-REG ADD %FILE_EXT%\.xml\OpenWithList /v "a" /t REG_SZ /d %APP% /F
-REG ADD %FILE_EXT%\.xml\OpenWithList /v "MRUList" /t REG_SZ /d a /F
-REG ADD %FILE_EXT%\.xml\UserChoice /v "ProgId" /t REG_SZ /d Applications\%APP% /F
-::End
