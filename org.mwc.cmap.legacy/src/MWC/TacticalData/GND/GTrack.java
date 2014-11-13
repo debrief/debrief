@@ -14,6 +14,7 @@
  */
 package MWC.TacticalData.GND;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -351,7 +352,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 					}
 				}
 
-				fw = new GDataItem("Item_" + (thisIndex + 1), fields, setter);
+				fw = new GDataItem("Item_" + (thisIndex + 1), fields, setter, Color.blue);
 				_myList.add(fw);
 			}
 		}

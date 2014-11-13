@@ -14,6 +14,7 @@
  */
 package org.mwc.cmap.gridharness.data.samples;
 
+import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collections;
@@ -143,11 +144,11 @@ public class PositionList implements GriddableSeries {
 
 	public static PositionList getShortSample(final PropertyChangeListener pcl) {
 		final Vector<TimeStampedDataItem> pts = new Vector<TimeStampedDataItem>();
-		pts.add(new Position(new HiResDate(10000), 12, 11, 140, new WorldSpeed2(12, WorldSpeed2.M_sec)));
-		pts.add(new Position(new HiResDate(20000), 13, 11, 121, new WorldSpeed2(13, WorldSpeed2.M_sec)));
-		pts.add(new Position(new HiResDate(30000), 15, 15, 111, new WorldSpeed2(14, WorldSpeed2.M_sec)));
-		pts.add(new Position(new HiResDate(40000), 16, 13, 101, new WorldSpeed2(14, WorldSpeed2.M_sec)));
-		pts.add(new Position(new HiResDate(50000), 17, 15, 162, new WorldSpeed2(12, WorldSpeed2.M_sec)));
+		pts.add(new Position(new HiResDate(10000), 12, 11, 140, new WorldSpeed2(12, WorldSpeed2.M_sec), Color.yellow));
+		pts.add(new Position(new HiResDate(20000), 13, 11, 121, new WorldSpeed2(13, WorldSpeed2.M_sec), Color.yellow));
+		pts.add(new Position(new HiResDate(30000), 15, 15, 111, new WorldSpeed2(14, WorldSpeed2.M_sec), Color.yellow));
+		pts.add(new Position(new HiResDate(40000), 16, 13, 101, new WorldSpeed2(14, WorldSpeed2.M_sec), Color.yellow));
+		pts.add(new Position(new HiResDate(50000), 17, 15, 162, new WorldSpeed2(12, WorldSpeed2.M_sec), Color.yellow));
 		final PositionList res = new PositionList("Short Pos", pts);
 		res.addPropertyChangeListener(pcl);
 		return res;
@@ -157,7 +158,7 @@ public class PositionList implements GriddableSeries {
 		final Vector<TimeStampedDataItem> pts = new Vector<TimeStampedDataItem>();
 
 		for (int i = 0; i < 3000; i++) {
-			pts.add(new Position(new HiResDate(10000 * i), 12d, 11, 140, new WorldSpeed2(12, WorldSpeed2.M_sec)));
+			pts.add(new Position(new HiResDate(10000 * i), 12d, 11, 140, new WorldSpeed2(12, WorldSpeed2.M_sec), Color.yellow));
 		}
 		final PositionList res = new PositionList("Long Pos", pts);
 		res.addPropertyChangeListener(pcl);

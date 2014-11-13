@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.gridharness.data.samples;
 
+import java.awt.Color;
+
 import org.mwc.cmap.gridharness.data.WorldDistance2;
 
 import MWC.GUI.TimeStampedDataItem;
@@ -32,13 +34,16 @@ public class Observation implements TimeStampedDataItem {
 
 	private WorldDistance2 _range;
 
+	private Color _color;
+
 	public Observation() {
 	}
 
-	public Observation(final HiResDate dtg, final double bearing, final WorldDistance2 range) {
+	public Observation(final HiResDate dtg, final double bearing, final WorldDistance2 range, final Color color) {
 		_myTime = dtg;
 		_bearing = bearing;
 		_range = range;
+		_color = color;
 	}
 
 	public String toString() {
@@ -75,6 +80,17 @@ public class Observation implements TimeStampedDataItem {
 
 	public void setDTG(final HiResDate newTime) {
 		this._myTime = newTime;
+	}
+	
+	public void setColor(final Color color)
+	{
+		_color = color;
+	}
+
+	@Override
+	public Color getColor()
+	{
+		return _color;
 	}
 
 
