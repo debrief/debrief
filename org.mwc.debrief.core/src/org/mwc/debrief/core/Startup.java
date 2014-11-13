@@ -14,19 +14,65 @@
  */
 package org.mwc.debrief.core;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionChangeHandler;
 import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.WorkbenchPart;
+import org.eclipse.ui.views.contentoutline.ContentOutline;
 
 public class Startup implements IStartup
 {
 
+	private IPartListener partListener = new IPartListener()
+	{
+		
+		@Override
+		public void partOpened(IWorkbenchPart part)
+		{
+			if (part instanceof ContentOutline) {
+				changeIcon((ContentOutline)part);
+			}
+		}
+		
+		@Override
+		public void partDeactivated(IWorkbenchPart part)
+		{
+		}
+		
+		@Override
+		public void partClosed(IWorkbenchPart part)
+		{
+		}
+		
+		@Override
+		public void partBroughtToTop(IWorkbenchPart part)
+		{
+		}
+		
+		@Override
+		public void partActivated(IWorkbenchPart part)
+		{
+		}
+	};
+	private static Image image;
+	
 	@Override
 	public void earlyStartup()
 	{
@@ -35,6 +81,43 @@ public class Startup implements IStartup
 		new ResetPerspective().resetPerspective();;
 		if (DebriefPlugin.getDefault().getCreateProject()) {
 			new CreateDebriefProject().createStartProject();
+		}
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			
+			@Override
+			public void run()
+			{
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				page.addPartListener(partListener);
+				IViewPart view = page.findView("org.eclipse.ui.views.ContentOutline");
+				if (view instanceof ContentOutline) {
+					changeIcon((ContentOutline) view);
+				}
+			}
+		});
+	}
+
+	protected void changeIcon(ContentOutline part)
+	{
+		try
+		{
+			Class<?> clazz = WorkbenchPart.class;
+			Method method = clazz.getDeclaredMethod("setTitleImage", new Class[] {Image.class});
+			method.setAccessible(true);
+			if (image == null)
+			{
+				ImageDescriptor descriptor = DebriefPlugin
+						.getImageDescriptor("icons/16/outline.png");
+				image = JFaceResources.getResources()
+						.createImageWithDefault(descriptor);
+			}
+			method.invoke(part, new Object[] {image});
+		}
+		catch (Exception e)
+		{
+			IStatus status = new Status(IStatus.INFO, DebriefPlugin.PLUGIN_NAME, "Can't change the icon of the Outline view", e);
+			DebriefPlugin.getDefault().getLog().log(status);
 		}
 	}
 
