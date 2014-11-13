@@ -280,8 +280,6 @@ public class FMC_Wrapper extends ContributionWrapper implements Layer
 	{
 		super.getContribution().setName(val);
 	}
-	
-	
 
 	@Override
 	public boolean hasOrderedChildren()

@@ -22,12 +22,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import org.eclipse.core.runtime.Status;
-
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
-import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Properties.BoundedInteger;
@@ -37,10 +34,10 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
-public class BMC_Wrapper extends ContributionWrapper implements Layer
+public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContribution>
 {
 	
 	public class BMC_Info extends Editable.EditorType implements Serializable
@@ -96,14 +93,14 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 			// wrap the measurements
 			_myElements = new ArrayList<Editable>();
 
-			BearingMeasurementContribution bmc = getBMC();
+			BearingMeasurementContribution bmc = (BearingMeasurementContribution) getBMC();
 			ArrayList<BMeasurement> meas = bmc.getMeasurements();
 			Iterator<BMeasurement> iter = meas.iterator();
 			while (iter.hasNext())
 			{
 				CoreMeasurement thisM = (CoreMeasurement) iter
 						.next();
-				BMC_Wrapper.MeasurementEditable thisMe = new MeasurementEditable(thisM);
+				MeasurementEditable thisMe = new MeasurementEditable(thisM);
 				_myElements.add(thisMe);
 			}
 		}
@@ -234,17 +231,9 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 		return getBMC().getNumObservations();
 	}
 
-	private BearingMeasurementContribution getBMC()
+	private CoreMeasurementContribution getBMC()
 	{
-		return (BearingMeasurementContribution) super.getContribution();
-	}
-	
-	
-
-	@Override
-	public boolean hasEditor()
-	{
-		return true;
+		return (CoreMeasurementContribution) super.getContribution();
 	}
 
 	@Override
@@ -267,47 +256,5 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 		bm.setBearingError(Math.toRadians(error.getCurrent()));
 	}
 
-	@Override
-	public void exportShape()
-	{
-	}
-
-	@Override
-	public void append(Layer other)
-	{
-	}
-
-	@Override
-	public void setName(String val)
-	{
-		super.getContribution().setName(val);
-	}
-	
-	
-
-	@Override
-	public boolean hasOrderedChildren()
-	{
-		return true;
-	}
-
-	@Override
-	public int getLineThickness()
-	{
-		return 0;
-	}
-
-	@Override
-	public void add(Editable point)
-	{
-		SATC_Activator.log(Status.ERROR,
-				"Should not be adding items to this layer", null);
-	}
-
-	@Override
-	public void removeElement(Editable point)
-	{
-
-	}
 
 }
