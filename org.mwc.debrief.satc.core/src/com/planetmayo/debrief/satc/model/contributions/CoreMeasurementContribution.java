@@ -40,27 +40,27 @@ public abstract class CoreMeasurementContribution<Measurement extends CoreMeasur
 			this.time = time;
 		}
 		
-		public java.awt.Color getColor()
+		final public java.awt.Color getColor()
 		{
 			return color;
 		}
 
-		public void setColor(java.awt.Color color)
+		final public void setColor(java.awt.Color color)
 		{
 			this.color = color;
 		}
 
-		public Date getDate()
+		final public Date getDate()
 		{
 			return time;
 		}
 
-		public boolean isActive()
+		final public boolean isActive()
 		{
 			return isActive;
 		}
 
-		public void setActive(boolean active)
+		final public void setActive(boolean active)
 		{
 			isActive = active;
 		}
@@ -73,7 +73,7 @@ public abstract class CoreMeasurementContribution<Measurement extends CoreMeasur
 	 * 
 	 * @param measure
 	 */
-	public void addMeasurement(Measurement measure)
+	final public void addMeasurement(Measurement measure)
 	{
 		// extend the time period accordingly
 		if (this.getStartDate() == null)
@@ -97,17 +97,17 @@ public abstract class CoreMeasurementContribution<Measurement extends CoreMeasur
 
 
 	@Override
-	public ContributionDataType getDataType()
+	final public ContributionDataType getDataType()
 	{
 		return ContributionDataType.MEASUREMENT;
 	}
 
-	public int getNumObservations()
+	final public int getNumObservations()
 	{
 		return measurements.size();
 	}
 
-	public ArrayList<Measurement> getMeasurements()
+	final public ArrayList<Measurement> getMeasurements()
 	{
 		return measurements;
 	}
@@ -118,7 +118,7 @@ public abstract class CoreMeasurementContribution<Measurement extends CoreMeasur
 	 * 
 	 * @return
 	 */
-	public boolean hasData()
+	final public boolean hasData()
 	{
 		return measurements.size() > 0;
 	}

@@ -14,9 +14,7 @@
  */
 package com.planetmayo.debrief.satc.model.contributions;
 
-import java.awt.Color;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,66 +23,15 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 
-public class FrequencyMeasurementContribution extends CoreMeasurementContribution
+public class FrequencyMeasurementContribution extends CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
 {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * the set of measurements we store
-	 * 
-	 */
-	private ArrayList<FMeasurement> measurements = new ArrayList<FMeasurement>();
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// do something...
-	}
-
-	/**
-	 * store this new measurement
-	 * 
-	 * @param measure
-	 */
-	public void addThis(FMeasurement measure)
-	{
-		// extend the time period accordingly
-		if (this.getStartDate() == null)
-		{
-			this.setStartDate(measure.time);
-			this.setFinishDate(measure.time);
-		}
-		else
-		{
-			long newTime = measure.time.getTime();
-			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure.time);
-			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure.time);
-		}
-
-		measurements.add(measure);
-	}
-
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.MEASUREMENT;
-	}
-
-	public int getEstimate()
-	{
-		return measurements.size();
-	}
-
-	/**
-	 * whether this contribution has any measurements yet
-	 * 
-	 * @return
-	 */
-	public boolean hasData()
-	{
-		return measurements.size() > 0;
 	}
 
 	public void loadFrom(List<String> lines)
@@ -122,7 +69,6 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 			String lonHemi = elements[12];
 
 			// and the beraing
-			String bearing = elements[13];
 
 			// and the range
 			String range = elements[14];
@@ -142,10 +88,10 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			FMeasurement measure = new FMeasurement(theLoc, Math.toRadians(Double.valueOf(bearing)),
+			FMeasurement measure = new FMeasurement(theLoc,
 					theDate, Double.valueOf(range));
 
-			addThis(measure);
+			addMeasurement(measure);
 
 		}
 	}
@@ -157,59 +103,22 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 	 * @author ian
 	 * 
 	 */
-	public static class FMeasurement
+	public static class FMeasurement extends CoreMeasurementContribution.CoreMeasurement
 	{
 		@SuppressWarnings("unused")
 		private final GeoPoint origin;
-		@SuppressWarnings("unused")
-		private final double bearingAngle;
-		private final Date time;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
 		@SuppressWarnings("unused")
 		private final Double frequency;
-		@SuppressWarnings("unused")
-		private Color _color;
-		private boolean isActive = true;
 
-		public FMeasurement(GeoPoint loc, double bearing, Date time, Double frequency)
+		public FMeasurement(GeoPoint loc, Date time, Double frequency)
 		{
+			super(time);
 			this.origin = loc;
-			this.bearingAngle = bearing;
-			this.time = time;
 			this.frequency = frequency;
 		}
-
-		public void setColor(Color color)
-		{
-			_color = color;
-		}
-
-		public Date getDate()
-		{
-			return time;
-		}
-		
-		public boolean isActive()
-		{
-			return isActive;
-		}
-
-		public void setActive(boolean active)
-		{
-			isActive  = active;
-		}
-	}
-
-	public int getNumObservations()
-	{
-		return measurements.size();
-	}
-
-	public ArrayList<FMeasurement> getMeasurements()
-	{
-		return measurements;
 	}
 }

@@ -872,19 +872,18 @@ public class CreateSolutionFromSensorData implements
 	
 				loc = conversions.toPoint(theOrigin);
 	
-				double brg = Math.toRadians(scw.getBearing());
 				Date date = scw.getDTG().getDate();
 				Double theRange = null;
 				if (scw.getRange() != null)
 					theRange = scw.getRange().getValueIn(WorldDistance.METRES);
 	
-				final FMeasurement thisM = new FMeasurement(loc, brg, date, theRange);
+				final FMeasurement thisM = new FMeasurement(loc, date, theRange);
 	
 				// give it the respective color
 				thisM.setColor(scw.getColor());
 	
 				// ok, store it.
-				bmc.addThis(thisM);
+				bmc.addMeasurement(thisM);
 			}
 			return bmc;
 		}
