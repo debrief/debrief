@@ -63,6 +63,8 @@ import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForec
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
@@ -242,9 +244,22 @@ public class CreateSolutionFromSensorData implements
 		// parent.add(wizardItem);
 		// parent.add(new Separator());
 
-		parent.add(new DoIt("Contribute selected bearings to the scenario",
-				new BearingMeasurementContributionFromCuts(solution, actionTitle,
-						layers, validItems), "icons/bearings.gif"));
+		SensorContactWrapper first = validItems.get(0);
+		
+		// hmm, is there bearing data?
+		if (first.getHasBearing())
+		{
+			parent.add(new DoIt("Contribute selected bearings to the scenario",
+					new BearingMeasurementContributionFromCuts(solution, actionTitle,
+							layers, validItems), "icons/bearings.gif"));
+		}
+		if (first.getHasFrequency())
+		{
+			parent.add(new DoIt(
+					"Contribute selected frequency measurements to the scenario",
+					new FrequencyMeasurementContributionFromCuts(solution, actionTitle,
+							layers, validItems), "icons/bearings.gif"));
+		}
 
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
@@ -821,6 +836,59 @@ public class CreateSolutionFromSensorData implements
 			// duh, ignore
 			return null;
 		}
+	}
+
+	private class FrequencyMeasurementContributionFromCuts extends
+			CoreSolutionFromCuts
+	{
+		private ArrayList<SensorContactWrapper> _validCuts;
+	
+		public FrequencyMeasurementContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, new TimePeriod.BaseTimePeriod(
+					new HiResDate(validCuts.get(0).getDTG().getDate()), new HiResDate(
+							validCuts.get(validCuts.size() - 1).getDTG())));
+			_validCuts = validCuts;
+		}
+	
+		protected FrequencyMeasurementContribution createContribution(String contName)
+		{
+			// ok, now collate the contriubtion
+			final FrequencyMeasurementContribution bmc = new FrequencyMeasurementContribution();
+			bmc.setName(contName);
+	
+			// add the bearing data
+			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
+			while (iter.hasNext())
+			{
+				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
+				WorldLocation theOrigin = scw.getOrigin();
+				GeoPoint loc;
+	
+				if (theOrigin == null)
+					theOrigin = scw.getCalculatedOrigin(scw.getSensor().getHost());
+	
+				loc = conversions.toPoint(theOrigin);
+	
+				double brg = Math.toRadians(scw.getBearing());
+				Date date = scw.getDTG().getDate();
+				Double theRange = null;
+				if (scw.getRange() != null)
+					theRange = scw.getRange().getValueIn(WorldDistance.METRES);
+	
+				final FMeasurement thisM = new FMeasurement(loc, brg, date, theRange);
+	
+				// give it the respective color
+				thisM.setColor(scw.getColor());
+	
+				// ok, store it.
+				bmc.addThis(thisM);
+			}
+			return bmc;
+		}
+	
 	}
 
 }

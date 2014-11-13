@@ -14,6 +14,7 @@
  */
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,14 +28,6 @@ import com.planetmayo.debrief.satc.util.ObjectUtils;
 public class FrequencyMeasurementContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
-
-	public static final String FREQUENCY_ERROR = "frequencyError";
-
-	/**
-	 * the allowable frequency error (in hertz)
-	 * 
-	 */
-	private Double frequencyError = 0d;
 
 	/**
 	 * the set of measurements we store
@@ -80,11 +73,6 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		}
 
 		measurements.add(measure);
-	}
-
-	public double getFrequencyError()
-	{
-		return frequencyError;
 	}
 
 	@Override
@@ -169,16 +157,8 @@ public class FrequencyMeasurementContribution extends BaseContribution
 			addThis(measure);
 
 		}
-		this.setFrequencyError(2d);
 	}
 
-	public void setFrequencyError(double newFrequencyError)
-	{
-		double old = frequencyError;
-		this.frequencyError = newFrequencyError;
-		firePropertyChange(FREQUENCY_ERROR, old, newFrequencyError);
-		firePropertyChange(HARD_CONSTRAINTS, old, newFrequencyError);
-	}
 	
 	/**
 	 * utility class for storing a measurement
@@ -199,6 +179,9 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		 */
 		@SuppressWarnings("unused")
 		private final Double frequency;
+		@SuppressWarnings("unused")
+		private Color _color;
+		private boolean isActive = true;
 
 		public FMeasurement(GeoPoint loc, double bearing, Date time, Double frequency)
 		{
@@ -207,5 +190,35 @@ public class FrequencyMeasurementContribution extends BaseContribution
 			this.time = time;
 			this.frequency = frequency;
 		}
-	}	
+
+		public void setColor(Color color)
+		{
+			_color = color;
+		}
+
+		public Date getDate()
+		{
+			return time;
+		}
+		
+		public boolean isActive()
+		{
+			return isActive;
+		}
+
+		public void setActive(boolean active)
+		{
+			isActive  = active;
+		}
+	}
+
+	public int getNumObservations()
+	{
+		return measurements.size();
+	}
+
+	public ArrayList<FMeasurement> getMeasurements()
+	{
+		return measurements;
+	}
 }

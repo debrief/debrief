@@ -48,15 +48,13 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	protected void bindValues(DataBindingContext context)
 	{
 		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "+/- ", " Hz");
-		IObservableValue errorValue = BeansObservables.observeValue(
-				contribution, FrequencyMeasurementContribution.FREQUENCY_ERROR);
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BearingMeasurementContribution.ESTIMATE);		
-		bindCommonHeaderWidgets(context, errorValue, estimateValue, 
+		bindCommonHeaderWidgets(context, null, estimateValue, 
 				new PrefixSuffixLabelConverter(Object.class, " Measurements"), labelConverter);
 		bindCommonDates(context);
 
-		bindSliderLabelCheckbox(context, errorValue, errorSlider, errorLabel, errorActiveCheckbox,
+		bindSliderLabelCheckbox(context, null, errorSlider, errorLabel, errorActiveCheckbox,
 				labelConverter, new BooleanToNullConverter<Double>(0d), null);		
 	}
 	

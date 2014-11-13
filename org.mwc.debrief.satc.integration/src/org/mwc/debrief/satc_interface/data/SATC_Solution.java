@@ -46,6 +46,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.CourseForecastWrapper;
+import org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.StraightLegWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
@@ -80,6 +81,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
@@ -522,6 +524,8 @@ public class SATC_Solution extends BaseLayer implements
 		ContributionWrapper thisW;
 		if (cont instanceof BearingMeasurementContribution)
 			thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
+		if (cont instanceof FrequencyMeasurementContribution)
+			thisW = new FMC_Wrapper((FrequencyMeasurementContribution) cont);
 		else if (cont instanceof StraightLegForecastContribution)
 			thisW = new StraightLegWrapper(cont);
 		else if (cont instanceof CourseForecastContribution)
@@ -1489,6 +1493,11 @@ public class SATC_Solution extends BaseLayer implements
 				{
 					final BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
 					wrapped = new BMC_Wrapper(bmc);
+				}
+				else if (baseC instanceof FrequencyMeasurementContribution)
+				{
+					final FrequencyMeasurementContribution bmc = (FrequencyMeasurementContribution) baseC;
+					wrapped = new FMC_Wrapper(bmc);
 				}
 				else if (baseC instanceof StraightLegForecastContribution)
 				{
