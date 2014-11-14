@@ -17,95 +17,63 @@ package org.mwc.debrief.satc_interface.data.wrappers;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
 
 import MWC.GUI.Editable;
-import MWC.GUI.Plottables.IteratorWrapper;
-import MWC.GUI.Properties.BoundedInteger;
 
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
 
-public class FMC_Wrapper extends CoreLayer_Wrapper<FrequencyMeasurementContribution>
+public class FMC_Wrapper
+		extends
+		CoreLayer_Wrapper<FrequencyMeasurementContribution, FMeasurement, FMC_Wrapper.FrequencyMeasurementEditable>
 {
-	
-	public class BMC_Info extends Editable.EditorType implements Serializable
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public BMC_Info(FMC_Wrapper data)
-		{
-			super(data, data.getName(), "");
-		}
-
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				PropertyDescriptor[] res =
-				{ 
-						prop("Name", "name of this contribution", EditorType.FORMAT)
-						
-				};
-
-				return res;
-			}
-			catch (IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-	}
-
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Collection<Editable> _myElements;
 
-	public FMC_Wrapper(FrequencyMeasurementContribution contribution)
+	public FMC_Wrapper(final FrequencyMeasurementContribution contribution)
 	{
 		super(contribution);
 	}
 
-	@Override
-	public Enumeration<Editable> elements()
+	protected void addThis(CoreMeasurement meas)
 	{
-		if (_myElements == null)
-		{
-			// wrap the measurements
-			_myElements = new ArrayList<Editable>();
+		final FrequencyMeasurementEditable thisMe = new FrequencyMeasurementEditable(
+				meas);
+		_myElements.add(thisMe);
+	}
+	
 
-			FrequencyMeasurementContribution bmc = (FrequencyMeasurementContribution) getBMC();
-			ArrayList<FMeasurement> meas = bmc.getMeasurements();
-			Iterator<FMeasurement> iter = meas.iterator();
-			while (iter.hasNext())
-			{
-				CoreMeasurement thisM = (CoreMeasurement) iter
-						.next();
-				FrequencyMeasurementEditable thisMe = new FrequencyMeasurementEditable(thisM);
-				_myElements.add(thisMe);
-			}
-		}
-
-		return new IteratorWrapper(_myElements.iterator());
+	@Override
+	public EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new FMC_Info(this);
+		return _myEditor;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public class FrequencyMeasurementEditable extends CoreLayer_Wrapper.CoreMeasurementEditable
+	public class FrequencyMeasurementEditable extends
+			CoreLayer_Wrapper.CoreMeasurementWrapper
 	{
+		private EditorType _myEditor;
+
+		public FrequencyMeasurementEditable(final CoreMeasurement measurement)
+		{
+			super(measurement);
+		}
+
+		@Override
+		public EditorType getInfo()
+		{
+			if (_myEditor == null)
+				_myEditor = new Meas_Info(this);
+			return _myEditor;
+		}
+
 		// ///////////////////////////////////////////////////////////
 		// info class
 		// //////////////////////////////////////////////////////////
@@ -117,60 +85,60 @@ public class FMC_Wrapper extends CoreLayer_Wrapper<FrequencyMeasurementContribut
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public Meas_Info(FrequencyMeasurementEditable data)
+			public Meas_Info(final FrequencyMeasurementEditable data)
 			{
 				super(data, data.getName(), "");
 			}
 
+			@Override
 			public PropertyDescriptor[] getPropertyDescriptors()
 			{
 				try
 				{
-					PropertyDescriptor[] res =
+					final PropertyDescriptor[] res =
 					{ prop("Active", "whether to use this bearing", EditorType.OPTIONAL) };
 
 					return res;
 				}
-				catch (IntrospectionException e)
+				catch (final IntrospectionException e)
 				{
 					return super.getPropertyDescriptors();
 				}
 			}
 		}
+	}
 
+	public class FMC_Info extends Editable.EditorType implements Serializable
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public FMC_Info(final FMC_Wrapper data)
+		{
+			super(data, data.getName(), "");
+		}
 
 		@Override
-		public EditorType getInfo()
+		public PropertyDescriptor[] getPropertyDescriptors()
 		{
-			if (_myEditor == null)
-				_myEditor = new Meas_Info(this);
-			return _myEditor;
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+						prop("Name", "name of this contribution", EditorType.FORMAT)
+
+				};
+
+				return res;
+			}
+			catch (final IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
 		}
-		
-		private EditorType _myEditor;
-
-		public FrequencyMeasurementEditable(CoreMeasurement measurement)
-		{
-			super(measurement);
-		}
 	}
 
-	public int size()
-	{
-		return getBMC().getNumObservations();
-	}
-
-	@SuppressWarnings("rawtypes")
-	private CoreMeasurementContribution getBMC()
-	{
-		return (CoreMeasurementContribution) super.getContribution();
-	}
-
-	@Override
-	public EditorType getInfo()
-	{
-		if(_myEditor == null)
-			_myEditor = new BMC_Info(this);
-		return _myEditor;
-	}
 }

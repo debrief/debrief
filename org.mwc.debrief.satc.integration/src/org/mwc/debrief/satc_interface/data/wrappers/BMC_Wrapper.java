@@ -25,57 +25,69 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 
-public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContribution, 
-   BMeasurement, BMC_Wrapper.BearingMeasurementEditable>
+public class BMC_Wrapper
+		extends
+		CoreLayer_Wrapper<BearingMeasurementContribution, BMeasurement, BMC_Wrapper.BearingMeasurementWrapper>
 {
-	
-	public class BMC_Info extends Editable.EditorType implements Serializable
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public BMC_Info(BMC_Wrapper data)
-		{
-			super(data, data.getName(), "");
-		}
-
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				PropertyDescriptor[] res =
-				{ 
-						prop("Error", "the size of bearing error to allow", EditorType.SPATIAL),
-						prop("Name", "name of this contribution", EditorType.FORMAT)
-						
-				};
-
-				return res;
-			}
-			catch (IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-	}
-
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public BMC_Wrapper(BearingMeasurementContribution contribution)
+
+	public BMC_Wrapper(final BearingMeasurementContribution contribution)
 	{
 		super(contribution);
 	}
 
+	protected void addThis(CoreMeasurement meas)
+	{
+		final BearingMeasurementWrapper thisMe = new BearingMeasurementWrapper(
+				meas);
+		_myElements.add(thisMe);
+	}
+	
+	public BoundedInteger getError()
+	{
+		final BearingMeasurementContribution bm = (BearingMeasurementContribution) super
+				.getContribution();
+		return new BoundedInteger((int) Math.toDegrees(bm.getBearingError()), 1, 20);
+	}
+
+	@Override
+	public EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new BMC_Info(this);
+		return _myEditor;
+	}
+
+	public void setError(final BoundedInteger error)
+	{
+		final BearingMeasurementContribution bm = (BearingMeasurementContribution) super
+				.getContribution();
+		bm.setBearingError(Math.toRadians(error.getCurrent()));
+	}
 
 	@SuppressWarnings("rawtypes")
-	public class BearingMeasurementEditable extends CoreLayer_Wrapper.CoreMeasurementEditable
+	public class BearingMeasurementWrapper extends
+			CoreLayer_Wrapper.CoreMeasurementWrapper
 	{
+		private EditorType _myEditor;
+
+		public BearingMeasurementWrapper(final CoreMeasurement measurement)
+		{
+			super(measurement);
+		}
+
+		@Override
+		public EditorType getInfo()
+		{
+			if (_myEditor == null)
+				_myEditor = new Meas_Info(this);
+			return _myEditor;
+		}
+
 		// ///////////////////////////////////////////////////////////
 		// info class
 		// //////////////////////////////////////////////////////////
@@ -87,64 +99,62 @@ public class BMC_Wrapper extends CoreLayer_Wrapper<BearingMeasurementContributio
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public Meas_Info(BearingMeasurementEditable data)
+			public Meas_Info(final BearingMeasurementWrapper data)
 			{
 				super(data, data.getName(), "");
 			}
 
+			@Override
 			public PropertyDescriptor[] getPropertyDescriptors()
 			{
 				try
 				{
-					PropertyDescriptor[] res =
+					final PropertyDescriptor[] res =
 					{ prop("Active", "whether to use this bearing", EditorType.OPTIONAL) };
 
 					return res;
 				}
-				catch (IntrospectionException e)
+				catch (final IntrospectionException e)
 				{
 					return super.getPropertyDescriptors();
 				}
 			}
 		}
+	}
 
+	public class BMC_Info extends Editable.EditorType implements Serializable
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public BMC_Info(final BMC_Wrapper data)
+		{
+			super(data, data.getName(), "");
+		}
 
 		@Override
-		public EditorType getInfo()
+		public PropertyDescriptor[] getPropertyDescriptors()
 		{
-			if (_myEditor == null)
-				_myEditor = new Meas_Info(this);
-			return _myEditor;
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+						prop("Error", "the size of bearing error to allow",
+								EditorType.SPATIAL),
+						prop("Name", "name of this contribution", EditorType.FORMAT)
+
+				};
+
+				return res;
+			}
+			catch (final IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
 		}
-		
-		private EditorType _myEditor;
-
-		public BearingMeasurementEditable(CoreMeasurement measurement)
-		{
-			super(measurement);
-		}
 	}
-
-
-	@Override
-	public EditorType getInfo()
-	{
-		if(_myEditor == null)
-			_myEditor = new BMC_Info(this);
-		return _myEditor;
-	}
-	
-	public BoundedInteger getError()
-	{
-		BearingMeasurementContribution bm = (BearingMeasurementContribution) super.getContribution();
-		return  new BoundedInteger( (int) Math.toDegrees(bm.getBearingError()),1,20);
-	}
-
-	public void setError(BoundedInteger error)
-	{
-		BearingMeasurementContribution bm = (BearingMeasurementContribution) super.getContribution();
-		bm.setBearingError(Math.toRadians(error.getCurrent()));
-	}
-
 
 }

@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Status;
-import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper.BearingMeasurementEditable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -19,24 +18,39 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
+@SuppressWarnings("rawtypes")
 abstract public class CoreLayer_Wrapper<Contribution extends CoreMeasurementContribution<?>, 
   Measurement extends CoreMeasurementContribution.CoreMeasurement,
-  Wrapper extends CoreLayer_Wrapper.CoreMeasurementEditable> extends ContributionWrapper implements Layer
+  Wrapper extends CoreLayer_Wrapper.CoreMeasurementWrapper> extends ContributionWrapper implements Layer
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/** the set of measurements that we strore 
+	 * 
+	 */
 	protected Collection<Editable> _myElements;
 
 
-	@SuppressWarnings("rawtypes")
-	private CoreMeasurementContribution getBMC()
+	public CoreLayer_Wrapper(BaseContribution contribution)
 	{
-		return (CoreMeasurementContribution) super.getContribution();
+		super(contribution);
 	}
+
+	@Override
+	final public void add(Editable point)
+	{
+		SATC_Activator.log(Status.ERROR,
+				"Should not be adding items to this layer", null);
+	}
+	
 
 	@Override
 	public Enumeration<Editable> elements()
@@ -46,19 +60,70 @@ abstract public class CoreLayer_Wrapper<Contribution extends CoreMeasurementCont
 			// wrap the measurements
 			_myElements = new ArrayList<Editable>();
 
-			CoreMeasurementContribution bmc = (Contribution) getBMC();
-			ArrayList<Measurement> meas = bmc.getMeasurements();
-			Iterator<Measurement> iter = meas.iterator();
+			final CoreMeasurementContribution<Measurement> bmc =  getBMC();
+			final ArrayList<Measurement> meas = bmc.getMeasurements();
+			final Iterator<Measurement> iter = meas.iterator();
 			while (iter.hasNext())
 			{
-				CoreMeasurement thisM = (CoreMeasurement) iter
-						.next();
-				Wrapper thisMe = new Wrapper(thisM);
-				_myElements.add(thisMe);
+				final CoreMeasurement thisM = iter.next();
+				addThis(thisM);
 			}
 		}
 
 		return new IteratorWrapper(_myElements.iterator());
+	}
+
+	
+	/** wrap this object appropriately, and store it
+	 * 
+	 * @param thisM
+	 */
+	abstract protected void addThis(CoreMeasurement thisM);
+
+	@Override
+	final public void append(Layer other)
+	{
+	}
+
+	@Override
+	final public void exportShape()
+	{
+	}
+
+	protected CoreMeasurementContribution<Measurement> getBMC()
+	{
+		return  (CoreMeasurementContribution<Measurement>) super.getContribution();
+	}
+
+	@Override
+	final public int getLineThickness()
+	{
+		return 0;
+	}
+
+	@Override
+	final public boolean hasEditor()
+	{
+		return true;
+	}
+	
+
+	@Override
+	final public boolean hasOrderedChildren()
+	{
+		return true;
+	}
+
+	@Override
+	final public void removeElement(Editable point)
+	{
+
+	}
+
+	@Override
+	final public void setName(String val)
+	{
+		super.getContribution().setName(val);
 	}
 
 	public int size()
@@ -66,12 +131,12 @@ abstract public class CoreLayer_Wrapper<Contribution extends CoreMeasurementCont
 		return getBMC().getNumObservations();
 	}
 
-	abstract public class CoreMeasurementEditable implements Plottable, ExcludeFromRightClickEdit
+	abstract public class CoreMeasurementWrapper implements Plottable, ExcludeFromRightClickEdit
 	{
 
 		protected final CoreMeasurement _myMeas;
 
-		public CoreMeasurementEditable(CoreMeasurement measurement)
+		public CoreMeasurementWrapper(CoreMeasurement measurement)
 		{
 			_myMeas = measurement;
 		}
@@ -143,64 +208,5 @@ abstract public class CoreLayer_Wrapper<Contribution extends CoreMeasurementCont
 			return getName();
 		}
 		
-	}
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public CoreLayer_Wrapper(BaseContribution contribution)
-	{
-		super(contribution);
-	}
-
-
-	@Override
-	final public void exportShape()
-	{
-	}
-
-	@Override
-	final public void append(Layer other)
-	{
-	}
-
-	@Override
-	final public void setName(String val)
-	{
-		super.getContribution().setName(val);
-	}
-	
-
-	@Override
-	final public boolean hasEditor()
-	{
-		return true;
-	}
-
-	@Override
-	final public boolean hasOrderedChildren()
-	{
-		return true;
-	}
-
-	@Override
-	final public int getLineThickness()
-	{
-		return 0;
-	}
-
-	@Override
-	final public void add(Editable point)
-	{
-		SATC_Activator.log(Status.ERROR,
-				"Should not be adding items to this layer", null);
-	}
-
-	@Override
-	final public void removeElement(Editable point)
-	{
-
 	}
 }
