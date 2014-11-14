@@ -26,6 +26,7 @@ import MWC.GUI.Editable;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 
@@ -36,29 +37,31 @@ public class SATC_ImageHelper implements ViewLabelImageHelper
 	{
 		ImageDescriptor res = null;
 
-		// TODO - switch to frequency icon, when we have one.
-		
 		if (editable instanceof SATC_Solution)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/calculator.gif");
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/scenario.png");
 		else if (editable instanceof StraightLegWrapper)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/leg.png");
-		else if (editable instanceof BMC_Wrapper.BearingMeasurementEditable)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/bearings.gif");
-		else if (editable instanceof FMC_Wrapper.MeasurementEditable)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/bearings.gif");
-		else if (editable instanceof StraightLegWrapper)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/leg.png");
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/leg.png");
+		else if (editable instanceof BMC_Wrapper.BearingMeasurementWrapper)
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/bearing.png");
+		else if (editable instanceof FMC_Wrapper.FrequencyMeasurementEditable)
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/frequency.png");
+		else if (editable instanceof BMC_Wrapper)
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/bearing.png");
+		else if (editable instanceof FMC_Wrapper)
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/frequency.png");
 		else if (editable instanceof ContributionWrapper)
 		{
 			ContributionWrapper cw = (ContributionWrapper) editable;
 			BaseContribution cont = cw.getContribution();
 			if (cont instanceof CourseForecastContribution)
 				res = SATC_Interface_Activator
-						.getImageDescriptor("icons/direction.png");
+						.getImageDescriptor("icons/16/direction.png");
 			else if (cont instanceof SpeedForecastContribution)
-				res = SATC_Interface_Activator.getImageDescriptor("icons/speed.png");
+				res = SATC_Interface_Activator.getImageDescriptor("icons/16/speed.png");
 			else if (cont instanceof RangeForecastContribution)
-				res = SATC_Interface_Activator.getImageDescriptor("icons/range.png");
+				res = SATC_Interface_Activator.getImageDescriptor("icons/16/range.png");
+			else if (cont instanceof Range1959ForecastContribution)
+				res = SATC_Interface_Activator.getImageDescriptor("icons/16/range.png");
 		}
 		return res;
 	}
