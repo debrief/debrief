@@ -864,26 +864,24 @@ public class CreateSolutionFromSensorData implements
 			while (iter.hasNext())
 			{
 				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
-				WorldLocation theOrigin = scw.getOrigin();
-				GeoPoint loc;
-	
-				if (theOrigin == null)
-					theOrigin = scw.getCalculatedOrigin(scw.getSensor().getHost());
-	
-				loc = conversions.toPoint(theOrigin);
 	
 				Date date = scw.getDTG().getDate();
-				Double theRange = null;
-				if (scw.getRange() != null)
-					theRange = scw.getRange().getValueIn(WorldDistance.METRES);
-	
-				final FMeasurement thisM = new FMeasurement(loc, date, theRange);
-	
-				// give it the respective color
-				thisM.setColor(scw.getColor());
-	
-				// ok, store it.
-				bmc.addMeasurement(thisM);
+				
+				if(scw.getHasFrequency())
+				{
+					double freq = scw.getFrequency();
+					final FMeasurement thisM = new FMeasurement(date, freq);
+					
+					// give it the respective color
+					thisM.setColor(scw.getColor());
+		
+					// ok, store it.
+					bmc.addMeasurement(thisM);
+				}
+				else
+				{
+					SATC_Activator.log(Status.WARNING, "Expected freq data at:" + date + " to contain freq, it doesn't", null);
+				}
 			}
 			return bmc;
 		}

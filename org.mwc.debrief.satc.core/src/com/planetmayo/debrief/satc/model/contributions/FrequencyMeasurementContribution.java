@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
@@ -87,9 +86,7 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 			if (lonHemi.toUpperCase().equals("W"))
 				lon = -lon;
 
-			GeoPoint theLoc = new GeoPoint(lat, lon);
-			FMeasurement measure = new FMeasurement(theLoc,
-					theDate, Double.valueOf(range));
+			FMeasurement measure = new FMeasurement(theDate, Double.valueOf(range));
 
 			addMeasurement(measure);
 
@@ -105,8 +102,6 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 	 */
 	public static class FMeasurement extends CoreMeasurementContribution.CoreMeasurement
 	{
-		@SuppressWarnings("unused")
-		private final GeoPoint origin;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
@@ -114,10 +109,9 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		@SuppressWarnings("unused")
 		private final Double frequency;
 
-		public FMeasurement(GeoPoint loc, Date time, Double frequency)
+		public FMeasurement(Date time, Double frequency)
 		{
 			super(time);
-			this.origin = loc;
 			this.frequency = frequency;
 		}
 	}
