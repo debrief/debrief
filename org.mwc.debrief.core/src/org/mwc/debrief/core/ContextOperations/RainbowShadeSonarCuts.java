@@ -49,7 +49,7 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator
 	 * list of the types of shading operation we support
 	 * 
 	 */
-	private enum ShadeOperation
+	public enum ShadeOperation
 	{
 		BLUE_RED_SPECTRUM, RAINBOW_SHADE, CLEAR_SHADE
 	}
@@ -190,7 +190,7 @@ public class RainbowShadeSonarCuts implements RightClickContextItemGenerator
 	 * 
 	 */
 
-	private static class ShadeCutsOperation extends CMAPOperation
+	public static class ShadeCutsOperation extends CMAPOperation
 	{
 
 		/**

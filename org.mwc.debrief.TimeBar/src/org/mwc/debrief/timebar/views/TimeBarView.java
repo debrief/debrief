@@ -35,7 +35,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.debrief.timebar.Activator;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -220,7 +219,15 @@ public class TimeBarView extends ViewPart {
 	
 	void processReformattedLayer(final Layers theData, final Layer changedLayer)
 	{
-		_viewer.drawDiagram(theData);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				if (_viewer == null || _viewer.isDisposed())
+					return;
+				_viewer.drawDiagram(theData);
+			}
+		});
 	}
 		
 	void processNewData(final Layers theData, final Editable newItem,
