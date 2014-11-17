@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -35,6 +37,7 @@ import java.util.Vector;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
@@ -115,6 +118,8 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts.ShadeCutsOperation;
+import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts.ShadeOperation;
 import org.mwc.debrief.core.actions.DragComponent;
 import org.mwc.debrief.core.actions.DragComponent.DragComponentMode;
 import org.mwc.debrief.core.actions.DragFeature;
@@ -650,11 +655,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				"Import Sensor data",
 				"Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
 				"Default range", defRange, imagePath, null);
+		final EnterBooleanPage applyRainbowInRainbowColors = new EnterBooleanPage(null, false,
+				"Apply Rainbow Shades in rainbow colors",
+				"Please specify if this sensor should be apply Rainbow Shades in rainbow colors",
+				"yes/no", imagePath, null);
+
 		wizard.addWizard(getName);
 		wizard.addWizard(getColor);
 		if (needsRange)
 			wizard.addWizard(getRange);
 		wizard.addWizard(getVis);
+		wizard.addWizard(applyRainbowInRainbowColors);
 		final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
@@ -684,6 +695,79 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						cut.setRange(new WorldDistance(theRange));
 					}
 				}
+			}
+			if (applyRainbowInRainbowColors.getBoolean())
+			{
+
+				SensorWrapper theSensor = null;
+
+				// are they items we're interested in?
+				HiResDate startDTG = new HiResDate(Long.MAX_VALUE / 1000, 0);
+				HiResDate endDTG = new HiResDate(0);
+				Enumeration<Editable> elements = thisS.elements();
+				ArrayList<Editable> sensors = new ArrayList<Editable>();
+				ArrayList<SensorContactWrapper> list = new ArrayList<SensorContactWrapper>();
+				while (elements.hasMoreElements())
+				{
+					sensors.add(elements.nextElement());
+				}
+				for (Editable thisE:sensors)
+				{
+					if (thisE instanceof SensorWrapper)
+					{
+						// just check that there's only one item selected
+						if (sensors.size() == 1)
+						{
+							theSensor = (SensorWrapper) thisE;
+						}
+					}
+					else if (thisE instanceof SensorContactWrapper)
+					{
+						list.add((SensorContactWrapper) thisE);
+						if (startDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) > 0)
+						{
+							startDTG = ((SensorContactWrapper) thisE).getDTG();
+						}
+						if (endDTG.compareTo(((SensorContactWrapper) thisE).getDTG()) < 0)
+						{
+							endDTG = ((SensorContactWrapper) thisE).getDTG();
+						}
+					}
+				}
+
+				// ok, do we have a single sensor?
+				if (theSensor != null)
+				{
+					startDTG = theSensor.getStartDTG();
+					endDTG = theSensor.getEndDTG();
+					Collection<Editable> editables = theSensor.getItemsBetween(theSensor.getStartDTG(), theSensor.getEndDTG());
+					for (Editable editable : editables)
+					{
+						if (editable instanceof SensorContactWrapper)
+						{
+							list.add((SensorContactWrapper) editable);
+						}
+					}
+				}
+				final HiResDate start = startDTG;
+				final HiResDate end = endDTG;
+				// create this operation
+				final String title1 = "Shade in rainbow colors";
+				Layer parentLayer = null;
+				
+				Layers parentLayers = _myLayers;
+				if (parentLayers != null)
+				{
+					if (parentLayers.size() == 1)
+					{
+						parentLayer = parentLayers.elementAt(0);
+					}
+				}
+
+				final IUndoableOperation theAction =
+						new ShadeCutsOperation(title1, parentLayers, parentLayer, list.toArray(new SensorContactWrapper[0]),
+								start, end, ShadeOperation.RAINBOW_SHADE);
+				CorePlugin.run(theAction);
 			}
 		}
 	}
