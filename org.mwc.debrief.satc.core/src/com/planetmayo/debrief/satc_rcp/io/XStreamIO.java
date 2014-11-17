@@ -103,6 +103,8 @@ public class XStreamIO
 		xstream.useAttributeFor(BMeasurement.class, "range");
 
 		xstream.useAttributeFor(FMeasurement.class, "frequency");
+		xstream.useAttributeFor(FMeasurement.class, "osCourse");
+		xstream.useAttributeFor(FMeasurement.class, "osSpeed");
 
 		xstream.useAttributeFor(GeoPoint.class, "lat");
 		xstream.useAttributeFor(GeoPoint.class, "lon");		
