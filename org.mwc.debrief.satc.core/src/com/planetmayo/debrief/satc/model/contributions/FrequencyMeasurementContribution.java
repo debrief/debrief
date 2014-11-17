@@ -16,10 +16,12 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 
 public class FrequencyMeasurementContribution extends CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
@@ -30,8 +32,46 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		// do something...
+		// hmm, can't think of anything clever to do here
 	}
+
+	
+	
+	@Override
+	protected double calcError(State thisState)
+	{
+		double res = 0;
+
+		Date date = thisState.getTime();
+		
+		FMeasurement meas = measurementAt(date);
+		
+		if(meas != null)
+		{
+			// ok, we can do a calculation
+			
+		}
+		
+		return res;
+	}
+		
+	private FMeasurement measurementAt(Date date)
+	{
+		Iterator<FMeasurement> iter = this.measurements.iterator();
+		while (iter.hasNext())
+		{
+			FMeasurement measurement = (FMeasurement) iter
+					.next();
+			if(measurement.getDate().equals(date))
+			{
+				return measurement;
+			}
+		}
+		
+		return null;
+	}
+
+
 
 	public void loadFrom(List<String> lines)
 	{
@@ -107,12 +147,23 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		 * 
 		 */
 		@SuppressWarnings("unused")
-		private final Double frequency;
+		private final Double frequency;		
+		@SuppressWarnings("unused")
+		private Double osCourse = null;
+		@SuppressWarnings("unused")
+		private Double osSpeed = null;
 
 		public FMeasurement(Date time, Double frequency)
 		{
 			super(time);
 			this.frequency = frequency;
 		}
+		public void setState(double crseRads, double spdMs)
+		{
+			osCourse = crseRads;
+			osSpeed = spdMs;
+		}
 	}
+
+
 }

@@ -45,14 +45,17 @@ import org.mwc.debrief.satc_interface.wizards.NewStraightLegWizard;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
@@ -856,14 +859,15 @@ public class CreateSolutionFromSensorData implements
 		protected FrequencyMeasurementContribution createContribution(String contName)
 		{
 			// ok, now collate the contriubtion
-			final FrequencyMeasurementContribution bmc = new FrequencyMeasurementContribution();
-			bmc.setName(contName);
+			final FrequencyMeasurementContribution fmc = new FrequencyMeasurementContribution();
+			fmc.setName(contName);
 	
 			// add the bearing data
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
 			while (iter.hasNext())
 			{
 				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
+				final TrackWrapper host = scw.getSensor().getHost();
 	
 				Date date = scw.getDTG().getDate();
 				
@@ -876,14 +880,30 @@ public class CreateSolutionFromSensorData implements
 					thisM.setColor(scw.getColor());
 		
 					// ok, store it.
-					bmc.addMeasurement(thisM);
+					fmc.addMeasurement(thisM);
+
+					// we need to get the host status at this time
+					Watchable[] statList = host.getNearestTo(scw.getTime());
+					
+					// do we know ownship state at this time?
+					if(statList.length > 0)
+					{
+						
+						Watchable stat = statList[0];
+						double crseRads = stat.getCourse();
+						double spdMs = new WorldSpeed(stat.getSpeed(), WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
+						thisM.setState(crseRads, spdMs);						
+					}
+					
 				}
 				else
 				{
 					SATC_Activator.log(Status.WARNING, "Expected freq data at:" + date + " to contain freq, it doesn't", null);
 				}
 			}
-			return bmc;
+			
+			
+			return fmc;
 		}
 	
 	}
