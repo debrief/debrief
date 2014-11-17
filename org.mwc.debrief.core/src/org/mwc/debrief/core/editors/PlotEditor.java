@@ -657,8 +657,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				"Default range", defRange, imagePath, null);
 		final EnterBooleanPage applyRainbowInRainbowColors = new EnterBooleanPage(null, false,
 				"Apply Rainbow Shades in rainbow colors",
-				"Please specify if this sensor should be apply Rainbow Shades in rainbow colors",
-				"yes/no", imagePath, null);
+				"Should Debrief apply Rainbow Shades to these sensor cuts?",
+				"yes/no", "images/ShadeRainbow.png", null);
 
 		wizard.addWizard(getName);
 		wizard.addWizard(getColor);
