@@ -290,7 +290,7 @@
         	<command
               commandId="org.eclipse.ui.file.save"
               icon="icons/24/save.png"
-              label="Create Project"
+              label="Save"
               tooltip="Save"
               style="push"
               id="org.mwc.debrief.core.save">
