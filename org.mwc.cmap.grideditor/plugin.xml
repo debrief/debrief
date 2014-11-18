@@ -6,7 +6,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Grid Editor"
-            icon="icons/chart.png"
+            icon="icons/16/chart.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.grideditor.GridEditorView"
             id="com.pml.grid.editor">

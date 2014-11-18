@@ -18,6 +18,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.TableItem;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.grideditor.GridEditorPlugin;
 import org.mwc.cmap.grideditor.table.GridEditorTable;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 
@@ -34,7 +35,7 @@ public class ExportToClipboardAction extends Action
 	{
 		super(ACTION_TEXT, AS_PUSH_BUTTON);
 		myTableUI = tableUI;
-		exportImage = CorePlugin.getImageDescriptor("icons/copy.png");
+		exportImage = loadImageDescriptor(GridEditorPlugin.IMG_EXPORT);
 		setToolTipText(ACTION_TEXT);
 		setEnabled(true);
 		refreshWithTableUI();
@@ -87,4 +88,7 @@ public class ExportToClipboardAction extends Action
 		setImageDescriptor(exportImage);
 	}
 
+	protected static final ImageDescriptor loadImageDescriptor(final String key) {
+		return GridEditorPlugin.getInstance().getImageRegistry().getDescriptor(key);
+	}
 }

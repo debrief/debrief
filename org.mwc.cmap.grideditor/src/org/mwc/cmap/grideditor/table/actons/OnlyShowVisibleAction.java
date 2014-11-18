@@ -33,8 +33,8 @@ public class OnlyShowVisibleAction extends Action {
 	public OnlyShowVisibleAction(final GridEditorTable tableUI) {
 		super(ACTION_TEXT, AS_PUSH_BUTTON);
 		myTableUI = tableUI;
-		showVisImage = CorePlugin.getImageDescriptor("icons/checked.gif");
-		showAllImage = CorePlugin.getImageDescriptor("icons/unchecked.gif");
+		showVisImage = CorePlugin.getImageDescriptor("icons/16/check.png");
+		showAllImage = CorePlugin.getImageDescriptor("icons/16/hide.png");
 		setToolTipText(ACTION_TEXT);
 		setEnabled(true);
 		refreshWithTableUI();
