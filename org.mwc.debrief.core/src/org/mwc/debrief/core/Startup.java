@@ -40,6 +40,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.PropertySheet;
 
+@SuppressWarnings("deprecation")
 public class Startup implements IStartup
 {
 
