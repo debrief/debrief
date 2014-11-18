@@ -36,24 +36,24 @@ public class SATC_ImageHelper implements ViewLabelImageHelper
 		ImageDescriptor res = null;
 
 		if (editable instanceof SATC_Solution)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/calculator.gif");
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/scenario.png");
 		else if (editable instanceof StraightLegWrapper)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/leg.png");
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/leg.png");
 		else if (editable instanceof BMC_Wrapper.MeasurementEditable)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/bearings.gif");
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/bearing.png");
 		else if (editable instanceof StraightLegWrapper)
-			res = SATC_Interface_Activator.getImageDescriptor("icons/leg.png");
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/leg.png");
 		else if (editable instanceof ContributionWrapper)
 		{
 			ContributionWrapper cw = (ContributionWrapper) editable;
 			BaseContribution cont = cw.getContribution();
 			if (cont instanceof CourseForecastContribution)
 				res = SATC_Interface_Activator
-						.getImageDescriptor("icons/direction.png");
+						.getImageDescriptor("icons/16/direction.png");
 			else if (cont instanceof SpeedForecastContribution)
-				res = SATC_Interface_Activator.getImageDescriptor("icons/speed.png");
+				res = SATC_Interface_Activator.getImageDescriptor("icons/16/speed.png");
 			else if (cont instanceof RangeForecastContribution)
-				res = SATC_Interface_Activator.getImageDescriptor("icons/range.png");
+				res = SATC_Interface_Activator.getImageDescriptor("icons/16/range.png");
 		}
 		return res;
 	}
