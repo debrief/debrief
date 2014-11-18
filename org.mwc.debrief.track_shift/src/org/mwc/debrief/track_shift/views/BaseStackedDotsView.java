@@ -657,7 +657,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setChecked(true);
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
 		_onlyVisible.setImageDescriptor(Activator
-				.getImageDescriptor("icons/24/reveal.gif"));
+				.getImageDescriptor("icons/24/reveal.png"));
 
 		// now the course action
 //		_magicBtn = new Action("Attempt to auto-stack dots (only for Manual TMA)", IAction.AS_PUSH_BUTTON)

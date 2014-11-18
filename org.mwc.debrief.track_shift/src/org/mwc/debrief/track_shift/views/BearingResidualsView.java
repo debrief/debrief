@@ -57,7 +57,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 		flipCourse.setChecked(false);
 		flipCourse.setToolTipText("Use +/- 180 scale for absolute data");
 		flipCourse.setImageDescriptor(Activator
-				.getImageDescriptor("icons/24/swap_axis.jpeg"));
+				.getImageDescriptor("icons/24/swap_axis.png"));
 
 		// now the course action
 		showCourse = new Action("Show ownship course", IAction.AS_CHECK_BOX)
