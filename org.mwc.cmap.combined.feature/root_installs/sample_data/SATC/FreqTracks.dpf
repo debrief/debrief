@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Mon Nov 17 15:45:51 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Tue Nov 18 09:19:08 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Fri Oct 31 11:40:55 GMT 2014"/>
 <session>
 <layers>
@@ -757,7 +757,7 @@
 </centre>
 </sensor_contact>
 </sensor>
-<sensor LineThickness="1" Name="NB_FREQ" TrackName="SENSOR" Visible="false" WormInHole="true">
+<sensor BaseFrequency="150.000" LineThickness="1" Name="NB_FREQ" TrackName="SENSOR" Visible="false" WormInHole="true">
 <colour Value="BLUE"/>
 <sensor_contact AmbiguousBearing="0.000" Dtg="100112 120730" Frequency="150.350" HasAmbiguousBearing="false" HasFrequency="true" Label="SUBJECT held on NB_FREQ" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <Range Units="yds" Value="0.0000000"/>
@@ -2603,11 +2603,11 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
-<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="30000" ScaleStep="10000" Visible="true">
+<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
-<satc_solution LiveRunning="true" NAME="121310.00" OnlyPlotEnds="false" ShowAlterationBounds="false" ShowBounds="true" ShowSolutions="true">
+<satc_solution LiveRunning="false" NAME="121310.00" OnlyPlotEnds="false" ShowAlterationBounds="false" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
@@ -2692,7 +2692,7 @@
     </bearingMeasurementContribution>
     <bearingMeasurementContribution>
       <name>more cuts</name>
-      <active>true</active>
+      <active>false</active>
       <weight>5</weight>
       <startDate>2010-01-12 13:35:00.0 UTC</startDate>
       <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
@@ -2738,13 +2738,13 @@
       <runMDA>false</runMDA>
     </bearingMeasurementContribution>
     <frequencyMeasurementContribution>
-      <name>first freq cuts</name>
+      <name>leg one cuts</name>
       <active>true</active>
       <weight>5</weight>
-      <startDate>2010-01-12 12:07:30.0 UTC</startDate>
-      <finishDate>2010-01-12 12:19:10.0 UTC</finishDate>
+      <startDate>2010-01-12 13:14:10.0 UTC</startDate>
+      <finishDate>2010-01-12 13:19:10.0 UTC</finishDate>
       <measurements>
-        <fmeasurement time="2010-01-12 12:07:30.0 UTC" isActive="true" frequency="150.35" osCourse="2.1450096507010312" osSpeed="1.2861111111111112">
+        <fmeasurement time="2010-01-12 13:14:10.0 UTC" isActive="true" frequency="149.963" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
           <color>
             <red>0</red>
             <green>255</green>
@@ -2752,37 +2752,23 @@
             <alpha>255</alpha>
           </color>
         </fmeasurement>
-        <fmeasurement time="2010-01-12 12:08:20.0 UTC" isActive="true" frequency="150.362" osCourse="2.3057544748097087" osSpeed="1.2861111111111112">
+        <fmeasurement time="2010-01-12 13:15:00.0 UTC" isActive="true" frequency="149.941" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
           <color reference="../../fmeasurement/color"/>
         </fmeasurement>
-        <fmeasurement time="2010-01-12 12:09:10.0 UTC" isActive="true" frequency="150.372" osCourse="2.4664992989183863" osSpeed="1.2861111111111112">
+        <fmeasurement time="2010-01-12 13:15:50.0 UTC" isActive="true" frequency="149.921" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
           <color reference="../../fmeasurement/color"/>
         </fmeasurement>
-        <fmeasurement time="2010-01-12 12:14:10.0 UTC" isActive="true" frequency="150.387" osCourse="3.4311427764956526" osSpeed="1.2861111111111112">
-          <color>
-            <red>0</red>
-            <green>0</green>
-            <blue>255</blue>
-            <alpha>255</alpha>
-          </color>
+        <fmeasurement time="2010-01-12 13:16:40.0 UTC" isActive="true" frequency="149.9" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
+          <color reference="../../fmeasurement/color"/>
         </fmeasurement>
-        <fmeasurement time="2010-01-12 12:15:00.0 UTC" isActive="true" frequency="150.38" osCourse="3.5918876006043305" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement[4]/color"/>
+        <fmeasurement time="2010-01-12 13:17:30.0 UTC" isActive="true" frequency="149.88" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
+          <color reference="../../fmeasurement/color"/>
         </fmeasurement>
-        <fmeasurement time="2010-01-12 12:15:50.0 UTC" isActive="true" frequency="150.377" osCourse="3.6336009697269946" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement[4]/color"/>
+        <fmeasurement time="2010-01-12 13:18:20.0 UTC" isActive="true" frequency="149.861" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
+          <color reference="../../fmeasurement/color"/>
         </fmeasurement>
-        <fmeasurement time="2010-01-12 12:16:40.0 UTC" isActive="true" frequency="150.374" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement[4]/color"/>
-        </fmeasurement>
-        <fmeasurement time="2010-01-12 12:17:30.0 UTC" isActive="true" frequency="150.372" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement[4]/color"/>
-        </fmeasurement>
-        <fmeasurement time="2010-01-12 12:18:20.0 UTC" isActive="true" frequency="150.369" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement[4]/color"/>
-        </fmeasurement>
-        <fmeasurement time="2010-01-12 12:19:10.0 UTC" isActive="true" frequency="150.366" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement[4]/color"/>
+        <fmeasurement time="2010-01-12 13:19:10.0 UTC" isActive="true" frequency="149.842" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
+          <color reference="../../fmeasurement/color"/>
         </fmeasurement>
       </measurements>
     </frequencyMeasurementContribution>
@@ -2815,7 +2801,7 @@
     </compositeStraightLegForecastContribution>
     <compositeStraightLegForecastContribution>
       <name>leg two</name>
-      <active>true</active>
+      <active>false</active>
       <weight>5</weight>
       <startDate>2010-01-12 13:35:00.0 UTC</startDate>
       <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>

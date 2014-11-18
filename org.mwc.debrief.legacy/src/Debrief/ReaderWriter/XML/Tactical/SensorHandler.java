@@ -39,7 +39,10 @@ abstract public class SensorHandler extends
 	private static final String WORM_IN_HOLE = "WormInHole";
 
 	private static final String OFFSET = "Offset";
+	private static final String BASE_FREQUENCY = "BaseFrequency";
 
+	private double _baseFrequency = 0;
+			
 	public SensorHandler()
 	{
 		// inform our parent what type of class we are
@@ -103,6 +106,13 @@ abstract public class SensorHandler extends
 					_mySensor.setSensorOffset(new WorldDistance.ArrayLength(value));
 			}
 		});
+    addAttributeHandler(new HandleDoubleAttribute(BASE_FREQUENCY)
+    {
+      public void setValue(final String name, final double val)
+      {
+        _baseFrequency = val;
+      }
+    });
 
 		addAttributeHandler(new HandleBooleanAttribute(WORM_IN_HOLE)
 		{
@@ -122,7 +132,6 @@ abstract public class SensorHandler extends
 		_mySensor = new Debrief.Wrappers.SensorWrapper("");
 
 		super.handleOurselves(name, attributes);
-
 	}
 
 	void addThisContact(final MWC.GUI.Plottable val)
@@ -136,6 +145,13 @@ abstract public class SensorHandler extends
 		// our layer is complete, add it to the parent!
 		addSensor(_mySensor);
 
+
+		if(_baseFrequency != 0)
+		{
+			_mySensor.setBaseFrequency(_baseFrequency);
+		}
+
+		_baseFrequency = 0;		
 		_mySensor = null;
 	}
 
@@ -176,6 +192,13 @@ abstract public class SensorHandler extends
 			trk.setAttribute(WORM_IN_HOLE, writeThis(wormy));
 		}
 
+		// do we have a base frequency?
+		final double baseF = sensor.getBaseFrequency();
+		if(baseF != 0)
+		{
+			trk.setAttribute(BASE_FREQUENCY, writeThis(baseF));
+		}
+		
 		// now the points
 		final java.util.Enumeration<Editable> iter = sensor.elements();
 		while (iter.hasMoreElements())
