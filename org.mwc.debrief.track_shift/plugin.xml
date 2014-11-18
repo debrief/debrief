@@ -5,14 +5,14 @@
          point="org.eclipse.ui.views">
       <view
             name="Bearing Residuals"
-            icon="icons/stacked_dots.png"
+            icon="icons/24/stacked_dots.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.track_shift.views.BearingResidualsView"
             id="org.mwc.debrief.track_shift.views.StackedDotsView">
       </view>         
       <view
             name="Frequency Residuals"
-            icon="icons/stacked_dots.png"
+            icon="icons/24/stacked_dots.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.track_shift.views.FrequencyResidualsView"
             id="org.mwc.debrief.track_shift.views.FrequencyResidualsView">
