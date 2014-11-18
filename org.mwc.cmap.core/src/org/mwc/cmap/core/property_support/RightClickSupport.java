@@ -1409,7 +1409,7 @@ public class RightClickSupport
 			assertEquals("found right matches", 1, props.length);
 			props = RightClickSupport.getCommonPropertiesFor(lst4);
 			assertNotNull("found some data", props);
-			assertEquals("found right matches", 8, props.length);
+			assertEquals("found right matches", 9, props.length);
 			props = RightClickSupport.getCommonPropertiesFor(lst5);
 			assertNotNull("found some data", props);
 			assertEquals("found right matches", 13, props.length);
