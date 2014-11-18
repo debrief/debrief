@@ -41,6 +41,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
+import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
@@ -360,6 +361,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 				imageKey = "vpf.png";
 			else if (editable instanceof Layer)
 				imageKey = "layer.png";
+			else if (editable instanceof LabelWrapper)
+				imageKey = "label.png";
 
 			res = PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 
