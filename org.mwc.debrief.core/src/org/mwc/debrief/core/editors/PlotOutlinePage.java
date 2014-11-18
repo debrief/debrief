@@ -346,8 +346,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		_followSelectionToggle.setChecked(true);
 		_followSelectionToggle
 				.setToolTipText("Ensure selected item in plot is always visible");
-		_followSelectionToggle.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/follow_selection.gif"));
+		_followSelectionToggle.setImageDescriptor(DebriefPlugin
+				.getImageDescriptor("icons/16/followselection.png"));
 
 		_collapseAllAction = new Action("Collapse all", Action.AS_PUSH_BUTTON)
 		{
@@ -362,7 +362,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		_collapseAllAction
 				.setToolTipText("Collapse all layers in the Outline View");
 		_collapseAllAction.setImageDescriptor(DebriefPlugin
-				.getImageDescriptor("icons/collapseall.gif"));
+				.getImageDescriptor("icons/16/collapse_all.png"));
 
 		_expandAllAction = new Action("Expand all", Action.AS_PUSH_BUTTON)
 		{
@@ -375,7 +375,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		_expandAllAction.setText("Expand all layers");
 		_expandAllAction.setToolTipText("Expand all layers in the Outline View");
 		_expandAllAction.setImageDescriptor(DebriefPlugin
-				.getImageDescriptor("icons/expandall.gif"));
+				.getImageDescriptor("icons/16/expand_all.png"));
 
 		_createLayer = new Action()
 		{
@@ -404,7 +404,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		_createLayer.setText("Create new layer");
 		_createLayer.setToolTipText("Create a new top-level layer");
 		_createLayer.setImageDescriptor(DebriefPlugin
-				.getImageDescriptor("icons/new_layer.gif"));
+				.getImageDescriptor("icons/16/new_layer.png"));
 
 		_makePrimary = new Action()
 		{
@@ -465,8 +465,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		};
 		_makePrimary.setText("Make Primary");
 		_makePrimary.setToolTipText("Make this item the primary ");
-		_makePrimary.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/primary.gif"));
+		_makePrimary.setImageDescriptor(DebriefPlugin
+				.getImageDescriptor("icons/16/make_primary.png"));
 		_makePrimary.setEnabled(false);
 
 		_makeSecondary = new Action()
@@ -524,8 +524,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		};
 		_makeSecondary.setText("Make Secondary");
 		_makeSecondary.setToolTipText("Set this item as the secondary track");
-		_makeSecondary.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/secondary.gif"));
+		_makeSecondary.setImageDescriptor(DebriefPlugin
+				.getImageDescriptor("icons/16/make_secondary.png"));
 		_makeSecondary.setEnabled(false);
 
 		_addAsSecondary = new Action()
@@ -583,8 +583,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		};
 		_addAsSecondary.setText("Add as Secondary");
 		_addAsSecondary.setToolTipText("Add this item to the secondary tracks");
-		_addAsSecondary.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/addSecondary.gif"));
+		_addAsSecondary.setImageDescriptor(DebriefPlugin
+				.getImageDescriptor("icons/16/add_secondary.png"));
 		_addAsSecondary.setEnabled(false);
 
 		_hideAction = new Action()
@@ -616,8 +616,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		};
 		_hideAction.setText("Hide item");
 		_hideAction.setToolTipText("Hide selected items");
-		_hideAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/hide.gif"));
+		_hideAction.setImageDescriptor(DebriefPlugin
+				.getImageDescriptor("icons/16/hide.png"));
 
 		_revealAction = new Action()
 		{
@@ -648,8 +648,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		};
 		_revealAction.setText("Reveal item");
 		_revealAction.setToolTipText("Reveal selected items");
-		_revealAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/reveal.gif"));
+		_revealAction.setImageDescriptor(DebriefPlugin
+				.getImageDescriptor("icons/16/show.png"));
 	}
 
 	private void hookContextMenu()
