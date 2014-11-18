@@ -598,7 +598,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_showLinePlot.setChecked(true);
 		_showLinePlot.setToolTipText("Show the actuals plot");
 		_showLinePlot.setImageDescriptor(Activator
-				.getImageDescriptor("icons/stacked_lines.png"));
+				.getImageDescriptor("icons/24/stacked_lines.png"));
 
 		_showDotPlot = new Action("Error plot", IAction.AS_CHECK_BOX)
 		{
@@ -625,7 +625,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_showDotPlot.setChecked(true);
 		_showDotPlot.setToolTipText("Show the error plot");
 		_showDotPlot.setImageDescriptor(Activator
-				.getImageDescriptor("icons/stacked_dots.png"));
+				.getImageDescriptor("icons/24/stacked_dots.png"));
 
 		// get an error logger
 		final ErrorLogger logger = this;
@@ -656,8 +656,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setText("Only plot visible data");
 		_onlyVisible.setChecked(true);
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
-		_onlyVisible.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/reveal.gif"));
+		_onlyVisible.setImageDescriptor(Activator
+				.getImageDescriptor("icons/24/reveal.png"));
 
 		// now the course action
 //		_magicBtn = new Action("Attempt to auto-stack dots (only for Manual TMA)", IAction.AS_PUSH_BUTTON)

@@ -49,6 +49,8 @@ public class SATC_ImageHelper implements ViewLabelImageHelper
 			res = SATC_Interface_Activator.getImageDescriptor("icons/16/bearing.png");
 		else if (editable instanceof FMC_Wrapper)
 			res = SATC_Interface_Activator.getImageDescriptor("icons/16/frequency.png");
+		else if (editable instanceof StraightLegWrapper)
+			res = SATC_Interface_Activator.getImageDescriptor("icons/16/leg.png");
 		else if (editable instanceof ContributionWrapper)
 		{
 			ContributionWrapper cw = (ContributionWrapper) editable;

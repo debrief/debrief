@@ -169,15 +169,15 @@ public class CreateSolutionFromSensorData implements
 						parent.add(new DoIt("Add Speed Forecast for period covered by ["
 								+ thisItem.getName() + "]",
 								new SpeedForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period), "icons/speed.png"));
+										theLayers, period), "icons/16/speed.png"));
 						parent.add(new DoIt("Add Course Forecast for period covered by ["
 								+ thisItem.getName() + "]",
 								new CourseForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period), "icons/direction.png"));
+										theLayers, period), "icons/16/direction.png"));
 						parent.add(new DoIt("Add Straight Leg for period covered by ["
 								+ thisItem.getName() + "]",
 								new CompositeStraightLegForecastContributionFromCuts(solution,
-										actionTitle, theLayers, period), "icons/leg.png"));
+										actionTitle, theLayers, period), "icons/16/leg.png"));
 					}
 				}
 			}
@@ -223,7 +223,7 @@ public class CreateSolutionFromSensorData implements
 						{
 							return "Bearing data";
 						}
-					}, "icons/calculator.gif");
+					}, "icons/16/scenario.png");
 			thisMenu.add(wizardItem);
 		}
 	}
@@ -254,30 +254,30 @@ public class CreateSolutionFromSensorData implements
 		{
 			parent.add(new DoIt("Contribute selected bearings to the scenario",
 					new BearingMeasurementContributionFromCuts(solution, actionTitle,
-							layers, validItems), "icons/bearings.gif"));
+							layers, validItems), "icons/16/bearing.png"));
 		}
 		if (first.getHasFrequency())
 		{
 			parent.add(new DoIt(
 					"Contribute selected frequency measurements to the scenario",
 					new FrequencyMeasurementContributionFromCuts(solution, actionTitle,
-							layers, validItems), "icons/bearings.gif"));
+							layers, validItems), "icons/16/frequency.png"));
 		}
 
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Straight Leg for period covered by [" + title
 				+ "]", new CompositeStraightLegForecastContributionFromCuts(solution,
-				actionTitle, layers, validItems), "icons/leg.png"));
+				actionTitle, layers, validItems), "icons/16/leg.png"));
 		parent.add(new Separator());
 		parent.add(new DoIt(verb1 + "Speed Forecast for period covered by ["
 				+ title + "]", new SpeedForecastContributionFromCuts(solution,
-				actionTitle, layers, validItems), "icons/speed.png"));
+				actionTitle, layers, validItems), "icons/16/speed.png"));
 		parent.add(new DoIt(verb1 + "Range Forecast for period covered by ["
 				+ title + "]", new RangeForecastContributionFromCuts(solution,
-				actionTitle, layers, validItems), "icons/range.png"));
+				actionTitle, layers, validItems), "icons/16/range.png"));
 		parent.add(new DoIt(verb1 + "Course Forecast for period covered by ["
 				+ title + "]", new CourseForecastContributionFromCuts(solution,
-				actionTitle, layers, validItems), "icons/direction.png"));
+				actionTitle, layers, validItems), "icons/16/direction.png"));
 
 		// does this data have frequency?
 		if (validItems.size() > 0)
@@ -290,7 +290,7 @@ public class CreateSolutionFromSensorData implements
 				parent.add(new DoIt(verb1
 						+ "1959 Range Forecast for period covered by [" + title + "]",
 						new Range1959ForecastContributionFromCuts(solution, actionTitle,
-								layers, validItems), "icons/direction.png"));
+								layers, validItems), "icons/16/frequency.png"));
 			}
 		}
 

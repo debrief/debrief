@@ -26,6 +26,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
@@ -36,7 +37,10 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
+import org.eclipse.ui.views.navigator.ResourceNavigator;
+import org.eclipse.ui.views.properties.PropertySheet;
 
+@SuppressWarnings("deprecation")
 public class Startup implements IStartup
 {
 
@@ -46,8 +50,8 @@ public class Startup implements IStartup
 		@Override
 		public void partOpened(IWorkbenchPart part)
 		{
-			if (part instanceof ContentOutline) {
-				changeIcon((ContentOutline)part);
+			if (part instanceof ContentOutline || part instanceof PropertySheet || part instanceof ResourceNavigator) {
+				changeIcon(part);
 			}
 		}
 		
@@ -71,7 +75,7 @@ public class Startup implements IStartup
 		{
 		}
 	};
-	private static Image image;
+	private static Image outlineImage, propertiesImage, navigatorImage;
 	
 	@Override
 	public void earlyStartup()
@@ -90,29 +94,60 @@ public class Startup implements IStartup
 			{
 				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				page.addPartListener(partListener);
-				IViewPart view = page.findView("org.eclipse.ui.views.ContentOutline");
+				IViewPart view = page.findView(IPageLayout.ID_OUTLINE);
 				if (view instanceof ContentOutline) {
-					changeIcon((ContentOutline) view);
+					changeIcon(view);
+				}
+				view = page.findView(IPageLayout.ID_PROP_SHEET);
+				if (view instanceof PropertySheet) {
+					changeIcon(view);
+				}
+				view = page.findView(IPageLayout.ID_RES_NAV);
+				if (view instanceof ResourceNavigator) {
+					changeIcon(view);
 				}
 			}
 		});
 	}
 
-	protected void changeIcon(ContentOutline part)
+	protected void changeIcon(IWorkbenchPart part)
 	{
 		try
 		{
 			Class<?> clazz = WorkbenchPart.class;
 			Method method = clazz.getDeclaredMethod("setTitleImage", new Class[] {Image.class});
 			method.setAccessible(true);
-			if (image == null)
+			Image image = null;
+			if (part instanceof ContentOutline)
 			{
-				ImageDescriptor descriptor = DebriefPlugin
-						.getImageDescriptor("icons/16/outline.png");
-				image = JFaceResources.getResources()
-						.createImageWithDefault(descriptor);
+				if (outlineImage == null)
+				{
+					ImageDescriptor descriptor = DebriefPlugin.getImageDescriptor("icons/16/outline.png");
+					outlineImage = JFaceResources.getResources().createImageWithDefault(descriptor);
+				}
+				image = outlineImage;
 			}
-			method.invoke(part, new Object[] {image});
+			if (part instanceof PropertySheet)
+			{
+				if (propertiesImage == null)
+				{
+					ImageDescriptor descriptor = DebriefPlugin.getImageDescriptor("icons/16/properties.png");
+					propertiesImage = JFaceResources.getResources().createImageWithDefault(descriptor);
+				}
+				image = propertiesImage;
+			}
+			if (part instanceof ResourceNavigator)
+			{
+				if (navigatorImage == null)
+				{
+					ImageDescriptor descriptor = DebriefPlugin.getImageDescriptor("icons/16/navigator.png");
+					navigatorImage = JFaceResources.getResources().createImageWithDefault(descriptor);
+				}
+				image = navigatorImage;
+			}
+			if (image != null) {
+				method.invoke(part, new Object[] {image});
+			}
 		}
 		catch (Exception e)
 		{

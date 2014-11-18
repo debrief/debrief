@@ -32,16 +32,17 @@ import org.osgi.framework.BundleContext;
 
 public class GridEditorPlugin extends AbstractUIPlugin {
 
-	public static final String IMG_ADD = "icons/add.png";
+	public static final String IMG_ADD = "icons/16/add.png";
 
-	public static final String IMG_REMOVE = "icons/remove.png";
+	public static final String IMG_REMOVE = "icons/16/remove.png";
 
-	public static final String IMG_INTERPOLATE_CALCULATOR = "icons/interpolate.png";
+	public static final String IMG_INTERPOLATE_CALCULATOR = "icons/16/interpolate.png";
 
 	public static final String IMG_INTERPOLATE_GEAR_WHEEL = "icons/interpolate2.png";
 
-	public static final String IMG_LOCKED = "icons/locked.png";
-	public static final String IMG_UNLOCKED = "icons/unlocked.png";
+	public static final String IMG_LOCKED = "icons/16/locked.png";
+	public static final String IMG_UNLOCKED = "icons/16/unlocked.png";
+	public static final String IMG_EXPORT = "icons/16/export.png";
 
 	private static GridEditorPlugin ourInstance;
 
@@ -91,6 +92,7 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 		addImage(reg, IMG_INTERPOLATE_GEAR_WHEEL);
 		addImage(reg, IMG_UNLOCKED);
 		addImage(reg, IMG_LOCKED);
+		addImage(reg, IMG_EXPORT);
 	}
 
 	private void addImage(final ImageRegistry registry, final String pluginPath) {

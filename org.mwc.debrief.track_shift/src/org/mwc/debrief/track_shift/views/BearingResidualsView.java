@@ -23,6 +23,7 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.track_shift.Activator;
 
 public class BearingResidualsView extends BaseStackedDotsView
 {
@@ -55,8 +56,8 @@ public class BearingResidualsView extends BaseStackedDotsView
 		};
 		flipCourse.setChecked(false);
 		flipCourse.setToolTipText("Use +/- 180 scale for absolute data");
-		flipCourse.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/swapAxis.jpeg"));
+		flipCourse.setImageDescriptor(Activator
+				.getImageDescriptor("icons/24/swap_axis.png"));
 
 		// now the course action
 		showCourse = new Action("Show ownship course", IAction.AS_CHECK_BOX)
@@ -71,8 +72,8 @@ public class BearingResidualsView extends BaseStackedDotsView
 		};
 		showCourse.setChecked(true);
 		showCourse.setToolTipText("Show ownship course in absolute plot");
-		showCourse.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/showCourse.png"));
+		showCourse.setImageDescriptor(Activator
+				.getImageDescriptor("icons/24/ShowCourse.png"));
 
 	}
 
