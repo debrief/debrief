@@ -288,7 +288,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			}
 		};
 		_clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-				.getImageDescriptor("icons/wrap.gif"));
+				.getImageDescriptor("icons/16/wrap.png"));
 		_clipText.setToolTipText("Whether to clip to visible space");
 		_clipText.setChecked(true);
 
@@ -299,7 +299,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		{
 		};
 		_followTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-				.getImageDescriptor("icons/synced.gif"));
+				.getImageDescriptor("icons/16/follow_time.png"));
 		_followTime.setToolTipText("Whether to listen to the time controller");
 		_followTime.setChecked(true);
 
@@ -310,7 +310,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		{
 		};
 		_controlTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-				.getImageDescriptor("icons/clock.png"));
+				.getImageDescriptor("icons/16/control_time.png"));
 		_controlTime.setToolTipText("Whether to control the current time");
 		_controlTime.setChecked(true);
 		menuManager.add(_controlTime);
@@ -326,7 +326,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			}
 		};
 		_setAsBookmarkAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/bkmrk_nav.gif"));
+				.getImageDescriptor("icons/16/add_bookmark.png"));
 		_setAsBookmarkAction
 				.setToolTipText("Add this DTG to the list of bookmarks");
 		menuManager.add(_setAsBookmarkAction);
