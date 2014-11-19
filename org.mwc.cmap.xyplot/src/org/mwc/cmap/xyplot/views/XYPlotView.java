@@ -1016,7 +1016,7 @@ public class XYPlotView extends ViewPart
 		_editMyProperties
 				.setToolTipText("Change editable properties for this chart");
 		_editMyProperties.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/properties.gif"));
+				.getImageDescriptor("icons/16/properties.png"));
 
 		_listenForDataChanges = new Action("Listen for data changes", SWT.TOGGLE)
 		{
@@ -1029,7 +1029,7 @@ public class XYPlotView extends ViewPart
 		_listenForDataChanges
 				.setToolTipText("Auto-sync with calculated track data.");
 		_listenForDataChanges.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/synced.gif"));
+				.getImageDescriptor("icons/16/follow_time.png"));
 
 		_switchAxes = new Action("Plot as waterfall", SWT.TOGGLE)
 		{
@@ -1051,8 +1051,8 @@ public class XYPlotView extends ViewPart
 			}
 		};
 		_switchAxes.setToolTipText("Switch axes");
-		_switchAxes.setImageDescriptor(XYPlotPlugin
-				.getImageDescriptor("icons/switchAxes.png"));
+		_switchAxes.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/swap_axis.png"));
 
 		_growPlot = new Action("Grow times", SWT.TOGGLE)
 		{
@@ -1074,8 +1074,8 @@ public class XYPlotView extends ViewPart
 		};
 		_growPlot
 				.setToolTipText("Expand period covered in sync with scenario time");
-		_growPlot.setImageDescriptor(XYPlotPlugin
-				.getImageDescriptor("icons/expandTime.png"));
+		_growPlot.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/clock.png"));
 
 		_fitToWindow = new Action()
 		{
@@ -1095,7 +1095,7 @@ public class XYPlotView extends ViewPart
 		_fitToWindow.setText("Fit to window");
 		_fitToWindow.setToolTipText("Scale the graph to show all data");
 		_fitToWindow.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/fit_to_win.gif"));
+				.getImageDescriptor("icons/16/fit_to_win.png"));
 
 		_exportToWMF = new Action()
 		{
@@ -1106,8 +1106,8 @@ public class XYPlotView extends ViewPart
 		};
 		_exportToWMF.setText("Export to WMF");
 		_exportToWMF.setToolTipText("Produce a WMF file of the graph");
-		_exportToWMF.setImageDescriptor(XYPlotPlugin
-				.getImageDescriptor("icons/photo_scenery.png"));
+		_exportToWMF.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/ex_2word.png"));
 
 		_exportToClipboard = new Action()
 		{
@@ -1137,8 +1137,8 @@ public class XYPlotView extends ViewPart
 		_copyToClipboard.setText("Copy to Clipboard");
 		_copyToClipboard
 				.setToolTipText("Copies the graph as a text matrix to the clipboard");
-		_copyToClipboard.setImageDescriptor(XYPlotPlugin
-				.getImageDescriptor("icons/csv.png"));
+		_copyToClipboard.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/export.png"));
 
 	}
 
