@@ -227,7 +227,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 					ambig = (float) de.getAmbiguousBearing();
 				}
 				
-				outputThisDetection2(de.getSensorLocation(), dtg, pt.getName(),
+				outputThisDetection2(dtg, pt.getName(),
 						pt.getCategory(), de.getBearing(),ambig, de.getRange(), pt.getSensorFit()
 								.getSensorWithId(de.getSensor()).getName(), de.toString(), de.getFreq());
 
@@ -475,7 +475,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 	 * @param sensor_name
 	 * @param label
 	 */
-	private void outputThisDetection2(WorldLocation loc, long dtg,
+	private void outputThisDetection2(long dtg,
 			String hostName, Category hostCategory, Float bearing, Float ambigBearing,
 			WorldDistance range, String sensor_name, String label, Float freq)
 	{
@@ -485,8 +485,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		// if (!haveOutputPositions)
 		// return;
 
-		String locStr = MWC.Utilities.TextFormatting.DebriefFormatLocation
-				.toString(loc);
+		String locStr = "NULL";
 		String dateStr = MWC.Utilities.TextFormatting.DebriefFormatDateTime
 				.toString(dtg);
 
