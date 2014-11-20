@@ -157,6 +157,11 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
    * the id of the target
    */
   private Integer _targetId;
+  
+  /** store the ambigous bearing
+   * 
+   */
+	private Float _ambigBrg = null;
 
 
   ////////////////////////////////////////////////////
@@ -351,6 +356,21 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
   public void setFreq(Float freq)
   {
   	_freq = freq;
+  }
+  
+  public void setAmbiguousBearing(Float ambiBrg)
+  {
+  	_ambigBrg = ambiBrg;
+  }
+
+	public boolean isAmbiguous()
+  {
+  	return _ambigBrg != null;
+  }
+  
+  public double getAmbiguousBearing()
+  {
+  	return _ambigBrg;
   }
 
   public long getTime()

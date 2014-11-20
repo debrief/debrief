@@ -848,7 +848,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		};
 		res.setToolTipText("View help on this component");
 		res.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/linkto_help.gif"));
+				.getImageDescriptor("icons/16/help.png"));
 		return res;
 	}
 

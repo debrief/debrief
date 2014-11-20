@@ -14,21 +14,26 @@
  */
 package org.mwc.cmap.overview.views;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
-import java.beans.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 
-import org.eclipse.jface.action.*;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tracker;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
@@ -36,14 +41,19 @@ import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
-import org.mwc.cmap.overview.Activator;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
 import MWC.GUI.CanvasType.PaintListener;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
 import MWC.GUI.Tools.Action;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -370,8 +380,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		_fitToWindow.setText("Fit to window");
 		_fitToWindow
 				.setToolTipText("Zoom the selected plot out to show the full data");
-		_fitToWindow.setImageDescriptor(Activator
-				.getImageDescriptor("icons/fit_to_win.gif"));
+		_fitToWindow.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/fit_to_win.png"));
 
 	}
 
