@@ -32,8 +32,6 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
   private final static String WORKING = "Working";
   protected boolean _working = true;
   private static final String ID_VAL = "id";
-  
-
 
   public CoreSensorHandler(final String myType)
   {

@@ -219,10 +219,16 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 			DetectionEvent de = (DetectionEvent) iter.next();
 
 			// hmm, do we have freq?
-			if (de.getFreq() != null)
+			if (de.getFreq() != null || de.isAmbiguous())
 			{
-				outputThisDetection2(de.getSensorLocation(), dtg, pt.getName(),
-						pt.getCategory(), de.getBearing(), de.getRange(), pt.getSensorFit()
+				Float ambig = null;
+				if(de.isAmbiguous())
+				{
+					ambig = (float) de.getAmbiguousBearing();
+				}
+				
+				outputThisDetection2(dtg, pt.getName(),
+						pt.getCategory(), de.getBearing(),ambig, de.getRange(), pt.getSensorFit()
 								.getSensorWithId(de.getSensor()).getName(), de.toString(), de.getFreq());
 
 			}
@@ -469,8 +475,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 	 * @param sensor_name
 	 * @param label
 	 */
-	private void outputThisDetection2(WorldLocation loc, long dtg,
-			String hostName, Category hostCategory, Float bearing,
+	private void outputThisDetection2(long dtg,
+			String hostName, Category hostCategory, Float bearing, Float ambigBearing,
 			WorldDistance range, String sensor_name, String label, Float freq)
 	{
 		// first see if we have output any positions yet -
@@ -479,8 +485,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		// if (!haveOutputPositions)
 		// return;
 
-		String locStr = MWC.Utilities.TextFormatting.DebriefFormatLocation
-				.toString(loc);
+		String locStr = "NULL";
 		String dateStr = MWC.Utilities.TextFormatting.DebriefFormatDateTime
 				.toString(dtg);
 
@@ -500,6 +505,17 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 					.formatTwoDecimalPlaces(bearing.floatValue());
 		}
 
+		String ambigTxt = null;
+		if (bearing == null)
+		{
+			ambigTxt = "NULL";
+		}
+		else
+		{
+			ambigTxt = MWC.Utilities.TextFormatting.GeneralFormat
+					.formatTwoDecimalPlaces(ambigBearing.floatValue());
+		}
+
 		String freqTxt = null;
 		if (freq == null)
 		{
@@ -514,7 +530,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		String rangeTxt = null;
 		if (range == null)
 		{
-			rangeTxt = "0000";
+			rangeTxt = "NULL";
 		}
 		else
 		{
@@ -523,7 +539,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		}
 
 		String msg = ";SENSOR2: " + dateStr + " " + wrapName(hostName) + " " + col
-				+ " " + locStr + " " + brgTxt + " NULL " + freqTxt + " " + rangeTxt + " " + sensor_name
+				+ " " + locStr + " " + brgTxt + " " + ambigTxt + " " + freqTxt + " " + rangeTxt + " " + sensor_name
 				+ " " + label + System.getProperty("line.separator");
 
 		try

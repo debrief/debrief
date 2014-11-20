@@ -37,6 +37,8 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		 */
 		WorldDistance _myVal;
 		
+		private boolean _isNull = false;
+		
 		/**
 		 * @return
 		 */
@@ -68,7 +70,16 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		 */
 		public Object createResultsObject(final double dist, final int units)
 		{
-			return new WorldDistance(dist, units);
+			final WorldDistance res;
+			// ok, was it null?
+			if(_isNull && dist == 0)
+			{
+				res = null;
+			}
+			else
+				res = new WorldDistance(dist, units);
+			
+			return  res;
 		}
 
 		/** convert the object to our data units
@@ -77,7 +88,13 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		 */
 		public void storeMe(final Object value)
 		{
-			_myVal = (WorldDistance) value;
+			if(value == null)
+			{
+				_isNull = true;
+				_myVal = new WorldDistance(0, WorldDistance.YARDS);
+			}
+			else
+				_myVal = (WorldDistance) value;
 		}
 		
 	}

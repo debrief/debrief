@@ -556,9 +556,15 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	public boolean radiatesThisNoise(final int medium)
 	{
-		// does the vessel radiate this?
-		boolean vesselRadiates = _radiatedChars.radiatesThis(medium);
-
+		// do we have any radiated chars?
+		boolean vesselRadiates = false;
+		
+		if(_radiatedChars != null)
+		{
+			// does the vessel radiate this?
+			vesselRadiates = _radiatedChars.radiatesThis(medium);
+		}
+		
 		// do any of the sensors radiate this?
 		boolean sensorRadiates = _mySensors.radiatesThisMedium(medium);
 
