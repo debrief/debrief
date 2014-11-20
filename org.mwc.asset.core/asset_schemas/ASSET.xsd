@@ -433,6 +433,18 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="Ambiguous" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>Whether this sensor produces ambiguous bearings
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="CanProduceRange" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>Whether this sensor produces a range value
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

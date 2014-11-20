@@ -51,6 +51,16 @@ abstract public class InitialSensor extends CoreSensor
 	 */
 	private static final long serialVersionUID = 1L;
 
+  
+  /** whether this sensor returns ambiguous bearings
+   * 
+   */
+  private boolean _isAmbiguous = false;
+  
+  /** whether this sensor can produce a range value
+   * 
+   */
+  private boolean _canProduceRange = true;
 
 	/**
    * *************************************************
@@ -145,6 +155,12 @@ abstract public class InitialSensor extends CoreSensor
                                tgtSpeed,
                                tgtCourse,
                                target);
+      
+      // hmm, do we produce ambiguous bearings?
+      if(isAmbiguous())
+      {
+      	res.setAmbiguousBearing((float)(host.getStatus().getCourse() - RelBrg));
+      }
 
     }
 
@@ -174,8 +190,25 @@ abstract public class InitialSensor extends CoreSensor
   {
     return false;
   }
+  
+  
 
-  /**
+  @Override
+	public boolean canProduceRange()
+	{
+  	return _canProduceRange;
+	}
+
+  /** specify is this sensor can produce a range value
+   * 
+   * @param canProduceRange
+   */
+  public void setCanProduceRange(boolean canProduceRange)
+  {
+  	_canProduceRange = canProduceRange;
+  }
+
+	/**
    * does this sensor return the speed of the target?
    */
   boolean hasTgtSpeed()
@@ -227,6 +260,25 @@ abstract public class InitialSensor extends CoreSensor
   }
 
 
+
+  /** indicate whether this sensor should return ambiguous bearings
+   * 
+   * @param isAmbiguous
+   */
+	public void setAmbiguous(boolean isAmbiguous)
+	{
+		_isAmbiguous = isAmbiguous;
+	}
+  
+  /** whether this is an ambiguous bearing
+   * 
+   * @return
+   */
+  public boolean isAmbiguous()
+  {
+  	return _isAmbiguous;
+  }
+  
   ////////////////////////////////////////////////////
   // embedded class for event fired after each detection step
   ////////////////////////////////////////////////////

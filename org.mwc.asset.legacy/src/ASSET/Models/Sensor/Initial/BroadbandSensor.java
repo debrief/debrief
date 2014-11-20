@@ -49,6 +49,7 @@ public class BroadbandSensor extends InitialSensor
   private double _myDetectionAperture = 120;
 
 
+
   /**
    * *************************************************
    * constructor
@@ -201,6 +202,7 @@ public class BroadbandSensor extends InitialSensor
   {
     return true;
   }
+
 
   ////////////////////////////////////////////////////////////
   // model support
@@ -380,4 +382,5 @@ public class BroadbandSensor extends InitialSensor
     }
 
   }
+
 }
