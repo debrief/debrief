@@ -1120,7 +1120,7 @@ public class XYPlotView extends ViewPart
 		_exportToClipboard
 				.setToolTipText("Place a WMF image of the graph on the clipboard");
 		_exportToClipboard.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/copy.png"));
+				.getImageDescriptor("icons/16/copy.png"));
 
 		_copyToClipboard = new Action()
 		{
