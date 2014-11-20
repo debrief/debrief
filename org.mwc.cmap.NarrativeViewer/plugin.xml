@@ -6,7 +6,7 @@
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.NarrativeViewer.app.NViewerView"
-            icon="icons/list_comments.gif"
+            icon="icons/16/narrative_viewer.png"
             id="com.borlander.ianmayo.nviewer.app.view"
             name="Narrative Viewer">
       </view>
