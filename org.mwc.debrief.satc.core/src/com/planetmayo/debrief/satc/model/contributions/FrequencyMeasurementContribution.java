@@ -14,6 +14,7 @@
  */
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -23,7 +24,11 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.DopplerCalculator;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class FrequencyMeasurementContribution extends CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
 {
@@ -34,6 +39,11 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 	 */
 	@SuppressWarnings("unused")
 	private double baseFrequency;
+	
+	/** the speed of sound for this body of water (m/s)
+	 * 
+	 */
+	private double soundSpeed = 2000;
 
 
 	@Override
@@ -41,8 +51,6 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 	{
 		// hmm, can't think of anything clever to do here
 	}
-
-	
 	
 	@Override
 	protected double calcError(State thisState)
@@ -55,9 +63,43 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		
 		if(meas != null)
 		{
-			// ok, we can do a calculation
+			// right, do we know the ownship origin?
+			GeoPoint origin = meas.getOrigin();
 			
-			// calculate the forecast frequency
+			if(origin != null)
+			{
+				// and check the course/speed
+				Double course = meas.getCourse();
+				Double speed = meas.getSpeed();
+				
+				// ok, can we do a calculation
+				if((course != null) && (speed != null))
+				{
+					// calculate the forecast frequency
+					
+					// what's the bearing?
+					GeodeticCalculator calc = GeoSupport.createCalculator();
+					calc.setStartingGeographicPoint(new Point2D.Double(origin.getLon(), origin.getLat()));
+					calc.setDestinationGeographicPoint(new Point2D.Double(thisState.getLocation().getX(), thisState.getLocation().getY()));
+					double bearing = calc.getAzimuth();
+					
+					// now try for the predicted doppler
+					
+					DopplerCalculator calculator = SATC_Activator.getDefault().getDopplerCalculator();
+					
+					if(calculator != null)
+					{
+						double shift = calculator.calcDopplerShift(soundSpeed, meas.getCourse(), thisState.getCourse(), meas.getSpeed(), thisState.getSpeed(),
+								bearing);
+						
+						double predicted = baseFrequency + shift;
+						
+						double error = predicted - meas.frequency;
+						
+						res += Math.pow(error, 2);
+					}								
+				}				
+			}
 		}
 		
 		return res;
@@ -72,8 +114,21 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		this.baseFrequency = baseFrequency;
 	}
 
+	public void setSoundSpeed(double soundSpeed)
+	{
+		this.soundSpeed = soundSpeed;
+	}
 
-
+	public double getBaseFrequency()
+	{
+		return baseFrequency;
+	}
+	
+	public double getSoundSpeed()
+	{
+		return soundSpeed;
+	}
+	
 	private FMeasurement measurementAt(Date date)
 	{
 		Iterator<FMeasurement> iter = this.measurements.iterator();
@@ -165,13 +220,9 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
-		@SuppressWarnings("unused")
 		private final Double frequency;		
-		@SuppressWarnings("unused")
 		private Double osCourse = null;
-		@SuppressWarnings("unused")
 		private Double osSpeed = null;
-		@SuppressWarnings("unused")
 		private GeoPoint osOrigin;
 
 		public FMeasurement(Date time, Double frequency)
@@ -187,6 +238,18 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		public void setOrigin(GeoPoint origin)
 		{
 			osOrigin = origin;
+		}
+		public GeoPoint getOrigin()
+		{
+			return osOrigin;
+		}
+		public Double getSpeed()
+		{
+			return osSpeed;
+		}
+		public Double getCourse()
+		{
+			return osCourse;
 		}
 	}
 

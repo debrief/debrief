@@ -82,12 +82,10 @@ public final class Doublet implements Comparable<Doublet>
 
 		// produce dLat, dLong at the correct point on the earth
 		final WorldVector offset = tgt.getLocation().subtract(host.getLocation());
-		final double dLat = offset.getRange() * Math.cos(offset.getBearing());
-		final double dLong = offset.getRange() * Math.sin(offset.getBearing());
 
 		// done, go for it.
 		return FrequencyCalcs.calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads,
-				osSpeed, tgtSpeed, dLat, dLong);
+				osSpeed, tgtSpeed, offset.getBearing());
 	}
 
 	private final SensorContactWrapper _sensor;
