@@ -756,10 +756,15 @@ public class CreateSolutionFromSensorData implements
 			{
 				// ok = now get our specific contribution
 				BaseContribution bmc = createContribution(contName);
-
+				
 				// and store it - if it worked
 				if (bmc != null)
+				{
+					// let any other steps happen
+					otherSteps();
+					
 					_targetSolution.addContribution(bmc);
+				}
 			}
 
 			// also, check that the maintain contributions window is open - the user
@@ -776,6 +781,11 @@ public class CreateSolutionFromSensorData implements
 			}
 
 			return Status.OK_STATUS;
+		}
+
+		protected void otherSteps()
+		{
+			// don't bother, we're an empty case
 		}
 
 		protected void initSolver()
@@ -845,6 +855,7 @@ public class CreateSolutionFromSensorData implements
 			CoreSolutionFromCuts
 	{
 		private ArrayList<SensorContactWrapper> _validCuts;
+		private double _soundSpeed;
 	
 		public FrequencyMeasurementContributionFromCuts(
 				SATC_Solution existingSolution, String title, Layers theLayers,
@@ -855,12 +866,39 @@ public class CreateSolutionFromSensorData implements
 							validCuts.get(validCuts.size() - 1).getDTG())));
 			_validCuts = validCuts;
 		}
+		
+		protected void otherSteps()
+		{
+			String res = null;
+			// grab a name
+			// create input box dialog
+			InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
+					"New frequency contribution", "What is Speed of Sound for this location (kts)",
+					"Speed here", null);
+
+			// did he cancel?
+			if (inp.open() == InputDialog.OK)
+			{
+				// get the results
+				res = inp.getValue();
+				
+				// try to convert to double
+				double spdKts = Double.parseDouble(res);
+				
+				WorldSpeed spd = new WorldSpeed(spdKts, WorldSpeed.Kts);
+				_soundSpeed = spd.getValueIn(WorldSpeed.M_sec);
+			}
+		}
+
 	
 		protected FrequencyMeasurementContribution createContribution(String contName)
 		{
 			// ok, now collate the contriubtion
 			final FrequencyMeasurementContribution fmc = new FrequencyMeasurementContribution();
 			fmc.setName(contName);
+
+			// store the user-specified sound speed
+			fmc.setSoundSpeed(_soundSpeed);
 			
 			boolean firstCut = true;
 	
