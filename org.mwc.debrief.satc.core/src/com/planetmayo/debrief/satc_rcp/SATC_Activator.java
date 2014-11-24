@@ -34,6 +34,7 @@ import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.impl.SolversManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
+import com.planetmayo.debrief.satc.util.DopplerCalculator;
 import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings;
 
 /**
@@ -47,6 +48,8 @@ public class SATC_Activator extends AbstractUIPlugin
 	private static SATC_Activator plugin;
 
 	private BundleContext context;
+
+	private DopplerCalculator _calculator;
 
 	public static SATC_Activator getDefault()
 	{
@@ -155,6 +158,16 @@ public class SATC_Activator extends AbstractUIPlugin
 				.getPerspectiveRegistry()
 				.findPerspectiveWithId("com.planetmayo.debrief.satc_rcp.perspective");
 		PlatformUI.getWorkbench().getPerspectiveRegistry().revertPerspective(myPer);
+	}
+	
+	public void setDopplerCalculator(DopplerCalculator calculator)
+	{
+		_calculator = calculator;
+	}
+	
+	public DopplerCalculator getDopplerCalculator()
+	{
+		return _calculator;
 	}
 
 	@Override
