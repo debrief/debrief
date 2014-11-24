@@ -87,6 +87,7 @@ public class XStreamIO
 		xstream.useAttributeFor(FrequencyMeasurement.class, "isActive");
 		
 		xstream.useAttributeFor(FrequencyMeasurementContribution.class, "baseFrequency");
+		xstream.useAttributeFor(FrequencyMeasurementContribution.class, "soundSpeed");
 		
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "fNought");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "speedSound");
