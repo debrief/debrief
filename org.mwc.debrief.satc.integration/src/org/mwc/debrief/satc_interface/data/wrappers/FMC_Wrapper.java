@@ -28,7 +28,7 @@ public class FMC_Wrapper
 		extends
 		CoreLayer_Wrapper<FrequencyMeasurementContribution, FMeasurement, FMC_Wrapper.FrequencyMeasurementEditable>
 {
-
+	
 	/**
 	 * 
 	 */
@@ -46,6 +46,31 @@ public class FMC_Wrapper
 		_myElements.add(thisMe);
 	}
 	
+
+	private FrequencyMeasurementContribution getFMC()
+	{
+		return (FrequencyMeasurementContribution) super.getBMC();
+	}
+	
+	public double getBaseFrequency()
+	{
+		return getFMC().getBaseFrequency();
+	}
+
+	public void setBaseFrequency(double baseFrequency)
+	{
+		getFMC().setBaseFrequency(baseFrequency);
+	}
+
+	public double getSoundSpeed()
+	{
+		return getFMC().getSoundSpeed();
+	}
+
+	public void setSoundSpeed(double soundSpeed)
+	{
+		getFMC().setSoundSpeed(soundSpeed);
+	}
 
 	@Override
 	public EditorType getInfo()
@@ -128,8 +153,9 @@ public class FMC_Wrapper
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("Name", "name of this contribution", EditorType.FORMAT)
-
+						prop("Name", "name of this contribution", EditorType.FORMAT),
+						prop("SoundSpeed", "Speed of Sound (kts)", EditorType.SPATIAL),
+						prop("BaseFrequency", "Base radiated frequency", EditorType.SPATIAL)
 				};
 
 				return res;
