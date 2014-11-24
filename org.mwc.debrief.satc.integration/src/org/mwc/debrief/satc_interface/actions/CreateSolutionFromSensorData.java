@@ -754,15 +754,15 @@ public class CreateSolutionFromSensorData implements
 			String contName = getContributionName();
 			if (contName != null)
 			{
+				// do we wish to collate any other information?
+				otherSteps();			
+				
 				// ok = now get our specific contribution
 				BaseContribution bmc = createContribution(contName);
 				
 				// and store it - if it worked
 				if (bmc != null)
-				{
-					// let any other steps happen
-					otherSteps();
-					
+				{					
 					_targetSolution.addContribution(bmc);
 				}
 			}
