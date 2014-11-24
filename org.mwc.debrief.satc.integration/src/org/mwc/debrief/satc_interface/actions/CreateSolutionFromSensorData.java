@@ -861,13 +861,16 @@ public class CreateSolutionFromSensorData implements
 			// ok, now collate the contriubtion
 			final FrequencyMeasurementContribution fmc = new FrequencyMeasurementContribution();
 			fmc.setName(contName);
+			
+			boolean firstCut = true;
 	
 			// add the bearing data
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
 			while (iter.hasNext())
 			{
 				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
-				final TrackWrapper host = scw.getSensor().getHost();
+				SensorWrapper sensor = scw.getSensor();
+				final TrackWrapper host = sensor.getHost();
 	
 				Date date = scw.getDTG().getDate();
 				
@@ -881,19 +884,30 @@ public class CreateSolutionFromSensorData implements
 		
 					// ok, store it.
 					fmc.addMeasurement(thisM);
+					
+					// is this the first cut?
+					if(firstCut)
+					{
+						// ok, store the base frequency
+						fmc.setBaseFrequency(sensor.getBaseFrequency());
+						firstCut = false;
+					}
 
 					// we need to get the host status at this time
 					Watchable[] statList = host.getNearestTo(scw.getTime());
 					
 					// do we know ownship state at this time?
 					if(statList.length > 0)
-					{
-						
+					{						
 						Watchable stat = statList[0];
 						double crseRads = stat.getCourse();
 						double spdMs = new WorldSpeed(stat.getSpeed(), WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
-						thisM.setState(crseRads, spdMs);						
+						thisM.setState(crseRads, spdMs);			
 					}
+					
+					// also try to find out the sensor locaiton
+					WorldLocation origin = scw.getCalculatedOrigin(host);
+					thisM.setOrigin(conversions.toPoint(origin));					
 					
 				}
 				else

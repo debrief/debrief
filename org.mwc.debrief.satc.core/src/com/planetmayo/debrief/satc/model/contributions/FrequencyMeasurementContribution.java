@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -27,6 +28,12 @@ import com.planetmayo.debrief.satc.util.ObjectUtils;
 public class FrequencyMeasurementContribution extends CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
 {
 	private static final long serialVersionUID = 1L;
+	
+	/** the radiated frequency for this noise source
+	 * 
+	 */
+	@SuppressWarnings("unused")
+	private double baseFrequency;
 
 
 	@Override
@@ -50,11 +57,23 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		{
 			// ok, we can do a calculation
 			
+			// calculate the forecast frequency
 		}
 		
 		return res;
 	}
 		
+	/** indicate the base frequency for this block of data
+	 * 
+	 * @param baseFrequency
+	 */
+	public void setBaseFrequency(double baseFrequency)
+	{
+		this.baseFrequency = baseFrequency;
+	}
+
+
+
 	private FMeasurement measurementAt(Date date)
 	{
 		Iterator<FMeasurement> iter = this.measurements.iterator();
@@ -152,6 +171,8 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		private Double osCourse = null;
 		@SuppressWarnings("unused")
 		private Double osSpeed = null;
+		@SuppressWarnings("unused")
+		private GeoPoint osOrigin;
 
 		public FMeasurement(Date time, Double frequency)
 		{
@@ -162,6 +183,10 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		{
 			osCourse = crseRads;
 			osSpeed = spdMs;
+		}
+		public void setOrigin(GeoPoint origin)
+		{
+			osOrigin = origin;
 		}
 	}
 
