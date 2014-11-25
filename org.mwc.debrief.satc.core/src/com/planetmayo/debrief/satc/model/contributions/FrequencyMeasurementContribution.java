@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
+
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -37,7 +39,6 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 	/** the radiated frequency for this noise source
 	 * 
 	 */
-	@SuppressWarnings("unused")
 	private double baseFrequency;
 	
 	/** the speed of sound for this body of water (m/s)
@@ -81,23 +82,26 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 					GeodeticCalculator calc = GeoSupport.createCalculator();
 					calc.setStartingGeographicPoint(new Point2D.Double(origin.getLon(), origin.getLat()));
 					calc.setDestinationGeographicPoint(new Point2D.Double(thisState.getLocation().getX(), thisState.getLocation().getY()));
-					double bearing = calc.getAzimuth();
+					double bearing = Math.toRadians(calc.getAzimuth());
 					
-					// now try for the predicted doppler
-					
+					// now try for the predicted doppler					
 					DopplerCalculator calculator = SATC_Activator.getDefault().getDopplerCalculator();
 					
+					// do we hav a calculator?
 					if(calculator != null)
 					{
-						double shift = calculator.calcDopplerShift(soundSpeed, meas.getCourse(), thisState.getCourse(), meas.getSpeed(), thisState.getSpeed(),
-								bearing);
-						
-						double predicted = baseFrequency + shift;
+						final double predicted = calculator.calcPredictedFreq(soundSpeed, meas.getCourse(), 
+								thisState.getCourse(), meas.getSpeed(), thisState.getSpeed(),
+								bearing, getBaseFrequency());
 						
 						double error = predicted - meas.frequency;
 						
 						res += Math.pow(error, 2);
 					}								
+					else
+					{
+						SATC_Activator.log(Status.ERROR, "Doppler calculator not assigned in SATC_Activator", null);
+					}
 				}				
 			}
 		}
@@ -220,7 +224,7 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
-		private final Double frequency;		
+		private Double frequency;		
 		private Double osCourse = null;
 		private Double osSpeed = null;
 		private GeoPoint osOrigin;
@@ -251,6 +255,15 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		{
 			return osCourse;
 		}
+		public Double getFrequency()
+		{
+			return frequency;
+		}
+		public void setFrequency(Double theFreq)
+		{
+			this.frequency = theFreq; 
+		}
+		
 	}
 
 
