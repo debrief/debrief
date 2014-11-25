@@ -223,7 +223,7 @@ public class NarrowbandSensor extends InitialSensor
 				double bearingDegs = Math.toDegrees(target.getStatus().getLocation().bearingFrom(host.getStatus().getLocation()));
 
 				// what's the observed freq?
-				double freq = FrequencyCalcs.getObservedFreq(f0, speedOfSoundKts, rxSpeedKts, rxCourseDegs, 
+				double freq = FrequencyCalcs.getMeasuredFreq(f0, speedOfSoundKts, rxSpeedKts, rxCourseDegs, 
 						txSpeedKts, txCourseDegs, bearingDegs);
 				
 				res.setFreq((float) freq);
