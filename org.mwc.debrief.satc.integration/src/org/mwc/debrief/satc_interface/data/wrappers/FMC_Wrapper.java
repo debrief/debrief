@@ -84,11 +84,29 @@ public class FMC_Wrapper
 	public class FrequencyMeasurementEditable extends
 			CoreLayer_Wrapper.CoreMeasurementWrapper
 	{
+		
 		private EditorType _myEditor;
 
+		private double Frequency;
+		
 		public FrequencyMeasurementEditable(final CoreMeasurement measurement)
 		{
 			super(measurement);
+		}
+
+		private FMeasurement getFM()
+		{
+			return (FMeasurement) _myMeas;
+		}
+		
+		public double getFrequency()
+		{
+			return getFM().getFrequency();
+		}
+
+		public void setFrequency(double frequency)
+		{
+			getFM().setFrequency(frequency);
 		}
 
 		@Override
@@ -121,7 +139,10 @@ public class FMC_Wrapper
 				try
 				{
 					final PropertyDescriptor[] res =
-					{ prop("Active", "whether to use this bearing", EditorType.OPTIONAL) };
+					{ 
+							prop("Active", "whether to use this bearing", EditorType.OPTIONAL),
+							prop("Frequency", "Measured value of frequency", EditorType.SPATIAL),
+							};
 
 					return res;
 				}
