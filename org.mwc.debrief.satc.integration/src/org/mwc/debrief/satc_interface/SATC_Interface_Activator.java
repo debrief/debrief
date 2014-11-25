@@ -136,10 +136,10 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 		{
 			
 			@Override
-			public double calcDopplerShift(double SpeedOfSound, double osHeadingRads,
-					double tgtHeadingRads, double osSpeed, double tgtSpeed, double bearing)
+			public double calcPredictedFreq(double SpeedOfSound, double osHeadingRads,
+					double tgtHeadingRads, double osSpeed, double tgtSpeed, double bearing, double fNought)
 			{
-				return FrequencyCalcs.calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearing);
+				return FrequencyCalcs.calcPredictedFreq(SpeedOfSound, osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearing, fNought);
 			}
 		});
 		

@@ -6,8 +6,8 @@ package com.planetmayo.debrief.satc.util;
  */
 public interface DopplerCalculator
 {
-	public double calcDopplerShift(final double SpeedOfSound,
+	public double calcPredictedFreq(final double SpeedOfSound,
 			final double osHeadingRads, final double tgtHeadingRads, final double osSpeed,
-			final double tgtSpeed, final double angle);
+			final double tgtSpeed, final double angle, double fNought);
 
 }

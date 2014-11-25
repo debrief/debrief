@@ -70,7 +70,7 @@ public final class Doublet implements Comparable<Doublet>
 	 *          the speed of sound to use, m/sec
 	 * @return
 	 */
-	public static double getDopplerShift(final double SpeedOfSound, final Fix host, final Fix tgt)
+	public static double getDopplerShift(final double SpeedOfSound, final double fNought, final Fix host, final Fix tgt)
 	{
 		final double osKts = Conversions.Yps2Kts(host.getSpeed());
 		final double tgtKts = Conversions.Yps2Kts(tgt.getSpeed());
@@ -84,8 +84,8 @@ public final class Doublet implements Comparable<Doublet>
 		final WorldVector offset = tgt.getLocation().subtract(host.getLocation());
 
 		// done, go for it.
-		return FrequencyCalcs.calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads,
-				osSpeed, tgtSpeed, offset.getBearing());
+		return FrequencyCalcs.calcPredictedFreq(SpeedOfSound, osHeadingRads, tgtHeadingRads,
+				osSpeed, tgtSpeed, offset.getBearing(), fNought);
 	}
 
 	private final SensorContactWrapper _sensor;

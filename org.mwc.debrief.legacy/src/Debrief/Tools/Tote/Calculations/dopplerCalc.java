@@ -62,7 +62,7 @@ public class dopplerCalc extends plainCalc
 			double bearingDegs = Math.toDegrees(primary.getLocation().bearingFrom(secondary.getLocation()));
 
 			// what's the observed freq?
-			freq = FrequencyCalcs.getObservedFreq(_fNought, _C, rxSpeedKts, rxCourseDegs, 
+			freq = FrequencyCalcs.getMeasuredFreq(_fNought, _C, rxSpeedKts, rxCourseDegs, 
 					txSpeedKts, txCourseDegs, bearingDegs);
 		}
 		return freq;
