@@ -14,7 +14,6 @@
  */
 package MWC.Algorithms;
 
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 public class FrequencyCalcs

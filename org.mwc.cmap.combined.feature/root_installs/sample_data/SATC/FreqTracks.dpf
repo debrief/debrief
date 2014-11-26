@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Mon Nov 24 10:41:22 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Mon Nov 24 15:16:13 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Thu Nov 20 13:55:47 GMT 2014"/>
 <session>
 <layers>
@@ -2603,7 +2603,7 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
-<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
+<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="20000" ScaleStep="5000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
@@ -2737,24 +2737,20 @@
       <bearingError>0.05235987755982988</bearingError>
       <runMDA>false</runMDA>
     </bearingMeasurementContribution>
-    <frequencyMeasurementContribution baseFrequency="150.0">
+    <frequencyMeasurementContribution baseFrequency="150.0" soundSpeed="1028.888888888889">
       <name>first cuts</name>
       <active>true</active>
       <weight>5</weight>
-      <startDate>2010-01-12 13:14:10.0 UTC</startDate>
-      <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
+      <startDate>2010-01-12 13:15:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:18:20.0 UTC</finishDate>
       <measurements>
-        <fmeasurement time="2010-01-12 13:14:10.0 UTC" isActive="true" frequency="149.963" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
+        <fmeasurement time="2010-01-12 13:15:00.0 UTC" isActive="true" frequency="149.941" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
           <color>
             <red>0</red>
             <green>255</green>
             <blue>0</blue>
             <alpha>255</alpha>
           </color>
-          <osOrigin lat="60.1599056" lon="-0.0269611"/>
-        </fmeasurement>
-        <fmeasurement time="2010-01-12 13:15:00.0 UTC" isActive="true" frequency="149.941" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement/color"/>
           <osOrigin lat="60.1593972" lon="-0.0275111"/>
         </fmeasurement>
         <fmeasurement time="2010-01-12 13:15:50.0 UTC" isActive="true" frequency="149.921" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
@@ -2772,14 +2768,6 @@
         <fmeasurement time="2010-01-12 13:18:20.0 UTC" isActive="true" frequency="149.861" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
           <color reference="../../fmeasurement/color"/>
           <osOrigin lat="60.1573556" lon="-0.0297111"/>
-        </fmeasurement>
-        <fmeasurement time="2010-01-12 13:19:10.0 UTC" isActive="true" frequency="149.842" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement/color"/>
-          <osOrigin lat="60.1568444" lon="-0.0302583"/>
-        </fmeasurement>
-        <fmeasurement time="2010-01-12 13:20:00.0 UTC" isActive="true" frequency="149.824" osCourse="3.633775502652194" osSpeed="1.2861111111111112">
-          <color reference="../../fmeasurement/color"/>
-          <osOrigin lat="60.1563361" lon="-0.0308083"/>
         </fmeasurement>
       </measurements>
     </frequencyMeasurementContribution>
