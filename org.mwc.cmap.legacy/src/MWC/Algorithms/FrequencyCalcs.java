@@ -47,7 +47,18 @@ public class FrequencyCalcs
 		return dopplerOffset;
 	}
 
-	public static double getMeasuredFreq(double f0, double speedOfSoundKts,
+	/** calculate what the received frequency should in these circumstances
+	 * 
+	 * @param f0
+	 * @param speedOfSoundKts
+	 * @param rxSpeedKts
+	 * @param rxCourseDegs
+	 * @param txSpeedKts
+	 * @param txCourseDegs
+	 * @param bearingDegs
+	 * @return
+	 */
+	public static double getPredictedFreq(double f0, double speedOfSoundKts,
 			double rxSpeedKts, double rxCourseDegs, double txSpeedKts,
 			double txCourseDegs, double bearingDegs)
 	{
@@ -63,72 +74,11 @@ public class FrequencyCalcs
 		double rxCrse = Math.toRadians(rxCourseDegs);
 		double txCrse = Math.toRadians(txCourseDegs);
 
-		return calcObservedFreqCollate(f0, C, bearingRads, rxCrse, rxSpeed, txCrse,
-				txSpeed);
+		return calcPredictedFreq(C,
+				rxCrse, txCrse,
+				rxSpeed, txSpeed, bearingRads,
+				f0);
 	}
-
-	/**
-	 * raw function, taken from:
-	 * http://en.wikipedia.org/wiki/Doppler_effect#General
-	 * 
-	 * @param f0
-	 *          - fNought value
-	 * @param C
-	 *          - speed of sound (m/s)
-	 * @param bearing
-	 *          -angle from sensor to emitter
-	 * @param rxCourse
-	 *          - receiver course (rads)
-	 * @param rxSpeed
-	 *          - receiver speed (m/s)
-	 * @param txCourse
-	 *          - target course (rads)
-	 * @param txSpeed
-	 *          - target speed (m/s)
-	 * 
-	 */
-	private static double calcObservedFreqCollate(double f0, double C,
-			double bearing, double rxCourse, double rxSpeed, double txCourse,
-			double txSpeed)
-	{
-		// collate the data
-		double rxSpeedAlong = rxSpeed * Math.cos(-(bearing - rxCourse));
-		double txSpeedAlong = txSpeed * Math.cos(txCourse - bearing);
-
-		return (C + rxSpeedAlong) / (C + txSpeedAlong) * f0;
-	}
-
-	/**
-	 * perform doppler shift calculation Note: we receive dLat, dLong to support
-	 * different range calculations. The Excel spreadsheet (DopplerEffect.xls)
-	 * that is used to verify the algorithm uses flat-earth calcs. In normal use
-	 * we wish to use round-earth calcs
-	 * 
-	 * @param SpeedOfSound
-	 *          m/s
-	 * @param osHeadingRads
-	 *          rads
-	 * @param tgtHeadingRads
-	 *          rads
-	 * @param osSpeed
-	 *          m/s
-	 * @param tgtSpeed
-	 *          m/s
-	 * @param dLat
-	 *          degs
-	 * @param dLong
-	 *          degs
-	 * @return
-	 */
-	// public static double calcDopplerShift(final double SpeedOfSound,
-	// final double osHeadingRads, final double tgtHeadingRads,
-	// final double osSpeed, final double tgtSpeed, final double dLat,
-	// final double dLong, final double fNought)
-	// {
-	// double a = -Math.atan2(dLong, dLat); // angle between points (rads)
-	// return calcPredictedFreq(SpeedOfSound, osHeadingRads, tgtHeadingRads,
-	// osSpeed, tgtSpeed, a, fNought);
-	// }
 
 	/**
 	 * perform doppler shift calculation Note: we receive dLat, dLong to support
@@ -155,23 +105,14 @@ public class FrequencyCalcs
 			final double osSpeed, final double tgtSpeed, double bearing,
 			final double fNought)
 	{
-
-		// trim to +/-180
-		// TODO - sort out what this angular shift is for
-		// if (bearing < - Math.PI)
-		// bearing += 2 * Math.PI;
-		// if (bearing > Math.PI)
-		// bearing -= 2 * Math.PI;
-		// if (bearing - Math.PI / 2 < 0)
-		// bearing += 3 * Math.PI / 2;
-		// else
-		// bearing -= Math.PI / 2;
-
 		final double relB = bearing - osHeadingRads;
-		final double ATB = (bearing + 180) - tgtHeadingRads;
+		
+		// note - contrary to some publications TSL uses the
+		// angle along the bearing, not the angle back down the bearing (ATB).
+		final double AngleOffTheOtherB = tgtHeadingRads - bearing;
 
 		final double OSL = Math.cos(relB) * osSpeed;
-		final double TSL = Math.cos(ATB) * tgtSpeed;
+		final double TSL = Math.cos(AngleOffTheOtherB) * tgtSpeed;
 
 		final double freq = fNought * (SpeedOfSound + OSL) / (SpeedOfSound + TSL);
 
@@ -213,8 +154,9 @@ public class FrequencyCalcs
 			assertEquals("correct OSL", 1.5298, OSL, 0.0001);
 			assertEquals("correct TSL", 0.04712, TSL, 0.0001);
 
-			double res = FrequencyCalcs.calcObservedFreqCollate(f0, Cms, brgRads,
-					osRads, osMS, tgtRads, tgtMS);
+			double res = FrequencyCalcs.calcPredictedFreq(Cms, osRads, tgtRads, osMS, tgtMS, brgRads, f0);
+//					calcObservedFreqCollate(f0, Cms, brgRads,
+//					osRads, osMS, tgtRads, tgtMS);
 
 			assertEquals("correct obs", 150.0750, res, 0.001);
 
