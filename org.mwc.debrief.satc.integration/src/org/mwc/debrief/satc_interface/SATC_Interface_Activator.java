@@ -139,7 +139,7 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 			public double calcPredictedFreq(double SpeedOfSound, double osHeadingRads,
 					double tgtHeadingRads, double osSpeed, double tgtSpeed, double bearing, double fNought)
 			{
-				return FrequencyCalcs.calcPredictedFreq(SpeedOfSound, osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearing, fNought);
+				return FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound, osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearing, fNought);
 			}
 		});
 		

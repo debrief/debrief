@@ -74,7 +74,7 @@ public class FrequencyCalcs
 		double rxCrse = Math.toRadians(rxCourseDegs);
 		double txCrse = Math.toRadians(txCourseDegs);
 
-		return calcPredictedFreq(C,
+		return calcPredictedFreqSI(C,
 				rxCrse, txCrse,
 				rxSpeed, txSpeed, bearingRads,
 				f0);
@@ -100,7 +100,7 @@ public class FrequencyCalcs
 	 *          radians
 	 * @return
 	 */
-	public static double calcPredictedFreq(final double SpeedOfSound,
+	public static double calcPredictedFreqSI(final double SpeedOfSound,
 			final double osHeadingRads, final double tgtHeadingRads,
 			final double osSpeed, final double tgtSpeed, double bearing,
 			final double fNought)
@@ -154,7 +154,7 @@ public class FrequencyCalcs
 			assertEquals("correct OSL", 1.5298, OSL, 0.0001);
 			assertEquals("correct TSL", 0.04712, TSL, 0.0001);
 
-			double res = FrequencyCalcs.calcPredictedFreq(Cms, osRads, tgtRads, osMS, tgtMS, brgRads, f0);
+			double res = FrequencyCalcs.calcPredictedFreqSI(Cms, osRads, tgtRads, osMS, tgtMS, brgRads, f0);
 //					calcObservedFreqCollate(f0, Cms, brgRads,
 //					osRads, osMS, tgtRads, tgtMS);
 

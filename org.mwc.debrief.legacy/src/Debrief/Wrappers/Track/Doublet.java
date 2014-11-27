@@ -84,7 +84,7 @@ public final class Doublet implements Comparable<Doublet>
 		final WorldVector offset = tgt.getLocation().subtract(host.getLocation());
 
 		// done, go for it.
-		return FrequencyCalcs.calcPredictedFreq(SpeedOfSound, osHeadingRads, tgtHeadingRads,
+		return FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound, osHeadingRads, tgtHeadingRads,
 				osSpeed, tgtSpeed, offset.getBearing(), fNought);
 	}
 
