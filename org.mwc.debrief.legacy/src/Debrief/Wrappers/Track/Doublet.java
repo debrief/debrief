@@ -45,19 +45,19 @@ public final class Doublet implements Comparable<Doublet>
 		public void testCorrected()
 		{
 			double res = convertAndTest(320, 28, 8, 300);
-			assertEquals("right freq", -0.304, res, 0.1);
+			assertEquals("right freq", 0.304, res, 0.1);
 
 			res = convertAndTest(320, 328, 8, 300);
-			assertEquals("right freq", -0.805, res, 0.1);
+			assertEquals("right freq", 0.805, res, 0.1);
 
 			res = convertAndTest(320, 158, 8, 300);
-			assertEquals("right freq", 0.7734, res, 0.01);
+			assertEquals("right freq", -0.7734, res, 0.01);
 
 			res = convertAndTest(320, 158, 9, 300);
-			assertEquals("right freq", 0.870, res, 0.01);
+			assertEquals("right freq", -0.870, res, 0.01);
 
 			res = convertAndTest(150, 158, 9, 300);
-			assertEquals("right freq", -0.906, res, 0.01);
+			assertEquals("right freq", 0.906, res, 0.01);
 		}
 	}
 
