@@ -61,6 +61,7 @@
     <module>org.mwc.debrief.SensorFusion</module>
     <module>org.mwc.debrief.TimeBar</module>
     <module>org.mwc.debrief.combined.feature</module>
+    <module>org.mwc.debrief.xmleditor.feature</module>
     <module>org.mwc.debrief.core</module>
     <module>org.mwc.debrief.data_feed</module>
     <module>org.mwc.debrief.data_feed_dummy</module>

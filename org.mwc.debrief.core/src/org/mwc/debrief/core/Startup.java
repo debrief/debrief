@@ -174,7 +174,7 @@ public class Startup implements IStartup
 		preferenceManager.remove("org.eclipse.debug.ui.LaunchConfigurations");
 		preferenceManager.remove("org.eclipse.debug.ui.LaunchDelegatesPreferencePage");
 		preferenceManager.remove("org.eclipse.team.ui.TeamPreferences");
-
+		preferenceManager.remove("org.eclipse.wst.xml.ui.propertyPage.project.validation");
 	}
 
 	private void removePerspective()
