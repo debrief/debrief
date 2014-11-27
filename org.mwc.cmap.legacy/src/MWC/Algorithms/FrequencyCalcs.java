@@ -38,21 +38,12 @@ public class FrequencyCalcs
 	{
 
 		final double speedOfSoundKts = 2951;
-		double relBearingRads = theBearingRads - myCourseRads;
-
-		final double ownSpeedAlongKts = Math.abs(Math.cos(relBearingRads)
-				* mySpeedKts);
-
-		// put rel brg into +/- 180 domain
-		while (relBearingRads > Math.PI)
-			relBearingRads -= (2 * Math.PI);
-		while (relBearingRads < -(Math.PI))
-			relBearingRads += (2 * Math.PI);
+		final double relBearingRads = theBearingRads - myCourseRads;
+		
+		final double ownSpeedAlongKts = Math.cos(relBearingRads) * mySpeedKts;
 
 		double dopplerOffset = (ownSpeedAlongKts * observedFreq) / speedOfSoundKts;
 
-		if (Math.abs(relBearingRads) < (Math.PI / 2))
-			dopplerOffset = -dopplerOffset;
 		return dopplerOffset;
 	}
 
@@ -80,14 +71,21 @@ public class FrequencyCalcs
 	 * raw function, taken from:
 	 * http://en.wikipedia.org/wiki/Doppler_effect#General
 	 * 
-	 * @param f0 - fNought value
-	 * @param C - speed of sound (m/s)
-	 * @param bearing -angle from sensor to emitter
-	 * @param rxCourse - receiver course (rads)
-	 * @param rxSpeed - receiver speed (m/s)
-	 * @param txCourse - target course (rads)
-	 * @param txSpeed - target speed (m/s)
-	 *  
+	 * @param f0
+	 *          - fNought value
+	 * @param C
+	 *          - speed of sound (m/s)
+	 * @param bearing
+	 *          -angle from sensor to emitter
+	 * @param rxCourse
+	 *          - receiver course (rads)
+	 * @param rxSpeed
+	 *          - receiver speed (m/s)
+	 * @param txCourse
+	 *          - target course (rads)
+	 * @param txSpeed
+	 *          - target speed (m/s)
+	 * 
 	 */
 	private static double calcObservedFreqCollate(double f0, double C,
 			double bearing, double rxCourse, double rxSpeed, double txCourse,
@@ -122,15 +120,15 @@ public class FrequencyCalcs
 	 *          degs
 	 * @return
 	 */
-//	public static double calcDopplerShift(final double SpeedOfSound,
-//			final double osHeadingRads, final double tgtHeadingRads,
-//			final double osSpeed, final double tgtSpeed, final double dLat,
-//			final double dLong, final double fNought)
-//	{
-//		double a = -Math.atan2(dLong, dLat); // angle between points (rads)
-//		return calcPredictedFreq(SpeedOfSound, osHeadingRads, tgtHeadingRads,
-//				osSpeed, tgtSpeed, a, fNought);
-//	}
+	// public static double calcDopplerShift(final double SpeedOfSound,
+	// final double osHeadingRads, final double tgtHeadingRads,
+	// final double osSpeed, final double tgtSpeed, final double dLat,
+	// final double dLong, final double fNought)
+	// {
+	// double a = -Math.atan2(dLong, dLat); // angle between points (rads)
+	// return calcPredictedFreq(SpeedOfSound, osHeadingRads, tgtHeadingRads,
+	// osSpeed, tgtSpeed, a, fNought);
+	// }
 
 	/**
 	 * perform doppler shift calculation Note: we receive dLat, dLong to support
@@ -154,19 +152,20 @@ public class FrequencyCalcs
 	 */
 	public static double calcPredictedFreq(final double SpeedOfSound,
 			final double osHeadingRads, final double tgtHeadingRads,
-			final double osSpeed, final double tgtSpeed, double bearing, final double fNought)
+			final double osSpeed, final double tgtSpeed, double bearing,
+			final double fNought)
 	{
 
 		// trim to +/-180
-//		TODO - sort out what this angular shift is for
-//		if (bearing < - Math.PI)
-//			bearing += 2 * Math.PI;
-//		if (bearing > Math.PI)
-//			bearing -= 2 * Math.PI;
-//		if (bearing - Math.PI / 2 < 0)
-//			bearing += 3 * Math.PI / 2;
-//		else
-//			bearing -= Math.PI / 2;
+		// TODO - sort out what this angular shift is for
+		// if (bearing < - Math.PI)
+		// bearing += 2 * Math.PI;
+		// if (bearing > Math.PI)
+		// bearing -= 2 * Math.PI;
+		// if (bearing - Math.PI / 2 < 0)
+		// bearing += 3 * Math.PI / 2;
+		// else
+		// bearing -= Math.PI / 2;
 
 		final double relB = bearing - osHeadingRads;
 		final double ATB = (bearing + 180) - tgtHeadingRads;
@@ -221,86 +220,86 @@ public class FrequencyCalcs
 
 		}
 
-//		public void testDopplerShiftLowLevel()
-//		{
-//			final double SPEED_OF_SOUND = 1500;
-//			final double F_NOUGHT = 150;
-//
-//			final WorldLocation hostLoc = new WorldLocation(4, 4, 0);
-//			final WorldLocation tgtLoc = new WorldLocation(4, 7, 0);
-//			double hostCourse = MWC.Algorithms.Conversions.Degs2Rads(60);
-//			double hostSpeed = 8d; // MWC.Algorithms.Conversions.Kts2Yps(8);
-//			double tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(300);
-//			double tgtSpeed = 4; // MWC.Algorithms.Conversions.Kts2Yps(4);
-//
-//			double dLat = hostLoc.getLat() - tgtLoc.getLat();
-//			double dLong = hostLoc.getLong() - tgtLoc.getLong();
-//
-//			double dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-//					hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
-//
-//			assertEquals("correct doppler shift", 1.00133, dShift, 0.00001d);
-//
-//			// and another permutation
-//			hostCourse = MWC.Algorithms.Conversions.Degs2Rads(12d);
-//			tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(333d);
-//			hostSpeed = 3;
-//			tgtSpeed = 4;
-//
-//			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-//					hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
-//
-//			assertEquals("correct doppler shift", 0.9995840, dShift, 0.00001d);
-//
-//			// move to southern hemi
-//			hostLoc.setLat(-4);
-//			tgtLoc.setLat(-5);
-//			hostCourse = 0;
-//			tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(180);
-//
-//			dLat = hostLoc.getLat() - tgtLoc.getLat();
-//			dLong = hostLoc.getLong() - tgtLoc.getLong();
-//
-//			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-//					hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
-//
-//			assertEquals("correct doppler shift", 1.004427, dShift, 0.00001d);
-//
-//			hostCourse = MWC.Algorithms.Conversions.Degs2Rads(12d);
-//			tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(333d);
-//			hostSpeed = 3;
-//
-//			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-//					hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
-//
-//			assertEquals("correct doppler shift", 0.99908, dShift, 0.00001d);
-//
-//			hostLoc.setLong(-2);
-//			tgtLoc.setLong(-3);
-//			dLat = hostLoc.getLat() - tgtLoc.getLat();
-//			dLong = hostLoc.getLong() - tgtLoc.getLong();
-//
-//			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-//					hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
-//
-//			assertEquals("correct doppler shift", 0.99914, dShift, 0.00001d);
-//
-//			// slow down target, so they're divering more slowly
-//			hostSpeed = 0.1;
-//
-//			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-//					hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
-//
-//			assertEquals("correct doppler shift", 1.000768, dShift, 0.000001d);
-//
-//			// stop them both
-//			hostSpeed = 0d;
-//			tgtSpeed = 0d;
-//
-//			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-//					hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
-//
-//			assertEquals("correct doppler shift", 1.000, dShift, 0.000001d);
-//		}
+		// public void testDopplerShiftLowLevel()
+		// {
+		// final double SPEED_OF_SOUND = 1500;
+		// final double F_NOUGHT = 150;
+		//
+		// final WorldLocation hostLoc = new WorldLocation(4, 4, 0);
+		// final WorldLocation tgtLoc = new WorldLocation(4, 7, 0);
+		// double hostCourse = MWC.Algorithms.Conversions.Degs2Rads(60);
+		// double hostSpeed = 8d; // MWC.Algorithms.Conversions.Kts2Yps(8);
+		// double tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(300);
+		// double tgtSpeed = 4; // MWC.Algorithms.Conversions.Kts2Yps(4);
+		//
+		// double dLat = hostLoc.getLat() - tgtLoc.getLat();
+		// double dLong = hostLoc.getLong() - tgtLoc.getLong();
+		//
+		// double dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
+		// hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
+		//
+		// assertEquals("correct doppler shift", 1.00133, dShift, 0.00001d);
+		//
+		// // and another permutation
+		// hostCourse = MWC.Algorithms.Conversions.Degs2Rads(12d);
+		// tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(333d);
+		// hostSpeed = 3;
+		// tgtSpeed = 4;
+		//
+		// dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
+		// hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
+		//
+		// assertEquals("correct doppler shift", 0.9995840, dShift, 0.00001d);
+		//
+		// // move to southern hemi
+		// hostLoc.setLat(-4);
+		// tgtLoc.setLat(-5);
+		// hostCourse = 0;
+		// tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(180);
+		//
+		// dLat = hostLoc.getLat() - tgtLoc.getLat();
+		// dLong = hostLoc.getLong() - tgtLoc.getLong();
+		//
+		// dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
+		// hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
+		//
+		// assertEquals("correct doppler shift", 1.004427, dShift, 0.00001d);
+		//
+		// hostCourse = MWC.Algorithms.Conversions.Degs2Rads(12d);
+		// tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(333d);
+		// hostSpeed = 3;
+		//
+		// dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
+		// hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
+		//
+		// assertEquals("correct doppler shift", 0.99908, dShift, 0.00001d);
+		//
+		// hostLoc.setLong(-2);
+		// tgtLoc.setLong(-3);
+		// dLat = hostLoc.getLat() - tgtLoc.getLat();
+		// dLong = hostLoc.getLong() - tgtLoc.getLong();
+		//
+		// dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
+		// hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
+		//
+		// assertEquals("correct doppler shift", 0.99914, dShift, 0.00001d);
+		//
+		// // slow down target, so they're divering more slowly
+		// hostSpeed = 0.1;
+		//
+		// dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
+		// hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
+		//
+		// assertEquals("correct doppler shift", 1.000768, dShift, 0.000001d);
+		//
+		// // stop them both
+		// hostSpeed = 0d;
+		// tgtSpeed = 0d;
+		//
+		// dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
+		// hostSpeed, tgtSpeed, dLat, dLong, F_NOUGHT);
+		//
+		// assertEquals("correct doppler shift", 1.000, dShift, 0.000001d);
+		// }
 	}
 }
