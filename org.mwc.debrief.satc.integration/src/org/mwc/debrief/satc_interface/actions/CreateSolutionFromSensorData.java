@@ -873,7 +873,7 @@ public class CreateSolutionFromSensorData implements
 			// grab a name
 			// create input box dialog
 			InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
-					"New frequency contribution", "What is Speed of Sound for this location (kts)",
+					"New frequency contribution", "What is Speed of Sound for this location (m/sec)",
 					"Speed here", null);
 
 			// did he cancel?
@@ -883,10 +883,7 @@ public class CreateSolutionFromSensorData implements
 				res = inp.getValue();
 				
 				// try to convert to double
-				double spdKts = Double.parseDouble(res);
-				
-				WorldSpeed spd = new WorldSpeed(spdKts, WorldSpeed.Kts);
-				_soundSpeed = spd.getValueIn(WorldSpeed.M_sec);
+				_soundSpeed = Double.parseDouble(res);
 			}
 		}
 
