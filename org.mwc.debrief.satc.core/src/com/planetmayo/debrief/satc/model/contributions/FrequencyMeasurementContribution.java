@@ -20,9 +20,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.Status;
-
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -32,84 +32,168 @@ import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
-public class FrequencyMeasurementContribution extends CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
+public class FrequencyMeasurementContribution extends
+		CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
 {
 	private static final long serialVersionUID = 1L;
-	
-	/** the radiated frequency for this noise source
+
+	/**
+	 * the radiated frequency for this noise source
 	 * 
 	 */
 	private double baseFrequency;
-	
-	/** the speed of sound for this body of water (m/s)
+
+	/**
+	 * the speed of sound for this body of water (m/s)
 	 * 
 	 */
 	private double soundSpeed = 2000;
-
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// hmm, can't think of anything clever to do here
 	}
-	
-	@Override
-	protected double calcError(State thisState)
-	{
-		double res = 0;
 
-		Date date = thisState.getTime();
-		
-		FMeasurement meas = measurementAt(date);
-		
-		if(meas != null)
+	protected double cumulativeScoreFor(CoreRoute route)
+	{
+		if (!isActive() || route.getType() == LegType.ALTERING)
 		{
-			// right, do we know the ownship origin?
-			GeoPoint origin = meas.getOrigin();
-			
-			if(origin != null)
+			return 0;
+		}
+		double res = 0;
+		int count = 0;
+		for (FMeasurement meas : measurements)
+		{
+			Date dateMeasurement = meas.getDate();
+			if (dateMeasurement.compareTo(route.getStartTime()) >= 0
+					&& dateMeasurement.compareTo(route.getEndTime()) <= 0)
 			{
-				// and check the course/speed
-				Double course = meas.getCourse();
-				Double speed = meas.getSpeed();
-				
-				// ok, can we do a calculation
-				if((course != null) && (speed != null))
+				State state = route.getStateAt(dateMeasurement);
+				if (state != null && state.getLocation() != null)
 				{
-					// calculate the forecast frequency
 					
-					// what's the bearing?
-					GeodeticCalculator calc = GeoSupport.createCalculator();
-					calc.setStartingGeographicPoint(new Point2D.Double(origin.getLon(), origin.getLat()));
-					calc.setDestinationGeographicPoint(new Point2D.Double(thisState.getLocation().getX(), thisState.getLocation().getY()));
-					double bearing = Math.toRadians(calc.getAzimuth());
-					
-					// now try for the predicted doppler					
-					DopplerCalculator calculator = SATC_Activator.getDefault().getDopplerCalculator();
-					
-					// do we hav a calculator?
-					if(calculator != null)
+					if (meas.isActive())
 					{
-						final double predicted = calculator.calcPredictedFreq(soundSpeed, meas.getCourse(), 
-								thisState.getCourse(), meas.getSpeed(), thisState.getSpeed(),
-								bearing, getBaseFrequency());
-						
-						double error = predicted - meas.frequency;
-						
-						res += Math.pow(error, 2);
-					}								
-					else
-					{
-						SATC_Activator.log(Status.ERROR, "Doppler calculator not assigned in SATC_Activator", null);
+						// right, do we know the ownship origin?
+						GeoPoint origin = meas.getOrigin();
+
+						if (origin != null)
+						{
+							// and check the course/speed
+							Double course = meas.getCourse();
+							Double speed = meas.getSpeed();
+
+							// ok, can we do a calculation
+							if ((course != null) && (speed != null))
+							{
+								// calculate the forecast frequency
+
+								// what's the bearing?
+								GeodeticCalculator calc = GeoSupport.createCalculator();
+								calc.setStartingGeographicPoint(new Point2D.Double(origin.getLon(),
+										origin.getLat()));
+								calc.setDestinationGeographicPoint(new Point2D.Double(state
+										.getLocation().getX(), state.getLocation().getY()));
+								double bearing = Math.toRadians(calc.getAzimuth());
+
+								// now try for the predicted doppler
+								DopplerCalculator calculator = SATC_Activator.getDefault()
+										.getDopplerCalculator();
+
+								// do we hav a calculator?
+								if (calculator != null)
+								{
+									final double predicted = calculator.calcPredictedFreq(soundSpeed,
+											meas.getCourse(), state.getCourse(), meas.getSpeed(),
+											state.getSpeed(), bearing, getBaseFrequency());
+
+									double error = predicted - meas.frequency;									
+									res += error * error;
+									count++;
+
+								}
+							}
+						}
 					}
-				}				
+					
+				}
 			}
 		}
-		
+		if (count > 0)
+		{
+			res = Math.sqrt(res / count);
+		}
 		return res;
 	}
-		
-	/** indicate the base frequency for this block of data
+	
+//	@Override
+//	protected double calcError(State thisState)
+//	{
+//		double res = 0;
+//
+//		Date date = thisState.getTime();
+//
+//		FMeasurement meas = measurementAt(date);
+//
+//		if (meas != null)
+//		{
+//			if (meas.isActive())
+//			{
+//				// right, do we know the ownship origin?
+//				GeoPoint origin = meas.getOrigin();
+//
+//				if (origin != null)
+//				{
+//					// and check the course/speed
+//					Double course = meas.getCourse();
+//					Double speed = meas.getSpeed();
+//
+//					// ok, can we do a calculation
+//					if ((course != null) && (speed != null))
+//					{
+//						// calculate the forecast frequency
+//
+//						// what's the bearing?
+//						GeodeticCalculator calc = GeoSupport.createCalculator();
+//						calc.setStartingGeographicPoint(new Point2D.Double(origin.getLon(),
+//								origin.getLat()));
+//						calc.setDestinationGeographicPoint(new Point2D.Double(thisState
+//								.getLocation().getX(), thisState.getLocation().getY()));
+//						double bearing = Math.toRadians(calc.getAzimuth());
+//
+//						// now try for the predicted doppler
+//						DopplerCalculator calculator = SATC_Activator.getDefault()
+//								.getDopplerCalculator();
+//
+//						// do we hav a calculator?
+//						if (calculator != null)
+//						{
+//							final double predicted = calculator.calcPredictedFreq(soundSpeed,
+//									meas.getCourse(), thisState.getCourse(), meas.getSpeed(),
+//									thisState.getSpeed(), bearing, getBaseFrequency());
+//
+//							double error = predicted - meas.frequency;
+//
+//							res += Math.pow(error, 2);
+//						}
+//						else
+//						{
+//							SATC_Activator.log(Status.ERROR,
+//									"Doppler calculator not assigned in SATC_Activator", null);
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+////		System.out.println("res:" + res);
+//
+//		return res;
+//	}
+
+	/**
+	 * indicate the base frequency for this block of data
 	 * 
 	 * @param baseFrequency
 	 */
@@ -127,29 +211,26 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 	{
 		return baseFrequency;
 	}
-	
+
 	public double getSoundSpeed()
 	{
 		return soundSpeed;
 	}
-	
+
 	private FMeasurement measurementAt(Date date)
 	{
 		Iterator<FMeasurement> iter = this.measurements.iterator();
 		while (iter.hasNext())
 		{
-			FMeasurement measurement = (FMeasurement) iter
-					.next();
-			if(measurement.getDate().equals(date))
+			FMeasurement measurement = (FMeasurement) iter.next();
+			if (measurement.getDate().equals(date))
 			{
 				return measurement;
 			}
 		}
-		
+
 		return null;
 	}
-
-
 
 	public void loadFrom(List<String> lines)
 	{
@@ -191,8 +272,8 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd hhmmss"),
-					date + " " + time);
+			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+					"yyMMdd hhmmss"), date + " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
@@ -211,20 +292,20 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 		}
 	}
 
-	
 	/**
 	 * utility class for storing a measurement
 	 * 
 	 * @author ian
 	 * 
 	 */
-	public static class FMeasurement extends CoreMeasurementContribution.CoreMeasurement
+	public static class FMeasurement extends
+			CoreMeasurementContribution.CoreMeasurement
 	{
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
-		private Double frequency;		
+		private Double frequency;
 		private Double osCourse = null;
 		private Double osSpeed = null;
 		private GeoPoint osOrigin;
@@ -234,37 +315,43 @@ public class FrequencyMeasurementContribution extends CoreMeasurementContributio
 			super(time);
 			this.frequency = frequency;
 		}
+
 		public void setState(double crseRads, double spdMs)
 		{
 			osCourse = crseRads;
 			osSpeed = spdMs;
 		}
+
 		public void setOrigin(GeoPoint origin)
 		{
 			osOrigin = origin;
 		}
+
 		public GeoPoint getOrigin()
 		{
 			return osOrigin;
 		}
+
 		public Double getSpeed()
 		{
 			return osSpeed;
 		}
+
 		public Double getCourse()
 		{
 			return osCourse;
 		}
+
 		public Double getFrequency()
 		{
 			return frequency;
 		}
+
 		public void setFrequency(Double theFreq)
 		{
-			this.frequency = theFreq; 
+			this.frequency = theFreq;
 		}
-		
-	}
 
+	}
 
 }
