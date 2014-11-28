@@ -1479,4 +1479,13 @@
                 class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
    		  <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>                
     </extension>
+    
+    <extension
+		point="org.eclipse.wst.xml.core.catalogContributions">
+		<catalogContribution id="default">
+			<uri
+				name="http://www.debrief.info/plot"
+				uri="schema/debrief_plot.xsd" />
+		</catalogContribution>
+	</extension>
 </plugin>

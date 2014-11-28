@@ -76,6 +76,7 @@ final public class PlotHandler extends
 			final org.w3c.dom.Document doc, final String version)
 	{
 		final org.w3c.dom.Element plt = doc.createElement("plot");
+		plt.setAttribute("xmlns", "http://www.debrief.info/plot");
 		plt.setAttribute("Created", new java.util.Date().toString());
 		plt.setAttribute("Name", "Debrief Plot");
 		final TimeProvider mgr = (TimeProvider) thePlot.getAdapter(TimeProvider.class);
