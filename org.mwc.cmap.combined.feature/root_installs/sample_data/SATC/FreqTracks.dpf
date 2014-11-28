@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Mon Nov 24 15:16:13 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
+<plot Created="Fri Nov 28 11:41:59 GMT 2014" Name="Debrief Plot" PlotId="1411645412631">
 <details Text="Saved with Debrief version dated Thu Nov 20 13:55:47 GMT 2014"/>
 <session>
 <layers>
@@ -2603,7 +2603,7 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
-<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="20000" ScaleStep="5000" Visible="true">
+<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
 </layer>
@@ -2687,7 +2687,7 @@
           <origin lat="60.1563361" lon="-0.0308083"/>
         </bmeasurement>
       </measurements>
-      <bearingError>0.05235987755982988</bearingError>
+      <bearingError>0.08726646259971647</bearingError>
       <runMDA>false</runMDA>
     </bearingMeasurementContribution>
     <bearingMeasurementContribution>
@@ -2740,7 +2740,7 @@
     <frequencyMeasurementContribution baseFrequency="150.0" soundSpeed="1028.888888888889">
       <name>first cuts</name>
       <active>true</active>
-      <weight>5</weight>
+      <weight>9</weight>
       <startDate>2010-01-12 13:15:00.0 UTC</startDate>
       <finishDate>2010-01-12 13:18:20.0 UTC</finishDate>
       <measurements>
@@ -2798,33 +2798,15 @@
         <finishDate reference="../../finishDate"/>
       </course>
     </compositeStraightLegForecastContribution>
-    <compositeStraightLegForecastContribution>
-      <name>leg two</name>
-      <active>false</active>
-      <weight>5</weight>
-      <startDate>2010-01-12 13:35:00.0 UTC</startDate>
-      <finishDate>2010-01-12 13:41:40.0 UTC</finishDate>
-      <color>
-        <red>0</red>
-        <green>255</green>
-        <blue>0</blue>
-        <alpha>255</alpha>
-      </color>
-      <speed>
-        <name>auto_id:1412150555991+_835</name>
-        <active>true</active>
-        <weight>5</weight>
-        <startDate reference="../../startDate"/>
-        <finishDate reference="../../finishDate"/>
-      </speed>
-      <course>
-        <name>auto_id:1412150555991+_952</name>
-        <active>true</active>
-        <weight>5</weight>
-        <startDate reference="../../startDate"/>
-        <finishDate reference="../../finishDate"/>
-      </course>
-    </compositeStraightLegForecastContribution>
+    <speedForecastContribution>
+      <name>first leg speed</name>
+      <active>true</active>
+      <weight>2</weight>
+      <startDate>2010-01-12 13:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 13:20:00.0 UTC</finishDate>
+      <minSpeed>3.7039999968</minSpeed>
+      <maxSpeed>6.3791111056</maxSpeed>
+    </speedForecastContribution>
     <courseAnalysisContribution>
       <name>Course Analysis</name>
       <active>true</active>
@@ -2845,10 +2827,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.3029572" Long="-0.3333814"/>
+<shortLocation Depth="0.000" Lat="60.2587204" Long="-0.3484622"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.9883599" Long="0.0127889"/>
+<shortLocation Depth="0.000" Lat="59.9997434" Long="0.1140178"/>
 </br>
 </projection>
 <gui>
