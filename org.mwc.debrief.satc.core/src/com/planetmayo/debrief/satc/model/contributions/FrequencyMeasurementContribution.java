@@ -17,7 +17,6 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
@@ -36,6 +35,10 @@ public class FrequencyMeasurementContribution extends
 		CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
 {
 	private static final long serialVersionUID = 1L;
+
+	public static final String SOUND_SPEED = "soundSpeed";
+	public static final String F_NOUGHT = "baseFrequency";
+
 
 	/**
 	 * the radiated frequency for this noise source
@@ -199,12 +202,22 @@ public class FrequencyMeasurementContribution extends
 	 */
 	public void setBaseFrequency(double baseFrequency)
 	{
+		double oldFreq = this.baseFrequency;
+		
 		this.baseFrequency = baseFrequency;
+		
+		firePropertyChange(F_NOUGHT, oldFreq,
+				this.baseFrequency);		
 	}
 
 	public void setSoundSpeed(double soundSpeed)
 	{
+		double oldSpeed = this.soundSpeed;
+		
 		this.soundSpeed = soundSpeed;
+		
+		firePropertyChange(SOUND_SPEED, oldSpeed,
+				this.soundSpeed);		
 	}
 
 	public double getBaseFrequency()
@@ -215,21 +228,6 @@ public class FrequencyMeasurementContribution extends
 	public double getSoundSpeed()
 	{
 		return soundSpeed;
-	}
-
-	private FMeasurement measurementAt(Date date)
-	{
-		Iterator<FMeasurement> iter = this.measurements.iterator();
-		while (iter.hasNext())
-		{
-			FMeasurement measurement = (FMeasurement) iter.next();
-			if (measurement.getDate().equals(date))
-			{
-				return measurement;
-			}
-		}
-
-		return null;
 	}
 
 	public void loadFrom(List<String> lines)
