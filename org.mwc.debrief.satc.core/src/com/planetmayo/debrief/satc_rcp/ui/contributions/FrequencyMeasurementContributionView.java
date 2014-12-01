@@ -84,8 +84,8 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 		speedSoundText.addVerifyListener(new DoubleVerifier());
 		
 		// add FNought
-		gd = new GridData(90, SWT.DEFAULT);
-		UIUtils.createLabel(speed, "F0 (Hz):", gd);
+		gd = new GridData(110, SWT.DEFAULT);
+		UIUtils.createLabel(speed, "Base Freq (Hz):", gd);
 		
 		fNoughtText = new Text(speed, SWT.BORDER|SWT.TRAIL);
 		gd = new GridData(100,SWT.DEFAULT);
@@ -130,9 +130,9 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 		ISWTObservableValue soundTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(speedSoundText);
 		
-		IConverter modelToUI = new KtsToMsConverter();
+		IConverter modelToUI = new UserToModelConverter();
 		
-		IConverter uiToModel = new MsToKtsConverter();
+		IConverter uiToModel = new ModelToUserConverter();
 
 //  TODO: if I use the next line (which doesn't require any data conversion), 
 //           the sound speed box stays empty. Things work fine for f-Nought
@@ -166,10 +166,9 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	{
 	}
 	
-	private class KtsToMsConverter implements IConverter
+	private class UserToModelConverter implements IConverter
 	{
 		final DecimalFormat df = new DecimalFormat("0.0");
-		final KtsToMSec converter = new KtsToMSec();
 	
 		@Override
 		public Object getToType()
@@ -190,17 +189,14 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 			{
 				return null;
 			}
-			Double kts = (Double) fromObject;
-			Double ms = (Double) converter.convert(kts);
-			String res = df.format(ms);
+			Double val = (Double) fromObject;
+			String res = df.format(val);
 			return res;
 		}
 	}
 
-	private class MsToKtsConverter implements IConverter
+	private class ModelToUserConverter implements IConverter
 	{
-		final MSecToKts converter = new MSecToKts();
-		
 		@Override
 		public Object getToType()
 		{
@@ -221,9 +217,8 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 				return null;
 			}
 			
-			double ms = new Double((String)fromObject).doubleValue();
-			Double kts = (Double) converter.convert(ms);			
-			return new Double(kts);
+			double val = new Double((String)fromObject).doubleValue();
+			return new Double(val);
 		}
 
 	}
