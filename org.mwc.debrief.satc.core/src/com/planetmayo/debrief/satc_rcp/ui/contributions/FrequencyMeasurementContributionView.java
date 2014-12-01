@@ -37,8 +37,6 @@ import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContr
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
-import com.planetmayo.debrief.satc_rcp.ui.converters.units.KtsToMSec;
-import com.planetmayo.debrief.satc_rcp.ui.converters.units.MSecToKts;
 
 public class FrequencyMeasurementContributionView extends BaseContributionView<FrequencyMeasurementContribution>
 {
@@ -120,7 +118,13 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 		ISWTObservableValue fNoughtTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(fNoughtText);
 		
-		context.bindValue(fNoughtTextValue, fNoughtValue);
+		// converter rounding the value to 1 decimal place
+		IConverter modelToUI = new RoundMUIConverter();
+		IConverter uiToModel = new RoundUIMConverter();
+
+		context.bindValue(fNoughtTextValue, fNoughtValue,
+				UIUtils.converterStrategy(uiToModel),
+				UIUtils.converterStrategy(modelToUI));
 	}
 
 	private void bindSpeed(DataBindingContext context)
@@ -130,13 +134,9 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 		ISWTObservableValue soundTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(speedSoundText);
 		
-		IConverter modelToUI = new KtsToMsConverter();
-		
-		IConverter uiToModel = new MsToKtsConverter();
-
-//  TODO: if I use the next line (which doesn't require any data conversion), 
-//           the sound speed box stays empty. Things work fine for f-Nought
-//	context.bindValue(soundTextValue, soundValue);
+		// converter rounding the value to 1 decimal place
+		IConverter modelToUI = new RoundMUIConverter();
+		IConverter uiToModel = new RoundUIMConverter();
 		
 		context.bindValue(soundTextValue, soundValue,
 				UIUtils.converterStrategy(uiToModel),
@@ -166,11 +166,10 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	{
 	}
 	
-	private class KtsToMsConverter implements IConverter
+	private class RoundMUIConverter implements IConverter
 	{
 		final DecimalFormat df = new DecimalFormat("0.0");
-		final KtsToMSec converter = new KtsToMSec();
-	
+		
 		@Override
 		public Object getToType()
 		{
@@ -191,16 +190,13 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 				return null;
 			}
 			Double kts = (Double) fromObject;
-			Double ms = (Double) converter.convert(kts);
-			String res = df.format(ms);
+			String res = df.format(kts);
 			return res;
 		}
 	}
-
-	private class MsToKtsConverter implements IConverter
+	
+	private class RoundUIMConverter implements IConverter
 	{
-		final MSecToKts converter = new MSecToKts();
-		
 		@Override
 		public Object getToType()
 		{
@@ -221,13 +217,11 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 				return null;
 			}
 			
-			double ms = new Double((String)fromObject).doubleValue();
-			Double kts = (Double) converter.convert(ms);			
-			return new Double(kts);
+			return new Double((String)fromObject);
 		}
 
 	}
-
+	
 	private class DoubleVerifier implements VerifyListener
 	{
 
