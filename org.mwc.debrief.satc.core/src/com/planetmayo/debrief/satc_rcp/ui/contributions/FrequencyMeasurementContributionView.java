@@ -37,8 +37,6 @@ import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContr
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
-import com.planetmayo.debrief.satc_rcp.ui.converters.units.KtsToMSec;
-import com.planetmayo.debrief.satc_rcp.ui.converters.units.MSecToKts;
 
 public class FrequencyMeasurementContributionView extends BaseContributionView<FrequencyMeasurementContribution>
 {
@@ -146,6 +144,7 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	@Override
 	protected void initializeWidgets()
 	{
+		hardConstraintLabel.setText("n/a");
 	}
 
 	@Override
