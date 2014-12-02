@@ -45,19 +45,19 @@ public final class Doublet implements Comparable<Doublet>
 		public void testCorrected()
 		{
 			double res = convertAndTest(320, 28, 8, 300);
-			assertEquals("right freq", -0.304, res, 0.1);
+			assertEquals("right freq", 0.304, res, 0.1);
 
 			res = convertAndTest(320, 328, 8, 300);
-			assertEquals("right freq", -0.805, res, 0.1);
+			assertEquals("right freq", 0.805, res, 0.1);
 
 			res = convertAndTest(320, 158, 8, 300);
-			assertEquals("right freq", 0.7734, res, 0.01);
+			assertEquals("right freq", -0.7734, res, 0.01);
 
 			res = convertAndTest(320, 158, 9, 300);
-			assertEquals("right freq", 0.870, res, 0.01);
+			assertEquals("right freq", -0.870, res, 0.01);
 
 			res = convertAndTest(150, 158, 9, 300);
-			assertEquals("right freq", -0.906, res, 0.01);
+			assertEquals("right freq", 0.906, res, 0.01);
 		}
 	}
 
@@ -70,7 +70,7 @@ public final class Doublet implements Comparable<Doublet>
 	 *          the speed of sound to use, m/sec
 	 * @return
 	 */
-	public static double getDopplerShift(final double SpeedOfSound, final Fix host, final Fix tgt)
+	public static double getDopplerShift(final double SpeedOfSound, final double fNought, final Fix host, final Fix tgt)
 	{
 		final double osKts = Conversions.Yps2Kts(host.getSpeed());
 		final double tgtKts = Conversions.Yps2Kts(tgt.getSpeed());
@@ -82,12 +82,10 @@ public final class Doublet implements Comparable<Doublet>
 
 		// produce dLat, dLong at the correct point on the earth
 		final WorldVector offset = tgt.getLocation().subtract(host.getLocation());
-		final double dLat = offset.getRange() * Math.cos(offset.getBearing());
-		final double dLong = offset.getRange() * Math.sin(offset.getBearing());
 
 		// done, go for it.
-		return FrequencyCalcs.calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads,
-				osSpeed, tgtSpeed, dLat, dLong);
+		return FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound, osHeadingRads, tgtHeadingRads,
+				osSpeed, tgtSpeed, offset.getBearing(), fNought);
 	}
 
 	private final SensorContactWrapper _sensor;

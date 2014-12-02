@@ -19,65 +19,94 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import MWC.GUI.Editable;
-import MWC.GUI.Properties.BoundedInteger;
 
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
 
-public class BMC_Wrapper
+public class FMC_Wrapper
 		extends
-		CoreLayer_Wrapper<BearingMeasurementContribution, BMeasurement, BMC_Wrapper.BearingMeasurementWrapper>
+		CoreLayer_Wrapper<FrequencyMeasurementContribution, FMeasurement, FMC_Wrapper.FrequencyMeasurementEditable>
 {
-
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public BMC_Wrapper(final BearingMeasurementContribution contribution)
+	public FMC_Wrapper(final FrequencyMeasurementContribution contribution)
 	{
 		super(contribution);
 	}
 
 	protected void addThis(CoreMeasurement meas)
 	{
-		final BearingMeasurementWrapper thisMe = new BearingMeasurementWrapper(
+		final FrequencyMeasurementEditable thisMe = new FrequencyMeasurementEditable(
 				meas);
 		_myElements.add(thisMe);
 	}
 	
-	public BoundedInteger getError()
+
+	private FrequencyMeasurementContribution getFMC()
 	{
-		final BearingMeasurementContribution bm = (BearingMeasurementContribution) super
-				.getContribution();
-		return new BoundedInteger((int) Math.toDegrees(bm.getBearingError()), 1, 20);
+		return (FrequencyMeasurementContribution) super.getBMC();
+	}
+	
+	public double getBaseFrequency()
+	{
+		return getFMC().getBaseFrequency();
+	}
+
+	public void setBaseFrequency(double baseFrequency)
+	{
+		getFMC().setBaseFrequency(baseFrequency);
+	}
+
+	public double getSoundSpeed()
+	{
+		return getFMC().getSoundSpeed();
+	}
+
+	public void setSoundSpeed(double soundSpeed)
+	{
+		getFMC().setSoundSpeed(soundSpeed);
 	}
 
 	@Override
 	public EditorType getInfo()
 	{
 		if (_myEditor == null)
-			_myEditor = new BMC_Info(this);
+			_myEditor = new FMC_Info(this);
 		return _myEditor;
 	}
 
-	public void setError(final BoundedInteger error)
-	{
-		final BearingMeasurementContribution bm = (BearingMeasurementContribution) super
-				.getContribution();
-		bm.setBearingError(Math.toRadians(error.getCurrent()));
-	}
-
 	@SuppressWarnings("rawtypes")
-	public class BearingMeasurementWrapper extends
+	public class FrequencyMeasurementEditable extends
 			CoreLayer_Wrapper.CoreMeasurementWrapper
 	{
+		
 		private EditorType _myEditor;
 
-		public BearingMeasurementWrapper(final CoreMeasurement measurement)
+		private double Frequency;
+		
+		public FrequencyMeasurementEditable(final CoreMeasurement measurement)
 		{
 			super(measurement);
+		}
+
+		private FMeasurement getFM()
+		{
+			return (FMeasurement) _myMeas;
+		}
+		
+		public double getFrequency()
+		{
+			return getFM().getFrequency();
+		}
+
+		public void setFrequency(double frequency)
+		{
+			getFM().setFrequency(frequency);
 		}
 
 		@Override
@@ -99,7 +128,7 @@ public class BMC_Wrapper
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public Meas_Info(final BearingMeasurementWrapper data)
+			public Meas_Info(final FrequencyMeasurementEditable data)
 			{
 				super(data, data.getName(), "");
 			}
@@ -110,7 +139,10 @@ public class BMC_Wrapper
 				try
 				{
 					final PropertyDescriptor[] res =
-					{ prop("Active", "whether to use this bearing", EditorType.OPTIONAL) };
+					{ 
+							prop("Active", "whether to use this bearing", EditorType.OPTIONAL),
+							prop("Frequency", "Measured value of frequency", EditorType.SPATIAL),
+							};
 
 					return res;
 				}
@@ -122,7 +154,7 @@ public class BMC_Wrapper
 		}
 	}
 
-	public class BMC_Info extends Editable.EditorType implements Serializable
+	public class FMC_Info extends Editable.EditorType implements Serializable
 	{
 
 		/**
@@ -130,7 +162,7 @@ public class BMC_Wrapper
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public BMC_Info(final BMC_Wrapper data)
+		public FMC_Info(final FMC_Wrapper data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -142,10 +174,9 @@ public class BMC_Wrapper
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("Error", "the size of bearing error to allow",
-								EditorType.SPATIAL),
-						prop("Name", "name of this contribution", EditorType.FORMAT)
-
+						prop("Name", "name of this contribution", EditorType.FORMAT),
+						prop("SoundSpeed", "Speed of Sound (kts)", EditorType.SPATIAL),
+						prop("BaseFrequency", "Base radiated frequency", EditorType.SPATIAL)
 				};
 
 				return res;

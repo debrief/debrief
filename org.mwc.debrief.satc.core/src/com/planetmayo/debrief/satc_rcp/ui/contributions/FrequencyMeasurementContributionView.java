@@ -14,79 +14,260 @@
  */
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import java.text.DecimalFormat;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
-import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
 public class FrequencyMeasurementContributionView extends BaseContributionView<FrequencyMeasurementContribution>
 {
-	private Scale errorSlider;
-	private Label errorLabel;
-	private Button errorActiveCheckbox;	
 
-	public FrequencyMeasurementContributionView(Composite parent,
-			FrequencyMeasurementContribution contribution, IContributions contributions)
+	private Text speedSoundText;
+	private Text fNoughtText;
+
+	public FrequencyMeasurementContributionView(Composite parent, FrequencyMeasurementContribution contribution,
+			IContributions contributions)
 	{
 		super(parent, contribution, contributions);
 		initUI();
 	}
 
 	@Override
-	protected void bindValues(DataBindingContext context)
+	protected void initUI()
 	{
-		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "+/- ", " Hz");
-		IObservableValue errorValue = BeansObservables.observeValue(
-				contribution, FrequencyMeasurementContribution.FREQUENCY_ERROR);
-		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, BearingMeasurementContribution.ESTIMATE);		
-		bindCommonHeaderWidgets(context, errorValue, estimateValue, 
-				new PrefixSuffixLabelConverter(Object.class, " Measurements"), labelConverter);
+		GridLayout layout = UIUtils.createGridLayoutWithoutMargins(1, false);
+		layout.verticalSpacing = 0;
+		mainGroup = new Group(controlParent, SWT.SHADOW_ETCHED_IN);
+		mainGroup.setLayout(layout);
+		mainGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		
+		createHeader(mainGroup);
+		createBody(mainGroup);
+
+		titleChangeListener =
+				attachTitleChangeListener(contribution, getTitlePrefix());
+		initializeWidgets();
+		
+		// add sound speed
+		UIUtils.createLabel(bodyGroup, "Sound Speed (m/s):", new GridData(130, SWT.DEFAULT));
+		UIUtils.createSpacer(bodyGroup, new GridData(45, SWT.DEFAULT));
+		
+		// add the speed
+		Composite speed = new Composite(bodyGroup, SWT.NONE);
+		speed.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		speed.setLayout(new GridLayout(4, false));
+		
+		speedSoundText = new Text(speed, SWT.BORDER|SWT.TRAIL);
+		GridData gd = new GridData(100, SWT.DEFAULT);
+		speedSoundText.setLayoutData(gd);
+		speedSoundText.addVerifyListener(new DoubleVerifier());
+		
+		// add FNought
+		gd = new GridData(110, SWT.DEFAULT);
+		UIUtils.createLabel(speed, "Base Freq (Hz):", gd);
+		
+		fNoughtText = new Text(speed, SWT.BORDER|SWT.TRAIL);
+		gd = new GridData(100,SWT.DEFAULT);
+		fNoughtText.setLayoutData(gd);
+		fNoughtText.addVerifyListener(new DoubleVerifier());
+		
+		// and tie the values together
+		context = new DataBindingContext();
+		bindValues(context);
+	}
+
+	@Override
+	protected void bindValues(DataBindingContext context)
+	{	
+		IObservableValue observationNumberValue = BeansObservables.observeValue(
+				contribution, CoreMeasurementContribution.OBSERVATIONS_NUMBER);		
+		bindCommonHeaderWidgets(context, null, observationNumberValue, 
+				new PrefixSuffixLabelConverter(Object.class, " Measurements"), null);
 		bindCommonDates(context);
 
-		bindSliderLabelCheckbox(context, errorValue, errorSlider, errorLabel, errorActiveCheckbox,
-				labelConverter, new BooleanToNullConverter<Double>(0d), null);		
+		// bind SpeedSound
+		bindSpeed(context);
+		
+		// bind FNought
+		bindFNought(context);
 	}
-	
-	@Override
-	protected void createLimitAndEstimateSliders()
+
+	private void bindFNought(DataBindingContext context)
 	{
-		UIUtils.createLabel(bodyGroup, "Error: ", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		IObservableValue fNoughtValue = BeansObservables.observeValue(contribution,
+				FrequencyMeasurementContribution.F_NOUGHT);
+		ISWTObservableValue fNoughtTextValue = WidgetProperties.text(SWT.FocusOut)
+				.observe(fNoughtText);
 		
-		Composite group = new Composite(bodyGroup, SWT.NONE);
-		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
-		errorActiveCheckbox = new Button(group, SWT.CHECK);
-		errorLabel = UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		// converter rounding the value to 1 decimal place
+		IConverter modelToUI = new RoundMUIConverter();
+		IConverter uiToModel = new RoundUIMConverter();
+
+		context.bindValue(fNoughtTextValue, fNoughtValue,
+				UIUtils.converterStrategy(uiToModel),
+				UIUtils.converterStrategy(modelToUI));
+	}
+
+	private void bindSpeed(DataBindingContext context)
+	{
+		IObservableValue soundValue = BeansObservables.observeValue(contribution,
+				FrequencyMeasurementContribution.SOUND_SPEED);
+		ISWTObservableValue soundTextValue = WidgetProperties.text(SWT.FocusOut)
+				.observe(speedSoundText);
 		
-		errorSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
-		errorSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		// converter rounding the value to 1 decimal place
+		IConverter modelToUI = new RoundMUIConverter();
+		IConverter uiToModel = new RoundUIMConverter();
+		
+		context.bindValue(soundTextValue, soundValue,
+				UIUtils.converterStrategy(uiToModel),
+				UIUtils.converterStrategy(modelToUI));
 	}
 	
 	@Override
 	protected void initializeWidgets()
 	{
-		startDate.setEnabled(false);
-		startTime.setEnabled(false);
-		endDate.setEnabled(false);
-		endTime.setEnabled(false);
+		hardConstraintLabel.setText("n/a");
 	}
 
 	@Override
 	protected String getTitlePrefix()
 	{
 		return "Frequency Measurement - ";
-	}	
+	}
+
+	@Override
+	protected void bindMaxMinEstimate(IObservableValue estimate,
+			IObservableValue min, IObservableValue max)
+	{
+		
+	}
+
+	@Override
+	protected void createLimitAndEstimateSliders()
+	{
+	}
+	private class RoundMUIConverter implements IConverter
+	{
+		final DecimalFormat df = new DecimalFormat("0.0");
+		
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+	
+		@Override
+		public Object getFromType()
+		{
+			return Double.class;
+		}
+	
+		@Override
+		public Object convert(Object fromObject)
+		{
+			if (fromObject == null)
+			{
+				return null;
+			}
+			Double kts = (Double) fromObject;
+			String res = df.format(kts);
+			return res;
+		}
+	}
+	
+	private class RoundUIMConverter implements IConverter
+	{
+		@Override
+		public Object getToType()
+		{
+			return Double.class;
+		}
+		
+		@Override
+		public Object getFromType()
+		{
+			return String.class;
+		}
+		
+		@Override
+		public Object convert(Object fromObject)
+		{
+			String s = (String) fromObject;
+			if (fromObject == null || s.isEmpty()) {
+				return null;
+			}
+			
+			return new Double((String)fromObject);
+		}
+
+	}
+	
+	
+	private class DoubleVerifier implements VerifyListener
+	{
+
+		@Override
+		public void verifyText(VerifyEvent e)
+		{
+			if (e.text.isEmpty())
+			{
+				return;
+			}
+			String s = e.text;
+			char[] chars = new char[s.length()];
+			s.getChars(0, chars.length, chars, 0);
+			for (int i = 0; i < chars.length; i++)
+			{
+				if (!('0' <= chars[i] && chars[i] <= '9'))
+				{
+					if (chars[i] != '.')
+					{
+						Display.getCurrent().beep();
+						e.doit = false;
+						return;
+					}
+				}
+			}
+			if (e.widget instanceof Text)
+			{
+				Text text = (Text) e.widget;
+				final String oldS = text.getText();
+				final String newS = oldS.substring(0, e.start) + e.text
+						+ oldS.substring(e.end);
+				int index = newS.indexOf(".");
+				if (index >= 0)
+				{
+					int i2 = newS.indexOf(".", index + 1);
+					if (i2 >= 0)
+					{
+						Display.getCurrent().beep();
+						e.doit = false;
+						return;
+					}
+				}
+				
+			}
+		}
+
+	}
 }

@@ -14,98 +14,220 @@
  */
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.DopplerCalculator;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
-public class FrequencyMeasurementContribution extends BaseContribution
+public class FrequencyMeasurementContribution extends
+		CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final String FREQUENCY_ERROR = "frequencyError";
+	public static final String SOUND_SPEED = "soundSpeed";
+	public static final String F_NOUGHT = "baseFrequency";
+
 
 	/**
-	 * the allowable frequency error (in hertz)
+	 * the radiated frequency for this noise source
 	 * 
 	 */
-	private Double frequencyError = 0d;
+	private double baseFrequency;
 
 	/**
-	 * the set of measurements we store
+	 * the speed of sound for this body of water (m/s)
 	 * 
 	 */
-	private ArrayList<FMeasurement> measurements = new ArrayList<FMeasurement>();
+	private double soundSpeed = 2000;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		// do something...
+		// hmm, can't think of anything clever to do here
 	}
 
-	public void addEstimate(double lat, double lon, Date date, double brg,
-			double freq)
+	protected double cumulativeScoreFor(CoreRoute route)
 	{
-		GeoPoint loc = new GeoPoint(lat, lon);
-		FMeasurement measure = new FMeasurement(loc, brg, date, freq);
-		addThis(measure);
-		firePropertyChange(ESTIMATE, measurements.size(), measurements.size());
+		if (!isActive() || route.getType() == LegType.ALTERING)
+		{
+			return 0;
+		}
+		double res = 0;
+		int count = 0;
+		for (FMeasurement meas : measurements)
+		{
+			Date dateMeasurement = meas.getDate();
+			if (dateMeasurement.compareTo(route.getStartTime()) >= 0
+					&& dateMeasurement.compareTo(route.getEndTime()) <= 0)
+			{
+				State state = route.getStateAt(dateMeasurement);
+				if (state != null && state.getLocation() != null)
+				{
+					
+					if (meas.isActive())
+					{
+						// right, do we know the ownship origin?
+						GeoPoint origin = meas.getOrigin();
+
+						if (origin != null)
+						{
+							// and check the course/speed
+							Double course = meas.getCourse();
+							Double speed = meas.getSpeed();
+
+							// ok, can we do a calculation
+							if ((course != null) && (speed != null))
+							{
+								// calculate the forecast frequency
+
+								// what's the bearing?
+								GeodeticCalculator calc = GeoSupport.createCalculator();
+								calc.setStartingGeographicPoint(new Point2D.Double(origin.getLon(),
+										origin.getLat()));
+								calc.setDestinationGeographicPoint(new Point2D.Double(state
+										.getLocation().getX(), state.getLocation().getY()));
+								double bearing = Math.toRadians(calc.getAzimuth());
+
+								// now try for the predicted doppler
+								DopplerCalculator calculator = SATC_Activator.getDefault()
+										.getDopplerCalculator();
+
+								// do we hav a calculator?
+								if (calculator != null)
+								{
+									final double predicted = calculator.calcPredictedFreq(soundSpeed,
+											meas.getCourse(), state.getCourse(), meas.getSpeed(),
+											state.getSpeed(), bearing, getBaseFrequency());
+
+									double error = predicted - meas.frequency;									
+									res += error * error;
+									count++;
+
+								}
+							}
+						}
+					}
+					
+				}
+			}
+		}
+		if (count > 0)
+		{
+			res = Math.sqrt(res / count);
+		}
+		return res;
 	}
+	
+//	@Override
+//	protected double calcError(State thisState)
+//	{
+//		double res = 0;
+//
+//		Date date = thisState.getTime();
+//
+//		FMeasurement meas = measurementAt(date);
+//
+//		if (meas != null)
+//		{
+//			if (meas.isActive())
+//			{
+//				// right, do we know the ownship origin?
+//				GeoPoint origin = meas.getOrigin();
+//
+//				if (origin != null)
+//				{
+//					// and check the course/speed
+//					Double course = meas.getCourse();
+//					Double speed = meas.getSpeed();
+//
+//					// ok, can we do a calculation
+//					if ((course != null) && (speed != null))
+//					{
+//						// calculate the forecast frequency
+//
+//						// what's the bearing?
+//						GeodeticCalculator calc = GeoSupport.createCalculator();
+//						calc.setStartingGeographicPoint(new Point2D.Double(origin.getLon(),
+//								origin.getLat()));
+//						calc.setDestinationGeographicPoint(new Point2D.Double(thisState
+//								.getLocation().getX(), thisState.getLocation().getY()));
+//						double bearing = Math.toRadians(calc.getAzimuth());
+//
+//						// now try for the predicted doppler
+//						DopplerCalculator calculator = SATC_Activator.getDefault()
+//								.getDopplerCalculator();
+//
+//						// do we hav a calculator?
+//						if (calculator != null)
+//						{
+//							final double predicted = calculator.calcPredictedFreq(soundSpeed,
+//									meas.getCourse(), thisState.getCourse(), meas.getSpeed(),
+//									thisState.getSpeed(), bearing, getBaseFrequency());
+//
+//							double error = predicted - meas.frequency;
+//
+//							res += Math.pow(error, 2);
+//						}
+//						else
+//						{
+//							SATC_Activator.log(Status.ERROR,
+//									"Doppler calculator not assigned in SATC_Activator", null);
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+////		System.out.println("res:" + res);
+//
+//		return res;
+//	}
 
 	/**
-	 * store this new measurement
+	 * indicate the base frequency for this block of data
 	 * 
-	 * @param measure
+	 * @param baseFrequency
 	 */
-	public void addThis(FMeasurement measure)
+	public void setBaseFrequency(double baseFrequency)
 	{
-		// extend the time period accordingly
-		if (this.getStartDate() == null)
-		{
-			this.setStartDate(measure.time);
-			this.setFinishDate(measure.time);
-		}
-		else
-		{
-			long newTime = measure.time.getTime();
-			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure.time);
-			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure.time);
-		}
-
-		measurements.add(measure);
+		double oldFreq = this.baseFrequency;
+		
+		this.baseFrequency = baseFrequency;
+		
+		firePropertyChange(F_NOUGHT, oldFreq,
+				this.baseFrequency);		
 	}
 
-	public double getFrequencyError()
+	public void setSoundSpeed(double soundSpeed)
 	{
-		return frequencyError;
+		double oldSpeed = this.soundSpeed;
+		
+		this.soundSpeed = soundSpeed;
+		
+		firePropertyChange(SOUND_SPEED, oldSpeed,
+				this.soundSpeed);		
 	}
 
-	@Override
-	public ContributionDataType getDataType()
+	public double getBaseFrequency()
 	{
-		return ContributionDataType.MEASUREMENT;
+		return baseFrequency;
 	}
 
-	public int getEstimate()
+	public double getSoundSpeed()
 	{
-		return measurements.size();
-	}
-
-	/**
-	 * whether this contribution has any measurements yet
-	 * 
-	 * @return
-	 */
-	public boolean hasData()
-	{
-		return measurements.size() > 0;
+		return soundSpeed;
 	}
 
 	public void loadFrom(List<String> lines)
@@ -143,14 +265,13 @@ public class FrequencyMeasurementContribution extends BaseContribution
 			String lonHemi = elements[12];
 
 			// and the beraing
-			String bearing = elements[13];
 
 			// and the range
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd hhmmss"),
-					date + " " + time);
+			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+					"yyMMdd hhmmss"), date + " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
@@ -162,50 +283,73 @@ public class FrequencyMeasurementContribution extends BaseContribution
 			if (lonHemi.toUpperCase().equals("W"))
 				lon = -lon;
 
-			GeoPoint theLoc = new GeoPoint(lat, lon);
-			FMeasurement measure = new FMeasurement(theLoc, Math.toRadians(Double.valueOf(bearing)),
-					theDate, Double.valueOf(range));
+			FMeasurement measure = new FMeasurement(theDate, Double.valueOf(range));
 
-			addThis(measure);
+			addMeasurement(measure);
 
 		}
-		this.setFrequencyError(2d);
 	}
 
-	public void setFrequencyError(double newFrequencyError)
-	{
-		double old = frequencyError;
-		this.frequencyError = newFrequencyError;
-		firePropertyChange(FREQUENCY_ERROR, old, newFrequencyError);
-		firePropertyChange(HARD_CONSTRAINTS, old, newFrequencyError);
-	}
-	
 	/**
 	 * utility class for storing a measurement
 	 * 
 	 * @author ian
 	 * 
 	 */
-	public static class FMeasurement
+	public static class FMeasurement extends
+			CoreMeasurementContribution.CoreMeasurement
 	{
-		@SuppressWarnings("unused")
-		private final GeoPoint origin;
-		@SuppressWarnings("unused")
-		private final double bearingAngle;
-		private final Date time;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
-		@SuppressWarnings("unused")
-		private final Double frequency;
+		private Double frequency;
+		private Double osCourse = null;
+		private Double osSpeed = null;
+		private GeoPoint osOrigin;
 
-		public FMeasurement(GeoPoint loc, double bearing, Date time, Double frequency)
+		public FMeasurement(Date time, Double frequency)
 		{
-			this.origin = loc;
-			this.bearingAngle = bearing;
-			this.time = time;
+			super(time);
 			this.frequency = frequency;
 		}
-	}	
+
+		public void setState(double crseRads, double spdMs)
+		{
+			osCourse = crseRads;
+			osSpeed = spdMs;
+		}
+
+		public void setOrigin(GeoPoint origin)
+		{
+			osOrigin = origin;
+		}
+
+		public GeoPoint getOrigin()
+		{
+			return osOrigin;
+		}
+
+		public Double getSpeed()
+		{
+			return osSpeed;
+		}
+
+		public Double getCourse()
+		{
+			return osCourse;
+		}
+
+		public Double getFrequency()
+		{
+			return frequency;
+		}
+
+		public void setFrequency(Double theFreq)
+		{
+			this.frequency = theFreq;
+		}
+
+	}
+
 }

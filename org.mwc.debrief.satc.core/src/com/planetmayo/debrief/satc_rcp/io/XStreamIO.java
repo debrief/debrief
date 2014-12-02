@@ -34,6 +34,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurement;
@@ -85,25 +86,28 @@ public class XStreamIO
 		xstream.useAttributeFor(FrequencyMeasurement.class, "time");
 		xstream.useAttributeFor(FrequencyMeasurement.class, "isActive");
 		
+		xstream.useAttributeFor(FrequencyMeasurementContribution.class, "baseFrequency");
+		xstream.useAttributeFor(FrequencyMeasurementContribution.class, "soundSpeed");
+		
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "fNought");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "speedSound");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "calculatedRange");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "minRangeM");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "maxRangeM");
 		
-		xstream.useAttributeFor(BMeasurement.class, "origin");
-		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
-		xstream.useAttributeFor(BMeasurement.class, "isActive");
-		xstream.useAttributeFor(BMeasurement.class, "time");
-		xstream.useAttributeFor(BMeasurement.class, "range");
+		xstream.useAttributeFor(CoreMeasurement.class, "isActive");
+		xstream.useAttributeFor(CoreMeasurement.class, "time");
 
 		xstream.useAttributeFor(ROrigin.class, "origin");
 		xstream.useAttributeFor(ROrigin.class, "time");
 
-		xstream.useAttributeFor(FMeasurement.class, "origin");
-		xstream.useAttributeFor(FMeasurement.class, "bearingAngle");
-		xstream.useAttributeFor(FMeasurement.class, "origin");
+		xstream.useAttributeFor(BMeasurement.class, "origin");
+		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
+		xstream.useAttributeFor(BMeasurement.class, "range");
+
 		xstream.useAttributeFor(FMeasurement.class, "frequency");
+		xstream.useAttributeFor(FMeasurement.class, "osCourse");
+		xstream.useAttributeFor(FMeasurement.class, "osSpeed");
 
 		xstream.useAttributeFor(GeoPoint.class, "lat");
 		xstream.useAttributeFor(GeoPoint.class, "lon");		

@@ -33,11 +33,13 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.osgi.framework.BundleContext;
 
+import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc.util.DopplerCalculator;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 /**
@@ -129,6 +131,18 @@ public class SATC_Interface_Activator extends AbstractUIPlugin
 		// register our image helper
 		CoreViewLabelProvider.addImageHelper(new SATC_ImageHelper());
 
+		// register our doppler calculator
+		SATC_Activator.getDefault().setDopplerCalculator(new DopplerCalculator()
+		{
+			
+			@Override
+			public double calcPredictedFreq(double SpeedOfSound, double osHeadingRads,
+					double tgtHeadingRads, double osSpeed, double tgtSpeed, double bearing, double fNought)
+			{
+				return FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound, osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearing, fNought);
+			}
+		});
+		
 	}
 
 	private void initPartMonitor()

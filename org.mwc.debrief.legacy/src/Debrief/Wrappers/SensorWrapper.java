@@ -207,6 +207,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * sensor that follows the track of it's host platform (like a towed array).
 	 */
 	private boolean _wormInHole = true;
+	
+	/** the radiated (source) transmitted frequency
+	 *  
+	 */
+	private double _baseFrequency = 0;
 
 	private HiResDate _lastDataFrequency = new HiResDate(0,
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
@@ -243,6 +248,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	// member methods to meet plain wrapper responsibilities
 	// //////////////////////////////////////
 
+	
 	/**
 	 * the real getBounds object, which uses properties of the parent
 	 */
@@ -304,6 +310,16 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		}
 
 		return res;
+	}
+
+	public double getBaseFrequency()
+	{
+		return _baseFrequency;
+	}
+
+	public void setBaseFrequency(double baseFrequency)
+	{
+		_baseFrequency = baseFrequency;
 	}
 
 	/**
@@ -699,6 +715,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 						longProp("VisibleFrequency",
 								"How frequently to display sensor cuts",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertProp("BaseFrequency",
+								"The base frequency of the source for this sound", OPTIONAL),								
 						expertLongProp("ResampleDataAt", "the sensor cut sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class) };
 

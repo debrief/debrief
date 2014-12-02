@@ -535,6 +535,12 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="DetectionIntervalMillis" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>How long to pause between detection opportunities.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

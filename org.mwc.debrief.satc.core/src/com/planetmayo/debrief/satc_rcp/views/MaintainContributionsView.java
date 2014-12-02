@@ -68,6 +68,7 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.Range1959ForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
@@ -94,6 +95,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.BaseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CompositeStraightLegForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.FrequencyMeasurementContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionView;
@@ -128,6 +130,8 @@ public class MaintainContributionsView extends ViewPart
 				ATBForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(BearingMeasurementContribution.class,
 				BearingMeasurementContributionView.class);
+		CONTRIBUTION_PANELS.put(FrequencyMeasurementContribution.class,
+				FrequencyMeasurementContributionView.class);
 		CONTRIBUTION_PANELS.put(CourseForecastContribution.class,
 				CourseContributionView.class);
 		CONTRIBUTION_PANELS.put(LocationForecastContribution.class,

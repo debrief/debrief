@@ -1018,8 +1018,9 @@ public class FlatFileExporter
 					sensor1.getSensorOffset(), sensor1.getWormInHole());
 			sensor1Loc = sensorFix.getLocation();
 
-			final double s1doppler = Doublet.getDopplerShift(speedOfSoundMS,
-					sensorFix.getFix(), msdFix.getFix());
+			final double s1doppler = Doublet.getDopplerShift(speedOfSoundMS, 
+					sensor1.getBaseFrequency(),
+					sensorFix.getFix(), msdFix.getFix()) - sensor1.getBaseFrequency();
 			double s2doppler = 0;
 
 			// see if we have a sensor cut at the right time
@@ -1058,8 +1059,9 @@ public class FlatFileExporter
 						sensor2.getSensorOffset(), sensor2.getWormInHole());
 				sensor2Loc = sensor2Fix.getLocation();
 
-				s2doppler = Doublet.getDopplerShift(speedOfSoundMS,
-						sensor2Fix.getFix(), msdFix.getFix());
+				s2doppler = Doublet.getDopplerShift(speedOfSoundMS, 
+						sensor2.getBaseFrequency(),
+						sensor2Fix.getFix(), msdFix.getFix()) - sensor2.getBaseFrequency();
 
 				// see if we have a sensor cut at the right time
 				cutS2 = nearestCutTo(sensor2, thisDTG);

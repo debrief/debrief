@@ -177,7 +177,7 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 			// sort out the current time
 			final IWorkbench wb = PlatformUI.getWorkbench();
 			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			if (wb != null)
+			if (win != null)
 			{
 				final IWorkbenchPage page = win.getActivePage();
 				final IEditorPart editor = page.getActiveEditor();
