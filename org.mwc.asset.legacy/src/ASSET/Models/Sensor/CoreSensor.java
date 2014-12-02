@@ -223,6 +223,11 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 		// see if we are due to run
 		canRun = isDueToScan(time);
 
+		// Note: for some processing we wish to remove existing detections
+		// whether the sensor runs or not.
+		// 
+		// removeMyOldDetections(existingDetections);
+
 		// can we?
 		if (canRun)
 		{
@@ -232,6 +237,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 			// are we active?
 			if (isWorking())
 			{
+				
 				// just check that our list is empty
 				_newDetections.removeAllElements();
 
