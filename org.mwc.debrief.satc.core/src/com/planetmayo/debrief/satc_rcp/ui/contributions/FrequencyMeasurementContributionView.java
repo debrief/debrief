@@ -118,7 +118,13 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 		ISWTObservableValue fNoughtTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(fNoughtText);
 		
-		context.bindValue(fNoughtTextValue, fNoughtValue);
+		// converter rounding the value to 1 decimal place
+		IConverter modelToUI = new RoundMUIConverter();
+		IConverter uiToModel = new RoundUIMConverter();
+
+		context.bindValue(fNoughtTextValue, fNoughtValue,
+				UIUtils.converterStrategy(uiToModel),
+				UIUtils.converterStrategy(modelToUI));
 	}
 
 	private void bindSpeed(DataBindingContext context)
@@ -128,13 +134,9 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 		ISWTObservableValue soundTextValue = WidgetProperties.text(SWT.FocusOut)
 				.observe(speedSoundText);
 		
-		IConverter modelToUI = new UserToModelConverter();
-		
-		IConverter uiToModel = new ModelToUserConverter();
-
-//  TODO: if I use the next line (which doesn't require any data conversion), 
-//           the sound speed box stays empty. Things work fine for f-Nought
-//	context.bindValue(soundTextValue, soundValue);
+		// converter rounding the value to 1 decimal place
+		IConverter modelToUI = new RoundMUIConverter();
+		IConverter uiToModel = new RoundUIMConverter();
 		
 		context.bindValue(soundTextValue, soundValue,
 				UIUtils.converterStrategy(uiToModel),
@@ -164,11 +166,10 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	protected void createLimitAndEstimateSliders()
 	{
 	}
-	
-	private class UserToModelConverter implements IConverter
+	private class RoundMUIConverter implements IConverter
 	{
 		final DecimalFormat df = new DecimalFormat("0.0");
-	
+		
 		@Override
 		public Object getToType()
 		{
@@ -188,13 +189,13 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 			{
 				return null;
 			}
-			Double val = (Double) fromObject;
-			String res = df.format(val);
+			Double kts = (Double) fromObject;
+			String res = df.format(kts);
 			return res;
 		}
 	}
-
-	private class ModelToUserConverter implements IConverter
+	
+	private class RoundUIMConverter implements IConverter
 	{
 		@Override
 		public Object getToType()
@@ -216,12 +217,12 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 				return null;
 			}
 			
-			double val = new Double((String)fromObject).doubleValue();
-			return new Double(val);
+			return new Double((String)fromObject);
 		}
 
 	}
-
+	
+	
 	private class DoubleVerifier implements VerifyListener
 	{
 
