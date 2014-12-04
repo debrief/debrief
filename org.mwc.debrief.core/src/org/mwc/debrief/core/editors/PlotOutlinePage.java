@@ -302,6 +302,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	{
 		IToolBarManager manager = bars.getToolBarManager();
 		manager.add(_followSelectionToggle);
+		manager.add(_collapseAllAction);
 		manager.add(_makePrimary);
 		manager.add(_makeSecondary);
 		manager.add(_addAsSecondary);
