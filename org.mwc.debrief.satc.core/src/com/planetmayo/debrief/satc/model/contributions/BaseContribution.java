@@ -152,6 +152,9 @@ public abstract class BaseContribution extends ModelObject implements
 			{
 				// ok, everything matches up = calculate this error
 				delta = calcError(thisState);
+				
+				// store the error against the state
+				thisState.setScore(this, delta);
 
 				// and accumulate it
 				res += delta;
