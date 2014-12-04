@@ -111,6 +111,10 @@ public class Range1959ForecastContribution extends BaseContribution
 					double distance = calculator.getOrthodromicDistance();
 
 					double temp = distance - calculatedRange;
+					// store the error
+					state.setScore(this, temp  * this.getWeight() / 10);
+					
+					// and prepare the cumulative score				
 					sum += temp * temp;
 					count++;
 				}

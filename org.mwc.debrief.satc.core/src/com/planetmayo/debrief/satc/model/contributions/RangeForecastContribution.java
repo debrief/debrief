@@ -169,8 +169,23 @@ public class RangeForecastContribution extends BaseContribution
 						origin.origin.getLat());
 				double distance = calculator.getOrthodromicDistance();
 
-				double temp = distance - estimate;
-				sum += temp * temp;
+				double error = distance - estimate;
+				
+				// calculate the error as a proportion to the relevant edge
+				if(error < 0)
+				{
+					error = error / (estimate - getMinRange());
+				}
+				else
+				{
+					error = error / (getMaxRange() - estimate);
+				}
+								
+				// store the error
+				state.setScore(this, Math.abs(error  * this.getWeight() / 10));
+				
+				// and prepare the cumulative score				
+				sum += error * error;
 				count++;
 			}
 		}

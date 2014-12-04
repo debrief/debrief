@@ -204,7 +204,16 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 					double radians = MathUtils.normalizeAngle(Math
 							.toRadians(calculator.getAzimuth()));
 					double angleDiff = MathUtils.angleDiff(measurement.bearingAngle, radians, true);
-					res += angleDiff * angleDiff;
+					
+					// make the error a proportion of the bearing error
+					angleDiff = angleDiff / (this.getBearingError());
+					
+					// store the error
+					state.setScore(this, angleDiff * this.getWeight() / 10);
+					
+					// and prepare the cumulative score
+					double thisError = angleDiff * angleDiff;
+					res += thisError;
 					count++;
 				}
 			}

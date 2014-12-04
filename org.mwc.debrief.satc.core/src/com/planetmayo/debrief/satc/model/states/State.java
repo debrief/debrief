@@ -16,7 +16,9 @@ package com.planetmayo.debrief.satc.model.states;
 
 import java.awt.Color;
 import java.util.Date;
+import java.util.HashMap;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.vividsolutions.jts.geom.Point;
 
 /* the state of an object at a specific time
@@ -28,6 +30,7 @@ public class State implements Comparable<State>
 	private final double _speed;
 	private final double _course;
 	private final Point _location;
+	transient private final HashMap<BaseContribution, Double> _scores = new HashMap<BaseContribution, Double>(); 
 	
 	/** the (optional) color used to present this state
 	 * 
@@ -81,6 +84,18 @@ public class State implements Comparable<State>
 	public Color getColor()
 	{
 		return _color;
+	}
+
+	public void setScore(
+			BaseContribution cont,
+			double thisError)
+	{
+		_scores.put(cont, thisError);
+	}
+
+	public HashMap<BaseContribution, Double> getScores()
+	{
+		return _scores;
 	}
 
 }
