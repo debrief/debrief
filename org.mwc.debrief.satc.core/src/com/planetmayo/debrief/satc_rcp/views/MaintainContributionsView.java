@@ -14,10 +14,14 @@
  */
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -55,9 +59,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
-import org.swtchart.ILineSeries;
+import org.swtchart.IBarSeries;
+import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
-import org.swtchart.ISeriesSet;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
@@ -82,11 +86,13 @@ import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.IGASolutionsListener;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
@@ -111,13 +117,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
-	private static final int ERROR_SCORE_THRESHOLD = 1000000;
-
-	/**
-	 * name we use for the performance graph
-	 * 
-	 */
-	private static final String SERIES_NAME = "line series";
+//	private static final int ERROR_SCORE_THRESHOLD = 1000000;
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	private static final String TITLE = "Maintain Contributions";
@@ -161,6 +161,8 @@ public class MaintainContributionsView extends ViewPart
 	// private Menu addContributionMenu;
 	// private ToolItem addContributionButton;
 
+	private transient HashMap<BaseContribution, Color> assignedColors;
+	
 	/** Contribution -> Contribution view mappings */
 	private HashMap<BaseContribution, BaseContributionView<?>> contributionsControl = new HashMap<BaseContribution, BaseContributionView<?>>();
 	private ISolver activeSolver;
@@ -498,17 +500,8 @@ public class MaintainContributionsView extends ViewPart
 		performanceChart.getLegend().setVisible(false);
 		performanceChart.getTitle().setVisible(false);
 		performanceChart.setForeground(colorBlack);
-		ISeriesSet seriesSet = performanceChart.getSeriesSet();
 
 		// now give the chart our data series
-		double[] ySeries =
-		{};
-		final ILineSeries series = (ILineSeries) seriesSet.createSeries(
-				SeriesType.LINE, SERIES_NAME);
-		series.enableArea(true);
-		series.setYSeries(ySeries);
-		series.setLineColor(colorBlack);
-
 		// ok, now for the x axis
 		IAxis xAxis = performanceChart.getAxisSet().getXAxis(0);
 		xAxis.getTitle().setVisible(false);
@@ -526,12 +519,19 @@ public class MaintainContributionsView extends ViewPart
 
 	private void clearPerformanceGraph()
 	{
-		ILineSeries ySeries = (ILineSeries) performanceChart.getSeriesSet()
-				.getSeries(SERIES_NAME);
-		double[] newYVals = new double[]
-		{};
+//		ILineSeries ySeries = (ILineSeries) performanceChart.getSeriesSet()
+//				.getSeries(SERIES_NAME);
+//		double[] newYVals = new double[]
+//		{};
 
-		ySeries.setYSeries(newYVals);
+		ISeries[] sets = performanceChart.getSeriesSet().getSeries();
+		for (int i = 0; i < sets.length; i++)
+		{
+			ISeries iSeries = sets[i];
+			performanceChart.getSeriesSet().deleteSeries(iSeries.getId());
+		}
+
+//		ySeries.setYSeries(newYVals);
 
 		performanceChart.getAxisSet().getXAxis(0).adjustRange();
 		performanceChart.getAxisSet().getYAxis(0).adjustRange();
@@ -539,32 +539,146 @@ public class MaintainContributionsView extends ViewPart
 		performanceChart.redraw();
 
 	}
-
-	private void addNewPerformanceScore(double value)
+	
+	private Color colorFor(BaseContribution contribution)
 	{
-		ILineSeries ySeries = (ILineSeries) performanceChart.getSeriesSet()
-				.getSeries(SERIES_NAME);
-		double[] yVals = ySeries.getYSeries();
+		java.awt.Color[] cols = new java.awt.Color[]{
+				java.awt.Color.red,java.awt.Color.green,
+				java.awt.Color.yellow,java.awt.Color.blue,
+				java.awt.Color.cyan, java.awt.Color.magenta};
 
-		double[] newYVals = new double[yVals.length + 1];
-		System.arraycopy(yVals, 0, newYVals, 0, yVals.length);
-
-		if (value < ERROR_SCORE_THRESHOLD)
+		if(assignedColors == null)
 		{
-			newYVals[newYVals.length - 1] = value;
+			assignedColors = new HashMap<BaseContribution, Color>();
 		}
-		else
+		
+		// have we already assigned this one?
+		Color res = assignedColors.get(contribution);
+		
+		if(res == null)
 		{
-			newYVals[newYVals.length - 1] = 0;
+			int index = assignedColors.size() % cols.length;
+			java.awt.Color newCol = cols[index];
+			res = new Color(Display.getDefault(), newCol.getRed(), newCol.getGreen(), newCol.getBlue()) ;
+			assignedColors.put(contribution, res);
+		}
+		
+		return res;
+		
+	}
+
+	private void addNewPerformanceScore(double value, List<CompositeRoute> topRoutes)
+	{
+		// remember each contribution's set of scores
+		HashMap<BaseContribution, HashMap<Date, Double>> stackedSeries = new HashMap<BaseContribution, HashMap<Date, Double>>();
+		
+		// remember the times for which we have states
+		ArrayList<Date> valueTimes = new ArrayList<Date>();
+		
+		// ok - have a look at the scores
+		Iterator<CoreRoute> legIter = topRoutes.get(0).getLegs().iterator();
+		while (legIter.hasNext())
+		{
+			CoreRoute route = (CoreRoute) legIter.next();
+			Iterator<State> states = route.getStates().iterator();
+			while (states.hasNext())
+			{
+				State state = (State) states.next();
+				HashMap<BaseContribution, Double> scores = state.getScores();
+				Iterator<BaseContribution> contributions = scores.keySet().iterator();
+				while (contributions.hasNext())
+				{
+					BaseContribution cont = (BaseContribution) contributions
+							.next();
+					HashMap<Date, Double> thisSeries = stackedSeries.get(cont);
+					if(thisSeries == null)
+					{
+						thisSeries = new HashMap<Date, Double>();
+						stackedSeries.put(cont, thisSeries);
+						final IBarSeries series = (IBarSeries)performanceChart.getSeriesSet().createSeries(
+								SeriesType.BAR, cont.getName());
+						series.setBarColor(colorFor(cont));
+						series.enableStack(true);
+					}
+					thisSeries.put(state.getTime(), scores.get(cont));
+					
+					// store the time of this value
+					if(!valueTimes.contains(state.getTime()))
+					{
+						valueTimes.add(state.getTime());
+					}
+					
+				}
+			}
 		}
 
-		ySeries.setYSeries(newYVals);
+		// ok, now loop through the series
+		Iterator<BaseContribution> conts = stackedSeries.keySet().iterator();
+		while (conts.hasNext())
+		{
+			BaseContribution cont = (BaseContribution) conts.next();
+			HashMap<Date, Double> vals = stackedSeries.get(cont);
+			if(vals.size() > 0)
+			{
+				final IBarSeries series = (IBarSeries)performanceChart.getSeriesSet().getSeries(cont.getName());
+				
+				// ok, we need to produce a value for each value time
+				double[] valArr = new double[valueTimes.size()];
+				
+				Iterator<Date> iter2 = valueTimes.iterator();
+				int ctr = 0;
+				while (iter2.hasNext())
+				{
+					Date date = (Date) iter2.next();
+					Double thisV = vals.get(date);
+					final double res;
+					if(thisV != null)
+						res = thisV;
+					else
+						res = 0;
+					
+					valArr[ctr++] =  res;
+				}
+				
+				series.setYSeries(valArr);
+			}
+		}
+		
+		// prepare the category labels
+		String[] labels = new String[valueTimes.size()];
+		Iterator<Date> vIter = valueTimes.iterator();
+		
+		// get our date formatter ready
+		SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+				
+		// determine frequency f
+		int wid = performanceChart.getBounds().width;
+		int allowed = wid / 90;
+		int freq = labels.length / allowed;
+		
+		int ctr = 0;
+		while (vIter.hasNext())
+		{
+			Date date = (Date) vIter.next();
+			final String str;
+			if(ctr % freq == 0)
+				str = sdf.format(date);
+			else
+				str = "";
+			labels[ctr++] = str;
+		}
+		
+		
+		// set category
+		performanceChart.getAxisSet().getXAxis(0).enableCategory(true);
+		performanceChart.getAxisSet().getXAxis(0).setCategorySeries(labels);
 
-		performanceChart.getAxisSet().getXAxis(0).adjustRange();
-		performanceChart.getAxisSet().getYAxis(0).adjustRange();
-
-		performanceChart.redraw();
-
+		// and resize the axes
+	  performanceChart.getAxisSet().adjustRange();
+	  
+	  // 
+	  performanceChart.redraw();
 	}
 
 	private void initVehicleGroup(Composite parent)
@@ -700,7 +814,7 @@ public class MaintainContributionsView extends ViewPart
 					{
 						// check it's roughly suitable
 						// if (topScore < 1000000)
-						addNewPerformanceScore(topScore);
+						addNewPerformanceScore(topScore, topRoutes);
 					}
 
 					@Override
