@@ -117,8 +117,6 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
-//	private static final int ERROR_SCORE_THRESHOLD = 1000000;
-
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	private static final String TITLE = "Maintain Contributions";
 
@@ -162,7 +160,7 @@ public class MaintainContributionsView extends ViewPart
 	// private ToolItem addContributionButton;
 
 	private transient HashMap<BaseContribution, Color> assignedColors;
-	
+
 	/** Contribution -> Contribution view mappings */
 	private HashMap<BaseContribution, BaseContributionView<?>> contributionsControl = new HashMap<BaseContribution, BaseContributionView<?>>();
 	private ISolver activeSolver;
@@ -296,7 +294,7 @@ public class MaintainContributionsView extends ViewPart
 		fillAnalystContributionsGroup(group);
 
 		final ScrolledComposite scrolled = new ScrolledComposite(group,
-				SWT.V_SCROLL|SWT.H_SCROLL);
+				SWT.V_SCROLL | SWT.H_SCROLL);
 		scrolled.setLayoutData(new GridData(GridData.FILL_BOTH));
 		contList = UIUtils.createScrolledBody(scrolled, SWT.NONE);
 		contList.setLayout(new GridLayout(1, false));
@@ -328,11 +326,12 @@ public class MaintainContributionsView extends ViewPart
 		group.setLayoutData(gridData);
 		group.setLayout(layout);
 		group.setText("Preferences");
-		
+
 		final ScrolledComposite scrolled = new ScrolledComposite(group,
 				SWT.H_SCROLL);
 		scrolled.setLayoutData(new GridData(GridData.FILL_BOTH));
-		final Composite preferencesComposite = UIUtils.createScrolledBody(scrolled, SWT.NONE);
+		final Composite preferencesComposite = UIUtils.createScrolledBody(scrolled,
+				SWT.NONE);
 		preferencesComposite.setLayout(new GridLayout(5, false));
 
 		scrolled.addListener(SWT.Resize, new Listener()
@@ -341,15 +340,16 @@ public class MaintainContributionsView extends ViewPart
 			@Override
 			public void handleEvent(Event e)
 			{
-				scrolled.setMinSize(preferencesComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+				scrolled.setMinSize(preferencesComposite.computeSize(SWT.DEFAULT,
+						SWT.DEFAULT));
 			}
 		});
 		scrolled.setAlwaysShowScrollBars(true);
 		scrolled.setContent(preferencesComposite);
-		scrolled.setMinSize(preferencesComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolled.setMinSize(preferencesComposite.computeSize(SWT.DEFAULT,
+				SWT.DEFAULT));
 		scrolled.setExpandHorizontal(true);
 		scrolled.setExpandVertical(true);
-
 
 		liveConstraints = new Button(preferencesComposite, SWT.TOGGLE);
 		liveConstraints.setText("Auto-Recalc of Constraints");
@@ -519,10 +519,10 @@ public class MaintainContributionsView extends ViewPart
 
 	private void clearPerformanceGraph()
 	{
-//		ILineSeries ySeries = (ILineSeries) performanceChart.getSeriesSet()
-//				.getSeries(SERIES_NAME);
-//		double[] newYVals = new double[]
-//		{};
+		// ILineSeries ySeries = (ILineSeries) performanceChart.getSeriesSet()
+		// .getSeries(SERIES_NAME);
+		// double[] newYVals = new double[]
+		// {};
 
 		ISeries[] sets = performanceChart.getSeriesSet().getSeries();
 		for (int i = 0; i < sets.length; i++)
@@ -531,7 +531,7 @@ public class MaintainContributionsView extends ViewPart
 			performanceChart.getSeriesSet().deleteSeries(iSeries.getId());
 		}
 
-//		ySeries.setYSeries(newYVals);
+		// ySeries.setYSeries(newYVals);
 
 		performanceChart.getAxisSet().getXAxis(0).adjustRange();
 		performanceChart.getAxisSet().getYAxis(0).adjustRange();
@@ -539,42 +539,45 @@ public class MaintainContributionsView extends ViewPart
 		performanceChart.redraw();
 
 	}
-	
+
 	private Color colorFor(BaseContribution contribution)
 	{
-		java.awt.Color[] cols = new java.awt.Color[]{
-				java.awt.Color.red,java.awt.Color.green,
-				java.awt.Color.yellow,java.awt.Color.blue,
-				java.awt.Color.cyan, java.awt.Color.magenta};
+		java.awt.Color[] cols = new java.awt.Color[]
+		{ java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
+				java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
+				java.awt.Color.darkGray, java.awt.Color.pink, java.awt.Color.orange,
+				java.awt.Color.lightGray };
 
-		if(assignedColors == null)
+		if (assignedColors == null)
 		{
 			assignedColors = new HashMap<BaseContribution, Color>();
 		}
-		
+
 		// have we already assigned this one?
 		Color res = assignedColors.get(contribution);
-		
-		if(res == null)
+
+		if (res == null)
 		{
 			int index = assignedColors.size() % cols.length;
 			java.awt.Color newCol = cols[index];
-			res = new Color(Display.getDefault(), newCol.getRed(), newCol.getGreen(), newCol.getBlue()) ;
+			res = new Color(Display.getDefault(), newCol.getRed(), newCol.getGreen(),
+					newCol.getBlue());
 			assignedColors.put(contribution, res);
 		}
-		
+
 		return res;
-		
+
 	}
 
-	private void addNewPerformanceScore(double value, List<CompositeRoute> topRoutes)
+	private void addNewPerformanceScore(double value,
+			List<CompositeRoute> topRoutes)
 	{
 		// remember each contribution's set of scores
 		HashMap<BaseContribution, HashMap<Date, Double>> stackedSeries = new HashMap<BaseContribution, HashMap<Date, Double>>();
-		
+
 		// remember the times for which we have states
 		ArrayList<Date> valueTimes = new ArrayList<Date>();
-		
+
 		// ok - have a look at the scores
 		Iterator<CoreRoute> legIter = topRoutes.get(0).getLegs().iterator();
 		while (legIter.hasNext())
@@ -588,26 +591,31 @@ public class MaintainContributionsView extends ViewPart
 				Iterator<BaseContribution> contributions = scores.keySet().iterator();
 				while (contributions.hasNext())
 				{
-					BaseContribution cont = (BaseContribution) contributions
-							.next();
-					HashMap<Date, Double> thisSeries = stackedSeries.get(cont);
-					if(thisSeries == null)
+					BaseContribution cont = (BaseContribution) contributions.next();
+
+					// get the score
+					Double score = scores.get(cont);
+					if (score > 0)
 					{
-						thisSeries = new HashMap<Date, Double>();
-						stackedSeries.put(cont, thisSeries);
-						final IBarSeries series = (IBarSeries)performanceChart.getSeriesSet().createSeries(
-								SeriesType.BAR, cont.getName());
-						series.setBarColor(colorFor(cont));
-						series.enableStack(true);
+
+						HashMap<Date, Double> thisSeries = stackedSeries.get(cont);
+						if (thisSeries == null)
+						{
+							thisSeries = new HashMap<Date, Double>();
+							stackedSeries.put(cont, thisSeries);
+							final IBarSeries series = (IBarSeries) performanceChart
+									.getSeriesSet().createSeries(SeriesType.BAR, cont.getName());
+							series.setBarColor(colorFor(cont));
+							series.enableStack(true);
+						}
+						thisSeries.put(state.getTime(), scores.get(cont));
+
+						// store the time of this value
+						if (!valueTimes.contains(state.getTime()))
+						{
+							valueTimes.add(state.getTime());
+						}
 					}
-					thisSeries.put(state.getTime(), scores.get(cont));
-					
-					// store the time of this value
-					if(!valueTimes.contains(state.getTime()))
-					{
-						valueTimes.add(state.getTime());
-					}
-					
 				}
 			}
 		}
@@ -618,13 +626,14 @@ public class MaintainContributionsView extends ViewPart
 		{
 			BaseContribution cont = (BaseContribution) conts.next();
 			HashMap<Date, Double> vals = stackedSeries.get(cont);
-			if(vals.size() > 0)
+			if (vals.size() > 0)
 			{
-				final IBarSeries series = (IBarSeries)performanceChart.getSeriesSet().getSeries(cont.getName());
-				
+				final IBarSeries series = (IBarSeries) performanceChart.getSeriesSet()
+						.getSeries(cont.getName());
+
 				// ok, we need to produce a value for each value time
 				double[] valArr = new double[valueTimes.size()];
-				
+
 				Iterator<Date> iter2 = valueTimes.iterator();
 				int ctr = 0;
 				while (iter2.hasNext())
@@ -632,53 +641,52 @@ public class MaintainContributionsView extends ViewPart
 					Date date = (Date) iter2.next();
 					Double thisV = vals.get(date);
 					final double res;
-					if(thisV != null)
+					if (thisV != null)
 						res = thisV;
 					else
 						res = 0;
-					
-					valArr[ctr++] =  res;
+
+					valArr[ctr++] = res;
 				}
-				
+
 				series.setYSeries(valArr);
 			}
 		}
-		
+
 		// prepare the category labels
 		String[] labels = new String[valueTimes.size()];
 		Iterator<Date> vIter = valueTimes.iterator();
-		
+
 		// get our date formatter ready
 		SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-				
+
 		// determine frequency f
 		int wid = performanceChart.getBounds().width;
 		int allowed = wid / 90;
 		int freq = labels.length / allowed;
-		
+
 		int ctr = 0;
 		while (vIter.hasNext())
 		{
 			Date date = (Date) vIter.next();
 			final String str;
-			if(ctr % freq == 0)
+			if (ctr % freq == 0)
 				str = sdf.format(date);
 			else
 				str = "";
 			labels[ctr++] = str;
 		}
-		
-		
+
 		// set category
 		performanceChart.getAxisSet().getXAxis(0).enableCategory(true);
 		performanceChart.getAxisSet().getXAxis(0).setCategorySeries(labels);
 
 		// and resize the axes
-	  performanceChart.getAxisSet().adjustRange();
-	  
-	  // 
-	  performanceChart.redraw();
+		performanceChart.getAxisSet().adjustRange();
+
+		//
+		performanceChart.redraw();
 	}
 
 	private void initVehicleGroup(Composite parent)
@@ -862,7 +870,7 @@ public class MaintainContributionsView extends ViewPart
 					public void statesBounded(IBoundsManager boundsManager)
 					{
 						// minimum steps to get the contributions list to redraw
-						contList.setSize(0,0);
+						contList.setSize(0, 0);
 					}
 
 					@Override
@@ -971,7 +979,10 @@ public class MaintainContributionsView extends ViewPart
 			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 					| GridData.GRAB_HORIZONTAL));
 
-			// and rememeber it
+			// see if we can give it a default color
+			panel.setDefaultColor(colorFor(contribution));
+
+			// now store it
 			contributionsControl.put(contribution, panel);
 			if (doLayout)
 			{
@@ -981,7 +992,12 @@ public class MaintainContributionsView extends ViewPart
 		catch (Exception ex)
 		{
 			LogFactory.getLog().error("Failed to generate panel for " + contribution);
-			SATC_Activator.getDefault().getLog().log(new Status(IStatus.ERROR, SATC_Activator.PLUGIN_ID, ex.getMessage(), ex));
+			SATC_Activator
+					.getDefault()
+					.getLog()
+					.log(
+							new Status(IStatus.ERROR, SATC_Activator.PLUGIN_ID, ex
+									.getMessage(), ex));
 		}
 	}
 
