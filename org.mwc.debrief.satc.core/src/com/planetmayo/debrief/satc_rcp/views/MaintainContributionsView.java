@@ -177,6 +177,13 @@ public class MaintainContributionsView extends ViewPart
 	private IConstrainSpaceListener constrainSpaceListener;
 	private Chart performanceChart;
 
+	private final java.awt.Color[] defaultColors = new java.awt.Color[]
+	{ java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
+			java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
+			java.awt.Color.darkGray, java.awt.Color.pink, java.awt.Color.orange,
+			java.awt.Color.lightGray };
+
+	
 	@Override
 	public void createPartControl(final Composite parent)
 	{
@@ -207,6 +214,14 @@ public class MaintainContributionsView extends ViewPart
 	@Override
 	public void dispose()
 	{
+		// ditch the colors
+		Iterator<Color> cIter = assignedColors.values().iterator();
+		while (cIter.hasNext())
+		{
+			org.eclipse.swt.graphics.Color entry = cIter.next();
+			entry.dispose();
+		}
+		
 		context.dispose();
 		setActiveSolver(null);
 		solversManager.removeSolverManagerListener(solverManagerListener);
@@ -542,11 +557,6 @@ public class MaintainContributionsView extends ViewPart
 
 	private Color colorFor(BaseContribution contribution)
 	{
-		java.awt.Color[] cols = new java.awt.Color[]
-		{ java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
-				java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
-				java.awt.Color.darkGray, java.awt.Color.pink, java.awt.Color.orange,
-				java.awt.Color.lightGray };
 
 		if (assignedColors == null)
 		{
@@ -558,8 +568,8 @@ public class MaintainContributionsView extends ViewPart
 
 		if (res == null)
 		{
-			int index = assignedColors.size() % cols.length;
-			java.awt.Color newCol = cols[index];
+			int index = assignedColors.size() % defaultColors.length;
+			java.awt.Color newCol = defaultColors[index];
 			res = new Color(Display.getDefault(), newCol.getRed(), newCol.getGreen(),
 					newCol.getBlue());
 			assignedColors.put(contribution, res);
@@ -892,6 +902,8 @@ public class MaintainContributionsView extends ViewPart
 		// just double check that we aren't already looking at this solver
 		if (solver != activeSolver)
 		{
+			// clear the bar chart - just in case
+			clearPerformanceGraph();
 
 			// other UI mgt
 			if (activeSolver != null)

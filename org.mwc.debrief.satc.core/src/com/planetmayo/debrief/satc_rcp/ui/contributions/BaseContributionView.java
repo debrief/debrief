@@ -588,12 +588,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 	public void dispose()
 	{
-		// ditch the default color
-		if(!defaultColor.isDisposed())
-		{
-			defaultColor.dispose();
-		}
-		
 		if (titleChangeListener != null)
 		{
 			contribution.removePropertyChangeListener(BaseContribution.NAME,
