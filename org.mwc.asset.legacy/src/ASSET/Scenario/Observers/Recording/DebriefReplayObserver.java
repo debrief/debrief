@@ -19,12 +19,14 @@ import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Participants.Category;
 import MWC.GUI.Editable;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +45,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 	 */
 	static private HashMap<String, String> _mySymbolRegister = new HashMap<String, String>();
 
+	private ArrayList<Integer> _recordedDetections = new ArrayList<Integer>();
+	
 	/***************************************************************
 	 * constructor
 	 ***************************************************************/
@@ -87,6 +91,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 	 * *************************************************************
 	 */
 
+	
+	
 	static public String writeDetailsToBuffer(
 			final MWC.GenericData.WorldLocation loc,
 			final ASSET.Participants.Status stat, final NetworkParticipant pt,
@@ -148,6 +154,15 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 		buff.append(System.getProperty("line.separator"));
 
 		return buff.toString();
+	}
+
+	@Override
+	public void restart(ScenarioType scenario)
+	{
+		super.restart(scenario);
+		
+		// and clear the stored detections
+		_recordedDetections.clear();
 	}
 
 	/**
@@ -227,14 +242,14 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 					ambig = (float) de.getAmbiguousBearing();
 				}
 				
-				outputThisDetection2(dtg, pt.getName(),
+				outputThisDetection2(de.getTime(), pt.getName(),
 						pt.getCategory(), de.getBearing(),ambig, de.getRange(), pt.getSensorFit()
 								.getSensorWithId(de.getSensor()).getName(), de.toString(), de.getFreq());
 
 			}
 			else
 			{
-				outputThisDetection(de.getSensorLocation(), dtg, pt.getName(),
+				outputThisDetection(de.getSensorLocation(), de.getTime(), pt.getName(),
 						pt.getCategory(), de.getBearing(), de.getRange(), pt.getSensorFit()
 								.getSensorWithId(de.getSensor()).getName(), de.toString());
 			}
@@ -451,7 +466,21 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 
 		try
 		{
-			_os.write(msg);
+			// have we already output this?
+			int hashCode = msg.hashCode();
+			if(_recordedDetections.contains(hashCode))
+			{
+				// ok, skip it
+			}
+			else
+			{
+				// nope, this is a new one. output it.
+				_os.write(msg);
+				
+				// and remember that we've output it
+				_recordedDetections.add(hashCode);
+			}
+			
 		}
 		catch (IOException e)
 		{
