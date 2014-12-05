@@ -692,6 +692,18 @@ public class MaintainContributionsView extends ViewPart
 		performanceChart.getAxisSet().getXAxis(0).enableCategory(true);
 		performanceChart.getAxisSet().getXAxis(0).setCategorySeries(labels);
 
+		ISeries[] series = performanceChart.getSeriesSet().getSeries();
+		if (series.length == 2 && series[0] instanceof IBarSeries && series[1] instanceof IBarSeries)
+		{
+			performanceChart.getLegend().setVisible(true);
+			performanceChart.getLegend().setPosition(SWT.RIGHT);
+			IBarSeries barSeries1 = (IBarSeries) series[0];
+			IBarSeries barSeries2 = (IBarSeries) series[1];
+			// enable stack series
+			barSeries1.enableStack(true);
+			barSeries2.enableStack(true);
+
+		}
 		// and resize the axes
 		performanceChart.getAxisSet().adjustRange();
 
