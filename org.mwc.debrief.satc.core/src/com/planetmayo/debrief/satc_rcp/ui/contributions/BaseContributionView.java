@@ -97,6 +97,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected PropertyChangeListener titleChangeListener;
 
 	private final IContributions contributions;
+	private org.eclipse.swt.graphics.Color defaultColor;
 
 	public BaseContributionView(final Composite parent, final T contribution,
 			final IContributions contributions)
@@ -209,7 +210,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			final IObservableValue min, final IObservableValue max)
 	{
 	}
-	
+
 	protected void bindMaxMinEstimateOld(final IObservableValue estimate,
 			final IObservableValue min, final IObservableValue max)
 	{
@@ -282,7 +283,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				double maxT = Math.max(maxValue.doubleValue(), newValue.doubleValue());
 				if (estimateValue != null)
 				{
-					if (estimateValue.doubleValue()> maxT)
+					if (estimateValue.doubleValue() > maxT)
 					{
 						estimate.setValue(maxT);
 					}
@@ -311,7 +312,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				double maxT = Math.max(minValue.doubleValue(), newValue.doubleValue());
 				if (estimateValue != null)
 				{
-					if (estimateValue.doubleValue()> maxT)
+					if (estimateValue.doubleValue() > maxT)
 					{
 						estimate.setValue(maxT);
 					}
@@ -609,6 +610,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		return mainGroup;
 	}
 
+	public void setDefaultColor(org.eclipse.swt.graphics.Color col)
+	{
+		defaultColor = col;
+	}
+
 	protected void initializeWidgets()
 	{
 
@@ -642,38 +648,37 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		mainGroup.setLayoutData(data);
 	}
 
-	protected void customPaint(Event event, org.eclipse.swt.graphics.Color backColor)
+	protected void customPaint(Event event,
+			org.eclipse.swt.graphics.Color backColor)
 	{
+
 		if (contribution instanceof BaseContribution.HasColor)
 		{
-			org.eclipse.swt.graphics.Color color = null;
 			if (contribution.isActive())
 			{
 				BaseContribution.HasColor colorCont = (HasColor) contribution;
 				Color jColor = colorCont.getColor();
 				if (jColor != null)
 				{
-					color = new org.eclipse.swt.graphics.Color(
+					// overwrite the default
+					defaultColor = new org.eclipse.swt.graphics.Color(
 							Display.getCurrent(), jColor.getRed(), jColor.getGreen(),
 							jColor.getBlue());
 				}
 			}
-			
-			if(color != null)
-			{
-				event.gc.setBackground(color);
-				event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
-				color.dispose();
-			}
-			else
-			{
-				event.gc.setBackground(backColor);
-				event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
-			}
-			
-			event.gc.setForeground(Display.getCurrent()
-					.getSystemColor(SWT.COLOR_GRAY));
-			event.gc.drawRoundRectangle(3, 5, 6, 20, 8, 8);
 		}
+		if (defaultColor != null)
+		{
+			event.gc.setBackground(defaultColor);
+			event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
+		}
+		else
+		{
+			event.gc.setBackground(backColor);
+			event.gc.fillRoundRectangle(3, 5, 6, 20, 8, 8);
+		}
+
+		event.gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
+		event.gc.drawRoundRectangle(3, 5, 6, 20, 8, 8);
 	}
 }

@@ -111,7 +111,13 @@ public class FrequencyMeasurementContribution extends
 											meas.getCourse(), state.getCourse(), meas.getSpeed(),
 											state.getSpeed(), bearing, getBaseFrequency());
 
-									double error = predicted - meas.frequency;									
+									double error = predicted - meas.frequency;		
+									
+									
+									// store the error
+									state.setScore(this, error  * this.getWeight() / 10);
+									
+									// and the cumulative (RMS) score
 									res += error * error;
 									count++;
 
