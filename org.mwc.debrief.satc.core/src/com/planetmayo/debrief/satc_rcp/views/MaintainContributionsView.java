@@ -660,6 +660,7 @@ public class MaintainContributionsView extends ViewPart
 				}
 
 				series.setYSeries(valArr);
+				series.enableStack(true);
 			}
 		}
 
@@ -688,13 +689,13 @@ public class MaintainContributionsView extends ViewPart
 			labels[ctr++] = str;
 		}
 
-		// set category
+		// set category labels
 		performanceChart.getAxisSet().getXAxis(0).enableCategory(true);
 		performanceChart.getAxisSet().getXAxis(0).setCategorySeries(labels);
 
 		// and resize the axes
 		performanceChart.getAxisSet().adjustRange();
-
+		
 		//
 		performanceChart.redraw();
 	}
