@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Dec 10 16:03:26 GMT 2013" Name="Debrief Plot" PlotId="1385027164422">
+<plot xmlns="http://www.debrief.info/plot" Created="Tue Dec 10 16:03:26 GMT 2013" Name="Debrief Plot" PlotId="1385027164422">
 <details Text="Saved with Debrief version dated Mon Dec 09 18:39:14 GMT 2013"/>
 <session>
 <layers>
