@@ -591,6 +591,12 @@
 		<xs:attribute name="LineStyle" type="xs:integer" />
 		<xs:attribute name="LineThickness" type="xs:integer" />
 		<xs:attribute name="Visible" type="xs:boolean" />
+		<xs:attribute name="SemiTransparent" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Whether to paint this object on-screen as semi-transparent.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="line">
 		<xs:complexContent>
