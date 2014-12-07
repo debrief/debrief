@@ -215,11 +215,15 @@ public class MaintainContributionsView extends ViewPart
 	public void dispose()
 	{
 		// ditch the colors
-		Iterator<Color> cIter = assignedColors.values().iterator();
-		while (cIter.hasNext())
+		if (assignedColors != null)
 		{
-			org.eclipse.swt.graphics.Color entry = cIter.next();
-			entry.dispose();
+			Iterator<Color> cIter = assignedColors.values().iterator();
+			while (cIter.hasNext())
+			{
+				org.eclipse.swt.graphics.Color entry = cIter.next();
+				entry.dispose();
+			}
+			assignedColors = null;
 		}
 		
 		context.dispose();
