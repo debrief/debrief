@@ -2,8 +2,8 @@
 <!-- This is the schema for datafiles used by the Debrief Maritime Analysis 
 	Package (www.debrief.info) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified" targetNamespace="org.mwc.debrief.core"
-	xmlns="org.mwc.debrief.core">
+	elementFormDefault="qualified" targetNamespace="http://www.debrief.info/plot"
+	xmlns="http://www.debrief.info/plot">
 	<!-- data types -->
 	<xs:simpleType name="labelLocationType">
 		<xs:restriction base="xs:string">
