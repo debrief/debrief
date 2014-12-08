@@ -284,17 +284,23 @@
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="sensor">
-		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="colour" type="colourType" />
-			<xs:element name="Offset" type="worldDistanceType" />
-			<xs:element name="sensor_contact" type="sensor_contact" />
-		</xs:choice>
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="1" name="colour" type="colourType" />
+			<xs:element minOccurs="0" maxOccurs="1" name="Offset" type="worldDistanceType" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="sensor_contact" type="sensor_contact" />
+		</xs:sequence>
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
 		<xs:attribute name="TrackName" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 		<xs:attribute name="WormInHole" default="false" type="xs:boolean" />
-		<xs:attribute name="BaseFrequency" type="xs:float"/>
+		<xs:attribute name="BaseFrequency" type="xs:float" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					The radiated frequency (f-nought) for the tonal being tracked
+				</xs:documentation>
+			</xs:annotation>		
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="sensor_contact">
 		<xs:all>
