@@ -771,24 +771,32 @@
 
 	<!-- plot -> session -> layers -> satc_solution -->
 	<xs:complexType name="satc_solution" mixed="true">
-	<xs:sequence>
-		<xs:element name="colour">
-			<xs:complexType>
-				<xs:simpleContent>
-					<xs:extension base="xs:string">
-						<xs:attribute type="xs:string" name="Value" />
-					</xs:extension>
-				</xs:simpleContent>
-			</xs:complexType>
-		</xs:element>
-	</xs:sequence>
-	<xs:attribute type="xs:boolean" name="LiveRunning" />
-	<xs:attribute type="xs:boolean" name="AutoSolutions"/>
-	<xs:attribute type="xs:string" name="NAME" />
-	<xs:attribute type="xs:boolean" name="OnlyPlotEnds" />
-	<xs:attribute type="xs:boolean" name="ShowAlterationBounds" />
-	<xs:attribute type="xs:boolean" name="ShowBounds" />
-	<xs:attribute type="xs:boolean" name="ShowSolutions" />
+		<xs:annotation>
+			<xs:documentation>A scenario representing a SATC problem-set
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="colour">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute type="xs:string" name="Value" />
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute type="xs:boolean" name="LiveRunning">
+			<xs:annotation>
+				<xs:documentation>Whether the scenario auto-runs when the user changes a contribution
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute type="xs:string" name="NAME" />
+		<xs:attribute type="xs:boolean" name="OnlyPlotEnds" />
+		<xs:attribute type="xs:boolean" name="ShowAlterationBounds" />
+		<xs:attribute type="xs:boolean" name="ShowBounds" />
+		<xs:attribute type="xs:boolean" name="ShowSolutions" />
 	</xs:complexType>
 	<!-- end of plot -> session -> layers -> satc_solution -->
 
