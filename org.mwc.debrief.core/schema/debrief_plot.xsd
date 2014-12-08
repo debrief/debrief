@@ -182,6 +182,7 @@
 			<xs:element name="track" type="track" />
 			<xs:element name="layer" type="layer" />
 			<xs:element name="ChartFolio" type="ChartFolio" />
+			<xs:element name="satc_solution" type="satc_solution" />
 		</xs:choice>
 	</xs:complexType>
 
@@ -283,16 +284,23 @@
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="sensor">
-		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="colour" type="colourType" />
-			<xs:element name="Offset" type="worldDistanceType" />
-			<xs:element name="sensor_contact" type="sensor_contact" />
-		</xs:choice>
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="1" name="colour" type="colourType" />
+			<xs:element minOccurs="0" maxOccurs="1" name="Offset" type="worldDistanceType" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="sensor_contact" type="sensor_contact" />
+		</xs:sequence>
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
 		<xs:attribute name="TrackName" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 		<xs:attribute name="WormInHole" default="false" type="xs:boolean" />
+		<xs:attribute name="BaseFrequency" type="xs:float" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					The radiated frequency (f-nought) for the tonal being tracked
+				</xs:documentation>
+			</xs:annotation>		
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="sensor_contact">
 		<xs:all>
@@ -766,6 +774,37 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- end of plot -> session -> layers -> layer -->
+
+	<!-- plot -> session -> layers -> satc_solution -->
+	<xs:complexType name="satc_solution" mixed="true">
+		<xs:annotation>
+			<xs:documentation>A scenario representing a SATC problem-set
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="colour">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute type="xs:string" name="Value" />
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute type="xs:boolean" name="LiveRunning">
+			<xs:annotation>
+				<xs:documentation>Whether the scenario auto-runs when the user changes a contribution
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute type="xs:string" name="NAME" />
+		<xs:attribute type="xs:boolean" name="OnlyPlotEnds" />
+		<xs:attribute type="xs:boolean" name="ShowAlterationBounds" />
+		<xs:attribute type="xs:boolean" name="ShowBounds" />
+		<xs:attribute type="xs:boolean" name="ShowSolutions" />
+	</xs:complexType>
+	<!-- end of plot -> session -> layers -> satc_solution -->
 
 	<!-- plot -> session -> layers -> ChartFolio -->
 	<xs:complexType name="ChartFolio">
