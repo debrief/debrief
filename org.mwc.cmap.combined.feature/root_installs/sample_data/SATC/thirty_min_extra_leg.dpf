@@ -1451,7 +1451,7 @@
 </fix>
 </TrackSegment>
 </track>
-<satc_solution AutoSolutions="true" NAME="Extra leg" ShowBounds="false" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="Extra leg" ShowBounds="false" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>

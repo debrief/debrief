@@ -2761,7 +2761,7 @@
 </fix>
 </TrackSegment>
 </track>
-<satc_solution AutoSolutions="true" NAME="second attempt" ShowBounds="true" ShowSolutions="true">
+<satc_solution LiveRunning="true" NAME="second attempt" ShowBounds="true" ShowSolutions="true">
 <colour Value="GREEN"/><![CDATA[<solution version="1">
   <vehicleType>
     <name>UK Ferry</name>
