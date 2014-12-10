@@ -229,4 +229,16 @@ public class ScaledSubmarineSym extends WorldScaledSym
 		return "ScaledSubmarine";
 	}
 
+	@Override
+	protected double getWidthNormalFactor()
+	{
+		return 20;
+	}
+
+	@Override
+	protected double getLengthNormalFactor()
+	{
+		return 110;
+	}
+
 }
