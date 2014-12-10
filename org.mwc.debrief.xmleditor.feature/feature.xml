@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.xmleditor.feature"
       label="%featureName"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="%providerName"
       plugin="org.eclipse.wst.xml.ui">
 
