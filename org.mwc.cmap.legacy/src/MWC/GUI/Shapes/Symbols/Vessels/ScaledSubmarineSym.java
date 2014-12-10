@@ -27,16 +27,6 @@ public class ScaledSubmarineSym extends WorldScaledSym
 				new WorldDistance(20, WorldDistance.METRES));
 	}
 
-	protected double getWidthNormalFactor()
-	{
-		return 20;
-	}
-	
-	protected double getLengthNormalFactor()
-	{
-		return 118;
-	}
-	
 	/**
 	 * 
 	 */
