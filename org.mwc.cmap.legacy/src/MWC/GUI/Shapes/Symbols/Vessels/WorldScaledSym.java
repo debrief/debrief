@@ -41,6 +41,12 @@ public abstract class WorldScaledSym extends PlainSymbol
 	 */
 	protected WorldDistance _subjectLength;
 	protected WorldDistance _subjectWidth;
+	
+	/** the (derived) height and width of the model
+	 * 
+	 */
+	protected Double _coordsLength;
+	protected Double _coordsWidth;
 
 	/** constructor - including the default dimensions
 	 * 
@@ -54,7 +60,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 		this._subjectWidth = width;
 	}
 
-	
+
 	/** what factor do we have to apply to normalise this shape to one unit wide
 	 * 
 	 * @return
@@ -65,7 +71,56 @@ public abstract class WorldScaledSym extends PlainSymbol
 	 * 
 	 * @return
 	 */
-	abstract protected double getLengthNormalFactor();
+	 protected double getLengthNormalFactor()
+	{
+		if(_coordsLength == null)
+			storeDimensions();
+		
+		return _coordsLength;
+	}
+	
+	private void storeDimensions()
+	{
+		// find the lines that make up the shape
+		final Vector<double[][]> hullLines = getMyCoords();
+
+		// store the values
+		double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE, minY = Double.MAX_VALUE, maxY = Double.MIN_VALUE;
+		boolean firstPass = true;
+		
+		// start looping through - to paint them
+		final Iterator<double[][]> iter = hullLines.iterator();
+		while (iter.hasNext())
+		{
+			final double[][] thisLine = iter.next();
+			for (int i = 0; i < thisLine.length; i++)
+			{
+				double thisX = thisLine[i][0];
+				double thisY = thisLine[i][1];
+				
+				if(firstPass)
+				{
+					minX = maxX = thisX;
+					minY = maxY = thisY;
+					
+					firstPass = false;
+				}
+				else
+				{
+					minX = Math.min(minX, thisX);
+					minY = Math.min(minY, thisY);
+					maxX = Math.max(maxX, thisX);
+					maxY = Math.max(maxY, thisY);
+				}
+			}
+		}
+		
+		if(!firstPass)
+		{
+			_coordsWidth = maxX - minX;
+			_coordsLength = maxY - minY;
+		}		
+	}
 
 
 	public WorldDistance getLength()
