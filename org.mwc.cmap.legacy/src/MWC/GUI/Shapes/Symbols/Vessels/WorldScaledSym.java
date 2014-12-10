@@ -20,10 +20,12 @@ import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.Vector;
 
+import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public abstract class WorldScaledSym extends PlainSymbol
 {
@@ -34,8 +36,11 @@ public abstract class WorldScaledSym extends PlainSymbol
 	private static final long serialVersionUID = 1L;
 	private Vector<double[][]> _myCoords;
 
-	protected WorldDistance _length;
-	protected WorldDistance _width;
+	/** the (user-specified) real world dimensions of the symbol
+	 * 
+	 */
+	protected WorldDistance _subjectLength;
+	protected WorldDistance _subjectWidth;
 
 	/** constructor - including the default dimensions
 	 * 
@@ -45,15 +50,15 @@ public abstract class WorldScaledSym extends PlainSymbol
 	public WorldScaledSym(final WorldDistance length, final WorldDistance width)
 	{
 		super();
-		this._length = length;
-		this._width = width;
+		this._subjectLength = length;
+		this._subjectWidth = width;
 	}
 
 	
-/** what factor do we have to apply to normalise this shape to one unit wide
- * 
- * @return
- */
+	/** what factor do we have to apply to normalise this shape to one unit wide
+	 * 
+	 * @return
+	 */
 	abstract protected double getWidthNormalFactor();
 	
 	/** what factor do we have to apply to normalise this shape to one unit long
@@ -65,25 +70,24 @@ public abstract class WorldScaledSym extends PlainSymbol
 
 	public WorldDistance getLength()
 	{
-		return _length;
+		return _subjectLength;
 	}
 
 	public void setLength(final WorldDistance length)
 	{
-		_length = length;
+		_subjectLength = length;
 	}
 
 	public WorldDistance getWidth()
 	{
-		return _width;
+		return _subjectWidth;
 	}
 
 	public void setHeight(final WorldDistance width)
 	{
-		_width = width;
+		_subjectWidth = width;
 	}
 
-	
 	
 	/**
 	 * getBounds
@@ -139,17 +143,29 @@ public abstract class WorldScaledSym extends PlainSymbol
 		// set the colour
 		dest.setColor(getColor());
 
+		final java.awt.Point origin = dest.toScreen(theLocation);		
+
 		// create centre rotation
 		final AffineTransform thisRotation = AffineTransform.getRotateInstance(
 				-direction, 0, 0);
 
 		// do the scale-factor
-		final double lenFactor =  _length.getValueIn(WorldDistance.METRES) / getLengthNormalFactor() ;
-		final double widFactor =   _width.getValueIn(WorldDistance.METRES) / getWidthNormalFactor();
-		
-		final AffineTransform scale = AffineTransform
+		final double lenFactor =  _subjectLength.getValueIn(WorldDistance.METRES) / getLengthNormalFactor() ;
+		final double widFactor =   _subjectWidth.getValueIn(WorldDistance.METRES) / getWidthNormalFactor();
+
+		final AffineTransform scaleToBoat = AffineTransform
 				.getScaleInstance(widFactor, lenFactor);
 
+		// scale it to the screen coords - let's use 1 km step instead of 1m, since  
+		// we'll get too much quantisation from pixel measurements with 1px step.
+		WorldVector lenOffset = new WorldVector(Math.PI/2, Conversions.m2Degs(1000), 0);
+		WorldLocation newEnd = theLocation.add(lenOffset);
+		Point lenScreen = dest.toScreen(newEnd);
+		double lenPixels = (origin.x - lenScreen.x) / 1000.0;
+		
+		final AffineTransform boatToScreen = AffineTransform
+				.getScaleInstance(-lenPixels, -lenPixels);
+				
 		// find the lines that make up the shape
 		final Vector<double[][]> hullLines = getMyCoords();
 
@@ -162,43 +178,29 @@ public abstract class WorldScaledSym extends PlainSymbol
 			for (int i = 0; i < thisLine.length; i++)
 			{
 				final Point2D raw = new Point2D.Double(thisLine[i][0], thisLine[i][1]);
+				final Point2D postScaleToBoat = new Point2D.Double();
+				final Point2D postScaleToScreen = new Point2D.Double();
 				final Point2D postTurn = new Point2D.Double();
-				final Point2D postScale = new Point2D.Double();
 
-				scale.transform(raw, postScale);
-				thisRotation.transform(postScale, postTurn);
-
-				final double latM = MWC.Algorithms.Conversions.m2Degs(postTurn.getY())
-						+ theLocation.getLat();
-				final double longM = MWC.Algorithms.Conversions.m2Degs(postTurn.getX())
-						+ theLocation.getLong();
-
-				final WorldLocation loc = new WorldLocation(latM, longM, 0d);
-
-				// double thisX = MWC.Algorithms.Conversions.m2Degs(thisLine[i][0])
-				// + theLocation.getLong();
-				// double thisY = MWC.Algorithms.Conversions.m2Degs(thisLine[i][1])
-				// + theLocation.getLat();
-				//
-				// Point2D before = new Point2D.Double(thisX, thisY);
-				// Point2D after2 = new Point2D.Double();
-				// Point2D after3 = new Point2D.Double();
-				//
-				// // do the rotate
-				// thisRotation.transform(before, after2);
-				//
-				// // and the scale
-				// scale.transform(after2, after3);
-
-				final java.awt.Point newP = dest.toScreen(loc);
-
+				// scale the point as if it's a 1m boat
+				scaleToBoat.transform(raw, postScaleToBoat);
+				
+				// now scale that 1m to screen pizel size
+				boatToScreen.transform(postScaleToBoat, postScaleToScreen);
+				
+				// and rotate for the direction of motion
+				thisRotation.transform(postScaleToScreen, postTurn);
+								
+				// generate the location of this point
+				Point newPos = new Point(origin.x + (int) postTurn.getX(),
+						origin.y -(int) postTurn.getY());
+				
 				if (lastPoint != null)
 				{
-
-					dest.drawLine(lastPoint.x, lastPoint.y, newP.x, newP.y);
+					dest.drawLine(lastPoint.x, lastPoint.y, newPos.x, newPos.y);
 				}
 
-				lastPoint = new Point(newP);
+				lastPoint = new Point(newPos);
 			}
 		}
 

@@ -34,7 +34,7 @@ public class ScaledContainerSym extends WorldScaledSym
 
 	protected double getLengthNormalFactor()
 	{
-		return 133;
+		return -133;
 	}
 
 	/**

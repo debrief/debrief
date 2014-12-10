@@ -15,11 +15,13 @@
 
 package org.mwc.debrief.core.editors.painters.highlighters;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 
-import MWC.GUI.*;
-import MWC.GUI.Editable.DoNotHighlightMe;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public final class SWTSymbolHighlighter implements SWTPlotHighlighter, Editable
 {
