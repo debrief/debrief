@@ -180,7 +180,7 @@ public class MaintainContributionsView extends ViewPart
 	private final java.awt.Color[] defaultColors = new java.awt.Color[]
 	{ java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
 			java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
-			java.awt.Color.darkGray, java.awt.Color.pink, java.awt.Color.orange,
+			java.awt.Color.darkGray, java.awt.Color.orange, java.awt.Color.pink,
 			java.awt.Color.lightGray };
 
 	
@@ -214,6 +214,10 @@ public class MaintainContributionsView extends ViewPart
 	@Override
 	public void dispose()
 	{
+		context.dispose();
+		setActiveSolver(null);
+		solversManager.removeSolverManagerListener(solverManagerListener);
+		
 		// ditch the colors
 		if (assignedColors != null)
 		{
@@ -225,10 +229,8 @@ public class MaintainContributionsView extends ViewPart
 			}
 			assignedColors = null;
 		}
+
 		
-		context.dispose();
-		setActiveSolver(null);
-		solversManager.removeSolverManagerListener(solverManagerListener);
 		super.dispose();
 	}
 
@@ -538,11 +540,10 @@ public class MaintainContributionsView extends ViewPart
 
 	private void clearPerformanceGraph()
 	{
-		// ILineSeries ySeries = (ILineSeries) performanceChart.getSeriesSet()
-		// .getSeries(SERIES_NAME);
-		// double[] newYVals = new double[]
-		// {};
-
+		// hmm, have we already ditched?
+		if(performanceChart.isDisposed())
+			return;
+		
 		ISeries[] sets = performanceChart.getSeriesSet().getSeries();
 		for (int i = 0; i < sets.length; i++)
 		{
