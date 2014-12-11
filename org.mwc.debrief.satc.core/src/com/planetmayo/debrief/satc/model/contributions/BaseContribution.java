@@ -128,6 +128,10 @@ public abstract class BaseContribution extends ModelObject implements
 
 		// keep track of how many errors we generate
 		int _errCtr = 0;
+		
+		// for forecasts on straight, we re-use the error score,
+		// since it's the same for every state
+		Double wholeLegScore = null;
 
 		// ok. work through the states that comprise this leg
 		while (sIter.hasNext())
@@ -151,7 +155,17 @@ public abstract class BaseContribution extends ModelObject implements
 			if (isValid)
 			{
 				// ok, everything matches up = calculate this error
-				delta = calcError(thisState);
+				
+				// do we have a whole-leg-score?
+				if(wholeLegScore == null)
+				{
+					// nope, better calculate it.
+					delta = calcError(thisState);
+				}
+				else
+				{
+					delta = wholeLegScore;
+				}
 				
 				// store the error against the state
 				thisState.setScore(this, delta);
@@ -168,7 +182,7 @@ public abstract class BaseContribution extends ModelObject implements
 				if (route.getType().equals(LegType.STRAIGHT)
 						&& this.getDataType().equals(ContributionDataType.FORECAST))
 				{
-					break;
+					wholeLegScore = delta;
 				}
 			}
 
