@@ -2,7 +2,6 @@ package org.mwc.cmap.naturalearth.model;
 
 import java.util.ArrayList;
 
-import org.mwc.cmap.naturalearth.model.NELibrary.NEFeature;
 
 public class NEResolutionGroup extends ArrayList<NEFeature>
 {
