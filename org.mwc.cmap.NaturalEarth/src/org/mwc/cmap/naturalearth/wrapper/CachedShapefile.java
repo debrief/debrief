@@ -12,6 +12,11 @@ public class CachedShapefile extends ArrayList<CachedFeature>
 	public CachedShapefile(String fName)
 	{
 		// load ourselves from this datafile
+		
+		// TODO: PECO:  loop through the shape  (while nextRecord())
+		
+		  // for each record, we need to put it into a Debrief-friendly data record (WorldLocation, WorldPath)W
+		
 	}
 
 }
