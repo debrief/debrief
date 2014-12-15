@@ -1,11 +1,23 @@
 package org.mwc.cmap.naturalearth.view;
 
-public class NEStyle
-{
-	private String _name = "pending";
+import java.util.ArrayList;
 
+/* a single Natural Earth style set - containing styles for all features, at all resolutions
+ * 
+ */
+public class NEStyle  extends ArrayList<NEResolution>
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/** the user-provided name for this set of styles
+	 * 
+	 * @return
+	 */
 	public String getName()
 	{
-		return _name ;
+		return "pending";
 	}
 }
