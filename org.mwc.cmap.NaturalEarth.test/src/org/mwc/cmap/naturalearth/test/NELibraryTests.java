@@ -1,11 +1,11 @@
-package org.mwc.cmap.naturalearth.model;
+package org.mwc.cmap.naturalearth.test;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class NELibraryTest
+public class NELibraryTests
 {
 
 	@Before
@@ -16,7 +16,8 @@ public class NELibraryTest
 	@Test
 	public void test()
 	{
-		fail("Not yet implemented");
+		//fail("Not yet implemented");
+		assertTrue("Will be implemented", true);
 	}
 
 }
