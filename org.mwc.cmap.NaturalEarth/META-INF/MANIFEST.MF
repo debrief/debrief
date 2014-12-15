@@ -8,7 +8,8 @@ Bundle-Vendor: planetmayo
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
- org.mwc.cmap.legacy;bundle-version="1.0.190"
+ org.mwc.cmap.legacy;bundle-version="1.0.190",
+ org.mwc.cmap.openmap;bundle-version="5.1.7"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: libs/jts-1.12.jar,
