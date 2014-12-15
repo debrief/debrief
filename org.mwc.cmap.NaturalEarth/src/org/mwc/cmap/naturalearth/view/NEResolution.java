@@ -19,5 +19,5 @@ public class NEResolution extends ArrayList<NEFeatureStyle>
 	{
 		return true;
 	}
-	
+
 }
