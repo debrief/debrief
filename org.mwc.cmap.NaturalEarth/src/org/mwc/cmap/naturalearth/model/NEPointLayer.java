@@ -1,6 +1,13 @@
 package org.mwc.cmap.naturalearth.model;
 
-public class NEPointLayer
+import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
+
+public class NEPointLayer extends NEFeature
 {
+
+	public NEPointLayer(NEFeatureStyle neFeatureStyle)
+	{
+		super(neFeatureStyle);
+	}
 
 }
