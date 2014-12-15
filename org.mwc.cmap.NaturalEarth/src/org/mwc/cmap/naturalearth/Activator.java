@@ -1,11 +1,10 @@
 package org.mwc.cmap.naturalearth;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.naturalearth.view.NEStyle;
-import org.mwc.cmap.naturalearth.view.StyleSet;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -73,10 +72,23 @@ public class Activator extends AbstractUIPlugin {
 		return "test_data";
 	}
 
-	public HashMap<String, NEStyle> getStyleSet()
+	public ArrayList<String> getStyleNames()
 	{
 		// TODO: @Peco, we need to load the set of default styles from the repo (memento, I guess).
 		// This part is still undefined.
 		return null;
 	}
+	
+	public NEStyle getThisStyle(String name)
+	{
+		// TODO: @Peco, we need to load the set of default styles from the repo (memento, I guess).
+		// This part is still undefined.
+		return null;
+	}
+	
+	public void storeThisStyle(NEStyle style)
+	{
+		// TODO: @Peco, we need to store this style in the prefs dataset		
+	}
+
 }
