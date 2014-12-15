@@ -43,6 +43,7 @@
     <module>org.mwc.cmap.LiveDataMonitor</module>
     <module>org.mwc.cmap.NarrativeViewer</module>
     <module>org.mwc.cmap.NaturalEarth</module>
+    <module>org.mwc.cmap.openmap</module>
     <module>org.mwc.cmap.TimeController</module>
     <module>org.mwc.cmap.combined.feature</module>
     <module>org.mwc.cmap.core</module>
