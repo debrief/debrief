@@ -1,18 +1,21 @@
 package org.mwc.cmap.naturalearth.model;
 
-import java.util.ArrayList;
+import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
+
 
 /** the collated set of bathymetry layers (which get handled as one)
  * 
  * @author ian
  *
  */
-public class NEBathyLayer extends ArrayList<NEPolygonLayer>
+public class NEBathyLayer extends NEFeature
 {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	public NEBathyLayer(NEFeatureStyle style)
+	{
+		super(style);
+		// TODO Auto-generated constructor stub
+	}
 
+	
 }
