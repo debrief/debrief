@@ -3,12 +3,12 @@ package org.mwc.cmap.naturalearth;
 import java.io.File;
 import java.util.HashMap;
 
-import org.mwc.cmap.naturalearth.wrapper.CachedShapefile;
+import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 
 public class ShapefileDataStore
 {
 	// our cached data
-	private HashMap<String, CachedShapefile> _store = new HashMap<String, CachedShapefile>();
+	private HashMap<String, CachedNauticalEarthFile> _store = new HashMap<String, CachedNauticalEarthFile>();
 	
 	// where to find our data
 	private String _path;
@@ -35,18 +35,18 @@ public class ShapefileDataStore
 	 * @param fName
 	 * @return
 	 */
-	public CachedShapefile get(String fName)
+	public CachedNauticalEarthFile get(String fName)
 	{
 		// construct the path to the file
 		String path = _path + File.pathSeparator + fName;
 		
-		CachedShapefile res = _store.get(path);
+		CachedNauticalEarthFile res = _store.get(path);
 		
 		// do we still need to load it?
 		if(res == null)
 		{
 			// ok, better load it
-			res = new CachedShapefile(fName);
+			res = new CachedNauticalEarthFile(fName);
 			
 			// and remember it.
 			_store.put(fName, res);
