@@ -34,9 +34,4 @@ public class NEFeature
 		_feature = feature;
 	}
 	
-	public Iterator<CachedFeature> iterator()
-	{
-		return _feature.iterator();
-	}
-
 }
