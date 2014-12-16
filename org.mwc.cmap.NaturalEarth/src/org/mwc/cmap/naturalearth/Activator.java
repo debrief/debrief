@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
-import org.mwc.cmap.naturalearth.wrapper.CachedShapefile;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -114,9 +114,9 @@ public class Activator extends AbstractUIPlugin
 		// TODO: @Peco, we need to store this style in the prefs dataset
 	}
 
-	public CachedShapefile loadData(String fName)
+	public CachedNauticalEarthFile loadData(String fName)
 	{
-		CachedShapefile res = null;
+		CachedNauticalEarthFile res = null;
 
 		// TODO: read the data root setting from the prefs page
 		String pathRoot = getLibraryPath();
