@@ -142,13 +142,21 @@ public class Activator extends AbstractUIPlugin
 
 	public static NEResolution getStyleFor(double curScale)
 	{
-		NEResolution ner = new NEResolution();
-		ner.add(createF("pointFeature", "ne_10m_geography_regions_points",true,  null, null, Color.red));
-		ner.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land", true, null, Color.green, Color.blue));
-		ner.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true, Color.DARK_GRAY, Color.orange, Color.yellow));
+		System.out.println("scale:" + curScale);
 		
+		NEResolution ne10 = new NEResolution(0d,11110d);
+		ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true, Color.DARK_GRAY, Color.orange, Color.yellow));
+		ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land", true, null, Color.green, Color.blue));
+		ne10.add(createF("pointFeature", "ne_10m_geography_regions_points",true,  null, null, Color.red));
+		
+		NEResolution ne110 = new NEResolution(0d,10000d);
+		ne110.add(createF("polygonFeature", "ne_110m_land", true, Color.yellow, Color.orange, Color.yellow));
+		ne110.add(createF("polygonFeature", "ne_110m_ocean", true, Color.blue, Color.green, Color.pink));
+		ne110.add(createF("pointFeature", "ne_110m_geography_regions_points", true, null, null, Color.red));
+		ne110.add(createF("pointFeature", "ne_110m_populated_places_simple", true, null, null, Color.green));
+				
 		// loop through our styles, find the one that is relevant to this scale
-		return ner;
+		return ne110;
 	}
 	
 	private static NEFeatureStyle createF(String featureType, String filename, boolean visible, Color fillCol, Color lineCol, Color textCol)
