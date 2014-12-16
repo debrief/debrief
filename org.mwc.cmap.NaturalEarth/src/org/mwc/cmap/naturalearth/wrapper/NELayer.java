@@ -55,52 +55,52 @@ public class NELayer extends BaseLayer
 	{
 		if (getVisible())
 		{
-			final double curScale = dest.getProjection().getScreenArea().getWidth()
-					/ dest.getProjection().getDataArea().getWidth();
+			double screenMM = dest.getProjection().getScreenArea().getWidth();
+			double worldDegs = dest.getProjection().getDataArea().getWidth();
+			double worldMM = worldDegs * 60 * 1852 * 1000;
+			final double curScale = worldMM / screenMM;
+			
+			// find the style set for this scale
+			final NEResolution thisR = getStyleSetFor(curScale);
 
-			// have we loaded our layers?
-			if (!hasLayers())
+			// is this different?
+			if (thisR != _currentRes)
 			{
-				// find the style set for this scale
-				final NEResolution thisR = getStyleSetFor(curScale);
-
-				// is this different?
-				if(thisR != _currentRes)
+				// check we have the resolutions collection
+				if (_myResolutions == null)
 				{
-					// check we have the resolutions collection
-					if(_myResolutions == null)
-					{
-						_myResolutions = new HashMap<NEResolution, Collection<Editable>>();
-					}
+					_myResolutions = new HashMap<NEResolution, Collection<Editable>>();
+				}
 
-					// ok, drop any existing layers
-					super.removeAllElements();
+				// ok, drop any existing layers
+				super.removeAllElements();
 
-					// ok, is this a new one?
-					if(!_myResolutions.containsKey(thisR))
-					{
-						// ok, better load it.
-						Iterator<NEFeatureStyle> iter = thisR.iterator();
+				// ok, is this a new one?
+				if (!_myResolutions.containsKey(thisR))
+				{
+					// ok, better load it.
+					Iterator<NEFeatureStyle> iter = thisR.iterator();
 
-						while (iter.hasNext())
-						{
-							NEFeatureStyle neFeatureStyle = (NEFeatureStyle) iter.next();
-							NEFeature newF = new NEFeature(neFeatureStyle);
-							super.add(newF);
-						}
-						_myResolutions.put(thisR, super.getData());
-					}
-					else
+					while (iter.hasNext())
 					{
-						// already have it, load it.
-						Iterator<Editable> iter = _myResolutions.get(thisR).iterator();
-						while (iter.hasNext())
-						{
-							Editable editable = (Editable) iter.next();
-							super.add(editable);
-						}
+						NEFeatureStyle neFeatureStyle = (NEFeatureStyle) iter.next();
+						NEFeature newF = new NEFeature(neFeatureStyle);
+						super.add(newF);
 					}
-				}				
+					_myResolutions.put(thisR, super.getData());
+				}
+				else
+				{
+					// already have it, load it.
+					Iterator<Editable> iter = _myResolutions.get(thisR).iterator();
+					while (iter.hasNext())
+					{
+						Editable editable = (Editable) iter.next();
+						super.add(editable);
+					}
+				}
+				
+				_currentRes = thisR;
 			}
 
 			// start off by making sure data is loaded
@@ -129,7 +129,6 @@ public class NELayer extends BaseLayer
 					}
 
 				}
-
 			}
 
 			children = super.elements();
@@ -177,11 +176,6 @@ public class NELayer extends BaseLayer
 		}
 	}
 
-	private boolean hasLayers()
-	{
-		return super.size() > 0;
-	}
-
 	private void drawPolygonPolygons(CanvasType dest,
 			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
 	{
@@ -190,8 +184,6 @@ public class NELayer extends BaseLayer
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
-		
-		System.out.println("area:" + visArea);
 
 		// ok, loop through the polys
 		Iterator<NamedWorldPath> iter = polygons.iterator();
@@ -204,8 +196,6 @@ public class NELayer extends BaseLayer
 				// ok, skip to the next one
 				continue;
 			}
-			
-			System.err.println("new poly");
 
 			dest.setColor(style.getFillColor());
 
@@ -229,7 +219,8 @@ public class NELayer extends BaseLayer
 					// convert to screen
 					final Point thisP = dest.toScreen(next);
 
-					if ((thisP.x <= 0) || (thisP.y <= 0) || (thisP.x > 5000) || (thisP.y > 5000))
+					if ((thisP.x <= 0) || (thisP.y <= 0) || (thisP.x > 5000)
+							|| (thisP.y > 5000))
 					{
 					}
 					else
@@ -406,6 +397,9 @@ public class NELayer extends BaseLayer
 		{
 			NamedWorldPathList next2 = iter.next();
 			if (next2.getName() == null)
+				continue;
+			
+			if(next2.getBounds() == null)
 				continue;
 
 			if (!visArea.overlaps(next2.getBounds()))
