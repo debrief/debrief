@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.view.NEFeatureSet;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
@@ -28,6 +29,11 @@ public class Activator extends AbstractUIPlugin
 	// the data file cache
 	private static ShapefileDataStore _dataStore;
 
+	// the set of feature types. Actually these will be drawn from the Prefs page
+	private static NEFeatureSet _featureSet = null;
+	
+
+	
 	/**
 	 * The constructor
 	 */
@@ -92,7 +98,9 @@ public class Activator extends AbstractUIPlugin
 	public String getLibraryPath()
 	{
 		// TODO: @Peco, can you implement this?
-		return "git/debrief/org.mwc.cmap.NaturalEarth.test/data";
+		// return "git/debrief/org.mwc.cmap.NaturalEarth.test/data";
+
+		return "/Users/ian/git/debrief_github/org.mwc.cmap.NaturalEarth.test/data";
 	}
 
 	public ArrayList<String> getStyleNames()
@@ -139,24 +147,31 @@ public class Activator extends AbstractUIPlugin
 
 		return res;
 	}
-
+	
 	public static NEResolution getStyleFor(double curScale)
 	{
 		System.out.println("scale:" + curScale);
+
+		if(_featureSet == null)
+		{
+			NEResolution ne10 = new NEResolution(null,100000d);
+			ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true, Color.DARK_GRAY, Color.orange, Color.yellow));
+			ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land", true, null, Color.green, Color.blue));
+			ne10.add(createF("pointFeature", "ne_10m_geography_regions_points",true,  null, null, Color.red));
+			
+			NEResolution ne110 = new NEResolution(100000d,null);
+			ne110.add(createF("polygonFeature", "ne_110m_land", true, Color.yellow, Color.orange, Color.yellow));
+			ne110.add(createF("polygonFeature", "ne_110m_ocean", true, Color.blue, Color.green, Color.pink));
+			ne110.add(createF("pointFeature", "ne_110m_geography_regions_points", true, null, null, Color.red));
+			ne110.add(createF("pointFeature", "ne_110m_populated_places_simple", true, null, null, Color.green));
+			
+			_featureSet = new NEFeatureSet();
+			_featureSet.add(ne10);
+			_featureSet.add(ne110);
+		}
 		
-		NEResolution ne10 = new NEResolution(0d,11110d);
-		ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true, Color.DARK_GRAY, Color.orange, Color.yellow));
-		ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land", true, null, Color.green, Color.blue));
-		ne10.add(createF("pointFeature", "ne_10m_geography_regions_points",true,  null, null, Color.red));
-		
-		NEResolution ne110 = new NEResolution(0d,10000d);
-		ne110.add(createF("polygonFeature", "ne_110m_land", true, Color.yellow, Color.orange, Color.yellow));
-		ne110.add(createF("polygonFeature", "ne_110m_ocean", true, Color.blue, Color.green, Color.pink));
-		ne110.add(createF("pointFeature", "ne_110m_geography_regions_points", true, null, null, Color.red));
-		ne110.add(createF("pointFeature", "ne_110m_populated_places_simple", true, null, null, Color.green));
-				
 		// loop through our styles, find the one that is relevant to this scale
-		return ne110;
+		return _featureSet.resolutionFor(curScale);
 	}
 	
 	private static NEFeatureStyle createF(String featureType, String filename, boolean visible, Color fillCol, Color lineCol, Color textCol)
