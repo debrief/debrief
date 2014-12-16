@@ -307,7 +307,7 @@ public class CachedNauticalEarthFile
 		return res;
 	}
 
-	private boolean notLoaded()
+	public boolean notLoaded()
 	{
 		return (_polygons == null) && (_lines == null) && (_points == null);
 	}
