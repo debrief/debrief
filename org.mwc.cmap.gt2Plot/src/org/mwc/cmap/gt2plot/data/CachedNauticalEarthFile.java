@@ -1,17 +1,20 @@
 package org.mwc.cmap.gt2plot.data;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.Status;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.mwc.cmap.gt2plot.GtActivator;
 import org.opengis.feature.Property;
 
 import MWC.GenericData.NamedWorldLocation;
@@ -28,18 +31,38 @@ import com.vividsolutions.jts.geom.Point;
 
 public class CachedNauticalEarthFile
 {
+	public static enum FeatureTypes
+	{
+		POLYGONS,
+		LINES,
+		POINTS, 
+		UNKNOWN
+	}
 
 	private ArrayList<NamedWorldPath> _polygons;
 	private ArrayList<NamedWorldLocation> _points;
 	private ArrayList<NamedWorldPathList> _lines;
 
 	private final String _filename;
+	private FeatureTypes _featureType = FeatureTypes.UNKNOWN;
 
 	public CachedNauticalEarthFile(String fName)
 	{
 		_filename = fName;
 	}
 
+	public String getName()
+	{
+		// TODO: parse the filename to give us two parts: resolution, data-type
+		// e.g. "10M Coastline";
+		return _filename;
+	}
+	
+	public FeatureTypes getFeatureType()
+	{
+		return _featureType;
+	}
+	
 	public void load()
 	{
 		FileDataStore store;
@@ -53,28 +76,35 @@ public class CachedNauticalEarthFile
 			// hey, can we parse it?
 			final SimpleFeatureCollection fs = featureSource.getFeatures();
 
-			final String fType = fs.getSchema().getSuper().getName().getLocalPart()
+			String fType = fs.getSchema().getSuper().getName().getLocalPart()
 					.toString();
 			switch (fType)
 			{
 			case "polygonFeature":
 				_polygons = loadPolygons(fs.features());
+				_featureType = FeatureTypes.POLYGONS; 
 				break;
 			case "pointFeature":
 				_points = loadPoints(fs.features());
+				_featureType = FeatureTypes.POINTS; 
 				break;
 			case "lineFeature":
 				_lines = loadLines(fs.features());
+				_featureType = FeatureTypes.LINES; 
 				break;
 			default:
-				System.out.println("could not handle:" + fType);
+				_featureType = FeatureTypes.UNKNOWN; 
+				GtActivator.logError(Status.WARNING, "Unexpected feature type:" + fType, null);
 				break;
 			}
-
+		}
+		catch (final FileNotFoundException fe)
+		{
+			GtActivator.logError(Status.WARNING, "Failed to find Natural Earth file:" +_filename, null);
 		}
 		catch (final IOException e)
 		{
-			e.printStackTrace();
+			GtActivator.logError(Status.ERROR, "Trouble loading Natural Earth file:" +_filename, e);
 		}
 	}
 
@@ -277,24 +307,37 @@ public class CachedNauticalEarthFile
 		return res;
 	}
 
+	private boolean notLoaded()
+	{
+		return (_polygons == null) && (_lines == null) && (_points == null);
+	}
+	
 	public ArrayList<NamedWorldPath> getPolygons()
 	{
-		if (_polygons == null)
-			load();
+		if (notLoaded())
+			GtActivator.logError(Status.ERROR, "Error = should have already loaded data", null);
+		
 		return _polygons;
 	}
 
 	public ArrayList<NamedWorldLocation> getPoints()
 	{
-		if (_points == null)
-			load();
+		if (notLoaded())
+			GtActivator.logError(Status.ERROR, "Error = should have already loaded data", null);
+		
 		return _points;
 	}
 
 	public ArrayList<NamedWorldPathList> getLines()
 	{
-		if (_lines == null)
-			load();
+		if (notLoaded())
+			GtActivator.logError(Status.ERROR, "Error = should have already loaded data", null);
+		
 		return _lines;
+	}
+
+	public void init()
+	{
+		load();
 	}
 }
