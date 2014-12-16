@@ -33,10 +33,7 @@ public class CachedNauticalEarthFile
 {
 	public static enum FeatureTypes
 	{
-		POLYGONS,
-		LINES,
-		POINTS, 
-		UNKNOWN
+		POLYGONS, LINES, POINTS, UNKNOWN
 	}
 
 	private ArrayList<NamedWorldPath> _polygons;
@@ -57,12 +54,12 @@ public class CachedNauticalEarthFile
 		// e.g. "10M Coastline";
 		return _filename;
 	}
-	
+
 	public FeatureTypes getFeatureType()
 	{
 		return _featureType;
 	}
-	
+
 	public void load()
 	{
 		FileDataStore store;
@@ -78,33 +75,38 @@ public class CachedNauticalEarthFile
 
 			String fType = fs.getSchema().getSuper().getName().getLocalPart()
 					.toString();
-			switch (fType)
+			if (fType.equals("polygonFeature"))
 			{
-			case "polygonFeature":
 				_polygons = loadPolygons(fs.features());
-				_featureType = FeatureTypes.POLYGONS; 
-				break;
-			case "pointFeature":
-				_points = loadPoints(fs.features());
-				_featureType = FeatureTypes.POINTS; 
-				break;
-			case "lineFeature":
-				_lines = loadLines(fs.features());
-				_featureType = FeatureTypes.LINES; 
-				break;
-			default:
-				_featureType = FeatureTypes.UNKNOWN; 
-				GtActivator.logError(Status.WARNING, "Unexpected feature type:" + fType, null);
-				break;
+				_featureType = FeatureTypes.POLYGONS;
 			}
+			else if (fType.equals("pointFeature"))
+			{
+				_points = loadPoints(fs.features());
+				_featureType = FeatureTypes.POINTS;
+			}
+			else if (fType.equals("lineFeature"))
+			{
+				_lines = loadLines(fs.features());
+				_featureType = FeatureTypes.LINES;
+			}
+			else
+			{
+				_featureType = FeatureTypes.UNKNOWN;
+				GtActivator.logError(Status.WARNING,
+						"Unexpected feature type:" + fType, null);
+			}
+
 		}
 		catch (final FileNotFoundException fe)
 		{
-			GtActivator.logError(Status.WARNING, "Failed to find Natural Earth file:" +_filename, null);
+			GtActivator.logError(Status.WARNING, "Failed to find Natural Earth file:"
+					+ _filename, null);
 		}
 		catch (final IOException e)
 		{
-			GtActivator.logError(Status.ERROR, "Trouble loading Natural Earth file:" +_filename, e);
+			GtActivator.logError(Status.ERROR, "Trouble loading Natural Earth file:"
+					+ _filename, e);
 		}
 	}
 
@@ -311,28 +313,31 @@ public class CachedNauticalEarthFile
 	{
 		return (_polygons == null) && (_lines == null) && (_points == null);
 	}
-	
+
 	public ArrayList<NamedWorldPath> getPolygons()
 	{
 		if (notLoaded())
-			GtActivator.logError(Status.ERROR, "Error = should have already loaded data", null);
-		
+			GtActivator.logError(Status.ERROR,
+					"Error = should have already loaded data", null);
+
 		return _polygons;
 	}
 
 	public ArrayList<NamedWorldLocation> getPoints()
 	{
 		if (notLoaded())
-			GtActivator.logError(Status.ERROR, "Error = should have already loaded data", null);
-		
+			GtActivator.logError(Status.ERROR,
+					"Error = should have already loaded data", null);
+
 		return _points;
 	}
 
 	public ArrayList<NamedWorldPathList> getLines()
 	{
 		if (notLoaded())
-			GtActivator.logError(Status.ERROR, "Error = should have already loaded data", null);
-		
+			GtActivator.logError(Status.ERROR,
+					"Error = should have already loaded data", null);
+
 		return _lines;
 	}
 
