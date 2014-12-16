@@ -38,7 +38,7 @@ public class ShapefileDataStore
 	public CachedNauticalEarthFile get(String fName)
 	{
 		// construct the path to the file
-		String path = _path + File.pathSeparator + fName;
+		String path = _path + File.separator + fName + File.separator + fName + ".shp";
 		
 		CachedNauticalEarthFile res = _store.get(path);
 		
@@ -46,7 +46,7 @@ public class ShapefileDataStore
 		if(res == null)
 		{
 			// ok, better load it
-			res = new CachedNauticalEarthFile(fName);
+			res = new CachedNauticalEarthFile(path);
 			
 			// and remember it.
 			_store.put(fName, res);
