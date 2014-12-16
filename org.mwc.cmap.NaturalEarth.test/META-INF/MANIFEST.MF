@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NaturalEarth tests
+Bundle-SymbolicName: org.mwc.cmap.NaturalEarth.test
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.cmap.naturalearth.test.Activator
+Bundle-Vendor: MWC
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit;bundle-version="4.0.0",
+ org.mwc.cmap.NaturalEarth;bundle-version="1.0.0",
+ org.mwc.cmap.openmap;bundle-version="5.1.7",
+ org.mwc.cmap.core,
+ org.mwc.debrief.legacy,
+ org.mwc.debrief.core,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.help.base,
+ org.apache.lucene.core,
+ org.apache.lucene.analysis
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
