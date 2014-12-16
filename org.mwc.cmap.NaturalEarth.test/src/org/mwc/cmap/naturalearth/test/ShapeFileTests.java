@@ -33,6 +33,7 @@ public class ShapeFileTests
 		 
 		// ok, load it 
 		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(marineAreas.getAbsolutePath());
+		csf.init();
 		
 		assertNotNull("found polygons", csf.getPolygons());
 		assertEquals("loaded polygons", 312, csf.getPolygons().size());
@@ -46,6 +47,7 @@ public class ShapeFileTests
 		 
 		// ok, load it 
 		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(pointNames.getAbsolutePath());
+		csf.init();
 		
 		assertNotNull("found points", csf.getPoints());
 		assertEquals("loaded points", 235, csf.getPoints().size());
@@ -60,6 +62,7 @@ public class ShapeFileTests
 		 
 		// ok, load it 
 		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(boundaryLines.getAbsolutePath());
+		csf.init();
 		
 		assertNotNull("found lines", csf.getLines());
 		assertEquals("loaded lines", 113, csf.getLines().size());
