@@ -110,12 +110,12 @@ public class NELayer extends BaseLayer
 		// just check we have our data
 		if (thisF.isLoaded())
 		{
-			Iterator<CachedFeature> iter = thisF.iterator();
-			while (iter.hasNext())
-			{
-				CachedFeature cachedFeature = (CachedFeature) iter.next();
-				paintThisFeature(dest, cachedFeature, thisF.getStyle());
-			}
+//			Iterator<CachedFeature> iter = thisF.iterator();
+//			while (iter.hasNext())
+//			{
+//				CachedFeature cachedFeature = (CachedFeature) iter.next();
+//				paintThisFeature(dest, cachedFeature, thisF.getStyle());
+//			}
 		}
 
 	}
