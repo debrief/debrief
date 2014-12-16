@@ -17,5 +17,28 @@
             class="org.mwc.cmap.naturalearth.preferences.PreferenceInitializer">
       </initializer>
    </extension>
-
+   <extension point="org.eclipse.ui.menus">   
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorFeatures?after=features"> 
+	      	<command
+	          commandId="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE"
+	          icon="icons/16/scale.png"
+	          style="push"
+	          id="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE">
+	       	  <visibleWhen
+	             checkEnabled="false">
+	                 <reference
+	                   definitionId="org.mwc.debrief.activePlotEditor">
+	                 </reference>
+	      	  </visibleWhen>
+	      	</command>
+      	</menuContribution>      	
+     </extension>
+     
+     <extension point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.cmap.naturalearth.ui.InsertNaturalEarth"
+             id="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE"
+             name="Natural Earth">
+       </command>
+     </extension>
 </plugin>
