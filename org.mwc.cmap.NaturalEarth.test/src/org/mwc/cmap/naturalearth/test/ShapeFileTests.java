@@ -5,22 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
-
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldPath;
-
-import com.bbn.openmap.layer.shape.ESRIPointRecord;
-import com.bbn.openmap.layer.shape.ESRIPoly;
-import com.bbn.openmap.layer.shape.ESRIPoly.ESRIFloatPoly;
-import com.bbn.openmap.layer.shape.ESRIPolygonRecord;
-import com.bbn.openmap.layer.shape.ESRIRecord;
-import com.bbn.openmap.layer.shape.ShapeFile;
 
 public class ShapeFileTests
 {
