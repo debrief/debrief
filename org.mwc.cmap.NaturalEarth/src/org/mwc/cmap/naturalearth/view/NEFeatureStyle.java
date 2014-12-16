@@ -11,6 +11,7 @@ public class NEFeatureStyle
 	 * 
 	 */
 	private CachedNauticalEarthFile _myData = null;
+	@SuppressWarnings("unused")
 	private String _featureType;
 	private String _filename;
 	private Color _lineCol;

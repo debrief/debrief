@@ -26,10 +26,14 @@ public class NEFeature implements Plottable
 	private CachedNauticalEarthFile _feature;
 
 	private FeatureInfo _myEditor;
+
+	final private long _created;
+	
 	
 	public NEFeature(NEFeatureStyle style)
 	{
 		_style = style;
+		_created = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -137,7 +141,16 @@ public class NEFeature implements Plottable
 	@Override
 	public int compareTo(Plottable o)
 	{
-		return getName().compareTo(o.getName());
+		NEFeature other = (NEFeature) o;
+		long hisTime = other._created;
+		final int res;
+		
+		if(_created > hisTime)
+			res = 1;
+		else 
+			res = -1;
+		
+		return res;
 	}
 
 	@Override
