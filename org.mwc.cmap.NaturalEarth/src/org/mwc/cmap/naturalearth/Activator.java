@@ -1,11 +1,13 @@
 package org.mwc.cmap.naturalearth;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
 import org.osgi.framework.BundleContext;
@@ -90,7 +92,7 @@ public class Activator extends AbstractUIPlugin
 	public String getLibraryPath()
 	{
 		// TODO: @Peco, can you implement this?
-		return "test_data";
+		return "git/debrief/org.mwc.cmap.NaturalEarth.test/data";
 	}
 
 	public ArrayList<String> getStyleNames()
@@ -124,6 +126,12 @@ public class Activator extends AbstractUIPlugin
 		// double check
 		if (pathRoot != null)
 		{
+			// init the datastore, if we have to
+			if(_dataStore == null)
+			{
+				_dataStore = new ShapefileDataStore();
+			}
+			
 			_dataStore.setPath(pathRoot);
 			
 			res = _dataStore.get(fName);
@@ -134,8 +142,20 @@ public class Activator extends AbstractUIPlugin
 
 	public static NEResolution getStyleFor(double curScale)
 	{
+		NEResolution ner = new NEResolution();
+		ner.add(createF("pointFeature", "ne_10m_geography_regions_points",true,  null, null, Color.red));
+		ner.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land", true, null, Color.green, Color.blue));
+		ner.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true, Color.DARK_GRAY, Color.orange, Color.yellow));
+		
 		// loop through our styles, find the one that is relevant to this scale
-		return null;
+		return ner;
+	}
+	
+	private static NEFeatureStyle createF(String featureType, String filename, boolean visible, Color fillCol, Color lineCol, Color textCol)
+	{
+		NEFeatureStyle nef =new NEFeatureStyle(featureType, filename, fillCol, lineCol, textCol);
+		nef.setVisible(visible);
+		return nef;
 	}
 	
 	/**
