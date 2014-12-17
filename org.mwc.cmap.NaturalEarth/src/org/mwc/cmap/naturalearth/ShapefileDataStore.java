@@ -3,7 +3,7 @@ package org.mwc.cmap.naturalearth;
 import java.io.File;
 import java.util.HashMap;
 
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 
 public class ShapefileDataStore
 {

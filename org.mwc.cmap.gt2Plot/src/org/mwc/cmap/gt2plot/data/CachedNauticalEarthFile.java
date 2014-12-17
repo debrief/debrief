@@ -1,4 +1,4 @@
-package org.mwc.cmap.naturalearth.data;
+package org.mwc.cmap.gt2plot.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
-import org.mwc.cmap.naturalearth.Activator;
+import org.mwc.cmap.gt2plot.GtActivator;
 import org.opengis.feature.Property;
 
 import MWC.GenericData.NamedWorldLocation;
@@ -93,19 +93,19 @@ public class CachedNauticalEarthFile
 			else
 			{
 				_featureType = FeatureTypes.UNKNOWN;
-				Activator.logError(Status.WARNING,
+				GtActivator.logError(Status.WARNING,
 						"Unexpected feature type:" + fType, null);
 			}
 
 		}
 		catch (final FileNotFoundException fe)
 		{
-			Activator.logError(Status.WARNING, "Failed to find Natural Earth file:"
+			GtActivator.logError(Status.WARNING, "Failed to find Natural Earth file:"
 					+ _filename, null);
 		}
 		catch (final IOException e)
 		{
-			Activator.logError(Status.ERROR, "Trouble loading Natural Earth file:"
+			GtActivator.logError(Status.ERROR, "Trouble loading Natural Earth file:"
 					+ _filename, e);
 		}
 	}
@@ -113,6 +113,7 @@ public class CachedNauticalEarthFile
 	private static ArrayList<NamedWorldPath> loadPolygons(
 			SimpleFeatureIterator features)
 	{
+		int ctr = 0;
 		ArrayList<NamedWorldPath> res = new ArrayList<NamedWorldPath>();
 		while (features.hasNext())
 		{
@@ -142,6 +143,10 @@ public class CachedNauticalEarthFile
 			// are we done?
 			if ((path != null))
 			{
+				// do we have name?
+				if(name == null)
+					name = "" + ++ctr;
+				
 				NamedWorldPath nwa = new NamedWorldPath(path);
 				nwa.setName(name);
 
@@ -317,7 +322,7 @@ public class CachedNauticalEarthFile
 	public ArrayList<NamedWorldPath> getPolygons()
 	{
 		if (notLoaded())
-			Activator.logError(Status.ERROR,
+			GtActivator.logError(Status.ERROR,
 					"Error = should have already loaded data", null);
 
 		return _polygons;
@@ -326,7 +331,7 @@ public class CachedNauticalEarthFile
 	public ArrayList<NamedWorldLocation> getPoints()
 	{
 		if (notLoaded())
-			Activator.logError(Status.ERROR,
+			GtActivator.logError(Status.ERROR,
 					"Error = should have already loaded data", null);
 
 		return _points;
@@ -335,7 +340,7 @@ public class CachedNauticalEarthFile
 	public ArrayList<NamedWorldPathList> getLines()
 	{
 		if (notLoaded())
-			Activator.logError(Status.ERROR,
+			GtActivator.logError(Status.ERROR,
 					"Error = should have already loaded data", null);
 
 		return _lines;

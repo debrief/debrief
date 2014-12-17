@@ -2,7 +2,7 @@ package org.mwc.cmap.naturalearth.view;
 
 import java.awt.Color;
 
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 
 public class NEFeatureStyle
 {
