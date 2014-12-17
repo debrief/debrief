@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
 import org.mwc.cmap.naturalearth.view.NEFeatureSet;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
@@ -97,10 +98,7 @@ public class Activator extends AbstractUIPlugin
 	 */
 	public String getLibraryPath()
 	{
-		// TODO: @Peco, can you implement this?
-		// return "git/debrief/org.mwc.cmap.NaturalEarth.test/data";
-
-		return "/Users/ian/git/debrief_github/org.mwc.cmap.NaturalEarth.test/data";
+		return getPreferenceStore().getString(PreferenceConstants.DATA_FOLDER);
 	}
 
 	public ArrayList<String> getStyleNames()
