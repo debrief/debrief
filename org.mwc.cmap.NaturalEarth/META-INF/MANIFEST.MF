@@ -7,12 +7,13 @@ Bundle-Activator: org.mwc.cmap.naturalearth.Activator
 Bundle-Vendor: planetmayo
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.cmap.gt2Plot;bundle-version="1.0.12",
+ org.mwc.cmap.geotools;bundle-version="12.1.0",
  org.mwc.cmap.legacy;bundle-version="1.0.190"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: org.mwc.cmap.naturalearth,
+ org.mwc.cmap.naturalearth.data,
  org.mwc.cmap.naturalearth.model,
  org.mwc.cmap.naturalearth.preferences,
  org.mwc.cmap.naturalearth.ui,
