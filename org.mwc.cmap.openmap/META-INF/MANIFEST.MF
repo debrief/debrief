@@ -4,7 +4,7 @@ Bundle-Name: Openmap library
 Bundle-SymbolicName: org.mwc.cmap.openmap
 Bundle-Version: 5.1.7
 Bundle-Activator: org.mwc.cmap.openmap.Activator
-Bundle-Vendor: MWC
+Bundle-Vendor: BBN Technologies
 Require-Bundle: org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
