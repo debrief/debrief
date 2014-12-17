@@ -12,9 +12,11 @@ public class NEResolution extends ArrayList<NEFeatureStyle>
 	
 	final private Double _minS;
 	final private Double _maxS;
+	final private String _name;
 
-	public NEResolution(Double minS, Double maxS)
+	public NEResolution(String name, Double minS, Double maxS)
 	{
+		_name = name;
 		_minS = minS;
 		_maxS = maxS;
 	}
@@ -26,20 +28,24 @@ public class NEResolution extends ArrayList<NEFeatureStyle>
 	 */
 	public boolean canPlot(double scale)
 	{
-		boolean valid = true;;
+		boolean valid = true;
 		if(_minS != null)
 		{
-			valid = scale < _minS;
+			valid = scale > _minS;
 		}
 		if(valid)
 		{
 			if(_maxS != null)
-				valid = scale > _maxS;
+				valid = scale <= _maxS;
 		}
 		
 		return valid;
 	}
 
+	public String getName()
+	{
+		return _name;
+	}
 	
 	
 }
