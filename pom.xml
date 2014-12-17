@@ -76,7 +76,9 @@
     <module>org.qinetiq.data_feed</module>
     <module>org.mwc.debrief.test2</module>
     <module>org.mwc.debrief.targetplatforms</module>
+<!--
     <module>org.mwc.debrief.site</module>
+-->
     <module>org.mwc.debrief.product</module>
     <module>org.mwc.debrief.satc.core</module>
     <module>org.mwc.debrief.satc.integration</module>
@@ -103,11 +105,13 @@
            </artifact>  
          </target>  
           <environments>
+<!--
             <environment>
               <os>linux</os>
               <ws>gtk</ws>
               <arch>x86</arch>
             </environment>
+-->
             <environment>
               <os>linux</os>
               <ws>gtk</ws>
