@@ -18,15 +18,18 @@ public class NEFeatureStyle
 	private Color _fillCol;
 	private Color _textCol;
 	private boolean _isVisible;
+	private float _textHeight;
+	private int _textStyle;
+	private String _textFont;
 
-	public NEFeatureStyle(String featureType, String filename, Color fillCol,
-			Color lineCol, Color textCol)
+	public NEFeatureStyle(String featureType, String filename, boolean visible, Color fillCol,
+			Color lineCol)
 	{
 		_featureType = featureType;
 		_filename = filename;
 		_lineCol = lineCol;
 		_fillCol = fillCol;
-		_textCol = textCol;
+		_isVisible = visible;
 	}
 
 	/** the NE filename that this style applies to
@@ -85,5 +88,37 @@ public class NEFeatureStyle
 	{
 		return _textCol;
 	}
+
+	public void setTextHeight(float textHeight)
+	{
+		_textHeight  = textHeight;
+	}
+
+	public void setTextStyle(int textStyle)
+	{
+		_textStyle = textStyle;
+	}
+
+	public void setTextFont(String textFont)
+	{
+		_textFont = textFont;
+	}
+
+	public float getTextHeight()
+	{
+		return _textHeight;
+	}
+
+	public int getTextStyle()
+	{
+		return _textStyle;
+	}
+
+	public String getTextFont()
+	{
+		return _textFont;
+	}
+	
+	
 
 }

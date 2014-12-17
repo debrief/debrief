@@ -26,15 +26,14 @@ public class Activator extends AbstractUIPlugin
 	// The shared instance
 	private static Activator plugin;
 
-	// TODO: PECO - I hope this datastore will remain "live" across Debrief plots, so that each plot doesn't have to load its own data
+	// TODO: PECO - I hope this datastore will remain "live" across Debrief plots,
+	// so that each plot doesn't have to load its own data
 	// the data file cache
 	private static ShapefileDataStore _dataStore;
 
 	// the set of feature types. Actually these will be drawn from the Prefs page
 	private static NEFeatureSet _featureSet = null;
-	
 
-	
 	/**
 	 * The constructor
 	 */
@@ -133,19 +132,19 @@ public class Activator extends AbstractUIPlugin
 		if (pathRoot != null)
 		{
 			// init the datastore, if we have to
-			if(_dataStore == null)
+			if (_dataStore == null)
 			{
 				_dataStore = new ShapefileDataStore();
 			}
-			
+
 			_dataStore.setPath(pathRoot);
-			
+
 			res = _dataStore.get(fName);
 		}
 
 		return res;
 	}
-	
+
 	/**
 	 * error logging utility
 	 * 
@@ -157,13 +156,14 @@ public class Activator extends AbstractUIPlugin
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logError(final int severity, final String message, final Throwable exception)
+	public static void logError(final int severity, final String message,
+			final Throwable exception)
 	{
 		final Activator singleton = getDefault();
 		if (singleton != null)
 		{
-			final Status stat = new Status(severity, "org.mwc.cmap.NaturalEarth", Status.OK,
-					message, exception);
+			final Status stat = new Status(severity, "org.mwc.cmap.NaturalEarth",
+					Status.OK, message, exception);
 			singleton.getLog().log(stat);
 		}
 
@@ -171,47 +171,82 @@ public class Activator extends AbstractUIPlugin
 		if (exception != null)
 			exception.printStackTrace();
 	}
-	
+
 	public static NEResolution getStyleFor(double curScale)
 	{
 		System.out.println("scale:" + curScale);
 
-		if(_featureSet == null)
+		if (_featureSet == null)
 		{
-			NEResolution ne10 = new NEResolution("10M", null,200000d);
-			ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true, Color.DARK_GRAY, Color.orange, Color.yellow));
-			ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land", true, null, Color.green, Color.blue));
-			ne10.add(createF("pointFeature", "ne_10m_geography_regions_points",true,  null, null, Color.red));
+			NEResolution ne10 = new NEResolution("10M", null, 200000d);
+			ne10.add(createF("polygonFeature", "ne_10m_land", true, Color.YELLOW,
+					Color.orange));
+			ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true,
+					Color.DARK_GRAY, Color.orange));
+			ne10.add(createF("polygonFeature", "ne_10m_geography_regions_polys",
+					true, Color.LIGHT_GRAY, Color.red));
+			ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land",
+					true, null, Color.green));
+			ne10.add(createF("pointFeature", "ne_10m_geography_regions_points", true,
+					null, null));
+			ne10.add(createF("pointFeature", "ne_10m_ports", true,
+					null, null, Color.pink, 8, 0, ""));
 
-			NEResolution ne50 = new NEResolution("50M", 200000d,800000d);
-	//		ne50.add(createF("polygonFeature", "ne_50m_land", true, Color.green, Color.orange, Color.yellow));
-			ne50.add(createF("polygonFeature", "ne_50m_ocean", true, Color.lightGray, Color.green, Color.pink));
-			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true, null, null, Color.yellow));
-			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true, null, null, Color.blue));
+			NEResolution ne50 = new NEResolution("50M", 200000d, 800000d);
+			// ne50.add(createF("polygonFeature", "ne_50m_land", true, Color.green,
+			// Color.orange, Color.yellow));
+			// ne50.add(createF("polygonFeature", "ne_50m_ocean", true,
+			// Color.lightGray, Color.green, Color.pink));
+			ne50.add(createF("polygonFeature", "ne_110m_land", true, Color.WHITE,
+					Color.orange));
+			ne50.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true,
+					Color.LIGHT_GRAY, Color.orange));
+			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
+					null, null, Color.yellow, 12, 0, ""));
+			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
+					null, null, Color.black, 8, 0, ""));
 
-			NEResolution ne110 = new NEResolution("110M", 800000d,null);
-			ne110.add(createF("polygonFeature", "ne_110m_land", true, Color.yellow, Color.orange, Color.yellow));
-			ne110.add(createF("polygonFeature", "ne_110m_ocean", true, Color.blue, Color.green, Color.pink));
-			ne110.add(createF("pointFeature", "ne_110m_geography_regions_points", true, null, null, Color.red));
-			ne110.add(createF("pointFeature", "ne_110m_populated_places_simple", true, null, null, Color.green));
-			
+			NEResolution ne110 = new NEResolution("110M", 800000d, null);
+			ne110.add(createF("polygonFeature", "ne_110m_land", true, new Color(235,
+					219, 188), new Color(162, 162, 162)));
+			ne110.add(createF("polygonFeature", "ne_110m_ocean", true, new Color(165,
+					191, 221), null));
+			ne110.add(createF("pointFeature", "ne_110m_geography_regions_points",
+					true, null, null, Color.pink, 8, 0, ""));
+			ne110.add(createF("pointFeature", "ne_110m_populated_places_simple",
+					true, null, null, new Color(128, 128, 128), 14, 0, ""));
+
 			_featureSet = new NEFeatureSet();
 			_featureSet.add(ne10);
 			_featureSet.add(ne50);
 			_featureSet.add(ne110);
 		}
-		
+
 		// loop through our styles, find the one that is relevant to this scale
 		return _featureSet.resolutionFor(curScale);
 	}
-	
-	private static NEFeatureStyle createF(String featureType, String filename, boolean visible, Color fillCol, Color lineCol, Color textCol)
+
+	private static NEFeatureStyle createF(String featureType, String filename,
+			boolean visible, Color fillCol, Color lineCol, Color textCol, float textHeight, int textStyle, String textFont)
 	{
-		NEFeatureStyle nef =new NEFeatureStyle(featureType, filename, fillCol, lineCol, textCol);
+		NEFeatureStyle nef = createF(featureType, filename, visible, fillCol, lineCol);		
+		nef.setVisible(visible);
+		nef.setTextHeight(textHeight);
+		nef.setTextStyle(textStyle);
+		nef.setTextFont(textFont);
+		return nef;
+	}
+
+
+	private static NEFeatureStyle createF(String featureType, String filename,
+			boolean visible, Color fillCol, Color lineCol)
+	{
+		NEFeatureStyle nef = new NEFeatureStyle(featureType, filename, visible, fillCol,
+				lineCol);
 		nef.setVisible(visible);
 		return nef;
 	}
-	
+
 	/**
 	 * error logging utility
 	 * 
@@ -223,10 +258,11 @@ public class Activator extends AbstractUIPlugin
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logError(final int severity, final String message, final Throwable exception, boolean showStack)
+	public static void logError(final int severity, final String message,
+			final Throwable exception, boolean showStack)
 	{
 		final String fullMessage;
-		if(showStack)
+		if (showStack)
 		{
 			String stackListing = "Trace follows\n=================\n";
 			StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -241,7 +277,7 @@ public class Activator extends AbstractUIPlugin
 		{
 			fullMessage = message;
 		}
-		
+
 		final Activator singleton = getDefault();
 		if (singleton != null)
 		{
@@ -254,6 +290,5 @@ public class Activator extends AbstractUIPlugin
 		if (exception != null)
 			exception.printStackTrace();
 	}
-	
 
 }
