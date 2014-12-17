@@ -18,7 +18,7 @@ public class NEFeatureStyle
 	private Color _fillCol;
 	private Color _textCol;
 	private boolean _isVisible;
-	private float _textHeight;
+	private int _textHeight;
 	private int _textStyle;
 	private String _textFont;
 
@@ -89,7 +89,7 @@ public class NEFeatureStyle
 		return _textCol;
 	}
 
-	public void setTextHeight(float textHeight)
+	public void setTextHeight(int textHeight)
 	{
 		_textHeight  = textHeight;
 	}
@@ -104,7 +104,7 @@ public class NEFeatureStyle
 		_textFont = textFont;
 	}
 
-	public float getTextHeight()
+	public int getTextHeight()
 	{
 		return _textHeight;
 	}
@@ -117,6 +117,11 @@ public class NEFeatureStyle
 	public String getTextFont()
 	{
 		return _textFont;
+	}
+
+	public void setTextColor(Color textCol)
+	{
+		_textCol = textCol;
 	}
 	
 	
