@@ -8,7 +8,7 @@ import java.io.File;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
 
 public class ShapeFileTests
 {
