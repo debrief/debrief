@@ -203,6 +203,12 @@ public class NELayer extends BaseLayer
 				// ok, skip to the next one
 				continue;
 			}
+			
+			// see if it's not our test one
+			if(! namedWorldPath.getName().equals("81"))
+			{
+		//		continue;
+			}
 
 			dest.setColor(style.getFillColor());
 
@@ -232,11 +238,7 @@ public class NELayer extends BaseLayer
 					}
 					else
 					{
-						if ((thisP.x <= 0) || (thisP.y <= 0) || (thisP.x > 5000)
-								|| (thisP.y > 5000))
-						{
-						}
-						else
+						if (locationOk(thisP))
 						{
 							// remember the coords
 							xP[counter] = thisP.x;
@@ -258,6 +260,9 @@ public class NELayer extends BaseLayer
 	{
 		if (polygons == null)
 			return;
+		
+		if(style.getLineColor() == null)
+			return;
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -274,6 +279,7 @@ public class NELayer extends BaseLayer
 				continue;
 			}
 
+			
 			dest.setColor(style.getLineColor());
 
 			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
@@ -304,10 +310,7 @@ public class NELayer extends BaseLayer
 					else
 					{
 
-						if ((thisP.x <= 0) || (thisP.y <= 0))
-						{
-						}
-						else
+						if (locationOk(thisP))
 						{
 							// remember the coords
 							xP[counter] = thisP.x;
@@ -323,12 +326,21 @@ public class NELayer extends BaseLayer
 			dest.drawPolygon(xP, yP, counter);
 		}
 	}
+	
+	private boolean locationOk(Point point)
+	{
+		return point.x > -10000 && point.y > -10000;
+	}
 
 	private void drawPolygonPoints(CanvasType dest,
 			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
 	{
 		if (polygons == null)
 			return;
+		
+		if(style.getTextColor() == null)
+			return;
+
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -364,6 +376,9 @@ public class NELayer extends BaseLayer
 		if (paths == null)
 			return;
 
+		if(style.getLineColor() == null)
+			return;
+
 		dest.setColor(style.getLineColor());
 
 		// ok, loop through the polys
@@ -393,10 +408,13 @@ public class NELayer extends BaseLayer
 
 					// convert to screen
 					final Point thisP = dest.toScreen(next);
-
-					// remember the coords
-					xPoints[counter++] = thisP.x;
-					xPoints[counter++] = thisP.y;
+					
+					if (locationOk(thisP))
+					{
+						// remember the coords
+						xPoints[counter++] = thisP.x;
+						xPoints[counter++] = thisP.y;
+					}
 				}
 
 				dest.drawPolyline(xPoints);
@@ -445,6 +463,9 @@ public class NELayer extends BaseLayer
 			ArrayList<NamedWorldLocation> points, NEFeatureStyle style)
 	{
 		if (points == null)
+			return;
+
+		if(style.getTextColor() == null)
 			return;
 
 		dest.setColor(style.getTextColor());
