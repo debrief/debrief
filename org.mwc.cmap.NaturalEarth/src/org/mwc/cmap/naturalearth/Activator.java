@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
 import org.mwc.cmap.naturalearth.view.NEFeatureSet;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
@@ -178,12 +178,18 @@ public class Activator extends AbstractUIPlugin
 
 		if(_featureSet == null)
 		{
-			NEResolution ne10 = new NEResolution(null,100000d);
+			NEResolution ne10 = new NEResolution("10M", null,200000d);
 			ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true, Color.DARK_GRAY, Color.orange, Color.yellow));
 			ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land", true, null, Color.green, Color.blue));
 			ne10.add(createF("pointFeature", "ne_10m_geography_regions_points",true,  null, null, Color.red));
-			
-			NEResolution ne110 = new NEResolution(100000d,null);
+
+			NEResolution ne50 = new NEResolution("50M", 200000d,800000d);
+	//		ne50.add(createF("polygonFeature", "ne_50m_land", true, Color.green, Color.orange, Color.yellow));
+			ne50.add(createF("polygonFeature", "ne_50m_ocean", true, Color.lightGray, Color.green, Color.pink));
+			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true, null, null, Color.yellow));
+			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true, null, null, Color.blue));
+
+			NEResolution ne110 = new NEResolution("110M", 800000d,null);
 			ne110.add(createF("polygonFeature", "ne_110m_land", true, Color.yellow, Color.orange, Color.yellow));
 			ne110.add(createF("polygonFeature", "ne_110m_ocean", true, Color.blue, Color.green, Color.pink));
 			ne110.add(createF("pointFeature", "ne_110m_geography_regions_points", true, null, null, Color.red));
@@ -191,6 +197,7 @@ public class Activator extends AbstractUIPlugin
 			
 			_featureSet = new NEFeatureSet();
 			_featureSet.add(ne10);
+			_featureSet.add(ne50);
 			_featureSet.add(ne110);
 		}
 		

@@ -3,7 +3,7 @@ package org.mwc.cmap.naturalearth.model;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 
 import MWC.GUI.CanvasType;
