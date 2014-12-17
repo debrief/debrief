@@ -8,8 +8,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.Activator;
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.model.NEFeature;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
@@ -59,9 +59,16 @@ public class NELayer extends BaseLayer
 			double worldDegs = dest.getProjection().getDataArea().getWidth();
 			double worldMM = worldDegs * 60 * 1852 * 1000;
 			final double curScale = worldMM / screenMM;
-			
+
 			// find the style set for this scale
 			final NEResolution thisR = getStyleSetFor(curScale);
+
+			System.out.println("got: " + thisR.getName());
+			
+			if(thisR.getName().startsWith("50M"))
+			{
+				System.err.println("here");
+			}
 
 			// is this different?
 			if (thisR != _currentRes)
@@ -99,7 +106,7 @@ public class NELayer extends BaseLayer
 						super.add(editable);
 					}
 				}
-				
+
 				_currentRes = thisR;
 			}
 
@@ -214,23 +221,30 @@ public class NELayer extends BaseLayer
 			{
 				final WorldLocation next = points.next();
 
-				if (next.getLat() <= 90)
+				if (next.getLat() < 90)
 				{
 					// convert to screen
 					final Point thisP = dest.toScreen(next);
 
-					if ((thisP.x <= 0) || (thisP.y <= 0) || (thisP.x > 5000)
-							|| (thisP.y > 5000))
+					if (thisP == null)
 					{
+						System.out.println("NULL LOCATION:" + next);
 					}
 					else
 					{
-						// remember the coords
-						xP[counter] = thisP.x;
-						yP[counter] = thisP.y;
+						if ((thisP.x <= 0) || (thisP.y <= 0) || (thisP.x > 5000)
+								|| (thisP.y > 5000))
+						{
+						}
+						else
+						{
+							// remember the coords
+							xP[counter] = thisP.x;
+							yP[counter] = thisP.y;
 
-						// move the counter
-						counter++;
+							// move the counter
+							counter++;
+						}
 					}
 				}
 			}
@@ -277,23 +291,31 @@ public class NELayer extends BaseLayer
 			{
 				final WorldLocation next = points.next();
 
-				if (next.getLat() <= 90)
+				if (next.getLat() < 90)
 				{
 
 					// convert to screen
 					final Point thisP = dest.toScreen(next);
 
-					if ((thisP.x <= 0) || (thisP.y <= 0))
+					if (thisP == null)
 					{
+						System.err.println("duff location");
 					}
 					else
 					{
-						// remember the coords
-						xP[counter] = thisP.x;
-						yP[counter] = thisP.y;
 
-						// move the counter
-						counter++;
+						if ((thisP.x <= 0) || (thisP.y <= 0))
+						{
+						}
+						else
+						{
+							// remember the coords
+							xP[counter] = thisP.x;
+							yP[counter] = thisP.y;
+
+							// move the counter
+							counter++;
+						}
 					}
 				}
 			}
@@ -398,8 +420,8 @@ public class NELayer extends BaseLayer
 			NamedWorldPathList next2 = iter.next();
 			if (next2.getName() == null)
 				continue;
-			
-			if(next2.getBounds() == null)
+
+			if (next2.getBounds() == null)
 				continue;
 
 			if (!visArea.overlaps(next2.getBounds()))
