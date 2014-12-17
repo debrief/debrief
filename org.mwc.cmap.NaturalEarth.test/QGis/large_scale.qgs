@@ -445,7 +445,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_10m_bathymetry_B_900020141211210352110</id>
             <datasource>../data/ne_10m_bathymetry_all/ne_10m_bathymetry_B_9000.shp</datasource>
             <title></title>
@@ -482,7 +482,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -520,7 +520,7 @@
                 <property key="labeling/fieldName" value=""/>
                 <property key="labeling/fontBold" value="false"/>
                 <property key="labeling/fontCapitals" value="0"/>
-                <property key="labeling/fontFamily" value=".Lucida Grande UI"/>
+                <property key="labeling/fontFamily" value="Ubuntu"/>
                 <property key="labeling/fontItalic" value="false"/>
                 <property key="labeling/fontLetterSpacing" value="0"/>
                 <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -549,7 +549,7 @@
                 <property key="labeling/minFeatureSize" value="0"/>
                 <property key="labeling/multilineAlign" value="0"/>
                 <property key="labeling/multilineHeight" value="1"/>
-                <property key="labeling/namedStyle" value=""/>
+                <property key="labeling/namedStyle" value="Medium"/>
                 <property key="labeling/obstacle" value="true"/>
                 <property key="labeling/placeDirectionSymbol" value="0"/>
                 <property key="labeling/placement" value="1"/>
@@ -715,7 +715,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -948,7 +948,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -1181,7 +1181,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -1408,7 +1408,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -1641,7 +1641,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -1874,7 +1874,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -2107,7 +2107,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -2340,7 +2340,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -2573,7 +2573,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
@@ -2806,7 +2806,7 @@
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
+                            <prop k="style_border" v="no"/>
                             <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
