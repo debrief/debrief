@@ -1,5 +1,6 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
+import java.awt.Font;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +35,10 @@ public class NELayer extends BaseLayer
 	private static final long serialVersionUID = 1L;
 	private HashMap<NEResolution, Collection<Editable>> _myResolutions;
 	private NEResolution _currentRes;
+	
+	private HashMap<String, Font> _fontCache = new HashMap<String, Font>();
+	
+
 
 	public NELayer()
 	{
@@ -340,7 +345,10 @@ public class NELayer extends BaseLayer
 		
 		if(style.getTextColor() == null)
 			return;
-
+		
+		dest.setColor(style.getTextColor());		
+		Font font = fontFor(style.getTextHeight(), style.getTextStyle(), style.getTextFont());
+		dest.setFont(font);
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -459,6 +467,18 @@ public class NELayer extends BaseLayer
 		}
 	}
 
+	private Font fontFor(int height, int style, String family)
+	{
+		String descriptor = family + "_" + height + "_" + style;
+		Font font = _fontCache.get(descriptor);
+		if(font == null)
+		{
+			font = new Font(family, style, height);
+			_fontCache.put(descriptor, font);
+		}
+		return font;
+	}
+	
 	private void drawPointPoints(CanvasType dest,
 			ArrayList<NamedWorldLocation> points, NEFeatureStyle style)
 	{
@@ -468,7 +488,9 @@ public class NELayer extends BaseLayer
 		if(style.getTextColor() == null)
 			return;
 
-		dest.setColor(style.getTextColor());
+		dest.setColor(style.getTextColor());		
+		Font font = fontFor(style.getTextHeight(), style.getTextStyle(), style.getTextFont());
+		dest.setFont(font);
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -502,3 +524,5 @@ public class NELayer extends BaseLayer
 	}
 
 }
+
+
