@@ -193,7 +193,7 @@
     <projectlayers layercount="8">
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_110m_admin_0_countries20141215154151457</id>
-            <datasource>../../../data/World/Natural Earth/small_scale/110m_cultural/ne_110m_admin_0_countries.shp</datasource>
+            <datasource>../data/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -802,7 +802,7 @@
         </maplayer>
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_110m_coastline20141211203653551</id>
-            <datasource>../../../data/World/Natural Earth/small_scale/110m_physical/ne_110m_coastline.shp</datasource>
+            <datasource>../data/ne_110m_coastline/ne_110m_coastline.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -1045,7 +1045,7 @@
         </maplayer>
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_110m_geography_regions_polys20141215154624808</id>
-            <datasource>../../../data/World/Natural Earth/small_scale/110m_physical/ne_110m_geography_regions_polys.shp</datasource>
+            <datasource>../data/ne_110m_geography_regions_polys/ne_110m_geography_regions_polys.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -1308,7 +1308,7 @@
         </maplayer>
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_110m_land20141211203653570</id>
-            <datasource>../../../data/World/Natural Earth/small_scale/110m_physical/ne_110m_land.shp</datasource>
+            <datasource>../data/ne_110m_land/ne_110m_land.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -1547,7 +1547,7 @@
         </maplayer>
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_110m_ocean20141211203653577</id>
-            <datasource>../../../data/World/Natural Earth/small_scale/110m_physical/ne_110m_ocean.shp</datasource>
+            <datasource>../data/ne_110m_ocean/ne_110m_ocean.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -1786,7 +1786,7 @@
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_110m_populated_places20141215154400492</id>
-            <datasource>../../../data/World/Natural Earth/small_scale/110m_cultural/ne_110m_populated_places.shp</datasource>
+            <datasource>../data/ne_110m_populated_places/ne_110m_populated_places.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -2571,7 +2571,7 @@
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ne_50m_graticules_3020141215154919590</id>
-            <datasource>../../../data/World/Natural Earth/medium_scale/50m_physical/ne_50m_graticules_30.shp</datasource>
+            <datasource>../data/ne_50m_graticules_30/ne_50m_graticules_30.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -2838,7 +2838,7 @@
         </maplayer>
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ocean_labels20141214202445588</id>
-            <datasource>./data/ocean labels.shp</datasource>
+            <datasource>../data/sea_ocean_labels/ocean labels.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
