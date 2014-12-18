@@ -22,6 +22,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
 
 import MWC.GUI.Layers;
@@ -56,7 +57,7 @@ public class InsertNaturalEarth extends AbstractHandler
 			if (layers != null)
 			{
 				//
-				NELayer ne = new NELayer();
+				NELayer ne = new NELayer(Activator.getDefault().getDefaultStyleSet());
 				layers.addThisLayer(ne);
 			}
 		}
