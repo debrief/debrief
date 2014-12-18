@@ -91,6 +91,8 @@ public class ShapeFileTests
 		assertTrue(boundaryLines.getAbsolutePath() + " doesn't exists.",
 				boundaryLines.isFile());
 
+		System.out.println("about to create cached file");
+		
 		// ok, load it
 		CachedNaturalEarthFile csf = new CachedNaturalEarthFile(
 				boundaryLines.getAbsolutePath());
@@ -98,6 +100,9 @@ public class ShapeFileTests
 
 		assertNotNull("found lines", csf.getLines());
 		assertEquals("loaded lines", 461, csf.getLines().size());
+		
+		System.out.println("test complete");
+
 	}
 
 	@Test
