@@ -174,8 +174,6 @@ public class Activator extends AbstractUIPlugin
 
 	public static NEResolution getStyleFor(double curScale)
 	{
-		System.out.println("scale:" + curScale);
-
 		if (_featureSet == null)
 		{
 			NEResolution ne10 = new NEResolution("10M", null, 200000d);
