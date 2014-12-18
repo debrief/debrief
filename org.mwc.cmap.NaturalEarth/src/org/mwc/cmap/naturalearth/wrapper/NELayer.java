@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.mwc.cmap.naturalearth.Activator;
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.model.NEFeature;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
@@ -138,7 +138,7 @@ public class NELayer extends BaseLayer implements NeedsToKnowAboutLayers
 					{
 						String fName = feature.getStyle().getFileName();
 						// get the datafile
-						CachedNauticalEarthFile thisData = Activator.getDefault().loadData(
+						CachedNaturalEarthFile thisData = Activator.getDefault().loadData(
 								fName);
 
 						// did we find the shapefile?
