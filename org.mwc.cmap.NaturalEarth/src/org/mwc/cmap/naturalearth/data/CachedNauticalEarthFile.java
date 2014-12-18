@@ -1,4 +1,4 @@
-package org.mwc.cmap.gt2plot.data;
+package org.mwc.cmap.naturalearth.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
-import org.mwc.cmap.gt2plot.GtActivator;
+import org.mwc.cmap.naturalearth.Activator;
 import org.opengis.feature.Property;
 
 import MWC.GenericData.NamedWorldLocation;
@@ -93,19 +93,19 @@ public class CachedNauticalEarthFile
 			else
 			{
 				_featureType = FeatureTypes.UNKNOWN;
-				GtActivator.logError(Status.WARNING,
+				Activator.logError(Status.WARNING,
 						"Unexpected feature type:" + fType, null);
 			}
 
 		}
 		catch (final FileNotFoundException fe)
 		{
-			GtActivator.logError(Status.WARNING, "Failed to find Natural Earth file:"
+			Activator.logError(Status.WARNING, "Failed to find Natural Earth file:"
 					+ _filename, null);
 		}
 		catch (final IOException e)
 		{
-			GtActivator.logError(Status.ERROR, "Trouble loading Natural Earth file:"
+			Activator.logError(Status.ERROR, "Trouble loading Natural Earth file:"
 					+ _filename, e);
 		}
 	}
@@ -322,7 +322,7 @@ public class CachedNauticalEarthFile
 	public ArrayList<NamedWorldPath> getPolygons()
 	{
 		if (notLoaded())
-			GtActivator.logError(Status.ERROR,
+			Activator.logError(Status.ERROR,
 					"Error = should have already loaded data", null);
 
 		return _polygons;
@@ -331,7 +331,7 @@ public class CachedNauticalEarthFile
 	public ArrayList<NamedWorldLocation> getPoints()
 	{
 		if (notLoaded())
-			GtActivator.logError(Status.ERROR,
+			Activator.logError(Status.ERROR,
 					"Error = should have already loaded data", null);
 
 		return _points;
@@ -340,7 +340,7 @@ public class CachedNauticalEarthFile
 	public ArrayList<NamedWorldPathList> getLines()
 	{
 		if (notLoaded())
-			GtActivator.logError(Status.ERROR,
+			Activator.logError(Status.ERROR,
 					"Error = should have already loaded data", null);
 
 		return _lines;

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
 import org.mwc.cmap.naturalearth.view.NEFeatureSet;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
