@@ -39,6 +39,10 @@ public class NELayer extends BaseLayer
 	private HashMap<String, Font> _fontCache = new HashMap<String, Font>();
 	
 
+	/** the safest we can get to the poles without GeoTools falling over.
+	 * 
+	 */
+	final private double LAT_LIMIT = 89.0;
 
 	public NELayer()
 	{
@@ -193,6 +197,9 @@ public class NELayer extends BaseLayer
 	{
 		if (polygons == null)
 			return;
+		
+		if(!style.isShowPolygons())
+			return;
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -232,14 +239,21 @@ public class NELayer extends BaseLayer
 			{
 				final WorldLocation next = points.next();
 
-				if (next.getLat() < 90)
+				if (Math.abs(next.getLat()) < LAT_LIMIT)
 				{
 					// convert to screen
-					final Point thisP = dest.toScreen(next);
+					Point thisP = null;
+					try{
+						thisP = dest.toScreen(next);
+					}
+					catch(Exception e)
+					{
+						System.err.println("failed with:" + next);
+					}
 
 					if (thisP == null)
 					{
-						System.out.println("NULL LOCATION:" + next);
+						System.out.println("NULL LOCATION:" + next + " lat:" + next.getLat());
 					}
 					else
 					{
@@ -268,6 +282,11 @@ public class NELayer extends BaseLayer
 		
 		if(style.getLineColor() == null)
 			return;
+		
+		if(!style.isShowLines())
+			return;
+
+
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -302,11 +321,17 @@ public class NELayer extends BaseLayer
 			{
 				final WorldLocation next = points.next();
 
-				if (next.getLat() < 90)
+				if (Math.abs(next.getLat()) < LAT_LIMIT)
 				{
-
 					// convert to screen
-					final Point thisP = dest.toScreen(next);
+					Point thisP = null;
+					try{
+						thisP = dest.toScreen(next);
+					}
+					catch(Exception e)
+					{
+						System.err.println("failed with:" + next);
+					}
 
 					if (thisP == null)
 					{
@@ -344,6 +369,10 @@ public class NELayer extends BaseLayer
 			return;
 		
 		if(style.getTextColor() == null)
+			return;
+
+		// this method handles labels and points, so drop out if neither are of interest
+		if(!style.isShowLabels() && !style.isShowPoints())
 			return;
 		
 		dest.setColor(style.getTextColor());		
@@ -385,6 +414,9 @@ public class NELayer extends BaseLayer
 			return;
 
 		if(style.getLineColor() == null)
+			return;
+		
+		if(!style.isShowLines())
 			return;
 
 		dest.setColor(style.getLineColor());
@@ -434,6 +466,10 @@ public class NELayer extends BaseLayer
 			ArrayList<NamedWorldPathList> paths, NEFeatureStyle style)
 	{
 		if (paths == null)
+			return;
+		
+		// this method handles labels and points, so drop out if neither are of interest
+		if(!style.isShowLabels() && !style.isShowPoints())
 			return;
 
 		// store the screen size
@@ -487,6 +523,11 @@ public class NELayer extends BaseLayer
 
 		if(style.getTextColor() == null)
 			return;
+		
+		// this method handles labels and points, so drop out if neither are of interest
+		if(!style.isShowLabels() && !style.isShowPoints())
+			return;
+		
 
 		dest.setColor(style.getTextColor());		
 		Font font = fontFor(style.getTextHeight(), style.getTextStyle(), style.getTextFont());
