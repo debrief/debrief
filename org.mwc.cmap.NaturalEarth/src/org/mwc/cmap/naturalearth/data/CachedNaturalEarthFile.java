@@ -75,28 +75,39 @@ public class CachedNaturalEarthFile
 
 			String fType = fs.getSchema().getSuper().getName().getLocalPart()
 					.toString();
-			if (fType.equals("polygonFeature"))
+			SimpleFeatureIterator features = null;
+			try
 			{
-				_polygons = loadPolygons(fs.features());
-				_featureType = FeatureTypes.POLYGONS;
-			}
-			else if (fType.equals("pointFeature"))
-			{
-				_points = loadPoints(fs.features());
-				_featureType = FeatureTypes.POINTS;
-			}
-			else if (fType.equals("lineFeature"))
-			{
-				_lines = loadLines(fs.features());
-				_featureType = FeatureTypes.LINES;
-			}
-			else
-			{
-				_featureType = FeatureTypes.UNKNOWN;
-				Activator.logError(Status.WARNING,
-						"Unexpected feature type:" + fType, null);
-			}
+				features = fs.features();
 
+				if (fType.equals("polygonFeature"))
+				{
+					_polygons = loadPolygons(features);
+					_featureType = FeatureTypes.POLYGONS;
+				}
+				else if (fType.equals("pointFeature"))
+				{
+					_points = loadPoints(features);
+					_featureType = FeatureTypes.POINTS;
+				}
+				else if (fType.equals("lineFeature"))
+				{
+					_lines = loadLines(features);
+					_featureType = FeatureTypes.LINES;
+				}
+				else
+				{
+					_featureType = FeatureTypes.UNKNOWN;
+					Activator.logError(Status.WARNING,
+							"Unexpected feature type:" + fType, null);
+				}
+			}
+			finally
+			{
+				// and close the file
+				if (features != null)
+					features.close();
+			}
 		}
 		catch (final FileNotFoundException fe)
 		{
@@ -144,15 +155,16 @@ public class CachedNaturalEarthFile
 			if ((path != null))
 			{
 				// do we have name?
-				if(name == null)
+				if (name == null)
 					name = "" + ++ctr;
-				
+
 				NamedWorldPath nwa = new NamedWorldPath(path);
 				nwa.setName(name);
 
 				res.add(nwa);
 			}
 		}
+
 		return res;
 	}
 
@@ -303,9 +315,8 @@ public class CachedNaturalEarthFile
 						zDepth = 0;
 					else
 						zDepth = coordinate.z;
-					wls[i] = new WorldLocation(coordinate.y,
-							coordinate.x, zDepth);
-					//res.addPoint(newL);
+					wls[i] = new WorldLocation(coordinate.y, coordinate.x, zDepth);
+					// res.addPoint(newL);
 				}
 				res = new WorldPath(wls);
 			}
