@@ -392,8 +392,14 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 			// convert to screen
 			final Point thisP = dest.toScreen(centre);
-
-			dest.drawText(namedWorldPath.getName(), thisP.x, thisP.y);
+			
+			if(style.isShowLabels())
+				dest.drawText(namedWorldPath.getName(), thisP.x, thisP.y);
+			
+			if(style.isShowPoints())
+			{
+				// TODO: put some marker on the screen, at "dest"
+			}
 		}
 	}
 
@@ -488,8 +494,14 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			WorldLocation centre = next2.getBounds().getCentre();
 			// convert to screen
 			final Point thisP = dest.toScreen(centre);
-
-			dest.drawText(next2.getName(), thisP.x, thisP.y);
+			
+			if(style.isShowLabels())
+				dest.drawText(next2.getName(), thisP.x, thisP.y);
+			
+			if(style.isShowPoints())
+			{
+				// TODO: put some marker on the screen, at "dest"
+			}
 
 		}
 	}
@@ -539,7 +551,14 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			if (visArea.contains(next))
 			{
 				final Point thisP = dest.toScreen(next);
-				dest.drawText(namedLoc.getName(), thisP.x, thisP.y);
+				
+				if(style.isShowLabels())
+					dest.drawText(namedLoc.getName(), thisP.x, thisP.y);
+				
+				if(style.isShowPoints())
+				{
+					// TODO: put some marker on the screen, at "dest"
+				}
 			}
 		}
 	}
