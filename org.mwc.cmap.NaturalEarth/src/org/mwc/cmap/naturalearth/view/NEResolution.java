@@ -1,8 +1,12 @@
 package org.mwc.cmap.naturalearth.view;
 
-import java.util.ArrayList;
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.naturalearth.Activator;
 
-public class NEResolution extends ArrayList<NEFeatureStyle>
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+
+public class NEResolution extends BaseLayer 
 {
 
 	/**
@@ -14,6 +18,8 @@ public class NEResolution extends ArrayList<NEFeatureStyle>
 	final private Double _maxS;
 	final private String _name;
 
+	private boolean _activeRes;
+
 	public NEResolution(String name, Double minS, Double maxS)
 	{
 		_name = name;
@@ -21,6 +27,16 @@ public class NEResolution extends ArrayList<NEFeatureStyle>
 		_maxS = maxS;
 	}
 	
+	
+	
+	@Override
+	public boolean hasOrderedChildren()
+	{
+		return true;
+	}
+
+
+
 	/** whether this set of styles is suited to plotting this particular scale
 	 * 
 	 * @param scale
@@ -44,7 +60,36 @@ public class NEResolution extends ArrayList<NEFeatureStyle>
 
 	public String getName()
 	{
-		return _name;
+		final String res;
+		
+		// do different formatting if it's the active res
+		if(_activeRes)
+		{
+			res = "[" + _name + "]";
+		}
+		else
+			res = _name;
+		return res;
+	}
+
+	
+	@Override
+	public void add(Editable thePlottable)
+	{
+		if(!(thePlottable instanceof NEFeatureStyle))
+		{
+			Activator.logError(Status.WARNING, "Should not be adding this to a NE Feature:" + thePlottable, null);
+		}
+		super.add(thePlottable);
+	}
+
+	/** indicate that this is the currently active resolution
+	 * 
+	 * @param b
+	 */
+	public void setActive(boolean b)
+	{
+		_activeRes = b;
 	}
 	
 	
