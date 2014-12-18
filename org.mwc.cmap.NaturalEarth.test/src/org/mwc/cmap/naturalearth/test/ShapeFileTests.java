@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -176,16 +175,20 @@ public class ShapeFileTests
 
 			ctr++;
 			System.out.println("handling poly #:" + ctr);
-
+			
 			// are we done?
 			if ((path != null))
 			{
 				// do we have name?
+				System.out.println("path=" + path + " ,bounds=" + path.getBounds());
 				if (name == null)
 					name = "" + ctr;
 
 				NamedWorldPath nwa = new NamedWorldPath(path);
 				nwa.setName(name);
+
+				System.out.println("nwa=" + nwa + " ,name=" + nwa.getName() 
+						+ " ,bounds=" + nwa.getBounds());
 
 				res.add(nwa);
 			}
@@ -205,8 +208,7 @@ public class ShapeFileTests
 			Coordinate[] coords = mp.getBoundary().getCoordinates();
 			if (coords != null)
 			{
-				res = new WorldPath();
-
+				WorldLocation[] wls = new WorldLocation[coords.length];
 				for (int i = 0; i < coords.length; i++)
 				{
 					final Coordinate coordinate = coords[i];
@@ -215,10 +217,11 @@ public class ShapeFileTests
 						zDepth = 0;
 					else
 						zDepth = coordinate.z;
-					final WorldLocation newL = new WorldLocation(coordinate.y,
+					wls[i] = new WorldLocation(coordinate.y,
 							coordinate.x, zDepth);
-					res.addPoint(newL);
+					//res.addPoint(newL);
 				}
+				res = new WorldPath(wls);
 			}
 
 		}
