@@ -14,7 +14,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: org.mwc.cmap.naturalearth,
  org.mwc.cmap.naturalearth.data,
- org.mwc.cmap.naturalearth.model,
  org.mwc.cmap.naturalearth.preferences,
  org.mwc.cmap.naturalearth.ui,
  org.mwc.cmap.naturalearth.view,

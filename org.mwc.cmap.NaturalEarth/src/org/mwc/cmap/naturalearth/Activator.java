@@ -172,7 +172,7 @@ public class Activator extends AbstractUIPlugin
 			exception.printStackTrace();
 	}
 
-	public static NEResolution getStyleFor(double curScale)
+	public NEFeatureSet getDefaultStyleSet()
 	{
 		if (_featureSet == null)
 		{
@@ -181,34 +181,32 @@ public class Activator extends AbstractUIPlugin
 			final int PLAIN = 0;
 
 			NEResolution ne10 = new NEResolution("10M", null, 200000d);
-			ne10.add(createF("polygonFeature", "ne_10m_land", true, Color.YELLOW,
-					Color.orange));
+			ne10.add(createF("ne_10m_land", true, Color.YELLOW, Color.orange));
 			// ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys",
 			// true,
 			// Color.DARK_GRAY, Color.orange));
-			ne10.add(createF("polygonFeature", "ne_10m_geography_regions_polys",
-					true, Color.LIGHT_GRAY, Color.red));
-			ne10.add(createF("lineFeature",
-					"ne_10m_admin_0_boundary_lines_maritime_indicator", true, null,
-					new Color(78, 128, 202)));
-			ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land",
-					true, null, Color.green));
+			ne10.add(createF("ne_10m_geography_regions_polys", true,
+					Color.LIGHT_GRAY, Color.red));
+			ne10.add(createF("ne_10m_admin_0_boundary_lines_maritime_indicator",
+					true, null, new Color(78, 128, 202)));
+			ne10.add(createF("ne_10m_admin_0_boundary_lines_land", true,
+					null, Color.green));
 			ne10.add(createF("polygonFeature", "ne_50m_admin_0_countries", true,
 					null, null, new Color(153, 125, 60), 9, 0, "Serif"));
-			ne10.add(createF("pointFeature", "ne_10m_geography_regions_points", true,
-					null, null));
+			ne10.add(createF("ne_10m_geography_regions_points", true, null,
+					null));
 			ne10.add(createF("pointFeature", "ne_10m_ports", true, null, null,
 					Color.pink, 8, 0, "Times"));
 
 			NEResolution ne50 = new NEResolution("50M", null, null);
-		ne50.add(createF("polygonFeature", "ne_50m_ocean", true, new Color(165,
+		ne50.add(createF("ne_50m_ocean", true, new Color(165,
 		191, 221), null));
-			ne50.add(createF("polygonFeature", "ne_50m_land", true, new Color(235,
+			ne50.add(createF("ne_50m_land", true, new Color(235,
 					219, 188), new Color(162, 162, 162)));
-			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
-					null, null, Color.yellow, 12, 0, "SansSerif"));
-			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
-					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
+//			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
+//					null, null, Color.yellow, 12, 0, "SansSerif"));
+//			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
+//					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
 			ne50.add(createF("polygonFeature", "ne_110m_admin_0_countries", true,
 					null, null, new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
 			ne50.add(createF("pointFeature", "sea labels", true, null, null,
@@ -217,9 +215,9 @@ public class Activator extends AbstractUIPlugin
 					new Color(16, 67, 98), 20, ITALIC | BOLD, "Serif"));
 
 			NEResolution ne110 = new NEResolution("110M", 3000000d, null);
-			ne110.add(createF("polygonFeature", "ne_110m_land", true, new Color(235,
+			ne110.add(createF("ne_110m_land", true, new Color(235,
 					219, 188), new Color(162, 162, 162)));
-			ne110.add(createF("polygonFeature", "ne_110m_ocean", true, new Color(165,
+			ne110.add(createF("ne_110m_ocean", true, new Color(165,
 					191, 221), null));
 			ne110.add(createF("polygonFeature", "ne_110m_geography_marine_polys",
 					true, new Color(165, 191, 221), null, Color.red, 8, 0, "Times"));
@@ -239,15 +237,14 @@ public class Activator extends AbstractUIPlugin
 		}
 
 		// loop through our styles, find the one that is relevant to this scale
-		return _featureSet.resolutionFor(curScale);
+		return _featureSet;
 	}
 
 	private static NEFeatureStyle createF(String featureType, String filename,
 			boolean visible, Color fillCol, Color lineCol, Color textCol,
 			int textHeight, int textStyle, String textFont)
 	{
-		NEFeatureStyle nef = createF(featureType, filename, visible, fillCol,
-				lineCol);
+		NEFeatureStyle nef = createF(filename, visible, fillCol, lineCol);
 		nef.setVisible(visible);
 		nef.setTextColor(textCol);
 		nef.setTextHeight(textHeight);
@@ -256,10 +253,10 @@ public class Activator extends AbstractUIPlugin
 		return nef;
 	}
 
-	private static NEFeatureStyle createF(String featureType, String filename,
-			boolean visible, Color fillCol, Color lineCol)
+	private static NEFeatureStyle createF(String filename, boolean visible,
+			Color fillCol, Color lineCol)
 	{
-		NEFeatureStyle nef = new NEFeatureStyle(featureType, filename, visible,
+		NEFeatureStyle nef = new NEFeatureStyle(filename, visible,
 				fillCol, lineCol);
 		nef.setVisible(visible);
 		return nef;

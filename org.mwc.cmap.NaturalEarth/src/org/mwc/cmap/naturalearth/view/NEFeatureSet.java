@@ -1,9 +1,14 @@
 package org.mwc.cmap.naturalearth.view;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Enumeration;
 
-public class NEFeatureSet extends ArrayList<NEResolution>
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.naturalearth.Activator;
+
+import MWC.GUI.Editable;
+import MWC.GUI.Plottables;
+
+public class NEFeatureSet extends Plottables
 { 
 	/**
 	 * 
@@ -12,10 +17,10 @@ public class NEFeatureSet extends ArrayList<NEResolution>
 
 	public NEResolution resolutionFor(double scale)
 	{
-		Iterator<NEResolution> iter = super.iterator();
-		while (iter.hasNext())
+		Enumeration<Editable> iter = super.elements();
+		while (iter.hasMoreElements())
 		{
-			NEResolution thisR = (NEResolution) iter.next();
+			NEResolution thisR = (NEResolution) iter.nextElement();
 			if(thisR.canPlot(scale))
 			{
 				return thisR;
@@ -24,4 +29,15 @@ public class NEFeatureSet extends ArrayList<NEResolution>
 		
 		return null;
 	}
+
+	@Override
+	public void add(Editable thePlottable)
+	{
+		if(!(thePlottable instanceof NEResolution))
+		{
+			Activator.logError(Status.WARNING, "Should not be adding this to a NE Feature:" + thePlottable, null);
+		}
+		super.add(thePlottable);
+	}
+	
 }
