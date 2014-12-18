@@ -63,7 +63,7 @@ public class NELayerHandler extends MWCXMLReader implements LayerHandlerExtensio
 
 	public void elementClosed()
 	{
-		NELayer newL = new NELayer();
+		NELayer newL = new NELayer(null);
 		_theLayers.addThisLayer(newL);
 	}
 
