@@ -179,12 +179,12 @@ public class Activator extends AbstractUIPlugin
 		if (_featureSet == null)
 		{
 			NEResolution ne10 = new NEResolution("10M", null, 200000d);
-//			ne10.add(createF("polygonFeature", "ne_10m_land", true, Color.YELLOW,
-//					Color.orange));
+			ne10.add(createF("polygonFeature", "ne_10m_land", true, Color.YELLOW,
+					Color.orange));
 //			ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true,
 //					Color.DARK_GRAY, Color.orange));
-//			ne10.add(createF("polygonFeature", "ne_10m_geography_regions_polys",
-//					true, Color.LIGHT_GRAY, Color.red));
+			ne10.add(createF("polygonFeature", "ne_10m_geography_regions_polys",
+					true, Color.LIGHT_GRAY, Color.red));
 			ne10.add(createF("lineFeature", "ne_10m_admin_0_boundary_lines_land",
 					true, null, Color.green));
 			ne10.add(createF("pointFeature", "ne_10m_geography_regions_points", true,
@@ -193,10 +193,10 @@ public class Activator extends AbstractUIPlugin
 					null, null, Color.pink, 8, 0, "Times"));
 
 			NEResolution ne50 = new NEResolution("50M", 200000d, 800000d);
-			// ne50.add(createF("polygonFeature", "ne_50m_land", true, Color.green,
-			// Color.orange, Color.yellow));
-			// ne50.add(createF("polygonFeature", "ne_50m_ocean", true,
-			// Color.lightGray, Color.green, Color.pink));
+			 ne50.add(createF("polygonFeature", "ne_50m_land", true, Color.green,
+			 Color.orange));
+			 ne50.add(createF("polygonFeature", "ne_50m_ocean", true,
+			 Color.lightGray, Color.green));
 			ne50.add(createF("polygonFeature", "ne_50m_land", true, Color.WHITE,
 					Color.orange));
 //			ne50.add(createF("polygonFeature", "ne_10m_geography_marine_polys", true,
