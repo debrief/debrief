@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 
-public class CachedNauticalEarthFile
+public class CachedNaturalEarthFile
 {
 	public static enum FeatureTypes
 	{
@@ -43,7 +43,7 @@ public class CachedNauticalEarthFile
 	private final String _filename;
 	private FeatureTypes _featureType = FeatureTypes.UNKNOWN;
 
-	public CachedNauticalEarthFile(String fName)
+	public CachedNaturalEarthFile(String fName)
 	{
 		_filename = fName;
 	}

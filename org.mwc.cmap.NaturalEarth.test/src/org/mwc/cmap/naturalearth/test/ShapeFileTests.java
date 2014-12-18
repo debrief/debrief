@@ -16,7 +16,7 @@ import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.opengis.feature.Property;
 
 import MWC.GenericData.NamedWorldPath;
@@ -60,7 +60,7 @@ public class ShapeFileTests
 				marineAreas.isFile());
 
 		// ok, load it
-		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
+		CachedNaturalEarthFile csf = new CachedNaturalEarthFile(
 				marineAreas.getAbsolutePath());
 		csf.init();
 
@@ -76,7 +76,7 @@ public class ShapeFileTests
 				pointNames.isFile());
 
 		// ok, load it
-		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
+		CachedNaturalEarthFile csf = new CachedNaturalEarthFile(
 				pointNames.getAbsolutePath());
 		csf.init();
 
@@ -92,7 +92,7 @@ public class ShapeFileTests
 				boundaryLines.isFile());
 
 		// ok, load it
-		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
+		CachedNaturalEarthFile csf = new CachedNaturalEarthFile(
 				boundaryLines.getAbsolutePath());
 		csf.init();
 
