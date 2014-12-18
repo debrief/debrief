@@ -348,7 +348,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		else
 		{
 
-			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
+			String imageKey = "client_network.png";
 
 			if (editable instanceof GridPainter)
 				imageKey = "grid.png";
