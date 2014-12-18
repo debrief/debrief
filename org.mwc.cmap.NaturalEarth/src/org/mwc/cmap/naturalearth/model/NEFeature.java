@@ -28,6 +28,7 @@ public class NEFeature implements Plottable
 	private FeatureInfo _myEditor;
 
 	final private long _created;
+
 	
 	
 	public NEFeature(NEFeatureStyle style)
@@ -36,6 +37,64 @@ public class NEFeature implements Plottable
 		_created = System.currentTimeMillis();
 	}
 	
+	
+	
+	public boolean getShowPolygons()
+	{
+		return _style.isShowLabels();
+	}
+
+
+
+	public void setShowPolygons(boolean showPolygons)
+	{
+		_style.setShowPolygons(showPolygons);
+	}
+
+
+
+	public boolean getShowLines()
+	{
+		return _style.isShowLabels();
+	}
+
+
+
+	public void setShowLines(boolean showLines)
+	{
+		_style.setShowLines(showLines);
+	}
+
+
+
+	public boolean getShowPoints()
+	{
+		return _style.isShowLabels();
+	}
+
+
+
+	public void setShowPoints(boolean showPoints)
+	{
+		_style.setShowPoints(showPoints);
+	}
+
+
+
+	public boolean getShowLabels()
+	{
+		return _style.isShowLabels();
+	}
+
+
+
+	public void setShowLabels(boolean showLabels)
+	{
+		_style.setShowLabels(showLabels);
+	}
+
+
+
 	@Override
 	public String toString()
 	{
@@ -125,6 +184,10 @@ public class NEFeature implements Plottable
 				final PropertyDescriptor[] myRes =
 				{
 						prop("Visible", "if the layer is visible", FORMAT),
+						prop("ShowPolygons", "if the layer is visible", FORMAT),
+						prop("ShowLines", "if the layer is visible", FORMAT),
+						prop("ShowPoints", "if the layer is visible", FORMAT),
+						prop("ShowLabels", "if the layer is visible", FORMAT)
 				};
 
 				return myRes;
