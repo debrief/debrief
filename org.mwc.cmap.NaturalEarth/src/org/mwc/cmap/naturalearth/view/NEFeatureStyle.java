@@ -6,17 +6,14 @@ import java.beans.PropertyDescriptor;
 
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
-public class NEFeatureStyle implements Editable
+public class NEFeatureStyle implements Plottable
 {
-	
-	/** the set of data that we will render
-	 * 
-	 */
-	private CachedNaturalEarthFile _myData = null;
-	@SuppressWarnings("unused")
-	private String _featureType;
 	private String _filename;
 	private Color _lineCol;
 	private Color _fillCol;
@@ -34,16 +31,27 @@ public class NEFeatureStyle implements Editable
 	private boolean showLines = true;
 	private boolean showPoints = true;
 	private boolean showLabels = true;
+	
+	/** the editor settings for this object
+	 * 
+	 */
 	private StyleInfo _myEditor;
+	
+	final private long _created;
+	
+	/** our dataset
+	 * 
+	 */
+	private CachedNaturalEarthFile _data;
 
-	public NEFeatureStyle(String featureType, String filename, boolean visible, Color fillCol,
+	public NEFeatureStyle(String filename, boolean visible, Color fillCol,
 			Color lineCol)
 	{
-		_featureType = featureType;
 		_filename = filename;
 		_lineCol = lineCol;
 		_fillCol = fillCol;
 		_isVisible = visible;
+		_created = System.currentTimeMillis();
 	}
 
 	/** the NE filename that this style applies to
@@ -69,22 +77,13 @@ public class NEFeatureStyle implements Editable
 		_isVisible = visible;
 	}
 
-	/** whether this feature has loaded its data
-	 * 
-	 * @return
-	 */
-	public boolean isLoaded()
-	{
-		return _myData != null;
-	}
-
 	/** store the actual data that this feature will render
 	 * 
 	 * @param data
 	 */
 	public void setData(CachedNaturalEarthFile data)
 	{
-		_myData = data;
+		_data = data;
 	}
 
 	public Color getLineColor()
@@ -190,7 +189,13 @@ public class NEFeatureStyle implements Editable
 	@Override
 	public String getName()
 	{
-		return toString();
+		return _filename;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return getName();
 	}
 
 	@Override
@@ -205,6 +210,16 @@ public class NEFeatureStyle implements Editable
 		if(_myEditor == null)
 			_myEditor = new StyleInfo(this, getName());
 		return _myEditor;
+	}
+
+	public CachedNaturalEarthFile getData()
+	{
+		return _data;
+	}
+
+	public boolean isLoaded()
+	{
+		return _data != null;
 	}
 
 	// ////////////////////////////////////////////////////
@@ -257,6 +272,41 @@ public class NEFeatureStyle implements Editable
 				return super.getPropertyDescriptors();
 			}
 		}	
-	}	
+	}
+
+	@Override
+	public int compareTo(Plottable o)
+	{
+		int res = -1;
+		NEFeatureStyle him = (NEFeatureStyle) o;
+		
+		if(_created < him._created)
+			res = 1;
+		
+		return res;
+	}
+
+	@Override
+	public void paint(CanvasType dest)
+	{
+	}
+
+	@Override
+	public WorldArea getBounds()
+	{
+		return null;
+	}
+
+	@Override
+	public boolean getVisible()
+	{
+		return isVisible();
+	}
+
+	@Override
+	public double rangeFrom(WorldLocation other)
+	{
+		return 0;
+	}
 
 }
