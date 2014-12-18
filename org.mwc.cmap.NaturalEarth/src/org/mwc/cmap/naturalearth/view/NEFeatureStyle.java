@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
 
 import MWC.GUI.Editable;
 

@@ -1,5 +1,6 @@
 package org.mwc.cmap.naturalearth.test;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -13,11 +14,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
-import org.geotools.filter.text.cql2.CQL;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
 import org.opengis.feature.Property;
-import org.opengis.filter.Filter;
 
 import MWC.GenericData.NamedWorldPath;
 import MWC.GenericData.WorldLocation;
@@ -51,54 +51,54 @@ public class ShapeFileTests
 		pointNames = new File(
 				"data/ne_10m_geography_regions_points/ne_10m_geography_regions_points.shp");
 	}
-//
-//	@Test
-//	public void loadPolygons()
-//	{
-//		// check we have the marine areas
-//		assertTrue(marineAreas.getAbsolutePath() + " doesn't exists.",
-//				marineAreas.isFile());
-//
-//		// ok, load it
-//		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
-//				marineAreas.getAbsolutePath());
-//		csf.init();
-//
-//		assertNotNull("found polygons", csf.getPolygons());
-//		assertEquals("loaded polygons", 312, csf.getPolygons().size());
-//	}
-//
-//	@Test
-//	public void loadPoints()
-//	{
-//		// check we have the marine areas
-//		assertTrue(pointNames.getAbsolutePath() + " doesn't exists.",
-//				pointNames.isFile());
-//
-//		// ok, load it
-//		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
-//				pointNames.getAbsolutePath());
-//		csf.init();
-//
-//		assertNotNull("found points", csf.getPoints());
-//		assertEquals("loaded points", 235, csf.getPoints().size());
-//	}
-//
-//	@Test
-//	public void loadLines()
-//	{
-//		// check we have the marine areas
-//		assertTrue(boundaryLines.getAbsolutePath() + " doesn't exists.",
-//				boundaryLines.isFile());
-//
-//		// ok, load it
-//		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
-//				boundaryLines.getAbsolutePath());
-//		csf.init();
-//
-//		assertNotNull("found lines", csf.getLines());
-//		assertEquals("loaded lines", 113, csf.getLines().size());
-//	}
+
+	@Test
+	public void loadPolygons()
+	{
+		// check we have the marine areas
+		assertTrue(marineAreas.getAbsolutePath() + " doesn't exists.",
+				marineAreas.isFile());
+
+		// ok, load it
+		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
+				marineAreas.getAbsolutePath());
+		csf.init();
+
+		assertNotNull("found polygons", csf.getPolygons());
+		assertEquals("loaded polygons", 312, csf.getPolygons().size());
+	}
+
+	@Test
+	public void loadPoints()
+	{
+		// check we have the marine areas
+		assertTrue(pointNames.getAbsolutePath() + " doesn't exists.",
+				pointNames.isFile());
+
+		// ok, load it
+		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
+				pointNames.getAbsolutePath());
+		csf.init();
+
+		assertNotNull("found points", csf.getPoints());
+		assertEquals("loaded points", 235, csf.getPoints().size());
+	}
+
+	@Test
+	public void loadLines()
+	{
+		// check we have the marine areas
+		assertTrue(boundaryLines.getAbsolutePath() + " doesn't exists.",
+				boundaryLines.isFile());
+
+		// ok, load it
+		CachedNauticalEarthFile csf = new CachedNauticalEarthFile(
+				boundaryLines.getAbsolutePath());
+		csf.init();
+
+		assertNotNull("found lines", csf.getLines());
+		assertEquals("loaded lines", 461, csf.getLines().size());
+	}
 
 	@Test
 	public void testExists()
@@ -111,8 +111,7 @@ public class ShapeFileTests
 				pointNames.isFile());
 	}
 
-	@Test
-	public void testGeoToolsPerformance() throws Exception
+	public void unTestGeoToolsPerformance() throws Exception
 	{
 		String filename = landAreas.getAbsolutePath();
 
@@ -228,8 +227,7 @@ public class ShapeFileTests
 		return res;
 	}
 
-	@Test
-	public void testOpenMapPerformance()
+	public void unTestOpenMapPerformance()
 	{
 		File file = landAreas;
 		if (!file.exists())
