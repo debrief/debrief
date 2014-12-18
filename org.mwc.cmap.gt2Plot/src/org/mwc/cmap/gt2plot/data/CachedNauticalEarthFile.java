@@ -294,8 +294,7 @@ public class CachedNauticalEarthFile
 			Coordinate[] coords = mp.getBoundary().getCoordinates();
 			if (coords != null)
 			{
-				res = new WorldPath();
-
+				WorldLocation[] wls = new WorldLocation[coords.length];
 				for (int i = 0; i < coords.length; i++)
 				{
 					final Coordinate coordinate = coords[i];
@@ -304,10 +303,11 @@ public class CachedNauticalEarthFile
 						zDepth = 0;
 					else
 						zDepth = coordinate.z;
-					final WorldLocation newL = new WorldLocation(coordinate.y,
+					wls[i] = new WorldLocation(coordinate.y,
 							coordinate.x, zDepth);
-					res.addPoint(newL);
+					//res.addPoint(newL);
 				}
+				res = new WorldPath(wls);
 			}
 
 		}
