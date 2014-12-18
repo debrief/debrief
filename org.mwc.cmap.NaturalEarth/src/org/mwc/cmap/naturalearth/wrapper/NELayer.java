@@ -19,6 +19,8 @@ import org.mwc.cmap.naturalearth.view.NEStyle;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GenericData.NamedWorldLocation;
 import MWC.GenericData.NamedWorldPath;
 import MWC.GenericData.NamedWorldPathList;
@@ -26,7 +28,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 
-public class NELayer extends BaseLayer
+public class NELayer extends BaseLayer implements NeedsToKnowAboutLayers
 {
 
 	/**
@@ -43,6 +45,7 @@ public class NELayer extends BaseLayer
 	 * 
 	 */
 	final private double LAT_LIMIT = 89.0;
+	private Layers _theLayers;
 
 	public NELayer()
 	{
@@ -115,6 +118,10 @@ public class NELayer extends BaseLayer
 						super.add(editable);
 					}
 				}
+				
+				// hmm, we also have to tell the layer manager that we have updated
+				if(_theLayers != null)
+					_theLayers.fireExtended(null,  this);
 
 				_currentRes = thisR;
 			}
@@ -222,7 +229,7 @@ public class NELayer extends BaseLayer
 		//		continue;
 			}
 
-			dest.setColor(style.getFillColor());
+			dest.setColor(style.getPolygonColor());
 
 			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
 
@@ -562,6 +569,12 @@ public class NELayer extends BaseLayer
 		final File dataPath = new File(Activator.getDefault().getLibraryPath());
 
 		return dataPath.exists();
+	}
+
+	@Override
+	public void setLayers(Layers parent)
+	{
+		_theLayers = parent;
 	}
 
 }
