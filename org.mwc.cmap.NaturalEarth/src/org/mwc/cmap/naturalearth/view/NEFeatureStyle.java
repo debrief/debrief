@@ -1,10 +1,14 @@
 package org.mwc.cmap.naturalearth.view;
 
 import java.awt.Color;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 
 import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 
-public class NEFeatureStyle
+import MWC.GUI.Editable;
+
+public class NEFeatureStyle implements Editable
 {
 	
 	/** the set of data that we will render
@@ -30,6 +34,7 @@ public class NEFeatureStyle
 	private boolean showLines = true;
 	private boolean showPoints = true;
 	private boolean showLabels = true;
+	private StyleInfo _myEditor;
 
 	public NEFeatureStyle(String featureType, String filename, boolean visible, Color fillCol,
 			Color lineCol)
@@ -87,11 +92,20 @@ public class NEFeatureStyle
 		return _lineCol;
 	}
 
-	public Color getFillColor()
+	public Color getPolygonColor()
 	{
 		return _fillCol;
 	}
 
+	public void setPolygonColor(Color col)
+	{
+		_fillCol = col;
+	}
+	
+	public void setLineColor(Color col)
+	{
+		_lineCol = col;
+	}
 
 	public Color getTextColor()
 	{
@@ -173,6 +187,76 @@ public class NEFeatureStyle
 		this.showLabels = showLabels;
 	}
 
-	
+	@Override
+	public String getName()
+	{
+		return toString();
+	}
+
+	@Override
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	@Override
+	public EditorType getInfo()
+	{
+		if(_myEditor == null)
+			_myEditor = new StyleInfo(this, getName());
+		return _myEditor;
+	}
+
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public final class StyleInfo extends Editable.EditorType
+	{
+
+		public StyleInfo(final NEFeatureStyle data, final String theName)
+		{
+			super(data, theName, "Natural Earth");
+		}
+
+		/**
+		 * whether the normal editable properties should be combined with the
+		 * additional editable properties into a single list. This is typically used
+		 * for a composite object which has two lists of editable properties but
+		 * which is seen by the user as a single object To be overwritten to change
+		 * it
+		 */
+		@Override
+		public final boolean combinePropertyLists()
+		{
+			return true;
+		}
+
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] myRes =
+				{
+						prop("Visible", "if the layer is visible", FORMAT),
+						prop("ShowPolygons", "if the polygons are visible", FORMAT),
+						prop("ShowLines", "if the polygons are visible", FORMAT),
+						prop("ShowPoints", "if the polygons are visible", FORMAT),
+						prop("ShowLabels", "if the polygons are visible", FORMAT),
+						prop("PolygonColor", "if the polygons are visible", FORMAT),
+						prop("LineColor", "if the polygons are visible", FORMAT),
+						prop("TextColor", "if the polygons are visible", FORMAT),
+				};
+
+				return myRes;
+
+			}
+			catch (final IntrospectionException e)
+			{
+				e.printStackTrace();
+				return super.getPropertyDescriptors();
+			}
+		}	
+	}	
 
 }

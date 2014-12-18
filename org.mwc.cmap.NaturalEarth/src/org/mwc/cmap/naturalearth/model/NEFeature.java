@@ -1,6 +1,6 @@
 package org.mwc.cmap.naturalearth.model;
 
-import java.beans.IntrospectionException;
+import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 
 import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
@@ -36,64 +36,6 @@ public class NEFeature implements Plottable
 		_style = style;
 		_created = System.currentTimeMillis();
 	}
-	
-	
-	
-	public boolean getShowPolygons()
-	{
-		return _style.isShowLabels();
-	}
-
-
-
-	public void setShowPolygons(boolean showPolygons)
-	{
-		_style.setShowPolygons(showPolygons);
-	}
-
-
-
-	public boolean getShowLines()
-	{
-		return _style.isShowLabels();
-	}
-
-
-
-	public void setShowLines(boolean showLines)
-	{
-		_style.setShowLines(showLines);
-	}
-
-
-
-	public boolean getShowPoints()
-	{
-		return _style.isShowLabels();
-	}
-
-
-
-	public void setShowPoints(boolean showPoints)
-	{
-		_style.setShowPoints(showPoints);
-	}
-
-
-
-	public boolean getShowLabels()
-	{
-		return _style.isShowLabels();
-	}
-
-
-
-	public void setShowLabels(boolean showLabels)
-	{
-		_style.setShowLabels(showLabels);
-	}
-
-
 
 	@Override
 	public String toString()
@@ -104,16 +46,6 @@ public class NEFeature implements Plottable
 	public NEFeatureStyle getStyle()
 	{
 		return _style;
-	}
-	
-	public boolean getVisible()
-	{
-		return _style.isVisible();
-	}
-	
-	public void setVisible(boolean val)
-	{
-		_style.setVisible(val);
 	}
 
 	public boolean isLoaded()
@@ -179,25 +111,30 @@ public class NEFeature implements Plottable
 		@Override
 		public final PropertyDescriptor[] getPropertyDescriptors()
 		{
-			try
-			{
 				final PropertyDescriptor[] myRes =
 				{
-						prop("Visible", "if the layer is visible", FORMAT),
-						prop("ShowPolygons", "if the layer is visible", FORMAT),
-						prop("ShowLines", "if the layer is visible", FORMAT),
-						prop("ShowPoints", "if the layer is visible", FORMAT),
-						prop("ShowLabels", "if the layer is visible", FORMAT)
 				};
 
 				return myRes;
-
-			}
-			catch (final IntrospectionException e)
+		}
+		
+		@Override
+		public final BeanInfo[] getAdditionalBeanInfo()
+		{
+			// get our shape back
+			final NEFeature sp = (NEFeature) super.getData();
+			final NEFeatureStyle ps = sp._style;
+			if (sp instanceof MWC.GUI.Editable)
 			{
-				e.printStackTrace();
-				return super.getPropertyDescriptors();
+				final MWC.GUI.Editable et = (MWC.GUI.Editable) ps;
+				if (et.hasEditor() == true)
+				{
+					final BeanInfo[] res =
+					{ et.getInfo() };
+					return res;
+				}
 			}
+			return null;
 		}
 	}
 
@@ -231,6 +168,18 @@ public class NEFeature implements Plottable
 	public double rangeFrom(WorldLocation other)
 	{
 		return Plottable.INVALID_RANGE;
+	}
+
+	@Override
+	public boolean getVisible()
+	{
+		return _style.isVisible();
+	}
+
+	@Override
+	public void setVisible(boolean val)
+	{
+		_style.setVisible(val);
 	}
 
 
