@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 
 import MWC.GUI.Editable;
 
@@ -14,7 +14,7 @@ public class NEFeatureStyle implements Editable
 	/** the set of data that we will render
 	 * 
 	 */
-	private CachedNauticalEarthFile _myData = null;
+	private CachedNaturalEarthFile _myData = null;
 	@SuppressWarnings("unused")
 	private String _featureType;
 	private String _filename;
@@ -82,7 +82,7 @@ public class NEFeatureStyle implements Editable
 	 * 
 	 * @param data
 	 */
-	public void setData(CachedNauticalEarthFile data)
+	public void setData(CachedNaturalEarthFile data)
 	{
 		_myData = data;
 	}

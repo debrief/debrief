@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
 import org.mwc.cmap.naturalearth.view.NEFeatureSet;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
@@ -121,9 +121,9 @@ public class Activator extends AbstractUIPlugin
 		// TODO: @Peco, we need to store this style in the prefs dataset
 	}
 
-	public CachedNauticalEarthFile loadData(String fName)
+	public CachedNaturalEarthFile loadData(String fName)
 	{
-		CachedNauticalEarthFile res = null;
+		CachedNaturalEarthFile res = null;
 
 		// TODO: read the data root setting from the prefs page
 		String pathRoot = getLibraryPath();

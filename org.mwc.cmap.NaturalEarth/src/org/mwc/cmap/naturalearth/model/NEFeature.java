@@ -3,7 +3,7 @@ package org.mwc.cmap.naturalearth.model;
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 
-import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
+import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 
 import MWC.GUI.CanvasType;
@@ -23,7 +23,7 @@ public class NEFeature implements Plottable
 	/** our dataset
 	 * 
 	 */
-	private CachedNauticalEarthFile _feature;
+	private CachedNaturalEarthFile _feature;
 
 	private FeatureInfo _myEditor;
 
@@ -53,12 +53,12 @@ public class NEFeature implements Plottable
 		return _feature != null;
 	}
 	
-	public void setDataSource(CachedNauticalEarthFile feature)
+	public void setDataSource(CachedNaturalEarthFile feature)
 	{
 		_feature = feature;
 	}
 	
-	public CachedNauticalEarthFile getData()
+	public CachedNaturalEarthFile getData()
 	{
 		return _feature;
 	}
