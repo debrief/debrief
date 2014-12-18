@@ -35,7 +35,7 @@ public class NELayer extends BaseLayer implements NeedsToKnowAboutLayers
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private HashMap<NEResolution, Collection<Editable>> _myResolutions;
+	private final HashMap<NEResolution, Collection<Editable>> _myResolutions;
 	private NEResolution _currentRes;
 	
 	private HashMap<String, Font> _fontCache = new HashMap<String, Font>();
@@ -50,6 +50,8 @@ public class NELayer extends BaseLayer implements NeedsToKnowAboutLayers
 	public NELayer()
 	{
 		setName("Natural Earth");
+		
+		_myResolutions = new HashMap<NEResolution, Collection<Editable>>();
 	}
 
 	/**
@@ -71,25 +73,15 @@ public class NELayer extends BaseLayer implements NeedsToKnowAboutLayers
 			double worldDegs = dest.getProjection().getDataArea().getWidth();
 			double worldMM = worldDegs * 60 * 1852 * 1000;
 			final double curScale = worldMM / screenMM;
-
+			
 			// find the style set for this scale
 			final NEResolution thisR = getStyleSetFor(curScale);
 
-			System.out.println("got: " + thisR.getName());
-			
-			if(thisR.getName().startsWith("50M"))
-			{
-				System.err.println("here");
-			}
+			System.out.println("got: " + thisR.getName() + " from: " + (int)curScale);
 
 			// is this different?
 			if (thisR != _currentRes)
 			{
-				// check we have the resolutions collection
-				if (_myResolutions == null)
-				{
-					_myResolutions = new HashMap<NEResolution, Collection<Editable>>();
-				}
 
 				// ok, drop any existing layers
 				super.removeAllElements();
@@ -206,6 +198,9 @@ public class NELayer extends BaseLayer implements NeedsToKnowAboutLayers
 			return;
 		
 		if(!style.isShowPolygons())
+			return;
+		
+		if(style.getPolygonColor() == null)
 			return;
 
 		// store the screen size
@@ -398,15 +393,21 @@ public class NELayer extends BaseLayer implements NeedsToKnowAboutLayers
 			if (namedWorldPath.getName() == null)
 				continue;
 
-			if (!visArea.overlaps(namedWorldPath.getBounds()))
+			WorldArea shapeBounds = namedWorldPath.getBounds();
+			if (!visArea.overlaps(shapeBounds))
 			{
 				// ok, skip to the next one
 				continue;
 			}
 
 			dest.setColor(style.getTextColor());
+			
+			// note we should not plot the text at the centre of the shape.
+			// we should plot the text at the centre of the visible portion of the shape
+			// TODO: we may need JTS to do this.
 
-			WorldLocation centre = namedWorldPath.getBounds().getCentre();
+			WorldLocation centre = shapeBounds.getCentre();
+			
 			// convert to screen
 			final Point thisP = dest.toScreen(centre);
 
