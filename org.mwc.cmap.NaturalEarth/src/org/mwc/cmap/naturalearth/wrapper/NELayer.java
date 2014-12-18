@@ -9,8 +9,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.mwc.cmap.gt2plot.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.Activator;
+import org.mwc.cmap.naturalearth.data.CachedNauticalEarthFile;
 import org.mwc.cmap.naturalearth.model.NEFeature;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
