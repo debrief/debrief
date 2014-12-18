@@ -126,9 +126,9 @@ public class ShapeFileTests
 
 		// hey, can we parse it?
 		// x1, y1, x2, y2
-		Filter filter = CQL.toFilter("BBOX(the_geom, -1.2,60,2.3,64)");
-		final SimpleFeatureCollection fs = featureSource.getFeatures(filter);
-		// final SimpleFeatureCollection fs = featureSource.getFeatures();
+//		Filter filter = CQL.toFilter("BBOX(the_geom, -1.2,60,2.3,64)");
+//		final SimpleFeatureCollection fs = featureSource.getFeatures(filter);
+		 final SimpleFeatureCollection fs = featureSource.getFeatures();
 
 		String fType = fs.getSchema().getSuper().getName().getLocalPart()
 				.toString();
