@@ -21,6 +21,15 @@ public class NEFeatureStyle
 	private int _textHeight;
 	private int _textStyle;
 	private String _textFont;
+	
+	
+	/** visibility settings
+	 * 
+	 */
+	private boolean showPolygons = true;
+	private boolean showLines = true;
+	private boolean showPoints = true;
+	private boolean showLabels = true;
 
 	public NEFeatureStyle(String featureType, String filename, boolean visible, Color fillCol,
 			Color lineCol)
@@ -124,6 +133,46 @@ public class NEFeatureStyle
 		_textCol = textCol;
 	}
 	
+	public boolean isShowPolygons()
+	{
+		return showPolygons;
+	}
+
+	public void setShowPolygons(boolean showPolygons)
+	{
+		this.showPolygons = showPolygons;
+	}
+
+	public boolean isShowLines()
+	{
+		return showLines;
+	}
+
+	public void setShowLines(boolean showLines)
+	{
+		this.showLines = showLines;
+	}
+
+	public boolean isShowPoints()
+	{
+		return showPoints;
+	}
+
+	public void setShowPoints(boolean showPoints)
+	{
+		this.showPoints = showPoints;
+	}
+
+	public boolean isShowLabels()
+	{
+		return showLabels;
+	}
+
+	public void setShowLabels(boolean showLabels)
+	{
+		this.showLabels = showLabels;
+	}
+
 	
 
 }
