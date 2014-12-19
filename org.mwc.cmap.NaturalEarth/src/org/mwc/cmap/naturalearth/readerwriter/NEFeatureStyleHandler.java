@@ -35,7 +35,7 @@ import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 abstract public class NEFeatureStyleHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	public static final String TYPE = "FeatureStyle";
+	public static final String TYPE = "style";
 	public static final String POLY_FILL = "PolyFill";
 	public static final String LINE_COL = "LineCol";
 	public static final String TEXT_COL = "TextCol";
@@ -106,6 +106,22 @@ abstract public class NEFeatureStyleHandler extends
 				_style.setPolygonColor(res);
 			}
 		});
+		addHandler(new ColourHandler(LINE_COL)
+		{
+			@Override
+			public void setColour(Color res)
+			{
+				_style.setLineColor(res);
+			}
+		});
+		addHandler(new ColourHandler(TEXT_COL)
+		{
+			@Override
+			public void setColour(Color res)
+			{
+				_style.setTextColor(res);
+			}
+		});
 		addHandler(new FontHandler()
 		{
 			public void setFont(final java.awt.Font font)
@@ -129,7 +145,6 @@ abstract public class NEFeatureStyleHandler extends
 	{
 		addStyle(_style);
 		_style = null;
-
 	}
 
 	abstract public void addStyle(NEFeatureStyle style);
@@ -137,7 +152,7 @@ abstract public class NEFeatureStyleHandler extends
 	public static void exportStyle(NEFeatureStyle style,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
-		final Element eStyle = doc.createElement("style");
+		final Element eStyle = doc.createElement(TYPE);
 
 		eStyle.setAttribute(FILE_NAME, style.getFileName());
 		eStyle.setAttribute(FOLDER_NAME, style.getFolderName());

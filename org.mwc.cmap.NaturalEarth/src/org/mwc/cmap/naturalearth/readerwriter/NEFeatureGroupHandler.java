@@ -86,7 +86,7 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
 	public static void exportGroup(NEFeatureGroup group,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
-		final Element eGroup = doc.createElement("group");
+		final Element eGroup = doc.createElement(TYPE);
 		Enumeration<Editable> iter = group.elements();
 		while (iter.hasMoreElements())
 		{

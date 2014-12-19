@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureStore>
+	<ResolutionGroup MaxRes="200000.000">
+		<style FileName="ne_10m_land" FolderName="ne_10m_land"
+			ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<PolyFill Value="YELLOW" />
+			<LineCol Value="ORANGE" />
+			<font Bold="false" Family="Default" Italic="false" Size="0" />
+		</style>
+		<group>
+			<style FileName="ne_10m_bathymetry_A_10000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="158" CustomGreen="90" CustomRed="31"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_B_9000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="173" CustomGreen="104" CustomRed="43"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_C_8000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="184" CustomGreen="115" CustomRed="55"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_D_7000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="189" CustomGreen="123" CustomRed="66"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_E_6000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="194" CustomGreen="132" CustomRed="77"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_F_5000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="199" CustomGreen="141" CustomRed="90"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_G_4000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="204" CustomGreen="149" CustomRed="101"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_H_3000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="209" CustomGreen="159" CustomRed="115"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_I_2000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="214" CustomGreen="169" CustomRed="128"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_J_1000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="219" CustomGreen="178" CustomRed="143"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_K_200" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="224" CustomGreen="188" CustomRed="156"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_L_0" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="230" CustomGreen="199" CustomRed="172"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+		</group>
+	</ResolutionGroup>
+	<ResolutionGroup MinRes="3000000.000">
+		<style FileName="ocean labels" FolderName="ocean labels"
+			ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<TextCol CustomBlue="98" CustomGreen="67" CustomRed="16"
+				Value="custom" />
+			<font Bold="true" Family="Serif" Italic="true" Size="20" />
+		</style>
+		<style FileName="sea labels" FolderName="sea labels" ShowLabel="true"
+			ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<TextCol CustomBlue="98" CustomGreen="67" CustomRed="16"
+				Value="custom" />
+			<font Bold="false" Family="Serif" Italic="true" Size="16" />
+		</style>
+		<style FileName="ne_110m_populated_places_simple" FolderName="ne_110m_populated_places_simple"
+			ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<TextCol Value="GREY" />
+			<font Bold="false" Family="SansSerif" Italic="false" Size="14" />
+		</style>
+		<style FileName="ne_110m_geography_regions_points" FolderName="ne_110m_geography_regions_points"
+			ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<TextCol Value="PINK" />
+			<font Bold="false" Family="Times" Italic="false" Size="8" />
+		</style>
+	</ResolutionGroup>
+	<ResolutionGroup>
+		<style FileName="ocean labels" FolderName="ocean labels"
+			ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<TextCol CustomBlue="98" CustomGreen="67" CustomRed="16"
+				Value="custom" />
+			<font Bold="true" Family="Serif" Italic="true" Size="20" />
+		</style>
+		<style FileName="sea labels" FolderName="sea labels" ShowLabel="true"
+			ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<TextCol CustomBlue="98" CustomGreen="67" CustomRed="16"
+				Value="custom" />
+			<font Bold="false" Family="Serif" Italic="true" Size="16" />
+		</style>
+		<style FileName="ne_50m_land" FolderName="ne_50m_land"
+			ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<PolyFill CustomBlue="188" CustomGreen="219" CustomRed="235"
+				Value="custom" />
+			<LineCol CustomBlue="162" CustomGreen="162" CustomRed="162"
+				Value="custom" />
+			<font Bold="false" Family="Default" Italic="false" Size="0" />
+		</style>
+		<style FileName="ne_50m_ocean" FolderName="ne_50m_ocean"
+			ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+			<PolyFill CustomBlue="221" CustomGreen="191" CustomRed="165"
+				Value="custom" />
+			<font Bold="false" Family="Default" Italic="false" Size="0" />
+		</style>
+		<group>
+			<style FileName="ne_10m_bathymetry_A_10000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="158" CustomGreen="90" CustomRed="31"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_B_9000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="173" CustomGreen="104" CustomRed="43"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_C_8000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="184" CustomGreen="115" CustomRed="55"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_D_7000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="189" CustomGreen="123" CustomRed="66"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_E_6000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="194" CustomGreen="132" CustomRed="77"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_F_5000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="199" CustomGreen="141" CustomRed="90"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_G_4000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="204" CustomGreen="149" CustomRed="101"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_H_3000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="209" CustomGreen="159" CustomRed="115"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_I_2000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="214" CustomGreen="169" CustomRed="128"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_J_1000" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="219" CustomGreen="178" CustomRed="143"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_K_200" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="224" CustomGreen="188" CustomRed="156"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+			<style FileName="ne_10m_bathymetry_L_0" FolderName="ne_10m_bathymetry_all"
+				ShowLabel="true" ShowLine="true" ShowPoint="true" ShowPoly="true">
+				<PolyFill CustomBlue="230" CustomGreen="199" CustomRed="172"
+					Value="custom" />
+				<font Bold="false" Family="Default" Italic="false" Size="0" />
+			</style>
+		</group>
+	</ResolutionGroup>
+</FeatureStore>
