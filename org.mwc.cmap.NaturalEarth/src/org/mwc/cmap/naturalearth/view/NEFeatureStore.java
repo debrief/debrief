@@ -14,6 +14,11 @@ public class NEFeatureStore extends Plottables
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public NEFeatureStore(String name)
+	{
+		super.setName(name);
+	}
 
 	public NEResolution resolutionFor(double scale)
 	{

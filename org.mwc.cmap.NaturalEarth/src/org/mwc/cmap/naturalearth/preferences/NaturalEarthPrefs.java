@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.naturalearth.Activator;
-import org.mwc.cmap.naturalearth.view.NEStyle;
+import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 
 /**
  * 
@@ -37,7 +37,7 @@ import org.mwc.cmap.naturalearth.view.NEStyle;
  * 
  */
 
-public class NaturalEarhPrefs extends PreferencePage implements
+public class NaturalEarthPrefs extends PreferencePage implements
 		IWorkbenchPreferencePage
 {
 
@@ -49,7 +49,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 	private Button duplicateButton;
 	private Button deleteButton;
 
-	public NaturalEarhPrefs()
+	public NaturalEarthPrefs()
 	{
 		super("Natural Earth");
 	}
@@ -203,7 +203,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 				if (sel instanceof IStructuredSelection)
 				{
 					enableButtons(true);
-					NEStyle style = (NEStyle) ((IStructuredSelection) sel)
+					NEFeatureStore style = (NEFeatureStore) ((IStructuredSelection) sel)
 							.getFirstElement();
 					if (style != null && "default".equals(style.getName()))
 					{
@@ -261,9 +261,9 @@ public class NaturalEarhPrefs extends PreferencePage implements
 		@Override
 		public String getText(Object element)
 		{
-			if (element instanceof NEStyle)
+			if (element instanceof NEFeatureStore)
 			{
-				return ((NEStyle) element).getName();
+				return ((NEFeatureStore) element).getName();
 			}
 			return super.getText(element);
 		}
@@ -288,7 +288,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 		{
 			if (inputElement instanceof Styles)
 			{
-				return ((Styles) inputElement).getStyles().toArray(new NEStyle[0]);
+				return ((Styles) inputElement).getStyles().toArray(new NEFeatureStore[0]);
 			}
 			return null;
 		}

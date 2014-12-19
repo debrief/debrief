@@ -40,14 +40,14 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	/** the editor settings for this object
 	 * 
 	 */
-	private StyleInfo _myEditor;
+	private transient StyleInfo _myEditor;
 	
 	final private long _created;
 	
 	/** our dataset
 	 * 
 	 */
-	private CachedNaturalEarthFile _data;
+	private transient CachedNaturalEarthFile _data;
 
 	public NEFeatureStyle(String folder, String filename, boolean visible,
 			Color fillCol, Color lineCol)

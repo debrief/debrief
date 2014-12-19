@@ -15,7 +15,6 @@ import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
-import org.mwc.cmap.naturalearth.view.NEStyle;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -62,9 +61,14 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	 * 
 	 * @param styles
 	 */
-	public void applyLayer(NEStyle newStyle)
+	public void applyLayer(NEFeatureStore newStyle)
 	{
 
+	}
+	
+	public NEFeatureStore getStore()
+	{
+		return _myFeatures;
 	}
 
 	@Override
@@ -255,11 +259,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 		{
 			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
 
-//			if (!visArea.overlaps(namedWorldPath.getBounds()))
-//			{
-//				// ok, skip to the next one
-//				continue;
-//			}
+			if (!visArea.overlaps(namedWorldPath.getBounds()))
+			{
+				// ok, skip to the next one
+				continue;
+			}
 
 			dest.setColor(style.getPolygonColor());
 			
@@ -383,15 +387,7 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 				if (Math.abs(next.getLat()) < LAT_LIMIT)
 				{
 
-					double thisLat = next.getLat();
-					double thisLong = next.getLong();
 					boolean trackMe = false;
-
-//					if (thisLong < -2 && thisLong > -5)
-//						if (thisLat > 57 && thisLat < 59)
-//						{
-//							trackMe = true;
-//						}
 
 					// convert to screen
 					Point thisP = null;
