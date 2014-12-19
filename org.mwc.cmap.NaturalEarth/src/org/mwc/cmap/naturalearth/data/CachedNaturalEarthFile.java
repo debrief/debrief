@@ -302,6 +302,7 @@ public class CachedNaturalEarthFile
 		WorldPath res = null;
 		if (value instanceof MultiPolygon)
 		{
+			int ctr = 1;
 			final MultiPolygon mp = (MultiPolygon) value;
 			Coordinate[] coords = mp.getBoundary().getCoordinates();
 			if (coords != null)
@@ -315,7 +316,11 @@ public class CachedNaturalEarthFile
 						zDepth = 0;
 					else
 						zDepth = coordinate.z;
-					wls[i] = new WorldLocation(coordinate.y, coordinate.x, zDepth);
+					
+					// TODO: when we create a WorldLocation, we should 
+					// be using zDepth for depth, not the ctr value
+					// it's only in there to help with debugging
+					wls[i] = new WorldLocation(coordinate.y, coordinate.x, ctr++);
 					// res.addPoint(newL);
 				}
 				res = new WorldPath(wls);

@@ -184,50 +184,50 @@ public class Activator extends AbstractUIPlugin
 			// start off with the bathy
 			NEFeatureGroup bathy = new NEFeatureGroup("Bathymetry");
 			final String bathyFolder = "ne_10m_bathymetry_all";
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_L_0", true, new Color(
-					172, 199, 230), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_K_200", true,
-					new Color(156, 188, 224), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_J_1000", true,
-					new Color(143, 178, 219), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_I_2000", true,
-					new Color(128, 169, 214), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_L_0", true, new Color(
+//					172, 199, 230), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_K_200", true,
+//					new Color(156, 188, 224), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_J_1000", true,
+//					new Color(143, 178, 219), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_I_2000", true,
+//					new Color(128, 169, 214), null));
 			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_H_3000", true,
-					new Color(115, 159, 209), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_G_4000", true,
-					new Color(101, 149, 204), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_F_5000", true,
-					new Color(90, 141, 199), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_E_6000", true,
-					new Color(77, 132, 194), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_D_7000", true,
-					new Color(66, 123, 189), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_C_8000", true,
-					new Color(55, 115, 184), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_B_9000", true,
-					new Color(43, 104, 173), null));
-			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_A_10000", true,
-					new Color(31, 90, 158), null));
+					new Color(115, 159, 209), Color.red,Color.green, 9, 0, "SansSerif"));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_G_4000", true,
+//					new Color(101, 149, 204), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_F_5000", true,
+//					new Color(90, 141, 199), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_E_6000", true,
+//					new Color(77, 132, 194), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_D_7000", true,
+//					new Color(66, 123, 189), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_C_8000", true,
+//					new Color(55, 115, 184), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_B_9000", true,
+//					new Color(43, 104, 173), null));
+//			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_A_10000", true,
+//					new Color(31, 90, 158), null));
 
-			NEFeatureGroup ne10 = new NEResolution("10M", null, 200000d);
+			NEFeatureGroup ne10 = new NEResolution("10M", null, null);
 			ne10.add(bathy);
-			ne10.add(createF(null, "ne_10m_land", true, Color.YELLOW, Color.orange));
-			// ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys",
-			// true,
-			// Color.DARK_GRAY, Color.orange));
-			ne10.add(createF(null, "ne_10m_geography_regions_polys", true,
-					Color.LIGHT_GRAY, Color.red));
-			ne10.add(createF(null,
-					"ne_10m_admin_0_boundary_lines_maritime_indicator", true, null,
-					new Color(78, 128, 202)));
-			ne10.add(createF(null, "ne_10m_admin_0_boundary_lines_land", true, null,
-					Color.green));
-			ne10.add(createF(null, "ne_50m_admin_0_countries", true, null, null,
-					new Color(153, 125, 60), 9, 0, "Serif"));
-			ne10.add(createF(null, "ne_10m_geography_regions_points", true, null,
-					null));
-			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
-					0, "Times"));
+//			ne10.add(createF(null, "ne_10m_land", true, Color.YELLOW, Color.orange));
+//			// ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys",
+//			// true,
+//			// Color.DARK_GRAY, Color.orange));
+//			ne10.add(createF(null, "ne_10m_geography_regions_polys", true,
+//					Color.LIGHT_GRAY, Color.red));
+//			ne10.add(createF(null,
+//					"ne_10m_admin_0_boundary_lines_maritime_indicator", true, null,
+//					new Color(78, 128, 202)));
+//			ne10.add(createF(null, "ne_10m_admin_0_boundary_lines_land", true, null,
+//					Color.green));
+//			ne10.add(createF(null, "ne_50m_admin_0_countries", true, null, null,
+//					new Color(153, 125, 60), 9, 0, "Serif"));
+//			ne10.add(createF(null, "ne_10m_geography_regions_points", true, null,
+//					null));
+//			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
+//					0, "Times"));
 
 			NEFeatureGroup ne50 = new NEResolution("50M", null, null);
 			ne50.add(bathy);
@@ -278,7 +278,7 @@ public class Activator extends AbstractUIPlugin
 			boolean visible, Color fillCol, Color lineCol, Color textCol,
 			int textHeight, int textStyle, String textFont)
 	{
-		NEFeatureStyle nef = createF(null, filename, visible, fillCol, lineCol);
+		NEFeatureStyle nef = createF(folder, filename, visible, fillCol, lineCol);
 		nef.setVisible(visible);
 		nef.setTextColor(textCol);
 		nef.setTextHeight(textHeight);
