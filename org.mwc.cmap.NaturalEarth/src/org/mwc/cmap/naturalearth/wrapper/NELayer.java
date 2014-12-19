@@ -254,16 +254,26 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 		while (iter.hasNext())
 		{
 			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
-
-//			if (!visArea.overlaps(namedWorldPath.getBounds()))
-//			{
-//				// ok, skip to the next one
-//				continue;
-//			}
+			
+			if(!visArea.overlaps(namedWorldPath.getBounds()))
+				continue;
 
 			dest.setColor(style.getPolygonColor());
-			
+
 			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
+
+			boolean trackMe = false;
+
+			if (namedWorldPath.getName().equals("153"))
+			{
+				System.out.println("good shape");
+				trackMe = true;
+			}
+			if (namedWorldPath.getName().equals("447"))
+			{
+				System.out.println("broken shape");
+				trackMe = true;
+			}
 
 			// create our point lists
 			final int[] xP = new int[_nodes.size()];
@@ -282,15 +292,9 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 				if (Math.abs(next.getLat()) < LAT_LIMIT)
 				{
-					boolean trackMe = false;
-					
+
 					String val = next.toString();
 					pastPoints.add(val);
-
-//					if(next.getDepth() > 3750 && next.getDepth() < 3780)
-//						{
-//							trackMe = true;
-//						}
 
 					// convert to screen
 					Point thisP = null;
@@ -300,7 +304,7 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 						if (trackMe)
 						{
-					//		 System.out.println(next + " to:" + thisP);
+							// System.out.println(next + " to:" + thisP);
 						}
 					}
 					catch (Exception e)
@@ -327,9 +331,6 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 					}
 				}
 			}
-
-			System.out.println("for poly:" + namedWorldPath.getName() + " len is:"
-					+ counter);
 
 			dest.fillPolygon(xP, yP, counter);
 
@@ -387,11 +388,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 					double thisLong = next.getLong();
 					boolean trackMe = false;
 
-//					if (thisLong < -2 && thisLong > -5)
-//						if (thisLat > 57 && thisLat < 59)
-//						{
-//							trackMe = true;
-//						}
+					// if (thisLong < -2 && thisLong > -5)
+					// if (thisLat > 57 && thisLat < 59)
+					// {
+					// trackMe = true;
+					// }
 
 					// convert to screen
 					Point thisP = null;
@@ -492,6 +493,12 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			if (style.isShowLabels())
 			{
 				dest.drawText(namedWorldPath.getName(), thisP.x, thisP.y);
+			}
+
+
+			if (style.isShowPoints())
+			{
+				// TODO: introduce some code to draw markers
 				
 				// //////////////
 				// draw in the poly counters
@@ -504,15 +511,10 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 					{
 						Point pt = dest.toScreen(loc);
 						if (pt != null)
-							dest.drawText("" + (int)loc.getDepth(), pt.x, pt.y);
+							dest.drawText("" + (int) loc.getDepth(), pt.x, pt.y);
 					}
 				}
-
-			}
-
-			if (style.isShowPoints())
-			{
-				// TODO: put some marker on the screen, at "dest"
+				
 			}
 
 		}
