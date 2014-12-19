@@ -8,7 +8,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
-import org.mwc.cmap.naturalearth.view.NEFeatureSet;
+import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
+import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
@@ -32,7 +33,7 @@ public class Activator extends AbstractUIPlugin
 	private static ShapefileDataStore _dataStore;
 
 	// the set of feature types. Actually these will be drawn from the Prefs page
-	private static NEFeatureSet _featureSet = null;
+	private static NEFeatureStore _featureSet = null;
 
 	/**
 	 * The constructor
@@ -172,7 +173,7 @@ public class Activator extends AbstractUIPlugin
 			exception.printStackTrace();
 	}
 
-	public NEFeatureSet getDefaultStyleSet()
+	public NEFeatureStore getDefaultStyleSet()
 	{
 		if (_featureSet == null)
 		{
@@ -180,57 +181,90 @@ public class Activator extends AbstractUIPlugin
 			final int ITALIC = 2;
 			final int PLAIN = 0;
 
-			NEResolution ne10 = new NEResolution("10M", null, 200000d);
-			ne10.add(createF("ne_10m_land", true, Color.YELLOW, Color.orange));
+			// start off with the bathy
+			NEFeatureGroup bathy = new NEFeatureGroup("Bathymetry");
+			final String bathyFolder = "ne_10m_bathymetry_all";
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_L_0", true, new Color(
+					172, 199, 230), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_K_200", true,
+					new Color(156, 188, 224), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_J_1000", true,
+					new Color(143, 178, 219), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_I_2000", true,
+					new Color(128, 169, 214), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_H_3000", true,
+					new Color(115, 159, 209), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_G_4000", true,
+					new Color(101, 149, 204), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_F_5000", true,
+					new Color(90, 141, 199), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_E_6000", true,
+					new Color(77, 132, 194), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_D_7000", true,
+					new Color(66, 123, 189), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_C_8000", true,
+					new Color(55, 115, 184), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_B_9000", true,
+					new Color(43, 104, 173), null));
+			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_A_10000", true,
+					new Color(31, 90, 158), null));
+
+			NEFeatureGroup ne10 = new NEResolution("10M", null, 200000d);
+			ne10.add(bathy);
+			ne10.add(createF(null, "ne_10m_land", true, Color.YELLOW, Color.orange));
 			// ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys",
 			// true,
 			// Color.DARK_GRAY, Color.orange));
-			ne10.add(createF("ne_10m_geography_regions_polys", true,
+			ne10.add(createF(null, "ne_10m_geography_regions_polys", true,
 					Color.LIGHT_GRAY, Color.red));
-			ne10.add(createF("ne_10m_admin_0_boundary_lines_maritime_indicator",
-					true, null, new Color(78, 128, 202)));
-			ne10.add(createF("ne_10m_admin_0_boundary_lines_land", true,
-					null, Color.green));
-			ne10.add(createF("polygonFeature", "ne_50m_admin_0_countries", true,
-					null, null, new Color(153, 125, 60), 9, 0, "Serif"));
-			ne10.add(createF("ne_10m_geography_regions_points", true, null,
+			ne10.add(createF(null,
+					"ne_10m_admin_0_boundary_lines_maritime_indicator", true, null,
+					new Color(78, 128, 202)));
+			ne10.add(createF(null, "ne_10m_admin_0_boundary_lines_land", true, null,
+					Color.green));
+			ne10.add(createF(null, "ne_50m_admin_0_countries", true, null, null,
+					new Color(153, 125, 60), 9, 0, "Serif"));
+			ne10.add(createF(null, "ne_10m_geography_regions_points", true, null,
 					null));
-			ne10.add(createF("pointFeature", "ne_10m_ports", true, null, null,
-					Color.pink, 8, 0, "Times"));
+			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
+					0, "Times"));
 
-			NEResolution ne50 = new NEResolution("50M", null, null);
-		ne50.add(createF("ne_50m_ocean", true, new Color(165,
-		191, 221), null));
-			ne50.add(createF("ne_50m_land", true, new Color(235,
-					219, 188), new Color(162, 162, 162)));
-//			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
-//					null, null, Color.yellow, 12, 0, "SansSerif"));
-//			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
-//					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
-			ne50.add(createF("polygonFeature", "ne_110m_admin_0_countries", true,
-					null, null, new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
-			ne50.add(createF("pointFeature", "sea labels", true, null, null,
-					new Color(16, 67, 98), 16, ITALIC, "Serif"));
-			ne50.add(createF("pointFeature", "ocean labels", true, null, null,
-					new Color(16, 67, 98), 20, ITALIC | BOLD, "Serif"));
+			NEFeatureGroup ne50 = new NEResolution("50M", null, null);
+			ne50.add(bathy);
 
-			NEResolution ne110 = new NEResolution("110M", 3000000d, null);
-			ne110.add(createF("ne_110m_land", true, new Color(235,
-					219, 188), new Color(162, 162, 162)));
-			ne110.add(createF("ne_110m_ocean", true, new Color(165,
-					191, 221), null));
-			ne110.add(createF("polygonFeature", "ne_110m_geography_marine_polys",
-					true, new Color(165, 191, 221), null, Color.red, 8, 0, "Times"));
-			ne110.add(createF("pointFeature", "ne_110m_geography_regions_points",
-					true, null, null, Color.pink, 8, 0, "Times"));
-			ne110.add(createF("pointFeature", "ne_110m_populated_places_simple",
-					true, null, null, new Color(128, 128, 128), 14, 0, "SansSerif"));
-			ne110.add(createF("pointFeature", "sea labels", true, null, null,
-					new Color(16, 67, 98), 16, ITALIC, "Serif"));
-			ne110.add(createF("pointFeature", "ocean labels", true, null, null,
-					new Color(16, 67, 98), 20, ITALIC | BOLD, "Serif"));
+			ne50.add(createF(null, "ne_50m_ocean", true, new Color(165, 191, 221),
+					null));
+			ne50.add(createF(null, "ne_50m_land", true, new Color(235, 219, 188),
+					new Color(162, 162, 162)));
+			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
+					null, null, Color.yellow, 12, 0, "SansSerif"));
+			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
+					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
+			ne50.add(createF(null, "ne_110m_admin_0_countries", true, null, null,
+					new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
+			ne50.add(createF(null, "sea labels", true, null, null, new Color(16, 67,
+					98), 16, ITALIC, "Serif"));
+			ne50.add(createF(null, "ocean labels", true, null, null, new Color(16,
+					67, 98), 20, ITALIC | BOLD, "Serif"));
 
-			_featureSet = new NEFeatureSet();
+			// NEFeatureGroup ne110 = new NEResolution("110M", null, null);
+ 		  NEFeatureGroup ne110 = new NEResolution("110M", 3000000d, null);
+			ne110.add(createF(null, "ne_110m_land", true, new Color(235, 219, 188),
+					new Color(162, 162, 162)));
+			ne110.add(createF(null, "ne_110m_ocean", true, new Color(165, 191, 221),
+					Color.red, Color.green, 12, PLAIN, "SansSerif"));
+			ne110.add(createF(null, "ne_110m_geography_marine_polys", true,
+					new Color(165, 191, 221), null, Color.red, 8, 0, "Times"));
+			ne110.add(createF(null, "ne_110m_geography_regions_points", true, null,
+					null, Color.pink, 8, 0, "Times"));
+			ne110.add(createF(null, "ne_110m_populated_places_simple", true, null,
+					null, new Color(128, 128, 128), 14, 0, "SansSerif"));
+			ne110.add(createF(null, "sea labels", true, null, null, new Color(16, 67,
+					98), 16, ITALIC, "Serif"));
+			ne110.add(createF(null, "ocean labels", true, null, null, new Color(16,
+					67, 98), 20, ITALIC | BOLD, "Serif"));
+
+			_featureSet = new NEFeatureStore();
 			_featureSet.add(ne10);
 			_featureSet.add(ne50);
 			_featureSet.add(ne110);
@@ -240,11 +274,11 @@ public class Activator extends AbstractUIPlugin
 		return _featureSet;
 	}
 
-	private static NEFeatureStyle createF(String featureType, String filename,
+	private static NEFeatureStyle createF(String folder, String filename,
 			boolean visible, Color fillCol, Color lineCol, Color textCol,
 			int textHeight, int textStyle, String textFont)
 	{
-		NEFeatureStyle nef = createF(filename, visible, fillCol, lineCol);
+		NEFeatureStyle nef = createF(null, filename, visible, fillCol, lineCol);
 		nef.setVisible(visible);
 		nef.setTextColor(textCol);
 		nef.setTextHeight(textHeight);
@@ -253,11 +287,11 @@ public class Activator extends AbstractUIPlugin
 		return nef;
 	}
 
-	private static NEFeatureStyle createF(String filename, boolean visible,
-			Color fillCol, Color lineCol)
+	private static NEFeatureStyle createF(String folder, String filename,
+			boolean visible, Color fillCol, Color lineCol)
 	{
-		NEFeatureStyle nef = new NEFeatureStyle(filename, visible,
-				fillCol, lineCol);
+		NEFeatureStyle nef = new NEFeatureStyle(folder, filename, visible, fillCol,
+				lineCol);
 		nef.setVisible(visible);
 		return nef;
 	}

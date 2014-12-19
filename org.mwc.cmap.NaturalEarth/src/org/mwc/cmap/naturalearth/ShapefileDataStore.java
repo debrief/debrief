@@ -38,7 +38,7 @@ public class ShapefileDataStore
 	public CachedNaturalEarthFile get(String fName)
 	{
 		// construct the path to the file
-		String path = _path + File.separator + fName + File.separator + fName + ".shp";
+		String path = _path + File.separator + fName + ".shp";
 		
 		CachedNaturalEarthFile res = _store.get(path);
 		
