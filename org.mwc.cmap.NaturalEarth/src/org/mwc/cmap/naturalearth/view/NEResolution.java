@@ -1,12 +1,9 @@
 package org.mwc.cmap.naturalearth.view;
 
-import org.eclipse.core.runtime.Status;
-import org.mwc.cmap.naturalearth.Activator;
 
-import MWC.GUI.BaseLayer;
-import MWC.GUI.Editable;
 
-public class NEResolution extends BaseLayer 
+
+public class NEResolution extends NEFeatureGroup
 {
 
 	/**
@@ -16,27 +13,29 @@ public class NEResolution extends BaseLayer
 	
 	final private Double _minS;
 	final private Double _maxS;
-	final private String _name;
-
-	private boolean _activeRes;
+	boolean _activeRes;
 
 	public NEResolution(String name, Double minS, Double maxS)
 	{
-		_name = name;
+		super(name);
 		_minS = minS;
 		_maxS = maxS;
 	}
 	
-	
-	
-	@Override
-	public boolean hasOrderedChildren()
+	public String getName()
 	{
-		return true;
+		final String res;
+		
+		// do different formatting if it's the active res
+		if(_activeRes)
+		{
+			res = "[" + _name + "]";
+		}
+		else
+			res = _name;
+		return res;
 	}
-
-
-
+	
 	/** whether this set of styles is suited to plotting this particular scale
 	 * 
 	 * @param scale
@@ -56,31 +55,6 @@ public class NEResolution extends BaseLayer
 		}
 		
 		return valid;
-	}
-
-	public String getName()
-	{
-		final String res;
-		
-		// do different formatting if it's the active res
-		if(_activeRes)
-		{
-			res = "[" + _name + "]";
-		}
-		else
-			res = _name;
-		return res;
-	}
-
-	
-	@Override
-	public void add(Editable thePlottable)
-	{
-		if(!(thePlottable instanceof NEFeatureStyle))
-		{
-			Activator.logError(Status.WARNING, "Should not be adding this to a NE Feature:" + thePlottable, null);
-		}
-		super.add(thePlottable);
 	}
 
 	/** indicate that this is the currently active resolution
