@@ -8,7 +8,7 @@ import org.mwc.cmap.naturalearth.Activator;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottables;
 
-public class NEFeatureSet extends Plottables
+public class NEFeatureStore extends Plottables
 { 
 	/**
 	 * 
