@@ -8,11 +8,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
+import org.mwc.cmap.naturalearth.readerwriter.NEFeatureStoreHandler;
 import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
-import org.mwc.cmap.naturalearth.view.NEStyle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -109,7 +109,7 @@ public class Activator extends AbstractUIPlugin
 		return null;
 	}
 
-	public NEStyle getThisStyle(String name)
+	public NEFeatureGroup getThisStyle(String name)
 	{
 		// TODO: @Peco, we need to load the set of default styles from the repo
 		// (memento, I guess).
@@ -117,7 +117,7 @@ public class Activator extends AbstractUIPlugin
 		return null;
 	}
 
-	public void storeThisStyle(NEStyle style)
+	public void storeThisStyle(NEFeatureGroup style)
 	{
 		// TODO: @Peco, we need to store this style in the prefs dataset
 	}
@@ -175,6 +175,7 @@ public class Activator extends AbstractUIPlugin
 
 	public NEFeatureStore getDefaultStyleSet()
 	{
+		_featureSet = null;
 		if (_featureSet == null)
 		{
 			final int BOLD = 1;
@@ -215,19 +216,19 @@ public class Activator extends AbstractUIPlugin
 			// ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys",
 			// true,
 			// Color.DARK_GRAY, Color.orange));
-			ne10.add(createF(null, "ne_10m_geography_regions_polys", true,
-					Color.LIGHT_GRAY, Color.red));
-			ne10.add(createF(null,
-					"ne_10m_admin_0_boundary_lines_maritime_indicator", true, null,
-					new Color(78, 128, 202)));
-			ne10.add(createF(null, "ne_10m_admin_0_boundary_lines_land", true, null,
-					Color.green));
-			ne10.add(createF(null, "ne_50m_admin_0_countries", true, null, null,
-					new Color(153, 125, 60), 9, 0, "Serif"));
-			ne10.add(createF(null, "ne_10m_geography_regions_points", true, null,
-					null));
-			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
-					0, "Times"));
+//			ne10.add(createF(null, "ne_10m_geography_regions_polys", true,
+//					Color.LIGHT_GRAY, Color.red));
+//			ne10.add(createF(null,
+//					"ne_10m_admin_0_boundary_lines_maritime_indicator", true, null,
+//					new Color(78, 128, 202)));
+//			ne10.add(createF(null, "ne_10m_admin_0_boundary_lines_land", true, null,
+//					Color.green));
+//			ne10.add(createF(null, "ne_50m_admin_0_countries", true, null, null,
+//					new Color(153, 125, 60), 9, 0, "Serif"));
+//			ne10.add(createF(null, "ne_10m_geography_regions_points", true, null,
+//					null));
+//			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
+//					0, "Times"));
 
 			NEFeatureGroup ne50 = new NEResolution("50M", null, null);
 			ne50.add(bathy);
@@ -236,12 +237,12 @@ public class Activator extends AbstractUIPlugin
 					null));
 			ne50.add(createF(null, "ne_50m_land", true, new Color(235, 219, 188),
 					new Color(162, 162, 162)));
-			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
-					null, null, Color.yellow, 12, 0, "SansSerif"));
-			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
-					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
-			ne50.add(createF(null, "ne_110m_admin_0_countries", true, null, null,
-					new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
+//			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
+//					null, null, Color.yellow, 12, 0, "SansSerif"));
+//			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
+//					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
+//			ne50.add(createF(null, "ne_110m_admin_0_countries", true, null, null,
+//					new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
 			ne50.add(createF(null, "sea labels", true, null, null, new Color(16, 67,
 					98), 16, ITALIC, "Serif"));
 			ne50.add(createF(null, "ocean labels", true, null, null, new Color(16,
@@ -249,12 +250,12 @@ public class Activator extends AbstractUIPlugin
 
 			// NEFeatureGroup ne110 = new NEResolution("110M", null, null);
  		  NEFeatureGroup ne110 = new NEResolution("110M", 3000000d, null);
-			ne110.add(createF(null, "ne_110m_land", true, new Color(235, 219, 188),
-					new Color(162, 162, 162)));
-			ne110.add(createF(null, "ne_110m_ocean", true, new Color(165, 191, 221),
-					Color.red, Color.green, 12, PLAIN, "SansSerif"));
-			ne110.add(createF(null, "ne_110m_geography_marine_polys", true,
-					new Color(165, 191, 221), null, Color.red, 8, 0, "Times"));
+//			ne110.add(createF(null, "ne_110m_land", true, new Color(235, 219, 188),
+//					new Color(162, 162, 162)));
+//			ne110.add(createF(null, "ne_110m_ocean", true, new Color(165, 191, 221),
+//					Color.red, Color.green, 12, PLAIN, "SansSerif"));
+//			ne110.add(createF(null, "ne_110m_geography_marine_polys", true,
+//					new Color(165, 191, 221), null, Color.red, 8, 0, "Times"));
 			ne110.add(createF(null, "ne_110m_geography_regions_points", true, null,
 					null, Color.pink, 8, 0, "Times"));
 			ne110.add(createF(null, "ne_110m_populated_places_simple", true, null,
@@ -264,14 +265,20 @@ public class Activator extends AbstractUIPlugin
 			ne110.add(createF(null, "ocean labels", true, null, null, new Color(16,
 					67, 98), 20, ITALIC | BOLD, "Serif"));
 
-			_featureSet = new NEFeatureStore();
+			_featureSet = new NEFeatureStore("test data");
 			_featureSet.add(ne10);
 			_featureSet.add(ne50);
 			_featureSet.add(ne110);
+			
+			String test = NEFeatureStoreHandler.encodeAsXML(_featureSet);
+			
+			System.err.println("===========");
+			System.err.println(test);
+			System.err.println("===========");
 		}
 
 		// loop through our styles, find the one that is relevant to this scale
-		return _featureSet;
+		return null;
 	}
 
 	private static NEFeatureStyle createF(String folder, String filename,

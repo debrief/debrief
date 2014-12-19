@@ -1,9 +1,11 @@
 package org.mwc.cmap.naturalearth.view;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.util.HashMap;
 
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.wrapper.NELayer.HasCreatedDate;
@@ -17,8 +19,8 @@ import MWC.GenericData.WorldLocation;
 public class NEFeatureStyle implements Plottable, HasCreatedDate
 {
 	
-	final private String _filename;
-	final private String _folder;
+	private String _filename;
+	private String _folder;
 
 	private Color _lineCol;
 	private Color _fillCol;
@@ -28,6 +30,9 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	private int _textStyle;
 	private String _textFont;
 	
+
+	private static transient HashMap<String, Font> _fontCache = new HashMap<String, Font>();
+
 	
 	/** visibility settings
 	 * 
@@ -48,10 +53,12 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	 * 
 	 */
 	private transient CachedNaturalEarthFile _data;
+	private Font _font;
 
 	public NEFeatureStyle(String folder, String filename, boolean visible,
 			Color fillCol, Color lineCol)
 	{
+		this();
 		if(folder != null)
 			_folder = folder;
 		else
@@ -60,22 +67,30 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 		_lineCol = lineCol;
 		_fillCol = fillCol;
 		_isVisible = visible;
+	}
+
+	public NEFeatureStyle()
+	{
 		_created = System.currentTimeMillis();
 	}
 
+	public String getFolderName()
+	{
+		String res = null;
+		if(_folder != null)
+			res = _folder;
+		else
+			res = _filename;
+		return res;
+	}
+	
 	/** the NE filename that this style applies to
 	 * 
 	 * @return
 	 */
 	public String getFileName()
 	{
-		final String res;
-		if(_folder == null)
-			res = _filename + File.separator + _filename;
-		else
-			res = _folder + File.separator + _filename;
-		
-		return res;
+		return _filename;
 	}
 
 	/** if this feature is visible
@@ -328,6 +343,45 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	public long getCreated()
 	{
 		return _created;
+	}
+
+	public void setTextFont(Font font)
+	{
+		_font = font;
+	}
+
+	public Font getFont()
+	{
+		if(_font == null)
+		{
+			_font = fontFor(getTextHeight(), getTextStyle(),
+				getTextFont());
+		}
+
+		return _font;
+	}
+
+
+	private Font fontFor(int height, int style, String family)
+	{
+		String descriptor = family + "_" + height + "_" + style;
+		Font font = _fontCache.get(descriptor);
+		if (font == null)
+		{
+			font = new Font(family, style, height);
+			_fontCache.put(descriptor, font);
+		}
+		return font;
+	}
+
+	public void setFolderName(String value)
+	{
+		_folder = value;
+	}
+
+	public void setFileName(String value)
+	{
+		_filename = value;
 	}
 
 }

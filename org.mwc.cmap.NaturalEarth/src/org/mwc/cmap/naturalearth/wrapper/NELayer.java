@@ -39,8 +39,6 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 	private NEResolution _currentRes;
 
-	private HashMap<String, Font> _fontCache = new HashMap<String, Font>();
-
 	/**
 	 * the safest we can get to the poles without GeoTools falling over.
 	 * 
@@ -137,9 +135,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 					if (feature.getData() == null)
 					{
 						String fName = feature.getFileName();
+						String folder = feature.getFolderName();
+						String path = folder + File.separator + fName;
 						// get the datafile
 						CachedNaturalEarthFile thisData = Activator.getDefault().loadData(
-								fName);
+								path);
 
 						// did we find the shapefile?
 						if (thisData != null)
@@ -450,9 +450,7 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			return;
 
 		dest.setColor(style.getTextColor());
-		Font font = fontFor(style.getTextHeight(), style.getTextStyle(),
-				style.getTextFont());
-		dest.setFont(font);
+		dest.setFont(style.getFont());
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -617,18 +615,6 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 		}
 	}
 
-	private Font fontFor(int height, int style, String family)
-	{
-		String descriptor = family + "_" + height + "_" + style;
-		Font font = _fontCache.get(descriptor);
-		if (font == null)
-		{
-			font = new Font(family, style, height);
-			_fontCache.put(descriptor, font);
-		}
-		return font;
-	}
-
 	private void drawPointPoints(CanvasType dest,
 			ArrayList<NamedWorldLocation> points, NEFeatureStyle style)
 	{
@@ -644,9 +630,7 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			return;
 
 		dest.setColor(style.getTextColor());
-		Font font = fontFor(style.getTextHeight(), style.getTextStyle(),
-				style.getTextFont());
-		dest.setFont(font);
+		dest.setFont(style.getFont());
 
 		// store the screen size
 		WorldArea visArea = dest.getProjection().getVisibleDataArea();
@@ -690,7 +674,10 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	@Override
 	public boolean getVisible()
 	{
-		return _myFeatures.getVisible();
+		boolean res = false;
+		if(_myFeatures != null)
+			res = _myFeatures.getVisible(); 
+		return res;
 	}
 
 	@Override
