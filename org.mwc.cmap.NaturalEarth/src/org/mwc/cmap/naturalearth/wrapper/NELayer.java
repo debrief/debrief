@@ -11,7 +11,8 @@ import java.util.Iterator;
 
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
-import org.mwc.cmap.naturalearth.view.NEFeatureSet;
+import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
+import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
@@ -47,9 +48,9 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	 */
 	final private double LAT_LIMIT = 89.0;
 	private Layers _theLayers;
-	private NEFeatureSet _myFeatures;
+	private NEFeatureStore _myFeatures;
 
-	public NELayer(NEFeatureSet features)
+	public NELayer(NEFeatureStore features)
 	{
 		setName("Natural Earth");
 
@@ -101,11 +102,32 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			}
 
 			// start off by making sure data is loaded
-			Enumeration<Editable> children = thisR.elements();
-			while (children.hasMoreElements())
-			{
-				NEFeatureStyle feature = (NEFeatureStyle) children.nextElement();
+			loadData(thisR);
 
+			// now do the drawing
+			drawPolygons(dest, thisR);
+			drawLines(dest, thisR);
+			drawPoints(dest, thisR);
+
+		}
+	}
+
+	private void loadData(NEFeatureGroup group)
+	{
+		Enumeration<Editable> children = group.elements();
+		while (children.hasMoreElements())
+		{
+			Editable thisE = children.nextElement();
+
+			// aah just check if this is actually a broup
+			if (thisE instanceof NEFeatureGroup)
+			{
+				NEFeatureGroup child = (NEFeatureGroup) thisE;
+				loadData(child);
+			}
+			else
+			{
+				NEFeatureStyle feature = (NEFeatureStyle) thisE;
 				if (feature.isVisible())
 				{
 					if (feature.getData() == null)
@@ -127,23 +149,52 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 				}
 			}
+		}
+	}
 
-			children = thisR.elements();
-			while (children.hasMoreElements())
+	private void drawPolygons(CanvasType dest, NEFeatureGroup group)
+	{
+		Enumeration<Editable> children = group.elements();
+		while (children.hasMoreElements())
+		{
+			Editable thisE = children.nextElement();
+
+			// aah just check if this is actually a broup
+			if (thisE instanceof NEFeatureGroup)
 			{
-				NEFeatureStyle feature = (NEFeatureStyle) children.nextElement();
-
+				NEFeatureGroup child = (NEFeatureGroup) thisE;
+				if (child.getVisible())
+					drawPolygons(dest, child);
+			}
+			else
+			{
+				NEFeatureStyle feature = (NEFeatureStyle) thisE;
 				if (!feature.isVisible())
 					continue;
 
 				// draw the data from the bottom up
 				drawPolygonPolygons(dest, feature.getData().getPolygons(), feature);
 			}
+		}
+	}
 
-			children = thisR.elements();
-			while (children.hasMoreElements())
+	private void drawLines(CanvasType dest, NEFeatureGroup group)
+	{
+		Enumeration<Editable> children = group.elements();
+		while (children.hasMoreElements())
+		{
+			Editable thisE = children.nextElement();
+
+			// aah just check if this is actually a broup
+			if (thisE instanceof NEFeatureGroup)
 			{
-				NEFeatureStyle feature = (NEFeatureStyle) children.nextElement();
+				NEFeatureGroup child = (NEFeatureGroup) thisE;
+				if (child.getVisible())
+					drawLines(dest, child);
+			}
+			else
+			{
+				NEFeatureStyle feature = (NEFeatureStyle) thisE;
 
 				if (!feature.isVisible())
 					continue;
@@ -152,12 +203,26 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 				drawPolygonLines(dest, feature.getData().getPolygons(), feature);
 				drawLineLines(dest, feature.getData().getLines(), feature);
 			}
+		}
+	}
 
-			children = thisR.elements();
-			while (children.hasMoreElements())
+	private void drawPoints(CanvasType dest, NEFeatureGroup group)
+	{
+		Enumeration<Editable> children = group.elements();
+		while (children.hasMoreElements())
+		{
+			Editable thisE = children.nextElement();
+
+			// aah just check if this is actually a broup
+			if (thisE instanceof NEFeatureGroup)
 			{
-				NEFeatureStyle feature = (NEFeatureStyle) children.nextElement();
-
+				NEFeatureGroup child = (NEFeatureGroup) thisE;
+				if (child.getVisible())
+					drawPoints(dest, child);
+			}
+			else
+			{
+				NEFeatureStyle feature = (NEFeatureStyle) thisE;
 				if (!feature.isVisible())
 					continue;
 
@@ -166,7 +231,6 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 				drawLinePoints(dest, feature.getData().getLines(), feature);
 				drawPointPoints(dest, feature.getData().getPoints(), feature);
 			}
-
 		}
 	}
 
@@ -191,20 +255,14 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 		{
 			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
 
-			if (!visArea.overlaps(namedWorldPath.getBounds()))
-			{
-				// ok, skip to the next one
-				continue;
-			}
-
-			// see if it's not our test one
-			if (!namedWorldPath.getName().equals("81"))
-			{
-				// continue;
-			}
+//			if (!visArea.overlaps(namedWorldPath.getBounds()))
+//			{
+//				// ok, skip to the next one
+//				continue;
+//			}
 
 			dest.setColor(style.getPolygonColor());
-
+			
 			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
 
 			// create our point lists
@@ -212,9 +270,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			final int[] yP = new int[_nodes.size()];
 
 			// ok, step through the area
-			final Iterator<WorldLocation> points = _nodes.iterator();
+			Iterator<WorldLocation> points = _nodes.iterator();
 
 			int counter = 0;
+
+			ArrayList<String> pastPoints = new ArrayList<String>();
 
 			while (points.hasNext())
 			{
@@ -222,11 +282,26 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 				if (Math.abs(next.getLat()) < LAT_LIMIT)
 				{
+					boolean trackMe = false;
+					
+					String val = next.toString();
+					pastPoints.add(val);
+
+//					if(next.getDepth() > 3750 && next.getDepth() < 3780)
+//						{
+//							trackMe = true;
+//						}
+
 					// convert to screen
 					Point thisP = null;
 					try
 					{
 						thisP = dest.toScreen(next);
+
+						if (trackMe)
+						{
+					//		 System.out.println(next + " to:" + thisP);
+						}
 					}
 					catch (Exception e)
 					{
@@ -253,7 +328,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 				}
 			}
 
+			System.out.println("for poly:" + namedWorldPath.getName() + " len is:"
+					+ counter);
+
 			dest.fillPolygon(xP, yP, counter);
+
 		}
 	}
 
@@ -303,11 +382,28 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 				if (Math.abs(next.getLat()) < LAT_LIMIT)
 				{
+
+					double thisLat = next.getLat();
+					double thisLong = next.getLong();
+					boolean trackMe = false;
+
+//					if (thisLong < -2 && thisLong > -5)
+//						if (thisLat > 57 && thisLat < 59)
+//						{
+//							trackMe = true;
+//						}
+
 					// convert to screen
 					Point thisP = null;
 					try
 					{
 						thisP = dest.toScreen(next);
+
+						if (trackMe)
+						{
+							// System.out.println(next + " to:" + thisP);
+						}
+
 					}
 					catch (Exception e)
 					{
@@ -392,14 +488,33 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 			// convert to screen
 			final Point thisP = dest.toScreen(centre);
-			
-			if(style.isShowLabels())
+
+			if (style.isShowLabels())
+			{
 				dest.drawText(namedWorldPath.getName(), thisP.x, thisP.y);
-			
-			if(style.isShowPoints())
+				
+				// //////////////
+				// draw in the poly counters
+				// TODO: delete me
+				Iterator<WorldLocation> iter2 = namedWorldPath.getPoints().iterator();
+				while (iter2.hasNext())
+				{
+					WorldLocation loc = (WorldLocation) iter2.next();
+					if (loc.getLat() < LAT_LIMIT)
+					{
+						Point pt = dest.toScreen(loc);
+						if (pt != null)
+							dest.drawText("" + (int)loc.getDepth(), pt.x, pt.y);
+					}
+				}
+
+			}
+
+			if (style.isShowPoints())
 			{
 				// TODO: put some marker on the screen, at "dest"
 			}
+
 		}
 	}
 
@@ -494,11 +609,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			WorldLocation centre = next2.getBounds().getCentre();
 			// convert to screen
 			final Point thisP = dest.toScreen(centre);
-			
-			if(style.isShowLabels())
+
+			if (style.isShowLabels())
 				dest.drawText(next2.getName(), thisP.x, thisP.y);
-			
-			if(style.isShowPoints())
+
+			if (style.isShowPoints())
 			{
 				// TODO: put some marker on the screen, at "dest"
 			}
@@ -551,11 +666,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			if (visArea.contains(next))
 			{
 				final Point thisP = dest.toScreen(next);
-				
-				if(style.isShowLabels())
+
+				if (style.isShowLabels())
 					dest.drawText(namedLoc.getName(), thisP.x, thisP.y);
-				
-				if(style.isShowPoints())
+
+				if (style.isShowPoints())
 				{
 					// TODO: put some marker on the screen, at "dest"
 				}
@@ -633,8 +748,6 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 		return "Natural Earth";
 	}
 
-	
-	
 	@Override
 	public String toString()
 	{
@@ -676,6 +789,18 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	public void setVisible(boolean val)
 	{
 		_myFeatures.setVisible(val);
+	}
+
+	/**
+	 * interface for layer objects that can be ordered, using their created
+	 * (imported) date
+	 * 
+	 * @author ian
+	 * 
+	 */
+	public static interface HasCreatedDate
+	{
+		public long getCreated();
 	}
 
 }
