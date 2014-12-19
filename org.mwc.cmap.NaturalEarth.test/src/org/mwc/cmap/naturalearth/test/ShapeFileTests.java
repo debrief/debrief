@@ -33,6 +33,7 @@ public class ShapeFileTests
 	private static File marineAreas;
 	private static File pointNames;
 	private static File landAreas;
+	private static File oceanArea;
 
 	@BeforeClass
 	public static void setUp() throws Exception
@@ -44,6 +45,8 @@ public class ShapeFileTests
 		landAreas = new File("data/ne_10m_land/ne_10m_land.shp");
 		pointNames = new File(
 				"data/ne_10m_geography_regions_points/ne_10m_geography_regions_points.shp");
+		oceanArea = new File(
+				"data/ne_110m_ocean/ne_110m_ocean.shp");
 	}
 
 	@Test
@@ -110,9 +113,10 @@ public class ShapeFileTests
 				pointNames.isFile());
 	}
 
+	@Test
 	public void unTestGeoToolsPerformance() throws Exception
 	{
-		String filename = landAreas.getAbsolutePath();
+		String filename = oceanArea.getAbsolutePath();
 
 		ShapefileDataStore store;
 		ArrayList<NamedWorldPath> polygons = new ArrayList<NamedWorldPath>();
@@ -185,7 +189,7 @@ public class ShapeFileTests
 				NamedWorldPath nwa = new NamedWorldPath(path);
 				nwa.setName(name);
 
-				System.out.println("nwa=" + nwa + " ,name=" + nwa.getName() 
+				System.out.println("name=" + nwa.getName() 
 						+ " ,bounds=" + nwa.getBounds());
 
 				res.add(nwa);
@@ -197,34 +201,41 @@ public class ShapeFileTests
 		return res;
 	}
 
+	static int itemCtr = 0;
+	
 	private static WorldPath gtGetPolygon(final Object value)
 	{
-		WorldPath res = null;
-		if (value instanceof MultiPolygon)
-		{
-			final MultiPolygon mp = (MultiPolygon) value;
-			Coordinate[] coords = mp.getBoundary().getCoordinates();
-			if (coords != null)
+			WorldPath res = null;
+			if (value instanceof MultiPolygon)
 			{
-				WorldLocation[] wls = new WorldLocation[coords.length];
-				for (int i = 0; i < coords.length; i++)
+				final MultiPolygon mp = (MultiPolygon) value;
+				int thisCtr = 0;
+				Coordinate[] coords = mp.getGeometryN(0).getCoordinates();// .getBoundary().getCoordinates();
+				if (coords != null)
 				{
-					final Coordinate coordinate = coords[i];
-					final double zDepth;
-					if (Double.isNaN(coordinate.z))
-						zDepth = 0;
-					else
-						zDepth = coordinate.z;
-					wls[i] = new WorldLocation(coordinate.y,
-							coordinate.x, zDepth);
-					//res.addPoint(newL);
-				}
-				res = new WorldPath(wls);
-			}
+					WorldLocation[] wls = new WorldLocation[coords.length];
+					for (int i = 0; i < coords.length; i++)
+					{
+						thisCtr ++;
+						final Coordinate coordinate = coords[i];
+						final double zDepth;
+						if (Double.isNaN(coordinate.z))
+							zDepth = 0;
+						else
+							zDepth = coordinate.z;
+						wls[i] = new WorldLocation(coordinate.y, coordinate.x, itemCtr++);
+						
+						if(itemCtr > 3716 & itemCtr < 3763)
+							System.out.println(itemCtr + " : " + wls[i]);
 
+						// res.addPoint(newL);
+					}
+					res = new WorldPath(wls);
+				}
+
+			}
+			return res;
 		}
-		return res;
-	}
 
 //	public void unTestOpenMapPerformance()
 //	{

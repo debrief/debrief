@@ -3,8 +3,10 @@ package org.mwc.cmap.naturalearth.view;
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.File;
 
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
+import org.mwc.cmap.naturalearth.wrapper.NELayer.HasCreatedDate;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -12,9 +14,12 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class NEFeatureStyle implements Plottable
+public class NEFeatureStyle implements Plottable, HasCreatedDate
 {
-	private String _filename;
+	
+	final private String _filename;
+	final private String _folder;
+
 	private Color _lineCol;
 	private Color _fillCol;
 	private Color _textCol;
@@ -44,9 +49,13 @@ public class NEFeatureStyle implements Plottable
 	 */
 	private CachedNaturalEarthFile _data;
 
-	public NEFeatureStyle(String filename, boolean visible, Color fillCol,
-			Color lineCol)
+	public NEFeatureStyle(String folder, String filename, boolean visible,
+			Color fillCol, Color lineCol)
 	{
+		if(folder != null)
+			_folder = folder;
+		else
+			_folder = null;
 		_filename = filename;
 		_lineCol = lineCol;
 		_fillCol = fillCol;
@@ -60,7 +69,13 @@ public class NEFeatureStyle implements Plottable
 	 */
 	public String getFileName()
 	{
-		return _filename;
+		final String res;
+		if(_folder == null)
+			res = _filename + File.separator + _filename;
+		else
+			res = _folder + File.separator + _filename;
+		
+		return res;
 	}
 
 	/** if this feature is visible
@@ -278,9 +293,9 @@ public class NEFeatureStyle implements Plottable
 	public int compareTo(Plottable o)
 	{
 		int res = -1;
-		NEFeatureStyle him = (NEFeatureStyle) o;
+		HasCreatedDate him = (HasCreatedDate) o;
 		
-		if(_created < him._created)
+		if(getCreated() < him.getCreated())
 			res = 1;
 		
 		return res;
@@ -307,6 +322,12 @@ public class NEFeatureStyle implements Plottable
 	public double rangeFrom(WorldLocation other)
 	{
 		return 0;
+	}
+
+	@Override
+	public long getCreated()
+	{
+		return _created;
 	}
 
 }
