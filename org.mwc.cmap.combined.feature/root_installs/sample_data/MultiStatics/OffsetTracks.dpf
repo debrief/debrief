@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Tue Dec 02 15:38:59 GMT 2014" Name="Debrief Plot" PlotId="1417533916788">
-<details Text="Saved with Debrief version dated Wed Nov 19 16:09:59 GMT 2014"/>
+<plot xmlns="http://www.debrief.info/plot" Created="Fri Dec 19 13:57:41 GMT 2014" Name="Debrief Plot" PlotId="1417533916788">
+<details Text="Saved with Debrief version dated Thu Dec 11 10:06:47 GMT 2014"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR_2" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR_2" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -413,7 +413,7 @@
 </fix>
 </TrackSegment>
 </track>
-<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR_1" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Frigate" Visible="true">
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="SENSOR_1" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
 <colour Value="BLUE"/>
 <SymbolColor Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -1215,13 +1215,18 @@
 </fix>
 </TrackSegment>
 </track>
+<layer LineThickness="0" Name="Chart Features" Visible="true">
+<coastline Name="World Default" Visible="true">
+<colour Value="GREY"/>
+</coastline>
+</layer>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.6990422" Long="-0.2664625"/>
+<shortLocation Depth="0.000" Lat="39.0353046" Long="14.1625552"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="60.1990273" Long="0.7664625"/>
+<shortLocation Depth="0.000" Lat="32.6547488" Long="24.8906610"/>
 </br>
 </projection>
 <gui>
@@ -1255,7 +1260,7 @@
 <property Name="Arcs" Value="-180"/>
 </component>
 <Background>
-<colour Value="LIGHT_GREY"/>
+<colour CustomBlue="26" CustomGreen="26" CustomRed="26" Value="custom"/>
 </Background>
 </gui>
 </session>
