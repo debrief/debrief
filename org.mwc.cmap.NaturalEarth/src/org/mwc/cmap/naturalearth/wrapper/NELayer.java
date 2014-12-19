@@ -282,23 +282,15 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 				if (Math.abs(next.getLat()) < LAT_LIMIT)
 				{
-
-					double thisLat = next.getLat();
-					double thisLong = next.getLong();
 					boolean trackMe = false;
 					
 					String val = next.toString();
-					if(pastPoints.contains(val))
-					{
-						System.out.println("EXISTING POINT:" + val);
-					}
 					pastPoints.add(val);
-					
 
-					if(next.getDepth() > 3750 && next.getDepth() < 3780)
-						{
-							trackMe = true;
-						}
+//					if(next.getDepth() > 3750 && next.getDepth() < 3780)
+//						{
+//							trackMe = true;
+//						}
 
 					// convert to screen
 					Point thisP = null;
@@ -395,11 +387,11 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 					double thisLong = next.getLong();
 					boolean trackMe = false;
 
-					if (thisLong < -2 && thisLong > -5)
-						if (thisLat > 57 && thisLat < 59)
-						{
-							trackMe = true;
-						}
+//					if (thisLong < -2 && thisLong > -5)
+//						if (thisLat > 57 && thisLat < 59)
+//						{
+//							trackMe = true;
+//						}
 
 					// convert to screen
 					Point thisP = null;
