@@ -35,7 +35,7 @@ import MWC.GUI.Editable;
 
 abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	private static final String TYPE = "FeatureGroup";
+	private static final String TYPE = "NEGroup";
 
 	protected NEFeatureGroup _list;
 
@@ -70,14 +70,13 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
 
 	protected NEFeatureGroup createGroup()
 	{
-		return new NEFeatureGroup("pending");
+		return new NEFeatureGroup("pending feature");
 	}
 	
   
   public void elementClosed()
   {
-  	addGroup(_list);
-  	
+  	addGroup(_list);  	
     _list = null;
   }
   

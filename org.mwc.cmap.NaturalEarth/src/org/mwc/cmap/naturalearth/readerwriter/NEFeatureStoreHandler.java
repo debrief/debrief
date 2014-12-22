@@ -47,14 +47,14 @@ import org.xml.sax.Attributes;
 import MWC.GUI.Editable;
 
 abstract public class NEFeatureStoreHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader 
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-	public static final String TYPE = "FeatureStore";
+	public static final String TYPE = "NEStyle";
 	public final String NAME = "Name";
-	
+
 	private NEFeatureStore _myStore;
-	
+
 	public NEFeatureStoreHandler()
 	{
 		// inform our parent what type of class we are
@@ -67,7 +67,7 @@ abstract public class NEFeatureStoreHandler extends
 				_myStore.setName(val);
 			}
 		});
-		
+
 		addHandler(new NEResolutionGroupHandler()
 		{
 			public void addGroup(NEFeatureGroup res)
@@ -75,18 +75,11 @@ abstract public class NEFeatureStoreHandler extends
 				_myStore.add(res);
 			}
 		});
-		addHandler(new NEFeatureGroupHandler()
-		{
-			public void addGroup(NEFeatureGroup res)
-			{
-				_myStore.add(res);
-			}
-		});
-		
 	}
 
 	// this is one of ours, so get on with it!
-	protected final void handleOurselves(final String name, final Attributes attributes)
+	protected final void handleOurselves(final String name,
+			final Attributes attributes)
 	{
 		_myStore = new NEFeatureStore("pending");
 
@@ -99,60 +92,56 @@ abstract public class NEFeatureStoreHandler extends
 		_myStore = null;
 	}
 
-	public static Element exportStore(final NEFeatureStore store, final org.w3c.dom.Document doc)
+	public static Element exportStore(final NEFeatureStore store,
+			final org.w3c.dom.Document doc)
 	{
 
-			final Element eStore = doc.createElement(TYPE);
-			
-			// loop through layers
-			Enumeration<Editable> iter = store.elements();
-			while (iter.hasMoreElements())
-			{
-				Editable next = (Editable) iter.nextElement();
-				if(next instanceof NEResolution)
-				{
-					NEResolution res = (NEResolution) next;
-					NEResolutionGroupHandler.exportGroup(res, eStore, doc);
-				}
-				else if(next instanceof NEFeatureGroup)
-				{
-					NEFeatureGroup group = (NEFeatureGroup) next;
-					NEFeatureGroupHandler.exportGroup(group, eStore, doc);
-				}
-			}
-			return eStore;
+		final Element eStore = doc.createElement(TYPE);
+
+		// loop through layers
+		Enumeration<Editable> iter = store.elements();
+		while (iter.hasMoreElements())
+		{
+			Editable next = (Editable) iter.nextElement();
+			NEResolution res = (NEResolution) next;
+			NEResolutionGroupHandler.exportGroup(res, eStore, doc);
+		}
+		return eStore;
 	}
 
 	abstract public void addStore(NEFeatureStore store);
-	
+
 	public static String encodeAsXML(NEFeatureStore store)
 	{
 		String res = null;
 		try
 		{
-			Document doc = DocumentBuilderFactory.newInstance()
-					.newDocumentBuilder().newDocument();
+			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+					.newDocument();
 			Element eStore = NEFeatureStoreHandler.exportStore(store, doc);
-			 // ok, now convert parent to text
+			// ok, now convert parent to text
 			final TransformerFactory tF = TransformerFactory.newInstance();
 			Transformer tr;
 			tr = tF.newTransformer();
 
 			tr.setOutputProperty(OutputKeys.INDENT, "yes");
 
-		  OutputStream output = new OutputStream()
-	    {
-	        private StringBuilder string = new StringBuilder();
-	        @Override
-	        public void write(int b) throws IOException {
-	            this.string.append((char) b );
-	        }
+			OutputStream output = new OutputStream()
+			{
+				private StringBuilder string = new StringBuilder();
 
-	        //Netbeans IDE automatically overrides this toString()
-	        public String toString(){
-	            return this.string.toString();
-	        }
-	    };
+				@Override
+				public void write(int b) throws IOException
+				{
+					this.string.append((char) b);
+				}
+
+				// Netbeans IDE automatically overrides this toString()
+				public String toString()
+				{
+					return this.string.toString();
+				}
+			};
 			final DOMSource source = new DOMSource(eStore);
 			final StreamResult result = new StreamResult(output);
 			tr.transform(source, result);
@@ -161,6 +150,8 @@ abstract public class NEFeatureStoreHandler extends
 		}
 		catch (TransformerConfigurationException e)
 		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		catch (ParserConfigurationException e)
 		{

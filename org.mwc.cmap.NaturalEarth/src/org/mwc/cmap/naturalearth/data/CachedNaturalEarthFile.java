@@ -67,6 +67,10 @@ public class CachedNaturalEarthFile
 		try
 		{
 			final File openFile = new File(_filename);
+			if(!openFile.exists())
+			{
+				Activator.logError(Status.WARNING, "Natural Earth datafile not found:" + _filename, null);
+			}
 			store = FileDataStoreFinder.getDataStore(openFile);
 			final SimpleFeatureSource featureSource = store.getFeatureSource();
 

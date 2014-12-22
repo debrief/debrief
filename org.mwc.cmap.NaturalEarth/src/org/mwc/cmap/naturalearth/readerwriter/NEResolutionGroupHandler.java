@@ -11,13 +11,15 @@ import MWC.GUI.Editable;
 
 public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 {
-	public static final String TYPE = "ResolutionGroup";
+	public static final String TYPE = "NEResolution";
 
+	public static final String NAME = "Name";
 	public static final String MIN_RES = "MinRes";
 	public static final String MAX_RES = "MaxRes";
 
 	Double _minVal;
 	Double _maxVal;
+	String _name;
 	
 	public NEResolutionGroupHandler()
 	{
@@ -31,6 +33,13 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 				_minVal = value;
 			}
 		});
+		addAttributeHandler(new HandleAttribute(NAME)
+		{
+			public void setValue(String name, String value)
+			{
+				_name = value;
+			}
+		});
 		addAttributeHandler(new HandleDoubleAttribute(MAX_RES)
 		{
 			public void setValue(String name, double value)
@@ -38,6 +47,19 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 				_maxVal = value;
 			}
 		});
+		addHandler(new NEFeatureGroupHandler()
+		{			
+			@Override
+			public void addGroup(NEFeatureGroup group)
+			{
+				addFeatureGroup(group);
+			}
+		});
+	}
+
+	protected void addFeatureGroup(NEFeatureGroup group)
+	{
+		getR().add(group);
 	}
 
 	private NEResolution getR()
@@ -47,24 +69,29 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 	
 	protected NEFeatureGroup createGroup()
 	{
-		return new NEResolution("pending");
+		return new NEResolution("pending resolution");
 	}
 	
 
 	@Override
 	public void elementClosed()
 	{
-		super.elementClosed();
-		
 		if(_minVal != null)
 			getR().setMin(_minVal);
 		if(_maxVal != null)
 			getR().setMin(_minVal);
-		
+		if(_name != null)
+			getR().setName(_name);
+
+		// store the list
+		addGroup(getR());
+
+		// clear out
+		_name = null;
 		_minVal = null;
 		_maxVal = null;		
-		
-		addGroup(getR());
+		_list = null;
+
 	}
 	
 	public static void exportGroup(NEResolution res,
@@ -76,6 +103,8 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 			eRes.setAttribute(MIN_RES,writeThis(res.getMin()));
 		if(res.getMax() != null)
 			eRes.setAttribute(MAX_RES,writeThis(res.getMax()));
+		if(res.getName() != null)
+			eRes.setAttribute(NAME,res.getName());
 		
 		Enumeration<Editable> iter = res.elements();
 		while (iter.hasMoreElements())

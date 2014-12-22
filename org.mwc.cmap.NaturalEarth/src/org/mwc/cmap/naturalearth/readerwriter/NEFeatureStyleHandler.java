@@ -35,7 +35,7 @@ import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 abstract public class NEFeatureStyleHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	public static final String TYPE = "style";
+	public static final String TYPE = "NEFeature";
 	public static final String POLY_FILL = "PolyFill";
 	public static final String LINE_COL = "LineCol";
 	public static final String TEXT_COL = "TextCol";
