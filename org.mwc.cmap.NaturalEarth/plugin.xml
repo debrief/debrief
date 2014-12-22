@@ -6,7 +6,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
-            class="org.mwc.cmap.naturalearth.preferences.NaturalEarhPrefs"
+            class="org.mwc.cmap.naturalearth.preferences.NaturalEarthPrefs"
             id="org.mwc.cmap.naturalearth.preferences.NaturalEarhPrefs"
             name="Natural Earth">
       </page>
