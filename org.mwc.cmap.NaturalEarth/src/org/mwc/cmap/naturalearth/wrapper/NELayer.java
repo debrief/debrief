@@ -154,6 +154,9 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 	private void drawPolygons(CanvasType dest, NEFeatureGroup group)
 	{
+		if(!group.getVisible())
+			return;
+		
 		Enumeration<Editable> children = group.elements();
 		while (children.hasMoreElements())
 		{
@@ -180,6 +183,9 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 	private void drawLines(CanvasType dest, NEFeatureGroup group)
 	{
+		if(!group.getVisible())
+			return;
+		
 		Enumeration<Editable> children = group.elements();
 		while (children.hasMoreElements())
 		{
@@ -208,6 +214,9 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 	private void drawPoints(CanvasType dest, NEFeatureGroup group)
 	{
+		if(!group.getVisible())
+			return;		
+
 		Enumeration<Editable> children = group.elements();
 		while (children.hasMoreElements())
 		{
