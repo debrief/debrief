@@ -8,7 +8,9 @@ Bundle-Vendor: planetmayo
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.geotools;bundle-version="12.1.0",
- org.mwc.cmap.legacy;bundle-version="1.0.190"
+ org.mwc.cmap.legacy;bundle-version="1.0.190",
+ org.mwc.cmap.gt2Plot,
+ org.mwc.cmap.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

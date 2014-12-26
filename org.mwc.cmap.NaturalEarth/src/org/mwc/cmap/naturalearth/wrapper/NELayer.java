@@ -1,14 +1,36 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.widgets.Display;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.MapContent;
+import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
+import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
@@ -17,6 +39,7 @@ import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -267,6 +290,9 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			if(!visArea.overlaps(namedWorldPath.getBounds()))
 				continue;
 
+//			if (!"447".equals(namedWorldPath.getName())) {
+//				continue;
+//			}
 			dest.setColor(style.getPolygonColor());
 
 			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
@@ -341,11 +367,81 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 				}
 			}
 
-			dest.fillPolygon(xP, yP, counter);
+			//dest.fillPolygon(xP, yP, counter);
+			
+			try
+			{
+				PlainProjection projection = dest.getProjection();
+				if (projection instanceof GtProjection) {
+					CachedNaturalEarthFile data = style.getData();
+					final File openFile = new File(data.getName());
+					FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
+					final SimpleFeatureSource featureSource = store.getFeatureSource();
+					
+					//Style sld = SLD.createSimpleStyle(featureSource.getSchema());
+					
+					Style sld = SLD.createPolygonStyle(style.getLineColor(), style.getPolygonColor(), 0.5f);
+					
+					FeatureLayer layer = new FeatureLayer(featureSource, sld);
+	      
+					MapContent map = ((GtProjection)projection).getMapContent();
+					map.addLayer(layer);
+	      
+					StreamingRenderer renderer = new StreamingRenderer();
+					renderer.setMapContent(map);
+					
+					Rectangle imageBounds = null;
+					int imageWidth = projection.getScreenArea().width;
+					int imageHeight = projection.getScreenArea().height;
+					imageBounds = new Rectangle(0, 0, imageWidth, imageHeight);
+
+			    BufferedImage image = new BufferedImage(imageBounds.width, imageBounds.height, BufferedImage.TYPE_INT_RGB);
+			    Graphics2D gr = image.createGraphics();
+			    //gr.setStroke(new java.awt.BasicStroke());
+			    //gr.setPaint(Color.WHITE);
+			    //gr.fillRect(0, 0, imageWidth, imageHeight);
+          gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			    //gr.fill(imageBounds);
+			    renderer.paint(gr, imageBounds, map.getViewport().getBounds());
+
+			    Image swtImage = new Image(Display.getDefault(), awtToSwt(image, imageBounds.width, imageBounds.height));
+			    if (dest instanceof SWTCanvasAdapter) {
+			    	((SWTCanvasAdapter)dest).drawSWTImage(swtImage, 0, 0, imageBounds.width, imageBounds.height, 200);
+			    }
+			    swtImage.dispose();
+					map.removeLayer(layer);
+				}
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		}
 	}
 
+	private ImageData awtToSwt( BufferedImage bufferedImage, int width, int height ) {
+    final int[] awtPixels = new int[width * height];
+    final PaletteData PALETTE_DATA = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+    final int TRANSPARENT_COLOR = 0x123456;
+    ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
+    swtImageData.transparentPixel = TRANSPARENT_COLOR;
+    int step = swtImageData.depth / 8;
+    final byte[] data = swtImageData.data;
+    bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
+    for( int i = 0; i < height; i++ ) {
+        int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
+        for( int j = 0; j < width; j++ ) {
+            int rgb = awtPixels[j + i * width];
+            for( int k = swtImageData.depth - 8; k >= 0; k -= 8 ) {
+                data[idx++] = (byte) ((rgb >> k) & 0xFF);
+            }
+        }
+    }
+
+    return swtImageData;
+}
 	private void drawPolygonLines(CanvasType dest,
 			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
 	{
