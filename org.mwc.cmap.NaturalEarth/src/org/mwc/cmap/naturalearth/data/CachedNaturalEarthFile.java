@@ -337,9 +337,9 @@ public class CachedNaturalEarthFile
 
 	public ArrayList<NamedWorldPath> getPolygons()
 	{
-		if (notLoaded())
-			Activator.logError(Status.ERROR,
-					"Error = should have already loaded data", null);
+//		if (notLoaded())
+//			Activator.logError(Status.ERROR,
+//					"Error = should have already loaded data", null);
 
 		return _polygons;
 	}
@@ -364,6 +364,6 @@ public class CachedNaturalEarthFile
 
 	public void init()
 	{
-		load();
+		//load();
 	}
 }
