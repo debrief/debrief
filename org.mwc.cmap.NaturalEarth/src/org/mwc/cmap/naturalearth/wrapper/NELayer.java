@@ -1,13 +1,18 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.DirectColorModel;
+import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,28 +21,55 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.styling.AnchorPoint;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Fill;
+import org.geotools.styling.Graphic;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.Mark;
+import org.geotools.styling.PointPlacement;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
+import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.naturalearth.Activator;
+import org.mwc.cmap.naturalearth.NaturalearthUtil;
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.FilterFactory2;
+
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
@@ -129,8 +161,8 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 
 			// now do the drawing
 			drawPolygons(dest, thisR);
-			drawLines(dest, thisR);
-			drawPoints(dest, thisR);
+			//drawLines(dest, thisR);
+			//drawPoints(dest, thisR);
 
 		}
 	}
@@ -269,8 +301,8 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	private void drawPolygonPolygons(CanvasType dest,
 			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
 	{
-		if (polygons == null)
-			return;
+		//if (polygons == null)
+		//	return;
 
 		if (!style.isShowPolygons())
 			return;
@@ -279,93 +311,93 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 			return;
 
 		// store the screen size
-		WorldArea visArea = dest.getProjection().getVisibleDataArea();
+		//WorldArea visArea = dest.getProjection().getVisibleDataArea();
 
 		// ok, loop through the polys
-		Iterator<NamedWorldPath> iter = polygons.iterator();
-		while (iter.hasNext())
-		{
-			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
-			
-			if(!visArea.overlaps(namedWorldPath.getBounds()))
-				continue;
-
-//			if (!"447".equals(namedWorldPath.getName())) {
+//		Iterator<NamedWorldPath> iter = polygons.iterator();
+//		while (iter.hasNext())
+//		{
+//			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
+//			
+//			if(!visArea.overlaps(namedWorldPath.getBounds()))
 //				continue;
+//
+////			if (!"447".equals(namedWorldPath.getName())) {
+////				continue;
+////			}
+//			dest.setColor(style.getPolygonColor());
+//
+//			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
+//
+//			boolean trackMe = false;
+//
+//			if (namedWorldPath.getName().equals("153"))
+//			{
+//				System.out.println("good shape");
+//				trackMe = true;
 //			}
-			dest.setColor(style.getPolygonColor());
-
-			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
-
-			boolean trackMe = false;
-
-			if (namedWorldPath.getName().equals("153"))
-			{
-				System.out.println("good shape");
-				trackMe = true;
-			}
-			if (namedWorldPath.getName().equals("447"))
-			{
-				System.out.println("broken shape");
-				trackMe = true;
-			}
-
-			// create our point lists
-			final int[] xP = new int[_nodes.size()];
-			final int[] yP = new int[_nodes.size()];
-
-			// ok, step through the area
-			Iterator<WorldLocation> points = _nodes.iterator();
-
-			int counter = 0;
-
-			ArrayList<String> pastPoints = new ArrayList<String>();
-
-			while (points.hasNext())
-			{
-				final WorldLocation next = points.next();
-
-				if (Math.abs(next.getLat()) < LAT_LIMIT)
-				{
-
-					String val = next.toString();
-					pastPoints.add(val);
-
-					// convert to screen
-					Point thisP = null;
-					try
-					{
-						thisP = dest.toScreen(next);
-
-						if (trackMe)
-						{
-							// System.out.println(next + " to:" + thisP);
-						}
-					}
-					catch (Exception e)
-					{
-						System.err.println("failed with:" + next);
-					}
-
-					if (thisP == null)
-					{
-						System.out.println("NULL LOCATION:" + next + " lat:"
-								+ next.getLat());
-					}
-					else
-					{
-						if (locationOk(thisP))
-						{
-							// remember the coords
-							xP[counter] = thisP.x;
-							yP[counter] = thisP.y;
-
-							// move the counter
-							counter++;
-						}
-					}
-				}
-			}
+//			if (namedWorldPath.getName().equals("447"))
+//			{
+//				System.out.println("broken shape");
+//				trackMe = true;
+//			}
+//
+//			// create our point lists
+//			final int[] xP = new int[_nodes.size()];
+//			final int[] yP = new int[_nodes.size()];
+//
+//			// ok, step through the area
+//			Iterator<WorldLocation> points = _nodes.iterator();
+//
+//			int counter = 0;
+//
+//			ArrayList<String> pastPoints = new ArrayList<String>();
+//
+//			while (points.hasNext())
+//			{
+//				final WorldLocation next = points.next();
+//
+//				if (Math.abs(next.getLat()) < LAT_LIMIT)
+//				{
+//
+//					String val = next.toString();
+//					pastPoints.add(val);
+//
+//					// convert to screen
+//					Point thisP = null;
+//					try
+//					{
+//						thisP = dest.toScreen(next);
+//
+//						if (trackMe)
+//						{
+//							// System.out.println(next + " to:" + thisP);
+//						}
+//					}
+//					catch (Exception e)
+//					{
+//						System.err.println("failed with:" + next);
+//					}
+//
+//					if (thisP == null)
+//					{
+//						System.out.println("NULL LOCATION:" + next + " lat:"
+//								+ next.getLat());
+//					}
+//					else
+//					{
+//						if (locationOk(thisP))
+//						{
+//							// remember the coords
+//							xP[counter] = thisP.x;
+//							yP[counter] = thisP.y;
+//
+//							// move the counter
+//							counter++;
+//						}
+//					}
+//				}
+//			}
 
 			//dest.fillPolygon(xP, yP, counter);
 			
@@ -379,69 +411,60 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 					final SimpleFeatureSource featureSource = store.getFeatureSource();
 					
 					//Style sld = SLD.createSimpleStyle(featureSource.getSchema());
+
+					//Style sld = SLD.createPolygonStyle(lineColor, style.getPolygonColor(), 0.5f);
 					
-					Style sld = SLD.createPolygonStyle(style.getLineColor(), style.getPolygonColor(), 0.5f);
+					Style sld = NaturalearthUtil.createStyle2(featureSource, style);
+				  NaturalearthUtil.addLabelStyle(sld, style);
+
+			    FeatureLayer layer = new FeatureLayer(featureSource, sld);
 					
-					FeatureLayer layer = new FeatureLayer(featureSource, sld);
-	      
 					MapContent map = ((GtProjection)projection).getMapContent();
 					map.addLayer(layer);
 	      
 					StreamingRenderer renderer = new StreamingRenderer();
 					renderer.setMapContent(map);
-					
+					HashMap<String, Object> rendererHints = new HashMap<String, Object>();
+          rendererHints.put("optimizedDataLoadingEnabled", true); //$NON-NLS-1$
+          renderer.setRendererHints(rendererHints);
+          RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+                  RenderingHints.VALUE_ANTIALIAS_ON);
+          renderer.setJava2DHints(hints);
 					Rectangle imageBounds = null;
 					int imageWidth = projection.getScreenArea().width;
 					int imageHeight = projection.getScreenArea().height;
 					imageBounds = new Rectangle(0, 0, imageWidth, imageHeight);
 
-			    BufferedImage image = new BufferedImage(imageBounds.width, imageBounds.height, BufferedImage.TYPE_INT_RGB);
+			    BufferedImage image = new BufferedImage(imageBounds.width, imageBounds.height, BufferedImage.TYPE_INT_ARGB);
 			    Graphics2D gr = image.createGraphics();
+			    gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			    //gr.setStroke(new java.awt.BasicStroke());
 			    //gr.setPaint(Color.WHITE);
+			    AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f);
+			    gr.setComposite(composite);
+			    gr.setBackground(new Color(0, 0,0,1));
 			    //gr.fillRect(0, 0, imageWidth, imageHeight);
-          gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			    //gr.fill(imageBounds);
 			    renderer.paint(gr, imageBounds, map.getViewport().getBounds());
 
-			    Image swtImage = new Image(Display.getDefault(), awtToSwt(image, imageBounds.width, imageBounds.height));
+			    Image swtImage = new Image(Display.getDefault(), NaturalearthUtil.createImageData(image, true));
 			    if (dest instanceof SWTCanvasAdapter) {
-			    	((SWTCanvasAdapter)dest).drawSWTImage(swtImage, 0, 0, imageBounds.width, imageBounds.height, 200);
+			    	((SWTCanvasAdapter)dest).drawSWTImage(swtImage, 0, 0, imageBounds.width, imageBounds.height, 255);
 			    }
 			    swtImage.dispose();
 					map.removeLayer(layer);
+					layer.dispose();
 				}
 			}
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.logError(IStatus.INFO, e.getMessage(), e);
 			}
 
-		}
+		
 	}
 
-	private ImageData awtToSwt( BufferedImage bufferedImage, int width, int height ) {
-    final int[] awtPixels = new int[width * height];
-    final PaletteData PALETTE_DATA = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-    final int TRANSPARENT_COLOR = 0x123456;
-    ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
-    swtImageData.transparentPixel = TRANSPARENT_COLOR;
-    int step = swtImageData.depth / 8;
-    final byte[] data = swtImageData.data;
-    bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
-    for( int i = 0; i < height; i++ ) {
-        int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
-        for( int j = 0; j < width; j++ ) {
-            int rgb = awtPixels[j + i * width];
-            for( int k = swtImageData.depth - 8; k >= 0; k -= 8 ) {
-                data[idx++] = (byte) ((rgb >> k) & 0xFF);
-            }
-        }
-    }
-
-    return swtImageData;
-}
+	
 	private void drawPolygonLines(CanvasType dest,
 			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
 	{
