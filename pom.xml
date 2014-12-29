@@ -42,6 +42,8 @@
     <module>org.mwc.debrief.help</module>
     <module>org.mwc.cmap.LiveDataMonitor</module>
     <module>org.mwc.cmap.NarrativeViewer</module>
+    <module>org.mwc.cmap.NaturalEarth</module>
+    <module>org.mwc.cmap.NaturalEarth.test</module>
     <module>org.mwc.cmap.openmap</module>
     <module>org.mwc.cmap.geotools</module>
     <module>org.mwc.cmap.TimeController</module>

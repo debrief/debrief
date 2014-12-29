@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/gt-render-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-swing-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-epsg-hsql-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-geojson-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/hsqldb-2.2.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/json-simple-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-image-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-coverage-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-geotiff-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-swt-12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-pool-1.5.4.jar" sourcepath="libs/sources/commons-pool-1.5.4-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-api-12.1.jar" sourcepath="libs/sources/gt-api-12.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-cql-12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-data-12.1.jar" sourcepath="libs/sources/gt-data-12.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-main-12.1.jar" sourcepath="libs/sources/gt-main-12.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-metadata-12.1.jar" sourcepath="libs/sources/gt-metadata-12.1-sources.jar"/>

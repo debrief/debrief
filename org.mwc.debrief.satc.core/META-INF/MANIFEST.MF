@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.databinding.property;bundle-version="1.4.0",
  org.eclipse.jface.databinding;bundle-version="1.5.0",
  org.junit,
- org.eclipse.help;bundle-version="3.6.0"
+ org.eclipse.help;bundle-version="3.6.0",
+ org.mwc.cmap.geotools;bundle-version="12.1.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: libs/jts-1.13.jar,
@@ -24,10 +25,6 @@ Bundle-ClassPath: libs/jts-1.13.jar,
  libs/kxml2-2.3.0.jar,
  libs/watchmaker-framework-0.7.1.jar,
  .,
- libs/gt-referencing-8.0-M4.jar,
- libs/gt-opengis-8.0-M4.jar,
- libs/jsr-275-1.0-beta-2.jar,
- libs/gt-metadata-8.0-M4.jar,
  libs/uncommons-maths-1.2.3.jar,
  libs/org.swtchart_0.9.0.v20140219.jar,
  libs/org.swtchart.ext_0.9.0.v20140219.jar,
