@@ -19,10 +19,10 @@
 	<classpathentry exported="true" kind="lib" path="libs/gt-api-12.1.jar" sourcepath="libs/sources/gt-api-12.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-cql-12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-data-12.1.jar" sourcepath="libs/sources/gt-data-12.1-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gt-main-12.1.jar" sourcepath="libs/sources/gt-main-12.1-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gt-metadata-12.1.jar" sourcepath="libs/sources/gt-metadata-12.1-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gt-opengis-12.1.jar" sourcepath="libs/sources/gt-opengis-12.1-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gt-referencing-12.1.jar" sourcepath="libs/sources/gt-referencing-12.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-main-12.1.jar" sourcepath="/home/snpe/.m2/repository/org/geotools/gt-main/12.1/gt-main-12.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-metadata-12.1.jar" sourcepath="/home/snpe/.m2/repository/org/geotools/gt-metadata/12.1/gt-metadata-12.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-opengis-12.1.jar" sourcepath="/home/snpe/.m2/repository/org/geotools/gt-opengis/12.1/gt-opengis-12.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-referencing-12.1.jar" sourcepath="/home/snpe/.m2/repository/org/geotools/gt-referencing/12.1/gt-referencing-12.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-shapefile-12.1.jar" sourcepath="libs/sources/gt-shapefile-12.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jai_core-1.1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jdom-1.1.3.jar"/>

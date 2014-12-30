@@ -552,8 +552,16 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 					if (thisBounds != null)
 					{
 						// right, now the painful bit of converting the layers
-						final ReferencedEnvelope newBounds = thisBounds.transform(
-								other.getCoordinateReferenceSystem(), false);
+						ReferencedEnvelope newBounds;
+						try
+						{
+							newBounds = thisBounds.transform(
+									other.getCoordinateReferenceSystem(), false);
+						}
+						catch (TransformException e)
+						{
+							return true;
+						}
 
 						if (newBounds.intersects(other))
 							return true;
