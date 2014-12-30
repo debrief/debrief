@@ -10,6 +10,11 @@
 	<classpathentry exported="true" kind="lib" path="libs/gt-coverage-12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-geotiff-12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-swt-12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-tiff-1.1.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-utilities-1.1.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jai_codec-1.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jai_imageio-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jt-utils-1.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-pool-1.5.4.jar" sourcepath="libs/sources/commons-pool-1.5.4-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-api-12.1.jar" sourcepath="/home/snpe/.m2/repository/org/geotools/gt-api/12.1/gt-api-12.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-cql-12.1.jar"/>
