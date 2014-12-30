@@ -113,6 +113,10 @@
 		<loader class="org.mwc.debrief.core.loaders.TifLoader"
 			extensions="tif;tiff" name="GeoTIF Image File" />
 	</extension>
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.ShapeLoader"
+			extensions="shp" name="ShapeFile File" />
+	</extension>
 
     <extension point="org.eclipse.ui.menus">
         <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?before=group.file">
