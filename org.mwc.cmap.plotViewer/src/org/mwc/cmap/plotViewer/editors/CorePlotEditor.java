@@ -93,6 +93,8 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
+import com.bbn.openmap.layer.nexrad.NexradLayer;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable.EditorType;
@@ -328,6 +330,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
 						}
+					} else if ("NELayer".equals(dl.getDataType())) {
+						final GeoToolsLayer gt = (GeoToolsLayer) dl;
+						gt.setVisible(dl.getVisible());
+						_myGeoHandler.addGeoToolsLayer(gt);
+						wrappedLayer = gt;
 					}
 					if (wrappedLayer != null)
 						super.addThisLayer(wrappedLayer);

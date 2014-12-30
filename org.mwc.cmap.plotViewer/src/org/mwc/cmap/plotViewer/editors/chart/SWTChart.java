@@ -182,6 +182,7 @@ import org.mwc.cmap.core.preferences.ChartPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
+import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.gt2plot.proj.GeoToolsPainter;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
@@ -198,6 +199,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.MetafileCanvas;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Tools.Chart.HitTester;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
@@ -1321,6 +1323,19 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				{
 					_swtImage.dispose();
 					_swtImage = null;
+				}
+				if (changedLayer instanceof GeoToolsLayer)
+				{
+					GeoToolsLayer layer = (GeoToolsLayer) changedLayer;
+					if (ChartBoundsWrapper.NELAYER_TYPE.equals(layer.getDataType()))
+					{
+						PlainProjection projection = _theCanvas.getProjection();
+						if (projection instanceof GtProjection)
+						{
+							GtProjection gtProjection = (GtProjection) projection;
+							layer.setMap(gtProjection.getMapContent());
+						}
+					}
 				}
 			}
 
