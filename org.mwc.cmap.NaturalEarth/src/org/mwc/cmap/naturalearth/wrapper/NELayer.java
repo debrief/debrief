@@ -22,6 +22,7 @@ import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 
+import MWC.Algorithms.PlainProjection.ViewportChangedListener;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -31,7 +32,7 @@ import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers
+public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, ViewportChangedListener
 {
 
 	private static final String NATURAL_EARTH = "Natural Earth";
