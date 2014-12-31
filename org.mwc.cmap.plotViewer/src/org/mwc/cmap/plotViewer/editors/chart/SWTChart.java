@@ -147,6 +147,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -550,7 +552,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				canvasResized();
 			}
 		});
-
+		
+		_theCanvas.getProjection().addListener(new PropertyChangeListener()
+		{
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				// TODO: screen res changed, update any layers that want to know about resolution changes
+				
+			}
+		});
+		
 		final Dimension dim = _theCanvas.getSize();
 
 		if (dim != null)
