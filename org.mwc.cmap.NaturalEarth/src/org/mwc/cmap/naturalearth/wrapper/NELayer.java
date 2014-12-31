@@ -61,6 +61,9 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, Vi
 			layer.dispose();
 			_myMap.removeLayer(layer);
 		}
+		if (_myMap != null) {
+			_myMap.dispose();
+		}
 		_gtLayers.clear();
 		_myMap = null;
 	}
