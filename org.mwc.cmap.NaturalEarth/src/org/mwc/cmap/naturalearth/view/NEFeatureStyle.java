@@ -61,6 +61,9 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 		_fillCol = fillCol;
 		_isVisible = visible;
 		_created = System.currentTimeMillis();
+		
+		showLines = (_lineCol != null);
+		showPolygons = (_fillCol != null);
 	}
 
 	/** the NE filename that this style applies to
