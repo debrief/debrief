@@ -37,6 +37,15 @@ import MWC.GenericData.WorldLocation;
 abstract public class PlainProjection implements Serializable,
   Editable
 {
+	
+	/** marker interface for layers that wish to know when the viewport has been changed
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static interface ViewportChangedListener
+	{
+	}
 
   /**
 	 * 
