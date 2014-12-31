@@ -105,6 +105,9 @@ public class HitTester
 
     // and convert it to screen coordinates
     final Point pOther = theProjection.toScreen(other);
+    if (pOther == null) {
+    	return false;
+    }
     final int dx = pOther.x - theHitScreen.x;
     final int dy = pOther.y - theHitScreen.y;
     final int pDist = (int) Math.sqrt(dx * dx + dy * dy);
