@@ -11,7 +11,6 @@ import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
 import org.geotools.styling.Style;
@@ -22,7 +21,6 @@ import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
-import org.opengis.filter.Filter;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -157,9 +155,9 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers
 						FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
 						
 						featureSource = store.getFeatureSource();
-						Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -78, 180, 78)");
-						features = featureSource.getFeatures( filter );
-						//features = featureSource.getFeatures();
+						//Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -78, 180, 78)");
+						//features = featureSource.getFeatures( filter );
+						features = featureSource.getFeatures();
 					}
 					catch (IOException e)
 					{
@@ -187,7 +185,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers
 					_gtLayers.add(layer);
 
 					_myMap.addLayer(layer);
-
 				}
 			}
 		}
