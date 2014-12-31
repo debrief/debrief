@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
 import org.geotools.styling.Style;
@@ -20,6 +22,7 @@ import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
+import org.opengis.filter.Filter;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -148,15 +151,26 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers
 						continue;
 					}
 					SimpleFeatureSource featureSource;
+					FeatureCollection features;
 					try
 					{
 						FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
+						
 						featureSource = store.getFeatureSource();
+						Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -78, 180, 78)");
+						features = featureSource.getFeatures( filter );
+						//features = featureSource.getFeatures();
 					}
 					catch (IOException e)
 					{
 						Activator.logError(IStatus.INFO,
 								"Can't load " + openFile.getAbsolutePath(), e);
+						continue;
+					}
+					catch (Exception e)
+					{
+						Activator.logError(IStatus.INFO,
+								"grabFeaturesInBoundingBox issue in " + openFile.getAbsolutePath(), e);
 						continue;
 					}
 
@@ -168,7 +182,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers
 					Style sld = NaturalearthUtil.createStyle2(featureSource, style);
 					NaturalearthUtil.addLabelStyle(sld, style);
 
-					FeatureLayer layer = new FeatureLayer(featureSource, sld);
+					FeatureLayer layer = new FeatureLayer(features, sld);
 
 					_gtLayers.add(layer);
 
