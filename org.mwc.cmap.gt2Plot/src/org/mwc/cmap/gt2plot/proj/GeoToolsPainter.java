@@ -22,6 +22,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
@@ -50,6 +51,8 @@ public class GeoToolsPainter
 		final MapContent map = proj.getMapContent();
 		final StreamingRenderer renderer = new StreamingRenderer();
 		renderer.setMapContent(map);
+		// fix/workaround for "Pole 90% exception"
+		org.geotools.util.logging.Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
 
 		final RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
