@@ -105,12 +105,15 @@ public class NaturalearthUtil
 
 		// create a partially opaque outline stroke
 		Color lineColor = null;
+		Stroke stroke = null;
+		
+		// do we show lines for this style?
 		if (st.isShowLines()) {
 			lineColor = st.getLineColor();
+			stroke = styleFactory.createStroke(
+					filterFactory.literal(lineColor), filterFactory.literal(1),
+					filterFactory.literal(0.5));
 		}
-		Stroke stroke = styleFactory.createStroke(
-				filterFactory.literal(lineColor), filterFactory.literal(1),
-				filterFactory.literal(0.5));
 
 		// create a partial opaque fill
 		Fill fill = styleFactory
