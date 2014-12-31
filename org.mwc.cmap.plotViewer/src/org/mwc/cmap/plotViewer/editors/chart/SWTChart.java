@@ -1348,7 +1348,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	public static ImageData awtToSwt(final BufferedImage bufferedImage, final int width,
 			final int height)
 	{
-		System.err.println("DOING AWT TO SWT!!!!");
+		//System.err.println("DOING AWT TO SWT!!!!");
 		final int[] awtPixels = new int[width * height];
 		final ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
 		swtImageData.transparentPixel = TRANSPARENT_COLOR;
