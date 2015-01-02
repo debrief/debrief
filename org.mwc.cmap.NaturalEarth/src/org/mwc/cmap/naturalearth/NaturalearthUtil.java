@@ -148,16 +148,8 @@ public class NaturalearthUtil
 				StyleBuilder sb = new StyleBuilder();
 				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
 				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
-				Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), st.getTextHeight());
-				TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
-								null, 
-								new org.geotools.styling.Font[] { font },
-								sb.createHalo(), sb.attributeExpression("name"),
-								pointPlacement, null);
-				//textSymbolizer.getOptions().put("maxDisplacement", "150");
-				Rule rule2 = styleFactory.createRule();
-				rule2.symbolizers().add(textSymbolizer);
-				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, rule2 });
+				Rule textRule = createTextRule(st, sb, pointPlacement);
+				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, textRule });
 			}
 		}
 		if (fts == null)
@@ -168,6 +160,23 @@ public class NaturalearthUtil
 		style.featureTypeStyles().add(fts);
 
 		return style;
+	}
+
+	private static Rule createTextRule(NEFeatureStyle st, StyleBuilder sb,
+			PointPlacement pointPlacement)
+	{
+		Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), 
+				st.getTextHeight() >= 9 ? st.getTextHeight() : 11);
+		TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
+						null, 
+						new org.geotools.styling.Font[] { font },
+						sb.createHalo(), sb.attributeExpression("name"),
+						pointPlacement, null);
+		textSymbolizer.getOptions().put("maxDisplacement", "150");
+		textSymbolizer.getOptions().put("autoWrap", "60");
+		Rule rule = styleFactory.createRule();
+		rule.symbolizers().add(textSymbolizer);
+		return rule;
 	}
 
 	/**
@@ -197,16 +206,8 @@ public class NaturalearthUtil
 				StyleBuilder sb = new StyleBuilder();
 				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
 				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
-				Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), st.getTextHeight());
-				TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
-								null, 
-								new org.geotools.styling.Font[] { font },
-								sb.createHalo(), sb.attributeExpression("name"),
-								pointPlacement, null);
-				//textSymbolizer.getOptions().put("maxDisplacement", "150");
-				Rule rule2 = styleFactory.createRule();
-				rule2.symbolizers().add(textSymbolizer);
-				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, rule2 });
+				Rule textRule = createTextRule(st, sb, pointPlacement);
+				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, textRule });
 			}
 		}
 		if (fts == null)
@@ -254,17 +255,8 @@ public class NaturalearthUtil
 				StyleBuilder sb = new StyleBuilder();
 				AnchorPoint anchorPoint = sb.createAnchorPoint(sb.attributeExpression("X"), sb.attributeExpression("Y"));
 				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
-								
-				Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), st.getTextHeight());
-				TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
-								null, 
-								new org.geotools.styling.Font[] { font },
-								sb.createHalo(), sb.attributeExpression("name"),
-								pointPlacement, null);
-				//textSymbolizer.getOptions().put("maxDisplacement", "150");
-				Rule rule2 = styleFactory.createRule();
-				rule2.symbolizers().add(textSymbolizer);
-				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, rule2 });
+				Rule textRule = createTextRule(st, sb, pointPlacement);
+				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, textRule });
 			}
 		}
 		if (fts == null)
