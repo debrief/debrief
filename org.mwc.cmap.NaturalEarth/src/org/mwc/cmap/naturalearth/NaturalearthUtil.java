@@ -7,7 +7,11 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
@@ -16,6 +20,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
+import org.geotools.styling.Font;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
@@ -23,6 +28,7 @@ import org.geotools.styling.PointPlacement;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SLDParser;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
@@ -31,8 +37,8 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.FilterFactory2;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -73,6 +79,7 @@ public class NaturalearthUtil
 		sld.featureTypeStyles().add(featureTypeStyle);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static Style createStyle2(FeatureSource featureSource, NEFeatureStyle st)
 	{
 		SimpleFeatureType schema = (SimpleFeatureType) featureSource.getSchema();
@@ -81,26 +88,28 @@ public class NaturalearthUtil
 		if (Polygon.class.isAssignableFrom(geomType)
 				|| MultiPolygon.class.isAssignableFrom(geomType))
 		{
-			return createPolygonStyle(st);
+			return createPolygonStyle(featureSource, st);
 
 		}
 		else if (LineString.class.isAssignableFrom(geomType)
 				|| MultiLineString.class.isAssignableFrom(geomType))
 		{
-			return createLineStyle(st);
+			return createLineStyle(featureSource, st);
 
 		}
 		else
 		{
-			return createPointStyle(st);
+			return createPointStyle(featureSource, st);
 		}
 	}
 
 	/**
-	 * Create a Style to draw polygon features with a thin blue outline and a cyan
+	 * Create a Style to draw polygon features 
 	 * fill
+	 * @param featureSource 
 	 */
-	public static Style createPolygonStyle(NEFeatureStyle st)
+	@SuppressWarnings("rawtypes")
+	public static Style createPolygonStyle(FeatureSource featureSource, NEFeatureStyle st)
 	{
 
 		// create a partially opaque outline stroke
@@ -129,8 +138,32 @@ public class NaturalearthUtil
 
 		Rule rule = styleFactory.createRule();
 		rule.symbolizers().add(sym);
-		FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle(new Rule[]
-		{ rule });
+		FeatureTypeStyle fts = null;
+		if (st.isShowLabels())
+		{
+			PropertyDescriptor propertyDescriptor = featureSource.getSchema().getDescriptor("name");
+			if (propertyDescriptor != null)
+			{
+				//return loadStyle("/home/snpe/Workspaces/workspace-debrief/tutorial/polygon_polygonwithstyledlabel.sld");
+				StyleBuilder sb = new StyleBuilder();
+				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
+				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
+				Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), st.getTextHeight());
+				TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
+								null, 
+								new org.geotools.styling.Font[] { font },
+								sb.createHalo(), sb.attributeExpression("name"),
+								pointPlacement, null);
+				//textSymbolizer.getOptions().put("maxDisplacement", "150");
+				Rule rule2 = styleFactory.createRule();
+				rule2.symbolizers().add(textSymbolizer);
+				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, rule2 });
+			}
+		}
+		if (fts == null)
+		{
+			fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule });
+		}
 		Style style = styleFactory.createStyle();
 		style.featureTypeStyles().add(fts);
 
@@ -138,9 +171,11 @@ public class NaturalearthUtil
 	}
 
 	/**
-	 * Create a Style to draw line features as thin blue lines
+	 * Create a Style to draw line features 
+	 * @param featureSource 
 	 */
-	public static Style createLineStyle(NEFeatureStyle st)
+	@SuppressWarnings("rawtypes")
+	public static Style createLineStyle(FeatureSource featureSource, NEFeatureStyle st)
 	{
 		Stroke stroke = styleFactory.createStroke(
 				filterFactory.literal(st.getLineColor()), filterFactory.literal(1));
@@ -153,8 +188,31 @@ public class NaturalearthUtil
 
 		Rule rule = styleFactory.createRule();
 		rule.symbolizers().add(sym);
-		FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle(new Rule[]
-		{ rule });
+		FeatureTypeStyle fts = null;
+		if (st.isShowLabels())
+		{
+			PropertyDescriptor propertyDescriptor = featureSource.getSchema().getDescriptor("name");
+			if (propertyDescriptor != null)
+			{
+				StyleBuilder sb = new StyleBuilder();
+				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
+				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
+				Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), st.getTextHeight());
+				TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
+								null, 
+								new org.geotools.styling.Font[] { font },
+								sb.createHalo(), sb.attributeExpression("name"),
+								pointPlacement, null);
+				//textSymbolizer.getOptions().put("maxDisplacement", "150");
+				Rule rule2 = styleFactory.createRule();
+				rule2.symbolizers().add(textSymbolizer);
+				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, rule2 });
+			}
+		}
+		if (fts == null)
+		{
+			fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule });
+		}
 		Style style = styleFactory.createStyle();
 		style.featureTypeStyles().add(fts);
 
@@ -164,16 +222,15 @@ public class NaturalearthUtil
 	/**
 	 * Create a Style to draw point features as circles with blue outlines and
 	 * cyan fill
+	 * @param featureSource 
 	 */
-	public static Style createPointStyle(NEFeatureStyle st)
+	@SuppressWarnings("rawtypes")
+	public static Style createPointStyle(FeatureSource featureSource, NEFeatureStyle st)
 	{
 		Graphic gr = styleFactory.createDefaultGraphic();
-
 		Mark mark = styleFactory.getCircleMark();
-
 		mark.setStroke(styleFactory.createStroke(
 				filterFactory.literal(st.getLineColor()), filterFactory.literal(1)));
-
 		mark.setFill(styleFactory.createFill(filterFactory.literal(Color.CYAN)));
 
 		gr.graphicalSymbols().clear();
@@ -188,11 +245,34 @@ public class NaturalearthUtil
 
 		Rule rule = styleFactory.createRule();
 		rule.symbolizers().add(sym);
-		FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle(new Rule[]
-		{ rule });
+		FeatureTypeStyle fts = null;
+		if (st.isShowLabels())
+		{
+			PropertyDescriptor propertyDescriptor = featureSource.getSchema().getDescriptor("name");
+			if (propertyDescriptor != null)
+			{
+				StyleBuilder sb = new StyleBuilder();
+				AnchorPoint anchorPoint = sb.createAnchorPoint(sb.attributeExpression("X"), sb.attributeExpression("Y"));
+				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
+								
+				Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), st.getTextHeight());
+				TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
+								null, 
+								new org.geotools.styling.Font[] { font },
+								sb.createHalo(), sb.attributeExpression("name"),
+								pointPlacement, null);
+				//textSymbolizer.getOptions().put("maxDisplacement", "150");
+				Rule rule2 = styleFactory.createRule();
+				rule2.symbolizers().add(textSymbolizer);
+				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, rule2 });
+			}
+		}
+		if (fts == null)
+		{
+			fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule });
+		}
 		Style style = styleFactory.createStyle();
 		style.featureTypeStyles().add(fts);
-
 		return style;
 	}
 
@@ -325,4 +405,23 @@ public class NaturalearthUtil
 		return null;
 	}
 
+	public static Style loadStyle(String fileName) {
+		File file = new File(fileName);
+		SLDParser stylereader;
+		try
+		{
+			stylereader = new SLDParser(styleFactory, file.toURI().toURL());
+			Style[] style = stylereader.readXML();
+	    return style[0];
+		}
+		catch (MalformedURLException e)
+		{
+			Activator.logError(IStatus.WARNING, "Invalid file: " + fileName, e);
+		}
+		catch (IOException e)
+		{
+			Activator.logError(IStatus.WARNING, "Invalid file: " + fileName, e);
+		}
+    return null;
+	}
 }
