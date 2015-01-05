@@ -15,6 +15,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.opengis.feature.Property;
@@ -50,6 +51,7 @@ public class ShapeFileTests
 	}
 
 	@Test
+	@Ignore
 	public void loadPolygons()
 	{
 		// check we have the marine areas
@@ -66,6 +68,7 @@ public class ShapeFileTests
 	}
 
 	@Test
+	@Ignore
 	public void loadPoints()
 	{
 		// check we have the marine areas
@@ -82,6 +85,7 @@ public class ShapeFileTests
 	}
 
 	@Test
+	@Ignore
 	public void loadLines()
 	{
 		// check we have the marine areas
