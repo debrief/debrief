@@ -567,22 +567,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				Enumeration<Editable> iter = getLayers().elements();
 				while (iter.hasMoreElements())
 				{
-					Layer editable = (Layer) iter.nextElement();
-					if(editable instanceof Layer.InterestedInViewportChange)
-					{
-						InterestedInViewportChange vc = (InterestedInViewportChange) editable;
-						PlainProjection proj = (PlainProjection) evt.getSource();
-						vc.viewPortChange(proj.getScreenArea(), proj.getDataArea());	
-						
-						// if this is a geo-tools layer, we also need to trigger a reconfig
-						if (editable instanceof GeoToolsLayer)
-						{
-							GeoToolsLayer gt = (GeoToolsLayer) editable;
-							GtProjection gtProjection = (GtProjection) proj;
-							gt.setMap(gtProjection.getMapContent());						
-						}
-					}
-					
+					Layer layer = (Layer) iter.nextElement();
+					setMap(layer);
 				}
 			}
 		});
