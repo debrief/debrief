@@ -209,7 +209,7 @@ public class Activator extends AbstractUIPlugin
 			bathy.add(createF(bathyFolder, "ne_10m_bathymetry_L_0", true, 
 					new Color(172, 199, 230), null));
 
-			NEFeatureGroup ne10 = new NEResolution("10M", null, null);
+			NEFeatureGroup ne10 = new NEResolution("10M", null, 3000000d);
 			ne10.add(bathy);
 //			ne10.add(createF(null, "ne_10m_land", true, Color.YELLOW, Color.orange));
 //			// ne10.add(createF("polygonFeature", "ne_10m_geography_marine_polys",
@@ -229,16 +229,16 @@ public class Activator extends AbstractUIPlugin
 //			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
 //					0, "Times"));
 
-			NEFeatureGroup ne50 = new NEResolution("50M", null, null);
+			NEFeatureGroup ne50 = new NEResolution("50M", 3000000d, 30000000d);
 			ne50.add(bathy);
 
 			ne50.add(createF(null, "ne_50m_ocean", true, new Color(165, 191, 221),
 					null));
 			ne50.add(createF(null, "ne_50m_land", true, new Color(235, 219, 188),
 					new Color(162, 162, 162)));
-			ne50.add(createF("pointFeature", "ne_50m_geography_regions_points", true,
+			ne50.add(createF(null, "ne_50m_geography_regions_points", true,
 					null, null, Color.yellow, 12, 0, "SansSerif"));
-			ne50.add(createF("pointFeature", "ne_50m_populated_places_simple", true,
+			ne50.add(createF(null, "ne_50m_populated_places_simple", true,
 					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
 			ne50.add(createF(null, "ne_110m_admin_0_countries", true, null, null,
 					new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
@@ -248,7 +248,7 @@ public class Activator extends AbstractUIPlugin
 					67, 98), 20, ITALIC | BOLD, "Serif"));
 
 			// NEFeatureGroup ne110 = new NEResolution("110M", null, null);
- 		  NEFeatureGroup ne110 = new NEResolution("110M", 3000000d, null);
+ 		  NEFeatureGroup ne110 = new NEResolution("110M", 30000000d, null);
 			ne110.add(createF(null, "ne_110m_land", true, new Color(235, 219, 188),
 					new Color(162, 162, 162)));
 			ne110.add(createF(null, "ne_110m_ocean", true, new Color(165, 191, 221),
