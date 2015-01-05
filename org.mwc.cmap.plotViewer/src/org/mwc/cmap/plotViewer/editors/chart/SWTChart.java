@@ -202,7 +202,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.MetafileCanvas;
-import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Tools.Chart.HitTester;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
@@ -1362,24 +1361,29 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					_swtImage.dispose();
 					_swtImage = null;
 				}
-				if (changedLayer instanceof GeoToolsLayer)
-				{
-					GeoToolsLayer layer = (GeoToolsLayer) changedLayer;
-					if (ChartBoundsWrapper.NELAYER_TYPE.equals(layer.getDataType()))
-					{
-						PlainProjection projection = _theCanvas.getProjection();
-						if (projection instanceof GtProjection)
-						{
-							GtProjection gtProjection = (GtProjection) projection;
-							layer.setMap(gtProjection.getMapContent());
-						}
-					}
-				}
+				setMap(changedLayer);
 			}
 
 			// and trigger update
 			_theCanvas.updateMe();
 
+		}
+	}
+
+	private void setMap(Editable layer)
+	{
+		if (layer instanceof InterestedInViewportChange)
+		{
+			if (layer instanceof GeoToolsLayer)
+			{
+				GeoToolsLayer gtLayer = (GeoToolsLayer) layer;
+				PlainProjection projection = _theCanvas.getProjection();
+				if (projection instanceof GtProjection)
+				{
+					GtProjection gtProjection = (GtProjection) projection;
+					gtLayer.setMap(gtProjection.getMapContent());
+				}
+			}
 		}
 	}
 

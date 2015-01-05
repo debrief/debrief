@@ -65,6 +65,9 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 			layer.dispose();
 			_myMap.removeLayer(layer);
 		}
+		if (_myMap != null) {
+			_myMap.dispose();
+		}
 		_gtLayers.clear();
 		_myMap = null;
 	}
@@ -135,14 +138,12 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 					String rootPath = Activator.getDefault().getLibraryPath();
 					if (rootPath == null)
 					{
-						Activator.logError(IStatus.INFO,
-								fileName + "DATA_FOLDER isn't set", null);
+						Activator.logError(IStatus.INFO, fileName + "DATA_FOLDER isn't set", null);
 						continue;
 					}
 					if (fileName == null)
 					{
-						Activator.logError(IStatus.INFO, fileName
-								+ "style.getFileName() is null", null);
+						Activator.logError(IStatus.INFO, fileName + "style.getFileName() is null", null);
 						continue;
 					}
 					fileName = rootPath + File.separator + fileName + ".shp";
@@ -165,29 +166,18 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 					}
 					catch (IOException e)
 					{
-						Activator.logError(IStatus.INFO,
-								"Can't load " + openFile.getAbsolutePath(), e);
+						Activator.logError(IStatus.INFO, "Can't load " + openFile.getAbsolutePath(), e);
 						continue;
 					}
 					catch (Exception e)
 					{
-						Activator.logError(IStatus.INFO,
-								"grabFeaturesInBoundingBox issue in " + openFile.getAbsolutePath(), e);
+						Activator.logError(IStatus.INFO, "grabFeaturesInBoundingBox issue in " + openFile.getAbsolutePath(), e);
 						continue;
 					}
 
-					// Style sld = SLD.createSimpleStyle(featureSource.getSchema());
-
-					// Style sld = SLD.createPolygonStyle(lineColor,
-					// style.getPolygonColor(), 0.5f);
-
 					Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-					NaturalearthUtil.addLabelStyle(sld, style);
-
 					FeatureLayer layer = new FeatureLayer(features, sld);
-
 					_gtLayers.add(layer);
-
 					_myMap.addLayer(layer);
 				}
 			}
