@@ -89,7 +89,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			// we'll tell GeoTools to use the projection that's used by most of our
 			// charts,
 			// so that the chart will be displayed undistorted
-			_worldCoords = CRS.decode("EPSG:3395");
+			_worldCoords = CRS.decode("EPSG:4326");
 
 			// we also need a way to convert a location in degrees to that used by
 			// the charts (metres)
