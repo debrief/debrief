@@ -110,8 +110,11 @@
 
 package MWC.GUI;
 
+import java.awt.Dimension;
 import java.io.Serializable;
 import java.util.Enumeration;
+
+import MWC.GenericData.WorldArea;
 
 /**
  * this class is a collection of objects which
@@ -135,6 +138,15 @@ public interface Layer extends Serializable, Plottable
 		public Enumeration<Editable> contiguousElements();
 	}
 	
+	/** interface for layers that wish to know when the viewport changes,
+	 * such as a layer that is able to show different data at different scales
+	 * 
+	 *
+	 */
+	public static interface InterestedInViewportChange
+	{
+		public void viewPortChange(Dimension sArea, WorldArea wArea);
+	}
 	
   /////////////////////////////////////////////////////////////
   // member functions
