@@ -1,5 +1,6 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,9 +23,10 @@ import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 
-import MWC.Algorithms.PlainProjection.ViewportChangedListener;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layer.InterestedInViewportChange;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.Plottable;
@@ -32,7 +34,7 @@ import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, ViewportChangedListener
+public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, InterestedInViewportChange
 {
 
 	private static final String NATURAL_EARTH = "Natural Earth";
@@ -45,6 +47,8 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, Vi
 	List<FeatureLayer> _gtLayers = new ArrayList<FeatureLayer>();
 
 	private NEResolution _currentRes;
+
+	private double _scaleFactor;
 
 	public NELayer(NEFeatureStore features)
 	{
@@ -76,8 +80,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, Vi
 
 		if (getVisible())
 		{
-			double scale = map.getViewport().getScreenToWorld().getScaleX();
-			NEResolution thisR = _myFeatures.resolutionFor(scale);
+			NEResolution thisR = _myFeatures.resolutionFor(_scaleFactor);
 			if (thisR != _currentRes)
 			{
 				if (_currentRes != null)
@@ -303,6 +306,19 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, Vi
 	public void setLayers(Layers parent)
 	{
 		_theLayers = parent;
+	}
+
+	@Override
+	public void viewPortChange(Dimension sArea, WorldArea wArea)
+	{
+		final double sWidPixels =  sArea.width;
+		final double sWidInches = sWidPixels / 72d;  // presume 72 dpi
+		final double sWidM = sWidInches * 2.54 / 100;
+		final double sWidDegs = Conversions.m2Degs(sWidM);
+		final double dWidDegs = wArea.getWidth(); 
+		
+		// store the scale factor, for when we redraw
+		_scaleFactor = dWidDegs / sWidDegs;
 	}
 
 }
