@@ -1358,7 +1358,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	private void setMap(Editable layer)
 	{
-		if (layer instanceof ViewportChangedListener)
+		if (this.getClass().getName().startsWith("org.mwc.cmap.overview.views.ChartOverview")) {
+			// a workaround for "Problem painting NELayer when Chart Overview is opened"
+			// https://github.com/debrief/debrief/issues/1018
+			return;
+		}
+		if (layer instanceof InterestedInViewportChange)
 		{
 			if (layer instanceof GeoToolsLayer)
 			{
