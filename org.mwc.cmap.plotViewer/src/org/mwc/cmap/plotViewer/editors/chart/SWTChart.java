@@ -191,13 +191,13 @@ import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.PlainProjection.ViewportChangedListener;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layer;
+import MWC.GUI.Layer.InterestedInViewportChange;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
@@ -559,23 +559,36 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			@Override
 			public void propertyChange(PropertyChangeEvent evt)
 			{
-				if (_theLayers == null) {
-					return;
-				}
-//				String propertyName = evt.getPropertyName();
-//				if ("Pan".equals(propertyName)) {
-//					return;
-//				}
-				Enumeration<Editable> layers = _theLayers.elements();
-				while (layers.hasMoreElements())
+				// screen res changed, update any layers that want to know about resolution changes
+				
+				// ok, loop through the layers, and see if any wish 
+				// to know about scale changes
+				Enumeration<Editable> iter = getLayers().elements();
+				while (iter.hasMoreElements())
 				{
-					Editable layer = layers.nextElement();
-					setMap(layer);
+					Layer editable = (Layer) iter.nextElement();
+					if(editable instanceof Layer.InterestedInViewportChange)
+					{
+						InterestedInViewportChange vc = (InterestedInViewportChange) editable;
+						PlainProjection proj = (PlainProjection) evt.getSource();
+						vc.viewPortChange(proj.getScreenArea(), proj.getDataArea());	
+						
+						// if this is a geo-tools layer, we also need to trigger a reconfig
+						if (editable instanceof GeoToolsLayer)
+						{
+							GeoToolsLayer gt = (GeoToolsLayer) editable;
+							GtProjection gtProjection = (GtProjection) proj;
+							gt.setMap(gtProjection.getMapContent());						
+						}
+					}
+					
 				}
+
 			}
 		});
 		
 		final Dimension dim = _theCanvas.getSize();
+		
 
 		if (dim != null)
 			_theCanvas.getProjection().setScreenArea(dim);
@@ -1359,7 +1372,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	private void setMap(Editable layer)
 	{
-		if (layer instanceof ViewportChangedListener)
+		if (layer instanceof InterestedInViewportChange)
 		{
 			if (layer instanceof GeoToolsLayer)
 			{
