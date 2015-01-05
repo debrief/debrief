@@ -120,13 +120,13 @@ public class NaturalearthUtil
 		if (st.isShowLines()) {
 			lineColor = st.getLineColor();
 			stroke = styleFactory.createStroke(
-					filterFactory.literal(lineColor), filterFactory.literal(1),
+					filterFactory.literal(lineColor == null ? Color.BLUE : lineColor), filterFactory.literal(1),
 					filterFactory.literal(0.5));
 		}
 
 		// create a partial opaque fill
 		Fill fill = styleFactory
-				.createFill(filterFactory.literal(st.getPolygonColor()),
+				.createFill(filterFactory.literal(st.getPolygonColor() == null ? Color.GRAY : st.getPolygonColor()),
 						filterFactory.literal(0.5));
 
 		/*
@@ -187,7 +187,7 @@ public class NaturalearthUtil
 	public static Style createLineStyle(FeatureSource featureSource, NEFeatureStyle st)
 	{
 		Stroke stroke = styleFactory.createStroke(
-				filterFactory.literal(st.getLineColor()), filterFactory.literal(1));
+				filterFactory.literal(st.getLineColor() == null ? Color.BLUE : st.getLineColor()), filterFactory.literal(1));
 
 		/*
 		 * Setting the geometryPropertyName arg to null signals that we want to draw
@@ -231,7 +231,7 @@ public class NaturalearthUtil
 		Graphic gr = styleFactory.createDefaultGraphic();
 		Mark mark = styleFactory.getCircleMark();
 		mark.setStroke(styleFactory.createStroke(
-				filterFactory.literal(st.getLineColor()), filterFactory.literal(1)));
+				filterFactory.literal(st.getLineColor() == null ? Color.BLUE : st.getLineColor()), filterFactory.literal(1)));
 		mark.setFill(styleFactory.createFill(filterFactory.literal(Color.CYAN)));
 
 		gr.graphicalSymbols().clear();
