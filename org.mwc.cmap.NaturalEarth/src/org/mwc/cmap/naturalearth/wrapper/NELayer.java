@@ -24,6 +24,7 @@ import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 
 import MWC.Algorithms.Conversions;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layer.InterestedInViewportChange;
@@ -34,7 +35,7 @@ import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, InterestedInViewportChange
+public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, InterestedInViewportChange,  BaseLayer.ProvidesRange
 {
 
 	private static final String NATURAL_EARTH = "Natural Earth";
@@ -193,7 +194,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	@Override
 	public double rangeFrom(WorldLocation other)
 	{
-		return Double.MAX_VALUE;
+		return  -1.0;
 	}
 
 	@Override
