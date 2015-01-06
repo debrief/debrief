@@ -194,7 +194,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	@Override
 	public double rangeFrom(WorldLocation other)
 	{
-		return  -1.0;
+		return  Plottable.INVALID_RANGE;
 	}
 
 	@Override
