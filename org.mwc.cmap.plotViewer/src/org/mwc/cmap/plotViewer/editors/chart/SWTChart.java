@@ -1347,7 +1347,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					_swtImage.dispose();
 					_swtImage = null;
 				}
-				setMap(changedLayer);
+				if (_theLayers.findLayer(GeoToolsLayer.NATURAL_EARTH) != null)
+				{
+					setMap(changedLayer);
+				}
+				else
+				{
+					if (changedLayer instanceof GeoToolsLayer
+							&& changedLayer instanceof InterestedInViewportChange)
+					{
+						((GeoToolsLayer) changedLayer).clearMap();
+					}
+				}
 			}
 
 			// and trigger update

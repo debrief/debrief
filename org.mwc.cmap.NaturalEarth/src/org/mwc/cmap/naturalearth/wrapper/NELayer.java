@@ -38,8 +38,6 @@ import MWC.GenericData.WorldLocation;
 public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, InterestedInViewportChange,  BaseLayer.ProvidesRange
 {
 
-	private static final String NATURAL_EARTH = "Natural Earth";
-
 	private static final long serialVersionUID = 1L;
 
 	private NEFeatureStore _myFeatures;
