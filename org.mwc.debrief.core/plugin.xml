@@ -68,8 +68,6 @@
             name="S2087 Context Track File (Log)" priority="normal"> </content-type>
     </extension>
 
-
-
     <extension-point id="DebriefPlotLoader" name="Plot Loader"
         schema="schema/DebriefPlotLoader.exsd"/>
     <extension-point id="XMLLayerHandler" name="XMLLayerHandler"
