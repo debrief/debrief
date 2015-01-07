@@ -12,11 +12,8 @@ import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.store.ReprojectingFeatureCollection;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
-import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.naturalearth.Activator;
@@ -25,7 +22,6 @@ import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
-import org.opengis.filter.Filter;
 
 import MWC.Algorithms.Conversions;
 import MWC.GUI.BaseLayer;
@@ -158,7 +154,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 					}
 					SimpleFeatureSource featureSource;
 					SimpleFeatureCollection features;
-					ReprojectingFeatureCollection reprojectingFeatures;
 					try
 					{
 						FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
@@ -168,7 +163,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 						//features = featureSource.getFeatures( filter );
 						//-180.0000, -80.0000, 180.0000, 84.0000
 						features = featureSource.getFeatures();
-						reprojectingFeatures = new ReprojectingFeatureCollection(features, CRS.decode("EPSG:3395"));
+						//reprojectingFeatures = new ReprojectingFeatureCollection(features, CRS.decode("EPSG:4326"));
 					}
 					catch (IOException e)
 					{
@@ -182,8 +177,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 					}
 
 					Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-					
-					FeatureLayer layer = new FeatureLayer(reprojectingFeatures, sld);
+					FeatureLayer layer = new FeatureLayer(features, sld);
 					_gtLayers.add(layer);
 					_myMap.addLayer(layer);
 				}
