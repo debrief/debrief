@@ -59,8 +59,8 @@ import MWC.Utilities.ReaderWriter.ImportManager;
  */
 public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 {
-	public  static final String PLUGIN_NAME = "org.mwc.debrief.core";
-	
+	public static final String PLUGIN_NAME = "org.mwc.debrief.core";
+
 	public static final String DEBRIEF_EDITOR = "org.mwc.debrief.PlotEditor";
 	public static final String SENSOR_FUSION = "org.mwc.debrief.SensorFusion";
 	public static final String MULTI_PATH = "org.mwc.debrief.MultiPath2";
@@ -96,8 +96,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 */
 	public static ImageDescriptor getImageDescriptor(final String path)
 	{
-		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_NAME,
-				path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_NAME, path);
 	}
 
 	/**
@@ -129,14 +128,15 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logError(final int severity, final String message, final Throwable exception)
+	public static void logError(final int severity, final String message,
+			final Throwable exception)
 	{
-		final Status stat = new Status(severity, PLUGIN_NAME,
-				IStatus.OK, message, exception);
+		final Status stat = new Status(severity, PLUGIN_NAME, IStatus.OK, message,
+				exception);
 		getDefault().getLog().log(stat);
-		
+
 		// also throw it to the console
-		if(exception != null)
+		if (exception != null)
 			exception.printStackTrace();
 	}
 
@@ -171,22 +171,29 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		return resourceBundle;
 	}
 
-	public void show(final String title, final String  message, final int status)
+	public void show(final String title, final String message, final int status)
 	{
-		Display.getCurrent().asyncExec(new Runnable()
+		Display display = Display.getCurrent();
+		final Display fDisplay;
+		
+		// if we have a current display, use it. else get the default display
+		if (display != null)
+			fDisplay = display;
+		else
+			fDisplay = Display.getDefault();
+
+		fDisplay.asyncExec(new Runnable()
 		{
 			public void run()
 			{
 				// sort out the status
 				if (status == MessageProvider.INFO || status == MessageProvider.OK)
-					MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
-							title, message);
-				else if(status == MessageProvider.WARNING)
-					MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
-							title, message);
-				else if(status == MessageProvider.ERROR)
-					MessageDialog.openError(Display.getCurrent().getActiveShell(),
-							title, message);
+					MessageDialog.openInformation(fDisplay.getActiveShell(), title,
+							message);
+				else if (status == MessageProvider.WARNING)
+					MessageDialog.openWarning(fDisplay.getActiveShell(), title, message);
+				else if (status == MessageProvider.ERROR)
+					MessageDialog.openError(fDisplay.getActiveShell(), title, message);
 			}
 		});
 	}
@@ -227,22 +234,24 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 		// tell the message provider where it can fire messages to
 		MessageProvider.Base.setProvider(this);
-		
-		_myImageHelper  = new DebriefImageHelper();
-		
-		// give the LayerManager our image creator.
-		CoreViewLabelProvider.addImageHelper(_myImageHelper  );
 
-//		 provide helper for triggering 'new-leg' operation
-		final GiveMeALeg triggerNewLeg = new GiveMeALeg(){
+		_myImageHelper = new DebriefImageHelper();
+
+		// give the LayerManager our image creator.
+		CoreViewLabelProvider.addImageHelper(_myImageHelper);
+
+		// provide helper for triggering 'new-leg' operation
+		final GiveMeALeg triggerNewLeg = new GiveMeALeg()
+		{
 
 			@Override
 			public void createLegFor(final Layer parent)
 			{
-				final InsertTrackSegment ts= new InsertTrackSegment(parent);
+				final InsertTrackSegment ts = new InsertTrackSegment(parent);
 				ts.run(null);
-			}};
-		
+			}
+		};
+
 		CompositeTrackWrapper.setNewLegHelper(triggerNewLeg);
 		CompositeTrackWrapper.initialise(CorePlugin.getToolParent());
 
@@ -258,18 +267,23 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		plugin = null;
 		resourceBundle = null;
 	}
-	
-	public long getResetPerspectivePreference() {
+
+	public long getResetPerspectivePreference()
+	{
 		return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE);
 	}
-	
-	public boolean getCreateProject() {
-		if (isRunningTests()) {
+
+	public boolean getCreateProject()
+	{
+		if (isRunningTests())
+		{
 			return false;
 		}
 		// check standard Debrief preference
-		String createProject = CorePlugin.getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT);
-		if (createProject == null || createProject.isEmpty()) {
+		String createProject = CorePlugin.getDefault().getPreferenceStore()
+				.getString(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT);
+		if (createProject == null || createProject.isEmpty())
+		{
 			createProject = Boolean.TRUE.toString();
 		}
 		return (Boolean.TRUE.toString().equals(createProject));
@@ -280,7 +294,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		// check settings system property on command line
 		// for tycho/travis test we need add -DbuildMode=true
 		String buildMode = System.getProperty(BUILD_MODE, "false");
-		if ("true".equals(buildMode)) {
+		if ("true".equals(buildMode))
+		{
 			return true;
 		}
 		return false;
