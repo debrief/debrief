@@ -175,9 +175,17 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 			{
 
 				// ok, we know we have a header line, so skip it.
-				@SuppressWarnings("unused")
-				String ingoreMe = br.readLine();
+				String skipHeader = br.readLine();
 
+				// do a quick check that the header looks how we expect
+				if(!skipHeader.startsWith("SYS_INTERNAL_TIME,SYS_ORDINAL_TIME"))
+				{
+					// CODE RED, CODE RED!
+					DebriefPlugin.getDefault().show("File Import", "Sorry this .log file isn't in the correct format",
+							Status.ERROR);					
+					return;
+				}
+				
 				// ok, now the first real line
 				thisLine = br.readLine();
 
@@ -252,6 +260,25 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 		{
 			DebriefPlugin.logError(Status.INFO, "Number format exception reading line "
 					+ lineCounter + " in " + fName, e);
+		}
+		finally
+		{
+			try
+			{
+				br.close();
+			}
+			catch (IOException e)
+			{
+				DebriefPlugin.logError(Status.INFO, "Buffer close problem:" + fName, e);
+			}
+			try
+			{
+				is.close();
+			}
+			catch (IOException e)
+			{
+				DebriefPlugin.logError(Status.INFO, "Buffer close problem:" + fName, e);
+			}
 		}
 	}
 
@@ -338,6 +365,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 			// and the date?
 			boolean thrown = false;
 			try{
+			@SuppressWarnings("unused")
 			Date dt = loader.dateFor(blocks[0]);
 			}
 			catch(ParseException pe)
@@ -348,6 +376,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 
 			thrown = false;
 			try{
+				@SuppressWarnings("unused")
 				FixWrapper res = loader.readLine(testLine2);
 			}
 			catch(NumberFormatException pe)
