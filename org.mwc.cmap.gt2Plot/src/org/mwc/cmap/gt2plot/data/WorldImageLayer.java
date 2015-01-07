@@ -210,7 +210,7 @@ public class WorldImageLayer extends GeoToolsLayer
 					}
 				}
 				// ok, lastly check we have the correct projection files
-				ProjSidecarGenerator.addPrj(parentPath, "EPSG:3395");
+				ProjSidecarGenerator.addPrj(parentPath, "EPSG:4326");
 
 			}
 			catch (final IOException e)
