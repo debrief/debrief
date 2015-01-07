@@ -64,11 +64,9 @@
             name="KMZ Track Archive" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.KMZTrackFile" file-extensions="kml"
             name="KMZ Track File" priority="normal"> </content-type>
-        <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="log"
-            name="Track File (Log)" priority="normal"> </content-type>
+        <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="csv"
+            name="S2087 Context Track File (Log)" priority="normal"> </content-type>
     </extension>
-
-
 
     <extension-point id="DebriefPlotLoader" name="Plot Loader"
         schema="schema/DebriefPlotLoader.exsd"/>
@@ -91,8 +89,8 @@
             name="KML Track Archive"/>
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.LogTrackLoader" extensions="log"
-            name="Track File (.log)"/>
+        <loader class="org.mwc.debrief.core.loaders.LogTrackLoader" extensions="log.csv"
+            name="S2087 Context Track File (.log.csv)"/>
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.GPXLoader" extensions="gpx" name="GPX Plot File"

@@ -9250,6 +9250,46 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
               timestamp</link> web site.</para>
         </sect2>
       </sect1>
+      <sect1>
+        <title>S2087 Track files</title>
+        <sect2>
+          <title>Introduction</title>
+          <para>The S2087 system is able to provide ownship track.  On occasions when the command
+            system isn't able to provide ownship track then this data can be used as a
+            fallback.</para>
+          <para>The following assumptions have been made regarding the data: <itemizedlist>
+              <listitem>
+                <para>The file ends in .log.csv</para>
+              </listitem>
+              <listitem>
+                <para>Course is in degrees, and speed is in knots</para>
+              </listitem>
+              <listitem>
+                <para>System Internal Time is recorded in GMT</para>
+              </listitem>
+            </itemizedlist></para>
+        </sect2>
+        <sect2>
+          <title>File format</title>
+          <para>Here is a sample of the expected format (line-breaks inserted to aid
+            legibility).<screen>SYS_INTERNAL_TIME,SYS_ORDINAL_TIME,SHIP_ORDINAL_TIME,LATITUDE,LONGITUDE,SPEED_MADE_GOOD,
+SHIP_COURSE, LOG_SPEED,SHIP_HEADING,TA_SCOPE,TA_DEPTH,TA_X,TA_Y,TA_HEADING,TA Deployed,TB_SCOPE,
+TB_DEPTH,TB_X, TB_Y, TB_HEADING, TB Deployed,SPEED_OF_SOUND, TEMPERATURE, SHIP_ROLL, SHIP_PITCH, 
+WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
+23-08-2014 02 36 53,01-09-2014 00 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,
+8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
+66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0
+23-08-2014 02 36 55,01-09-2014 00 00 12,31-08-2014 23 00 08,48.57566666666667,-9.339333333333334,
+8.722246514887131,319.8,9.449891895292325,320.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
+66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0
+23-08-2014 02 36 57,01-09-2014 00 00 12,31-08-2014 23 00 08,48.59566666666667,-9.319333333333334,
+8.522246514887131,321.8,9.549891895292325,321.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
+66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0
+23-08-2014 02 36 59,01-09-2014 00 00 12,31-08-2014 23 00 08,48.61566666666667,-9.269333333333334,
+8.322246514887131,323.8,9.649891895292325,322.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
+66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0</screen></para>
+        </sect2>
+      </sect1>
 
       
     </chapter>
