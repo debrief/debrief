@@ -64,9 +64,9 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 			layer.dispose();
 			_myMap.removeLayer(layer);
 		}
-		if (_myMap != null) {
-			_myMap.dispose();
-		}
+//		if (_myMap != null) {
+//			_myMap.dispose();
+//		}
 		_gtLayers.clear();
 		_myMap = null;
 	}
