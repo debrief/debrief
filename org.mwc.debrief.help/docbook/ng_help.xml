@@ -9259,7 +9259,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
             fallback.</para>
           <para>The following assumptions have been made regarding the data: <itemizedlist>
               <listitem>
-                <para>The file ends in .log.csv</para>
+                <para>The file ends in .csv</para>
               </listitem>
               <listitem>
                 <para>Course is in degrees, and speed is in knots</para>
@@ -9267,7 +9267,12 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
               <listitem>
                 <para>System Internal Time is recorded in GMT</para>
               </listitem>
-            </itemizedlist></para>
+            </itemizedlist>
+            <note><para>Local IT settings may hide the file suffix for MS Windows devices.  So, a file
+            titled <filename>context.csv</filename> may just appear as <filename>context</filename>, with MS Windows indicating that the
+            file is a <emphasis>Microsoft Office Excel Comma Separated Value file</emphasis>.</para></note>
+          </para>
+                        
         </sect2>
         <sect2>
           <title>File format</title>
