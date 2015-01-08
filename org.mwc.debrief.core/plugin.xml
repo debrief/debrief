@@ -89,8 +89,8 @@
             name="KML Track Archive"/>
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.LogTrackLoader" extensions="log.csv"
-            name="S2087 Context Track File (.log.csv)"/>
+        <loader class="org.mwc.debrief.core.loaders.LogTrackLoader" extensions="csv"
+            name="S2087 Context Track File (.csv)"/>
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.GPXLoader" extensions="gpx" name="GPX Plot File"
