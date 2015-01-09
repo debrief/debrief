@@ -241,10 +241,6 @@ public class NaturalearthUtil
 		gr.graphicalSymbols().add(mark);
 		gr.setSize(filterFactory.literal(5));
 
-		/*
-		 * Setting the geometryPropertyName arg to null signals that we want to draw
-		 * the default geomettry of features
-		 */
 		PointSymbolizer sym = styleFactory.createPointSymbolizer(gr, null);
 
 		Rule rule = styleFactory.createRule();
@@ -256,7 +252,7 @@ public class NaturalearthUtil
 			if (propertyDescriptor != null)
 			{
 				StyleBuilder sb = new StyleBuilder();
-				AnchorPoint anchorPoint = sb.createAnchorPoint(sb.attributeExpression("X"), sb.attributeExpression("Y"));
+				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
 				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
 				Rule textRule = createTextRule(st, sb, pointPlacement);
 				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, textRule });
