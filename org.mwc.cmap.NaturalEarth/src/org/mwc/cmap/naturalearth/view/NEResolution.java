@@ -1,10 +1,6 @@
 package org.mwc.cmap.naturalearth.view;
 
 import MWC.GUI.Plottable;
-import MWC.TacticalData.NarrativeEntry;
-
-
-
 
 public class NEResolution extends NEFeatureGroup
 {
@@ -70,7 +66,7 @@ public class NEResolution extends NEFeatureGroup
 	}
 
 	/**
-	 * member function to meet requirements of comparable interface *
+	 * Sort the resolution objects by scale (to prevent them being sorted by name)
 	 */
 	public final int compareTo(final Plottable o)
 	{
