@@ -172,8 +172,14 @@ public class NaturalearthUtil
 		Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), italic, bold,
 				txtHeight);
 		Halo halo = null; // sb.createHalo();
+		Fill fill = null;
+		if (st.getTextColor() != null)
+		{
+			fill = styleFactory.createFill(filterFactory.literal(st.getTextColor()),
+					filterFactory.literal(0.5));
+		}
 		TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
-						null, 
+						fill, 
 						new org.geotools.styling.Font[] { font },
 						halo, sb.attributeExpression("name"),
 						pointPlacement, null);
