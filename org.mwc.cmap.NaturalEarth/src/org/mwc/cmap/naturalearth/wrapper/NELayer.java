@@ -80,6 +80,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		if (getVisible())
 		{
 			NEResolution thisR = _myFeatures.resolutionFor(_scaleFactor);
+			
 			if (thisR != _currentRes)
 			{
 				if (_currentRes != null)
@@ -309,7 +310,10 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		_theLayers = parent;
 	}
 
-	@Override
+	/** method that gets called when the viewport changes.
+	 * We handle this separately to screen refreshes since a viewport
+	 * change may lead to loading data at a new resolution.
+	 */
 	public void viewPortChange(Dimension sArea, WorldArea wArea)
 	{
 		final double sWidPixels =  sArea.width;
