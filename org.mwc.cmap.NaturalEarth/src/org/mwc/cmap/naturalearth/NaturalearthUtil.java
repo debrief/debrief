@@ -167,7 +167,9 @@ public class NaturalearthUtil
 			PointPlacement pointPlacement)
 	{
 		int txtHeight = st.getTextHeight();
-		Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), 
+		boolean italic = (st.getTextStyle() & 2) != 0;
+		boolean bold = (st.getTextStyle() & 1) != 0;
+		Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), italic, bold,
 				txtHeight);
 		Halo halo = null; // sb.createHalo();
 		TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
