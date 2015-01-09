@@ -1,5 +1,8 @@
 package org.mwc.cmap.naturalearth.view;
 
+import MWC.GUI.Plottable;
+import MWC.TacticalData.NarrativeEntry;
+
 
 
 
@@ -65,6 +68,37 @@ public class NEResolution extends NEFeatureGroup
 	{
 		_activeRes = b;
 	}
-	
+
+	/**
+	 * member function to meet requirements of comparable interface *
+	 */
+	public final int compareTo(final Plottable o)
+	{
+		final int res;
+		
+		final NEResolution other = (NEResolution) o;
+		
+		// do we have a max value?
+		if(_maxS == null)
+		{
+			// nope, so we're the fallback method - make us last
+			res = 1;
+		}
+		else
+		{
+			// does he have a max value?
+			if(other._maxS == null)
+			{
+				// he's the fallback method, make him last
+				res = -1;
+			}
+			else
+			{
+				res = _maxS.compareTo(other._maxS);
+			}
+		}
+		
+		return res;
+	}	
 	
 }

@@ -21,9 +21,12 @@ public class NEFeatureStore extends Plottables
 		while (iter.hasMoreElements())
 		{
 			NEResolution thisR = (NEResolution) iter.nextElement();
-			if(thisR.canPlot(scale))
+			if(thisR.getVisible())
 			{
-				return thisR;
+				if(thisR.canPlot(scale))
+				{
+					return thisR;
+				}
 			}
 		}
 		
