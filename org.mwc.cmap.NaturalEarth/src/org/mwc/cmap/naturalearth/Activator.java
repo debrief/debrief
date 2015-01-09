@@ -222,7 +222,7 @@ public class Activator extends AbstractUIPlugin
 					new Color(78, 128, 202)));
 //			ne10.add(createF(null, "ne_10m_admin_0_boundary_lines_land", true, null,
 //					Color.green));
-			ne10.add(createF(null, "ne_50m_admin_0_countries", true, null, new Color(30, 30, 30),
+			ne10.add(createF(null, "ne_10m_admin_0_countries", true, null, new Color(30, 30, 30),
 					new Color(153, 125, 60), 9, 0, "Serif"));
 //			ne10.add(createF(null, "ne_10m_geography_regions_points", true, null,
 //					null));
