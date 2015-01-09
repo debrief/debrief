@@ -568,6 +568,21 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				while (iter.hasMoreElements())
 				{
 					Layer layer = (Layer) iter.nextElement();
+					
+					// pass on details of the new projection
+					if (layer instanceof InterestedInViewportChange)
+					{
+						InterestedInViewportChange vc = (InterestedInViewportChange) layer;
+						
+						Dimension sArea = _theCanvas.getProjection().getScreenArea();
+						WorldArea wArea = _theCanvas.getProjection().getDataArea();
+						if((sArea != null) && (wArea != null))
+						{
+							vc.viewPortChange(sArea, wArea);
+						}
+					}
+					
+					// trigger redraw
 					setMap(layer);
 				}
 			}
