@@ -88,7 +88,10 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 					_currentRes.setActive(false);
 				}
 
-				thisR.setActive(true);
+				if (thisR != null)
+				{
+					thisR.setActive(true);
+				}
 
 				// remember this resolution
 				_currentRes = thisR;
@@ -97,8 +100,11 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 				if (_theLayers != null)
 					_theLayers.fireReformatted(this);
 			}
-			NEFeatureGroup group = thisR;
-			configureLayers(group);
+			if (thisR != null)
+			{
+				NEFeatureGroup group = thisR;
+				configureLayers(group);
+			}
 		}
 
 	}
