@@ -229,7 +229,7 @@ public class Activator extends AbstractUIPlugin
 //			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
 //					0, "Times"));
 
-			NEFeatureGroup ne50 = new NEResolution("50M", 3000000d, 30000000d);
+			NEFeatureGroup ne50 = new NEResolution("50M", null, 30000000d);
 			ne50.add(bathy);
 
 			ne50.add(createF(null, "ne_50m_ocean", true, new Color(165, 191, 221),
@@ -248,7 +248,7 @@ public class Activator extends AbstractUIPlugin
 					67, 98), 20, ITALIC | BOLD, "Serif"));
 
 			// NEFeatureGroup ne110 = new NEResolution("110M", null, null);
- 		  NEFeatureGroup ne110 = new NEResolution("110M", 30000000d, null);
+ 		  NEFeatureGroup ne110 = new NEResolution("110M", null, null);
 			ne110.add(createF(null, "ne_110m_land", true, new Color(235, 219, 188),
 					new Color(162, 162, 162)));
 			ne110.add(createF(null, "ne_110m_ocean", true, new Color(165, 191, 221),
