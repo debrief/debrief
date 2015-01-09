@@ -22,6 +22,7 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
 import org.geotools.styling.Graphic;
+import org.geotools.styling.Halo;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointPlacement;
@@ -120,13 +121,13 @@ public class NaturalearthUtil
 		if (st.isShowLines()) {
 			lineColor = st.getLineColor();
 			stroke = styleFactory.createStroke(
-					filterFactory.literal(lineColor == null ? Color.BLUE : lineColor), filterFactory.literal(1),
+					filterFactory.literal(lineColor), filterFactory.literal(1),
 					filterFactory.literal(0.5));
 		}
 
 		// create a partial opaque fill
 		Fill fill = styleFactory
-				.createFill(filterFactory.literal(st.getPolygonColor() == null ? Color.GRAY : st.getPolygonColor()),
+				.createFill(filterFactory.literal(st.getPolygonColor()),
 						filterFactory.literal(0.5));
 
 		/*
@@ -165,12 +166,14 @@ public class NaturalearthUtil
 	private static Rule createTextRule(NEFeatureStyle st, StyleBuilder sb,
 			PointPlacement pointPlacement)
 	{
+		int txtHeight = st.getTextHeight();
 		Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), 
-				st.getTextHeight() >= 9 ? st.getTextHeight() : 11);
+				txtHeight);
+		Halo halo = null; // sb.createHalo();
 		TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
 						null, 
 						new org.geotools.styling.Font[] { font },
-						sb.createHalo(), sb.attributeExpression("name"),
+						halo, sb.attributeExpression("name"),
 						pointPlacement, null);
 		textSymbolizer.getOptions().put("maxDisplacement", "150");
 		textSymbolizer.getOptions().put("autoWrap", "60");
