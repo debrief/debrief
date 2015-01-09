@@ -230,7 +230,8 @@ public class Activator extends AbstractUIPlugin
 //					0, "Times"));
 
 			NEFeatureGroup ne50 = new NEResolution("50M", null, 30000000d);
-			ne50.add(bathy);
+			
+			//  ne50.add(bathy);
 
 			ne50.add(createF(null, "ne_50m_ocean", true, new Color(165, 191, 221),
 					null));
@@ -240,7 +241,7 @@ public class Activator extends AbstractUIPlugin
 					null, null, Color.yellow, 12, 0, "SansSerif"));
 			ne50.add(createF(null, "ne_50m_populated_places_simple", true,
 					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
-			ne50.add(createF(null, "ne_110m_admin_0_countries", true, null, null,
+			ne50.add(createF(null, "ne_50m_admin_0_countries", true, null, null,
 					new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
 			ne50.add(createF(null, "sea labels", true, null, null, new Color(16, 67,
 					98), 16, ITALIC, "Serif"));
