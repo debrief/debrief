@@ -222,8 +222,8 @@ public class Activator extends AbstractUIPlugin
 					new Color(78, 128, 202)));
 //			ne10.add(createF(null, "ne_10m_admin_0_boundary_lines_land", true, null,
 //					Color.green));
-			ne10.add(createF(null, "ne_10m_admin_0_countries", true, null, new Color(30, 30, 30),
-					new Color(153, 125, 60), 9, 0, "Serif"));
+			ne10.add(createF(null, "ne_10m_admin_0_countries", true, null, new Color(208, 162, 117),
+					new Color(150, 117, 84), 12, PLAIN, "SansSerif"));
 //			ne10.add(createF(null, "ne_10m_geography_regions_points", true, null,
 //					null));
 //			ne10.add(createF(null, "ne_10m_ports", true, null, null, Color.pink, 8,
@@ -235,14 +235,18 @@ public class Activator extends AbstractUIPlugin
 
 			ne50.add(createF(null, "ne_50m_ocean", true, new Color(165, 191, 221),
 					null));
-			ne50.add(createF(null, "ne_50m_land", true, new Color(235, 219, 188),
-					new Color(162, 162, 162)));
+			
 			ne50.add(createF(null, "ne_50m_geography_regions_points", true,
 					null, null, Color.yellow, 12, 0, "SansSerif"));
 			ne50.add(createF(null, "ne_50m_populated_places_simple", true,
 					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
-			ne50.add(createF(null, "ne_50m_admin_0_countries", true, null, null,
-					new Color(153, 125, 60), 9, PLAIN, "SansSerif"));
+			
+			ne50.add(createF(null, "ne_50m_land", true, new Color(235, 219, 188),
+					new Color(108, 108, 108)));
+			ne50.add(createF(null, "ne_50m_admin_0_countries", true, null, new Color(208, 162, 117),
+					new Color(150, 117, 84), 12, PLAIN, "SansSerif"));
+			
+			
 			ne50.add(createF(null, "sea labels", true, null, null, new Color(16, 67,
 					98), 16, ITALIC, "Serif"));
 			ne50.add(createF(null, "ocean labels", true, null, null, new Color(16,
