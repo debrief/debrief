@@ -238,6 +238,9 @@ public class Activator extends AbstractUIPlugin
 			
 			ne50.add(createF(null, "ne_50m_geography_regions_points", true,
 					null, null, Color.yellow, 12, 0, "SansSerif"));
+			ne50.add(createF(null, "ne_50m_geography_marine_polys", true,
+					new Color(165, 191, 221), null, new Color(31, 130, 180), 15, ITALIC, "Times"));
+			
 			ne50.add(createF(null, "ne_50m_populated_places_simple", true,
 					null, null, new Color(106, 106, 106), 6, PLAIN, "SansSerif"));
 			
@@ -259,7 +262,7 @@ public class Activator extends AbstractUIPlugin
 			ne110.add(createF(null, "ne_110m_ocean", true, new Color(165, 191, 221),
 					Color.red, Color.green, 12, PLAIN, "SansSerif"));
 			ne110.add(createF(null, "ne_110m_geography_marine_polys", true,
-					new Color(165, 191, 221), null, Color.red, 8, 0, "Times"));
+					new Color(165, 191, 221), null, new Color(31, 130, 180), 15, ITALIC, "Times"));
 			ne110.add(createF(null, "ne_110m_geography_regions_points", true, null,
 					null, Color.pink, 8, 0, "Times"));
 			ne110.add(createF(null, "ne_110m_populated_places_simple", true, null,
