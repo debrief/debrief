@@ -25,10 +25,13 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 
 	private final long _created;
 
-	public NEFeatureGroup(String name)
+	private NEFeatureStore _featureSet;
+
+	public NEFeatureGroup(NEFeatureStore featureSet, String name)
 	{
 		_name = name;
 		_created = System.currentTimeMillis();
+		_featureSet = featureSet;
 	}
 
 	@Override
@@ -56,6 +59,12 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 	public long getCreated()
 	{
 		return _created;
+	}
+
+	@Override
+	public boolean getVisible()
+	{
+		return _featureSet.getVisible() ? super.getVisible() : false;
 	}
 
 }

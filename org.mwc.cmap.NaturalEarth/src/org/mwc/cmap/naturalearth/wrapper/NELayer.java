@@ -1,6 +1,8 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
 import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +50,16 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	private NEResolution _currentRes;
 
 	private double _scaleFactor;
+	
+	PropertyChangeListener _propertyChangeListener = new PropertyChangeListener()
+	{
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			setMap(_myMap);
+		}
+	};
 
 	public NELayer(NEFeatureStore features)
 	{
@@ -117,7 +129,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 
 	private void configureLayers(NEFeatureGroup group)
 	{
-		if (group.getVisible())
+		//if (group.getVisible())
 		{
 
 			Enumeration<Editable> children = group.elements();
@@ -129,17 +141,19 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 				if (thisE instanceof NEFeatureGroup)
 				{
 					NEFeatureGroup child = (NEFeatureGroup) thisE;
-					if (child.getVisible())
+					//if (child.getVisible())
 						configureLayers(child);
 				}
 				else
 				{
 					NEFeatureStyle feature = (NEFeatureStyle) thisE;
-					if (!feature.isVisible())
-						continue;
+					//if (!feature.isVisible())
+					//	continue;
 
 					NEFeatureStyle style = feature;
 
+					style.removeListener(_propertyChangeListener);
+					style.addListener(_propertyChangeListener);
 					String fileName = feature.getFileName();
 					String rootPath = Activator.getDefault().getLibraryPath();
 					if (rootPath == null)
@@ -184,7 +198,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 					}
 
 					Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-					FeatureLayer layer = new FeatureLayer(features, sld);
+					FeatureLayer layer = new NEFeatureLayer(style, features, sld);
 					_gtLayers.add(layer);
 					_myMap.addLayer(layer);
 				}
@@ -288,6 +302,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	@Override
 	public void setVisible(boolean val)
 	{
+		super.setVisible(val);
 		_myFeatures.setVisible(val);
 	}
 
