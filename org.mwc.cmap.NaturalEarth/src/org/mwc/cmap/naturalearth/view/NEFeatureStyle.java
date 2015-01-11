@@ -2,6 +2,8 @@ package org.mwc.cmap.naturalearth.view;
 
 import java.awt.Color;
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 
@@ -48,8 +50,11 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	 * 
 	 */
 	private CachedNaturalEarthFile _data;
+	private NEFeatureGroup parent;
+	
+	protected PropertyChangeSupport _pSupport = null;
 
-	public NEFeatureStyle(String folder, String filename, boolean visible,
+	public NEFeatureStyle(NEFeatureGroup group, String folder, String filename, boolean visible,
 			Color fillCol, Color lineCol)
 	{
 		if(folder != null)
@@ -64,6 +69,8 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 		
 		showLines = (_lineCol != null);
 		showPolygons = (_fillCol != null);
+		this.parent = group;
+		_pSupport = new PropertyChangeSupport(this);
 	}
 
 	/** the NE filename that this style applies to
@@ -87,7 +94,7 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	 */
 	public boolean isVisible()
 	{
-		return _isVisible;
+		return parent.getVisible() ? _isVisible : false;
 	}
 
 	public void setVisible(boolean visible)
@@ -116,12 +123,16 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 
 	public void setPolygonColor(Color col)
 	{
+		Color oldProperty = this._fillCol;
 		_fillCol = col;
+		firePropertyChange("polygonColor", oldProperty, col);
 	}
 	
 	public void setLineColor(Color col)
 	{
+		Color oldProperty = this._lineCol;
 		_lineCol = col;
+		firePropertyChange("lineColor", oldProperty, col);
 	}
 
 	public Color getTextColor()
@@ -131,17 +142,23 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 
 	public void setTextHeight(int textHeight)
 	{
+		int oldProperty = this._textHeight;
 		_textHeight  = textHeight;
+		firePropertyChange("textHeight", oldProperty, textHeight);
 	}
 
 	public void setTextStyle(int textStyle)
 	{
+		int oldProperty = this._textStyle;
 		_textStyle = textStyle;
+		firePropertyChange("textStyle", oldProperty, textStyle);
 	}
 
 	public void setTextFont(String textFont)
 	{
+		String oldProperty = this._textFont;
 		_textFont = textFont;
+		firePropertyChange("textFont", oldProperty, textFont);
 	}
 
 	public int getTextHeight()
@@ -161,7 +178,9 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 
 	public void setTextColor(Color textCol)
 	{
+		Color oldProperty = this._textCol;
 		_textCol = textCol;
+		firePropertyChange("textColor", oldProperty, textCol);
 	}
 	
 	public boolean isShowPolygons()
@@ -171,7 +190,9 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 
 	public void setShowPolygons(boolean showPolygons)
 	{
+		boolean oldProperty = this.showPolygons;
 		this.showPolygons = showPolygons;
+		firePropertyChange("showPolygons", oldProperty, showPolygons);
 	}
 
 	public boolean isShowLines()
@@ -181,7 +202,9 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 
 	public void setShowLines(boolean showLines)
 	{
+		boolean oldProperty = this.showLines;
 		this.showLines = showLines;
+		firePropertyChange("showLines", oldProperty, showLines);
 	}
 
 	public boolean isShowPoints()
@@ -191,7 +214,9 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 
 	public void setShowPoints(boolean showPoints)
 	{
+		boolean oldProperty = this.showPoints;
 		this.showPoints = showPoints;
+		firePropertyChange("showPoints", oldProperty, showPoints);
 	}
 
 	public boolean isShowLabels()
@@ -201,7 +226,9 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 
 	public void setShowLabels(boolean showLabels)
 	{
+		boolean oldProperty = this.showLabels;
 		this.showLabels = showLabels;
+		firePropertyChange("showLabels", oldProperty, showLabels);
 	}
 
 	@Override
@@ -331,6 +358,47 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	public long getCreated()
 	{
 		return _created;
+	}
+
+	/**
+	 * fire a property change, if we have any listeners
+	 * 
+	 * @param event_type
+	 *          the type of event to fire
+	 * @param oldValue
+	 *          the old value
+	 * @param newValue
+	 *          the new value
+	 */
+	public void firePropertyChange(final String propertyName,
+			final Object oldValue, final Object newValue)
+	{
+		if (_pSupport != null)
+		{
+			_pSupport.firePropertyChange(propertyName, oldValue, newValue);
+		}
+	}
+
+	/**
+	 * add a listener
+	 * 
+	 * @param listener
+	 *          the new listener
+	 */
+	public void addListener(final java.beans.PropertyChangeListener listener)
+	{
+		if (_pSupport == null)
+			_pSupport = new PropertyChangeSupport(this);
+
+		_pSupport.addPropertyChangeListener(listener);
+	}
+
+	/**
+	 * remove a listener
+	 */
+	public void removeListener(final PropertyChangeListener listener)
+	{
+		_pSupport.removePropertyChangeListener(listener);
 	}
 
 }
