@@ -189,6 +189,7 @@ import org.mwc.cmap.gt2plot.proj.GeoToolsPainter;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
+import org.opengis.filter.expression.PropertyName;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
@@ -563,6 +564,10 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				
 				// ok, loop through the layers, and see if any wish 
 				// to know about scale changes
+				String propertyName = evt.getPropertyName();
+				if (PlainProjection.PAN_EVENT.equals(propertyName)) {
+					return;
+				}
 				Enumeration<Editable> iter = getLayers().elements();
 				while (iter.hasMoreElements())
 				{
@@ -579,10 +584,10 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						{
 							vc.viewPortChange(sArea, wArea);
 						}
+						// trigger redraw
+						setMap(layer);
 					}
 					
-					// trigger redraw
-					setMap(layer);
 				}
 
 			}
@@ -1362,18 +1367,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					_swtImage.dispose();
 					_swtImage = null;
 				}
-				if (_theLayers.findLayer(GeoToolsLayer.NATURAL_EARTH) != null)
-				{
-					setMap(changedLayer);
-				}
-				else
-				{
-					if (changedLayer instanceof GeoToolsLayer
-							&& changedLayer instanceof InterestedInViewportChange)
-					{
-						((GeoToolsLayer) changedLayer).clearMap();
-					}
-				}
+				//if (_theLayers.findLayer(GeoToolsLayer.NATURAL_EARTH) != null)
+				//{
+				//	setMap(changedLayer);
+				//}
+				//else
+				//{
+				//	if (changedLayer instanceof GeoToolsLayer
+				//			&& changedLayer instanceof InterestedInViewportChange)
+				//	{
+				//		((GeoToolsLayer) changedLayer).clearMap();
+				//	}
+				//}
 			}
 
 			// and trigger update

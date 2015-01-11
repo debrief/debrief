@@ -14,9 +14,9 @@ public class NEResolution extends NEFeatureGroup
 	final private Double _maxS;
 	boolean _activeRes;
 
-	public NEResolution(String name, Double minS, Double maxS)
+	public NEResolution(NEFeatureStore featureSet, String name, Double minS, Double maxS)
 	{
-		super(name);
+		super(featureSet, name);
 		_minS = minS;
 		_maxS = maxS;
 	}
