@@ -38,4 +38,34 @@ public class NEFeatureLayer extends FeatureLayer
 		}
 		return neFeatureStyle.isVisible();
 	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((neFeatureStyle == null) ? 0 : neFeatureStyle.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NEFeatureLayer other = (NEFeatureLayer) obj;
+		if (neFeatureStyle == null)
+		{
+			if (other.neFeatureStyle != null)
+				return false;
+		}
+		else if (!neFeatureStyle.equals(other.neFeatureStyle))
+			return false;
+		return true;
+	}
 }
