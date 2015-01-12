@@ -29,9 +29,10 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 
 abstract public class NELayerHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader 
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements LayerHandlerExtension
 {
 
 	public static final String TYPE = "NaturalEarth";
