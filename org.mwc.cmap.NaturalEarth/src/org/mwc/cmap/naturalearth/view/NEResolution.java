@@ -21,6 +21,16 @@ public class NEResolution extends NEFeatureGroup
 		_maxS = maxS;
 	}
 	
+	public Double getMinScale()
+	{
+		return _minS;
+	}
+	
+	public Double getMaxScale()
+	{
+		return _maxS;
+	}
+	
 	public String getName()
 	{
 		final String res;
