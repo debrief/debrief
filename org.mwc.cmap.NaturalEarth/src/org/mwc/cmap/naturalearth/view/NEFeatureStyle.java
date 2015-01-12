@@ -405,4 +405,33 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 		_pSupport.removePropertyChangeListener(listener);
 	}
 
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((_filename == null) ? 0 : _filename.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NEFeatureStyle other = (NEFeatureStyle) obj;
+		if (_filename == null)
+		{
+			if (other._filename != null)
+				return false;
+		}
+		else if (!_filename.equals(other._filename))
+			return false;
+		return true;
+	}
+
 }
