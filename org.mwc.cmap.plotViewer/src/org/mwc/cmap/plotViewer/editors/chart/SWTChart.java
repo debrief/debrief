@@ -590,7 +590,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						// The vc.viewPortChange() method should cause 
 						// the redraw. This may be by deleting the GT object
 						// - to be redrawn in the next render cycle I guess.
-						setMap(layer);
+					// 	setMap(layer);
 					}
 					
 				}
@@ -1392,32 +1392,32 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		}
 	}
 
-	private void setMap(Editable layer)
-	{
-		// TODO: I don't think this should be a "setMap" call, I think it should be a 
-		// configureMap call.  The gtLayer will already know its map object.
-		// It just needs to re-configure layers are displayed.
-		
-		
-		if (this.getClass().getName().startsWith("org.mwc.cmap.overview.views.ChartOverview")) {
-			// a workaround for "Problem painting NELayer when Chart Overview is opened"
-			// https://github.com/debrief/debrief/issues/1018
-			return;
-		}
-		if (layer instanceof InterestedInViewportChange)
-		{
-			if (layer instanceof GeoToolsLayer)
-			{
-				GeoToolsLayer gtLayer = (GeoToolsLayer) layer;
-				PlainProjection projection = _theCanvas.getProjection();
-				if (projection instanceof GtProjection)
-				{
-					GtProjection gtProjection = (GtProjection) projection;
-					gtLayer.setMap(gtProjection.getMapContent());
-				}
-			}
-		}
-	}
+//	private void setMap(Editable layer)
+//	{
+//		// TODO: I don't think this should be a "setMap" call, I think it should be a 
+//		// configureMap call.  The gtLayer will already know its map object.
+//		// It just needs to re-configure layers are displayed.
+//		
+//		
+//		if (this.getClass().getName().startsWith("org.mwc.cmap.overview.views.ChartOverview")) {
+//			// a workaround for "Problem painting NELayer when Chart Overview is opened"
+//			// https://github.com/debrief/debrief/issues/1018
+//			return;
+//		}
+//		if (layer instanceof InterestedInViewportChange)
+//		{
+//			if (layer instanceof GeoToolsLayer)
+//			{
+//				GeoToolsLayer gtLayer = (GeoToolsLayer) layer;
+//				PlainProjection projection = _theCanvas.getProjection();
+//				if (projection instanceof GtProjection)
+//				{
+//					GtProjection gtProjection = (GtProjection) projection;
+//					gtLayer.setMap(gtProjection.getMapContent());
+//				}
+//			}
+//		}
+//	}
 
 	public static ImageData awtToSwt(final BufferedImage bufferedImage, final int width,
 			final int height)
