@@ -176,11 +176,13 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		{
 			layer.dispose();
 			_myMap.removeLayer(layer);
+			_gtLayers.remove(layer);
 			
 			SimpleFeatureSource featureSource = getFeatureSource(style);
 			Style sld = NaturalearthUtil.createStyle2(featureSource, style);
 			layer = new NEFeatureLayer(style, featureSource, sld);
 			_myMap.addLayer(layer);
+			_gtLayers.add(layer);
 		}
 	
 	}
