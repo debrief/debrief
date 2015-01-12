@@ -88,13 +88,17 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 		return res;
 	}
 
+	public NEFeatureGroup getParent() {
+		return parent;
+	}
+	
 	/** if this feature is visible
 	 * 
 	 * @return
 	 */
 	public boolean isVisible()
 	{
-		return parent.getVisible() ? _isVisible : false;
+		return _isVisible;
 	}
 
 	public void setVisible(boolean visible)

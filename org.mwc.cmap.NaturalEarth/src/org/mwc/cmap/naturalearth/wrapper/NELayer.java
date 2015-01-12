@@ -50,16 +50,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	private NEResolution _currentRes;
 
 	private double _scaleFactor;
-	
-	PropertyChangeListener _propertyChangeListener = new PropertyChangeListener()
-	{
-		
-		@Override
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			setMap(_myMap);
-		}
-	};
 
 	public NELayer(NEFeatureStore features)
 	{
@@ -86,9 +76,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	@Override
 	public void setMap(MapContent map)
 	{
-		clearMap();
-		_myMap = map;
-		
 		// TODO:  I'd like us to refactor this further.  In the rest of the GeoTools classes
 		// the instances only expect to get a setMap() call once.
 		//
@@ -120,11 +107,14 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 				// hmm, we also have to tell the layer manager that we have updated
 				if (_theLayers != null)
 					_theLayers.fireReformatted(this);
-			}
-			if (thisR != null)
-			{
-				NEFeatureGroup group = thisR;
-				configureLayers(group);
+				
+				clearMap();
+				_myMap = map;
+				if (thisR != null)
+				{
+					NEFeatureGroup group = thisR;
+					configureLayers(group);
+				}
 			}
 		}
 
@@ -159,60 +149,87 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 					//if (!feature.isVisible())
 					//	continue;
 
-					NEFeatureStyle style = feature;
+					final NEFeatureStyle style = feature;
 
-					style.removeListener(_propertyChangeListener);
-					style.addListener(_propertyChangeListener);
-					String fileName = feature.getFileName();
-					String rootPath = Activator.getDefault().getLibraryPath();
-					if (rootPath == null)
-					{
-						Activator.logError(IStatus.INFO, fileName + "DATA_FOLDER isn't set", null);
-						continue;
-					}
-					if (fileName == null)
-					{
-						Activator.logError(IStatus.INFO, fileName + "style.getFileName() is null", null);
-						continue;
-					}
-					fileName = rootPath + File.separator + fileName + ".shp";
-					final File openFile = new File(fileName);
-					if (!openFile.isFile())
-					{
-						Activator.logError(IStatus.INFO, fileName + " doesn't exist", null);
-						continue;
-					}
-					SimpleFeatureSource featureSource;
-					SimpleFeatureCollection features;
-					try
-					{
-						FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
-						
-						featureSource = store.getFeatureSource();
-						//Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -80, 180, 84)");
-						//features = featureSource.getFeatures( filter );
-						//-180.0000, -80.0000, 180.0000, 84.0000
-						features = featureSource.getFeatures();
-						//reprojectingFeatures = new ReprojectingFeatureCollection(features, CRS.decode("EPSG:4326"));
-					}
-					catch (IOException e)
-					{
-						Activator.logError(IStatus.INFO, "Can't load " + openFile.getAbsolutePath(), e);
-						continue;
-					}
-					catch (Exception e)
-					{
-						Activator.logError(IStatus.INFO, "grabFeaturesInBoundingBox issue in " + openFile.getAbsolutePath(), e);
-						continue;
-					}
+					SimpleFeatureSource featureSource = getFeatureSource(style);
 
 					Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-					FeatureLayer layer = new NEFeatureLayer(style, features, sld);
+					final FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
 					_gtLayers.add(layer);
 					_myMap.addLayer(layer);
+					
+					style.addListener(new Listener(layer, style));
 				}
 			}
 		}
+	}
+
+	class Listener implements PropertyChangeListener {
+		private NEFeatureStyle style;
+		private FeatureLayer layer;
+		public Listener(FeatureLayer layer, NEFeatureStyle style) {
+			this.layer = layer;
+			this.style = style;
+		}
+		@Override
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			layer.dispose();
+			_myMap.removeLayer(layer);
+			
+			SimpleFeatureSource featureSource = getFeatureSource(style);
+			Style sld = NaturalearthUtil.createStyle2(featureSource, style);
+			layer = new NEFeatureLayer(style, featureSource, sld);
+			_myMap.addLayer(layer);
+		}
+	
+	}
+	
+	private SimpleFeatureSource getFeatureSource(NEFeatureStyle style)
+	{
+		String fileName = style.getFileName();
+		String rootPath = Activator.getDefault().getLibraryPath();
+		if (rootPath == null)
+		{
+			Activator.logError(IStatus.INFO, fileName + "DATA_FOLDER isn't set", null);
+			return null;
+		}
+		if (fileName == null)
+		{
+			Activator.logError(IStatus.INFO, fileName + "style.getFileName() is null", null);
+			return null;
+		}
+		fileName = rootPath + File.separator + fileName + ".shp";
+		final File openFile = new File(fileName);
+		if (!openFile.isFile())
+		{
+			Activator.logError(IStatus.INFO, fileName + " doesn't exist", null);
+			return null;
+		}
+		SimpleFeatureSource featureSource;
+		//SimpleFeatureCollection features;
+		try
+		{
+			FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
+			
+			featureSource = store.getFeatureSource();
+			//Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -80, 180, 84)");
+			//features = featureSource.getFeatures( filter );
+			//-180.0000, -80.0000, 180.0000, 84.0000
+			//features = featureSource.getFeatures();
+			//reprojectingFeatures = new ReprojectingFeatureCollection(features, CRS.decode("EPSG:4326"));
+		}
+		catch (IOException e)
+		{
+			Activator.logError(IStatus.INFO, "Can't load " + openFile.getAbsolutePath(), e);
+			return null;
+		}
+		catch (Exception e)
+		{
+			Activator.logError(IStatus.INFO, "grabFeaturesInBoundingBox issue in " + openFile.getAbsolutePath(), e);
+			return null;
+		}
+		return featureSource;
 	}
 
 	@Override
