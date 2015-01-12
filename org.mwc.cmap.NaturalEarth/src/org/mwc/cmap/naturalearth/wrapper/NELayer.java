@@ -88,6 +88,15 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	{
 		clearMap();
 		_myMap = map;
+		
+		// TODO:  I'd like us to refactor this further.  In the rest of the GeoTools classes
+		// the instances only expect to get a setMap() call once.
+		//
+		// I think this NELayer should work the same.  I think that the resolution-dependent 
+		// changesm and configureLayers be in a separate method.
+		//
+		//  That method would be called from within setMap (for the initial data load),
+		// but also from within the property change listeners (viewport & styling)
 
 		if (getVisible())
 		{
