@@ -25,15 +25,19 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 
 	private final long _created;
 
-	private NEFeatureStore _featureSet;
+	private NEFeatureStore _parent;
 
 	public NEFeatureGroup(NEFeatureStore featureSet, String name)
 	{
 		_name = name;
 		_created = System.currentTimeMillis();
-		_featureSet = featureSet;
+		_parent = featureSet;
 	}
 
+	public NEFeatureStore getParent() {
+		return _parent;
+	}
+	
 	@Override
 	public boolean hasOrderedChildren()
 	{
@@ -59,12 +63,6 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 	public long getCreated()
 	{
 		return _created;
-	}
-
-	@Override
-	public boolean getVisible()
-	{
-		return _featureSet.getVisible() ? super.getVisible() : false;
 	}
 
 }

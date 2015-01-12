@@ -565,9 +565,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				// ok, loop through the layers, and see if any wish 
 				// to know about scale changes
 				String propertyName = evt.getPropertyName();
-				if (PlainProjection.PAN_EVENT.equals(propertyName)) {
-					return;
-				}
+//				if (PlainProjection.PAN_EVENT.equals(propertyName)) {
+//					return;
+//				}
 				Enumeration<Editable> iter = getLayers().elements();
 				while (iter.hasMoreElements())
 				{
