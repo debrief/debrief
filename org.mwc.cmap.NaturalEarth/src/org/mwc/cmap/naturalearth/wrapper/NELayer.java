@@ -12,7 +12,6 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
@@ -76,48 +75,11 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	@Override
 	public void setMap(MapContent map)
 	{
-		// TODO:  I'd like us to refactor this further.  In the rest of the GeoTools classes
-		// the instances only expect to get a setMap() call once.
-		//
-		// I think this NELayer should work the same.  I think that the resolution-dependent 
-		// changesm and configureLayers be in a separate method.
-		//
-		//  That method would be called from within setMap (for the initial data load),
-		// but also from within the property change listeners (viewport & styling)
-
-		if (getVisible())
-		{
-			NEResolution thisR = _myFeatures.resolutionFor(_scaleFactor);
-			
-			if (thisR != _currentRes)
-			{
-				if (_currentRes != null)
-				{
-					_currentRes.setActive(false);
-				}
-
-				if (thisR != null)
-				{
-					thisR.setActive(true);
-				}
-
-				// remember this resolution
-				_currentRes = thisR;
-
-				// hmm, we also have to tell the layer manager that we have updated
-				if (_theLayers != null)
-					_theLayers.fireReformatted(this);
-				
-				clearMap();
-				_myMap = map;
-				if (thisR != null)
-				{
-					NEFeatureGroup group = thisR;
-					configureLayers(group);
-				}
-			}
-		}
-
+		// store the map object.  
+		_myMap = map;
+		
+		// TODO: we still need to trigger a "viewport changed" call.
+		// I guess we have to extract them from the "map" parameter
 	}
 
 	@Override
@@ -128,6 +90,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 
 	private void configureLayers(NEFeatureGroup group)
 	{
+		
 		//if (group.getVisible())
 		{
 
@@ -373,6 +336,45 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		
 		// store the scale factor, for when we redraw
 		_scaleFactor = dWidDegs / sWidDegs;
+		
+		// ok, now sort out which dataset we're looking at 
+		if (getVisible())
+		{
+			NEResolution thisR = _myFeatures.resolutionFor(_scaleFactor);
+			
+			if (thisR != _currentRes)
+			{
+				// TODO: I think this is were we clear the map, since we've got a 
+				// whole new set of layers
+				clearMap();
+
+				if (_currentRes != null)
+				{					
+					// tell the new res that it's active, so it can show highlight on its name
+					_currentRes.setActive(false);
+				}
+
+				if (thisR != null)
+				{
+					thisR.setActive(true);
+				}
+
+				// remember this resolution
+				_currentRes = thisR;
+
+				// hmm, we also have to tell the layer manager that we have updated
+				if (_theLayers != null)
+					_theLayers.fireReformatted(this);
+				
+				clearMap();
+				if (thisR != null)
+				{
+					NEFeatureGroup group = thisR;
+					configureLayers(group);
+				}
+			}
+		}
+		
 	}
 
 }
