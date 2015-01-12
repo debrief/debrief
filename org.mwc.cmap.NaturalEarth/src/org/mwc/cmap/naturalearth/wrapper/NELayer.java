@@ -377,4 +377,9 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		
 	}
 
+	public NEFeatureStore getStore()
+	{
+		return _myFeatures;
+	}
+
 }
