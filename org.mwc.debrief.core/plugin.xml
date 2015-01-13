@@ -751,11 +751,11 @@
             <property name="appName" value="DebriefNG"/>
             <property name="preferenceCustomization" value="plugin_customization.ini"/>
             <property name="introTitle" value="Welcome to DebriefNG (with Charts)"/>
-            <property name="introBrandingImage" value="product:icons/debrief_icon.gif"/>
+            <property name="introBrandingImage" value="product:icons/icon.png"/>
             <property name="introBrandingImageText"
                 value="Debrief, from the Maritime Warfare Centre"/>
-            <property name="aboutImage" value="icons/DebriefNGlogoSmall.gif"/>
-            <property name="windowImages" value="icons/icon.gif"/>
+            <property name="aboutImage" value="icons/DebriefNGlogoSmall.png"/>
+            <property name="windowImages" value="icons/icon.png"/>
             <property name="startupForegroundColor" value="000000"/>
             <property name="startupMessageRect" value="0,0,0,0"/>
             <property name="startupProgressRect" value="0,0,0,0"/>
