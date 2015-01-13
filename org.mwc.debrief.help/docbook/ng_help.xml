@@ -10,7 +10,7 @@
     <title>Debrief NG User Documentation</title>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="figures/DebriefNGlogo.gif"/>
+        <imagedata align="center" fileref="figures/DebriefNGlogo.png"/>
       </imageobject>
     </mediaobject>
     <author>
@@ -32,10 +32,10 @@
       </affiliation>
     </author>
     <edition>Documentation for Debrief NG</edition>
-    <pubdate>Winter 2013</pubdate>
+    <pubdate>Spring 2015</pubdate>
     <abstract>
       <title>Contact details</title>
-      <para>Should you wish to learn more about <application>Debrief</application> please contact
+      <para>Should you wish to learn more about <application>Debrief</application> please make contact
         one of the following:</para>
       <formalpara>
         <title>Debrief Project Sponsor</title>
@@ -58,7 +58,7 @@
           <address>
             <personname>Mr Ian Mayo</personname>
             <otheraddr>PlanetMayo Ltd</otheraddr>
-            <street>[n/a</street>
+            <street>[n/a]</street>
             <city>Fareham</city>
             <state>HANTS</state>
             <country>UK</country>
