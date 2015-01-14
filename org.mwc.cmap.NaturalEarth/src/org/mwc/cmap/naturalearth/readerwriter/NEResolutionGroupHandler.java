@@ -77,9 +77,9 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 	public void elementClosed()
 	{
 		if(_minVal != null)
-			getR().setMin(_minVal);
+			getR().setMinScale(_minVal);
 		if(_maxVal != null)
-			getR().setMin(_minVal);
+			getR().setMaxScale(_minVal);
 		if(_name != null)
 			getR().setName(_name);
 

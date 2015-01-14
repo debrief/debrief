@@ -17,6 +17,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
 import org.geotools.styling.Style;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
 import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
@@ -62,14 +63,14 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	{
 		for (FeatureLayer layer : _gtLayers)
 		{
-			layer.dispose();
+			//layer.dispose();
 			_myMap.removeLayer(layer);
 		}
 //		if (_myMap != null) {
 //			_myMap.dispose();
 //		}
 		_gtLayers.clear();
-		_myMap = null;
+		//_myMap = null;
 	}
 
 	@Override
@@ -77,9 +78,12 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	{
 		// store the map object.  
 		_myMap = map;
-		
-		// TODO: we still need to trigger a "viewport changed" call.
-		// I guess we have to extract them from the "map" parameter
+		GtProjection projection = (GtProjection) map.getUserData().get(GeoToolsLayer.DEBRIEF_PROJECTION);
+		Dimension sArea = projection.getScreenArea();
+		WorldArea wArea = projection.getDataArea();
+		if (sArea != null && wArea != null) {
+			viewPortChange(sArea, wArea);
+		}
 	}
 
 	@Override
@@ -114,12 +118,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 
 					final NEFeatureStyle style = feature;
 
-					SimpleFeatureSource featureSource = getFeatureSource(style);
-
-					Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-					final FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
-					_gtLayers.add(layer);
-					_myMap.addLayer(layer);
+					FeatureLayer layer = addLayer(style);
 					
 					style.addListener(new Listener(layer, style));
 				}
@@ -137,15 +136,10 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		@Override
 		public void propertyChange(PropertyChangeEvent evt)
 		{
-			layer.dispose();
 			_myMap.removeLayer(layer);
 			_gtLayers.remove(layer);
 			
-			SimpleFeatureSource featureSource = getFeatureSource(style);
-			Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-			layer = new NEFeatureLayer(style, featureSource, sld);
-			_myMap.addLayer(layer);
-			_gtLayers.add(layer);
+			addLayer(style);
 		}
 	
 	}
@@ -172,7 +166,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 			return null;
 		}
 		SimpleFeatureSource featureSource;
-		//SimpleFeatureCollection features;
 		try
 		{
 			FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
@@ -344,10 +337,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 			
 			if (thisR != _currentRes)
 			{
-				// TODO: I think this is were we clear the map, since we've got a 
-				// whole new set of layers
-				clearMap();
-
 				if (_currentRes != null)
 				{					
 					// tell the new res that it's active, so it can show highlight on its name
@@ -380,6 +369,16 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	public NEFeatureStore getStore()
 	{
 		return _myFeatures;
+	}
+
+	private FeatureLayer addLayer(NEFeatureStyle style)
+	{
+		SimpleFeatureSource featureSource = getFeatureSource(style);
+		Style sld = NaturalearthUtil.createStyle2(featureSource, style);
+		FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
+		_myMap.addLayer(layer);
+		_gtLayers.add(layer);
+		return layer;
 	}
 
 }

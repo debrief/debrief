@@ -8,15 +8,15 @@ Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit;bundle-version="4.0.0",
- org.mwc.cmap.NaturalEarth;bundle-version="1.0.0",
- org.mwc.cmap.geotools;bundle-version="12.1.0",
- org.mwc.cmap.openmap;bundle-version="5.1.7",
- org.mwc.cmap.legacy;bundle-version="1.0.190",
+ org.mwc.cmap.NaturalEarth,
+ org.mwc.cmap.geotools,
+ org.mwc.cmap.openmap,
+ org.mwc.cmap.legacy,
  org.mwc.cmap.core,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
  org.eclipse.help.base,
  org.apache.lucene.core,
  org.apache.lucene.analysis
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

@@ -27,6 +27,11 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 
 	private NEFeatureStore _parent;
 
+	public NEFeatureGroup(String name)
+	{
+		this(null, name);
+	}
+	
 	public NEFeatureGroup(NEFeatureStore featureSet, String name)
 	{
 		_name = name;
@@ -36,6 +41,11 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 
 	public NEFeatureStore getParent() {
 		return _parent;
+	}
+	
+	public void setParent(NEFeatureStore parent)
+	{
+		this._parent = parent;
 	}
 	
 	@Override
@@ -52,11 +62,20 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 	@Override
 	public void add(Editable thePlottable)
 	{
-		if(!(thePlottable instanceof NEFeatureGroup) && !(thePlottable instanceof NEFeatureStyle))
+		if (!(thePlottable instanceof NEFeatureGroup)
+				&& !(thePlottable instanceof NEFeatureStyle))
 		{
-			Activator.logError(Status.WARNING, "Should not be adding this to a NE Feature:" + thePlottable, null);
+			Activator.logError(Status.WARNING,
+					"Should not be adding this to a NE Feature:" + thePlottable, null);
 		}
-		super.add(thePlottable);
+		else
+		{
+			super.add(thePlottable);
+			if (thePlottable instanceof NEFeatureStyle)
+			{
+				((NEFeatureStyle) thePlottable).setParent(this);
+			}
+		}
 	}
 
 	@Override
