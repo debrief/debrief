@@ -10,10 +10,15 @@ public class NEResolution extends NEFeatureGroup
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	final private Double _minS;
-	final private Double _maxS;
+	private Double _minS;
+	private Double _maxS;
 	boolean _activeRes;
 
+	public NEResolution(String name)
+	{
+		this(null, name, null, null);
+	}
+	
 	public NEResolution(NEFeatureStore featureSet, String name, Double minS, Double maxS)
 	{
 		super(featureSet, name);
@@ -105,6 +110,16 @@ public class NEResolution extends NEFeatureGroup
 		}
 		
 		return res;
+	}
+
+	public void setMinScale(Double minS)
+	{
+		_minS = minS;
+	}
+	
+	public void setMaxScale(Double maxS)
+	{
+		_maxS = maxS;
 	}	
 	
 }

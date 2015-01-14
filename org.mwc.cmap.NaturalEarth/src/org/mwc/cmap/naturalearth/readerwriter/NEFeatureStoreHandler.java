@@ -81,7 +81,7 @@ abstract public class NEFeatureStoreHandler extends
 	protected final void handleOurselves(final String name,
 			final Attributes attributes)
 	{
-		_myStore = new NEFeatureStore("pending");
+		_myStore = new NEFeatureStore();
 
 		super.handleOurselves(name, attributes);
 	}

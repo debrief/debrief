@@ -39,8 +39,10 @@ public class NEFeatureStore extends Plottables
 		if(!(thePlottable instanceof NEResolution))
 		{
 			Activator.logError(Status.WARNING, "Should not be adding this to a NE Feature:" + thePlottable, null);
+		} else {
+			super.add(thePlottable);
+			((NEResolution)thePlottable).setParent(this);
 		}
-		super.add(thePlottable);
 	}
 	
 }

@@ -76,6 +76,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		_workScreen = new DirectPosition2D();
 
 		_map = new MapContent();
+		_map.getUserData().put(GeoToolsLayer.DEBRIEF_PROJECTION, this);
 		_view = _map.getViewport();
 
 		// set the aspect radio matching to true. The default

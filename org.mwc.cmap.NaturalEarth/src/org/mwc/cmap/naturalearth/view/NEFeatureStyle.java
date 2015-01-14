@@ -19,8 +19,8 @@ import MWC.GenericData.WorldLocation;
 public class NEFeatureStyle implements Plottable, HasCreatedDate
 {
 	
-	final private String _filename;
-	final private String _folder;
+	private String _filename;
+	private String _folder;
 
 	private Color _lineCol;
 	private Color _fillCol;
@@ -54,6 +54,11 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	
 	protected PropertyChangeSupport _pSupport = null;
 
+	public NEFeatureStyle()
+	{
+		this(null, null, null, false, null, null);
+	}
+	
 	public NEFeatureStyle(NEFeatureGroup group, String folder, String filename, boolean visible,
 			Color fillCol, Color lineCol)
 	{
@@ -86,6 +91,11 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 			res = _folder + File.separator + _filename;
 		
 		return res;
+	}
+	
+	public String getFolderName()
+	{
+		return _folder;
 	}
 
 	public NEFeatureGroup getParent() {
@@ -405,4 +415,47 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 		_pSupport.removePropertyChangeListener(listener);
 	}
 
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((_filename == null) ? 0 : _filename.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NEFeatureStyle other = (NEFeatureStyle) obj;
+		if (_filename == null)
+		{
+			if (other._filename != null)
+				return false;
+		}
+		else if (!_filename.equals(other._filename))
+			return false;
+		return true;
+	}
+
+	public void setParent(NEFeatureGroup parent)
+	{
+		this.parent = parent;
+	}
+
+	public void setFileName(String filename)
+	{
+		this._filename = filename;
+	}
+
+	public void setFolderName(String folder)
+	{
+		this._folder = folder;
+	}
 }
