@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.mwc.cmap.geotools
 Bundle-Version: 12.1.1
 Bundle-Activator: org.mwc.cmap.geotools.Activator
 Require-Bundle: org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Open Source Geospatial Foundation
 Bundle-ClassPath: libs/commons-pool-1.5.4.jar,
