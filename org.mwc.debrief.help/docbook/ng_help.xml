@@ -9250,12 +9250,18 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
               timestamp</link> web site.</para>
         </sect2>
       </sect1>
-      <sect1>
+      <sect1 xml:id="format_2087_files">
         <title>S2087 Track files</title>
-        <sect2>
+        <indexterm>
+          <primary>S2087 Log-file format</primary>
+        </indexterm><indexterm>
+          <primary>File Format</primary>
+          <secondary>S2087</secondary>
+        </indexterm>        <sect2>
           <title>Introduction</title>
-          <para>The S2087 system is able to provide ownship track.  On occasions when the command
-            system isn't able to provide ownship track then this data can be used as a
+          <para>
+            The S2087 system is able to provide ownship track. On occasions when the
+            command system isn't able to provide ownship track then this data can be used as a
             fallback.</para>
           <para>The following assumptions have been made regarding the data: <itemizedlist>
               <listitem>
@@ -9265,9 +9271,12 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
                 <para>Course is in degrees, and speed is in knots</para>
               </listitem>
               <listitem>
-                <para>System Internal Time is recorded in GMT</para>
+                <para>Measured Time is recorded in GMT</para>
               </listitem>
-            </itemizedlist>
+              <listitem>
+                <para>Measurement time is stored in the SYS_ORDINAL_TIME column</para>
+              </listitem>
+          </itemizedlist>
             <note><para>Local IT settings may hide the file suffix for MS Windows devices.  So, a file
             titled <filename>context.csv</filename> may just appear as <filename>context</filename>, with MS Windows indicating that the
             file is a <emphasis>Microsoft Office Excel Comma Separated Value file</emphasis>.</para></note>
@@ -9284,13 +9293,13 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
 23-08-2014 02 36 53,01-09-2014 00 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,
 8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
 66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0
-23-08-2014 02 36 55,01-09-2014 00 00 12,31-08-2014 23 00 08,48.57566666666667,-9.339333333333334,
+23-08-2014 02 36 55,01-09-2014 00 00 13,31-08-2014 23 00 08,48.57566666666667,-9.339333333333334,
 8.722246514887131,319.8,9.449891895292325,320.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
 66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0
-23-08-2014 02 36 57,01-09-2014 00 00 12,31-08-2014 23 00 08,48.59566666666667,-9.319333333333334,
+23-08-2014 02 36 57,01-09-2014 00 00 15,31-08-2014 23 00 08,48.59566666666667,-9.319333333333334,
 8.522246514887131,321.8,9.549891895292325,321.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
 66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0
-23-08-2014 02 36 59,01-09-2014 00 00 12,31-08-2014 23 00 08,48.61566666666667,-9.269333333333334,
+23-08-2014 02 36 59,01-09-2014 00 00 19,31-08-2014 23 00 08,48.61566666666667,-9.269333333333334,
 8.322246514887131,323.8,9.649891895292325,322.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
 66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0</screen></para>
         </sect2>
