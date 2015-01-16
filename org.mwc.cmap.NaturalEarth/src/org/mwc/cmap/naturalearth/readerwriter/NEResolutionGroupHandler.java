@@ -14,12 +14,14 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 	public static final String TYPE = "NEResolution";
 
 	public static final String NAME = "Name";
+	public static final String VIS = "Visible";
 	public static final String MIN_RES = "MinRes";
 	public static final String MAX_RES = "MaxRes";
 
 	Double _minVal;
 	Double _maxVal;
 	String _name;
+	boolean _isVis;
 	
 	public NEResolutionGroupHandler()
 	{
@@ -38,6 +40,14 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 			public void setValue(String name, String value)
 			{
 				_name = value;
+			}
+		});
+		
+		addAttributeHandler(new HandleBooleanAttribute(VIS)
+		{
+			public void setValue(final String name, final boolean val)
+			{
+				_isVis = val;
 			}
 		});
 		addAttributeHandler(new HandleDoubleAttribute(MAX_RES)
@@ -79,9 +89,10 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 		if(_minVal != null)
 			getR().setMinScale(_minVal);
 		if(_maxVal != null)
-			getR().setMaxScale(_minVal);
+			getR().setMaxScale(_maxVal);
 		if(_name != null)
 			getR().setName(_name);
+		getR().setVisible(_isVis);
 
 		// store the list
 		addGroup(getR());
@@ -104,8 +115,8 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 			eRes.setAttribute(MIN_RES,writeThis(res.getMinScale()));
 		if(res.getMaxScale() != null)
 			eRes.setAttribute(MAX_RES,writeThis(res.getMaxScale()));
-		if(res.getName() != null)
-			eRes.setAttribute(NAME,res.getName());
+		if(res.getLocalName() != null)
+			eRes.setAttribute(NAME,res.getLocalName());
 		
 		Enumeration<Editable> iter = res.elements();
 		while (iter.hasMoreElements())

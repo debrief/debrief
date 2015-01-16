@@ -31,7 +31,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import MWC.GUI.Editable;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader.HandleAttribute;
 
 
 abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -39,8 +38,10 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
 	private static final String TYPE = "NEGroup";
 	
 	public static final String NAME = "Name";
+	public static final String VIS = "Visible";
 	
 	String _name;
+	boolean _isVis;
 
 	protected NEFeatureGroup _list;
 
@@ -60,6 +61,14 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
 			public void setValue(String name, String value)
 			{
 				_name = value;
+			}
+		});
+    
+    addAttributeHandler(new HandleBooleanAttribute(VIS)
+		{
+			public void setValue(final String name, final boolean val)
+			{
+				_isVis = val;
 			}
 		});
     
@@ -89,6 +98,7 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
   
   public void elementClosed()
   {
+  	_list.setVisible(_isVis);
   	addGroup(_list);  	
     _list = null;
   }

@@ -85,7 +85,7 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 	public String getFileName()
 	{
 		final String res;
-		if(_folder == null)
+		if(_folder == null || _folder.isEmpty())
 			res = _filename + File.separator + _filename;
 		else
 			res = _folder + File.separator + _filename;
