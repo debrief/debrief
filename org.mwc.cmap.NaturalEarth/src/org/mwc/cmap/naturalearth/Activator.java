@@ -13,6 +13,7 @@ import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
 import org.mwc.cmap.naturalearth.view.NEStyle;
+import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -183,6 +184,7 @@ public class Activator extends AbstractUIPlugin
 
 			// start off with the bathy
 			_featureSet = new NEFeatureStore();
+			_featureSet.setName(NELayer.NATURAL_EARTH);
 			
 			NEFeatureGroup bathy = new NEFeatureGroup(_featureSet, "Bathymetry");
 			final String bathyFolder = "ne_10m_bathymetry_all";
