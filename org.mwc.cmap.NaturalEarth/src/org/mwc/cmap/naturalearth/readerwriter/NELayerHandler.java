@@ -37,7 +37,7 @@ public class NELayerHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements LayerHandlerExtension
 {
 
-	public static final String TYPE = "NEStyle";
+	public static final String TYPE = "NaturalEarth";
 	public static final String NAME = "Name";
 	public static final String VIS = "Visible";
 	
@@ -45,6 +45,7 @@ public class NELayerHandler extends
 	private Layers _theLayers;
 	
 	private boolean _isVis;
+	private String _myName;
 	
 	public NELayerHandler()
 	{
@@ -62,7 +63,7 @@ public class NELayerHandler extends
 		{
 			public void setValue(final String name, final String val)
 			{
-				_myStore.setName(val);
+				_myName = val;
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(VIS)
@@ -87,17 +88,17 @@ public class NELayerHandler extends
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		_myStore = new NEFeatureStore();
-
 		super.handleOurselves(name, attributes);
 	}
 
 	public final void elementClosed()
 	{
+		_myStore.setName(_myName);
 		NELayer nel = new NELayer(_myStore);
 		nel.setVisible(_isVis);
 		_theLayers.addThisLayer(nel);
 		_myStore = null;
+		_myName = null;
 	}
 
 	public static void exportLayer(final NELayer layer,
