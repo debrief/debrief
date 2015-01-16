@@ -21,7 +21,7 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 	private static final long serialVersionUID = 1L;
 	
 	// name for this style
-	protected final String _name;
+	protected String _name;
 
 	private final long _created;
 
@@ -47,6 +47,11 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 	public String getName()
 	{
 		return _name;
+	}
+	
+	public void setName(String name)
+	{
+		_name = name;
 	}
 
 	@Override
