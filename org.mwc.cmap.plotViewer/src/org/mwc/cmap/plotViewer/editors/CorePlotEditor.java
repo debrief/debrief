@@ -336,7 +336,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 						if (dl instanceof GeoToolsLayer)
 						{
 							final GeoToolsLayer gt = (GeoToolsLayer) dl;
-							gt.setVisible(dl.getVisible());
+							//gt.setVisible(dl.getVisible());
 							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
 						}

@@ -5,9 +5,6 @@ import MWC.GUI.Plottable;
 public class NEResolution extends NEFeatureGroup
 {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private Double _minS;
@@ -48,6 +45,11 @@ public class NEResolution extends NEFeatureGroup
 		else
 			res = _name;
 		return res;
+	}
+	
+	public String getLocalName()
+	{
+		return _name;
 	}
 	
 	/** whether this set of styles is suited to plotting this particular scale

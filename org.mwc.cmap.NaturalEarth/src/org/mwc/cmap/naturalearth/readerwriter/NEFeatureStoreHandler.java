@@ -52,6 +52,7 @@ abstract public class NEFeatureStoreHandler extends
 
 	public static final String TYPE = "NEStore";
 	public static final String NAME = "Name";
+	public static final String VIS = "Visible";
 	
 	private NEFeatureStore _myStore;
 
@@ -65,6 +66,14 @@ abstract public class NEFeatureStoreHandler extends
 			public void setValue(final String name, final String val)
 			{
 				_myStore.setName(val);
+			}
+		});
+		
+		addAttributeHandler(new HandleBooleanAttribute(VIS)
+		{
+			public void setValue(final String name, final boolean val)
+			{
+				_myStore.setVisible(val);
 			}
 		});
 

@@ -35,6 +35,7 @@ abstract public class NEFeatureStyleHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 	public static final String TYPE = "NEFeature";
+	public static final String VIS = "Visible";
 	public static final String POLY_FILL = "PolyFill";
 	public static final String LINE_COL = "LineCol";
 	public static final String TEXT_COL = "TextCol";
@@ -46,6 +47,10 @@ abstract public class NEFeatureStyleHandler extends
 	
 	public static final String FOLDER_NAME = "FolderName";
 	public static final String FILE_NAME = "FileName";
+	
+	public static final String TEXT_HEIGHT = "TextHeight";
+	public static final String TEXT_STYLE = "TextStyle";
+	public static final String TEXT_FONT = "TextFont";
 
 
 	NEFeatureStyle _style;
@@ -67,6 +72,13 @@ abstract public class NEFeatureStyleHandler extends
 			public void setValue(String name, String value)
 			{
 				_style.setFileName(value);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(VIS)
+		{
+			public void setValue(String name, boolean value)
+			{
+				_style.setVisible(value);
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(SHOW_POLY)
@@ -97,6 +109,31 @@ abstract public class NEFeatureStyleHandler extends
 				_style.setShowLabels(value);
 			}
 		});
+		addAttributeHandler(new HandleIntegerAttribute(TEXT_HEIGHT)
+		{
+			
+			@Override
+			public void setValue(String name, int value)
+			{
+				_style.setTextHeight(value);
+			}
+		});
+		addAttributeHandler(new HandleIntegerAttribute(TEXT_STYLE)
+		{
+			
+			@Override
+			public void setValue(String name, int value)
+			{
+				_style.setTextStyle(value);
+			}
+		});
+		addAttributeHandler(new HandleAttribute(TEXT_FONT)
+		{
+			public void setValue(String name, String value)
+			{
+				_style.setTextFont(value);
+			}
+		});
 		addHandler(new ColourHandler(POLY_FILL)
 		{
 			@Override
@@ -121,15 +158,6 @@ abstract public class NEFeatureStyleHandler extends
 				_style.setTextColor(res);
 			}
 		});
-		// FIXME
-//		addHandler(new FontHandler()
-//		{
-//			public void setFont(final java.awt.Font font)
-//			{
-//				_style.setTextFont(font);
-//			}
-//		});
-
 	}
 
 	// this is one of ours, so get on with it!
@@ -161,6 +189,9 @@ abstract public class NEFeatureStyleHandler extends
     eStyle.setAttribute(SHOW_LINE, writeThis(style.isShowLines()));
     eStyle.setAttribute(SHOW_POINT, writeThis(style.isShowPoints()));
     eStyle.setAttribute(SHOW_LABEL, writeThis(style.isShowLabels()));
+    eStyle.setAttribute(TEXT_FONT, style.getTextFont());
+    eStyle.setAttribute(TEXT_HEIGHT, writeThis(style.getTextHeight()));
+    eStyle.setAttribute(TEXT_STYLE, writeThis(style.getTextStyle()));
 
 		// do the colors
 		MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(
