@@ -99,6 +99,7 @@ public abstract class NEResolutionGroupHandler extends NEFeatureGroupHandler
 	{
 		final Element eRes = doc.createElement(TYPE);
 		
+		eRes.setAttribute(NELayerHandler.VIS, writeThis(res.getVisible()));
 		if(res.getMinScale() != null)
 			eRes.setAttribute(MIN_RES,writeThis(res.getMinScale()));
 		if(res.getMaxScale() != null)

@@ -118,7 +118,10 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 
 					FeatureLayer layer = addLayer(style);
 					
-					style.addListener(new Listener(layer, style));
+					if (layer != null)
+					{
+						style.addListener(new Listener(layer, style));
+					}
 				}
 			}
 		}
@@ -367,11 +370,15 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	private FeatureLayer addLayer(NEFeatureStyle style)
 	{
 		SimpleFeatureSource featureSource = getFeatureSource(style);
-		Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-		FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
-		_myMap.addLayer(layer);
-		_gtLayers.add(layer);
-		return layer;
+		if (featureSource != null)
+		{
+			Style sld = NaturalearthUtil.createStyle2(featureSource, style);
+			FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
+			_myMap.addLayer(layer);
+			_gtLayers.add(layer);
+			return layer;
+		}
+		return null;
 	}
 
 }

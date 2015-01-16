@@ -31,11 +31,16 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import MWC.GUI.Editable;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader.HandleAttribute;
 
 
 abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 	private static final String TYPE = "NEGroup";
+	
+	public static final String NAME = "Name";
+	
+	String _name;
 
 	protected NEFeatureGroup _list;
 
@@ -50,6 +55,14 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
     // inform our parent what type of class we are
     super(type);
 
+    addAttributeHandler(new HandleAttribute(NAME)
+		{
+			public void setValue(String name, String value)
+			{
+				_name = value;
+			}
+		});
+    
     addHandler(new NEFeatureStyleHandler()
     {
     	@Override
@@ -86,6 +99,10 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		final Element eGroup = doc.createElement(TYPE);
+		eGroup.setAttribute(NELayerHandler.VIS, writeThis(group.getVisible()));
+		if(group.getName() != null)
+			eGroup.setAttribute(NAME,group.getName());
+		
 		Enumeration<Editable> iter = group.elements();
 		while (iter.hasMoreElements())
 		{
