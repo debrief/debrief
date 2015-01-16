@@ -262,7 +262,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 
 	public static final String WORLDIMAGE_TYPE = "GeoTiff";
 	public static final String SHAPEFILE_TYPE = "Shapefile";
-
+	public static final String NELAYER_TYPE = "NELayer";
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////

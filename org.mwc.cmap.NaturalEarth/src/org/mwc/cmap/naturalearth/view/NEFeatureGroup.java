@@ -21,16 +21,33 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 	private static final long serialVersionUID = 1L;
 	
 	// name for this style
-	protected final String _name;
+	protected String _name;
 
 	private final long _created;
 
+	private NEFeatureStore _parent;
+
 	public NEFeatureGroup(String name)
+	{
+		this(null, name);
+	}
+	
+	public NEFeatureGroup(NEFeatureStore featureSet, String name)
 	{
 		_name = name;
 		_created = System.currentTimeMillis();
+		_parent = featureSet;
 	}
 
+	public NEFeatureStore getParent() {
+		return _parent;
+	}
+	
+	public void setParent(NEFeatureStore parent)
+	{
+		this._parent = parent;
+	}
+	
 	@Override
 	public boolean hasOrderedChildren()
 	{
@@ -41,15 +58,29 @@ public class NEFeatureGroup extends BaseLayer implements HasCreatedDate
 	{
 		return _name;
 	}
+	
+	public void setName(String name)
+	{
+		_name = name;
+	}
 
 	@Override
 	public void add(Editable thePlottable)
 	{
-		if(!(thePlottable instanceof NEFeatureGroup) && !(thePlottable instanceof NEFeatureStyle))
+		if (!(thePlottable instanceof NEFeatureGroup)
+				&& !(thePlottable instanceof NEFeatureStyle))
 		{
-			Activator.logError(Status.WARNING, "Should not be adding this to a NE Feature:" + thePlottable, null);
+			Activator.logError(Status.WARNING,
+					"Should not be adding this to a NE Feature:" + thePlottable, null);
 		}
-		super.add(thePlottable);
+		else
+		{
+			super.add(thePlottable);
+			if (thePlottable instanceof NEFeatureStyle)
+			{
+				((NEFeatureStyle) thePlottable).setParent(this);
+			}
+		}
 	}
 
 	@Override

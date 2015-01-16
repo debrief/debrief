@@ -102,6 +102,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -325,6 +326,17 @@ public abstract class CorePlotEditor extends EditorPart implements
 							final GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
 									dl.getFilename());
 							gt.setVisible(dl.getVisible());
+							_myGeoHandler.addGeoToolsLayer(gt);
+							wrappedLayer = gt;
+						}
+					}
+					else if (ChartBoundsWrapper.NELAYER_TYPE.equals(dl.getDataType()))
+					{
+						// FIXME add NELayer
+						if (dl instanceof GeoToolsLayer)
+						{
+							final GeoToolsLayer gt = (GeoToolsLayer) dl;
+							//gt.setVisible(dl.getVisible());
 							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
 						}

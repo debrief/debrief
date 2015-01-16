@@ -76,6 +76,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		_workScreen = new DirectPosition2D();
 
 		_map = new MapContent();
+		_map.getUserData().put(GeoToolsLayer.DEBRIEF_PROJECTION, this);
 		_view = _map.getViewport();
 
 		// set the aspect radio matching to true. The default
@@ -89,7 +90,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			// we'll tell GeoTools to use the projection that's used by most of our
 			// charts,
 			// so that the chart will be displayed undistorted
-			_worldCoords = CRS.decode("EPSG:3395");
+			_worldCoords = CRS.decode("EPSG:4326");
 
 			// we also need a way to convert a location in degrees to that used by
 			// the charts (metres)
@@ -552,8 +553,16 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 					if (thisBounds != null)
 					{
 						// right, now the painful bit of converting the layers
-						final ReferencedEnvelope newBounds = thisBounds.transform(
-								other.getCoordinateReferenceSystem(), false);
+						ReferencedEnvelope newBounds;
+						try
+						{
+							newBounds = thisBounds.transform(
+									other.getCoordinateReferenceSystem(), false);
+						}
+						catch (TransformException e)
+						{
+							return true;
+						}
 
 						if (newBounds.intersects(other))
 							return true;

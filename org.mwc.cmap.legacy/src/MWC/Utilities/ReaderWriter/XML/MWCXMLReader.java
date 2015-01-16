@@ -448,7 +448,7 @@ public class MWCXMLReader extends DefaultHandler {
 		return longFormat.format(val);
 	}
 
-	static public double readThisDouble(final String value) 
+	static public synchronized double readThisDouble(final String value) 
 			throws ParseException {
 		double res;
 		

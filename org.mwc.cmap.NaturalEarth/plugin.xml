@@ -12,6 +12,12 @@
       </page>
    </extension>
    <extension
+         point="org.mwc.debrief.core.XMLLayerHandler">
+      <helper
+            class="org.mwc.cmap.naturalearth.readerwriter.NELayerHandler">
+      </helper>
+   </extension>
+   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="org.mwc.cmap.naturalearth.preferences.PreferenceInitializer">

@@ -1,705 +1,196 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
-import java.awt.Font;
-import java.awt.Point;
+import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.MapContent;
+import org.geotools.styling.Style;
+import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.naturalearth.Activator;
-import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
+import org.mwc.cmap.naturalearth.NaturalearthUtil;
 import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.view.NEResolution;
-import org.mwc.cmap.naturalearth.view.NEStyle;
 
-import MWC.GUI.CanvasType;
+import MWC.Algorithms.Conversions;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layer.InterestedInViewportChange;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.Plottable;
-import MWC.GenericData.NamedWorldLocation;
-import MWC.GenericData.NamedWorldPath;
-import MWC.GenericData.NamedWorldPathList;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldPath;
 
-public class NELayer implements Layer, NeedsToKnowAboutLayers
+public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, InterestedInViewportChange,  BaseLayer.ProvidesRange
 {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
+	private NEFeatureStore _myFeatures;
+	private Layers _theLayers;
+
+	List<FeatureLayer> _gtLayers = new ArrayList<FeatureLayer>();
 
 	private NEResolution _currentRes;
 
-	private HashMap<String, Font> _fontCache = new HashMap<String, Font>();
-
-	/**
-	 * the safest we can get to the poles without GeoTools falling over.
-	 * 
-	 */
-	final private double LAT_LIMIT = 89.0;
-	private Layers _theLayers;
-	private NEFeatureStore _myFeatures;
+	private double _scaleFactor;
 
 	public NELayer(NEFeatureStore features)
 	{
-		setName("Natural Earth");
-
+		super(ChartBoundsWrapper.NELAYER_TYPE, NATURAL_EARTH, null);
+		setName(NATURAL_EARTH);
 		_myFeatures = features;
 	}
 
-	/**
-	 * switch to the supplied style set
-	 * 
-	 * @param styles
-	 */
-	public void applyLayer(NEStyle newStyle)
+	@Override
+	public void clearMap()
 	{
-
+		for (FeatureLayer layer : _gtLayers)
+		{
+			//layer.dispose();
+			_myMap.removeLayer(layer);
+		}
+//		if (_myMap != null) {
+//			_myMap.dispose();
+//		}
+		_gtLayers.clear();
+		//_myMap = null;
 	}
 
 	@Override
-	public void paint(CanvasType dest)
+	public void setMap(MapContent map)
 	{
-		if (getVisible())
-		{
-			double screenMM = dest.getProjection().getScreenArea().getWidth();
-			double worldDegs = dest.getProjection().getDataArea().getWidth();
-			double worldMM = worldDegs * 60 * 1852 * 1000;
-			final double curScale = worldMM / screenMM;
-
-			// find the style set for this scale
-			final NEResolution thisR = _myFeatures.resolutionFor(curScale);
-
-			System.out
-					.println("got: " + thisR.getName() + " from: " + (int) curScale);
-
-			// is this different?
-			if (thisR != _currentRes)
-			{
-				if (_currentRes != null)
-				{
-					_currentRes.setActive(false);
-				}
-
-				thisR.setActive(true);
-
-				// remember this resolution
-				_currentRes = thisR;
-
-				// hmm, we also have to tell the layer manager that we have updated
-				if (_theLayers != null)
-					_theLayers.fireReformatted(this);
-			}
-
-			// start off by making sure data is loaded
-			loadData(thisR);
-
-			// now do the drawing
-			drawPolygons(dest, thisR);
-			drawLines(dest, thisR);
-			drawPoints(dest, thisR);
-
+		// store the map object.  
+		_myMap = map;
+		GtProjection projection = (GtProjection) map.getUserData().get(GeoToolsLayer.DEBRIEF_PROJECTION);
+		Dimension sArea = projection.getScreenArea();
+		WorldArea wArea = projection.getDataArea();
+		if (sArea != null && wArea != null) {
+			viewPortChange(sArea, wArea);
 		}
 	}
 
-	private void loadData(NEFeatureGroup group)
+	@Override
+	protected org.geotools.map.Layer loadLayer(File openFile)
 	{
-		Enumeration<Editable> children = group.elements();
-		while (children.hasMoreElements())
-		{
-			Editable thisE = children.nextElement();
+		return null;
+	}
 
-			// aah just check if this is actually a broup
-			if (thisE instanceof NEFeatureGroup)
+	private void configureLayers(NEFeatureGroup group)
+	{
+		
+		//if (group.getVisible())
+		{
+
+			Enumeration<Editable> children = group.elements();
+			while (children.hasMoreElements())
 			{
-				NEFeatureGroup child = (NEFeatureGroup) thisE;
-				loadData(child);
-			}
-			else
-			{
-				NEFeatureStyle feature = (NEFeatureStyle) thisE;
-				if (feature.isVisible())
+				Editable thisE = children.nextElement();
+
+				// aah just check if this is actually a group
+				if (thisE instanceof NEFeatureGroup)
 				{
-					if (feature.getData() == null)
+					NEFeatureGroup child = (NEFeatureGroup) thisE;
+					//if (child.getVisible())
+						configureLayers(child);
+				}
+				else
+				{
+					NEFeatureStyle feature = (NEFeatureStyle) thisE;
+					//if (!feature.isVisible())
+					//	continue;
+
+					final NEFeatureStyle style = feature;
+
+					FeatureLayer layer = addLayer(style);
+					
+					if (layer != null)
 					{
-						String fName = feature.getFileName();
-						// get the datafile
-						CachedNaturalEarthFile thisData = Activator.getDefault().loadData(
-								fName);
-
-						// did we find the shapefile?
-						if (thisData != null)
-						{
-							feature.setData(thisData);
-						}
-
-						// ok, and self-load
-						thisData.init();
+						style.addListener(new Listener(layer, style));
 					}
-
 				}
 			}
 		}
 	}
 
-	private void drawPolygons(CanvasType dest, NEFeatureGroup group)
-	{
-		if(!group.getVisible())
-			return;
-		
-		Enumeration<Editable> children = group.elements();
-		while (children.hasMoreElements())
-		{
-			Editable thisE = children.nextElement();
-
-			// aah just check if this is actually a broup
-			if (thisE instanceof NEFeatureGroup)
-			{
-				NEFeatureGroup child = (NEFeatureGroup) thisE;
-				if (child.getVisible())
-					drawPolygons(dest, child);
-			}
-			else
-			{
-				NEFeatureStyle feature = (NEFeatureStyle) thisE;
-				if (!feature.isVisible())
-					continue;
-
-				// draw the data from the bottom up
-				drawPolygonPolygons(dest, feature.getData().getPolygons(), feature);
-			}
+	class Listener implements PropertyChangeListener {
+		private NEFeatureStyle style;
+		private FeatureLayer layer;
+		public Listener(FeatureLayer layer, NEFeatureStyle style) {
+			this.layer = layer;
+			this.style = style;
 		}
-	}
-
-	private void drawLines(CanvasType dest, NEFeatureGroup group)
-	{
-		if(!group.getVisible())
-			return;
-		
-		Enumeration<Editable> children = group.elements();
-		while (children.hasMoreElements())
+		@Override
+		public void propertyChange(PropertyChangeEvent evt)
 		{
-			Editable thisE = children.nextElement();
-
-			// aah just check if this is actually a broup
-			if (thisE instanceof NEFeatureGroup)
-			{
-				NEFeatureGroup child = (NEFeatureGroup) thisE;
-				if (child.getVisible())
-					drawLines(dest, child);
-			}
-			else
-			{
-				NEFeatureStyle feature = (NEFeatureStyle) thisE;
-
-				if (!feature.isVisible())
-					continue;
-
-				// draw the data from the bottom up
-				drawPolygonLines(dest, feature.getData().getPolygons(), feature);
-				drawLineLines(dest, feature.getData().getLines(), feature);
-			}
-		}
-	}
-
-	private void drawPoints(CanvasType dest, NEFeatureGroup group)
-	{
-		if(!group.getVisible())
-			return;		
-
-		Enumeration<Editable> children = group.elements();
-		while (children.hasMoreElements())
-		{
-			Editable thisE = children.nextElement();
-
-			// aah just check if this is actually a broup
-			if (thisE instanceof NEFeatureGroup)
-			{
-				NEFeatureGroup child = (NEFeatureGroup) thisE;
-				if (child.getVisible())
-					drawPoints(dest, child);
-			}
-			else
-			{
-				NEFeatureStyle feature = (NEFeatureStyle) thisE;
-				if (!feature.isVisible())
-					continue;
-
-				// draw the data from the bottom up
-				drawPolygonPoints(dest, feature.getData().getPolygons(), feature);
-				drawLinePoints(dest, feature.getData().getLines(), feature);
-				drawPointPoints(dest, feature.getData().getPoints(), feature);
-			}
-		}
-	}
-
-	private void drawPolygonPolygons(CanvasType dest,
-			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
-	{
-		if (polygons == null)
-			return;
-
-		if (!style.isShowPolygons())
-			return;
-
-		if (style.getPolygonColor() == null)
-			return;
-
-		// store the screen size
-		WorldArea visArea = dest.getProjection().getVisibleDataArea();
-
-		// ok, loop through the polys
-		Iterator<NamedWorldPath> iter = polygons.iterator();
-		while (iter.hasNext())
-		{
-			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
+			_myMap.removeLayer(layer);
+			_gtLayers.remove(layer);
 			
-			if(!visArea.overlaps(namedWorldPath.getBounds()))
-				continue;
-
-			dest.setColor(style.getPolygonColor());
-
-			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
-
-			boolean trackMe = false;
-
-			if (namedWorldPath.getName().equals("153"))
-			{
-				System.out.println("good shape");
-				trackMe = true;
-			}
-			if (namedWorldPath.getName().equals("447"))
-			{
-				System.out.println("broken shape");
-				trackMe = true;
-			}
-
-			// create our point lists
-			final int[] xP = new int[_nodes.size()];
-			final int[] yP = new int[_nodes.size()];
-
-			// ok, step through the area
-			Iterator<WorldLocation> points = _nodes.iterator();
-
-			int counter = 0;
-
-			ArrayList<String> pastPoints = new ArrayList<String>();
-
-			while (points.hasNext())
-			{
-				final WorldLocation next = points.next();
-
-				if (Math.abs(next.getLat()) < LAT_LIMIT)
-				{
-
-					String val = next.toString();
-					pastPoints.add(val);
-
-					// convert to screen
-					Point thisP = null;
-					try
-					{
-						thisP = dest.toScreen(next);
-
-						if (trackMe)
-						{
-							// System.out.println(next + " to:" + thisP);
-						}
-					}
-					catch (Exception e)
-					{
-						System.err.println("failed with:" + next);
-					}
-
-					if (thisP == null)
-					{
-						System.out.println("NULL LOCATION:" + next + " lat:"
-								+ next.getLat());
-					}
-					else
-					{
-						if (locationOk(thisP))
-						{
-							// remember the coords
-							xP[counter] = thisP.x;
-							yP[counter] = thisP.y;
-
-							// move the counter
-							counter++;
-						}
-					}
-				}
-			}
-
-			dest.fillPolygon(xP, yP, counter);
-
+			addLayer(style);
 		}
+	
 	}
-
-	private void drawPolygonLines(CanvasType dest,
-			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
+	
+	private SimpleFeatureSource getFeatureSource(NEFeatureStyle style)
 	{
-		if (polygons == null)
-			return;
-
-		if (style.getLineColor() == null)
-			return;
-
-		if (!style.isShowLines())
-			return;
-
-		// store the screen size
-		WorldArea visArea = dest.getProjection().getVisibleDataArea();
-
-		// ok, loop through the polys
-		Iterator<NamedWorldPath> iter = polygons.iterator();
-		while (iter.hasNext())
+		String fileName = style.getFileName();
+		String rootPath = Activator.getDefault().getLibraryPath();
+		if (rootPath == null)
 		{
-			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
-
-			if (!visArea.overlaps(namedWorldPath.getBounds()))
-			{
-				// ok, skip to the next one
-				continue;
-			}
-
-			dest.setColor(style.getLineColor());
-
-			Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
-
-			// create our point lists
-			final int[] xP = new int[_nodes.size()];
-			final int[] yP = new int[_nodes.size()];
-
-			// ok, step through the area
-			final Iterator<WorldLocation> points = _nodes.iterator();
-
-			int counter = 0;
-
-			while (points.hasNext())
-			{
-				final WorldLocation next = points.next();
-
-				if (Math.abs(next.getLat()) < LAT_LIMIT)
-				{
-
-					double thisLat = next.getLat();
-					double thisLong = next.getLong();
-					boolean trackMe = false;
-
-					// if (thisLong < -2 && thisLong > -5)
-					// if (thisLat > 57 && thisLat < 59)
-					// {
-					// trackMe = true;
-					// }
-
-					// convert to screen
-					Point thisP = null;
-					try
-					{
-						thisP = dest.toScreen(next);
-
-						if (trackMe)
-						{
-							// System.out.println(next + " to:" + thisP);
-						}
-
-					}
-					catch (Exception e)
-					{
-						System.err.println("failed with:" + next);
-					}
-
-					if (thisP == null)
-					{
-						System.err.println("duff location");
-					}
-					else
-					{
-
-						if (locationOk(thisP))
-						{
-							// remember the coords
-							xP[counter] = thisP.x;
-							yP[counter] = thisP.y;
-
-							// move the counter
-							counter++;
-						}
-					}
-				}
-			}
-
-			dest.drawPolygon(xP, yP, counter);
+			Activator.logError(IStatus.INFO, fileName + "DATA_FOLDER isn't set", null);
+			return null;
 		}
-	}
-
-	private boolean locationOk(Point point)
-	{
-		return point.x > -10000 && point.y > -10000;
-	}
-
-	private void drawPolygonPoints(CanvasType dest,
-			ArrayList<NamedWorldPath> polygons, NEFeatureStyle style)
-	{
-		if (polygons == null)
-			return;
-
-		if (style.getTextColor() == null)
-			return;
-
-		// this method handles labels and points, so drop out if neither are of
-		// interest
-		if (!style.isShowLabels() && !style.isShowPoints())
-			return;
-
-		dest.setColor(style.getTextColor());
-		Font font = fontFor(style.getTextHeight(), style.getTextStyle(),
-				style.getTextFont());
-		dest.setFont(font);
-
-		// store the screen size
-		WorldArea visArea = dest.getProjection().getVisibleDataArea();
-
-		// ok, loop through the polys
-		Iterator<NamedWorldPath> iter = polygons.iterator();
-		while (iter.hasNext())
+		if (fileName == null)
 		{
-			NamedWorldPath namedWorldPath = (NamedWorldPath) iter.next();
-
-			if (namedWorldPath.getName() == null)
-				continue;
-
-			WorldArea shapeBounds = namedWorldPath.getBounds();
-			if (!visArea.overlaps(shapeBounds))
-			{
-				// ok, skip to the next one
-				continue;
-			}
-
-			dest.setColor(style.getTextColor());
-
-			// note we should not plot the text at the centre of the shape.
-			// we should plot the text at the centre of the visible portion of the
-			// shape
-			// TODO: we may need JTS to do this.
-
-			WorldLocation centre = shapeBounds.getCentre();
-
-			// convert to screen
-			final Point thisP = dest.toScreen(centre);
-
-			if (style.isShowLabels())
-			{
-				dest.drawText(namedWorldPath.getName(), thisP.x, thisP.y);
-			}
-
-
-			if (style.isShowPoints())
-			{
-				// TODO: introduce some code to draw markers
-				
-				// //////////////
-				// draw in the poly counters
-				// TODO: delete me
-				Iterator<WorldLocation> iter2 = namedWorldPath.getPoints().iterator();
-				while (iter2.hasNext())
-				{
-					WorldLocation loc = (WorldLocation) iter2.next();
-					if (loc.getLat() < LAT_LIMIT)
-					{
-						Point pt = dest.toScreen(loc);
-						if (pt != null)
-							dest.drawText("" + (int) loc.getDepth(), pt.x, pt.y);
-					}
-				}
-				
-			}
-
+			Activator.logError(IStatus.INFO, fileName + "style.getFileName() is null", null);
+			return null;
 		}
-	}
-
-	private void drawLineLines(CanvasType dest,
-			ArrayList<NamedWorldPathList> paths, NEFeatureStyle style)
-	{
-		if (paths == null)
-			return;
-
-		if (style.getLineColor() == null)
-			return;
-
-		if (!style.isShowLines())
-			return;
-
-		dest.setColor(style.getLineColor());
-
-		// ok, loop through the polys
-		Iterator<NamedWorldPathList> iter = paths.iterator();
-		while (iter.hasNext())
+		fileName = rootPath + File.separator + fileName + ".shp";
+		final File openFile = new File(fileName);
+		if (!openFile.isFile())
 		{
-			NamedWorldPathList next2 = iter.next();
-			Iterator<WorldPath> iter2 = next2.iterator();
-
-			while (iter2.hasNext())
-			{
-				WorldPath namedWorldPath = (WorldPath) iter2.next();
-
-				Collection<WorldLocation> _nodes = namedWorldPath.getPoints();
-
-				// create our point lists
-				final int[] xPoints = new int[2 * _nodes.size()];
-
-				// ok, step through the area
-				final Iterator<WorldLocation> points = _nodes.iterator();
-
-				int counter = 0;
-
-				while (points.hasNext())
-				{
-					final WorldLocation next = points.next();
-
-					// convert to screen
-					final Point thisP = dest.toScreen(next);
-
-					if (locationOk(thisP))
-					{
-						// remember the coords
-						xPoints[counter++] = thisP.x;
-						xPoints[counter++] = thisP.y;
-					}
-				}
-
-				dest.drawPolyline(xPoints);
-			}
+			Activator.logError(IStatus.INFO, fileName + " doesn't exist", null);
+			return null;
 		}
-	}
-
-	private void drawLinePoints(CanvasType dest,
-			ArrayList<NamedWorldPathList> paths, NEFeatureStyle style)
-	{
-		if (paths == null)
-			return;
-
-		// this method handles labels and points, so drop out if neither are of
-		// interest
-		if (!style.isShowLabels() && !style.isShowPoints())
-			return;
-
-		// store the screen size
-		WorldArea visArea = dest.getProjection().getVisibleDataArea();
-
-		// ok, loop through the polys
-		Iterator<NamedWorldPathList> iter = paths.iterator();
-		while (iter.hasNext())
+		SimpleFeatureSource featureSource;
+		try
 		{
-			NamedWorldPathList next2 = iter.next();
-			if (next2.getName() == null)
-				continue;
-
-			if (next2.getBounds() == null)
-				continue;
-
-			if (!visArea.overlaps(next2.getBounds()))
-			{
-				// ok, skip to the next one
-				continue;
-			}
-
-			dest.setColor(style.getTextColor());
-
-			WorldLocation centre = next2.getBounds().getCentre();
-			// convert to screen
-			final Point thisP = dest.toScreen(centre);
-
-			if (style.isShowLabels())
-				dest.drawText(next2.getName(), thisP.x, thisP.y);
-
-			if (style.isShowPoints())
-			{
-				// TODO: put some marker on the screen, at "dest"
-			}
-
+			FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
+			
+			featureSource = store.getFeatureSource();
+			//Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -80, 180, 84)");
+			//features = featureSource.getFeatures( filter );
+			//-180.0000, -80.0000, 180.0000, 84.0000
+			//features = featureSource.getFeatures();
+			//reprojectingFeatures = new ReprojectingFeatureCollection(features, CRS.decode("EPSG:4326"));
 		}
-	}
-
-	private Font fontFor(int height, int style, String family)
-	{
-		String descriptor = family + "_" + height + "_" + style;
-		Font font = _fontCache.get(descriptor);
-		if (font == null)
+		catch (IOException e)
 		{
-			font = new Font(family, style, height);
-			_fontCache.put(descriptor, font);
+			Activator.logError(IStatus.INFO, "Can't load " + openFile.getAbsolutePath(), e);
+			return null;
 		}
-		return font;
-	}
-
-	private void drawPointPoints(CanvasType dest,
-			ArrayList<NamedWorldLocation> points, NEFeatureStyle style)
-	{
-		if (points == null)
-			return;
-
-		if (style.getTextColor() == null)
-			return;
-
-		// this method handles labels and points, so drop out if neither are of
-		// interest
-		if (!style.isShowLabels() && !style.isShowPoints())
-			return;
-
-		dest.setColor(style.getTextColor());
-		Font font = fontFor(style.getTextHeight(), style.getTextStyle(),
-				style.getTextFont());
-		dest.setFont(font);
-
-		// store the screen size
-		WorldArea visArea = dest.getProjection().getVisibleDataArea();
-
-		// ok, loop through the polys
-		Iterator<NamedWorldLocation> iter = points.iterator();
-		while (iter.hasNext())
+		catch (Exception e)
 		{
-			NamedWorldLocation namedLoc = (NamedWorldLocation) iter.next();
-			final WorldLocation next = namedLoc;
-
-			// check if it's visible
-			if (visArea.contains(next))
-			{
-				final Point thisP = dest.toScreen(next);
-
-				if (style.isShowLabels())
-					dest.drawText(namedLoc.getName(), thisP.x, thisP.y);
-
-				if (style.isShowPoints())
-				{
-					// TODO: put some marker on the screen, at "dest"
-				}
-			}
+			Activator.logError(IStatus.INFO, "grabFeaturesInBoundingBox issue in " + openFile.getAbsolutePath(), e);
+			return null;
 		}
-	}
-
-	public static boolean hasGoodPath()
-	{
-		final File dataPath = new File(Activator.getDefault().getLibraryPath());
-
-		return dataPath.exists();
-	}
-
-	@Override
-	public void setLayers(Layers parent)
-	{
-		_theLayers = parent;
+		return featureSource;
 	}
 
 	@Override
@@ -711,7 +202,7 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	@Override
 	public double rangeFrom(WorldLocation other)
 	{
-		return Double.MAX_VALUE;
+		return  Plottable.INVALID_RANGE;
 	}
 
 	@Override
@@ -756,7 +247,7 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	@Override
 	public String getName()
 	{
-		return "Natural Earth";
+		return NATURAL_EARTH;
 	}
 
 	@Override
@@ -774,7 +265,6 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	@Override
 	public int getLineThickness()
 	{
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -799,6 +289,7 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	@Override
 	public void setVisible(boolean val)
 	{
+		super.setVisible(val);
 		_myFeatures.setVisible(val);
 	}
 
@@ -812,6 +303,89 @@ public class NELayer implements Layer, NeedsToKnowAboutLayers
 	public static interface HasCreatedDate
 	{
 		public long getCreated();
+	}
+
+	public static boolean hasGoodPath()
+	{
+		final File dataPath = new File(Activator.getDefault().getLibraryPath());
+
+		return dataPath.exists();
+	}
+
+	@Override
+	public void setLayers(Layers parent)
+	{
+		_theLayers = parent;
+	}
+
+	/** method that gets called when the viewport changes.
+	 * We handle this separately to screen refreshes since a viewport
+	 * change may lead to loading data at a new resolution.
+	 */
+	public void viewPortChange(Dimension sArea, WorldArea wArea)
+	{
+		final double sWidPixels =  sArea.width;
+		final double sWidInches = sWidPixels / 72d;  // presume 72 dpi
+		final double sWidM = sWidInches * 2.54 / 100;
+		final double sWidDegs = Conversions.m2Degs(sWidM);
+		final double dWidDegs = wArea.getWidth(); 
+		
+		// store the scale factor, for when we redraw
+		_scaleFactor = dWidDegs / sWidDegs;
+		
+		// ok, now sort out which dataset we're looking at 
+		if (getVisible())
+		{
+			NEResolution thisR = _myFeatures.resolutionFor(_scaleFactor);
+			
+			if (thisR != _currentRes)
+			{
+				if (_currentRes != null)
+				{					
+					// tell the new res that it's active, so it can show highlight on its name
+					_currentRes.setActive(false);
+				}
+
+				if (thisR != null)
+				{
+					thisR.setActive(true);
+				}
+
+				// remember this resolution
+				_currentRes = thisR;
+
+				// hmm, we also have to tell the layer manager that we have updated
+//				if (_theLayers != null)
+//					_theLayers.fireReformatted(this);
+				
+				clearMap();
+				if (thisR != null)
+				{
+					NEFeatureGroup group = thisR;
+					configureLayers(group);
+				}
+			}
+		}
+		
+	}
+
+	public NEFeatureStore getStore()
+	{
+		return _myFeatures;
+	}
+
+	private FeatureLayer addLayer(NEFeatureStyle style)
+	{
+		SimpleFeatureSource featureSource = getFeatureSource(style);
+		if (featureSource != null)
+		{
+			Style sld = NaturalearthUtil.createStyle2(featureSource, style);
+			FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
+			_myMap.addLayer(layer);
+			_gtLayers.add(layer);
+			return layer;
+		}
+		return null;
 	}
 
 }

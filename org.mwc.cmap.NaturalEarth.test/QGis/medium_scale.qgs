@@ -3559,7 +3559,7 @@
         </maplayer>
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>ocean_labels20141214205234232</id>
-            <datasource>../data/sea_ocean_labels/ocean labels.shp</datasource>
+            <datasource>../data/ocean labels/ocean labels.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>
@@ -3795,7 +3795,7 @@
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>sea_labels20141214205234239</id>
-            <datasource>../data/sea_ocean_labels/sea labels.shp</datasource>
+            <datasource>../data/sea labels/sea labels.shp</datasource>
             <title></title>
             <abstract></abstract>
             <keywordList>

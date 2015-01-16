@@ -23,51 +23,93 @@ package org.mwc.cmap.naturalearth.readerwriter;
  * @version 1.0
  */
 
+import org.mwc.cmap.naturalearth.view.NEFeatureStore;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-public class NELayerHandler extends MWCXMLReader implements LayerHandlerExtension
+public class NELayerHandler extends
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements LayerHandlerExtension
 {
-	private static final String MY_TYPE = "natural_earth";
 
-	private static final String NAME = "NAME";
-
-	private String _name;
-
+	public static final String TYPE = "NaturalEarth";
+	public static final String NAME = "Name";
+	public static final String VIS = "Visible";
+	
+	private NEFeatureStore _myStore;
 	private Layers _theLayers;
-
+	
+	private boolean _isVis;
+	private String _myName;
+	
 	public NELayerHandler()
 	{
-		this(MY_TYPE);
+		this(TYPE);
 	}
-
+	
 	public NELayerHandler(String theType)
 	{
 		// inform our parent what type of class we are
 		super(theType);
+		
+		//_theLayers = theLayers;
 
 		addAttributeHandler(new HandleAttribute(NAME)
 		{
-			public void setValue(String name, String val)
+			public void setValue(final String name, final String val)
 			{
-				_name = val;
+				_myName = val;
 			}
 		});
+		addAttributeHandler(new HandleBooleanAttribute(VIS)
+		{
+			public void setValue(final String name, final boolean val)
+			{
+				_isVis = val;
+			}
+		});
+		
+		addHandler(new NEFeatureStoreHandler()
+		{
+			@Override
+			public void addStore(NEFeatureStore store)
+			{
+				_myStore = store;
+			}
+		});
+	
 	}
 
-	public void elementClosed()
+	// this is one of ours, so get on with it!
+	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		NELayer newL = new NELayer(null);
-		_theLayers.addThisLayer(newL);
+		super.handleOurselves(name, attributes);
 	}
 
+	public final void elementClosed()
+	{
+		//_myStore.setName(_myName);
+		NELayer nel = new NELayer(_myStore);
+		nel.setVisible(_myStore.getVisible());
+		_theLayers.addThisLayer(nel);
+		_myStore = null;
+		_myName = null;
+	}
 
+	public static void exportLayer(final NELayer layer,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+	{
+			final Element eStore = doc.createElement(TYPE);		
+			NEFeatureStore store = layer.getStore();	
+			eStore.appendChild(NEFeatureStoreHandler.exportStore(store, doc));
+			parent.appendChild(eStore);			
+	}
+	
 	@Override
 	public void setLayers(Layers theLayers)
 	{
@@ -77,17 +119,21 @@ public class NELayerHandler extends MWCXMLReader implements LayerHandlerExtensio
 	@Override
 	public boolean canExportThis(Layer subject)
 	{
-		return (subject instanceof NELayer);
+		return subject instanceof NELayer;
 	}
 
 	@Override
 	public void exportThis(Layer theLayer, Element parent, Document doc)
 	{
-		@SuppressWarnings("unused")
-		NELayer solution = (NELayer) theLayer;
-
-		// TODO: handle the export
-
+		NELayer neLayer = (NELayer) theLayer;
+		Element neStyle = doc.createElement(TYPE);
+		//neStyle.setAttribute(NAME, neLayer.getName());
+		//neStyle.setAttribute(NELayerHandler.VIS, writeThis(neLayer.getVisible()));
+		parent.appendChild(neStyle);
+		
+		NEFeatureStore store = neLayer.getStore();
+		Element neStoreElement = NEFeatureStoreHandler.exportStore(store, doc);
+		neStyle.appendChild(neStoreElement);
 	}
-
+		
 }
