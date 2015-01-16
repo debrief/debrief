@@ -86,9 +86,9 @@ abstract public class NELayerHandler extends
 
 	public final void elementClosed()
 	{
-		_myStore.setName(_myName);
+		//_myStore.setName(_myName);
 		NELayer nel = new NELayer(_myStore);
-		nel.setVisible(_isVis);
+		nel.setVisible(_myStore.getVisible());
 		_theLayers.addThisLayer(nel);
 		_myStore = null;
 		_myName = null;
@@ -120,8 +120,8 @@ abstract public class NELayerHandler extends
 	{
 		NELayer neLayer = (NELayer) theLayer;
 		Element neStyle = doc.createElement(TYPE);
-		neStyle.setAttribute(NAME, neLayer.getName());
-		neStyle.setAttribute(NELayerHandler.VIS, writeThis(neLayer.getVisible()));
+		//neStyle.setAttribute(NAME, neLayer.getName());
+		//neStyle.setAttribute(NELayerHandler.VIS, writeThis(neLayer.getVisible()));
 		parent.appendChild(neStyle);
 		
 		NEFeatureStore store = neLayer.getStore();
