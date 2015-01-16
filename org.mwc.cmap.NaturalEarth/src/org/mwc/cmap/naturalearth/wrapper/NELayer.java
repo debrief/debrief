@@ -355,8 +355,8 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 				_currentRes = thisR;
 
 				// hmm, we also have to tell the layer manager that we have updated
-				if (_theLayers != null)
-					_theLayers.fireReformatted(this);
+//				if (_theLayers != null)
+//					_theLayers.fireReformatted(this);
 				
 				clearMap();
 				if (thisR != null)
