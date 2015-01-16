@@ -35,9 +35,9 @@ abstract public class NELayerHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements LayerHandlerExtension
 {
 
-	public static final String TYPE = "NaturalEarth";
-	public final String NAME = "Name";
-	public final String VIS = "VISIBLE";
+	public static final String TYPE = "NEStyle";
+	public static final String NAME = "Name";
+	public static final String VIS = "Visible";
 	
 	private NEFeatureStore _myStore;
 	final private Layers _theLayers;
@@ -100,6 +100,32 @@ abstract public class NELayerHandler extends
 			NEFeatureStore store = layer.getStore();	
 			eStore.appendChild(NEFeatureStoreHandler.exportStore(store, doc));
 			parent.appendChild(eStore);			
+	}
+	
+	@Override
+	public void setLayers(Layers theLayers)
+	{
+		_theLayers = theLayers;
+	}
+
+	@Override
+	public boolean canExportThis(Layer subject)
+	{
+		return subject instanceof NELayer;
+	}
+
+	@Override
+	public void exportThis(Layer theLayer, Element parent, Document doc)
+	{
+		NELayer neLayer = (NELayer) theLayer;
+		Element neStyle = doc.createElement(TYPE);
+		neStyle.setAttribute(NAME, neLayer.getName());
+		neStyle.setAttribute(NELayerHandler.VIS, writeThis(neLayer.getVisible()));
+		parent.appendChild(neStyle);
+		
+		NEFeatureStore store = neLayer.getStore();
+		Element neStoreElement = NEFeatureStoreHandler.exportStore(store, doc);
+		neStyle.appendChild(neStoreElement);
 	}
 		
 }
