@@ -50,9 +50,9 @@ abstract public class NEFeatureStoreHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-	public static final String TYPE = "NEStyle";
-	public final String NAME = "Name";
-
+	public static final String TYPE = "NEStore";
+	public static final String NAME = "Name";
+	
 	private NEFeatureStore _myStore;
 
 	public NEFeatureStoreHandler()
@@ -97,6 +97,9 @@ abstract public class NEFeatureStoreHandler extends
 	{
 
 		final Element eStore = doc.createElement(TYPE);
+		
+		eStore.setAttribute(NAME, store.getName());
+		eStore.setAttribute(NELayerHandler.VIS, writeThis(store.getVisible()));
 
 		// loop through layers
 		Enumeration<Editable> iter = store.elements();

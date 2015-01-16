@@ -154,7 +154,8 @@ abstract public class NEFeatureStyleHandler extends
 	{
 		final Element eStyle = doc.createElement(TYPE);
 
-		eStyle.setAttribute(FILE_NAME, style.getFileName());
+		eStyle.setAttribute(NELayerHandler.VIS, writeThis(style.getVisible()));
+		eStyle.setAttribute(FILE_NAME, style.getLocalFileName());
 		eStyle.setAttribute(FOLDER_NAME, style.getFolderName());
     eStyle.setAttribute(SHOW_POLY, writeThis(style.isShowPolygons()));
     eStyle.setAttribute(SHOW_LINE, writeThis(style.isShowLines()));

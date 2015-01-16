@@ -93,6 +93,11 @@ public class NEFeatureStyle implements Plottable, HasCreatedDate
 		return res;
 	}
 	
+	public String getLocalFileName()
+	{
+		return _filename;
+	}
+	
 	public String getFolderName()
 	{
 		return _folder;
