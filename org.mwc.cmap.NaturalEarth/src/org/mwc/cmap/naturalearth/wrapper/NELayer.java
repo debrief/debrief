@@ -1,8 +1,5 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
-import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,12 +17,11 @@ import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
+import org.mwc.cmap.naturalearth.view.NEFeature;
 import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
-import org.mwc.cmap.naturalearth.view.NEFeatureStore;
+import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
-import org.mwc.cmap.naturalearth.view.NEResolution;
 
-import MWC.Algorithms.Conversions;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -42,16 +38,12 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 
 	private static final long serialVersionUID = 1L;
 
-	private NEFeatureStore _myFeatures;
+	private NEFeatureRoot _myFeatures;
 	private Layers _theLayers;
 
 	List<FeatureLayer> _gtLayers = new ArrayList<FeatureLayer>();
 
-	private NEResolution _currentRes;
-
-	private double _scaleFactor;
-
-	public NELayer(NEFeatureStore features)
+	public NELayer(NEFeatureRoot features)
 	{
 		super(ChartBoundsWrapper.NELAYER_TYPE, NATURAL_EARTH, null);
 		setName(NATURAL_EARTH);
@@ -78,12 +70,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	{
 		// store the map object.  
 		_myMap = map;
-		GtProjection projection = (GtProjection) map.getUserData().get(GeoToolsLayer.DEBRIEF_PROJECTION);
-		Dimension sArea = projection.getScreenArea();
-		WorldArea wArea = projection.getDataArea();
-		if (sArea != null && wArea != null) {
-			viewPortChange(sArea, wArea);
-		}
+		viewPortChange();
 	}
 
 	@Override
@@ -92,76 +79,28 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		return null;
 	}
 
-	private void configureLayers(NEFeatureGroup group)
+	private void configureLayers(NEFeature feature)
 	{
-		
-		//if (group.getVisible())
+		Enumeration<Editable> children = feature.elements();
+		while (children.hasMoreElements())
 		{
+			Editable thisE = children.nextElement();
 
-			Enumeration<Editable> children = group.elements();
-			while (children.hasMoreElements())
+			if (thisE instanceof NEFeatureGroup)
 			{
-				Editable thisE = children.nextElement();
-
-				// aah just check if this is actually a group
-				if (thisE instanceof NEFeatureGroup)
-				{
-					NEFeatureGroup child = (NEFeatureGroup) thisE;
-					//if (child.getVisible())
-						configureLayers(child);
-				}
-				else
-				{
-					NEFeatureStyle feature = (NEFeatureStyle) thisE;
-					//if (!feature.isVisible())
-					//	continue;
-
-					final NEFeatureStyle style = feature;
-
-					FeatureLayer layer = addLayer(style);
-					
-					if (layer != null)
-					{
-						style.addListener(new Listener(layer, style));
-					}
-				}
+				NEFeatureGroup child = (NEFeatureGroup) thisE;
+				configureLayers(child);
+			}
+			else
+			{
+				NEFeatureStyle style = (NEFeatureStyle) thisE;
+				addLayer(style);
 			}
 		}
 	}
 
-	class Listener implements PropertyChangeListener {
-		private NEFeatureStyle style;
-		private FeatureLayer layer;
-		public Listener(FeatureLayer layer, NEFeatureStyle style) {
-			this.layer = layer;
-			this.style = style;
-		}
-		@Override
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			_myMap.removeLayer(layer);
-			_gtLayers.remove(layer);
-			
-			addLayer(style);
-		}
-	
-	}
-	
-	private SimpleFeatureSource getFeatureSource(NEFeatureStyle style)
+	private SimpleFeatureSource getFeatureSource(String fileName)
 	{
-		String fileName = style.getFileName();
-		String rootPath = Activator.getDefault().getLibraryPath();
-		if (rootPath == null)
-		{
-			Activator.logError(IStatus.INFO, fileName + "DATA_FOLDER isn't set", null);
-			return null;
-		}
-		if (fileName == null)
-		{
-			Activator.logError(IStatus.INFO, fileName + "style.getFileName() is null", null);
-			return null;
-		}
-		fileName = rootPath + File.separator + fileName + ".shp";
 		final File openFile = new File(fileName);
 		if (!openFile.isFile())
 		{
@@ -240,17 +179,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	}
 
 	@Override
-	public void setName(String val)
-	{
-	}
-
-	@Override
-	public String getName()
-	{
-		return NATURAL_EARTH;
-	}
-
-	@Override
 	public String toString()
 	{
 		return getName();
@@ -270,12 +198,6 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 
 	@Override
 	public void add(Editable point)
-	{
-
-	}
-
-	@Override
-	public void removeElement(Editable point)
 	{
 
 	}
@@ -309,7 +231,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	{
 		final File dataPath = new File(Activator.getDefault().getLibraryPath());
 
-		return dataPath.exists();
+		return dataPath.isDirectory();
 	}
 
 	@Override
@@ -322,70 +244,48 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	 * We handle this separately to screen refreshes since a viewport
 	 * change may lead to loading data at a new resolution.
 	 */
-	public void viewPortChange(Dimension sArea, WorldArea wArea)
+	public void viewPortChange()
 	{
-		final double sWidPixels =  sArea.width;
-		final double sWidInches = sWidPixels / 72d;  // presume 72 dpi
-		final double sWidM = sWidInches * 2.54 / 100;
-		final double sWidDegs = Conversions.m2Degs(sWidM);
-		final double dWidDegs = wArea.getWidth(); 
-		
-		// store the scale factor, for when we redraw
-		_scaleFactor = dWidDegs / sWidDegs;
-		
-		// ok, now sort out which dataset we're looking at 
+		// ok, now sort out which dataset we're looking at
 		if (getVisible())
 		{
-			NEResolution thisR = _myFeatures.resolutionFor(_scaleFactor);
-			
-			if (thisR != _currentRes)
-			{
-				if (_currentRes != null)
-				{					
-					// tell the new res that it's active, so it can show highlight on its name
-					_currentRes.setActive(false);
-				}
-
-				if (thisR != null)
-				{
-					thisR.setActive(true);
-				}
-
-				// remember this resolution
-				_currentRes = thisR;
-
-				// hmm, we also have to tell the layer manager that we have updated
-//				if (_theLayers != null)
-//					_theLayers.fireReformatted(this);
-				
-				clearMap();
-				if (thisR != null)
-				{
-					NEFeatureGroup group = thisR;
-					configureLayers(group);
-				}
-			}
+			clearMap();
+			configureLayers(_myFeatures);
 		}
-		
 	}
 
-	public NEFeatureStore getStore()
-	{
-		return _myFeatures;
-	}
 
 	private FeatureLayer addLayer(NEFeatureStyle style)
 	{
-		SimpleFeatureSource featureSource = getFeatureSource(style);
-		if (featureSource != null)
+		List<String> fileNames = style.getFileNames();
+		for (String fileName : fileNames)
 		{
-			Style sld = NaturalearthUtil.createStyle2(featureSource, style);
-			FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
-			_myMap.addLayer(layer);
-			_gtLayers.add(layer);
-			return layer;
+			SimpleFeatureSource featureSource = getFeatureSource(fileName);
+			if (featureSource != null)
+			{
+				String sldName = fileName.substring(0, fileName.length() - 3) + "sld";
+				Style sld;
+				File sldFile = new File(sldName);
+				if (sldFile.isFile())
+				{
+					sld = NaturalearthUtil.loadStyle(sldName);
+				}
+				else
+				{
+					sld = NaturalearthUtil.createStyle2(featureSource, style);
+				}
+				FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
+				_myMap.addLayer(layer);
+				_gtLayers.add(layer);
+				return layer;
+			}
 		}
 		return null;
+	}
+
+	public NEFeatureRoot getStore()
+	{
+		return _myFeatures;
 	}
 
 }

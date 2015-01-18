@@ -38,15 +38,15 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
-import org.mwc.cmap.naturalearth.view.NEFeatureStore;
-import org.mwc.cmap.naturalearth.view.NEResolution;
+import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
+import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import MWC.GUI.Editable;
 
-abstract public class NEFeatureStoreHandler extends
+abstract public class NEFeatureRootHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
@@ -54,9 +54,9 @@ abstract public class NEFeatureStoreHandler extends
 	public static final String NAME = "Name";
 	public static final String VIS = "Visible";
 	
-	private NEFeatureStore _myStore;
+	private NEFeatureRoot _myStore;
 
-	public NEFeatureStoreHandler()
+	public NEFeatureRootHandler()
 	{
 		// inform our parent what type of class we are
 		super(TYPE);
@@ -77,9 +77,16 @@ abstract public class NEFeatureStoreHandler extends
 			}
 		});
 
-		addHandler(new NEResolutionGroupHandler()
+		addHandler(new NEFeatureGroupHandler()
 		{
 			public void addGroup(NEFeatureGroup res)
+			{
+				_myStore.add(res);
+			}
+		});
+		addHandler(new NEFeatureStyleHandler()
+		{
+			public void addStyle(NEFeatureStyle res)
 			{
 				_myStore.add(res);
 			}
@@ -90,7 +97,7 @@ abstract public class NEFeatureStoreHandler extends
 	protected final void handleOurselves(final String name,
 			final Attributes attributes)
 	{
-		_myStore = new NEFeatureStore();
+		_myStore = new NEFeatureRoot(name);
 
 		super.handleOurselves(name, attributes);
 	}
@@ -101,7 +108,7 @@ abstract public class NEFeatureStoreHandler extends
 		_myStore = null;
 	}
 
-	public static Element exportStore(final NEFeatureStore store,
+	public static Element exportStore(final NEFeatureRoot store,
 			final org.w3c.dom.Document doc)
 	{
 
@@ -115,22 +122,30 @@ abstract public class NEFeatureStoreHandler extends
 		while (iter.hasMoreElements())
 		{
 			Editable next = (Editable) iter.nextElement();
-			NEResolution res = (NEResolution) next;
-			NEResolutionGroupHandler.exportGroup(res, eStore, doc);
+			if (next instanceof NEFeatureGroup)
+			{
+				NEFeatureGroup res = (NEFeatureGroup) next;
+				NEFeatureGroupHandler.exportGroup(res, eStore, doc);
+			}
+			else
+			{
+				NEFeatureStyle res = (NEFeatureStyle) next;
+				NEFeatureStyleHandler.exportStyle(res, eStore, doc);
+			}
 		}
 		return eStore;
 	}
 
-	abstract public void addStore(NEFeatureStore store);
+	abstract public void addStore(NEFeatureRoot store);
 
-	public static String encodeAsXML(NEFeatureStore store)
+	public static String encodeAsXML(NEFeatureRoot store)
 	{
 		String res = null;
 		try
 		{
 			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
 					.newDocument();
-			Element eStore = NEFeatureStoreHandler.exportStore(store, doc);
+			Element eStore = NEFeatureRootHandler.exportStore(store, doc);
 			// ok, now convert parent to text
 			final TransformerFactory tF = TransformerFactory.newInstance();
 			Transformer tr;

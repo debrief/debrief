@@ -3,14 +3,7 @@ package org.mwc.cmap.naturalearth.preferences;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ListViewer;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -27,15 +20,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.naturalearth.Activator;
-import org.mwc.cmap.naturalearth.view.NEStyle;
-
-/**
- * 
- * TODO: @Peco can you implement the prefs page so that it has a path variable
- * (with browse button to change it). TODO: @Peco = It should also have
- * "Import styles (XML)", "Export styles (XML)" and "reset styles" buttons.
- * 
- */
 
 public class NaturalEarhPrefs extends PreferencePage implements
 		IWorkbenchPreferencePage
@@ -43,12 +27,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 
 	public static final String ID = "org.mwc.cmap.naturalearth.preferences.NaturalEarhPrefs";
 	private Text dataFolderText;
-	private ListViewer viewer;
-	private Button importButton;
-	private Button exportButton;
-	private Button duplicateButton;
-	private Button deleteButton;
-
+	
 	public NaturalEarhPrefs()
 	{
 		super("Natural Earth");
@@ -122,106 +101,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 		gd.horizontalSpan = 3;
 		stylesGroup.setLayoutData(gd);
 
-		viewer = new ListViewer(stylesGroup, SWT.H_SCROLL | SWT.V_SCROLL
-				| SWT.BORDER);
-		viewer.setContentProvider(new StylesContentProvider());
-		viewer.setLabelProvider(new StylesLabelProvider());
-		viewer.setInput(new Styles());
-		viewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		Composite buttonComposite = new Composite(stylesGroup, SWT.NONE);
-		buttonComposite.setLayout(new GridLayout(1, false));
-		buttonComposite
-				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
-
-		deleteButton = new Button(buttonComposite, SWT.PUSH);
-		deleteButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		deleteButton.setText("Delete");
-		deleteButton.addSelectionListener(new SelectionAdapter()
-		{
-
-			public void widgetSelected(SelectionEvent e)
-			{
-				// TODO
-				viewer.refresh();
-			}
-		});
-
-		duplicateButton = new Button(buttonComposite, SWT.PUSH);
-		duplicateButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		duplicateButton.setText("Duplicate");
-		duplicateButton.addSelectionListener(new SelectionAdapter()
-		{
-
-			public void widgetSelected(SelectionEvent e)
-			{
-				// TODO
-				viewer.refresh();
-			}
-
-		});
-
-		exportButton = new Button(buttonComposite, SWT.PUSH);
-		exportButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		exportButton.setText("Export");
-
-		exportButton.addSelectionListener(new SelectionAdapter()
-		{
-
-			public void widgetSelected(SelectionEvent e)
-			{
-				// TODO
-				viewer.refresh();
-			}
-
-		});
-
-		importButton = new Button(buttonComposite, SWT.PUSH);
-		importButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		importButton.setText("Import");
-
-		importButton.addSelectionListener(new SelectionAdapter()
-		{
-
-			public void widgetSelected(SelectionEvent e)
-			{
-				// TODO
-				viewer.refresh();
-			}
-
-		});
-
-		enableButtons(false);
-
-		viewer.addSelectionChangedListener(new ISelectionChangedListener()
-		{
-
-			public void selectionChanged(SelectionChangedEvent event)
-			{
-				enableButtons(false);
-				ISelection sel = event.getSelection();
-				if (sel instanceof IStructuredSelection)
-				{
-					enableButtons(true);
-					NEStyle style = (NEStyle) ((IStructuredSelection) sel)
-							.getFirstElement();
-					if (style != null && "default".equals(style.getName()))
-					{
-						deleteButton.setEnabled(false);
-					}
-				}
-			}
-		});
-
 		return composite;
-	}
-
-	private void enableButtons(boolean enable)
-	{
-		deleteButton.setEnabled(enable);
-		duplicateButton.setEnabled(enable);
-		exportButton.setEnabled(enable);
-		importButton.setEnabled(enable);
 	}
 
 	@Override
@@ -243,7 +123,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 	{
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		String value = dataFolderText.getText();
-		if (!value.isEmpty())
+		if (value != null)
 		{
 			store.setValue(PreferenceConstants.DATA_FOLDER, value);
 		}
@@ -258,40 +138,6 @@ public class NaturalEarhPrefs extends PreferencePage implements
 			return null;
 		}
 
-		@Override
-		public String getText(Object element)
-		{
-			if (element instanceof NEStyle)
-			{
-				return ((NEStyle) element).getName();
-			}
-			return super.getText(element);
-		}
-
-	}
-
-	class StylesContentProvider implements IStructuredContentProvider
-	{
-
-		@Override
-		public void dispose()
-		{
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
-		{
-		}
-
-		@Override
-		public Object[] getElements(Object inputElement)
-		{
-			if (inputElement instanceof Styles)
-			{
-				return ((Styles) inputElement).getStyles().toArray(new NEStyle[0]);
-			}
-			return null;
-		}
 
 	}
 

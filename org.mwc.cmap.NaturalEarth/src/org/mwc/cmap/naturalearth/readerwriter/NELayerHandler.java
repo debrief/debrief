@@ -23,7 +23,7 @@ package org.mwc.cmap.naturalearth.readerwriter;
  * @version 1.0
  */
 
-import org.mwc.cmap.naturalearth.view.NEFeatureStore;
+import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,7 +41,7 @@ public class NELayerHandler extends
 	public static final String NAME = "Name";
 	public static final String VIS = "Visible";
 	
-	private NEFeatureStore _myStore;
+	private NEFeatureRoot _myStore;
 	private Layers _theLayers;
 	
 	private boolean _isVis;
@@ -74,10 +74,10 @@ public class NELayerHandler extends
 			}
 		});
 		
-		addHandler(new NEFeatureStoreHandler()
+		addHandler(new NEFeatureRootHandler()
 		{
 			@Override
-			public void addStore(NEFeatureStore store)
+			public void addStore(NEFeatureRoot store)
 			{
 				_myStore = store;
 			}
@@ -105,8 +105,8 @@ public class NELayerHandler extends
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 			final Element eStore = doc.createElement(TYPE);		
-			NEFeatureStore store = layer.getStore();	
-			eStore.appendChild(NEFeatureStoreHandler.exportStore(store, doc));
+			NEFeatureRoot store = layer.getStore();	
+			eStore.appendChild(NEFeatureRootHandler.exportStore(store, doc));
 			parent.appendChild(eStore);			
 	}
 	
@@ -131,8 +131,8 @@ public class NELayerHandler extends
 		//neStyle.setAttribute(NELayerHandler.VIS, writeThis(neLayer.getVisible()));
 		parent.appendChild(neStyle);
 		
-		NEFeatureStore store = neLayer.getStore();
-		Element neStoreElement = NEFeatureStoreHandler.exportStore(store, doc);
+		NEFeatureRoot store = neLayer.getStore();
+		Element neStoreElement = NEFeatureRootHandler.exportStore(store, doc);
 		neStyle.appendChild(neStoreElement);
 	}
 		
