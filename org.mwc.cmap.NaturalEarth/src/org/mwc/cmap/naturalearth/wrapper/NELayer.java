@@ -14,7 +14,6 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
 import org.geotools.styling.Style;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
 import org.mwc.cmap.naturalearth.view.NEFeature;
