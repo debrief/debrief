@@ -1,7 +1,5 @@
 package org.mwc.cmap.naturalearth.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -15,9 +13,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mwc.cmap.naturalearth.data.CachedNaturalEarthFile;
 import org.opengis.feature.Property;
 
 import MWC.GenericData.NamedWorldPath;
@@ -48,62 +44,6 @@ public class ShapeFileTests
 				"data/ne_10m_geography_regions_points/ne_10m_geography_regions_points.shp");
 		oceanArea = new File(
 				"data/ne_110m_ocean/ne_110m_ocean.shp");
-	}
-
-	@Test
-	@Ignore
-	public void loadPolygons()
-	{
-		// check we have the marine areas
-		assertTrue(marineAreas.getAbsolutePath() + " doesn't exists.",
-				marineAreas.isFile());
-
-		// ok, load it
-		CachedNaturalEarthFile csf = new CachedNaturalEarthFile(
-				marineAreas.getAbsolutePath());
-		csf.init();
-
-		assertNotNull("found polygons", csf.getPolygons());
-		assertEquals("loaded polygons", 312, csf.getPolygons().size());
-	}
-
-	@Test
-	@Ignore
-	public void loadPoints()
-	{
-		// check we have the marine areas
-		assertTrue(pointNames.getAbsolutePath() + " doesn't exists.",
-				pointNames.isFile());
-
-		// ok, load it
-		CachedNaturalEarthFile csf = new CachedNaturalEarthFile(
-				pointNames.getAbsolutePath());
-		csf.init();
-
-		assertNotNull("found points", csf.getPoints());
-		assertEquals("loaded points", 235, csf.getPoints().size());
-	}
-
-	@Test
-	@Ignore
-	public void loadLines()
-	{
-		// check we have the marine areas
-		assertTrue(boundaryLines.getAbsolutePath() + " doesn't exists.",
-				boundaryLines.isFile());
-
-		System.out.println("about to create cached file");
-		
-		// ok, load it
-		CachedNaturalEarthFile csf = new CachedNaturalEarthFile(
-				boundaryLines.getAbsolutePath());
-		csf.init();
-
-		assertNotNull("found lines", csf.getLines());
-		assertEquals("loaded lines", 461, csf.getLines().size());
-		
-		System.out.println("test complete");
-
 	}
 
 	@Test

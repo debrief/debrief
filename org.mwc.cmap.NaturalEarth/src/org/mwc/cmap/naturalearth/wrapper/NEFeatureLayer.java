@@ -3,8 +3,7 @@ package org.mwc.cmap.naturalearth.wrapper;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.styling.Style;
-import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
-import org.mwc.cmap.naturalearth.view.NEFeatureStore;
+import org.mwc.cmap.naturalearth.view.NEFeature;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 
 public class NEFeatureLayer extends FeatureLayer
@@ -17,26 +16,21 @@ public class NEFeatureLayer extends FeatureLayer
 	{
 		super(featureSource, sld);
 		this.neFeatureStyle = neFeatureStyle;
-		setVisible(neFeatureStyle.isVisible());
 	}
 
 	@Override
 	public boolean isVisible()
 	{
-		NEFeatureGroup parent = neFeatureStyle.getParent();
-		if (parent != null)
+		NEFeature parent = neFeatureStyle.getParent();
+		while (parent != null)
 		{
 			if (!parent.getVisible())
 			{
 				return false;
 			}
-			NEFeatureStore fs = parent.getParent();
-			if (fs != null && !fs.getVisible())
-			{
-				return false;
-			}
+			parent = parent.getParent();
 		}
-		return neFeatureStyle.isVisible();
+		return neFeatureStyle.getVisible();
 	}
 
 	@Override

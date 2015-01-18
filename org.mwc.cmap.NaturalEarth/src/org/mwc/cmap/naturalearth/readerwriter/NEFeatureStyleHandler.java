@@ -23,55 +23,41 @@ package org.mwc.cmap.naturalearth.readerwriter;
  * @version 1.0
  */
 
-import java.awt.Color;
-
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
-
 abstract public class NEFeatureStyleHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
+	private static final String DELIMITER = ",";
 	public static final String TYPE = "NEFeature";
+	public static final String NAME = "Name";
 	public static final String VIS = "Visible";
-	public static final String POLY_FILL = "PolyFill";
-	public static final String LINE_COL = "LineCol";
-	public static final String TEXT_COL = "TextCol";
+	public static final String FILE_NAMES = "Filenames";
 	
-	public static final String SHOW_POLY = "ShowPoly";
-	public static final String SHOW_LINE = "ShowLine";
-	public static final String SHOW_POINT = "ShowPoint";
-	public static final String SHOW_LABEL = "ShowLabel";
-	
-	public static final String FOLDER_NAME = "FolderName";
-	public static final String FILE_NAME = "FileName";
-	
-	public static final String TEXT_HEIGHT = "TextHeight";
-	public static final String TEXT_STYLE = "TextStyle";
-	public static final String TEXT_FONT = "TextFont";
-
-
-	NEFeatureStyle _style;
+	private NEFeatureStyle _style;
 
 	public NEFeatureStyleHandler()
 	{
 		// inform our parent what type of class we are
 		super(TYPE);
 
-		addAttributeHandler(new HandleAttribute(FOLDER_NAME)
+		addAttributeHandler(new HandleAttribute(FILE_NAMES)
 		{
 			public void setValue(String name, String value)
 			{
-				_style.setFolderName(value);
-			}
-		});
-		addAttributeHandler(new HandleAttribute(FILE_NAME)
-		{
-			public void setValue(String name, String value)
-			{
-				_style.setFileName(value);
+				if (value != null && !value.isEmpty())
+				{
+					String[] elements = value.split(DELIMITER);
+					for (String fileName : elements)
+					{
+						if (fileName != null && !fileName.isEmpty())
+						{
+							_style.getFileNames().add(fileName);
+						}
+					}
+				}
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(VIS)
@@ -81,81 +67,11 @@ abstract public class NEFeatureStyleHandler extends
 				_style.setVisible(value);
 			}
 		});
-		addAttributeHandler(new HandleBooleanAttribute(SHOW_POLY)
-		{
-			public void setValue(String name, boolean value)
-			{
-				_style.setShowPolygons(value);
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute(SHOW_LINE)
-		{
-			public void setValue(String name, boolean value)
-			{
-				_style.setShowLines(value);
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute(SHOW_POINT)
-		{
-			public void setValue(String name, boolean value)
-			{
-				_style.setShowPoints(value);
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute(SHOW_LABEL)
-		{
-			public void setValue(String name, boolean value)
-			{
-				_style.setShowLabels(value);
-			}
-		});
-		addAttributeHandler(new HandleIntegerAttribute(TEXT_HEIGHT)
-		{
-			
-			@Override
-			public void setValue(String name, int value)
-			{
-				_style.setTextHeight(value);
-			}
-		});
-		addAttributeHandler(new HandleIntegerAttribute(TEXT_STYLE)
-		{
-			
-			@Override
-			public void setValue(String name, int value)
-			{
-				_style.setTextStyle(value);
-			}
-		});
-		addAttributeHandler(new HandleAttribute(TEXT_FONT)
+		addAttributeHandler(new HandleAttribute(NAME)
 		{
 			public void setValue(String name, String value)
 			{
-				_style.setTextFont(value);
-			}
-		});
-		addHandler(new ColourHandler(POLY_FILL)
-		{
-			@Override
-			public void setColour(Color res)
-			{
-				_style.setPolygonColor(res);
-			}
-		});
-		addHandler(new ColourHandler(LINE_COL)
-		{
-			@Override
-			public void setColour(Color res)
-			{
-				_style.setLineColor(res);
-			}
-		});
-		addHandler(new ColourHandler(TEXT_COL)
-		{
-			@Override
-			public void setColour(Color res)
-			{
-				_style.setTextColor(res);
+				_style.setName(value);
 			}
 		});
 	}
@@ -164,7 +80,7 @@ abstract public class NEFeatureStyleHandler extends
 	protected final void handleOurselves(final String name,
 			final Attributes attributes)
 	{
-		_style = new NEFeatureStyle();
+		_style = new NEFeatureStyle(name);
 
 		super.handleOurselves(name, attributes);
 	}
@@ -182,29 +98,28 @@ abstract public class NEFeatureStyleHandler extends
 	{
 		final Element eStyle = doc.createElement(TYPE);
 
-		eStyle.setAttribute(NELayerHandler.VIS, writeThis(style.getVisible()));
-		eStyle.setAttribute(FILE_NAME, style.getLocalFileName());
-		eStyle.setAttribute(FOLDER_NAME, style.getFolderName());
-    eStyle.setAttribute(SHOW_POLY, writeThis(style.isShowPolygons()));
-    eStyle.setAttribute(SHOW_LINE, writeThis(style.isShowLines()));
-    eStyle.setAttribute(SHOW_POINT, writeThis(style.isShowPoints()));
-    eStyle.setAttribute(SHOW_LABEL, writeThis(style.isShowLabels()));
-    eStyle.setAttribute(TEXT_FONT, style.getTextFont());
-    eStyle.setAttribute(TEXT_HEIGHT, writeThis(style.getTextHeight()));
-    eStyle.setAttribute(TEXT_STYLE, writeThis(style.getTextStyle()));
-
-		// do the colors
-		MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(
-				style.getPolygonColor(), eStyle, doc, POLY_FILL);
-		MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(
-				style.getLineColor(), eStyle, doc, LINE_COL);
-		MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(
-				style.getTextColor(), eStyle, doc, TEXT_COL);
-
-		// and the font
-		// FIXME
-		//FontHandler.exportFont(style.getFont(), eStyle, doc);
-
+		if (style.getFileNames().size() > 0)
+		{
+			StringBuilder builder = new StringBuilder();
+			for (String fileName : style.getFileNames())
+			{
+				if (fileName != null && !fileName.isEmpty())
+				{
+					builder.append(fileName);
+					builder.append(DELIMITER);
+				}
+			}
+			String fileNames = builder.toString();
+			if (fileNames != null && !fileNames.isEmpty()) {
+				fileNames = fileNames.trim();
+				if (fileNames.endsWith(DELIMITER)) {
+					fileNames = fileNames.substring(0, fileNames.length() - 1);
+				}
+				eStyle.setAttribute(FILE_NAMES, fileNames);
+			}
+		}
+		eStyle.setAttribute(VIS, writeThis(style.getVisible()));
+		eStyle.setAttribute(NAME, style.getName());
 		parent.appendChild(eStyle);
 
 	}
