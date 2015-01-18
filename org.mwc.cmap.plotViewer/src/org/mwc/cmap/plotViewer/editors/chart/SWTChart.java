@@ -184,12 +184,10 @@ import org.mwc.cmap.core.preferences.ChartPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.gt2plot.proj.GeoToolsPainter;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
-import org.opengis.filter.expression.PropertyName;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.ViewportChangedListener;
@@ -578,13 +576,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					if (layer instanceof InterestedInViewportChange)
 					{
 						InterestedInViewportChange vc = (InterestedInViewportChange) layer;
-						
-						Dimension sArea = _theCanvas.getProjection().getScreenArea();
-						WorldArea wArea = _theCanvas.getProjection().getDataArea();
-						if((sArea != null) && (wArea != null))
-						{
-							vc.viewPortChange(sArea, wArea);
-						}
+						vc.viewPortChange();
 						// trigger redraw
 						
 						// TODO: we should not use setMap to trigger a redraw.  

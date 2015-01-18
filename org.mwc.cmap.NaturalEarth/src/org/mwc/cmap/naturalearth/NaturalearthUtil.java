@@ -63,8 +63,8 @@ public class NaturalearthUtil
 		PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null,
 				sb.literalExpression(0));
 		TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
-				sb.createFill(st.getTextColor()), new org.geotools.styling.Font[]
-				{ sb.createFont(st.getTextFont() == null ? "Lucida Sans" : st.getTextFont(), 10), sb.createFont("Arial", 10) },
+				sb.createFill(Color.BLACK), new org.geotools.styling.Font[]
+				{ sb.createFont("Lucida Sans", 10), sb.createFont("Arial", 10) },
 				sb.createHalo(), sb.attributeExpression("name"), pointPlacement, null);
 
 		// creation of the Point symbolizer
@@ -117,17 +117,13 @@ public class NaturalearthUtil
 		Color lineColor = null;
 		Stroke stroke = null;
 		
-		// do we show lines for this style?
-		if (st.isShowLines()) {
-			lineColor = st.getLineColor();
-			stroke = styleFactory.createStroke(
+		stroke = styleFactory.createStroke(
 					filterFactory.literal(lineColor), filterFactory.literal(1),
 					filterFactory.literal(0.5));
-		}
 
 		// create a partial opaque fill
 		Fill fill = styleFactory
-				.createFill(filterFactory.literal(st.getPolygonColor()),
+				.createFill(filterFactory.literal(Color.GRAY),
 						filterFactory.literal(0.5));
 
 		/*
@@ -140,18 +136,19 @@ public class NaturalearthUtil
 		Rule rule = styleFactory.createRule();
 		rule.symbolizers().add(sym);
 		FeatureTypeStyle fts = null;
-		if (st.isShowLabels())
+		PropertyDescriptor propertyDescriptor = featureSource.getSchema()
+				.getDescriptor("name");
+		if (propertyDescriptor != null)
 		{
-			PropertyDescriptor propertyDescriptor = featureSource.getSchema().getDescriptor("name");
-			if (propertyDescriptor != null)
-			{
-				//return loadStyle("/home/snpe/Workspaces/workspace-debrief/tutorial/polygon_polygonwithstyledlabel.sld");
-				StyleBuilder sb = new StyleBuilder();
-				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
-				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
-				Rule textRule = createTextRule(st, sb, pointPlacement);
-				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, textRule });
-			}
+			// return
+			// loadStyle("/home/snpe/Workspaces/workspace-debrief/tutorial/polygon_polygonwithstyledlabel.sld");
+			StyleBuilder sb = new StyleBuilder();
+			AnchorPoint anchorPoint = sb.createAnchorPoint(0.5, 0.5);
+			PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint,
+					null, sb.literalExpression(0));
+			Rule textRule = createTextRule(st, sb, pointPlacement);
+			fts = styleFactory.createFeatureTypeStyle(new Rule[]
+			{ rule, textRule });
 		}
 		if (fts == null)
 		{
@@ -166,18 +163,14 @@ public class NaturalearthUtil
 	private static Rule createTextRule(NEFeatureStyle st, StyleBuilder sb,
 			PointPlacement pointPlacement)
 	{
-		int txtHeight = st.getTextHeight();
-		boolean italic = (st.getTextStyle() & 2) != 0;
-		boolean bold = (st.getTextStyle() & 1) != 0;
-		Font font = sb.createFont(st.getTextFont() == null ? "Arial" : st.getTextFont(), italic, bold,
+		int txtHeight = 10;
+		boolean italic = false;
+		boolean bold = false;
+		Font font = sb.createFont("Arial", italic, bold,
 				txtHeight);
 		Halo halo = null; // sb.createHalo();
-		Fill fill = null;
-		if (st.getTextColor() != null)
-		{
-			fill = styleFactory.createFill(filterFactory.literal(st.getTextColor()),
+		Fill fill = styleFactory.createFill(filterFactory.literal(Color.BLACK),
 					filterFactory.literal(0.5));
-		}
 		TextSymbolizer textSymbolizer = sb.createTextSymbolizer(
 						fill, 
 						new org.geotools.styling.Font[] { font },
@@ -198,7 +191,7 @@ public class NaturalearthUtil
 	public static Style createLineStyle(FeatureSource featureSource, NEFeatureStyle st)
 	{
 		Stroke stroke = styleFactory.createStroke(
-				filterFactory.literal(st.getLineColor() == null ? Color.BLUE : st.getLineColor()), filterFactory.literal(1));
+				filterFactory.literal(Color.BLUE), filterFactory.literal(1));
 
 		/*
 		 * Setting the geometryPropertyName arg to null signals that we want to draw
@@ -209,17 +202,17 @@ public class NaturalearthUtil
 		Rule rule = styleFactory.createRule();
 		rule.symbolizers().add(sym);
 		FeatureTypeStyle fts = null;
-		if (st.isShowLabels())
+		PropertyDescriptor propertyDescriptor = featureSource.getSchema()
+				.getDescriptor("name");
+		if (propertyDescriptor != null)
 		{
-			PropertyDescriptor propertyDescriptor = featureSource.getSchema().getDescriptor("name");
-			if (propertyDescriptor != null)
-			{
-				StyleBuilder sb = new StyleBuilder();
-				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
-				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
-				Rule textRule = createTextRule(st, sb, pointPlacement);
-				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, textRule });
-			}
+			StyleBuilder sb = new StyleBuilder();
+			AnchorPoint anchorPoint = sb.createAnchorPoint(0.5, 0.5);
+			PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint,
+					null, sb.literalExpression(0));
+			Rule textRule = createTextRule(st, sb, pointPlacement);
+			fts = styleFactory.createFeatureTypeStyle(new Rule[]
+			{ rule, textRule });
 		}
 		if (fts == null)
 		{
@@ -242,7 +235,7 @@ public class NaturalearthUtil
 		Graphic gr = styleFactory.createDefaultGraphic();
 		Mark mark = styleFactory.getCircleMark();
 		mark.setStroke(styleFactory.createStroke(
-				filterFactory.literal(st.getLineColor() == null ? Color.BLUE : st.getLineColor()), filterFactory.literal(1)));
+				filterFactory.literal(Color.BLUE), filterFactory.literal(1)));
 		mark.setFill(styleFactory.createFill(filterFactory.literal(Color.CYAN)));
 
 		gr.graphicalSymbols().clear();
@@ -254,17 +247,17 @@ public class NaturalearthUtil
 		Rule rule = styleFactory.createRule();
 		rule.symbolizers().add(sym);
 		FeatureTypeStyle fts = null;
-		if (st.isShowLabels())
+		PropertyDescriptor propertyDescriptor = featureSource.getSchema()
+				.getDescriptor("name");
+		if (propertyDescriptor != null)
 		{
-			PropertyDescriptor propertyDescriptor = featureSource.getSchema().getDescriptor("name");
-			if (propertyDescriptor != null)
-			{
-				StyleBuilder sb = new StyleBuilder();
-				AnchorPoint anchorPoint = sb.createAnchorPoint(0.5,0.5);
-				PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
-				Rule textRule = createTextRule(st, sb, pointPlacement);
-				fts = styleFactory.createFeatureTypeStyle(new Rule[] { rule, textRule });
-			}
+			StyleBuilder sb = new StyleBuilder();
+			AnchorPoint anchorPoint = sb.createAnchorPoint(0.5, 0.5);
+			PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint,
+					null, sb.literalExpression(0));
+			Rule textRule = createTextRule(st, sb, pointPlacement);
+			fts = styleFactory.createFeatureTypeStyle(new Rule[]
+			{ rule, textRule });
 		}
 		if (fts == null)
 		{
