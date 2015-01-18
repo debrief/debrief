@@ -147,8 +147,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -197,7 +195,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layer;
-import MWC.GUI.Layer.InterestedInViewportChange;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
@@ -550,43 +547,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			public void controlResized(final ControlEvent e)
 			{
 				canvasResized();
-			}
-		});
-		
-		_theCanvas.getProjection().addListener(new PropertyChangeListener()
-		{
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				// screen res changed, update any layers that want to know about resolution changes
-				
-				// ok, loop through the layers, and see if any wish 
-				// to know about scale changes
-				String propertyName = evt.getPropertyName();
-//				if (PlainProjection.PAN_EVENT.equals(propertyName)) {
-//					return;
-//				}
-				Enumeration<Editable> iter = getLayers().elements();
-				while (iter.hasMoreElements())
-				{
-					Layer layer = (Layer) iter.nextElement();
-					
-					// pass on details of the new projection
-					if (layer instanceof InterestedInViewportChange)
-					{
-						InterestedInViewportChange vc = (InterestedInViewportChange) layer;
-						vc.viewPortChange();
-						// trigger redraw
-						
-						// TODO: we should not use setMap to trigger a redraw.  
-						// The vc.viewPortChange() method should cause 
-						// the redraw. This may be by deleting the GT object
-						// - to be redrawn in the next render cycle I guess.
-					// 	setMap(layer);
-					}
-					
-				}
 			}
 		});
 		
