@@ -257,6 +257,32 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 	private FeatureLayer addLayer(NEFeatureStyle style)
 	{
 		List<String> fileNames = style.getFileNames();
+		if (fileNames.size() <= 0) {
+			String dirName = style.getName();
+			// FIXME include groups
+			String rootFolder = Activator.getDefault().getLibraryPath();
+			if (dirName != null && !dirName.isEmpty() && rootFolder != null && !rootFolder.isEmpty())
+			{
+				File rootFile = new File(rootFolder, dirName);
+				if (rootFile.isDirectory())
+				{
+					File[] files = rootFile.listFiles();
+					List<String> shapeFiles = new ArrayList<String>();
+					for (File file : files)
+					{
+						if (file.isFile() && file.getName().endsWith(".shp"))
+						{
+							shapeFiles.add(file.getAbsolutePath());
+						}
+					}
+					if (shapeFiles.size() > 0)
+					{
+						style.getFileNames().addAll(shapeFiles);
+						fileNames = style.getFileNames();
+					}
+				}
+			}
+		}
 		for (String fileName : fileNames)
 		{
 			SimpleFeatureSource featureSource = getFeatureSource(fileName);
