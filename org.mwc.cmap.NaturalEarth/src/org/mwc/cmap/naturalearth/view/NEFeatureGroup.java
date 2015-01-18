@@ -1,9 +1,5 @@
 package org.mwc.cmap.naturalearth.view;
 
-import org.eclipse.core.runtime.Status;
-import org.mwc.cmap.naturalearth.Activator;
-
-import MWC.GUI.Editable;
 
 /** a collection of style objects
  * 
