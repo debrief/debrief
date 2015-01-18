@@ -141,7 +141,7 @@ public class Activator extends AbstractUIPlugin
 			_featureSet = new NEFeatureRoot(NELayer.NATURAL_EARTH);
 			File[] files = rootFile.listFiles();
 			for(File file:files) {
-				if (file.isDirectory()) {
+				if (file.isDirectory() && !file.getName().startsWith(".")) {
 					addDirectory(file, _featureSet);
 				}
 			}
@@ -154,7 +154,7 @@ public class Activator extends AbstractUIPlugin
 		File[] files = rootFile.listFiles();
 		for (File file : files)
 		{
-			if (file.isDirectory())
+			if (file.isDirectory() && !file.getName().startsWith("."))
 			{
 				NEFeatureGroup group = new NEFeatureGroup(file.getName());
 				parent.add(group);

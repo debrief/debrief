@@ -116,8 +116,15 @@ abstract public class NEFeatureGroupHandler extends MWC.Utilities.ReaderWriter.X
 		Enumeration<Editable> iter = group.elements();
 		while (iter.hasMoreElements())
 		{
-			NEFeatureStyle next = (NEFeatureStyle) iter.nextElement();
-			NEFeatureStyleHandler.exportStyle(next, eGroup, doc);			
+			Editable next = iter.nextElement();
+			if (next instanceof NEFeatureStyle)
+			{
+				NEFeatureStyleHandler.exportStyle((NEFeatureStyle) next, eGroup, doc);
+			}
+			else if (next instanceof NEFeatureGroup)
+			{
+				NEFeatureGroupHandler.exportGroup((NEFeatureGroup) next, eGroup, doc);
+			}
 		}
 		
 		parent.appendChild(eGroup);
