@@ -13,10 +13,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
-import org.mwc.cmap.naturalearth.view.NEFeature;
-import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
-import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.osgi.framework.BundleContext;
 
@@ -134,40 +131,52 @@ public class Activator extends AbstractUIPlugin
 	{
 		if (_featureSet == null)
 		{
-			String rootFolder = getLibraryPath();
-			if (rootFolder == null || rootFolder.isEmpty()) {
-				logError(IStatus.WARNING, "Natural Earth Data Folder isn't set", null);
-				return _featureSet;
-			}
-			File rootFile = new File(rootFolder);
-			if (!rootFile.isDirectory()) {
-				logError(IStatus.WARNING, "Natural Earth Data Folder doesn't exist", null);
-				return _featureSet;
-			}
 			_featureSet = new NEFeatureRoot(NELayer.NATURAL_EARTH);
-			File[] files = rootFile.listFiles();
-			List<Order> orderList = new LinkedList<Order>();
-			for(File dir:files) {
-				if (dir.isDirectory() && !dir.getName().startsWith(".")) {
-					Integer order = getOrder(dir);
-					orderList.add(new Order(order, dir));
-				}
-			}
-			Collections.sort(orderList, new Comparator<Order>()
-			{
-
-				@Override
-				public int compare(Order o1, Order o2)
-				{
-					return o1.order.compareTo(o2.order);
-				}
-			});
-			for (Order order : orderList)
-			{
-				addDirectory(order.directory, _featureSet);
-			}
 		}
 		return _featureSet;
+	}
+
+	public List<String> getShapeFiles(File rootFile)
+	{
+		File[] files = rootFile.listFiles();
+		List<Order> orderList = new LinkedList<Order>();
+		for(File dir:files) {
+			if (dir.isDirectory() && !dir.getName().startsWith(".")) {
+				Integer order = getOrder(dir);
+				orderList.add(new Order(order, dir));
+			}
+		}
+		Collections.sort(orderList, new Comparator<Order>()
+		{
+
+			@Override
+			public int compare(Order o1, Order o2)
+			{
+				return o1.order.compareTo(o2.order);
+			}
+		});
+		List<String> shapeFiles = new ArrayList<String>();
+		for (Order order : orderList)
+		{
+			List<String> list = addDirectory(order.directory);
+			shapeFiles.addAll(list);
+		}
+		return shapeFiles;
+	}
+
+	public File getRootFolder()
+	{
+		String rootFolder = getLibraryPath();
+		if (rootFolder == null || rootFolder.isEmpty()) {
+			logError(IStatus.WARNING, "Natural Earth Data Folder isn't set", null);
+			return null;
+		}
+		File rootFile = new File(rootFolder);
+		if (!rootFile.isDirectory()) {
+			logError(IStatus.WARNING, "Natural Earth Data Folder doesn't exist", null);
+			return null;
+		}
+		return rootFile;
 	}
 	
 	private class Order
@@ -212,18 +221,9 @@ public class Activator extends AbstractUIPlugin
 		return Integer.MAX_VALUE;
 	}
 
-	private void addDirectory(File rootFile, NEFeature parent)
+	private List<String> addDirectory(File rootFile)
 	{
 		File[] files = rootFile.listFiles();
-		for (File file : files)
-		{
-			if (file.isDirectory() && !file.getName().startsWith("."))
-			{
-				NEFeatureGroup group = new NEFeatureGroup(file.getName());
-				parent.add(group);
-				addDirectory(file, group);
-			}
-		}
 		List<String> shapeFiles = new ArrayList<String>();
 		for (File file : files)
 		{
@@ -233,11 +233,9 @@ public class Activator extends AbstractUIPlugin
 			}
 		}
 		if (shapeFiles.size() > 0) {
-			NEFeatureStyle style = new NEFeatureStyle(rootFile.getName());
-			parent.add(style);
-			sortShapeFiles(style, shapeFiles);
-			style.getFileNames().addAll(shapeFiles);
+			sortShapeFiles(rootFile,shapeFiles);
 		}
+		return shapeFiles;
 	}
 
 	/**
@@ -284,11 +282,11 @@ public class Activator extends AbstractUIPlugin
 			exception.printStackTrace();
 	}
 	
-	public static void sortShapeFiles(NEFeatureStyle style, List<String> fileNames)
+	public static void sortShapeFiles(File rootFile, List<String> fileNames)
 	{
 		if (fileNames.size() > 0)
 		{
-			if ("ne_10m_bathymetry_all".equals(style.getName()))
+			if ("ne_10m_bathymetry_all".equals(rootFile.getName()))
 			{
 				Collections.sort(fileNames, new Comparator<String>()
 				{

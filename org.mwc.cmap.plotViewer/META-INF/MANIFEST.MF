@@ -17,6 +17,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
  org.mwc.cmap.gt2Plot,
- org.mwc.cmap.geotools
+ org.mwc.cmap.geotools,
+ org.mwc.cmap.NaturalEarth
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
