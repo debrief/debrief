@@ -3,6 +3,8 @@ package org.mwc.cmap.naturalearth.wrapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -78,8 +80,12 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		return null;
 	}
 
-	private void configureLayers(NEFeature feature)
+	private void configureLayers(NEFeature feature, File rootFolder)
 	{
+		if (rootFolder == null) {
+			String rootFolderPath = Activator.getDefault().getLibraryPath();
+			rootFolder = new File(rootFolderPath);
+		}
 		Enumeration<Editable> children = feature.elements();
 		while (children.hasMoreElements())
 		{
@@ -88,12 +94,13 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 			if (thisE instanceof NEFeatureGroup)
 			{
 				NEFeatureGroup child = (NEFeatureGroup) thisE;
-				configureLayers(child);
+				File folder = new File(rootFolder, child.getName());
+				configureLayers(child, folder);
 			}
 			else
 			{
 				NEFeatureStyle style = (NEFeatureStyle) thisE;
-				addLayer(style);
+				addLayer(style, rootFolder);
 			}
 		}
 	}
@@ -249,24 +256,22 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		if (getVisible())
 		{
 			clearMap();
-			configureLayers(_myFeatures);
+			configureLayers(_myFeatures, null);
 		}
 	}
 
 
-	private FeatureLayer addLayer(NEFeatureStyle style)
+	private FeatureLayer addLayer(NEFeatureStyle style, File rootFile)
 	{
 		List<String> fileNames = style.getFileNames();
-		if (fileNames.size() <= 0) {
-			String dirName = style.getName();
-			// FIXME include groups
-			String rootFolder = Activator.getDefault().getLibraryPath();
-			if (dirName != null && !dirName.isEmpty() && rootFolder != null && !rootFolder.isEmpty())
+		if (fileNames.size() <= 0)
+		{
+			if (rootFile.isDirectory())
 			{
-				File rootFile = new File(rootFolder, dirName);
-				if (rootFile.isDirectory())
+				File styleDirectory = new File(rootFile, style.getName());
+				if (styleDirectory.isDirectory())
 				{
-					File[] files = rootFile.listFiles();
+					File[] files = styleDirectory.listFiles();
 					List<String> shapeFiles = new ArrayList<String>();
 					for (File file : files)
 					{
@@ -283,6 +288,7 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 				}
 			}
 		}
+		Activator.sortShapeFiles(style, fileNames);
 		for (String fileName : fileNames)
 		{
 			SimpleFeatureSource featureSource = getFeatureSource(fileName);
