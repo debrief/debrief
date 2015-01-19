@@ -3,8 +3,6 @@ package org.mwc.cmap.naturalearth.wrapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -18,29 +16,24 @@ import org.geotools.styling.Style;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
-import org.mwc.cmap.naturalearth.view.NEFeature;
-import org.mwc.cmap.naturalearth.view.NEFeatureGroup;
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
-import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layer.InterestedInViewportChange;
-import MWC.GUI.Layers;
-import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, InterestedInViewportChange,  BaseLayer.ProvidesRange
+public class NELayer extends GeoToolsLayer implements InterestedInViewportChange,  BaseLayer.ProvidesRange
 {
 
 	private static final long serialVersionUID = 1L;
 
 	private NEFeatureRoot _myFeatures;
-	private Layers _theLayers;
+	//private Layers _theLayers;
 
 	List<FeatureLayer> _gtLayers = new ArrayList<FeatureLayer>();
 
@@ -80,29 +73,9 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		return null;
 	}
 
-	private void configureLayers(NEFeature feature, File rootFolder)
+	private void configureLayers()
 	{
-		if (rootFolder == null) {
-			String rootFolderPath = Activator.getDefault().getLibraryPath();
-			rootFolder = new File(rootFolderPath);
-		}
-		Enumeration<Editable> children = feature.elements();
-		while (children.hasMoreElements())
-		{
-			Editable thisE = children.nextElement();
-
-			if (thisE instanceof NEFeatureGroup)
-			{
-				NEFeatureGroup child = (NEFeatureGroup) thisE;
-				File folder = new File(rootFolder, child.getName());
-				configureLayers(child, folder);
-			}
-			else
-			{
-				NEFeatureStyle style = (NEFeatureStyle) thisE;
-				addLayer(style, rootFolder);
-			}
-		}
+		addLayer();
 	}
 
 	private SimpleFeatureSource getFeatureSource(String fileName)
@@ -240,11 +213,11 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		return dataPath.isDirectory();
 	}
 
-	@Override
-	public void setLayers(Layers parent)
-	{
-		_theLayers = parent;
-	}
+//	@Override
+//	public void setLayers(Layers parent)
+//	{
+//		_theLayers = parent;
+//	}
 
 	/** method that gets called when the viewport changes.
 	 * We handle this separately to screen refreshes since a viewport
@@ -256,39 +229,18 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 		if (getVisible())
 		{
 			clearMap();
-			configureLayers(_myFeatures, null);
+			configureLayers();
 		}
 	}
 
 
-	private FeatureLayer addLayer(NEFeatureStyle style, File rootFile)
+	private FeatureLayer addLayer()
 	{
-		List<String> fileNames = style.getFileNames();
-		if (fileNames.size() <= 0)
-		{
-			if (rootFile.isDirectory())
-			{
-				File styleDirectory = new File(rootFile, style.getName());
-				if (styleDirectory.isDirectory())
-				{
-					File[] files = styleDirectory.listFiles();
-					List<String> shapeFiles = new ArrayList<String>();
-					for (File file : files)
-					{
-						if (file.isFile() && file.getName().endsWith(".shp"))
-						{
-							shapeFiles.add(file.getAbsolutePath());
-						}
-					}
-					if (shapeFiles.size() > 0)
-					{
-						style.getFileNames().addAll(shapeFiles);
-						fileNames = style.getFileNames();
-					}
-				}
-			}
+		File rootFolder = Activator.getDefault().getRootFolder();
+		if (rootFolder == null) {
+			return null;
 		}
-		Activator.sortShapeFiles(style, fileNames);
+		List<String> fileNames = Activator.getDefault().getShapeFiles(rootFolder);
 		for (String fileName : fileNames)
 		{
 			SimpleFeatureSource featureSource = getFeatureSource(fileName);
@@ -303,12 +255,11 @@ public class NELayer extends GeoToolsLayer implements NeedsToKnowAboutLayers, In
 				}
 				else
 				{
-					sld = NaturalearthUtil.createStyle2(featureSource, style);
+					sld = NaturalearthUtil.createStyle2(featureSource);
 				}
-				FeatureLayer layer = new NEFeatureLayer(style, featureSource, sld);
+				FeatureLayer layer = new NEFeatureLayer(_myFeatures, featureSource, sld);
 				_myMap.addLayer(layer);
 				_gtLayers.add(layer);
-				return layer;
 			}
 		}
 		return null;

@@ -81,7 +81,7 @@ public class NaturalearthUtil
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static Style createStyle2(FeatureSource featureSource, NEFeatureStyle st)
+	public static Style createStyle2(FeatureSource featureSource)
 	{
 		SimpleFeatureType schema = (SimpleFeatureType) featureSource.getSchema();
 		Class geomType = schema.getGeometryDescriptor().getType().getBinding();
@@ -89,18 +89,18 @@ public class NaturalearthUtil
 		if (Polygon.class.isAssignableFrom(geomType)
 				|| MultiPolygon.class.isAssignableFrom(geomType))
 		{
-			return createPolygonStyle(featureSource, st);
+			return createPolygonStyle(featureSource);
 
 		}
 		else if (LineString.class.isAssignableFrom(geomType)
 				|| MultiLineString.class.isAssignableFrom(geomType))
 		{
-			return createLineStyle(featureSource, st);
+			return createLineStyle(featureSource);
 
 		}
 		else
 		{
-			return createPointStyle(featureSource, st);
+			return createPointStyle(featureSource);
 		}
 	}
 
@@ -110,7 +110,7 @@ public class NaturalearthUtil
 	 * @param featureSource 
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Style createPolygonStyle(FeatureSource featureSource, NEFeatureStyle st)
+	public static Style createPolygonStyle(FeatureSource featureSource)
 	{
 
 		// create a partially opaque outline stroke
@@ -146,7 +146,7 @@ public class NaturalearthUtil
 			AnchorPoint anchorPoint = sb.createAnchorPoint(0.5, 0.5);
 			PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint,
 					null, sb.literalExpression(0));
-			Rule textRule = createTextRule(st, sb, pointPlacement);
+			Rule textRule = createTextRule(sb, pointPlacement);
 			fts = styleFactory.createFeatureTypeStyle(new Rule[]
 			{ rule, textRule });
 		}
@@ -160,7 +160,7 @@ public class NaturalearthUtil
 		return style;
 	}
 
-	private static Rule createTextRule(NEFeatureStyle st, StyleBuilder sb,
+	private static Rule createTextRule(StyleBuilder sb,
 			PointPlacement pointPlacement)
 	{
 		int txtHeight = 10;
@@ -188,7 +188,7 @@ public class NaturalearthUtil
 	 * @param featureSource 
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Style createLineStyle(FeatureSource featureSource, NEFeatureStyle st)
+	public static Style createLineStyle(FeatureSource featureSource)
 	{
 		Stroke stroke = styleFactory.createStroke(
 				filterFactory.literal(Color.BLUE), filterFactory.literal(1));
@@ -210,7 +210,7 @@ public class NaturalearthUtil
 			AnchorPoint anchorPoint = sb.createAnchorPoint(0.5, 0.5);
 			PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint,
 					null, sb.literalExpression(0));
-			Rule textRule = createTextRule(st, sb, pointPlacement);
+			Rule textRule = createTextRule(sb, pointPlacement);
 			fts = styleFactory.createFeatureTypeStyle(new Rule[]
 			{ rule, textRule });
 		}
@@ -230,7 +230,7 @@ public class NaturalearthUtil
 	 * @param featureSource 
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Style createPointStyle(FeatureSource featureSource, NEFeatureStyle st)
+	public static Style createPointStyle(FeatureSource featureSource)
 	{
 		Graphic gr = styleFactory.createDefaultGraphic();
 		Mark mark = styleFactory.getCircleMark();
@@ -255,7 +255,7 @@ public class NaturalearthUtil
 			AnchorPoint anchorPoint = sb.createAnchorPoint(0.5, 0.5);
 			PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint,
 					null, sb.literalExpression(0));
-			Rule textRule = createTextRule(st, sb, pointPlacement);
+			Rule textRule = createTextRule(sb, pointPlacement);
 			fts = styleFactory.createFeatureTypeStyle(new Rule[]
 			{ rule, textRule });
 		}

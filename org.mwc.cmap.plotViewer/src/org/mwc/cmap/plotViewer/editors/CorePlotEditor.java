@@ -84,6 +84,8 @@ import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.gt2plot.data.ShapeFileLayer;
 import org.mwc.cmap.gt2plot.data.WorldImageLayer;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.naturalearth.Activator;
+import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
@@ -332,14 +334,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 					}
 					else if (ChartBoundsWrapper.NELAYER_TYPE.equals(dl.getDataType()))
 					{
-						// FIXME add NELayer
-						if (dl instanceof GeoToolsLayer)
-						{
-							final GeoToolsLayer gt = (GeoToolsLayer) dl;
-							//gt.setVisible(dl.getVisible());
-							_myGeoHandler.addGeoToolsLayer(gt);
-							wrappedLayer = gt;
-						}
+						final NELayer gt = new NELayer(Activator.getDefault().getDefaultStyleSet());
+						gt.setVisible(dl.getVisible());
+						_myGeoHandler.addGeoToolsLayer(gt);
+						wrappedLayer = gt;
 					}
 					if (wrappedLayer != null)
 						super.addThisLayer(wrappedLayer);
