@@ -2,19 +2,24 @@ package org.mwc.cmap.naturalearth;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -97,7 +102,25 @@ public class Activator extends AbstractUIPlugin
 	 */
 	public String getLibraryPath()
 	{
-		return getPreferenceStore().getString(PreferenceConstants.DATA_FOLDER);
+		String path = getPreferenceStore().getString(PreferenceConstants.DATA_FOLDER);
+		if (path == null || path.isEmpty() || ! (new File(path).isDirectory())) {
+			Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+			if (bundle != null) {
+				URL url = bundle.getEntry("/data");
+				try
+				{
+					path = FileLocator.toFileURL(url).getFile().toString();
+					return path;
+				}
+				catch (IOException e)
+				{
+					return null;
+				}
+			}
+		} else {
+			return path;
+		}
+		return null;
 	}
 
 	/**
