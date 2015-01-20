@@ -33,8 +33,6 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 
 	public static final String NATURAL_EARTH = "Natural Earth";
 	
-	public static final String DEBRIEF_PROJECTION = "Debrief.gtProjection";
-
 	/**
 	 * the map where we display ourselves
 	 * 
