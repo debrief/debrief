@@ -21,13 +21,12 @@ import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.Layer.InterestedInViewportChange;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class NELayer extends GeoToolsLayer implements InterestedInViewportChange,  BaseLayer.ProvidesRange
+public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 {
 
 	private static final long serialVersionUID = 1L;
@@ -64,7 +63,13 @@ public class NELayer extends GeoToolsLayer implements InterestedInViewportChange
 	{
 		// store the map object.  
 		_myMap = map;
-		viewPortChange();
+		
+		// ok, now sort out which dataset we're looking at
+		if (getVisible())
+		{
+			clearMap();
+			configureLayers();
+		}
 	}
 
 	@Override
@@ -212,27 +217,6 @@ public class NELayer extends GeoToolsLayer implements InterestedInViewportChange
 
 		return dataPath.isDirectory();
 	}
-
-//	@Override
-//	public void setLayers(Layers parent)
-//	{
-//		_theLayers = parent;
-//	}
-
-	/** method that gets called when the viewport changes.
-	 * We handle this separately to screen refreshes since a viewport
-	 * change may lead to loading data at a new resolution.
-	 */
-	public void viewPortChange()
-	{
-		// ok, now sort out which dataset we're looking at
-		if (getVisible())
-		{
-			clearMap();
-			configureLayers();
-		}
-	}
-
 
 	private FeatureLayer addLayer()
 	{
