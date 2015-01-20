@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="RB_scenario" xmlns="http://www.mwc.org/asset"
-	ShowSymbol="false" ShowActivity="false" ShowName="false"
+	ShowSymbol="false" ShowActivity="false" ShowName="true"
 	ShowStatus="true" StartTime="2011-12-03T12:00:00">
 	<StepTime Units="seconds" Value="15" />
 	<Participants>
