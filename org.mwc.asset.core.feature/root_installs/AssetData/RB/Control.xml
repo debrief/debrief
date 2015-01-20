@@ -72,11 +72,8 @@
 			</Watch>
 		</PlotDetectionStatusObserver>
 		<DebriefReplayObserver Name="DebriefPlot"
-			record_detections="true" record_positions="true" Active="true"
+			record_detections="false" record_positions="true" Active="true"
 			record_decisions="true" file_name="RBTrial">
-			<SubjectToTrack>
-				<Type Name="BLUE" />
-			</SubjectToTrack>
 		</DebriefReplayObserver>
 		<StopOnProximityObserver Name="Non-BLUE near MER"
 			Active="true">

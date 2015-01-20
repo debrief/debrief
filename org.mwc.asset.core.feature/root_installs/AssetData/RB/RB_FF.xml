@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="RB_scenario" xmlns="http://www.mwc.org/asset"
-	ShowSymbol="false" ShowActivity="false" ShowName="false" ShowStatus="true">
+	ShowSymbol="false" ShowActivity="false" ShowName="false"
+	ShowStatus="true" StartTime="2011-12-03T12:00:00">
 	<StepTime Units="seconds" Value="15" />
 	<Participants>
 		<Surface Name="RedFV1">
-			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE" />
+			<Category Type="FISHING_VESSEL" Force="RED"
+				Environment="SURFACE" />
 			<SensorFit>
 				<TypedCookieSensor>
 					<TypedRangeDoublet>
@@ -48,7 +50,8 @@
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<Surface Name="GreenFV1">
-			<Category Type="FISHING_VESSEL" Force="GREEN" Environment="SURFACE" />
+			<Category Type="FISHING_VESSEL" Force="GREEN"
+				Environment="SURFACE" />
 			<SensorFit></SensorFit>
 			<Status Course="113" Fuel="100">
 				<Location>
@@ -80,13 +83,16 @@
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<Surface Name="RedSWM">
-			<Category Type="DESTROYER" Force="RED" Environment="SURFACE" />
-				<SensorFit><TypedCookieSensor>
+			<Category Type="DESTROYER" Force="RED"
+				Environment="SURFACE" />
+			<SensorFit>
+				<TypedCookieSensor>
 					<TypedRangeDoublet>
 						<Type Name="BLUE" />
 						<DetectionRange Value="15" Units="nm" />
 					</TypedRangeDoublet>
-				</TypedCookieSensor></SensorFit>
+				</TypedCookieSensor>
+			</SensorFit>
 			<Status Course="316" Fuel="100">
 				<Location>
 					<shortLocation Lat="1" Long="1"></shortLocation>
@@ -122,13 +128,16 @@
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<Surface Name="RedFC">
-			<Category Type="FRIGATE" Force="RED" Environment="SURFACE"></Category>
-				<SensorFit><TypedCookieSensor>
+			<Category Type="FRIGATE" Force="RED"
+				Environment="SURFACE"></Category>
+			<SensorFit>
+				<TypedCookieSensor>
 					<TypedRangeDoublet>
 						<Type Name="BLUE" />
 						<DetectionRange Value="15" Units="nm" />
 					</TypedRangeDoublet>
-				</TypedCookieSensor></SensorFit>
+				</TypedCookieSensor>
+			</SensorFit>
 			<Status Course="18" Fuel="100">
 				<Location>
 					<shortLocation Lat="0.25" Long="0.25"></shortLocation>
@@ -164,7 +173,8 @@
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<Helo Name="LX">
-			<Category Type="HELICOPTER" Force="BLUE" Environment="AIRBORNE" />
+			<Category Type="HELICOPTER" Force="BLUE"
+				Environment="AIRBORNE" />
 			<SensorFit>
 				<TypedCookieSensor DetectionLevel="Detected">
 					<TypedRangeDoublet>
@@ -217,7 +227,8 @@
 						<Type Name="BLUE" />
 					</TargetType>
 				</Trail>
-				<Investigate Name="Check out reds" DetectionLevel="Identified" CollaborativeSearch="true">
+				<Investigate Name="Check out reds"
+					DetectionLevel="Identified" CollaborativeSearch="true">
 					<TargetType>
 						<Type Name="FRIGATE" />
 					</TargetType>
@@ -226,8 +237,8 @@
 					</WatchType>
 				</Investigate>
 			</Waterfall>
-			<HeloMovementCharacteristics Name=""
-				FuelUsageRate="0.0" DefaultTurnRate="1">
+			<HeloMovementCharacteristics Name="" FuelUsageRate="0.0"
+				DefaultTurnRate="1">
 				<MinSpeed Value="0.0" Units="m/s" />
 				<MaxSpeed Value="140" Units="kts" />
 				<AccelerationRate Value="5" Units="kt/s" />
@@ -248,7 +259,8 @@
 						<Type Name="GREEN" />
 						<DetectionRange Value="6" Units="nm" />
 					</TypedRangeDoublet>
-				</TypedCookieSensor></SensorFit>
+				</TypedCookieSensor>
+			</SensorFit>
 			<Status Course="99" Fuel="0.0">
 				<Location>
 					<shortLocation Lat="0.23" Long="1.0"></shortLocation>
@@ -258,72 +270,72 @@
 			<Waterfall Name="MerPatrol">
 				<Evade Name="Keep clear">
 					<Duration Value="2" Units="minutes" />
-					<FleeHeight Value="200" Units="ft" ></FleeHeight>
+					<FleeHeight Value="200" Units="ft"></FleeHeight>
 					<FleeSpeed Value="60" Units="ft/s" />
 					<TargetType AND="false">
-						<Type Name="RED" ></Type>
+						<Type Name="RED"></Type>
 						<Type Name="GREEN" />
 					</TargetType>
 				</Evade>
 				<Sequence>
-				<Move Name="Leg 1" Course="330">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 2" Course="300">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 3" Course="270">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 4" Course="315">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 5" Course="340">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 5" Course="315">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 6" Course="280">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 7" Course="255">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
-				<Move Name="Leg 8" Course="260">
-					<Vector Value="6" Units="nm" />
-				</Move>
-				<Wait Name="do dip">
-					<Duration Value="7" Units="minutes"></Duration>
-				</Wait>
+					<Move Name="Leg 1" Course="330">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 2" Course="300">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 3" Course="270">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 4" Course="315">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 5" Course="340">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 5" Course="315">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 6" Course="280">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 7" Course="255">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
+					<Move Name="Leg 8" Course="260">
+						<Vector Value="6" Units="nm" />
+					</Move>
+					<Wait Name="do dip">
+						<Duration Value="7" Units="minutes"></Duration>
+					</Wait>
 				</Sequence>
 			</Waterfall>
-			<HeloMovementCharacteristics Name=""
-				FuelUsageRate="0.0" DefaultTurnRate="1">
+			<HeloMovementCharacteristics Name="" FuelUsageRate="0.0"
+				DefaultTurnRate="1">
 				<MinSpeed Value="0.0" Units="m/s" />
 				<MaxSpeed Value="100" Units="kts" />
 				<AccelerationRate Value="5" Units="kt/s" />
@@ -340,12 +352,14 @@
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 			<grid PlotLabels="true" Units="degs" Visible="true">
-				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
+				<font Bold="false" Family="Sans Serif" Italic="false"
+					Size="8" />
 				<Delta Units="nm" Value="10" />
 				<colour Value="DARK_GREY" />
 			</grid>
-			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
-				Name="World Default" ScaleMax="100000" ScaleStep="50000" Visible="true">
+			<scale AutoMode="true" DisplayUnits="yd"
+				Location="BottomLeft" Name="World Default" ScaleMax="100000"
+				ScaleStep="50000" Visible="true">
 				<colour Value="GREY" />
 			</scale>
 		</layer>
