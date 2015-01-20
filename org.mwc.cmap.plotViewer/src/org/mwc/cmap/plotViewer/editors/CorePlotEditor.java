@@ -594,6 +594,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// and the layers
 		_myLayers.close();
 		_myLayers = null;
+		
+		if (_myGeoHandler != null) {
+			_myGeoHandler.dispose();
+			_myGeoHandler = null;
+		}
 
 		// some other items
 		_timeListener = null;
