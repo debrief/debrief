@@ -42,7 +42,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		setName(NATURAL_EARTH);
 		_myFeatures = features;
 	}
-
+	
 	@Override
 	public void clearMap()
 	{
@@ -51,12 +51,10 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 			//layer.dispose();
 			_myMap.removeLayer(layer);
 		}
-//		if (_myMap != null) {
-//			_myMap.dispose();
-//		}
+		
 		_gtLayers.clear();
-		//_myMap = null;
 	}
+
 
 	@Override
 	public void setMap(MapContent map)
@@ -67,8 +65,45 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		// ok, now sort out which dataset we're looking at
 		if (getVisible())
 		{
-			clearMap();
-			configureLayers();
+			// ok, find the root folder
+			File rootFolder = Activator.getDefault().getRootFolder();
+			if (rootFolder == null) {
+				return;
+			}
+			
+			// and now find the list of shapefiles
+			List<String> fileNames = Activator.getDefault().getShapeFiles(rootFolder);
+			for (String fileName : fileNames)
+			{
+				// ok, get a pointer to the data
+				SimpleFeatureSource featureSource = getFeatureSource(fileName);
+				
+				// did we find it?
+				if (featureSource != null)
+				{
+					// ok, now sort out the style
+					String sldName = fileName.substring(0, fileName.length() - 3) + "sld";
+					Style sld;
+					File sldFile = new File(sldName);
+					
+					if (sldFile.isFile())
+					{
+						// ok, we can produce the styling from the file
+						sld = NaturalearthUtil.loadStyle(sldName);
+					}
+					else
+					{
+						// just give it some default styling
+						sld = NaturalearthUtil.createStyle2(featureSource);
+					}
+					
+					// wrap the GT data
+					FeatureLayer layer = new NEFeatureLayer(_myFeatures, fileName, featureSource, sld);
+					_myMap.addLayer(layer);
+					_gtLayers.add(layer);
+				}
+			}
+			
 		}
 	}
 
@@ -76,11 +111,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	protected org.geotools.map.Layer loadLayer(File openFile)
 	{
 		return null;
-	}
-
-	private void configureLayers()
-	{
-		addLayer();
 	}
 
 	private SimpleFeatureSource getFeatureSource(String fileName)
@@ -216,37 +246,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		final File dataPath = new File(Activator.getDefault().getLibraryPath());
 
 		return dataPath.isDirectory();
-	}
-
-	private FeatureLayer addLayer()
-	{
-		File rootFolder = Activator.getDefault().getRootFolder();
-		if (rootFolder == null) {
-			return null;
-		}
-		List<String> fileNames = Activator.getDefault().getShapeFiles(rootFolder);
-		for (String fileName : fileNames)
-		{
-			SimpleFeatureSource featureSource = getFeatureSource(fileName);
-			if (featureSource != null)
-			{
-				String sldName = fileName.substring(0, fileName.length() - 3) + "sld";
-				Style sld;
-				File sldFile = new File(sldName);
-				if (sldFile.isFile())
-				{
-					sld = NaturalearthUtil.loadStyle(sldName);
-				}
-				else
-				{
-					sld = NaturalearthUtil.createStyle2(featureSource);
-				}
-				FeatureLayer layer = new NEFeatureLayer(_myFeatures, fileName, featureSource, sld);
-				_myMap.addLayer(layer);
-				_gtLayers.add(layer);
-			}
-		}
-		return null;
 	}
 
 	public NEFeatureRoot getStore()
