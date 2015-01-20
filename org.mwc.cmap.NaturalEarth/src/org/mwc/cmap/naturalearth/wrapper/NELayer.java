@@ -103,7 +103,22 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 					_gtLayers.add(layer);
 				}
 			}
-			
+		}
+		List<org.geotools.map.Layer> otherLayers = new ArrayList<org.geotools.map.Layer>();
+		List<org.geotools.map.Layer> layers = _myMap.layers();
+		
+		for (org.geotools.map.Layer layer : layers)
+		{
+			if (!(layer instanceof NEFeatureLayer))
+			{
+				otherLayers.add(layer);
+			}
+		}
+		int destinationPosition = layers.size() - 1;
+		for (org.geotools.map.Layer layer : otherLayers)
+		{
+			int sourcePosition = layers.indexOf(layer);
+			_myMap.moveLayer(sourcePosition, destinationPosition);
 		}
 	}
 
