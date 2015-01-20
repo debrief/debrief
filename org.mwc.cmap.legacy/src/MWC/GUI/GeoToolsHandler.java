@@ -24,4 +24,6 @@ public interface GeoToolsHandler
 	 */
 	public void addGeoToolsLayer(ExternallyManagedDataLayer layer);
 
+	public void dispose();
+
 }
