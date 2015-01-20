@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScenarioController OutputDirectory="RB_output"
+<ScenarioController OutputDirectory="root_installs/AssetData/RB/Output"
 	xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
 
