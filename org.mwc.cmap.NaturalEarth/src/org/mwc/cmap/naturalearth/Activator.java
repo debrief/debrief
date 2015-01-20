@@ -159,13 +159,18 @@ public class Activator extends AbstractUIPlugin
 		return _featureSet;
 	}
 
+	/** find any shapefiles beneath the specified root
+	 * 
+	 * @param rootFile the folder we spider down from
+	 * @return an ordered list of shapefiles
+	 */
 	public List<String> getShapeFiles(File rootFile)
 	{
 		File[] files = rootFile.listFiles();
 		List<Order> orderList = new LinkedList<Order>();
 		for(File dir:files) {
 			if (dir.isDirectory() && !dir.getName().startsWith(".")) {
-				Integer order = getOrder(dir);
+				int order = getOrder(dir);
 				orderList.add(new Order(order, dir));
 			}
 		}
@@ -187,6 +192,10 @@ public class Activator extends AbstractUIPlugin
 		return shapeFiles;
 	}
 
+	/** retrieve the user preferred NAtural Earth data source
+	 * 
+	 * @return
+	 */
 	public File getRootFolder()
 	{
 		String rootFolder = getLibraryPath();
@@ -202,6 +211,11 @@ public class Activator extends AbstractUIPlugin
 		return rootFile;
 	}
 	
+	/** store the order of the specified directory/dataset
+	 * 
+	 * @author ian
+	 *
+	 */
 	private class Order
 	{
 		public Integer order;
@@ -216,6 +230,11 @@ public class Activator extends AbstractUIPlugin
 
 	}
 	
+	/** if the specified folder contains a "1.order" order file,
+	 * extract the order.
+	 * @param dir
+	 * @return the integer to use, or integer.max if un-ordered.
+	 */
 	private Integer getOrder(File dir)
 	{
 		File[] files = dir.listFiles(new FilenameFilter()
@@ -244,6 +263,11 @@ public class Activator extends AbstractUIPlugin
 		return Integer.MAX_VALUE;
 	}
 
+	/** find out if this folder contains any shape files. If it does
+	 * return them in a list
+	 * @param rootFile the root we search down from
+	 * @return
+	 */
 	private List<String> addDirectory(File rootFile)
 	{
 		File[] files = rootFile.listFiles();
