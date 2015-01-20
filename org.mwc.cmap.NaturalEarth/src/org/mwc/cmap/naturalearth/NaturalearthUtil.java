@@ -191,7 +191,7 @@ public class NaturalearthUtil
 	public static Style createLineStyle(FeatureSource featureSource)
 	{
 		Stroke stroke = styleFactory.createStroke(
-				filterFactory.literal(Color.BLUE), filterFactory.literal(1));
+				filterFactory.literal(Color.LIGHT_GRAY), filterFactory.literal(1));
 
 		/*
 		 * Setting the geometryPropertyName arg to null signals that we want to draw

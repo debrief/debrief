@@ -257,7 +257,7 @@ public class NELayer extends GeoToolsLayer implements InterestedInViewportChange
 				{
 					sld = NaturalearthUtil.createStyle2(featureSource);
 				}
-				FeatureLayer layer = new NEFeatureLayer(_myFeatures, featureSource, sld);
+				FeatureLayer layer = new NEFeatureLayer(_myFeatures, fileName, featureSource, sld);
 				_myMap.addLayer(layer);
 				_gtLayers.add(layer);
 			}
