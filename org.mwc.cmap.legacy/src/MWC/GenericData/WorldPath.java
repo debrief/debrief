@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class WorldPath implements java.io.Serializable
+public final class WorldPath implements java.io.Serializable
 {
 
 
