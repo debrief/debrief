@@ -701,4 +701,13 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 	}
 
+	@Override
+	public void dispose()
+	{
+		if (_map != null)
+		{
+			_map.dispose();
+		}
+	}
+
 }
