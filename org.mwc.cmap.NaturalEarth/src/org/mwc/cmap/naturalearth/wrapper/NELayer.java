@@ -30,8 +30,6 @@ import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
@@ -48,6 +46,10 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	private static final long serialVersionUID = 1L;
 	
 	private static final int BATHY_HEIGHT = 20;
+
+	/** from StreamingRenderer - Tolerance used to compare doubles for equality */
+  private static final double TOLERANCE = 1e-6;
+
 
 	private NEFeatureRoot _myFeatures;
 	//private Layers _theLayers;
@@ -363,23 +365,10 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 //			double _scaleFactor = dWidDegs / sWidDegs;
 			
 			MapViewport viewport = _myMap.getViewport();
-			double dpi = RendererUtilities.getDpi(null);
-			double scale = 0;
-			try
-			{
-				scale = RendererUtilities.calculateScale(viewport.getBounds(),
-						(int) viewport.getScreenArea().getWidth(), (int) viewport
-								.getScreenArea().getHeight(), dpi);
-			}
-			catch (FactoryException ex)
-			{
-				throw new RuntimeException(ex);
-			}
-			catch (TransformException ex)
-			{
-				throw new RuntimeException(ex);
-			}
-			if (scale <= _maxScale && scale >= _minScale)
+			double scaleDenominator = RendererUtilities.calculateOGCScale(viewport.getBounds(),
+						(int) viewport.getScreenArea().getWidth(), null);
+
+			if ( (_minScale - TOLERANCE) <= scaleDenominator && (_maxScale + TOLERANCE) > scaleDenominator )
 			{
 				int height = sArea.height;
 				Set<String> depths = _bathyKeys.keySet();
