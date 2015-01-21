@@ -104,9 +104,14 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 				}
 			}
 		}
+		
+		// NOTE: we now need to push the NE layers to the bottom of the GeoTools stack.
+		// - we require the GT Tiffs to sit above NE layers.
+		
 		List<org.geotools.map.Layer> otherLayers = new ArrayList<org.geotools.map.Layer>();
 		List<org.geotools.map.Layer> layers = _myMap.layers();
 		
+		// find a list of the non-Natural Earth layers
 		for (org.geotools.map.Layer layer : layers)
 		{
 			if (!(layer instanceof NEFeatureLayer))
@@ -114,6 +119,8 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 				otherLayers.add(layer);
 			}
 		}
+		
+		// move the non-NE layers to the top of the stack
 		int destinationPosition = layers.size() - 1;
 		for (org.geotools.map.Layer layer : otherLayers)
 		{
