@@ -59,7 +59,6 @@
     <module>org.mwc.cmap.xyplot</module>
     <module>org.mwc.cmap.jfreechart</module>
     <module>org.mwc.cmap.media</module>
-    <module>org.mwc.debrief.GNDManager</module>
     <module>org.mwc.debrief.SensorFusion</module>
     <module>org.mwc.debrief.TimeBar</module>
     <module>org.mwc.debrief.combined.feature</module>
