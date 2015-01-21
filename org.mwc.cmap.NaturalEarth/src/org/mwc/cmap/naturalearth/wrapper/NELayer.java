@@ -1,10 +1,16 @@
 package org.mwc.cmap.naturalearth.wrapper;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.geotools.data.FileDataStore;
@@ -12,13 +18,23 @@ import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
+import org.geotools.map.MapViewport;
+import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.Rule;
+import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
+import org.geotools.styling.Symbolizer;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 
 import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
@@ -30,11 +46,18 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 {
 
 	private static final long serialVersionUID = 1L;
+	
+	private static final int BATHY_HEIGHT = 20;
 
 	private NEFeatureRoot _myFeatures;
 	//private Layers _theLayers;
 
-	List<FeatureLayer> _gtLayers = new ArrayList<FeatureLayer>();
+	private List<FeatureLayer> _gtLayers = new ArrayList<FeatureLayer>();
+	
+	private Map<String, Color> _bathyKeys = new LinkedHashMap<String, Color>();
+
+	private double _maxScale = 0;
+	private double _minScale = Double.MAX_VALUE;
 
 	public NELayer(NEFeatureRoot features)
 	{
@@ -73,6 +96,9 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 			
 			// and now find the list of shapefiles
 			List<String> fileNames = Activator.getDefault().getShapeFiles(rootFolder);
+			_bathyKeys.clear();
+			_maxScale = 0;
+			_minScale = Double.MAX_VALUE;
 			for (String fileName : fileNames)
 			{
 				// ok, get a pointer to the data
@@ -96,7 +122,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 						// just give it some default styling
 						sld = NaturalearthUtil.createStyle2(featureSource);
 					}
-					
+					loadBathyKey(fileName, sld);
 					// wrap the GT data
 					FeatureLayer layer = new NEFeatureLayer(_myFeatures, fileName, featureSource, sld);
 					_myMap.addLayer(layer);
@@ -126,6 +152,52 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		{
 			int sourcePosition = layers.indexOf(layer);
 			_myMap.moveLayer(sourcePosition, destinationPosition);
+		}
+	}
+
+	public void loadBathyKey(String fileName, Style sld)
+	{
+		if (fileName.contains(Activator.NE_10M_BATHYMETRY_ALL)
+				&& sld != null)
+		{
+			int length = "ne_10m_bathymetry_A_".length();
+			String name = new File(fileName).getName();
+			if (name.length() > length)
+			{
+				name = name.substring(length, name.length() - 4);
+				FeatureTypeStyle[] typeStyles = sld.featureTypeStyles()
+						.toArray(new FeatureTypeStyle[0]);
+				if (typeStyles.length > 0)
+				{
+					double maxScale = SLD.maxScale(typeStyles[0]);
+					if (maxScale > _maxScale)
+					{
+						_maxScale = maxScale;
+					}
+					double minScale = SLD.minScale(typeStyles[0]);
+					if (minScale < _minScale)
+					{
+						_minScale = minScale;
+					}
+				}
+				for (FeatureTypeStyle typeStyle : typeStyles)
+				{
+					List<Rule> rules = typeStyle.rules();
+					for (Rule rule : rules)
+					{
+						Symbolizer[] syms = rule.getSymbolizers();
+						for (Symbolizer sym : syms)
+						{
+							if (sym instanceof PolygonSymbolizer)
+							{
+								Color color = SLD.color(((PolygonSymbolizer) sym).getFill());
+								_bathyKeys.put(name, color);
+								break;
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -273,6 +345,56 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	public NEFeatureRoot getStore()
 	{
 		return _myFeatures;
+	}
+
+	@Override
+	public void paint(CanvasType dest)
+	{
+		if (dest != null && getVisible() && _bathyKeys.size() > 0) {
+			Dimension sArea = dest.getProjection().getScreenArea();
+//			WorldArea wArea = dest.getProjection().getDataArea();
+//			
+//			final double sWidPixels =  sArea.width;
+//			final double sWidInches = sWidPixels / 72d;  // presume 72 dpi
+//			final double sWidM = sWidInches * 2.54 / 100;
+//			final double sWidDegs = Conversions.m2Degs(sWidM);
+//			final double dWidDegs = wArea.getWidth(); 
+//			
+//			double _scaleFactor = dWidDegs / sWidDegs;
+			
+			MapViewport viewport = _myMap.getViewport();
+			double dpi = RendererUtilities.getDpi(null);
+			double scale = 0;
+			try
+			{
+				scale = RendererUtilities.calculateScale(viewport.getBounds(),
+						(int) viewport.getScreenArea().getWidth(), (int) viewport
+								.getScreenArea().getHeight(), dpi);
+			}
+			catch (FactoryException ex)
+			{
+				throw new RuntimeException(ex);
+			}
+			catch (TransformException ex)
+			{
+				throw new RuntimeException(ex);
+			}
+			if (scale <= _maxScale && scale >= _minScale)
+			{
+				int height = sArea.height;
+				Set<String> depths = _bathyKeys.keySet();
+				Font font = new Font("Arial", Font.PLAIN, 9);
+				for (String depth : depths)
+				{
+					height = height - BATHY_HEIGHT;
+					dest.setColor(_bathyKeys.get(depth));
+					dest.fillRect(0, height, BATHY_HEIGHT, BATHY_HEIGHT);
+					dest.setColor(Color.BLACK);
+					dest.drawText(font, depth, BATHY_HEIGHT + 5, height + 12);
+				}
+				dest.drawText(font, "Bathymetry", 5, height - 10);
+			}
+		}
 	}
 
 }

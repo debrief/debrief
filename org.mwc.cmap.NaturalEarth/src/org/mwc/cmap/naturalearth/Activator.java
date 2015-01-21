@@ -28,6 +28,8 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin
 {
 
+	public static final String NE_10M_BATHYMETRY_ALL = "ne_10m_bathymetry_all";
+
 	private static final String ORDER = ".order";
 
 	// The plug-in ID
@@ -333,7 +335,7 @@ public class Activator extends AbstractUIPlugin
 	{
 		if (fileNames.size() > 0)
 		{
-			if ("ne_10m_bathymetry_all".equals(rootFile.getName()))
+			if (NE_10M_BATHYMETRY_ALL.equals(rootFile.getName()))
 			{
 				Collections.sort(fileNames, new Comparator<String>()
 				{
@@ -354,7 +356,8 @@ public class Activator extends AbstractUIPlugin
 						String s1 = new File(o1).getName();
 						String s2 = new File(o2).getName();
 						int length = "ne_10m_bathymetry_A_".length();
-						if (s1.length() > length && s2.length() > length) {
+						if (s1.length() > length && s2.length() > length)
+						{
 							s1 = s1.substring(length, s1.length() - 4);
 							s2 = s2.substring(length, s2.length() - 4);
 							try
