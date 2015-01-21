@@ -192,7 +192,7 @@ public class CoreViewLabelProvider extends LabelProvider implements
 			Editable editable = editableWrapper.getEditable();
 			if (editable instanceof ColoredWatchable)
 			{
-				String id = idFor((ColoredWatchable) editable);
+				String id = idFor((ColoredWatchable) editable, "");
 				imageIds.add(id);
 			}
 		}
@@ -246,8 +246,9 @@ public class CoreViewLabelProvider extends LabelProvider implements
 				{
 					final ColoredWatchable thisW = (ColoredWatchable) editable;
 
-					// sort out the color index
-					final String thisId = idFor(thisW);
+					// sort out the color index. Note: we incude the image descriptor, since
+					// some elements (tracks) can provide different icons.
+					final String thisId = idFor(thisW, thirdPartyImageDescriptor.toString());
 
 					// do we have a cached image for this combination?
 					res = getLocallyCachedImage(thisId);
@@ -385,11 +386,12 @@ public class CoreViewLabelProvider extends LabelProvider implements
 	 * 
 	 * @param thisW
 	 *          the item to hash
+	 * @param thirdPartyImageDescriptor 
 	 * @return a unique string for this item type and color
 	 */
-	private String idFor(final ColoredWatchable thisW)
+	private String idFor(final ColoredWatchable thisW, String thirdPartyImageDescriptor)
 	{
-		return thisW.getClass() + " " + thisW.getColor();
+		return thisW.getClass() + " " + thisW.getColor() + " " + thirdPartyImageDescriptor;
 	}
 
 	public Image getColumnImage(final Object element, final int columnIndex)

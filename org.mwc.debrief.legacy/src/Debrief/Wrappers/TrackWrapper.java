@@ -51,6 +51,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
@@ -3853,4 +3854,78 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return elements();
 	}
 
+	/** accessor to determine if this is a relative track
+	 * 
+	 * @return
+	 */
+	public boolean isTMATrack()
+	{
+		boolean res = false;
+		if(_thePositions != null)
+			if(_thePositions.size() > 0)
+				if(_thePositions.first() instanceof CoreTMASegment)
+				{
+					res = true;
+				}
+		
+		return res;
+	}
+	
+	@Override
+	public int compareTo(Plottable arg0)
+	{
+		Integer answer = null;
+		
+		// SPECIAL PROCESSING: we wish to push TMA tracks to the top of any 
+		// tracks shown in the outline view.
+		
+		// is he a track?
+		if(arg0 instanceof TrackWrapper)
+		{
+			TrackWrapper other = (TrackWrapper) arg0;
+			
+			// yes, he's a track. See if we're a relative track
+			boolean iAmTMA = isTMATrack();
+			
+			// is he relative?
+			boolean heIsTMA = other.isTMATrack();
+			
+			if(heIsTMA)
+			{
+				// ok, he's a TMA segment. now we need to sort out if we are.						
+				if(iAmTMA)
+				{
+					// we're both relative, compare names
+					answer = getName().compareTo(other.getName());
+				}
+				else
+				{
+					// only he is relative, he comes first
+					answer = 1;
+				}
+			}
+			else
+			{
+				// he's not relative. am I? 
+				if(iAmTMA)
+				{
+					// I am , so go first
+					answer = -1;
+				}
+			}
+		}
+		else
+		{
+			// we're a track, they're not - put us at the end!
+			answer = 1;
+		}
+		
+		// if we haven't worked anything out yet, just use the parent implementation
+		if(answer == null)
+			answer = super.compareTo(arg0);
+		
+		return answer;
+	}
+
+	
 }

@@ -1253,9 +1253,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 				else if ((p1.getEditable() instanceof Comparable)
 						&& (p2.getEditable() instanceof Comparable))
 				{
-					final String name1 = p1.getEditable().toString();
-					final String name2 = p2.getEditable().toString();
-					res = name1.compareTo(name2);
+					@SuppressWarnings("rawtypes")
+					Comparable p1c = (Comparable) p1.getEditable();
+					@SuppressWarnings("rawtypes")
+					Comparable p2c = (Comparable) p2.getEditable();
+					res = p1c.compareTo(p2c);
+					
+					// Note: use the native compare-to, not just comparing names
+//					final String name1 = p1.getEditable().toString();
+//					final String name2 = p2.getEditable().toString();
+//					res = name1.compareTo(name2);
 				}
 				else
 				{

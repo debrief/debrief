@@ -398,17 +398,24 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
     public int compareTo(final Plottable arg0)
     {
-        final int res;
-        final Plottable other = (Plottable) arg0;
-        final int myCode = hashCode();
-        final int otherCode = other.hashCode();
-        if (myCode < otherCode)
-            res = -1;
-        else if (myCode > otherCode)
-            res = 1;
-        else
-            res = 0;
-        return res;
+    	// just do idiot check
+    	if((getName() != null) && (arg0.getName() != null) && (!getName().equals(arg0.getName())))
+    	{
+    		return getName().compareTo(arg0.getName());
+    	}
+    	else
+    	{
+	      final int res;
+	      final int myCode = hashCode();
+	      final int otherCode = arg0.hashCode();
+	      if (myCode < otherCode)
+	          res = -1;
+	      else if (myCode > otherCode)
+	          res = 1;
+	      else
+	          res = 0;
+	      return res;    		
+    	}
     }
 
 }
