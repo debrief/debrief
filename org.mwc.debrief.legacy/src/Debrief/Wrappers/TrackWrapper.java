@@ -3854,6 +3854,23 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return elements();
 	}
 
+	/** accessor to determine if this is a relative track
+	 * 
+	 * @return
+	 */
+	public boolean isTMATrack()
+	{
+		boolean res = false;
+		if(_thePositions != null)
+			if(_thePositions.size() > 0)
+				if(_thePositions.first() instanceof CoreTMASegment)
+				{
+					res = true;
+				}
+		
+		return res;
+	}
+	
 	@Override
 	public int compareTo(Plottable arg0)
 	{
@@ -3865,47 +3882,37 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// is he a track?
 		if(arg0 instanceof TrackWrapper)
 		{
-			// yes, he's a track. See if we're a relative track
-			boolean iAmRelative = false;
-			if(_thePositions != null)
-				if(_thePositions.size() > 0)
-					if(_thePositions.first() instanceof CoreTMASegment)
-					{
-						iAmRelative = true;
-					}
-			
 			TrackWrapper other = (TrackWrapper) arg0;
-			SegmentList pos = other._thePositions;
-			if(pos != null)
-				if(pos.size() > 0)
+			
+			// yes, he's a track. See if we're a relative track
+			boolean iAmTMA = isTMATrack();
+			
+			// is he relative?
+			boolean heIsTMA = other.isTMATrack();
+			
+			if(heIsTMA)
+			{
+				// ok, he's a TMA segment. now we need to sort out if we are.						
+				if(iAmTMA)
 				{
-					// ok, he's got some legs.
-					Plottable legOne = pos.first();
-					
-					// is he a TMA segment?
-					if(legOne instanceof CoreTMASegment)
-					{
-						// ok, he's a TMA segment. now we need to sort out if we are.						
-						if(iAmRelative)
-						{
-							// we're both relative, compare names
-							answer = getName().compareTo(other.getName());
-						}
-						else
-						{
-							// only he is relative, he comes first
-							answer = 1;
-						}
-					}
-					{
-						// he's not relative. am I? 
-						if(iAmRelative)
-						{
-							// I am , so go first
-							answer = -1;
-						}
-					}
+					// we're both relative, compare names
+					answer = getName().compareTo(other.getName());
 				}
+				else
+				{
+					// only he is relative, he comes first
+					answer = 1;
+				}
+			}
+			else
+			{
+				// he's not relative. am I? 
+				if(iAmTMA)
+				{
+					// I am , so go first
+					answer = -1;
+				}
+			}
 		}
 		else
 		{
