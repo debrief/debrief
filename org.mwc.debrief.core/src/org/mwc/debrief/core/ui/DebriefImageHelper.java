@@ -15,7 +15,6 @@
 package org.mwc.debrief.core.ui;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 import org.mwc.debrief.core.DebriefPlugin;
 
@@ -42,9 +41,7 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 	{
 		ImageDescriptor res = null;
 		
-		if (editable instanceof TrackWrapper)
-			res = DebriefPlugin.getImageDescriptor("icons/16/track.png");
-		else if (editable instanceof SensorWrapper)
+		if (editable instanceof SensorWrapper)
 			res = DebriefPlugin.getImageDescriptor("icons/16/sensor.png");
 		else if (editable instanceof ChartFolio)
 			res = DebriefPlugin.getImageDescriptor("icons/16/library.png");
@@ -70,6 +67,17 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 			res = DebriefPlugin.getImageDescriptor("icons/16/polygon.png");
 		else if (editable instanceof LabelWrapper)
 			res = DebriefPlugin.getImageDescriptor("icons/16/shape.gif");
+		else if (editable instanceof TrackWrapper)
+		{
+			// we're doing fancy testing here, so put it last in the list
+			
+			// see if it's a relative track
+			TrackWrapper tw=  (TrackWrapper) editable;
+			if(tw.isTMATrack())
+				res = DebriefPlugin.getImageDescriptor("icons/16/track_relative.png");
+			else
+				res = DebriefPlugin.getImageDescriptor("icons/16/track.png");
+		}
 		 
 		return res;
 	}
