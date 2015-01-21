@@ -246,7 +246,8 @@ public class CoreViewLabelProvider extends LabelProvider implements
 				{
 					final ColoredWatchable thisW = (ColoredWatchable) editable;
 
-					// sort out the color index
+					// sort out the color index. Note: we incude the image descriptor, since
+					// some elements (tracks) can provide different icons.
 					final String thisId = idFor(thisW, thirdPartyImageDescriptor.toString());
 
 					// do we have a cached image for this combination?
