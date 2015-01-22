@@ -381,7 +381,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 					dest.setColor(Color.BLACK);
 					dest.drawText(font, depth, BATHY_HEIGHT + 5, height + 12);
 				}
-				dest.drawText(font, "Bathymetry", 5, height - 10);
+				dest.drawText(font, "Depth (m)", 5, height - 10);
 			}
 		}
 	}
