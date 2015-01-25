@@ -96,7 +96,6 @@ public class ImportAis extends PlainImporterBase
 					if (trackWrapper == null) {
 						trackWrapper = new TrackWrapper();
 						TrackSegment initialLayer = new TrackSegment();
-						initialLayer.setPlotRelative(true);
 						trackWrapper.add(initialLayer);
 						addLayer(trackWrapper);
 						trackWrapper.setName(name);
