@@ -300,5 +300,6 @@ Require-Bundle: org.mwc.cmap.core,
  org.eclipse.core.filesystem,
  org.eclipse.ui.cheatsheets;bundle-version="[3.4.0,4.0.0)",
  org.mwc.cmap.gt2Plot;bundle-version="[1.0.0,2.0.0)",
- org.mwc.cmap.plotViewer
+ org.mwc.cmap.plotViewer,
+ org.mwc.cmap.aislib
 Bundle-ActivationPolicy: lazy
