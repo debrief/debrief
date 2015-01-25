@@ -17,6 +17,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import dk.dma.ais.message.AisMessage;
+import dk.dma.ais.message.AisMessage4;
 import dk.dma.ais.message.AisPositionMessage;
 import dk.dma.ais.reader.AisReader;
 import dk.dma.ais.reader.AisReaders;
@@ -73,7 +74,12 @@ public class ImportAis extends PlainImporterBase
 		{
 			public void accept(AisMessage aisMessage)
 			{
-				if (aisMessage instanceof AisPositionMessage)
+				if (aisMessage.getMsgId() == 4)
+				{
+					AisMessage4 a4 = (AisMessage4) aisMessage;
+					System.out.println("date:" + a4.getDate());
+				}
+				else if (aisMessage.getMsgId() == 1)
 				{
 					AisPositionMessage apm = (AisPositionMessage) aisMessage;
 //				System.out.println("id: " + apm.getMsgId());
