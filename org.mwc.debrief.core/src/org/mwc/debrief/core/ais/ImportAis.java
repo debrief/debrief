@@ -8,7 +8,6 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
