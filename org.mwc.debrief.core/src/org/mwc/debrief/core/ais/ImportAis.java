@@ -2,8 +2,6 @@ package org.mwc.debrief.core.ais;
 
 import java.awt.Color;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.core.runtime.Status;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -11,6 +9,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -26,7 +25,6 @@ import dk.dma.enav.util.function.Consumer;
 public class ImportAis extends PlainImporterBase
 {
 
-	private Map<String, TrackWrapper> trackWrappers = new HashMap<String, TrackWrapper>();
 	private HiResDate theDate;
 
 	public ImportAis()
@@ -98,14 +96,25 @@ public class ImportAis extends PlainImporterBase
 						return;
 					}
 					String name = new Integer(apm.getUserId()).toString();
-					TrackWrapper trackWrapper = trackWrappers.get(name);
-					if (trackWrapper == null) {
+					Layer layer = getLayerFor(name);
+					if (layer != null && !(layer instanceof TrackWrapper))
+					{
+						DebriefPlugin.logError(Status.WARNING, "Invalid layer in AIS file:"
+								+ layer.getName(), null);
+						return;
+					}
+					TrackWrapper trackWrapper;
+					if (layer == null)
+					{
 						trackWrapper = new TrackWrapper();
 						addLayer(trackWrapper);
 						trackWrapper.setName(name);
 						trackWrapper.setColor(Color.BLUE);
 						trackWrapper.setSymbolColor(Color.BLUE);
-						trackWrappers.put(name, trackWrapper);
+					}
+					else
+					{
+						trackWrapper = (TrackWrapper) layer;
 					}
 					theDate = new HiResDate(theDate.getDate().getTime() + apm.getUtcSec()*1000);
 					WorldLocation loc = new WorldLocation(lat, lon, 0);

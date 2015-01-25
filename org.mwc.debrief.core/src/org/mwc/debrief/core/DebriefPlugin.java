@@ -43,7 +43,6 @@ import org.mwc.debrief.core.ContextOperations.MergeContacts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts;
 import org.mwc.debrief.core.ContextOperations.TrimTrack;
-import org.mwc.debrief.core.ais.ImportAis;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
@@ -227,14 +226,13 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		// and the Replay importer/exporter (used to export items from the
 		// layer-manager)
 		ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
-
-		ImportManager.addImporter(new ImportAis());
 		
 		// make Debrief the default editor for XML files
 		final IEditorRegistry editorRegistry = PlatformUI.getWorkbench()
 				.getEditorRegistry();
 		editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
-
+		editorRegistry.setDefaultEditor("*.dpf", "org.mwc.debrief.PlotEditor");
+		
 		// tell the message provider where it can fire messages to
 		MessageProvider.Base.setProvider(this);
 
