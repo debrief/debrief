@@ -101,8 +101,6 @@ public class ImportAis extends PlainImporterBase
 					TrackWrapper trackWrapper = trackWrappers.get(name);
 					if (trackWrapper == null) {
 						trackWrapper = new TrackWrapper();
-						TrackSegment initialLayer = new TrackSegment();
-						trackWrapper.add(initialLayer);
 						addLayer(trackWrapper);
 						trackWrapper.setName(name);
 						trackWrapper.setColor(Color.BLUE);
