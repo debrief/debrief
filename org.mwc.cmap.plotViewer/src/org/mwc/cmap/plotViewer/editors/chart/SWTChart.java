@@ -188,7 +188,6 @@ import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.PlainProjection.ViewportChangedListener;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;

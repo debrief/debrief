@@ -10,7 +10,6 @@ import MWC.GenericData.WorldLocation;
 
 public class NEFeatureStyle extends NEFeature
 {
-
 	private static final long serialVersionUID = 1L;
 	private List<String> _fileNames = new ArrayList<String>();
 	

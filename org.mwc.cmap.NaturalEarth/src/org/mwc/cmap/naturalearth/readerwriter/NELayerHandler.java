@@ -25,13 +25,15 @@ package org.mwc.cmap.naturalearth.readerwriter;
 
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 
-abstract public class NELayerHandler extends
+public class NELayerHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements LayerHandlerExtension
 {
 
@@ -45,12 +47,17 @@ abstract public class NELayerHandler extends
 	private boolean _isVis;
 	private String _myName;
 	
-	public NELayerHandler(Layers theLayers)
+	public NELayerHandler()
+	{
+		this(TYPE);
+	}
+	
+	public NELayerHandler(String theType)
 	{
 		// inform our parent what type of class we are
-		super(TYPE);
+		super(theType);
 		
-		_theLayers = theLayers;
+		//_theLayers = theLayers;
 
 		addAttributeHandler(new HandleAttribute(NAME)
 		{
