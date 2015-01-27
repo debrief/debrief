@@ -29,7 +29,7 @@
         <menuContribution locationURI="menu:org.mwc.debrief.core.EditorFeatures?after=features"> 
 	      	<command
 	          commandId="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE"
-	          icon="icons/16/scale.png"
+	          icon="icons/16/NaturalEarth.png"
 	          style="push"
 	          id="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE">
 	       	  <visibleWhen
