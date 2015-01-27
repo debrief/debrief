@@ -124,7 +124,7 @@ public class ExportWMF extends CoreEditorAction
 				catch(final UnsatisfiedLinkError le)
 				{
 					CorePlugin.logError(Status.ERROR,"Failed to find clipboard dll", le);
-					CorePlugin.showMessage("Export to WMF", "Sorry, unable to produce WMF. This is either an invalid installation dll missing, or an non-Windows PC");
+					CorePlugin.showMessage("Export to WMF", "Sorry, unable to produce WMF. This is due to a dll missing, or an non-Windows PC");
 				}
 				catch (final Exception e)
 				{
