@@ -11,7 +11,6 @@ public class NEFeatureGroup extends NEFeature
 
 	private static final long serialVersionUID = 1L;
 	
-
 	public NEFeatureGroup(String name)
 	{
 		super(name);
