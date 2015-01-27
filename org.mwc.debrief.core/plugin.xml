@@ -127,6 +127,11 @@
                 <separator name="sep2" visible="true"/>
                 <separator name="additions" visible="true"/>
             </toolbar>
+            <toolbar id="org.mwc.debrief.core.ChartFeatures" label="Chart Features">
+                <separator name="charts" visible="true"/>
+                <separator name="sep2" visible="true"/>
+                <separator name="additions" visible="true"/>
+            </toolbar>
             <toolbar id="org.mwc.debrief.core.EditorView" label="View Mode">
                 <separator name="viewRadio" visible="true"/>
                 <separator name="view" visible="true"/>
