@@ -39,7 +39,16 @@
 	                 </reference>
 	      	  </visibleWhen>
 	      	</command>
-      	</menuContribution>      	
+      	</menuContribution>
+      	<menuContribution locationURI="toolbar:org.mwc.debrief.core.ChartFeatures?after=charts">
+            <separator name="org.mwc.debrief.core.charts"> </separator>
+            <command commandId="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE" icon="icons/24/NaturalEarth.png"
+                style="push" id="org.mwc.debrief.core.NaturalEarth">
+                <visibleWhen checkEnabled="false">
+                    <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
+                </visibleWhen>
+            </command>
+        </menuContribution>
      </extension>
      
      <extension point="org.eclipse.ui.commands">
