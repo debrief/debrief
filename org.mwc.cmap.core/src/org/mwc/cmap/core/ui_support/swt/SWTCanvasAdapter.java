@@ -372,7 +372,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			_theProjection.setDataArea(theArea);
 
 			// get the projection to refit-itself
-			_theProjection.zoom(0.0);
+		//	_theProjection.zoom(0.0);
 		}
 
 	}
