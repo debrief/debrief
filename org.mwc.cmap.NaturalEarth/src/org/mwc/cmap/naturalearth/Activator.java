@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
@@ -59,6 +60,9 @@ public class Activator extends AbstractUIPlugin
 	{
 		super.start(context);
 		plugin = this;
+		
+		// register our image helper
+		CoreViewLabelProvider.addImageHelper(new NE_ImageHelper());
 	}
 
 	/*
