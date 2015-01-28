@@ -74,6 +74,7 @@ public class ZoomIn extends CoreDragAction
 
 
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
 				final Layers theLayers, SWTCanvas theCanvas)
