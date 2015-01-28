@@ -199,7 +199,7 @@ public class ZoomIn extends PlainDragTool  implements Serializable
       _theChart.getCanvas().getProjection().setDataArea(_oldArea);
       
       // get the projection to refit-itself
-      _theChart.getCanvas().getProjection().zoom(0.0);
+  //    _theChart.getCanvas().getProjection().zoom(0.0);
     }
 
     public void execute()
@@ -208,7 +208,7 @@ public class ZoomIn extends PlainDragTool  implements Serializable
       _theChart.getCanvas().getProjection().setDataArea(_newArea);
       
       // get the projection to refit-itself
-      _theChart.getCanvas().getProjection().zoom(0.0);
+  //    _theChart.getCanvas().getProjection().zoom(0.0);
     }
   }
 
