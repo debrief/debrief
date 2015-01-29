@@ -297,7 +297,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 
 		// ok, segment the line
 		String[] blocks = thisLine.split(",");
-		Date date = dateFor(blocks[0]);
+		Date date = dateFor(blocks[1]);
 		double lat = Double.parseDouble(blocks[3]);
 		double lon = Double.parseDouble(blocks[4]);
 		double speedKts = Double.parseDouble(blocks[5]);
