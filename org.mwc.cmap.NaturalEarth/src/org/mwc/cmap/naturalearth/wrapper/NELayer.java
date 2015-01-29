@@ -136,10 +136,24 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 							return;
 						}
 						Rectangle screenArea = viewport.getScreenArea();
-						graphics.setColor(new Color(143, 216, 216));
+						Color c = getBathy0Color();
+						graphics.setColor(c);
 						graphics.fillRect(screenArea.x, screenArea.y, screenArea.width, screenArea.height);
 					}
 
+					public Color getBathy0Color()
+					{
+						if (_bathyKeys != null)
+						{
+							Color value = _bathyKeys.get("0");
+							if (value != null)
+							{
+								return value;
+							}
+						}
+						return new Color(172, 199, 230);
+					}
+					
 				};
 				_myMap.addLayer(background);
 			}
