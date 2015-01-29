@@ -103,7 +103,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	private static final SimpleDateFormat iso;
 	static
 	{
-		iso = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+		iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		iso.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 

@@ -277,7 +277,7 @@ public class FrequencyMeasurementContribution extends
 
 			// ok,now construct the date=time
 			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
-					"yyMMdd hhmmss"), date + " " + time);
+					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d

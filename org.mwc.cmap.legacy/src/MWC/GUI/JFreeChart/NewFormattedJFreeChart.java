@@ -68,7 +68,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 * the interval & format of the date axis
 	 */
 	private DateAxisEditor.MWCDateTickUnitWrapper _theDateTick = new DateAxisEditor.MWCDateTickUnitWrapper(
-			DateTickUnitType.MINUTE, Calendar.MINUTE, "hh:mm");
+			DateTickUnitType.MINUTE, Calendar.MINUTE, "HH:mm");
 
 	/**
 	 * the time offset supplier

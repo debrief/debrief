@@ -674,7 +674,7 @@ public class MaintainContributionsView extends ViewPart
 		Iterator<Date> vIter = valueTimes.iterator();
 
 		// get our date formatter ready
-		SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		// determine frequency f
