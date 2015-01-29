@@ -127,7 +127,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private ISolversManager _solversManager;	
 	private ISolver _activeSolver;	
 
-	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat("hh:mm:ss");
+	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	private ISolversManagerListener solversManagerListener;
 	private IConstrainSpaceListener constrainSpaceListener;

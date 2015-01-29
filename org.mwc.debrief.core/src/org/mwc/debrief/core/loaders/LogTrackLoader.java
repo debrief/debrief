@@ -316,7 +316,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 
 	public Date dateFor(String date) throws ParseException
 	{
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh mm ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH mm ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return sdf.parse(date);
 	}
@@ -352,6 +352,51 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 			assertEquals("correct speed", 8.922246, res.getSpeed(), 0.001);
 		}
 		
+		public void testDateImport() throws ParseException 
+		{
+			String testLine1 = "23-08-2014 02136 53,01-01-2014 11 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
+			String testLine2 = "23-08-2014 02136 53,01-01-2014 12 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
+			String testLine3 = "23-08-2014 02136 53,01-01-2014 13 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
+			
+			// check the import, bit by bit
+			LogTrackLoader loader = new LogTrackLoader();
+			
+			Date d1 = loader.dateFor(testLine1.split(",")[1]);
+			Date d2 = loader.dateFor(testLine2.split(",")[1]);
+			Date d3 = loader.dateFor(testLine3.split(",")[1]);
+			
+			assertEquals("correct hours", "11:00:12", DateFormat.getTimeInstance()
+					.format(d1));
+			assertEquals("correct hours", "12:00:12", DateFormat.getTimeInstance()
+					.format(d2));
+			assertEquals("correct hours", "13:00:12", DateFormat.getTimeInstance()
+					.format(d3));
+		}
+
+		
+		public void testDaylightSavings() throws ParseException 
+		{
+			String testLine1 = "23-08-2014 02136 53,01-09-2014 11 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
+			String testLine2 = "23-08-2014 02136 53,01-09-2014 12 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
+			String testLine3 = "23-08-2014 02136 53,01-09-2014 13 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
+			
+			// check the import, bit by bit
+			LogTrackLoader loader = new LogTrackLoader();
+			
+			Date d1 = loader.dateFor(testLine1.split(",")[1]);
+			Date d2 = loader.dateFor(testLine2.split(",")[1]);
+			Date d3 = loader.dateFor(testLine3.split(",")[1]);
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+			
+			assertEquals("correct hours", "11:00:12", sdf.format(d1));
+			assertEquals("correct hours", "12:00:12", sdf.format(d2));
+			assertEquals("correct hours", "13:00:12", sdf.format(d3));
+		}
+		
+
 		public void testDuffImport() throws ParseException
 		{
 			String testLine1 = "23-08-2014 02136 53,01-09-2014 00 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
