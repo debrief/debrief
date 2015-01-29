@@ -51,7 +51,7 @@ import MWC.GenericData.WorldLocation;
 public class GtProjection extends PlainProjection implements GeoToolsHandler
 {
 
-	private static final String WORLD_PROJECTION = "EPSG:4326";
+	private static final String WORLD_PROJECTION = "EPSG:4326"; // 3395 for Mercator proj
 	private static final String DATA_PROJECTION = "EPSG:4326";
 	private CoordinateReferenceSystem _worldCoords;
 	protected MathTransform _degs2metres;
