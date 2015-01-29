@@ -51,6 +51,8 @@ import MWC.GenericData.WorldLocation;
 public class GtProjection extends PlainProjection implements GeoToolsHandler
 {
 
+	private static final String WORLD_PROJECTION = "EPSG:4326";
+	private static final String DATA_PROJECTION = "EPSG:4326";
 	private CoordinateReferenceSystem _worldCoords;
 	protected MathTransform _degs2metres;
 
@@ -89,11 +91,11 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			// we'll tell GeoTools to use the projection that's used by most of our
 			// charts,
 			// so that the chart will be displayed undistorted
-			_worldCoords = CRS.decode("EPSG:4326");
+			_worldCoords = CRS.decode(WORLD_PROJECTION);
 
 			// we also need a way to convert a location in degrees to that used by
 			// the charts (metres)
-			final CoordinateReferenceSystem worldDegs = CRS.decode("EPSG:4326");
+			final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
 			_degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
 		}
 		catch (final NoSuchAuthorityCodeException e)
@@ -600,7 +602,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			final MapContent mc = new MapContent();
 
 			// set a coordinate reference system
-			final CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+			final CoordinateReferenceSystem crs = CRS.decode(DATA_PROJECTION);
 			mc.getViewport().setCoordinateReferenceSystem(crs);
 
 			// set a data area
@@ -644,7 +646,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			final MapContent mc = new MapContent();
 
 			// set a coordinate reference system
-			final CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+			final CoordinateReferenceSystem crs = CRS.decode(DATA_PROJECTION);
 			mc.getViewport().setCoordinateReferenceSystem(crs);
 
 			// set a data area
