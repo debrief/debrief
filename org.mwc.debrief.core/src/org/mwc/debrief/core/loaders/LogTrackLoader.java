@@ -48,6 +48,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
  * @author ian.mayo
@@ -324,7 +325,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 	{
 		public void testImport() throws ParseException
 		{
-			String testLine = "23-08-2014 02 36 53,01-09-2014 00 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
+			String testLine = "23-08-2014 02 36 53,01-09-2014 09 13 14,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
 
 			// check our understanding
 			String[] blocks = testLine.split(",");
@@ -344,6 +345,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 			assertEquals("correct millis", 1408761413000L, dt.getTime());
 
 			FixWrapper res = loader.readLine(testLine);
+			assertEquals("correct lat", "010913.14", FormatRNDateTime.toString(res.getDTG().getDate().getTime()));
 			assertEquals("correct lat", 48.5556666, res.getLocation().getLat(), 0.001);
 			assertEquals("correct lon", -9.359333, res.getLocation().getLong(), 0.001);
 			assertEquals("correct course", 318.8, res.getCourseDegs(), 0.001);
