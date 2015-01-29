@@ -3,6 +3,8 @@ package org.mwc.cmap.naturalearth.wrapper;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.DirectLayer;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
@@ -86,7 +90,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	{
 		// store the map object.  
 		_myMap = map;
-		
+		DirectLayer background = null;
 		// ok, now sort out which dataset we're looking at
 		if (getVisible())
 		{
@@ -101,6 +105,44 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 			_bathyKeys.clear();
 			_maxScale = 0;
 			_minScale = Double.MAX_VALUE;
+			if (fileNames.size() > 0)
+			{
+				background = new DirectLayer()
+				{
+
+					@Override
+					public ReferencedEnvelope getBounds()
+					{
+						if (_myMap != null)
+						{
+							return _myMap.getViewport().getBounds();
+						}
+						else
+						{
+							return null;
+						}
+					}
+
+					@Override
+					public void draw(Graphics2D graphics, MapContent map,
+							MapViewport viewport)
+					{
+						if (viewport == null)
+						{
+							viewport = map.getViewport(); 
+						}
+						if (viewport == null || viewport.getScreenArea() == null)
+						{
+							return;
+						}
+						Rectangle screenArea = viewport.getScreenArea();
+						graphics.setColor(new Color(143, 216, 216));
+						graphics.fillRect(screenArea.x, screenArea.y, screenArea.width, screenArea.height);
+					}
+
+				};
+				_myMap.addLayer(background);
+			}
 			for (String fileName : fileNames)
 			{
 				// ok, get a pointer to the data
@@ -154,6 +196,11 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		{
 			int sourcePosition = layers.indexOf(layer);
 			_myMap.moveLayer(sourcePosition, destinationPosition);
+		}
+		// move background layer on the top of the stack
+		if (background != null) {
+			int sourcePosition = layers.indexOf(background);
+			_myMap.moveLayer(sourcePosition, 0);
 		}
 	}
 
