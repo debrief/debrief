@@ -65,6 +65,8 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	private double _maxScale = 0;
 	private double _minScale = Double.MAX_VALUE;
 
+	private DirectLayer _backgroundFill;
+
 	public NELayer(NEFeatureRoot features)
 	{
 		super(ChartBoundsWrapper.NELAYER_TYPE, NATURAL_EARTH, null);
@@ -90,10 +92,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	{
 		// store the map object.  
 		_myMap = map;
-		DirectLayer background = null;
-		// ok, now sort out which dataset we're looking at
-		if (getVisible())
-		{
+		
 			// ok, find the root folder
 			File rootFolder = Activator.getDefault().getRootFolder();
 			if (rootFolder == null) {
@@ -107,7 +106,12 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 			_minScale = Double.MAX_VALUE;
 			if (fileNames.size() > 0)
 			{
-				background = new DirectLayer()
+				/** the zero bathy contour will not plot under a 
+				 * mercator projection, since it has points at the North Pole.
+				 * So, we provide a background fill what "shows through" where
+				 * the missing zero contour should be.
+				 */
+				_backgroundFill = new DirectLayer()
 				{
 
 					@Override
@@ -141,6 +145,10 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 						graphics.fillRect(screenArea.x, screenArea.y, screenArea.width, screenArea.height);
 					}
 
+					/** retrieve the color from the SLD for the zero bathy contour
+					 * 
+					 * @return
+					 */
 					public Color getBathy0Color()
 					{
 						if (_bathyKeys != null)
@@ -152,10 +160,10 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 							}
 						}
 						return new Color(172, 199, 230);
-					}
-					
+					}					
 				};
-				_myMap.addLayer(background);
+				_myMap.addLayer(_backgroundFill);
+				_backgroundFill.setVisible(getVisible());
 			}
 			for (String fileName : fileNames)
 			{
@@ -186,7 +194,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 					_myMap.addLayer(layer);
 					_gtLayers.add(layer);
 				}
-			}
+			
 		}
 		
 		// NOTE: we now need to push the NE layers to the bottom of the GeoTools stack.
@@ -212,8 +220,8 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 			_myMap.moveLayer(sourcePosition, destinationPosition);
 		}
 		// move background layer on the top of the stack
-		if (background != null) {
-			int sourcePosition = layers.indexOf(background);
+		if (_backgroundFill != null) {
+			int sourcePosition = layers.indexOf(_backgroundFill);
 			_myMap.moveLayer(sourcePosition, 0);
 		}
 	}
@@ -383,6 +391,8 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	public void setVisible(boolean val)
 	{
 		super.setVisible(val);
+		if(_backgroundFill != null)
+			_backgroundFill.setVisible(val);
 		_myFeatures.setVisible(val);
 	}
 
