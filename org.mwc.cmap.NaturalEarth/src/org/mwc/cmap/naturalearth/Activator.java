@@ -109,9 +109,16 @@ public class Activator extends AbstractUIPlugin
 	public String getLibraryPath()
 	{
 		String path = getPreferenceStore().getString(PreferenceConstants.DATA_FOLDER);
+		
+		// is the path empty, or unsuitable for a Natural Earth directory?
 		if (path == null || path.isEmpty() || ! (new File(path).isDirectory())) {
+			
+			// try to retrieve the directory for this plugin
 			Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+			
+			// did we find it?
 			if (bundle != null) {
+				// ok, get the data subfolder.
 				URL url = bundle.getEntry("/data");
 				try
 				{
@@ -124,6 +131,7 @@ public class Activator extends AbstractUIPlugin
 				}
 			}
 		} else {
+			// ok - we have a valid path, return it.
 			return path;
 		}
 		return null;

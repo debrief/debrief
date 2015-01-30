@@ -101,14 +101,14 @@ public class NELayerHandler extends
 		_myName = null;
 	}
 
-	public static void exportLayer(final NELayer layer,
-			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-	{
-			final Element eStore = doc.createElement(TYPE);		
-			NEFeatureRoot store = layer.getStore();	
-			eStore.appendChild(NEFeatureRootHandler.exportStore(store, doc));
-			parent.appendChild(eStore);			
-	}
+//	public static void exportLayer(final NELayer layer,
+//			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+//	{
+//			final Element eStore = doc.createElement(TYPE);		
+//			NEFeatureRoot store = layer.getStore();	
+//			eStore.appendChild(NEFeatureRootHandler.exportStore(store, doc));
+//			parent.appendChild(eStore);			
+//	}
 	
 	@Override
 	public void setLayers(Layers theLayers)

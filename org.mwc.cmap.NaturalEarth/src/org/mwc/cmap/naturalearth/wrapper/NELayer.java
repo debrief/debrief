@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -44,22 +45,32 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 {
 
 	private static final long serialVersionUID = 1L;
-	
-	private static final int BATHY_HEIGHT = 20;
+
+	/**
+	 * how tall to make the cells in the bathy key
+	 * 
+	 */
+	private static final int BATHY_KEY_CELL_HEIGHT = 20;
 
 	/** from StreamingRenderer - Tolerance used to compare doubles for equality */
-  private static final double TOLERANCE = 1e-6;
-
+	private static final double TOLERANCE = 1e-6;
 
 	private NEFeatureRoot _myFeatures;
-	//private Layers _theLayers;
 
 	private List<FeatureLayer> _gtLayers = new ArrayList<FeatureLayer>();
-	
+
+	/**
+	 * the list of shades used in the bathymetry
+	 * 
+	 */
 	private Map<String, Color> _bathyKeys = new LinkedHashMap<String, Color>();
 
-	private double _maxScale = 0;
-	private double _minScale = Double.MAX_VALUE;
+	/**
+	 * the range of scales at which we display the Bathy data. We capture them
+	 * here since we need to know when to paint the bathy key
+	 */
+	private double _maxBathyScale = 0;
+	private double _minBathyScale = Double.MAX_VALUE;
 
 	public NELayer(NEFeatureRoot features)
 	{
@@ -67,75 +78,80 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		setName(NATURAL_EARTH);
 		_myFeatures = features;
 	}
-	
+
 	@Override
 	public void clearMap()
 	{
 		for (FeatureLayer layer : _gtLayers)
 		{
-			//layer.dispose();
+			// layer.dispose();
 			_myMap.removeLayer(layer);
 		}
-		
+
 		_gtLayers.clear();
 	}
-
 
 	@Override
 	public void setMap(MapContent map)
 	{
-		// store the map object.  
+		// store the map object.
 		_myMap = map;
-		
-			// ok, find the root folder
-			File rootFolder = Activator.getDefault().getRootFolder();
-			if (rootFolder == null) {
-				return;
-			}
-			
-			// and now find the list of shapefiles
-			List<String> fileNames = Activator.getDefault().getShapeFiles(rootFolder);
-			_bathyKeys.clear();
-			_maxScale = 0;
-			_minScale = Double.MAX_VALUE;
-			for (String fileName : fileNames)
-			{
-				// ok, get a pointer to the data
-				SimpleFeatureSource featureSource = getFeatureSource(fileName);
-				
-				// did we find it?
-				if (featureSource != null)
-				{
-					// ok, now sort out the style
-					String sldName = fileName.substring(0, fileName.length() - 3) + "sld";
-					Style sld;
-					File sldFile = new File(sldName);
-					
-					if (sldFile.isFile())
-					{
-						// ok, we can produce the styling from the file
-						sld = NaturalearthUtil.loadStyle(sldName);
-					}
-					else
-					{
-						// just give it some default styling
-						sld = NaturalearthUtil.createStyle2(featureSource);
-					}
-					loadBathyKey(fileName, sld);
-					// wrap the GT data
-					FeatureLayer layer = new NEFeatureLayer(_myFeatures, fileName, featureSource, sld);
-					_myMap.addLayer(layer);
-					_gtLayers.add(layer);
-				}
-			
+
+		// ok, find the root folder
+		File rootFolder = Activator.getDefault().getRootFolder();
+		if (rootFolder == null)
+		{
+			return;
 		}
-		
-		// NOTE: we now need to push the NE layers to the bottom of the GeoTools stack.
+
+		// and now find the list of shapefiles
+		List<String> fileNames = Activator.getDefault().getShapeFiles(rootFolder);
+		_bathyKeys.clear();
+		_maxBathyScale = 0;
+		_minBathyScale = Double.MAX_VALUE;
+		for (String fileName : fileNames)
+		{
+			// ok, get a pointer to the data
+			SimpleFeatureSource featureSource = getFeatureSource(fileName);
+
+			// did we find it?
+			if (featureSource != null)
+			{
+				// ok, now sort out the style
+				String sldName = fileName.substring(0, fileName.length() - 3) + "sld";
+				Style sld;
+				File sldFile = new File(sldName);
+
+				if (sldFile.isFile())
+				{
+					// ok, we can produce the styling from the file
+					sld = NaturalearthUtil.loadStyle(sldName);
+				}
+				else
+				{
+					// give warning, for maintainer.
+					Activator.logError(Status.WARNING, "Style not found for ShapeFile:" + sldName, null);
+					
+					// just give it some default styling
+					sld = NaturalearthUtil.createStyle2(featureSource);
+				}
+				storeBathyKeyFor(fileName, sld);
+				// wrap the GT data
+				FeatureLayer layer = new NEFeatureLayer(_myFeatures, fileName,
+						featureSource, sld);
+				_myMap.addLayer(layer);
+				_gtLayers.add(layer);
+			}
+
+		}
+
+		// NOTE: we now need to push the NE layers to the bottom of the GeoTools
+		// stack.
 		// - we require the GT Tiffs to sit above NE layers.
-		
+
 		List<org.geotools.map.Layer> otherLayers = new ArrayList<org.geotools.map.Layer>();
 		List<org.geotools.map.Layer> layers = _myMap.layers();
-		
+
 		// find a list of the non-Natural Earth layers
 		for (org.geotools.map.Layer layer : layers)
 		{
@@ -144,7 +160,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 				otherLayers.add(layer);
 			}
 		}
-		
+
 		// move the non-NE layers to the top of the stack
 		int destinationPosition = layers.size() - 1;
 		for (org.geotools.map.Layer layer : otherLayers)
@@ -154,29 +170,28 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		}
 	}
 
-	public void loadBathyKey(String fileName, Style sld)
+	public void storeBathyKeyFor(String fileName, Style sld)
 	{
-		if (fileName.contains(Activator.NE_10M_BATHYMETRY_ALL)
-				&& sld != null)
+		if (fileName.contains(Activator.NE_10M_BATHYMETRY_ALL) && sld != null)
 		{
 			int length = "ne_10m_bathymetry_A_".length();
 			String name = new File(fileName).getName();
 			if (name.length() > length)
 			{
 				name = name.substring(length, name.length() - 4);
-				FeatureTypeStyle[] typeStyles = sld.featureTypeStyles()
-						.toArray(new FeatureTypeStyle[0]);
+				FeatureTypeStyle[] typeStyles = sld.featureTypeStyles().toArray(
+						new FeatureTypeStyle[0]);
 				if (typeStyles.length > 0)
 				{
 					double maxScale = SLD.maxScale(typeStyles[0]);
-					if (maxScale > _maxScale)
+					if (maxScale > _maxBathyScale)
 					{
-						_maxScale = maxScale;
+						_maxBathyScale = maxScale;
 					}
 					double minScale = SLD.minScale(typeStyles[0]);
-					if (minScale < _minScale)
+					if (minScale < _minBathyScale)
 					{
-						_minScale = minScale;
+						_minBathyScale = minScale;
 					}
 				}
 				for (FeatureTypeStyle typeStyle : typeStyles)
@@ -218,22 +233,28 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		try
 		{
 			FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
-			
+
 			featureSource = store.getFeatureSource();
-			//Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -80, 180, 84)");
-			//features = featureSource.getFeatures( filter );
-			//-180.0000, -80.0000, 180.0000, 84.0000
-			//features = featureSource.getFeatures();
-			//reprojectingFeatures = new ReprojectingFeatureCollection(features, CRS.decode("EPSG:4326"));
+			
+			// the following code demonstrates how to retrieve a filtered box.
+			//   - GeoTools seems to do a good job at doing it by itself.
+			// Filter filter = ECQL.toFilter("BBOX(the_geom, -180, -80, 180, 84)");
+			// features = featureSource.getFeatures( filter );
+			// -180.0000, -80.0000, 180.0000, 84.0000
+			// features = featureSource.getFeatures();
+			// reprojectingFeatures = new ReprojectingFeatureCollection(features,
+			// CRS.decode("EPSG:4326"));
 		}
 		catch (IOException e)
 		{
-			Activator.logError(IStatus.INFO, "Can't load " + openFile.getAbsolutePath(), e);
+			Activator.logError(IStatus.INFO,
+					"Can't load " + openFile.getAbsolutePath(), e);
 			return null;
 		}
 		catch (Exception e)
 		{
-			Activator.logError(IStatus.INFO, "grabFeaturesInBoundingBox issue in " + openFile.getAbsolutePath(), e);
+			Activator.logError(IStatus.INFO, "grabFeaturesInBoundingBox issue in "
+					+ openFile.getAbsolutePath(), e);
 			return null;
 		}
 		return featureSource;
@@ -248,7 +269,7 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	@Override
 	public double rangeFrom(WorldLocation other)
 	{
-		return  Plottable.INVALID_RANGE;
+		return Plottable.INVALID_RANGE;
 	}
 
 	@Override
@@ -322,18 +343,10 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		_myFeatures.setVisible(val);
 	}
 
-	/**
-	 * interface for layer objects that can be ordered, using their created
-	 * (imported) date
+	/** check if the user has set a Natural Earth data directoy
 	 * 
-	 * @author ian
-	 * 
+	 * @return
 	 */
-	public static interface HasCreatedDate
-	{
-		public long getCreated();
-	}
-
 	public static boolean hasGoodPath()
 	{
 		final File dataPath = new File(Activator.getDefault().getLibraryPath());
@@ -341,42 +354,43 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		return dataPath.isDirectory();
 	}
 
+	/** retrieve the features (used for export)
+	 * 
+	 * @return
+	 */
 	public NEFeatureRoot getStore()
 	{
 		return _myFeatures;
 	}
 
-	@Override
+	/** paint this layer. Note: GeoTools does the shapefile rendering, this paint method just
+	 * draws the key/legend for the bathy depths
+	 * 
+	 */
 	public void paint(CanvasType dest)
 	{
-		if (dest != null && getVisible() && _bathyKeys.size() > 0) {
+		if (dest != null && getVisible() && _bathyKeys.size() > 0)
+		{
 			Dimension sArea = dest.getProjection().getScreenArea();
-//			WorldArea wArea = dest.getProjection().getDataArea();
-//			
-//			final double sWidPixels =  sArea.width;
-//			final double sWidInches = sWidPixels / 72d;  // presume 72 dpi
-//			final double sWidM = sWidInches * 2.54 / 100;
-//			final double sWidDegs = Conversions.m2Degs(sWidM);
-//			final double dWidDegs = wArea.getWidth(); 
-//			
-//			double _scaleFactor = dWidDegs / sWidDegs;
-			
-			MapViewport viewport = _myMap.getViewport();
-			double scaleDenominator = RendererUtilities.calculateOGCScale(viewport.getBounds(),
-						(int) viewport.getScreenArea().getWidth(), null);
 
-			if ( (_minScale - TOLERANCE) <= scaleDenominator && (_maxScale + TOLERANCE) > scaleDenominator )
+			MapViewport viewport = _myMap.getViewport();
+			double scaleDenominator = RendererUtilities
+					.calculateOGCScale(viewport.getBounds(), (int) viewport
+							.getScreenArea().getWidth(), null);
+
+			if ((_minBathyScale - TOLERANCE) <= scaleDenominator
+					&& (_maxBathyScale + TOLERANCE) > scaleDenominator)
 			{
 				int height = sArea.height;
 				Set<String> depths = _bathyKeys.keySet();
 				Font font = new Font("Arial", Font.PLAIN, 9);
 				for (String depth : depths)
 				{
-					height = height - BATHY_HEIGHT;
+					height = height - BATHY_KEY_CELL_HEIGHT;
 					dest.setColor(_bathyKeys.get(depth));
-					dest.fillRect(0, height, BATHY_HEIGHT, BATHY_HEIGHT);
+					dest.fillRect(0, height, BATHY_KEY_CELL_HEIGHT, BATHY_KEY_CELL_HEIGHT);
 					dest.setColor(Color.BLACK);
-					dest.drawText(font, depth, BATHY_HEIGHT + 5, height + 12);
+					dest.drawText(font, depth, BATHY_KEY_CELL_HEIGHT + 5, height + 12);
 				}
 				dest.drawText(font, "Depth (m)", 5, height - 10);
 			}
