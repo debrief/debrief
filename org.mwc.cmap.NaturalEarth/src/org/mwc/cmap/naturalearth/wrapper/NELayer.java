@@ -160,6 +160,13 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 							}
 						}
 						return new Color(172, 199, 230);
+					}
+
+					@Override
+					public void dispose()
+					{
+						preDispose();
+						super.dispose();
 					}					
 				};
 				_myMap.addLayer(_backgroundFill);
