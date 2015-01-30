@@ -3,8 +3,6 @@ package org.mwc.cmap.naturalearth.wrapper;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,8 +16,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.DirectLayer;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
@@ -65,8 +61,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	private double _maxScale = 0;
 	private double _minScale = Double.MAX_VALUE;
 
-	private DirectLayer _backgroundFill;
-
 	public NELayer(NEFeatureRoot features)
 	{
 		super(ChartBoundsWrapper.NELAYER_TYPE, NATURAL_EARTH, null);
@@ -104,74 +98,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 			_bathyKeys.clear();
 			_maxScale = 0;
 			_minScale = Double.MAX_VALUE;
-			if (fileNames.size() > 0)
-			{
-				/** the zero bathy contour will not plot under a 
-				 * mercator projection, since it has points at the North Pole.
-				 * So, we provide a background fill what "shows through" where
-				 * the missing zero contour should be.
-				 */
-				_backgroundFill = new DirectLayer()
-				{
-
-					@Override
-					public ReferencedEnvelope getBounds()
-					{
-						if (_myMap != null)
-						{
-							return _myMap.getViewport().getBounds();
-						}
-						else
-						{
-							return null;
-						}
-					}
-
-					@Override
-					public void draw(Graphics2D graphics, MapContent map,
-							MapViewport viewport)
-					{
-						if (viewport == null)
-						{
-							viewport = map.getViewport(); 
-						}
-						if (viewport == null || viewport.getScreenArea() == null)
-						{
-							return;
-						}
-						Rectangle screenArea = viewport.getScreenArea();
-						Color c = getBathy0Color();
-						graphics.setColor(c);
-						graphics.fillRect(screenArea.x, screenArea.y, screenArea.width, screenArea.height);
-					}
-
-					/** retrieve the color from the SLD for the zero bathy contour
-					 * 
-					 * @return
-					 */
-					public Color getBathy0Color()
-					{
-						if (_bathyKeys != null)
-						{
-							Color value = _bathyKeys.get("0");
-							if (value != null)
-							{
-								return value;
-							}
-						}
-						return new Color(172, 199, 230);
-					}
-
-					@Override
-					public void dispose()
-					{
-						preDispose();
-						super.dispose();
-					}					
-				};
-				_myMap.addLayer(_backgroundFill);
-				_backgroundFill.setVisible(getVisible());
-			}
 			for (String fileName : fileNames)
 			{
 				// ok, get a pointer to the data
@@ -225,11 +151,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		{
 			int sourcePosition = layers.indexOf(layer);
 			_myMap.moveLayer(sourcePosition, destinationPosition);
-		}
-		// move background layer on the top of the stack
-		if (_backgroundFill != null) {
-			int sourcePosition = layers.indexOf(_backgroundFill);
-			_myMap.moveLayer(sourcePosition, 0);
 		}
 	}
 
@@ -398,8 +319,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 	public void setVisible(boolean val)
 	{
 		super.setVisible(val);
-		if(_backgroundFill != null)
-			_backgroundFill.setVisible(val);
 		_myFeatures.setVisible(val);
 	}
 
