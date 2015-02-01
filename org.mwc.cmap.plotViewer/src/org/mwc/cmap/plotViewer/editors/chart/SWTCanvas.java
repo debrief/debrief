@@ -386,6 +386,29 @@ public class SWTCanvas extends SWTCanvasAdapter
 					"Double-buffering failed, no image produced", null);
 		}
 	}
+	
+	public Image getImage()
+	{
+			final Point theSize = _myCanvas.getSize();
+			if ((theSize.x == 0) || (theSize.y == 0))
+				return null;
+
+			Image image = new Image(Display.getCurrent(), theSize.x, theSize.y);
+			final GC theDest = new GC(image);
+
+			// prepare the ground (remember the graphics dest for a start)
+			startDraw(theDest);
+
+			// and paint into it
+			paintPlot(this);
+
+			// all finished, close it now
+			endDraw(null);
+
+			// and ditch the GC
+			theDest.dispose();
+			return image;
+	}
 
 	/**
 	 * the real paint function, called when it's not satisfactory to just paint in
