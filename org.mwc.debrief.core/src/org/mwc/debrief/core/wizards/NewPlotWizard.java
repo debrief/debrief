@@ -45,6 +45,7 @@ import org.eclipse.ui.ide.IDE;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.wizards.CoastWizardPage;
 import org.mwc.cmap.core.wizards.ETOPOWizardPage;
+import org.mwc.cmap.core.wizards.NaturalEarthWizardPage;
 import org.mwc.cmap.core.wizards.NewPlotFilenameWizardPage;
 import org.mwc.cmap.core.wizards.GridWizardPage;
 import org.mwc.cmap.core.wizards.ScaleWizardPage;
@@ -52,6 +53,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.CoastPainter;
@@ -75,6 +77,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	private ISelection selection;
 
 	private final Layers _myNewLayers;
+	private NaturalEarthWizardPage _naturalEarthWizard;
 
 	/**
 	 * Constructor for NewPlotWizard.
@@ -99,6 +102,8 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 
 		// check there's ETOPO data before we add the page
 		_etopoWizard = new ETOPOWizardPage(selection);
+		
+		_naturalEarthWizard = new NaturalEarthWizardPage(selection);
 
 		addPage(_fileWizard);
 		addPage(_scaleWizard);
@@ -106,6 +111,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 		addPage(_gridWizard);
 		if (_etopoWizard.isAvailable())
 			addPage(_etopoWizard);
+		addPage(_naturalEarthWizard);
 	}
 
 	/**
@@ -226,6 +232,12 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 				_myNewLayers.addThisLayer(etopoLayer);
 		}
 
+		final Layer neLayer = (Layer) _naturalEarthWizard.getEditable();
+		if (neLayer != null)
+		{
+			_myNewLayers.addThisLayer(neLayer);
+		}
+		
 		final String containerName = _fileWizard.getContainerName();
 		final String fileName = _fileWizard.getFileName();
 		final IRunnableWithProgress op = new IRunnableWithProgress() {

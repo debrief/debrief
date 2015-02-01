@@ -747,7 +747,7 @@
 
     <extension point="org.eclipse.ui.newWizards">
         <wizard category="org.mwc.cmap.core" class="org.mwc.debrief.core.wizards.NewPlotWizard"
-            icon="icons/sample.gif" id="org.mwc.debrief.core.wizards.NewPlotWizard"
+            icon="icons/16/plot_file.png" id="org.mwc.debrief.core.wizards.NewPlotWizard"
             name="Debrief Plot"/>
     </extension>
     <extension id="Debrief" point="org.eclipse.core.runtime.products">

@@ -264,6 +264,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
 		initialize();
 		dialogChanged();
+		addComponents(container);
 		setControl(container);
 
 		// finally, just clear the error message, we're not ready for it yet
@@ -273,6 +274,10 @@ abstract public class CoreEditableWizardPage extends WizardPage
 		if (_myEditors.size() > 0)
 			_myEditors.get(0).setFocus();
 
+	}
+
+	protected void addComponents(Composite container)
+	{
 	}
 
 	/**
