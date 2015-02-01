@@ -14,8 +14,10 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
@@ -30,6 +32,7 @@ import org.geotools.styling.Symbolizer;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
+import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;
 import org.mwc.cmap.naturalearth.view.NEFeatureRoot;
 
 import MWC.GUI.BaseLayer;
@@ -234,6 +237,11 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
 		{
 			FileDataStore store = FileDataStoreFinder.getDataStore(openFile);
 
+			if (store instanceof ShapefileDataStore) {
+				IPreferenceStore prefs = Activator.getDefault().getPreferenceStore();
+				boolean memoryMapped = prefs.getBoolean(PreferenceConstants.MEMORY_MAPPED);
+				((ShapefileDataStore)store).setMemoryMapped(memoryMapped);
+			}
 			featureSource = store.getFeatureSource();
 			
 			// the following code demonstrates how to retrieve a filtered box.

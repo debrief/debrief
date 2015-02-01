@@ -21,6 +21,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
 	{
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.DATA_FOLDER, "");
+		store.setDefault(PreferenceConstants.MEMORY_MAPPED, false);
 	}
 
 }

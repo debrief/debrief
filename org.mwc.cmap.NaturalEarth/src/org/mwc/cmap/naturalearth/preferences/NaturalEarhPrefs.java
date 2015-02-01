@@ -27,6 +27,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 
 	public static final String ID = "org.mwc.cmap.naturalearth.preferences.NaturalEarhPrefs";
 	private Text dataFolderText;
+	private Button memoryMapButton;
 	
 	public NaturalEarhPrefs()
 	{
@@ -93,13 +94,13 @@ public class NaturalEarhPrefs extends PreferencePage implements
 
 		});
 
-		Group stylesGroup = new Group(composite, SWT.NONE);
-		layout = new GridLayout(2, false);
-		stylesGroup.setLayout(layout);
-		stylesGroup.setText("Styles");
+		memoryMapButton = new Button(composite, SWT.CHECK);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 3;
-		stylesGroup.setLayoutData(gd);
+		memoryMapButton.setLayoutData(gd);
+		memoryMapButton.setText("Use memory map file");
+		boolean selected = store.getBoolean(PreferenceConstants.MEMORY_MAPPED);
+		memoryMapButton.setSelection(selected);
 
 		return composite;
 	}
@@ -108,6 +109,7 @@ public class NaturalEarhPrefs extends PreferencePage implements
 	protected void performDefaults()
 	{
 		dataFolderText.setText(""); //$NON-NLS-1$
+		memoryMapButton.setSelection(false);
 		storePreferences();
 		super.performDefaults();
 	}
@@ -127,6 +129,8 @@ public class NaturalEarhPrefs extends PreferencePage implements
 		{
 			store.setValue(PreferenceConstants.DATA_FOLDER, value);
 		}
+		boolean selected = memoryMapButton.getSelection();
+		store.setValue(PreferenceConstants.MEMORY_MAPPED, selected);
 	}
 
 	class StylesLabelProvider extends LabelProvider
