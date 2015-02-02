@@ -46,7 +46,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -97,7 +96,6 @@ import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
-import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.editors.chart.CursorTracker;
 import org.mwc.cmap.plotViewer.editors.chart.RangeTracker;
@@ -699,69 +697,61 @@ public abstract class CorePlotEditor extends EditorPart implements
 		{
 			public void runWithEvent(final Event event)
 			{
-				if (Platform.OS_WIN32.equals(Platform.getOS())
-						&& Platform.ARCH_X86.equals(Platform.getOSArch()))
+				SWTCanvas canvas = (SWTCanvas) getChart().getCanvas();
+				Image image = null;
+				try
 				{
-					final ExportWMF ew = new ExportWMF(true, false);
-					ew.run(null);
-				}
-				else
-				{
-					SWTCanvas canvas = (SWTCanvas) getChart().getCanvas();
-					Image image = null;
-					try
+					image = canvas.getImage();
+					if (image != null)
 					{
-						image = canvas.getImage();
-						if (image != null)
+						final BufferedImage _awtImage = PlotViewerPlugin.convertToAWT(image
+								.getImageData());
+						Transferable t = new Transferable()
 						{
-							final BufferedImage _awtImage = PlotViewerPlugin.convertToAWT(image.getImageData());
-							Transferable t = new Transferable( ) {
 
-								public DataFlavor[] getTransferDataFlavors( )
-								{
-									return new DataFlavor[]{
-										DataFlavor.imageFlavor
-									};
-								}
-
-								public boolean isDataFlavorSupported( DataFlavor flavor )
-								{
-									if ( flavor == DataFlavor.imageFlavor )
-										return true;
-									return false;
-								}
-
-								public Object getTransferData( DataFlavor flavor )
-										throws UnsupportedFlavorException, IOException
-								{
-									if ( isDataFlavorSupported( flavor ) )
-									{
-										return _awtImage;
-									}
-									return null;
-								}
-
-							};
-
-							ClipboardOwner co = new ClipboardOwner()
+							public DataFlavor[] getTransferDataFlavors()
 							{
+								return new DataFlavor[]
+								{ DataFlavor.imageFlavor };
+							}
 
-								public void lostOwnership(Clipboard clipboard,
-										Transferable contents)
+							public boolean isDataFlavorSupported(DataFlavor flavor)
+							{
+								if (flavor == DataFlavor.imageFlavor)
+									return true;
+								return false;
+							}
+
+							public Object getTransferData(DataFlavor flavor)
+									throws UnsupportedFlavorException, IOException
+							{
+								if (isDataFlavorSupported(flavor))
 								{
+									return _awtImage;
 								}
+								return null;
+							}
 
-							};
-							Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-							cb.setContents(t, co);
-						}
-					}
-					finally
-					{
-						if (image != null)
+						};
+
+						ClipboardOwner co = new ClipboardOwner()
 						{
-							image.dispose();
-						}
+
+							public void lostOwnership(Clipboard clipboard,
+									Transferable contents)
+							{
+							}
+
+						};
+						Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+						cb.setContents(t, co);
+					}
+				}
+				finally
+				{
+					if (image != null)
+					{
+						image.dispose();
 					}
 				}
 			}
