@@ -7,6 +7,7 @@
       <se:FeatureTypeStyle>
         <se:Rule>
           <se:Name>Single symbol</se:Name>
+          <se:MinScaleDenominator>45000001</se:MinScaleDenominator>          
           <se:PolygonSymbolizer>
             <se:Fill>
               <se:CssParameter name="fill">#a5bfdd</se:CssParameter>
