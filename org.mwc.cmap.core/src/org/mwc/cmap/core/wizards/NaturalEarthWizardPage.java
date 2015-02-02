@@ -16,6 +16,7 @@ package org.mwc.cmap.core.wizards;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.net.URL;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -28,6 +29,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.mwc.cmap.core.CorePlugin;
@@ -96,11 +99,34 @@ public class NaturalEarthWizardPage extends CoreEditableWizardPage
 	@Override
 	protected void addComponents(Composite container)
 	{
+		Link link1 = new Link(container, SWT.NONE);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		gd.horizontalSpan = 3;
+		link1.setLayoutData(gd);
+		link1.setText("Natural Earth data trimmed to suit Debrief's Mercator projection is available online from here:\n"
+				+ "<a>https://github.com/debrief/NaturalEarth</a>");
+		link1.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent event)
+			{
+				try
+				{
+					IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
+					IWebBrowser browser = support.getExternalBrowser();
+					browser.openURL(new URL("https://github.com/debrief/NaturalEarth"));
+				}
+				catch (Exception e)
+				{
+					CorePlugin.logError(IStatus.WARNING, "Cannot open an external browser", e);
+				}
+			}
+		});
 		String path = getDataFolder();
 		if (path == null || path.isEmpty() || !(new File(path).isDirectory()))
 		{
 			final Link link = new Link(container, SWT.BORDER);
-			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+			gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 			gd.horizontalSpan = 3;
 			link.setLayoutData(gd);
 			link.setText("Natural Earth data folder isn't set. Debrief will use the default folder.\n"

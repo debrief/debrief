@@ -1,5 +1,8 @@
 package org.mwc.cmap.naturalearth.preferences;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -14,11 +17,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.mwc.cmap.naturalearth.Activator;
 
 public class NaturalEarhPrefs extends PreferencePage implements
@@ -102,6 +108,30 @@ public class NaturalEarhPrefs extends PreferencePage implements
 		boolean selected = store.getBoolean(PreferenceConstants.MEMORY_MAPPED);
 		memoryMapButton.setSelection(selected);
 
+		Link link = new Link(composite, SWT.NONE);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		gd.horizontalSpan = 3;
+		link.setLayoutData(gd);
+		link.setText("Natural Earth data trimmed to suit Debrief's Mercator projection is available online from here:\n"
+				+ "<a>https://github.com/debrief/NaturalEarth</a>");
+		link.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent event)
+			{
+				try
+				{
+					IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
+					IWebBrowser browser = support.getExternalBrowser();
+					browser.openURL(new URL("https://github.com/debrief/NaturalEarth"));
+				}
+				catch (Exception e)
+				{
+					Activator.logError(IStatus.WARNING, "Cannot open an external browser", e);
+				}
+			}
+		});
+		
 		return composite;
 	}
 
