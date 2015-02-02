@@ -46,6 +46,7 @@ import org.mwc.cmap.xyplot.views.XYPlotView;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Tools.Tote.toteCalculation;
+import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -268,7 +269,8 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						// ok, try to retrieve the view
 						final IViewReference plotRef = page.findViewReference(plotId, theTitle);
 						final XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-						plotter.showPlot(theTitle, theSeriesCollection, "Range (m)", null,
+						plotter.showPlot(theTitle, theSeriesCollection, 
+								"Range (" + new rangeCalc().getUnits() + ")", null,
 								thePlotId);
 					}
 					else
@@ -521,7 +523,12 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 								WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
 								final WorldLocation trackLoc = thisPosition.getLocation();
 								range = trackLoc.rangeFrom(sensorLoc, range);
-								final double thisVal = range.getValueIn(WorldDistance.METRES);
+								
+								rangeCalc rc = new rangeCalc();
+								String units  = rc.getUnits();
+								final double thisVal = rangeCalc.convertRange(range.getValueIn(WorldDistance.DEGS), units);
+								
+//								final double thisVal = range.getValueIn(WorldDistance.METRES);
 
 								// ////////////////////////////////////////////////
 								// and create the point
