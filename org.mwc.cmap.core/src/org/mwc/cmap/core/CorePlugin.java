@@ -52,6 +52,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -268,6 +269,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		TrackSegment.initialise(_toolParent);
 		
 		evaluateEarthModelProviderExtension(Platform.getExtensionRegistry());
+		
+		// 
+		if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+			System.setProperty("apple.awt.usingSWT", "true");
+			SWT_AWT.embeddedFrameClass = "sun.lwawt.macosx.CViewEmbeddedFrame";
+		}
 	}
 
 	/**
