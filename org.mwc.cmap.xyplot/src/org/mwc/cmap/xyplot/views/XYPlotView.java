@@ -17,11 +17,13 @@ package org.mwc.cmap.xyplot.views;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Panel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
@@ -32,6 +34,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import javax.swing.JRootPane;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -238,7 +242,7 @@ public class XYPlotView extends ViewPart
 	/**
 	 * the Swing control we insert the plot into
 	 */
-	private Frame _plotControl;
+	private Container _plotControl;
 
 	/**
 	 * the data-area of the plot
@@ -379,12 +383,40 @@ public class XYPlotView extends ViewPart
 	{
 
 		// right, we need an SWT.EMBEDDED object to act as a holder
-		final Composite holder = new Composite(parent, SWT.EMBEDDED);
+		final Composite holder = new Composite(parent, SWT.NO_BACKGROUND
+				| SWT.EMBEDDED | SWT.NO_REDRAW_RESIZE);
 		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
 				| GridData.FILL_HORIZONTAL));
 
+		/*
+		* Set a Windows specific AWT property that prevents heavyweight
+		* components from erasing their background. Note that this
+		* is a global property and cannot be scoped. It might not be
+		* suitable for your application.
+		*/
+		try {
+			System.setProperty("sun.awt.noerasebackground","true");
+		} catch (NoSuchMethodError error) {}
+		
+		//java.awt.Toolkit.getDefaultToolkit().setDynamicLayout(false);
 		// now we need a Swing object to put our chart into
-		_plotControl = SWT_AWT.new_Frame(holder);
+		/* Create and setting up frame */
+		Frame frame = SWT_AWT.new_Frame(holder);
+		Panel panel = new Panel(new BorderLayout())
+		{
+			@Override
+			public void update(java.awt.Graphics g)
+			{
+				/* Do not erase the background */
+				paint(g);
+			}
+		};
+		frame.add(panel);
+		JRootPane root = new JRootPane();
+		root.setDoubleBuffered(true);
+		panel.add(root);
+		_plotControl = root.getContentPane();
+		//_plotControl = SWT_AWT.new_Frame(holder);
 
 		// and lastly do the remaining bits...
 		makeActions();
