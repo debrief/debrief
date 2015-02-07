@@ -603,6 +603,23 @@
                     <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
                 </visibleWhen>
             </command>
+            <command commandId="org.mwc.cmap.plotViewer.actions.ExportWMFToClipboard"
+                icon="icons/16/photo_scenery.png" style="push"
+                id="org.mwc.cmap.plotViewer.actions.ExportWMFToClipboard">
+                <visibleWhen checkEnabled="false">
+                    <and>
+               			<systemTest
+                     		property="osgi.os"
+                     		value="win32">
+               			</systemTest>
+            			<systemTest
+                     		property="osgi.arch"
+                     		value="x86">
+               			</systemTest>
+                    	<reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
+                    </and>
+                </visibleWhen>
+            </command>
 
             <command commandId="org.mwc.debrief.core.exportAsRTF" icon="icons/16/Ex_2word_256_1.png"
                 style="push" id="org.mwc.debrief.core.exportAsRTF">
@@ -740,6 +757,10 @@
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.ExportWMF"
             id="org.mwc.cmap.plotViewer.actions.ExportWMF" name="Export WMF"> </command>
+        
+        <command defaultHandler="org.mwc.cmap.plotViewer.actions.ExportWMFToClipboard"
+            id="org.mwc.cmap.plotViewer.actions.ExportWMFToClipboard" name="Export WMF to clipboard">
+        </command>
 
         <command defaultHandler="org.mwc.debrief.core.operations.ExportGPX"
             id="org.mwc.debrief.core.operations.ExportGPX" name="Export GPX"> </command>
