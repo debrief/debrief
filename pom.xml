@@ -40,6 +40,9 @@
     <module>org.mwc.asset.legacy</module>
 -->
     <module>org.mwc.debrief.help</module>
+    <module>org.eclipse.nebula.cwt</module>
+    <module>org.eclipse.nebula.widgets.cdatetime</module>
+    <module>org.eclipse.nebula.jface.cdatetime</module>
     <module>org.mwc.cmap.LiveDataMonitor</module>
     <module>org.mwc.cmap.NarrativeViewer</module>
     <module>org.mwc.cmap.openmap</module>

@@ -28,6 +28,9 @@ import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -38,7 +41,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -78,10 +80,10 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected Spinner weightSpinner;
 
 	protected Text contributionNameText;
-	protected DateTime startDate;
-	protected DateTime startTime;
-	protected DateTime endDate;
-	protected DateTime endTime;
+	protected CDateTime startDate;
+	protected CDateTime startTime;
+	protected CDateTime endDate;
+	protected CDateTime endTime;
 
 	protected Label minLabel;
 	protected Label maxLabel;
@@ -335,19 +337,16 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	{
 		IObservableValue startDateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.START_DATE);
-		IObservableValue startDateWidget = WidgetProperties.selection().observe(
-				startDate);
-		IObservableValue startTimeWidget = WidgetProperties.selection().observe(
-				startTime);
+		IObservableValue startDateWidget = new CDateTimeObservableValue(startDate);
+		IObservableValue startTimeWidget = new CDateTimeObservableValue(startTime);
+		
 		context.bindValue(new DateAndTimeObservableValue(startDateWidget,
 				startTimeWidget), startDateValue);
 
 		IObservableValue endDateValue = BeansObservables.observeValue(contribution,
 				BaseContribution.FINISH_DATE);
-		IObservableValue endDateWidget = WidgetProperties.selection().observe(
-				endDate);
-		IObservableValue endTimeWidget = WidgetProperties.selection().observe(
-				endTime);
+		IObservableValue endDateWidget = new CDateTimeObservableValue(endDate);
+		IObservableValue endTimeWidget = new CDateTimeObservableValue(endTime);
 		context.bindValue(new DateAndTimeObservableValue(endDateWidget,
 				endTimeWidget), endDateValue);
 
@@ -442,11 +441,13 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		UIUtils.createSpacer(bodyGroup, new GridData());
 		Composite datesGroup = UIUtils.createEmptyComposite(bodyGroup,
 				new RowLayout(SWT.HORIZONTAL), new GridData());
-		startDate = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.DATE);
-		startTime = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.TIME);
+		startDate = new CDateTime(datesGroup, CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
+		startDate.setPattern("dd/MM/yyyy");
+		startTime = new CDateTime(datesGroup, CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
 		UIUtils.createLabel(datesGroup, "  -  ", new RowData());
-		endDate = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.DATE);
-		endTime = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.TIME);
+		endDate = new CDateTime(datesGroup, CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
+		endDate.setPattern("dd/MM/yyyy");
+		endTime = new CDateTime(datesGroup, CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
 
 		createLimitAndEstimateSliders();
 	}
