@@ -104,6 +104,7 @@ abstract public class CoreTMASegment extends TrackSegment
 
 		final FixWrapper newFix = new FixWrapper(fix);
 		newFix.resetName();
+		newFix.setLabelFormat("HHmm.ss");
 		return newFix;
 	}
 
