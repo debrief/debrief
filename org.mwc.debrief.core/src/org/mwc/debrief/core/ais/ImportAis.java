@@ -2,6 +2,7 @@ package org.mwc.debrief.core.ais;
 
 import java.awt.Color;
 import java.io.InputStream;
+import java.util.Date;
 
 import org.eclipse.core.runtime.Status;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -29,27 +30,28 @@ public class ImportAis extends PlainImporterBase
 	public ImportAis()
 	{
 		super();
-		_myTypes = new String[]{".ais"};
+		_myTypes = new String[]
+		{ ".ais" };
 	}
 
 	@Override
 	public boolean canImportThisFile(String theFile)
 	{
 		boolean res = true;
-    String theSuffix=null;
-    final int pos = theFile.lastIndexOf(".");
-    theSuffix = theFile.substring(pos, theFile.length());
+		String theSuffix = null;
+		final int pos = theFile.lastIndexOf(".");
+		theSuffix = theFile.substring(pos, theFile.length());
 
-    for(int i=0; i<_myTypes.length; i++)
-    {
-      if(theSuffix.equalsIgnoreCase(_myTypes[i]))
-      {
-        res = true;
-        break;
-      }
-    }
+		for (int i = 0; i < _myTypes.length; i++)
+		{
+			if (theSuffix.equalsIgnoreCase(_myTypes[i]))
+			{
+				res = true;
+				break;
+			}
+		}
 
-    return res;
+		return res;
 	}
 
 	@Override
@@ -62,35 +64,33 @@ public class ImportAis extends PlainImporterBase
 	{
 	}
 
-	@Override
-	public void importThis(String fName, InputStream is)
+	public class AisHandler implements Consumer<AisMessage>
 	{
-		AisReader reader = AisReaders.createReaderFromInputStream(is);
-		theDate = new HiResDate();
-		reader.registerHandler(new Consumer<AisMessage>()
+
+		private Date lastDate = null;
+
+		public void accept(AisMessage aisMessage)
 		{
-			public void accept(AisMessage aisMessage)
+//			System.out.println("type:" + aisMessage.getMsgId() + " is:" + aisMessage.getUserId());
+
+			if (aisMessage.getMsgId() == 4)
 			{
-				if (aisMessage.getMsgId() == 4)
+				AisMessage4 a4 = (AisMessage4) aisMessage;
+				
+				lastDate = a4.getDate();
+			}
+			else if (aisMessage.getMsgId() == 1)
+			{
+				AisPositionMessage apm = (AisPositionMessage) aisMessage;
+
+				// aah, do we know the last date?
+				if(lastDate != null)
 				{
-					AisMessage4 a4 = (AisMessage4) aisMessage;
-					System.out.println("date:" + a4.getDate());
-				}
-				else if (aisMessage.getMsgId() == 1)
-				{
-					AisPositionMessage apm = (AisPositionMessage) aisMessage;
-//				System.out.println("id: " + apm.getMsgId());
-//				System.out.println("userId: " + apm.getUserId());
-//				System.out.println("longitude: " + apm.getPos().getLongitudeDouble());
-//				System.out.println("latitude: " + apm.getPos().getLatitudeDouble());
-//				System.out.println("speed over ground: " + apm.getSog());
-//				System.out.println("course over ground: " + apm.getCog());
-//				System.out.println("utcsec: " + apm.getUtcSec());
-//				System.out.println("utcsec: " + apm.getVdm().getOrgLinesJoined());
-					
+
 					double lat = apm.getPos().getLatitudeDouble();
 					double lon = apm.getPos().getLongitudeDouble();
-					if (!apm.isPositionValid() || Math.abs(lat) >= 90.0 || Math.abs(lon) >= 180.0 )
+					if (!apm.isPositionValid() || Math.abs(lat) >= 90.0
+							|| Math.abs(lon) >= 180.0)
 					{
 						return;
 					}
@@ -115,7 +115,10 @@ public class ImportAis extends PlainImporterBase
 					{
 						trackWrapper = (TrackWrapper) layer;
 					}
-					theDate = new HiResDate(theDate.getDate().getTime() + apm.getUtcSec()*1000);
+					
+					// ok, construct the time
+					theDate = new HiResDate(lastDate.getTime());
+					
 					WorldLocation loc = new WorldLocation(lat, lon, 0);
 					int course = apm.getCog();
 					int speed = apm.getSog();
@@ -127,7 +130,15 @@ public class ImportAis extends PlainImporterBase
 					trackWrapper.addFix(fixWrapper);
 				}
 			}
-		});
+		}
+	}
+
+	@Override
+	public void importThis(String fName, InputStream is)
+	{
+		AisReader reader = AisReaders.createReaderFromInputStream(is);
+		theDate = new HiResDate();
+		reader.registerHandler(new AisHandler());
 		reader.start();
 		try
 		{
@@ -135,8 +146,8 @@ public class ImportAis extends PlainImporterBase
 		}
 		catch (InterruptedException e)
 		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-					+ fName, e);
+			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:" + fName,
+					e);
 		}
 	}
 
