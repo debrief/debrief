@@ -115,7 +115,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 						expertProp("Name", "Name of this track segment", FORMAT), };
 
 				res[0].setPropertyEditorClass(PlanningLegCalcModelPropertyEditor.class);
-				res[3].setPropertyEditorClass(CardinalPointsPropertyEditor.class);
+				res[4].setPropertyEditorClass(CardinalPointsPropertyEditor.class);
 
 				return res;
 			}
