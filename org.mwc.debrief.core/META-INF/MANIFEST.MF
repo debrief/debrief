@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief Core
 Bundle-SymbolicName: org.mwc.debrief.core; singleton:=true
-Bundle-Version: 1.0.236
+Bundle-Version: 1.0.237
 Bundle-ClassPath: debrief_core.jar,
  libs/eclipselink.jar,
  libs/jdom-1.0.jar

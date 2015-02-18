@@ -9,6 +9,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.debrief.legacy</artifactId>
-  <version>1.0.278</version>
+  <version>1.0.279</version>
   <packaging>eclipse-plugin</packaging>
 </project>
