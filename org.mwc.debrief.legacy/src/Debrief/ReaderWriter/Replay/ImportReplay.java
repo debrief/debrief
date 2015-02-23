@@ -338,7 +338,10 @@ public class ImportReplay extends PlainImporterBase
 	private final LayersFormatter[] _myFormatters =
 	{ new FormatTracks() };
 
-	private Vector<SensorWrapper> _sensorNames;
+	/** a list of the sensors we've imported
+	 * 
+	 */
+	private Vector<SensorWrapper> _importedSensors;
 
 	/**
 	 * the property name we use for importing tracks (DR/ATG)
@@ -593,14 +596,12 @@ public class ImportReplay extends PlainImporterBase
 			} // looping through the sensors
 		} // whether there are any sensors
 
+		
 		// did we find it?
 		if (thisSensor == null) 
 		{
 			// then create it
 			thisSensor = new SensorWrapper(sensorName);
-
-			// remember it
-			_sensorNames.add(thisSensor);
 
 			// set it's colour to the colour of the first data point
 			thisSensor.setColor(sw.getColor());
@@ -611,6 +612,16 @@ public class ImportReplay extends PlainImporterBase
 			theTrack.add(thisSensor);
 		}
 
+		// remember this sensor.  Note: this is a change, so that we list
+		// all sensors that were in this import, not just new ones.  If
+		// we actually only want to know about new sensors, then this "if" 
+		// block should actually be in the above (thisSensor == null)
+		// code block.
+		if(!_importedSensors.contains(thisSensor))
+		{
+			_importedSensors.add(thisSensor);
+		}
+		
 		// so, we now have the wrapper. have a look to see if the colour
 		// of this data item is the same
 		// as the sensor - in which case we will erase the colour for
@@ -1006,14 +1017,14 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 
-	public Vector<SensorWrapper> getNewlyLoadedSensors()
+	public Vector<SensorWrapper> getLoadedSensors()
 	{
-		return _sensorNames;
+		return _importedSensors;
 	}
 	
 	public void clearSensorList()
 	{
-		_sensorNames = new Vector<SensorWrapper>();
+		_importedSensors = new Vector<SensorWrapper>();
 	}
 
 	static public int replayLineStyleFor(final String theSym)
