@@ -593,7 +593,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								final ReplayLoader rl = (ReplayLoader) loader;
 								final ImportReplay ir = rl.getReplayLoader();
 								final Vector<SensorWrapper> sensors = ir
-										.getNewlyLoadedSensors();
+										.getLoadedSensors();
 								if (sensors.size() == 1)
 								{
 									final SensorWrapper thisS = sensors.firstElement();
