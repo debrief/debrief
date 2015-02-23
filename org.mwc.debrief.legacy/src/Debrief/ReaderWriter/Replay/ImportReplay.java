@@ -612,7 +612,11 @@ public class ImportReplay extends PlainImporterBase
 			theTrack.add(thisSensor);
 		}
 
-		// remember this sensor
+		// remember this sensor.  Note: this is a change, so that we list
+		// all sensors that were in this import, not just new ones.  If
+		// we actually only want to know about new sensors, then this "if" 
+		// block should actually be in the above (thisSensor == null)
+		// code block.
 		if(!_importedSensors.contains(thisSensor))
 		{
 			_importedSensors.add(thisSensor);
