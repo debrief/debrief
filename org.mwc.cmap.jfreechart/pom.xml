@@ -9,6 +9,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.cmap.jfreechart</artifactId>
-  <version>1.0.18</version>
+  <version>1.0.20</version>
   <packaging>eclipse-plugin</packaging>
 </project>

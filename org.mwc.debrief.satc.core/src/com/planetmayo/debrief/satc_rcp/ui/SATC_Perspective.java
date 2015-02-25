@@ -24,9 +24,6 @@ public class SATC_Perspective implements IPerspectiveFactory {
 	private static final String STATES_VIEW = "com.planetmayo.debrief.satc_rcp.views.TrackStatesView";
 	private static final String SPATIAL_VIEW = "com.planetmayo.debrief.satc_rcp.views.SpatialView";
 	
-	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
-
-	
 	public void createInitialLayout(IPageLayout layout) {
 		// keep the editor open - once integrated it will contain the plot
 		layout.setEditorAreaVisible(true);

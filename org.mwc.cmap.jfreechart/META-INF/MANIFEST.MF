@@ -2,18 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JFreeChart
 Bundle-SymbolicName: org.mwc.cmap.jfreechart;singleton:=true
-Bundle-Version: 1.0.18
+Bundle-Version: 1.0.20
 Bundle-Activator: org.mwc.cmap.jfreechart.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
-Bundle-ClassPath: libs/jcommon-1.0.20.jar,
- libs/jfreechart-1.0.16-experimental.jar,
- libs/jfreechart-1.0.16-swt.jar,
- libs/jfreechart-1.0.16.jar,
- .
+Bundle-ClassPath: .,
+ libs/jcommon-1.0.23.jar,
+ libs/jfreechart-1.0.19-experimental.jar,
+ libs/jfreechart-1.0.19-swt.jar,
+ libs/jfreechart-1.0.19.jar
 Export-Package: com.keypoint,
  org.jfree,
  org.jfree.base,

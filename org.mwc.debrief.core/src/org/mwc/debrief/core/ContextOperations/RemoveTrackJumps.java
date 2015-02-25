@@ -66,6 +66,10 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 	{
 		Collection<Editable> points = null;
 		String tmpTitle = null;
+		
+		// check something was selected
+		if(subjects.length == 0)
+			return;
 
 		// how many items are selected?
 		if (subjects.length == 1)

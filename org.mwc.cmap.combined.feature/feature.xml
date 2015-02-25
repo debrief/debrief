@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.combined.feature"
       label="%featureName"
-      version="1.0.242"
+      version="1.0.243"
       provider-name="MWC"
       plugin="org.mwc.cmap.core">
 
@@ -285,13 +285,6 @@ Library.
          unpack="false"/>
 
    <plugin
-         id="org.mwc.cmap.media"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.mwc.cmap.openmap"
          download-size="0"
          install-size="0"
@@ -300,6 +293,27 @@ Library.
 
    <plugin
          id="org.mwc.cmap.geotools"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.nebula.cwt"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.nebula.jface.cdatetime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.nebula.widgets.cdatetime"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
