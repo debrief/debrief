@@ -4767,6 +4767,97 @@ and so on....</programlisting></para>
 
     <chapter xml:id="external_datasets">
       <title>External datasets</title>
+      <sect1  xml:id="natural_earth">
+        <title>Natural Earth data</title>
+        <sect2 xml:id="ne_intro">
+          <title>Introduction</title>
+          <para><indexterm>
+              <primary>Natural Earth Data</primary>
+              <secondary>Introduction</secondary>
+            </indexterm>
+            <figure
+              xml:id="ne_logo">
+              <title>Natural Earth logo</title>              
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/NaturalEarthLogo.png" scalefit="1" width="100%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <quote>Natural Earth is a public domain map dataset available at 1:10m,
+              1:50m, and 1:110 million scales. Featuring tightly integrated vector and raster data,
+              with Natural Earth you can make a variety of visually pleasing, well-crafted maps with
+              cartography or GIS software.</quote><uri>http://www.naturalearthdata.com/</uri></para>
+          <para>Whilst Debrief users have enjoyed VPF and ETOPO reference datasets for vector and
+            raster backdrops (resp) for over 10 years,these have now been superceded by the Open
+            Source <glossterm linkend="g_ne">Natural Earth</glossterm> dataset.  Natural Earth vectored data doesn&apos;t come with any
+            styling, so the team employed a very clever professional cartographer 
+            (Julie at <link xlink:href="http://jewelcartografx.com/">http://jewelcartografx.com/</link>) to produce a set
+            of themes to apply to the various Natural Earth feature types.</para>
+          <para>
+            The Natural Earth download size has also be reduced by focussing on a specific set of 
+            features of interest to the maritime domain.  Lastly, the data-points in this 
+            set of data-files have been
+            subtlely trimmed to remove points at the poles, to make them suitable for Debrief&apos;s 
+            mercator projection.  The data-point trimming was performed with the most excellent
+            QGis application (<link xlink:href="http://qgis.org">http://qgis.org</link>).
+          </para>
+          <para>
+            The detailed Natural Earth data is around 80Mb in size, so it&apos;s too large to
+            include with Debrief.  So, only they very highest scale, lowest resolution data is 
+            included with Debrief.  This gives a world coastline and named countries. If
+            you require more detailed data (which you almost certainly will), just download the more
+            detailed dataset and unpack it on your disk - as detailed below.
+          </para>
+        </sect2>
+        <sect2 xml:id="ne_use">
+          <title>Use</title>
+          <sect3>
+            <title>Downloading</title>
+            <para>The customized set of Natural Earth data can be downloaded from this GitHub repository:
+              <link xlink:href="https://github.com/debrief/NaturalEarth">https://github.com/debrief/NaturalEarth</link>.
+              You don&apos;t need to download the individual files, just click on the <guimenuitem>Download Zip</guimenuitem> 
+              button to the bottom-right of the page.  The zip file is about 25Mb. This will download a zip-file of the data (obviously).
+              
+            </para>
+            <para>Once you&apos;ve downloaded the data, unzip it into a nice safe folder on your system. It should expand
+            to around 80Mb.</para>
+          </sect3>
+          <sect3>
+            <title>Configuration</title>
+            <para>Ok, you&apos;ve got the data on your system. Now you need to tell Debrief where it&apos;s stored. You do this
+            from Debrief&apos;s Natural Earth preferences page.  So, go into <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>
+            and the dialog will open. Then select <guimenuitem>Natural Earth</guimenuitem> from beneath 
+              <guimenuitem>Maritime Analysis</guimenuitem>.  In that form, just browse to the unzipped Natural Earth folder.</para>
+          </sect3>
+          <sect3>
+            <title>Usage</title>
+            <para>
+              <indexterm>
+              <primary>Natural Earth Data</primary>
+              <secondary>Usage</secondary>
+              </indexterm>
+              <figure
+                xml:id="ne_image">
+                <title>Natural Earth in use</title>              
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/NaturalEarthScreenshot.png" scalefit="1" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+              Unlike the previous external reference datasets, Natural Earth is kid&apos;s play.
+              You really do just have to click on the Natural Earth icon, from the Chart Features
+              menu, or the main application toolbar:<inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/NaturalEarth.png" width="24"/>
+                </imageobject>
+              </inlinemediaobject></para>
+            <para>The Natural Earth layer doesnt&apos; have any configurable properties - all of that has
+              been done for you already.</para>
+          </sect3>
+        </sect2>
+      </sect1>
 
       <sect1 xml:id="vpf_data">
         <title>Installing VPF data</title>
@@ -9261,7 +9352,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
           <title>Introduction</title>
           <para>
             The S2087 system is able to provide ownship track. On occasions when the
-            command system isn't able to provide ownship track then this data can be used as a
+            command system isn&apos;t able to provide ownship track then this data can be used as a
             fallback.</para>
           <para>The following assumptions have been made regarding the data: <itemizedlist>
               <listitem>
@@ -9682,7 +9773,7 @@ departure / d.lat = tan (course)</markup>
           <note><para>Read the user perspective on removing jumps in the user guide (<xref  linkend="RemoveJumpsUser"/>)</para></note>
           The initial strategy to remove drift was to find the range/direction of the jump from the last dived 
           point to the first GPS fix.  But, during implementation it became clear that this
-          wouldn't work.  What was actually needed was to "plot-on" the last dived point to 
+          wouldn&apos;t work.  What was actually needed was to "plot-on" the last dived point to 
           derive where the dived track would be at the time of the GPS fix.  
           The following diagram shows a stylized representation of a period of dived drift.
           <screenshot>
@@ -11901,7 +11992,19 @@ range = Range to target from ownship (yds)</markup>
             that the message have a DTG attached and that it may be represented in text form.</para>
         </glossdef>
       </glossentry>
-
+      
+      <glossentry xml:id="g_ne">
+        <glossterm>Natural Earth</glossterm>
+        
+        <glossdef>
+          <para>In 2015 support for Natural Earth data was added to Debrief. Natural Earth
+            is a public domain, freely available dataset of Vector and Raster data. To support
+            Debrief analysts a customized version of Natural Earth has been produced that is 
+            compliant with the Mercator Projection, and styled suitably for the maritime domain.
+          </para>
+        </glossdef>
+      </glossentry>
+      
       <glossentry xml:id="g_OverTheGround">
         <glossterm>Over the ground</glossterm>
 
