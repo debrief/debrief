@@ -44,7 +44,7 @@ import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange
+public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange, Layer.NoPaintInOverview
 {
 
 	private static final long serialVersionUID = 1L;
