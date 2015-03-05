@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/opencsv-2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jfreechart-1.0.14-swt.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jfreechart-1.0.14.jar"/>
@@ -17,5 +18,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry exported="true" kind="lib" path="libs/jts-1.13.jar"/>
+	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/joda-time-2.1.jar"/>
+	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/flanagan.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
