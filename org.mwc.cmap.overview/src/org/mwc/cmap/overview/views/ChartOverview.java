@@ -832,7 +832,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	 */
 	public boolean doWePaintThisLayer(final Layer thisLayer)
 	{
-		final boolean res = true;
+		final boolean res = !(thisLayer instanceof Layer.NoPaintInOverview);
+		
+		// check for the special marker interface that prevents a layer being painted
+		
 
 		// no, don't check for ETOPO data - just paint the lot.
 		// if (thisLayer instanceof SpatialRasterPainter)

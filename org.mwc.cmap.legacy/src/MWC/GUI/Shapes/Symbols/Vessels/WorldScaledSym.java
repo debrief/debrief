@@ -54,7 +54,7 @@ public abstract class WorldScaledSym extends PlainSymbol
 		this._subjectWidth = width;
 	}
 
-	
+
 	/** what factor do we have to apply to normalise this shape to one unit wide
 	 * 
 	 * @return

@@ -548,8 +548,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				canvasResized();
 			}
 		});
-
+		
 		final Dimension dim = _theCanvas.getSize();
+		
 
 		if (dim != null)
 			_theCanvas.getProjection().setScreenArea(dim);
@@ -1322,6 +1323,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					_swtImage.dispose();
 					_swtImage = null;
 				}
+				//if (_theLayers.findLayer(GeoToolsLayer.NATURAL_EARTH) != null)
+				//{
+				//	setMap(changedLayer);
+				//}
+				//else
+				//{
+				//	if (changedLayer instanceof GeoToolsLayer
+				//			&& changedLayer instanceof InterestedInViewportChange)
+				//	{
+				//		((GeoToolsLayer) changedLayer).clearMap();
+				//	}
+				//}
 			}
 
 			// and trigger update
@@ -1330,10 +1343,37 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		}
 	}
 
+//	private void setMap(Editable layer)
+//	{
+//		// TODO: I don't think this should be a "setMap" call, I think it should be a 
+//		// configureMap call.  The gtLayer will already know its map object.
+//		// It just needs to re-configure layers are displayed.
+//		
+//		
+//		if (this.getClass().getName().startsWith("org.mwc.cmap.overview.views.ChartOverview")) {
+//			// a workaround for "Problem painting NELayer when Chart Overview is opened"
+//			// https://github.com/debrief/debrief/issues/1018
+//			return;
+//		}
+//		if (layer instanceof InterestedInViewportChange)
+//		{
+//			if (layer instanceof GeoToolsLayer)
+//			{
+//				GeoToolsLayer gtLayer = (GeoToolsLayer) layer;
+//				PlainProjection projection = _theCanvas.getProjection();
+//				if (projection instanceof GtProjection)
+//				{
+//					GtProjection gtProjection = (GtProjection) projection;
+//					gtLayer.setMap(gtProjection.getMapContent());
+//				}
+//			}
+//		}
+//	}
+
 	public static ImageData awtToSwt(final BufferedImage bufferedImage, final int width,
 			final int height)
 	{
-		System.err.println("DOING AWT TO SWT!!!!");
+		//System.err.println("DOING AWT TO SWT!!!!");
 		final int[] awtPixels = new int[width * height];
 		final ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
 		swtImageData.transparentPixel = TRANSPARENT_COLOR;

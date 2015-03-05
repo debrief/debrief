@@ -40,7 +40,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
- * OR with the extension that matches the expected one (xml).
+ * OR with the extension that matches the expected one (dpf).
  */
 
 public class NewPlotFilenameWizardPage extends WizardPage
@@ -158,9 +158,9 @@ public class NewPlotFilenameWizardPage extends WizardPage
 		if (dotLoc != -1)
 		{
 			final String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("xml") == false)
+			if (ext.equalsIgnoreCase("dpf") == false)
 			{
-				updateStatus("File extension must be \"xml\"");
+				updateStatus("File extension must be \"dpf\"");
 				return;
 			}
 		}
@@ -220,7 +220,7 @@ public class NewPlotFilenameWizardPage extends WizardPage
 				containerText.setText(container.getFullPath().toString());
 			}
 		}
-		fileText.setText("new_plot.xml");
+		fileText.setText("new_plot.dpf");
 	}
 
 	private void updateStatus(final String message)

@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NaturalEarth
+Bundle-SymbolicName: org.mwc.cmap.NaturalEarth; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.cmap.naturalearth.Activator
+Bundle-Vendor: planetmayo
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.geotools;bundle-version="12.1.0",
+ org.mwc.cmap.legacy;bundle-version="1.0.190",
+ org.mwc.cmap.gt2Plot,
+ org.mwc.cmap.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir
+Bundle-ClassPath: .
+Export-Package: org.mwc.cmap.naturalearth,
+ org.mwc.cmap.naturalearth.preferences,
+ org.mwc.cmap.naturalearth.ui,
+ org.mwc.cmap.naturalearth.view,
+ org.mwc.cmap.naturalearth.wrapper

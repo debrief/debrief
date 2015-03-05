@@ -22,9 +22,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+import org.eclipse.core.runtime.Platform;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
+import org.geotools.renderer.label.LabelCacheImpl;
+import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.StreamingRenderer;
 
 /**
@@ -50,31 +54,39 @@ public class GeoToolsPainter
 		final MapContent map = proj.getMapContent();
 		final StreamingRenderer renderer = new StreamingRenderer();
 		renderer.setMapContent(map);
+		// fix/workaround for "Pole 90% exception"
+		org.geotools.util.logging.Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
 
-		final RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		renderer.setJava2DHints(hints);
-
+		if (!Platform.OS_LINUX.equals(Platform.getOS()))
+		{
+			final RenderingHints hints = new RenderingHints(
+					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			renderer.setJava2DHints(hints);
+		}
 		final Map<String, Object> rendererParams = new HashMap<String, Object>();
 		rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-
+		LabelCache labelCache = new LabelCacheImpl();
+		rendererParams.put(StreamingRenderer.LABEL_CACHE_KEY, labelCache);
 		renderer.setRendererHints(rendererParams);
 
 		final BufferedImage baseImage = new BufferedImage(width + 1, height + 1,
 				BufferedImage.TYPE_INT_ARGB);
 		final Graphics2D g2d = baseImage.createGraphics();
-
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			
+		if (Platform.OS_LINUX.equals(Platform.getOS()))
+		{
+			g2d.setRenderingHint(RenderingHints.KEY_TEXT_LCD_CONTRAST, 250);
+			g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+		}
 		// do we need to set the background color?
-		if (bkColor != null)
+		if (bkColor != null && !Platform.OS_LINUX.equals(Platform.getOS()))
 		{
 			// fill in the background color
 			g2d.setPaint(bkColor);
 			g2d.fillRect(0, 0, baseImage.getWidth(), baseImage.getHeight());
 		}
-
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-
+		
 		// renderer.setContext(context);
 		final java.awt.Rectangle awtRectangle = new Rectangle(0, 0, width, height);
 		final ReferencedEnvelope mapAOI = map.getViewport().getBounds();

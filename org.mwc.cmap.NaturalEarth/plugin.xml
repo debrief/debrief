@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+            class="org.mwc.cmap.naturalearth.preferences.NaturalEarhPrefs"
+            id="org.mwc.cmap.naturalearth.preferences.NaturalEarhPrefs"
+            name="Natural Earth">
+      </page>
+   </extension>
+   <!--
+   <extension
+         point="org.mwc.debrief.core.XMLLayerHandler">
+      <helper
+            class="org.mwc.cmap.naturalearth.readerwriter.NELayerHandler">
+      </helper>
+   </extension>
+   -->
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.mwc.cmap.naturalearth.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension point="org.eclipse.ui.menus">   
+        <menuContribution locationURI="menu:org.mwc.debrief.core.EditorFeatures?after=features"> 
+	      	<command
+	          commandId="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE"
+	          icon="icons/16/NaturalEarth.png"
+	          style="push"
+	          id="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE">
+	       	  <visibleWhen
+	             checkEnabled="false">
+	                 <reference
+	                   definitionId="org.mwc.debrief.activePlotEditor">
+	                 </reference>
+	      	  </visibleWhen>
+	      	</command>
+      	</menuContribution>
+      	<menuContribution locationURI="toolbar:org.mwc.debrief.core.ChartFeatures?after=charts">
+            <separator name="org.mwc.debrief.core.charts"> </separator>
+            <command commandId="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE" icon="icons/24/NaturalEarth.png"
+                style="push" id="org.mwc.debrief.core.NaturalEarth">
+                <visibleWhen checkEnabled="false">
+                    <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
+                </visibleWhen>
+            </command>
+        </menuContribution>
+     </extension>
+     
+     <extension point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.mwc.cmap.naturalearth.ui.InsertNaturalEarth"
+             id="org.mwc.cmap.NaturalEarth.creators.chartFeatures.InsertNE"
+             name="Natural Earth">
+       </command>
+       <command
+             defaultHandler="org.mwc.cmap.naturalearth.ui.CreateNELayer"
+             id="org.mwc.cmap.naturalearth.ui.CreateNELayer"
+             name="Create NE Layer">
+       </command>
+     </extension>
+</plugin>

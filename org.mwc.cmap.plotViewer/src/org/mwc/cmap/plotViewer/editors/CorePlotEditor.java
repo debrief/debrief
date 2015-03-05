@@ -16,10 +16,18 @@ package org.mwc.cmap.plotViewer.editors;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +61,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -84,8 +93,9 @@ import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.mwc.cmap.gt2plot.data.ShapeFileLayer;
 import org.mwc.cmap.gt2plot.data.WorldImageLayer;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.naturalearth.Activator;
+import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
-import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.editors.chart.CursorTracker;
 import org.mwc.cmap.plotViewer.editors.chart.RangeTracker;
@@ -102,6 +112,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -178,26 +189,28 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	protected GeoToolsHandler _myGeoHandler;
 	protected IContextActivation _myActivation;
-	
+
 	protected IResourceChangeListener resourceChangeListener = new IResourceChangeListener()
 	{
-		
+
 		@Override
 		public void resourceChanged(IResourceChangeEvent event)
 		{
 			IResourceDelta delta = event.getDelta();
 			final int eventType = event.getType();
-			if (delta != null) {
+			if (delta != null)
+			{
 				try
 				{
 					delta.accept(new IResourceDeltaVisitor()
 					{
-						
+
 						@Override
 						public boolean visit(IResourceDelta delta) throws CoreException
 						{
 							IResource resource = delta.getResource();
-							if (resource instanceof IWorkspaceRoot) {
+							if (resource instanceof IWorkspaceRoot)
+							{
 								return true;
 							}
 							if (resource instanceof IProject)
@@ -232,14 +245,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 										IPath movedToPath = delta.getMovedToPath();
 										if (movedToPath != null)
 										{
-											IResource path = ResourcesPlugin.getWorkspace().getRoot().findMember(movedToPath);
+											IResource path = ResourcesPlugin.getWorkspace().getRoot()
+													.findMember(movedToPath);
 											if (path instanceof IFile)
 											{
 												final FileEditorInput newInput = new FileEditorInput(
 														(IFile) path);
 												Display.getDefault().asyncExec(new Runnable()
 												{
-													
+
 													@Override
 													public void run()
 													{
@@ -262,7 +276,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 				}
 				catch (CoreException e)
 				{
-					IStatus status = new Status(IStatus.INFO, PlotViewerPlugin.PLUGIN_ID, e.getLocalizedMessage(),e);
+					IStatus status = new Status(IStatus.INFO, PlotViewerPlugin.PLUGIN_ID,
+							e.getLocalizedMessage(), e);
 					PlotViewerPlugin.getDefault().getLog().log(status);
 				}
 			}
@@ -328,6 +343,14 @@ public abstract class CorePlotEditor extends EditorPart implements
 							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
 						}
+					}
+					else if (ChartBoundsWrapper.NELAYER_TYPE.equals(dl.getDataType()))
+					{
+						final NELayer gt = new NELayer(Activator.getDefault()
+								.getDefaultStyleSet());
+						gt.setVisible(dl.getVisible());
+						_myGeoHandler.addGeoToolsLayer(gt);
+						wrappedLayer = gt;
 					}
 					if (wrappedLayer != null)
 						super.addThisLayer(wrappedLayer);
@@ -468,8 +491,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 							Plottable theE = (Plottable) ed.getEditable();
 							if (theE.getVisible())
 							{
-							//	if (!(theE instanceof DoNotHighlightMe))
-									drawHighlightedBorder(dest, theE.getBounds());
+								// if (!(theE instanceof DoNotHighlightMe))
+								drawHighlightedBorder(dest, theE.getBounds());
 							}
 						}
 					}
@@ -484,20 +507,22 @@ public abstract class CorePlotEditor extends EditorPart implements
 		};
 	}
 
-	/** get the first NNN valid items from the selection
+	/**
+	 * get the first NNN valid items from the selection
 	 * 
-	 * @param ss the current structured selection
+	 * @param ss
+	 *          the current structured selection
 	 * @return the first 20 items
 	 */
 	private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
 	{
 		List<EditableWrapper> res = new ArrayList<EditableWrapper>();
 		final Iterator<?> selIterator = ss.iterator();
-		
-		// limit how many entities to highlight
-		final int MAX_HIGHLIGHT=20;
 
-		while (selIterator.hasNext() && res.size()<MAX_HIGHLIGHT)
+		// limit how many entities to highlight
+		final int MAX_HIGHLIGHT = 20;
+
+		while (selIterator.hasNext() && res.size() < MAX_HIGHLIGHT)
 		{
 			final Object o = selIterator.next();
 			if (o instanceof EditableWrapper)
@@ -572,7 +597,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 		super.dispose();
 
 		getSite().getPage().removePartListener(partListener);
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(
+				resourceChangeListener);
 
 		// empty the part monitor
 		if (_myPartMonitor != null)
@@ -584,6 +610,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// and the layers
 		_myLayers.close();
 		_myLayers = null;
+
+		if (_myGeoHandler != null)
+		{
+			_myGeoHandler.dispose();
+			_myGeoHandler = null;
+		}
 
 		// some other items
 		_timeListener = null;
@@ -601,7 +633,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 			}
 		});
 	}
-	
+
 	public void createPartControl(final Composite parent)
 	{
 		// hey, create the chart
@@ -665,8 +697,63 @@ public abstract class CorePlotEditor extends EditorPart implements
 		{
 			public void runWithEvent(final Event event)
 			{
-				final ExportWMF ew = new ExportWMF(true, false);
-				ew.run(null);
+				SWTCanvas canvas = (SWTCanvas) getChart().getCanvas();
+				Image image = null;
+				try
+				{
+					image = canvas.getImage();
+					if (image != null)
+					{
+						final BufferedImage _awtImage = PlotViewerPlugin.convertToAWT(image
+								.getImageData());
+						Transferable t = new Transferable()
+						{
+
+							public DataFlavor[] getTransferDataFlavors()
+							{
+								return new DataFlavor[]
+								{ DataFlavor.imageFlavor };
+							}
+
+							public boolean isDataFlavorSupported(DataFlavor flavor)
+							{
+								if (flavor == DataFlavor.imageFlavor)
+									return true;
+								return false;
+							}
+
+							public Object getTransferData(DataFlavor flavor)
+									throws UnsupportedFlavorException, IOException
+							{
+								if (isDataFlavorSupported(flavor))
+								{
+									return _awtImage;
+								}
+								return null;
+							}
+
+						};
+
+						ClipboardOwner co = new ClipboardOwner()
+						{
+
+							public void lostOwnership(Clipboard clipboard,
+									Transferable contents)
+							{
+							}
+
+						};
+						Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+						cb.setContents(t, co);
+					}
+				}
+				finally
+				{
+					if (image != null)
+					{
+						image.dispose();
+					}
+				}
 			}
 		};
 
@@ -686,6 +773,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE|IResourceChangeEvent.PRE_DELETE|IResourceChangeEvent.POST_CHANGE);
 	}
 
+	
 	private IContextService getContextService()
 	{
 		return (IContextService) getSite().getService(IContextService.class);
@@ -729,8 +817,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 							final IWorkbenchPart parentPart)
 					{
 						final ISelectionProvider iS = (ISelectionProvider) part;
-			// TODO- make it possible for use to indicate if highlights get plotted (prob via Layer Manager)			
-			//			iS.addSelectionChangedListener(_selectionChangeListener);
+						// TODO- make it possible for use to indicate if highlights get
+						// plotted (prob via Layer Manager)
+						// iS.addSelectionChangedListener(_selectionChangeListener);
 					}
 				});
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
@@ -740,8 +829,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 							final IWorkbenchPart parentPart)
 					{
 						final ISelectionProvider iS = (ISelectionProvider) part;
-						// TODO- make it possible for use to indicate if highlights get plotted (prob via Layer Manager)			
-			//			iS.removeSelectionChangedListener(_selectionChangeListener);
+						// TODO- make it possible for use to indicate if highlights get
+						// plotted (prob via Layer Manager)
+						// iS.removeSelectionChangedListener(_selectionChangeListener);
 					}
 				});
 	}

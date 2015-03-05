@@ -31,6 +31,8 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static final String NATURAL_EARTH = "Natural Earth";
+	
 	/**
 	 * the map where we display ourselves
 	 * 

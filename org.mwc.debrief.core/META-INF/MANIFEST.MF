@@ -9,6 +9,7 @@ Bundle-ClassPath: debrief_core.jar,
 Bundle-Activator: org.mwc.debrief.core.DebriefPlugin
 Bundle-Vendor: MWC
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.topografix.gpx.v10,
  com.topografix.gpx.v11,
  commonj.sdo.impl,

@@ -59,17 +59,22 @@ public final class WorldPath implements java.io.Serializable
 
   public WorldPath(final WorldLocation[] path)
   {
-    this();
+  	_myPoints = new Vector<WorldLocation>(path.length, 1);
     for (int i = 0; i < path.length; i++)
     {
-      addPoint(new WorldLocation(path[i]));
+      _myPoints.add(new WorldLocation(path[i]));
     }
+    refreshBounds();
   }
 
   public WorldPath(final WorldPath path)
   {
-    this();
-    add(path);
+  	_myPoints = new Vector<WorldLocation>(path.size(),1);
+  	for (int i = 0; i < path.size(); i++)
+    {
+      _myPoints.add(new WorldLocation(path.getLocationAt(i)));
+    }
+  	refreshBounds();
   }
 
   //////////////////////////////////////////////////////////////////////

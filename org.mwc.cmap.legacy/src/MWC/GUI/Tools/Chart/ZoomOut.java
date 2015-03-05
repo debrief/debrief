@@ -99,7 +99,7 @@ public class ZoomOut extends PlainTool
       _theChart.getCanvas().getProjection().setDataArea(_oldArea);
       
       // get the projection to refit-itself
-      _theChart.getCanvas().getProjection().zoom(0.0);
+  //    _theChart.getCanvas().getProjection().zoom(0.0);
       
       // and redraw the whole plot
       _theChart.update();
@@ -147,7 +147,7 @@ public class ZoomOut extends PlainTool
 		     _theChart.getCanvas().getProjection().setDataArea(_oldArea);
 
 		     // get the projection to refit-itself
-		     _theChart.getCanvas().getProjection().zoom(0.0);
+		 //    _theChart.getCanvas().getProjection().zoom(0.0);
 		}
 
 		@Override
@@ -155,7 +155,7 @@ public class ZoomOut extends PlainTool
 			 _theChart.getCanvas().getProjection().zoom(_zoomFactor, _selectedArea);
 
 		    // get the projection to refit-itself
-		    _theChart.getCanvas().getProjection().zoom(0.0);
+		 //   _theChart.getCanvas().getProjection().zoom(0.0);
 		}
 
 		public String toString() {
@@ -215,6 +215,10 @@ public class ZoomOut extends PlainTool
 
 			class MockChart extends PlainChart
 			{
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
 				MockCanvasType _theCanvas;
 
 				public MockChart(Layers theLayers)

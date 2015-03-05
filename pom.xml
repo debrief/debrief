@@ -47,6 +47,7 @@
     <module>org.mwc.cmap.NarrativeViewer</module>
     <module>org.mwc.cmap.openmap</module>
     <module>org.mwc.cmap.geotools</module>
+    <module>org.mwc.cmap.NaturalEarth</module>
     <module>org.mwc.cmap.TimeController</module>
     <module>org.mwc.cmap.combined.feature</module>
     <module>org.mwc.cmap.core</module>
@@ -181,6 +182,8 @@
 		<version>${tycho.version}</version>
 		<configuration>
 			<encoding>UTF-8</encoding>
+			<source>1.7</source>
+			<target>1.7</target>
 		</configuration>
 	</plugin>
 	<plugin>

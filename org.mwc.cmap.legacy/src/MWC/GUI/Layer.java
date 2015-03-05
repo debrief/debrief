@@ -135,6 +135,15 @@ public interface Layer extends Serializable, Plottable
 		public Enumeration<Editable> contiguousElements();
 	}
 	
+	/** marker interface for layers that should not be painted in the overview chart
+	 * 
+	 * @author ian
+	 *
+	 */
+	public interface NoPaintInOverview
+	{
+		
+	}
 	
   /////////////////////////////////////////////////////////////
   // member functions
