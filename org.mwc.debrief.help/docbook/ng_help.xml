@@ -36,22 +36,7 @@
     <abstract>
       <title>Contact details</title>
       <para>Should you wish to learn more about <application>Debrief</application> please make contact
-        one of the following:</para>
-      <formalpara>
-        <title>Debrief Project Sponsor</title>
-        <para>
-          <address>
-            <personname>Lt Cdr Dave Whitehouse</personname>
-            <personname>SO2 UW OA</personname>
-            <otheraddr>Maritime Warfare Centre</otheraddr>
-            <street>Marlborough Building, HMS Collingwood</street>
-            <city>Fareham</city>
-            <state>HANTS</state>
-            <country>UK</country>
-            <postcode>  PO14 1AS</postcode>
-          </address>
-        </para>
-      </formalpara>
+        the Project Manager:</para>
       <formalpara xml:id="project_manager">
         <title>Debrief Project Manager</title>
         <para>
@@ -514,6 +499,13 @@
           didn&apos;t suffer the previous performance problems (See <xref linkend="ChartBackdrops"/>).
           Support was also introduced for using Debrief in the process of Exercise Planning (See
             <xref linkend="ExercisePlanning"/>).</para>
+        <para>In 2015, under 
+          <link xlink:href="https://www.gov.uk/government/organisations/defence-science-and-technology-laboratory">DSTL</link> 
+          sponsorship, support for the Natural Earth dataset was added to
+        Debrief.  This will be of value to the wide body of Debrief users (see <xref linkend="natural_earth"/>.
+          DSTL also sponsored
+         the development of Semi Automatic Track Construction, but this is of very, very niche interest
+         (see <xref linkend="satc"/>).</para>
       </sect2>
     </sect1>
 
@@ -4837,15 +4829,6 @@ and so on....</programlisting></para>
               <primary>Natural Earth Data</primary>
               <secondary>Usage</secondary>
               </indexterm>
-              <figure
-                xml:id="ne_image">
-                <title>Natural Earth in use</title>              
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/NaturalEarthScreenshot.png" scalefit="1" width="100%"/>
-                  </imageobject>
-                </mediaobject>
-              </figure>
               Unlike the previous external reference datasets, Natural Earth is kid&apos;s play.
               You really do just have to click on the Natural Earth icon, from the Chart Features
               menu, or the main application toolbar:<inlinemediaobject>
@@ -4853,8 +4836,45 @@ and so on....</programlisting></para>
                   <imagedata fileref="figures/NaturalEarth.png" width="24"/>
                 </imageobject>
               </inlinemediaobject></para>
-            <para>The Natural Earth layer doesnt&apos; have any configurable properties - all of that has
+            <para>The Natural Earth layer doesn&apos;t have any configurable properties - all of that has
               been done for you already.</para>
+            <para>If you haven&apos;t downloaded and configured the detailed dataset, or if you&apos;re 
+            zoomed out a long, long way, you will see the 110M resolution dataset:
+              <figure
+                xml:id="ne_110M">
+                <title>Natural Earth in use (110M resolution)</title>              
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/NE_110M.png" scalefit="1" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+              
+            </para>
+            <para>Zoom in a little more and you will start to see names of significant places and a 
+            more detailed coastline, from the 50M resolution dataset:
+              <figure
+                xml:id="ne_50M">
+                <title>Natural Earth in use (50M resolution)</title>              
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/NE_50M.png" scalefit="1" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </para>
+            <para>Finally, once you're zoomed in close you will see bathymetric data, plus a lot more placenames:
+              <figure
+                xml:id="ne_10M">
+                <title>Natural Earth in use (10M resolution)</title>              
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/NE_10M.png" scalefit="1" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+              
+            </para>
           </sect3>
         </sect2>
       </sect1>
@@ -7367,7 +7387,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           Debrief manual TMA capabilities.</para>
         
         <para>Following exploratory discussions with <guilabel>Atlas Elektronik UK</guilabel>
-          regarding the <guilabel>FRITMA</guilabel> tool it was determined that a custom-built TMA
+          regarding the <guilabel>FRITMA</guilabel> tool it was determined by the 
+          relevant stakeholders that a custom-built TMA
           algortihm would be a viable solution for the requirement. This new Debrief feature was to
           be called Semi Automatic Track Construction (<guilabel>SATC</guilabel>) </para>
         <para><note>
