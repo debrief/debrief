@@ -19,6 +19,8 @@ import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -62,12 +64,28 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		bindSliderLabelCheckbox(context, errorValue, errorSlider, errorLabel, errorActiveCheckbox,
 				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
 		
-		// connect up the MDA toggle
-		IObservableValue autoValue = BeansObservables.observeValue(contribution,
-				BearingMeasurementContribution.RUN_MDA);
-		IObservableValue autoButton = WidgetProperties.selection().observe(
-				runMDACheckbox);
-		context.bindValue(autoButton, autoValue);
+		// connect up the MDA toggle (note - we've switched from a toggle to a button
+//		IObservableValue autoValue = BeansObservables.observeValue(contribution,
+//				BearingMeasurementContribution.RUN_MDA);
+//		IObservableValue autoButton = WidgetProperties.selection().observe(
+//				runMDACheckbox);
+//		context.bindValue(autoButton, autoValue);
+		
+		// connect the checkbox to the run MDA event
+		runMDACheckbox.addSelectionListener(new SelectionListener()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				// ok - run the MDA generator
+				contribution.runMDA(getContributions());
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
+		
 	}
 	
 	@Override
@@ -89,8 +107,9 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		Composite group2 = new Composite(bodyGroup, SWT.NONE);
 		group2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		group2.setLayout(UIUtils.createGridLayoutWithoutMargins(3, false));
-		runMDACheckbox = new Button(group2, SWT.CHECK);
-		UIUtils.createLabel(bodyGroup, "(Auto-detect target manoeuvres) - NOT IMPLEMENTED", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		runMDACheckbox = new Button(group2, SWT.PUSH);
+		runMDACheckbox.setText("Run");
+		UIUtils.createLabel(bodyGroup, "Auto-detect target manoeuvres", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 	}
 	
 	@Override
