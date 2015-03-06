@@ -538,7 +538,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			@Override
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				contributions.removeContribution(contribution);
+				getContributions().removeContribution(contribution);
 			}
 		});
 
@@ -681,5 +681,10 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 		event.gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
 		event.gc.drawRoundRectangle(3, 5, 6, 20, 8, 8);
+	}
+
+	public IContributions getContributions()
+	{
+		return contributions;
 	}
 }
