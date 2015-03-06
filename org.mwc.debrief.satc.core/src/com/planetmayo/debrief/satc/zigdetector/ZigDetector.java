@@ -3,6 +3,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
+
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+
 import junit.framework.TestCase;
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
@@ -266,10 +270,9 @@ public class ZigDetector
 			final long wholeEnd, final Sensor sensor, final ILegStorer legStorer,
 			final double RMS_ZIG_RATIO, final double optimiseTolerance, final List<Long> thisLegTimes, final List<Double> thisLegBearings)
 	{
-		System.out.println("  Trying to slice : "
+		SATC_Activator.log(Status.INFO, "  Trying to slice : "
 				+ dateF.format(new Date(wholeStart)) + " - "
-				+ dateF.format(new Date(wholeEnd)));// + " " + curStart + " to " +
-		// curEnd);
+				+ dateF.format(new Date(wholeEnd)), null);
 
 		// ok, find the best slice
 		// prepare the data
@@ -317,9 +320,9 @@ public class ZigDetector
 		// right, how did we get on?
 		if (sliceTime != -1)
 		{
-			System.out.println("  Best slice at:" + dateF.format(new Date(sliceTime))
+			SATC_Activator.log(Status.INFO, "  Best slice at:" + dateF.format(new Date(sliceTime))
 					+ " index:" + bestSlice + " score:" + bestScore + " whole leg:"
-					+ wholeLegScore);
+					+ wholeLegScore, null);
 
 			// is this slice acceptable?
 			if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
@@ -332,8 +335,8 @@ public class ZigDetector
 			else
 			{
 				// right - we couldn't get a good slice. see what the whole score is
-				System.out.println("Couldn't slice: whole leg score:" + wholeLegScore
-						+ " best slice:" + bestScore);
+				SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:" + wholeLegScore
+						+ " best slice:" + bestScore, null);
 
 				// just store the whole slice
 				legStorer.storeLeg(scenario, wholeStart, wholeEnd, sensor,
@@ -342,7 +345,7 @@ public class ZigDetector
 		}
 		else
 		{
-			System.out.println("slicing complete, can't slice");
+			SATC_Activator.log(Status.INFO, "slicing complete, can't slice", null);
 		}
 	}
 
