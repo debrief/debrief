@@ -9,6 +9,12 @@
       </helper>
    </extension>
    <extension
+         point="org.mwc.cmap.core.RightClickSupport">
+      <helper
+            class="org.mwc.debrief.satc_interface.actions.MergeLegs">
+      </helper>
+   </extension>
+   <extension
          point="org.mwc.debrief.core.XMLLayerHandler">
       <helper
             class="org.mwc.debrief.satc_interface.readerwriter.SATCHandler">
