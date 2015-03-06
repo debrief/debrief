@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.satc_interface.actions;
 
+import java.util.Date;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
@@ -29,12 +31,12 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.data.wrappers.StraightLegWrapper;
 
-import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 
 /**
  * @author ian.mayo
@@ -115,6 +117,7 @@ public class MergeLegs implements RightClickContextItemGenerator
 		protected final SATC_Solution _parent;
 		protected final Editable[] _subjects;
 		protected final Editable _target;
+		private Date _firstFinish;
 
 		public MergeLegsOperation(final String title, final Editable target,
 				final Layers theLayers, final SATC_Solution parentLayer,
@@ -142,6 +145,7 @@ public class MergeLegs implements RightClickContextItemGenerator
 				if (i == 0)
 				{
 					firstC = thisC;
+					_firstFinish = thisC.getFinishDate();
 				}
 				else
 				{
@@ -153,30 +157,9 @@ public class MergeLegs implements RightClickContextItemGenerator
 				}
 			}
 
-			// // ok, get the first leg
-			// StraightLegWrapper slwA = (StraightLegWrapper) _subjects[0];
-			// StraightLegForecastContribution contA = slwA.getContribution();
-			//
-			// // ok, get the other legs
-			// for()
-			// StraightLegWrapper slwA = (StraightLegWrapper) _subjects[0];
-			// StraightLegForecastContribution contA = slwA.getContribution();
-			//
-			// final int res = TrackWrapper.mergeTracks((TrackWrapper) _target,
-			// _layers, _subjects);
-
-			// ok, we can also hide the parent
-			//
-			// if (res == IStatus.OK)
-			// {
-			// // it worked, so switch off the composite track
-			// TrackWrapper oldParent = (TrackWrapper) _parents[0];
-			// oldParent.setVisible(false);
-			//
-			// // and talk about the UI update
-			// fireModified();
-			// }
-			//
+			// share the good news
+			fireModified();
+			
 			return Status.OK_STATUS;
 		}
 
@@ -185,25 +168,47 @@ public class MergeLegs implements RightClickContextItemGenerator
 		{
 			return false;
 		}
-
-		@Override
-		public boolean canUndo()
-		{
-			return false;
-		}
+		
 
 		private void fireModified()
 		{
 			_layers.fireExtended();
 		}
 
+
+		@Override
+		public boolean canUndo()
+		{
+			return true;
+		}
+
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			CorePlugin.logError(Status.INFO,
-					"Undo not permitted for merge operation", null);
-			return null;
+			// ok, loop through the legs
+			for (int i = 0; i < _subjects.length; i++)
+			{
+				Editable thisE = _subjects[i];
+				StraightLegWrapper thisS = (StraightLegWrapper) thisE;
+				StraightLegForecastContribution thisC = (StraightLegForecastContribution) thisS
+						.getContribution();
+
+				if (i == 0)
+				{
+					thisC.setFinishDate(_firstFinish);
+				}
+				else
+				{
+					// first remove it, so we don't get a re-calculate
+					_parent.add(thisS);
+				}
+			}
+			
+			// share the good news
+			fireModified();
+			
+			return Status.OK_STATUS;
 		}
 	}
 }

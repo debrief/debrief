@@ -516,6 +516,27 @@ public class SATC_Solution extends BaseLayer implements
 			_myLayers.fireModified(this);
 	}
 
+	public void add(Editable editable)
+	{
+		if(!(editable instanceof ContributionWrapper))
+		{
+			// ingore it
+			return;
+		}
+		else
+		{
+			ContributionWrapper cw = (ContributionWrapper) editable;
+			BaseContribution cont = cw.getContribution();
+			// do we need to pass this to the parent?
+			if (!_mySolver.getContributions().contains(cont))
+			{
+				_mySolver.getContributions().addContribution(cont);
+			}
+		}
+		
+		super.add(editable);
+	}
+	
 	public void addContribution(final BaseContribution cont)
 	{
 		// do we need to pass this to the parent?
