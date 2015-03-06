@@ -75,4 +75,11 @@ public interface IContributions extends Iterable<BaseContribution>
 	 * returns how many contributions do we have now 
 	 */
 	int size();
+
+	/** indicates if this contribution is already loaded
+	 * 
+	 * @param contribution
+	 * @return
+	 */
+	boolean contains(BaseContribution contribution);
 }

@@ -70,6 +70,12 @@ public class Contributions implements IContributions
 	{
 		return contributions.iterator();
 	}
+	
+	@Override
+	public boolean contains(BaseContribution contribution)
+	{
+		return contributions.contains(contribution);
+	}
 
 	@Override
 	public void addContribution(BaseContribution contribution)
