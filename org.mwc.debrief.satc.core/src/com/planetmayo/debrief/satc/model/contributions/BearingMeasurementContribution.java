@@ -327,6 +327,11 @@ public class BearingMeasurementContribution extends
 		return bearingError;
 	}
 
+	public List<HostState> getHostState()
+	{
+		return states;
+	}
+	
 	/**
 	 * provide the bearing error
 	 * 
@@ -436,9 +441,9 @@ public class BearingMeasurementContribution extends
 
 	public static class HostState
 	{
-		final private long time;
-		final private double courseDegs;
-		final private double speedKts;
+		final public long time;
+		final public double courseDegs;
+		final public double speedKts;
 
 		public HostState(long time, double courseDegs, double speedKts)
 		{
@@ -460,7 +465,7 @@ public class BearingMeasurementContribution extends
 
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
-		List<LegOfData> legs = osLegDet.identifyOwnshipLegs(getTimes(states),
+		List<LegOfData> ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
 				getCourses(states), getSpeeds(states), 5);
 
 		// create object that can store the new legs
@@ -471,7 +476,7 @@ public class BearingMeasurementContribution extends
 			public void storeLeg(String scenarioName, long tStart, long tEnd,
 					Sensor sensor, double rms)
 			{
-				String name = "Leg - " + ctr++;
+				String name = "Leg-" + ctr++;
 				SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
 				StraightLegForecastContribution slf = new StraightLegForecastContribution();
 				slf.setStartDate(new Date(tStart));
@@ -488,7 +493,7 @@ public class BearingMeasurementContribution extends
 		// ok, work through the legs. In the absence of a Discrete
 		// Optimisation algorithm we're taking a brue force approach.
 		// Hopefully we can find an optimised alternative to this.
-		for (final Iterator<LegOfData> iterator2 = legs.iterator(); iterator2
+		for (final Iterator<LegOfData> iterator2 = ownshipLegs.iterator(); iterator2
 				.hasNext();)
 		{
 			final LegOfData thisLeg = iterator2.next();
