@@ -99,6 +99,7 @@ import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.HostState;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.MDAResultsListener;
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -123,6 +124,7 @@ import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
@@ -217,6 +219,7 @@ public class MaintainContributionsView extends ViewPart
 	private TabItem performanceTab;
 	private TabItem legTab;
 	private TabFolder graphTabs;
+	private MDAResultsListener _sliceListener;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -1180,9 +1183,25 @@ public class MaintainContributionsView extends ViewPart
 						}
 					};
 				startListeningTo(slf);
-				
-				// ok, better go through the refresh cycle!
-				redoStraightLegs();
+			}
+			else if(contribution instanceof BearingMeasurementContribution)
+			{
+				BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
+				if(_sliceListener == null)
+				{
+					_sliceListener = new BearingMeasurementContribution.MDAResultsListener()
+					{
+						
+						@Override
+						public void sliced(String string, List<LegOfData> ownshipLegs,
+								ArrayList<StraightLegForecastContribution> arrayList,
+								ArrayList<HostState> hostStates)
+						{
+							redoOwnshipStates(string, ownshipLegs, hostStates);
+						}
+					};
+				}
+				bmc.addSliceListener(_sliceListener);
 			}
 		}
 		catch (Exception ex)
@@ -1197,6 +1216,111 @@ public class MaintainContributionsView extends ViewPart
 		}
 	}
 
+	protected void redoOwnshipStates(String bearingName, List<LegOfData> ownshipLegs,
+			ArrayList<HostState> states)
+	{
+		if(legPlot == null)
+			return;
+		
+		java.awt.Color courseCol = java.awt.Color.blue.darker().darker();
+		java.awt.Color speedCol = java.awt.Color.blue.brighter().brighter();
+		
+		// ok, now loop through and set them
+		long startTime = Long.MAX_VALUE;
+		long endTime = Long.MIN_VALUE;
+
+		legPlot.setDataset(0, null);
+		legPlot.setDataset(1, null);
+
+		// hey, does it have any ownship legs?
+		TimeSeriesCollection tscC = new TimeSeriesCollection();
+		TimeSeriesCollection tscS = new TimeSeriesCollection();
+		TimeSeriesCollection tscCLegs = new TimeSeriesCollection();
+		TimeSeriesCollection tscSLegs = new TimeSeriesCollection();
+		TimeSeries courses = new TimeSeries("Course");
+		TimeSeries speeds = new TimeSeries("Speed");
+		TimeSeries courseLegs = new TimeSeries("Course (leg)");
+		TimeSeries speedLegs = new TimeSeries("Speed (leg)");
+
+		Iterator<LegOfData> lIter = ownshipLegs.iterator();
+		LegOfData thisLeg = lIter.next();
+		
+		Iterator<HostState> stateIter = states.iterator();
+		while (stateIter.hasNext())
+		{
+			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) stateIter
+					.next();
+			long thisTime =hostState.time;
+			double thisCourse = hostState.courseDegs;
+			courses.add(new FixedMillisecond(thisTime), thisCourse);
+			double thisSpeed = hostState.speedKts;
+			speeds.add(new FixedMillisecond(thisTime), thisSpeed);
+			startTime = Math.min(thisTime, startTime);
+			endTime = Math.max(thisTime, endTime);
+			
+			// sort out if this is in a leg or not
+			if(thisLeg != null){
+				if(thisTime > thisLeg.getEnd())
+				{
+					thisLeg = lIter.next();
+				}
+				else
+				{
+					if(thisTime >= thisLeg.getStart())
+					{
+						courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
+						speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
+					}
+				}
+			}
+		}
+		
+		tscC.addSeries(courses);
+		tscS.addSeries(speeds);
+		tscCLegs.addSeries(courseLegs);
+		tscSLegs.addSeries(speedLegs);
+		
+		legPlot.setDataset(0, null);
+		legPlot.setDataset(0, tscC);
+		legPlot.setDataset(1, tscS);
+		legPlot.setDataset(2, tscCLegs);
+		legPlot.setDataset(3, tscSLegs);
+		
+		final NumberAxis axis2 = new NumberAxis("Speed (Kts)");
+		legPlot.setRangeAxis(1, axis2);
+		legPlot.mapDatasetToRangeAxis(1, 1);
+		legPlot.mapDatasetToRangeAxis(3, 1);
+		
+		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(
+				true, false);
+		lineRenderer1.setSeriesPaint(0, courseCol);
+
+		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(
+				true, false);
+		lineRenderer2.setSeriesPaint(0, speedCol);
+
+		final XYLineAndShapeRenderer lineRenderer3 = new XYLineAndShapeRenderer(
+				false, true);
+		lineRenderer3.setSeriesPaint(0, courseCol);
+		lineRenderer3.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
+
+		final XYLineAndShapeRenderer lineRenderer4 = new XYLineAndShapeRenderer(
+				false, true);
+		lineRenderer4.setSeriesPaint(0, speedCol);
+		lineRenderer4.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
+
+		// ok, and store them
+		legPlot.setRenderer(0, lineRenderer1);
+		legPlot.setRenderer(1, lineRenderer2);
+		legPlot.setRenderer(2, lineRenderer3);
+		legPlot.setRenderer(3, lineRenderer4);
+		
+		legPlot.getDomainAxis().setRange(startTime, endTime);
+		
+		// ok - get the straight legs to sort themselves out
+		redoStraightLegs();
+	}
+
 	protected void redoStraightLegs()
 	{
 		// ok, clear any leg markers
@@ -1205,10 +1329,6 @@ public class MaintainContributionsView extends ViewPart
 			graphTabs.setSelection(legTab);
 
 			legPlot.clearDomainMarkers();
-
-			// ok, now loop through and set them
-			long startTime = Long.MAX_VALUE;
-			long endTime = Long.MIN_VALUE;
 
 			Iterator<BaseContribution> conts = activeSolver.getContributions()
 					.iterator();
@@ -1243,66 +1363,11 @@ public class MaintainContributionsView extends ViewPart
 					{
 						if(baseC instanceof BearingMeasurementContribution)
 						{
-							legPlot.setDataset(0, null);
-							legPlot.setDataset(1, null);
-
-							// hey, does it have any ownship legs?
-							BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
-							List<HostState> states = bmc.getHostState();
-							TimeSeriesCollection tscC = new TimeSeriesCollection();
-							TimeSeriesCollection tscS = new TimeSeriesCollection();
-							TimeSeries courses = new TimeSeries("Course");
-							TimeSeries speeds = new TimeSeries("Speed");
-							Iterator<HostState> stateIter = states.iterator();
-							while (stateIter.hasNext())
-							{
-								BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) stateIter
-										.next();
-								long thisTime =hostState.time;
-								double thisCourse = hostState.courseDegs;
-								courses.add(new FixedMillisecond(thisTime), thisCourse);
-								double thisSpeed = hostState.speedKts;
-								speeds.add(new FixedMillisecond(thisTime), thisSpeed);
-//								System.out.println("stored course:" + (int)thisCourse +", " + " speed:" + (int)thisSpeed + " at " + new Date(thisTime));
-								
-								long thisStart = baseC.getStartDate().getTime();
-								long thisFinish = baseC.getFinishDate().getTime();
-
-								startTime = Math.min(startTime, thisStart);
-								endTime = Math.max(endTime, thisFinish);
-
-							}
 							
-							tscC.addSeries(courses);
-							tscS.addSeries(speeds);
-							
-							legPlot.setDataset(0, null);
-							legPlot.setDataset(0, tscC);
-							legPlot.setDataset(1, tscS);
-							
-							final NumberAxis axis2 = new NumberAxis("Speed (Kts)");
-							legPlot.setRangeAxis(1, axis2);
-							legPlot.setDataset(1, tscS);
-							legPlot.mapDatasetToRangeAxis(1, 1);
-							
-							final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(
-									true, true);
-							lineRenderer1.setSeriesPaint(0, java.awt.Color.blue);
-							lineRenderer1.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
-
-							final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(
-									true, true);
-							lineRenderer2.setSeriesPaint(0, java.awt.Color.blue);
-							lineRenderer2.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
-
-							// ok, and store them
-							legPlot.setRenderer(0, lineRenderer1);
-							legPlot.setRenderer(1, lineRenderer2);
 						}
 					}
 			}
 
-			legPlot.getDomainAxis().setRange(startTime, endTime);
 		}
 
 	}
@@ -1326,6 +1391,39 @@ public class MaintainContributionsView extends ViewPart
 		{
 			stopListeningTo(contribution);
 		}
+		else if(contribution instanceof BearingMeasurementContribution)
+		{
+			BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
+			bmc.removeSliceListener(_sliceListener);
+		}
+	}
+
+	
+	
+	@Override
+	protected void finalize() throws Throwable
+	{
+	
+		// clear our listeners
+		Iterator<BaseContribution> conts = activeSolver.getContributions()
+				.iterator();
+		while (conts.hasNext())
+		{
+			BaseContribution contribution = (BaseContribution) conts.next();
+			// aaah, is it a straight leg?
+			if (contribution instanceof StraightLegForecastContribution)
+			{
+				stopListeningTo(contribution);
+			}
+			else if(contribution instanceof BearingMeasurementContribution)
+			{
+				BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
+				bmc.removeSliceListener(_sliceListener);
+			}
+		}
+		
+		// let the parent shut down
+		super.finalize();
 	}
 
 	private void startListeningTo(final StraightLegForecastContribution slf)

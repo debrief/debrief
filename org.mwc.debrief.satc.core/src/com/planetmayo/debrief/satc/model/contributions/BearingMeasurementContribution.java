@@ -28,8 +28,6 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
-import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
-import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -60,6 +58,12 @@ public class BearingMeasurementContribution extends
 	public static final String BEARING_ERROR = "bearingError";
 	public static final String RUN_MDA = "autoDetect";
 
+	public static interface MDAResultsListener{
+		public void sliced(String string, List<LegOfData> ownshipLegs, 
+				ArrayList<StraightLegForecastContribution> arrayList,
+				ArrayList<HostState> hostStates);
+	}
+	
 	/**
 	 * the allowable bearing error (in radians)
 	 * 
@@ -76,6 +80,12 @@ public class BearingMeasurementContribution extends
 	 * manoeuvre detection algorithm
 	 */
 	private ArrayList<HostState> states;
+	
+	/** array of listeners interested in MDA
+	 * 
+	 */
+	private transient ArrayList<MDAResultsListener> _listeners = new ArrayList<MDAResultsListener>();
+	
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -469,23 +479,7 @@ public class BearingMeasurementContribution extends
 				getCourses(states), getSpeeds(states), 5);
 
 		// create object that can store the new legs
-		ILegStorer storer = new ILegStorer()
-		{
-			int ctr = 1;
-			@Override
-			public void storeLeg(String scenarioName, long tStart, long tEnd,
-					Sensor sensor, double rms)
-			{
-				String name = "Leg-" + ctr++;
-				SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
-				StraightLegForecastContribution slf = new StraightLegForecastContribution();
-				slf.setStartDate(new Date(tStart));
-				slf.setFinishDate(new Date(tEnd));
-				slf.setActive(true);
-				slf.setName(name);
-				contributions.addContribution(slf);
-			}
-		};
+		MyLegStorer storer = new MyLegStorer(contributions);
 		
 		// ok, now collate the bearing data
 		ZigDetector detector = new ZigDetector();
@@ -528,6 +522,61 @@ public class BearingMeasurementContribution extends
 		}
 
 		
+		// ok, slicing done!
+		if(_listeners != null)
+		{
+			Iterator<MDAResultsListener> iter = _listeners.iterator();
+			while (iter.hasNext())
+			{
+				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
+						.next();
+				thisL.sliced(getName(), ownshipLegs, storer.getSlices(), states);
+			}
+		}
+		
+	}
+	
+	public void addSliceListener(MDAResultsListener listener)
+	{
+		_listeners.add(listener);
+	}
+	
+	public void removeSliceListener(MDAResultsListener listener)
+	{
+		_listeners.remove(listener);
+	}
+	
+	private static class MyLegStorer implements ILegStorer
+	{
+		int ctr = 1;
+		private ArrayList<StraightLegForecastContribution> slices = new
+				ArrayList<StraightLegForecastContribution>();
+		private final IContributions _contributions;
+		
+		public MyLegStorer(final IContributions theConts)
+		{
+			_contributions = theConts;
+		}
+		
+		public ArrayList<StraightLegForecastContribution> getSlices()
+		{
+			return slices;
+		}
+		
+		@Override
+		public void storeLeg(String scenarioName, long tStart, long tEnd,
+				Sensor sensor, double rms)
+		{
+			String name = "Leg-" + ctr++;
+			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
+			StraightLegForecastContribution slf = new StraightLegForecastContribution();
+			slf.setStartDate(new Date(tStart));
+			slf.setFinishDate(new Date(tEnd));
+			slf.setActive(true);
+			slf.setName(name);
+			_contributions.addContribution(slf);
+			slices .add(slf);
+		}
 	}
 
 	public void addState(final HostState newState)
