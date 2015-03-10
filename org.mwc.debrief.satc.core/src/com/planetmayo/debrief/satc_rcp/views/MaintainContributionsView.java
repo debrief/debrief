@@ -552,7 +552,7 @@ public class MaintainContributionsView extends ViewPart
 		graphTabs.setLayoutData(gridData);
 
 		legTab = new TabItem(graphTabs, SWT.NONE);
-		legTab.setText("Legs");
+		legTab.setText("Target Legs");
 		Composite perfG1 = initLegGraph(graphTabs);
 		legTab.setControl(perfG1);
 
