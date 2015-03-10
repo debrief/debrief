@@ -658,7 +658,7 @@ public class MaintainContributionsView extends ViewPart
 
 		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Target Legs", // String
 				"Time", // String timeAxisLabel
-				"Course (Degs)", // String valueAxisLabel,
+				null, // String valueAxisLabel,
 				null, // XYDataset dataset,
 				true, // include legend
 				true, // tooltips
@@ -1281,6 +1281,9 @@ public class MaintainContributionsView extends ViewPart
 		tscSLegs.addSeries(speedLegs);
 		
 		legPlot.setDataset(0, null);
+		legPlot.setDataset(1, null);
+		legPlot.setDataset(2, null);
+		legPlot.setDataset(3, null);
 		legPlot.setDataset(0, tscC);
 		legPlot.setDataset(1, tscS);
 		legPlot.setDataset(2, tscCLegs);
@@ -1291,6 +1294,10 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.mapDatasetToRangeAxis(1, 1);
 		legPlot.mapDatasetToRangeAxis(3, 1);
 		
+		legPlot.getRangeAxis(0).setLabel("Course (Degs)");
+		legPlot.mapDatasetToRangeAxis(0, 0);
+		legPlot.mapDatasetToRangeAxis(2, 0);
+
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(
 				true, false);
 		lineRenderer1.setSeriesPaint(0, courseCol);
