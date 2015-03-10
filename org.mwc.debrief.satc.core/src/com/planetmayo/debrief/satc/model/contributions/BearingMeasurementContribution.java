@@ -84,7 +84,7 @@ public class BearingMeasurementContribution extends
 	/** array of listeners interested in MDA
 	 * 
 	 */
-	private transient ArrayList<MDAResultsListener> _listeners = new ArrayList<MDAResultsListener>();
+	private transient ArrayList<MDAResultsListener> _listeners = null;
 	
 
 	@Override
@@ -538,12 +538,16 @@ public class BearingMeasurementContribution extends
 	
 	public void addSliceListener(MDAResultsListener listener)
 	{
+		if(_listeners == null)
+			_listeners = new ArrayList<MDAResultsListener>();
+		
 		_listeners.add(listener);
 	}
 	
 	public void removeSliceListener(MDAResultsListener listener)
 	{
-		_listeners.remove(listener);
+		if(_listeners != null)
+			_listeners.remove(listener);
 	}
 	
 	private static class MyLegStorer implements ILegStorer
