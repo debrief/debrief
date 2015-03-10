@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ais3
+Bundle-SymbolicName: org.mwc.cmap.ais3
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.mwc.cmap.ais3.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
