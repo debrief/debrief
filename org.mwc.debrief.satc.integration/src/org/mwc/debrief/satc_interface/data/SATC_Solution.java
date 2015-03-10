@@ -861,15 +861,19 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getEndDTG()
 	{
-		// handle instance where problem space is undefined,
-		// so we don't have a start date
-		Date startD = _mySolver.getProblemSpace().getFinishDate();
-		final HiResDate res;
-		if (startD == null)
-			res = null;
-		else
-			res = new HiResDate(startD);
-		return res;
+			HiResDate endD = null;
+			Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
+			while (iter.hasNext())
+			{
+				BaseContribution cont = (BaseContribution) iter.next();
+				if(cont.getStartDate() != null)
+				{
+					if((endD == null) || (cont.getStartDate().getTime() > endD.getDate().getTime()))
+						endD = new HiResDate(cont.getStartDate().getTime());
+				}
+			}
+			
+			return endD;
 	}
 
 	@Override
@@ -1058,15 +1062,19 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getStartDTG()
 	{
-		// handle instance where problem space is undefined,
-		// so we don't have a start date
-		Date startD = _mySolver.getProblemSpace().getStartDate();
-		final HiResDate res;
-		if (startD == null)
-			res = null;
-		else
-			res = new HiResDate(startD);
-		return res;
+		HiResDate startD = null;
+		Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
+		while (iter.hasNext())
+		{
+			BaseContribution cont = (BaseContribution) iter.next();
+			if(cont.getStartDate() != null)
+			{
+				if((startD == null) || (cont.getStartDate().getTime() < startD.getDate().getTime()))
+				startD = new HiResDate(cont.getStartDate().getTime());
+			}
+		}
+		
+		return startD;
 	}
 
 	@Override
