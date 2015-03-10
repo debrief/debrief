@@ -220,6 +220,7 @@ public class MaintainContributionsView extends ViewPart
 	private TabItem legTab;
 	private TabFolder graphTabs;
 	private MDAResultsListener _sliceListener;
+	private JFreeChart legChart;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -656,7 +657,7 @@ public class MaintainContributionsView extends ViewPart
 		panel.add(root);
 		Container _legPane = root.getContentPane();
 
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Target Legs", // String
+		legChart = ChartFactory.createTimeSeriesChart("Target Legs", // String
 				"Time", // String timeAxisLabel
 				null, // String valueAxisLabel,
 				null, // XYDataset dataset,
@@ -664,13 +665,13 @@ public class MaintainContributionsView extends ViewPart
 				true, // tooltips
 				false); // urls
 
-		legPlot = (XYPlot) chart.getPlot();
+		legPlot = (XYPlot) legChart.getPlot();
 		legPlot.setDomainCrosshairVisible(true);
 		legPlot.setRangeCrosshairVisible(true);
 		final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
 
-		ChartPanel chartInPanel = new ChartPanel(chart, true);
+		ChartPanel chartInPanel = new ChartPanel(legChart, true);
 
 		// // ok - we need to fire time-changes to the chart
 		// setupFiringChangesToChart();
@@ -684,6 +685,7 @@ public class MaintainContributionsView extends ViewPart
 
 		return holder;
 	}
+
 	private void clearPerformanceGraph()
 	{
 		// hmm, have we already ditched?
@@ -767,7 +769,7 @@ public class MaintainContributionsView extends ViewPart
 							final IBarSeries series = (IBarSeries) performanceChart
 									.getSeriesSet().createSeries(SeriesType.BAR, cont.getName());
 							series.setBarColor(colorFor(cont));
-							series.enableStack(true);
+		//					series.enableStack(true);
 						}
 						thisSeries.put(state.getTime(), scores.get(cont));
 
@@ -811,7 +813,7 @@ public class MaintainContributionsView extends ViewPart
 				}
 
 				series.setYSeries(valArr);
-				series.enableStack(true);
+	//			series.enableStack(true);
 			}
 		}
 
@@ -844,20 +846,37 @@ public class MaintainContributionsView extends ViewPart
 		performanceChart.getAxisSet().getXAxis(0).enableCategory(true);
 		performanceChart.getAxisSet().getXAxis(0).setCategorySeries(labels);
 
+		// ISeries[] series = performanceChart.getSeriesSet().getSeries();
+		// if (series != null && series.length > 1)
+		// {
+		// performanceChart.getLegend().setVisible(true);
+		// performanceChart.getLegend().setPosition(SWT.RIGHT);
+		// for (ISeries serie : series)
+		// {
+		// if (serie instanceof IBarSeries)
+		// {
+		// IBarSeries barSeries = (IBarSeries) serie;
+		// barSeries.enableStack(true);
+		// }
+		// }
+		// }
+
 		ISeries[] series = performanceChart.getSeriesSet().getSeries();
-		if (series != null && series.length > 1)
+		if (series.length == 2 && series[0] instanceof IBarSeries
+				&& series[1] instanceof IBarSeries)
 		{
 			performanceChart.getLegend().setVisible(true);
 			performanceChart.getLegend().setPosition(SWT.RIGHT);
-			for (ISeries serie : series)
-			{
-				if (serie instanceof IBarSeries)
-				{
-					IBarSeries barSeries = (IBarSeries) serie;
-					barSeries.enableStack(true);
-				}
-			}
+			IBarSeries barSeries1 = (IBarSeries) series[0];
+			IBarSeries barSeries2 = (IBarSeries) series[1];
+			// enable stack series
+			barSeries1.enableStack(false);
+			barSeries2.enableStack(false);
+			barSeries1.enableStack(true);
+			barSeries2.enableStack(true);
+
 		}
+
 		// and resize the axes
 		performanceChart.getAxisSet().adjustRange();
 
@@ -1184,14 +1203,14 @@ public class MaintainContributionsView extends ViewPart
 					};
 				startListeningTo(slf);
 			}
-			else if(contribution instanceof BearingMeasurementContribution)
+			else if (contribution instanceof BearingMeasurementContribution)
 			{
 				BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
-				if(_sliceListener == null)
+				if (_sliceListener == null)
 				{
 					_sliceListener = new BearingMeasurementContribution.MDAResultsListener()
 					{
-						
+
 						@Override
 						public void sliced(String string, List<LegOfData> ownshipLegs,
 								ArrayList<StraightLegForecastContribution> arrayList,
@@ -1216,15 +1235,17 @@ public class MaintainContributionsView extends ViewPart
 		}
 	}
 
-	protected void redoOwnshipStates(String bearingName, List<LegOfData> ownshipLegs,
-			ArrayList<HostState> states)
+	protected void redoOwnshipStates(String bearingName,
+			List<LegOfData> ownshipLegs, ArrayList<HostState> states)
 	{
-		if(legPlot == null)
+		if (legPlot == null)
 			return;
+		
+		legChart.setTitle("Target zigs from " + bearingName);
 		
 		java.awt.Color courseCol = java.awt.Color.blue.darker().darker();
 		java.awt.Color speedCol = java.awt.Color.blue.brighter().brighter();
-		
+
 		// ok, now loop through and set them
 		long startTime = Long.MAX_VALUE;
 		long endTime = Long.MIN_VALUE;
@@ -1244,29 +1265,30 @@ public class MaintainContributionsView extends ViewPart
 
 		Iterator<LegOfData> lIter = ownshipLegs.iterator();
 		LegOfData thisLeg = lIter.next();
-		
+
 		Iterator<HostState> stateIter = states.iterator();
 		while (stateIter.hasNext())
 		{
 			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) stateIter
 					.next();
-			long thisTime =hostState.time;
+			long thisTime = hostState.time;
 			double thisCourse = hostState.courseDegs;
 			courses.add(new FixedMillisecond(thisTime), thisCourse);
 			double thisSpeed = hostState.speedKts;
 			speeds.add(new FixedMillisecond(thisTime), thisSpeed);
 			startTime = Math.min(thisTime, startTime);
 			endTime = Math.max(thisTime, endTime);
-			
+
 			// sort out if this is in a leg or not
-			if(thisLeg != null){
-				if(thisTime > thisLeg.getEnd())
+			if (thisLeg != null)
+			{
+				if (thisTime > thisLeg.getEnd())
 				{
 					thisLeg = lIter.next();
 				}
 				else
 				{
-					if(thisTime >= thisLeg.getStart())
+					if (thisTime >= thisLeg.getStart())
 					{
 						courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
 						speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
@@ -1274,12 +1296,12 @@ public class MaintainContributionsView extends ViewPart
 				}
 			}
 		}
-		
+
 		tscC.addSeries(courses);
 		tscS.addSeries(speeds);
 		tscCLegs.addSeries(courseLegs);
 		tscSLegs.addSeries(speedLegs);
-		
+
 		legPlot.setDataset(0, null);
 		legPlot.setDataset(1, null);
 		legPlot.setDataset(2, null);
@@ -1288,12 +1310,12 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.setDataset(1, tscS);
 		legPlot.setDataset(2, tscCLegs);
 		legPlot.setDataset(3, tscSLegs);
-		
+
 		final NumberAxis axis2 = new NumberAxis("Speed (Kts)");
 		legPlot.setRangeAxis(1, axis2);
 		legPlot.mapDatasetToRangeAxis(1, 1);
 		legPlot.mapDatasetToRangeAxis(3, 1);
-		
+
 		legPlot.getRangeAxis(0).setLabel("Course (Degs)");
 		legPlot.mapDatasetToRangeAxis(0, 0);
 		legPlot.mapDatasetToRangeAxis(2, 0);
@@ -1321,9 +1343,9 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.setRenderer(1, lineRenderer2);
 		legPlot.setRenderer(2, lineRenderer3);
 		legPlot.setRenderer(3, lineRenderer4);
-		
+
 		legPlot.getDomainAxis().setRange(startTime, endTime);
-		
+
 		// ok - get the straight legs to sort themselves out
 		redoStraightLegs();
 	}
@@ -1347,9 +1369,9 @@ public class MaintainContributionsView extends ViewPart
 					{
 						StraightLegForecastContribution slf = (StraightLegForecastContribution) baseC;
 						java.awt.Color thisCol = slf.getColor();
-						
+
 						// hmm, has it been given a color (initialised) yet?
-						if(thisCol == null)
+						if (thisCol == null)
 							continue;
 
 						long thisStart = baseC.getStartDate().getTime();
@@ -1368,9 +1390,9 @@ public class MaintainContributionsView extends ViewPart
 					}
 					else
 					{
-						if(baseC instanceof BearingMeasurementContribution)
+						if (baseC instanceof BearingMeasurementContribution)
 						{
-							
+
 						}
 					}
 			}
@@ -1398,19 +1420,17 @@ public class MaintainContributionsView extends ViewPart
 		{
 			stopListeningTo(contribution);
 		}
-		else if(contribution instanceof BearingMeasurementContribution)
+		else if (contribution instanceof BearingMeasurementContribution)
 		{
 			BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
 			bmc.removeSliceListener(_sliceListener);
 		}
 	}
 
-	
-	
 	@Override
 	protected void finalize() throws Throwable
 	{
-	
+
 		// clear our listeners
 		Iterator<BaseContribution> conts = activeSolver.getContributions()
 				.iterator();
@@ -1422,13 +1442,13 @@ public class MaintainContributionsView extends ViewPart
 			{
 				stopListeningTo(contribution);
 			}
-			else if(contribution instanceof BearingMeasurementContribution)
+			else if (contribution instanceof BearingMeasurementContribution)
 			{
 				BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
 				bmc.removeSliceListener(_sliceListener);
 			}
 		}
-		
+
 		// let the parent shut down
 		super.finalize();
 	}
@@ -1436,21 +1456,16 @@ public class MaintainContributionsView extends ViewPart
 	private void startListeningTo(final StraightLegForecastContribution slf)
 	{
 		slf.addPropertyChangeListener(BaseContribution.START_DATE, _legListener);
-		slf.addPropertyChangeListener(BaseContribution.FINISH_DATE,
-				_legListener);
+		slf.addPropertyChangeListener(BaseContribution.FINISH_DATE, _legListener);
 		slf.addPropertyChangeListener(BaseContribution.NAME, _legListener);
 		slf.addPropertyChangeListener(BaseContribution.ACTIVE, _legListener);
 	}
 
 	private void stopListeningTo(final BaseContribution slf)
 	{
-		slf.removePropertyChangeListener(BaseContribution.ACTIVE,
-				_legListener);
-		slf.removePropertyChangeListener(BaseContribution.START_DATE,
-				_legListener);
-		slf.removePropertyChangeListener(BaseContribution.FINISH_DATE,
-				_legListener);
-		slf.removePropertyChangeListener(BaseContribution.NAME,
-				_legListener);
+		slf.removePropertyChangeListener(BaseContribution.ACTIVE, _legListener);
+		slf.removePropertyChangeListener(BaseContribution.START_DATE, _legListener);
+		slf.removePropertyChangeListener(BaseContribution.FINISH_DATE, _legListener);
+		slf.removePropertyChangeListener(BaseContribution.NAME, _legListener);
 	}
 }
