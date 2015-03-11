@@ -339,8 +339,8 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 //		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 //		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
 		
-		// time stamp bits 138-143
-		int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(138, 143), false);
+		// time stamp bits 138-143		
+		int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(138, 144), false);
 		this.msgTimestamp = new Timestamp(secs * 1000);
 
 		
