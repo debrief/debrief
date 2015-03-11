@@ -32,6 +32,7 @@ import org.eclipse.ui.IViewPart;
 import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.timebar.model.IEventEntry;
 import org.mwc.debrief.timebar.model.TimeBar;
 import org.mwc.debrief.timebar.model.TimeSpot;
@@ -174,6 +175,12 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 	    	if(next instanceof NarrativeWrapper)
 	    	{
 	    		_timeBars.add(new TimeBar((NarrativeWrapper) next));
+	    	}	    	
+	    	if(next instanceof SATC_Solution)
+	    	{
+	    		SATC_Solution solution = (SATC_Solution) next;
+	    		if(solution.getStartDTG() != null)
+	    			_timeBars.add(new TimeBar(solution));
 	    	}	    	
     		if (!(next instanceof WatchableList))
     			walkThrough(next);

@@ -1076,6 +1076,9 @@ Export-Package:
  org.codehaus.jackson.type,
  org.codehaus.jackson.util;uses:="org.codehaus.jackson.io,org.codehaus.jackson.impl,org.codehaus.jackson",
  org.javalite.http,
+ org.joda.time,
+ org.joda.time.base,
+ org.joda.time.format,
  vrml;uses:="javax.media.j3d,com.sun.j3d.loaders.vrml97.impl",
  vrml.field;uses:="vrml,com.sun.j3d.loaders.vrml97.impl",
  vrml.node;uses:="vrml,com.sun.j3d.loaders.vrml97.impl"

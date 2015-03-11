@@ -33,6 +33,7 @@ import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.HostState;
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
@@ -81,6 +82,7 @@ public class XStreamIO
 		xstream.alias("rorigin", ROrigin.class);
 		xstream.alias("fmeasurement", FMeasurement.class);
 		xstream.alias("freqMeasurement", FrequencyMeasurement.class);
+		xstream.alias("hostState", HostState.class);
 
 		xstream.useAttributeFor(FrequencyMeasurement.class, "freq");
 		xstream.useAttributeFor(FrequencyMeasurement.class, "time");
@@ -104,6 +106,10 @@ public class XStreamIO
 		xstream.useAttributeFor(BMeasurement.class, "origin");
 		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
 		xstream.useAttributeFor(BMeasurement.class, "range");
+
+		xstream.useAttributeFor(HostState.class, "time");
+		xstream.useAttributeFor(HostState.class, "courseDegs");
+		xstream.useAttributeFor(HostState.class, "speedKts");
 
 		xstream.useAttributeFor(FMeasurement.class, "frequency");
 		xstream.useAttributeFor(FMeasurement.class, "osCourse");

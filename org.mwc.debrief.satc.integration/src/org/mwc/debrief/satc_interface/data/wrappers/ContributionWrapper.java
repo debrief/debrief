@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.satc_interface.data.wrappers;
 
+import java.util.Date;
+
 import MWC.GUI.CanvasType;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Plottable;
@@ -96,7 +98,16 @@ public class ContributionWrapper implements Plottable, ExcludeFromRightClickEdit
 	public int compareTo(Plottable arg0)
 	{
 		ContributionWrapper him = (ContributionWrapper) arg0;
-		int res = this.getContribution().getStartDate().compareTo(him.getContribution().getStartDate());
+		
+		Date myStart = this.getContribution().getStartDate();
+		Date hisStart = him.getContribution().getStartDate();
+		
+		int res = 0;
+		
+		if((myStart != null) && (hisStart != null))
+		{
+			res = myStart.compareTo(hisStart); 
+		}
 		
 		// are they the same time?
 		if(res == 0)

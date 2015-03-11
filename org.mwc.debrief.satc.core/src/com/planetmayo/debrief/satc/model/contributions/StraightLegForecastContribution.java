@@ -31,7 +31,7 @@ public class StraightLegForecastContribution extends BaseContribution implements
 	private static final long serialVersionUID = 1L;
 
 	
-	private Color color = null;
+	private Color color = Color.red;
 	
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException

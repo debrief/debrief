@@ -295,8 +295,8 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			final Class<SATC_Solution> c = SATC_Solution.class;
 
-			final MethodDescriptor[] mds =
-			{ method(c, "convertToLegs", null, "Convert to Composite Track (legs)"),
+			final MethodDescriptor[] mds = {
+					method(c, "convertToLegs", null, "Convert to Composite Track (legs)"),
 					method(c, "convertToTrack", null, "Convert to Standalone Track"),
 					method(c, "recalculate", null, "Recalculate solutions") };
 
@@ -308,8 +308,7 @@ public class SATC_Solution extends BaseLayer implements
 		{
 			try
 			{
-				final PropertyDescriptor[] res =
-				{
+				final PropertyDescriptor[] res = {
 						prop("ShowLocationConstraints",
 								"whether to display location constraints", FORMAT),
 						prop("ShowAlterationStates", "whether to states during alteration",
@@ -517,22 +516,52 @@ public class SATC_Solution extends BaseLayer implements
 			_myLayers.fireModified(this);
 	}
 
+	public void add(Editable editable)
+	{
+		if(!(editable instanceof ContributionWrapper))
+		{
+			// ingore it
+			return;
+		}
+		else
+		{
+			ContributionWrapper cw = (ContributionWrapper) editable;
+			BaseContribution cont = cw.getContribution();
+			// do we need to pass this to the parent?
+			if (!_mySolver.getContributions().contains(cont))
+			{
+				_mySolver.getContributions().addContribution(cont);
+			}
+		}
+		
+		super.add(editable);
+	}
+	
 	public void addContribution(final BaseContribution cont)
 	{
-		_mySolver.getContributions().addContribution(cont);
+		// do we need to pass this to the parent?
+		if (!_mySolver.getContributions().contains(cont))
+		{
+			_mySolver.getContributions().addContribution(cont);
+		}
 
-		ContributionWrapper thisW;
-		if (cont instanceof BearingMeasurementContribution)
-			thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
-		if (cont instanceof FrequencyMeasurementContribution)
-			thisW = new FMC_Wrapper((FrequencyMeasurementContribution) cont);
-		else if (cont instanceof StraightLegForecastContribution)
-			thisW = new StraightLegWrapper(cont);
-		else if (cont instanceof CourseForecastContribution)
-			thisW = new CourseForecastWrapper((CourseForecastContribution) cont);
-		else
-			thisW = new ContributionWrapper(cont);
-		super.add(thisW);
+		// just check it isn't an analysis contribution
+		if (cont.getDataType() != ContributionDataType.ANALYSIS)
+		{
+			// ok, we're going to wrap it, to put it into the Layer Manager
+			ContributionWrapper thisW;
+			if (cont instanceof BearingMeasurementContribution)
+				thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
+			if (cont instanceof FrequencyMeasurementContribution)
+				thisW = new FMC_Wrapper((FrequencyMeasurementContribution) cont);
+			else if (cont instanceof StraightLegForecastContribution)
+				thisW = new StraightLegWrapper(cont);
+			else if (cont instanceof CourseForecastContribution)
+				thisW = new CourseForecastWrapper((CourseForecastContribution) cont);
+			else
+				thisW = new ContributionWrapper(cont);
+			super.add(thisW);
+		}
 	}
 
 	@Override
@@ -832,15 +861,19 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getEndDTG()
 	{
-		// handle instance where problem space is undefined,
-		// so we don't have a start date
-		Date startD = _mySolver.getProblemSpace().getFinishDate();
-		final HiResDate res;
-		if (startD == null)
-			res = null;
-		else
-			res = new HiResDate(startD);
-		return res;
+			HiResDate endD = null;
+			Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
+			while (iter.hasNext())
+			{
+				BaseContribution cont = (BaseContribution) iter.next();
+				if(cont.getStartDate() != null)
+				{
+					if((endD == null) || (cont.getStartDate().getTime() > endD.getDate().getTime()))
+						endD = new HiResDate(cont.getStartDate().getTime());
+				}
+			}
+			
+			return endD;
 	}
 
 	@Override
@@ -974,8 +1007,7 @@ public class SATC_Solution extends BaseLayer implements
 							}
 
 							items.add(wrapped);
-							return items.toArray(new Watchable[]
-							{});
+							return items.toArray(new Watchable[] {});
 						}
 
 						before = state;
@@ -985,8 +1017,7 @@ public class SATC_Solution extends BaseLayer implements
 
 		}
 
-		return items.toArray(new Watchable[]
-		{});
+		return items.toArray(new Watchable[] {});
 	}
 
 	public boolean getOnlyPlotLegEnds()
@@ -1031,15 +1062,19 @@ public class SATC_Solution extends BaseLayer implements
 	@Override
 	public HiResDate getStartDTG()
 	{
-		// handle instance where problem space is undefined,
-		// so we don't have a start date
-		Date startD = _mySolver.getProblemSpace().getStartDate();
-		final HiResDate res;
-		if (startD == null)
-			res = null;
-		else
-			res = new HiResDate(startD);
-		return res;
+		HiResDate startD = null;
+		Iterator<BaseContribution> iter = _mySolver.getContributions().iterator();
+		while (iter.hasNext())
+		{
+			BaseContribution cont = (BaseContribution) iter.next();
+			if(cont.getStartDate() != null)
+			{
+				if((startD == null) || (cont.getStartDate().getTime() < startD.getDate().getTime()))
+				startD = new HiResDate(cont.getStartDate().getTime());
+			}
+		}
+		
+		return startD;
 	}
 
 	@Override
@@ -1115,6 +1150,8 @@ public class SATC_Solution extends BaseLayer implements
 			}
 		};
 
+		final SATC_Solution parentThis = this;
+
 		_contributionsListener = new IContributionsChangedListener()
 		{
 
@@ -1123,11 +1160,14 @@ public class SATC_Solution extends BaseLayer implements
 			{
 				// fireRepaint();
 				fireExtended();
+
+				// aah, we need to add this, if we haven't already!
+				addContribution(contribution);
 			}
 
 			public void fireExtended()
 			{
-				firePropertyChange(SupportsPropertyListeners.EXTENDED, null, this);
+				firePropertyChange(SupportsPropertyListeners.EXTENDED, null, parentThis);
 			}
 
 			@Override
@@ -1144,7 +1184,8 @@ public class SATC_Solution extends BaseLayer implements
 				{
 					final Editable editable = (Editable) rIter.next();
 					final ContributionWrapper cw = (ContributionWrapper) editable;
-					if (cw.getContribution() == contribution)
+					final BaseContribution thisCont = cw.getContribution();
+					if (thisCont == contribution)
 					{
 						// _mySolver.getContributions().removeContribution(contribution);
 						toBeRemoved = cw;
@@ -1159,11 +1200,13 @@ public class SATC_Solution extends BaseLayer implements
 				}
 				else
 				{
-					SATC_Activator
-							.log(
-									IStatus.ERROR,
-									"We were asked to remove a contribution, but we didn't have it stored in the Layer",
-									null);
+					// don't worry - we may have removed it from the LayerManager rather than the 
+					// maintain contributions view
+//					SATC_Activator
+//							.log(
+//									IStatus.ERROR,
+//									"We were asked to remove a contribution, but we didn't have it stored in the Layer",
+//									null);
 				}
 
 				fireExtended();
@@ -1258,8 +1301,8 @@ public class SATC_Solution extends BaseLayer implements
 			// do some fancy tests for if users only want the
 			// states that appear at leg ends
 			final boolean isLastOne = !iterator.hasNext();
-			
-			// note, we don't use .equals in the next line, since 
+
+			// note, we don't use .equals in the next line, since
 			// getMemberOf could legitimately return an null
 			final boolean isDifferentLeg = thisS.getMemberOf() != lastName;
 			final boolean isLegEnd = isLastOne || isDifferentLeg;

@@ -14,6 +14,14 @@
  */
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Panel;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import javax.swing.JRootPane;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -39,6 +49,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -54,9 +65,27 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.IntervalMarker;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.ui.Layer;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
+import org.jfree.util.ShapeUtilities;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;
@@ -69,6 +98,8 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.HostState;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.MDAResultsListener;
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -93,6 +124,7 @@ import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
@@ -177,13 +209,19 @@ public class MaintainContributionsView extends ViewPart
 	private IConstrainSpaceListener constrainSpaceListener;
 	private Chart performanceChart;
 
-	private final java.awt.Color[] defaultColors = new java.awt.Color[]
-	{ java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
+	private final java.awt.Color[] defaultColors = new java.awt.Color[] {
+			java.awt.Color.red, java.awt.Color.green, java.awt.Color.yellow,
 			java.awt.Color.blue, java.awt.Color.cyan, java.awt.Color.magenta,
 			java.awt.Color.darkGray, java.awt.Color.orange, java.awt.Color.pink,
 			java.awt.Color.lightGray };
+	private XYPlot legPlot;
+	private PropertyChangeListener _legListener;
+	private TabItem performanceTab;
+	private TabItem legTab;
+	private TabFolder graphTabs;
+	private MDAResultsListener _sliceListener;
+	private JFreeChart legChart;
 
-	
 	@Override
 	public void createPartControl(final Composite parent)
 	{
@@ -217,7 +255,7 @@ public class MaintainContributionsView extends ViewPart
 		context.dispose();
 		setActiveSolver(null);
 		solversManager.removeSolverManagerListener(solverManagerListener);
-		
+
 		// ditch the colors
 		if (assignedColors != null)
 		{
@@ -230,7 +268,6 @@ public class MaintainContributionsView extends ViewPart
 			assignedColors = null;
 		}
 
-		
 		super.dispose();
 	}
 
@@ -389,6 +426,9 @@ public class MaintainContributionsView extends ViewPart
 			{
 				if (activeSolver != null)
 				{
+					// ok - make sure the performance tab is open
+					graphTabs.setSelection(performanceTab);
+
 					activeSolver.run(true, true);
 					main.setSize(0, 0);
 					main.getParent().layout(true, true);
@@ -486,7 +526,8 @@ public class MaintainContributionsView extends ViewPart
 		initVehicleGroup(main);
 		initAnalystContributionsGroup(main);
 		initAddContributionGroup(main);
-		initPerformanceGraph(main);
+		// initPerformanceGraph(main);
+		initGraphTabs(main);
 
 		// also sort out the header controls
 		final IActionBars bars = getViewSite().getActionBars();
@@ -496,7 +537,33 @@ public class MaintainContributionsView extends ViewPart
 
 	}
 
-	private void initPerformanceGraph(Composite parent)
+	private void initGraphTabs(Composite parent)
+	{
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.heightHint = 200;
+
+		graphTabs = new TabFolder(parent, SWT.BORDER);
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.marginWidth = 5;
+		fillLayout.marginHeight = 5;
+		// tabs.setLayout(fillLayout);
+		graphTabs.setLayoutData(gridData);
+
+		legTab = new TabItem(graphTabs, SWT.NONE);
+		legTab.setText("Target Legs");
+		Composite perfG1 = initLegGraph(graphTabs);
+		legTab.setControl(perfG1);
+
+		performanceTab = new TabItem(graphTabs, SWT.NONE);
+		performanceTab.setText("Performance");
+		Group perfG2 = initPerformanceGraph(graphTabs);
+		performanceTab.setControl(perfG2);
+
+	}
+
+	private Group initPerformanceGraph(Composite parent)
 	{
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
@@ -509,7 +576,7 @@ public class MaintainContributionsView extends ViewPart
 		fillLayout.marginHeight = 5;
 		group.setLayout(fillLayout);
 		group.setLayoutData(gridData);
-		group.setText("Performance");
+		// group.setText("Performance");
 
 		// we need the color black several times
 		final Color colorBlack = new Color(Display.getCurrent(), 0, 0, 0);
@@ -536,14 +603,95 @@ public class MaintainContributionsView extends ViewPart
 		yAxis.getTick().setForeground(colorBlack);
 		yAxis.getTitle().setForeground(colorBlack);
 		yAxis.getTitle().setText("Error Sum");
+
+		return group;
+	}
+
+	/**
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
+	 */
+	public Composite initLegGraph(final Composite parent)
+	{
+
+		// right, we need an SWT.EMBEDDED object to act as a holder
+		final Composite holder = new Composite(parent, SWT.NO_BACKGROUND
+				| SWT.EMBEDDED | SWT.NO_REDRAW_RESIZE);
+		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
+				| GridData.FILL_HORIZONTAL));
+
+		/*
+		 * Set a Windows specific AWT property that prevents heavyweight components
+		 * from erasing their background. Note that this is a global property and
+		 * cannot be scoped. It might not be suitable for your application.
+		 */
+		try
+		{
+			System.setProperty("sun.awt.noerasebackground", "true");
+		}
+		catch (NoSuchMethodError error)
+		{
+		}
+
+		// java.awt.Toolkit.getDefaultToolkit().setDynamicLayout(false);
+		// now we need a Swing object to put our chart into
+		/* Create and setting up frame */
+		Frame frame = SWT_AWT.new_Frame(holder);
+		Panel panel = new Panel(new BorderLayout())
+		{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void update(java.awt.Graphics g)
+			{
+				/* Do not erase the background */
+				paint(g);
+			}
+		};
+		frame.add(panel);
+		JRootPane root = new JRootPane();
+		root.setDoubleBuffered(true);
+		panel.add(root);
+		Container _legPane = root.getContentPane();
+
+		legChart = ChartFactory.createTimeSeriesChart("Target Legs", // String
+				"Time", // String timeAxisLabel
+				null, // String valueAxisLabel,
+				null, // XYDataset dataset,
+				true, // include legend
+				true, // tooltips
+				false); // urls
+
+		legPlot = (XYPlot) legChart.getPlot();
+		legPlot.setDomainCrosshairVisible(true);
+		legPlot.setRangeCrosshairVisible(true);
+		final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
+		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+
+		ChartPanel chartInPanel = new ChartPanel(legChart, true);
+
+		// // ok - we need to fire time-changes to the chart
+		// setupFiringChangesToChart();
+
+		// format the chart
+		chartInPanel.setName("Legs");
+		chartInPanel.setMouseZoomable(true, true);
+
+		// and insert into the panel
+		_legPane.add(chartInPanel, BorderLayout.CENTER);
+
+		return holder;
 	}
 
 	private void clearPerformanceGraph()
 	{
 		// hmm, have we already ditched?
-		if(performanceChart.isDisposed())
+		if (performanceChart.isDisposed())
 			return;
-		
+
 		ISeries[] sets = performanceChart.getSeriesSet().getSeries();
 		for (int i = 0; i < sets.length; i++)
 		{
@@ -621,7 +769,7 @@ public class MaintainContributionsView extends ViewPart
 							final IBarSeries series = (IBarSeries) performanceChart
 									.getSeriesSet().createSeries(SeriesType.BAR, cont.getName());
 							series.setBarColor(colorFor(cont));
-							series.enableStack(true);
+		//					series.enableStack(true);
 						}
 						thisSeries.put(state.getTime(), scores.get(cont));
 
@@ -665,7 +813,7 @@ public class MaintainContributionsView extends ViewPart
 				}
 
 				series.setYSeries(valArr);
-				series.enableStack(true);
+	//			series.enableStack(true);
 			}
 		}
 
@@ -698,22 +846,40 @@ public class MaintainContributionsView extends ViewPart
 		performanceChart.getAxisSet().getXAxis(0).enableCategory(true);
 		performanceChart.getAxisSet().getXAxis(0).setCategorySeries(labels);
 
+		// ISeries[] series = performanceChart.getSeriesSet().getSeries();
+		// if (series != null && series.length > 1)
+		// {
+		// performanceChart.getLegend().setVisible(true);
+		// performanceChart.getLegend().setPosition(SWT.RIGHT);
+		// for (ISeries serie : series)
+		// {
+		// if (serie instanceof IBarSeries)
+		// {
+		// IBarSeries barSeries = (IBarSeries) serie;
+		// barSeries.enableStack(true);
+		// }
+		// }
+		// }
+
 		ISeries[] series = performanceChart.getSeriesSet().getSeries();
-		if (series != null && series.length > 1)
+		if (series.length == 2 && series[0] instanceof IBarSeries
+				&& series[1] instanceof IBarSeries)
 		{
 			performanceChart.getLegend().setVisible(true);
 			performanceChart.getLegend().setPosition(SWT.RIGHT);
-			for (ISeries serie : series)
-			{
-				if (serie instanceof IBarSeries) {
-					IBarSeries barSeries = (IBarSeries) serie;
-					barSeries.enableStack(true);
-				}
-			}
+			IBarSeries barSeries1 = (IBarSeries) series[0];
+			IBarSeries barSeries2 = (IBarSeries) series[1];
+			// enable stack series
+			barSeries1.enableStack(false);
+			barSeries2.enableStack(false);
+			barSeries1.enableStack(true);
+			barSeries2.enableStack(true);
+
 		}
+
 		// and resize the axes
 		performanceChart.getAxisSet().adjustRange();
-		
+
 		//
 		performanceChart.redraw();
 	}
@@ -1019,6 +1185,43 @@ public class MaintainContributionsView extends ViewPart
 			{
 				contList.layout();
 			}
+
+			// hmm, is this a new straight leg?
+			if (contribution instanceof StraightLegForecastContribution)
+			{
+				// ok - listen out for period changes
+				StraightLegForecastContribution slf = (StraightLegForecastContribution) contribution;
+				if (_legListener == null)
+					_legListener = new PropertyChangeListener()
+					{
+
+						@Override
+						public void propertyChange(PropertyChangeEvent evt)
+						{
+							redoStraightLegs();
+						}
+					};
+				startListeningTo(slf);
+			}
+			else if (contribution instanceof BearingMeasurementContribution)
+			{
+				BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
+				if (_sliceListener == null)
+				{
+					_sliceListener = new BearingMeasurementContribution.MDAResultsListener()
+					{
+
+						@Override
+						public void sliced(String string, List<LegOfData> ownshipLegs,
+								ArrayList<StraightLegForecastContribution> arrayList,
+								ArrayList<HostState> hostStates)
+						{
+							redoOwnshipStates(string, ownshipLegs, hostStates);
+						}
+					};
+				}
+				bmc.addSliceListener(_sliceListener);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -1030,6 +1233,172 @@ public class MaintainContributionsView extends ViewPart
 							new Status(IStatus.ERROR, SATC_Activator.PLUGIN_ID, ex
 									.getMessage(), ex));
 		}
+	}
+
+	protected void redoOwnshipStates(String bearingName,
+			List<LegOfData> ownshipLegs, ArrayList<HostState> states)
+	{
+		if (legPlot == null)
+			return;
+		
+		legChart.setTitle("Target zigs from " + bearingName);
+		
+		java.awt.Color courseCol = java.awt.Color.blue.darker().darker();
+		java.awt.Color speedCol = java.awt.Color.blue.brighter().brighter();
+
+		// ok, now loop through and set them
+		long startTime = Long.MAX_VALUE;
+		long endTime = Long.MIN_VALUE;
+
+		legPlot.setDataset(0, null);
+		legPlot.setDataset(1, null);
+
+		// hey, does it have any ownship legs?
+		TimeSeriesCollection tscC = new TimeSeriesCollection();
+		TimeSeriesCollection tscS = new TimeSeriesCollection();
+		TimeSeriesCollection tscCLegs = new TimeSeriesCollection();
+		TimeSeriesCollection tscSLegs = new TimeSeriesCollection();
+		TimeSeries courses = new TimeSeries("Course");
+		TimeSeries speeds = new TimeSeries("Speed");
+		TimeSeries courseLegs = new TimeSeries("Course (leg)");
+		TimeSeries speedLegs = new TimeSeries("Speed (leg)");
+
+		Iterator<LegOfData> lIter = ownshipLegs.iterator();
+		LegOfData thisLeg = lIter.next();
+
+		Iterator<HostState> stateIter = states.iterator();
+		while (stateIter.hasNext())
+		{
+			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) stateIter
+					.next();
+			long thisTime = hostState.time;
+			double thisCourse = hostState.courseDegs;
+			courses.add(new FixedMillisecond(thisTime), thisCourse);
+			double thisSpeed = hostState.speedKts;
+			speeds.add(new FixedMillisecond(thisTime), thisSpeed);
+			startTime = Math.min(thisTime, startTime);
+			endTime = Math.max(thisTime, endTime);
+
+			// sort out if this is in a leg or not
+			if (thisLeg != null)
+			{
+				if (thisTime > thisLeg.getEnd())
+				{
+					thisLeg = lIter.next();
+				}
+				else
+				{
+					if (thisTime >= thisLeg.getStart())
+					{
+						courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
+						speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
+					}
+				}
+			}
+		}
+
+		tscC.addSeries(courses);
+		tscS.addSeries(speeds);
+		tscCLegs.addSeries(courseLegs);
+		tscSLegs.addSeries(speedLegs);
+
+		legPlot.setDataset(0, null);
+		legPlot.setDataset(1, null);
+		legPlot.setDataset(2, null);
+		legPlot.setDataset(3, null);
+		legPlot.setDataset(0, tscC);
+		legPlot.setDataset(1, tscS);
+		legPlot.setDataset(2, tscCLegs);
+		legPlot.setDataset(3, tscSLegs);
+
+		final NumberAxis axis2 = new NumberAxis("Speed (Kts)");
+		legPlot.setRangeAxis(1, axis2);
+		legPlot.mapDatasetToRangeAxis(1, 1);
+		legPlot.mapDatasetToRangeAxis(3, 1);
+
+		legPlot.getRangeAxis(0).setLabel("Course (Degs)");
+		legPlot.mapDatasetToRangeAxis(0, 0);
+		legPlot.mapDatasetToRangeAxis(2, 0);
+
+		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(
+				true, false);
+		lineRenderer1.setSeriesPaint(0, courseCol);
+
+		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(
+				true, false);
+		lineRenderer2.setSeriesPaint(0, speedCol);
+
+		final XYLineAndShapeRenderer lineRenderer3 = new XYLineAndShapeRenderer(
+				false, true);
+		lineRenderer3.setSeriesPaint(0, courseCol);
+		lineRenderer3.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
+
+		final XYLineAndShapeRenderer lineRenderer4 = new XYLineAndShapeRenderer(
+				false, true);
+		lineRenderer4.setSeriesPaint(0, speedCol);
+		lineRenderer4.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
+
+		// ok, and store them
+		legPlot.setRenderer(0, lineRenderer1);
+		legPlot.setRenderer(1, lineRenderer2);
+		legPlot.setRenderer(2, lineRenderer3);
+		legPlot.setRenderer(3, lineRenderer4);
+
+		legPlot.getDomainAxis().setRange(startTime, endTime);
+
+		// ok - get the straight legs to sort themselves out
+		redoStraightLegs();
+	}
+
+	protected void redoStraightLegs()
+	{
+		// ok, clear any leg markers
+		if (legPlot != null)
+		{
+			graphTabs.setSelection(legTab);
+
+			legPlot.clearDomainMarkers();
+
+			Iterator<BaseContribution> conts = activeSolver.getContributions()
+					.iterator();
+			while (conts.hasNext())
+			{
+				BaseContribution baseC = (BaseContribution) conts.next();
+				if (baseC.isActive())
+					if (baseC instanceof StraightLegForecastContribution)
+					{
+						StraightLegForecastContribution slf = (StraightLegForecastContribution) baseC;
+						java.awt.Color thisCol = slf.getColor();
+
+						// hmm, has it been given a color (initialised) yet?
+						if (thisCol == null)
+							continue;
+
+						long thisStart = baseC.getStartDate().getTime();
+						long thisFinish = baseC.getFinishDate().getTime();
+
+						java.awt.Color transCol = new java.awt.Color(thisCol.getRed(),
+								thisCol.getGreen(), thisCol.getBlue(), 88);
+
+						final Marker bst = new IntervalMarker(thisStart, thisFinish,
+								transCol, new BasicStroke(2.0f), null, null, 1.0f);
+						bst.setLabel(baseC.getName());
+						bst.setLabelAnchor(RectangleAnchor.BOTTOM_LEFT);
+						bst.setLabelFont(new Font("SansSerif", Font.ITALIC + Font.BOLD, 10));
+						bst.setLabelTextAnchor(TextAnchor.BASELINE_LEFT);
+						legPlot.addDomainMarker(bst, Layer.BACKGROUND);
+					}
+					else
+					{
+						if (baseC instanceof BearingMeasurementContribution)
+						{
+
+						}
+					}
+			}
+
+		}
+
 	}
 
 	protected void removeContribution(BaseContribution contribution,
@@ -1045,5 +1414,58 @@ public class MaintainContributionsView extends ViewPart
 				contList.layout();
 			}
 		}
+
+		// aaah, is it a straight leg?
+		if (contribution instanceof StraightLegForecastContribution)
+		{
+			stopListeningTo(contribution);
+		}
+		else if (contribution instanceof BearingMeasurementContribution)
+		{
+			BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
+			bmc.removeSliceListener(_sliceListener);
+		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable
+	{
+
+		// clear our listeners
+		Iterator<BaseContribution> conts = activeSolver.getContributions()
+				.iterator();
+		while (conts.hasNext())
+		{
+			BaseContribution contribution = (BaseContribution) conts.next();
+			// aaah, is it a straight leg?
+			if (contribution instanceof StraightLegForecastContribution)
+			{
+				stopListeningTo(contribution);
+			}
+			else if (contribution instanceof BearingMeasurementContribution)
+			{
+				BearingMeasurementContribution bmc = (BearingMeasurementContribution) contribution;
+				bmc.removeSliceListener(_sliceListener);
+			}
+		}
+
+		// let the parent shut down
+		super.finalize();
+	}
+
+	private void startListeningTo(final StraightLegForecastContribution slf)
+	{
+		slf.addPropertyChangeListener(BaseContribution.START_DATE, _legListener);
+		slf.addPropertyChangeListener(BaseContribution.FINISH_DATE, _legListener);
+		slf.addPropertyChangeListener(BaseContribution.NAME, _legListener);
+		slf.addPropertyChangeListener(BaseContribution.ACTIVE, _legListener);
+	}
+
+	private void stopListeningTo(final BaseContribution slf)
+	{
+		slf.removePropertyChangeListener(BaseContribution.ACTIVE, _legListener);
+		slf.removePropertyChangeListener(BaseContribution.START_DATE, _legListener);
+		slf.removePropertyChangeListener(BaseContribution.FINISH_DATE, _legListener);
+		slf.removePropertyChangeListener(BaseContribution.NAME, _legListener);
 	}
 }

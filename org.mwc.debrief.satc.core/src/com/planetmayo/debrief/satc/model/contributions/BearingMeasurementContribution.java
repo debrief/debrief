@@ -16,6 +16,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Status;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -35,6 +37,11 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
+import com.planetmayo.debrief.satc.zigdetector.ILegStorer;
+import com.planetmayo.debrief.satc.zigdetector.LegOfData;
+import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
+import com.planetmayo.debrief.satc.zigdetector.Sensor;
+import com.planetmayo.debrief.satc.zigdetector.ZigDetector;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -43,14 +50,20 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
-public class BearingMeasurementContribution extends CoreMeasurementContribution<BearingMeasurementContribution.BMeasurement>
+public class BearingMeasurementContribution extends
+		CoreMeasurementContribution<BearingMeasurementContribution.BMeasurement>
 {
 	private static final long serialVersionUID = 1L;
 
 	public static final String BEARING_ERROR = "bearingError";
 	public static final String RUN_MDA = "autoDetect";
 
-
+	public static interface MDAResultsListener{
+		public void sliced(String string, List<LegOfData> ownshipLegs, 
+				ArrayList<StraightLegForecastContribution> arrayList,
+				ArrayList<HostState> hostStates);
+	}
+	
 	/**
 	 * the allowable bearing error (in radians)
 	 * 
@@ -63,6 +76,16 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 	 */
 	private boolean runMDA = true;
 
+	/** store the ownship states, if possible. We use this to run the 
+	 * manoeuvre detection algorithm
+	 */
+	private ArrayList<HostState> states;
+	
+	/** array of listeners interested in MDA
+	 * 
+	 */
+	private transient ArrayList<MDAResultsListener> _listeners = null;
+	
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -103,19 +126,22 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 
 				// now the top-left
 				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
-				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(leftEdge)), range);
+				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(leftEdge)),
+						range);
 				Point2D dest = calc.getDestinationGeographicPoint();
 				coords[1] = new Coordinate(dest.getX(), dest.getY());
 
 				// now the centre bearing
 				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
-				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(bearing)), range);
+				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(bearing)),
+						range);
 				dest = calc.getDestinationGeographicPoint();
 				coords[2] = new Coordinate(dest.getX(), dest.getY());
 
 				// now the top-right
 				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
-				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(rightEdge)), range);
+				calc.setDirection(Math.toDegrees(MathUtils.normalizeAngle2(rightEdge)),
+						range);
 				dest = calc.getDestinationGeographicPoint();
 				coords[3] = new Coordinate(dest.getX(), dest.getY());
 
@@ -146,12 +172,13 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 
 				// well, if we didn't - we do now! Apply it!
 				thisState.constrainTo(lr);
-				
-				LineString bearingLine = GeoSupport.getFactory()
-						.createLineString(new Coordinate[] { coords[0], coords[2] });
+
+				LineString bearingLine = GeoSupport.getFactory().createLineString(
+						new Coordinate[] { coords[0], coords[2] });
 				thisState.setBearingLine(bearingLine);
-				
-				// also store the bearing value in the state - since it's of value in other processes (1959)
+
+				// also store the bearing value in the state - since it's of value in
+				// other processes (1959)
 				thisState.setBearingValue(bearing);
 			}
 		}
@@ -201,16 +228,17 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 					calculator.setDestinationGeographicPoint(state.getLocation().getX(),
 							state.getLocation().getY());
 
-					double radians = MathUtils.normalizeAngle(Math
-							.toRadians(calculator.getAzimuth()));
-					double angleDiff = MathUtils.angleDiff(measurement.bearingAngle, radians, true);
-					
+					double radians = MathUtils.normalizeAngle(Math.toRadians(calculator
+							.getAzimuth()));
+					double angleDiff = MathUtils.angleDiff(measurement.bearingAngle,
+							radians, true);
+
 					// make the error a proportion of the bearing error
 					angleDiff = angleDiff / (this.getBearingError());
-					
+
 					// store the error
 					state.setScore(this, angleDiff * this.getWeight() / 10);
-					
+
 					// and prepare the cumulative score
 					double thisError = angleDiff * angleDiff;
 					res += thisError;
@@ -232,9 +260,6 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 		BMeasurement measure = new BMeasurement(loc, brg, date, range);
 		addMeasurement(measure);
 	}
-
-
-
 
 	public void loadFrom(List<String> lines)
 	{
@@ -312,6 +337,11 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 		return bearingError;
 	}
 
+	public List<HostState> getHostState()
+	{
+		return states;
+	}
+	
 	/**
 	 * provide the bearing error
 	 * 
@@ -351,7 +381,8 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 	 * @author ian
 	 * 
 	 */
-	public static class BMeasurement extends CoreMeasurementContribution.CoreMeasurement
+	public static class BMeasurement extends
+			CoreMeasurementContribution.CoreMeasurement
 	{
 		private static final double MAX_RANGE_METERS = 50000.;
 		private final GeoPoint origin;
@@ -373,5 +404,192 @@ public class BearingMeasurementContribution extends CoreMeasurementContribution<
 			this.range = range == null ? MAX_RANGE_METERS : range;
 		}
 
+	}
+
+	public long[] getTimes(ArrayList<HostState> states)
+	{
+		long[] res = new long[states.size()];
+		int ctr = 0;
+		Iterator<HostState> iter = states.iterator();
+		while (iter.hasNext())
+		{
+			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) iter
+					.next();
+			res[ctr++] = hostState.time;
+		}
+		return res;
+	}
+	
+	public double[] getCourses(ArrayList<HostState> states)
+	{
+		double[] res = new double[states.size()];
+		Iterator<HostState> iter = states.iterator();
+		int ctr = 0;
+		while (iter.hasNext())
+		{
+			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) iter
+					.next();
+			res[ctr++] = hostState.courseDegs;
+		}
+		return res;
+	}
+
+	public double[] getSpeeds(ArrayList<HostState> states)
+	{
+		double[] res = new double[states.size()];
+		Iterator<HostState> iter = states.iterator();
+		int ctr = 0;
+		while (iter.hasNext())
+		{
+			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) iter
+					.next();
+			res[ctr++] = hostState.speedKts;
+		}
+		return res;
+	}
+
+
+	public static class HostState
+	{
+		final public long time;
+		final public double courseDegs;
+		final public double speedKts;
+
+		public HostState(long time, double courseDegs, double speedKts)
+		{
+			this.time = time;
+			this.courseDegs = courseDegs;
+			this.speedKts = speedKts;
+		}
+	}
+	
+	
+
+	public void runMDA(final IContributions contributions)
+	{
+		// ok, we've got to find the ownship data, somehow :-(
+		if ((states == null) || (states.size() == 0))
+		{
+			return;
+		}
+
+		// ok, extract the ownship legs from this data
+		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
+		List<LegOfData> ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
+				getCourses(states), getSpeeds(states), 5);
+
+		// create object that can store the new legs
+		MyLegStorer storer = new MyLegStorer(contributions);
+		
+		// ok, now collate the bearing data
+		ZigDetector detector = new ZigDetector();
+		
+		// ok, work through the legs. In the absence of a Discrete
+		// Optimisation algorithm we're taking a brue force approach.
+		// Hopefully we can find an optimised alternative to this.
+		for (final Iterator<LegOfData> iterator2 = ownshipLegs.iterator(); iterator2
+				.hasNext();)
+		{
+			final LegOfData thisLeg = iterator2.next();
+	
+			// ok, slice the data for this leg
+			long legStart = thisLeg.getStart();
+			long legEnd = thisLeg.getEnd();
+	
+			// trim the start/end to the sensor data
+			legStart = Math.max(legStart, getStartDate().getTime());
+			legEnd = Math
+					.min(legEnd, getFinishDate().getTime());
+
+			List<Long> thisLegTimes = new ArrayList<Long>();
+			List<Double> thisLegBearings  = new ArrayList<Double>();
+			ArrayList<BMeasurement> meas = getMeasurements();
+			Iterator<BMeasurement> iter = meas.iterator();
+			while (iter.hasNext())
+			{				
+				BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
+						.next();
+				long thisTime = measurement.getDate().getTime();
+				if((thisTime >= legStart) && (thisTime <= legEnd))
+				{
+					thisLegTimes.add(measurement.getDate().getTime());
+					thisLegBearings.add(Math.toDegrees(measurement.bearingAngle));
+				}
+			}
+
+			detector.sliceThis("some name",legStart, legEnd, null, storer, 
+					0.6, 0.000001, thisLegTimes, thisLegBearings);
+		}
+
+		
+		// ok, slicing done!
+		if(_listeners != null)
+		{
+			Iterator<MDAResultsListener> iter = _listeners.iterator();
+			while (iter.hasNext())
+			{
+				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
+						.next();
+				thisL.sliced(getName(), ownshipLegs, storer.getSlices(), states);
+			}
+		}
+		
+	}
+	
+	public void addSliceListener(MDAResultsListener listener)
+	{
+		if(_listeners == null)
+			_listeners = new ArrayList<MDAResultsListener>();
+		
+		_listeners.add(listener);
+	}
+	
+	public void removeSliceListener(MDAResultsListener listener)
+	{
+		if(_listeners != null)
+			_listeners.remove(listener);
+	}
+	
+	private static class MyLegStorer implements ILegStorer
+	{
+		int ctr = 1;
+		private ArrayList<StraightLegForecastContribution> slices = new
+				ArrayList<StraightLegForecastContribution>();
+		private final IContributions _contributions;
+		
+		public MyLegStorer(final IContributions theConts)
+		{
+			_contributions = theConts;
+		}
+		
+		public ArrayList<StraightLegForecastContribution> getSlices()
+		{
+			return slices;
+		}
+		
+		@Override
+		public void storeLeg(String scenarioName, long tStart, long tEnd,
+				Sensor sensor, double rms)
+		{
+			String name = "Leg-" + ctr++;
+			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
+			StraightLegForecastContribution slf = new StraightLegForecastContribution();
+			slf.setStartDate(new Date(tStart));
+			slf.setFinishDate(new Date(tEnd));
+			slf.setActive(true);
+			slf.setName(name);
+			_contributions.addContribution(slf);
+			slices .add(slf);
+		}
+	}
+
+	public void addState(final HostState newState)
+	{
+		// check we have our states
+		if (states == null)
+			states = new ArrayList<HostState>();
+
+		// and store this new one
+		states.add(newState);
 	}
 }
