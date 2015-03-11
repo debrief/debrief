@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.debrief.help</artifactId>
-  <version>1.0.121</version>
+  <version>1.0.122</version>
   <packaging>eclipse-plugin</packaging>
   <build>
     <plugins>
