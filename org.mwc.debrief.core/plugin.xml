@@ -97,6 +97,10 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="ais" name="AIS Track File"
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.TifLoader" extensions="tif;tiff"
             name="GeoTIF Image File"/>
     </extension>

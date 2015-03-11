@@ -160,6 +160,7 @@ Export-Package:
    MWC.GUI.Properties,
    MWC.GUI",
  Debrief.ReaderWriter.XML.Util;uses:="MWC.Utilities.ReaderWriter.XML",
+ Debrief.ReaderWriter.ais,
  Debrief.Tools.FilterOperations;
   uses:="Debrief.GUI.Tote,
    MWC.GenericData,
