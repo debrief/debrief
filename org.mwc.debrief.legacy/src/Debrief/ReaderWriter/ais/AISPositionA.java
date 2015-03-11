@@ -309,7 +309,7 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 
 		/* speed over ground bits 50-59 - 10 bits */
 		this.sog = (AISDecoder.getDecValueByBinStr(decBytes.substring(50, 60), false) / 10.0);
-
+		
 		// bit 60 - position accuracy won't be read.
 
 		/* longitude bits 61-88 */
@@ -330,17 +330,17 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE + " " + latitude);
 		}
 
-		/* COG bits 117-127 */
+		/* COG bits 116-127 */
 		this.cog = (AISDecoder.getDecValueByBinStr(decBytes.substring(116, 128), false) / 10.0);
-
+		
 		/* true heading bits 128-136 */
 		this.trueHeading = AISDecoder.getDecValueByBinStr(decBytes.substring(128, 137), false);
 
 //		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 //		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
 		
-		// time stamp bits 138-143		
-		int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(138, 144), false);
+		// time stamp bits 137-143		
+		int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(137, 143), false);
 		this.msgTimestamp = new Timestamp(secs * 1000);
 
 		

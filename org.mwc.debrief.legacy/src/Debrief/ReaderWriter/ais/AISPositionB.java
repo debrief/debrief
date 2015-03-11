@@ -32,8 +32,6 @@
 package Debrief.ReaderWriter.ais;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 
 /**
@@ -230,10 +228,14 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable {
 		this.trueHeading = AISDecoder.getDecValueByBinStr(
 				decBytes.substring(124, 133), false);
 
-		/* time stamp bits 138-143 */
-		// TODO: impelemt the rest bits
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
+		// time stamp bits 137-143		
+		int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(137, 143), false);
+		this.msgTimestamp = new Timestamp(secs * 1000);
+		
+//		/* time stamp bits 138-143 */
+//		// TODO: impelemt the rest bits
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
 
 		return this;
 
