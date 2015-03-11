@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
@@ -96,7 +95,7 @@ public class ImportAIS
 				else if (res instanceof AISBaseStation)
 				{
 					AISBaseStation base = (AISBaseStation) res;
-					System.out.println(nmea_sentence);// + " BASE ");
+//					System.out.println(nmea_sentence);// + " BASE ");
 					_lastTime = base.getTimestamp();
 					
 			//		System.out.println("new Base time:" + _lastTime + " MMSI:" + base.getMmsi());
@@ -293,6 +292,14 @@ public class ImportAIS
 				
 			}
 			
+		}
+		public void testKnownImport() throws AISParseException
+		{
+			String test = "!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A";
+			AISParser parser = new AISParser();
+			IAISMessage res = parser.parse(test);
+			@SuppressWarnings("unused")
+			AISPositionA posA = (AISPositionA) res;
 		}
 	}
 }
