@@ -48,7 +48,7 @@ public class RangeForecastContribution extends BaseContribution
 	 * for UI components, this is the maximum range that a user can select
 	 * 
 	 */
-	public static final double MAX_SELECTABLE_RANGE_M = 40000;
+	public static final double MAX_SELECTABLE_RANGE_M = 100000;
 
 	protected Double minRangeM = 0d;
 
