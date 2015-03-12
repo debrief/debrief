@@ -32,9 +32,6 @@ import Debrief.ReaderWriter.ais.ImportAIS;
 import MWC.GUI.Layers;
 
 /**
- * @author Aravind R. Yarram <yaravind@gmail.com>
- * @date August 21, 2012
- * @category gpx
  */
 public class AISLoader extends IPlotLoader.BaseLoader
 {
