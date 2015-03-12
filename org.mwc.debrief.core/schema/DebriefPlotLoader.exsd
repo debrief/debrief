@@ -6,7 +6,8 @@
          <meta.schema plugin="org.mwc.debrief.core" id="DebriefPlotLoader" name="Plot Loader"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This is to lazy declare file loaders. The loader is only actually loaded 
+         into memory if/when a suitable file type is encountered.
       </documentation>
    </annotation>
 
@@ -59,6 +60,13 @@
             <annotation>
                <documentation>
                   the file suffix-list for applicable files (semi-colon separated)
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="regexp" type="string" use="optional">
+            <annotation>
+               <documentation>
+                  A RegExp that should be matched by the first line of the file
                </documentation>
             </annotation>
          </attribute>

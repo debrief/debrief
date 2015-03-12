@@ -38,6 +38,7 @@ import MWC.GUI.Layers;
  */
 public class AISLoader extends IPlotLoader.BaseLoader
 {
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -135,10 +136,10 @@ public class AISLoader extends IPlotLoader.BaseLoader
 		catch (final IOException e)
 		{
 			DebriefPlugin
-					.logError(Status.ERROR, "Problem loading GPX:" + fileName, e);
+					.logError(Status.ERROR, "Problem loading AIS:" + fileName, e);
 		}
 
 		// ok, load the data...
-		DebriefPlugin.logError(Status.INFO, "Successfully loaded GPX file", null);
+		DebriefPlugin.logError(Status.INFO, "Successfully loaded AIS file", null);
 	}
 }

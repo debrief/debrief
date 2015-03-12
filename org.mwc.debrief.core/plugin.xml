@@ -97,7 +97,8 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="ais" name="AIS Track File"
+        <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" name="AIS Track File"
+        regexp="\d\d\d\d\d\d_\d\d\d\d(:!AIVDM)(\S*)"
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
