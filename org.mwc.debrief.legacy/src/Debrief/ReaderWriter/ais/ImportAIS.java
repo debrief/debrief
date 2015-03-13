@@ -37,7 +37,7 @@ public class ImportAIS
 	private final ArrayList<FixWrapper> _queuedFixes;
 
 	NumberFormat numF = new DecimalFormat("00");
-	
+
 	private Timestamp _lastTime = null;
 
 	public ImportAIS(Layers target)
@@ -46,8 +46,6 @@ public class ImportAIS
 		_layers = target;
 		_queuedFixes = new ArrayList<FixWrapper>();
 	}
-
-
 
 	@SuppressWarnings("deprecation")
 	public void importThis(String fName, InputStream is) throws Exception
@@ -131,8 +129,8 @@ public class ImportAIS
 
 				_nameLookups.put(vess.getMmsi(), vess.getName());
 
-//				System.out.println("Named vessel:" + vess.getName() + " MMSI:"
-//						+ vess.getMmsi());
+				System.out.println("Named vessel:" + vess.getName() + " MMSI:"
+						+ vess.getMmsi());
 
 				// ok, see if we can name this vessel
 				Layer thisLayer = _layers.findLayer("" + vess.getMmsi());
@@ -158,11 +156,11 @@ public class ImportAIS
 	private void processQueuedPositions(Date lastTime)
 	{
 
-		if(_queuedFixes.isEmpty())
+		if (_queuedFixes.isEmpty())
 			return;
-		
+
 		System.out.println("PROCESSING QUEUE");
-		
+
 		Iterator<FixWrapper> iter = _queuedFixes.iterator();
 		int lastSecs = lastTime.getSeconds();
 
@@ -182,7 +180,7 @@ public class ImportAIS
 				// ok, we have to decrement the minutes
 				newDate.setMinutes(newDate.getMinutes() - 1);
 			}
-			else if(isNextMinute(lastSecs, secs))
+			else if (isNextMinute(lastSecs, secs))
 			{
 				// ok, we have to increment the minutes
 				newDate.setMinutes(newDate.getMinutes() + 1);
@@ -205,13 +203,18 @@ public class ImportAIS
 			double sog, int mmsi, int secs, Timestamp lastTime)
 	{
 
-		if (mmsi == 244198000)
+		if (mmsi == 219016555)
 		{
-//			System.out.println("  secs:" + numF.format(secs) + " lastTime:" + lastTime);
+			// System.out.println("  secs:" + numF.format(secs) + " lastTime:" +
+			// lastTime);
+			if(secs == 56)
+			{
+				System.out.println("here!!");
+			}
 		}
 		else
 		{
-		//	return;
+			return;
 		}
 
 		String layerName = null;
@@ -250,7 +253,7 @@ public class ImportAIS
 			{
 				newDate.setMinutes(newDate.getMinutes() - 1);
 			}
-			else if(isNextMinute(lastTime.getSeconds(), secs))
+			else if (isNextMinute(lastTime.getSeconds(), secs))
 			{
 				newDate.setMinutes(newDate.getMinutes() + 1);
 			}
@@ -327,10 +330,9 @@ public class ImportAIS
 
 		}
 
-
 		public void testNewImport() throws Exception
 		{
-			String testFile = "/home/ian/Downloads/AIS_TEST_FILES/150304_0814.txt";
+			String testFile = "/home/ian/Downloads/AIS_TEST_FILES/150304_0914.txt";
 			File testI = new File(testFile);
 			assertTrue(testI.exists());
 
@@ -341,10 +343,19 @@ public class ImportAIS
 			ImportAIS importer = new ImportAIS(tLayers);
 			importer.importThis(testFile, is);
 
+			// ok, now for the second file
+			is.close();
+			testFile = "/home/ian/Downloads/AIS_TEST_FILES/150304_0924.txt";
+			testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			is = new FileInputStream(testI);
+			importer.importThis(testFile, is);
+
 			// hmmm, how many tracks
 			assertEquals("got new tracks", 1, tLayers.size());
 
-			TrackWrapper thisT = (TrackWrapper) tLayers.findLayer("TINA");
+			TrackWrapper thisT = (TrackWrapper) tLayers.findLayer("LOLLAND");
 			Enumeration<Editable> fixes = thisT.getPositions();
 			while (fixes.hasMoreElements())
 			{
@@ -356,7 +367,7 @@ public class ImportAIS
 			}
 
 		}
-		
+
 		public void testKnownImport() throws AISParseException
 		{
 			String test = "!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A";
@@ -446,29 +457,28 @@ public class ImportAIS
 			assertEquals("is after", false, isPreviousMinute(2, 28));
 			assertEquals("is after", false, isPreviousMinute(57, 2));
 			assertEquals("is after", false, isPreviousMinute(4, 31));
-			
-			
+
 			assertEquals("is after", true, isNextMinute(57, 2));
 			assertEquals("is after", false, isNextMinute(5, 52));
 			assertEquals("is after", false, isNextMinute(5, 15));
-			
+
 		}
 	}
-	
+
 	public static boolean isNextMinute(int lastSecs, int newSecs)
 	{
 		final boolean res;
 
-		if(newSecs > lastSecs)
+		if (newSecs > lastSecs)
 		{
 			res = false;
 		}
 		else
 		{
 			// so, newSecs is less than lastSecs
-			if(lastSecs - newSecs > 30)
+			if (lastSecs - newSecs > 30)
 			{
-				res = true;				
+				res = true;
 			}
 			else
 			{
@@ -477,14 +487,14 @@ public class ImportAIS
 		}
 		return res;
 	}
-	
+
 	public static boolean isPreviousMinute(int lastSecs, int newSecs)
 	{
 		final boolean res;
 
-		if(newSecs > lastSecs)
+		if (newSecs > lastSecs)
 		{
-			if((newSecs - lastSecs) > 30)
+			if ((newSecs - lastSecs) > 30)
 			{
 				res = true;
 			}
@@ -496,15 +506,15 @@ public class ImportAIS
 		else
 		{
 			res = false;
-//			// so, newSecs is less than lastSecs
-//			if(lastSecs - newSecs < 30)
-//			{
-//				res = false;				
-//			}
-//			else
-//			{
-//				res = true;
-//			}
+			// // so, newSecs is less than lastSecs
+			// if(lastSecs - newSecs < 30)
+			// {
+			// res = false;
+			// }
+			// else
+			// {
+			// res = true;
+			// }
 		}
 		return res;
 	}
