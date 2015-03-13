@@ -551,15 +551,29 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	private void loadThisFile(final String filePath)
 	{
+		FileInputStream ifs = null;
 		try
 		{
-			final FileInputStream ifs = new FileInputStream(filePath);
+			ifs = new FileInputStream(filePath);
 			loadThisStream(ifs, filePath);
 		}
 		catch (final FileNotFoundException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Problem loading data file:" + filePath, e);
+		}
+		finally
+		{
+			if(ifs != null)
+				try
+				{
+					ifs.close();
+				}
+				catch (IOException e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"Problem closing input stream:" + filePath, e);
+				}
 		}
 	}
 
@@ -886,7 +900,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// to start off with a dirty plot
 		startIgnoringDirtyCalls();
 
-		DebriefPlugin.logError(Status.INFO, "File load received", null);
+		DebriefPlugin.logError(Status.INFO, "File loading complete received", null);
 
 		// and update the time management bits
 		final TimePeriod timePeriod = getPeriodFor(_myLayers);
