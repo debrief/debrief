@@ -33,6 +33,8 @@ package Debrief.ReaderWriter.ais;
 
 import java.util.Arrays;
 
+import MWC.GUI.ToolParent;
+
 /**
  * Implementation of the AISDecoder in accordance with<br>
  * IMO Recommendation ITU-R.M.1371-1<br>
@@ -46,6 +48,15 @@ import java.util.Arrays;
  * @author David Schmitz
  */
 public class AISDecoder {
+
+
+	private static ToolParent _toolParent;
+	
+
+	public static void initialise(ToolParent toolParent)
+	{
+		_toolParent = toolParent;
+	}
 
 
 	/**
@@ -84,9 +95,14 @@ public class AISDecoder {
 			return new AISPositionExtB().decode(decodedBinString);
 		}
 
+		// check if we've got a null message type
+		if(_toolParent != null)
+			_toolParent.logError(ToolParent.WARNING, "Failed to handle AIS message of type:" + msgId, null);
 
-		throw new AISParseException(AISParseException.WRONG_MESSAGE_ID + " "
-				+ msgId);
+		return null;
+
+//		throw new AISParseException(AISParseException.WRONG_MESSAGE_ID + " "
+//				+ msgId);
 	}
 
 	/**
