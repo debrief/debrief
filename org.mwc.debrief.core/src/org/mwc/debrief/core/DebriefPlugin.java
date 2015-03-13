@@ -48,6 +48,7 @@ import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.osgi.framework.BundleContext;
 
+import Debrief.ReaderWriter.ais.AISDecoder;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.CompositeTrackWrapper.GiveMeALeg;
 import MWC.GUI.Layer;
@@ -254,6 +255,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 		CompositeTrackWrapper.setNewLegHelper(triggerNewLeg);
 		CompositeTrackWrapper.initialise(CorePlugin.getToolParent());
+		AISDecoder.initialise(CorePlugin.getToolParent());
 
 	}
 
