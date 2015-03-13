@@ -7,8 +7,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +18,6 @@ import java.util.TimeZone;
 import junit.framework.TestCase;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -32,13 +29,21 @@ import MWC.TacticalData.Fix;
 public class ImportAIS
 {
 
+	/** where we write our data
+	 * 
+	 */
 	private final Layers _layers;
+	
+	/** keep a tally of vessel names against MMSI numbers. We keep it
+	 * as static so that it stays alive between file loads.
+	 * 
+	 */
 	private static HashMap<Integer, String> _nameLookups;
+	
+	/** fixes that are received before we have a TimeStamp from a base
+	 * 
+	 */
 	private final ArrayList<FixWrapper> _queuedFixes;
-
-	NumberFormat numF = new DecimalFormat("00");
-
-	private Timestamp _lastTime = null;
 
 	public ImportAIS(Layers target)
 	{
@@ -51,86 +56,61 @@ public class ImportAIS
 	public void importThis(String fName, InputStream is) throws Exception
 	{
 
-		// reset the timestamp, so we deduce the time
-		_lastTime = null;
+		// we can't assume times continue from the last file - so
+		// always start with an empty time stamp
+		Timestamp lastTime = null;
 
-		AISParser parser = new AISParser();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmm");
+		// get ready to parse
+		final AISParser parser = new AISParser();
+		
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmm");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		// ok, loop through the lines
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 		String nmea_sentence;
+		
+		// loop through the lines
 		while ((nmea_sentence = br.readLine()) != null)
 		{
 
-			// sort out the time leader
-			// String leader = nmea_sentence.substring(0, 11);
-			// Date date = sdf.parse(leader);
-
+			// parse this message. Note that fortunately this library consumes any 
+			// leading text.
 			IAISMessage res = parser.parse(nmea_sentence);
 
-			if (res instanceof AISPositionA)
+			if (res instanceof IPositionMessage)
 			{
-				AISPositionA ar = (AISPositionA) res;
+				// ok, cast it
+				IPositionMessage ar = (IPositionMessage) res;
 
-				// if(ar.getMmsi() == 563622000)
-				// {
-				// System.out.println(nmea_sentence + " secs:" +
-				// ar.getMsgTimestamp().getSeconds());
-				// }
-
+				// and now store it.
 				storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(),
 						ar.getSog(), ar.getMmsi(), ar.getMsgTimestamp().getSeconds(),
-						_lastTime);
-			}
-			else if (res instanceof AISPositionB)
-			{
-				AISPositionB ar = (AISPositionB) res;
-				storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(),
-						ar.getSog(), ar.getMmsi(), ar.getMsgTimestamp().getSeconds(),
-						_lastTime);
-
-				if (ar.getMmsi() == 563622000)
-				{
-					// System.out.println(nmea_sentence + " secs:" +
-					// ar.getMsgTimestamp().getSeconds());
-					// System.out.println(nmea_sentence);
-				}
-
+						lastTime);
 			}
 			else if (res instanceof AISBaseStation)
 			{
 				AISBaseStation base = (AISBaseStation) res;
-				// System.out.println(nmea_sentence);// + " BASE ");
-				_lastTime = base.getTimestamp();
 
-				System.out.println("     new Base time:" + _lastTime);
+				// ok, extract the time stamp - so we can use it to offset positions
+				lastTime = base.getTimestamp();
 
 				// hey, we may have stacked up some positions while
 				// they are waiting for the first data item
 				if (_queuedFixes.size() > 0)
-					processQueuedPositions(_lastTime);
+					processQueuedPositions(lastTime);
 
 			}
 			else if (res instanceof AISVessel)
 			{
 				AISVessel vess = (AISVessel) res;
 
-				// if(vess.getMmsi() == 220433000)
-				// {
-				// System.out.println(nmea_sentence + " VESSEL");
-				// }
-
-				// ok, store the id against the name
 				if (_nameLookups == null)
 					_nameLookups = new HashMap<Integer, String>();
 
+				// ok, store the id against the name
 				_nameLookups.put(vess.getMmsi(), vess.getName());
-
-				System.out.println("Named vessel:" + vess.getName() + " MMSI:"
-						+ vess.getMmsi());
 
 				// ok, see if we can name this vessel
 				Layer thisLayer = _layers.findLayer("" + vess.getMmsi());
@@ -138,24 +118,15 @@ public class ImportAIS
 				{
 					thisLayer.setName(vess.getName());
 				}
-				else
-				{
-					// System.out.println("VESSEL NOT FOUND FOR ID:" + vess.getMmsi());
-				}
-
 			}
-			else
-			{
-				// System.out.println(res);
-			}
-
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	private void processQueuedPositions(Date lastTime)
+	private void processQueuedPositions(Timestamp lastTime)
 	{
 
+		// anything to process?
 		if (_queuedFixes.isEmpty())
 			return;
 
@@ -191,6 +162,13 @@ public class ImportAIS
 
 			// and store it
 			fix.getFix().setTime(new HiResDate(newDate));
+
+			// ok, find the track
+			String parentName = nameFor(Integer.valueOf(fix.getLabel()));
+			Layer parent = _layers.findLayer(parentName);
+			parent.add(fix);
+
+			// ok, we've used the name, now we can override it
 			fix.resetName();
 		}
 
@@ -198,37 +176,27 @@ public class ImportAIS
 		_queuedFixes.clear();
 	}
 
+	private String nameFor(int mmsi)
+	{
+		final String res;
+		if ((_nameLookups != null) && _nameLookups.containsKey(mmsi))
+		{
+			res = _nameLookups.get(mmsi);
+		}
+		else
+		{
+			res = "" + mmsi;
+		}
+
+		return res;
+	}
+
 	@SuppressWarnings("deprecation")
 	private void storeThis(double latitude, double longitude, double cog,
 			double sog, int mmsi, int secs, Timestamp lastTime)
 	{
-
-		if (mmsi == 219016555)
-		{
-			// System.out.println("  secs:" + numF.format(secs) + " lastTime:" +
-			// lastTime);
-			if(secs == 56)
-			{
-				System.out.println("here!!");
-			}
-		}
-		else
-		{
-			return;
-		}
-
-		String layerName = null;
-
 		// try to do a name lookup
-		String lookupName = null;
-
-		if (_nameLookups != null)
-			lookupName = _nameLookups.get(mmsi);
-
-		if (lookupName != null)
-			layerName = lookupName;
-		else
-			layerName = "" + mmsi;
+		String layerName = nameFor(mmsi);
 
 		// does this track exist
 		Layer layer = _layers.findLayer(layerName);
@@ -276,13 +244,15 @@ public class ImportAIS
 
 		// ok, do we have a time offset yet? if we don't we should queue up this fix
 		if (lastTime == null)
+		{
+			fixWrapper.setLabel("" + mmsi);
 			_queuedFixes.add(fixWrapper);
+		}
 		else
 		{
 			fixWrapper.resetName();
+			layer.add(fixWrapper);
 		}
-
-		layer.add(fixWrapper);
 
 	}
 
@@ -374,7 +344,7 @@ public class ImportAIS
 			AISParser parser = new AISParser();
 			IAISMessage res = parser.parse(test);
 			@SuppressWarnings("unused")
-			AISPositionA posA = (AISPositionA) res;
+			IPositionMessage posA = (IPositionMessage) res;
 		}
 
 		@SuppressWarnings("deprecation")

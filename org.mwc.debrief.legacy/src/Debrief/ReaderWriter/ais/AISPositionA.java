@@ -41,7 +41,7 @@ import java.sql.Timestamp;
  * @author Alexander Lotter
  * 
  */
-public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
+public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable, IPositionMessage {
 
 
 	private int msgId;
@@ -116,6 +116,7 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 	 * Simple getter for course over ground COG.
 	 * @return COG
 	 */
+	@Override
 	public double getCog() {
 		return cog;
 	}
@@ -124,6 +125,7 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 	 * Simple getter for MSG ID
 	 * @return msgid
 	 */
+	@Override
 	public int getMsgId() {
 		return msgId;
 	}
@@ -140,6 +142,7 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 	 * Simple getter for latitude.
 	 * @return latitude
 	 */
+	@Override
 	public double getLatitude() {
 		return latitude;
 	}
@@ -148,10 +151,12 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 	 * Simple getter for longitude.
 	 * @return longitude
 	 */
+	@Override
 	public double getLongitude() {
 		return longitude;
 	}
 
+	@Override
 	public Timestamp getMsgTimestamp() {
 		return msgTimestamp;
 	}
@@ -176,14 +181,17 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable {
 	 * Simple getter for speed over ground.
 	 * @return SOG
 	 */
+	@Override
 	public double getSog() {
 		return sog;
 	}
 
+	@Override
 	public int getTrueHeading() {
 		return trueHeading;
 	}
 
+	@Override
 	public int getMmsi() {
 		return mmsi;
 	}
