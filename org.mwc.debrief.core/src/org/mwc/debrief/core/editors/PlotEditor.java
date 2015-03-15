@@ -497,6 +497,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					"File cannot be found:" + input.getName(), null);
 			return;
 		}
+		String name = input.getName();
 		try
 		{
 			final IPersistableElement persist = input.getPersistable();
@@ -506,23 +507,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				final IFile iff = ife.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
 				is = iff.getContents();
+				name = getAbsoluteName(iff);
 			}
 			else if (persist instanceof IFileEditorInput)
 			{
-				final IFileEditorInput iff = (IFileEditorInput) persist;
-				is = iff.getFile().getContents();
+				final IFileEditorInput ifi = (IFileEditorInput) persist;
+				IFile iff = ifi.getFile();
+				is = iff.getContents();
+				name = getAbsoluteName(iff);
 			}
 			else if (input instanceof FileStoreEditorInput)
 			{
 				final FileStoreEditorInput _input = (FileStoreEditorInput) input;
 				final URI _uri = _input.getURI();
 				final Path _p = new Path(_uri.getPath());
+				name = _uri.getPath();
 				final IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
 				is = _ifs.openInputStream(EFS.NONE, null);
 			}
 
 			if (is != null)
-				loadThisStream(is, input.getName());
+				loadThisStream(is, name);
 			else
 			{
 				CorePlugin.logError(Status.INFO, "Failed to load file from:" + input,
@@ -543,6 +548,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 									+ input.getName()
 									+ "\nPlease right-click on your navigator project and press Refresh");
 		}
+	}
+
+	public String getAbsoluteName(final IFile iff) throws CoreException
+	{
+		String name;
+		URI uri = iff.getLocationURI();
+		if(iff.isLinked()){
+			uri = iff.getRawLocationURI();
+		}
+		File javaFile = EFS.getStore(uri).toLocalFile(0, new NullProgressMonitor());
+		name = javaFile.getAbsolutePath();
+		return name;
 	}
 
 	/**

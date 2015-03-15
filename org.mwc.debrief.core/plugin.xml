@@ -66,8 +66,11 @@
             name="KMZ Track File" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="csv"
             name="S2087 Context Track File (Log)" priority="normal"> </content-type>
-        <content-type id="org.mwc.debrief.contenttype.AISTrackFile" file-extensions="txt"
-            name="AIS track file" priority="normal"> </content-type>
+        <content-type id="org.mwc.debrief.contenttype.AISTrackFile"
+            file-extensions="txt"
+            name="AIS track file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.AISContentDescriber"/>
+        </content-type>
     </extension>
 
     <extension-point id="DebriefPlotLoader" name="Plot Loader"
