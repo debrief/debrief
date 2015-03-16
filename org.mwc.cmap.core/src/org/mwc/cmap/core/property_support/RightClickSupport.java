@@ -409,9 +409,22 @@ public class RightClickSupport
 								// find the common ones
 								res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
 							}
+							else
+							{
+								// handle instance where editable doesn't have anything editable
+								res = null;
+								break;
+							}
+
 						}
 					}
 				}
+				else
+				{
+					// handle instance where editable doesn't have anything editable
+					res = null;
+				}
+
 			}
 		}
 
@@ -505,28 +518,6 @@ public class RightClickSupport
 			{
 				res = firstInfo.getPropertyDescriptors();
 
-				// // and are there any more?
-				// BeanInfo[] abl = firstInfo.getAdditionalBeanInfo();
-				// for (int i = 0; i < abl.length; i++)
-				// {
-				// BeanInfo thisB = abl[i];
-				// PropertyDescriptor[] newPd = thisB.getPropertyDescriptors();
-				//
-				// // and extend the existing list
-				// PropertyDescriptor[] tmpList = new PropertyDescriptor[res.length +
-				// newPd.length];
-				//
-				// // copy in the originals
-				// System.arraycopy(res, 0, tmpList, 0, res.length);
-				//
-				// // and the new ones
-				// System.arraycopy(newPd, 0, tmpList, res.length, newPd.length);
-				//
-				// // and take over the list
-				// res = tmpList;
-				// }
-				//
-
 				// only continue if there are any property descriptors
 				if (res != null)
 				{
@@ -551,8 +542,20 @@ public class RightClickSupport
 								res = (PropertyDescriptor[]) getIntersectionFor(res, newSet,
 										demo);
 							}
+							else
+							{
+								// handle instance where editable doesn't have anything editable
+								res = null;
+								break;
+							}
+
 						}
 					}
+				}
+				else
+				{
+					// handle instance where editable doesn't have anything editable
+					res = null;
 				}
 			}
 		}
@@ -1089,19 +1092,19 @@ public class RightClickSupport
 									"Setter call failed:" + thisSubject.getName() + " Error was:"
 											+ e.getTargetException().getMessage(),
 									e.getTargetException());
-					res = null;
+					res = Status.CANCEL_STATUS;
 				}
 				catch (final IllegalArgumentException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
 							+ thisSubject.getName(), e);
-					res = null;
+					res = Status.CANCEL_STATUS;
 				}
 				catch (final IllegalAccessException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Illegal access problem for:"
 							+ thisSubject.getName(), e);
-					res = null;
+					res = Status.CANCEL_STATUS;
 				}
 			}
 
@@ -1197,7 +1200,7 @@ public class RightClickSupport
 				{
 					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
 							+ thisSubject.getName(), e);
-					res = null;
+					res = Status.CANCEL_STATUS;
 				}
 			}
 
@@ -1221,7 +1224,7 @@ public class RightClickSupport
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
 							+ thisSubject.getName(), e);
-					res = null;
+					res = Status.CANCEL_STATUS;
 				}
 			}
 
