@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.zigdetector;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class OwnshipLegDetector
@@ -20,8 +21,8 @@ public class OwnshipLegDetector
 			final int avgPeriod)
 	{
 	
-		final double COURSE_TOLERANCE = 0.1; // degs / sec (just a guess!!)
-		final double SPEED_TOLERANCE = 0.01; // knots / sec (just a guess!!)
+		final double COURSE_TOLERANCE = 0.001; // rads / sec (just a guess!!)
+		final double SPEED_TOLERANCE = 1.1; // ms / sec (just a guess!!)
 	
 		double lastCourse = 0;
 		double lastSpeed = 0;
@@ -31,11 +32,8 @@ public class OwnshipLegDetector
 		legs.add(new LegOfData("Leg-1"));
 	
 		// switch the courses to an n-term moving average
-		final double[] courses = movingAverage(rawCourses, avgPeriod);
-//		track.averageCourses = courses;
-	
+		final double[] courses = movingAverage(rawCourses, avgPeriod);		
 		final double[] speeds = movingAverage(rawSpeeds, avgPeriod);
-//		track.averageSpeeds = speeds;
 	
 		for (int i = 0; i < times.length; i++)
 		{
@@ -60,6 +58,8 @@ public class OwnshipLegDetector
 				}
 				else
 				{
+//					System.out.println("O/S ZIG at " + new Date(thisTime) + ": courseRate:" + courseRate  + " speedRate:" + speedRate);
+//					
 					// we may be in a turn. create a new leg, if we haven't done
 					// so already
 					if (legs.get(legs.size() - 1).initialised())
