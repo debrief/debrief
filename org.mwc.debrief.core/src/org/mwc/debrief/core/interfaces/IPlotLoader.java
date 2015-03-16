@@ -14,17 +14,12 @@
  */
 package org.mwc.debrief.core.interfaces;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
@@ -68,22 +63,20 @@ public interface IPlotLoader extends INamedItem
 	 * @param icon
 	 * @param fileTypes
 	 */
-	public void init(String name, String icon, String fileTypes, String regexp);
+	public void init(String name, String icon, String fileTypes);
 
 	abstract public static class BaseLoader implements IPlotLoader
 	{
 		protected String _myName;
 		protected String _icon;
 		protected String _fileTypes;
-		protected String _regexp;
 
 		public void init(final String name, final String icon,
-				final String fileTypes, String regexp)
+				final String fileTypes)
 		{
 			_myName = name;
 			_icon = icon;
 			_fileTypes = fileTypes;
-			_regexp = regexp;
 		}
 
 		public final String getName()
@@ -121,55 +114,6 @@ public interface IPlotLoader extends INamedItem
 				}
 			}
 
-			// do we have a regexp?
-			if (res)
-			{
-				if (_regexp != null)
-				{
-					// ok, have a look at the first line
-
-					// hmm, is there anything in the file?
-					BufferedReader r = null;
-					try
-					{
-						r = new BufferedReader(new FileReader(fileName));
-
-						// ok, have a look at the first line
-						String firstLine = r.readLine();
-
-						// ok, see if it matches our example.
-						res = firstLine.matches(_regexp);
-						
-						// report error
-						CorePlugin.logError(Status.INFO, "File didn't match regexp for " + _myName, null);
-					}
-					catch (FileNotFoundException e)
-					{
-						CorePlugin.logError(Status.ERROR, "Can't find AIS file", e);
-						res = false;
-					}
-					catch (IOException e)
-					{
-						CorePlugin.logError(Status.ERROR,
-								"Can't read first line of AIS file", e);
-						res = false;
-					}
-					finally
-					{
-						try
-						{
-							if (r != null)
-								r.close();
-						}
-						catch (IOException e)
-						{
-							CorePlugin.logError(Status.ERROR, "Couldn't close file file", e);
-						}
-					}
-
-				}
-			}
-
 			return res;
 		}
 
@@ -191,11 +135,10 @@ public interface IPlotLoader extends INamedItem
 		 * @param regexp
 		 */
 		public DeferredPlotLoader(final IConfigurationElement configElement,
-				final String name, final String icon, final String fileTypes,
-				String regexp)
+				final String name, final String icon, final String fileTypes)
 		{
 			_config = configElement;
-			init(name, icon, fileTypes, regexp);
+			init(name, icon, fileTypes);
 		}
 
 		public BaseLoader getLoader()
@@ -216,7 +159,7 @@ public interface IPlotLoader extends INamedItem
 					_myLoader = (BaseLoader) _config.createExecutableExtension("class");
 
 					// hey, stick the data in
-					_myLoader.init(_myName, _icon, _fileTypes, _regexp);
+					_myLoader.init(_myName, _icon, _fileTypes);
 
 				}
 				catch (final CoreException e)

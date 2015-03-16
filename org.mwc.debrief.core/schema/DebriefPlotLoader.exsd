@@ -63,13 +63,6 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="regexp" type="string" use="optional">
-            <annotation>
-               <documentation>
-                  A RegExp that should be matched by the first line of the file
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
