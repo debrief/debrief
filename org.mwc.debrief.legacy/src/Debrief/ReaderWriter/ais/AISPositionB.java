@@ -41,7 +41,7 @@ import java.sql.Timestamp;
  * @author Alexander Lotter
  *
  */
-public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable {
+public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPositionMessage {
 
 
 	/** message id */
@@ -98,34 +98,42 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable {
 		this.msgTimestamp = msgTimestamp;
 	}
 
+	@Override
 	public double getCog() {
 		return cog;
 	}
 
+	@Override
 	public int getMsgId() {
 		return msgId;
 	}
 
+	@Override
 	public double getLatitude() {
 		return latitude;
 	}
 
+	@Override
 	public double getLongitude() {
 		return longitude;
 	}
 
+	@Override
 	public Timestamp getMsgTimestamp() {
 		return msgTimestamp;
 	}
 
+	@Override
 	public double getSog() {
 		return sog;
 	}
 
+	@Override
 	public int getTrueHeading() {
 		return trueHeading;
 	}
 
+	@Override
 	public int getMmsi() {
 		return mmsi;
 	}

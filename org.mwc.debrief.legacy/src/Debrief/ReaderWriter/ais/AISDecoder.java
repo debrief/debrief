@@ -33,6 +33,8 @@ package Debrief.ReaderWriter.ais;
 
 import java.util.Arrays;
 
+import MWC.GUI.ToolParent;
+
 /**
  * Implementation of the AISDecoder in accordance with<br>
  * IMO Recommendation ITU-R.M.1371-1<br>
@@ -41,24 +43,32 @@ import java.util.Arrays;
  * Automatic identification systems (AIS) – Part 2: Class A shipborne equipment
  * of the universal automatic identification system (AIS) – Operational and
  * performance requirements, methods of test and required test results."
- *
+ * 
  * @author Alexander Lotter
  * @author David Schmitz
  */
-public class AISDecoder {
+public class AISDecoder
+{
 
+	private static ToolParent _toolParent;
+
+	public static void initialise(ToolParent toolParent)
+	{
+		_toolParent = toolParent;
+	}
 
 	/**
 	 * Encoded message will be decoded and packed into corresponding object
-	 *
+	 * 
 	 * @param encodedMsg
 	 * @return Corresponding IAISMessage implementation
 	 * @throws AISParseException
 	 */
-	public static IAISMessage decode(String encodedMsg)
-			throws AISParseException {
+	public static IAISMessage decode(String encodedMsg) throws AISParseException
+	{
 
-		if (encodedMsg == null || encodedMsg.isEmpty()) {
+		if (encodedMsg == null || encodedMsg.isEmpty())
+		{
 			throw new AISParseException(AISParseException.EMPTY_AIS_MESSAGE);
 		}
 		byte[] toDecBytes = encodedMsg.getBytes();
@@ -68,7 +78,8 @@ public class AISDecoder {
 
 		String decodedBinString = getDecodedStr(decBytes);
 
-		switch (msgId) {
+		switch (msgId)
+		{
 		case 1:
 		case 2:
 		case 3:
@@ -84,50 +95,74 @@ public class AISDecoder {
 			return new AISPositionExtB().decode(decodedBinString);
 		}
 
+		// check if we've got a null message type
+		if (msgId == 0)
+		{
+			// hey, just ignore it - they happen really frequently
+		}
+		else
+		{
+			if (_toolParent != null)
+				_toolParent.logError(ToolParent.WARNING,
+						"Failed to handle AIS message of type:" + msgId, null);
+		}
 
-		throw new AISParseException(AISParseException.WRONG_MESSAGE_ID + " "
-				+ msgId);
+		return null;
+
+		// throw new AISParseException(AISParseException.WRONG_MESSAGE_ID + " "
+		// + msgId);
 	}
 
 	/**
 	 * Method to convert ASCII-coded character to 6-bit binary
-	 *
+	 * 
 	 * @param toDecBytes
 	 * @return decodedBytes
 	 */
 	private static byte[] ascii8To6bitBin(byte[] toDecBytes)
-			throws AISParseException {
+			throws AISParseException
+	{
 
 		byte[] convertedBytes = new byte[toDecBytes.length];
 		int sum = 0;
 		int _6bitBin = 0;
 
-		for (int i = 0; i < toDecBytes.length; i++) {
+		for (int i = 0; i < toDecBytes.length; i++)
+		{
 			sum = 0;
 			_6bitBin = 0;
 
-			if (toDecBytes[i] < 48) {
-				throw new AISParseException(AISParseException.INVALID_CHARACTER
-						+ " " + (char) toDecBytes[i]);
+			if (toDecBytes[i] < 48)
+			{
+				throw new AISParseException(AISParseException.INVALID_CHARACTER + " "
+						+ (char) toDecBytes[i]);
 			}
-			if (toDecBytes[i] > 119) {
-				throw new AISParseException(AISParseException.INVALID_CHARACTER
-						+ " " + (char) toDecBytes[i]);
+			if (toDecBytes[i] > 119)
+			{
+				throw new AISParseException(AISParseException.INVALID_CHARACTER + " "
+						+ (char) toDecBytes[i]);
 			}
-			if (toDecBytes[i] > 87) {
-				if (toDecBytes[i] < 96) {
-					throw new AISParseException(
-							AISParseException.INVALID_CHARACTER + " "
-									+ (char) toDecBytes[i]);
+			if (toDecBytes[i] > 87)
+			{
+				if (toDecBytes[i] < 96)
+				{
+					throw new AISParseException(AISParseException.INVALID_CHARACTER + " "
+							+ (char) toDecBytes[i]);
 				}
 				sum = toDecBytes[i] + 40;
-			} else {
+			}
+			else
+			{
 				sum = toDecBytes[i] + 40;
 			}
-			if (sum != 0) {
-				if (sum > 128) {
+			if (sum != 0)
+			{
+				if (sum > 128)
+				{
 					sum += 32;
-				} else {
+				}
+				else
+				{
 					sum += 40;
 				}
 				_6bitBin = sum & 0x3F;
@@ -140,28 +175,33 @@ public class AISDecoder {
 
 	/**
 	 * Set a String of decoded bytes
-	 *
+	 * 
 	 * @param decBytes
 	 * @throws AISParseException
 	 */
-	private static String getDecodedStr(byte[] decBytes) {
+	private static String getDecodedStr(byte[] decBytes)
+	{
 
 		String decStr = "";
-		for (int i = 0; i < decBytes.length; i++) {
+		for (int i = 0; i < decBytes.length; i++)
+		{
 
 			int decByte = decBytes[i];
 			String bitStr = Integer.toBinaryString(decByte);
 
-			if (bitStr.length() < 6) {
+			if (bitStr.length() < 6)
+			{
 
 				String zerosToAdd = "";
 
-				for (int j = bitStr.length() - 1; j < 5; j++) {
+				for (int j = bitStr.length() - 1; j < 5; j++)
+				{
 					zerosToAdd += "0";
 				}
 				bitStr = zerosToAdd + bitStr;
 			}
-			for (int j = 0; j < 6; j++) {
+			for (int j = 0; j < 6; j++)
+			{
 				decStr += bitStr.charAt(j);
 			}
 		}
@@ -171,17 +211,21 @@ public class AISDecoder {
 
 	/**
 	 * Convert one 6 bit ASCII character to 8 bit ASCII character
-	 *
+	 * 
 	 * @param byteToDec
 	 * @return
 	 * @throws AISParseException
 	 */
-	private static byte convert6BitCharToStandartdAscii(byte byteToDec) {
+	private static byte convert6BitCharToStandartdAscii(byte byteToDec)
+	{
 
 		byte decByte = 0;
-		if (byteToDec < 32) {
+		if (byteToDec < 32)
+		{
 			decByte = (byte) (byteToDec + 64);
-		} else if (byteToDec < 63) {
+		}
+		else if (byteToDec < 63)
+		{
 			decByte = byteToDec;
 		}
 
@@ -190,16 +234,18 @@ public class AISDecoder {
 
 	/**
 	 * Get a value for specified bits from the binary string.
-	 *
+	 * 
 	 * @param fromBit
 	 * @param toBit
 	 * @return
 	 * @throws AISParseException
 	 */
-	protected static int getDecValueByBinStr(String decStr, boolean signum) {
+	protected static int getDecValueByBinStr(String decStr, boolean signum)
+	{
 
 		Integer decValue = Integer.parseInt(decStr, 2);
-		if (signum && decStr.charAt(0) == '1') {
+		if (signum && decStr.charAt(0) == '1')
+		{
 			char[] invert = new char[decStr.length()];
 			Arrays.fill(invert, '1');
 			decValue ^= Integer.parseInt(new String(invert), 2);
@@ -212,23 +258,26 @@ public class AISDecoder {
 
 	/**
 	 * Decode 6 bit String to standard ASCII String
-	 *
-	 * Input is a binary string of 0 and 1 each 6 bit is a character that will
-	 * be converted to the standard ASCII character
-	 *
+	 * 
+	 * Input is a binary string of 0 and 1 each 6 bit is a character that will be
+	 * converted to the standard ASCII character
+	 * 
 	 * @param str
 	 * @return
 	 * @throws AISParseException
 	 */
-	protected static String getDecStringFrom6BitStr(String str) {
+	protected static String getDecStringFrom6BitStr(String str)
+	{
 
 		String txt = "";
-		for (int i = 0; i < str.length(); i = i + 6) {
+		for (int i = 0; i < str.length(); i = i + 6)
+		{
 			byte _byte = (byte) Integer.parseInt(str.substring(i, i + 6), 2);
 			_byte = convert6BitCharToStandartdAscii(_byte);
 			char convChar = (char) _byte;
 
-			if (convChar == '@') {
+			if (convChar == '@')
+			{
 				break;
 			}
 			txt += (char) _byte;

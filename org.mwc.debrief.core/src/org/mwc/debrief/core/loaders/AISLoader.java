@@ -32,12 +32,10 @@ import Debrief.ReaderWriter.ais.ImportAIS;
 import MWC.GUI.Layers;
 
 /**
- * @author Aravind R. Yarram <yaravind@gmail.com>
- * @date August 21, 2012
- * @category gpx
  */
 public class AISLoader extends IPlotLoader.BaseLoader
 {
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -50,6 +48,7 @@ public class AISLoader extends IPlotLoader.BaseLoader
 			final String fileName)
 	{
 
+		// ok, we'll need somewhere to put the data
 		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 		try
@@ -82,16 +81,6 @@ public class AISLoader extends IPlotLoader.BaseLoader
 							DebriefPlugin.logError(Status.INFO, "completed loading:"
 									+ fileName, null);
 
-							// and inform the plot editor
-							thePlot.loadingComplete(this);
-
-							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
-							DebriefPlugin.logError(Status.INFO, "completed loading:"
-									+ fileName, null);
-
-							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
 						}
 						catch (final RuntimeException e)
 						{
@@ -107,6 +96,8 @@ public class AISLoader extends IPlotLoader.BaseLoader
 						{
 							// and inform the plot editor
 							thePlot.loadingComplete(this);
+
+							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
 							// ok, allow the layers object to inform anybody what's
 							// happening
@@ -135,10 +126,10 @@ public class AISLoader extends IPlotLoader.BaseLoader
 		catch (final IOException e)
 		{
 			DebriefPlugin
-					.logError(Status.ERROR, "Problem loading GPX:" + fileName, e);
+					.logError(Status.ERROR, "Problem loading AIS:" + fileName, e);
 		}
 
 		// ok, load the data...
-		DebriefPlugin.logError(Status.INFO, "Successfully loaded GPX file", null);
+		DebriefPlugin.logError(Status.INFO, "Successfully loaded AIS file", null);
 	}
 }
