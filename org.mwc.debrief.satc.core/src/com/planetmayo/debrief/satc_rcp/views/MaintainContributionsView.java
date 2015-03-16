@@ -38,6 +38,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -221,6 +222,7 @@ public class MaintainContributionsView extends ViewPart
 	private TabFolder graphTabs;
 	private MDAResultsListener _sliceListener;
 	private JFreeChart legChart;
+	private Action _exportBtn;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -534,7 +536,20 @@ public class MaintainContributionsView extends ViewPart
 		IToolBarManager manager = bars.getToolBarManager();
 		manager.add(SATC_Activator.createOpenHelpAction(
 				"org.mwc.debrief.help.SATC", null, this));
-
+		
+		_exportBtn = new Action(
+				"Export SATC dataset", Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(final Event event)
+			{
+				exportSATC();
+			}
+		};
+		_exportBtn.setToolTipText("Export SATC scenario");
+		_exportBtn.setImageDescriptor(SATC_Activator
+				.getImageDescriptor("icons/export.png"));
+		manager.add(_exportBtn);
+		
 	}
 
 	private void initGraphTabs(Composite parent)
@@ -1485,4 +1500,33 @@ public class MaintainContributionsView extends ViewPart
 		slf.removePropertyChangeListener(BaseContribution.FINISH_DATE, _legListener);
 		slf.removePropertyChangeListener(BaseContribution.NAME, _legListener);
 	}
+	
+	/** copy the SATC scenario to the clipboard
+	 * 
+	 */
+	protected void exportSATC()
+	{
+		// - ok, really we just export the state & bearing data
+		if(activeSolver != null)
+		{
+			StringBuffer res = new StringBuffer();
+			
+			Iterator<BaseContribution> conts = activeSolver.getContributions().iterator();
+			while (conts.hasNext())
+			{
+				BaseContribution baseC = (BaseContribution) conts.next();
+				if(baseC instanceof BearingMeasurementContribution)
+				{
+					BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
+					
+					// ok, first the states
+					Iterator<HostState> states = bmc.getHostState().iterator();
+					
+				}
+			}
+		}
+	}
+
+
+	
 }
