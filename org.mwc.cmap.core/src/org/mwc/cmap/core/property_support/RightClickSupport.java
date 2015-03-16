@@ -411,13 +411,20 @@ public class RightClickSupport
 							}
 							else
 							{
-								// this type doesn't even have an editor, so it can't have any 
-								// matching items!
+								// handle instance where editable doesn't have anything editable
 								res = null;
+								break;
 							}
+
 						}
 					}
 				}
+				else
+				{
+					// handle instance where editable doesn't have anything editable
+					res = null;
+				}
+
 			}
 		}
 
@@ -537,12 +544,18 @@ public class RightClickSupport
 							}
 							else
 							{
-								// this type doesn't even have an editor, so it can't have any 
-								// matching items!
+								// handle instance where editable doesn't have anything editable
 								res = null;
+								break;
 							}
+
 						}
 					}
+				}
+				else
+				{
+					// handle instance where editable doesn't have anything editable
+					res = null;
 				}
 			}
 		}
@@ -1187,7 +1200,7 @@ public class RightClickSupport
 				{
 					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
 							+ thisSubject.getName(), e);
-					res = null;
+					res = Status.CANCEL_STATUS;
 				}
 			}
 
@@ -1211,7 +1224,7 @@ public class RightClickSupport
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
 							+ thisSubject.getName(), e);
-					res = null;
+					res = Status.CANCEL_STATUS;
 				}
 			}
 

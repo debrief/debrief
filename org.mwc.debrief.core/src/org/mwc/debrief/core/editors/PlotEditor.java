@@ -178,6 +178,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	private static final String EXTENSION_TAG_LABEL_ATTRIB = "name";
 
 	private static final String EXTENSION_TAG_EXTENSIONS_ATTRIB = "extensions";
+	
+	private static final String REGEXP_ATTRIB = "regexp";
 
 	private static final String EXTENSION_TAG_ICON_ATTRIB = "icon";
 
@@ -495,6 +497,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					"File cannot be found:" + input.getName(), null);
 			return;
 		}
+		String name = input.getName();
 		try
 		{
 			final IPersistableElement persist = input.getPersistable();
@@ -504,23 +507,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				final IFile iff = ife.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
 				is = iff.getContents();
+				name = getAbsoluteName(iff);
 			}
 			else if (persist instanceof IFileEditorInput)
 			{
-				final IFileEditorInput iff = (IFileEditorInput) persist;
-				is = iff.getFile().getContents();
+				final IFileEditorInput ifi = (IFileEditorInput) persist;
+				IFile iff = ifi.getFile();
+				is = iff.getContents();
+				name = getAbsoluteName(iff);
 			}
 			else if (input instanceof FileStoreEditorInput)
 			{
 				final FileStoreEditorInput _input = (FileStoreEditorInput) input;
 				final URI _uri = _input.getURI();
 				final Path _p = new Path(_uri.getPath());
+				name = _uri.getPath();
 				final IFileStore _ifs = EFS.getLocalFileSystem().getStore(_p);
 				is = _ifs.openInputStream(EFS.NONE, null);
 			}
 
 			if (is != null)
-				loadThisStream(is, input.getName());
+				loadThisStream(is, name);
 			else
 			{
 				CorePlugin.logError(Status.INFO, "Failed to load file from:" + input,
@@ -543,21 +550,47 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 	}
 
+	public String getAbsoluteName(final IFile iff) throws CoreException
+	{
+		String name;
+		URI uri = iff.getLocationURI();
+		if(iff.isLinked()){
+			uri = iff.getRawLocationURI();
+		}
+		File javaFile = EFS.getStore(uri).toLocalFile(0, new NullProgressMonitor());
+		name = javaFile.getAbsolutePath();
+		return name;
+	}
+
 	/**
 	 * @param input
 	 *          the file to insert
 	 */
 	private void loadThisFile(final String filePath)
 	{
+		FileInputStream ifs = null;
 		try
 		{
-			final FileInputStream ifs = new FileInputStream(filePath);
+			ifs = new FileInputStream(filePath);
 			loadThisStream(ifs, filePath);
 		}
 		catch (final FileNotFoundException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Problem loading data file:" + filePath, e);
+		}
+		finally
+		{
+			if(ifs != null)
+				try
+				{
+					ifs.close();
+				}
+				catch (IOException e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"Problem closing input stream:" + filePath, e);
+				}
 		}
 	}
 
@@ -882,7 +915,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// to start off with a dirty plot
 		startIgnoringDirtyCalls();
 
-		DebriefPlugin.logError(Status.INFO, "File load received", null);
+		DebriefPlugin.logError(Status.INFO, "File loading complete received", null);
 
 		// and update the time management bits
 		final TimePeriod timePeriod = getPeriodFor(_myLayers);
