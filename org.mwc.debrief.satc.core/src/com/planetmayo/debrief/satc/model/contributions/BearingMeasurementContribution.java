@@ -404,6 +404,11 @@ public class BearingMeasurementContribution extends
 			this.range = range == null ? MAX_RANGE_METERS : range;
 		}
 
+		public double getBearingRads()
+		{
+			return bearingAngle;
+		}
+		
 	}
 
 	public long[] getTimes(ArrayList<HostState> states)
