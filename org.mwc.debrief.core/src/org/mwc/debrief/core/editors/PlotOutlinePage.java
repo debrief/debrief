@@ -90,17 +90,17 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	 * whether we are already ignoring firing messages
 	 */
 	private static boolean _alreadyDeferring = false;
-	
+
 	MyTreeViewer _treeViewer;
 
 	private CoreViewLabelProvider _myLabelProvider;
 
 	private DragDropSupport _dragDropSupport;
-	
+
 	private ISelectionChangedListener _selectionChangeListener;
-	
+
 	Layers _myLayers;
-	
+
 	/*
 	 * don't bother with the drill-down adapter. we've removed it to save space in
 	 * the local toolbar private DrillDownAdapter drillDownAdapter;
@@ -135,7 +135,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	 * reveal the selected item(s)
 	 */
 	private Action _revealAction;
-	
+
 	/**
 	 * toggle to indicate whether user wants narrative to always jump to
 	 * highlighted entry
@@ -152,9 +152,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	 */
 	private Action _expandAllAction;
 
-
 	private Layers.DataListener _myLayersListener;
-	
+
 	protected TrackManager _theTrackDataListener;
 
 	private PlotEditor _plotEditor;
@@ -163,7 +162,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	{
 		this._plotEditor = _plotEditor;
 		this._myLayers = _myLayers;
-		this._theTrackDataListener = (TrackManager) _plotEditor.getAdapter(TrackManager.class);
+		this._theTrackDataListener = (TrackManager) _plotEditor
+				.getAdapter(TrackManager.class);
 	}
 
 	@Override
@@ -257,47 +257,47 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 				}
 			}
 		};
-		
+
 		_plotEditor.addSelectionChangedListener(_selectionChangeListener);
 
-	// also listen out ourselves to any changes, so we can update the button
-			// enablement
-			_treeViewer.addSelectionChangedListener(new ISelectionChangedListener()
+		// also listen out ourselves to any changes, so we can update the button
+		// enablement
+		_treeViewer.addSelectionChangedListener(new ISelectionChangedListener()
+		{
+
+			public void selectionChanged(final SelectionChangedEvent event)
 			{
-
-				public void selectionChanged(final SelectionChangedEvent event)
+				final ISelection isel = event.getSelection();
+				if (isel instanceof StructuredSelection)
 				{
-					final ISelection isel = event.getSelection();
-					if (isel instanceof StructuredSelection)
-					{
-						final StructuredSelection ss = (StructuredSelection) isel;
+					final StructuredSelection ss = (StructuredSelection) isel;
 
-						// right, see if this is an item we can make primary
-						_makePrimary.setEnabled(isValidPrimary(ss));
+					// right, see if this is an item we can make primary
+					_makePrimary.setEnabled(isValidPrimary(ss));
 
-						// and see if we can make it a secondary
-						_makeSecondary.setEnabled(isValidSecondary(ss));
+					// and see if we can make it a secondary
+					_makeSecondary.setEnabled(isValidSecondary(ss));
 
-						// and see if we can make it a secondary
-						_addAsSecondary.setEnabled(isValidSecondary(ss));
-					}
+					// and see if we can make it a secondary
+					_addAsSecondary.setEnabled(isValidSecondary(ss));
 				}
+			}
 
-			});
+		});
 		// and declare our context sensitive help
 		// FIXME
 		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
 
 		processNewLayers();
 	}
-	
+
 	private void contributeToActionBars()
 	{
 		final IActionBars bars = getSite().getActionBars();
 		fillLocalPullDown(bars);
 		fillLocalToolBar(bars);
 	}
-	
+
 	private void fillLocalToolBar(IActionBars bars)
 	{
 		IToolBarManager manager = bars.getToolBarManager();
@@ -308,7 +308,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		manager.add(_addAsSecondary);
 		manager.add(_hideAction);
 		manager.add(_revealAction);
-		//manager.add(_trackNewLayers);
+		// manager.add(_trackNewLayers);
 	}
 
 	private void fillLocalPullDown(IActionBars bars)
@@ -329,15 +329,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		manager.add(_createLayer);
 
 		// FIXME
-		//manager.add(CorePlugin.createOpenHelpAction(
-		//		"org.mwc.debrief.help.LayerMgr", null, this));
+		// manager.add(CorePlugin.createOpenHelpAction(
+		// "org.mwc.debrief.help.LayerMgr", null, this));
 	}
 
 	private void makeActions()
 	{
 
-		//_trackNewLayers = _myPartMonitor.createSyncedAction("Link to current plot",
-		//		"Always show layers for selected Plot", getSite());
+		// _trackNewLayers =
+		// _myPartMonitor.createSyncedAction("Link to current plot",
+		// "Always show layers for selected Plot", getSite());
 
 		_followSelectionToggle = new Action("Jump to selection",
 				Action.AS_CHECK_BOX)
@@ -668,7 +669,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		_treeViewer.getControl().setMenu(menu);
 		getSite().registerContextMenu("#PopupMenu", menuMgr, _treeViewer);
 	}
-		
+
 	void fillContextMenu(final IMenuManager manager)
 	{
 		// get the selected item
@@ -734,6 +735,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 				parentLayers, _myLayers, false);
 
 	}
+
 	/**
 	 * find out if the selection is valid for setting as primary
 	 * 
@@ -743,6 +745,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	protected boolean isValidPrimary(final StructuredSelection ss)
 	{
 		boolean res = false;
+		// we can only do this for one entry!
 		if (ss.size() == 1)
 		{
 			final EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
@@ -774,35 +777,45 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		boolean res = false;
 		if (ss.size() >= 1)
 		{
-			final EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
-			final Editable pl = pw.getEditable();
-			if (pl instanceof WatchableList)
+			Iterator<?> iter = ss.iterator();
+			while (iter.hasNext())
 			{
-				// hey, it's a maybe.
-				res = true;
-
-				// ok, it's a candidate. now see if it's already one of the secondaries
-				if (_theTrackDataListener == null)
+				EditableWrapper pw = (EditableWrapper) iter.next();
+				final Editable pl = pw.getEditable();
+				if (!(pl instanceof WatchableList))
 				{
-					CorePlugin
-							.logError(
-									Status.INFO,
-									"PROBLEM: Outline View does not hold track data listener.  Maintaner to track this occurrence",
-									null);
+					// nope - we can just make them all secondaries! drop out
+					res = false;
+					break;
 				}
 				else
 				{
-					final WatchableList[] secs = _theTrackDataListener
-							.getSecondaryTracks();
-					if (secs != null)
+					// hey, it's a maybe.
+					res = true;
+
+					// ok, it's a candidate. now see if it's already one of the secondaries
+					if (_theTrackDataListener == null)
 					{
-						for (int i = 0; i < secs.length; i++)
+						CorePlugin
+								.logError(
+										Status.INFO,
+										"PROBLEM: Outline View does not hold track data listener.  Maintaner to track this occurrence",
+										null);
+					}
+					else
+					{
+						final WatchableList[] secs = _theTrackDataListener
+								.getSecondaryTracks();
+						if (secs != null)
 						{
-							final WatchableList thisList = secs[i];
-							if (thisList == pl)
+							for (int i = 0; i < secs.length; i++)
 							{
-								res = false;
-								break;
+								final WatchableList thisList = secs[i];
+								if (thisList == pl)
+								{
+									res = false;
+									break;
+								}
 							}
 						}
 					}
@@ -821,7 +834,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			pl.setVisible(on);
 		}
 	}
-		
+
 	/**
 	 * user has double-clicked on an item. process.
 	 * 
@@ -835,21 +848,22 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		applyOperation(operation, selection, _myLayers);
 
 	}
-	
+
 	private static void triggerChartUpdate(final Layer changedLayer,
 			final Layers myLayers)
 	{
 		myLayers.fireReformatted(changedLayer);
 	}
-	
+
 	public void editableSelected(final ISelection sel, final EditableWrapper pw)
 	{
 		if (_followSelectionToggle.isChecked())
 		{
 			// ahh, just check if this is a whole new layers object
-			if (pw.getEditable() instanceof Layers) 
+			if (pw.getEditable() instanceof Layers)
 			{
-				if (pw.getEditable() != _myLayers) {
+				if (pw.getEditable() != _myLayers)
+				{
 					_myLayers = (Layers) pw.getEditable();
 					processNewLayers();
 				}
@@ -979,6 +993,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			}
 		});
 	}
+
 	private void formatTree(final Tree tree)
 	{
 		// define the columns
@@ -989,7 +1004,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		visibleCol.setText(VISIBILITY_COLUMN_NAME);
 		visibleCol.setWidth(50);
 	}
-	
+
 	@Override
 	public Control getControl()
 	{
@@ -1025,7 +1040,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	{
 		_treeViewer.setSelection(selection);
 	}
-	
+
 	public void dispose()
 	{
 		super.dispose();
@@ -1036,8 +1051,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		// remove selection listeners
 		if (_plotEditor != null)
 		{
-			_plotEditor
-					.removeSelectionChangedListener(_selectionChangeListener);
+			_plotEditor.removeSelectionChangedListener(_selectionChangeListener);
 			_plotEditor.outlinePageClosed();
 			_plotEditor = null;
 		}
@@ -1062,7 +1076,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			_myLayers = null;
 		}
 	}
-	
+
 	private static class MyTreeViewer extends TreeViewer
 	{
 		public MyTreeViewer(final Tree parent)
@@ -1258,11 +1272,11 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 					@SuppressWarnings("rawtypes")
 					Comparable p2c = (Comparable) p2.getEditable();
 					res = p1c.compareTo(p2c);
-					
+
 					// Note: use the native compare-to, not just comparing names
-//					final String name1 = p1.getEditable().toString();
-//					final String name2 = p2.getEditable().toString();
-//					res = name1.compareTo(name2);
+					// final String name1 = p1.getEditable().toString();
+					// final String name2 = p2.getEditable().toString();
+					// res = name1.compareTo(name2);
 				}
 				else
 				{
@@ -1275,7 +1289,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			return res;
 		}
 	}
-	
+
 	/**
 	 * recursive class used to build up a list containing the item together with
 	 * all child items
@@ -1305,8 +1319,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	private static Set<Layer> _pendingLayers = new TreeSet<Layer>(
 			new Comparator<Layer>()
 			{
-				@SuppressWarnings(
-				{ "unchecked", "rawtypes" })
+				@SuppressWarnings({ "unchecked", "rawtypes" })
 				public int compare(final Layer arg0, final Layer arg1)
 				{
 					int res = 1;
@@ -1411,8 +1424,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
 			// and do the update
 			final Object[] itemsToUpdate = newList.toArray();
-			_treeViewer.update(itemsToUpdate, new String[]
-			{ VISIBILITY_COLUMN_NAME });
+			_treeViewer
+					.update(itemsToUpdate, new String[] { VISIBILITY_COLUMN_NAME });
 		}
 		catch (final Exception e)
 		{
@@ -1465,12 +1478,12 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		}
 
 	}
-	
+
 	private static interface IOperateOn
 	{
 		public void doItTo(Editable item);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	static void applyOperation(final IOperateOn operation,
 			final IStructuredSelection selection, final Layers myLayers)

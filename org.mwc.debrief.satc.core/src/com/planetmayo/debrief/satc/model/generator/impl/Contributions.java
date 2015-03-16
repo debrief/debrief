@@ -70,6 +70,12 @@ public class Contributions implements IContributions
 	{
 		return contributions.iterator();
 	}
+	
+	@Override
+	public boolean contains(BaseContribution contribution)
+	{
+		return contributions.contains(contribution);
+	}
 
 	@Override
 	public void addContribution(BaseContribution contribution)
@@ -80,7 +86,7 @@ public class Contributions implements IContributions
 			SATC_Activator.log(Status.ERROR, "Contribution names must be unique",
 					null);
 			SATC_Activator.showMessage("Add new contribution",
-					"Sorry, contribution names must be unique");
+					"Sorry, contribution names must be unique. Do you need to delete target legs before generating them?");
 			return;
 		}
 		contributions.add(contribution);

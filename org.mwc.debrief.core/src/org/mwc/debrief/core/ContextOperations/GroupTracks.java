@@ -87,6 +87,12 @@ public class GroupTracks implements RightClickContextItemGenerator
 		if(tracks.size() == 0)
 			goForIt = false;
 		
+		if(tracks.size() > 10)
+		{
+			goForIt = false;
+			CorePlugin.logError(Status.WARNING, "Not offering group tracks,  too many seleted", null);
+		}
+		
 		// ok, is it worth going for?
 		if (goForIt)
 		{

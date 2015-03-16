@@ -15,6 +15,7 @@
 package org.mwc.debrief.satc_interface.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 import org.mwc.debrief.satc_interface.wizards.NewStraightLegWizard;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -401,6 +403,23 @@ public class CreateSolutionFromSensorData implements
 				// ok, store it.
 				bmc.addMeasurement(thisM);
 			}
+			
+			// we also want to try to store the ownship state data (course/speed) - to help spot target zigs
+			SensorContactWrapper first = _validCuts.get(0);
+			TrackWrapper host = first.getSensor().getHost();
+			Collection<Editable> hostFixes = host.getItemsBetween(new HiResDate(bmc.getStartDate()),new HiResDate(bmc.getFinishDate()));
+			for (Iterator<Editable> iterator = hostFixes.iterator(); iterator.hasNext();)
+			{
+				FixWrapper editable = (FixWrapper) iterator.next();
+				long time = editable.getDateTimeGroup().getDate().getTime();
+				double courseDegs = editable.getCourseDegs();
+				double speedKts = editable.getSpeed();
+				bmc.addState(new BearingMeasurementContribution.HostState( time, courseDegs, speedKts));
+			}
+			
+			
+			
+			
 			return bmc;
 		}
 

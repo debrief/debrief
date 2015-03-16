@@ -21,11 +21,11 @@
             contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
             icon="icons/16/track_file.png" id="org.mwc.debrief.TrackEditor"
             name="Debrief Plot Editor">
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile"> </contentTypeBinding>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackFile"> </contentTypeBinding>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.LogTrackFile"> </contentTypeBinding>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive"
-            > </contentTypeBinding>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.LogTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
         </editor>
     </extension>
 
@@ -66,6 +66,11 @@
             name="KMZ Track File" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="csv"
             name="S2087 Context Track File (Log)" priority="normal"> </content-type>
+        <content-type id="org.mwc.debrief.contenttype.AISTrackFile"
+            file-extensions="txt"
+            name="AIS track file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.AISContentDescriber"/>
+        </content-type>
     </extension>
 
     <extension-point id="DebriefPlotLoader" name="Plot Loader"
@@ -94,6 +99,10 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.GPXLoader" extensions="gpx" name="GPX Plot File"
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" name="AIS Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">

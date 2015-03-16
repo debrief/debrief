@@ -6,7 +6,8 @@
          <meta.schema plugin="org.mwc.debrief.core" id="DebriefPlotLoader" name="Plot Loader"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This is to lazy declare file loaders. The loader is only actually loaded 
+         into memory if/when a suitable file type is encountered.
       </documentation>
    </annotation>
 
