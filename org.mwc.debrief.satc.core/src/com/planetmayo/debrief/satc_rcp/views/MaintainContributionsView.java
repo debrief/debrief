@@ -686,6 +686,22 @@ public class MaintainContributionsView extends ViewPart
 		return holder;
 	}
 
+	/** clear the data on the leg graph
+	 * 
+	 */
+	private void clearLegGraph()
+	{
+		if (legPlot == null)
+			return;
+		
+		legPlot.setDataset(0, null);
+		legPlot.setDataset(1, null);
+		legPlot.setDataset(2, null);
+		legPlot.setDataset(3, null);
+
+		legPlot.clearDomainMarkers();
+	}
+	
 	private void clearPerformanceGraph()
 	{
 		// hmm, have we already ditched?
@@ -1087,8 +1103,9 @@ public class MaintainContributionsView extends ViewPart
 		// just double check that we aren't already looking at this solver
 		if (solver != activeSolver)
 		{
-			// clear the bar chart - just in case
+			// clear the charts - just in case
 			clearPerformanceGraph();
+			clearLegGraph();
 
 			// other UI mgt
 			if (activeSolver != null)

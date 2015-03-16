@@ -476,8 +476,8 @@ public class BearingMeasurementContribution extends
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
 		List<LegOfData> ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
-				getCourses(states), getSpeeds(states), 5);
-
+				getCourses(states), getSpeeds(states), 9);
+		
 		// create object that can store the new legs
 		MyLegStorer storer = new MyLegStorer(contributions);
 		
@@ -573,7 +573,7 @@ public class BearingMeasurementContribution extends
 		{
 			String name = "Leg-" + ctr++;
 			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
-			StraightLegForecastContribution slf = new StraightLegForecastContribution();
+			StraightLegForecastContribution slf = new CompositeStraightLegForecastContribution();
 			slf.setStartDate(new Date(tStart));
 			slf.setFinishDate(new Date(tEnd));
 			slf.setActive(true);
