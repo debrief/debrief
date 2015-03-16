@@ -409,9 +409,22 @@ public class RightClickSupport
 								// find the common ones
 								res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
 							}
+							else
+							{
+								// handle instance where editable doesn't have anything editable
+								res = null;
+								break;
+							}
+
 						}
 					}
 				}
+				else
+				{
+					// handle instance where editable doesn't have anything editable
+					res = null;
+				}
+
 			}
 		}
 
@@ -551,8 +564,20 @@ public class RightClickSupport
 								res = (PropertyDescriptor[]) getIntersectionFor(res, newSet,
 										demo);
 							}
+							else
+							{
+								// handle instance where editable doesn't have anything editable
+								res = null;
+								break;
+							}
+
 						}
 					}
+				}
+				else
+				{
+					// handle instance where editable doesn't have anything editable
+					res = null;
 				}
 			}
 		}
