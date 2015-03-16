@@ -786,7 +786,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 				{
 					// nope - we can just make them all secondaries! drop out
 					res = false;
-					return res;
+					break;
 				}
 				else
 				{
@@ -819,12 +819,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 							}
 						}
 					}
-				}
-				else
-				{
-					// hey, we can't offer this one - drop out
-					res = false;
-					break;
 				}
 			}
 		}
