@@ -59,8 +59,12 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 		
 		double MAX_SELECTABLE_RANGE_YDS = new MeterToYds().safeConvert(new Double(RangeForecastContribution.MAX_SELECTABLE_RANGE_M));
 		
-		int[] borders = {0, 1000, 3000, 7000, 17000, (int)MAX_SELECTABLE_RANGE_YDS};
-		int[] increments = {50, 100, 200, 500, 1000};
+
+		// here are the original values. We had to change them to allow range out to 100kyds
+		//		int[] borders = {0, 1000, 3000, 7000, 17000, (int)MAX_SELECTABLE_RANGE_YDS};
+		//		int[] increments = {50, 100, 200, 500, 1000};
+		int[] borders = {0, 1000, 3000, 7000, 10000, (int)MAX_SELECTABLE_RANGE_YDS};
+		int[] increments = {50, 100, 500, 1000, 2000};
 		context.bindValue(sliderValue, modelValue,
 				UIUtils.converterStrategy(new ScaleConverterFrom(increments, borders)),
 				UIUtils.converterStrategy(new ScaleConverterTo(increments, borders))

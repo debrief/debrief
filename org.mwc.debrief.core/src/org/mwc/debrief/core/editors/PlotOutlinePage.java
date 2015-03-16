@@ -745,6 +745,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 	protected boolean isValidPrimary(final StructuredSelection ss)
 	{
 		boolean res = false;
+		// we can only do this for one entry!
 		if (ss.size() == 1)
 		{
 			final EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
@@ -779,16 +780,20 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			Iterator<?> iter = ss.iterator();
 			while (iter.hasNext())
 			{
-				Object object = (Object) iter.next();
-				final EditableWrapper pw = (EditableWrapper) object;
+				EditableWrapper pw = (EditableWrapper) iter.next();
 				final Editable pl = pw.getEditable();
-				if (pl instanceof WatchableList)
+				if (!(pl instanceof WatchableList))
+				{
+					// nope - we can just make them all secondaries! drop out
+					res = false;
+					return res;
+				}
+				else
 				{
 					// hey, it's a maybe.
 					res = true;
 
-					// ok, it's a candidate. now see if it's already one of the
-					// secondaries
+					// ok, it's a candidate. now see if it's already one of the secondaries
 					if (_theTrackDataListener == null)
 					{
 						CorePlugin
