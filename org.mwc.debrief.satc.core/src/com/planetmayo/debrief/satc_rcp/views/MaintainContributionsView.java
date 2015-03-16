@@ -20,6 +20,11 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Panel;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
@@ -38,6 +43,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -98,6 +104,7 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.HostState;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.MDAResultsListener;
 import com.planetmayo.debrief.satc.model.contributions.CompositeStraightLegForecastContribution;
@@ -221,6 +228,7 @@ public class MaintainContributionsView extends ViewPart
 	private TabFolder graphTabs;
 	private MDAResultsListener _sliceListener;
 	private JFreeChart legChart;
+	private Action _exportBtn;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -534,7 +542,20 @@ public class MaintainContributionsView extends ViewPart
 		IToolBarManager manager = bars.getToolBarManager();
 		manager.add(SATC_Activator.createOpenHelpAction(
 				"org.mwc.debrief.help.SATC", null, this));
-
+		
+		_exportBtn = new Action(
+				"Export SATC dataset", Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(final Event event)
+			{
+				exportSATC();
+			}
+		};
+		_exportBtn.setToolTipText("Export SATC scenario to clipboard");
+		_exportBtn.setImageDescriptor(SATC_Activator
+				.getImageDescriptor("icons/export.png"));
+		manager.add(_exportBtn);
+		
 	}
 
 	private void initGraphTabs(Composite parent)
@@ -1485,4 +1506,85 @@ public class MaintainContributionsView extends ViewPart
 		slf.removePropertyChangeListener(BaseContribution.FINISH_DATE, _legListener);
 		slf.removePropertyChangeListener(BaseContribution.NAME, _legListener);
 	}
+	
+	/** copy the SATC scenario to the clipboard
+	 * 
+	 */
+	protected void exportSATC()
+	{
+		// - ok, really we just export the state & bearing data
+		if(activeSolver != null)
+		{
+			StringBuffer res = new StringBuffer();
+			final String newLine = System.getProperty("line.separator");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
+			@SuppressWarnings("deprecation")
+			Date dateLead = new Date(100,7,7); 
+			
+			Iterator<BaseContribution> conts = activeSolver.getContributions().iterator();
+			while (conts.hasNext())
+			{
+				BaseContribution baseC = (BaseContribution) conts.next();
+				if(baseC instanceof BearingMeasurementContribution)
+				{
+					BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
+					
+					// ok - sort out the date offset
+					Date startDate = bmc.getStartDate();
+					long offset = startDate.getTime()-dateLead.getTime();
+					
+					// ok, first the states
+					res.append("//Time, Course Degs, Speed Kts" + newLine);
+					Iterator<HostState> states = bmc.getHostState().iterator();
+					while (states.hasNext())
+					{
+						BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) states
+								.next();
+						res.append(sdf.format(new Date(hostState.time - offset))+ "," + hostState.courseDegs + "," + hostState.speedKts + newLine);						
+					}
+					
+					// now the cuts
+					res.append("//Time, Bearing Degs" + newLine);
+					Iterator<BMeasurement> cuts = bmc.getMeasurements().iterator();
+					while (cuts.hasNext())
+					{
+						BearingMeasurementContribution.BMeasurement cut = (BearingMeasurementContribution.BMeasurement) cuts
+								.next();
+						res.append(sdf.format(new Date(cut.getDate().getTime()-offset)) + "," + Math.toDegrees(cut.getBearingRads()) + newLine);						
+					}
+				}
+			}
+			
+			
+			// hmm, did we find anything
+			if(res.length() > 0)
+			{
+				// ok, put it on the clipboard.
+				new TextTransfer().setClipboardContents(res.toString());
+			}
+		}
+	}
+
+	static final class TextTransfer implements ClipboardOwner 
+	{
+		  private TextTransfer() {}
+		  
+		  @Override public void lostOwnership(Clipboard aClipboard, Transferable aContents)
+		  {
+		     //do nothing
+		  }
+
+		  /**
+		  * Place a String on the clipboard, and make this class the
+		  * owner of the Clipboard's contents.
+		  */
+		  public void setClipboardContents(String aString)
+		  {
+			  StringSelection stringSelection = new StringSelection(aString);
+			  Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			  clipboard.setContents(stringSelection, this);
+		  }
+		 
+	} 
+	
 }
