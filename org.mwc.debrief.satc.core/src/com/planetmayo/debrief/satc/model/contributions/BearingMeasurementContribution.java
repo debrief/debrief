@@ -384,7 +384,7 @@ public class BearingMeasurementContribution extends
 	public static class BMeasurement extends
 			CoreMeasurementContribution.CoreMeasurement
 	{
-		private static final double MAX_RANGE_METERS = 50000.;
+		private static final double MAX_RANGE_METERS = RangeForecastContribution.MAX_SELECTABLE_RANGE_M;
 		private final GeoPoint origin;
 		private final double bearingAngle;
 		/**

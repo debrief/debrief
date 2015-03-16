@@ -56,7 +56,7 @@ public class Solver extends ModelObject implements ISolver
 	 * whether we auto=run after each contribution change
 	 * 
 	 */
-	private volatile boolean liveRunning = true;
+	private volatile boolean liveRunning = false;
 	
 	private volatile boolean isClear = false;
 	
