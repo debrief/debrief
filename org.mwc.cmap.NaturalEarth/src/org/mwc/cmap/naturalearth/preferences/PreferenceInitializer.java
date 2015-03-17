@@ -20,7 +20,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
 	public void initializeDefaultPreferences()
 	{
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		store.setDefault(PreferenceConstants.DATA_FOLDER, "");
+		store.setDefault(PreferenceConstants.DATA_FOLDER, "NaturalEarth");
 		store.setDefault(PreferenceConstants.MEMORY_MAPPED, true);
 	}
 
