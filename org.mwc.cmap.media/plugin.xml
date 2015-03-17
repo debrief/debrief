@@ -96,14 +96,7 @@
    -->
    
    <extension point="org.eclipse.ui.menus">
-        <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.mwc.debrief.core.EditorView">
-       		<toolbar
-               id="org.mwc.cmap.media.toolbar"
-               label="Media Player">
-			  <separator name="additions" visible="true"/>   
-       		</toolbar>
-       	</menuContribution>
-       	<menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
+        <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
             <menu id="org.mwc.cmap.media.menu" label="Media"/>
         </menuContribution>
         <menuContribution locationURI="menu:org.mwc.cmap.media.menu?after=additions"> 
@@ -127,27 +120,7 @@
               id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
             </command>
         </menuContribution>
-        <menuContribution locationURI="toolbar:org.mwc.cmap.media.toolbar?after=additions"> 
-            <command
-              commandId="org.mwc.cmap.media.actions.NewVideoPlayerAction"
-              icon="icons/24/player.png"
-              style="push"
-              id="org.mwc.cmap.media.actions.NewVideoPlayerAction">
-            </command>
-            <command
-              commandId="org.mwc.cmap.media.actions.NewImagesViewAction"
-              icon="icons/24/images16.png"
-              style="push"
-              id="org.mwc.cmap.media.actions.NewImagesViewAction">
-            </command>
-            <command
-              commandId="org.mwc.cmap.media.actions.OpenTestHarnessAction"
-              icon="icons/24/openbrwsr.png"
-              style="push"
-              id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
-            </command>
-         </menuContribution>
-         <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions"> 
+        <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions"> 
             <command
               commandId="org.mwc.cmap.media.actions.OpenVideoPlayerAction"
               icon="icons/16/player.png"
