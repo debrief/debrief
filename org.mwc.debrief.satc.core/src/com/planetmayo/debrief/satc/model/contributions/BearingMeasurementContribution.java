@@ -59,6 +59,7 @@ public class BearingMeasurementContribution extends
 	public static final String RUN_MDA = "autoDetect";
 
 	public static interface MDAResultsListener{
+		public void startingSlice(String contName);
 		public void sliced(String contName, ArrayList<BMeasurement> bearings, List<LegOfData> ownshipLegs, 
 				ArrayList<StraightLegForecastContribution> arrayList,
 				ArrayList<HostState> hostStates);
@@ -477,6 +478,20 @@ public class BearingMeasurementContribution extends
 		{
 			return;
 		}
+		
+		// ok share the good news
+		// ok, slicing done!
+		if(_listeners != null)
+		{
+			Iterator<MDAResultsListener> iter = _listeners.iterator();
+			while (iter.hasNext())
+			{
+				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
+						.next();
+				thisL.startingSlice(this.getName());
+			}
+		}
+
 
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();

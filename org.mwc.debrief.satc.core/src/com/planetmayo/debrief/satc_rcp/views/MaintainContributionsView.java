@@ -1257,6 +1257,12 @@ public class MaintainContributionsView extends ViewPart
 						{
 							redoOwnshipStates(contName, bearings, ownshipLegs, hostStates);
 						}
+
+						@Override
+						public void startingSlice(String contName)
+						{
+							startSlicingOwnshipLegs(contName);
+						}
 					};
 				}
 				bmc.addSliceListener(_sliceListener);
@@ -1271,6 +1277,17 @@ public class MaintainContributionsView extends ViewPart
 					.log(
 							new Status(IStatus.ERROR, SATC_Activator.PLUGIN_ID, ex
 									.getMessage(), ex));
+		}
+	}
+
+	protected void startSlicingOwnshipLegs(String contName)
+	{
+		// ok, clear any leg markers
+		if (legPlot != null)
+		{
+			graphTabs.setSelection(legTab);
+
+			legPlot.clearDomainMarkers();
 		}
 	}
 
@@ -1470,6 +1487,9 @@ public class MaintainContributionsView extends ViewPart
 		if (contribution instanceof StraightLegForecastContribution)
 		{
 			stopListeningTo(contribution);
+			
+			// ok, better update the legs too
+			redoStraightLegs();
 		}
 		else if (contribution instanceof BearingMeasurementContribution)
 		{
