@@ -86,6 +86,11 @@ public class BearingMeasurementContribution extends
 	 * 
 	 */
 	private transient ArrayList<MDAResultsListener> _listeners = null;
+
+	/** store any sliced legs
+	 * 
+	 */
+	private transient List<LegOfData> ownshipLegs;
 	
 
 	@Override
@@ -495,7 +500,11 @@ public class BearingMeasurementContribution extends
 
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
-		List<LegOfData> ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
+		
+		if(ownshipLegs != null)
+			ownshipLegs.clear();
+		
+		ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
 				getCourses(states), getSpeeds(states), 9);
 		
 		// create object that can store the new legs
@@ -554,6 +563,11 @@ public class BearingMeasurementContribution extends
 			}
 		}
 		
+	}
+	
+	public List<LegOfData> getOwnshipLegs()
+	{
+		return ownshipLegs;
 	}
 	
 	public void addSliceListener(MDAResultsListener listener)
