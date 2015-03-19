@@ -1453,11 +1453,15 @@ public class MaintainContributionsView extends ViewPart
 				}
 		}
 
-		tscC.addSeries(bearings);
-		tscC.addSeries(courses);
 		tscS.addSeries(speeds);
-		tscCLegs.addSeries(courseLegs);
 		tscSLegs.addSeries(speedLegs);
+		tscC.addSeries(bearings);
+		
+		if(showCourses)
+		{
+			tscC.addSeries(courses);
+			tscCLegs.addSeries(courseLegs);
+		}
 
 		legPlot.setDataset(0, null);
 		legPlot.setDataset(1, null);
