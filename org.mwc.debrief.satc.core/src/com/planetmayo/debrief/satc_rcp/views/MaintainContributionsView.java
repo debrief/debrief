@@ -56,6 +56,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -542,7 +543,10 @@ public class MaintainContributionsView extends ViewPart
 
 	private void initUI(Composite parent)
 	{
-		main = new Composite(parent, SWT.NONE);
+		parent.setLayout(new FillLayout());
+		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+		
+		main = new Composite(sashForm, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(1, true);
 		gridLayout.verticalSpacing = 2;
 		gridLayout.marginLeft = 5;
@@ -553,8 +557,12 @@ public class MaintainContributionsView extends ViewPart
 		initVehicleGroup(main);
 		initAnalystContributionsGroup(main);
 		initAddContributionGroup(main);
-		// initPerformanceGraph(main);
-		initGraphTabs(main);
+		
+		Composite lowerSection = new Composite(sashForm, SWT.NONE);
+		lowerSection.setLayout(new FillLayout());
+		
+		// ok - the next section needs to be in a sash - so we can resize it
+		initGraphTabs(lowerSection);
 
 		// also sort out the header controls
 		final IActionBars bars = getViewSite().getActionBars();
@@ -1438,8 +1446,8 @@ public class MaintainContributionsView extends ViewPart
 				}
 		}
 
-		tscC.addSeries(courses);
 		tscC.addSeries(bearings);
+		tscC.addSeries(courses);
 		tscS.addSeries(speeds);
 		tscCLegs.addSeries(courseLegs);
 		tscSLegs.addSeries(speedLegs);
@@ -1458,16 +1466,16 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.mapDatasetToRangeAxis(1, 1);
 		legPlot.mapDatasetToRangeAxis(3, 1);
 
-		legPlot.getRangeAxis(0).setLabel("Course (Degs)");
+		legPlot.getRangeAxis(0).setLabel("Crse/Brg (Degs)");
 		legPlot.mapDatasetToRangeAxis(0, 0);
 		legPlot.mapDatasetToRangeAxis(2, 0);
 
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(
 				true, true);
-		lineRenderer1.setSeriesPaint(0, courseCol);
-		lineRenderer1.setSeriesShape(0, ShapeUtilities.createDiamond(0.1f));
-		lineRenderer1.setSeriesPaint(1, java.awt.Color.RED);
-		lineRenderer1.setSeriesShape(1, ShapeUtilities.createDiamond(2f));
+		lineRenderer1.setSeriesPaint(1, courseCol);
+		lineRenderer1.setSeriesShape(1, ShapeUtilities.createDiamond(0.1f));
+		lineRenderer1.setSeriesPaint(0, java.awt.Color.RED);
+		lineRenderer1.setSeriesShape(0, ShapeUtilities.createDiamond(2f));
 
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(
 				true, false);
