@@ -59,7 +59,7 @@ public class BearingMeasurementContribution extends
 	public static final String RUN_MDA = "autoDetect";
 
 	public static interface MDAResultsListener{
-		public void sliced(String string, List<LegOfData> ownshipLegs, 
+		public void sliced(String contName, ArrayList<BMeasurement> bearings, List<LegOfData> ownshipLegs, 
 				ArrayList<StraightLegForecastContribution> arrayList,
 				ArrayList<HostState> hostStates);
 	}
@@ -535,7 +535,7 @@ public class BearingMeasurementContribution extends
 			{
 				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
 						.next();
-				thisL.sliced(getName(), ownshipLegs, storer.getSlices(), states);
+				thisL.sliced(this.getName(), this.getMeasurements(), ownshipLegs, storer.getSlices(), states);
 			}
 		}
 		

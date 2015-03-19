@@ -1250,11 +1250,12 @@ public class MaintainContributionsView extends ViewPart
 					{
 
 						@Override
-						public void sliced(String string, List<LegOfData> ownshipLegs,
+						public void sliced(String contName,
+								ArrayList<BMeasurement> bearings, List<LegOfData> ownshipLegs,
 								ArrayList<StraightLegForecastContribution> arrayList,
 								ArrayList<HostState> hostStates)
 						{
-							redoOwnshipStates(string, ownshipLegs, hostStates);
+							redoOwnshipStates(contName, bearings, ownshipLegs, hostStates);
 						}
 					};
 				}
@@ -1273,13 +1274,13 @@ public class MaintainContributionsView extends ViewPart
 		}
 	}
 
-	protected void redoOwnshipStates(String bearingName,
+	protected void redoOwnshipStates(String contName, ArrayList<BMeasurement> cutList,
 			List<LegOfData> ownshipLegs, ArrayList<HostState> states)
 	{
 		if (legPlot == null)
 			return;
 		
-		legChart.setTitle("Target zigs from " + bearingName);
+		legChart.setTitle("Target zigs from " + contName);
 		
 		java.awt.Color courseCol = java.awt.Color.blue.darker().darker();
 		java.awt.Color speedCol = java.awt.Color.blue.brighter().brighter();
@@ -1297,6 +1298,7 @@ public class MaintainContributionsView extends ViewPart
 		TimeSeriesCollection tscCLegs = new TimeSeriesCollection();
 		TimeSeriesCollection tscSLegs = new TimeSeriesCollection();
 		TimeSeries courses = new TimeSeries("Course");
+		TimeSeries bearings = new TimeSeries("Bearings");
 		TimeSeries speeds = new TimeSeries("Speed");
 		TimeSeries courseLegs = new TimeSeries("Course (leg)");
 		TimeSeries speedLegs = new TimeSeries("Speed (leg)");
@@ -1335,7 +1337,18 @@ public class MaintainContributionsView extends ViewPart
 			}
 		}
 
+		// also, we wish to show the bearings from the BMC
+		Iterator<BMeasurement> cuts = cutList.iterator();
+		while (cuts.hasNext())
+		{
+			BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) cuts
+					.next();
+			long thisT = measurement.getDate().getTime();
+			bearings.add(new FixedMillisecond(thisT), Math.toDegrees(Math.abs(measurement.getBearingRads())));
+		}
+		
 		tscC.addSeries(courses);
+		tscC.addSeries(bearings);
 		tscS.addSeries(speeds);
 		tscCLegs.addSeries(courseLegs);
 		tscSLegs.addSeries(speedLegs);
