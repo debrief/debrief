@@ -552,7 +552,7 @@ public class SATC_Solution extends BaseLayer implements
 			ContributionWrapper thisW;
 			if (cont instanceof BearingMeasurementContribution)
 				thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
-			if (cont instanceof FrequencyMeasurementContribution)
+			else if (cont instanceof FrequencyMeasurementContribution)
 				thisW = new FMC_Wrapper((FrequencyMeasurementContribution) cont);
 			else if (cont instanceof StraightLegForecastContribution)
 				thisW = new StraightLegWrapper(cont);
