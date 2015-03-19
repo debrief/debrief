@@ -1296,6 +1296,8 @@ public class MaintainContributionsView extends ViewPart
 	{
 		if (legPlot == null)
 			return;
+
+		boolean showCourses = true;
 		
 		legChart.setTitle("Target zigs from " + contName);
 		
@@ -1328,9 +1330,10 @@ public class MaintainContributionsView extends ViewPart
 		{
 			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) stateIter
 					.next();
-			long thisTime = hostState.time;
+			long thisTime = hostState.time;			
 			double thisCourse = hostState.courseDegs;
-			courses.add(new FixedMillisecond(thisTime), thisCourse);
+				if(showCourses)
+				courses.add(new FixedMillisecond(thisTime), thisCourse);
 			double thisSpeed = hostState.speedKts;
 			speeds.add(new FixedMillisecond(thisTime), thisSpeed);
 			startTime = Math.min(thisTime, startTime);
@@ -1347,8 +1350,9 @@ public class MaintainContributionsView extends ViewPart
 				{
 					if (thisTime >= thisLeg.getStart())
 					{
-						courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
 						speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
+						if(showCourses)
+							courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
 					}
 				}
 			}
