@@ -160,17 +160,22 @@ public class CreateSolutionFromSensorData implements
 								solution.getEndDTG());
 				}
 
+				// have either of these objects produced a period?
 				if (period != null)
 				{
+					// have we got a period already?
 					if (runningPeriod == null)
+					{
+						// nope, let's use this one then
 						runningPeriod = period;
+					}
 					else
 					{
+						// yes - well in that case -extend it with these values
 						runningPeriod.extend(period.getStartDTG());
 						runningPeriod.extend(period.getEndDTG());
 					}
 				}
-
 			}
 		}
 
