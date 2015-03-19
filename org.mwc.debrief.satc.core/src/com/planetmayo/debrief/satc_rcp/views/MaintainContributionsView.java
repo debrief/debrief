@@ -564,6 +564,10 @@ public class MaintainContributionsView extends ViewPart
 		// ok - the next section needs to be in a sash - so we can resize it
 		initGraphTabs(lowerSection);
 
+		// set the relative sizes in the sash
+		sashForm.setWeights(new int[]{3,1});
+
+		
 		// also sort out the header controls
 		final IActionBars bars = getViewSite().getActionBars();
 		IToolBarManager manager = bars.getToolBarManager();
@@ -1438,9 +1442,12 @@ public class MaintainContributionsView extends ViewPart
 					{
 						BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) cuts
 								.next();
-						long thisT = measurement.getDate().getTime();
-						bearings.add(new FixedMillisecond(thisT),
-								Math.toDegrees(Math.abs(measurement.getBearingRads())));
+						if(measurement.isActive())
+						{
+							long thisT = measurement.getDate().getTime();
+							bearings.add(new FixedMillisecond(thisT),
+									Math.toDegrees(Math.abs(measurement.getBearingRads())));
+						}
 					}
 
 				}
@@ -1508,7 +1515,8 @@ public class MaintainContributionsView extends ViewPart
 		// ok, clear any leg markers
 		if (legPlot != null)
 		{
-			graphTabs.setSelection(legTab);
+			if(!graphTabs.isDisposed())
+				graphTabs.setSelection(legTab);
 
 			legPlot.clearDomainMarkers();
 
