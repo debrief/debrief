@@ -97,6 +97,8 @@ public class CreateSolutionFromSensorData implements
 		IMenuManager thisMenu = new MenuManager("SemiAuto TMA");
 		parent.add(thisMenu);
 
+		BaseTimePeriod runningPeriod = null;
+
 		for (int i = 0; i < subjects.length; i++)
 		{
 			Editable thisItem = subjects[i];
@@ -139,50 +141,59 @@ public class CreateSolutionFromSensorData implements
 			else if ((thisItem instanceof ContributionWrapper)
 					|| (thisItem instanceof SATC_Solution))
 			{
-				if (subjects.length == 1)
+				BaseTimePeriod period = null;
+
+				if (thisItem instanceof ContributionWrapper)
 				{
-					BaseTimePeriod period = null;
+					ContributionWrapper cw = (ContributionWrapper) thisItem;
+					BaseContribution theCont = cw.getContribution();
+					period = new TimePeriod.BaseTimePeriod(new HiResDate(
+							theCont.getStartDate()), new HiResDate(theCont.getFinishDate()));
 
-					if (thisItem instanceof ContributionWrapper)
-					{
-						ContributionWrapper cw = (ContributionWrapper) thisItem;
-						BaseContribution theCont = cw.getContribution();
-						period = new TimePeriod.BaseTimePeriod(new HiResDate(
-								theCont.getStartDate()), new HiResDate(theCont.getFinishDate()));
+				}
+				else
+				{
+					SATC_Solution solution = (SATC_Solution) thisItem;
 
-					}
+					if (solution.getSolver().getProblemSpace().getStartDate() != null)
+						period = new TimePeriod.BaseTimePeriod(solution.getStartDTG(),
+								solution.getEndDTG());
+				}
+
+				if (period != null)
+				{
+					if (runningPeriod == null)
+						runningPeriod = period;
 					else
 					{
-						SATC_Solution solution = (SATC_Solution) thisItem;
-
-						if (solution.getSolver().getProblemSpace().getStartDate() != null)
-							period = new TimePeriod.BaseTimePeriod(solution.getStartDTG(),
-									solution.getEndDTG());
-					}
-
-					// did it work?
-					if (period != null)
-					{
-						parent.add(new Separator());
-
-						SATC_Solution solution = (SATC_Solution) parentLayers[0];
-						String actionTitle = "Add new contribution";
-
-						parent.add(new DoIt("Add Speed Forecast for period covered by ["
-								+ thisItem.getName() + "]",
-								new SpeedForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period), "icons/16/speed.png"));
-						parent.add(new DoIt("Add Course Forecast for period covered by ["
-								+ thisItem.getName() + "]",
-								new CourseForecastContributionFromCuts(solution, actionTitle,
-										theLayers, period), "icons/16/direction.png"));
-						parent.add(new DoIt("Add Straight Leg for period covered by ["
-								+ thisItem.getName() + "]",
-								new CompositeStraightLegForecastContributionFromCuts(solution,
-										actionTitle, theLayers, period), "icons/16/leg.png"));
+						runningPeriod.extend(period.getStartDTG());
+						runningPeriod.extend(period.getEndDTG());
 					}
 				}
+
 			}
+		}
+
+		if (runningPeriod != null)
+		{
+			parent.add(new Separator());
+
+			SATC_Solution solution = (SATC_Solution) parentLayers[0];
+			String actionTitle = "Add new contribution";
+
+			parent.add(new DoIt(
+					"Add Speed Forecast for period covered by [selected legs]",
+					new SpeedForecastContributionFromCuts(solution, actionTitle,
+							theLayers, runningPeriod), "icons/16/speed.png"));
+			parent.add(new DoIt(
+					"Add Course Forecast for period covered by [selected legs]",
+					new CourseForecastContributionFromCuts(solution, actionTitle,
+							theLayers, runningPeriod), "icons/16/direction.png"));
+			parent.add(new DoIt(
+					"Add Straight Leg for period covered by [selected legs]",
+					new CompositeStraightLegForecastContributionFromCuts(solution,
+							actionTitle, theLayers, runningPeriod), "icons/16/leg.png"));
+
 		}
 
 		// ok, is it worth going for?
@@ -250,7 +261,7 @@ public class CreateSolutionFromSensorData implements
 		// parent.add(new Separator());
 
 		SensorContactWrapper first = validItems.get(0);
-		
+
 		// hmm, is there bearing data?
 		if (first.getHasBearing())
 		{
@@ -347,8 +358,7 @@ public class CreateSolutionFromSensorData implements
 
 		SATC_Solution[] list = null;
 		if (res != null)
-			list = res.toArray(new SATC_Solution[]
-			{});
+			list = res.toArray(new SATC_Solution[] {});
 
 		return list;
 	}
@@ -403,23 +413,25 @@ public class CreateSolutionFromSensorData implements
 				// ok, store it.
 				bmc.addMeasurement(thisM);
 			}
-			
-			// we also want to try to store the ownship state data (course/speed) - to help spot target zigs
+
+			// we also want to try to store the ownship state data (course/speed) - to
+			// help spot target zigs
 			SensorContactWrapper first = _validCuts.get(0);
 			TrackWrapper host = first.getSensor().getHost();
-			Collection<Editable> hostFixes = host.getItemsBetween(new HiResDate(bmc.getStartDate()),new HiResDate(bmc.getFinishDate()));
-			for (Iterator<Editable> iterator = hostFixes.iterator(); iterator.hasNext();)
+			Collection<Editable> hostFixes = host
+					.getItemsBetween(new HiResDate(bmc.getStartDate()),
+							new HiResDate(bmc.getFinishDate()));
+			for (Iterator<Editable> iterator = hostFixes.iterator(); iterator
+					.hasNext();)
 			{
 				FixWrapper editable = (FixWrapper) iterator.next();
 				long time = editable.getDateTimeGroup().getDate().getTime();
 				double courseDegs = editable.getCourseDegs();
 				double speedKts = editable.getSpeed();
-				bmc.addState(new BearingMeasurementContribution.HostState( time, courseDegs, speedKts));
+				bmc.addState(new BearingMeasurementContribution.HostState(time,
+						courseDegs, speedKts));
 			}
-			
-			
-			
-			
+
 			return bmc;
 		}
 
@@ -449,7 +461,9 @@ public class CreateSolutionFromSensorData implements
 
 	}
 
-	/** conveneince function. we've pulled it out of the class so that we can use it in testing
+	/**
+	 * conveneince function. we've pulled it out of the class so that we can use
+	 * it in testing
 	 * 
 	 * @param validCuts
 	 * @return
@@ -470,7 +484,8 @@ public class CreateSolutionFromSensorData implements
 			Date date = scw.getDTG().getDate();
 			double freq = scw.getFrequency();
 
-			final FrequencyMeasurement thisM = new FrequencyMeasurement(date, conversions.toPoint(scw.getLocation()), freq);
+			final FrequencyMeasurement thisM = new FrequencyMeasurement(date,
+					conversions.toPoint(scw.getLocation()), freq);
 
 			// give it the respective color
 			thisM.setColor(scw.getColor());
@@ -774,14 +789,14 @@ public class CreateSolutionFromSensorData implements
 			if (contName != null)
 			{
 				// do we wish to collate any other information?
-				otherSteps();			
-				
+				otherSteps();
+
 				// ok = now get our specific contribution
 				BaseContribution bmc = createContribution(contName);
-				
+
 				// and store it - if it worked
 				if (bmc != null)
-				{					
+				{
 					_targetSolution.addContribution(bmc);
 				}
 			}
@@ -875,7 +890,7 @@ public class CreateSolutionFromSensorData implements
 	{
 		private ArrayList<SensorContactWrapper> _validCuts;
 		private double _soundSpeed;
-	
+
 		public FrequencyMeasurementContributionFromCuts(
 				SATC_Solution existingSolution, String title, Layers theLayers,
 				ArrayList<SensorContactWrapper> validCuts)
@@ -885,29 +900,30 @@ public class CreateSolutionFromSensorData implements
 							validCuts.get(validCuts.size() - 1).getDTG())));
 			_validCuts = validCuts;
 		}
-		
+
 		protected void otherSteps()
 		{
 			String res = null;
 			// grab a name
 			// create input box dialog
 			InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
-					"New frequency contribution", "What is Speed of Sound for this location (m/sec)",
-					"Speed here", null);
+					"New frequency contribution",
+					"What is Speed of Sound for this location (m/sec)", "Speed here",
+					null);
 
 			// did he cancel?
 			if (inp.open() == InputDialog.OK)
 			{
 				// get the results
 				res = inp.getValue();
-				
+
 				// try to convert to double
 				_soundSpeed = Double.parseDouble(res);
 			}
 		}
 
-	
-		protected FrequencyMeasurementContribution createContribution(String contName)
+		protected FrequencyMeasurementContribution createContribution(
+				String contName)
 		{
 			// ok, now collate the contriubtion
 			final FrequencyMeasurementContribution fmc = new FrequencyMeasurementContribution();
@@ -915,9 +931,9 @@ public class CreateSolutionFromSensorData implements
 
 			// store the user-specified sound speed
 			fmc.setSoundSpeed(_soundSpeed);
-			
+
 			boolean firstCut = true;
-	
+
 			// add the bearing data
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
 			while (iter.hasNext())
@@ -925,22 +941,22 @@ public class CreateSolutionFromSensorData implements
 				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
 				SensorWrapper sensor = scw.getSensor();
 				final TrackWrapper host = sensor.getHost();
-	
+
 				Date date = scw.getDTG().getDate();
-				
-				if(scw.getHasFrequency())
+
+				if (scw.getHasFrequency())
 				{
 					double freq = scw.getFrequency();
 					final FMeasurement thisM = new FMeasurement(date, freq);
-					
+
 					// give it the respective color
 					thisM.setColor(scw.getColor());
-		
+
 					// ok, store it.
 					fmc.addMeasurement(thisM);
-					
+
 					// is this the first cut?
-					if(firstCut)
+					if (firstCut)
 					{
 						// ok, store the base frequency
 						fmc.setBaseFrequency(sensor.getBaseFrequency());
@@ -949,31 +965,32 @@ public class CreateSolutionFromSensorData implements
 
 					// we need to get the host status at this time
 					Watchable[] statList = host.getNearestTo(scw.getTime());
-					
+
 					// do we know ownship state at this time?
-					if(statList.length > 0)
-					{						
+					if (statList.length > 0)
+					{
 						Watchable stat = statList[0];
 						double crseRads = stat.getCourse();
-						double spdMs = new WorldSpeed(stat.getSpeed(), WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec);
-						thisM.setState(crseRads, spdMs);			
+						double spdMs = new WorldSpeed(stat.getSpeed(), WorldSpeed.Kts)
+								.getValueIn(WorldSpeed.M_sec);
+						thisM.setState(crseRads, spdMs);
 					}
-					
+
 					// also try to find out the sensor locaiton
 					WorldLocation origin = scw.getCalculatedOrigin(host);
-					thisM.setOrigin(conversions.toPoint(origin));					
-					
+					thisM.setOrigin(conversions.toPoint(origin));
+
 				}
 				else
 				{
-					SATC_Activator.log(Status.WARNING, "Expected freq data at:" + date + " to contain freq, it doesn't", null);
+					SATC_Activator.log(Status.WARNING, "Expected freq data at:" + date
+							+ " to contain freq, it doesn't", null);
 				}
 			}
-			
-			
+
 			return fmc;
 		}
-	
+
 	}
 
 }
