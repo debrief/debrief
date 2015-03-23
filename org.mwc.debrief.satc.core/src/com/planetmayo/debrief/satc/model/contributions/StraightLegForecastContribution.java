@@ -161,6 +161,11 @@ public class StraightLegForecastContribution extends BaseContribution implements
 		return color;
 	}
 	
+	public void setColor(Color col)
+	{
+		color = col;
+	}
+	
 	@Override
 	public ContributionDataType getDataType()
 	{
