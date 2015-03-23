@@ -80,8 +80,11 @@ import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.event.ChartProgressEvent;
+import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.XYPlot;
@@ -721,6 +724,76 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.setRangeCrosshairVisible(true);
 		final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+
+		legPlot.setBackgroundPaint(java.awt.Color.WHITE);
+		legPlot.setRangeGridlinePaint(java.awt.Color.LIGHT_GRAY);
+		legPlot.setDomainGridlinePaint(java.awt.Color.LIGHT_GRAY);
+		
+		// format the cross hairs, when they're clicked
+		legPlot.setDomainCrosshairVisible(true);
+		legPlot.setRangeCrosshairVisible(true);
+		legPlot.setDomainCrosshairPaint(java.awt.Color.GRAY);
+		legPlot.setRangeCrosshairPaint(java.awt.Color.GRAY);
+		legPlot.setDomainCrosshairStroke(new BasicStroke(1));
+		legPlot.setRangeCrosshairStroke(new BasicStroke(1));
+
+		// and the plot object to display the cross hair value
+		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
+		annot.setTextAnchor(TextAnchor.TOP_LEFT);
+		annot.setPaint(java.awt.Color.black);
+		annot.setBackgroundPaint(java.awt.Color.white);
+		legPlot.addAnnotation(annot);
+
+		
+		legChart.addProgressListener(new ChartProgressListener()
+		{
+			public void chartProgress(final ChartProgressEvent cpe)
+			{
+				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
+					return;
+
+				// double-check our label is still in the right place
+				final double xVal = legPlot.getRangeAxis().getUpperBound();
+				final double yVal = legPlot.getDomainAxis().getLowerBound();
+
+				boolean annotChanged = false;
+				if (annot.getX() != yVal)
+				{
+					annot.setX(yVal);
+					annotChanged = true;
+				}
+				if (annot.getY() != xVal)
+				{
+					annot.setY(xVal);
+					annotChanged = true;
+				}
+
+				// and write the text
+				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
+						.formatOneDecimalPlace(legPlot.getRangeCrosshairValue());
+				final Date newDate = new Date((long) legPlot.getDomainCrosshairValue());
+				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
+				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
+				final String dateVal = _df.format(newDate);
+				final String theMessage = " [" + dateVal + "," + numA + "]";
+				if (!theMessage.equals(annot.getText()))
+				{
+					annot.setText(theMessage);
+					annotChanged = true;
+				}
+
+				// aah, now we have to add and then remove the annotation in order
+				// for the new text value to be displayed. Watch and learn...
+				if (annotChanged)
+				{
+					legPlot.removeAnnotation(annot);
+					legPlot.addAnnotation(annot);
+				}
+
+			}
+		});
+		
+		
 
 		ChartPanel chartInPanel = new ChartPanel(legChart, true);
 
@@ -1542,8 +1615,7 @@ public class MaintainContributionsView extends ViewPart
 						long thisStart = baseC.getStartDate().getTime();
 						long thisFinish = baseC.getFinishDate().getTime();
 
-						java.awt.Color transCol = new java.awt.Color(thisCol.getRed(),
-								thisCol.getGreen(), thisCol.getBlue(), 22);
+						java.awt.Color transCol = new java.awt.Color(255, 0, 0, 22);
 
 						final Marker bst = new IntervalMarker(thisStart, thisFinish,
 								transCol, new BasicStroke(2.0f), null, null, 1.0f);
