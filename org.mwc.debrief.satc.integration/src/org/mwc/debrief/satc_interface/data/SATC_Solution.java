@@ -54,6 +54,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
@@ -586,7 +587,7 @@ public class SATC_Solution extends BaseLayer implements
 	}
 
 	/**
-	 * convert this solution into a formal track
+	 * convert this solution into a set of SATC legs
 	 * 
 	 */
 	public void convertToLegs()
@@ -608,9 +609,15 @@ public class SATC_Solution extends BaseLayer implements
 				final TrackWrapper newT = new TrackWrapper();
 				newT.setName(getName() + "_" + i);
 
+				// helper objects, so we can create dynamic infills.
+				TrackSegment lastLeg = null;
+				TrackSegment pendingAlteration = null;
+				
+
 				final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
 				while (legs.hasNext())
 				{
+					
 					final CoreRoute thisLeg = legs.next();
 					if (thisLeg instanceof StraightRoute)
 					{
@@ -629,6 +636,9 @@ public class SATC_Solution extends BaseLayer implements
 
 						final AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs,
 								speed, origin, startTime, endTime);
+						
+						// remember this leg
+						lastLeg = abs;
 
 						// quick check to see if we have some frequency data
 						IContributions conts = _mySolver.getContributions();
@@ -650,6 +660,17 @@ public class SATC_Solution extends BaseLayer implements
 							}
 						}
 
+						// ok, do we have a pending alteartion?
+						if(pendingAlteration != null)
+						{
+							// right, "abs" doesn't yet have any positions
+							
+							// ok, stick in a dynamic infill
+							DynamicInfillSegment infill = new DynamicInfillSegment(pendingAlteration,  abs);
+							newT.add(infill);
+							pendingAlteration = null;
+						}
+						
 						abs.setName(straight.getName());
 						newT.add(abs);
 						abs.setName(straight.getName());
@@ -657,32 +678,35 @@ public class SATC_Solution extends BaseLayer implements
 					}
 					else if (thisLeg instanceof AlteringRoute)
 					{
-						final AlteringRoute altering = (AlteringRoute) thisLeg;
+						// remember the previous straight leg.
+						pendingAlteration = lastLeg;
 
-						final TrackSegment segment = new TrackSegment();
-						segment.setName(altering.getName());
-
-						final ArrayList<State> states = altering.getStates();
-						for (final State thisS : states)
-						{
-							final double theCourse = thisS.getCourse();
-							final WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
-									WorldSpeed.M_sec);
-							final WorldLocation theLocation = conversions.toLocation(thisS
-									.getLocation().getCoordinate());
-							final HiResDate theTime = new HiResDate(thisS.getTime().getTime());
-
-							final Fix theFix = new Fix(theTime, theLocation, theCourse,
-									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
-							final FixWrapper newFix = new FixWrapper(theFix);
-							newFix.resetName();
-							segment.addFix(newFix);
-						}
-
-						// make it dotted, that's our way of doing it.
-						segment.setLineStyle(CanvasType.DOTTED);
-
-						newT.add(segment);
+						// COMMENTED OUT THIS NEXT BLOCK - WE'RE NOT GOING TO USE THE DERIVED ALTERATION,
+						// WE'LL JUST USE OUR DYNAMIC INFILL SEGMENTS
+//						final TrackSegment segment = new TrackSegment();
+//						segment.setName(altering.getName());
+//
+//						final ArrayList<State> states = altering.getStates();
+//						for (final State thisS : states)
+//						{
+//							final double theCourse = thisS.getCourse();
+//							final WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
+//									WorldSpeed.M_sec);
+//							final WorldLocation theLocation = conversions.toLocation(thisS
+//									.getLocation().getCoordinate());
+//							final HiResDate theTime = new HiResDate(thisS.getTime().getTime());
+//
+//							final Fix theFix = new Fix(theTime, theLocation, theCourse,
+//									theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
+//							final FixWrapper newFix = new FixWrapper(theFix);
+//							newFix.resetName();
+//							segment.addFix(newFix);
+//						}
+//
+//						// make it dotted, that's our way of doing it.
+//						segment.setLineStyle(CanvasType.DOTTED);
+//
+//						newT.add(segment);
 					}
 					else
 						DebriefPlugin.logError(IStatus.ERROR,
