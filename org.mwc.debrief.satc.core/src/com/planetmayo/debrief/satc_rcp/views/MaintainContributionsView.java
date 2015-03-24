@@ -656,7 +656,7 @@ public class MaintainContributionsView extends ViewPart
 		yAxis.enableLogScale(true);
 		yAxis.getTick().setForeground(colorBlack);
 		yAxis.getTitle().setForeground(colorBlack);
-		yAxis.getTitle().setText("Error Sum");
+		yAxis.getTitle().setText("Weighted error");
 
 		return group;
 	}
