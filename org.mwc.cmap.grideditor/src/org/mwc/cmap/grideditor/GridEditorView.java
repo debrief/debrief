@@ -175,7 +175,10 @@ public class GridEditorView extends ViewPart
 		if (input == null)
 		{
 			// not valid data - set input to null (which clears the UI
-			myUI.inputSeriesChanged(null);
+			
+			// CHANGED:  don't wipe on invalid input. This lets us do Layer Manager edits
+			// based on data in the grid editor
+			// myUI.inputSeriesChanged(null);
 		}
 		else
 		{
