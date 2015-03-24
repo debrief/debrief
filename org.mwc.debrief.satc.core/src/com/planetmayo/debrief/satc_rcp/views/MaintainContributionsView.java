@@ -1345,6 +1345,9 @@ public class MaintainContributionsView extends ViewPart
 						}
 					};
 				startListeningTo(slf);
+				
+				// ok - chuck in a graph update
+				redoStraightLegs();
 			}
 			else if (contribution instanceof BearingMeasurementContribution)
 			{
@@ -1584,7 +1587,7 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.getDomainAxis().setRange(startTime, endTime);
 
 		// ok - get the straight legs to sort themselves out
-		redoStraightLegs();
+	//	redoStraightLegs();
 	}
 
 	protected void redoStraightLegs()
@@ -1657,8 +1660,11 @@ public class MaintainContributionsView extends ViewPart
 		{
 			stopListeningTo(contribution);
 
-			// ok, better update the legs too
-			redoStraightLegs();
+			// ok, better update the legs too. AAh, not if the form is closing
+			if(doLayout)
+			{
+				redoStraightLegs();
+			}
 		}
 		else if (contribution instanceof BearingMeasurementContribution)
 		{
