@@ -4863,7 +4863,7 @@ and so on....</programlisting></para>
                 </mediaobject>
               </figure>
             </para>
-            <para>Finally, once you're zoomed in close you will see bathymetric data, plus a lot more placenames:
+            <para>Finally, once you&apos;re zoomed in close you will see bathymetric data, plus a lot more placenames:
               <figure
                 xml:id="ne_10M">
                 <title>Natural Earth in use (10M resolution)</title>              
@@ -7656,12 +7656,16 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           </formalpara>
           <formalpara>
             <title>Performance</title>
-            <para>The performance graph is an indication of progress of the SATC algorithm. Along
-              the x-axis it shows the number of cycles that the algorithm has run through, and on
-              the y-axis it shows the error score of the best-performing solution in that
-              generation. When <guilabel>Medium</guilabel> or <guilabel>High</guilabel> precision
-              values are used, a greater number of cycles are performed, with each cycle processing
-              a greater number of solution permutations. </para>
+            <para>The performance graph is an indication of progress of the SATC algorithm, as
+              a series of states along the whole solution.  For each timed state object
+              the graph shows one or more bars. A bar is shown for each contribution that is
+              capable of calculating solution error - with some error scores shown per state
+              (such as for Bearing Measurement Contribution) or an error shown for a whole leg
+              (such as for an estimated leg speed).  The error shown is normalised to a zero-one value
+              within the 
+              allowable min/max range (or bearing error for bearing data), then scaled according
+              to the weighting value for that contribution.
+            </para>
           </formalpara>
         </sect2>
       </sect1>
