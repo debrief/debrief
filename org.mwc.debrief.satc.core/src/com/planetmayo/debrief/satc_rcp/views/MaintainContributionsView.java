@@ -544,10 +544,12 @@ public class MaintainContributionsView extends ViewPart
 		});
 	}
 
-	private void initUI(Composite parent)
+	private void initUI(final Composite parent)
 	{
 		parent.setLayout(new FillLayout());
-		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+		final SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+		sashForm.SASH_WIDTH = 15;
+		sashForm.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		
 		main = new Composite(sashForm, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(1, true);
