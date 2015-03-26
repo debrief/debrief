@@ -1,4 +1,5 @@
 package com.planetmayo.debrief.satc.zigdetector;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,14 +31,15 @@ public class Track
 	final private double[] y;
 	final private double[] courses;
 	final private double[] speeds;
-//	public double[] averageCourses;
-//	public double[] averageSpeeds;
+
+	// public double[] averageCourses;
+	// public double[] averageSpeeds;
 
 	public Track(final String path) throws IOException
 	{
 
 		final DateTimeFormatter formatter = DateTimeFormat
-				.forPattern("yyMMdd HHmmss");
+				.forPattern("yyMMdd HHmmss.SSS");
 
 		// Filename containing the data
 		// String csvFilename = "data/ArcTan_Data.csv";
@@ -50,6 +52,10 @@ public class Track
 		// headings the result is stored in a list
 		CSVReader csvReader = null;
 
+		// counter used to populate the variables with data from the csv
+		// file
+		int counter = 0;
+
 		try
 		{
 			final FileReader fReader = new FileReader(path);
@@ -57,10 +63,6 @@ public class Track
 			final List<String[]> content = csvReader.readAll();
 			// variable to hold each row of the List while iterating through it
 			String[] row = null;
-
-			// counter used to populate the variables with data from the csv
-			// file
-			int counter = 0;
 
 			// initializing the variables to hold data in the csv file
 			x = new double[content.size()];
@@ -74,21 +76,28 @@ public class Track
 				row = (String[]) object;
 				/* parsing data from the list to the variables */
 				final String thisDate = row[0].toString();
+				if (thisDate == null || thisDate.length() == 0)
+				{
+					continue;
+				}
 				dates[counter] = formatter.parseDateTime(thisDate).getMillis();
 				x[counter] = (Double.parseDouble(row[2].toString()));
 				y[counter] = (Double.parseDouble(row[3].toString()));
 				courses[counter] = (Double.parseDouble(row[5].toString()));
 				speeds[counter] = (Double.parseDouble(row[6].toString()));
+
 				counter++;
 			}
 		}
 		finally
 		{
+//			System.out.println("Counter got to:" + counter);
 			if (csvReader != null)
 			{
 				csvReader.close();
 			}
 		}
+
 	}
 
 	public double[] getCourses()
