@@ -213,7 +213,12 @@ public class Trace extends java.lang.Object
 	{
 		if (_myParent != null)
 		{
-			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, null);
+			Exception ex = null;
+			if(e instanceof Exception)
+			{
+				ex = (Exception) e;
+			}
+			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, ex);
 		}
 		else
 		{
