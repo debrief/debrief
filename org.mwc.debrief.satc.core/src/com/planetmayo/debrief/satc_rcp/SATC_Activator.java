@@ -92,7 +92,13 @@ public class SATC_Activator extends AbstractUIPlugin
 
 	public static void log(int status, String message, Exception e)
 	{
-		getDefault().getLog().log(new Status(status, PLUGIN_ID, message, e));
+		if(getDefault() != null)
+			getDefault().getLog().log(new Status(status, PLUGIN_ID, message, e));
+		else
+		{
+			if(e != null)
+				e.printStackTrace();
+		}
 	}
 
 	/**
