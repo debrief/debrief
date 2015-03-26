@@ -56,6 +56,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -79,8 +80,11 @@ import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.event.ChartProgressEvent;
+import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.XYPlot;
@@ -192,6 +196,7 @@ public class MaintainContributionsView extends ViewPart
 	private Button recalculate;
 	private Button cancelGeneration;
 	private Button suppressCuts;
+	private Button showOSCourse;
 	private ComboViewer precisionsCombo;
 	// private ComboViewer vehiclesCombo;
 	private Composite contList;
@@ -398,7 +403,7 @@ public class MaintainContributionsView extends ViewPart
 		scrolled.setLayoutData(new GridData(GridData.FILL_BOTH));
 		final Composite preferencesComposite = UIUtils.createScrolledBody(scrolled,
 				SWT.NONE);
-		preferencesComposite.setLayout(new GridLayout(5, false));
+		preferencesComposite.setLayout(new GridLayout(6, false));
 
 		scrolled.addListener(SWT.Resize, new Listener()
 		{
@@ -480,6 +485,24 @@ public class MaintainContributionsView extends ViewPart
 			}
 		});
 
+		showOSCourse = new Button(preferencesComposite, SWT.CHECK);
+		showOSCourse.setText("Plot O/S Course");
+		showOSCourse.setVisible(true);
+		showOSCourse.setEnabled(false);
+		showOSCourse.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (activeSolver != null)
+				{
+					redoOwnshipStates();
+				}
+			}
+		});
+
+		
 		Composite precisionPanel = new Composite(preferencesComposite, SWT.NONE);
 		precisionPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
 				| GridData.GRAB_HORIZONTAL | GridData.VERTICAL_ALIGN_CENTER));
@@ -521,9 +544,14 @@ public class MaintainContributionsView extends ViewPart
 		});
 	}
 
-	private void initUI(Composite parent)
+	private void initUI(final Composite parent)
 	{
-		main = new Composite(parent, SWT.NONE);
+		parent.setLayout(new FillLayout());
+		final SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+		sashForm.SASH_WIDTH = 15;
+		sashForm.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		
+		main = new Composite(sashForm, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(1, true);
 		gridLayout.verticalSpacing = 2;
 		gridLayout.marginLeft = 5;
@@ -534,17 +562,24 @@ public class MaintainContributionsView extends ViewPart
 		initVehicleGroup(main);
 		initAnalystContributionsGroup(main);
 		initAddContributionGroup(main);
-		// initPerformanceGraph(main);
-		initGraphTabs(main);
+		
+		Composite lowerSection = new Composite(sashForm, SWT.NONE);
+		lowerSection.setLayout(new FillLayout());
+		
+		// ok - the next section needs to be in a sash - so we can resize it
+		initGraphTabs(lowerSection);
 
+		// set the relative sizes in the sash
+		sashForm.setWeights(new int[]{3,1});
+
+		
 		// also sort out the header controls
 		final IActionBars bars = getViewSite().getActionBars();
 		IToolBarManager manager = bars.getToolBarManager();
 		manager.add(SATC_Activator.createOpenHelpAction(
 				"org.mwc.debrief.help.SATC", null, this));
-		
-		_exportBtn = new Action(
-				"Export SATC dataset", Action.AS_PUSH_BUTTON)
+
+		_exportBtn = new Action("Export SATC dataset", Action.AS_PUSH_BUTTON)
 		{
 			public void runWithEvent(final Event event)
 			{
@@ -555,7 +590,7 @@ public class MaintainContributionsView extends ViewPart
 		_exportBtn.setImageDescriptor(SATC_Activator
 				.getImageDescriptor("icons/export.png"));
 		manager.add(_exportBtn);
-		
+
 	}
 
 	private void initGraphTabs(Composite parent)
@@ -623,7 +658,7 @@ public class MaintainContributionsView extends ViewPart
 		yAxis.enableLogScale(true);
 		yAxis.getTick().setForeground(colorBlack);
 		yAxis.getTitle().setForeground(colorBlack);
-		yAxis.getTitle().setText("Error Sum");
+		yAxis.getTitle().setText("Weighted error");
 
 		return group;
 	}
@@ -692,6 +727,76 @@ public class MaintainContributionsView extends ViewPart
 		final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
 
+		legPlot.setBackgroundPaint(java.awt.Color.WHITE);
+		legPlot.setRangeGridlinePaint(java.awt.Color.LIGHT_GRAY);
+		legPlot.setDomainGridlinePaint(java.awt.Color.LIGHT_GRAY);
+		
+		// format the cross hairs, when they're clicked
+		legPlot.setDomainCrosshairVisible(true);
+		legPlot.setRangeCrosshairVisible(true);
+		legPlot.setDomainCrosshairPaint(java.awt.Color.GRAY);
+		legPlot.setRangeCrosshairPaint(java.awt.Color.GRAY);
+		legPlot.setDomainCrosshairStroke(new BasicStroke(1));
+		legPlot.setRangeCrosshairStroke(new BasicStroke(1));
+
+		// and the plot object to display the cross hair value
+		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
+		annot.setTextAnchor(TextAnchor.TOP_LEFT);
+		annot.setPaint(java.awt.Color.black);
+		annot.setBackgroundPaint(java.awt.Color.white);
+		legPlot.addAnnotation(annot);
+
+		
+		legChart.addProgressListener(new ChartProgressListener()
+		{
+			public void chartProgress(final ChartProgressEvent cpe)
+			{
+				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
+					return;
+
+				// double-check our label is still in the right place
+				final double xVal = legPlot.getRangeAxis().getUpperBound();
+				final double yVal = legPlot.getDomainAxis().getLowerBound();
+
+				boolean annotChanged = false;
+				if (annot.getX() != yVal)
+				{
+					annot.setX(yVal);
+					annotChanged = true;
+				}
+				if (annot.getY() != xVal)
+				{
+					annot.setY(xVal);
+					annotChanged = true;
+				}
+
+				// and write the text
+				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
+						.formatOneDecimalPlace(legPlot.getRangeCrosshairValue());
+				final Date newDate = new Date((long) legPlot.getDomainCrosshairValue());
+				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
+				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
+				final String dateVal = _df.format(newDate);
+				final String theMessage = " [" + dateVal + "," + numA + "]";
+				if (!theMessage.equals(annot.getText()))
+				{
+					annot.setText(theMessage);
+					annotChanged = true;
+				}
+
+				// aah, now we have to add and then remove the annotation in order
+				// for the new text value to be displayed. Watch and learn...
+				if (annotChanged)
+				{
+					legPlot.removeAnnotation(annot);
+					legPlot.addAnnotation(annot);
+				}
+
+			}
+		});
+		
+		
+
 		ChartPanel chartInPanel = new ChartPanel(legChart, true);
 
 		// // ok - we need to fire time-changes to the chart
@@ -707,14 +812,15 @@ public class MaintainContributionsView extends ViewPart
 		return holder;
 	}
 
-	/** clear the data on the leg graph
+	/**
+	 * clear the data on the leg graph
 	 * 
 	 */
 	private void clearLegGraph()
 	{
 		if (legPlot == null)
 			return;
-		
+
 		legPlot.setDataset(0, null);
 		legPlot.setDataset(1, null);
 		legPlot.setDataset(2, null);
@@ -722,7 +828,7 @@ public class MaintainContributionsView extends ViewPart
 
 		legPlot.clearDomainMarkers();
 	}
-	
+
 	private void clearPerformanceGraph()
 	{
 		// hmm, have we already ditched?
@@ -806,7 +912,7 @@ public class MaintainContributionsView extends ViewPart
 							final IBarSeries series = (IBarSeries) performanceChart
 									.getSeriesSet().createSeries(SeriesType.BAR, cont.getName());
 							series.setBarColor(colorFor(cont));
-		//					series.enableStack(true);
+							// series.enableStack(true);
 						}
 						thisSeries.put(state.getTime(), scores.get(cont));
 
@@ -850,7 +956,7 @@ public class MaintainContributionsView extends ViewPart
 				}
 
 				series.setYSeries(valArr);
-	//			series.enableStack(true);
+				// series.enableStack(true);
 			}
 		}
 
@@ -1190,6 +1296,7 @@ public class MaintainContributionsView extends ViewPart
 				recalculate.setEnabled(hasSolver);
 				performanceChart.setEnabled(hasSolver);
 				suppressCuts.setEnabled(hasSolver);
+				showOSCourse.setEnabled(hasSolver);
 
 				// vehiclesCombo.getCombo().setEnabled(hasSolver);
 				// addContributionButton.setEnabled(hasSolver);
@@ -1240,6 +1347,9 @@ public class MaintainContributionsView extends ViewPart
 						}
 					};
 				startListeningTo(slf);
+				
+				// ok - chuck in a graph update
+				redoStraightLegs();
 			}
 			else if (contribution instanceof BearingMeasurementContribution)
 			{
@@ -1250,16 +1360,27 @@ public class MaintainContributionsView extends ViewPart
 					{
 
 						@Override
-						public void sliced(String string, List<LegOfData> ownshipLegs,
+						public void sliced(String contName,
+								ArrayList<BMeasurement> bearings, List<LegOfData> ownshipLegs,
 								ArrayList<StraightLegForecastContribution> arrayList,
 								ArrayList<HostState> hostStates)
 						{
-							redoOwnshipStates(string, ownshipLegs, hostStates);
+							redoOwnshipStates();
+						}
+
+						@Override
+						public void startingSlice(String contName)
+						{
+							startSlicingOwnshipLegs(contName);
 						}
 					};
 				}
 				bmc.addSliceListener(_sliceListener);
+				
+				// hey, let's also re-display the ownship states
+				redoOwnshipStates();
 			}
+			
 		}
 		catch (Exception ex)
 		{
@@ -1273,14 +1394,53 @@ public class MaintainContributionsView extends ViewPart
 		}
 	}
 
-	protected void redoOwnshipStates(String bearingName,
-			List<LegOfData> ownshipLegs, ArrayList<HostState> states)
+	protected void startSlicingOwnshipLegs(String contName)
+	{
+		// hey, let's also ditch any straight leg forecasts
+		Iterator<BaseContribution> conts = activeSolver.getContributions()
+				.iterator();
+		ArrayList<BaseContribution> toRemove = new ArrayList<BaseContribution>();
+		while (conts.hasNext())
+		{
+			BaseContribution baseC = (BaseContribution) conts.next();
+			if (baseC.isActive())
+				if (baseC instanceof StraightLegForecastContribution)
+				{
+					toRemove.add(baseC);
+				}
+		}
+		
+		// did we find any?
+		if(!toRemove.isEmpty())
+		{
+			Iterator<BaseContribution> iter = toRemove.iterator();
+			while (iter.hasNext())
+			{
+				BaseContribution baseContribution = (BaseContribution) iter.next();
+				activeSolver.getContributions().removeContribution(baseContribution);
+			}
+		}
+
+		// ok, clear any leg markers
+		if (legPlot != null)
+		{
+			graphTabs.setSelection(legTab);
+
+			legPlot.clearDomainMarkers();
+		}
+		
+		
+	}
+
+	protected void redoOwnshipStates()
 	{
 		if (legPlot == null)
 			return;
-		
-		legChart.setTitle("Target zigs from " + bearingName);
-		
+
+		boolean showCourses = true;
+		if(showOSCourse != null)
+			showCourses = showOSCourse.getSelection(); 
+
 		java.awt.Color courseCol = java.awt.Color.blue.darker().darker();
 		java.awt.Color speedCol = java.awt.Color.blue.brighter().brighter();
 
@@ -1297,48 +1457,89 @@ public class MaintainContributionsView extends ViewPart
 		TimeSeriesCollection tscCLegs = new TimeSeriesCollection();
 		TimeSeriesCollection tscSLegs = new TimeSeriesCollection();
 		TimeSeries courses = new TimeSeries("Course");
+		TimeSeries bearings = new TimeSeries("Bearings");
 		TimeSeries speeds = new TimeSeries("Speed");
 		TimeSeries courseLegs = new TimeSeries("Course (leg)");
 		TimeSeries speedLegs = new TimeSeries("Speed (leg)");
 
-		Iterator<LegOfData> lIter = ownshipLegs.iterator();
-		LegOfData thisLeg = lIter.next();
-
-		Iterator<HostState> stateIter = states.iterator();
-		while (stateIter.hasNext())
+		Iterator<BaseContribution> conts = activeSolver.getContributions()
+				.iterator();
+		while (conts.hasNext())
 		{
-			BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) stateIter
-					.next();
-			long thisTime = hostState.time;
-			double thisCourse = hostState.courseDegs;
-			courses.add(new FixedMillisecond(thisTime), thisCourse);
-			double thisSpeed = hostState.speedKts;
-			speeds.add(new FixedMillisecond(thisTime), thisSpeed);
-			startTime = Math.min(thisTime, startTime);
-			endTime = Math.max(thisTime, endTime);
+			BaseContribution baseC = (BaseContribution) conts.next();
+			if (baseC.isActive())
+				if (baseC instanceof BearingMeasurementContribution)
+				{
+					BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
 
-			// sort out if this is in a leg or not
-			if (thisLeg != null)
-			{
-				if (thisTime > thisLeg.getEnd())
-				{
-					thisLeg = lIter.next();
-				}
-				else
-				{
-					if (thisTime >= thisLeg.getStart())
+					Iterator<LegOfData> lIter = null;
+					LegOfData thisLeg = null;
+
+					if (bmc.getOwnshipLegs() != null)
 					{
-						courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
-						speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
+						lIter = bmc.getOwnshipLegs().iterator();
+						thisLeg = lIter.next();
 					}
+
+					Iterator<HostState> stateIter = bmc.getHostState().iterator();
+					while (stateIter.hasNext())
+					{
+						BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) stateIter
+								.next();
+						long thisTime = hostState.time;
+						double thisCourse = hostState.courseDegs;
+						if (showCourses)
+							courses.add(new FixedMillisecond(thisTime), thisCourse);
+						double thisSpeed = hostState.speedKts;
+						speeds.add(new FixedMillisecond(thisTime), thisSpeed);
+						startTime = Math.min(thisTime, startTime);
+						endTime = Math.max(thisTime, endTime);
+
+						// sort out if this is in a leg or not
+						if (thisLeg != null)
+						{
+							if (thisTime > thisLeg.getEnd())
+							{
+								thisLeg = lIter.next();
+							}
+							else
+							{
+								if (thisTime >= thisLeg.getStart())
+								{
+									speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
+									if (showCourses)
+										courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
+								}
+							}
+						}
+					}
+
+					// also, we wish to show the bearings from the BMC
+					Iterator<BMeasurement> cuts = bmc.getMeasurements().iterator();
+					while (cuts.hasNext())
+					{
+						BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) cuts
+								.next();
+						if(measurement.isActive())
+						{
+							long thisT = measurement.getDate().getTime();
+							bearings.add(new FixedMillisecond(thisT),
+									Math.toDegrees(Math.abs(measurement.getBearingRads())));
+						}
+					}
+
 				}
-			}
 		}
 
-		tscC.addSeries(courses);
 		tscS.addSeries(speeds);
-		tscCLegs.addSeries(courseLegs);
 		tscSLegs.addSeries(speedLegs);
+		tscC.addSeries(bearings);
+		
+		if(showCourses)
+		{
+			tscC.addSeries(courses);
+			tscCLegs.addSeries(courseLegs);
+		}
 
 		legPlot.setDataset(0, null);
 		legPlot.setDataset(1, null);
@@ -1354,13 +1555,16 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.mapDatasetToRangeAxis(1, 1);
 		legPlot.mapDatasetToRangeAxis(3, 1);
 
-		legPlot.getRangeAxis(0).setLabel("Course (Degs)");
+		legPlot.getRangeAxis(0).setLabel("Crse/Brg (Degs)");
 		legPlot.mapDatasetToRangeAxis(0, 0);
 		legPlot.mapDatasetToRangeAxis(2, 0);
 
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(
-				true, false);
-		lineRenderer1.setSeriesPaint(0, courseCol);
+				true, true);
+		lineRenderer1.setSeriesPaint(1, courseCol);
+		lineRenderer1.setSeriesShape(1, ShapeUtilities.createDiamond(0.1f));
+		lineRenderer1.setSeriesPaint(0, java.awt.Color.RED);
+		lineRenderer1.setSeriesShape(0, ShapeUtilities.createDiamond(2f));
 
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(
 				true, false);
@@ -1385,7 +1589,7 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.getDomainAxis().setRange(startTime, endTime);
 
 		// ok - get the straight legs to sort themselves out
-		redoStraightLegs();
+	//	redoStraightLegs();
 	}
 
 	protected void redoStraightLegs()
@@ -1393,7 +1597,8 @@ public class MaintainContributionsView extends ViewPart
 		// ok, clear any leg markers
 		if (legPlot != null)
 		{
-			graphTabs.setSelection(legTab);
+			if(!graphTabs.isDisposed())
+				graphTabs.setSelection(legTab);
 
 			legPlot.clearDomainMarkers();
 
@@ -1415,8 +1620,7 @@ public class MaintainContributionsView extends ViewPart
 						long thisStart = baseC.getStartDate().getTime();
 						long thisFinish = baseC.getFinishDate().getTime();
 
-						java.awt.Color transCol = new java.awt.Color(thisCol.getRed(),
-								thisCol.getGreen(), thisCol.getBlue(), 88);
+						java.awt.Color transCol = new java.awt.Color(255, 0, 0, 22);
 
 						final Marker bst = new IntervalMarker(thisStart, thisFinish,
 								transCol, new BasicStroke(2.0f), null, null, 1.0f);
@@ -1457,6 +1661,12 @@ public class MaintainContributionsView extends ViewPart
 		if (contribution instanceof StraightLegForecastContribution)
 		{
 			stopListeningTo(contribution);
+
+			// ok, better update the legs too. AAh, not if the form is closing
+			if(doLayout)
+			{
+				redoStraightLegs();
+			}
 		}
 		else if (contribution instanceof BearingMeasurementContribution)
 		{
@@ -1506,33 +1716,35 @@ public class MaintainContributionsView extends ViewPart
 		slf.removePropertyChangeListener(BaseContribution.FINISH_DATE, _legListener);
 		slf.removePropertyChangeListener(BaseContribution.NAME, _legListener);
 	}
-	
-	/** copy the SATC scenario to the clipboard
+
+	/**
+	 * copy the SATC scenario to the clipboard
 	 * 
 	 */
 	protected void exportSATC()
 	{
 		// - ok, really we just export the state & bearing data
-		if(activeSolver != null)
+		if (activeSolver != null)
 		{
 			StringBuffer res = new StringBuffer();
 			final String newLine = System.getProperty("line.separator");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
 			@SuppressWarnings("deprecation")
-			Date dateLead = new Date(100,7,7); 
-			
-			Iterator<BaseContribution> conts = activeSolver.getContributions().iterator();
+			Date dateLead = new Date(100, 7, 7);
+
+			Iterator<BaseContribution> conts = activeSolver.getContributions()
+					.iterator();
 			while (conts.hasNext())
 			{
 				BaseContribution baseC = (BaseContribution) conts.next();
-				if(baseC instanceof BearingMeasurementContribution)
+				if (baseC instanceof BearingMeasurementContribution)
 				{
 					BearingMeasurementContribution bmc = (BearingMeasurementContribution) baseC;
-					
+
 					// ok - sort out the date offset
 					Date startDate = bmc.getStartDate();
-					long offset = startDate.getTime()-dateLead.getTime();
-					
+					long offset = startDate.getTime() - dateLead.getTime();
+
 					// ok, first the states
 					res.append("//Time, Course Degs, Speed Kts" + newLine);
 					Iterator<HostState> states = bmc.getHostState().iterator();
@@ -1540,9 +1752,10 @@ public class MaintainContributionsView extends ViewPart
 					{
 						BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) states
 								.next();
-						res.append(sdf.format(new Date(hostState.time - offset))+ "," + hostState.courseDegs + "," + hostState.speedKts + newLine);						
+						res.append(sdf.format(new Date(hostState.time - offset)) + ","
+								+ hostState.courseDegs + "," + hostState.speedKts + newLine);
 					}
-					
+
 					// now the cuts
 					res.append("//Time, Bearing Degs" + newLine);
 					Iterator<BMeasurement> cuts = bmc.getMeasurements().iterator();
@@ -1550,14 +1763,14 @@ public class MaintainContributionsView extends ViewPart
 					{
 						BearingMeasurementContribution.BMeasurement cut = (BearingMeasurementContribution.BMeasurement) cuts
 								.next();
-						res.append(sdf.format(new Date(cut.getDate().getTime()-offset)) + "," + Math.toDegrees(cut.getBearingRads()) + newLine);						
+						res.append(sdf.format(new Date(cut.getDate().getTime() - offset))
+								+ "," + Math.toDegrees(cut.getBearingRads()) + newLine);
 					}
 				}
 			}
-			
-			
+
 			// hmm, did we find anything
-			if(res.length() > 0)
+			if (res.length() > 0)
 			{
 				// ok, put it on the clipboard.
 				new TextTransfer().setClipboardContents(res.toString());
@@ -1565,26 +1778,29 @@ public class MaintainContributionsView extends ViewPart
 		}
 	}
 
-	static final class TextTransfer implements ClipboardOwner 
+	static final class TextTransfer implements ClipboardOwner
 	{
-		  private TextTransfer() {}
-		  
-		  @Override public void lostOwnership(Clipboard aClipboard, Transferable aContents)
-		  {
-		     //do nothing
-		  }
+		private TextTransfer()
+		{
+		}
 
-		  /**
-		  * Place a String on the clipboard, and make this class the
-		  * owner of the Clipboard's contents.
-		  */
-		  public void setClipboardContents(String aString)
-		  {
-			  StringSelection stringSelection = new StringSelection(aString);
-			  Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			  clipboard.setContents(stringSelection, this);
-		  }
-		 
-	} 
-	
+		@Override
+		public void lostOwnership(Clipboard aClipboard, Transferable aContents)
+		{
+			// do nothing
+		}
+
+		/**
+		 * Place a String on the clipboard, and make this class the owner of the
+		 * Clipboard's contents.
+		 */
+		public void setClipboardContents(String aString)
+		{
+			StringSelection stringSelection = new StringSelection(aString);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, this);
+		}
+
+	}
+
 }

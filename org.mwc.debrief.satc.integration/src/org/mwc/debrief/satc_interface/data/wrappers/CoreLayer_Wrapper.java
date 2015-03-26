@@ -90,6 +90,7 @@ abstract public class CoreLayer_Wrapper<Contribution extends CoreMeasurementCont
 	{
 	}
 
+	@SuppressWarnings("unchecked")
 	protected CoreMeasurementContribution<Measurement> getBMC()
 	{
 		return  (CoreMeasurementContribution<Measurement>) super.getContribution();

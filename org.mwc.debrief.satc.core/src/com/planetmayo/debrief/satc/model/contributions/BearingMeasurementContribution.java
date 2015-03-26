@@ -14,6 +14,7 @@
  */
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,12 +59,16 @@ public class BearingMeasurementContribution extends
 	public static final String BEARING_ERROR = "bearingError";
 	public static final String RUN_MDA = "autoDetect";
 
-	public static interface MDAResultsListener{
-		public void sliced(String string, List<LegOfData> ownshipLegs, 
+	public static interface MDAResultsListener
+	{
+		public void startingSlice(String contName);
+
+		public void sliced(String contName, ArrayList<BMeasurement> bearings,
+				List<LegOfData> ownshipLegs,
 				ArrayList<StraightLegForecastContribution> arrayList,
 				ArrayList<HostState> hostStates);
 	}
-	
+
 	/**
 	 * the allowable bearing error (in radians)
 	 * 
@@ -76,16 +81,23 @@ public class BearingMeasurementContribution extends
 	 */
 	private boolean runMDA = true;
 
-	/** store the ownship states, if possible. We use this to run the 
-	 * manoeuvre detection algorithm
+	/**
+	 * store the ownship states, if possible. We use this to run the manoeuvre
+	 * detection algorithm
 	 */
 	private ArrayList<HostState> states;
-	
-	/** array of listeners interested in MDA
+
+	/**
+	 * array of listeners interested in MDA
 	 * 
 	 */
 	private transient ArrayList<MDAResultsListener> _listeners = null;
-	
+
+	/**
+	 * store any sliced legs
+	 * 
+	 */
+	private transient List<LegOfData> ownshipLegs;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -341,7 +353,7 @@ public class BearingMeasurementContribution extends
 	{
 		return states;
 	}
-	
+
 	/**
 	 * provide the bearing error
 	 * 
@@ -408,7 +420,7 @@ public class BearingMeasurementContribution extends
 		{
 			return bearingAngle;
 		}
-		
+
 	}
 
 	public long[] getTimes(ArrayList<HostState> states)
@@ -424,7 +436,7 @@ public class BearingMeasurementContribution extends
 		}
 		return res;
 	}
-	
+
 	public double[] getCourses(ArrayList<HostState> states)
 	{
 		double[] res = new double[states.size()];
@@ -453,7 +465,6 @@ public class BearingMeasurementContribution extends
 		return res;
 	}
 
-
 	public static class HostState
 	{
 		final public long time;
@@ -467,8 +478,6 @@ public class BearingMeasurementContribution extends
 			this.speedKts = speedKts;
 		}
 	}
-	
-	
 
 	public void runMDA(final IContributions contributions)
 	{
@@ -478,17 +487,33 @@ public class BearingMeasurementContribution extends
 			return;
 		}
 
+		// ok share the good news - we're about to start
+		if (_listeners != null)
+		{
+			Iterator<MDAResultsListener> iter = _listeners.iterator();
+			while (iter.hasNext())
+			{
+				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
+						.next();
+				thisL.startingSlice(this.getName());
+			}
+		}
+
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
-		List<LegOfData> ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
+
+		if (ownshipLegs != null)
+			ownshipLegs.clear();
+
+		ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
 				getCourses(states), getSpeeds(states), 9);
-		
+
 		// create object that can store the new legs
-		MyLegStorer storer = new MyLegStorer(contributions);
-		
+		MyLegStorer storer = new MyLegStorer(contributions, this.getMeasurements());
+
 		// ok, now collate the bearing data
 		ZigDetector detector = new ZigDetector();
-		
+
 		// ok, work through the legs. In the absence of a Discrete
 		// Optimisation algorithm we're taking a brue force approach.
 		// Hopefully we can find an optimised alternative to this.
@@ -496,82 +521,106 @@ public class BearingMeasurementContribution extends
 				.hasNext();)
 		{
 			final LegOfData thisLeg = iterator2.next();
-	
+
 			// ok, slice the data for this leg
 			long legStart = thisLeg.getStart();
 			long legEnd = thisLeg.getEnd();
-	
+
 			// trim the start/end to the sensor data
 			legStart = Math.max(legStart, getStartDate().getTime());
-			legEnd = Math
-					.min(legEnd, getFinishDate().getTime());
+			legEnd = Math.min(legEnd, getFinishDate().getTime());
 
 			List<Long> thisLegTimes = new ArrayList<Long>();
-			List<Double> thisLegBearings  = new ArrayList<Double>();
+			List<Double> thisLegBearings = new ArrayList<Double>();
 			ArrayList<BMeasurement> meas = getMeasurements();
 			Iterator<BMeasurement> iter = meas.iterator();
 			while (iter.hasNext())
-			{				
+			{
 				BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
 						.next();
 				long thisTime = measurement.getDate().getTime();
-				if((thisTime >= legStart) && (thisTime <= legEnd))
+				if ((thisTime >= legStart) && (thisTime <= legEnd))
 				{
 					thisLegTimes.add(measurement.getDate().getTime());
 					thisLegBearings.add(Math.toDegrees(measurement.bearingAngle));
 				}
 			}
 
-			detector.sliceThis("some name",legStart, legEnd, null, storer, 
-					0.6, 0.000001, thisLegTimes, thisLegBearings);
+			detector.sliceThis("some name", legStart, legEnd, null, storer, 0.6,
+					0.000001, thisLegTimes, thisLegBearings);
 		}
 
-		
 		// ok, slicing done!
-		if(_listeners != null)
+		if (_listeners != null)
 		{
 			Iterator<MDAResultsListener> iter = _listeners.iterator();
 			while (iter.hasNext())
 			{
 				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
 						.next();
-				thisL.sliced(getName(), ownshipLegs, storer.getSlices(), states);
+				thisL.sliced(this.getName(), this.getMeasurements(), ownshipLegs,
+						storer.getSlices(), states);
 			}
 		}
-		
+
 	}
-	
+
+	public List<LegOfData> getOwnshipLegs()
+	{
+		return ownshipLegs;
+	}
+
 	public void addSliceListener(MDAResultsListener listener)
 	{
-		if(_listeners == null)
+		if (_listeners == null)
 			_listeners = new ArrayList<MDAResultsListener>();
-		
+
 		_listeners.add(listener);
 	}
-	
+
 	public void removeSliceListener(MDAResultsListener listener)
 	{
-		if(_listeners != null)
+		if (_listeners != null)
 			_listeners.remove(listener);
 	}
-	
+
 	private static class MyLegStorer implements ILegStorer
 	{
 		int ctr = 1;
-		private ArrayList<StraightLegForecastContribution> slices = new
-				ArrayList<StraightLegForecastContribution>();
+		private ArrayList<StraightLegForecastContribution> slices = new ArrayList<StraightLegForecastContribution>();
 		private final IContributions _contributions;
-		
-		public MyLegStorer(final IContributions theConts)
+		private final ArrayList<BMeasurement> _cuts;
+
+		public MyLegStorer(final IContributions theConts,
+				ArrayList<BMeasurement> cuts)
 		{
 			_contributions = theConts;
+			_cuts = cuts;
 		}
-		
+
 		public ArrayList<StraightLegForecastContribution> getSlices()
 		{
 			return slices;
 		}
-		
+
+		private Color colorAt(Date date)
+		{
+			Color res = null;
+			Iterator<BMeasurement> iter = _cuts.iterator();
+			while (iter.hasNext())
+			{
+				BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
+						.next();
+				
+				// check if it's on or after the supplied date
+				if (!measurement.getDate().before(date))
+				{
+					res = measurement.getColor();
+				}
+			}
+			return res;
+		}
+
 		@Override
 		public void storeLeg(String scenarioName, long tStart, long tEnd,
 				Sensor sensor, double rms)
@@ -581,6 +630,7 @@ public class BearingMeasurementContribution extends
 			StraightLegForecastContribution slf = new CompositeStraightLegForecastContribution();
 			slf.setStartDate(new Date(tStart));
 			slf.setFinishDate(new Date(tEnd));
+			slf.setColor(colorAt(slf.getStartDate()));
 			slf.setActive(true);
 			slf.setName(name);
 			_contributions.addContribution(slf);

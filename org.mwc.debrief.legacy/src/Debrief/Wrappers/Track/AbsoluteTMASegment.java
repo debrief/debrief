@@ -21,9 +21,11 @@ import java.util.SortedSet;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 
 /**
  * extension of track segment that represents a single TMA solution as a series
@@ -173,11 +175,39 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		final long interval = 60 * 1000;
 		for (long tNow = tStart; tNow <= tEnd; tNow += interval)
 		{
-			final FixWrapper newFix = createFixAt(tNow);
+			final FixWrapper newFix = createFixAt(tNow, tStart);
 			newFix.setSymbolShowing(true);
 			this.addFix(newFix);
 		}
 	}
+	
+	/**
+	 * create a nice shiny fix at the indicated time
+	 * 
+	 * @param theTime
+	 * @return the new fix, with valid course and speed
+	 */
+	protected FixWrapper createFixAt(final long theTime, final long startTime)
+	{
+		
+		// find out how far we've travelled
+		double distM = _speed.getValueIn(WorldSpeed.M_sec) * (theTime - startTime) / 1000;		
+		double courseRads = MWC.Algorithms.Conversions.Degs2Rads(_courseDegs);
+		
+		WorldDistance theDist = new WorldDistance(distM, WorldDistance.METRES);
+		WorldLocation newLoc = this._origin.add(new WorldVector(courseRads, theDist, 
+				new WorldDistance(0, WorldDistance.METRES)));
+		
+		final Fix fix = new Fix(new HiResDate(theTime), newLoc,
+				courseRads,
+				_speed.getValueIn(WorldSpeed.ft_sec) / 3);
+
+		final FixWrapper newFix = new FixWrapper(fix);
+		newFix.resetName();
+		newFix.setLabelFormat("HHmm.ss");
+		return newFix;
+	}
+
 
 	@Override
 	public EditorType getInfo()

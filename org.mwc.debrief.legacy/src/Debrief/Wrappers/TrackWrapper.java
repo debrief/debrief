@@ -2596,32 +2596,43 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				continue;
 			}
 			
-			// is the first track a DR track?
-			if (thisE.getPlotRelative())
+			// if this is a TMA segment, we plot the name 1/2 way along. If it isn't
+			// we plot it at the start
+			if(thisE instanceof CoreTMASegment)
 			{
-				_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
-			}
-			else if (_theLabel.getFont().isItalic())
-			{
-				_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
-			}
-
-			final WorldLocation theLoc = thisE.getTrackStart();
-			final String oldTxt = _theLabel.getString();
-			_theLabel.setString(thisE.getName());
-			// just see if this is a planning segment, with its own colors
-			if (thisE instanceof PlanningSegment)
-			{
-				final PlanningSegment ps = (PlanningSegment) thisE;
-				_theLabel.setColor(ps.getColor());
+				// just move along - we plot the name
+				// a the mid-point
 			}
 			else
 			{
-				_theLabel.setColor(getColor());
-			}
-			_theLabel.setLocation(theLoc);
-			_theLabel.paint(dest);
-			_theLabel.setString(oldTxt);
+			
+				// is the first track a DR track?
+				if (thisE.getPlotRelative())
+				{
+					_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
+				}
+				else if (_theLabel.getFont().isItalic())
+				{
+					_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+				}
+	
+				final WorldLocation theLoc = thisE.getTrackStart();
+				final String oldTxt = _theLabel.getString();
+				_theLabel.setString(thisE.getName());
+				// just see if this is a planning segment, with its own colors
+				if (thisE instanceof PlanningSegment)
+				{
+					final PlanningSegment ps = (PlanningSegment) thisE;
+					_theLabel.setColor(ps.getColor());
+				}
+				else
+				{
+					_theLabel.setColor(getColor());
+				}
+				_theLabel.setLocation(theLoc);
+				_theLabel.paint(dest);
+				_theLabel.setString(oldTxt);
+				}
 
 		}
 
