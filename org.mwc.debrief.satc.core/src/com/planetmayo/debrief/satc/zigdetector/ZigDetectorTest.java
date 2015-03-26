@@ -161,7 +161,7 @@ public class ZigDetectorTest
 		// scenarios.add("Scen2b");
 		// scenarios.add("Scen3");
 		// scenarios.add("Scen4");
-		scenarios.add("Scen5");
+		scenarios.add("Scen6");
 	
 		// handler for slider changes
 		final NewValueListener newL = new NewValueListener()
@@ -319,7 +319,7 @@ public class ZigDetectorTest
 	
 			// find the ownship legs
 			data.ownshipLegs = legDetector.identifyOwnshipLegs(
-					data.ownshipTrack.getDates(), data.ownshipTrack.getSpeeds(), data.ownshipTrack.getCourses(), 5);
+					data.ownshipTrack.getDates(), data.ownshipTrack.getSpeeds(), data.ownshipTrack.getCourses(), 9);
 			// data.ownshipLegs = data.ownshipLegs.subList(2, 3);
 	
 			// ok, now for the ownship data
