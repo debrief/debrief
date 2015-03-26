@@ -1498,7 +1498,7 @@ public class MaintainContributionsView extends ViewPart
 						// sort out if this is in a leg or not
 						if (thisLeg != null)
 						{
-							if (thisTime > thisLeg.getEnd())
+							if (thisTime > thisLeg.getEnd() && lIter.hasNext())
 							{
 								thisLeg = lIter.next();
 							}
