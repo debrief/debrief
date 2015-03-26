@@ -115,6 +115,8 @@ public class XStreamIO
 		xstream.useAttributeFor(FMeasurement.class, "osCourse");
 		xstream.useAttributeFor(FMeasurement.class, "osSpeed");
 
+		xstream.useAttributeFor(StraightLegForecastContribution.class, "autoGenBy");
+
 		xstream.useAttributeFor(GeoPoint.class, "lat");
 		xstream.useAttributeFor(GeoPoint.class, "lon");		
 	}
