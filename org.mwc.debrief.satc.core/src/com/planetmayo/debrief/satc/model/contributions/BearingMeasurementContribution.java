@@ -499,6 +499,32 @@ public class BearingMeasurementContribution extends
 			}
 		}
 
+		// ok, now ditch any straight leg contributions that we generated
+		Iterator<BaseContribution> ditchIter = contributions.iterator();
+		ArrayList<StraightLegForecastContribution> toRemove = new ArrayList<StraightLegForecastContribution>();
+		while (ditchIter.hasNext())
+		{
+			BaseContribution baseContribution = (BaseContribution) ditchIter.next();
+			if(baseContribution instanceof StraightLegForecastContribution)
+			{
+				StraightLegForecastContribution sfl = (StraightLegForecastContribution) baseContribution;
+				if(sfl.getAutoGenBy().equals(getName()))
+				{
+					toRemove.add(sfl);
+				}
+			}
+		}
+		
+		// ditch any that we did find
+		Iterator<StraightLegForecastContribution> remover = toRemove.iterator();
+		while (remover.hasNext())
+		{
+			StraightLegForecastContribution toDitch = (StraightLegForecastContribution) remover
+					.next();
+			contributions.removeContribution(toDitch);
+		}
+		
+		
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
 
@@ -506,10 +532,10 @@ public class BearingMeasurementContribution extends
 			ownshipLegs.clear();
 
 		ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
-				getCourses(states), getSpeeds(states), 9);
+				getSpeeds(states), getCourses(states), 9);
 
 		// create object that can store the new legs
-		MyLegStorer storer = new MyLegStorer(contributions, this.getMeasurements());
+		MyLegStorer storer = new MyLegStorer(contributions, this.getMeasurements(), this.getName());
 
 		// ok, now collate the bearing data
 		ZigDetector detector = new ZigDetector();
@@ -590,12 +616,14 @@ public class BearingMeasurementContribution extends
 		private ArrayList<StraightLegForecastContribution> slices = new ArrayList<StraightLegForecastContribution>();
 		private final IContributions _contributions;
 		private final ArrayList<BMeasurement> _cuts;
+		private final String _genName;
 
 		public MyLegStorer(final IContributions theConts,
-				ArrayList<BMeasurement> cuts)
+				ArrayList<BMeasurement> cuts, String genName)
 		{
 			_contributions = theConts;
 			_cuts = cuts;
+			_genName = genName;
 		}
 
 		public ArrayList<StraightLegForecastContribution> getSlices()
@@ -629,6 +657,7 @@ public class BearingMeasurementContribution extends
 			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
 			StraightLegForecastContribution slf = new CompositeStraightLegForecastContribution();
 			slf.setStartDate(new Date(tStart));
+			slf.setAutoGenBy(_genName);
 			slf.setFinishDate(new Date(tEnd));
 			slf.setColor(colorAt(slf.getStartDate()));
 			slf.setActive(true);
