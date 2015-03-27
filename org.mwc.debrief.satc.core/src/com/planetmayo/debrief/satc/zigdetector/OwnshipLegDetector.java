@@ -10,6 +10,8 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 public class OwnshipLegDetector
 {
 
+	private static final int MIN_OWNSHIP_LENGTH = 180000; // 3 minutes
+
 	/**
 	 * slice this data into ownship legs, where the course and speed are
 	 * relatively steady
@@ -117,6 +119,17 @@ public class OwnshipLegDetector
 						long lastRecorded = legs.get(legs.size() - 1).getEnd();
 						if ((thisTime - lastRecorded) > 30 * 1000)
 						{
+							// ok, check out the last leg. Was it worthwhile?
+							if(legs.size()>0)
+							{
+								LegOfData previousLeg = legs.get(legs.size()-1);
+								if(previousLeg.getEnd() - previousLeg.getStart() < MIN_OWNSHIP_LENGTH)
+								{
+									// ok, just ditch it
+									legs.remove(previousLeg);
+								}
+							}
+							
 							legs.add(new LegOfData("Leg-" + (legs.size() + 1)));
 						}
 					}
