@@ -1140,8 +1140,6 @@ public class SATC_Solution extends BaseLayer implements
 				// store the most recent score - so we can
 				// decide whether to bother showing a result to the user
 				_currentScore = topScore;
-				if(topScore == 0)
-					System.out.println("here");
 			}
 
 			@Override
