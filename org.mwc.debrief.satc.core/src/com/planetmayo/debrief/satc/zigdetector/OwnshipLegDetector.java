@@ -36,17 +36,17 @@ public class OwnshipLegDetector
 			switch(precision)
 			{
 			case HIGH:
-				COURSE_TOLERANCE = 0.04; // rads / sec (just a guess!!)
-				SPEED_TOLERANCE = 0.5; // ms / sec (just a guess!!)			
+				COURSE_TOLERANCE = 0.05; // rads / sec (just a guess!!)
+				SPEED_TOLERANCE = 0.0005; // ms / sec (just a guess!!)			
 				break;
 			case MEDIUM:
 				COURSE_TOLERANCE = 0.08; // rads / sec (just a guess!!)
-				SPEED_TOLERANCE = 1.1; // ms / sec (just a guess!!)			
+				SPEED_TOLERANCE = 0.001; // ms / sec (just a guess!!)			
 				break;
 			case LOW:
 			default:
-				COURSE_TOLERANCE = 0.16; // rads / sec (just a guess!!)
-				SPEED_TOLERANCE = 1.8; // ms / sec (just a guess!!)			
+				COURSE_TOLERANCE = 0.6; // rads / sec (just a guess!!)
+				SPEED_TOLERANCE = 0.004; // ms / sec (just a guess!!)			
 				break;
 			}
 		}
