@@ -2536,15 +2536,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			return;
 
 		// is the first track a DR track?
-		final TrackSegment t1 = (TrackSegment) _thePositions.first();
-		if (t1.getPlotRelative())
-		{
-			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
-		}
-		else if (_theLabel.getFont().isItalic())
-		{
-			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
-		}
+		// NO - CHANGED: we only initialise the track font in italics
+		// for a DR track. Then we let the user change it
+//		final TrackSegment t1 = (TrackSegment) _thePositions.first();
+//		
+//		if (t1.getPlotRelative())
+//		{
+//			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
+//		}
+//		else if (_theLabel.getFont().isItalic())
+//		{
+//			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+//		}
 
 		// check that we have set the name for the label
 		if (_theLabel.getString() == null)
