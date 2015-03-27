@@ -3,6 +3,10 @@ package com.planetmayo.debrief.satc.zigdetector;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.planetmayo.debrief.satc.model.Precision;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+
 public class OwnshipLegDetector
 {
 
@@ -21,8 +25,37 @@ public class OwnshipLegDetector
 			final int minsOfAverage)
 	{
 
-		final double COURSE_TOLERANCE = 0.08; // rads / sec (just a guess!!)
-		final double SPEED_TOLERANCE = 1.1; // ms / sec (just a guess!!)
+		// ok, see if we can find the precision
+		final double COURSE_TOLERANCE;
+		final double SPEED_TOLERANCE;
+		ISolversManager solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, false);
+		
+		if(solversManager != null)
+		{
+			Precision precision = solversManager.getActiveSolver().getPrecision();
+			switch(precision)
+			{
+			case HIGH:
+				COURSE_TOLERANCE = 0.04; // rads / sec (just a guess!!)
+				SPEED_TOLERANCE = 0.5; // ms / sec (just a guess!!)			
+				break;
+			case MEDIUM:
+				COURSE_TOLERANCE = 0.08; // rads / sec (just a guess!!)
+				SPEED_TOLERANCE = 1.1; // ms / sec (just a guess!!)			
+				break;
+			case LOW:
+			default:
+				COURSE_TOLERANCE = 0.16; // rads / sec (just a guess!!)
+				SPEED_TOLERANCE = 1.8; // ms / sec (just a guess!!)			
+				break;
+			}
+		}
+		else
+		{
+			COURSE_TOLERANCE = 0.08; // rads / sec (just a guess!!)
+			SPEED_TOLERANCE = 1.1; // ms / sec (just a guess!!)			
+		}
+		
 
 		double lastCourse = 0;
 		double lastSpeed = 0;
