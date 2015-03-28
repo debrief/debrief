@@ -101,7 +101,7 @@
          <target>  
            <artifact>  
              <groupId>org.mwc.debrief</groupId>  
-             <artifactId>eclipse38</artifactId>  
+             <artifactId>luna</artifactId>  
              <version>0.0.1-SNAPSHOT</version>  
            </artifact>  
          </target>  
@@ -156,16 +156,10 @@
 			<artifactId>org.eclipse.platform</artifactId>
 			<version>0.0.0</version>
 		</dependency>
-	<!-- http://www.jmock.org/maven.html -->
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-legacy</artifactId>
-			<version>2.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-junit4</artifactId>
-			<version>2.5.1</version>
+	        <dependency>
+			<type>eclipse-feature</type>
+			<artifactId>org.eclipse.e4.rcp</artifactId>
+			<version>0.0.0</version>
 		</dependency>
 	  </dependencies>
 	  <includes>

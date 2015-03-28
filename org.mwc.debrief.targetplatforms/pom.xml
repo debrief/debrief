@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
         <groupId>org.mwc.debrief</groupId>
-	<artifactId>eclipse38</artifactId>
+	<artifactId>luna</artifactId>
 	<packaging>eclipse-target-definition</packaging>
-	<name>Debrief Eclipse 3.8 Target Definition</name>
+	<name>Debrief Eclipse Luna SR2 (4.4.2) Target Definition</name>
 
 	<parent>
 		<artifactId>parent</artifactId>
