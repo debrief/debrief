@@ -21,9 +21,16 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Panel;
+import java.awt.Toolkit;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
@@ -35,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.swing.JComponent;
 import javax.swing.JRootPane;
 
 import org.eclipse.core.runtime.IStatus;
@@ -1145,12 +1153,12 @@ public class XYPlotView extends ViewPart
 		{
 			public void run()
 			{
-				wmfToClipboard();
+				bitmapToClipBoard(_chartInPanel);
 			}
 		};
 		_exportToClipboard.setText("Copy to Clipboard");
 		_exportToClipboard
-				.setToolTipText("Place a WMF image of the graph on the clipboard");
+				.setToolTipText("Place a bitmap image of the graph on the clipboard");
 		_exportToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/copy.png"));
 
@@ -1171,6 +1179,54 @@ public class XYPlotView extends ViewPart
 				.setToolTipText("Copies the graph as a text matrix to the clipboard");
 		_copyToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/export.png"));
+
+	}
+
+	protected void bitmapToClipBoard(JComponent component) {
+		final BufferedImage img = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = img.getGraphics();
+        g.setColor(component.getForeground());
+        g.setFont(component.getFont());
+        component.paint(g);
+        Transferable t = new Transferable()
+		{
+
+			public DataFlavor[] getTransferDataFlavors()
+			{
+				return new DataFlavor[]
+				{ DataFlavor.imageFlavor };
+			}
+
+			public boolean isDataFlavorSupported(DataFlavor flavor)
+			{
+				if (flavor == DataFlavor.imageFlavor)
+					return true;
+				return false;
+			}
+
+			public Object getTransferData(DataFlavor flavor)
+					throws UnsupportedFlavorException, IOException
+			{
+				if (isDataFlavorSupported(flavor))
+				{
+					return img;
+				}
+				return null;
+			}
+
+		};
+
+		ClipboardOwner co = new ClipboardOwner()
+		{
+
+			public void lostOwnership(java.awt.datatransfer.Clipboard clipboard,
+					Transferable contents)
+			{
+			}
+
+		};
+		java.awt.datatransfer.Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		cb.setContents(t, co);
 
 	}
 
