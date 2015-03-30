@@ -96,6 +96,7 @@ import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.preferences.SelectionHelper;
+import org.mwc.cmap.core.preferences.WMFExportPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.RTFWriter;
@@ -106,6 +107,7 @@ import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
@@ -841,7 +843,22 @@ public class XYPlotView extends ViewPart
 	final void wmfToFile()
 	{
 		// create the metafile graphics
-		String dir = System.getProperty("java.io.tmpdir");
+		final String dir;
+		
+		// retrieve the prefs location for writing WMF
+		String tmpDir = CorePlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.WMF_DIRECTORY);
+
+		// did we find the preference for the WMF location?
+		if(tmpDir != null)
+		{
+			dir = tmpDir;
+		}
+		else
+		{
+			dir =  System.getProperty("java.io.tmpdir");
+		}
+		
+		// ok, setup the export
 		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
 				(Graphics2D) _chartInPanel.getGraphics());
 
@@ -1093,6 +1110,7 @@ public class XYPlotView extends ViewPart
 		_switchAxes.setToolTipText("Switch axes");
 		_switchAxes.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/swap_axis.png"));
+		
 
 		_growPlot = new Action("Grow times", SWT.TOGGLE)
 		{
@@ -1144,7 +1162,7 @@ public class XYPlotView extends ViewPart
 				wmfToFile();
 			}
 		};
-		_exportToWMF.setText("Export to WMF");
+		_exportToWMF.setText("Export to WMF file");
 		_exportToWMF.setToolTipText("Produce a WMF file of the graph");
 		_exportToWMF.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/ex_2word.png"));
@@ -1156,7 +1174,7 @@ public class XYPlotView extends ViewPart
 				bitmapToClipBoard(_chartInPanel);
 			}
 		};
-		_exportToClipboard.setText("Copy to Clipboard");
+		_exportToClipboard.setText("Copy bitmap to Clipboard");
 		_exportToClipboard
 				.setToolTipText("Place a bitmap image of the graph on the clipboard");
 		_exportToClipboard.setImageDescriptor(CorePlugin
