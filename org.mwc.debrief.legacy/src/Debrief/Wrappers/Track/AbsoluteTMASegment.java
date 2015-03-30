@@ -357,7 +357,11 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		this.setCourse(newCourse);
 
 		// tell the segment it's being stretched
-		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts "
+		
+		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
+				.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
+
+		_dragMsg = "[" + spdTxt + " kts "
 				+ (int) newCourse + "\u00B0]";
 
 		super.firePropertyChange("Course", newCourse, newCourse);
