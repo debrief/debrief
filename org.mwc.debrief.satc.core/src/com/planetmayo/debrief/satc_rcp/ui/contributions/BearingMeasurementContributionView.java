@@ -39,7 +39,8 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 	private Scale errorSlider;
 	private Label errorLabel;
 	private Button errorActiveCheckbox;
-	private Button runMDACheckbox;
+	private Button runSliceOsBtn;
+	private Button runSliceTgtBtn;
 
 	public BearingMeasurementContributionView(Composite parent,
 			BearingMeasurementContribution contribution, final IContributions contributions)
@@ -72,7 +73,25 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 //		context.bindValue(autoButton, autoValue);
 		
 		// connect the checkbox to the run MDA event
-		runMDACheckbox.addSelectionListener(new SelectionListener()
+		runSliceOsBtn.addSelectionListener(new SelectionListener()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+
+				// ok - run the MDA generator
+				contribution.sliceOwnship(getContributions());
+				
+				// ok, done - enable the second btn
+				runSliceTgtBtn.setEnabled(true);
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
+		// connect the checkbox to the run MDA event
+		runSliceTgtBtn.addSelectionListener(new SelectionListener()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent e)
@@ -106,9 +125,11 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		UIUtils.createLabel(bodyGroup, "MDA: ", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		Composite group2 = new Composite(bodyGroup, SWT.NONE);
 		group2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		group2.setLayout(UIUtils.createGridLayoutWithoutMargins(3, false));
-		runMDACheckbox = new Button(group2, SWT.PUSH);
-		runMDACheckbox.setText("Run");
+		group2.setLayout(UIUtils.createGridLayoutWithoutMargins(5, false));
+		runSliceOsBtn = new Button(group2, SWT.PUSH);
+		runSliceOsBtn.setText("1. Slice O/S legs");
+		runSliceTgtBtn = new Button(group2, SWT.PUSH);
+		runSliceTgtBtn.setText("2. Slice Tgt legs");
 		UIUtils.createLabel(bodyGroup, "Auto-detect target manoeuvres", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 	}
 	
@@ -119,6 +140,9 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		startTime.setEnabled(false);
 		endDate.setEnabled(false);
 		endTime.setEnabled(false);
+		
+		runSliceOsBtn.setEnabled(true);
+		runSliceTgtBtn.setEnabled(false);
 	}
 
 	@Override

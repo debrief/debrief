@@ -197,7 +197,16 @@ final class ImportSensor implements PlainLineImporter {
 	    } // whether the duff origin data was entered
 
 	    brg = MWCXMLReader.readThisDouble(st.nextToken());
-	    rng = MWCXMLReader.readThisDouble(st.nextToken());
+	    
+	    String rangeStr = st.nextToken();
+	    if(rangeStr.startsWith("N"))
+	    {
+	    	rng = 0;
+	    }
+	    else
+	    {	   
+	    	rng = MWCXMLReader.readThisDouble(rangeStr);
+	    }
     
 	    // only store a sensor range if a legitimate one was passed in
 	    WorldDistance sensorRng;

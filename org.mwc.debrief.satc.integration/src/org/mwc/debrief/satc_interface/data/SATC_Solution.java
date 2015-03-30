@@ -111,6 +111,11 @@ public class SATC_Solution extends BaseLayer implements
 		BaseLayer.ProvidesRange, ISecondaryTrack, NonColoredWatchable
 {
 
+	/** only accept a final solution if it's better than the
+	 * maximum score
+	 */
+	private static final int MAXIMUM_SCORE = 50;
+
 	/**
 	 * utility class to work through a route
 	 * 
@@ -1141,7 +1146,7 @@ public class SATC_Solution extends BaseLayer implements
 			public void solutionsReady(final CompositeRoute[] routes)
 			{
 				// just double-check that the score is acceptable
-				if ((_currentScore != null) && (_currentScore > 10))
+				if ((_currentScore != null) && (_currentScore > MAXIMUM_SCORE))
 				{
 					// hey, skip it, no good solutions
 					CorePlugin

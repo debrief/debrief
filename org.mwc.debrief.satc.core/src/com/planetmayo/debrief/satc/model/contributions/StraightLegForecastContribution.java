@@ -30,8 +30,23 @@ public class StraightLegForecastContribution extends BaseContribution implements
 {
 	private static final long serialVersionUID = 1L;
 
+	/** name of the system that auto generated us, if applicable
+	 * 
+	 */
+	private String autoGenBy = null;
 	
 	private Color color = Color.red;
+	
+	public String getAutoGenBy()
+	{
+		return autoGenBy;
+	}
+	
+	
+	public void setAutoGenBy(String val)
+	{
+		autoGenBy = val;
+	}
 	
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException

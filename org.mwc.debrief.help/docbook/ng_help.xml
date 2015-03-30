@@ -6447,7 +6447,7 @@ Platform C,-551</screen></para>
 <markup>;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS  H BBB.B
  RRRR yy..yy xx..xx
 ;; date, ownship name, symbology, sensor lat/long (or the single word NULL),
- bearing (degs), range(yds), sensor name, label (to end of line)</markup>
+ bearing (degs), range(yds) [or the single world NULL], sensor name, label (to end of line)</markup>
             </screen>
             or
             <screen width="70">
@@ -8873,7 +8873,7 @@ minima (yards), label
 ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H 
 BBB.B RRRR yy..yy xx..xx 
 ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
-bearing (degs), range(yds), sensor name, label (to end of line)
+bearing (degs), range(yds) [or the single world NULL], sensor name, label (to end of line)
 
 ;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C 
 FFF.F RRRR yy..yy xx..xx

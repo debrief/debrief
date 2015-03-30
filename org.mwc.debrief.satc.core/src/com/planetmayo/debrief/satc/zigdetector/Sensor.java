@@ -22,7 +22,7 @@ public class Sensor
 	{
 
 		final DateTimeFormatter formatter = DateTimeFormat
-				.forPattern("yyMMdd HHmmss");
+				.forPattern("yyMMdd HHmmss.SSS");
 
 		// schema
 		// 100112 120000,12000.00 ,24000.00 ,0.00 ,-153.43

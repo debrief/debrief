@@ -257,6 +257,7 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -522,6 +523,13 @@ public class ImportReplay extends PlainImporterBase
 
 			// give it the data container
 			trkWrapper.add(initialLayer);
+			
+			// if this was relative, make it plot as italic
+			if(initialLayer.getPlotRelative())
+			{
+				// ok, retrieve the original font, and make it italic
+				trkWrapper.setTrackFont(trkWrapper.getTrackFont().deriveFont(Font.ITALIC));
+			}
 
 			// get the colour for this track
 			trkWrapper.setColor(thisColor);

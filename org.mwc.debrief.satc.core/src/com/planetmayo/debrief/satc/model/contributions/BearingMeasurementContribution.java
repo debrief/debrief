@@ -63,10 +63,12 @@ public class BearingMeasurementContribution extends
 	{
 		public void startingSlice(String contName);
 
-		public void sliced(String contName, ArrayList<BMeasurement> bearings,
+		public void ownshipLegs(String contName, ArrayList<BMeasurement> bearings,
 				List<LegOfData> ownshipLegs,
-				ArrayList<StraightLegForecastContribution> arrayList,
 				ArrayList<HostState> hostStates);
+		
+		public void sliced(String contName, 
+				ArrayList<StraightLegForecastContribution> arrayList);
 	}
 
 	/**
@@ -478,15 +480,9 @@ public class BearingMeasurementContribution extends
 			this.speedKts = speedKts;
 		}
 	}
-
-	public void runMDA(final IContributions contributions)
+	
+	public void sliceOwnship(final IContributions contributions)
 	{
-		// ok, we've got to find the ownship data, somehow :-(
-		if ((states == null) || (states.size() == 0))
-		{
-			return;
-		}
-
 		// ok share the good news - we're about to start
 		if (_listeners != null)
 		{
@@ -498,7 +494,7 @@ public class BearingMeasurementContribution extends
 				thisL.startingSlice(this.getName());
 			}
 		}
-
+		
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
 
@@ -506,10 +502,60 @@ public class BearingMeasurementContribution extends
 			ownshipLegs.clear();
 
 		ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
-				getCourses(states), getSpeeds(states), 9);
+				getSpeeds(states), getCourses(states), 9);
+		
+		// ok, share the ownship legs
+		// ok, slicing done!
+		if (_listeners != null)
+		{
+			Iterator<MDAResultsListener> iter = _listeners.iterator();
+			while (iter.hasNext())
+			{
+				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
+						.next();
+				thisL.ownshipLegs(this.getName(), this.getMeasurements(), ownshipLegs, states);
+			}
+		}
+	}
+
+	public void runMDA(final IContributions contributions)
+	{
+		// ok, we've got to find the ownship data, somehow :-(
+		if ((states == null) || (states.size() == 0))
+		{
+			return;
+		}
+		
+
+		// ok, now ditch any straight leg contributions that we generated
+		Iterator<BaseContribution> ditchIter = contributions.iterator();
+		ArrayList<StraightLegForecastContribution> toRemove = new ArrayList<StraightLegForecastContribution>();
+		while (ditchIter.hasNext())
+		{
+			BaseContribution baseContribution = (BaseContribution) ditchIter.next();
+			if(baseContribution instanceof StraightLegForecastContribution)
+			{
+				StraightLegForecastContribution sfl = (StraightLegForecastContribution) baseContribution;
+				if(sfl.getAutoGenBy().equals(getName()))
+				{
+					toRemove.add(sfl);
+				}
+			}
+		}
+		
+		// ditch any that we did find
+		Iterator<StraightLegForecastContribution> remover = toRemove.iterator();
+		while (remover.hasNext())
+		{
+			StraightLegForecastContribution toDitch = (StraightLegForecastContribution) remover
+					.next();
+			contributions.removeContribution(toDitch);
+		}
+		
+
 
 		// create object that can store the new legs
-		MyLegStorer storer = new MyLegStorer(contributions, this.getMeasurements());
+		MyLegStorer storer = new MyLegStorer(contributions, this.getMeasurements(), this.getName());
 
 		// ok, now collate the bearing data
 		ZigDetector detector = new ZigDetector();
@@ -558,8 +604,7 @@ public class BearingMeasurementContribution extends
 			{
 				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
 						.next();
-				thisL.sliced(this.getName(), this.getMeasurements(), ownshipLegs,
-						storer.getSlices(), states);
+				thisL.sliced(this.getName(), storer.getSlices());
 			}
 		}
 
@@ -590,12 +635,14 @@ public class BearingMeasurementContribution extends
 		private ArrayList<StraightLegForecastContribution> slices = new ArrayList<StraightLegForecastContribution>();
 		private final IContributions _contributions;
 		private final ArrayList<BMeasurement> _cuts;
+		private final String _genName;
 
 		public MyLegStorer(final IContributions theConts,
-				ArrayList<BMeasurement> cuts)
+				ArrayList<BMeasurement> cuts, String genName)
 		{
 			_contributions = theConts;
 			_cuts = cuts;
+			_genName = genName;
 		}
 
 		public ArrayList<StraightLegForecastContribution> getSlices()
@@ -625,10 +672,11 @@ public class BearingMeasurementContribution extends
 		public void storeLeg(String scenarioName, long tStart, long tEnd,
 				Sensor sensor, double rms)
 		{
-			String name = "Leg-" + ctr++;
+			String name = "Tgt-" + ctr++;
 			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
 			StraightLegForecastContribution slf = new CompositeStraightLegForecastContribution();
 			slf.setStartDate(new Date(tStart));
+			slf.setAutoGenBy(_genName);
 			slf.setFinishDate(new Date(tEnd));
 			slf.setColor(colorAt(slf.getStartDate()));
 			slf.setActive(true);
