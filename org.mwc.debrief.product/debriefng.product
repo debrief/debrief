@@ -15,13 +15,16 @@
 
    <launcherArgs>
       <programArgs>-data
-@user.home/.DebriefNG
+@user.home/.DebriefNG_luna
 --launcher.defaultAction
-openFile</programArgs>
+openFile
+      </programArgs>
       <vmArgs>-Xms128m
 -Xmx1024m
--Duser.timezone=GMT</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+-Duser.timezone=GMT
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="icons/icon.gif"/>
