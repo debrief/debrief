@@ -968,7 +968,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			if (_swtImage == null)
 			{
 				// nope, do we have any data?
-				if (gp.numLayers() > 0)
+				if (gp.numVisibleLayers() > 0)
 				{
 					// now, GeoTools paint is an expensive operation, so I'm going to do
 					// all I can to avoid doing it. So, I'm going to see if any of the
@@ -1013,7 +1013,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			else if (dest instanceof MetafileCanvas)
 			{
 				// but do we have any data?
-				if (gp.numLayers() > 0)
+				if (gp.numVisibleLayers() > 0)
 				{
 					// yes, generate the image
 					final BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,

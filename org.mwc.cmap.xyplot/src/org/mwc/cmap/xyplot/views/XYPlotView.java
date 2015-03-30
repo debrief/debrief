@@ -21,9 +21,16 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Panel;
+import java.awt.Toolkit;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
@@ -35,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.swing.JComponent;
 import javax.swing.JRootPane;
 
 import org.eclipse.core.runtime.IStatus;
@@ -88,6 +96,7 @@ import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.preferences.SelectionHelper;
+import org.mwc.cmap.core.preferences.WMFExportPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.RTFWriter;
@@ -98,6 +107,7 @@ import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
@@ -833,7 +843,22 @@ public class XYPlotView extends ViewPart
 	final void wmfToFile()
 	{
 		// create the metafile graphics
-		String dir = System.getProperty("java.io.tmpdir");
+		final String dir;
+		
+		// retrieve the prefs location for writing WMF
+		String tmpDir = CorePlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.WMF_DIRECTORY);
+
+		// did we find the preference for the WMF location?
+		if(tmpDir != null)
+		{
+			dir = tmpDir;
+		}
+		else
+		{
+			dir =  System.getProperty("java.io.tmpdir");
+		}
+		
+		// ok, setup the export
 		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
 				(Graphics2D) _chartInPanel.getGraphics());
 
@@ -1085,6 +1110,7 @@ public class XYPlotView extends ViewPart
 		_switchAxes.setToolTipText("Switch axes");
 		_switchAxes.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/swap_axis.png"));
+		
 
 		_growPlot = new Action("Grow times", SWT.TOGGLE)
 		{
@@ -1136,7 +1162,7 @@ public class XYPlotView extends ViewPart
 				wmfToFile();
 			}
 		};
-		_exportToWMF.setText("Export to WMF");
+		_exportToWMF.setText("Export to WMF file");
 		_exportToWMF.setToolTipText("Produce a WMF file of the graph");
 		_exportToWMF.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/ex_2word.png"));
@@ -1145,12 +1171,12 @@ public class XYPlotView extends ViewPart
 		{
 			public void run()
 			{
-				wmfToClipboard();
+				bitmapToClipBoard(_chartInPanel);
 			}
 		};
-		_exportToClipboard.setText("Copy to Clipboard");
+		_exportToClipboard.setText("Copy bitmap to Clipboard");
 		_exportToClipboard
-				.setToolTipText("Place a WMF image of the graph on the clipboard");
+				.setToolTipText("Place a bitmap image of the graph on the clipboard");
 		_exportToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/copy.png"));
 
@@ -1171,6 +1197,54 @@ public class XYPlotView extends ViewPart
 				.setToolTipText("Copies the graph as a text matrix to the clipboard");
 		_copyToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/export.png"));
+
+	}
+
+	protected void bitmapToClipBoard(JComponent component) {
+		final BufferedImage img = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = img.getGraphics();
+        g.setColor(component.getForeground());
+        g.setFont(component.getFont());
+        component.paint(g);
+        Transferable t = new Transferable()
+		{
+
+			public DataFlavor[] getTransferDataFlavors()
+			{
+				return new DataFlavor[]
+				{ DataFlavor.imageFlavor };
+			}
+
+			public boolean isDataFlavorSupported(DataFlavor flavor)
+			{
+				if (flavor == DataFlavor.imageFlavor)
+					return true;
+				return false;
+			}
+
+			public Object getTransferData(DataFlavor flavor)
+					throws UnsupportedFlavorException, IOException
+			{
+				if (isDataFlavorSupported(flavor))
+				{
+					return img;
+				}
+				return null;
+			}
+
+		};
+
+		ClipboardOwner co = new ClipboardOwner()
+		{
+
+			public void lostOwnership(java.awt.datatransfer.Clipboard clipboard,
+					Transferable contents)
+			{
+			}
+
+		};
+		java.awt.datatransfer.Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		cb.setContents(t, co);
 
 	}
 

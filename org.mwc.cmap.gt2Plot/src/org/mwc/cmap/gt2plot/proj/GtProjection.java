@@ -515,6 +515,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		return _map.layers().size();
 	}
 
+	public int numVisibleLayers()
+	{
+		int num =0;
+		for (Layer layer:_map.layers()) {
+			if (layer.isVisible()) {
+				num++;
+			}
+		}
+		return num;
+	}
+	
 	/**
 	 * whether the geotools layers overlap with the specified area
 	 * 
