@@ -378,8 +378,8 @@ public class DynamicInfillSegment extends TrackSegment
 		this.removeAllElements();
 
 		// now the num to use
-		final int oneUse = 2;
-		final int twoUse = 3;
+		final int oneUse = Math.min(2, _before.size());
+		final int twoUse = Math.min(3, _after.size());
 
 		// generate the data for the splines
 		final FixWrapper[] oneElements = getLastElementsFrom(_before, oneUse);
