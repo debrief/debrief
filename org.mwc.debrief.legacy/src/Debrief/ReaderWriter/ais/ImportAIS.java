@@ -377,7 +377,7 @@ public class ImportAIS
 		public void testFullImport() throws Exception
 		{
 			testImport(
-					"../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0854.ais",
+					"../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0854.txt",
 					6);
 		}
 
@@ -512,7 +512,7 @@ public class ImportAIS
 			importer.importThis(testFile, is);
 
 			// hmmm, how many tracks
-			assertEquals("got new tracks", 1, tLayers.size());
+			assertEquals("got new tracks", 15, tLayers.size());
 
 			final TrackWrapper thisT = (TrackWrapper) tLayers.findLayer("LOLLAND");
 			final Enumeration<Editable> fixes = thisT.getPositions();
@@ -527,11 +527,5 @@ public class ImportAIS
 
 		}
 
-		public void testShortImport() throws Exception
-		{
-			testImport(
-					"../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0854_trimmed.ais",
-					1);
-		}
 	}
 }
