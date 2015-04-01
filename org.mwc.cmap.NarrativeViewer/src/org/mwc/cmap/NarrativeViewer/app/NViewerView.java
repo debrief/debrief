@@ -14,10 +14,12 @@
  */
 package org.mwc.cmap.NarrativeViewer.app;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -59,6 +61,8 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -162,10 +166,22 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			{
 				if (changedLayer == _myRollingNarrative)
 					setInput(_myRollingNarrative);
+				refreshColor(changedLayer);
 			}
+
 		};
 	}
 
+	private boolean internalEquals(Color color1, Color color2) {
+		if (color1 == null && color2 == null) {
+			return true;
+		}
+		if (color1 != null) {
+			return color1.equals(color2);
+		}
+		return color2.equals(color1);
+	}
+	
 	public void createPartControl(final Composite parent)
 	{
 
@@ -565,6 +581,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 							ditchOldLayers();
 
 							_myLayers = layer;
+							refreshColors();
 							_myLayers.addDataModifiedListener(_layerListener);
 							_myLayers.addDataReformattedListener(_layerListener);
 						}
@@ -714,6 +731,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		if (_myLayers != null)
 		{
 			_myLayers.removeDataModifiedListener(_layerListener);
+			_myLayers.removeDataReformattedListener(_layerListener);
 			_myLayers = null;
 		}
 	}
@@ -723,7 +741,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 	{
 
 		// and stop listening for part activity
-		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.ditch();
 
 		if (_controllableTime != null)
 		{
@@ -734,6 +752,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			_controllableTime = null;
 		}
 
+		ditchOldLayers();
 		// let the parent do it's bit
 		super.dispose();
 
@@ -934,6 +953,46 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			e.printStackTrace();
 		}
 
+	}
+
+	private void refreshColors() {
+		if (_myLayers == null) {
+			return;
+		}
+		Enumeration<Editable> elements = _myLayers.elements();
+		while (elements.hasMoreElements()) {
+			Editable element = elements.nextElement();
+			if (element instanceof Layer) {
+				refreshColor((Layer) element);
+			}
+		}
+		
+	}
+	
+	private void refreshColor(final Layer layer) {
+		if (layer instanceof TrackWrapper) {
+			TrackWrapper track = (TrackWrapper) layer;
+			String name = track.getName();
+			Color color = track.getColor();
+			boolean refresh = false;
+			NarrativeEntry[] entries = _myRollingNarrative.getNarrativeHistory(new String[] {});
+			for (NarrativeEntry entry : entries) {
+				if (entry.getTrackName() != null
+						&& entry.getTrackName().equals(name)) {
+					if (!internalEquals(color, entry.getColor())) {
+						if (color == null) {
+							entry.setColor(Color.white);
+						} else {
+							entry.setColor(color);
+						}
+						refresh = true;
+					}
+				}
+			}
+			if (refresh) {
+				myViewer.refresh();
+			}
+		}
 	}
 
 }
