@@ -257,9 +257,9 @@ public class NarrativeViewerModel extends KTableDefaultModel
     	Color color = entry.getColor();
     	KTableCellRenderer renderer = renderers.get(color); 
     	if (renderer == null) {
-    		//final org.eclipse.swt.graphics.Color swtColor = getWashedColor(color);
-    		final org.eclipse.swt.graphics.Color swtColor = new org.eclipse.swt.graphics.Color(Display.getCurrent(),
-    				color.getRed(), color.getGreen(), color.getBlue());
+    		final org.eclipse.swt.graphics.Color swtColor = getWashedColor(color);
+    		//final org.eclipse.swt.graphics.Color swtColor = new org.eclipse.swt.graphics.Color(Display.getCurrent(),
+    		//		color.getRed(), color.getGreen(), color.getBlue());
     		swtColors.add(swtColor);
     		renderer = new TextCellRenderer(TextCellRenderer.INDICATION_FOCUS_ROW) {
 
@@ -279,7 +279,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
 		int g = color.getGreen();
 		int b = color.getBlue();
 		
-		float shadeFactor = 0.5f;
+		float shadeFactor = 0.9f;
 		float red = (255 - r) * shadeFactor + r;
 		float green = (255 - g) * shadeFactor + g;
 		float blue = (255 - b) * shadeFactor + b;
