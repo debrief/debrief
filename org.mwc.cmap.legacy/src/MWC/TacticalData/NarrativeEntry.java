@@ -14,6 +14,7 @@
  */
 package MWC.TacticalData;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
@@ -43,6 +44,8 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 	String _DTGString = null;
 
 	private transient NarrativeEntryInfo _myInfo;
+
+	private Color _color = Color.white;
 
 	/**
      * 
@@ -149,6 +152,16 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 			_DTGString = DebriefFormatDateTime.toStringHiRes(_DTG);
 
 		return _DTGString;
+	}
+
+	public void setColor(Color color)
+	{
+		_color  = color;
+	}
+	
+	public Color getColor()
+	{
+		return _color;
 	}
 
 	/**
@@ -274,6 +287,7 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 				prop("Type", "the type of entry", FORMAT),
 						prop("Source", "the source for this entry", FORMAT),
 						prop(DTG, "the time this entry was recorded", FORMAT),
+						prop("Color", "the color for this narrative entry", FORMAT),
 						prop("Entry", "the content of this entry", FORMAT), };
 
 				return myRes;

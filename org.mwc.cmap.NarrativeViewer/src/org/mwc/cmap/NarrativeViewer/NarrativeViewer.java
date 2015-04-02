@@ -277,4 +277,12 @@ public class NarrativeViewer extends KTable
 		}
 
 	}
+	
+	@Override
+	public void dispose() {
+		if (myModel != null) {
+			myModel.dispose();
+		}
+		super.dispose();
+	}
 }

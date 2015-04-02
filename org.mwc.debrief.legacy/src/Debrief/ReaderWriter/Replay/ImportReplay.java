@@ -792,6 +792,15 @@ public class ImportReplay extends PlainImporterBase
 				dest = new NarrativeWrapper(NARRATIVE_LAYER);
 				addLayer(dest);
 			}
+			
+			// ok, can we provide a track color for it?
+			String source = entry.getTrackName();
+			Layer host = getLayerFor(source);
+			if(host instanceof TrackWrapper)
+			{
+				TrackWrapper tw = (TrackWrapper) host;
+				entry.setColor(tw.getColor());
+			}
 
 			addToLayer(entry, dest);
 		}

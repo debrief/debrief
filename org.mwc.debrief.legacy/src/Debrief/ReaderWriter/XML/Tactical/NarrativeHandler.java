@@ -29,6 +29,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GenericData.HiResDate;
@@ -81,6 +82,18 @@ public final class NarrativeHandler extends
 
 	void addThis(final MWC.TacticalData.NarrativeEntry entry)
 	{
+		// see if we have a color code for this entry type
+		String source = entry.getSource();
+		Layer thisL = _theLayers.findLayer(source);
+		if(thisL != null)
+		{
+			if(thisL instanceof TrackWrapper)
+			{
+				TrackWrapper tw=  (TrackWrapper) thisL;
+				entry.setColor(tw.getColor());
+			}
+		}
+		
 		_myNarrative.add(entry);
 	}
 

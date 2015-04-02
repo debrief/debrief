@@ -14,21 +14,24 @@
  */
 package org.mwc.cmap.NarrativeViewer;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
-
-
 import de.kupzog.ktable.KTableCellEditor;
 import de.kupzog.ktable.KTableCellRenderer;
 import de.kupzog.ktable.KTableDefaultModel;
@@ -55,6 +58,9 @@ public class NarrativeViewerModel extends KTableDefaultModel
 
     private final ColumnFilter mySourceFilter;
     private final ColumnFilter myTypeFilter;
+    
+    private Map<Color, KTableCellRenderer> renderers = new HashMap<Color, KTableCellRenderer>();
+    private List<org.eclipse.swt.graphics.Color> swtColors = new ArrayList<org.eclipse.swt.graphics.Color>();
 
     private final FixedCellRenderer myHeaderCellRenderer = new FixedCellRenderer(
             FixedCellRenderer.STYLE_PUSH | SWT.BOLD
@@ -241,9 +247,47 @@ public class NarrativeViewerModel extends KTableDefaultModel
     @Override
     public KTableCellRenderer doGetCellRenderer(final int col, final int row)
     {
-        return row == 0 ? myHeaderCellRenderer : getVisibleColumn(col)
-                .getCellRenderer();
+    	if (row == 0) {
+    		return myHeaderCellRenderer;
+    	}
+    	NarrativeEntry entry = getEntryAt(col, row);
+    	if (entry == null || entry.getColor() == null) {
+        	return getVisibleColumn(col).getCellRenderer();
+    	}
+    	Color color = entry.getColor();
+    	KTableCellRenderer renderer = renderers.get(color); 
+    	if (renderer == null) {
+    		final org.eclipse.swt.graphics.Color swtColor = getWashedColor(color);
+    		//final org.eclipse.swt.graphics.Color swtColor = new org.eclipse.swt.graphics.Color(Display.getCurrent(),
+    		//		color.getRed(), color.getGreen(), color.getBlue());
+    		swtColors.add(swtColor);
+    		renderer = new TextCellRenderer(TextCellRenderer.INDICATION_FOCUS_ROW) {
+
+				@Override
+				public org.eclipse.swt.graphics.Color getBackground() {
+					return swtColor;
+				}
+    			
+    		};
+    		renderers.put(color, renderer);
+    	}
+    	return renderer;
     }
+
+	private org.eclipse.swt.graphics.Color getWashedColor(Color color) {
+		int r = color.getRed() ;
+		int g = color.getGreen();
+		int b = color.getBlue();
+		
+		float shadeFactor = 0.9f;
+		float red = (255 - r) * shadeFactor + r;
+		float green = (255 - g) * shadeFactor + g;
+		float blue = (255 - b) * shadeFactor + b;
+		
+		final org.eclipse.swt.graphics.Color swtColor = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 
+				(int)red, (int)green, (int)blue);
+		return swtColor;
+	}
 
     @Override
     public int doGetColumnCount()
@@ -523,4 +567,10 @@ public class NarrativeViewerModel extends KTableDefaultModel
             // return simpleDateFormat.format(calendar.getTime());
         }
     };
+    
+    public void dispose() {
+		for (org.eclipse.swt.graphics.Color color:swtColors) {
+    		color.dispose();
+    	}
+    }
 }
