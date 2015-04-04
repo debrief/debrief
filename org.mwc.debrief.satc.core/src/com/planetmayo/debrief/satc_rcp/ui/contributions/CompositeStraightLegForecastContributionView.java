@@ -23,12 +23,16 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -48,12 +52,20 @@ public class CompositeStraightLegForecastContributionView extends
 		BaseContributionView<CompositeStraightLegForecastContribution>
 {
 
+	private static final String BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT = "Both max/min values must be present";
 	private Text minSpeed;
 	private Text maxSpeed;
 	private Text speedEstimate;
 	private Text minCrse;
 	private Text maxCrse;
 	private Text crseEstimate;
+	
+	private ControlDecoration cdMinSpeed;
+	private ControlDecoration cdMaxSpeed;
+	private ControlDecoration cdSpeedEstimate;
+	private ControlDecoration cdMinCrse;
+	private ControlDecoration cdMaxCrse;
+	private ControlDecoration cdCrseEstimate;
 
 	public CompositeStraightLegForecastContributionView(Composite parent,
 			CompositeStraightLegForecastContribution contribution,
@@ -95,8 +107,11 @@ public class CompositeStraightLegForecastContributionView extends
 		speed.setLayout(new GridLayout(9, false));
 		
 		minSpeed = createSpeed(speed, "Min:");
+		cdMinSpeed = createDecoration(minSpeed);
 		maxSpeed = createSpeed(speed, "Max:");
+		cdMaxSpeed = createDecoration(maxSpeed);
 		speedEstimate = createSpeed(speed, "Estimate:");
+		cdSpeedEstimate = createDecoration(speedEstimate);
 
 		// now add the course
 		UIUtils.createLabel(bodyGroup, "Course: (0-360°)", new GridData(120, SWT.DEFAULT));
@@ -107,11 +122,23 @@ public class CompositeStraightLegForecastContributionView extends
 		course.setLayout(new GridLayout(9, false));
 		
 		minCrse = createCourse(course, "Min:");
+		cdMinCrse = createDecoration(minCrse);
 		maxCrse = createCourse(course, "Max:");
+		cdMaxCrse = createDecoration(maxCrse);
 		crseEstimate = createCourse(course, "Estimate:");
+		cdCrseEstimate = createDecoration(crseEstimate);
 		
 		context = new DataBindingContext();
 		bindValues(context);
+	}
+
+	private ControlDecoration createDecoration(Text text)
+	{
+		ControlDecoration cd = new ControlDecoration(text, SWT.TOP | SWT.LEFT);
+		Image image = FieldDecorationRegistry.getDefault()
+				.getFieldDecoration(FieldDecorationRegistry.DEC_ERROR).getImage();
+		cd.setImage(image);
+		return cd;
 	}
 
 	private Text createSpeed(Composite speed, String label)
@@ -179,18 +206,105 @@ public class CompositeStraightLegForecastContributionView extends
 		
 		ISWTObservableValue estimateCourseTextValue = bindCourseValue(context, crseEstimate, estimateCourseValue);
 		
-		ControlDecorationSupport.create(new Validator(
-				minSpeedTextValue, maxSpeedTextValue, estimateSpeedTextValue,
-				"Both max/min values must be present",
-				"Estimate value must be between min and max"), 
-				SWT.LEFT | SWT.TOP);
 		
-		ControlDecorationSupport.create(new Validator(
-				minCourseTextValue, maxCourseTextValue, estimateCourseTextValue,
-				"Both max/min values must be present",
-				"Estimate value must be between min and max"), 
-				SWT.LEFT | SWT.TOP);
+		ModifyListener modifyListener = new ModifyListener()
+		{
+			
+			@Override
+			public void modifyText(ModifyEvent e)
+			{
+				validate();
+			}
+		};
+		minSpeed.addModifyListener(modifyListener );
+		maxSpeed.addModifyListener(modifyListener );
+		speedEstimate.addModifyListener(modifyListener );
+		minCrse.addModifyListener(modifyListener );
+		maxCrse.addModifyListener(modifyListener );
+		crseEstimate.addModifyListener(modifyListener );
 		
+//		ControlDecorationSupport.create(new Validator(
+//				minSpeedTextValue, maxSpeedTextValue, estimateSpeedTextValue,
+//				"Both max/min values must be present",
+//				"Estimate value must be between min and max"), 
+//				SWT.LEFT | SWT.TOP);
+//		
+//		ControlDecorationSupport.create(new Validator(
+//				minCourseTextValue, maxCourseTextValue, estimateCourseTextValue,
+//				"Both max/min values must be present",
+//				"Estimate value must be between min and max"), 
+//				SWT.LEFT | SWT.TOP);
+		validate();
+		
+	}
+
+	protected void validate()
+	{
+		hideDecorations();
+		if (speedEstimate.getText().isEmpty())
+		{
+			if ((minSpeed.getText().isEmpty() && !maxSpeed.getText().isEmpty()))
+			{
+				cdMinSpeed.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMinSpeed.show();
+
+			}
+			if ((maxSpeed.getText().isEmpty() && !minSpeed.getText().isEmpty()))
+			{
+				cdMaxSpeed.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMaxSpeed.show();
+			}
+		}
+		else
+		{
+			if (minSpeed.getText().isEmpty())
+			{
+				cdMinSpeed.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMinSpeed.show();
+			}
+			if (maxSpeed.getText().isEmpty())
+			{
+				cdMaxSpeed.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMaxSpeed.show();
+			}
+		}
+
+		if (crseEstimate.getText().isEmpty())
+		{
+			if ((minCrse.getText().isEmpty() && !maxCrse.getText().isEmpty()))
+			{
+				cdMinCrse.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMinCrse.show();
+			}
+			if ((maxCrse.getText().isEmpty() && !minCrse.getText().isEmpty()))
+			{
+				cdMaxCrse.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMaxCrse.show();
+			}
+		}
+		else
+		{
+			if (minCrse.getText().isEmpty())
+			{
+				cdMinCrse.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMinCrse.show();
+			}
+			if (maxCrse.getText().isEmpty())
+			{
+				cdMaxCrse.setDescriptionText(BOTH_MAX_MIN_VALUES_MUST_BE_PRESENT);
+				cdMaxCrse.show();
+			}
+		}
+	}
+
+	private void hideDecorations()
+	{
+		cdMinSpeed.hide();
+		cdMaxSpeed.hide();
+		cdSpeedEstimate.hide();
+		cdMinCrse.hide();
+		cdMaxCrse.hide();
+		cdCrseEstimate.hide();
 	}
 
 	private ISWTObservableValue bindSpeedValue(DataBindingContext context,
