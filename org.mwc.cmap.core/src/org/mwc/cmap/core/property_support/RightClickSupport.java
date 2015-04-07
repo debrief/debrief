@@ -1052,8 +1052,7 @@ public class RightClickSupport
 				final Editable[] editable, final Method getter, final Method setter,
 				final Object newValue, final Layers layers, final Layer parentLayer)
 		{
-			super(propertyName + " for multiple items");
-
+			super(propertyName + " for " +  ( editable.length > 1? "multiple items" : editable[0].getName()));
 			_setter = setter;
 			_layers = layers;
 			_parentLayer = parentLayer;
@@ -1175,7 +1174,7 @@ public class RightClickSupport
 		public UndoableAction(final String propertyName, final Editable[] editable,
 				final SubjectAction action, final Layers layers, final Layer parentLayer)
 		{
-			super(propertyName + " for multiple items");
+			super(propertyName + " for " +  ( editable.length > 1? "multiple items" : editable[0].getName()));
 			_layers = layers;
 			_action = action;
 			_parentLayer = parentLayer;
