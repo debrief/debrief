@@ -33,7 +33,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
@@ -81,7 +80,6 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView;
 
 public class CreateSolutionFromSensorData implements
 		RightClickContextItemGenerator
@@ -809,16 +807,14 @@ public class CreateSolutionFromSensorData implements
 			// also, check that the maintain contributions window is open - the user
 			// is bound to be interested
 			CorePlugin.openView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
-
-			// also, try to set this as the current scenario in Maintain Contribs
-			IViewPart aView = CorePlugin
-					.findView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
-			if (aView != null)
+			
+			// tell anybody that's interested that we have a current solver
+			ISolversManager solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, false);
+			if(solversManager != null)
 			{
-				MaintainContributionsView mv = (MaintainContributionsView) aView;
-				mv.setActiveSolver(_targetSolution.getSolver());
+				solversManager.setActiveSolver(_targetSolution.getSolver());
 			}
-
+			
 			return Status.OK_STATUS;
 		}
 
