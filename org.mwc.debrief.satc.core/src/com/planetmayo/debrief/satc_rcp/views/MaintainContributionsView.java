@@ -161,7 +161,6 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
-	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	private static final String TITLE = "Maintain Contributions";
 
 	private static final Map<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>> CONTRIBUTION_PANELS;
