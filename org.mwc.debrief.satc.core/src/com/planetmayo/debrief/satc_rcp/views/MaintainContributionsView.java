@@ -1357,6 +1357,9 @@ public class MaintainContributionsView extends ViewPart
 						@Override
 						public void startingSlice(String contName)
 						{
+							// ok - ownship course is important for this - show it
+							showOSCourse.setSelection(true);
+							
 							startSlicingOwnshipLegs(contName);
 						}
 
@@ -1376,6 +1379,17 @@ public class MaintainContributionsView extends ViewPart
 						public void sliced(String contName,
 								ArrayList<StraightLegForecastContribution> arrayList)
 						{
+							// are we currently showing ownship course?
+							if(showOSCourse.getSelection())
+							{
+								// ok, ownship course is irrelevant to this, hide it
+								showOSCourse.setSelection(false);
+								
+								// update the ownship states, now that we've hidden the O/S course
+								redoOwnshipStates();
+							}
+							
+							// ok, now display the target legs
 							redoStraightLegs();
 						}
 					};
