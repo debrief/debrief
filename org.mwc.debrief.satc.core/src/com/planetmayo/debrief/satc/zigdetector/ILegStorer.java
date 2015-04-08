@@ -1,5 +1,9 @@
 package com.planetmayo.debrief.satc.zigdetector;
 
+import java.util.ArrayList;
+
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+
 /** interface for listener class that is told when a new leg is detected
  * 
  * @author ian
@@ -19,5 +23,8 @@ public interface ILegStorer
 	 */
 	void storeLeg(String scenarioName, long tStart, long tEnd, Sensor sensor,
 			double rms);
+	
+	public ArrayList<StraightLegForecastContribution> getSlices();
+
 
 }
