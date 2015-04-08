@@ -39,6 +39,7 @@ import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc.zigdetector.ILegStorer;
+import com.planetmayo.debrief.satc.zigdetector.IZigStorer;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
 import com.planetmayo.debrief.satc.zigdetector.Sensor;
@@ -54,6 +55,8 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 public class BearingMeasurementContribution extends
 		CoreMeasurementContribution<BearingMeasurementContribution.BMeasurement>
 {
+	private static final double ZIG_DETECTOR_RMS = 0.6;
+
 	private static final long serialVersionUID = 1L;
 
 	public static final String BEARING_ERROR = "bearingError";
@@ -526,7 +529,9 @@ public class BearingMeasurementContribution extends
 			return;
 		}
 		
-
+		// decide if we are going to split at ownship and target zigs, or just target zigs
+		final boolean justTargetZigs = true;
+		
 		// ok, now ditch any straight leg contributions that we generated
 		Iterator<BaseContribution> ditchIter = contributions.iterator();
 		ArrayList<StraightLegForecastContribution> toRemove = new ArrayList<StraightLegForecastContribution>();
@@ -555,7 +560,22 @@ public class BearingMeasurementContribution extends
 
 
 		// create object that can store the new legs
-		MyLegStorer storer = new MyLegStorer(contributions, this.getMeasurements(), this.getName());
+		IContributions zigConts, legConts;
+		if(justTargetZigs)
+		{			
+			zigConts = contributions;
+			legConts = null;
+		}
+		else
+		{
+			legConts= contributions;
+			 zigConts = null;			
+		}
+		
+		ILegStorer legStorer = new MyLegStorer(legConts, this.getMeasurements(), this.getName());
+		IZigStorer zigStorer = new MyZigStorer(zigConts, this.getMeasurements(), this.getName(), 
+				states.get(0).time, 
+				states.get(states.size()-1).time);
 
 		// ok, now collate the bearing data
 		ZigDetector detector = new ZigDetector();
@@ -592,9 +612,14 @@ public class BearingMeasurementContribution extends
 				}
 			}
 
-			detector.sliceThis("some name", legStart, legEnd, null, storer, 0.6,
+			double zigScore = ZIG_DETECTOR_RMS;
+			zigScore = 0.5;
+			detector.sliceThis("some name", legStart, legEnd, null, legStorer, zigStorer, zigScore,
 					0.000001, thisLegTimes, thisLegBearings);
 		}
+		
+		// ok, finalise the zig-detector, if we have one		
+		zigStorer.finish();
 
 		// ok, slicing done!
 		if (_listeners != null)
@@ -604,7 +629,16 @@ public class BearingMeasurementContribution extends
 			{
 				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
 						.next();
-				thisL.sliced(this.getName(), storer.getSlices());
+				
+				if(justTargetZigs)
+				{					
+					thisL.sliced(this.getName(), zigStorer.getSlices());
+				}
+				else
+				{
+					thisL.sliced(this.getName(), legStorer.getSlices());
+				}
+
 			}
 		}
 
@@ -629,15 +663,73 @@ public class BearingMeasurementContribution extends
 			_listeners.remove(listener);
 	}
 
-	private static class MyLegStorer implements ILegStorer
+	private static class MyLegStorer extends MyStorer implements ILegStorer
 	{
-		int ctr = 1;
-		private ArrayList<StraightLegForecastContribution> slices = new ArrayList<StraightLegForecastContribution>();
-		private final IContributions _contributions;
-		private final ArrayList<BMeasurement> _cuts;
-		private final String _genName;
 
 		public MyLegStorer(final IContributions theConts,
+				ArrayList<BMeasurement> cuts, String genName)
+		{
+			super(theConts, cuts, genName);
+		}
+	}
+	
+	private static class MyZigStorer extends MyStorer implements IZigStorer
+	{
+
+		private long _startTime;
+		private final long _endTime;
+
+		public MyZigStorer(final IContributions theConts,
+				final ArrayList<BMeasurement> cuts, final String genName, final long startTime, final long endTime)
+		{
+			super(theConts, cuts, genName);
+			_startTime = startTime;
+			_endTime = endTime;
+		}
+
+		@Override
+		public void storeZig(String scenarioName, long tStart, long tEnd,
+				Sensor sensor, double rms)
+		{
+			storeLeg(scenarioName, _startTime, tStart, sensor, rms);
+			
+			// and move foward the end time
+			_startTime = tEnd;
+		}
+
+
+
+		@Override
+		public ArrayList<StraightLegForecastContribution> getSlices()
+		{
+			finish();
+			
+			return super.getSlices();
+		}
+
+		@Override
+		public void finish()
+		{
+			// ok, just check if there is a missing last leg
+			if(_startTime != Long.MIN_VALUE)
+			{
+				// ok, append the last leg
+				storeLeg(null, _startTime, _endTime, null, 0);
+				_startTime = Long.MIN_VALUE;
+			}
+		}
+	}
+
+
+	private static class MyStorer 
+	{
+		int ctr = 1;
+		protected ArrayList<StraightLegForecastContribution> slices = new ArrayList<StraightLegForecastContribution>();
+		protected final IContributions _contributions;
+		protected final ArrayList<BMeasurement> _cuts;
+		protected final String _genName;
+
+		public MyStorer(final IContributions theConts,
 				ArrayList<BMeasurement> cuts, String genName)
 		{
 			_contributions = theConts;
@@ -668,7 +760,6 @@ public class BearingMeasurementContribution extends
 			return res;
 		}
 
-		@Override
 		public void storeLeg(String scenarioName, long tStart, long tEnd,
 				Sensor sensor, double rms)
 		{
@@ -681,11 +772,14 @@ public class BearingMeasurementContribution extends
 			slf.setColor(colorAt(slf.getStartDate()));
 			slf.setActive(true);
 			slf.setName(name);
-			_contributions.addContribution(slf);
+			if(_contributions != null)
+			{
+				_contributions.addContribution(slf);
+			}
 			slices .add(slf);
 		}
 	}
-
+	
 	public void addState(final HostState newState)
 	{
 		// check we have our states
