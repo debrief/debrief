@@ -161,7 +161,6 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
-	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	private static final String TITLE = "Maintain Contributions";
 
 	private static final Map<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>> CONTRIBUTION_PANELS;
@@ -1368,7 +1367,7 @@ public class MaintainContributionsView extends ViewPart
 						{
 							// clear the domain markers, this is a new dataset
 							legPlot.clearDomainMarkers();
-							
+
 							// and show the ownship states
 							redoOwnshipStates();
 						}
@@ -1457,13 +1456,14 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.setDataset(0, null);
 		legPlot.setDataset(1, null);
 
-		
 		// hmm, actually we have to remove any target leg markers
 		@SuppressWarnings("unchecked")
-		Collection<IntervalMarker> markers = legPlot.getDomainMarkers(Layer.BACKGROUND);
+		Collection<IntervalMarker> markers = legPlot
+				.getDomainMarkers(Layer.BACKGROUND);
 		if (markers != null)
 		{
-			ArrayList<IntervalMarker> markersToDelete = new ArrayList<IntervalMarker>(markers);
+			ArrayList<IntervalMarker> markersToDelete = new ArrayList<IntervalMarker>(
+					markers);
 			Iterator<IntervalMarker> mIter = markersToDelete.iterator();
 			while (mIter.hasNext())
 			{
@@ -1471,7 +1471,7 @@ public class MaintainContributionsView extends ViewPart
 				legPlot.removeDomainMarker(im);
 			}
 		}
-		
+
 		// hey, does it have any ownship legs?
 		TimeSeriesCollection tscC = new TimeSeriesCollection();
 		TimeSeriesCollection tscS = new TimeSeriesCollection();
@@ -1502,34 +1502,39 @@ public class MaintainContributionsView extends ViewPart
 						thisLeg = lIter.next();
 					}
 
-					Iterator<HostState> stateIter = bmc.getHostState().iterator();
-					while (stateIter.hasNext())
+					List<HostState> hostStates = bmc.getHostState();
+					if (hostStates != null)
 					{
-						BearingMeasurementContribution.HostState hostState = stateIter
-								.next();
-						long thisTime = hostState.time;
-						double thisCourse = hostState.courseDegs;
-						if (showCourses)
-							courses.add(new FixedMillisecond(thisTime), thisCourse);
-						double thisSpeed = hostState.speedKts;
-						speeds.add(new FixedMillisecond(thisTime), thisSpeed);
-						startTime = Math.min(thisTime, startTime);
-						endTime = Math.max(thisTime, endTime);
-
-						// sort out if this is in a leg or not
-						if (thisLeg != null)
+						Iterator<HostState> stateIter = hostStates.iterator();
+						while (stateIter.hasNext())
 						{
-							if (thisTime > thisLeg.getEnd() && lIter.hasNext())
+							BearingMeasurementContribution.HostState hostState = stateIter
+									.next();
+							long thisTime = hostState.time;
+							double thisCourse = hostState.courseDegs;
+							if (showCourses)
+								courses.add(new FixedMillisecond(thisTime), thisCourse);
+							double thisSpeed = hostState.speedKts;
+							speeds.add(new FixedMillisecond(thisTime), thisSpeed);
+							startTime = Math.min(thisTime, startTime);
+							endTime = Math.max(thisTime, endTime);
+
+							// sort out if this is in a leg or not
+							if (thisLeg != null)
 							{
-								thisLeg = lIter.next();
-							}
-							else
-							{
-								if (thisTime >= thisLeg.getStart())
+								if (thisTime > thisLeg.getEnd() && lIter.hasNext())
 								{
-									speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
-									if (showCourses)
-										courseLegs.add(new FixedMillisecond(thisTime), thisCourse);
+									thisLeg = lIter.next();
+								}
+								else
+								{
+									if (thisTime >= thisLeg.getStart())
+									{
+										speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
+										if (showCourses)
+											courseLegs
+													.add(new FixedMillisecond(thisTime), thisCourse);
+									}
 								}
 							}
 						}
@@ -1645,7 +1650,8 @@ public class MaintainContributionsView extends ViewPart
 		legPlot.setRenderer(2, lineRenderer3);
 		legPlot.setRenderer(3, lineRenderer4);
 
-		legPlot.getDomainAxis().setRange(startTime, endTime);
+		if(startTime != Long.MAX_VALUE)
+			legPlot.getDomainAxis().setRange(startTime, endTime);
 
 		// ok - get the straight legs to sort themselves out
 		// redoStraightLegs();
@@ -1661,10 +1667,12 @@ public class MaintainContributionsView extends ViewPart
 
 			// hmm, actually we have to remove any target leg markers
 			@SuppressWarnings("unchecked")
-			Collection<IntervalMarker> markers = legPlot.getDomainMarkers(Layer.FOREGROUND);
+			Collection<IntervalMarker> markers = legPlot
+					.getDomainMarkers(Layer.FOREGROUND);
 			if (markers != null)
 			{
-				ArrayList<IntervalMarker> markersToDelete = new ArrayList<IntervalMarker>(markers);
+				ArrayList<IntervalMarker> markersToDelete = new ArrayList<IntervalMarker>(
+						markers);
 				Iterator<IntervalMarker> mIter = markersToDelete.iterator();
 				while (mIter.hasNext())
 				{
@@ -1821,8 +1829,7 @@ public class MaintainContributionsView extends ViewPart
 					Iterator<HostState> states = bmc.getHostState().iterator();
 					while (states.hasNext())
 					{
-						BearingMeasurementContribution.HostState hostState = states
-								.next();
+						BearingMeasurementContribution.HostState hostState = states.next();
 						res.append(sdf.format(new Date(hostState.time - offset)) + ","
 								+ hostState.courseDegs + "," + hostState.speedKts + newLine);
 					}
@@ -1832,8 +1839,7 @@ public class MaintainContributionsView extends ViewPart
 					Iterator<BMeasurement> cuts = bmc.getMeasurements().iterator();
 					while (cuts.hasNext())
 					{
-						BearingMeasurementContribution.BMeasurement cut = cuts
-								.next();
+						BearingMeasurementContribution.BMeasurement cut = cuts.next();
 						res.append(sdf.format(new Date(cut.getDate().getTime() - offset))
 								+ "," + Math.toDegrees(cut.getBearingRads()) + newLine);
 					}
