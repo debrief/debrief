@@ -33,7 +33,6 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -138,6 +137,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 */
 	private static ToolParent _toolParent;
 
+	private static IUndoContext undoContext;
+
 	/**
 	 * where we cache our images
 	 */
@@ -147,16 +148,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * our CMAP-wide clipboard
 	 */
 	private Clipboard _myClipboard;
-
-	/**
-	 * the undo buffer we manage/support
-	 */
-	private static IOperationHistory _myHistory;
-
-	/**
-	 * and the context used to describe our undo list
-	 */
-	public final static IUndoContext CMAP_CONTEXT = new ObjectUndoContext("CMAP");
 
 	/**
 	 * fixed string used to indicate a string is in our location format
@@ -349,15 +340,24 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 */
 	public static IOperationHistory getHistory()
 	{
-		if (_myHistory == null)
-		{
-			_myHistory = OperationHistoryFactory.getOperationHistory();
-
-			// and set the buffer length
-			_myHistory.setLimit(CorePlugin.CMAP_CONTEXT, LENGTH_OF_UNDO_BUFFER);
+		IOperationHistory history = OperationHistoryFactory.getOperationHistory();
+		
+		// and set the buffer length
+		if (getUndoContext() == null) {
+			return history;
 		}
+		history.setLimit(getUndoContext(), LENGTH_OF_UNDO_BUFFER);
+		return history;
+	}
 
-		return _myHistory;
+	public static IUndoContext getUndoContext()
+	{
+		return undoContext;
+	}
+	
+	public static void setUndoContext(IUndoContext undoContext)
+	{
+		CorePlugin.undoContext = undoContext;
 	}
 
 	/**
@@ -992,6 +992,5 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	    };
 	    SafeRunner.run(runnable);
 	}
-
 
 }

@@ -1163,8 +1163,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 			_redo = redo;
 			_destination = destination;
 
-			// put in the global context, for some reason
-			addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				addContext(CorePlugin.getUndoContext());
+			}
 		}
 
 		/**

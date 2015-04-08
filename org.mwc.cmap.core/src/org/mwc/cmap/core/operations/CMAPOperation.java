@@ -35,8 +35,9 @@ abstract public class CMAPOperation extends AbstractOperation
 	{
 		super(title);
 		
-		// hey, also set the context - so we have the single list of history items
-		super.addContext(CorePlugin.CMAP_CONTEXT);		
+		if (CorePlugin.getUndoContext() != null) {
+			super.addContext(CorePlugin.getUndoContext());
+		}	
 	}
 
 	/** instead of having to implement REDO, just call execute

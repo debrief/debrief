@@ -580,8 +580,10 @@ public class EditableWrapper implements IPropertySource
 		{
 			super(name + " " + subject.getDisplayName());
 
-			this.addContext(CorePlugin.CMAP_CONTEXT);
-
+			if (CorePlugin.getUndoContext() != null) {
+				this.addContext(CorePlugin.getUndoContext());
+			}
+			
 			_oldValue = oldValue;
 			_newValue = newValue;
 			_property = subject;

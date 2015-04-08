@@ -18,6 +18,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.EditorActionBarContributor;
 /**
  * Plot editor action bar contributor.
@@ -51,8 +52,11 @@ public class PlotEditorActionBarContributor extends EditorActionBarContributor {
 		}
 		IActionBars bars = getActionBars();
 		if (bars == null)
+		{
 			return;
-		//bars.setGlobalActionHandler(ActionFactory.REVERT.getId(), getRevertAction());
+		}
+		bars.setGlobalActionHandler(ActionFactory.UNDO.getId(), _myEditor.getUndoAction());
+		bars.setGlobalActionHandler(ActionFactory.REDO.getId(), _myEditor.getRedoAction());
 		bars.updateActionBars();	
 	}
 
