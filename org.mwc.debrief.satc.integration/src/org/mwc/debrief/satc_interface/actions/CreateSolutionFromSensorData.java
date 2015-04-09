@@ -433,9 +433,8 @@ public class CreateSolutionFromSensorData implements
 				long time = editable.getDateTimeGroup().getDate().getTime();
 				double courseDegs = editable.getCourseDegs();
 				double speedKts = editable.getSpeed();
-				Point ptLoc = GeoSupport.createPoint(editable.getLocation().getLong(), editable.getLocation().getLat());
 				bmc.addState(new BearingMeasurementContribution.HostState(time,
-						courseDegs, speedKts, ptLoc));
+						courseDegs, speedKts, editable.getLocation().getLat(), editable.getLocation().getLong()));
 			}
 
 			return bmc;

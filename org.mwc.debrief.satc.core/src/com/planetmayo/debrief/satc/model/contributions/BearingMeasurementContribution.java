@@ -476,14 +476,16 @@ public class BearingMeasurementContribution extends
 		final public long time;
 		final public double courseDegs;
 		final public double speedKts;
-		final public Point point;
+		final public double dLat;
+		final public double dLong;
 
-		public HostState(long time, double courseDegs, double speedKts, Point point)
+		public HostState(long time, double courseDegs, double speedKts, double dLat, double dLong)
 		{
 			this.time = time;
 			this.courseDegs = courseDegs;
 			this.speedKts = speedKts;
-			this.point = point;
+			this.dLat = dLat;
+			this.dLong = dLong;
 		}
 	}
 	

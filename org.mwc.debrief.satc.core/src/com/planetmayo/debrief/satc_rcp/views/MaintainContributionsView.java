@@ -1856,12 +1856,12 @@ public class MaintainContributionsView extends ViewPart
 						{
 							x = 0;
 							y = 0;
-							origin = new Point2D.Double(hostState.point.getX(), hostState.point.getY());
+							origin = new Point2D.Double(hostState.dLong, hostState.dLat);
 						}
 						else
 						{
 							// ok, calc a new XY, from the origin
-							java.awt.geom.Point2D.Double thisP = new Point2D.Double(hostState.point.getX(), hostState.point.getY());
+							java.awt.geom.Point2D.Double thisP = new Point2D.Double(hostState.dLong, hostState.dLat);
 							calc.setStartingGeographicPoint(origin);
 							calc.setDestinationGeographicPoint(thisP);
 							double angle = calc.getAzimuth();
