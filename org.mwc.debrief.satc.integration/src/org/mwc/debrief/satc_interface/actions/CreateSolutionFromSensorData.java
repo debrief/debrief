@@ -79,7 +79,9 @@ import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContri
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.vividsolutions.jts.geom.Point;
 
 public class CreateSolutionFromSensorData implements
 		RightClickContextItemGenerator
@@ -431,8 +433,9 @@ public class CreateSolutionFromSensorData implements
 				long time = editable.getDateTimeGroup().getDate().getTime();
 				double courseDegs = editable.getCourseDegs();
 				double speedKts = editable.getSpeed();
+				Point ptLoc = GeoSupport.createPoint(editable.getLocation().getLong(), editable.getLocation().getLat());
 				bmc.addState(new BearingMeasurementContribution.HostState(time,
-						courseDegs, speedKts));
+						courseDegs, speedKts, ptLoc));
 			}
 
 			return bmc;
