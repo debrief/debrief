@@ -7575,7 +7575,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <caption>Maintain Contributions View</caption>
               </mediaobject>
             </screenshot>The following sections describe the three parts of the <guilabel>Maintain
-              Contributiosn</guilabel> View</para>
+              Contributions</guilabel> View</para>
           <formalpara xml:id="satc_ui_preferences">
             <title>Preferences</title>
             <para>This panel provides overall control of the scenario.<variablelist>
@@ -7666,6 +7666,15 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               allowable min/max range (or bearing error for bearing data), then scaled according
               to the weighting value for that contribution.
             </para>
+          </formalpara>
+          <formalpara>
+            <title>Analysis support</title>
+            <para>In the toolbar for the Maintain Contributions view is a button to export a 
+              summary of the scenario to the clipboard in CSV format.  This format includes 
+              a series of x,y, date-time, course, speed ownship state measurements, followed
+              by a series of time-stamped bearings.  The X/Y and date-time have been made 
+              relative to an arbitrary location to hide any potentially sensitive data.
+              Access to the data eases the task of externally analysing the scenario.</para>
           </formalpara>
         </sect2>
       </sect1>
