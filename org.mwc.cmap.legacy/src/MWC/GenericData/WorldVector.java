@@ -235,8 +235,8 @@ public final class WorldVector implements Serializable, Cloneable
   final public String toString()
   {
     String res;
-    res = "MWC.GenericData.WorldVector[brg:" + Conversions.Rads2Degs(_brg);
-    res = res + " degs, rng:" + Conversions.Degs2Nm(_rng) + " nm";
+    res = ":" + ((int)Conversions.Rads2Degs(_brg));
+    res = res + "\u00b0 " + ((int)Conversions.Degs2m(_rng)) + " m";
     return res;
   }
 
