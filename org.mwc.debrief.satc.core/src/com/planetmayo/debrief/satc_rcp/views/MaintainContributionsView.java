@@ -25,6 +25,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
@@ -136,6 +137,8 @@ import com.planetmayo.debrief.satc.model.manager.ISolversManagerListener;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
@@ -151,6 +154,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributio
 import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * mock class to test high level application flows
@@ -1832,14 +1836,44 @@ public class MaintainContributionsView extends ViewPart
 					// ok - sort out the date offset
 					Date startDate = bmc.getStartDate();
 					long offset = startDate.getTime() - dateLead.getTime();
+					
+					// get ready for the offset
+					Point2D origin = null;
+
+					// get ready to calculate offsetes
+					GeodeticCalculator calc = GeoSupport.createCalculator();
 
 					// ok, first the states
-					res.append("//Time, Course Degs, Speed Kts" + newLine);
+					res.append("//X, Y, Time, Course Degs, Speed Kts" + newLine);
 					Iterator<HostState> states = bmc.getHostState().iterator();
 					while (states.hasNext())
 					{
 						BearingMeasurementContribution.HostState hostState = states.next();
-						res.append(sdf.format(new Date(hostState.time - offset)) + ","
+						
+						// sort out the X,Y offset
+						double x,y;
+						if(origin == null)
+						{
+							x = 0;
+							y = 0;
+							origin = new Point2D.Double(hostState.point.getX(), hostState.point.getY());
+						}
+						else
+						{
+							// ok, calc a new XY, from the origin
+							java.awt.geom.Point2D.Double thisP = new Point2D.Double(hostState.point.getX(), hostState.point.getY());
+							calc.setStartingGeographicPoint(origin);
+							calc.setDestinationGeographicPoint(thisP);
+							double angle = calc.getAzimuth();
+							double dist = calc.getOrthodromicDistance();
+							
+							// and the new x,y coords
+							x = Math.sin(Math.toRadians(angle)) * dist;
+							y = Math.cos(Math.toRadians(angle)) * dist;
+							
+						}
+						
+						res.append(x + ", " + y + ", " + sdf.format(new Date(hostState.time - offset)) + ","
 								+ hostState.courseDegs + "," + hostState.speedKts + newLine);
 					}
 
