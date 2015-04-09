@@ -161,6 +161,8 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
 public class MaintainContributionsView extends ViewPart
 {
 
+	private static final String PERFORMANCE_TITLE = "Overall score:";
+
 	private static final String TITLE = "Maintain Contributions";
 
 	private static final Map<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>> CONTRIBUTION_PANELS;
@@ -235,6 +237,8 @@ public class MaintainContributionsView extends ViewPart
 	private JFreeChart legChart;
 	private Action _exportBtn;
 
+	private Color _colorBlack;
+
 	@Override
 	public void createPartControl(final Composite parent)
 	{
@@ -280,6 +284,10 @@ public class MaintainContributionsView extends ViewPart
 			}
 			assignedColors = null;
 		}
+		
+		// and our SWT black shade
+		if(!_colorBlack.isDisposed())
+			_colorBlack.dispose();
 
 		super.dispose();
 	}
@@ -633,29 +641,31 @@ public class MaintainContributionsView extends ViewPart
 		// group.setText("Performance");
 
 		// we need the color black several times
-		final Color colorBlack = new Color(Display.getCurrent(), 0, 0, 0);
+		_colorBlack = new Color(Display.getCurrent(), 0, 0, 0);
 
 		// generate the chart
 		performanceChart = new Chart(group, SWT.NONE);
 
 		// format the chart
 		performanceChart.getLegend().setVisible(false);
-		performanceChart.getTitle().setVisible(false);
-		performanceChart.setForeground(colorBlack);
+		performanceChart.getTitle().setVisible(true);
+		performanceChart.setForeground(_colorBlack);
+		performanceChart.getTitle().setText(PERFORMANCE_TITLE + " Pending");
+		performanceChart.getTitle().setForeground(_colorBlack);
 
 		// now give the chart our data series
 		// ok, now for the x axis
 		IAxis xAxis = performanceChart.getAxisSet().getXAxis(0);
 		xAxis.getTitle().setVisible(false);
 		xAxis.adjustRange();
-		xAxis.getTick().setForeground(colorBlack);
+		xAxis.getTick().setForeground(_colorBlack);
 
 		// and the y axis
 		IAxis yAxis = performanceChart.getAxisSet().getYAxis(0);
 		yAxis.adjustRange();
 		yAxis.enableLogScale(true);
-		yAxis.getTick().setForeground(colorBlack);
-		yAxis.getTitle().setForeground(colorBlack);
+		yAxis.getTick().setForeground(_colorBlack);
+		yAxis.getTitle().setForeground(_colorBlack);
 		yAxis.getTitle().setText("Weighted error");
 
 		return group;
@@ -963,14 +973,14 @@ public class MaintainContributionsView extends ViewPart
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-		// determine frequency f
+		// determine frequency f (trim to 1)
 		int wid = performanceChart.getBounds().width;
 		int allowed = wid / 90;
-		int freq = labels.length / allowed;
+		int freq = Math.max(labels.length / allowed, 1);
 
 		int ctr = 0;
 		while (vIter.hasNext())
-		{
+		{			
 			Date date = vIter.next();
 			final String str;
 			if (ctr % freq == 0)
@@ -983,21 +993,6 @@ public class MaintainContributionsView extends ViewPart
 		// set category labels
 		performanceChart.getAxisSet().getXAxis(0).enableCategory(true);
 		performanceChart.getAxisSet().getXAxis(0).setCategorySeries(labels);
-
-		// ISeries[] series = performanceChart.getSeriesSet().getSeries();
-		// if (series != null && series.length > 1)
-		// {
-		// performanceChart.getLegend().setVisible(true);
-		// performanceChart.getLegend().setPosition(SWT.RIGHT);
-		// for (ISeries serie : series)
-		// {
-		// if (serie instanceof IBarSeries)
-		// {
-		// IBarSeries barSeries = (IBarSeries) serie;
-		// barSeries.enableStack(true);
-		// }
-		// }
-		// }
 
 		ISeries[] series = performanceChart.getSeriesSet().getSeries();
 		if (series.length == 2 && series[0] instanceof IBarSeries
@@ -1017,6 +1012,8 @@ public class MaintainContributionsView extends ViewPart
 
 		// and resize the axes
 		performanceChart.getAxisSet().adjustRange();
+		
+		performanceChart.getTitle().setText(PERFORMANCE_TITLE +(int)value);
 
 		//
 		performanceChart.redraw();
@@ -1153,8 +1150,6 @@ public class MaintainContributionsView extends ViewPart
 					public void iterationComputed(List<CompositeRoute> topRoutes,
 							double topScore)
 					{
-						// check it's roughly suitable
-						// if (topScore < 1000000)
 						addNewPerformanceScore(topScore, topRoutes);
 					}
 
@@ -1357,6 +1352,9 @@ public class MaintainContributionsView extends ViewPart
 						@Override
 						public void startingSlice(String contName)
 						{
+							// ok - ownship course is important for this - show it
+							showOSCourse.setSelection(true);
+							
 							startSlicingOwnshipLegs(contName);
 						}
 
@@ -1376,6 +1374,17 @@ public class MaintainContributionsView extends ViewPart
 						public void sliced(String contName,
 								ArrayList<StraightLegForecastContribution> arrayList)
 						{
+							// are we currently showing ownship course?
+							if(showOSCourse.getSelection())
+							{
+								// ok, ownship course is irrelevant to this, hide it
+								showOSCourse.setSelection(false);
+								
+								// update the ownship states, now that we've hidden the O/S course
+								redoOwnshipStates();
+							}
+							
+							// ok, now display the target legs
 							redoStraightLegs();
 						}
 					};

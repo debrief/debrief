@@ -30,10 +30,11 @@ public class OwnshipLegDetector
 		// ok, see if we can find the precision
 		final double COURSE_TOLERANCE;
 		final double SPEED_TOLERANCE;
-		ISolversManager solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, false);
 		
-		if(solversManager != null)
+		if(SATC_Activator.getDefault() != null)
 		{
+			ISolversManager solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, false);
+			
 			Precision precision = solversManager.getActiveSolver().getPrecision();
 			switch(precision)
 			{
@@ -48,7 +49,7 @@ public class OwnshipLegDetector
 			case LOW:
 			default:
 				COURSE_TOLERANCE = 0.6; // rads / sec (just a guess!!)
-				SPEED_TOLERANCE = 0.004; // ms / sec (just a guess!!)			
+				SPEED_TOLERANCE = 0.04; // ms / sec (just a guess!!)			
 				break;
 			}
 		}

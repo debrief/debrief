@@ -9,7 +9,7 @@ import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContri
  * @author ian
  *
  */
-public interface ILegStorer
+public interface IZigStorer
 {
 
 	/**
@@ -21,10 +21,16 @@ public interface ILegStorer
 	 * @param sensor - optional sensor object that produced the data
 	 * @param rms - the %age error from the RMS for the whole leg
 	 */
-	void storeLeg(String scenarioName, long tStart, long tEnd, Sensor sensor,
+	void storeZig(String scenarioName, long tStart, long tEnd, Sensor sensor,
 			double rms);
 	
 	public ArrayList<StraightLegForecastContribution> getSlices();
+
+	/** the algorithm will probably have to produce once final straight leg, from the last
+	 * detected zig until the end of the data
+	 * 
+	 */
+	void finish();
 
 
 }

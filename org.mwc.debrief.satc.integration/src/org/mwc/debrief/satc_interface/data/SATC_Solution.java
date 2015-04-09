@@ -1145,27 +1145,14 @@ public class SATC_Solution extends BaseLayer implements
 			@Override
 			public void solutionsReady(final CompositeRoute[] routes)
 			{
-				// just double-check that the score is acceptable
-				if ((_currentScore != null) && (_currentScore > MAXIMUM_SCORE))
-				{
-					// hey, skip it, no good solutions
-					CorePlugin
-							.errorDialog("Generate TMA Solutions",
-									"It was not possible to generate a candidate solution from the supplied data");
-				}
-				else
-				{
-					// ok, either there isn't a current score (non-GA solver),
-					// or the score is acceptable
+				// store the routes
+				_newRoutes = routes;
 
-					_newRoutes = routes;
+				// tell the layer manager that we've changed
+				fireTrackShifted();
 
-					// tell the layer manager that we've changed
-					fireTrackShifted();
-
-					// hey, trigger repaint
-					fireRepaint();
-				}
+				// hey, trigger repaint
+				fireRepaint();
 			}
 
 			@Override

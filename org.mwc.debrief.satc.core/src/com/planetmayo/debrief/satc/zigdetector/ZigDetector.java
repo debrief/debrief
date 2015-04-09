@@ -1,13 +1,15 @@
 package com.planetmayo.debrief.satc.zigdetector;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Status;
 
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
-import junit.framework.TestCase;
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
 
@@ -31,10 +33,8 @@ public class ZigDetector
 		public FlanaganArctan(final List<Long> beforeTimes,
 				final List<Double> beforeBearings)
 		{
-			_times = beforeTimes.toArray(new Long[]
-			{});
-			_bearings = beforeBearings.toArray(new Double[]
-			{});
+			_times = beforeTimes.toArray(new Long[] {});
+			_bearings = beforeBearings.toArray(new Double[] {});
 		}
 
 		// evaluation function
@@ -166,12 +166,10 @@ public class ZigDetector
 
 		// initial estimates
 		final double firstBearing = bearings.get(0);
-		final double[] start =
-		{ firstBearing, 0.0D, 0.0D };
+		final double[] start = { firstBearing, 0.0D, 0.0D };
 
 		// initial step sizes
-		final double[] step =
-		{ 0.2D, 0.3D, 0.3D };
+		final double[] step = { 0.2D, 0.3D, 0.3D };
 
 		// convergence tolerance
 		final double ftol = optimiserTolerance;
@@ -198,10 +196,9 @@ public class ZigDetector
 	 * @param thisSeries
 	 * @return
 	 */
-	private double sliceLeg(final int trialIndex,
-			final List<Double> bearings, final List<Long> times,
-			final int bufferSize, final int legOneEnd, final int legTwoStart,
-			final double optimiserTolerance)
+	private double sliceLeg(final int trialIndex, final List<Double> bearings,
+			final List<Long> times, final int bufferSize, final int legOneEnd,
+			final int legTwoStart, final double optimiserTolerance)
 	{
 
 		final List<Long> theseTimes = times;
@@ -268,11 +265,13 @@ public class ZigDetector
 
 	public void sliceThis(final String scenario, final long wholeStart,
 			final long wholeEnd, final Sensor sensor, final ILegStorer legStorer,
-			final double RMS_ZIG_RATIO, final double optimiseTolerance, final List<Long> thisLegTimes, final List<Double> thisLegBearings)
+			IZigStorer zigStorer, final double RMS_ZIG_RATIO,
+			final double optimiseTolerance, final List<Long> thisLegTimes,
+			final List<Double> thisLegBearings)
 	{
-		SATC_Activator.log(Status.INFO, "  Trying to slice : "
-				+ dateF.format(new Date(wholeStart)) + " - "
-				+ dateF.format(new Date(wholeEnd)), null);
+		SATC_Activator.log(Status.INFO,
+				"  Trying to slice : " + dateF.format(new Date(wholeStart)) + " - "
+						+ dateF.format(new Date(wholeEnd)), null);
 
 		// ok, find the best slice
 		// prepare the data
@@ -320,9 +319,10 @@ public class ZigDetector
 		// right, how did we get on?
 		if (sliceTime != -1)
 		{
-			SATC_Activator.log(Status.INFO, "  Best slice at:" + dateF.format(new Date(sliceTime))
-					+ " index:" + bestSlice + " score:" + bestScore + " whole leg:"
-					+ wholeLegScore, null);
+			SATC_Activator.log(Status.INFO,
+					"  Best slice at:" + dateF.format(new Date(sliceTime)) + " index:"
+							+ bestSlice + " score:" + bestScore + " whole leg:"
+							+ wholeLegScore, null);
 
 			// is this slice acceptable?
 			if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
@@ -331,12 +331,17 @@ public class ZigDetector
 						bestScore / wholeLegScore * 100);
 				legStorer.storeLeg(scenario, bestLegTwoStart, wholeEnd, sensor,
 						bestScore / wholeLegScore * 100);
+				if (zigStorer != null)
+				{
+					zigStorer.storeZig(scenario, bestLegOneEnd, bestLegTwoStart, sensor,
+							bestScore / wholeLegScore * 100);
+				}
 			}
 			else
 			{
 				// right - we couldn't get a good slice. see what the whole score is
-				SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:" + wholeLegScore
-						+ " best slice:" + bestScore, null);
+				SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
+						+ wholeLegScore + " best slice:" + bestScore, null);
 
 				// just store the whole slice
 				legStorer.storeLeg(scenario, wholeStart, wholeEnd, sensor,
