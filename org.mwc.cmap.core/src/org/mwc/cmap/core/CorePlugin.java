@@ -34,6 +34,7 @@ import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryFactory;
+import org.eclipse.core.commands.operations.UndoContext;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -55,6 +56,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
@@ -76,6 +78,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.EarthModel;
+import MWC.Algorithms.Editors.IUndoable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Tools.Palette.CreateTOPO;
@@ -136,8 +139,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * the Debrief tool-parent used to provide legacy access to properties
 	 */
 	private static ToolParent _toolParent;
-
-	private static IUndoContext undoContext;
 
 	/**
 	 * where we cache our images
@@ -343,21 +344,48 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		IOperationHistory history = OperationHistoryFactory.getOperationHistory();
 		
 		// and set the buffer length
-		if (getUndoContext() == null) {
+		IUndoContext undoContext = getUndoContext();
+		if (undoContext == null) {
 			return history;
 		}
-		history.setLimit(getUndoContext(), LENGTH_OF_UNDO_BUFFER);
+		history.setLimit(undoContext, LENGTH_OF_UNDO_BUFFER);
 		return history;
 	}
 
 	public static IUndoContext getUndoContext()
 	{
-		return undoContext;
-	}
-	
-	public static void setUndoContext(IUndoContext undoContext)
-	{
-		CorePlugin.undoContext = undoContext;
+		final IUndoContext[] contexts = new UndoContext[1];
+		Runnable runnable = new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				if (window != null)
+				{
+					IWorkbenchPage page = getActivePage();
+					if (page != null)
+					{
+						IEditorPart activeEditor = page.getActiveEditor();
+						if (activeEditor instanceof IUndoable)
+						{
+							contexts[0] = ((IUndoable) activeEditor).getUndoContext();
+						}
+					}
+				}
+			}
+		};
+
+		if (Display.getCurrent() != null)
+		{
+			runnable.run();
+		}
+		else
+		{
+			Display.getDefault().syncExec(runnable);
+		}
+		return contexts[0];
 	}
 
 	/**

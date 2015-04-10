@@ -61,6 +61,8 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.mwc.cmap.core.CorePlugin;
@@ -164,6 +166,18 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 		this._myLayers = _myLayers;
 		this._theTrackDataListener = (TrackManager) _plotEditor
 				.getAdapter(TrackManager.class);
+	}
+
+	@Override
+	public void init(IPageSite pageSite)
+	{
+		super.init(pageSite);
+		IActionBars actionBars = pageSite.getActionBars();
+		actionBars.setGlobalActionHandler(
+				ActionFactory.UNDO.getId(), _plotEditor.getUndoAction());
+		actionBars.setGlobalActionHandler(
+				ActionFactory.REDO.getId(), _plotEditor.getRedoAction());
+		actionBars.updateActionBars();
 	}
 
 	@Override

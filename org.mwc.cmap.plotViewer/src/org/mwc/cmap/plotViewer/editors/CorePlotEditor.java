@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.resources.IFile;
@@ -107,6 +108,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.Editors.IUndoable;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
@@ -123,7 +125,7 @@ import MWC.GenericData.WorldLocation;
 
 public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
-		IChartBasedEditor
+		IChartBasedEditor, IUndoable
 {
 
 	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
@@ -577,7 +579,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		{
 			if (part == CorePlotEditor.this)
 			{
-				CorePlugin.setUndoContext(undoContext);
 				if (_myActivation == null)
 				{
 					_myActivation = getContextService().activateContext(CONTEXT_ID);
@@ -589,7 +590,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		{
 			if (part == CorePlotEditor.this)
 			{
-				CorePlugin.setUndoContext(null);
 				if (_myActivation != null)
 				{
 					getContextService().deactivateContext(_myActivation);
@@ -708,8 +708,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		redoAction = new RedoActionHandler(getEditorSite(),
 				undoContext);
 		redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
-		CorePlugin.setUndoContext(undoContext);
-
+		
 		getEditorSite().getActionBars().setGlobalActionHandler(
 				ActionFactory.UNDO.getId(), undoAction);
 		getEditorSite().getActionBars().setGlobalActionHandler(
@@ -1323,6 +1322,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public IAction getUndoAction()
 	{
 		return undoAction;
+	}
+
+	public IUndoContext getUndoContext()
+	{
+		return undoContext;
 	}
 	
 }
