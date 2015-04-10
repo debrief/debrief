@@ -154,7 +154,6 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributio
 import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * mock class to test high level application flows
