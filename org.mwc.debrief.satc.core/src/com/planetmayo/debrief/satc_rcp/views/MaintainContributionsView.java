@@ -15,11 +15,7 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Panel;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -38,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.swing.JRootPane;
-
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -57,7 +51,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -80,7 +73,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
@@ -94,6 +86,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.Layer;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
@@ -154,7 +147,6 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributio
 import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * mock class to test high level application flows
@@ -681,50 +673,7 @@ public class MaintainContributionsView extends ViewPart
 	 */
 	public Composite initLegGraph(final Composite parent)
 	{
-
-		// right, we need an SWT.EMBEDDED object to act as a holder
-		final Composite holder = new Composite(parent, SWT.NO_BACKGROUND
-				| SWT.EMBEDDED | SWT.NO_REDRAW_RESIZE);
-		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
-				| GridData.FILL_HORIZONTAL));
-
-		/*
-		 * Set a Windows specific AWT property that prevents heavyweight components
-		 * from erasing their background. Note that this is a global property and
-		 * cannot be scoped. It might not be suitable for your application.
-		 */
-		try
-		{
-			System.setProperty("sun.awt.noerasebackground", "true");
-		}
-		catch (NoSuchMethodError error)
-		{
-		}
-
-		// java.awt.Toolkit.getDefaultToolkit().setDynamicLayout(false);
-		// now we need a Swing object to put our chart into
-		/* Create and setting up frame */
-		Frame frame = SWT_AWT.new_Frame(holder);
-		Panel panel = new Panel(new BorderLayout())
-		{
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void update(java.awt.Graphics g)
-			{
-				/* Do not erase the background */
-				paint(g);
-			}
-		};
-		frame.add(panel);
-		JRootPane root = new JRootPane();
-		root.setDoubleBuffered(true);
-		panel.add(root);
-		Container _legPane = root.getContentPane();
-
+		
 		legChart = ChartFactory.createTimeSeriesChart("Target Legs", // String
 				"Time", // String timeAxisLabel
 				null, // String valueAxisLabel,
@@ -805,20 +754,13 @@ public class MaintainContributionsView extends ViewPart
 
 			}
 		});
+		
+		ChartComposite frame = new ChartComposite(parent, SWT.NONE, legChart, true);
+    frame.setDisplayToolTips(true);
+    frame.setHorizontalAxisTrace(false);
+    frame.setVerticalAxisTrace(false);
 
-		ChartPanel chartInPanel = new ChartPanel(legChart, true);
-
-		// // ok - we need to fire time-changes to the chart
-		// setupFiringChangesToChart();
-
-		// format the chart
-		chartInPanel.setName("Legs");
-		chartInPanel.setMouseZoomable(true, true);
-
-		// and insert into the panel
-		_legPane.add(chartInPanel, BorderLayout.CENTER);
-
-		return holder;
+		return frame;
 	}
 
 	/**
