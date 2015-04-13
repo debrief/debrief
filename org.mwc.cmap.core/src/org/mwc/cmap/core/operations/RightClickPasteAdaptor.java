@@ -205,8 +205,9 @@ public class RightClickPasteAdaptor
 					return Status.OK_STATUS;
 				}
 			};
-			// put in the global context, for some reason
-			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				myOperation.addContext(CorePlugin.getUndoContext());
+			}
 			CorePlugin.run(myOperation);
 		}
 
@@ -327,8 +328,9 @@ public class RightClickPasteAdaptor
 					return Status.OK_STATUS;
 				}
 			};
-			// put in the global context, for some reason
-			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				myOperation.addContext(CorePlugin.getUndoContext());
+			}
 			CorePlugin.run(myOperation);
 		}
 

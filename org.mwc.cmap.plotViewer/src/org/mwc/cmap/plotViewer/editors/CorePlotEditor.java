@@ -33,6 +33,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.ObjectUndoContext;
+import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -72,6 +75,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
@@ -104,6 +108,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.Editors.IUndoable;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
@@ -120,7 +125,7 @@ import MWC.GenericData.WorldLocation;
 
 public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
-		IChartBasedEditor
+		IChartBasedEditor, IUndoable
 {
 
 	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
@@ -572,27 +577,42 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		private void activateContext(IWorkbenchPart part)
 		{
-			if (part == CorePlotEditor.this && _myActivation == null)
+			if (part == CorePlotEditor.this)
 			{
-				_myActivation = getContextService().activateContext(CONTEXT_ID);
+				if (_myActivation == null)
+				{
+					_myActivation = getContextService().activateContext(CONTEXT_ID);
+				}
 			}
 		}
 
 		private void deactivateContext(IWorkbenchPart part)
 		{
-			if (part == CorePlotEditor.this && _myActivation != null)
+			if (part == CorePlotEditor.this)
 			{
-				getContextService().deactivateContext(_myActivation);
-				_myActivation = null;
+				if (_myActivation != null)
+				{
+					getContextService().deactivateContext(_myActivation);
+					_myActivation = null;
+				}
 			}
 		}
 	};
+
+	private ObjectUndoContext undoContext;
+
+	private UndoActionHandler undoAction;
+
+	private RedoActionHandler redoAction;
 
 	public void dispose()
 	{
 		// ok, tell the chart to self-destruct (And dispose/release of any objects)
 		_myChart.close();
 		_myChart = null;
+		undoAction.dispose();
+		redoAction.dispose();
+		OperationHistoryFactory.getOperationHistory().dispose(undoContext, true, true, true);
 
 		super.dispose();
 
@@ -681,11 +701,14 @@ public abstract class CorePlotEditor extends EditorPart implements
 		getSite().setSelectionProvider(this);
 
 		// and over-ride the undo button
-		final IAction undoAction = new UndoActionHandler(getEditorSite(),
-				CorePlugin.CMAP_CONTEXT);
-		final IAction redoAction = new RedoActionHandler(getEditorSite(),
-				CorePlugin.CMAP_CONTEXT);
-
+		undoContext = new ObjectUndoContext(this, "CMAP");
+		undoAction = new UndoActionHandler(getEditorSite(),
+				undoContext);
+		undoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_UNDO);
+		redoAction = new RedoActionHandler(getEditorSite(),
+				undoContext);
+		redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
+		
 		getEditorSite().getActionBars().setGlobalActionHandler(
 				ActionFactory.UNDO.getId(), undoAction);
 		getEditorSite().getActionBars().setGlobalActionHandler(
@@ -1290,4 +1313,20 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{
 		_myChart.rescale();
 	}
+	
+	public IAction getRedoAction()
+	{
+		return redoAction;
+	}
+	
+	public IAction getUndoAction()
+	{
+		return undoAction;
+	}
+
+	public IUndoContext getUndoContext()
+	{
+		return undoContext;
+	}
+	
 }

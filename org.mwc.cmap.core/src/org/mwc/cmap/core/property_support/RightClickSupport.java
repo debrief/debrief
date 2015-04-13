@@ -1069,8 +1069,9 @@ public class RightClickSupport
 						+ "Multiple items starting with:" + _subjects[0].getName(), e);
 			}
 
-			// put in the global context, for some reason
-			super.addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				super.addContext(CorePlugin.getUndoContext());
+			}
 		}
 
 		private IStatus doIt(final Object theValue)
@@ -1179,8 +1180,9 @@ public class RightClickSupport
 			_action = action;
 			_parentLayer = parentLayer;
 			_subjects = editable;
-			// put in the global context, for some reason
-			super.addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				super.addContext(CorePlugin.getUndoContext());
+			}
 		}
 
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
