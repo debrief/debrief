@@ -630,7 +630,7 @@ public class BearingMeasurementContribution extends
 			// ownship zig
 			if (lastLegTimes != null)
 			{
-				boolean probWasZig = checkForTargetZig(lastLegTimes, lastLegBearings,
+				boolean probWasZig = checkForTargetZig(thisLeg.getName(), lastLegTimes, lastLegBearings,
 						thisLegTimes, thisLegBearings);
 
 				if (probWasZig)
@@ -675,7 +675,7 @@ public class BearingMeasurementContribution extends
 
 	}
 
-	private boolean checkForTargetZig(List<Long> lastLegTimes,
+	private boolean checkForTargetZig(String legName, List<Long> lastLegTimes,
 			List<Double> lastLegBearings, List<Long> thisLegTimes,
 			List<Double> thisLegBearings)
 	{
@@ -715,14 +715,16 @@ public class BearingMeasurementContribution extends
 							lastLegTimes.size() - 1));
 			double l2BearingRate = bearingRateFor(thisLegTimes.subList(0, leg2Len),
 					thisLegBearings.subList(0, leg2Len));
-			double deltaBRate = l2BearingRate - l1BearingRate;
+			double deltaBRate = l1BearingRate - l2BearingRate; // (order changed, according to Iain doc)
 
 			// and the range
 			double rng1936m = 1770.28 * dOSA / deltaBRate;
 
 			// ok, what's the bearing rate for this range?
+			double pBoot = 1770.28 * dOSA / rng1936m;
 
 			// does this bearing rate match what we expected?
+			System.out.println("turning onto:" + legName + " l2Rate:" + l2BearingRate + " pBoot:" + pBoot);
 		}
 
 		return res;
