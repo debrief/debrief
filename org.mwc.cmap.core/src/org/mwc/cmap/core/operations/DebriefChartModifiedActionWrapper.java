@@ -34,8 +34,9 @@ public class DebriefChartModifiedActionWrapper extends AbstractOperation
 	{
 		super(theAction.toString());
 		
-		// put in the global context, for some reason
-		super.addContext(CorePlugin.CMAP_CONTEXT);
+		if (CorePlugin.getUndoContext() != null) {
+			super.addContext(CorePlugin.getUndoContext());
+		}
 		
 		_myAction = theAction;
 	}

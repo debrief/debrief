@@ -100,7 +100,9 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
+import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
@@ -134,7 +136,26 @@ public class rangeCalc extends plainCalc
 		double theRng = 0.0;
 		if ((primary != null) && (secondary != null) && (primary != secondary))
 		{
-			range = primary.getLocation().rangeFrom(secondary.getLocation());
+			// see if the primary or secondary is a shape - so we measure from the nearest point
+			// Note: we can't accurately handle the range between two shapes, since they
+			// can't both iterate through points to find the nearest on the other 
+			if(secondary instanceof ShapeWrapper)
+			{
+				ShapeWrapper sw = (ShapeWrapper) secondary;
+				PlainShape shape = sw.getShape();
+				range = shape.rangeFrom(primary.getLocation());
+			}
+			else if(primary instanceof ShapeWrapper)
+			{
+				ShapeWrapper sw = (ShapeWrapper) primary;
+				PlainShape shape = sw.getShape();
+				range = shape.rangeFrom(secondary.getLocation());				
+			}
+			else
+			{
+				range = primary.getLocation().rangeFrom(secondary.getLocation());
+			}
+			
 
 			// we output the range value according to the currently selected range
 			// units

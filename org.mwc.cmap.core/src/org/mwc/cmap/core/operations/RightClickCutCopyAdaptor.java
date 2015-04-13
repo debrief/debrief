@@ -430,7 +430,9 @@ public class RightClickCutCopyAdaptor
 
 			};
 			// put in the global context, for some reason
-			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				myOperation.addContext(CorePlugin.getUndoContext());
+			}
 			CorePlugin.run(myOperation);
 		}
 
@@ -530,8 +532,9 @@ public class RightClickCutCopyAdaptor
 					{ transfer });
 				}
 			};
-			// put in the global context, for some reason
-			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				myOperation.addContext(CorePlugin.getUndoContext());
+			}
 			CorePlugin.run(myOperation);
 		}
 
@@ -632,7 +635,7 @@ public class RightClickCutCopyAdaptor
 			final IOperationHistory history = CorePlugin.getHistory();
 			try
 			{
-				history.undo(CorePlugin.CMAP_CONTEXT, null, null);
+				history.undo(CorePlugin.getUndoContext(), null, null);
 			}
 			catch (final ExecutionException e)
 			{
@@ -1073,8 +1076,9 @@ public class RightClickCutCopyAdaptor
 				}
 
 			};
-			// put in the global context, for some reason
-			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			if (CorePlugin.getUndoContext() != null) {
+				myOperation.addContext(CorePlugin.getUndoContext());
+			}
 			CorePlugin.run(myOperation);
 		}
 

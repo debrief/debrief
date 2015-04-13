@@ -33,8 +33,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryFactory;
+import org.eclipse.core.commands.operations.UndoContext;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -56,6 +56,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
@@ -77,6 +78,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.EarthModel;
+import MWC.Algorithms.Editors.IUndoable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Tools.Palette.CreateTOPO;
@@ -147,16 +149,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 * our CMAP-wide clipboard
 	 */
 	private Clipboard _myClipboard;
-
-	/**
-	 * the undo buffer we manage/support
-	 */
-	private static IOperationHistory _myHistory;
-
-	/**
-	 * and the context used to describe our undo list
-	 */
-	public final static IUndoContext CMAP_CONTEXT = new ObjectUndoContext("CMAP");
 
 	/**
 	 * fixed string used to indicate a string is in our location format
@@ -349,15 +341,51 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	 */
 	public static IOperationHistory getHistory()
 	{
-		if (_myHistory == null)
-		{
-			_myHistory = OperationHistoryFactory.getOperationHistory();
-
-			// and set the buffer length
-			_myHistory.setLimit(CorePlugin.CMAP_CONTEXT, LENGTH_OF_UNDO_BUFFER);
+		IOperationHistory history = OperationHistoryFactory.getOperationHistory();
+		
+		// and set the buffer length
+		IUndoContext undoContext = getUndoContext();
+		if (undoContext == null) {
+			return history;
 		}
+		history.setLimit(undoContext, LENGTH_OF_UNDO_BUFFER);
+		return history;
+	}
 
-		return _myHistory;
+	public static IUndoContext getUndoContext()
+	{
+		final IUndoContext[] contexts = new UndoContext[1];
+		Runnable runnable = new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				if (window != null)
+				{
+					IWorkbenchPage page = getActivePage();
+					if (page != null)
+					{
+						IEditorPart activeEditor = page.getActiveEditor();
+						if (activeEditor instanceof IUndoable)
+						{
+							contexts[0] = ((IUndoable) activeEditor).getUndoContext();
+						}
+					}
+				}
+			}
+		};
+
+		if (Display.getCurrent() != null)
+		{
+			runnable.run();
+		}
+		else
+		{
+			Display.getDefault().syncExec(runnable);
+		}
+		return contexts[0];
 	}
 
 	/**
@@ -992,6 +1020,5 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	    };
 	    SafeRunner.run(runnable);
 	}
-
 
 }

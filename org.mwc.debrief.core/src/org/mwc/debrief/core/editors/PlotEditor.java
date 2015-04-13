@@ -89,6 +89,7 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
@@ -298,6 +299,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 		}
 	};
+
+	private PlotPropertySheetPage _propertySheetPage;
 
 	/**
 	 * constructor - quite simple really.
@@ -1180,6 +1183,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				_outlinePage = createOutlinePage();
 
 			res = _outlinePage;
+		}
+		else if (IPropertySheetPage.class.equals(adapter)) {
+			if (_propertySheetPage == null)
+			{
+				_propertySheetPage = new PlotPropertySheetPage(this);
+			}
+			res = _propertySheetPage;
 		}
 
 		// did we find anything?
