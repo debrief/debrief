@@ -479,12 +479,6 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		clearLineListener();		
 		clearTimeListener();
 		
-		if(_viewer != null)
-		{
-			_viewer.removeSelectionChangedListener(_selectionChangeListener);
-			_viewer.clearPlot();
-		}
-		
 		if (_selectionProvider != null)
 		{
 			_selectionProvider.removeSelectionChangedListener(_selectionChangeListener);
@@ -496,6 +490,12 @@ public class CrossSectionView extends ViewPart implements ISnailPeriodChangedLis
 		if (_partMonitor != null)
 		{
 			_partMonitor.ditch();
+		}
+		
+		if(_viewer != null)
+		{
+			_viewer.removeSelectionChangedListener(_selectionChangeListener);
+			//_viewer.clearPlot();
 		}
 	}
 	
