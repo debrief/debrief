@@ -120,7 +120,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	protected TrackShiftListener _myShiftListener;
 
-	/** 
+	/**
 	 * buttons for which plots to show
 	 * 
 	 */
