@@ -15,16 +15,12 @@
 package org.mwc.cmap.xyplot.views;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Panel;
 import java.awt.Toolkit;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -43,7 +39,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import javax.swing.JComponent;
-import javax.swing.JRootPane;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -56,11 +51,10 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
@@ -92,6 +86,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -107,7 +102,6 @@ import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
-import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
@@ -250,10 +244,10 @@ public class XYPlotView extends ViewPart
 	private Action _copyToClipboard;
 
 	/**
-	 * the Swing control we insert the plot into
+	 * the SWT control we insert the plot into
 	 */
-	private Container _plotControl;
-
+	private ChartComposite _plotControl;
+	
 	/**
 	 * the data-area of the plot
 	 */
@@ -391,43 +385,7 @@ public class XYPlotView extends ViewPart
 	 */
 	public void createPartControl(final Composite parent)
 	{
-
-		// right, we need an SWT.EMBEDDED object to act as a holder
-		final Composite holder = new Composite(parent, SWT.NO_BACKGROUND
-				| SWT.EMBEDDED | SWT.NO_REDRAW_RESIZE);
-		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
-				| GridData.FILL_HORIZONTAL));
-
-		/*
-		* Set a Windows specific AWT property that prevents heavyweight
-		* components from erasing their background. Note that this
-		* is a global property and cannot be scoped. It might not be
-		* suitable for your application.
-		*/
-		try {
-			System.setProperty("sun.awt.noerasebackground","true");
-		} catch (NoSuchMethodError error) {}
-		
-		//java.awt.Toolkit.getDefaultToolkit().setDynamicLayout(false);
-		// now we need a Swing object to put our chart into
-		/* Create and setting up frame */
-		Frame frame = SWT_AWT.new_Frame(holder);
-		Panel panel = new Panel(new BorderLayout())
-		{
-			@Override
-			public void update(java.awt.Graphics g)
-			{
-				/* Do not erase the background */
-				paint(g);
-			}
-		};
-		frame.add(panel);
-		JRootPane root = new JRootPane();
-		root.setDoubleBuffered(true);
-		panel.add(root);
-		_plotControl = root.getContentPane();
-		//_plotControl = SWT_AWT.new_Frame(holder);
-
+		_plotControl = new ChartComposite(parent, SWT.NONE);
 		// and lastly do the remaining bits...
 		makeActions();
 		hookContextMenu();
@@ -689,8 +647,8 @@ public class XYPlotView extends ViewPart
 		_chartInPanel.setName(title);
 		_chartInPanel.setMouseZoomable(true, true);
 
-		// and insert into the panel
-		_plotControl.add(_chartInPanel, BorderLayout.CENTER);
+		// and insert into the composite
+		_plotControl.setChart(_thePlotArea);
 
 		// get the cross hairs ready
 		_thePlot.setDomainCrosshairVisible(true);
@@ -829,6 +787,7 @@ public class XYPlotView extends ViewPart
 
 					// and tell the plot holder to redraw everything
 					_chartInPanel.newTime(null, newDTG, null);
+					refreshPlot();
 				}
 			};
 
@@ -837,6 +796,7 @@ public class XYPlotView extends ViewPart
 
 			// fire the current time to our chart (just to start us off)
 			_chartInPanel.newTime(null, prov.getTime(), null);
+			refreshPlot();
 		}
 	}
 
@@ -858,9 +818,17 @@ public class XYPlotView extends ViewPart
 			dir =  System.getProperty("java.io.tmpdir");
 		}
 		
+		if (_plotControl == null || _plotControl.isDisposed()) {
+			return;
+		}
 		// ok, setup the export
+		Point size = _plotControl.getSize();
+		BufferedImage image = new BufferedImage(size.x, size.x, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2d = image.createGraphics();
+		_chartInPanel.setSize(size.x, size.y);
+		_chartInPanel.paint(g2d);
 		final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
-				(Graphics2D) _chartInPanel.getGraphics());
+				(Graphics2D) g2d);
 
 		doWMF(mf);
 	}
@@ -974,14 +942,16 @@ public class XYPlotView extends ViewPart
 
 		// copy the projection
 		final MWC.Algorithms.Projections.FlatProjection fp = new FlatProjection();
-		fp.setScreenArea(_plotControl.getSize());
+		Point size = _plotControl.getSize();
+		Dimension dim = new Dimension(size.x, size.y);
+		fp.setScreenArea(dim);
 		mf.setProjection(fp);
 
 		// start drawing
 		mf.startDraw(null);
 
 		// sort out the background colour
-		final Dimension dim = _plotControl.getSize();
+		//final Dimension dim = _plotControl.getSize();
 		mf.setBackgroundColor(java.awt.Color.white);
 		mf.setColor(mf.getBackgroundColor());
 		mf.fillRect(0, 0, dim.width, dim.height);
@@ -1201,10 +1171,12 @@ public class XYPlotView extends ViewPart
 	}
 
 	protected void bitmapToClipBoard(JComponent component) {
-		final BufferedImage img = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Point size = _plotControl.getSize();
+		final BufferedImage img = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
         Graphics g = img.getGraphics();
         g.setColor(component.getForeground());
         g.setFont(component.getFont());
+        component.setSize(size.x, size.y);
         component.paint(g);
         Transferable t = new Transferable()
 		{
@@ -1528,6 +1500,33 @@ public class XYPlotView extends ViewPart
 
 		// and process the new state
 		doListenStatusUpdate();
+	}
+
+	private void refreshPlot()
+	{
+		Runnable runnable = new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				if (_plotControl != null && !_plotControl.isDisposed())
+				{
+					_plotControl.setSize(0, 0);
+					_plotControl.getParent().layout(true, true);
+					_plotControl.redraw();
+					_plotControl.update();
+				}
+			}
+		};
+		if (Display.getCurrent() != null)
+		{
+			runnable.run();
+		}
+		else
+		{
+			Display.getDefault().syncExec(runnable);
+		}
 	}
 
 }
