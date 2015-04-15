@@ -1,10 +1,16 @@
-;RECT: @A  21.4 0 0 N 21.5 0 0 W 21.5 0 0 N 21.6 0 0 W test rectangle
+;RECT: @A 21.4 0 0 N 21.5 0 0 W 21.5 0 0 N 21.6 0 0 W test rectangle
 
-;LINE: @B  20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line
+;LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line
 
 ;VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector
 
-;CIRCLE: @D 21.5 0 0 N 21.5 0 0 W 5000 test circle
+;CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle
+;CIRCLE: @A@00 21.7 0 0 N 20.9 0 0 W 2000 solid hairwidth no fill
+;CIRCLE: @BA11 21.6 0 0 N 20.8 0 0 W 2000 dotted 1px solid fill
+;CIRCLE: @CB23 21.5 0 0 N 20.7 0 0 W 2000 dot-dash 2px semi-transparent
+;CIRCLE: @DC30 21.4 0 0 N 20.6 0 0 W 2000 short dashes 3px no fill
+;CIRCLE: @ED41 21.3 0 0 N 20.5 0 0 W 2000 long dashes 4px solid fill
+;CIRCLE: @FE52 21.2 0 0 N 20.4 0 0 W 2000 unconnected 4px semi transparent
 
 ;TEXT: @E 21.7 0 0 N 21.5 0 0 W test text 
 
@@ -19,7 +25,6 @@
 ;TIMETEXT: @C 951212 050200 21.7 0 0 N 21.7 0 0 W test timetext 
 
 ;PERIODTEXT: @C 951212 050200 951212 060200 21.7 0 0 N 21.2 0 0 W test period
-
 
 ;TMA_POS: 951212 050900 NELSON S@ 22 11 10.63 N 21 41 52.37 W TRACK_060 NULL 050 12.4 100 Trial label
 
