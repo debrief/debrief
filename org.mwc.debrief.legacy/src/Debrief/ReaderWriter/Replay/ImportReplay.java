@@ -273,6 +273,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -284,6 +285,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
@@ -821,6 +823,36 @@ public class ImportReplay extends PlainImporterBase
 				final Watchable wat = (Watchable) thisWrapper;
 				res = wat.getTime();
 			}
+			
+			if (thisObject instanceof ShapeWrapper)
+			{
+				ShapeWrapper shapeWrapper = (ShapeWrapper) thisObject;
+				String symbology = thisOne.getSymbology();
+				if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
+				{
+					shapeWrapper.setLineStyle(ImportReplay.replayLineStyleFor(symbology.substring(2)));
+					shapeWrapper.setLineThickness(ImportReplay.replayLineThicknesFor(symbology.substring(3)));
+					if (symbology.length() >= 5)
+					{
+						PlainShape shape = shapeWrapper.getShape();
+						String fillType = symbology.substring(4, 5);
+						if ("1".equals(fillType))
+						{
+							shape.setFilled(true);
+						}
+						else if ("2".equals(fillType))
+						{
+							shape.setFilled(true);
+							shape.setSemiTransparent(true);
+						}
+						else
+						{
+							shape.setFilled(false);
+							shape.setSemiTransparent(false);
+						}
+					}
+				}
+			}
 
 			// not fix, must be annotation, just add it to the correct
 			// layer
@@ -834,6 +866,23 @@ public class ImportReplay extends PlainImporterBase
 			addToLayer(thisWrapper, dest);
 
 		}		
+
+		return res;
+	}
+
+	private static int replayLineThicknesFor(String theSym)
+	{
+		int res = 0;
+		final String theThicknes = theSym.substring(0, 1);
+
+		try
+		{
+			res = new Integer(theThicknes);
+		}
+		catch (NumberFormatException e)
+		{
+			// ignore; res = 0
+		}
 
 		return res;
 	}
