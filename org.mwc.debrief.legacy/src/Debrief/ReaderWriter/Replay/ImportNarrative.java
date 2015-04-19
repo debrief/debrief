@@ -79,13 +79,13 @@ import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a label from a line of text
  */
-public final class ImportNarrative implements PlainLineImporter
+public final class ImportNarrative extends AbstractPlainLineImporter
 {
   /** the type for this string
    */

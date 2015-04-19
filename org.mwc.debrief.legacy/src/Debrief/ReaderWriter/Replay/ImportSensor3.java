@@ -96,12 +96,12 @@ import junit.framework.Assert;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.Utilities.Errors.Trace;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportSensor3 implements PlainLineImporter {
+final class ImportSensor3 extends AbstractPlainLineImporter {
   /**
    * the type for this string
    */

@@ -14,17 +14,21 @@
  */
 package Debrief.ReaderWriter.Replay;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Shapes.*;
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Shapes.VectorShape;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 
 /** class to parse a vector from a line of text
  */
-final class ImportVector implements PlainLineImporter
+final class ImportVector extends AbstractPlainLineImporter
 {
   /** the type for this string
    */
@@ -38,13 +42,12 @@ final class ImportVector implements PlainLineImporter
 	    
 	    // declare local variables
 	    WorldLocation start;
-	    String theSymbology;
 	    
 	    // skip the comment identifier
 	    st.nextToken();
 	    
 	    // start with the symbology
-	    theSymbology = st.nextToken();
+	    symbology = st.nextToken();
 	    
 	    try
 	    {
@@ -66,7 +69,8 @@ final class ImportVector implements PlainLineImporter
 			
 		    // create the Vector object
 		    final VectorShape sp = new VectorShape(start, new Double(bearingString), distance);
-		    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+		    Color c = ImportReplay.replayColorFor(symbology);
+				sp.setColor(c);
 		    
 			final WorldArea tmp = new WorldArea(start, sp.getLineEnd());
 			tmp.normalise();
@@ -74,7 +78,7 @@ final class ImportVector implements PlainLineImporter
 		    // and put it into a shape
 		    final ShapeWrapper sw = new ShapeWrapper(theText, 
 		                                       sp, 
-		                                       ImportReplay.replayColorFor(theSymbology),
+		                                       c,
 																					 null);
 		    
 		    return sw;

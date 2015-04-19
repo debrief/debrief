@@ -69,14 +69,15 @@ import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a label from a line of text
  */
-final class ImportTimeText implements PlainLineImporter
+final class ImportTimeText extends AbstractPlainLineImporter
 {
   /** the type for this string
    */
@@ -95,14 +96,13 @@ final class ImportTimeText implements PlainLineImporter
     char latHem, longHem;
     double latSec, longSec;
     String theText;
-    String theSymbology;
 		HiResDate theDate=null;
 
     // skip the comment identifier
     st.nextToken();
 
     // start with the symbology
-    theSymbology = st.nextToken();
+    symbology = st.nextToken();
 
 		// combine the date, a space, and the time
 		final String dateToken = st.nextToken();
@@ -151,7 +151,7 @@ final class ImportTimeText implements PlainLineImporter
 	    // create the fix ready to store it
 	    final LabelWrapper lw = new LabelWrapper(theText,
 	                                       theLoc,
-	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       ImportReplay.replayColorFor(symbology),
 																				 theDate,
 																				 null);
 	

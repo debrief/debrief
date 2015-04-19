@@ -92,24 +92,23 @@
 
 package Debrief.ReaderWriter.Replay;
 
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.HiResDate;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import junit.framework.Assert;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportSensor2 implements PlainLineImporter {
+final class ImportSensor2 extends AbstractPlainLineImporter {
   /**
    * the type for this string
    */
@@ -129,7 +128,6 @@ final class ImportSensor2 implements PlainLineImporter {
 
     // declare local variables
     String theText;
-    String theSymbology;
     String theTrack;
     String sensorName;
     double latDeg, longDeg, latMin, longMin;
@@ -156,7 +154,7 @@ final class ImportSensor2 implements PlainLineImporter {
     theTrack = ImportFix.checkForQuotedTrackName(st);
 
     // start with the symbology
-    theSymbology = st.nextToken(normalDelimiters);
+    symbology = st.nextToken(normalDelimiters);
 
     // now the sensor offsets
     final String next = st.nextToken().trim();
@@ -242,9 +240,9 @@ final class ImportSensor2 implements PlainLineImporter {
 	    // and lastly read in the message
 	    theText = st.nextToken("\r").trim();
 	
-	    theColor = ImportReplay.replayColorFor(theSymbology);
+	    theColor = ImportReplay.replayColorFor(symbology);
 	
-	    final int theStyle = ImportReplay.replayLineStyleFor(theSymbology);
+	    final int theStyle = ImportReplay.replayLineStyleFor(symbology);
 
 
 	    // create the contact object

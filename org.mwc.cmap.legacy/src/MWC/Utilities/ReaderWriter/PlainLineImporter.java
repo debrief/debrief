@@ -111,5 +111,7 @@ public interface PlainLineImporter
 	/** indicate if you can export this type of object
 	 */
 	public boolean canExportThis(Object val);
+
+	String getSymbology();
 	
 }

@@ -81,12 +81,12 @@ import java.util.StringTokenizer;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a label from a line of text
  */
-public final class ImportNarrative2 implements PlainLineImporter
+public final class ImportNarrative2 extends AbstractPlainLineImporter
 {
   /** the type for this string
    */

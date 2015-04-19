@@ -58,17 +58,20 @@
 package Debrief.ReaderWriter.PCArgos;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 import Debrief.ReaderWriter.Replay.ReplayFix;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /** import a fix from a line of text (in PCArgos format)
  */
-final class ImportPMRFFix implements PlainLineImporter
+final class ImportPMRFFix extends AbstractPlainLineImporter
 {
 
 	/** header information necessary for range data offsets

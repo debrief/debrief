@@ -88,18 +88,21 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Shapes.*;
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /** class to parse a label from a line of text
  */
-final class ImportCircle implements PlainLineImporter
+final class ImportCircle extends AbstractPlainLineImporter
 {
   /** the type for this string
    */
@@ -119,13 +122,12 @@ final class ImportCircle implements PlainLineImporter
     double latSec, longSec;
     double radius;
     String theText = null;
-    String theSymbology;
     
     // skip the comment identifier
     st.nextToken();
     
     // start with the symbology
-    theSymbology = st.nextToken();
+    symbology = st.nextToken();
     
     try
     {
@@ -174,12 +176,13 @@ final class ImportCircle implements PlainLineImporter
   
 	    // create the circle object
 	    final PlainShape sp = new CircleShape(theLoc, radius);
-	    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+	    Color c = ImportReplay.replayColorFor(symbology);
+			sp.setColor(c);
 	    
 	    // and put it into a shape
 	    final ShapeWrapper sw = new ShapeWrapper(theText, 
 	                                       sp, 
-	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       c,
 																				 null);
 	    
 	    return sw;
