@@ -548,6 +548,18 @@ public class ImportReplay extends PlainImporterBase
 			addLayer(trkWrapper);
 		}
 
+		// FIXME line style and thicknes doesn't exists for a position
+		if (rf.theSymbology != null && rf.theSymbology.length() > 2)
+		{
+			trkWrapper.setLineStyle(ImportReplay.replayLineStyleFor(rf.theSymbology
+					.substring(2)));
+			if (rf.theSymbology.length() > 3)
+			{
+				trkWrapper.setLineThickness(ImportReplay
+						.replayLineThicknesFor(rf.theSymbology.substring(3)));
+			}
+		}
+				
 		// add the fix to the track
 		trkWrapper.addFix((FixWrapper) thisWrapper);
 
@@ -831,7 +843,11 @@ public class ImportReplay extends PlainImporterBase
 				if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
 				{
 					shapeWrapper.setLineStyle(ImportReplay.replayLineStyleFor(symbology.substring(2)));
-					shapeWrapper.setLineThickness(ImportReplay.replayLineThicknesFor(symbology.substring(3)));
+					if (symbology.length() > 3)
+					{
+						shapeWrapper.setLineThickness(ImportReplay
+								.replayLineThicknesFor(symbology.substring(3)));
+					}
 					if (symbology.length() >= 5)
 					{
 						PlainShape shape = shapeWrapper.getShape();
