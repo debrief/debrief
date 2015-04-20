@@ -87,6 +87,7 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
@@ -97,13 +98,13 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a label from a line of text
  */
-final class ImportBearing implements PlainLineImporter
+final class ImportBearing extends AbstractPlainLineImporter
 {
   /** the type for this string
    */
@@ -122,7 +123,6 @@ final class ImportBearing implements PlainLineImporter
     char latHem, longHem;
     double latSec, longSec;
     String theText="";
-    String theSymbology;
     HiResDate theDate;
 
 
@@ -133,7 +133,7 @@ final class ImportBearing implements PlainLineImporter
     st.nextToken();
 
     // start with the symbology
-    theSymbology = st.nextToken();
+    symbology = st.nextToken();
 
 		// combine the date, a space, and the time
 		final String dateToken = st.nextToken();
@@ -202,7 +202,8 @@ final class ImportBearing implements PlainLineImporter
 
 	    // create the Line object
 	    final PlainShape sp = new LineShape(start, end);
-	    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+	    Color c = ImportReplay.replayColorFor(symbology);
+	    sp.setColor(c);
 	
 	    final WorldArea tmp = new WorldArea(start, end);
 	    tmp.normalise();
@@ -210,7 +211,7 @@ final class ImportBearing implements PlainLineImporter
 	    // and put it into a shape
 	    final ShapeWrapper sw = new ShapeWrapper(theText,
 	                                       sp,
-	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       c,
 	                                       theDate);
 	
 	    return sw;

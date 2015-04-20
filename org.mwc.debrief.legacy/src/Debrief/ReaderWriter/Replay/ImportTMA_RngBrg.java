@@ -46,23 +46,23 @@
 
 package Debrief.ReaderWriter.Replay;
 
-import MWC.Utilities.ReaderWriter.*;
+import java.awt.Color;
+import java.text.ParseException;
+import java.util.StringTokenizer;
+
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import MWC.GUI.Shapes.EllipseShape;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-
-import Debrief.Wrappers.*;
-import MWC.GUI.Shapes.*;
-
-import java.text.ParseException;
-import java.util.*;
-import java.awt.*;
-
-import MWC.GenericData.*;
 
 /**
  * class to read in a TMA Solution (incorporating Range and Bearing)
  */
-public final class ImportTMA_RngBrg implements PlainLineImporter
+public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 {
 	/**
 	 * the type for this string
@@ -86,7 +86,6 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 
 		// declare local variables
 		String theLabel;
-		String theSymbology;
 		String vesselName;
 		String solutionName;
 		HiResDate theDtg = null;
@@ -110,7 +109,7 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 		vesselName = ImportFix.checkForQuotedTrackName(st);
 
 		// next with the symbology
-		theSymbology = st.nextToken(normalDelimiters);
+		symbology = st.nextToken(normalDelimiters);
 
 		try
 		{
@@ -159,9 +158,9 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 			// strip off any gash
 			theLabel = theLabel.trim();
 	
-			theColor = ImportReplay.replayColorFor(theSymbology);
+			theColor = ImportReplay.replayColorFor(symbology);
 
-			final String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
+			final String theStyle = ImportReplay.replayTrackSymbolFor(symbology);
 	
 			// create the contact object
 			final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,

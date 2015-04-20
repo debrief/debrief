@@ -68,20 +68,25 @@
 //
 package Debrief.ReaderWriter.Replay;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Shapes.*;
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Shapes.WheelShape;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportWheel implements PlainLineImporter
+final class ImportWheel extends AbstractPlainLineImporter
 {
 
   /**
@@ -105,7 +110,6 @@ final class ImportWheel implements PlainLineImporter
     double latSec, longSec;
     double innerRadius, outerRadius;
     String theText;
-    String theSymbology;
     String scrap;
     HiResDate theDate = null;
 
@@ -115,7 +119,7 @@ final class ImportWheel implements PlainLineImporter
     	scrap = null;
 
     // start with the symbology
-    theSymbology = st.nextToken();
+    symbology = st.nextToken();
 
     // now the date
     String dateStr = null;
@@ -173,12 +177,13 @@ final class ImportWheel implements PlainLineImporter
 	
 	    // create the circle object
 	    final PlainShape wh = new WheelShape(theLoc, innerRadius, outerRadius);
-	    wh.setColor(ImportReplay.replayColorFor(theSymbology));
+	    Color c = ImportReplay.replayColorFor(symbology);
+			wh.setColor(c);
 	
 	    // and put it into a shape
 	    final ShapeWrapper sw = new ShapeWrapper(theText,
 	                                       wh,
-	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       c,
 	                                       theDate);
 	
 	    return sw;

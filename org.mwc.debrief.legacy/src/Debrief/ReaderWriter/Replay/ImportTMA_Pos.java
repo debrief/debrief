@@ -47,18 +47,21 @@ import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
-import Debrief.Wrappers.*;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.Shapes.EllipseShape;
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * class to read in a TMA Solution (incorporating Range and Bearing)
  */
-public final class ImportTMA_Pos implements PlainLineImporter
+public final class ImportTMA_Pos extends AbstractPlainLineImporter
 {
 	/**
 	 * the type for this string
@@ -82,7 +85,6 @@ public final class ImportTMA_Pos implements PlainLineImporter
 
 		// declare local variables
 		String theLabel;
-		String theSymbology;
 		String vesselName;
 		String solutionName;
 		double latDeg, longDeg, latMin, longMin;
@@ -109,7 +111,7 @@ public final class ImportTMA_Pos implements PlainLineImporter
 		vesselName = ImportFix.checkForQuotedTrackName(st);
 
 		// next with the symbology
-		theSymbology = st.nextToken(normalDelimiters);
+		symbology = st.nextToken(normalDelimiters);
 
 		// find out if it's our null value
 		String next = st.nextToken();
@@ -190,9 +192,9 @@ public final class ImportTMA_Pos implements PlainLineImporter
 			// strip off any gash
 			theLabel = theLabel.trim();
 	
-			theColor = ImportReplay.replayColorFor(theSymbology);
+			theColor = ImportReplay.replayColorFor(symbology);
 	
-			final String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
+			final String theStyle = ImportReplay.replayTrackSymbolFor(symbology);
 	
 			// create the contact object
 			final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,

@@ -72,18 +72,21 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Shapes.*;
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /** class to parse a label from a line of text
  */
-final class ImportLine implements PlainLineImporter
+final class ImportLine extends AbstractPlainLineImporter
 {
   /** the type for this string
    */
@@ -101,13 +104,12 @@ final class ImportLine implements PlainLineImporter
     double latDeg, longDeg, latMin, longMin;
     char latHem, longHem;
     double latSec, longSec;
-    String theSymbology;
     
     // skip the comment identifier
     st.nextToken();
     
     // start with the symbology
-    theSymbology = st.nextToken();
+    symbology = st.nextToken();
     
     // now the start location
     String vDiff;
@@ -158,7 +160,8 @@ final class ImportLine implements PlainLineImporter
 			
 	    // create the Line object
 	    final PlainShape sp = new LineShape(start, end);
-	    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+	    Color c = ImportReplay.replayColorFor(symbology);
+			sp.setColor(c);
 	    
 			final WorldArea tmp = new WorldArea(start, end);
 			tmp.normalise();
@@ -166,7 +169,7 @@ final class ImportLine implements PlainLineImporter
 	    // and put it into a shape
 	    final ShapeWrapper sw = new ShapeWrapper(theText, 
 	                                       sp, 
-	                                       ImportReplay.replayColorFor(theSymbology),
+	                                       c,
 																				 null);
 	    
 	    return sw;

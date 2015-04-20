@@ -104,7 +104,7 @@ import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -112,7 +112,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  * class that is able to export a polygon - note the Replay file format doesn't
  * include polygons, so we only export it.
  */
-class ImportPolygon implements PlainLineImporter
+class ImportPolygon extends AbstractPlainLineImporter
 {
 
 	/**
@@ -133,13 +133,12 @@ class ImportPolygon implements PlainLineImporter
 		double latSec, longSec;
 		HiResDate startDate = null, endDate = null;
 		String theText = null;
-		String theSymbology;
 
 		// skip the comment identifier
 		st.nextToken();
 
 		// start with the symbology
-		theSymbology = st.nextToken();
+		symbology = st.nextToken();
 
 		String dateToken = st.nextToken();
 		String timeToken = st.nextToken();
@@ -157,7 +156,7 @@ class ImportPolygon implements PlainLineImporter
 		}
 		else
 		{
-			line = line.substring(line.indexOf(theSymbology));
+			line = line.substring(line.indexOf(symbology));
 			st = new StringTokenizer(line);
 			st.nextToken(); // skip the simbology
 		}
@@ -232,7 +231,7 @@ class ImportPolygon implements PlainLineImporter
 
 		// and put Polygon into a shape
 		final PolygonWrapper sw = new PolygonWrapper(theText, sp,
-				ImportReplay.replayColorFor(theSymbology), startDate, endDate);
+				ImportReplay.replayColorFor(symbology), startDate, endDate);
 
 		return sw;
 	}

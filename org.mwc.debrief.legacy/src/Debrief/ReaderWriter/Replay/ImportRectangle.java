@@ -74,21 +74,23 @@
 
 package Debrief.ReaderWriter.Replay;
 
-import MWC.Utilities.ReaderWriter.*;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import Debrief.Wrappers.*;
-import MWC.GUI.Shapes.*;
-
+import java.awt.Color;
 import java.text.ParseException;
-import java.util.*;
+import java.util.StringTokenizer;
 
 import junit.framework.TestCase;
-import MWC.GenericData.*;
+import Debrief.Wrappers.ShapeWrapper;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Shapes.RectangleShape;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportRectangle implements PlainLineImporter {
+final class ImportRectangle extends AbstractPlainLineImporter {
 	/**
 	 * the type for this string
 	 */
@@ -108,13 +110,12 @@ final class ImportRectangle implements PlainLineImporter {
 		char latHem, longHem;
 		double latSec, longSec;
 		String theText = null;
-		String theSymbology;
-
+		
 		// skip the comment identifier
 		st.nextToken();
 
 		// start with the symbology
-		theSymbology = st.nextToken();
+		symbology = st.nextToken();
 
 		try
 		{
@@ -182,14 +183,15 @@ final class ImportRectangle implements PlainLineImporter {
 			}
 			// create the Rectangle object
 			final PlainShape sp = new RectangleShape(TL, BR);
-			sp.setColor(ImportReplay.replayColorFor(theSymbology));
+			Color c = ImportReplay.replayColorFor(symbology);
+			sp.setColor(c);
 	
 			final WorldArea tmp = new WorldArea(TL, BR);
 			tmp.normalise();
 	
 			// and put it into a shape
 			final ShapeWrapper sw = new ShapeWrapper(theText, sp,
-					ImportReplay.replayColorFor(theSymbology), null);
+					c, null);
 	
 			return sw;
 		}

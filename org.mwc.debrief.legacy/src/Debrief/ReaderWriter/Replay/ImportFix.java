@@ -148,14 +148,14 @@ import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * import a fix from a line of text (in Replay format)
  */
-public final class ImportFix implements PlainLineImporter
+public final class ImportFix extends AbstractPlainLineImporter
 {
 
 	// ////////////////////////////////////////////////
@@ -195,8 +195,7 @@ public final class ImportFix implements PlainLineImporter
 		double theDepth;
 
 		String theTrackName;
-		String theSymbology;
-
+		
 		// dateStr = new StringBuffer(100);
 
 		// parse the line
@@ -216,7 +215,7 @@ public final class ImportFix implements PlainLineImporter
 		// in the remaining fields aswell
 		theTrackName = checkForQuotedTrackName(st).trim();
 
-		theSymbology = st.nextToken(normalDelimiters);
+		symbology = st.nextToken(normalDelimiters);
 
 		try
 		{
@@ -278,7 +277,7 @@ public final class ImportFix implements PlainLineImporter
 			final ReplayFix rf = new ReplayFix();
 			rf.theFix = res;
 			rf.theTrackName = theTrackName;
-			rf.theSymbology = theSymbology;
+			rf.theSymbology = symbology;
 			if ((txtLabel != null) && (txtLabel.length() > 0))
 				rf.label = txtLabel;
 	

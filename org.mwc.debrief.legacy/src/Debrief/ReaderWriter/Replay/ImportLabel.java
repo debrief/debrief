@@ -76,17 +76,17 @@
 
 package Debrief.ReaderWriter.Replay;
 
-import MWC.Utilities.ReaderWriter.*;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-
 import java.text.ParseException;
-import java.util.*;
-import MWC.GenericData.*;
-import Debrief.Wrappers.*;
+import java.util.StringTokenizer;
+
+import Debrief.Wrappers.LabelWrapper;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /** class to parse a label from a line of text
  */
-final class ImportLabel implements PlainLineImporter
+final class ImportLabel extends AbstractPlainLineImporter
 {
   /** the type for this string
    */
@@ -105,13 +105,12 @@ final class ImportLabel implements PlainLineImporter
     char latHem, longHem;
     double latSec, longSec;
     String theText;
-    String theSymbology;
-
+    
     // skip the comment identifier
     st.nextToken();
 
     // start with the symbology
-    theSymbology = st.nextToken();
+    symbology = st.nextToken();
 
     try
     {
@@ -153,10 +152,10 @@ final class ImportLabel implements PlainLineImporter
 	    // create the fix ready to store it
 	    final LabelWrapper lw = new LabelWrapper(theText,
 	                                       theLoc,
-	                                       ImportReplay.replayColorFor(theSymbology));
+	                                       ImportReplay.replayColorFor(symbology));
 	    
 	    // also get the symbol type
-	    final String symType = ImportReplay.replayTrackSymbolFor(theSymbology);
+	    final String symType = ImportReplay.replayTrackSymbolFor(symbology);
 	    lw.setSymbolType(symType);
 	
 	    return lw;

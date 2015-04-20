@@ -91,21 +91,26 @@
 //
 package Debrief.ReaderWriter.Replay;
 
-import MWC.Utilities.ReaderWriter.*;
+import java.awt.Color;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.StringTokenizer;
+
+import Debrief.Wrappers.ShapeWrapper;
+import MWC.Algorithms.Conversions;
+import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import Debrief.Wrappers.*;
-import MWC.GUI.Shapes.*;
-
-import java.text.ParseException;
-import java.util.*;
-import MWC.GenericData.*;
-import MWC.Algorithms.*;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportEllipse implements PlainLineImporter
+final class ImportEllipse extends AbstractPlainLineImporter
 {
 
 	/**
@@ -129,14 +134,13 @@ final class ImportEllipse implements PlainLineImporter
 		double latSec, longSec;
 		double maxima, minima, orient;
 		String theText;
-		String theSymbology;
 		HiResDate theDate = null;
 
 		// skip the comment identifier
 		st.nextToken();
 
 		// start with the symbology
-		theSymbology = st.nextToken();
+		symbology = st.nextToken();
 
 		// now the date
 		String dateStr = null;
@@ -194,11 +198,11 @@ final class ImportEllipse implements PlainLineImporter
 			// create the circle object
 			final PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(maxima,
 					WorldDistance.DEGS), new WorldDistance(minima, WorldDistance.DEGS));
-			sp.setColor(ImportReplay.replayColorFor(theSymbology));
+			Color c = ImportReplay.replayColorFor(symbology);
+			sp.setColor(c);
 	
 			// and put it into a shape
-			final ShapeWrapper sw = new ShapeWrapper(theText, sp, ImportReplay
-					.replayColorFor(theSymbology), theDate);
+			final ShapeWrapper sw = new ShapeWrapper(theText, sp, c, theDate);
 	
 			return sw;
 		}
