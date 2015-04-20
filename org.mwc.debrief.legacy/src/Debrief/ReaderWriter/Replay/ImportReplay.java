@@ -548,7 +548,8 @@ public class ImportReplay extends PlainImporterBase
 			addLayer(trkWrapper);
 		}
 
-		// FIXME line style and thicknes doesn't exists for a position
+		// Note: line style & thickness only (currently) apply to whole tracks,
+		// so we will effectively just use the last value read in.
 		if (rf.theSymbology != null && rf.theSymbology.length() > 2)
 		{
 			trkWrapper.setLineStyle(ImportReplay.replayLineStyleFor(rf.theSymbology
