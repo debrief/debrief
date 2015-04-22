@@ -16,6 +16,8 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -679,8 +681,10 @@ public class BearingMeasurementContribution extends
 			List<Double> lastLegBearings, List<Long> thisLegTimes,
 			List<Double> thisLegBearings)
 	{
-		boolean res = false;
+		boolean res = true;
 		// ok, what's the 1936 range?
+		
+		NumberFormat dp2 = new DecimalFormat("0.00");
 
 		// ok, trim the leg 1 bearings
 		int leg1Len = Math.min(6, lastLegTimes.size());
@@ -694,14 +698,14 @@ public class BearingMeasurementContribution extends
 			double leg1Bearing = lastLegBearings.get(lastLegBearings.size() - 1);
 			double leg1Speed = speedAt(lastLegTimes.get(lastLegTimes.size() - 1));
 			double leg1Course = courseAt(lastLegTimes.get(lastLegTimes.size() - 1));
-			double leg1RelBrg = leg1Bearing - leg1Course;
+			double leg1RelBrg = leg1Course - leg1Bearing ;
 			double osa1 = leg1Speed * Math.sin(Math.toRadians(leg1RelBrg));
 
 			// OSA 2
 			double leg2Bearing = thisLegBearings.get(0);
 			double leg2Speed = speedAt(thisLegTimes.get(0));
 			double leg2Course = courseAt(thisLegTimes.get(0));
-			double leg2RelBrg = leg2Bearing - leg2Course;
+			double leg2RelBrg = leg2Course - leg2Bearing;
 			double osa2 = leg2Speed * Math.sin(Math.toRadians(leg2RelBrg));
 
 			// dOSA
@@ -724,7 +728,12 @@ public class BearingMeasurementContribution extends
 			double pBoot = 1770.28 * dOSA / rng1936m;
 
 			// does this bearing rate match what we expected?
-			System.out.println("turning onto:" + legName + " l2Rate:" + l2BearingRate + " pBoot:" + pBoot);
+			SATC_Activator.log(Status.INFO, "turning onto:" + legName + " range:" + (int)rng1936m + 
+					
+					" osa1:" + dp2.format(osa1) + " osa2:" + dp2.format(osa2) +
+					" dOSA:" + dp2.format(dOSA) +
+					" l1Rate:" + dp2.format(l1BearingRate) + " l2Rate:" + dp2.format(l2BearingRate) +
+					" dRate:" + dp2.format(deltaBRate) , null);
 		}
 
 		return res;
@@ -901,8 +910,10 @@ public class BearingMeasurementContribution extends
 				Sensor sensor, double rms)
 		{
 			String name = "Tgt-" + ctr++;
-			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart)
-					+ " - " + new Date(tEnd), null);
+			
+//			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart)
+//					+ " - " + new Date(tEnd), null);
+						
 			StraightLegForecastContribution slf = new CompositeStraightLegForecastContribution();
 			slf.setStartDate(new Date(tStart));
 			slf.setAutoGenBy(_genName);
