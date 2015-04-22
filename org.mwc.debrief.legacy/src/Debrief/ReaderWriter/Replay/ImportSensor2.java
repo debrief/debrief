@@ -151,7 +151,7 @@ final class ImportSensor2 extends AbstractPlainLineImporter {
 		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // get the (possibly multi-word) track name
-    theTrack = ImportFix.checkForQuotedTrackName(st);
+    theTrack = ImportFix.checkForQuotedName(st);
 
     // start with the symbology
     symbology = st.nextToken(normalDelimiters);
@@ -232,7 +232,7 @@ final class ImportSensor2 extends AbstractPlainLineImporter {
 	    }
 
 	    // get the (possibly multi-word) track name
-	    sensorName = ImportFix.checkForQuotedTrackName(st);
+	    sensorName = ImportFix.checkForQuotedName(st);
 	
 	    // trim the sensor name
 	    sensorName = sensorName.trim();

@@ -106,7 +106,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
 		// now the vessel name
-		vesselName = ImportFix.checkForQuotedTrackName(st);
+		vesselName = ImportFix.checkForQuotedName(st);
 
 		// next with the symbology
 		symbology = st.nextToken(normalDelimiters);

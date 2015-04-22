@@ -269,6 +269,8 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import Debrief.Wrappers.DynamicShapeLayer;
+import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -455,6 +457,10 @@ public class ImportReplay extends PlainImporterBase
 			// they are handled by the ImportReplay method. We are including it in
 			// this list so that we can use it as an exporter
 			_theImporters.addElement(new ImportFix());
+			
+			_theImporters.addElement(new ImportRectangleTrack());
+			_theImporters.addElement(new ImportCircleTrack());
+			_theImporters.addElement(new ImportPolygonTrack());
 		}
 	}
 	
@@ -785,6 +791,20 @@ public class ImportReplay extends PlainImporterBase
 		{
 			res = processReplayFix((ReplayFix) thisObject);
 		}
+		else if (thisObject instanceof DynamicShapeWrapper)
+		{
+			proccessShapeWrapper(thisOne, thisObject);
+			DynamicShapeWrapper thisWrapper = (DynamicShapeWrapper) thisObject;
+			String trackName = thisWrapper.getTrackName();
+			DynamicShapeLayer dsl = (DynamicShapeLayer) getLayerFor(trackName);
+			if (dsl == null) 
+			{
+				dsl = new DynamicShapeLayer();
+				dsl.setName(trackName);
+			}
+			addToLayer(thisWrapper, dsl);
+			addLayer(dsl);
+		}
 		else if (thisObject instanceof SensorContactWrapper)
 		{
 			res = processSensorContactWrapper((SensorContactWrapper) thisObject);
@@ -839,36 +859,7 @@ public class ImportReplay extends PlainImporterBase
 			
 			if (thisObject instanceof ShapeWrapper)
 			{
-				ShapeWrapper shapeWrapper = (ShapeWrapper) thisObject;
-				String symbology = thisOne.getSymbology();
-				if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
-				{
-					shapeWrapper.setLineStyle(ImportReplay.replayLineStyleFor(symbology.substring(2)));
-					if (symbology.length() > 3)
-					{
-						shapeWrapper.setLineThickness(ImportReplay
-								.replayLineThicknesFor(symbology.substring(3)));
-					}
-					if (symbology.length() >= 5)
-					{
-						PlainShape shape = shapeWrapper.getShape();
-						String fillType = symbology.substring(4, 5);
-						if ("1".equals(fillType))
-						{
-							shape.setFilled(true);
-						}
-						else if ("2".equals(fillType))
-						{
-							shape.setFilled(true);
-							shape.setSemiTransparent(true);
-						}
-						else
-						{
-							shape.setFilled(false);
-							shape.setSemiTransparent(false);
-						}
-					}
-				}
+				proccessShapeWrapper(thisOne, thisObject);
 			}
 
 			// not fix, must be annotation, just add it to the correct
@@ -885,6 +876,41 @@ public class ImportReplay extends PlainImporterBase
 		}		
 
 		return res;
+	}
+
+	private void proccessShapeWrapper(final PlainLineImporter thisOne,
+			final Object thisObject)
+	{
+		ShapeWrapper shapeWrapper = (ShapeWrapper) thisObject;
+		String symbology = thisOne.getSymbology();
+		if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
+		{
+			shapeWrapper.setLineStyle(ImportReplay.replayLineStyleFor(symbology.substring(2)));
+			if (symbology.length() > 3)
+			{
+				shapeWrapper.setLineThickness(ImportReplay
+						.replayLineThicknesFor(symbology.substring(3)));
+			}
+			if (symbology.length() >= 5)
+			{
+				PlainShape shape = shapeWrapper.getShape();
+				String fillType = symbology.substring(4, 5);
+				if ("1".equals(fillType))
+				{
+					shape.setFilled(true);
+				}
+				else if ("2".equals(fillType))
+				{
+					shape.setFilled(true);
+					shape.setSemiTransparent(true);
+				}
+				else
+				{
+					shape.setFilled(false);
+					shape.setSemiTransparent(false);
+				}
+			}
+		}
 	}
 
 	private static int replayLineThicknesFor(String theSym)
