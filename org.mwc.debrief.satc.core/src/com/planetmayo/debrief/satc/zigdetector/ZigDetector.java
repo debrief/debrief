@@ -269,9 +269,9 @@ public class ZigDetector
 			final double optimiseTolerance, final List<Long> thisLegTimes,
 			final List<Double> thisLegBearings)
 	{
-		SATC_Activator.log(Status.INFO,
-				"  Trying to slice : " + dateF.format(new Date(wholeStart)) + " - "
-						+ dateF.format(new Date(wholeEnd)), null);
+//		SATC_Activator.log(Status.INFO,
+//				"  Trying to slice : " + dateF.format(new Date(wholeStart)) + " - "
+//						+ dateF.format(new Date(wholeEnd)), null);
 
 		// ok, find the best slice
 		// prepare the data
@@ -319,10 +319,10 @@ public class ZigDetector
 		// right, how did we get on?
 		if (sliceTime != -1)
 		{
-			SATC_Activator.log(Status.INFO,
-					"  Best slice at:" + dateF.format(new Date(sliceTime)) + " index:"
-							+ bestSlice + " score:" + bestScore + " whole leg:"
-							+ wholeLegScore, null);
+//			SATC_Activator.log(Status.INFO,
+//					"  Best slice at:" + dateF.format(new Date(sliceTime)) + " index:"
+//							+ bestSlice + " score:" + bestScore + " whole leg:"
+//							+ wholeLegScore, null);
 
 			// is this slice acceptable?
 			if (bestScore < wholeLegScore * RMS_ZIG_RATIO)
@@ -340,8 +340,8 @@ public class ZigDetector
 			else
 			{
 				// right - we couldn't get a good slice. see what the whole score is
-				SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
-						+ wholeLegScore + " best slice:" + bestScore, null);
+//				SATC_Activator.log(Status.INFO, "Couldn't slice: whole leg score:"
+//						+ wholeLegScore + " best slice:" + bestScore, null);
 
 				// just store the whole slice
 				legStorer.storeLeg(scenario, wholeStart, wholeEnd, sensor,
