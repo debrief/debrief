@@ -801,9 +801,9 @@ public class ImportReplay extends PlainImporterBase
 			{
 				dsl = new DynamicShapeLayer();
 				dsl.setName(trackName);
+				addLayer(dsl);
 			}
 			addToLayer(thisWrapper, dsl);
-			addLayer(dsl);
 		}
 		else if (thisObject instanceof SensorContactWrapper)
 		{
