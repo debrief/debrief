@@ -21,6 +21,7 @@ import java.beans.PropertyDescriptor;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.MovingPlottable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
@@ -98,6 +99,11 @@ public class PlainHighlighter implements TemporalLayerPainter
 	{
 		// paint it, to start off with
 		theLayer.paint(dest);
+		
+		if (theLayer instanceof MovingPlottable && dtg != null)
+		{
+			((MovingPlottable)theLayer).paint(dest, dtg.getMicros());
+		}
 
 		// now think about the highlight
 
