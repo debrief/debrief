@@ -8601,7 +8601,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             vehicle. The Symbol style read in is used when tracks are to be shown by using symbol
             (in 2D or 3D), as described in <xref linkend="intro_to_sym_sets"/> . <table
               xml:id="debrief_Sym">
-              <title>Debrief symbology data fields</title>
+              <title>Debrief core symbology data fields</title>
 
               <tgroup cols="4">
                 <colspec colname="c1"/>
@@ -8802,11 +8802,88 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                   </row>
                 </tbody>
               </tgroup>
-            </table><note>
-              <para>Note that historically only the first color style read in from file for a
-                particular track was implemented, this has been changed in order that the colour
-                value is used for each position read in.</para>
-            </note></para>
+            </table>
+            
+            <table
+              xml:id="debrief_ExtendedSym">
+              <title>Debrief extended symbology data fields</title>
+              
+              <tgroup cols="6">
+                <colspec colname="c1"/>
+                
+                <colspec colname="c2"/>
+                
+                <colspec colname="c3"/>
+                
+                <colspec colname="c4"/>
+                <colspec colname="c5"/>
+                
+                <colspec colname="c6"/>
+                
+                <thead>
+                  <row>
+                    <entry nameend="c2" namest="c1"><para>Line Type</para></entry>                    
+                    <entry nameend="c4" namest="c3"><para>Line Thickness</para></entry>
+                    <entry nameend="c6" namest="c5"><para>Fill Style</para></entry>
+                  </row>
+                </thead>
+                
+                <tbody>
+                  <row>
+                    <entry><para>A</para></entry>
+                    
+                    <entry><para>Aircraft</para></entry>
+                    
+                    <entry><para>@</para></entry>
+                    
+                    <entry><para>White</para></entry>
+                    <entry><para>@</para></entry>
+                    
+                    <entry><para>White</para></entry>
+                  </row>
+                  
+                  <row>
+                    <entry><para>C</para></entry>
+                    
+                    <entry><para>Carrier</para></entry>
+                    
+                    <entry><para>A</para></entry>
+                    
+                    <entry><para>Blue</para></entry>
+                    <entry><para>A</para></entry>
+                    
+                    <entry><para>Blue</para></entry>
+                  </row>
+                  
+                  <row>
+                    <entry><para>D</para></entry>
+                    
+                    <entry><para>Destroyer</para></entry>
+                    
+                    <entry><para>B</para></entry>
+                    
+                    <entry><para>Green</para></entry>
+                    <entry><para>B</para></entry>
+                    
+                    <entry><para>Green</para></entry>
+                  </row>
+                  
+                  <row>
+                    <entry><para>F</para></entry>
+                    
+                    <entry><para>Frigate</para></entry>
+                    
+                    <entry><para>C</para></entry>
+                    
+                    <entry><para>Red</para></entry>
+                    <entry><para>C</para></entry>
+                    
+                    <entry><para>Red</para></entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
+          </para>
         </sect2>
 
         <sect2 xml:id="replay_annotation_format">
