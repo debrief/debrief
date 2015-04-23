@@ -163,13 +163,19 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 								// it has an area, see if it is in view
 								if (wp.overlaps(wa))
 								{
-									paintElement(dest, time, thisP);
+									if (paintElement(dest, time, thisP)) 
+									{
+										break;
+									}
 								}
 							}
 							else
 							{
 								// it doesn't have an area, so plot it anyway
-								paintElement(dest, time, thisP);
+								if (paintElement(dest, time, thisP))
+								{
+									break;
+								}
 							}
 						}
 					}
@@ -178,7 +184,7 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 	}
 
 
-	private void paintElement(CanvasType dest, long time, final Plottable thisP)
+	private boolean paintElement(CanvasType dest, long time, final Plottable thisP)
 	{
 		if (thisP instanceof DynamicShapeWrapper)
 		{
@@ -189,6 +195,7 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 				if (time >= startDTG)
 				{
 					thisP.paint(dest);
+					return true;
 				}
 			}
 		}
@@ -197,6 +204,7 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 			// FIXME if element isn't DynamicShapeWrapper we will ignore or paint it ???
 			// thisP.paint(dest);
 		}
+		return false;
 	}
 
 }

@@ -986,4 +986,11 @@
             <uri name="http://www.debrief.info/plot" uri="schema/debrief_plot.xsd"/>
         </catalogContribution>
     </extension>
+    
+     <extension
+         point="org.mwc.debrief.core.XMLLayerHandler">
+      <helper
+            class="org.mwc.debrief.core.handlers.DynamicShapeLayerHandler">
+      </helper>
+   </extension>
 </plugin>

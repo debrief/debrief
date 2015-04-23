@@ -41,6 +41,7 @@ abstract public class PolygonHandler extends ShapeHandler implements
 		PlottableExporter
 {
 
+	private static final String TYPE = "polygon";
 	private static final String FILLED_STR = "Filled";
 	private static final String SEMI_TRANSPARENT_STR = "SemiTransparent";
 	private static final String CLOSED_STR = "Closed";
@@ -53,8 +54,13 @@ abstract public class PolygonHandler extends ShapeHandler implements
 
 	public PolygonHandler()
 	{
+		this(TYPE);
+	}
+	
+	public PolygonHandler(String type)
+	{
 		// inform our parent what type of class we are
-		super("polygon");
+		super(type);
 
 		addHandler(new WorldPathHandler()
 		{
@@ -122,6 +128,8 @@ abstract public class PolygonHandler extends ShapeHandler implements
 		if (_labelNodes != null)
 			poly.setShowNodeLabels(_labelNodes);
 
+		poly.calcPoints();
+		
 		return poly;
 	}
 
