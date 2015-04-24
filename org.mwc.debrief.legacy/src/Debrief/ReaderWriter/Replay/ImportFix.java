@@ -213,7 +213,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		// trouble - the track name may have been quoted, in which case we will
 		// pull
 		// in the remaining fields aswell
-		theTrackName = checkForQuotedTrackName(st).trim();
+		theTrackName = checkForQuotedName(st).trim();
 
 		symbology = st.nextToken(normalDelimiters);
 
@@ -378,55 +378,6 @@ public final class ImportFix extends AbstractPlainLineImporter
 	// ////////////////////////////////////////////////
 
 	/**
-	 * when importing the track name, it may turn out to be quoted, in which case
-	 * we consume the remaining tokens until we get another quote
-	 * 
-	 * @param st
-	 *          the tokenised stream to read the name from
-	 * @return a string containing the (possibly multi-word) track name
-	 */
-	static public String checkForQuotedTrackName(final StringTokenizer st)
-	{
-		String theTrackName = st.nextToken();
-
-		// so, does the track name contain a quote character?
-		final int quoteIndex = theTrackName.indexOf("\"");
-		if (quoteIndex >= 0)
-		{
-			// aah, but, we may have just read in all of the item. just check if
-			// the
-			// token contains
-			// both speech marks...
-			final int secondQuoteIndex = theTrackName.indexOf("\"", quoteIndex + 1);
-
-			if (secondQuoteIndex >= 0)
-			{
-				// yes, we have caught both quotes
-				// just trim off the quote marks
-				theTrackName = theTrackName.substring(1, theTrackName.length() - 1);
-			}
-			else
-			{
-				// no, we just caught the first quote.
-				// fish around for the second one.
-
-				String lastPartOfName = st.nextToken(quoteDelimiter);
-
-				// yup. the ne
-				theTrackName += lastPartOfName;
-
-				// and trim away the quote
-				theTrackName = theTrackName.substring(theTrackName.indexOf("\"") + 1);
-
-				// consume the trailing quote delimiter (note - we allow spaces
-				// & tabs)
-				lastPartOfName = st.nextToken(" \t");
-			}
-		}
-		return theTrackName;
-	}
-
-	/**
 	 * export this (possibly multi-word) name to the line of text, wrapping in
 	 * double quotes if we have ot.
 	 * 
@@ -466,7 +417,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		{
 			// test the secs component
 			String iLine = "951212 051600 CARPET   @C   22 0 45 N 22 0 1.45 W 239.9   2.0      0 ";
-			ImportFix iff = new ImportFix();
+			AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 			assertEquals("right lat", 22.0125, res.theFix.getLocation().getLat(),
 					0.001);
@@ -538,7 +489,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		public void testValues()
 		{
 			String iLine = "951212 051600 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			final ImportFix iff = new ImportFix();
+			final AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			// and check the result
@@ -698,7 +649,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		public void testPaddingStrings()
 		{
 			String iLine = "0101 01 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			ImportFix iff = new ImportFix();
+			AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			iLine = "700101 000000.100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
@@ -722,7 +673,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		public void testMilliSecValues()
 		{
 			String iLine = "700101 000001 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			ImportFix iff = new ImportFix();
+			AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			iLine = "700101 000000.100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
@@ -747,7 +698,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		public void NtestPadding()
 		{
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			final ImportFix iff = new ImportFix();
+			final AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			// and our special time data
@@ -843,7 +794,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		public void testHiResValues()
 		{
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			final ImportFix iff = new ImportFix();
+			final AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
 
 			// and check the result

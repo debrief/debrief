@@ -349,7 +349,7 @@ public class PolygonShape extends PlainShape implements Editable,
 	 * calculate some convenience values based on the radius and centre of the
 	 * polygon
 	 */
-	protected void calcPoints()
+	public void calcPoints()
 	{
 		// check we have some points
 		if (_nodes == null)

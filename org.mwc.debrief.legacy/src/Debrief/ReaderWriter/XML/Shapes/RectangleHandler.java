@@ -31,7 +31,8 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 abstract public class RectangleHandler extends ShapeHandler implements PlottableExporter
 {
 	
-  private static final String TL = "tl";
+  private static final String TYPE = "rectangle";
+	private static final String TL = "tl";
   private static final String BR = "br";
   private static final String FILLED = "Filled";
   private static final String SEMI_TRANSPARENT = "SemiTransparent";
@@ -43,8 +44,13 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
 
   public RectangleHandler()
   {
+  	this(TYPE);
+  }
+  
+  public RectangleHandler(String type)
+  {
     // inform our parent what type of class we are
-    super("rectangle");
+    super(type);
 
 
     addHandler(new LocationHandler(TL){

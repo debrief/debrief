@@ -116,7 +116,7 @@ public final class ImportNarrative extends AbstractPlainLineImporter
 		DTG = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // now the track name
-    theTrack = ImportFix.checkForQuotedTrackName(st);
+    theTrack = ImportFix.checkForQuotedName(st);
 
     // and now read in the message
     theEntry = st.nextToken("\r").trim();
