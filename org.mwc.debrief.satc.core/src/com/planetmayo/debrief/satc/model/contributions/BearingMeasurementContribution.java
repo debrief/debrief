@@ -628,7 +628,7 @@ public class BearingMeasurementContribution extends
 			}
 
 			// ok, before we slice this leg, let's just try to see if there was
-			// probably a target zig duing the
+			// probably a target zig during the
 			// ownship zig
 			if (lastLegTimes != null)
 			{
@@ -638,6 +638,9 @@ public class BearingMeasurementContribution extends
 				if (probWasZig)
 				{
 					// inject a target leg for the period spanning the ownship manouvre
+					long tStart = lastLegTimes.get(lastLegTimes.size()-1);
+					long tEnd = thisLegTimes.get(0);
+					zigStorer.storeZig("some name", tStart, tEnd, null, 0);
 				}
 			}
 
@@ -727,13 +730,28 @@ public class BearingMeasurementContribution extends
 			// ok, what's the bearing rate for this range?
 			double pBoot = 1770.28 * dOSA / rng1936m;
 
-			// does this bearing rate match what we expected?
-			SATC_Activator.log(Status.INFO, "turning onto:" + legName + " range:" + (int)rng1936m + 
-					
+			// hmm, what's the RSA?
+			double l1RSA = (l1BearingRate * rng1936m) / 1770.28;
+			double l1TSA = osa1 - l1RSA;
+
+			double l2RSA = (l2BearingRate * rng1936m) / 1770.28;
+			double l2TSA = osa2 - l2RSA;
+			
+			// ok, now for his TSA
+			SATC_Activator.log(Status.INFO, "turning onto:" + legName + " range:" + (int)rng1936m + 					
 					" osa1:" + dp2.format(osa1) + " osa2:" + dp2.format(osa2) +
 					" dOSA:" + dp2.format(dOSA) +
 					" l1Rate:" + dp2.format(l1BearingRate) + " l2Rate:" + dp2.format(l2BearingRate) +
-					" dRate:" + dp2.format(deltaBRate) , null);
+					" dRate:" + dp2.format(deltaBRate) +
+					" l1TSA:" + dp2.format(l1TSA) + " l2TSA:" + dp2.format(l2TSA)
+					, null);
+			
+			// ok, make a decision
+			double deltaTSA = Math.abs(Math.abs(l2TSA) - Math.abs(l1TSA));
+			if(deltaTSA <= 2)
+				res = false;
+			else
+				res = true;
 		}
 
 		return res;
