@@ -127,7 +127,14 @@ abstract public class PolygonHandler extends ShapeHandler implements
 			poly.setClosed(_closed.booleanValue());
 		if (_labelNodes != null)
 			poly.setShowNodeLabels(_labelNodes);
-
+		
+		// also reset those flags
+		_filled = null;
+		_semiTransparent = null;
+		_closed = null;
+		_labelNodes = null;
+				
+		// recalculate the points in the polygon
 		poly.calcPoints();
 		
 		return poly;
