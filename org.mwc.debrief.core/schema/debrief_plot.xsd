@@ -181,6 +181,7 @@
 			<xs:element name="pattern" type="pattern" />
 			<xs:element name="track" type="track" />
 			<xs:element name="layer" type="layer" />
+			<xs:element name="dynamicShapeLayer" type="dynamicShapeLayer" />
 			<xs:element name="ChartFolio" type="ChartFolio" />
 			<xs:element name="satc_solution" type="satc_solution" />
 		</xs:choice>
@@ -618,6 +619,29 @@
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="dynamicShapeLayer">
+		<xs:annotation>
+			<xs:documentation>
+			  A layer that contains a series of time-stamped shapes. Debrief will only plot the shape
+			  nearest to the current replay time
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="polygon" type="polygon" />
+			<xs:element name="rectangle" type="rectangle" />
+			<xs:element name="circle" type="circle" />
+		</xs:choice>
+		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+		<xs:attribute name="Name" use="required" type="xs:string" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+		<xs:attribute name="PlotAllShapes" use="optional" default="false" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>
+				Whether to just plot all shapes, ignoring the time component
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="shape" abstract="true">
 		<xs:sequence>
