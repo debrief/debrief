@@ -23,6 +23,7 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandlerExtension
 {
+	private static final String LINE_THICKNESS = "LineThickness";
 	private static final String PLOT_ALL_SHAPES = "PlotAllShapes";
 	private static final String VISIBLE = "Visible";
 	private static final String NAME = "Name";
@@ -31,6 +32,7 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 	private Layers _theLayers;
 	private DynamicShapeLayer _myLayer;
 	protected boolean _visible;
+	protected Integer _lineThickness;
 	protected String _name;
 
 	public DynamicShapeLayerHandler()
@@ -62,6 +64,13 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 				_name = value;
 			}
 		});
+		addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
+		{
+			public void setValue(final String name, final int val)
+			{
+				_lineThickness = val;
+			}
+		});
 		addHandler(new CircleTrackHandler());
 		addHandler(new RectangleTrackHandler());
 		addHandler(new PolygonTrackHandler());
@@ -75,8 +84,12 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 			wrapper.setVisible(_visible);
 			wrapper.setPlotAllShapes(_plotAllShapes);
 			wrapper.setName(_name);
+			if(_lineThickness != null)
+				wrapper.setLineThickness(_lineThickness);
 			
 			_theLayers.addThisLayer(wrapper);
+			
+			_lineThickness = null;
 	}
 
 	@Override
@@ -97,6 +110,7 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 		eLayer.setAttribute(NAME, dsl.getName());
 		eLayer.setAttribute(VISIBLE, writeThis(dsl.getVisible()));
 		eLayer.setAttribute(PLOT_ALL_SHAPES, writeThis(dsl.isPlotAllShapes()));
+		eLayer.setAttribute(LINE_THICKNESS, writeThis(dsl.getLineThickness()));
 
 		// step through the components of the layer
 		final java.util.Enumeration<Editable> enumer = theLayer.elements();
