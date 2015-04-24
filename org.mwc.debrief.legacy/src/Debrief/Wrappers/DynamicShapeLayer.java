@@ -14,24 +14,35 @@
  */
 package Debrief.Wrappers;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Iterator;
-import java.util.SortedSet;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.MovingPlottable;
-import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
 @SuppressWarnings("serial")
-public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
+public class DynamicShapeLayer extends BaseLayer implements MovingPlottable,
+		WatchableList
 {
 
 	private boolean plotAllShapes = false;
-	
+
+	public DynamicShapeLayer()
+	{
+		super(true);
+	}
+
 	/**
 	 * class containing editable details of a layer
 	 */
@@ -56,10 +67,10 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 			try
 			{
 				PropertyDescriptor[] sres = super.getPropertyDescriptors();
-				PropertyDescriptor[] res = new PropertyDescriptor[sres.length+1];
+				PropertyDescriptor[] res = new PropertyDescriptor[sres.length + 1];
 				System.arraycopy(sres, 0, res, 0, sres.length);
-				res[sres.length] =
-				expertProp("PlotAllShapes", "Plot All Shapes", VISIBILITY);
+				res[sres.length] = expertProp("PlotAllShapes", "Plot All Shapes",
+						VISIBILITY);
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -69,8 +80,7 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 		}
 
 	}
-	
-	
+
 	public final MWC.GUI.Editable.EditorType getInfo()
 	{
 		if (_myEditor == null)
@@ -78,7 +88,6 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 
 		return _myEditor;
 	}
-
 
 	@Override
 	public void paint(CanvasType dest)
@@ -95,7 +104,6 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 	{
 		this.plotAllShapes = plotAllShapes;
 	}
-
 
 	@Override
 	public void paint(CanvasType dest, long time)
@@ -121,12 +129,21 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 		}
 	}
 
-
 	private void internalPaint(CanvasType dest, long time)
 	{
-		  // copied from Plottables.paint(dest)
+		Watchable[] nearest = this.getNearestTo(new HiResDate(time));
+		ShapeWrapper nearestShape = null;
+		if ((nearest != null) && (nearest.length > 0))
+		{
+			nearestShape = (ShapeWrapper) nearest[0];
+		}
+
+		if (nearestShape != null)
+		{
+			// copied from Plottables.paint(dest)
 			// note, we used to only test it the subject was in the data area,
-			// but that left some items outside the user-dragged area not being visible.
+			// but that left some items outside the user-dragged area not being
+			// visible.
 			// - instead we calculate the visible data-area from the current screen
 			// area, and
 			// compare against that
@@ -139,72 +156,254 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable
 				wa = dest.getProjection().getVisibleDataArea();
 			}
 
-			final SortedSet<Editable> _thePlottables = (SortedSet<Editable>) getData();
-			synchronized (_thePlottables)
+			// is this plottable visible
+			if (nearestShape.getVisible())
 			{
-				final Iterator<Editable> enumer = _thePlottables.iterator();
 
-				while (enumer.hasNext())
+				// see if this plottable is within the data area
+				final WorldArea wp = nearestShape.getBounds();
+
+				if ((wp == null) || (wp.overlaps(wa)))
 				{
-					final Object next = enumer.next();
-					if (next instanceof Plottable)
+					nearestShape.paint(dest);
+				}
+
+			}
+		}
+	}
+
+	// private boolean paintElement(CanvasType dest, long timeMillis,
+	// final Plottable thisP)
+	// {
+	// if (thisP instanceof DynamicShapeWrapper)
+	// {
+	// DynamicShapeWrapper dsw = (DynamicShapeWrapper) thisP;
+	// if (dsw.getStartDTG() != null)
+	// {
+	// long startMillis = dsw.getStartDTG().getDate().getTime();
+	// HiResDate endDTG = dsw.getEndDTG();
+	// if (endDTG != null)
+	// {
+	// // ok, let's check if this
+	// long endMillis = endDTG.getDate().getTime();
+	// if ((timeMillis >= startMillis) && (timeMillis <= endMillis))
+	// {
+	// thisP.paint(dest);
+	// }
+	// }
+	// if (timeMillis >= startMillis)
+	// {
+	// thisP.paint(dest);
+	// return true;
+	// }
+	// }
+	// }
+	// else
+	// {
+	// // FIXME if element isn't DynamicShapeWrapper we will ignore or paint it
+	// // ???
+	// // thisP.paint(dest);
+	// }
+	// return false;
+	// }
+
+	@Override
+	public Color getColor()
+	{
+		Color res = null;
+		// just return the color of the first item
+		if (size() > 0)
+		{
+			Editable first = this.elements().nextElement();
+			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first;
+			res = dsw.getColor();
+		}
+		return res;
+	}
+
+	@Override
+	public HiResDate getStartDTG()
+	{
+		HiResDate res = null;
+		// just return the color of the first item
+		if (size() > 0)
+		{
+			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first();
+			res = dsw.getStartDTG();
+		}
+		return res;
+	}
+
+	@Override
+	public HiResDate getEndDTG()
+	{
+		HiResDate res = null;
+		// just return the color of the first item
+		if (size() > 0)
+		{
+			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first();
+			res = dsw.getEndDTG();
+		}
+		return res;
+	}
+
+	@Override
+	public Watchable[] getNearestTo(HiResDate DTG)
+	{
+
+		Watchable[] res = new Watchable[] {};
+
+		// just check it's worth testing
+		if (size() > 0)
+		{
+			final ShapeWrapper firstS = (ShapeWrapper) first();
+			if (firstS.getStartDTG().lessThanOrEqualTo(DTG))
+			{
+				boolean inRange = false;
+				// does the last one have and end time
+				ShapeWrapper end = (ShapeWrapper) last();
+				if (end.getEndDTG() != null)
+				{
+					// ok, test the end
+					if (end.getEndDTG().greaterThanOrEqualTo(DTG))
 					{
-						final Plottable thisP = (Plottable) next;
+						inRange = true;
+					}
+				}
+				else
+				{
+					// no end point, use start time of last point
+					if (end.getStartDTG().greaterThanOrEqualTo(DTG))
+					{
+						inRange = true;
+					}
+				}
 
-						// is this plottable visible
-						if (thisP.getVisible())
+				// ok, is it worth bothering with?
+				if (inRange)
+				{
+					// ok, persevere to find the nearest (first one after)
+					Enumeration<Editable> ele = elements();
+					while (ele.hasMoreElements())
+					{
+						Editable editable = (Editable) ele.nextElement();
+						DynamicShapeWrapper dsw = (DynamicShapeWrapper) editable;
+						if (dsw.getVisible())
 						{
-
-							// see if this plottable is within the data area
-							final WorldArea wp = thisP.getBounds();
-
-							if (wp != null)
+							if (dsw.getStartDTG().greaterThanOrEqualTo(DTG))
 							{
-								// it has an area, see if it is in view
-								if (wp.overlaps(wa))
-								{
-									if (paintElement(dest, time, thisP)) 
-									{
-										break;
-									}
-								}
-							}
-							else
-							{
-								// it doesn't have an area, so plot it anyway
-								if (paintElement(dest, time, thisP))
-								{
-									break;
-								}
+								res = new Watchable[] { dsw };
+								break;
 							}
 						}
 					}
 				}
 			}
+		}
+		return res;
 	}
 
-
-	private boolean paintElement(CanvasType dest, long time, final Plottable thisP)
+	@Override
+	public void filterListTo(HiResDate start, HiResDate end)
 	{
-		if (thisP instanceof DynamicShapeWrapper)
+		// ok, get the matching items
+		Collection<Editable> list = getItemsBetween(start, end);
+
+		// ok, now loop through, and hide/reveal as appropriate
+		Enumeration<Editable> ele = this.elements();
+		while (ele.hasMoreElements())
 		{
-			DynamicShapeWrapper dsw = (DynamicShapeWrapper) thisP;
-			if (dsw.getStartDTG() != null)
+			DynamicShapeWrapper wrapper = (DynamicShapeWrapper) ele.nextElement();
+			if (list.contains(wrapper))
 			{
-				long startDTG = dsw.getStartDTG().getMicros();
-				if (time >= startDTG)
+				wrapper.setVisible(true);
+			}
+			else
+			{
+				wrapper.setVisible(false);
+			}
+		}
+	}
+
+	@Override
+	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
+	{
+		Vector<Editable> list = new Vector<Editable>();
+
+		// just check it's worth testing
+		if (size() > 0)
+		{
+			if (((ShapeWrapper) first()).getStartDTG().lessThanOrEqualTo(end))
+			{
+				boolean inRange = false;
+				// does the last one have and end time
+				ShapeWrapper endT = (ShapeWrapper) last();
+				if (endT.getEndDTG() != null)
 				{
-					thisP.paint(dest);
-					return true;
+					// ok, test the end
+					if (endT.getEndDTG().greaterThanOrEqualTo(start))
+					{
+						inRange = true;
+					}
+				}
+				else
+				{
+					// no end point, use start time of last point
+					if (endT.getStartDTG().greaterThanOrEqualTo(start))
+					{
+						inRange = true;
+					}
+				}
+
+				// ok, is it worth bothering with?
+				if (inRange)
+				{
+					// ok, persevere to find the nearest (first one after)
+					Enumeration<Editable> ele = elements();
+					while (ele.hasMoreElements())
+					{
+						Editable editable = (Editable) ele.nextElement();
+						DynamicShapeWrapper dsw = (DynamicShapeWrapper) editable;
+						if (dsw.getStartDTG().greaterThan(start))
+						{
+							boolean itemInRange = false;
+							// ok, check the end point of this shape
+							if (dsw.getEndDTG() != null)
+							{
+								// ok, test the end
+								if (dsw.getEndDTG().lessThanOrEqualTo(end))
+								{
+									itemInRange = true;
+								}
+							}
+							else
+							{
+								// no end point, use start time of last point
+								if (dsw.getStartDTG().lessThanOrEqualTo(end))
+								{
+									itemInRange = true;
+								}
+							}
+
+							if (itemInRange)
+							{
+								list.add(dsw);
+							}
+						}
+					}
 				}
 			}
 		}
-		else
-		{
-			// FIXME if element isn't DynamicShapeWrapper we will ignore or paint it ???
-			// thisP.paint(dest);
-		}
-		return false;
+		// ok, convert the output
+
+		return list;
+	}
+
+	@Override
+	public PlainSymbol getSnailShape()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
