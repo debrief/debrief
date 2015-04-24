@@ -8932,7 +8932,7 @@ and entry type can be multi-word if surrounded by quotes (").
             </para>
           </sect3>
           <sect3>
-              <title>Dyanmic Elements</title>
+              <title>Dynamic Elements</title>
             
             <para>In addition to individual annotation shapes it is possible to define a dynamic annotation.  Do
               this by using a series of dynamic annotations, all with the same annotation name.  Once
