@@ -458,9 +458,9 @@ public class ImportReplay extends PlainImporterBase
 			// this list so that we can use it as an exporter
 			_theImporters.addElement(new ImportFix());
 			
-			_theImporters.addElement(new ImportRectangleTrack());
-			_theImporters.addElement(new ImportCircleTrack());
-			_theImporters.addElement(new ImportPolygonTrack());
+			_theImporters.addElement(new ImportDynamicRectangle());
+			_theImporters.addElement(new ImportDynamicCircle());
+			_theImporters.addElement(new ImportDynamicPolygon());
 		}
 	}
 	

@@ -112,13 +112,13 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  * class that is able to export a polygon - note the Replay file format doesn't
  * include polygons, so we only export it.
  */
-class ImportPolygonTrack extends AbstractPlainLineImporter
+class ImportDynamicPolygon extends AbstractPlainLineImporter
 {
 
 	/**
 	 * the type for this string
 	 */
-	private final String _myType = ";POLY_TRACK:";
+	private final String _myType = ";DYNAMIC_POLY:";
 
 	@Override
 	public final Object readThisLine(final String theLine)
@@ -292,7 +292,7 @@ class ImportPolygonTrack extends AbstractPlainLineImporter
 		public void testWithLabel()
 		{
 			final String line = " ;POLY_RECT: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
-			final ImportPolygonTrack ip = new ImportPolygonTrack();
+			final ImportDynamicPolygon ip = new ImportDynamicPolygon();
 			final DynamicShapeWrapper res = (DynamicShapeWrapper) ip.readThisLine(line);
 			assertEquals("label", res.getLabel());
 			assertNotNull("read it in", res);

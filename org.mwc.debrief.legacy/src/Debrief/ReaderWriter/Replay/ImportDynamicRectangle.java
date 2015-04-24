@@ -93,11 +93,11 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 /**
  * class to parse a rectangle from a line of text
  */
-final class ImportRectangleTrack extends AbstractPlainLineImporter {
+final class ImportDynamicRectangle extends AbstractPlainLineImporter {
 	/**
 	 * the type for this string
 	 */
-	private final String _myType = ";RECT_TRACK:";
+	private final String _myType = ";DYNAMIC_RECT:";
 
 	/**
 	 * read in this string and return a Label
@@ -277,7 +277,7 @@ final class ImportRectangleTrack extends AbstractPlainLineImporter {
 		
 		public void testWithLabel() {
 			final String line1 = ";RECT_TRACK: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
-			final ImportRectangleTrack ir = new ImportRectangleTrack();
+			final ImportDynamicRectangle ir = new ImportDynamicRectangle();
 			final DynamicShapeWrapper res = (DynamicShapeWrapper) ir.readThisLine(line1);
 			assertNotNull("read it in", res);
 			assertNotNull(res.getLabel());

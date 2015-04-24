@@ -105,11 +105,11 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a circle from a line of text
  */
-final class ImportCircleTrack extends AbstractPlainLineImporter
+final class ImportDynamicCircle extends AbstractPlainLineImporter
 {
   /** the type for this string
    */
-  private final String _myType = ";CIRCLE_TRACK:";
+  private final String _myType = ";DYNAMIC_CIRCLE:";
   
   /** read in this string and return a Label
    */

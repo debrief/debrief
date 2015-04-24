@@ -8790,9 +8790,46 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             comment marker; a semi-colon &apos;;&apos;.To put a comment on a line, begin with two
             semi-colons.</para>
 
-          <para><indexterm>
-              <primary>Narrative Data</primary>
-              <secondary>File format</secondary>
+
+          <para>
+            <note>
+              <para>Note, when null positions are entered for <glossterm linkend="g_sensor">Sensor</glossterm> data, the position is taken from the track named in "ownship
+                name". Debrief finds the nearest track location equal to or greater than the
+                indicated time, and uses this as the sensor lat and long.</para>
+            </note><note>
+              <para>As with normal positional data, annotation entries which use a track/ownship
+                name may contain multi-word phrases if they are enclosed in quotation marks ("),
+                and the year can be expressed as 2 or 4 figures.</para>
+            </note><note>
+              <para>Debrief can handle decimal values for degrees or minutes. If you original data
+                is in decimal degrees or degrees plus decimal minutes feel free to use these values
+                directly, but remember to provide a zero for the unused column(s).  Examples of this 
+                are shown below.
+                <screen>
+                  <markup>
+;; example using D, M, S
+951212 050100.000 NELSON @C 22 11 10.58 N 21 42 2.98 W 269.7 2.0 0
+;; example using D
+951212 050100.000 NELSON @C 22.455 0 0 N 21.432 0 0 W 269.7 2.0 0
+;; example using D, M
+951212 050100.000 NELSON @C 22 11.6678 0 N 21 42.543 0 W 269.7 2.0 0
+                  </markup>
+                </screen>
+              
+              </para>
+            </note><note>
+              <para>Where labels are provided for shapes, Debrief allows multi-line text labels -
+                just insert a \n character to indicate the line-break</para>
+            </note></para>
+          
+          <para><glossterm linkend="g_annotation">Annotation</glossterm> positions are specified in
+            degrees as in the standard replay file format, and symbology representations are as in
+            the above tables.</para>      
+          <sect3>
+             <title>Core Elements</title>
+            <para><indexterm>
+              <primary>Annotation Data</primary>
+              <secondary>Core Elements</secondary>
             </indexterm>The format for the different types of annotations is: <screen width="70">            <markup>
 123456789012345678901234567890123456789012345678901234567890123456789
 0123456789012345678901234567890 
@@ -8891,26 +8928,40 @@ surrounded by quotes (").
 ;NARRATIVE2:  YYMMDD HHMMSS  TTT.TTT AA..AA XX..XX
  ;; dtg, track name, narrative entry-type, narrative entry.  Note the track name 
 and entry type can be multi-word if surrounded by quotes (").
-            </markup>   </screen><note>
-              <para>Note, when null positions are entered for <glossterm linkend="g_sensor">Sensor</glossterm> data, the position is taken from the track named in "ownship
-                name". Debrief finds the nearest track location equal to or greater than the
-                indicated time, and uses this as the sensor lat and long.</para>
-            </note><note>
-              <para>As with normal positional data, annotation entries which use a track/ownship
-                name may now contain multi-word phrases if they are enclosed in quotation marks ("),
-                and the year can be expressed as 2 or 4 figures.</para>
-            </note><note>
-              <para>Debrief can handle decimal values for degrees or minutes. If you original data
-                is in decimal degrees or degrees plus decimal minutes feel free to use these values
-                directly, but remember to provide a zero for the unused column(s)</para>
-            </note><note>
-              <para>Where labels are provided for shapes, Debrief allows multi-line text labels -
-                just insert a \n character to indicate the line-break</para>
-            </note></para>
+            </markup>   </screen>
+            </para>
+          </sect3>
+          <sect3>
+              <title>Dyanmic Elements</title>
+            
+            <para>In addition to individual annotation shapes it is possible to define a dynamic annotation.  Do
+              this by using a series of dynamic annotations, all with the same annotation name.  Once
+              loaded, Debrief will only show the shape nearest to the current scenario time (according
+              to the Time Controller).  The dynamic annotations largely take the same format as their non-dynamic
+              equivalents as described above, save for the introduction of a Shape Name</para>
+            
+            <para><indexterm>
+              <primary>Annotation Data</primary>
+              <secondary>Dynamic Elements</secondary>
+            </indexterm>The format for the different types of dynamic annotations is: <screen width="70">
+            <markup>
+;;format
+;;DYNAMIC_CIRCLE: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H YYY XX.XX 
+;;DYNAMIC_POLYGON: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
+;;DYNAMIC_RECTANGLE: @@@@@ YYMMDD HHMMSS "NAME"DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
+;; symb, date-time, shape name [other fields as in the standard annotation type
+;; example:
+;DYNAMIC_CIRCLE: @@011 151212 143000 "Circle Track A" 54 05 12.1 N 4 0 12.4 W 1000 At time 1430 
+;DYNAMIC_CIRCLE: @@011 151212 143100 "Circle Track A" 54 05 14.1 N 4 0 12.1 W 1100 At time 1431         
+;DYNAMIC_POLYGON: @@011 151212 143200 "Circle Track A" 54 05 15.1 N 4 0 12.1 W  54 06 15.1 N 4 0 11.1 W  54 05 13.1 N 4 1 14.1 W At time 1432         
+;DYNAMIC_RECTANGLE: @@011 151212 143300 "Circle Track A" 54 05 17.1 N 4 0 12.1 W  54 05 10.1 N 4 0 12.6 W At time 1433
+            </markup>
+            </screen>
+            </para>
+          </sect3>
 
-          <para><glossterm linkend="g_annotation">Annotation</glossterm> positions are specified in
-            degrees as in the standard replay file format, and symbology representations are as in
-            the above tables.</para>
+
+          
         </sect2>
       </sect1>
 
