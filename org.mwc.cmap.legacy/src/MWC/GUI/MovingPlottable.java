@@ -18,6 +18,8 @@ public interface MovingPlottable
 {
 
 	/** paint this object to the specified canvas
+	 * @param dest current destination
+	 * @param time milliseconds
    */
   public void paint(CanvasType dest, long time);
 }
