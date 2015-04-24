@@ -1,5 +1,7 @@
 package org.mwc.debrief.core.handlers;
 
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.core.CorePlugin;
 import org.xml.sax.Attributes;
 
 import Debrief.ReaderWriter.XML.Shapes.CircleHandler;
@@ -146,12 +148,6 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 	
 	private class CircleTrackHandler extends CircleHandler {
 
-		
-		public CircleTrackHandler()
-		{
-			super("circleTrack");
-		}
-
 		@Override
 		public void addPlottable(Plottable plottable)
 		{
@@ -162,12 +158,6 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 	
 	private class RectangleTrackHandler extends RectangleHandler {
 
-		
-		public RectangleTrackHandler()
-		{
-			super("rectangleTrack");
-		}
-
 		@Override
 		public void addPlottable(Plottable plottable)
 		{
@@ -177,12 +167,6 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 	}
 	
 	private class PolygonTrackHandler extends PolygonHandler {
-
-		
-		public PolygonTrackHandler()
-		{
-			super("polyTrack");
-		}
 
 		@Override
 		public void addPlottable(Plottable plottable)
@@ -216,6 +200,7 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 		}
 		else
 		{
+			CorePlugin.logError(Status.WARNING , "Dynamic Shape Layer received unexpected type:" + plottable.getName(), null);
 			addThis(plottable);
 		}
 	}
