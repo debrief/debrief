@@ -16,6 +16,7 @@ package Debrief.Wrappers;
 
 import java.awt.Color;
 
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 
@@ -41,5 +42,15 @@ public class DynamicShapeWrapper extends ShapeWrapper
 	{
 		this._theTrackName = theTrackName;
 	}
+	
+	/** override the default sort order (name), since
+	 * we wish to sort by DTG
+	 */
+	public int compareTo(Plottable o)
+	{
+		final DynamicShapeWrapper sw = (DynamicShapeWrapper) o;
+		return this.getStartDTG().compareTo(sw.getStartDTG());
+	}
+	
 
 }
