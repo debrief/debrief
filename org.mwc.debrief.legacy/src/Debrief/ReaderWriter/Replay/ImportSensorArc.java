@@ -12,12 +12,10 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-
 package Debrief.ReaderWriter.Replay;
 
 import java.text.ParseException;
 import java.util.StringTokenizer;
-
 import Debrief.Wrappers.SensorArcContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GenericData.HiResDate;
