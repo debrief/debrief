@@ -209,6 +209,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	private static final String SOLUTIONS_LAYER_NAME = "Solutions";
 
 	public static final String SENSORS_LAYER_NAME = "Sensors";
+	
+	public static final String SENSORARCS_LAYER_NAME = "Sensor Arcs";
 
 	/**
 	 * keep track of versions - version id
@@ -664,6 +666,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	final private BaseLayer _mySensors;
 
 	/**
+	 * the sensor arc tracks for this vessel
+	 */
+	final private BaseLayer _mySensorArcs;
+
+	/**
 	 * the TMA solutions for this vessel
 	 */
 	final private BaseLayer _mySolutions;
@@ -735,6 +742,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_mySensors = new SplittableLayer(true);
 		_mySensors.setName(SENSORS_LAYER_NAME);
+		
+		_mySensorArcs = new SplittableLayer(true);
+		_mySensorArcs.setName(SENSORARCS_LAYER_NAME);
+		
 		_mySolutions = new BaseLayer(true);
 		_mySolutions.setName(SOLUTIONS_LAYER_NAME);
 
@@ -796,6 +807,28 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// add to our list
 			_mySensors.add(swr);
+
+			// tell the sensor about us
+			swr.setHost(this);
+
+			// and the track name (if we're loading from REP it will already
+			// know
+			// the name, but if this data is being pasted in, it may start with
+			// a different
+			// parent track name - so override it here)
+			swr.setTrackName(this.getName());
+
+			// indicate success
+			done = true;
+
+		}
+		// is this a sensor arc?
+		else if (point instanceof SensorArcWrapper)
+		{
+			final SensorArcWrapper swr = (SensorArcWrapper) point;
+
+			// add to our list
+			_mySensorArcs.add(swr);
 
 			// tell the sensor about us
 			swr.setHost(this);
@@ -977,6 +1010,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// now ditch them
 			_mySensors.removeAllElements();
 		}
+		
+		// and my objects
+		// first ask the sensors to close themselves
+		if (_mySensorArcs != null)
+		{
+			final Enumeration<Editable> it2 = _mySensorArcs.elements();
+			while (it2.hasMoreElements())
+			{
+				final Object val = it2.nextElement();
+				if (val instanceof PlainWrapper)
+				{
+					final PlainWrapper pw = (PlainWrapper) val;
+					pw.closeMe();
+				}
+			}
+			// now ditch them
+			_mySensorArcs.removeAllElements();
+		}
 
 		// now ask the solutions to close themselves
 		if (_mySolutions != null)
@@ -1059,6 +1110,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 		}
+		
+		if (_mySensorArcs != null)
+		{
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				// is it visible?
+				if (sw.getVisible())
+				{
+					res.addAll(sw._myContacts);
+				}
+			}
+		}
 
 		if (_mySolutions != null)
 		{
@@ -1094,6 +1159,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (_mySensors.size() > 0)
 		{
 			res.add(_mySensors);
+		}
+		
+		if (_mySensorArcs.size() > 0)
+		{
+			res.add(_mySensorArcs);
 		}
 
 		if (_mySolutions.size() > 0)
@@ -1165,7 +1235,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // through the sensors
 		} // whether we have any sensors
 
-		// and our solution data
+		// now do the same for our sensor arc data
+		if (_mySensorArcs != null)
+		{
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final WatchableList sw = (WatchableList) iter.nextElement();
+				sw.filterListTo(start, end);
+			} // through the sensor arcs
+		} // whether we have any sensor arcs
+		
 		if (_mySolutions != null)
 		{
 			final Enumeration<Editable> iter = _mySolutions.elements();
@@ -1292,6 +1372,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (iter.hasMoreElements())
 			{
 				final SensorWrapper nextS = (SensorWrapper) iter.nextElement();
+				nextS.setHost(this);
+			}
+		}
+		
+		if (_mySensorArcs != null)
+		{
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final SensorArcWrapper nextS = (SensorArcWrapper) iter.nextElement();
 				nextS.setHost(this);
 			}
 		}
@@ -1442,6 +1532,27 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				} // step through the sensors
 			} // whether we have any sensors
 
+			// also extend to include our sensor data
+			if (_mySensorArcs != null)
+			{
+				final Enumeration<Editable> iter = _mySensorArcs.elements();
+				while (iter.hasMoreElements())
+				{
+					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+					final WorldArea theseBounds = sw.getBounds();
+					if (theseBounds != null)
+					{
+						if (res == null)
+						{
+							res = new WorldArea(theseBounds);
+						}
+						else
+						{
+							res.extend(sw.getBounds());
+						}
+					}
+				} // step through the sensors
+			}
 			// and our solution data
 			if (_mySolutions != null)
 			{
@@ -2032,6 +2143,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return _mySensors;
 	}
 
+	/**
+	 * get the list of sensor arcs for this track
+	 */
+	public final BaseLayer getSensorArcs()
+	{
+		return _mySensorArcs;
+	}
 	/**
 	 * return the symbol to be used for plotting this track in snail mode
 	 */
@@ -2703,6 +2821,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			} // through the sensors
 		} // whether the sensor layer is visible
+		
+		// now plot the sensor arcs
+		if (_mySensorArcs.getVisible())
+		{
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				// just check that the sensor knows we're it's parent
+				if (sw.getHost() == null)
+				{
+					sw.setHost(this);
+				}
+
+				// and do the paint
+				sw.paint(dest);
+
+			}
+		}
 
 		// /////////////////////////////////////////////
 		// and now the track itself
@@ -2884,6 +3021,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				sw.removeElement(point);
 			}
 		}
+		else if (point instanceof SensorArcContactWrapper)
+		{
+			// ok, cycle through our sensors, try to remove this contact...
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				// try to remove it from this one...
+				sw.removeElement(point);
+			}
+		}
 		else if (point instanceof TrackSegment)
 		{
 			_thePositions.removeElement(point);
@@ -2909,6 +3057,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and empty them out
 			_mySensors.removeAllElements();
+
+		}
+		else if (point == _mySensorArcs)
+		{
+			// ahh, the user is trying to delete all the solution, cycle through
+			// them
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final Editable editable = iter.nextElement();
+
+				// tell the sensor wrapper to forget about us
+				final TacticalDataWrapper sw = (TacticalDataWrapper) editable;
+				sw.setHost(null);
+
+			}
+
+			// and empty them out
+			_mySensorArcs.removeAllElements();
 
 		}
 		else if (point == _mySolutions)
@@ -3289,6 +3456,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						.hasMoreElements();)
 				{
 					final SensorWrapper thisS = (SensorWrapper) iterator.nextElement();
+					thisS.decimate(theVal, startTime);
+				}
+			}
+			
+			if (_mySensorArcs != null)
+			{
+				for (final Enumeration<Editable> iterator = _mySensorArcs.elements(); iterator
+						.hasMoreElements();)
+				{
+					final SensorArcWrapper thisS = (SensorArcWrapper) iterator.nextElement();
 					thisS.decimate(theVal, startTime);
 				}
 			}
@@ -3837,6 +4014,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (iter.hasMoreElements())
 			{
 				final SensorWrapper sw = (SensorWrapper) iter.nextElement();
+				sw.trimTo(period);
+			}
+		}
+		
+		if (_mySensorArcs != null)
+		{
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
 				sw.trimTo(period);
 			}
 		}

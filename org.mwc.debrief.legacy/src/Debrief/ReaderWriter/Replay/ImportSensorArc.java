@@ -92,9 +92,11 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
+import Debrief.Wrappers.SensorArcContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
@@ -129,7 +131,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     //WorldLocation origin = null;
     HiResDate startDtg = null;
     HiResDate endDtg = null;
-    int left, right, inner, outer, left1, right1, inner1, outer1;
+    int left, right, inner, outer, left1=0, right1=0, inner1=0, outer1=0;
     boolean isBeam;
     
     java.awt.Color theColor;
@@ -197,14 +199,20 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 	 
 	    theColor = ImportReplay.replayColorFor(symbology);
 	
-	    //final int theStyle = ImportReplay.replayLineStyleFor(symbology.substring(2));
+	    final int theStyle = ImportReplay.replayLineStyleFor(symbology);
 	
-	    // create the contact object
-	    //final SensorContactWrapper data =
-	    //    new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin, theColor, theText, theStyle, sensorName);
+	    // create the contact object		
+	    final SensorArcContactWrapper data =
+	        new SensorArcContactWrapper(theTrack, startDtg, 
+	        		endDtg, 
+	        		left, right, inner, outer,
+	        		left1, right1, inner1, outer1,
+	        		isBeam,
+	        		theColor,
+	        		theStyle, sensorName);
+	        		
 	
-	    //return data;
-	    return null;
+	    return data;
     }
     catch(final ParseException pe)
     {

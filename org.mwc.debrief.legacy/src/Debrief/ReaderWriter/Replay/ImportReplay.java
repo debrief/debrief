@@ -273,6 +273,8 @@ import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.SensorArcContactWrapper;
+import Debrief.Wrappers.SensorArcWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
@@ -347,6 +349,12 @@ public class ImportReplay extends PlainImporterBase
 	 * 
 	 */
 	private Vector<SensorWrapper> _importedSensors;
+	
+	/** a list of the sensor arcs we've imported
+	 * 
+	 */
+	
+	private Vector<SensorArcWrapper> _importedSensorArcs;
 
 	/**
 	 * the property name we use for importing tracks (DR/ATG)
@@ -669,6 +677,90 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 	
+	private HiResDate processSensorArcContactWrapper(final SensorArcContactWrapper sw)
+	{	
+		final HiResDate res = sw.getTime();
+
+		SensorArcWrapper thisSensor = null;
+
+		// do we have a sensor capable of handling this contact?
+		final String sensorName = sw.getSensorName();
+		String trackName = sw.getTrackName();
+		Object val = getLayerFor(trackName);
+
+		// if we failed to get the trackname, try shortening it -
+		// it may have been mangled by BabelFish
+		if (val == null)
+			val = getLayerFor(trackName = trackName.substring(6));
+
+		// did we get anything?
+		// is this indeed a sensor?
+		if (val == null || !(val instanceof TrackWrapper))
+			return res;
+
+		// so, we've found a track - see if it holds this sensor
+		final TrackWrapper theTrack = (TrackWrapper) val;
+		final Enumeration<Editable> iter = theTrack.getSensorArcs().elements();
+
+		// step through this track' sensors
+		if (iter != null) 
+		{
+			while (iter.hasMoreElements()) 
+			{
+				final SensorArcWrapper sensorw = (SensorArcWrapper) iter.nextElement();
+
+				// is this our sensor?
+				if (sensorw.getName().equals(sensorName)) 
+				{
+					// cool, drop out
+					thisSensor = sensorw;
+					break;
+				}
+			} // looping through the sensors
+		} // whether there are any sensors
+
+		
+		// did we find it?
+		if (thisSensor == null) 
+		{
+			// then create it
+			thisSensor = new SensorArcWrapper(sensorName);
+
+			// set it's colour to the colour of the first data point
+			thisSensor.setColor(sw.getColor());
+
+			// also set it's name
+			thisSensor.setTrackName(sw.getTrackName());
+
+			theTrack.add(thisSensor);
+		}
+
+		// remember this sensor.  Note: this is a change, so that we list
+		// all sensors that were in this import, not just new ones.  If
+		// we actually only want to know about new sensors, then this "if" 
+		// block should actually be in the above (thisSensor == null)
+		// code block.
+		if(!_importedSensorArcs.contains(thisSensor))
+		{
+			_importedSensorArcs.add(thisSensor);
+		}
+		
+		// so, we now have the wrapper. have a look to see if the colour
+		// of this data item is the same
+		// as the sensor - in which case we will erase the colour for
+		// this data item so that it always takes the colour of it's parent
+		if (sw.getColor().equals(thisSensor.getColor())) 
+		{
+			// clear the colour - so it takes it form it's parent
+			sw.setColor(null);
+		}
+
+		// now add the new contact to this sensor
+		thisSensor.add(sw);
+
+		return res;
+	}
+	
 	private HiResDate processContactWrapper(final TMAContactWrapper sw)
 	{
 		final HiResDate res = sw.getTime();
@@ -810,6 +902,10 @@ public class ImportReplay extends PlainImporterBase
 		else if (thisObject instanceof SensorContactWrapper)
 		{
 			res = processSensorContactWrapper((SensorContactWrapper) thisObject);
+		}
+		else if (thisObject instanceof SensorArcContactWrapper)
+		{
+			res = processSensorArcContactWrapper((SensorArcContactWrapper) thisObject);
 		}
 		else if (thisObject instanceof TMAContactWrapper)
 		{
@@ -1136,6 +1232,11 @@ public class ImportReplay extends PlainImporterBase
 	public void clearSensorList()
 	{
 		_importedSensors = new Vector<SensorWrapper>();
+	}
+	
+	public void clearSensorArcList()
+	{
+		_importedSensorArcs = new Vector<SensorArcWrapper>();
 	}
 
 	static public int replayLineStyleFor(final String theSym)
