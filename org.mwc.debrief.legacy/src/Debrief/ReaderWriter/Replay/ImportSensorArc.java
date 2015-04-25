@@ -14,6 +14,7 @@
  */
 package Debrief.ReaderWriter.Replay;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 import Debrief.Wrappers.SensorArcContactWrapper;
