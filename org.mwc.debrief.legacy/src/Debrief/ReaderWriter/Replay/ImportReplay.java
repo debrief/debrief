@@ -461,6 +461,8 @@ public class ImportReplay extends PlainImporterBase
 			_theImporters.addElement(new ImportDynamicRectangle());
 			_theImporters.addElement(new ImportDynamicCircle());
 			_theImporters.addElement(new ImportDynamicPolygon());
+			
+			_theImporters.addElement(new ImportSensorArc());
 		}
 	}
 	

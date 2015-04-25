@@ -17,6 +17,11 @@ public abstract class AbstractPlainLineImporter implements PlainLineImporter
 	{
 		String theName = st.nextToken();
 	
+		return checkForQuotedName(st, theName);
+	}
+
+	public static String checkForQuotedName(final StringTokenizer st, String theName)
+	{
 		// so, does the track name contain a quote character?
 		final int quoteIndex = theName.indexOf("\"");
 		if (quoteIndex >= 0)
