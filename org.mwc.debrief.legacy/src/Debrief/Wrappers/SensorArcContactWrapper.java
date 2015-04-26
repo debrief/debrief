@@ -35,8 +35,8 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldVector;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 @SuppressWarnings("serial")
@@ -371,9 +371,6 @@ public final class SensorArcContactWrapper extends
 			}
 		}
 
-		// ok, we have the start - convert it to a point
-		final Point pt = new Point(dest.toScreen(origin));
-		
 		if (!keep_simple)
 		{
 
@@ -411,32 +408,15 @@ public final class SensorArcContactWrapper extends
 					labelPos = origin;
 				}
 
-				// sort out where to plot it
-				//if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
-				//{
-					// use the start
-					labelPos = origin;
-				//}
-//				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
-//				{
-//					// put it at the end
-//					labelPos = theFarEnd;
-//				}
-//				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-//				{
-//					// calculate the centre point
-//					final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
-//					labelPos = tmpArea.getCentre();
-//				}
-
-
 				// update it's location
 				_theLabel.setLocation(labelPos);
 				_theLabel.setColor(getColor());
 				_theLabel.paint(dest);
 			}
 		}
-		
+		// ok, we have the start - convert it to a point
+		final Point pt = new Point(dest.toScreen(origin));
+			
 		// also plot the origin
 		dest.fillRect(pt.x - 1, pt.y - 2, 3, 3);
 		// paint circles
