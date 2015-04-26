@@ -160,11 +160,14 @@ import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 @SuppressWarnings("serial")
@@ -230,6 +233,14 @@ public final class SensorArcContactWrapper extends
 	private int _theLineLocation = MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE;
 
 	private String _sensorName;
+	
+	private WorldDistance _extRadius = new WorldDistance(4000, WorldDistance.YARDS);
+	
+	private CircleShape _extCircle, _intCircle;
+	
+	private WorldDistance _intRadius = new WorldDistance(2000, WorldDistance.YARDS);
+
+	private WorldArea _theArea;
 
 	/**
 	 * default constructor, used when we read in from XML
@@ -286,9 +297,40 @@ public final class SensorArcContactWrapper extends
 		_sensorName = sensorName;
 	}
 
+	private void calculateArea(final WorldLocation centre)
+	{
+			// calc the radius in degrees
+			final double radDegs = _extRadius.getValueIn(WorldDistance.DEGS);
+
+			if (centre == null) 
+			{
+				// FIXME
+				return;
+			}
+			// create our area
+			_theArea = new WorldArea(centre, centre);
+
+			// create & extend to top left
+			WorldLocation other = centre.add(new WorldVector(0, radDegs, 0));
+			_theArea.extend(other);
+			other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+					radDegs, 0));
+			_theArea.extend(other);
+
+			// create & extend to bottom right
+			other = centre.add(new WorldVector(MWC.Algorithms.Conversions
+					.Degs2Rads(180), radDegs, 0));
+			_theArea.extend(other);
+			other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
+					radDegs, 0));
+			_theArea.extend(other);
+	}
+
 	public void clearCalculatedOrigin()
 	{
 		_calculatedOrigin = null;
+		_extCircle = null;
+		_intCircle = null;
 	}
 
 	/**
@@ -347,6 +389,10 @@ public final class SensorArcContactWrapper extends
 
 		}
 
+		if (_calculatedOrigin != null) {
+			_extCircle = new CircleShape(_calculatedOrigin, _extRadius);
+			_intCircle = new CircleShape(_calculatedOrigin, _intRadius);
+		}
 		return _calculatedOrigin;
 	}
 
@@ -456,9 +502,6 @@ public final class SensorArcContactWrapper extends
 			}
 		}
 
-		// ok, we have the start - convert it to a point
-		final Point pt = new Point(dest.toScreen(origin));
-		
 		if (!keep_simple)
 		{
 
@@ -469,24 +512,32 @@ public final class SensorArcContactWrapper extends
 			if (getLabelVisible())
 			{
 				WorldLocation labelPos = null;
+				
+				double radDegs = _extRadius.getValueIn(WorldDistance.DEGS);
 
 				// sort out where to plot it
-				//if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
-				//{
-					// use the start
+				if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
+				{
+					WorldLocation topLeft = new WorldLocation(
+							origin.add(new WorldVector(0, radDegs, 0)));
+					topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+							radDegs, 0));
+					labelPos = topLeft;
+				}
+				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
+				{
+					WorldLocation bottomRight = new WorldLocation(
+							origin.add(new WorldVector(MWC.Algorithms.Conversions
+									.Degs2Rads(180), radDegs, 0)));
+					bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions
+							.Degs2Rads(90), radDegs, 0));
+					labelPos = bottomRight;
+				}
+				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
+				{
+					// calculate the centre point
 					labelPos = origin;
-				//}
-//				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
-//				{
-//					// put it at the end
-//					labelPos = theFarEnd;
-//				}
-//				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-//				{
-//					// calculate the centre point
-//					final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
-//					labelPos = tmpArea.getCentre();
-//				}
+				}
 
 				// update it's location
 				_theLabel.setLocation(labelPos);
@@ -495,9 +546,80 @@ public final class SensorArcContactWrapper extends
 			}
 		}
 	
+		// ok, we have the start - convert it to a point
+		final Point pt = new Point(dest.toScreen(origin));
+			
+		// also plot the origin
+		dest.fillRect(pt.x - 1, pt.y - 2, 3, 3);
+		// paint circles
+		if (_extCircle != null)
+		{
+			//_extCircle.setColor(getColor());
+			_extCircle.paint(dest);
+		}
+		if (_intCircle != null)
+		{
+			//_intCircle.setColor(getColor());
+			_intCircle.paint(dest);
+		}
+		
+		// paint arc
+		
+		double radDegs = _extRadius.getValueIn(WorldDistance.DEGS);
+		Color oldColor = dest.getBackgroundColor();
+		
+		paintArc(dest, origin, radDegs, getColor(), _left, _right);
+		if (_inner != 0 && _outer != 0)
+		{
+			paintArc(dest, origin, radDegs * _inner / _outer, oldColor, _left, _right);
+		}
+		
+		if (_isBeam)
+		{
+			paintArc(dest, origin, radDegs, getColor(), _left1, _right1);
+			if (_inner1 != 0 && _outer1 != 0)
+			{
+				paintArc(dest, origin, radDegs * _inner1 / _outer1, oldColor, _left1, _right1);
+			}
+		}
+		
+		dest.setBackgroundColor(oldColor);
+		
+	}
 
-		// TODO implement paint
+	private void paintArc(final MWC.GUI.CanvasType dest,
+			final WorldLocation origin, double radDegs, Color color, int left, int right)
+	{
+		WorldLocation topLeft = new WorldLocation(
+				origin.add(new WorldVector(0, radDegs, 0)));
+		topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+				radDegs, 0));
 
+		// create & extend to bottom right
+		WorldLocation bottomRight = new WorldLocation(
+				origin.add(new WorldVector(MWC.Algorithms.Conversions
+						.Degs2Rads(180), radDegs, 0)));
+		bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions
+				.Degs2Rads(90), radDegs, 0));
+
+		Point tl = dest.toScreen(topLeft);
+
+		int tlx = tl.x;
+		int tly = tl.y;
+
+		// get the width and height
+		Point br = dest.toScreen(bottomRight);
+				
+		int startAngle = - (left - 90);
+		int arcWidth = right - left;
+
+		int wid = br.x - tlx;
+		int height = br.y - tly;
+
+		// and now draw it
+
+		dest.setBackgroundColor(color);
+		dest.fillArc(tlx, tly, wid, height, startAngle, -arcWidth);
 	}
 
 	/**
@@ -531,19 +653,16 @@ public final class SensorArcContactWrapper extends
 	 */
 	public final MWC.GenericData.WorldArea getBounds()
 	{
-		WorldArea res = null;
+		if (_theArea !=null) 
+		{
+			return _theArea;
+		}
 		final WorldLocation origin = getCalculatedOrigin(null);
 
-		// do we know our origin?
-		if (origin != null)
-		{
-			// FIXME
-			res = new WorldArea(getCalculatedOrigin(null),
-					getCalculatedOrigin(null));
-		}
+		calculateArea(origin);
 
 		// done.
-		return res;
+		return _theArea;
 	}
 
 	/**
@@ -650,10 +769,6 @@ public final class SensorArcContactWrapper extends
 
 		if (getVisible())
 		{
-			// an outer area we create for when the sensor data doesn't have range
-			// attribute
-			WorldArea outerEnvelope = null;
-
 			// get the range from the origin
 
 			// find our origin
