@@ -58,11 +58,9 @@ public final class SensorArcContactWrapper extends
 	 */
 	private HiResDate _startDTG, _endDTG;
 	
-	//private int _left, _right, _inner, _outer;
-	//private int _left1, _right1, _inner1, _outer1;
-	//private boolean _isBeam;
-	
 	private List<SensorArcValue> _values = new ArrayList<SensorArcValue>();
+	
+	private String _arcs;
 
 	/**
 	 * origin of the target, or null to read origin from host vessel
@@ -143,12 +141,30 @@ public final class SensorArcContactWrapper extends
 		_startDTG = startDtg;
 		_endDTG = endDtg;
 		_values = values;
+		calculateArcs();
 		
 		// and the gui parameters
 		setColor(theColor);
 		_myLineStyle = theStyle;
 		_theLabel.setString(sensorName);
 		_sensorName = sensorName;
+	}
+
+	private void calculateArcs()
+	{
+		StringBuilder builder = new StringBuilder();
+		for (SensorArcValue value:_values)
+		{
+			builder.append(value.min);
+			builder.append(" ");
+			builder.append(value.max);
+			builder.append(" ");
+			builder.append(value.angle);
+			builder.append(" ");
+			builder.append(value.course);
+			builder.append(" ");
+		}
+		_arcs = builder.toString().trim();
 	}
 
 	private void calculateArea(final WorldLocation centre)
@@ -189,9 +205,9 @@ public final class SensorArcContactWrapper extends
 		int outer = 0;
 		for (SensorArcValue value : _values)
 		{
-			if (value.outer > outer)
+			if (value.course > outer)
 			{
-				outer = value.outer;
+				outer = value.course;
 			}
 		}
 		_radDegs = new WorldDistance(outer, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
@@ -422,11 +438,11 @@ public final class SensorArcContactWrapper extends
 		
 		for (SensorArcValue value : _values)
 		{
-			paintArc(dest, origin, _radDegs, getColor(), value.left, value.right);
-			if (value.inner != 0 && value.outer != 0)
+			paintArc(dest, origin, _radDegs, getColor(), value.min, value.max);
+			if (value.angle != 0 && value.course != 0)
 			{
-				paintArc(dest, origin, _radDegs * value.inner / value.outer, oldColor,
-						value.left, value.right);
+				paintArc(dest, origin, _radDegs * value.angle / value.course, oldColor,
+						value.min, value.max);
 			}
 		}
 
@@ -808,6 +824,7 @@ public final class SensorArcContactWrapper extends
 						prop("Color", "the color for this sensor contact", FORMAT),
 						prop("startDTG", "the start time this entry was recorded", FORMAT),
 						prop("endDTG", "the end time this entry was recorded", FORMAT),
+						prop("arcs", "sensor arcs: min max angle range", FORMAT),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
 						longProp("PutLabelAt",
@@ -845,6 +862,7 @@ public final class SensorArcContactWrapper extends
 						prop("Color", "the color for this sensor contact", FORMAT),
 						prop("startDTG", "the start time this entry was recorded", FORMAT),
 						prop("endDTG", "the end time this entry was recorded", FORMAT),
+						prop("arcs", "sensor arcs: min max angle range", FORMAT),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
 						longProp("PutLabelAt",
@@ -953,5 +971,50 @@ public final class SensorArcContactWrapper extends
 	public List<SensorArcValue> getValues()
 	{
 		return _values;
+	}
+
+	public String getArcs()
+	{
+		return _arcs;
+	}
+
+	public void setArcs(String arcs)
+	{
+		if (arcs == null)
+		{
+			throw new RuntimeException("Error parsing arcs");
+		}
+		arcs = arcs.trim();
+		String[] elements = arcs.split(" ");
+		if (elements.length % 4 != 0)
+		{
+			throw new RuntimeException("Error parsing arcs");
+		}
+		List<SensorArcValue> values = new ArrayList<SensorArcValue>();
+		int index = 0;
+		while (index < elements.length)
+		{
+			SensorArcValue value = new SensorArcValue();
+			value.min = getValue(elements, index++);
+			value.max = getValue(elements, index++);
+			value.angle = getValue(elements, index++);
+			value.course = getValue(elements, index++);
+			values.add(value);
+		}
+		this._values = values;
+		this._arcs = arcs;
+		_radDegs = 0;
+	}
+
+	private int getValue(String[] elements, int index)
+	{
+		try
+		{
+			return new Integer(elements[index]).intValue();
+		}
+		catch (NumberFormatException e)
+		{
+			throw new RuntimeException("Error parsing arcs. Invalid number.");
+		}
 	}
 }

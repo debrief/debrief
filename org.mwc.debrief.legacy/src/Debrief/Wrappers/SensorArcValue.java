@@ -16,5 +16,11 @@ package Debrief.Wrappers;
 
 public class SensorArcValue
 {
-	public int left, right, inner, outer;
+	public int min, max, angle, course;
+
+	@Override
+	public String toString()
+	{
+		return min + " " + max + " " + angle + " " + course;
+	}
 }
