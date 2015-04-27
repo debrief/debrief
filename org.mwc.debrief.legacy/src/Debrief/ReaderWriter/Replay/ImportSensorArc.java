@@ -16,12 +16,14 @@ package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import Debrief.Wrappers.SensorArcContactWrapper;
+import Debrief.Wrappers.SensorArcValue;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -48,68 +50,62 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     String sensorName;
     HiResDate startDtg = null;
     HiResDate endDtg = null;
-    int left, right, inner, outer, left1=0, right1=0, inner1=0, outer1=0;
-    boolean isBeam;
-    
+    List<SensorArcValue> values = new ArrayList<SensorArcValue>();
     java.awt.Color theColor;
 
+    List<String> myTokens = new ArrayList<String>();
+		while (st.hasMoreTokens())
+		{
+			String next = ImportFix.checkForQuotedName(st);
+			myTokens.add(next);
+		}
+		if (myTokens.size() < 10)
+		{
+			MWC.Utilities.Errors.Trace.trace("Whilst import sensor arc: " + theLine);
+			return null;
+		}
+    int index = 1;
     // skip the comment identifier
-    st.nextToken();
-
+    //st.nextToken();
+    
 		// combine the date, a space, and the time
-		String dateToken = st.nextToken();
+		String dateToken = myTokens.get(index++);
 		if (dateToken.startsWith("N"))
 		{
 			// startDtg is null
 		}
 		else
 		{
-			final String timeToken = st.nextToken();
+			final String timeToken = myTokens.get(index++);
 			startDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 		}
-		dateToken = st.nextToken();
+		dateToken = myTokens.get(index++);
 		if (dateToken.startsWith("N"))
 		{
 			// endDtg is null
 		}
 		else
 		{
-			final String timeToken = st.nextToken();
+			final String timeToken = myTokens.get(index++);
 			endDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 		}
 
     // get the (possibly multi-word) track name
-    theTrack = ImportFix.checkForQuotedName(st);
-
-    // start with the symbology
-    symbology = st.nextToken(normalDelimiters);
+    theTrack = myTokens.get(index++);
     
+    // start with the symbology
+    //symbology = st.nextToken(normalDelimiters);
+    symbology = myTokens.get(index++);
+    
+    int tokens = myTokens.size() - index;
     try
     {
-    	
-    	 left = (int)MWCXMLReader.readThisDouble(st.nextToken());
-    	 right = (int)MWCXMLReader.readThisDouble(st.nextToken());
-    	 inner = (int)MWCXMLReader.readThisDouble(st.nextToken());
-    	 outer = (int)MWCXMLReader.readThisDouble(st.nextToken());
-
-	    // get the (possibly multi-word) track name
-			String theName = st.nextToken();
-			final int quoteIndex = theName.indexOf("\"");
-			if (quoteIndex >= 0)
+    	while (tokens > 4)
 			{
-				sensorName = ImportFix.checkForQuotedName(st, theName);
-				isBeam = false;
+				index = addValue(myTokens, values, index);
+				tokens -= 4;
 			}
-			else
-			{
-				//left1 = (int) MWCXMLReader.readThisDouble(st.nextToken());
-				left1 = new Integer(theName).intValue(); 
-				right1 = (int) MWCXMLReader.readThisDouble(st.nextToken());
-				inner1 = (int) MWCXMLReader.readThisDouble(st.nextToken());
-				outer1 = (int) MWCXMLReader.readThisDouble(st.nextToken());
-				sensorName = ImportFix.checkForQuotedName(st);
-				isBeam = true;
-			}
+	    sensorName = myTokens.get(index);
 	    
 	    // and ditch some whitespace
 	    sensorName = sensorName.trim();
@@ -122,9 +118,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 	    final SensorArcContactWrapper data =
 	        new SensorArcContactWrapper(theTrack, startDtg, 
 	        		endDtg, 
-	        		left, right, inner, outer,
-	        		left1, right1, inner1, outer1,
-	        		isBeam,
+	        		values,
 	        		theColor,
 	        		theStyle, sensorName);
 	        		
@@ -134,10 +128,22 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     catch(final ParseException pe)
     {
     	MWC.Utilities.Errors.Trace.trace(pe,
-				"Whilst import sensor");
+				"Whilst import sensor arc: " + theLine);
     	return null;
     }
   }
+
+	private int addValue(final List<String> myTokens, List<SensorArcValue> values, int index)
+			throws ParseException
+	{
+		SensorArcValue value = new SensorArcValue();
+		value.left = new Integer(myTokens.get(index++)).intValue();
+		value.right = new Integer(myTokens.get(index++)).intValue();
+		value.inner = new Integer(myTokens.get(index++)).intValue();
+		value.outer = new Integer(myTokens.get(index++)).intValue();
+		values.add(value);
+		return index;
+	}
 
   /**
    * determine the identifier returning this type of annotation

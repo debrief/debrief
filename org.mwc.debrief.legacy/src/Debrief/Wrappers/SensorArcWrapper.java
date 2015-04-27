@@ -17,6 +17,7 @@ package Debrief.Wrappers;
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -278,9 +279,7 @@ public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable
 				{
 					nearestContact = new SensorArcContactWrapper(null, DTG, 
 	        		null, 
-	        		0, 0, 0, 0,
-	        		0, 0, 0, 0,
-	        		false,
+	        		new ArrayList<SensorArcValue>(),
 	        		null,
 	        		0, getName());
 				}
