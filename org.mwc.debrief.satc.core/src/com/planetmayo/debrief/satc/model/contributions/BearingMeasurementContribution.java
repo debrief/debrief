@@ -684,7 +684,7 @@ public class BearingMeasurementContribution extends
 			List<Double> lastLegBearings, List<Long> thisLegTimes,
 			List<Double> thisLegBearings)
 	{
-		boolean res = true;
+		boolean res = false;
 		// ok, what's the 1936 range?
 		
 		NumberFormat dp2 = new DecimalFormat("0.00");
@@ -730,28 +730,33 @@ public class BearingMeasurementContribution extends
 			// ok, what's the bearing rate for this range?
 			double pBoot = 1770.28 * dOSA / rng1936m;
 
-			// hmm, what's the RSA?
+			// hmm, what are the two TSAs?
 			double l1RSA = (l1BearingRate * rng1936m) / 1770.28;
 			double l1TSA = osa1 - l1RSA;
 
 			double l2RSA = (l2BearingRate * rng1936m) / 1770.28;
 			double l2TSA = osa2 - l2RSA;
 			
-			// ok, now for his TSA
+			// ok, make a decision - we need a dTSA of less than the threshold,
+			// with a +ve range estimate there to be no zig.
+			double deltaTSA = Math.abs(Math.abs(l2TSA) - Math.abs(l1TSA));
+			final double deltaTSA_Threshold = 4;
+			if((deltaTSA <= deltaTSA_Threshold)&&(rng1936m > 0))
+				res = false;
+			else
+				res = true;
+
+			// ok, output diagnostics
 			SATC_Activator.log(Status.INFO, "turning onto:" + legName + " range:" + (int)rng1936m + 					
 					" osa1:" + dp2.format(osa1) + " osa2:" + dp2.format(osa2) +
 					" dOSA:" + dp2.format(dOSA) +
 					" l1Rate:" + dp2.format(l1BearingRate) + " l2Rate:" + dp2.format(l2BearingRate) +
 					" dRate:" + dp2.format(deltaBRate) +
-					" l1TSA:" + dp2.format(l1TSA) + " l2TSA:" + dp2.format(l2TSA)
+					" l1TSA:" + dp2.format(l1TSA) + 
+					" l2TSA:" + dp2.format(l2TSA)+
+					" is Zig:" + res
 					, null);
 			
-			// ok, make a decision
-			double deltaTSA = Math.abs(Math.abs(l2TSA) - Math.abs(l1TSA));
-			if(deltaTSA <= 2)
-				res = false;
-			else
-				res = true;
 		}
 
 		return res;
@@ -762,11 +767,38 @@ public class BearingMeasurementContribution extends
 		// how large is the data?
 		final int len = legTimes.size();
 
+		// keep track of the max/min bearings
+		double minBrg = Double.MAX_VALUE;
+		double maxBrg = Double.MIN_NORMAL;
+		
+		long timeStart = legTimes.get(0);
+
+		// store the data
 		double[][] data = new double[len][2];
 		for (int i = 0; i < len; i++)
 		{
-			data[i][0] = legTimes.get(i) / (1000 * 60d); // convert to mins
-			data[i][1] = legBearings.get(i);
+			data[i][0] =  (legTimes.get(i) - timeStart) / (1000 * 60d); // convert to mins
+			Double thisBrg = legBearings.get(i);
+			if(thisBrg < minBrg)
+				minBrg = thisBrg;
+			if(thisBrg > maxBrg)
+				maxBrg = thisBrg;
+			data[i][1] = thisBrg;
+		}
+		
+		// ok, we need to check that we don't pass through zero in this data.
+		if(maxBrg - minBrg > 180)
+		{
+			// ok, we need to put them into the same cycle (180..540)
+			for (int i = 0; i < len; i++)
+			{
+				double thisVal = data[i][1];
+				if(thisVal < 180)
+				{
+					thisVal += 360;
+					data[i][1] = thisVal;
+				}
+			}
 		}
 
 		// calculate the line
