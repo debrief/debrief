@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="1936 Run Plans" xmlns="http://www.mwc.org/asset"
+	StartTime="2010-01-12T12:00:00Z" Created="2010-01-19T12:13:14Z"
+	ShowActivity="false" ShowStatus="true">
+	<StepTime Units="seconds" Value="50"></StepTime>
+	<Environment Name="token" AtmosphericAttenuation="VERY_CLEAR"
+		SeaState="1">
+		<VisualLookupEnvironment Name="Easy to see">
+			<VisualAttenuationDatum Haze="0.0000001" Mist="0.0000001"
+				LightHaze="0.0000001" VeryClear="0.0000001" Fog="0.0000001" Clear="0.0000001"></VisualAttenuationDatum>
+			<TargetVisibilitySet>
+				<TargetVisibilityDatum Type="CARRIER"
+					Visibility="2" />
+				<TargetVisibilityDatum Type="FRIGATE"
+					Visibility="2"></TargetVisibilityDatum>
+			</TargetVisibilitySet>
+			<TargetSeaStateSet>
+				<TargetSeaStateDatum Type="CARRIER" SeaState_5="1"
+					SeaState_4="1" SeaState_3="1" SeaState_2="1" SeaState_1="1"
+					SeaState_0="1" SeaState_6="1" />
+				<TargetSeaStateDatum Type="FRIGATE" SeaState_5="1"
+					SeaState_4="1" SeaState_3="1" SeaState_2="1" SeaState_1="1"
+					SeaState_0="1" SeaState_6="1" />
+			</TargetSeaStateSet>
+			<LightLevelDatum Dusk="1" DarkNight="1" MoonlitNight="1"
+				Daylight="1" />
+		</VisualLookupEnvironment>
+	</Environment>
+	<Participants>
+		<Surface Name="SUBJECT">
+			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="320" Fuel="100">
+				<Location>
+					<shortLocation Lat="60" Long="0"></shortLocation>
+				</Location>
+				<Speed Value="9" Units="kts" />
+			</Status>
+			<Waterfall Name="subject route">
+				<Move Name="leg one" Course="320">
+					<Vector Value="5.7" Units="nm" /></Move>
+				<Move Name="leg two" Course="355">
+					<Vector Value="4.75" Units="nm" /></Move>
+				<Move Name="leg three" Course="300">
+					<Vector Value="5.0" Units="nm" /></Move>
+				<Move Name="leg four" Course="320">
+					<Vector Value="4" Units="nm" /></Move>
+			</Waterfall>
+
+
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="SENSOR">
+			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<TypedCookieSensor Working="true">
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="25" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="40" Fuel="100">
+				<Location>
+					<shortLocation Lat="60.2" Long="0"></shortLocation>
+				</Location>
+				<Speed Value="2.5" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+				<Move Name="leg one" Course="200">
+					<Vector Value="3" Units="nm" /></Move>
+				<Move Name="leg two" Course="340">
+					<Vector Value="1.6" Units="nm" /></Move>
+				<Move Name="leg three" Course="60">
+					<Vector Value="2" Units="nm" /></Move>
+			</Waterfall>
+
+
+
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+	<DebriefLayer>
+		<layer LineThickness="0" Name="Chart Features" Visible="true">
+			<grid PlotLabels="true" Units="degs" Visible="true">
+				<Delta Units="km" Value="1" />
+				<colour Value="DARK_GREY" />
+			</grid>
+
+		</layer>
+	</DebriefLayer>
+
+</Scenario>

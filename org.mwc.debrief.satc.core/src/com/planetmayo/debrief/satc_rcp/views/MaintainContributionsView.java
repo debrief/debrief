@@ -959,7 +959,13 @@ public class MaintainContributionsView extends ViewPart
 		// and resize the axes
 		performanceChart.getAxisSet().adjustRange();
 		
-		performanceChart.getTitle().setText(PERFORMANCE_TITLE +(int)value);
+		final String perfString;
+		if(value > 200d)
+			perfString = "Unachievable";
+		else
+			perfString = PERFORMANCE_TITLE +(int)value;
+		
+		performanceChart.getTitle().setText(perfString);
 
 		//
 		performanceChart.redraw();

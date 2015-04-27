@@ -16,6 +16,8 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +25,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.Status;
+import org.jfree.data.statistics.Regression;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -49,7 +54,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
@@ -68,10 +72,9 @@ public class BearingMeasurementContribution extends
 		public void startingSlice(String contName);
 
 		public void ownshipLegs(String contName, ArrayList<BMeasurement> bearings,
-				List<LegOfData> ownshipLegs,
-				ArrayList<HostState> hostStates);
-		
-		public void sliced(String contName, 
+				List<LegOfData> ownshipLegs, ArrayList<HostState> hostStates);
+
+		public void sliced(String contName,
 				ArrayList<StraightLegForecastContribution> arrayList);
 	}
 
@@ -429,7 +432,7 @@ public class BearingMeasurementContribution extends
 
 	}
 
-	public long[] getTimes(ArrayList<HostState> states)
+	protected long[] getTimes()
 	{
 		long[] res = new long[states.size()];
 		int ctr = 0;
@@ -443,7 +446,7 @@ public class BearingMeasurementContribution extends
 		return res;
 	}
 
-	public double[] getCourses(ArrayList<HostState> states)
+	protected double[] getCourses()
 	{
 		double[] res = new double[states.size()];
 		Iterator<HostState> iter = states.iterator();
@@ -457,7 +460,7 @@ public class BearingMeasurementContribution extends
 		return res;
 	}
 
-	public double[] getSpeeds(ArrayList<HostState> states)
+	protected double[] getSpeeds()
 	{
 		double[] res = new double[states.size()];
 		Iterator<HostState> iter = states.iterator();
@@ -479,7 +482,8 @@ public class BearingMeasurementContribution extends
 		final public double dLat;
 		final public double dLong;
 
-		public HostState(long time, double courseDegs, double speedKts, double dLat, double dLong)
+		public HostState(long time, double courseDegs, double speedKts,
+				double dLat, double dLong)
 		{
 			this.time = time;
 			this.courseDegs = courseDegs;
@@ -488,7 +492,7 @@ public class BearingMeasurementContribution extends
 			this.dLong = dLong;
 		}
 	}
-	
+
 	public void sliceOwnship(final IContributions contributions)
 	{
 		// ok share the good news - we're about to start
@@ -502,16 +506,16 @@ public class BearingMeasurementContribution extends
 				thisL.startingSlice(this.getName());
 			}
 		}
-		
+
 		// ok, extract the ownship legs from this data
 		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
 
 		if (ownshipLegs != null)
 			ownshipLegs.clear();
 
-		ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(states),
-				getSpeeds(states), getCourses(states), 9);
-		
+		ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(), getSpeeds(),
+				getCourses(), 9);
+
 		// ok, share the ownship legs
 		// ok, slicing done!
 		if (_listeners != null)
@@ -521,7 +525,8 @@ public class BearingMeasurementContribution extends
 			{
 				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
 						.next();
-				thisL.ownshipLegs(this.getName(), this.getMeasurements(), ownshipLegs, states);
+				thisL.ownshipLegs(this.getName(), this.getMeasurements(), ownshipLegs,
+						states);
 			}
 		}
 	}
@@ -533,26 +538,27 @@ public class BearingMeasurementContribution extends
 		{
 			return;
 		}
-		
-		// decide if we are going to split at ownship and target zigs, or just target zigs
+
+		// decide if we are going to split at ownship and target zigs, or just
+		// target zigs
 		final boolean justTargetZigs = true;
-		
+
 		// ok, now ditch any straight leg contributions that we generated
 		Iterator<BaseContribution> ditchIter = contributions.iterator();
 		ArrayList<StraightLegForecastContribution> toRemove = new ArrayList<StraightLegForecastContribution>();
 		while (ditchIter.hasNext())
 		{
 			BaseContribution baseContribution = (BaseContribution) ditchIter.next();
-			if(baseContribution instanceof StraightLegForecastContribution)
+			if (baseContribution instanceof StraightLegForecastContribution)
 			{
 				StraightLegForecastContribution sfl = (StraightLegForecastContribution) baseContribution;
-				if(sfl.getAutoGenBy().equals(getName()))
+				if (sfl.getAutoGenBy().equals(getName()))
 				{
 					toRemove.add(sfl);
 				}
 			}
 		}
-		
+
 		// ditch any that we did find
 		Iterator<StraightLegForecastContribution> remover = toRemove.iterator();
 		while (remover.hasNext())
@@ -561,29 +567,33 @@ public class BearingMeasurementContribution extends
 					.next();
 			contributions.removeContribution(toDitch);
 		}
-		
-
 
 		// create object that can store the new legs
 		IContributions zigConts, legConts;
-		if(justTargetZigs)
-		{			
+		if (justTargetZigs)
+		{
 			zigConts = contributions;
 			legConts = null;
 		}
 		else
 		{
-			legConts= contributions;
-			 zigConts = null;			
+			legConts = contributions;
+			zigConts = null;
 		}
-		
-		ILegStorer legStorer = new MyLegStorer(legConts, this.getMeasurements(), this.getName());
-		IZigStorer zigStorer = new MyZigStorer(zigConts, this.getMeasurements(), this.getName(), 
-				states.get(0).time, 
-				states.get(states.size()-1).time);
+
+		ILegStorer legStorer = new MyLegStorer(legConts, this.getMeasurements(),
+				this.getName());
+		IZigStorer zigStorer = new MyZigStorer(zigConts, this.getMeasurements(),
+				this.getName(), states.get(0).time, states.get(states.size() - 1).time);
 
 		// ok, now collate the bearing data
 		ZigDetector detector = new ZigDetector();
+
+		// get ready to remember the previous leg
+		List<Long> lastLegTimes = null;
+		List<Double> lastLegBearings = null;
+
+		//
 
 		// ok, work through the legs. In the absence of a Discrete
 		// Optimisation algorithm we're taking a brue force approach.
@@ -617,13 +627,34 @@ public class BearingMeasurementContribution extends
 				}
 			}
 
+			// ok, before we slice this leg, let's just try to see if there was
+			// probably a target zig during the
+			// ownship zig
+			if (lastLegTimes != null)
+			{
+				boolean probWasZig = checkForTargetZig(thisLeg.getName(), lastLegTimes, lastLegBearings,
+						thisLegTimes, thisLegBearings);
+
+				if (probWasZig)
+				{
+					// inject a target leg for the period spanning the ownship manouvre
+					long tStart = lastLegTimes.get(lastLegTimes.size()-1);
+					long tEnd = thisLegTimes.get(0);
+					zigStorer.storeZig("some name", tStart, tEnd, null, 0);
+				}
+			}
+
 			double zigScore = ZIG_DETECTOR_RMS;
 			zigScore = 0.5;
-			detector.sliceThis("some name", legStart, legEnd, null, legStorer, zigStorer, zigScore,
-					0.000001, thisLegTimes, thisLegBearings);
+			detector.sliceThis("some name", legStart, legEnd, null, legStorer,
+					zigStorer, zigScore, 0.000001, thisLegTimes, thisLegBearings);
+
+			lastLegTimes = thisLegTimes;
+			lastLegBearings = thisLegBearings;
+
 		}
-		
-		// ok, finalise the zig-detector, if we have one		
+
+		// ok, finalise the zig-detector, if we have one
 		zigStorer.finish();
 
 		// ok, slicing done!
@@ -634,9 +665,9 @@ public class BearingMeasurementContribution extends
 			{
 				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
 						.next();
-				
-				if(justTargetZigs)
-				{					
+
+				if (justTargetZigs)
+				{
 					thisL.sliced(this.getName(), zigStorer.getSlices());
 				}
 				else
@@ -647,6 +678,168 @@ public class BearingMeasurementContribution extends
 			}
 		}
 
+	}
+
+	private boolean checkForTargetZig(String legName, List<Long> lastLegTimes,
+			List<Double> lastLegBearings, List<Long> thisLegTimes,
+			List<Double> thisLegBearings)
+	{
+		boolean res = false;
+		// ok, what's the 1936 range?
+		
+		NumberFormat dp2 = new DecimalFormat("0.00");
+
+		// ok, trim the leg 1 bearings
+		int leg1Len = Math.min(6, lastLegTimes.size());
+		int leg2Len = Math.min(6, thisLegTimes.size());
+
+		// drop out if either are too small
+		if ((leg1Len >= 3) && (leg2Len >= 3))
+		{
+
+			// OSA 1
+			double leg1Bearing = lastLegBearings.get(lastLegBearings.size() - 1);
+			double leg1Speed = speedAt(lastLegTimes.get(lastLegTimes.size() - 1));
+			double leg1Course = courseAt(lastLegTimes.get(lastLegTimes.size() - 1));
+			double leg1RelBrg = leg1Course - leg1Bearing ;
+			double osa1 = leg1Speed * Math.sin(Math.toRadians(leg1RelBrg));
+
+			// OSA 2
+			double leg2Bearing = thisLegBearings.get(0);
+			double leg2Speed = speedAt(thisLegTimes.get(0));
+			double leg2Course = courseAt(thisLegTimes.get(0));
+			double leg2RelBrg = leg2Course - leg2Bearing;
+			double osa2 = leg2Speed * Math.sin(Math.toRadians(leg2RelBrg));
+
+			// dOSA
+			double dOSA = osa2 - osa1;
+
+			// bearing rate
+			double l1BearingRate = bearingRateFor(
+					lastLegTimes.subList(lastLegTimes.size() - leg1Len,
+							lastLegTimes.size() - 1),
+					lastLegBearings.subList(lastLegTimes.size() - leg1Len,
+							lastLegTimes.size() - 1));
+			double l2BearingRate = bearingRateFor(thisLegTimes.subList(0, leg2Len),
+					thisLegBearings.subList(0, leg2Len));
+			double deltaBRate = l1BearingRate - l2BearingRate; // (order changed, according to Iain doc)
+
+			// and the range
+			double rng1936m = 1770.28 * dOSA / deltaBRate;
+
+			// ok, what's the bearing rate for this range?
+//			double pBoot = 1770.28 * dOSA / rng1936m;
+
+			// hmm, what are the two TSAs?
+			double l1RSA = (l1BearingRate * rng1936m) / 1770.28;
+			double l1TSA = osa1 - l1RSA;
+
+			double l2RSA = (l2BearingRate * rng1936m) / 1770.28;
+			double l2TSA = osa2 - l2RSA;
+			
+			// ok, make a decision - we need a dTSA of less than the threshold,
+			// with a +ve range estimate there to be no zig.
+			double deltaTSA = Math.abs(Math.abs(l2TSA) - Math.abs(l1TSA));
+			final double deltaTSA_Threshold = 4;
+			if((deltaTSA <= deltaTSA_Threshold)&&(rng1936m > 0))
+				res = false;
+			else
+				res = true;
+
+			// ok, output diagnostics
+			SATC_Activator.log(Status.INFO, "turning onto:" + legName + " range:" + (int)rng1936m + 					
+					" osa1:" + dp2.format(osa1) + " osa2:" + dp2.format(osa2) +
+					" dOSA:" + dp2.format(dOSA) +
+					" l1Rate:" + dp2.format(l1BearingRate) + " l2Rate:" + dp2.format(l2BearingRate) +
+					" dRate:" + dp2.format(deltaBRate) +
+					" l1TSA:" + dp2.format(l1TSA) + 
+					" l2TSA:" + dp2.format(l2TSA)+
+					" is Zig:" + res
+					, null);
+			
+		}
+
+		return res;
+	}
+
+	private double bearingRateFor(List<Long> legTimes, List<Double> legBearings)
+	{
+		// how large is the data?
+		final int len = legTimes.size();
+
+		// keep track of the max/min bearings
+		double minBrg = Double.MAX_VALUE;
+		double maxBrg = Double.MIN_NORMAL;
+		
+		long timeStart = legTimes.get(0);
+
+		// store the data
+		double[][] data = new double[len][2];
+		for (int i = 0; i < len; i++)
+		{
+			data[i][0] =  (legTimes.get(i) - timeStart) / (1000 * 60d); // convert to mins
+			Double thisBrg = legBearings.get(i);
+			if(thisBrg < minBrg)
+				minBrg = thisBrg;
+			if(thisBrg > maxBrg)
+				maxBrg = thisBrg;
+			data[i][1] = thisBrg;
+		}
+		
+		// ok, we need to check that we don't pass through zero in this data.
+		if(maxBrg - minBrg > 180)
+		{
+			// ok, we need to put them into the same cycle (180..540)
+			for (int i = 0; i < len; i++)
+			{
+				double thisVal = data[i][1];
+				if(thisVal < 180)
+				{
+					thisVal += 360;
+					data[i][1] = thisVal;
+				}
+			}
+		}
+
+		// calculate the line
+		double[] res = Regression.getOLSRegression(data);
+
+		// and the rate
+		return res[1];
+	}
+
+	private double speedAt(long time)
+	{
+		double res = -1;
+		final Iterator<HostState> iter = states.iterator();
+		while (iter.hasNext())
+		{
+			final BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) iter
+					.next();
+			if (hostState.time >= time)
+			{
+				res = hostState.speedKts;
+				break;
+			}
+		}
+		return res;
+	}
+
+	private double courseAt(long time)
+	{
+		double res = -1;
+		final Iterator<HostState> iter = states.iterator();
+		while (iter.hasNext())
+		{
+			final BearingMeasurementContribution.HostState hostState = (BearingMeasurementContribution.HostState) iter
+					.next();
+			if (hostState.time >= time)
+			{
+				res = hostState.courseDegs;
+				break;
+			}
+		}
+		return res;
 	}
 
 	public List<LegOfData> getOwnshipLegs()
@@ -677,7 +870,7 @@ public class BearingMeasurementContribution extends
 			super(theConts, cuts, genName);
 		}
 	}
-	
+
 	private static class MyZigStorer extends MyStorer implements IZigStorer
 	{
 
@@ -685,7 +878,8 @@ public class BearingMeasurementContribution extends
 		private final long _endTime;
 
 		public MyZigStorer(final IContributions theConts,
-				final ArrayList<BMeasurement> cuts, final String genName, final long startTime, final long endTime)
+				final ArrayList<BMeasurement> cuts, final String genName,
+				final long startTime, final long endTime)
 		{
 			super(theConts, cuts, genName);
 			_startTime = startTime;
@@ -697,18 +891,16 @@ public class BearingMeasurementContribution extends
 				Sensor sensor, double rms)
 		{
 			storeLeg(scenarioName, _startTime, tStart, sensor, rms);
-			
+
 			// and move foward the end time
 			_startTime = tEnd;
 		}
-
-
 
 		@Override
 		public ArrayList<StraightLegForecastContribution> getSlices()
 		{
 			finish();
-			
+
 			return super.getSlices();
 		}
 
@@ -716,7 +908,7 @@ public class BearingMeasurementContribution extends
 		public void finish()
 		{
 			// ok, just check if there is a missing last leg
-			if(_startTime != Long.MIN_VALUE)
+			if (_startTime != Long.MIN_VALUE)
 			{
 				// ok, append the last leg
 				storeLeg(null, _startTime, _endTime, null, 0);
@@ -725,8 +917,7 @@ public class BearingMeasurementContribution extends
 		}
 	}
 
-
-	private static class MyStorer 
+	private static class MyStorer
 	{
 		int ctr = 1;
 		protected ArrayList<StraightLegForecastContribution> slices = new ArrayList<StraightLegForecastContribution>();
@@ -755,7 +946,7 @@ public class BearingMeasurementContribution extends
 			{
 				BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
 						.next();
-				
+
 				// check if it's on or after the supplied date
 				if (!measurement.getDate().before(date))
 				{
@@ -769,7 +960,10 @@ public class BearingMeasurementContribution extends
 				Sensor sensor, double rms)
 		{
 			String name = "Tgt-" + ctr++;
-			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart) + " - " + new Date(tEnd), null);
+			
+//			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart)
+//					+ " - " + new Date(tEnd), null);
+						
 			StraightLegForecastContribution slf = new CompositeStraightLegForecastContribution();
 			slf.setStartDate(new Date(tStart));
 			slf.setAutoGenBy(_genName);
@@ -777,14 +971,14 @@ public class BearingMeasurementContribution extends
 			slf.setColor(colorAt(slf.getStartDate()));
 			slf.setActive(true);
 			slf.setName(name);
-			if(_contributions != null)
+			if (_contributions != null)
 			{
 				_contributions.addContribution(slf);
 			}
-			slices .add(slf);
+			slices.add(slf);
 		}
 	}
-	
+
 	public void addState(final HostState newState)
 	{
 		// check we have our states
@@ -794,4 +988,18 @@ public class BearingMeasurementContribution extends
 		// and store this new one
 		states.add(newState);
 	}
+
+	public static class AssumptionsTest extends TestCase
+	{
+		public void testOLS()
+		{
+			double[][] data = { { 0.5, 3 }, { 1.5, 2.5 }, { 3, 1 }, { 3.5, 0.5 } };
+			double[] res = Regression.getOLSRegression(data);
+			double gradient = res[1];
+			double intercept = res[0];
+			assertEquals("correctly identified gradient", -0.8, gradient, 0.1);
+			assertEquals("correctly identified intercept", 3.5, intercept, 0.1);
+		}
+	}
+
 }
