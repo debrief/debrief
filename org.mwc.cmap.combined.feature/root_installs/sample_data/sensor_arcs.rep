@@ -45,7 +45,7 @@
 ;SENSORARC 951212 055000 951212 060000 NELSON @@ 0 360 700 1200 CZ_Ring
 ;;
 ;; sensor coverage with null finish - visible permanently from start time
-;SENSORARC 951212 080000 NULL COLLINGWOOD @@ -135 -45 0 1000 45 135 0 1000 "Beams null finish"
+;SENSORARC 951212 080000 NULL COLLINGWOOD @@ -135 -45 0 1000 -20 20 0 1000 45 135 0 1000 160 -160 0 1000  "Cross beams null finish"
 ;; sensor coverage with null start - visible permanently until end time
 ;SENSORARC NULL 951212 070000 COLLINGWOOD @@ -135 -45 1100 2000 45 135 1100 2000 "Beams null start"
 ;; sensor coverage with null times - visible permanently 
