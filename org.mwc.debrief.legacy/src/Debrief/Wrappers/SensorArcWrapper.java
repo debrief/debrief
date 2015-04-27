@@ -209,7 +209,7 @@ public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable
 
 	public final String toString()
 	{
-		return "SensorArc:" + getName() + " (" + _myContacts.size() + " items)";
+		return "Coverage Arc:" + getName() + " (" + _myContacts.size() + " items)";
 	}
 	
 	/**

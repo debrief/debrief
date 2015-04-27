@@ -210,7 +210,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	public static final String SENSORS_LAYER_NAME = "Sensors";
 	
-	public static final String SENSORARCS_LAYER_NAME = "Sensor Arcs";
+	public static final String SENSORARCS_LAYER_NAME = "Coverage Arcs";
 
 	/**
 	 * keep track of versions - version id
