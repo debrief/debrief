@@ -806,6 +806,8 @@ public final class SensorArcContactWrapper extends
 						prop("LabelVisible",
 								"whether the label for this contact is visible", FORMAT),
 						prop("Color", "the color for this sensor contact", FORMAT),
+						prop("startDTG", "the start time this entry was recorded", FORMAT),
+						prop("endDTG", "the end time this entry was recorded", FORMAT),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
 						longProp("PutLabelAt",
@@ -841,6 +843,8 @@ public final class SensorArcContactWrapper extends
 						prop("LabelVisible",
 								"whether the label for this contact is visible", FORMAT),
 						prop("Color", "the color for this sensor contact", FORMAT),
+						prop("startDTG", "the start time this entry was recorded", FORMAT),
+						prop("endDTG", "the end time this entry was recorded", FORMAT),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
 						longProp("PutLabelAt",
@@ -926,9 +930,19 @@ public final class SensorArcContactWrapper extends
 		return _startDTG;
 	}
 	
+	public void setStartDTG(HiResDate date)
+	{
+		_startDTG = date;
+	}
+	
 	public HiResDate getStartDTG()
 	{
 		return _startDTG;
+	}
+	
+	public void setEndDTG(HiResDate date)
+	{
+		_endDTG = date;
 	}
 	
 	public HiResDate getEndDTG()
