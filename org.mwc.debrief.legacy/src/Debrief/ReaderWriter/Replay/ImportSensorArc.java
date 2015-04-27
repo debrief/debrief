@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import Debrief.Wrappers.SensorArcContactWrapper;
 import Debrief.Wrappers.SensorArcValue;
-import Debrief.Wrappers.SensorWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -158,10 +157,77 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
    * @param theWrapper the thing we are going to export
    * @return the shape in String form
    */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
     // result value
-    final String line = ";; Export of sensor data not implemented";
-    return line;
+  	// ;SENSORARC 951212 062800 951212 063000 NELSON @@ -75 35 0 1000 "fwd dynamic"
+  	
+  	SensorArcContactWrapper sacw = (SensorArcContactWrapper) theWrapper;
+  	StringBuilder builder = new StringBuilder();
+    builder.append("\n");
+    builder.append(_myType);
+    builder.append(" ");
+    if (sacw.getDTG() == null)
+    {
+    	builder.append("NULL");
+    }
+    else
+    {
+    	builder.append(MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(sacw.getStartDTG()));
+    }
+    builder.append(" ");
+    if (sacw.getEndDTG() == null)
+    {
+    	builder.append("NULL");
+    }
+    else
+    {
+    	builder.append(MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(sacw.getEndDTG()));
+    }
+    builder.append(" ");
+    String trackName = sacw.getTrackName();
+    if (trackName.indexOf(" ") > -1)
+    {
+    	builder.append("\"");
+    	builder.append(trackName);
+    	builder.append("\"");
+    }
+    else 
+    {
+    	builder.append(trackName);
+    }
+    builder.append(" ");
+    // symbology
+    builder.append(ImportReplay.replaySymbolFor(sacw.getColor(), null));
+    // FIXME - issue #1186 - Additional symbology codes    
+    // builder.append(ImportReplay.replaySymbolForLineStyle(sacw.getLineStyle()));
+    
+    builder.append(" ");
+    for (SensorArcValue value:sacw.getValues())
+    {
+    	builder.append(value.left);
+    	builder.append(" ");
+    	builder.append(value.right);
+    	builder.append(" ");
+    	builder.append(value.inner);
+    	builder.append(" ");
+    	builder.append(value.outer);
+    	builder.append(" ");
+    }
+		
+    String name = sacw.getSensorName();
+    if (name.indexOf(" ") > -1)
+    {
+    	builder.append("\"");
+    	builder.append(name);
+    	builder.append("\"");
+    }
+    else 
+    {
+    	builder.append(name);
+    }
+    builder.append(" ");
+    
+    return builder.toString();
 
   }
 
@@ -174,7 +240,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
   public final boolean canExportThis(final Object val) {
     boolean res = false;
 
-    if (val instanceof SensorWrapper) {
+    if (val instanceof SensorArcContactWrapper) {
       res = true;
     }
 

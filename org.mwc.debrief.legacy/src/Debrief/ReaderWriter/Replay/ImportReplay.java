@@ -1239,6 +1239,31 @@ public class ImportReplay extends PlainImporterBase
 		_importedSensorArcs = new Vector<SensorArcWrapper>();
 	}
 
+	static public String replaySymbolForLineStyle(final int style)
+	{
+		switch (style)
+		{
+		case MWC.GUI.CanvasType.DOTTED:
+			return "A";
+			
+		case MWC.GUI.CanvasType.DOT_DASH:
+			return "B";
+			
+		case MWC.GUI.CanvasType.SHORT_DASHES:
+			return "C";
+			
+		case MWC.GUI.CanvasType.LONG_DASHES:
+			return "D";
+			
+		case MWC.GUI.CanvasType.UNCONNECTED:
+			return "E";
+
+		default:
+			break;
+		}
+		return "@";
+	}
+	
 	static public int replayLineStyleFor(final String theSym)
 	{
 		int res = 0;

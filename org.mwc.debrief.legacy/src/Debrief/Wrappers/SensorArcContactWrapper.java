@@ -63,7 +63,7 @@ public final class SensorArcContactWrapper extends
 	//private boolean _isBeam;
 	
 	private List<SensorArcValue> _values = new ArrayList<SensorArcValue>();
-	
+
 	/**
 	 * origin of the target, or null to read origin from host vessel
 	 */
@@ -923,5 +923,20 @@ public final class SensorArcContactWrapper extends
 	public HiResDate getDTG()
 	{
 		return _startDTG;
+	}
+	
+	public HiResDate getStartDTG()
+	{
+		return _startDTG;
+	}
+	
+	public HiResDate getEndDTG()
+	{
+		return _endDTG;
+	}
+	
+	public List<SensorArcValue> getValues()
+	{
+		return _values;
 	}
 }
