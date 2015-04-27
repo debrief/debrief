@@ -51,6 +51,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
+import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Layer.ProvidesContiguousElements;
@@ -83,7 +84,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
-		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack
+		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack, 
+		MovingPlottable
 {
 
 	// //////////////////////////////////////
@@ -2823,23 +2825,23 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		} // whether the sensor layer is visible
 		
 		// now plot the sensor arcs
-		if (_mySensorArcs.getVisible())
-		{
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
-			while (iter.hasMoreElements())
-			{
-				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
-				// just check that the sensor knows we're it's parent
-				if (sw.getHost() == null)
-				{
-					sw.setHost(this);
-				}
-
-				// and do the paint
-				sw.paint(dest);
-
-			}
-		}
+//		if (_mySensorArcs.getVisible())
+//		{
+//			final Enumeration<Editable> iter = _mySensorArcs.elements();
+//			while (iter.hasMoreElements())
+//			{
+//				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+//				// just check that the sensor knows we're it's parent
+//				if (sw.getHost() == null)
+//				{
+//					sw.setHost(this);
+//				}
+//
+//				// and do the paint
+//				sw.paint(dest);
+//
+//			}
+//		}
 
 		// /////////////////////////////////////////////
 		// and now the track itself
@@ -4126,6 +4128,40 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			answer = super.compareTo(arg0);
 		
 		return answer;
+	}
+
+	@Override
+	public void paint(CanvasType dest, long time)
+	{
+		if (!getVisible())
+			return;
+
+		// set the thickness for this track
+		dest.setLineWidth(_lineWidth);
+
+		// and set the initial colour for this track
+		if (getColor() != null)
+			dest.setColor(getColor());
+
+		// we plot only the sensor arcs because they are MovingPlottable
+		if (_mySensorArcs.getVisible())
+		{
+			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			while (iter.hasMoreElements())
+			{
+				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				// just check that the sensor knows we're it's parent
+				if (sw.getHost() == null)
+				{
+					sw.setHost(this);
+				}
+
+				// and do the paint
+				sw.paint(dest, time);
+
+			}
+		}
+
 	}
 
 	

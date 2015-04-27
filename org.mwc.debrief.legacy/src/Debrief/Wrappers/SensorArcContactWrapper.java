@@ -336,6 +336,7 @@ public final class SensorArcContactWrapper extends
 	public final void paint(final MWC.GenericData.WatchableList track,
 			final MWC.GUI.CanvasType dest, final boolean keep_simple)
 	{
+		// ignore
 		if (!getVisible())
 			return;
 

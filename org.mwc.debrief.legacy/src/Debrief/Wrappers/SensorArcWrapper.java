@@ -20,22 +20,23 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
+import MWC.GUI.MovingPlottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 @SuppressWarnings("serial")
-public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable
+public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable, MovingPlottable
 {
 	/**
 	 * more optimisatons
@@ -577,5 +578,42 @@ public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void paint(CanvasType canvas, long time)
+	{
+		if (!getVisible())
+			return;
+
+		// remember the current line width
+		final float oldLineWidth = canvas.getLineWidth();
+
+		// set the line width
+		canvas.setLineWidth(getLineThickness());
+
+		// trigger our child sensor contact data items to plot themselves
+		final java.util.Iterator<Editable> it = _myContacts.iterator();
+		while (it.hasNext())
+		{
+			final Object next = it.next();
+			final SensorArcContactWrapper con = (SensorArcContactWrapper) next;
+
+			HiResDate dtg = new HiResDate(time);
+			
+			if (con.getStartDTG() != null && dtg.lessThan(con.getStartDTG()))
+				return;
+			if (con.getEndDTG() != null && dtg.greaterThan(con.getEndDTG()))
+				return;
+			// ok, plot it - and don't make it keep it simple, lets really go
+			// for it man!
+			con.paint(_myHost, canvas, false);
+		}
+
+		// and restore the line width
+		canvas.setLineWidth(oldLineWidth);
+
+		
+	}
+
 
 }
