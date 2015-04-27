@@ -31,7 +31,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
   /**
    * the type for this string
    */
-  private final String _myType = ";SENSORARC";
+  private final String _myType = ";SENSORARC:";
 
   /**
    * read in this string and return a Label
