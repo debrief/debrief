@@ -728,7 +728,7 @@ public class BearingMeasurementContribution extends
 			double rng1936m = 1770.28 * dOSA / deltaBRate;
 
 			// ok, what's the bearing rate for this range?
-			double pBoot = 1770.28 * dOSA / rng1936m;
+//			double pBoot = 1770.28 * dOSA / rng1936m;
 
 			// hmm, what are the two TSAs?
 			double l1RSA = (l1BearingRate * rng1936m) / 1770.28;
