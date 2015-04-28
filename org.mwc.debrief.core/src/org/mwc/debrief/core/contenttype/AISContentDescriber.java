@@ -18,13 +18,19 @@ public class AISContentDescriber extends TextContentDescriber
 			throws IOException
 	{
 		BufferedReader r = null;
+		int res = INVALID;
 		try
 		{
 			r = new BufferedReader(new InputStreamReader(contents));
 			String firstLine = r.readLine();
-			if (firstLine != null && firstLine.contains("!AIVDM"))
+			if ((firstLine != null) && (firstLine.contains("!AIVDM")))
 			{
-				return VALID;
+				res = VALID;
+			}
+			else
+			{
+				// just double-check that it's invalid
+				res = INVALID;
 			}
 		}
 		catch (Exception e)
@@ -43,7 +49,7 @@ public class AISContentDescriber extends TextContentDescriber
 				CorePlugin.logError(Status.ERROR, "Couldn't close file file", e);
 			}
 		}
-		return super.describe(contents, description);
+		return res;
 	}
 
 }
