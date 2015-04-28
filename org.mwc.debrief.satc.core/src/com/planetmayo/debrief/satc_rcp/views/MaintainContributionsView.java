@@ -1769,6 +1769,7 @@ public class MaintainContributionsView extends ViewPart
 			StringBuffer res = new StringBuffer();
 			final String newLine = System.getProperty("line.separator");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 			@SuppressWarnings("deprecation")
 			Date dateLead = new Date(100, 7, 7);
 
