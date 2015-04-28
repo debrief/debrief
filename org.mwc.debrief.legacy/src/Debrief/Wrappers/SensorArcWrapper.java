@@ -601,9 +601,9 @@ public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable, 
 			HiResDate dtg = new HiResDate(time);
 			
 			if (con.getStartDTG() != null && dtg.lessThan(con.getStartDTG()))
-				return;
-			if (con.getEndDTG() != null && dtg.greaterThan(con.getEndDTG()))
-				return;
+				continue;
+			if (con.getEndDTG() != null && dtg.greaterThanOrEqualTo(con.getEndDTG()))
+				continue;
 			// ok, plot it - and don't make it keep it simple, lets really go
 			// for it man!
 			con.paint(_myHost, canvas, false);
