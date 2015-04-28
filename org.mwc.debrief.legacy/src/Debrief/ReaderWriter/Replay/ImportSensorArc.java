@@ -166,7 +166,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     builder.append("\n");
     builder.append(_myType);
     builder.append(" ");
-    if (sacw.getDTG() == null)
+    if (sacw.getStartDTG() == null)
     {
     	builder.append("NULL");
     }

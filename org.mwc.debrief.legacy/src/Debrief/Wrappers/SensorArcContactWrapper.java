@@ -33,7 +33,7 @@ import MWC.GUI.Plottables;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -53,10 +53,7 @@ public final class SensorArcContactWrapper extends
 	 */
 	private String _trackName;
 
-	/**
-	 * long _DTG
-	 */
-	private HiResDate _startDTG, _endDTG;
+	private HiResDate _startDTG, _endDTG, _dtg;
 	
 	private List<SensorArcValue> _values = new ArrayList<SensorArcValue>();
 	
@@ -347,7 +344,7 @@ public final class SensorArcContactWrapper extends
 	 * @param dest
 	 *          where we're painting it to
 	 * @param keep_simple
-	 *          whether to allow a change in line style
+	 *          whether to allow a change in line styles
 	 */
 	public final void paint(final MWC.GenericData.WatchableList track,
 			final MWC.GUI.CanvasType dest, final boolean keep_simple)
@@ -373,18 +370,7 @@ public final class SensorArcContactWrapper extends
 			// FIXME
 			return;
 		}
-		HiResDate dtg = _startDTG != null ? _startDTG : _endDTG;
-		if (dtg != null)
-		{
-			final TimePeriod trackPeriod = new TimePeriod.BaseTimePeriod(
-					track.getStartDTG(), track.getEndDTG());
-			if (!trackPeriod.contains(dtg))
-			{
-				// don't bother trying to plot it, we're outside the parent period
-				return;
-			}
-		}
-
+		
 		if (!keep_simple)
 		{
 
@@ -436,13 +422,22 @@ public final class SensorArcContactWrapper extends
 		
 		Color oldColor = dest.getBackgroundColor();
 		
+		int trackCourse = 0;
+		if (_dtg != null)
+		{
+			Watchable[] wList = track.getNearestTo(_dtg);
+			if (wList.length > 0)
+			{
+				trackCourse = (int) Math.toDegrees(wList[0].getCourse());
+			}
+		}
 		for (SensorArcValue value : _values)
 		{
-			paintArc(dest, origin, _radDegs, getColor(), value.min, value.max);
+			paintArc(dest, origin, _radDegs, getColor(), value.min, value.max, trackCourse);
 			if (value.angle != 0 && value.course != 0)
 			{
 				paintArc(dest, origin, _radDegs * value.angle / value.course, oldColor,
-						value.min, value.max);
+						value.min, value.max, trackCourse);
 			}
 		}
 
@@ -451,7 +446,8 @@ public final class SensorArcContactWrapper extends
 	}
 
 	private void paintArc(final MWC.GUI.CanvasType dest,
-			final WorldLocation origin, double radDegs, Color color, int left, int right)
+			final WorldLocation origin,
+			double radDegs, Color color, int left, int right, int trackCourse)
 	{
 		WorldLocation topLeft = new WorldLocation(
 				origin.add(new WorldVector(0, radDegs, 0)));
@@ -473,7 +469,7 @@ public final class SensorArcContactWrapper extends
 		// get the width and height
 		Point br = dest.toScreen(bottomRight);
 				
-		int startAngle = - (left - 90);
+		int startAngle = - (left + trackCourse - 90);
 		int arcWidth = right - left;
 
 		int wid = br.x - tlx;
@@ -939,13 +935,13 @@ public final class SensorArcContactWrapper extends
 	@Override
 	public void setDTG(HiResDate date)
 	{
-		_startDTG = date;
+		_dtg = date;
 	}
 
 	@Override
 	public HiResDate getDTG()
 	{
-		return _startDTG;
+		return _dtg;
 	}
 	
 	public void setStartDTG(HiResDate date)

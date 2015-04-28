@@ -171,9 +171,14 @@ public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable, 
 			// maintain our time period
 			if (_timePeriod == null)
 				_timePeriod = new MWC.GenericData.TimePeriod.BaseTimePeriod(
-						scw.getDTG(), scw.getDTG());
+						scw.getStartDTG(), scw.getEndDTG());
 			else
-				_timePeriod.extend(scw.getDTG());
+			{
+				if (scw.getDTG() != null)
+				{
+					_timePeriod.extend(scw.getDTG());
+				}
+			}
 
 			// and tell the contact about us
 			scw.setSensor(this);
@@ -606,6 +611,7 @@ public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable, 
 				continue;
 			// ok, plot it - and don't make it keep it simple, lets really go
 			// for it man!
+			con.setDTG(dtg);
 			con.paint(_myHost, canvas, false);
 		}
 
