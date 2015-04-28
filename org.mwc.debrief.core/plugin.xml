@@ -26,6 +26,7 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.LogTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
         </editor>
     </extension>
 
@@ -71,6 +72,11 @@
             name="AIS track file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.AISContentDescriber"/>
         </content-type>
+        <content-type id="org.mwc.debrief.contenttype.SATCTrackFile"
+            file-extensions="txt"
+            name="SATC export file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.SATCContentDescriber"/>
+        </content-type>
     </extension>
 
     <extension-point id="DebriefPlotLoader" name="Plot Loader"
@@ -103,6 +109,10 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" name="AIS Track File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.SATCLoader" extensions="txt" name="SATC Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
