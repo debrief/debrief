@@ -73,7 +73,7 @@
             <describer class="org.mwc.debrief.core.contenttype.AISContentDescriber"/>
         </content-type>
         <content-type id="org.mwc.debrief.contenttype.SATCTrackFile"
-            file-extensions="satc"
+            file-extensions="txt"
             name="SATC export file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.SATCContentDescriber"/>
         </content-type>
@@ -108,11 +108,11 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" name="AIS Track File"        
+        <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" first_line="!AIVDM" name="AIS Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.SATCLoader" extensions="satc" name="SATC Track File"        
+        <loader class="org.mwc.debrief.core.loaders.SATCLoader" extensions="txt" first_line="//X, Y, Time"  name="SATC Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
