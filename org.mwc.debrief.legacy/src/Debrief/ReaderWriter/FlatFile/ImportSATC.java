@@ -99,8 +99,6 @@ public class ImportSATC
 			{
 				// ok, parse the position
 				String[] elements = satc_sentence.split(",");
-				double x = Double.valueOf(elements[0]);
-				double y = Double.valueOf(elements[1]);
 				String date = elements[2];
 				double courseDegs = Double.valueOf(elements[3]);
 				double speedKts = Double.valueOf(elements[4]);
