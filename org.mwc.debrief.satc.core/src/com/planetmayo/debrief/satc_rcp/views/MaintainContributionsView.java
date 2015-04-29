@@ -225,6 +225,7 @@ public class MaintainContributionsView extends ViewPart
 			java.awt.Color.darkGray, java.awt.Color.orange, java.awt.Color.pink,
 			java.awt.Color.lightGray };
 	private XYPlot legPlot;
+	private Composite legGraphComposite;
 	private PropertyChangeListener _legListener;
 	private TabItem performanceTab;
 	private TabItem legTab;
@@ -234,6 +235,7 @@ public class MaintainContributionsView extends ViewPart
 	private Action _exportBtn;
 
 	private Color _colorBlack;
+
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -611,8 +613,8 @@ public class MaintainContributionsView extends ViewPart
 
 		legTab = new TabItem(graphTabs, SWT.NONE);
 		legTab.setText("Target Legs");
-		Composite perfG1 = initLegGraph(graphTabs);
-		legTab.setControl(perfG1);
+		legGraphComposite = initLegGraph(graphTabs);
+		legTab.setControl(legGraphComposite);
 
 		performanceTab = new TabItem(graphTabs, SWT.NONE);
 		performanceTab.setText("Performance");
@@ -755,12 +757,12 @@ public class MaintainContributionsView extends ViewPart
 			}
 		});
 		
-		ChartComposite frame = new ChartComposite(parent, SWT.NONE, legChart, true);
-    frame.setDisplayToolTips(true);
-    frame.setHorizontalAxisTrace(false);
-    frame.setVerticalAxisTrace(false);
+		ChartComposite chartFrame = new ChartComposite(parent, SWT.NONE, legChart, true);
+    chartFrame.setDisplayToolTips(true);
+    chartFrame.setHorizontalAxisTrace(false);
+    chartFrame.setVerticalAxisTrace(false);
 
-		return frame;
+		return chartFrame;
 	}
 
 	/**
@@ -772,6 +774,9 @@ public class MaintainContributionsView extends ViewPart
 		if (legPlot == null)
 			return;
 
+		if((legGraphComposite == null) || (legGraphComposite.isDisposed()))
+			return;
+		
 		legPlot.setDataset(0, null);
 		legPlot.setDataset(1, null);
 		legPlot.setDataset(2, null);
@@ -1172,13 +1177,11 @@ public class MaintainContributionsView extends ViewPart
 		// just double check that we aren't already looking at this solver
 		if (solver != activeSolver)
 		{
-			// clear the charts - just in case
-			clearPerformanceGraph();
-			clearLegGraph();
 
 			// other UI mgt
 			if (activeSolver != null)
 			{
+				// cancel listeners
 				activeSolver.getContributions().removeContributionsChangedListener(
 						contributionsChangedListener);
 				activeSolver.getSolutionGenerator().removeReadyListener(
@@ -1188,6 +1191,8 @@ public class MaintainContributionsView extends ViewPart
 
 				liveRunningBinding.dispose();
 			}
+			
+			// drop the contributions
 			List<BaseContribution> contributions = new ArrayList<BaseContribution>(
 					contributionsControl.keySet());
 			for (BaseContribution contribution : contributions)
@@ -1198,6 +1203,10 @@ public class MaintainContributionsView extends ViewPart
 			{
 				contList.layout();
 			}
+
+			// clear the charts - just in case
+			clearPerformanceGraph();
+			clearLegGraph();
 
 			activeSolver = solver;
 			boolean hasSolver = activeSolver != null;
