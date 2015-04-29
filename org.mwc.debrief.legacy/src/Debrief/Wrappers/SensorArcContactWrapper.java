@@ -60,16 +60,6 @@ public final class SensorArcContactWrapper extends
 	private String _arcs;
 
 	/**
-	 * origin of the target, or null to read origin from host vessel
-	 */
-	private WorldLocation _absoluteOrigin;
-
-	/**
-	 * the calculated origin for this item, when we're dependent on a parent track
-	 */
-	private WorldLocation _calculatedOrigin;
-
-	/**
 	 * whether to show the label
 	 */
 	private boolean _showLabel = false;
@@ -210,24 +200,6 @@ public final class SensorArcContactWrapper extends
 		_radDegs = new WorldDistance(outer, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
 	}
 
-	public void clearCalculatedOrigin()
-	{
-		_calculatedOrigin = null;
-	}
-
-	/**
-	 * set the origin for this object
-	 */
-	public final void setOrigin(final WorldLocation val)
-	{
-		_absoluteOrigin = val;
-	}
-
-	public WorldLocation getOrigin()
-	{
-		return _absoluteOrigin;
-	}
-
 	/**
 	 * return the coordinates for the start of the line
 	 */
@@ -236,42 +208,37 @@ public final class SensorArcContactWrapper extends
 	{
 		MWC.GenericData.WatchableList theParent = parent;
 		if (theParent == null)
-			theParent = _mySensor.getHost();
-
-		if ((_calculatedOrigin == null))
 		{
-			if (_absoluteOrigin != null)
+			theParent = _mySensor.getHost();
+		}
+		if (theParent != null)
+		{
+			// better calculate it ourselves then
+			final TrackWrapper parentTrack = (TrackWrapper) theParent;
+
+			HiResDate dtg;
+			if (_dtg != null)
 			{
-				// note, we don't bother with the offset if we have an absolute origin
-				_calculatedOrigin = new WorldLocation(_absoluteOrigin);
-			}
+				dtg = _dtg;
+			} 
 			else
 			{
-				if (theParent != null)
+				dtg = _startDTG != null ? _startDTG : _endDTG;
+			}
+			if (dtg == null)
+			{
+				dtg = parentTrack.getStartDTG();
+			}
+			if (dtg != null)
+			{
+				Watchable[] wList = parentTrack.getNearestTo(_dtg);
+				if (wList.length > 0)
 				{
-
-					// better calculate it ourselves then
-					final TrackWrapper parentTrack = (TrackWrapper) theParent;
-
-					// get the origin
-					HiResDate dtg = _startDTG != null ? _startDTG : _endDTG;
-					if (dtg == null)
-					{
-						dtg = parentTrack.getStartDTG();
-					}
-					if (dtg != null)
-					{
-						final FixWrapper backtrack = parentTrack.getBacktraceTo(dtg,
-								_mySensor.getSensorOffset(), _mySensor.getWormInHole());
-						if (backtrack != null)
-							_calculatedOrigin = backtrack.getLocation();
-					}
+					return wList[0].getLocation();
 				}
 			}
-
 		}
-
-		return _calculatedOrigin;
+		return null;
 	}
 
 	/**

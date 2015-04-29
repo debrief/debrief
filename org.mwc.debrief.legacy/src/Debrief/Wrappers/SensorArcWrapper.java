@@ -428,8 +428,7 @@ public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable, 
 		while (it.hasNext())
 		{
 			final SensorArcContactWrapper fw = (SensorArcContactWrapper) it.next();
-			fw.clearCalculatedOrigin();
-
+			
 			// and tell it we're the boss
 			fw.setSensor(this);
 		}
