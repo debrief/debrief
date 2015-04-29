@@ -36,6 +36,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 	private static final String SHOW_COURSE = "SHOW_COURSE";
 	private Action showCourse;
 	private Action flipCourse;
+	protected Action _5degResize;
 
 	@Override
 	protected void makeActions()
@@ -75,6 +76,34 @@ public class BearingResidualsView extends BaseStackedDotsView
 		showCourse.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/ShowCourse.png"));
 
+		_5degResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+				final boolean val = _5degResize.isChecked();
+				if (_showDotPlot.isChecked())
+				{
+					if(val)
+					{
+					_dotPlot.getRangeAxis().setAutoRange(false);
+					_dotPlot.getRangeAxis().setRange(-5, 5);
+					}
+					else
+					{
+						_dotPlot.getRangeAxis().setAutoRange(true);
+					}
+				}
+			}
+		};
+		_5degResize.setChecked(true);
+		_5degResize.setToolTipText("Fix bearing range to +/- 5 degs");
+		_5degResize.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/24/Binocular.png"));
+		
+		
+		
 	}
 
 	@Override
@@ -82,6 +111,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 	{
 		toolBarManager.add(showCourse);
 		toolBarManager.add(flipCourse);
+		toolBarManager.add(_5degResize);
 		super.fillLocalToolBar(toolBarManager);
 
 	}
@@ -160,13 +190,4 @@ public class BearingResidualsView extends BaseStackedDotsView
 
 		memento.putBoolean(SHOW_COURSE, showCourse.isChecked());
 	}
-
-	@Override
-	protected void optimise()
-	{
-		// TODO verify if we can ditch this method
-		
-
-	}
-
 }

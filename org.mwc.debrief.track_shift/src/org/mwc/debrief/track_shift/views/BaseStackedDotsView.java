@@ -125,12 +125,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	protected TrackShiftListener _myShiftListener;
 
-	/**
+	/** 
 	 * buttons for which plots to show
 	 * 
 	 */
 	protected Action _showLinePlot;
-	private Action _showDotPlot;
+	Action _showDotPlot;
 
 	/**
 	 * flag indicating whether we should only show stacked dots for visible fixes
@@ -207,12 +207,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	abstract protected void updateData(boolean updateDoublets);
 
-	/**
-	 * do some wonder magic on the plot
-	 * 
-	 */
-	abstract protected void optimise();
-
 	private void contributeToActionBars()
 	{
 		final IActionBars bars = getViewSite().getActionBars();
@@ -223,8 +217,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	protected void fillLocalToolBar(final IToolBarManager toolBarManager)
 	{
 		// fit to window
-		toolBarManager.add(_onlyVisible);
 		toolBarManager.add(_autoResize);
+		toolBarManager.add(_onlyVisible);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
 //		toolBarManager.add(_magicBtn);
@@ -571,7 +565,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_autoResize.setChecked(true);
 		_autoResize.setToolTipText("Keep plot sized to show all data");
 		_autoResize.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/fit_to_size.png"));
+				.getImageDescriptor("icons/24/fit_to_win.png"));
+		
+	
 
 		_showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
 		{
@@ -658,124 +654,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
 		_onlyVisible.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/reveal.png"));
-
-		// now the course action
-//		_magicBtn = new Action("Attempt to auto-stack dots (only for Manual TMA)", IAction.AS_PUSH_BUTTON)
-//		{
-//			@Override
-//			public void run()
-//			{
-//				super.run();
-//				doMagic();
-//			}
-//		};
-//		_magicBtn.setImageDescriptor(Activator
-//				.getImageDescriptor("icons/magic_hat.png"));
-
 	}
-
-//	protected void doMagic()
-//	{
-//		// right, find the layer manager
-//		final IViewPart mgr = this.getViewSite().getPage()
-//				.findView(CorePlugin.LAYER_MANAGER);
-//		final ISelectionProvider selProvider = (ISelectionProvider) mgr
-//				.getAdapter(ISelectionProvider.class);
-//		final IStructuredSelection sel = (IStructuredSelection) selProvider
-//				.getSelection();
-//
-//		// check that the secondary track is a TrackWrapper
-//		ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
-//		if (!(secondary instanceof TrackWrapper))
-//		{
-//			CorePlugin.logError(Status.WARNING,
-//					"We can't 'Do Magic' for a non-standard TMA solution", null);
-//			return;
-//		}
-//
-//		TrackWrapper secondaryTrack = (TrackWrapper) secondary;
-//
-//		// ok, see if we've got something of value
-//		final Vector<DraggableItem> dragees = new Vector<DraggableItem>();
-//		final String troubles = OptimiseTest.getDraggables(dragees, sel,
-//				secondaryTrack);
-//
-//		if (troubles != null)
-//		{
-//			CorePlugin.showMessage("Optimise solution", troubles);
-//			return;
-//		}
-//
-//		// cool sort out the list of sensor locations for these tracks
-//		final TreeSet<Doublet> doublets = _myHelper.getDoublets(
-//				_onlyVisible.isChecked(), true, false);
-//
-//		// Create instance of Minimisation
-//		final Minimisation min = new Minimisation();
-//		final MinimisationFunction funct = new TryOffsetFunction(doublets);
-//
-//		// initial estimates
-//		final double[] start =
-//		{ 180, 2000 };
-//
-//		// initial step sizes
-//		final double[] step =
-//		{ 90, 400 };
-//
-//		// convergence tolerance
-//		final double ftol = 1e-10;
-//
-//		// set the min/max bearing
-//		min.addConstraint(0, -1, 0d);
-//		min.addConstraint(0, 1, 360d);
-//
-//		// set the min/max ranges
-//		min.addConstraint(1, -1, 0d);
-//		min.addConstraint(1, 1, 6000d);
-//
-//		// Nelder and Mead minimisation procedure
-//		min.nelderMead(funct, start, step, ftol, 10000);
-//
-//		// get the results out
-//		final double[] param = min.getParamValues();
-//
-//		final double bearing = param[0];
-//		final double range = param[1];
-//
-//		// produce a world-vector
-//		final WorldVector vec = new WorldVector(
-//				MWC.Algorithms.Conversions.Degs2Rads(bearing),
-//				MWC.Algorithms.Conversions.m2Degs(range), 0);
-//
-//		// get the secondary track
-//		final TrackWrapper secTrack = secondaryTrack;
-//
-//		final DragOperation shiftIt = new DragOperation()
-//		{
-//			public void apply(final DraggableItem item, final WorldVector offset)
-//			{
-//				item.shift(offset);
-//			}
-//		};
-//
-//		// put it into our action
-//		final DragFeatureAction dta = new DragFeatureAction(vec, secTrack,
-//				_ourLayersSubject, secTrack, shiftIt);
-//
-//		// and wrap it
-//		final DebriefActionWrapper daw = new DebriefActionWrapper(dta,
-//				_ourLayersSubject, secTrack);
-//
-//		// and add it to the clipboard
-//		CorePlugin.run(daw);
-//
-//		// cool, is it a track that we've just dragged?
-//		if (secTrack instanceof TrackWrapper)
-//		{
-//			updateStackedDots(false);
-//		}
-//
-//	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -808,10 +687,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	void updateStackedDots(final boolean updateDoublets)
 	{
-
-		// note, we can only do our magic if the secondary track is amanual TMA
-//		_magicBtn.setEnabled(_myHelper.getSecondaryTrack() instanceof TrackWrapper);
-
 		// update the current datasets
 		updateData(updateDoublets);
 
