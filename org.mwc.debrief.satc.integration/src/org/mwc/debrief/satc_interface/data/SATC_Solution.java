@@ -612,6 +612,7 @@ public class SATC_Solution extends BaseLayer implements
 
 				// the output track
 				final TrackWrapper newT = new TrackWrapper();
+				newT.setColor(Color.red);
 				newT.setName(getName() + "_" + i);
 
 				// helper objects, so we can create dynamic infills.
