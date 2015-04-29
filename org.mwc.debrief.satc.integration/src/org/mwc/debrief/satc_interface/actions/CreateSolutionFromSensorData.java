@@ -402,21 +402,25 @@ public class CreateSolutionFromSensorData implements
 				if (theOrigin == null)
 					theOrigin = scw.getCalculatedOrigin(scw.getSensor().getHost());
 
-				loc = conversions.toPoint(theOrigin);
+				if (theOrigin != null)
+				{
 
-				double brg = Math.toRadians(scw.getBearing());
-				Date date = scw.getDTG().getDate();
-				Double theRange = null;
-				if (scw.getRange() != null)
-					theRange = scw.getRange().getValueIn(WorldDistance.METRES);
+					loc = conversions.toPoint(theOrigin);
 
-				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
+					double brg = Math.toRadians(scw.getBearing());
+					Date date = scw.getDTG().getDate();
+					Double theRange = null;
+					if (scw.getRange() != null)
+						theRange = scw.getRange().getValueIn(WorldDistance.METRES);
 
-				// give it the respective color
-				thisM.setColor(scw.getColor());
+					final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
 
-				// ok, store it.
-				bmc.addMeasurement(thisM);
+					// give it the respective color
+					thisM.setColor(scw.getColor());
+
+					// ok, store it.
+					bmc.addMeasurement(thisM);
+				}
 			}
 
 			// we also want to try to store the ownship state data (course/speed) - to
@@ -434,7 +438,8 @@ public class CreateSolutionFromSensorData implements
 				double courseDegs = editable.getCourseDegs();
 				double speedKts = editable.getSpeed();
 				bmc.addState(new BearingMeasurementContribution.HostState(time,
-						courseDegs, speedKts, editable.getLocation().getLat(), editable.getLocation().getLong()));
+						courseDegs, speedKts, editable.getLocation().getLat(), editable
+								.getLocation().getLong()));
 			}
 
 			return bmc;
@@ -809,14 +814,15 @@ public class CreateSolutionFromSensorData implements
 			// also, check that the maintain contributions window is open - the user
 			// is bound to be interested
 			CorePlugin.openView(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
-			
+
 			// tell anybody that's interested that we have a current solver
-			ISolversManager solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, false);
-			if(solversManager != null)
+			ISolversManager solversManager = SATC_Activator.getDefault().getService(
+					ISolversManager.class, false);
+			if (solversManager != null)
 			{
 				solversManager.setActiveSolver(_targetSolution.getSolver());
 			}
-			
+
 			return Status.OK_STATUS;
 		}
 
