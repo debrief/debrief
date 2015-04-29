@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.mwc.debrief.core">
+<schema targetNamespace="org.mwc.debrief.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.mwc.debrief.core" id="DebriefPlotLoader" name="Plot Loader"/>
@@ -11,12 +11,11 @@
       </documentation>
    </annotation>
 
- <element name="extension">
+   <element name="extension">
       <complexType>
          <sequence>
             <element ref="loader"/>
          </sequence>
-
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -83,8 +82,24 @@
                </appInfo>
             </annotation>
          </attribute>
+         <attribute name="first_line" type="string">
+            <annotation>
+               <documentation>
+                  String that the first line must begin with
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
 
    <annotation>
       <appInfo>
@@ -106,15 +121,6 @@
 
    <annotation>
       <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         [Enter API information here.]
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
@@ -130,6 +136,5 @@
          MWC, 2005
       </documentation>
    </annotation>
-
 
 </schema>
