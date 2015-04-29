@@ -25,6 +25,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.RowLayout;
@@ -209,7 +211,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			holder.setLayout(new RowLayout(SWT.HORIZONTAL));
 			final Label selection = new Label(holder, SWT.NONE);
 			selection.setText(_message);
-			final Combo theOps = new Combo(holder, SWT.NONE);
+			final Combo theOps = new Combo(holder, SWT.SIMPLE);
 			theOps.addSelectionListener(new SelectionAdapter()
 			{
 				public void widgetSelected(final SelectionEvent e)
@@ -243,6 +245,39 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				_resultIndex = selItem;
 			}
 
+			theOps.addKeyListener(new KeyAdapter(){
+			   private long sequenceTimeOut = 0;
+			   private String keySequence;
+			 
+			   @Override
+			   public void keyPressed(KeyEvent keyEvent){
+			      if (!Character.isLetterOrDigit(keyEvent.character)){
+			         return;
+			      }
+			      long now = System.currentTimeMillis();
+			      if (now > sequenceTimeOut){
+			         keySequence = "";
+			      }
+			      keySequence += Character.toLowerCase(keyEvent.character);
+			      sequenceTimeOut = now + 1000;
+			      int index = 0;
+			      for (String item : _titles){
+			         if (item.toLowerCase().startsWith(keySequence)){
+			            // Prevent the ordinary search
+			            keyEvent.doit = false;
+			            theOps.select(index);
+			            
+			            _result = _choices[index];
+			            _resultIndex = index;
+			            
+			            return;
+			         }
+			         index++;
+			      }
+			      keySequence = "";
+			   }
+			});
+			
 			return holder;
 		}
 	}
