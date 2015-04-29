@@ -79,9 +79,7 @@ import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContri
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.vividsolutions.jts.geom.Point;
 
 public class CreateSolutionFromSensorData implements
 		RightClickContextItemGenerator
