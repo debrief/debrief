@@ -14,12 +14,17 @@
  */
 package org.mwc.debrief.core.interfaces;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
@@ -40,7 +45,9 @@ public interface IPlotLoader extends INamedItem
 	 * @param inputStream
 	 *          the file source
 	 * @param fileName
-	 *          TODO
+	 *          file suffix that must match
+	 * @param firstLine
+	 *           String that the first line of text must start with
 	 */
 	public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
 			final String fileName);
@@ -63,20 +70,22 @@ public interface IPlotLoader extends INamedItem
 	 * @param icon
 	 * @param fileTypes
 	 */
-	public void init(String name, String icon, String fileTypes);
+	public void init(String name, String icon, String fileTypes, String firstLine);
 
 	abstract public static class BaseLoader implements IPlotLoader
 	{
 		protected String _myName;
 		protected String _icon;
 		protected String _fileTypes;
+		protected String _firstLine;
 
 		public void init(final String name, final String icon,
-				final String fileTypes)
+				final String fileTypes, final String firstLine)
 		{
 			_myName = name;
 			_icon = icon;
 			_fileTypes = fileTypes;
+			_firstLine = firstLine;
 		}
 
 		public final String getName()
@@ -113,6 +122,51 @@ public interface IPlotLoader extends INamedItem
 					res = true;
 				}
 			}
+			
+			// if the suffix matches, see if the first line matches
+			if(res)
+			{
+				if(_firstLine != null)
+				{
+					// ok, check the first line
+
+					BufferedReader r = null;
+					FileInputStream fis = null;
+					try
+					{
+						fis  = new FileInputStream(fileName);
+						r = new BufferedReader(new InputStreamReader(fis));
+						String firstLine = r.readLine();
+						if (firstLine != null && firstLine.contains(_firstLine))
+						{
+							res = true;
+						}
+						else
+						{
+							// just double-check that it's invalid
+							res = false;
+						}
+					}
+					catch (Exception e)
+					{
+						CorePlugin.logError(Status.ERROR, "Trouble whilst verifying first line of content", e);
+					}
+					finally
+					{
+						try
+						{
+							if (r != null)
+								r.close();
+							if(fis != null)
+								fis.close();
+						}
+						catch (IOException e)
+						{
+							CorePlugin.logError(Status.ERROR, "Couldn't close file file", e);
+						}
+					}
+				}
+			}
 
 			return res;
 		}
@@ -132,13 +186,14 @@ public interface IPlotLoader extends INamedItem
 		 * @param name
 		 * @param icon
 		 * @param fileTypes
+		 * @param firstLine 
 		 * @param regexp
 		 */
 		public DeferredPlotLoader(final IConfigurationElement configElement,
-				final String name, final String icon, final String fileTypes)
+				final String name, final String icon, final String fileTypes, String firstLine)
 		{
 			_config = configElement;
-			init(name, icon, fileTypes);
+			init(name, icon, fileTypes, firstLine);
 		}
 
 		public BaseLoader getLoader()
@@ -159,7 +214,7 @@ public interface IPlotLoader extends INamedItem
 					_myLoader = (BaseLoader) _config.createExecutableExtension("class");
 
 					// hey, stick the data in
-					_myLoader.init(_myName, _icon, _fileTypes);
+					_myLoader.init(_myName, _icon, _fileTypes, _firstLine);
 
 				}
 				catch (final CoreException e)
