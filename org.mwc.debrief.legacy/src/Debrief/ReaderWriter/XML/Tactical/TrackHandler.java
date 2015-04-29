@@ -31,6 +31,7 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.SensorArcWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -163,6 +164,19 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			}
 		}
 
+		// output any sensor arc data
+		final Enumeration<Editable> sensorArcs = track.getSensorArcs().elements();
+
+		if (sensorArcs != null)
+		{
+			while (sensorArcs.hasMoreElements())
+			{
+				final Debrief.Wrappers.SensorArcWrapper thisS = (SensorArcWrapper) sensorArcs
+						.nextElement();
+				SensorArcHandler.exportSensorArc(thisS, trk, doc);
+			}
+		}
+
 		final Enumeration<Editable> allItems = track.elements();
 		while (allItems.hasMoreElements())
 		{
@@ -238,6 +252,15 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		{
 			@Override
 			public void addSensor(final Debrief.Wrappers.SensorWrapper sensor)
+			{
+				addThis(sensor);
+			}
+		});
+		
+		addHandler(new SensorArcHandler()
+		{
+			@Override
+			public void addSensor(final Debrief.Wrappers.SensorArcWrapper sensor)
 			{
 				addThis(sensor);
 			}
