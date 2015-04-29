@@ -42,10 +42,5 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 		// hide the line for the base freq dataset
 		final DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot.getRenderer();
 		lineRend.setSeriesShapesVisible(3, false);
-
-	}
-
-	@Override
-	protected void optimise() {
 	}
 }

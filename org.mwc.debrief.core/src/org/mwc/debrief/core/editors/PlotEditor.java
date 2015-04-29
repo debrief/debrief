@@ -180,8 +180,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 	private static final String EXTENSION_TAG_EXTENSIONS_ATTRIB = "extensions";
 	
-	private static final String REGEXP_ATTRIB = "regexp";
-
+	private static final String EXTENSION_TAG_FIRST_LINE_ATTRIB = "first_line";
+	
 	private static final String EXTENSION_TAG_ICON_ATTRIB = "icon";
 
 	// private static final String EXTENSION_TAG_CLASS_ATTRIB = "class";
@@ -827,10 +827,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
 				final String fileTypes = configElement
 						.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
+				final String firstLine = configElement
+						.getAttribute(EXTENSION_TAG_FIRST_LINE_ATTRIB);
 
 				// create the instance
 				final INamedItem res = new IPlotLoader.DeferredPlotLoader(
-						configElement, theLabel, icon, fileTypes);
+						configElement, theLabel, icon, fileTypes, firstLine);
 
 				// and return it.
 				return res;

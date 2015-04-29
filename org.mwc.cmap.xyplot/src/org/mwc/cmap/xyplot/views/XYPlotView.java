@@ -426,7 +426,13 @@ public class XYPlotView extends ViewPart
 			@Override
 			public void dataReformatted(final Layers theData, final Layer changedLayer)
 			{
+				try{
 				regenerateData();
+				}
+				catch(org.eclipse.swt.SWTException se)
+				{
+					CorePlugin.logError(Status.WARNING, "Trouble redrawing XT Plot", se);
+				}
 			}
 		};
 

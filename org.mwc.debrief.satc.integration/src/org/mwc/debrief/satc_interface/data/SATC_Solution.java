@@ -98,8 +98,8 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.MathUtils;
@@ -110,11 +110,6 @@ public class SATC_Solution extends BaseLayer implements
 		NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
 		BaseLayer.ProvidesRange, ISecondaryTrack, NonColoredWatchable
 {
-
-	/** only accept a final solution if it's better than the
-	 * maximum score
-	 */
-	private static final int MAXIMUM_SCORE = 50;
 
 	/**
 	 * utility class to work through a route
@@ -612,6 +607,7 @@ public class SATC_Solution extends BaseLayer implements
 
 				// the output track
 				final TrackWrapper newT = new TrackWrapper();
+				newT.setColor(Color.red);
 				newT.setName(getName() + "_" + i);
 
 				// helper objects, so we can create dynamic infills.
