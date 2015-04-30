@@ -20,10 +20,13 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 
-@SuppressWarnings("serial")
 public class DynamicShapeWrapper extends ShapeWrapper
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String _theTrackName;
 
 	public DynamicShapeWrapper(String label, PlainShape theShape, Color theColor,

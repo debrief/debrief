@@ -40,7 +40,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-@SuppressWarnings("serial")
 public final class SensorArcContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
 		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
@@ -48,6 +47,11 @@ public final class SensorArcContactWrapper extends
 {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** utility class used to store a single sensor coverage arc
 	 * 
 	 * @author ian

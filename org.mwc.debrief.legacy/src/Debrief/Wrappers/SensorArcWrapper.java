@@ -36,9 +36,13 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
-@SuppressWarnings("serial")
 public class SensorArcWrapper extends TacticalDataWrapper implements Cloneable, MovingPlottable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * more optimisatons
 	 */
