@@ -91,15 +91,19 @@ public class AWTDemoDonuts extends JFrame {
             System.out.println("PLease create full and sector donuts first.");
         }
         Graphics2D graphics2D = (Graphics2D) graphics;
-   //     graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,    RenderingHints.VALUE_ANTIALIAS_ON);
 
         graphics2D.setPaint(Color.green);
         graphics2D.fill(sectorDonut);
-   //     graphics2D.draw(sectorDonut);
 
         graphics2D.setPaint(Color.green);
         graphics2D.fill(fullDonut);
-   //     graphics2D.draw(fullDonut);
+        
+        // @TODO:  Peco, here's a class that lets us plot an AWT shape object in SWT:
+        // http://www.java2s.com/Tutorial/Java/0280__SWT/DrawGraphics2Dstuffonaswtcomposite.htm
+        // So, we'll need to extend our CanvasType object with the fill(Shape) method, and incldue
+        // the above shape-conversion code in the SWT rendering
+        
+        
     }
 
     /**
