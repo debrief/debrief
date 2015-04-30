@@ -8959,7 +8959,59 @@ and entry type can be multi-word if surrounded by quotes (").
             </screen>
             </para>
           </sect3>
-
+          <sect3>
+            <title>Dynamic Track Annotations</title>
+            
+            <para>It is also possible to attach annotations to tracks - so that the annotation moves (and rotates) with
+              the track. These annotations can be grouped. This allows the dynamic shape itself to change 
+              dimensions during its life, but with the whole collection of shapes switched on and off as one.</para>
+            <para>
+              Here are a series of examples:
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/arcs_1.png" width="40%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/arcs_2.png" width="40%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/arcs_3.png" width="40%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </para>
+           
+            <para><indexterm>
+              <primary>Annotation Data</primary>
+              <secondary>Dynamic Track Annotations</secondary>
+            </indexterm>The format for the different types of dynamic track annotations is shown below.  Note that 
+              each line may contain a series of definitions, and that the distance units are in yards.<screen width="70">
+            <markup>
+;; format
+;SENSORARC YYMMDD HHMMSS.SSS YYMMDD HHMMSS.SSS TRACKNAME SYMBOLOGY LEFT RIGHT INNER OUTER [LEFT RIGHT INNER OUTER] LABEL
+;; (start time, end time, parent track, styling, min-max angles of the arc, inner-outer radiuses, collective label.
+;; simple example
+;SENSORARC 951212 062800 951212 063000 NELSON @@ -75 35 0 1000 "fwd dynamic"
+;; dynamic example - so donut spreads outwards in time using 3 steps
+;SENSORARC: 951212 053000 951212 054000 NELSON @A 0 360 500 1000 CZ_Ring
+;SENSORARC: 951212 054000 951212 055000 NELSON @B 0 360 600 1100 CZ_Ring
+;SENSORARC: 951212 055000 951212 060000 NELSON @C 0 360 700 1200 CZ_Ring
+            </markup>
+            </screen>
+              <note><para>A NULL can be provided instead of one or more of the times.  This will result in the dynamic
+              shape being used for part or all of the track lifetime.</para></note>
+            </para>
+          </sect3>
+          
 
           
         </sect2>
