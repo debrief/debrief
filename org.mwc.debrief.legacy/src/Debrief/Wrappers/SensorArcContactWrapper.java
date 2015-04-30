@@ -657,23 +657,6 @@ public final class SensorArcContactWrapper extends
 	}
 
 	/**
-	 * get the colour (or that of our parent, if we don't have one
-	 */
-	public final java.awt.Color getColor()
-	{
-		java.awt.Color res = super.getColor();
-
-		// has our colour been set?
-		if (res == null)
-		{
-			// no, get the colour from our parent
-			res = _mySensor.getColor();
-		}
-
-		return res;
-	}
-
-	/**
 	 * whether there is any edit information for this item this is a convenience
 	 * function to save creating the EditorType data first
 	 * 

@@ -51,13 +51,13 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
-import MWC.GUI.MovingPlottable;
-import MWC.GUI.Plottable;
-import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
+import MWC.GUI.MovingPlottable;
 import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottable;
+import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
@@ -835,13 +835,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// tell the sensor about us
 			swr.setHost(this);
 
-			// and the track name (if we're loading from REP it will already
-			// know
-			// the name, but if this data is being pasted in, it may start with
-			// a different
-			// parent track name - so override it here)
-			swr.setTrackName(this.getName());
-
 			// indicate success
 			done = true;
 
@@ -1122,7 +1115,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// is it visible?
 				if (sw.getVisible())
 				{
-					res.addAll(sw._myContacts);
+					res.addAll(sw.getData());
 				}
 			}
 		}
@@ -1540,7 +1533,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				final Enumeration<Editable> iter = _mySensorArcs.elements();
 				while (iter.hasMoreElements())
 				{
-					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+					final Plottable sw = (Plottable) iter.nextElement();
 					final WorldArea theseBounds = sw.getBounds();
 					if (theseBounds != null)
 					{
@@ -3462,16 +3455,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 			
-			if (_mySensorArcs != null)
-			{
-				for (final Enumeration<Editable> iterator = _mySensorArcs.elements(); iterator
-						.hasMoreElements();)
-				{
-					final SensorArcWrapper thisS = (SensorArcWrapper) iterator.nextElement();
-					thisS.decimate(theVal, startTime);
-				}
-			}
-
 			// now the solutions
 			if (_mySolutions != null)
 			{
@@ -4150,11 +4133,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (iter.hasMoreElements())
 			{
 				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
-				// just check that the sensor knows we're it's parent
-				if (sw.getHost() == null)
-				{
-					sw.setHost(this);
-				}
 
 				// and do the paint
 				sw.paint(dest, time);

@@ -726,12 +726,6 @@ public class ImportReplay extends PlainImporterBase
 			// then create it
 			thisSensor = new SensorArcWrapper(sensorName);
 
-			// set it's colour to the colour of the first data point
-			thisSensor.setColor(sw.getColor());
-
-			// also set it's name
-			thisSensor.setTrackName(sw.getTrackName());
-
 			theTrack.add(thisSensor);
 		}
 
@@ -745,16 +739,6 @@ public class ImportReplay extends PlainImporterBase
 			_importedSensorArcs.add(thisSensor);
 		}
 		
-		// so, we now have the wrapper. have a look to see if the colour
-		// of this data item is the same
-		// as the sensor - in which case we will erase the colour for
-		// this data item so that it always takes the colour of it's parent
-		if (sw.getColor().equals(thisSensor.getColor())) 
-		{
-			// clear the colour - so it takes it form it's parent
-			sw.setColor(null);
-		}
-
 		// now add the new contact to this sensor
 		thisSensor.add(sw);
 

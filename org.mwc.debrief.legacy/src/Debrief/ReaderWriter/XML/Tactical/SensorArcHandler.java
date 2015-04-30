@@ -19,26 +19,16 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.SensorArcContactWrapper;
 import MWC.GUI.Editable;
-import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 abstract public class SensorArcHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	Debrief.Wrappers.SensorArcWrapper _mySensor;
-	private static final String WORM_IN_HOLE = "WormInHole";
+	Debrief.Wrappers.SensorArcWrapper _sensorArcs;
 			
 	public SensorArcHandler()
 	{
 		// inform our parent what type of class we are
 		super("sensorarc");
-
-		addHandler(new ColourHandler()
-		{
-			public void setColour(final java.awt.Color res)
-			{
-				_mySensor.setColor(res);
-			}
-		});
 
 		addHandler(new SensorArcContactHandler()
 		{
@@ -48,7 +38,7 @@ abstract public class SensorArcHandler extends
 
 				// and set the sensor for that contact
 				final SensorArcContactWrapper sc = (SensorArcContactWrapper) contact;
-				sc.setSensor(_mySensor);
+				sc.setSensor(_sensorArcs);
 
 			}
 		});
@@ -56,47 +46,29 @@ abstract public class SensorArcHandler extends
 		{
 			public void setValue(final String name, final String val)
 			{
-				_mySensor.setName(fromXML(val));
-			}
-		});
-		addAttributeHandler(new HandleAttribute("TrackName")
-		{
-			public void setValue(final String name, final String val)
-			{
-				_mySensor.setTrackName(val);
+				_sensorArcs.setName(fromXML(val));
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute("Visible")
 		{
 			public void setValue(final String name, final boolean val)
 			{
-				_mySensor.setVisible(val);
+				_sensorArcs.setVisible(val);
 			}
 		});
 		addAttributeHandler(new HandleIntegerAttribute("LineThickness")
 		{
 			public void setValue(final String name, final int val)
 			{
-				_mySensor.setLineThickness(val);
+				_sensorArcs.setLineThickness(val);
 			}
 		});
-
-		addAttributeHandler(new HandleBooleanAttribute(WORM_IN_HOLE)
-		{
-
-			@Override
-			public void setValue(final String name, final boolean value)
-			{
-				_mySensor.setWormInHole(value);
-			}
-		});
-
 	}
 
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		_mySensor = new Debrief.Wrappers.SensorArcWrapper("");
+		_sensorArcs = new Debrief.Wrappers.SensorArcWrapper("");
 
 		super.handleOurselves(name, attributes);
 	}
@@ -104,16 +76,16 @@ abstract public class SensorArcHandler extends
 	void addThisContact(final MWC.GUI.Plottable val)
 	{
 		// store in our list
-		_mySensor.add(val);
+		_sensorArcs.add(val);
 	}
 
 	public final void elementClosed()
 	{
 		// our layer is complete, add it to the parent!
-		addSensor(_mySensor);
+		addSensor(_sensorArcs);
 
 
-		_mySensor = null;
+		_sensorArcs = null;
 	}
 
 	abstract public void addSensor(Debrief.Wrappers.SensorArcWrapper data);
@@ -125,16 +97,9 @@ abstract public class SensorArcHandler extends
 		final Element trk = doc.createElement("sensorarc");
 		trk.setAttribute("Name", toXML(sensor.getName()));
 		trk.setAttribute("Visible", writeThis(sensor.getVisible()));
-		trk.setAttribute("TrackName", sensor.getTrackName());
+		trk.setAttribute("TrackName", sensor.getHost().getName());
 		trk.setAttribute("LineThickness", writeThis(sensor.getLineThickness()));
-		ColourHandler.exportColour(sensor.getColor(), trk, doc);
 
-		// and the worm in the hole indicator?
-		final Boolean wormy = sensor.getWormInHole();
-		if (wormy != null)
-		{
-			trk.setAttribute(WORM_IN_HOLE, writeThis(wormy));
-		}
 		
 		// now the points
 		final java.util.Enumeration<Editable> iter = sensor.elements();
