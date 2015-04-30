@@ -825,9 +825,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		}
 		// is this a sensor arc?
-		else if (point instanceof SensorArcWrapper)
+		else if (point instanceof DynamicTrackShapeSetWrapper)
 		{
-			final SensorArcWrapper swr = (SensorArcWrapper) point;
+			final DynamicTrackShapeSetWrapper swr = (DynamicTrackShapeSetWrapper) point;
 
 			// add to our list
 			_mySensorArcs.add(swr);
@@ -1111,7 +1111,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<Editable> iter = _mySensorArcs.elements();
 			while (iter.hasMoreElements())
 			{
-				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
 				// is it visible?
 				if (sw.getVisible())
 				{
@@ -1376,7 +1376,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<Editable> iter = _mySensorArcs.elements();
 			while (iter.hasMoreElements())
 			{
-				final SensorArcWrapper nextS = (SensorArcWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper nextS = (DynamicTrackShapeSetWrapper) iter.nextElement();
 				nextS.setHost(this);
 			}
 		}
@@ -3016,13 +3016,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				sw.removeElement(point);
 			}
 		}
-		else if (point instanceof SensorArcContactWrapper)
+		else if (point instanceof DynamicTrackShapeWrapper)
 		{
 			// ok, cycle through our sensors, try to remove this contact...
 			final Enumeration<Editable> iter = _mySensorArcs.elements();
 			while (iter.hasMoreElements())
 			{
-				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
 				// try to remove it from this one...
 				sw.removeElement(point);
 			}
@@ -4008,7 +4008,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<Editable> iter = _mySensorArcs.elements();
 			while (iter.hasMoreElements())
 			{
-				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
 				sw.trimTo(period);
 			}
 		}
@@ -4132,7 +4132,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<Editable> iter = _mySensorArcs.elements();
 			while (iter.hasMoreElements())
 			{
-				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
 
 				// and do the paint
 				sw.paint(dest, time);

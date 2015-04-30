@@ -273,8 +273,8 @@ import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
-import Debrief.Wrappers.SensorArcContactWrapper;
-import Debrief.Wrappers.SensorArcWrapper;
+import Debrief.Wrappers.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
@@ -354,7 +354,7 @@ public class ImportReplay extends PlainImporterBase
 	 * 
 	 */
 	
-	private Vector<SensorArcWrapper> _importedSensorArcs;
+	private Vector<DynamicTrackShapeSetWrapper> _importedSensorArcs;
 
 	/**
 	 * the property name we use for importing tracks (DR/ATG)
@@ -677,11 +677,11 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 	
-	private HiResDate processSensorArcContactWrapper(final SensorArcContactWrapper sw)
+	private HiResDate processSensorArcContactWrapper(final DynamicTrackShapeWrapper sw)
 	{	
 		final HiResDate res = null;
 
-		SensorArcWrapper thisSensor = null;
+		DynamicTrackShapeSetWrapper thisSensor = null;
 
 		// do we have a sensor capable of handling this contact?
 		final String sensorName = sw.getSensorName();
@@ -707,7 +707,7 @@ public class ImportReplay extends PlainImporterBase
 		{
 			while (iter.hasMoreElements()) 
 			{
-				final SensorArcWrapper sensorw = (SensorArcWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sensorw = (DynamicTrackShapeSetWrapper) iter.nextElement();
 
 				// is this our sensor?
 				if (sensorw.getName().equals(sensorName)) 
@@ -724,7 +724,7 @@ public class ImportReplay extends PlainImporterBase
 		if (thisSensor == null) 
 		{
 			// then create it
-			thisSensor = new SensorArcWrapper(sensorName);
+			thisSensor = new DynamicTrackShapeSetWrapper(sensorName);
 
 			theTrack.add(thisSensor);
 		}
@@ -887,9 +887,9 @@ public class ImportReplay extends PlainImporterBase
 		{
 			res = processSensorContactWrapper((SensorContactWrapper) thisObject);
 		}
-		else if (thisObject instanceof SensorArcContactWrapper)
+		else if (thisObject instanceof DynamicTrackShapeWrapper)
 		{
-			res = processSensorArcContactWrapper((SensorArcContactWrapper) thisObject);
+			res = processSensorArcContactWrapper((DynamicTrackShapeWrapper) thisObject);
 		}
 		else if (thisObject instanceof TMAContactWrapper)
 		{
@@ -1220,7 +1220,7 @@ public class ImportReplay extends PlainImporterBase
 	
 	public void clearSensorArcList()
 	{
-		_importedSensorArcs = new Vector<SensorArcWrapper>();
+		_importedSensorArcs = new Vector<DynamicTrackShapeSetWrapper>();
 	}
 
 	static public String replaySymbolForLineStyle(final int style)

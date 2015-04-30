@@ -17,13 +17,13 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.SensorArcContactWrapper;
+import Debrief.Wrappers.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 
 abstract public class SensorArcHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	Debrief.Wrappers.SensorArcWrapper _sensorArcs;
+	Debrief.Wrappers.DynamicTrackShapeSetWrapper _sensorArcs;
 			
 	public SensorArcHandler()
 	{
@@ -37,7 +37,7 @@ abstract public class SensorArcHandler extends
 				addThisContact(contact);
 
 				// and set the sensor for that contact
-				final SensorArcContactWrapper sc = (SensorArcContactWrapper) contact;
+				final DynamicTrackShapeWrapper sc = (DynamicTrackShapeWrapper) contact;
 				sc.setSensor(_sensorArcs);
 
 			}
@@ -68,7 +68,7 @@ abstract public class SensorArcHandler extends
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		_sensorArcs = new Debrief.Wrappers.SensorArcWrapper("");
+		_sensorArcs = new Debrief.Wrappers.DynamicTrackShapeSetWrapper("");
 
 		super.handleOurselves(name, attributes);
 	}
@@ -88,9 +88,9 @@ abstract public class SensorArcHandler extends
 		_sensorArcs = null;
 	}
 
-	abstract public void addSensor(Debrief.Wrappers.SensorArcWrapper data);
+	abstract public void addSensor(Debrief.Wrappers.DynamicTrackShapeSetWrapper data);
 
-	public static void exportSensorArc(final Debrief.Wrappers.SensorArcWrapper sensor,
+	public static void exportSensorArc(final Debrief.Wrappers.DynamicTrackShapeSetWrapper sensor,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
@@ -106,9 +106,9 @@ abstract public class SensorArcHandler extends
 		while (iter.hasMoreElements())
 		{
 			final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
-			if (pl instanceof Debrief.Wrappers.SensorArcContactWrapper)
+			if (pl instanceof Debrief.Wrappers.DynamicTrackShapeWrapper)
 			{
-				final Debrief.Wrappers.SensorArcContactWrapper fw = (Debrief.Wrappers.SensorArcContactWrapper) pl;
+				final Debrief.Wrappers.DynamicTrackShapeWrapper fw = (Debrief.Wrappers.DynamicTrackShapeWrapper) pl;
 				SensorArcContactHandler.exportFix(fw, trk, doc);
 			}
 

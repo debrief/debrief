@@ -37,7 +37,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public final class SensorArcContactWrapper extends PlainWrapper implements
+public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 		Editable.DoNotHighlightMe, ExcludeFromRightClickEdit
 {
 
@@ -54,12 +54,20 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 	 */
 	public static class SensorArcValue
 	{
-		public int minYds, maxYds, minAngleDegs, maxAngleDegs;
+		final public int minYds, maxYds, minAngleDegs, maxAngleDegs;
+		
+		public SensorArcValue(int MinAngleDegs, int MaxAngleDegs, int minYds, int maxYds)
+		{
+			this.minAngleDegs = MinAngleDegs;
+			this.maxAngleDegs = MaxAngleDegs;
+			this.minYds = minYds;
+			this.maxYds = maxYds;
+		}
 
 		@Override
 		public String toString()
 		{
-			return minYds + " " + maxYds + " " + minAngleDegs + " " + maxAngleDegs;
+			return minAngleDegs + " " + maxAngleDegs + " " + minYds + " " + maxYds + " ";
 		}
 	}
 
@@ -94,7 +102,7 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 	/**
 	 * the parent object (which supplies our colour, should we need it)
 	 */
-	private transient SensorArcWrapper _mySensor;
+	private transient DynamicTrackShapeSetWrapper _mySensor;
 
 	/**
 	 * the label describing this contact
@@ -106,12 +114,12 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 	 */
 	private int _theLineLocation = MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE;
 
-	private String _sensorName;
+	private String _coverageName;
 
 	/**
 	 * default constructor, used when we read in from XML
 	 */
-	public SensorArcContactWrapper()
+	public DynamicTrackShapeWrapper()
 	{
 		// create the label
 		_theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
@@ -129,10 +137,10 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 	 * 
 	 */
 
-	public SensorArcContactWrapper(final String theTrack,
+	public DynamicTrackShapeWrapper(final String theTrack,
 			final HiResDate startDtg, final HiResDate endDtg,
 			List<SensorArcValue> values, final Color theColor, final int theStyle,
-			final String sensorName)
+			final String coverageName)
 	{
 		this();
 
@@ -145,8 +153,8 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 		// and the gui parameters
 		setColor(theColor);
 		_myLineStyle = theStyle;
-		_theLabel.setString(sensorName);
-		_sensorName = sensorName;
+		_theLabel.setString(coverageName);
+		_coverageName = coverageName;
 	}
 
 	private void calculateArcs()
@@ -154,13 +162,13 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 		StringBuilder builder = new StringBuilder();
 		for (SensorArcValue value : _values)
 		{
-			builder.append(value.minYds);
-			builder.append(" ");
-			builder.append(value.maxYds);
-			builder.append(" ");
 			builder.append(value.minAngleDegs);
 			builder.append(" ");
 			builder.append(value.maxAngleDegs);
+			builder.append(" ");
+			builder.append(value.minYds);
+			builder.append(" ");
+			builder.append(value.maxYds);
 			builder.append(" ");
 		}
 		_arcs = builder.toString().trim();
@@ -181,7 +189,7 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 	 */
 	public final int compareTo(final Plottable o)
 	{
-		final SensorArcContactWrapper other = (SensorArcContactWrapper) o;
+		final DynamicTrackShapeWrapper other = (DynamicTrackShapeWrapper) o;
 		if (_startDTG == null || other == null || other._startDTG == null)
 		{
 			return 1;
@@ -344,7 +352,6 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
     final double minDegs = new WorldDistance(arc.minYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
     final double maxDegs = new WorldDistance(arc.maxYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
     
-
     for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
     {
       // produce the current bearing
@@ -354,6 +361,36 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
       // first produce a standard ellipse of the correct size
       final double x1 = Math.sin(this_brg) * maxDegs;
       double y1 = Math.cos(this_brg) * maxDegs;
+
+      // now produce the range out to the edge of the ellipse at
+      // this point
+      final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
+
+      // to prevent div/0 error in atan, make y1 small if zero
+      if (y1 == 0)
+        y1 = 0.0000001;
+
+      // and the new bearing to the correct point on the ellipse
+      final double tr = Math.atan2(y1, x1) + orient;
+
+      // use our "add" function to add a vector, rather than the
+      // x-y components as we did, so that the ellipse stays correctly
+      // shaped as it travels further from the equator.
+      final WorldLocation wl = origin.add(new WorldVector(tr, r, 0));
+
+      res.add(wl);
+    }
+    
+    // and now the inner shape
+    for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
+    {
+      // produce the current bearing
+      final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
+
+
+      // first produce a standard ellipse of the correct size
+      final double x1 = Math.sin(this_brg) * minDegs;
+      double y1 = Math.cos(this_brg) * minDegs;
 
       // now produce the range out to the edge of the ellipse at
       // this point
@@ -427,7 +464,7 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 		}
 		else
 		{
-			res = _sensorName;
+			res = _coverageName;
 		}
 		return res;
 	}
@@ -509,12 +546,12 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 	/**
 	 * inform us of our sensor
 	 */
-	public final void setSensor(final SensorArcWrapper sensor)
+	public final void setSensor(final DynamicTrackShapeSetWrapper sensor)
 	{
 		_mySensor = sensor;
 	}
 
-	public final SensorArcWrapper getSensor()
+	public final DynamicTrackShapeSetWrapper getSensor()
 	{
 		return _mySensor;
 	}
@@ -632,7 +669,7 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 		 * @param data
 		 *          the Layers themselves
 		 */
-		public SensorArcContactInfo(final SensorArcContactWrapper data)
+		public SensorArcContactInfo(final DynamicTrackShapeWrapper data)
 		{
 			super(data, data.getName(), "SensorArc");
 		}
@@ -766,11 +803,11 @@ public final class SensorArcContactWrapper extends PlainWrapper implements
 		int index = 0;
 		while (index < elements.length)
 		{
-			SensorArcValue value = new SensorArcValue();
-			value.minYds = getValue(elements, index++);
-			value.maxYds = getValue(elements, index++);
-			value.minAngleDegs = getValue(elements, index++);
-			value.maxAngleDegs = getValue(elements, index++);
+			int minAngleDegs = getValue(elements, index++);
+			int maxAngleDegs = getValue(elements, index++);
+			int minYds = getValue(elements, index++);
+			int maxYds = getValue(elements, index++);
+			SensorArcValue value = new SensorArcValue(minAngleDegs, maxAngleDegs, minYds, maxYds);
 			values.add(value);
 		}
 		this._values = values;

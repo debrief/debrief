@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import Debrief.Wrappers.SensorArcContactWrapper;
-import Debrief.Wrappers.SensorArcContactWrapper.SensorArcValue;
+import Debrief.Wrappers.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.DynamicTrackShapeWrapper.SensorArcValue;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -114,8 +114,8 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 	    final int theStyle = ImportReplay.replayLineStyleFor(symbology);
 	
 	    // create the contact object		
-	    final SensorArcContactWrapper data =
-	        new SensorArcContactWrapper(theTrack, startDtg, 
+	    final DynamicTrackShapeWrapper data =
+	        new DynamicTrackShapeWrapper(theTrack, startDtg, 
 	        		endDtg, 
 	        		values,
 	        		theColor,
@@ -135,11 +135,12 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 	private int addValue(final List<String> myTokens, List<SensorArcValue> values, int index)
 			throws ParseException
 	{
-		SensorArcValue value = new SensorArcValue();
-		value.minAngleDegs = new Integer(myTokens.get(index++)).intValue();
-		value.maxAngleDegs = new Integer(myTokens.get(index++)).intValue();
-		value.minYds = new Integer(myTokens.get(index++)).intValue();
-		value.maxYds = new Integer(myTokens.get(index++)).intValue();
+		int minAngleDegs = new Integer(myTokens.get(index++)).intValue();
+		int maxAngleDegs = new Integer(myTokens.get(index++)).intValue();
+		int minYds = new Integer(myTokens.get(index++)).intValue();
+		int maxYds = new Integer(myTokens.get(index++)).intValue();
+		SensorArcValue value = new SensorArcValue(minAngleDegs, maxAngleDegs, minYds, maxYds);
+		
 		values.add(value);
 		return index;
 	}
@@ -161,7 +162,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     // result value
   	// ;SENSORARC 951212 062800 951212 063000 NELSON @@ -75 35 0 1000 "fwd dynamic"
   	
-  	SensorArcContactWrapper sacw = (SensorArcContactWrapper) theWrapper;
+  	DynamicTrackShapeWrapper sacw = (DynamicTrackShapeWrapper) theWrapper;
   	StringBuilder builder = new StringBuilder();
     builder.append("\n");
     builder.append(_myType);
@@ -204,13 +205,13 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     builder.append(" ");
     for (SensorArcValue value:sacw.getValues())
     {
-    	builder.append(value.minYds);
-    	builder.append(" ");
-    	builder.append(value.maxYds);
-    	builder.append(" ");
     	builder.append(value.minAngleDegs);
     	builder.append(" ");
     	builder.append(value.maxAngleDegs);
+    	builder.append(" ");
+    	builder.append(value.minYds);
+    	builder.append(" ");
+    	builder.append(value.maxYds);
     	builder.append(" ");
     }
 		
@@ -240,7 +241,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
   public final boolean canExportThis(final Object val) {
     boolean res = false;
 
-    if (val instanceof SensorArcContactWrapper) {
+    if (val instanceof DynamicTrackShapeWrapper) {
       res = true;
     }
 

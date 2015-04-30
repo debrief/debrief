@@ -30,9 +30,8 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WatchableList;
-import MWC.GenericData.WorldLocation;
 
-public class SensorArcWrapper extends Plottables implements Cloneable,
+public class DynamicTrackShapeSetWrapper extends Plottables implements Cloneable,
 		MovingPlottable
 {
 	/**
@@ -40,10 +39,6 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * more optimisatons
-	 */
-	transient private SensorArcContactWrapper nearestContact;
 
 	private String _myName;
 
@@ -63,7 +58,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 	/**
 	 * ////////////////////////////////////////
 	 */
-	public SensorArcWrapper(final String title)
+	public DynamicTrackShapeSetWrapper(final String title)
 	{
 		_myName = title;
 	}
@@ -104,11 +99,11 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 	public final void add(final MWC.GUI.Editable plottable)
 	{
 		// check it's a sensor contact entry
-		if (plottable instanceof SensorArcContactWrapper)
+		if (plottable instanceof DynamicTrackShapeWrapper)
 		{
 			super.add(plottable);
 
-			final SensorArcContactWrapper scw = (SensorArcContactWrapper) plottable;
+			final DynamicTrackShapeWrapper scw = (DynamicTrackShapeWrapper) plottable;
 
 			// maintain our time period
 			if (_timePeriod == null)
@@ -127,14 +122,14 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 
 	public final void append(final Layer theLayer)
 	{
-		if (theLayer instanceof SensorArcWrapper)
+		if (theLayer instanceof DynamicTrackShapeSetWrapper)
 		{
-			final SensorArcWrapper other = (SensorArcWrapper) theLayer;
+			final DynamicTrackShapeSetWrapper other = (DynamicTrackShapeSetWrapper) theLayer;
 
 			final Enumeration<Editable> it = other.elements();
 			while (it.hasMoreElements())
 			{
-				final SensorArcContactWrapper fw = (SensorArcContactWrapper) it
+				final DynamicTrackShapeWrapper fw = (DynamicTrackShapeWrapper) it
 						.nextElement();
 				this.add(fw);
 			}
@@ -161,21 +156,6 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 		return "Coverage Arc:" + getName() + " (" + size() + " items)";
 	}
 
-	/**
-	 * how far away are we from this point? or return null if it can't be
-	 * calculated
-	 */
-	public final double rangeFrom(final WorldLocation other)
-	{
-		double res = INVALID_RANGE;
-
-		// if we have a nearest contact, see how far away it is.
-		if (nearestContact != null)
-			res = nearestContact.rangeFrom(other);
-
-		return res;
-	}
-
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
 	// //////////////////////////////////////////////////////////////////////////
@@ -191,7 +171,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 		 * @param data
 		 *          the Layers themselves
 		 */
-		public SensorInfo(final SensorArcWrapper data)
+		public SensorInfo(final DynamicTrackShapeSetWrapper data)
 		{
 			super(data, data.getName(), "Sensor");
 		}
@@ -276,11 +256,11 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 	public static int mergeSensors(final Editable targetE,
 			final Layers theLayers, final Layer parent, final Editable[] subjects)
 	{
-		final SensorArcWrapper target = (SensorArcWrapper) targetE;
+		final DynamicTrackShapeSetWrapper target = (DynamicTrackShapeSetWrapper) targetE;
 
 		for (int i = 0; i < subjects.length; i++)
 		{
-			final SensorArcWrapper sensor = (SensorArcWrapper) subjects[i];
+			final DynamicTrackShapeSetWrapper sensor = (DynamicTrackShapeSetWrapper) subjects[i];
 			if (sensor != target)
 			{
 				// ok, append the items in this layer to the target
@@ -308,7 +288,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 		final Enumeration<Editable> it = this.elements();
 		while (it.hasMoreElements())
 		{
-			final SensorArcContactWrapper con = (SensorArcContactWrapper) it
+			final DynamicTrackShapeWrapper con = (DynamicTrackShapeWrapper) it
 					.nextElement();
 
 			HiResDate dtg = new HiResDate(time);
@@ -387,7 +367,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 		final Enumeration<Editable> it = this.elements();
 		while (it.hasMoreElements())
 		{
-			final SensorArcContactWrapper thisE = (SensorArcContactWrapper) it
+			final DynamicTrackShapeWrapper thisE = (DynamicTrackShapeWrapper) it
 					.nextElement();
 			if (period.overlaps(thisE.getPeriod()))
 			{
