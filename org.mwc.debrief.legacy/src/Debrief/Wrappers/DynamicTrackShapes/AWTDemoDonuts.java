@@ -19,7 +19,7 @@ public class AWTDemoDonuts extends JFrame {
     private double outerRadius;
 
     private double minAngle;
-    private double maxAngle;
+    private double angleExtent;
 
     private int leftCornerShift;
 
@@ -44,12 +44,18 @@ public class AWTDemoDonuts extends JFrame {
     public void setParameters(int x, int y,
                            double innerR, double outerR,
                            double minA, double maxA) {
+        setParameters(x,y,innerR,outerR);
+        minAngle = minA;
+        angleExtent = maxA - minA;
+
+    }
+
+    public void setParameters(int x, int y,
+                              double innerR, double outerR) {
         xDestination = x;
         yDestination = y;
         innerRadius = innerR;
         outerRadius = outerR;
-        minAngle =  minA;
-        maxAngle =  maxA;
         leftCornerShift = (int) (outerRadius - innerRadius) / 2;
     }
 
@@ -76,7 +82,7 @@ public class AWTDemoDonuts extends JFrame {
         /**
          * Create circle sector from maxAngle to minAngle.
          */
-        Arc2D circleSector = new Arc2D.Double(xDestination - 1, yDestination - 1, outerRadius + 2, outerRadius + 2, minAngle, - 360 + (maxAngle - minAngle), Arc2D.PIE);
+        Arc2D circleSector = new Arc2D.Double(xDestination - 1, yDestination - 1, outerRadius + 2, outerRadius + 2, -(minAngle - 90), 360 - angleExtent, Arc2D.PIE);
 
         /**
          * Subtract inner circle from outer thus creating needed donut.
@@ -91,19 +97,15 @@ public class AWTDemoDonuts extends JFrame {
             System.out.println("PLease create full and sector donuts first.");
         }
         Graphics2D graphics2D = (Graphics2D) graphics;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,    RenderingHints.VALUE_ANTIALIAS_ON);
 
         graphics2D.setPaint(Color.green);
         graphics2D.fill(sectorDonut);
+        graphics2D.draw(sectorDonut);
 
         graphics2D.setPaint(Color.green);
         graphics2D.fill(fullDonut);
-        
-        // @TODO:  Peco, here's a class that lets us plot an AWT shape object in SWT:
-        // http://www.java2s.com/Tutorial/Java/0280__SWT/DrawGraphics2Dstuffonaswtcomposite.htm
-        // So, we'll need to extend our CanvasType object with the fill(Shape) method, and incldue
-        // the above shape-conversion code in the SWT rendering
-        
-        
+        graphics2D.draw(fullDonut);
     }
 
     /**
@@ -120,7 +122,7 @@ public class AWTDemoDonuts extends JFrame {
 
     public static void main(String[] args) {
         AWTDemoDonuts awtDemoDonuts = new AWTDemoDonuts();
-        awtDemoDonuts.setParameters(100,400,150,200,45,135);
+        awtDemoDonuts.setParameters(100,400,150,200);
         awtDemoDonuts.createFullDonut();
         awtDemoDonuts.setParameters(100,100,150,200,45,135);
         awtDemoDonuts.createSectorDonut();
