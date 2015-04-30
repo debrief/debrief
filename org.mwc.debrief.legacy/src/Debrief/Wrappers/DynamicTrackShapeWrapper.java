@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.ExtendedCanvasType;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -46,17 +48,30 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static interface DynamicShape
+	{
+		/** paint this dynamic shape
+		 * 
+		 * @param dest where to paint to
+		 * @param hostState the host state at this time
+		 * @param color color for this object
+		 */
+		public void paint(CanvasType dest, Watchable hostState, Color color);
+
+	}
+	
 	/**
 	 * utility class used to store a single sensor coverage arc
 	 * 
 	 * @author ian
 	 * 
 	 */
-	public static class SensorArcValue
+	public static class DynamicCoverageShape implements DynamicShape
 	{
+		
 		final public int minYds, maxYds, minAngleDegs, maxAngleDegs;
 		
-		public SensorArcValue(int MinAngleDegs, int MaxAngleDegs, int minYds, int maxYds)
+		public DynamicCoverageShape(int MinAngleDegs, int MaxAngleDegs, int minYds, int maxYds)
 		{
 			this.minAngleDegs = MinAngleDegs;
 			this.maxAngleDegs = MaxAngleDegs;
@@ -64,7 +79,113 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 			this.maxYds = maxYds;
 		}
 
-		@Override
+	  /**
+	   * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
+	   * @param trackCourseDegs 
+	   */
+	  private Vector<WorldLocation> calcDataPoints(final WorldLocation origin, final double orient)
+	  {
+	    // get ready to store the list
+	    final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+
+	    final double minDegs = new WorldDistance(minYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
+	    final double maxDegs = new WorldDistance(maxYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
+	    
+	    for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
+	    {
+	      // produce the current bearing
+	      final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
+
+
+	      // first produce a standard ellipse of the correct size
+	      final double x1 = Math.sin(this_brg) * maxDegs;
+	      double y1 = Math.cos(this_brg) * maxDegs;
+
+	      // now produce the range out to the edge of the ellipse at
+	      // this point
+	      final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
+
+	      // to prevent div/0 error in atan, make y1 small if zero
+	      if (y1 == 0)
+	        y1 = 0.0000001;
+
+	      // and the new bearing to the correct point on the ellipse
+	      final double tr = Math.atan2(y1, x1) + orient;
+
+	      // use our "add" function to add a vector, rather than the
+	      // x-y components as we did, so that the ellipse stays correctly
+	      // shaped as it travels further from the equator.
+	      final WorldLocation wl = origin.add(new WorldVector(tr, r, 0));
+
+	      res.add(wl);
+	    }
+	    
+	    // and now the inner shape
+	    for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
+	    {
+	      // produce the current bearing
+	      final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
+
+
+	      // first produce a standard ellipse of the correct size
+	      final double x1 = Math.sin(this_brg) * minDegs;
+	      double y1 = Math.cos(this_brg) * minDegs;
+
+	      // now produce the range out to the edge of the ellipse at
+	      // this point
+	      final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
+
+	      // to prevent div/0 error in atan, make y1 small if zero
+	      if (y1 == 0)
+	        y1 = 0.0000001;
+
+	      // and the new bearing to the correct point on the ellipse
+	      final double tr = Math.atan2(y1, x1) + orient;
+
+	      // use our "add" function to add a vector, rather than the
+	      // x-y components as we did, so that the ellipse stays correctly
+	      // shaped as it travels further from the equator.
+	      final WorldLocation wl = origin.add(new WorldVector(tr, r, 0));
+
+	      res.add(wl);
+	    }
+
+	    return res;
+
+	  }
+		
+		
+		public void paint(CanvasType dest, Watchable hostState, Color color)
+		{
+				// get the polygon at this location
+				Vector<WorldLocation> _theDataPoints = calcDataPoints(hostState.getLocation(), hostState.getCourse());
+				
+
+		    // create a polygon to represent the ellipse (so that we can fill or draw it)
+		    final int len = _theDataPoints.size();
+		    final int[] xPoints = new int[len];
+		    final int[] yPoints = new int[len];
+
+		    // work through the list to create the list of screen coordinates
+		    for (int i = 0; i < _theDataPoints.size(); i++)
+		    {
+		      final WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
+
+		      final Point p2 = dest.toScreen(location);
+
+		      xPoints[i] = p2.x;
+		      yPoints[i] = p2.y;
+		    }
+
+//					if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+//					{
+						ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+		    		ext.semiFillPolygon(xPoints, yPoints, len);
+//					}
+//		    	else
+//		    		dest.fillPolygon(xPoints, yPoints, len);
+		}
+		
 		public String toString()
 		{
 			return minAngleDegs + " " + maxAngleDegs + " " + minYds + " " + maxYds + " ";
@@ -80,7 +201,7 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 
 	private HiResDate _startDTG, _endDTG;
 
-	private List<SensorArcValue> _values = new ArrayList<SensorArcValue>();
+	private List<DynamicCoverageShape> _values = new ArrayList<DynamicCoverageShape>();
 
 	private String _arcs;
 
@@ -109,12 +230,9 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 	 */
 	private final MWC.GUI.Shapes.TextLabel _theLabel;
 
-	/**
-	 * whereabouts on the line where we plot the label
-	 */
-	private int _theLineLocation = MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE;
-
 	private String _coverageName;
+
+	private int _lineWidth;
 
 	/**
 	 * default constructor, used when we read in from XML
@@ -139,7 +257,7 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 
 	public DynamicTrackShapeWrapper(final String theTrack,
 			final HiResDate startDtg, final HiResDate endDtg,
-			List<SensorArcValue> values, final Color theColor, final int theStyle,
+			List<DynamicCoverageShape> values, final Color theColor, final int theStyle,
 			final String coverageName)
 	{
 		this();
@@ -160,7 +278,7 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 	private void calculateArcs()
 	{
 		StringBuilder builder = new StringBuilder();
-		for (SensorArcValue value : _values)
+		for (DynamicCoverageShape value : _values)
 		{
 			builder.append(value.minAngleDegs);
 			builder.append(" ");
@@ -255,64 +373,21 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 		// restore the solid line style, for the next poor bugger
 		dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
 
-		// // now draw the label
-		// if (getLabelVisible())
-		// {
-		// WorldLocation labelPos = null;
-		//
-		// // sort out where to plot it
-		// if (_theLineLocation ==
-		// MWC.GUI.Properties.LineLocationPropertyEditor.START)
-		// {
-		// WorldLocation topLeft = new WorldLocation(origin .add(new WorldVector(0,
-		// _radDegs, 0)));
-		// topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions
-		// .Degs2Rads(270), _radDegs, 0));
-		// labelPos = topLeft;
-		// }
-		// else if (_theLineLocation ==
-		// MWC.GUI.Properties.LineLocationPropertyEditor.END)
-		// {
-		// WorldLocation bottomRight = new WorldLocation(
-		// origin.add(new WorldVector(MWC.Algorithms.Conversions
-		// .Degs2Rads(180), _radDegs, 0)));
-		// bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions
-		// .Degs2Rads(90), _radDegs, 0));
-		// labelPos = bottomRight;
-		// }
-		// else if (_theLineLocation ==
-		// MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-		// {
-		// // calculate the centre point
-		// labelPos = origin;
-		// }
-		//
-		// // update it's location
-		// _theLabel.setLocation(labelPos);
-		// _theLabel.setColor(getColor());
-		// _theLabel.paint(dest);
-		// }
-		//
-
-		// paint arc
-
 		Color oldColor = dest.getBackgroundColor();
 
-		int trackCourse = 0;
-		WorldLocation origin = null;
+		Watchable hostState = null;
 
 		if (DTG != null)
 		{
 			Watchable[] wList = getSensor().getHost().getNearestTo(DTG);
 			if (wList.length > 0)
 			{
-				trackCourse = (int) Math.toDegrees(wList[0].getCourse());
-				origin = wList[0].getLocation();
+				hostState = wList[0];
 			}
 		}
 
 		// have we worked?
-		if (origin == null)
+		if (hostState == null)
 		{
 			MWC.Utilities.Errors.Trace
 					.trace("This sensor arc object hasn't got a parent at time:" + DTG);
@@ -321,15 +396,10 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 		{
 
 			// ok, we've got enough to do the paint!
-			for (SensorArcValue value : _values)
+			for (DynamicCoverageShape value : _values)
 			{
-				paintArc(dest, origin, trackCourse, getColor(), value);
-				
-//				if (value.angle != 0 && value.course != 0)
-//				{
-//					paintArc(dest, origin, _radDegs * value.angle / value.course,
-//							oldColor, value.min, value.max, trackCourse);
-//				}
+				value.paint(dest, hostState, getColor());
+//				paintArc(dest, origin, trackCourse, getColor(), value);
 			}
 		}
 
@@ -337,120 +407,42 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 
 	}
 	
-  /**
-   * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
-   * @param trackCourseDegs 
-   */
-  private Vector<WorldLocation> calcDataPoints(WorldLocation origin, int trackCourseDegs, SensorArcValue arc)
-  {
-    // get ready to store the list
-    final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
-    // produce the orientation in radians
-    final double orient = MWC.Algorithms.Conversions.Degs2Rads(trackCourseDegs);
-    
-    final double minDegs = new WorldDistance(arc.minYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
-    final double maxDegs = new WorldDistance(arc.maxYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
-    
-    for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
-    {
-      // produce the current bearing
-      final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
-
-
-      // first produce a standard ellipse of the correct size
-      final double x1 = Math.sin(this_brg) * maxDegs;
-      double y1 = Math.cos(this_brg) * maxDegs;
-
-      // now produce the range out to the edge of the ellipse at
-      // this point
-      final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
-
-      // to prevent div/0 error in atan, make y1 small if zero
-      if (y1 == 0)
-        y1 = 0.0000001;
-
-      // and the new bearing to the correct point on the ellipse
-      final double tr = Math.atan2(y1, x1) + orient;
-
-      // use our "add" function to add a vector, rather than the
-      // x-y components as we did, so that the ellipse stays correctly
-      // shaped as it travels further from the equator.
-      final WorldLocation wl = origin.add(new WorldVector(tr, r, 0));
-
-      res.add(wl);
-    }
-    
-    // and now the inner shape
-    for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
-    {
-      // produce the current bearing
-      final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
-
-
-      // first produce a standard ellipse of the correct size
-      final double x1 = Math.sin(this_brg) * minDegs;
-      double y1 = Math.cos(this_brg) * minDegs;
-
-      // now produce the range out to the edge of the ellipse at
-      // this point
-      final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
-
-      // to prevent div/0 error in atan, make y1 small if zero
-      if (y1 == 0)
-        y1 = 0.0000001;
-
-      // and the new bearing to the correct point on the ellipse
-      final double tr = Math.atan2(y1, x1) + orient;
-
-      // use our "add" function to add a vector, rather than the
-      // x-y components as we did, so that the ellipse stays correctly
-      // shaped as it travels further from the equator.
-      final WorldLocation wl = origin.add(new WorldVector(tr, r, 0));
-
-      res.add(wl);
-    }
-
-    return res;
-
-  }
-	
-
-	private void paintArc(final MWC.GUI.CanvasType dest,
-			final WorldLocation origin, int trackCourseDegs, Color color, SensorArcValue value)
-	{
-		// 
-		
-		// get the polygon at this location
-		Vector<WorldLocation> _theDataPoints = calcDataPoints(origin, trackCourseDegs, value);
-		
-
-    // create a polygon to represent the ellipse (so that we can fill or draw it)
-    final int len = _theDataPoints.size();
-    final int[] xPoints = new int[len];
-    final int[] yPoints = new int[len];
-
-    // work through the list to create the list of screen coordinates
-    for (int i = 0; i < _theDataPoints.size(); i++)
-    {
-      final WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
-
-      final Point p2 = dest.toScreen(location);
-
-      xPoints[i] = p2.x;
-      yPoints[i] = p2.y;
-    }
-
-//			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
-//			{
-				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
-    		ext.semiFillPolygon(xPoints, yPoints, len);
-//			}
-//    	else
-//    		dest.fillPolygon(xPoints, yPoints, len);
-	
-		
-	}
+//	private void paintArc(final MWC.GUI.CanvasType dest,
+//			final WorldLocation origin, int trackCourseDegs, Color color, DynamicCoverageShape value)
+//	{
+//		// 
+//		
+//		// get the polygon at this location
+//		Vector<WorldLocation> _theDataPoints = calcDataPoints(origin, trackCourseDegs, value);
+//		
+//
+//    // create a polygon to represent the ellipse (so that we can fill or draw it)
+//    final int len = _theDataPoints.size();
+//    final int[] xPoints = new int[len];
+//    final int[] yPoints = new int[len];
+//
+//    // work through the list to create the list of screen coordinates
+//    for (int i = 0; i < _theDataPoints.size(); i++)
+//    {
+//      final WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
+//
+//      final Point p2 = dest.toScreen(location);
+//
+//      xPoints[i] = p2.x;
+//      yPoints[i] = p2.y;
+//    }
+//
+////			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+////			{
+//				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+//    		ext.semiFillPolygon(xPoints, yPoints, len);
+////			}
+////    	else
+////    		dest.fillPolygon(xPoints, yPoints, len);
+//	
+//		
+//	}
 
 	/**
 	 * find the name of the sensor which recorded this contact
@@ -512,22 +504,6 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 	}
 
 	/**
-	 * return the location of the label
-	 */
-	public final void setPutLabelAt(final Integer loc)
-	{
-		_theLineLocation = loc.intValue();
-	}
-
-	/**
-	 * update the location of the label
-	 */
-	public final Integer getPutLabelAt()
-	{
-		return new Integer(_theLineLocation);
-	}
-
-	/**
 	 * update the line style
 	 */
 	public final void setLineStyle(final Integer style)
@@ -546,7 +522,7 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 	/**
 	 * inform us of our sensor
 	 */
-	public final void setSensor(final DynamicTrackShapeSetWrapper sensor)
+	public final void setParent(final DynamicTrackShapeSetWrapper sensor)
 	{
 		_mySensor = sensor;
 	}
@@ -691,9 +667,6 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 						prop("arcs", "sensor arcs: min max angle range", FORMAT),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
-						longProp("PutLabelAt",
-								"whereabouts on the line to position the label",
-								MWC.GUI.Properties.LineLocationPropertyEditor.class),
 						longProp("LineStyle", "style to use to plot the line",
 								MWC.GUI.Properties.LineStylePropertyEditor.class), };
 
@@ -777,7 +750,7 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 		return new TimePeriod.BaseTimePeriod(_startDTG, _endDTG);
 	}
 	
-	public List<SensorArcValue> getValues()
+	public List<DynamicCoverageShape> getValues()
 	{
 		return _values;
 	}
@@ -799,7 +772,7 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 		{
 			throw new RuntimeException("Error parsing arcs");
 		}
-		List<SensorArcValue> values = new ArrayList<SensorArcValue>();
+		List<DynamicCoverageShape> values = new ArrayList<DynamicCoverageShape>();
 		int index = 0;
 		while (index < elements.length)
 		{
@@ -807,7 +780,7 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 			int maxAngleDegs = getValue(elements, index++);
 			int minYds = getValue(elements, index++);
 			int maxYds = getValue(elements, index++);
-			SensorArcValue value = new SensorArcValue(minAngleDegs, maxAngleDegs, minYds, maxYds);
+			DynamicCoverageShape value = new DynamicCoverageShape(minAngleDegs, maxAngleDegs, minYds, maxYds);
 			values.add(value);
 		}
 		this._values = values;
@@ -825,4 +798,24 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 			throw new RuntimeException("Error parsing arcs. Invalid number.");
 		}
 	}
+	
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 * 
+	 * @return
+	 */
+	public final int getLineThickness()
+	{
+		return _lineWidth;
+	}
+
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 */
+	@FireReformatted
+	public final void setLineThickness(final int val)
+	{
+		_lineWidth = val;
+	}
+
 }

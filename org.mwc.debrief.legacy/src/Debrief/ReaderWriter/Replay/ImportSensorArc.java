@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.DynamicTrackShapeWrapper;
-import Debrief.Wrappers.DynamicTrackShapeWrapper.SensorArcValue;
+import Debrief.Wrappers.DynamicTrackShapeWrapper.DynamicCoverageShape;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -49,7 +49,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     String sensorName;
     HiResDate startDtg = null;
     HiResDate endDtg = null;
-    List<SensorArcValue> values = new ArrayList<SensorArcValue>();
+    List<DynamicCoverageShape> values = new ArrayList<DynamicCoverageShape>();
     java.awt.Color theColor;
 
     List<String> myTokens = new ArrayList<String>();
@@ -132,14 +132,14 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     }
   }
 
-	private int addValue(final List<String> myTokens, List<SensorArcValue> values, int index)
+	private int addValue(final List<String> myTokens, List<DynamicCoverageShape> values, int index)
 			throws ParseException
 	{
 		int minAngleDegs = new Integer(myTokens.get(index++)).intValue();
 		int maxAngleDegs = new Integer(myTokens.get(index++)).intValue();
 		int minYds = new Integer(myTokens.get(index++)).intValue();
 		int maxYds = new Integer(myTokens.get(index++)).intValue();
-		SensorArcValue value = new SensorArcValue(minAngleDegs, maxAngleDegs, minYds, maxYds);
+		DynamicCoverageShape value = new DynamicCoverageShape(minAngleDegs, maxAngleDegs, minYds, maxYds);
 		
 		values.add(value);
 		return index;
@@ -203,7 +203,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     // builder.append(ImportReplay.replaySymbolForLineStyle(sacw.getLineStyle()));
     
     builder.append(" ");
-    for (SensorArcValue value:sacw.getValues())
+    for (DynamicCoverageShape value:sacw.getValues())
     {
     	builder.append(value.minAngleDegs);
     	builder.append(" ");

@@ -700,7 +700,7 @@ public class ImportReplay extends PlainImporterBase
 
 		// so, we've found a track - see if it holds this sensor
 		final TrackWrapper theTrack = (TrackWrapper) val;
-		final Enumeration<Editable> iter = theTrack.getSensorArcs().elements();
+		final Enumeration<Editable> iter = theTrack.getDynamicShapes().elements();
 
 		// step through this track' sensors
 		if (iter != null) 

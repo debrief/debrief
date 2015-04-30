@@ -116,7 +116,7 @@ public class DynamicTrackShapeSetWrapper extends Plottables implements Cloneable
 			}
 
 			// and tell the contact about us
-			scw.setSensor(this);
+			scw.setParent(this);
 		}
 	}
 
@@ -381,4 +381,6 @@ public class DynamicTrackShapeSetWrapper extends Plottables implements Cloneable
 		// ok, copy over the matching items
 		super.getData().addAll(newList);
 	}
+	
+	
 }

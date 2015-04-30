@@ -668,9 +668,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	final private BaseLayer _mySensors;
 
 	/**
-	 * the sensor arc tracks for this vessel
+	 * the dynamic shapes for this vessel
 	 */
-	final private BaseLayer _mySensorArcs;
+	final private BaseLayer _myDynamicShapes;
 
 	/**
 	 * the TMA solutions for this vessel
@@ -745,8 +745,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		_mySensors = new SplittableLayer(true);
 		_mySensors.setName(SENSORS_LAYER_NAME);
 		
-		_mySensorArcs = new SplittableLayer(true);
-		_mySensorArcs.setName(SENSORARCS_LAYER_NAME);
+		_myDynamicShapes = new SplittableLayer(true);
+		_myDynamicShapes.setName(SENSORARCS_LAYER_NAME);
 		
 		_mySolutions = new BaseLayer(true);
 		_mySolutions.setName(SOLUTIONS_LAYER_NAME);
@@ -824,13 +824,13 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			done = true;
 
 		}
-		// is this a sensor arc?
+		// is this a dynamic shape?
 		else if (point instanceof DynamicTrackShapeSetWrapper)
 		{
 			final DynamicTrackShapeSetWrapper swr = (DynamicTrackShapeSetWrapper) point;
 
 			// add to our list
-			_mySensorArcs.add(swr);
+			_myDynamicShapes.add(swr);
 
 			// tell the sensor about us
 			swr.setHost(this);
@@ -1008,9 +1008,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		
 		// and my objects
 		// first ask the sensors to close themselves
-		if (_mySensorArcs != null)
+		if (_myDynamicShapes != null)
 		{
-			final Enumeration<Editable> it2 = _mySensorArcs.elements();
+			final Enumeration<Editable> it2 = _myDynamicShapes.elements();
 			while (it2.hasMoreElements())
 			{
 				final Object val = it2.nextElement();
@@ -1021,7 +1021,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 			// now ditch them
-			_mySensorArcs.removeAllElements();
+			_myDynamicShapes.removeAllElements();
 		}
 
 		// now ask the solutions to close themselves
@@ -1106,9 +1106,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 		
-		if (_mySensorArcs != null)
+		if (_myDynamicShapes != null)
 		{
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
 				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
@@ -1156,9 +1156,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			res.add(_mySensors);
 		}
 		
-		if (_mySensorArcs.size() > 0)
+		if (_myDynamicShapes.size() > 0)
 		{
-			res.add(_mySensorArcs);
+			res.add(_myDynamicShapes);
 		}
 
 		if (_mySolutions.size() > 0)
@@ -1231,9 +1231,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		} // whether we have any sensors
 
 		// now do the same for our sensor arc data
-		if (_mySensorArcs != null)
+		if (_myDynamicShapes != null)
 		{
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
 				final WatchableList sw = (WatchableList) iter.nextElement();
@@ -1371,9 +1371,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 		
-		if (_mySensorArcs != null)
+		if (_myDynamicShapes != null)
 		{
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
 				final DynamicTrackShapeSetWrapper nextS = (DynamicTrackShapeSetWrapper) iter.nextElement();
@@ -1528,9 +1528,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // whether we have any sensors
 
 			// also extend to include our sensor data
-			if (_mySensorArcs != null)
+			if (_myDynamicShapes != null)
 			{
-				final Enumeration<Editable> iter = _mySensorArcs.elements();
+				final Enumeration<Editable> iter = _myDynamicShapes.elements();
 				while (iter.hasMoreElements())
 				{
 					final Plottable sw = (Plottable) iter.nextElement();
@@ -2141,9 +2141,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * get the list of sensor arcs for this track
 	 */
-	public final BaseLayer getSensorArcs()
+	public final BaseLayer getDynamicShapes()
 	{
-		return _mySensorArcs;
+		return _myDynamicShapes;
 	}
 	/**
 	 * return the symbol to be used for plotting this track in snail mode
@@ -3019,7 +3019,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else if (point instanceof DynamicTrackShapeWrapper)
 		{
 			// ok, cycle through our sensors, try to remove this contact...
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
 				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
@@ -3054,11 +3054,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_mySensors.removeAllElements();
 
 		}
-		else if (point == _mySensorArcs)
+		else if (point == _myDynamicShapes)
 		{
 			// ahh, the user is trying to delete all the solution, cycle through
 			// them
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
 				final Editable editable = iter.nextElement();
@@ -3070,7 +3070,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 
 			// and empty them out
-			_mySensorArcs.removeAllElements();
+			_myDynamicShapes.removeAllElements();
 
 		}
 		else if (point == _mySolutions)
@@ -4003,9 +4003,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 		
-		if (_mySensorArcs != null)
+		if (_myDynamicShapes != null)
 		{
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
 				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
@@ -4126,10 +4126,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (getColor() != null)
 			dest.setColor(getColor());
 
-		// we plot only the sensor arcs because they are MovingPlottable
-		if (_mySensorArcs.getVisible())
+		// we plot only the dynamic arcs because they are MovingPlottable
+		if (_myDynamicShapes.getVisible())
 		{
-			final Enumeration<Editable> iter = _mySensorArcs.elements();
+			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
 				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();

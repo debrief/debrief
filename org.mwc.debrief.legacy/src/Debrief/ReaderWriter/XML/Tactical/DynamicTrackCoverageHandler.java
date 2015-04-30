@@ -17,17 +17,16 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.DynamicTrackShapeWrapper;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
-abstract public class SensorArcContactHandler extends
+abstract public class DynamicTrackCoverageHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-	private static final String SENSORARC_CONTACT = "sensorarc_contact";
+	private static final String MY_TYPE = "DynamicCoverage";
 
 	private static final String LINE_STYLE = "LineStyle";
-
-	private static final String PUT_LABEL_AT = "PutLabelAt";
 
 	private static final String LABEL_LOCATION = "LabelLocation";
 
@@ -41,37 +40,32 @@ abstract public class SensorArcContactHandler extends
 	private static final String END_DTG = "EndDtg";
 	private static final String ARCS = "arcs";
 
-	Debrief.Wrappers.SensorArcContactWrapper _theContact;
+	DynamicTrackShapeWrapper _theContact;
 
 	/**
 	 * class which contains list of textual representations of label locations
 	 */
-	static final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
+	static final MWC.GUI.Properties.LocationPropertyEditor labelLocation = new MWC.GUI.Properties.LocationPropertyEditor();
 
 	/**
 	 * class which contains list of textual representations of label locations
 	 */
-	static final MWC.GUI.Properties.LineLocationPropertyEditor ll = new MWC.GUI.Properties.LineLocationPropertyEditor();
-
-	/**
-	 * class which contains list of textual representations of label locations
-	 */
-	static final MWC.GUI.Properties.LineStylePropertyEditor ls = new MWC.GUI.Properties.LineStylePropertyEditor();
+	static final MWC.GUI.Properties.LineStylePropertyEditor lineStyle = new MWC.GUI.Properties.LineStylePropertyEditor();
 
 	/** default constructor - using fixed name
 	 * 
 	 */
-	public SensorArcContactHandler()
+	public DynamicTrackCoverageHandler()
 	{
 		// inform our parent what type of class we are
-		this(SENSORARC_CONTACT);
+		this(MY_TYPE);
 	}
 
 	/** versatile constructor that allows any item name to be specified
 	 * 
 	 * @param typeName the element name that we're looking for
 	 */
-	public SensorArcContactHandler(final String typeName)
+	public DynamicTrackCoverageHandler(final String typeName)
 	{
 		// inform our parent what type of class we are
 		super(typeName);
@@ -136,28 +130,18 @@ abstract public class SensorArcContactHandler extends
 		{
 			public void setValue(final String name, final String val)
 			{
-				lp.setAsText(val);
-				final Integer res = (Integer) lp.getValue();
+				labelLocation.setAsText(val);
+				final Integer res = (Integer) labelLocation.getValue();
 				if (res != null)
 					_theContact.setLabelLocation(res);
-			}
-		});
-		addAttributeHandler(new HandleAttribute(PUT_LABEL_AT)
-		{
-			public void setValue(final String name, final String val)
-			{
-				ll.setAsText(val);
-				final Integer res = (Integer) ll.getValue();
-				if (res != null)
-					_theContact.setPutLabelAt(res);
 			}
 		});
 		addAttributeHandler(new HandleAttribute(LINE_STYLE)
 		{
 			public void setValue(final String name, final String val)
 			{
-				ls.setAsText(val.replace('_', ' '));
-				final Integer res = (Integer) ls.getValue();
+				lineStyle.setAsText(val.replace('_', ' '));
+				final Integer res = (Integer) lineStyle.getValue();
 				if (res != null)
 					_theContact.setLineStyle(res);
 			}
@@ -168,11 +152,10 @@ abstract public class SensorArcContactHandler extends
 	public final void handleOurselves(final String name, final Attributes atts)
 	{
 		// create the new items
-		_theContact = new Debrief.Wrappers.SensorArcContactWrapper();
+		_theContact = new DynamicTrackShapeWrapper();
 
-		lp.setValue(null);
-		ls.setValue(null);
-		ll.setValue(null);
+		labelLocation.setValue(null);
+		lineStyle.setValue(null);
 
 		super.handleOurselves(name, atts);
 	}
@@ -195,10 +178,10 @@ abstract public class SensorArcContactHandler extends
 	 * @param parent the xml parent element
 	 * @param doc the document we're being written to
 	 */
-	public static void exportFix(final Debrief.Wrappers.SensorArcContactWrapper contact,
+	public static void exportFix(final DynamicTrackShapeWrapper contact,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
-		exportFix(SENSORARC_CONTACT, contact, parent, doc);
+		exportFix(MY_TYPE, contact, parent, doc);
 	}
 	
 	
@@ -209,7 +192,7 @@ abstract public class SensorArcContactHandler extends
 	 * @param parent the xml parent element
 	 * @param doc the document we're being written to
 	 */
-	public static void exportFix(final String typeName, final Debrief.Wrappers.SensorArcContactWrapper contact,
+	public static void exportFix(final String typeName, final DynamicTrackShapeWrapper contact,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		final Element eFix = doc.createElement(typeName);
@@ -230,16 +213,12 @@ abstract public class SensorArcContactHandler extends
 		eFix.setAttribute(LABEL, toXML(contact.getLabel()));
 		
 		// sort out the line style
-		ls.setValue(contact.getLineStyle());
-		eFix.setAttribute(LINE_STYLE, ls.getAsText().replace(' ', '_'));
-		
-		// and the line label location
-		ll.setValue(contact.getPutLabelAt());
-		eFix.setAttribute(PUT_LABEL_AT, ll.getAsText());
+		lineStyle.setValue(contact.getLineStyle());
+		eFix.setAttribute(LINE_STYLE, lineStyle.getAsText().replace(' ', '_'));
 
 		// and the label itself
-		lp.setValue(contact.getLabelLocation());
-		eFix.setAttribute(LABEL_LOCATION, lp.getAsText());
+		labelLocation.setValue(contact.getLabelLocation());
+		eFix.setAttribute(LABEL_LOCATION, labelLocation.getAsText());
 
 		// note, we are accessing the "actual" colour for this fix, we are not
 		// using the

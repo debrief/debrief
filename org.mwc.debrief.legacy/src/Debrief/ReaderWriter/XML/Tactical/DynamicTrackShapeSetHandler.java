@@ -20,47 +20,47 @@ import org.xml.sax.Attributes;
 import Debrief.Wrappers.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 
-abstract public class SensorArcHandler extends
+abstract public class DynamicTrackShapeSetHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	Debrief.Wrappers.DynamicTrackShapeSetWrapper _sensorArcs;
+	private static final String MY_TYPE = "DynamicCoverageSet";
+	Debrief.Wrappers.DynamicTrackShapeSetWrapper _dynamicShapes;
 			
-	public SensorArcHandler()
+	public DynamicTrackShapeSetHandler()
 	{
 		// inform our parent what type of class we are
-		super("sensorarc");
+		super(MY_TYPE);
 
-		addHandler(new SensorArcContactHandler()
+		addHandler(new DynamicTrackCoverageHandler()
 		{
 			public void addContact(final MWC.GUI.Plottable contact)
 			{
-				addThisContact(contact);
+				addThisShape(contact);
 
 				// and set the sensor for that contact
 				final DynamicTrackShapeWrapper sc = (DynamicTrackShapeWrapper) contact;
-				sc.setSensor(_sensorArcs);
-
+				sc.setParent(_dynamicShapes);
 			}
 		});
 		addAttributeHandler(new HandleAttribute("Name")
 		{
 			public void setValue(final String name, final String val)
 			{
-				_sensorArcs.setName(fromXML(val));
+				_dynamicShapes.setName(fromXML(val));
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute("Visible")
 		{
 			public void setValue(final String name, final boolean val)
 			{
-				_sensorArcs.setVisible(val);
+				_dynamicShapes.setVisible(val);
 			}
 		});
 		addAttributeHandler(new HandleIntegerAttribute("LineThickness")
 		{
 			public void setValue(final String name, final int val)
 			{
-				_sensorArcs.setLineThickness(val);
+				_dynamicShapes.setLineThickness(val);
 			}
 		});
 	}
@@ -68,33 +68,32 @@ abstract public class SensorArcHandler extends
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		_sensorArcs = new Debrief.Wrappers.DynamicTrackShapeSetWrapper("");
+		_dynamicShapes = new Debrief.Wrappers.DynamicTrackShapeSetWrapper("");
 
 		super.handleOurselves(name, attributes);
 	}
 
-	void addThisContact(final MWC.GUI.Plottable val)
+	void addThisShape(final MWC.GUI.Plottable val)
 	{
 		// store in our list
-		_sensorArcs.add(val);
+		_dynamicShapes.add(val);
 	}
 
 	public final void elementClosed()
 	{
 		// our layer is complete, add it to the parent!
-		addSensor(_sensorArcs);
+		addDynamicTrackShapes(_dynamicShapes);
 
-
-		_sensorArcs = null;
+		_dynamicShapes = null;
 	}
 
-	abstract public void addSensor(Debrief.Wrappers.DynamicTrackShapeSetWrapper data);
+	abstract public void addDynamicTrackShapes(Debrief.Wrappers.DynamicTrackShapeSetWrapper data);
 
-	public static void exportSensorArc(final Debrief.Wrappers.DynamicTrackShapeSetWrapper sensor,
+	public static void exportShapeSet(final Debrief.Wrappers.DynamicTrackShapeSetWrapper sensor,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
-		final Element trk = doc.createElement("sensorarc");
+		final Element trk = doc.createElement(MY_TYPE);
 		trk.setAttribute("Name", toXML(sensor.getName()));
 		trk.setAttribute("Visible", writeThis(sensor.getVisible()));
 		trk.setAttribute("TrackName", sensor.getHost().getName());
@@ -109,12 +108,13 @@ abstract public class SensorArcHandler extends
 			if (pl instanceof Debrief.Wrappers.DynamicTrackShapeWrapper)
 			{
 				final Debrief.Wrappers.DynamicTrackShapeWrapper fw = (Debrief.Wrappers.DynamicTrackShapeWrapper) pl;
-				SensorArcContactHandler.exportFix(fw, trk, doc);
+				DynamicTrackCoverageHandler.exportFix(fw, trk, doc);
 			}
 
 		}
 
 		parent.appendChild(trk);
 	}
+
 
 }
