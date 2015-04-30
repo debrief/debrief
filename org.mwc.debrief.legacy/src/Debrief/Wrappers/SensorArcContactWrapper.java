@@ -46,6 +46,24 @@ public final class SensorArcContactWrapper extends
 		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
 		Editable.DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
 {
+	
+	
+	/** utility class used to store a single sensor coverage arc
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static class SensorArcValue
+	{
+		public int min, max, angle, course;
+
+		@Override
+		public String toString()
+		{
+			return min + " " + max + " " + angle + " " + course;
+		}
+	}
+	
 	// ///////////////////////////////////////////
 	// member variables
 	/**
