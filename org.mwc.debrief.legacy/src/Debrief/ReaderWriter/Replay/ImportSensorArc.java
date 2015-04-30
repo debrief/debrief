@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import Debrief.Wrappers.DynamicTrackShapeWrapper;
-import Debrief.Wrappers.DynamicTrackShapeWrapper.DynamicCoverageShape;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicCoverageShape;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;

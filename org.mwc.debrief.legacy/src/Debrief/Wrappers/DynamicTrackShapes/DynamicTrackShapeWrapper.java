@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package Debrief.Wrappers;
+package Debrief.Wrappers.DynamicTrackShapes;
 
 import java.awt.Color;
 import java.awt.Point;

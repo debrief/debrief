@@ -34,6 +34,8 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import Debrief.ReaderWriter.Replay.FormatTracks;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;

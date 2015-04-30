@@ -17,7 +17,7 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 abstract public class DynamicTrackCoverageHandler extends

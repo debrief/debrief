@@ -12,12 +12,13 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package Debrief.Wrappers;
+package Debrief.Wrappers.DynamicTrackShapes;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;

@@ -17,14 +17,14 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 
 abstract public class DynamicTrackShapeSetHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 	private static final String MY_TYPE = "DynamicShapeSet";
-	Debrief.Wrappers.DynamicTrackShapeSetWrapper _dynamicShapes;
+	Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper _dynamicShapes;
 			
 	public DynamicTrackShapeSetHandler()
 	{
@@ -68,7 +68,7 @@ abstract public class DynamicTrackShapeSetHandler extends
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		_dynamicShapes = new Debrief.Wrappers.DynamicTrackShapeSetWrapper("");
+		_dynamicShapes = new Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper("");
 
 		super.handleOurselves(name, attributes);
 	}
@@ -87,9 +87,9 @@ abstract public class DynamicTrackShapeSetHandler extends
 		_dynamicShapes = null;
 	}
 
-	abstract public void addDynamicTrackShapes(Debrief.Wrappers.DynamicTrackShapeSetWrapper data);
+	abstract public void addDynamicTrackShapes(Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper data);
 
-	public static void exportShapeSet(final Debrief.Wrappers.DynamicTrackShapeSetWrapper sensor,
+	public static void exportShapeSet(final Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper sensor,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 
@@ -105,9 +105,9 @@ abstract public class DynamicTrackShapeSetHandler extends
 		while (iter.hasMoreElements())
 		{
 			final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
-			if (pl instanceof Debrief.Wrappers.DynamicTrackShapeWrapper)
+			if (pl instanceof Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper)
 			{
-				final Debrief.Wrappers.DynamicTrackShapeWrapper fw = (Debrief.Wrappers.DynamicTrackShapeWrapper) pl;
+				final Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper fw = (Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper) pl;
 				DynamicTrackCoverageHandler.exportFix(fw, trk, doc);
 			}
 
