@@ -17,6 +17,7 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
@@ -98,7 +99,7 @@ abstract public class DynamicTrackCoverageHandler extends
 		{
 			public void setValue(final String name, final String value)
 			{
-				_theContact.setArcs(value);
+				_theContact.setConstraints(value);
 			}
 		});
 
@@ -152,7 +153,7 @@ abstract public class DynamicTrackCoverageHandler extends
 	public final void handleOurselves(final String name, final Attributes atts)
 	{
 		// create the new items
-		_theContact = new DynamicTrackShapeWrapper();
+		_theContact = new DynamicTrackCoverageWrapper();
 
 		labelLocation.setValue(null);
 		lineStyle.setValue(null);
@@ -205,7 +206,7 @@ abstract public class DynamicTrackCoverageHandler extends
 		{
 			eFix.setAttribute(END_DTG, writeThis(contact.getEndDTG()));
 		}
-		eFix.setAttribute(ARCS, contact.getArcs());
+		eFix.setAttribute(ARCS, contact.getConstraints());
 
 		eFix.setAttribute(VISIBLE, writeThis(contact.getVisible()));
 		

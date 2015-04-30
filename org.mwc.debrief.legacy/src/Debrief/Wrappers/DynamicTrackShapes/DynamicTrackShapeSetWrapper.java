@@ -19,20 +19,17 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.MessageProvider;
 import MWC.GUI.MovingPlottable;
-import MWC.GUI.Plottables;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WatchableList;
 
-public class DynamicTrackShapeSetWrapper extends Plottables implements Cloneable,
+public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 		MovingPlottable
 {
 	/**
@@ -121,24 +118,24 @@ public class DynamicTrackShapeSetWrapper extends Plottables implements Cloneable
 		}
 	}
 
-	public final void append(final Layer theLayer)
-	{
-		if (theLayer instanceof DynamicTrackShapeSetWrapper)
-		{
-			final DynamicTrackShapeSetWrapper other = (DynamicTrackShapeSetWrapper) theLayer;
-
-			final Enumeration<Editable> it = other.elements();
-			while (it.hasMoreElements())
-			{
-				final DynamicTrackShapeWrapper fw = (DynamicTrackShapeWrapper) it
-						.nextElement();
-				this.add(fw);
-			}
-
-			// and clear him out...
-			other.removeAllElements();
-		}
-	}
+//	public final void append(final Layer theLayer)
+//	{
+//		if (theLayer instanceof DynamicTrackShapeSetWrapper)
+//		{
+//			final DynamicTrackShapeSetWrapper other = (DynamicTrackShapeSetWrapper) theLayer;
+//
+//			final Enumeration<Editable> it = other.elements();
+//			while (it.hasMoreElements())
+//			{
+//				final DynamicTrackShapeWrapper fw = (DynamicTrackShapeWrapper) it
+//						.nextElement();
+//				this.add(fw);
+//			}
+//
+//			// and clear him out...
+//			other.removeAllElements();
+//		}
+//	}
 
 	public boolean hasOrderedChildren()
 	{
@@ -240,37 +237,6 @@ public class DynamicTrackShapeSetWrapper extends Plottables implements Cloneable
 		if (eles.hasMoreElements())
 			res = eles.nextElement();
 		return res;
-	}
-
-	/**
-	 * perform a merge of the supplied tracks.
-	 * 
-	 * @param target
-	 *          the final recipient of the other items
-	 * @param theLayers
-	 * @param parent
-	 *          the parent tracks for the supplied items
-	 * @param subjects
-	 *          the actual selected items
-	 * @return sufficient information to undo the merge
-	 */
-	public static int mergeSensors(final Editable targetE,
-			final Layers theLayers, final Layer parent, final Editable[] subjects)
-	{
-		final DynamicTrackShapeSetWrapper target = (DynamicTrackShapeSetWrapper) targetE;
-
-		for (int i = 0; i < subjects.length; i++)
-		{
-			final DynamicTrackShapeSetWrapper sensor = (DynamicTrackShapeSetWrapper) subjects[i];
-			if (sensor != target)
-			{
-				// ok, append the items in this layer to the target
-				target.append(sensor);
-				parent.removeElement(sensor);
-			}
-		}
-
-		return MessageProvider.OK;
 	}
 
 	@Override

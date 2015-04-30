@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper.DynamicCoverageShape;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicCoverageShape;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicShape;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -49,7 +51,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     String sensorName;
     HiResDate startDtg = null;
     HiResDate endDtg = null;
-    List<DynamicCoverageShape> values = new ArrayList<DynamicCoverageShape>();
+    List<DynamicShape> values = new ArrayList<DynamicShape>();
     java.awt.Color theColor;
 
     List<String> myTokens = new ArrayList<String>();
@@ -115,7 +117,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 	
 	    // create the contact object		
 	    final DynamicTrackShapeWrapper data =
-	        new DynamicTrackShapeWrapper(theTrack, startDtg, 
+	        new DynamicTrackCoverageWrapper(theTrack, startDtg, 
 	        		endDtg, 
 	        		values,
 	        		theColor,
@@ -132,14 +134,14 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     }
   }
 
-	private int addValue(final List<String> myTokens, List<DynamicCoverageShape> values, int index)
+	private int addValue(final List<String> myTokens, List<DynamicShape> values, int index)
 			throws ParseException
 	{
 		int minAngleDegs = new Integer(myTokens.get(index++)).intValue();
 		int maxAngleDegs = new Integer(myTokens.get(index++)).intValue();
 		int minYds = new Integer(myTokens.get(index++)).intValue();
 		int maxYds = new Integer(myTokens.get(index++)).intValue();
-		DynamicCoverageShape value = new DynamicCoverageShape(minAngleDegs, maxAngleDegs, minYds, maxYds);
+		DynamicShape value = new DynamicCoverageShape(minAngleDegs, maxAngleDegs, minYds, maxYds);
 		
 		values.add(value);
 		return index;
@@ -203,8 +205,9 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     // builder.append(ImportReplay.replaySymbolForLineStyle(sacw.getLineStyle()));
     
     builder.append(" ");
-    for (DynamicCoverageShape value:sacw.getValues())
+    for (DynamicShape valueD:sacw.getValues())
     {
+    	DynamicCoverageShape value = (DynamicCoverageShape) valueD;
     	builder.append(value.minAngleDegs);
     	builder.append(" ");
     	builder.append(value.maxAngleDegs);
