@@ -23,7 +23,7 @@ import MWC.GUI.Editable;
 abstract public class DynamicTrackShapeSetHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	private static final String MY_TYPE = "DynamicCoverageSet";
+	private static final String MY_TYPE = "DynamicShapeSet";
 	Debrief.Wrappers.DynamicTrackShapeSetWrapper _dynamicShapes;
 			
 	public DynamicTrackShapeSetHandler()
