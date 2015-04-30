@@ -349,12 +349,6 @@ public class ImportReplay extends PlainImporterBase
 	 * 
 	 */
 	private Vector<SensorWrapper> _importedSensors;
-	
-	/** a list of the sensor arcs we've imported
-	 * 
-	 */
-	
-	private Vector<DynamicTrackShapeSetWrapper> _importedSensorArcs;
 
 	/**
 	 * the property name we use for importing tracks (DR/ATG)
@@ -677,11 +671,11 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 	
-	private HiResDate processSensorArcContactWrapper(final DynamicTrackShapeWrapper sw)
+	private HiResDate processDynamicShapeWrapper(final DynamicTrackShapeWrapper sw)
 	{	
 		final HiResDate res = null;
 
-		DynamicTrackShapeSetWrapper thisSensor = null;
+		DynamicTrackShapeSetWrapper thisShape = null;
 
 		// do we have a sensor capable of handling this contact?
 		final String sensorName = sw.getSensorName();
@@ -698,22 +692,22 @@ public class ImportReplay extends PlainImporterBase
 		if (val == null || !(val instanceof TrackWrapper))
 			return res;
 
-		// so, we've found a track - see if it holds this sensor
+		// so, we've found a track - see if it holds this shape
 		final TrackWrapper theTrack = (TrackWrapper) val;
 		final Enumeration<Editable> iter = theTrack.getDynamicShapes().elements();
 
-		// step through this track' sensors
+		// step through this track' shape
 		if (iter != null) 
 		{
 			while (iter.hasMoreElements()) 
 			{
-				final DynamicTrackShapeSetWrapper sensorw = (DynamicTrackShapeSetWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper shape = (DynamicTrackShapeSetWrapper) iter.nextElement();
 
 				// is this our sensor?
-				if (sensorw.getName().equals(sensorName)) 
+				if (shape.getName().equals(sensorName)) 
 				{
 					// cool, drop out
-					thisSensor = sensorw;
+					thisShape = shape;
 					break;
 				}
 			} // looping through the sensors
@@ -721,26 +715,16 @@ public class ImportReplay extends PlainImporterBase
 
 		
 		// did we find it?
-		if (thisSensor == null) 
+		if (thisShape == null) 
 		{
 			// then create it
-			thisSensor = new DynamicTrackShapeSetWrapper(sensorName);
+			thisShape = new DynamicTrackShapeSetWrapper(sensorName);
 
-			theTrack.add(thisSensor);
+			theTrack.add(thisShape);
 		}
-
-		// remember this sensor.  Note: this is a change, so that we list
-		// all sensors that were in this import, not just new ones.  If
-		// we actually only want to know about new sensors, then this "if" 
-		// block should actually be in the above (thisSensor == null)
-		// code block.
-		if(!_importedSensorArcs.contains(thisSensor))
-		{
-			_importedSensorArcs.add(thisSensor);
-		}
-		
+	
 		// now add the new contact to this sensor
-		thisSensor.add(sw);
+		thisShape.add(sw);
 
 		return res;
 	}
@@ -889,7 +873,7 @@ public class ImportReplay extends PlainImporterBase
 		}
 		else if (thisObject instanceof DynamicTrackShapeWrapper)
 		{
-			res = processSensorArcContactWrapper((DynamicTrackShapeWrapper) thisObject);
+			res = processDynamicShapeWrapper((DynamicTrackShapeWrapper) thisObject);
 		}
 		else if (thisObject instanceof TMAContactWrapper)
 		{
@@ -1218,11 +1202,6 @@ public class ImportReplay extends PlainImporterBase
 		_importedSensors = new Vector<SensorWrapper>();
 	}
 	
-	public void clearSensorArcList()
-	{
-		_importedSensorArcs = new Vector<DynamicTrackShapeSetWrapper>();
-	}
-
 	static public String replaySymbolForLineStyle(final int style)
 	{
 		switch (style)

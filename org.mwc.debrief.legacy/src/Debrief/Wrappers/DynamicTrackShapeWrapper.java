@@ -396,53 +396,17 @@ public final class DynamicTrackShapeWrapper extends PlainWrapper implements
 		{
 
 			// ok, we've got enough to do the paint!
-			for (DynamicCoverageShape value : _values)
+			for (DynamicShape value : _values)
 			{
 				value.paint(dest, hostState, getColor());
-//				paintArc(dest, origin, trackCourse, getColor(), value);
 			}
 		}
 
+		// and restore the background color
 		dest.setBackgroundColor(oldColor);
 
 	}
 	
-
-//	private void paintArc(final MWC.GUI.CanvasType dest,
-//			final WorldLocation origin, int trackCourseDegs, Color color, DynamicCoverageShape value)
-//	{
-//		// 
-//		
-//		// get the polygon at this location
-//		Vector<WorldLocation> _theDataPoints = calcDataPoints(origin, trackCourseDegs, value);
-//		
-//
-//    // create a polygon to represent the ellipse (so that we can fill or draw it)
-//    final int len = _theDataPoints.size();
-//    final int[] xPoints = new int[len];
-//    final int[] yPoints = new int[len];
-//
-//    // work through the list to create the list of screen coordinates
-//    for (int i = 0; i < _theDataPoints.size(); i++)
-//    {
-//      final WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
-//
-//      final Point p2 = dest.toScreen(location);
-//
-//      xPoints[i] = p2.x;
-//      yPoints[i] = p2.y;
-//    }
-//
-////			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
-////			{
-//				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
-//    		ext.semiFillPolygon(xPoints, yPoints, len);
-////			}
-////    	else
-////    		dest.fillPolygon(xPoints, yPoints, len);
-//	
-//		
-//	}
 
 	/**
 	 * find the name of the sensor which recorded this contact

@@ -106,7 +106,6 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 		
 		// clear the list of sensor names
 		importer.clearSensorList();
-		importer.clearSensorArcList();
 		
 		// and do the import...
 		importer.importThis(thePath, is, theLayers);
