@@ -86,7 +86,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
-		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack, 
+		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack,
 		MovingPlottable
 {
 
@@ -118,8 +118,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// just add the reset color field first
 			final Class<TrackWrapper> c = TrackWrapper.class;
 
-			final MethodDescriptor[] mds =
-			{
+			final MethodDescriptor[] mds = {
 					method(c, "exportThis", null, "Export Shape"),
 					method(c, "resetLabels", null, "Reset DTG Labels"),
 					method(c, "calcCourseSpeed", null/* no params */,
@@ -139,8 +138,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			try
 			{
-				PropertyDescriptor[] res =
-				{
+				PropertyDescriptor[] res = {
 						expertProp("SymbolType",
 								"the type of symbol plotted for this label", FORMAT),
 						expertProp("LineThickness", "the width to draw this track", FORMAT),
@@ -213,8 +211,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	private static final String SOLUTIONS_LAYER_NAME = "Solutions";
 
 	public static final String SENSORS_LAYER_NAME = "Sensors";
-	
-	public static final String SENSORARCS_LAYER_NAME = "Coverage Arcs";
+
+	public static final String DYNAMIC_SHAPES_LAYER_NAME = "Dynamic Shapes";
 
 	/**
 	 * keep track of versions - version id
@@ -746,10 +744,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_mySensors = new SplittableLayer(true);
 		_mySensors.setName(SENSORS_LAYER_NAME);
-		
+
 		_myDynamicShapes = new SplittableLayer(true);
-		_myDynamicShapes.setName(SENSORARCS_LAYER_NAME);
-		
+		_myDynamicShapes.setName(DYNAMIC_SHAPES_LAYER_NAME);
+
 		_mySolutions = new BaseLayer(true);
 		_mySolutions.setName(SOLUTIONS_LAYER_NAME);
 
@@ -831,15 +829,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			final DynamicTrackShapeSetWrapper swr = (DynamicTrackShapeSetWrapper) point;
 
-			// add to our list
-			_myDynamicShapes.add(swr);
+			// just check we don't alraedy have it
+			if (_myDynamicShapes.contains(swr))
+			{
+				MWC.Utilities.Errors.Trace
+						.trace("Don't allow duplicate shape set name:" + swr.getName());
+			}
+			else
+			{
 
-			// tell the sensor about us
-			swr.setHost(this);
+				// add to our list
+				_myDynamicShapes.add(swr);
 
-			// indicate success
-			done = true;
+				// tell the sensor about us
+				swr.setHost(this);
 
+				// indicate success
+				done = true;
+			}
 		}
 		// is this a TMA solution track?
 		else if (point instanceof TMAWrapper)
@@ -1007,7 +1014,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// now ditch them
 			_mySensors.removeAllElements();
 		}
-		
+
 		// and my objects
 		// first ask the sensors to close themselves
 		if (_myDynamicShapes != null)
@@ -1107,13 +1114,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 		}
-		
+
 		if (_myDynamicShapes != null)
 		{
 			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
-				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter
+						.nextElement();
 				// is it visible?
 				if (sw.getVisible())
 				{
@@ -1157,7 +1165,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			res.add(_mySensors);
 		}
-		
+
 		if (_myDynamicShapes.size() > 0)
 		{
 			res.add(_myDynamicShapes);
@@ -1242,7 +1250,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				sw.filterListTo(start, end);
 			} // through the sensor arcs
 		} // whether we have any sensor arcs
-		
+
 		if (_mySolutions != null)
 		{
 			final Enumeration<Editable> iter = _mySolutions.elements();
@@ -1372,13 +1380,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				nextS.setHost(this);
 			}
 		}
-		
+
 		if (_myDynamicShapes != null)
 		{
 			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
-				final DynamicTrackShapeSetWrapper nextS = (DynamicTrackShapeSetWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper nextS = (DynamicTrackShapeSetWrapper) iter
+						.nextElement();
 				nextS.setHost(this);
 			}
 		}
@@ -1873,8 +1882,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// check that we do actually contain some data
 		if (_thePositions.size() == 0)
 		{
-			return new MWC.GenericData.Watchable[]
-			{};
+			return new MWC.GenericData.Watchable[] {};
 		}
 
 		// special case - if we've been asked for an invalid time value
@@ -1883,8 +1891,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final TrackSegment seg = (TrackSegment) _thePositions.first();
 			final FixWrapper fix = (FixWrapper) seg.first();
 			// just return our first location
-			return new MWC.GenericData.Watchable[]
-			{ fix };
+			return new MWC.GenericData.Watchable[] { fix };
 		}
 
 		// see if this is the DTG we have just requestsed
@@ -1942,7 +1949,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						// is this one visible?
 						if (!res.getVisible())
 						{
-							
 
 							// right, the one we found isn't visible. duplicate the
 							// set, so that
@@ -1963,16 +1969,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 							// SPECIAL CASE: when the time period is after
 							// the end of the filtered period, the above logic will
-							// result in the very last point on the list being 
-							// selected.  In truth, the first point on the 
+							// result in the very last point on the list being
+							// selected. In truth, the first point on the
 							// list is closer to the requested time.
-							// when this happens, return the first item in the 
+							// when this happens, return the first item in the
 							// original list.
-							if(tmpSet.size() == 0)
+							if (tmpSet.size() == 0)
 							{
 								res = (FixWrapper) set.first();
 							}
-							
+
 						}
 
 					}
@@ -2046,13 +2052,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		if (res != null)
 		{
-			return new MWC.GenericData.Watchable[]
-			{ res };
+			return new MWC.GenericData.Watchable[] { res };
 		}
 		else
 		{
-			return new MWC.GenericData.Watchable[]
-			{};
+			return new MWC.GenericData.Watchable[] {};
 		}
 
 	}
@@ -2147,6 +2151,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		return _myDynamicShapes;
 	}
+
 	/**
 	 * return the symbol to be used for plotting this track in snail mode
 	 */
@@ -2653,16 +2658,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// is the first track a DR track?
 		// NO - CHANGED: we only initialise the track font in italics
 		// for a DR track. Then we let the user change it
-//		final TrackSegment t1 = (TrackSegment) _thePositions.first();
-//		
-//		if (t1.getPlotRelative())
-//		{
-//			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
-//		}
-//		else if (_theLabel.getFont().isItalic())
-//		{
-//			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
-//		}
+		// final TrackSegment t1 = (TrackSegment) _thePositions.first();
+		//
+		// if (t1.getPlotRelative())
+		// {
+		// _theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
+		// }
+		// else if (_theLabel.getFont().isItalic())
+		// {
+		// _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+		// }
 
 		// check that we have set the name for the label
 		if (_theLabel.getString() == null)
@@ -2709,21 +2714,21 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 
 			// does it have visible data points?
-			if(thisE.size() == 0)
+			if (thisE.size() == 0)
 			{
 				continue;
 			}
-			
+
 			// if this is a TMA segment, we plot the name 1/2 way along. If it isn't
 			// we plot it at the start
-			if(thisE instanceof CoreTMASegment)
+			if (thisE instanceof CoreTMASegment)
 			{
 				// just move along - we plot the name
 				// a the mid-point
 			}
 			else
 			{
-			
+
 				// is the first track a DR track?
 				if (thisE.getPlotRelative())
 				{
@@ -2733,7 +2738,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				{
 					_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
 				}
-	
+
 				final WorldLocation theLoc = thisE.getTrackStart();
 				final String oldTxt = _theLabel.getString();
 				_theLabel.setString(thisE.getName());
@@ -2750,7 +2755,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				_theLabel.setLocation(theLoc);
 				_theLabel.paint(dest);
 				_theLabel.setString(oldTxt);
-				}
+			}
 
 		}
 
@@ -2818,25 +2823,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			} // through the sensors
 		} // whether the sensor layer is visible
-		
+
 		// now plot the sensor arcs
-//		if (_mySensorArcs.getVisible())
-//		{
-//			final Enumeration<Editable> iter = _mySensorArcs.elements();
-//			while (iter.hasMoreElements())
-//			{
-//				final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
-//				// just check that the sensor knows we're it's parent
-//				if (sw.getHost() == null)
-//				{
-//					sw.setHost(this);
-//				}
-//
-//				// and do the paint
-//				sw.paint(dest);
-//
-//			}
-//		}
+		// if (_mySensorArcs.getVisible())
+		// {
+		// final Enumeration<Editable> iter = _mySensorArcs.elements();
+		// while (iter.hasMoreElements())
+		// {
+		// final SensorArcWrapper sw = (SensorArcWrapper) iter.nextElement();
+		// // just check that the sensor knows we're it's parent
+		// if (sw.getHost() == null)
+		// {
+		// sw.setHost(this);
+		// }
+		//
+		// // and do the paint
+		// sw.paint(dest);
+		//
+		// }
+		// }
 
 		// /////////////////////////////////////////////
 		// and now the track itself
@@ -3024,7 +3029,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
-				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter
+						.nextElement();
 				// try to remove it from this one...
 				sw.removeElement(point);
 			}
@@ -3456,7 +3462,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					thisS.decimate(theVal, startTime);
 				}
 			}
-			
+
 			// now the solutions
 			if (_mySolutions != null)
 			{
@@ -4004,13 +4010,14 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				sw.trimTo(period);
 			}
 		}
-		
+
 		if (_myDynamicShapes != null)
 		{
 			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
-				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter
+						.nextElement();
 				sw.trimTo(period);
 			}
 		}
@@ -4042,46 +4049,47 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return elements();
 	}
 
-	/** accessor to determine if this is a relative track
+	/**
+	 * accessor to determine if this is a relative track
 	 * 
 	 * @return
 	 */
 	public boolean isTMATrack()
 	{
 		boolean res = false;
-		if(_thePositions != null)
-			if(_thePositions.size() > 0)
-				if(_thePositions.first() instanceof CoreTMASegment)
+		if (_thePositions != null)
+			if (_thePositions.size() > 0)
+				if (_thePositions.first() instanceof CoreTMASegment)
 				{
 					res = true;
 				}
-		
+
 		return res;
 	}
-	
+
 	@Override
 	public int compareTo(Plottable arg0)
 	{
 		Integer answer = null;
-		
-		// SPECIAL PROCESSING: we wish to push TMA tracks to the top of any 
+
+		// SPECIAL PROCESSING: we wish to push TMA tracks to the top of any
 		// tracks shown in the outline view.
-		
+
 		// is he a track?
-		if(arg0 instanceof TrackWrapper)
+		if (arg0 instanceof TrackWrapper)
 		{
 			TrackWrapper other = (TrackWrapper) arg0;
-			
+
 			// yes, he's a track. See if we're a relative track
 			boolean iAmTMA = isTMATrack();
-			
+
 			// is he relative?
 			boolean heIsTMA = other.isTMATrack();
-			
-			if(heIsTMA)
+
+			if (heIsTMA)
 			{
-				// ok, he's a TMA segment. now we need to sort out if we are.						
-				if(iAmTMA)
+				// ok, he's a TMA segment. now we need to sort out if we are.
+				if (iAmTMA)
 				{
 					// we're both relative, compare names
 					answer = getName().compareTo(other.getName());
@@ -4094,8 +4102,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 			else
 			{
-				// he's not relative. am I? 
-				if(iAmTMA)
+				// he's not relative. am I?
+				if (iAmTMA)
 				{
 					// I am , so go first
 					answer = -1;
@@ -4107,11 +4115,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// we're a track, they're not - put us at the end!
 			answer = 1;
 		}
-		
+
 		// if we haven't worked anything out yet, just use the parent implementation
-		if(answer == null)
+		if (answer == null)
 			answer = super.compareTo(arg0);
-		
+
 		return answer;
 	}
 
@@ -4134,7 +4142,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<Editable> iter = _myDynamicShapes.elements();
 			while (iter.hasMoreElements())
 			{
-				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter.nextElement();
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) iter
+						.nextElement();
 
 				// and do the paint
 				sw.paint(dest, time);
@@ -4144,5 +4153,4 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	}
 
-	
 }
