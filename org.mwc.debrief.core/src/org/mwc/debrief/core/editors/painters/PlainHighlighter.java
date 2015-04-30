@@ -97,11 +97,6 @@ public class PlainHighlighter implements TemporalLayerPainter
 	 */
 	public void paintThisLayer(final Layer theLayer, final CanvasType dest, final HiResDate dtg)
 	{
-		if (theLayer instanceof MovingPlottable && dtg != null)
-		{
-			((MovingPlottable)theLayer).paint(dest, dtg.getDate().getTime());
-		}
-
 		// paint it, to start off with
 		theLayer.paint(dest);
 			

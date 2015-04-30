@@ -156,6 +156,7 @@ import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -1278,6 +1279,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					// if (tNow != null)
 					if (true)
 					{
+						if (thisLayer instanceof MovingPlottable && tNow != null)
+						{
+							((MovingPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
+						}
+
 						// yes. cool, get plotting
 						_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer,
 								dest, tNow);
