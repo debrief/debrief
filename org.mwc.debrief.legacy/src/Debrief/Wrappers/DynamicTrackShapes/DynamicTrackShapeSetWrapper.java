@@ -37,9 +37,6 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 	 */
 	private static final long serialVersionUID = 1L;
 
-
-	private String _myName;
-
 	/**
 	 * our editor
 	 */
@@ -58,7 +55,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 	 */
 	public DynamicTrackShapeSetWrapper(final String title)
 	{
-		_myName = title;
+		super.setName(title);
 	}
 
 	// //////////////////////////////////////
@@ -151,7 +148,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 
 	public final String toString()
 	{
-		return "Coverage Arc:" + getName() + " (" + size() + " items)";
+		return "Dynamic Shape:" + getName() + " (" + size() + " items)";
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
@@ -281,12 +278,6 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 		MWC.Utilities.Errors.Trace
 				.trace("Sensor Arc Wrapper paint() should not be called!");
 
-	}
-
-	@Override
-	public String getName()
-	{
-		return _myName;
 	}
 
 	@Override
