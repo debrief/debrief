@@ -136,10 +136,10 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 			throws ParseException
 	{
 		SensorArcValue value = new SensorArcValue();
-		value.min = new Integer(myTokens.get(index++)).intValue();
-		value.max = new Integer(myTokens.get(index++)).intValue();
-		value.angle = new Integer(myTokens.get(index++)).intValue();
-		value.course = new Integer(myTokens.get(index++)).intValue();
+		value.minAngleDegs = new Integer(myTokens.get(index++)).intValue();
+		value.maxAngleDegs = new Integer(myTokens.get(index++)).intValue();
+		value.minYds = new Integer(myTokens.get(index++)).intValue();
+		value.maxYds = new Integer(myTokens.get(index++)).intValue();
 		values.add(value);
 		return index;
 	}
@@ -204,13 +204,13 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
     builder.append(" ");
     for (SensorArcValue value:sacw.getValues())
     {
-    	builder.append(value.min);
+    	builder.append(value.minYds);
     	builder.append(" ");
-    	builder.append(value.max);
+    	builder.append(value.maxYds);
     	builder.append(" ");
-    	builder.append(value.angle);
+    	builder.append(value.minAngleDegs);
     	builder.append(" ");
-    	builder.append(value.course);
+    	builder.append(value.maxAngleDegs);
     	builder.append(" ");
     }
 		

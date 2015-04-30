@@ -679,7 +679,7 @@ public class ImportReplay extends PlainImporterBase
 	
 	private HiResDate processSensorArcContactWrapper(final SensorArcContactWrapper sw)
 	{	
-		final HiResDate res = sw.getTime();
+		final HiResDate res = null;
 
 		SensorArcWrapper thisSensor = null;
 

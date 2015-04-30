@@ -16,10 +16,8 @@ package Debrief.Wrappers;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
-import Debrief.Wrappers.SensorArcContactWrapper.SensorArcValue;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
@@ -32,7 +30,6 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WatchableList;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public class SensorArcWrapper extends Plottables implements Cloneable,
@@ -61,7 +58,6 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 
 	private BaseTimePeriod _timePeriod;
 
-
 	// //////////////////////////////////////
 	// constructors
 	/**
@@ -77,54 +73,13 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 	// //////////////////////////////////////
 
 	/**
-	 * the real getBounds object, which uses properties of the parent
+	 * find the data area occupied by this item
 	 */
 	public final MWC.GenericData.WorldArea getBounds()
 	{
-		// we no longer just return the bounds of the track, because a portion
-		// of the track may have been made invisible.
-		// instead, we will pass through the full dataset and find the outer
-		// bounds of the visible area
-		WorldArea res = null;
-
-		if (!getVisible())
-		{
-			// hey, we're invisible, return null
-		}
-		else
-		{
-			final Enumeration<Editable> it = this.elements();
-			while (it.hasMoreElements())
-			{
-				final SensorArcContactWrapper fw = (SensorArcContactWrapper) it
-						.nextElement();
-
-				// is this point visible?
-				if (fw.getVisible())
-				{
-
-					// has our data been initialised?
-					if (res == null)
-					{
-						// no, initialise it
-						final WorldLocation startOfLine = fw.getCalculatedOrigin(_myHost);
-
-						// we may not have a sensor-data origin, since the
-						// sensor may be out of the time period of the track
-						if (startOfLine != null)
-							res = new WorldArea(startOfLine, startOfLine);
-					}
-					else
-					{
-						// yes, extend to include the new area
-						res.extend(fw.getCalculatedOrigin(_myHost));
-					}
-
-				}
-			}
-		}
-
-		return res;
+		// this object only has a context in time-stepping.
+		// since it's dynamic, it doesn't have a concrete bounds.
+		return null;
 	}
 
 	/**
@@ -161,10 +116,8 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 						scw.getStartDTG(), scw.getEndDTG());
 			else
 			{
-				if (scw.getDTG() != null)
-				{
-					_timePeriod.extend(scw.getDTG());
-				}
+				_timePeriod.extend(scw.getStartDTG());
+				_timePeriod.extend(scw.getEndDTG());
 			}
 
 			// and tell the contact about us
@@ -223,111 +176,6 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 		return res;
 	}
 
-	// /////////////////////////////////////////////////////////////////
-	// support for WatchableList interface (required for Snail Trail plotting)
-	// //////////////////////////////////////////////////////////////////
-
-	/**
-	 * get the watchable in this list nearest to the specified DTG - we take most
-	 * of this processing from the similar method in TrackWrappper. If the DTG is
-	 * after our end, return our last point
-	 * 
-	 * @param DTG
-	 *          the DTG to search for
-	 * @return the nearest Watchable
-	 */
-	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
-	{
-
-		/**
-		 * we need to end up with a watchable, not a fix, so we need to work our way
-		 * through the fixes
-		 */
-		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[] {};
-
-		// check that we do actually contain some data
-		if (size() == 0)
-			return res;
-
-		// see if this DTG is inside our data range
-		// in which case we will just return null
-		final SensorArcContactWrapper theFirst = (SensorArcContactWrapper) first();
-		final SensorArcContactWrapper theLast = (SensorArcContactWrapper) last();
-
-		if ((DTG.greaterThanOrEqualTo(theFirst.getDTG()))
-				&& (DTG.lessThanOrEqualTo(theLast.getDTG())))
-		{
-			// yes it's inside our data range, find the first fix
-			// after the indicated point
-
-			// see if we have to create our local temporary fix
-			if (nearestContact == null)
-			{
-				nearestContact = new SensorArcContactWrapper(null, DTG, null,
-						new ArrayList<SensorArcValue>(), null, 0, getName());
-			}
-			else
-				nearestContact.setDTG(DTG);
-
-			// get the data..
-			final java.util.Vector<SensorArcContactWrapper> list = new java.util.Vector<SensorArcContactWrapper>(
-					0, 1);
-			boolean finished = false;
-
-			final Enumeration<Editable> it = this.elements();
-			while ((it.hasMoreElements()) && (!finished))
-			{
-				final SensorArcContactWrapper scw = (SensorArcContactWrapper) it
-						.nextElement();
-				final HiResDate thisDate = scw.getTime();
-				if (thisDate.lessThan(DTG))
-				{
-					// before it, ignore!
-				}
-				else if (thisDate.greaterThan(DTG))
-				{
-					// hey, it's a possible - if we haven't found an exact
-					// match
-					if (list.size() == 0)
-					{
-						list.add(scw);
-					}
-					else
-					{
-						// hey, we're finished!
-						finished = true;
-					}
-				}
-				else
-				{
-					// hey, it must be at the same time!
-					list.add(scw);
-				}
-
-			}
-
-			if (list.size() > 0)
-			{
-				final MWC.GenericData.Watchable[] dummy = new MWC.GenericData.Watchable[] { null };
-				res = list.toArray(dummy);
-			}
-		}
-		else if (DTG.greaterThanOrEqualTo(theLast.getDTG()))
-		{
-			// is it after the last one? If so, just plot the last one. This
-			// helps us when we're doing snail trails.
-			final java.util.Vector<SensorArcContactWrapper> list = new java.util.Vector<SensorArcContactWrapper>(
-					0, 1);
-			list.add(theLast);
-			final MWC.GenericData.Watchable[] dummy = new MWC.GenericData.Watchable[] { null };
-			res = list.toArray(dummy);
-		}
-
-		return res;
-
-	}
-
-
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
 	// //////////////////////////////////////////////////////////////////////////
@@ -361,7 +209,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 				final PropertyDescriptor[] res = {
 						prop("Name", "the name for this sensor"),
 						prop("Visible", "whether this sensor data is visible"),
-						prop("LineThickness", "the thickness to draw these sensor lines")};
+						prop("LineThickness", "the thickness to draw these sensor lines") };
 
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
@@ -471,8 +319,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 				continue;
 			// ok, plot it - and don't make it keep it simple, lets really go
 			// for it man!
-			con.setDTG(dtg);
-			con.paint(_myHost, canvas, false);
+			con.paint(canvas, dtg);
 		}
 
 		// and restore the line width
@@ -483,7 +330,9 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 	@Override
 	public void paint(CanvasType dest)
 	{
-		// TODO Auto-generated method stub
+		// this method shouldn't be called = we're a time dependent object
+		MWC.Utilities.Errors.Trace
+				.trace("Sensor Arc Wrapper paint() should not be called!");
 
 	}
 
@@ -530,7 +379,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 	{
 		return _myHost;
 	}
-	
+
 	public void trimTo(TimePeriod period)
 	{
 		java.util.SortedSet<Editable> newList = new java.util.TreeSet<Editable>();
@@ -540,7 +389,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 		{
 			final SensorArcContactWrapper thisE = (SensorArcContactWrapper) it
 					.nextElement();
-			if (period.contains(thisE.getTime()))
+			if (period.overlaps(thisE.getPeriod()))
 			{
 				newList.add(thisE);
 			}
@@ -548,7 +397,7 @@ public class SensorArcWrapper extends Plottables implements Cloneable,
 
 		// ditch the current items
 		removeAllElements();
-		
+
 		// ok, copy over the matching items
 		super.getData().addAll(newList);
 	}

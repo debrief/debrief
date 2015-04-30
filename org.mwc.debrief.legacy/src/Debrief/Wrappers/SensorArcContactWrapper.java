@@ -17,57 +17,52 @@ package Debrief.Wrappers;
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
-import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
-import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
-import MWC.GUI.FireReformatted;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Griddable;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
-import MWC.GUI.Plottables;
-import MWC.GUI.TimeStampedDataItem;
-import MWC.GUI.Tools.SubjectAction;
+import MWC.GUI.Shapes.CircleShape;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public final class SensorArcContactWrapper extends
-		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
-		Editable.DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
+public final class SensorArcContactWrapper extends PlainWrapper implements
+		Editable.DoNotHighlightMe, ExcludeFromRightClickEdit
 {
-	
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/** utility class used to store a single sensor coverage arc
+	/**
+	 * utility class used to store a single sensor coverage arc
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
 	public static class SensorArcValue
 	{
-		public int min, max, angle, course;
+		public int minYds, maxYds, minAngleDegs, maxAngleDegs;
 
 		@Override
 		public String toString()
 		{
-			return min + " " + max + " " + angle + " " + course;
+			return minYds + " " + maxYds + " " + minAngleDegs + " " + maxAngleDegs;
 		}
 	}
-	
+
 	// ///////////////////////////////////////////
 	// member variables
 	/**
@@ -75,10 +70,10 @@ public final class SensorArcContactWrapper extends
 	 */
 	private String _trackName;
 
-	private HiResDate _startDTG, _endDTG, _dtg;
-	
+	private HiResDate _startDTG, _endDTG;
+
 	private List<SensorArcValue> _values = new ArrayList<SensorArcValue>();
-	
+
 	private String _arcs;
 
 	/**
@@ -112,10 +107,6 @@ public final class SensorArcContactWrapper extends
 	private int _theLineLocation = MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE;
 
 	private String _sensorName;
-	
-	private WorldArea _theArea;
-
-	private double _radDegs = 0;
 
 	/**
 	 * default constructor, used when we read in from XML
@@ -138,11 +129,10 @@ public final class SensorArcContactWrapper extends
 	 * 
 	 */
 
-	public SensorArcContactWrapper(final String theTrack, final HiResDate startDtg,
-			final HiResDate endDtg,
-			List<SensorArcValue> values,
-			final Color theColor,
-			final int theStyle, final String sensorName)
+	public SensorArcContactWrapper(final String theTrack,
+			final HiResDate startDtg, final HiResDate endDtg,
+			List<SensorArcValue> values, final Color theColor, final int theStyle,
+			final String sensorName)
 	{
 		this();
 
@@ -151,7 +141,7 @@ public final class SensorArcContactWrapper extends
 		_endDTG = endDtg;
 		_values = values;
 		calculateArcs();
-		
+
 		// and the gui parameters
 		setColor(theColor);
 		_myLineStyle = theStyle;
@@ -162,105 +152,18 @@ public final class SensorArcContactWrapper extends
 	private void calculateArcs()
 	{
 		StringBuilder builder = new StringBuilder();
-		for (SensorArcValue value:_values)
+		for (SensorArcValue value : _values)
 		{
-			builder.append(value.min);
+			builder.append(value.minYds);
 			builder.append(" ");
-			builder.append(value.max);
+			builder.append(value.maxYds);
 			builder.append(" ");
-			builder.append(value.angle);
+			builder.append(value.minAngleDegs);
 			builder.append(" ");
-			builder.append(value.course);
+			builder.append(value.maxAngleDegs);
 			builder.append(" ");
 		}
 		_arcs = builder.toString().trim();
-	}
-
-	private void calculateArea(final WorldLocation centre)
-	{
-		// calc the outer radius
-		calculateExtRadius();
-
-		if (centre == null)
-		{
-			// FIXME
-			return;
-		}
-		// create our area
-		_theArea = new WorldArea(centre, centre);
-
-		// create & extend to top left
-		WorldLocation other = centre.add(new WorldVector(0, _radDegs, 0));
-		_theArea.extend(other);
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-				_radDegs, 0));
-		_theArea.extend(other);
-
-		// create & extend to bottom right
-		other = centre.add(new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(180), _radDegs, 0));
-		_theArea.extend(other);
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
-				_radDegs, 0));
-		_theArea.extend(other);
-	}
-
-	private void calculateExtRadius()
-	{
-		if (_radDegs != 0)
-		{
-			return;
-		}
-		int outer = 0;
-		for (SensorArcValue value : _values)
-		{
-			if (value.course > outer)
-			{
-				outer = value.course;
-			}
-		}
-		_radDegs = new WorldDistance(outer, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
-	}
-
-	/**
-	 * return the coordinates for the start of the line
-	 */
-	public final WorldLocation getCalculatedOrigin(
-			final MWC.GenericData.WatchableList parent)
-	{
-		MWC.GenericData.WatchableList theParent = parent;
-		if (theParent == null)
-		{
-			theParent = _mySensor.getHost();
-		}
-		if (theParent != null)
-		{
-			// better calculate it ourselves then
-			final TrackWrapper parentTrack = (TrackWrapper) theParent;
-
-			HiResDate dtg;
-			if (_dtg != null)
-			{
-				dtg = _dtg;
-			} 
-			else
-			{
-				dtg = _startDTG != null ? _startDTG : _endDTG;
-			}
-			if (dtg == null)
-			{
-				dtg = parentTrack.getStartDTG();
-			}
-			if (dtg != null)
-			{
-				Watchable[] wList = parentTrack.getNearestTo(_dtg);
-				if (wList.length > 0)
-				{
-					return wList[0].getLocation();
-				}
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -273,14 +176,14 @@ public final class SensorArcContactWrapper extends
 		return _trackName;
 	}
 
-
 	/**
 	 * member function to meet requirements of comparable interface *
 	 */
 	public final int compareTo(final Plottable o)
 	{
 		final SensorArcContactWrapper other = (SensorArcContactWrapper) o;
-		if (_startDTG == null || other == null || other._startDTG == null) {
+		if (_startDTG == null || other == null || other._startDTG == null)
+		{
 			return 1;
 		}
 		int res = 0;
@@ -335,148 +238,181 @@ public final class SensorArcContactWrapper extends
 	 * @param keep_simple
 	 *          whether to allow a change in line styles
 	 */
-	public final void paint(final MWC.GenericData.WatchableList track,
-			final MWC.GUI.CanvasType dest, final boolean keep_simple)
+	public final void paint(final MWC.GUI.CanvasType dest, final HiResDate DTG)
 	{
 		// ignore
 		if (!getVisible())
 			return;
 
-		// do we know our track?
-		if (track == null)
-		{
-			MWC.Utilities.Errors.Trace.trace("failed to find track for sensor data:"
-					+ this.getLabel());
-			return;
-		}
+		// restore the solid line style, for the next poor bugger
+		dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
 
-		// do we need an origin
-		final WorldLocation origin = getCalculatedOrigin(track);
-		calculateArea(origin);
+		// // now draw the label
+		// if (getLabelVisible())
+		// {
+		// WorldLocation labelPos = null;
+		//
+		// // sort out where to plot it
+		// if (_theLineLocation ==
+		// MWC.GUI.Properties.LineLocationPropertyEditor.START)
+		// {
+		// WorldLocation topLeft = new WorldLocation(origin .add(new WorldVector(0,
+		// _radDegs, 0)));
+		// topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions
+		// .Degs2Rads(270), _radDegs, 0));
+		// labelPos = topLeft;
+		// }
+		// else if (_theLineLocation ==
+		// MWC.GUI.Properties.LineLocationPropertyEditor.END)
+		// {
+		// WorldLocation bottomRight = new WorldLocation(
+		// origin.add(new WorldVector(MWC.Algorithms.Conversions
+		// .Degs2Rads(180), _radDegs, 0)));
+		// bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions
+		// .Degs2Rads(90), _radDegs, 0));
+		// labelPos = bottomRight;
+		// }
+		// else if (_theLineLocation ==
+		// MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
+		// {
+		// // calculate the centre point
+		// labelPos = origin;
+		// }
+		//
+		// // update it's location
+		// _theLabel.setLocation(labelPos);
+		// _theLabel.setColor(getColor());
+		// _theLabel.paint(dest);
+		// }
+		//
 
-		if (origin == null)
-		{
-			// FIXME
-			return;
-		}
-		
-		if (!keep_simple)
-		{
-
-			// restore the solid line style, for the next poor bugger
-			dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
-
-			// now draw the label
-			if (getLabelVisible())
-			{
-				WorldLocation labelPos = null;
-				
-				// sort out where to plot it
-				if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
-				{
-					WorldLocation topLeft = new WorldLocation(
-							origin.add(new WorldVector(0, _radDegs, 0)));
-					topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-							_radDegs, 0));
-					labelPos = topLeft;
-				}
-				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
-				{
-					WorldLocation bottomRight = new WorldLocation(
-							origin.add(new WorldVector(MWC.Algorithms.Conversions
-									.Degs2Rads(180), _radDegs, 0)));
-					bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions
-							.Degs2Rads(90), _radDegs, 0));
-					labelPos = bottomRight;
-				}
-				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-				{
-					// calculate the centre point
-					labelPos = origin;
-				}
-
-				// update it's location
-				_theLabel.setLocation(labelPos);
-				_theLabel.setColor(getColor());
-				_theLabel.paint(dest);
-			}
-		}
-		// ok, we have the start - convert it to a point
-		final Point pt = new Point(dest.toScreen(origin));
-			
-		// FIXME also plot the origin
-		dest.fillRect(pt.x - 1, pt.y - 2, 3, 3);
-		
 		// paint arc
-		
+
 		Color oldColor = dest.getBackgroundColor();
-		
+
 		int trackCourse = 0;
-		if (_dtg != null)
+		WorldLocation origin = null;
+
+		if (DTG != null)
 		{
-			Watchable[] wList = track.getNearestTo(_dtg);
+			Watchable[] wList = getSensor().getHost().getNearestTo(DTG);
 			if (wList.length > 0)
 			{
 				trackCourse = (int) Math.toDegrees(wList[0].getCourse());
+				origin = wList[0].getLocation();
 			}
 		}
-		for (SensorArcValue value : _values)
+
+		// have we worked?
+		if (origin == null)
 		{
-			paintArc(dest, origin, _radDegs, getColor(), value.min, value.max, trackCourse);
-			if (value.angle != 0 && value.course != 0)
+			MWC.Utilities.Errors.Trace
+					.trace("This sensor arc object hasn't got a parent at time:" + DTG);
+		}
+		else
+		{
+
+			// ok, we've got enough to do the paint!
+			for (SensorArcValue value : _values)
 			{
-				paintArc(dest, origin, _radDegs * value.angle / value.course, oldColor,
-						value.min, value.max, trackCourse);
+				paintArc(dest, origin, trackCourse, getColor(), value);
+				
+//				if (value.angle != 0 && value.course != 0)
+//				{
+//					paintArc(dest, origin, _radDegs * value.angle / value.course,
+//							oldColor, value.min, value.max, trackCourse);
+//				}
 			}
 		}
 
 		dest.setBackgroundColor(oldColor);
-		
+
 	}
+	
+  /**
+   * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
+   * @param trackCourseDegs 
+   */
+  private Vector<WorldLocation> calcDataPoints(WorldLocation origin, int trackCourseDegs, SensorArcValue arc)
+  {
+    // get ready to store the list
+    final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+
+    // produce the orientation in radians
+    final double orient = MWC.Algorithms.Conversions.Degs2Rads(trackCourseDegs);
+    
+    final double minDegs = new WorldDistance(arc.minYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
+    final double maxDegs = new WorldDistance(arc.maxYds, WorldDistance.YARDS).getValueIn(WorldDistance.DEGS);
+    
+
+    for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
+    {
+      // produce the current bearing
+      final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
+
+
+      // first produce a standard ellipse of the correct size
+      final double x1 = Math.sin(this_brg) * maxDegs;
+      double y1 = Math.cos(this_brg) * maxDegs;
+
+      // now produce the range out to the edge of the ellipse at
+      // this point
+      final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
+
+      // to prevent div/0 error in atan, make y1 small if zero
+      if (y1 == 0)
+        y1 = 0.0000001;
+
+      // and the new bearing to the correct point on the ellipse
+      final double tr = Math.atan2(y1, x1) + orient;
+
+      // use our "add" function to add a vector, rather than the
+      // x-y components as we did, so that the ellipse stays correctly
+      // shaped as it travels further from the equator.
+      final WorldLocation wl = origin.add(new WorldVector(tr, r, 0));
+
+      res.add(wl);
+    }
+
+    return res;
+
+  }
+	
 
 	private void paintArc(final MWC.GUI.CanvasType dest,
-			final WorldLocation origin,
-			double radDegs, Color color, int left, int right, int trackCourse)
+			final WorldLocation origin, int trackCourseDegs, Color color, SensorArcValue value)
 	{
-		WorldLocation topLeft = new WorldLocation(
-				origin.add(new WorldVector(0, radDegs, 0)));
-		topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-				radDegs, 0));
+		// 
+		
+		// get the polygon at this location
+		Vector<WorldLocation> _theDataPoints = calcDataPoints(origin, trackCourseDegs, value);
+		
 
-		// create & extend to bottom right
-		WorldLocation bottomRight = new WorldLocation(
-				origin.add(new WorldVector(MWC.Algorithms.Conversions
-						.Degs2Rads(180), radDegs, 0)));
-		bottomRight.addToMe(new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(90), radDegs, 0));
+    // create a polygon to represent the ellipse (so that we can fill or draw it)
+    final int len = _theDataPoints.size();
+    final int[] xPoints = new int[len];
+    final int[] yPoints = new int[len];
 
-		Point tl = dest.toScreen(topLeft);
+    // work through the list to create the list of screen coordinates
+    for (int i = 0; i < _theDataPoints.size(); i++)
+    {
+      final WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
 
-		int tlx = tl.x;
-		int tly = tl.y;
+      final Point p2 = dest.toScreen(location);
 
-		// get the width and height
-		Point br = dest.toScreen(bottomRight);
-				
-		int startAngle = - (left + trackCourse - 90);
-		int arcWidth = right - left;
+      xPoints[i] = p2.x;
+      yPoints[i] = p2.y;
+    }
 
-		int wid = br.x - tlx;
-		int height = br.y - tly;
-
-		// and now draw it
-
-		dest.setBackgroundColor(color);
-		dest.fillArc(tlx, tly, wid, height, startAngle, -arcWidth);
-	}
-
-	/**
-	 * method to reset the colour, so that we take that of our parent
-	 */
-  @FireReformatted
-	public final void resetColor()
-	{
-		setColor(null);
+//			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+//			{
+				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+    		ext.semiFillPolygon(xPoints, yPoints, len);
+//			}
+//    	else
+//    		dest.fillPolygon(xPoints, yPoints, len);
+	
+		
 	}
 
 	/**
@@ -501,16 +437,9 @@ public final class SensorArcContactWrapper extends
 	 */
 	public final MWC.GenericData.WorldArea getBounds()
 	{
-		if (_theArea !=null) 
-		{
-			return _theArea;
-		}
-		final WorldLocation origin = getCalculatedOrigin(null);
-
-		calculateArea(origin);
-
-		// done.
-		return _theArea;
+		// this object only has a context in time-stepping.
+		// since it's dynamic, it doesn't have a concrete bounds.
+		return null;
 	}
 
 	/**
@@ -612,25 +541,8 @@ public final class SensorArcContactWrapper extends
 	 */
 	public final double rangeFrom(final MWC.GenericData.WorldLocation other)
 	{
-		// return the distance from each end
-		double res = Plottables.INVALID_RANGE;
-
-		if (getVisible())
-		{
-			// find our origin
-			final WorldLocation theOrigin = getCalculatedOrigin(null);
-
-			// did we manage it?
-			if (theOrigin == null)
-			{
-				// nope, poss because we don't have a position for this time
-				return INVALID_RANGE;
-			}
-			else
-				res = theOrigin.rangeFrom(other);
-		}
-
-		return res;
+		// Note: since this is a dynamic object, it doesn't have a concrete location
+		return super.rangeFrom(other);
 	}
 
 	/**
@@ -692,8 +604,7 @@ public final class SensorArcContactWrapper extends
 	 */
 	public String getMultiLineName()
 	{
-		return "SensorArc:" + getName() + "\nTrack:"
-				+ getLabel();
+		return "SensorArc:" + getName() + "\nTrack:" + getLabel();
 	}
 
 	/**
@@ -704,57 +615,6 @@ public final class SensorArcContactWrapper extends
 	public final String toString()
 	{
 		return getName();
-	}
-
-	// ////////////////////////////////////////////////////////////
-	// methods to support Watchable interface
-	// ////////////////////////////////////////////////////////////
-	/**
-	 * get the current location of the watchable
-	 * 
-	 * @return the location
-	 */
-	public final WorldLocation getLocation()
-	{
-		return this.getCalculatedOrigin(null);
-	}
-
-	/**
-	 * get the current course of the watchable (rads)
-	 * 
-	 * @return course in radians
-	 */
-	public final double getCourse()
-	{
-		return -1;
-	}
-
-	/**
-	 * get the current speed of the watchable (kts)
-	 * 
-	 * @return speed in knots
-	 */
-	public final double getSpeed()
-	{
-		return -1;
-	}
-
-	/**
-	 * get the current depth of the watchable (m)
-	 * 
-	 * @return depth in metres
-	 */
-	public final double getDepth()
-	{
-		return 0;
-	}
-
-	/**
-	 * find out the time of this watchable
-	 */
-	public final HiResDate getTime()
-	{
-		return this.getDTG();
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
@@ -782,8 +642,7 @@ public final class SensorArcContactWrapper extends
 		{
 			try
 			{
-				final PropertyDescriptor[] res =
-				{
+				final PropertyDescriptor[] res = {
 						prop("Label", "the label for this data item", FORMAT),
 						prop("Visible", "whether this sensor contact data is visible",
 								FORMAT),
@@ -820,8 +679,7 @@ public final class SensorArcContactWrapper extends
 		{
 			try
 			{
-				final PropertyDescriptor[] res =
-				{
+				final PropertyDescriptor[] res = {
 						prop("Label", "the label for this data item", FORMAT),
 						prop("Visible", "whether this sensor contact data is visible",
 								FORMAT),
@@ -838,7 +696,7 @@ public final class SensorArcContactWrapper extends
 								MWC.GUI.Properties.LineLocationPropertyEditor.class),
 						longProp("LineStyle", "style to use to plot the line",
 								MWC.GUI.Properties.LineStylePropertyEditor.class),
-						
+
 				};
 				return res;
 			}
@@ -846,27 +704,6 @@ public final class SensorArcContactWrapper extends
 			{
 				return super.getPropertyDescriptors();
 			}
-		}
-
-		/**
-		 * getMethodDescriptors
-		 * 
-		 * @return the returned MethodDescriptor[]
-		 */
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
-			// just add the reset color field first
-			final Class<SensorArcContactWrapper> c = SensorArcContactWrapper.class;
-			final MethodDescriptor[] mds =
-			{ method(c, "resetColor", null, "Reset Color") };
-			return mds;
-		}
-
-		public final SubjectAction[] getUndoableActions()
-		{
-			final SubjectAction[] res = new SubjectAction[0];
-			// FIXME
-			return res;
 		}
 
 		@Override
@@ -878,62 +715,29 @@ public final class SensorArcContactWrapper extends
 
 	}
 
-	
-
-	// ////////////////////////////////////////////////////
-	// nested class
-	// /////////////////////////////////////////////////////
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-
-	static public final class testSensorArcContact extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testSensorArcContact(final String val)
-		{
-			super(val);
-		}
-
-		// TODO
-		public final void testMyCode()
-		{
-			
-		}
-
-	}
-
-	@Override
-	public void setDTG(HiResDate date)
-	{
-		_dtg = date;
-	}
-
-	@Override
-	public HiResDate getDTG()
-	{
-		return _dtg;
-	}
-	
 	public void setStartDTG(HiResDate date)
 	{
 		_startDTG = date;
 	}
-	
+
 	public HiResDate getStartDTG()
 	{
 		return _startDTG;
 	}
-	
+
 	public void setEndDTG(HiResDate date)
 	{
 		_endDTG = date;
 	}
-	
+
 	public HiResDate getEndDTG()
 	{
 		return _endDTG;
+	}
+
+	public TimePeriod getPeriod()
+	{
+		return new TimePeriod.BaseTimePeriod(_startDTG, _endDTG);
 	}
 	
 	public List<SensorArcValue> getValues()
@@ -963,15 +767,14 @@ public final class SensorArcContactWrapper extends
 		while (index < elements.length)
 		{
 			SensorArcValue value = new SensorArcValue();
-			value.min = getValue(elements, index++);
-			value.max = getValue(elements, index++);
-			value.angle = getValue(elements, index++);
-			value.course = getValue(elements, index++);
+			value.minYds = getValue(elements, index++);
+			value.maxYds = getValue(elements, index++);
+			value.minAngleDegs = getValue(elements, index++);
+			value.maxAngleDegs = getValue(elements, index++);
 			values.add(value);
 		}
 		this._values = values;
 		this._arcs = arcs;
-		_radDegs = 0;
 	}
 
 	private int getValue(String[] elements, int index)
