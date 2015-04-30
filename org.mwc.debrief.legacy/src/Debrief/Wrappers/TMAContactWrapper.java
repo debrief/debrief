@@ -100,7 +100,6 @@ import java.beans.PropertyDescriptor;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
