@@ -14,13 +14,13 @@
  */
 package Debrief.ReaderWriter.Replay;
 
-import java.awt.Color;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import Debrief.Wrappers.SensorArcContactWrapper;
-import Debrief.Wrappers.SensorArcValue;
+import Debrief.Wrappers.SensorArcContactWrapper.SensorArcValue;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;

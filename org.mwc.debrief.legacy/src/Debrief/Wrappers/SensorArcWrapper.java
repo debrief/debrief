@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Wrappers.SensorArcContactWrapper.SensorArcValue;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
