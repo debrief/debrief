@@ -8783,7 +8783,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
         </sect2>
 
         <sect2 xml:id="replay_annotation_format">
-          <title>Annotation Data</title>
+          <title>Annotation Data Intro</title>
 
           <para>In addition to the positional vessel track data, annotations can also be added. Each
             annotation is placed on a single line in a replay file, each line beginning with the
@@ -8824,8 +8824,9 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
           
           <para><glossterm linkend="g_annotation">Annotation</glossterm> positions are specified in
             degrees as in the standard replay file format, and symbology representations are as in
-            the above tables.</para>      
-          <sect3>
+            the above tables.</para>     
+        </sect2>
+          <sect2  xml:id="replay_core_annotations">
              <title>Core Elements</title>
             <para><indexterm>
               <primary>Annotation Data</primary>
@@ -8930,8 +8931,8 @@ surrounded by quotes (").
 and entry type can be multi-word if surrounded by quotes (").
             </markup>   </screen>
             </para>
-          </sect3>
-          <sect3>
+          </sect2>
+          <sect2  xml:id="replay_dynamic_annotations">
               <title>Dynamic Elements</title>
             
             <para>In addition to individual annotation shapes it is possible to define a dynamic annotation.  Do
@@ -8958,8 +8959,8 @@ and entry type can be multi-word if surrounded by quotes (").
             </markup>
             </screen>
             </para>
-          </sect3>
-          <sect3>
+          </sect2>
+          <sect2  xml:id="replay_dynamic_track_annotations">
             <title>Dynamic Track Annotations</title>
             
             <para>It is also possible to attach annotations to tracks - so that the annotation moves (and rotates) with
@@ -9010,11 +9011,7 @@ and entry type can be multi-word if surrounded by quotes (").
               <note><para>A NULL can be provided instead of one or more of the times.  This will result in the dynamic
               shape being used for part or all of the track lifetime.</para></note>
             </para>
-          </sect3>
-          
-
-          
-        </sect2>
+          </sect2>
       </sect1>
 
       <sect1 xml:id="debrief_file_format">
