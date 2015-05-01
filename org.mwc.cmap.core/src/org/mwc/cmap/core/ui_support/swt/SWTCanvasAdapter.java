@@ -1466,11 +1466,24 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	}
 
 	@Override
-	public void drawShape(Shape shape)
+	public void semiFillShape(Shape shape)
+	{
+		if (_sg2d != null && shape != null)
+		{		
+			_theDest.setAlpha(45);
+      _sg2d.fill(shape);
+			_theDest.setAlpha(255);
+      _sg2d.draw(shape);
+		}
+	}
+
+	@Override
+	public void fillShape(Shape shape)
 	{
 		if (_sg2d != null && shape != null)
 		{		
       _sg2d.fill(shape);
+      _sg2d.draw(shape);
 		}
 	}
 
