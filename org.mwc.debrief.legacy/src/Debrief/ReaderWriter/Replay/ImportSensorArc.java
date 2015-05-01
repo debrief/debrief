@@ -123,7 +123,22 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 	        		theColor,
 	        		theStyle, sensorName);
 	        		
-	
+	    String fillStyle = ImportReplay.replayFillStyleFor(symbology);
+	    if(fillStyle != null)
+	    {
+				if ("1".equals(fillStyle))
+				{
+					data.setSemiTransparent(false);
+				}
+				else if ("2".equals(fillStyle))
+				{
+					data.setSemiTransparent(true);
+				}
+				else
+				{
+				}
+	    }
+	    
 	    return data;
     }
     catch(final ParseException pe)

@@ -33,7 +33,7 @@ abstract public class DynamicTrackCoverageHandler extends
 
 	private static final String VISIBLE = "Visible";
 
-	private static final String LABEL_SHOWING = "LabelShowing";
+	private static final String SEMI_TRANS = "SemiTransparent";
 
 	private static final String LABEL = "Label";
 
@@ -111,11 +111,11 @@ abstract public class DynamicTrackCoverageHandler extends
 			}
 		});
 
-		addAttributeHandler(new HandleBooleanAttribute(LABEL_SHOWING)
+		addAttributeHandler(new HandleBooleanAttribute(SEMI_TRANS)
 		{
 			public void setValue(final String name, final boolean value)
 			{
-				_theContact.setLabelVisible(value);
+				_theContact.setSemiTransparent(value);
 			}
 		});
 
@@ -210,7 +210,7 @@ abstract public class DynamicTrackCoverageHandler extends
 
 		eFix.setAttribute(VISIBLE, writeThis(contact.getVisible()));
 		
-		eFix.setAttribute(LABEL_SHOWING, writeThis(contact.getLabelVisible()));
+		eFix.setAttribute(SEMI_TRANS, writeThis(contact.getSemiTransparent()));
 		eFix.setAttribute(LABEL, toXML(contact.getLabel()));
 		
 		// sort out the line style

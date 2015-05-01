@@ -978,6 +978,16 @@ public class ImportReplay extends PlainImporterBase
 			}
 		}
 	}
+	
+
+	public static String replayFillStyleFor(String theSym)
+	{
+		String res  = null;
+		if(theSym.length() >= 5)
+			res = theSym.substring(4, 5);
+		return res ;
+	}
+	
 
 	private static int replayLineThicknesFor(String theSym)
 	{
