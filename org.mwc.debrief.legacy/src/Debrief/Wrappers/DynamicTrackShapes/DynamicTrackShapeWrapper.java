@@ -70,11 +70,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	protected List<DynamicShape> _values = new ArrayList<DynamicShape>();
 
 	/**
-	 * whether to show the label
-	 */
-	private boolean _showLabel = false;
-
-	/**
 	 * our editor
 	 */
 	transient private MWC.GUI.Editable.EditorType _myEditor;
@@ -113,7 +108,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		setColor(null);
 
 		setVisible(true);
-		setLabelVisible(false);
 	}
 
 	/**
@@ -299,22 +293,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	public final void setSemiTransparent(final boolean val)
 	{
 		_semiTransparent = val;
-	}
-
-	/**
-	 * it this Label item currently visible?
-	 */
-	public final boolean getLabelVisible()
-	{
-		return _showLabel;
-	}
-
-	/**
-	 * set the Label visibility
-	 */
-	public final void setLabelVisible(final boolean val)
-	{
-		_showLabel = val;
 	}
 
 	/**
@@ -525,8 +503,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 						prop("Label", "the label for this data item", FORMAT),
 						prop("Visible", "whether this sensor contact data is visible",
 								FORMAT),
-						prop("LabelVisible",
-								"whether the label for this contact is visible", FORMAT),
 						prop("Color", "the color for this sensor contact", FORMAT),
 						prop("StartDTG", "the start time this entry was recorded", FORMAT),
 						prop("EndDTG", "the end time this entry was recorded", FORMAT),
