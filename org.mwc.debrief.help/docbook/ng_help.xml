@@ -8963,7 +8963,15 @@ and entry type can be multi-word if surrounded by quotes (").
           <sect2  xml:id="replay_dynamic_track_annotations">
             <title>Dynamic Track Annotations</title>
             
-            <para>It is also possible to attach annotations to tracks - so that the annotation moves (and rotates) with
+            <para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/DynamicArcs.png" width="80%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+              It is also possible to attach annotations to tracks - so that the annotation moves (and rotates) with
               the track. These annotations can be grouped. This allows the dynamic shape itself to change 
               dimensions during its life, but with the whole collection of shapes switched on and off as one.</para>
             <para>
