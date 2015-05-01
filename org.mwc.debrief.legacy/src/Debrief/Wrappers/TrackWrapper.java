@@ -3072,7 +3072,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				final Editable editable = iter.nextElement();
 
 				// tell the sensor wrapper to forget about us
-				final TacticalDataWrapper sw = (TacticalDataWrapper) editable;
+				final DynamicTrackShapeSetWrapper sw = (DynamicTrackShapeSetWrapper) editable;
 				sw.setHost(null);
 
 			}
