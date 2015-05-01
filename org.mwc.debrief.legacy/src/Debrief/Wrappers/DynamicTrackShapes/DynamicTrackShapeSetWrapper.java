@@ -148,7 +148,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 
 	public final String toString()
 	{
-		return "Dynamic Shape:" + getName() + " (" + size() + " items)";
+		return  getName() + " (" + size() + " items)";
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
