@@ -105,9 +105,13 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 	@Test
 	public void testErrorCalc()
 	{
-		@SuppressWarnings("serial")
 		SpeedForecastContribution speed = new SpeedForecastContribution()
 		{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected double calcError(State thisState)
 			{

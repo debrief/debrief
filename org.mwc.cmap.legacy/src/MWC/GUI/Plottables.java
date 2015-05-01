@@ -560,6 +560,16 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 			add(p);
 		}
 	}
+	
+	/** do we already contain this object?
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public boolean contains(Editable other)
+	{
+		return _thePlottables.contains(other);
+	}
 
 	public int compareTo(final Plottable arg0)
 	{

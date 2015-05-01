@@ -31,11 +31,14 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
-@SuppressWarnings("serial")
 public class DynamicShapeLayer extends BaseLayer implements MovingPlottable,
 		WatchableList
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean plotAllShapes = false;
 
 	public DynamicShapeLayer()

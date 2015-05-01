@@ -99,12 +99,7 @@ public class PlainHighlighter implements TemporalLayerPainter
 	{
 		// paint it, to start off with
 		theLayer.paint(dest);
-		
-		if (theLayer instanceof MovingPlottable && dtg != null)
-		{
-			((MovingPlottable)theLayer).paint(dest, dtg.getDate().getTime());
-		}
-
+			
 		// now think about the highlight
 
 		// do we have a dtg?

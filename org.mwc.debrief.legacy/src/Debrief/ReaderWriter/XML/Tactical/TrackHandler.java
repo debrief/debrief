@@ -34,6 +34,7 @@ import org.xml.sax.Attributes;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.PlanningSegment;
@@ -163,6 +164,19 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			}
 		}
 
+		// output any sensor arc data
+		final Enumeration<Editable> shapeSet = track.getDynamicShapes().elements();
+
+		if (shapeSet != null)
+		{
+			while (shapeSet.hasMoreElements())
+			{
+				final DynamicTrackShapeSetWrapper thisS = (DynamicTrackShapeSetWrapper) shapeSet
+						.nextElement();
+				DynamicTrackShapeSetHandler.exportShapeSet(thisS, trk, doc);
+			}
+		}
+
 		final Enumeration<Editable> allItems = track.elements();
 		while (allItems.hasMoreElements())
 		{
@@ -240,6 +254,15 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			public void addSensor(final Debrief.Wrappers.SensorWrapper sensor)
 			{
 				addThis(sensor);
+			}
+		});
+		
+		addHandler(new DynamicTrackShapeSetHandler()
+		{
+			@Override
+			public void addDynamicTrackShapes(DynamicTrackShapeSetWrapper data)
+			{
+				addThis(data);
 			}
 		});
 

@@ -156,6 +156,7 @@ import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -1282,6 +1283,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer,
 								dest, tNow);
 
+						// if this has a moveable perspective - paint it over the top
+						if (thisLayer instanceof MovingPlottable && tNow != null)
+						{
+							((MovingPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
+						}						
+
 						// ok, now sort out the highlight
 
 						// right, what are the watchables
@@ -1327,6 +1334,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								}
 							} // whether we have a current time...
 						}
+
+
+
 					}
 				}
 				catch (final Exception e)

@@ -279,6 +279,8 @@ import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.ExportLayerAsSingleItem;
@@ -461,6 +463,8 @@ public class ImportReplay extends PlainImporterBase
 			_theImporters.addElement(new ImportDynamicRectangle());
 			_theImporters.addElement(new ImportDynamicCircle());
 			_theImporters.addElement(new ImportDynamicPolygon());
+			
+			_theImporters.addElement(new ImportSensorArc());
 		}
 	}
 	
@@ -667,6 +671,64 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 	
+	private HiResDate processDynamicShapeWrapper(final DynamicTrackShapeWrapper sw)
+	{	
+		final HiResDate res = null;
+
+		DynamicTrackShapeSetWrapper thisShape = null;
+
+		// do we have a sensor capable of handling this contact?
+		final String sensorName = sw.getSensorName();
+		String trackName = sw.getTrackName();
+		Object val = getLayerFor(trackName);
+
+		// if we failed to get the trackname, try shortening it -
+		// it may have been mangled by BabelFish
+		if (val == null)
+			val = getLayerFor(trackName = trackName.substring(6));
+
+		// did we get anything?
+		// is this indeed a sensor?
+		if (val == null || !(val instanceof TrackWrapper))
+			return res;
+
+		// so, we've found a track - see if it holds this shape
+		final TrackWrapper theTrack = (TrackWrapper) val;
+		final Enumeration<Editable> iter = theTrack.getDynamicShapes().elements();
+
+		// step through this track' shape
+		if (iter != null) 
+		{
+			while (iter.hasMoreElements()) 
+			{
+				final DynamicTrackShapeSetWrapper shape = (DynamicTrackShapeSetWrapper) iter.nextElement();
+
+				// is this our sensor?
+				if (shape.getName().equals(sensorName)) 
+				{
+					// cool, drop out
+					thisShape = shape;
+					break;
+				}
+			} // looping through the sensors
+		} // whether there are any sensors
+
+		
+		// did we find it?
+		if (thisShape == null) 
+		{
+			// then create it
+			thisShape = new DynamicTrackShapeSetWrapper(sensorName);
+
+			theTrack.add(thisShape);
+		}
+	
+		// now add the new contact to this sensor
+		thisShape.add(sw);
+
+		return res;
+	}
+	
 	private HiResDate processContactWrapper(final TMAContactWrapper sw)
 	{
 		final HiResDate res = sw.getTime();
@@ -809,6 +871,10 @@ public class ImportReplay extends PlainImporterBase
 		{
 			res = processSensorContactWrapper((SensorContactWrapper) thisObject);
 		}
+		else if (thisObject instanceof DynamicTrackShapeWrapper)
+		{
+			res = processDynamicShapeWrapper((DynamicTrackShapeWrapper) thisObject);
+		}
 		else if (thisObject instanceof TMAContactWrapper)
 		{
 			res = processContactWrapper((TMAContactWrapper) thisObject);
@@ -912,6 +978,16 @@ public class ImportReplay extends PlainImporterBase
 			}
 		}
 	}
+	
+
+	public static String replayFillStyleFor(String theSym)
+	{
+		String res  = null;
+		if(theSym.length() >= 5)
+			res = theSym.substring(4, 5);
+		return res ;
+	}
+	
 
 	private static int replayLineThicknesFor(String theSym)
 	{
@@ -1135,7 +1211,32 @@ public class ImportReplay extends PlainImporterBase
 	{
 		_importedSensors = new Vector<SensorWrapper>();
 	}
+	
+	static public String replaySymbolForLineStyle(final int style)
+	{
+		switch (style)
+		{
+		case MWC.GUI.CanvasType.DOTTED:
+			return "A";
+			
+		case MWC.GUI.CanvasType.DOT_DASH:
+			return "B";
+			
+		case MWC.GUI.CanvasType.SHORT_DASHES:
+			return "C";
+			
+		case MWC.GUI.CanvasType.LONG_DASHES:
+			return "D";
+			
+		case MWC.GUI.CanvasType.UNCONNECTED:
+			return "E";
 
+		default:
+			break;
+		}
+		return "@";
+	}
+	
 	static public int replayLineStyleFor(final String theSym)
 	{
 		int res = 0;

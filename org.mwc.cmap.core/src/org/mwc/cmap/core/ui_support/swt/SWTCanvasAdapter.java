@@ -113,6 +113,7 @@ package org.mwc.cmap.core.ui_support.swt;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Shape;
 import java.awt.image.ImageObserver;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -132,6 +133,7 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
+import org.jfree.experimental.swt.SWTGraphics2D;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.property_support.FontHelper;
@@ -226,6 +228,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 * 
 	 */
 	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.LIGHT_GRAY;
+
+	private SWTGraphics2D _sg2d;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -994,6 +998,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	public final void startDraw(final Object theVal)
 	{
 		_theDest = (GC) theVal;
+		
+		if (!_theDest.isDisposed())
+			_sg2d = new SWTGraphics2D(_theDest);
 
 		// initialise the background color
 		if (!_theDest.isDisposed())
@@ -1456,6 +1463,28 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (_theDest != null)
 			if (!_theDest.isDisposed())
 				_theDest.drawImage(image, x, y);
+	}
+
+	@Override
+	public void semiFillShape(Shape shape)
+	{
+		if (_sg2d != null && shape != null)
+		{		
+			_theDest.setAlpha(45);
+      _sg2d.fill(shape);
+			_theDest.setAlpha(255);
+      _sg2d.draw(shape);
+		}
+	}
+
+	@Override
+	public void fillShape(Shape shape)
+	{
+		if (_sg2d != null && shape != null)
+		{		
+      _sg2d.fill(shape);
+      _sg2d.draw(shape);
+		}
 	}
 
 }
