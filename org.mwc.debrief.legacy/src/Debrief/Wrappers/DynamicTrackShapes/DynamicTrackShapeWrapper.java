@@ -50,8 +50,9 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		 * @param dest where to paint to
 		 * @param hostState the host state at this time
 		 * @param color color for this object
+		 * @param semiTransparent how to fill shape
 		 */
-		public void paint(CanvasType dest, Watchable hostState, Color color);
+		public void paint(CanvasType dest, Watchable hostState, Color color, boolean semiTransparent);
 
 	}
 	
@@ -96,6 +97,8 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	private String _coverageName;
 
 	private int _lineWidth;
+
+	private boolean _semiTransparent = true;
 
 	/**
 	 * default constructor, used when we read in from XML
@@ -245,7 +248,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 			// ok, we've got enough to do the paint!
 			for (DynamicShape value : _values)
 			{
-				value.paint(dest, hostState, getColor());
+				value.paint(dest, hostState, getColor(), _semiTransparent);
 			}
 		}
 
@@ -280,6 +283,22 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		// this object only has a context in time-stepping.
 		// since it's dynamic, it doesn't have a concrete bounds.
 		return null;
+	}
+
+	/**
+	 * it this Label item currently visible?
+	 */
+	public final boolean getSemiTransparent()
+	{
+		return _semiTransparent;
+	}
+
+	/**
+	 * set the Label visibility
+	 */
+	public final void setSemiTransparent(final boolean val)
+	{
+		_semiTransparent = val;
 	}
 
 	/**
@@ -413,10 +432,18 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		{
 			builder.append(DebriefFormatDateTime.toStringHiRes(_startDTG));
 		}
+		else
+		{
+			builder.append("[UNSET]");			
+		}
 		builder.append("-");
 		if (_endDTG != null)
 		{
 			builder.append(DebriefFormatDateTime.toStringHiRes(_endDTG));
+		}
+		else
+		{
+			builder.append("[UNSET]");			
 		}
 		return builder.toString();
 	}
@@ -503,6 +530,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 						prop("Color", "the color for this sensor contact", FORMAT),
 						prop("StartDTG", "the start time this entry was recorded", FORMAT),
 						prop("EndDTG", "the end time this entry was recorded", FORMAT),
+						prop("SemiTransparent", "whether to make the coverage semi-transparent", FORMAT),
 						prop("Constraints", "sensor arcs: min max angle range", FORMAT),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
