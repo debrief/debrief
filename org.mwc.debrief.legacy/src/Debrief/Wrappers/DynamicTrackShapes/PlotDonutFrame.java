@@ -8,7 +8,6 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Arc2D;
@@ -53,27 +52,18 @@ public class PlotDonutFrame extends Frame {
 		Area area;
     Color areaBorderColor = Color.decode("#95b770");
     Paint areaFillPaint = Color.decode("#cce9ad");
+    public Area getArea() { return this.area; }
     public void setArea(Area a) { this.area = a; }
-//    public Area getArea() { return this.area; }
-//    public Color getAreaBorderColor() { return this.areaBorderColor; }
-//    public void setAreaBorerColor(Color c) { this.areaBorderColor = c; }
-//    public Paint getAreaFillPaint() { return this.areaFillPaint; }
-//    public void setAreaFillPaint(Paint p) { this.areaFillPaint = p; }
+    public Color getAreaBorderColor() { return this.areaBorderColor; }
+    public void setAreaBorerColor(Color c) { this.areaBorderColor = c; }
+    public Paint getAreaFillPaint() { return this.areaFillPaint; }
+    public void setAreaFillPaint(Paint p) { this.areaFillPaint = p; }
     public void paint(Graphics g) {
       super.paint(g);
       Graphics2D g2 = (Graphics2D) g;
 
       // translate origin to center
       g2.translate(this.getWidth()/2, this.getHeight()/2);
-
-      // scale to 1.1 * max (height or width) distance from origin
-      Rectangle areaBounds = this.area.getBounds();
-      double x = areaBounds.getX(), y = areaBounds.getY();
-      double w = areaBounds.getWidth(), h = areaBounds.getHeight();
-      double r = Math.max(Math.max(Math.abs(x), Math.abs(x + w)),
-                          Math.max(Math.abs(y), Math.abs(y + h)));
-      double scale = Math.min(this.getWidth()/2, this.getHeight()/2)/(1.1*r);
-      g2.scale(scale, scale);
 
       g2.setPaint(this.areaFillPaint);
       g2.fill(area);
@@ -112,26 +102,24 @@ public class PlotDonutFrame extends Frame {
                                           double outerRadius,
                                           double minAngle,
                                           double maxAngle) {
-    double rO = outerRadius, rI = innerRadius;
+    double dO = 2*outerRadius, dI = 2*innerRadius;
     // angles from degrees clockwise from the positive y axis.
     // convert to degress counter-clockwise from positive x axis.
     double aBeg = 90 - maxAngle, aExt = maxAngle - minAngle;
     // x and y are upper left corner of bounding rectangle of full circle
     if (Math.abs(minAngle % 360 - maxAngle % 360) < 0.1) {
-      Area outer = new Area(new Ellipse2D.Double(-rO/2, -rO/2, rO, rO));
-      Area inner = new Area(new Ellipse2D.Double(-rI/2, -rI/2, rI, rI));
+      Area outer = new Area(new Ellipse2D.Double(-dO/2, -dO/2, dO, dO));
+      Area inner = new Area(new Ellipse2D.Double(-dI/2, -dI/2, dI, dI));
       outer.subtract(inner);
       return outer;
     } else {
-      Area outer = new Area(new Arc2D.Double(-rO/2, -rO/2, rO, rO, aBeg, aExt,
+      Area outer = new Area(new Arc2D.Double(-dO/2, -dO/2, dO, dO, aBeg, aExt,
                                              Arc2D.PIE));
-      Area inner = new Area(new Arc2D.Double(-rI/2, -rI/2, rI, rI, aBeg, aExt,
+      Area inner = new Area(new Arc2D.Double(-dI/2, -dI/2, dI, dI, aBeg, aExt,
                                              Arc2D.PIE));
       outer.subtract(inner);
       return outer;
     }
   }
-
-
 
 }

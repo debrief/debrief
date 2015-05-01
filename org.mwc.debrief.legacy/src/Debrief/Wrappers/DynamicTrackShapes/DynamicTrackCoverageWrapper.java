@@ -186,7 +186,7 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	                                          double course) {
 	  	
 	  	// convenience variables, for simpler coding
-	    double rO = outerRadius, rI = innerRadius;
+	    double dO = outerRadius * 2, dI = innerRadius * 2;
 	    
 	    // angles from degrees clockwise from the positive y axis.
 	    // convert to degress counter-clockwise from positive x axis.
@@ -196,16 +196,16 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	    if (Math.abs(minAngle % 360 - maxAngle % 360) < 0.1) 
 	    {
 	    	// ok - it's a plain donut
-	      Area outer = new Area(new Ellipse2D.Double(-rO/2, -rO/2, rO, rO));
-	      Area inner = new Area(new Ellipse2D.Double(-rI/2, -rI/2, rI, rI));
+	      Area outer = new Area(new Ellipse2D.Double(-dO/2, -dO/2, dO, dO));
+	      Area inner = new Area(new Ellipse2D.Double(-dI/2, -dI/2, dI, dI));
 	      outer.subtract(inner);
 	      return outer;
 	    } else 
 	    {
 	    	// this is a pie slice of a donut
-	      Area outer = new Area(new Arc2D.Double(-rO/2, -rO/2, rO, rO, aBeg, aExt,
+	      Area outer = new Area(new Arc2D.Double(-dO/2, -dO/2, dO, dO, aBeg, aExt,
 	                                             Arc2D.PIE));
-	      Area inner = new Area(new Arc2D.Double(-rI/2, -rI/2, rI, rI, aBeg, aExt,
+	      Area inner = new Area(new Arc2D.Double(-dI/2, -dI/2, dI, dI, aBeg, aExt,
 	                                             Arc2D.PIE));
 	      outer.subtract(inner);
 	      return outer;
@@ -238,7 +238,7 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 			long maxOffsetPt = originPt.y - maxPt.y;
 			
 			double course = Math.toDegrees(hostState.getCourse());
-			Area area = makeDonutSectionArea(minOffsetPt*2, maxOffsetPt*2, minAngleDegs, maxAngleDegs, course);
+			Area area = makeDonutSectionArea(minOffsetPt, maxOffsetPt, minAngleDegs, maxAngleDegs, course);
 			
 			final AffineTransform af = AffineTransform.getTranslateInstance(originPt.x, originPt.y);
 	    Shape shape = af.createTransformedShape(area);
