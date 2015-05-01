@@ -185,28 +185,27 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	                                          double maxAngle,
 	                                          double course) {
 	  	
-	  	// convenience variables, for simpler coding
-	    double dO = outerRadius * 2, dI = innerRadius * 2;
-	    
-	    // angles from degrees clockwise from the positive y axis.
+	    double dO = 2*outerRadius, dI = 2*innerRadius;
+	    // Angles: From degrees clockwise from the positive y axis,
 	    // convert to degress counter-clockwise from positive x axis.
-	    double aBeg =  90 - (maxAngle + course), aExt = maxAngle - minAngle;
-	    
-	    // x and y are upper left corner of bounding rectangle of full circle
-	    if (Math.abs(minAngle % 360 - maxAngle % 360) < 0.1) 
-	    {
-	    	// ok - it's a plain donut
-	      Area outer = new Area(new Ellipse2D.Double(-dO/2, -dO/2, dO, dO));
-	      Area inner = new Area(new Ellipse2D.Double(-dI/2, -dI/2, dI, dI));
+	    double aBeg = 90 - (maxAngle + course);
+	    double aExt = maxAngle - minAngle;
+	    // X and y are upper left corner of bounding rectangle of full circle.
+	    // Subtract 0.5 so that center is between pixels and drawn width is dO
+	    // (rather than dO + 1).
+	    double xO = -dO/2 - 0.5, yO = -dO/2 - .5;
+	    double xI = -dI/2 - 0.5, yI = -dI/2 - .5;
+	    if (Math.abs(minAngle % 360 - maxAngle % 360) < 0.1) {
+	      Area outer = new Area(new Ellipse2D.Double(xO, yO, dO, dO));
+	      Area inner = new Area(new Ellipse2D.Double(xI, yI, dI, dI));
 	      outer.subtract(inner);
 	      return outer;
-	    } else 
-	    {
-	    	// this is a pie slice of a donut
-	      Area outer = new Area(new Arc2D.Double(-dO/2, -dO/2, dO, dO, aBeg, aExt,
+	    } else {
+	      Area outer = new Area(new Arc2D.Double(xO, yO, dO, dO, aBeg, aExt,
 	                                             Arc2D.PIE));
-	      Area inner = new Area(new Arc2D.Double(-dI/2, -dI/2, dI, dI, aBeg, aExt,
-	                                             Arc2D.PIE));
+	      Area inner = new Area(new Ellipse2D.Double(xI, yI, dI, dI));
+//	      Area inner = new Area(new Arc2D.Double(xI, yI, dI, dI, aBeg, aExt,
+//	                                             Arc2D.PIE));
 	      outer.subtract(inner);
 	      return outer;
 	    }
