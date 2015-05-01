@@ -14,6 +14,9 @@
  */
 package MWC.GUI;
 
+import java.awt.Point;
+import java.awt.Shape;
+
 public interface ExtendedCanvasType
 {
 	/** produce a semi-transparent filled oval
@@ -56,5 +59,7 @@ public interface ExtendedCanvasType
 	 */
 	public void semiFillRect(final int x, final int y, final int wid,
 			final int height);
+	
+	public void drawShape(Shape shape);
 
 }

@@ -196,5 +196,6 @@ Require-Bundle: org.mwc.cmap.legacy,
  org.eclipse.core.resources,
  org.eclipse.ui.views,
  org.eclipse.help,
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.mwc.cmap.jfreechart
 Bundle-ActivationPolicy: lazy

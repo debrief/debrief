@@ -2,6 +2,11 @@ package Debrief.Wrappers.DynamicTrackShapes;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -166,37 +171,87 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 			}
 		}
 
+		/**
+	   * Create a donut or donut section.  A full donut results if the
+	   * start and end mod 360 are within 0.1 degree, so don't call this 
+	   * if the difference between minAngle and maxAngle should be 0.
+	   *
+	   * @param innerRadius of donut section
+	   * @param outerRadius of donut section
+	   * @param minAngle compass angle of section start
+	   * @param maxAngle compass angle of section end
+	   */
+	  public static Area makeDonutSectionArea(double innerRadius,
+	                                          double outerRadius,
+	                                          double minAngle,
+	                                          double maxAngle,
+	                                          double course) {
+	    double rO = outerRadius, rI = innerRadius;
+	    // angles from degrees clockwise from the positive y axis.
+	    // convert to degress counter-clockwise from positive x axis.
+	    double aBeg =  90 - (maxAngle + course), aExt = maxAngle - minAngle;
+	    // x and y are upper left corner of bounding rectangle of full circle
+	    if (Math.abs(minAngle % 360 - maxAngle % 360) < 0.1) {
+	      Area outer = new Area(new Ellipse2D.Double(-rO/2, -rO/2, rO, rO));
+	      Area inner = new Area(new Ellipse2D.Double(-rI/2, -rI/2, rI, rI));
+	      outer.subtract(inner);
+	      return outer;
+	    } else {
+	      Area outer = new Area(new Arc2D.Double(-rO/2, -rO/2, rO, rO, aBeg, aExt,
+	                                             Arc2D.PIE));
+	      Area inner = new Area(new Arc2D.Double(-rI/2, -rI/2, rI, rI, aBeg, aExt,
+	                                             Arc2D.PIE));
+	      outer.subtract(inner);
+	      return outer;
+	    }
+	  }
+
 		public void paint(CanvasType dest, Watchable hostState, Color color)
 		{
 			// get the polygon at this location
-			Vector<WorldLocation> _theDataPoints = calcDataPoints(
-					hostState.getLocation(), hostState.getCourse());
+			//Vector<WorldLocation> _theDataPoints = calcDataPoints(
+			//		hostState.getLocation(), hostState.getCourse());
 
 			// update the color
 			dest.setColor(color);
+			//final double minDegs = new WorldDistance(minYds, WorldDistance.YARDS)
+			//	.getValueIn(WorldDistance.DEGS);
+			//final double maxDegs = new WorldDistance(maxYds, WorldDistance.YARDS)
+			//	.getValueIn(WorldDistance.DEGS);
+			double course = Math.toDegrees(hostState.getCourse());
+			// FIXME
+			Area area = makeDonutSectionArea(minYds/20, maxYds/20, minAngleDegs, maxAngleDegs, course);
+			Point origin = dest.toScreen(hostState.getLocation());
+			final AffineTransform af = AffineTransform.getTranslateInstance(origin.x, origin.y);
+	    Shape shape = af.createTransformedShape(area);
 
+			if (dest instanceof ExtendedCanvasType)
+			{
+				((ExtendedCanvasType) dest).drawShape(shape);
+			}
+			
 			// create a polygon to represent the ellipse (so that we can fill or draw
 			// it)
-			final int len = _theDataPoints.size();
-			final int[] xPoints = new int[len];
-			final int[] yPoints = new int[len];
-
-			// work through the list to create the list of screen coordinates
-			for (int i = 0; i < _theDataPoints.size(); i++)
-			{
-				final WorldLocation location = (WorldLocation) _theDataPoints
-						.elementAt(i);
-
-				final Point p2 = dest.toScreen(location);
-
-				xPoints[i] = p2.x;
-				yPoints[i] = p2.y;
-			}
-
-			// if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
-			// {
-			ExtendedCanvasType ext = (ExtendedCanvasType) dest;
-			ext.semiFillPolygon(xPoints, yPoints, len);
+//			final int len = _theDataPoints.size();
+//			final int[] xPoints = new int[len];
+//			final int[] yPoints = new int[len];
+//
+//			// work through the list to create the list of screen coordinates
+//			for (int i = 0; i < _theDataPoints.size(); i++)
+//			{
+//				final WorldLocation location = (WorldLocation) _theDataPoints
+//						.elementAt(i);
+//
+//				final Point p2 = dest.toScreen(location);
+//
+//				xPoints[i] = p2.x;
+//				yPoints[i] = p2.y;
+//			}
+//
+//			// if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
+//			// {
+//			ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+//			ext.semiFillPolygon(xPoints, yPoints, len);
 			// }
 			// else
 			// dest.fillPolygon(xPoints, yPoints, len);
