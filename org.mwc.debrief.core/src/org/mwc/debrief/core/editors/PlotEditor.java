@@ -1279,14 +1279,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					// if (tNow != null)
 					if (true)
 					{
-						if (thisLayer instanceof MovingPlottable && tNow != null)
-						{
-							((MovingPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
-						}
-
 						// yes. cool, get plotting
 						_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer,
 								dest, tNow);
+
+						// if this has a moveable perspective - paint it over the top
+						if (thisLayer instanceof MovingPlottable && tNow != null)
+						{
+							((MovingPlottable)thisLayer).paint(dest, tNow.getDate().getTime());
+						}						
 
 						// ok, now sort out the highlight
 
@@ -1333,6 +1334,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								}
 							} // whether we have a current time...
 						}
+
+
+
 					}
 				}
 				catch (final Exception e)
