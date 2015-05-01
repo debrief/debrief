@@ -42,7 +42,6 @@ public class PlotDonutFrame extends Frame {
   /**
    * A simple canvas that draws a single area with a border color and fill.
    * The origin is the center of the canvas.
-   * The area is drawn scaled to fit the canvas.
    */
   private static class AreaCanvas extends Canvas {
     /**
@@ -103,19 +102,23 @@ public class PlotDonutFrame extends Frame {
                                           double minAngle,
                                           double maxAngle) {
     double dO = 2*outerRadius, dI = 2*innerRadius;
-    // angles from degrees clockwise from the positive y axis.
+    // Angles: From degrees clockwise from the positive y axis,
     // convert to degress counter-clockwise from positive x axis.
     double aBeg = 90 - maxAngle, aExt = maxAngle - minAngle;
-    // x and y are upper left corner of bounding rectangle of full circle
+    // X and y are upper left corner of bounding rectangle of full circle.
+    // Subtract 0.5 so that center is between pixels and drawn width is dO
+    // (rather than dO + 1).
+    double xO = -dO/2 - 0.5, yO = -dO/2 - .5;
+    double xI = -dI/2 - 0.5, yI = -dI/2 - .5;
     if (Math.abs(minAngle % 360 - maxAngle % 360) < 0.1) {
-      Area outer = new Area(new Ellipse2D.Double(-dO/2, -dO/2, dO, dO));
-      Area inner = new Area(new Ellipse2D.Double(-dI/2, -dI/2, dI, dI));
+      Area outer = new Area(new Ellipse2D.Double(xO, yO, dO, dO));
+      Area inner = new Area(new Ellipse2D.Double(xI, yI, dI, dI));
       outer.subtract(inner);
       return outer;
     } else {
-      Area outer = new Area(new Arc2D.Double(-dO/2, -dO/2, dO, dO, aBeg, aExt,
+      Area outer = new Area(new Arc2D.Double(xO, yO, dO, dO, aBeg, aExt,
                                              Arc2D.PIE));
-      Area inner = new Area(new Arc2D.Double(-dI/2, -dI/2, dI, dI, aBeg, aExt,
+      Area inner = new Area(new Arc2D.Double(xI, yI, dI, dI, aBeg, aExt,
                                              Arc2D.PIE));
       outer.subtract(inner);
       return outer;
