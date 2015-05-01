@@ -8975,7 +8975,7 @@ and entry type can be multi-word if surrounded by quotes (").
               the track. These annotations can be grouped. This allows the dynamic shape itself to change 
               dimensions during its life, but with the whole collection of shapes switched on and off as one.</para>
             <para>
-              Here are a series of examples:
+              Here are a series of examples (but note that the REP lines have been abbreviated):
               <screenshot>
                 <mediaobject>
                   <imageobject>
