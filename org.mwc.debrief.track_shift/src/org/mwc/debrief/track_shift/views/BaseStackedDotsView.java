@@ -144,7 +144,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	protected TrackDataProvider _myTrackDataProvider;
 
-	Composite _holder;
+	ChartComposite _holder;
 
 	JFreeChart _myChart;
 
@@ -238,10 +238,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	public void createPartControl(final Composite parent)
 	{
 
-		ChartComposite plotControl = new ChartComposite(parent, SWT.NONE);
+		_holder = new ChartComposite(parent, SWT.NONE);
 
 		// hey - now create the stacked plot!
-		createStackedPlot(plotControl);
+		createStackedPlot();
 
 		// /////////////////////////////////////////
 		// ok - listen out for changes in the view
@@ -301,7 +301,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * @return the chart, in it's own panel
 	 */
 	@SuppressWarnings("deprecation")
-	protected void createStackedPlot(final ChartComposite plotControl)
+	protected void createStackedPlot()
 	{
 
 		// first create the x (time) axis
@@ -423,7 +423,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		});
 
 		// and insert into the panel
-		plotControl.setChart(_myChart);
+		_holder.setChart(_myChart);
 
 //		plotControl.addMouseMotionListener(new MouseMotionListener()
 //		{
