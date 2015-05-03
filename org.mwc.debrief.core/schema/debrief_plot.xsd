@@ -252,6 +252,7 @@
 	<xs:complexType name="track">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="sensor" type="sensor" />
+			<xs:element name="DynamicShapeSet" type="DynamicShapeSet" />
 			<xs:element name="fix" type="fix" />
 			<xs:element name="tma" type="tma" />
 			<xs:element name="TrackSegment" type="TrackSegment" />
@@ -283,6 +284,40 @@
 			type="xs:boolean" />
 		<xs:attribute name="Symbol" default="SQUARE" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="DynamicShapeSet">
+		<xs:sequence>
+			<xs:element name="DynamicCoverage" maxOccurs="unbounded"
+				minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="colour">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute type="xs:string" name="Value" use="optional" />
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute type="xs:string" name="EndDtg" use="optional" />
+					<xs:attribute type="xs:string" name="Label" use="optional" />
+					<xs:attribute type="xs:string" name="LabelLocation"
+						use="optional" />
+					<xs:attribute type="xs:string" name="LabelShowing"
+						use="optional" />
+					<xs:attribute type="xs:string" name="LineStyle" use="optional" />
+					<xs:attribute type="xs:string" name="StartDtg" use="optional" />
+					<xs:attribute type="xs:string" name="Visible" use="optional" />
+					<xs:attribute type="xs:string" name="arcs" use="optional" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute type="xs:byte" name="LineThickness" use="optional" />
+		<xs:attribute type="xs:string" name="Name" use="optional" />
+		<xs:attribute type="xs:string" name="TrackName" use="optional" />
+		<xs:attribute type="xs:string" name="Visible" use="optional" />
 	</xs:complexType>
 	<xs:complexType name="sensor">
 		<xs:sequence>
