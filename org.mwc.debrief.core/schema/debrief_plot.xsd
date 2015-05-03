@@ -59,7 +59,7 @@
 
 	<!-- reusable elements -->
 	<xs:complexType name="timeRange">
-		<xs:attribute name="End" use="required" type="xs:string" />
+		<xs:attribute name="End" type="xs:string" />
 		<xs:attribute name="Start" use="required" type="xs:string" />
 	</xs:complexType>
 
@@ -725,7 +725,6 @@
 			<xs:extension base="shape">
 				<xs:sequence>
 					<xs:element name="tl" type="locationType" />
-					<xs:element name="Bearing" type="xs:double" />
 					<xs:element name="Distance" type="worldDistanceType" />
 				</xs:sequence>
 				<xs:attribute name="ArrowAtEnd" type="xs:boolean" use="optional">
@@ -734,6 +733,7 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="Bearing" type="xs:double" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
