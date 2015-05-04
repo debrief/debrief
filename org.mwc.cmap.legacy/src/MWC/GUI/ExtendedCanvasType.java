@@ -62,5 +62,9 @@ public interface ExtendedCanvasType
 	public void semiFillShape(Shape shape);
 
 	public void fillShape(Shape shape);
+	
+	public void setXORMode(boolean mode);
+	
+	public boolean getXORMode();
 
 }
