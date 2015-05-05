@@ -1,0 +1,1147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot xmlns="http://www.debrief.info/plot" Created="Sun Apr 26 14:48:40 GMT 2015"
+	Name="Debrief Plot" PlotId="1430059709717">
+	<details
+		Text="Saved with Debrief version dated Sun Apr 26 14:45:30 GMT 2015" />
+	<session>
+		<layers>
+			<layer LineThickness="0" Name="Annotations" Visible="true">
+				<circle Filled="true" Label="dot-dash 2px semi-transparent"
+					LabelLocation="Left" LabelVisible="true" LineStyle="3"
+					LineThickness="2" SemiTransparent="true" Visible="true">
+					<colour Value="RED" />
+					<fontcolour Value="RED" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.5000000" Long="-20.7000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<circle Filled="false" Label="dotted 1px solid fill"
+					LabelLocation="Left" LabelVisible="true" LineStyle="2"
+					LineThickness="1" SemiTransparent="false" Visible="true">
+					<colour Value="GREEN" />
+					<fontcolour Value="GREEN" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.6000000" Long="-20.8000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<circle Filled="true" Label="long dashes 4px semi transparent"
+					LabelLocation="Left" LabelVisible="true" LineStyle="1"
+					LineThickness="4" SemiTransparent="true" Visible="true">
+					<colour Value="PURPLE" />
+					<fontcolour Value="PURPLE" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.3000000" Long="-20.5000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<circle Filled="false" Label="short dashes 3px no fill"
+					LabelLocation="Left" LabelVisible="true" LineStyle="4"
+					LineThickness="3" SemiTransparent="false" Visible="true">
+					<colour Value="YELLOW" />
+					<fontcolour Value="YELLOW" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.4000000" Long="-20.6000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<circle Filled="false" Label="solid hairwidth no fill"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.7000000" Long="-20.9000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<circle Filled="true" Label="solid hairwidth solid fill"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.7000000" Long="-20.2000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<polygon Closed="true" Filled="false" Label="test\npoly"
+					LabelLocation="Centre" LabelNodes="true" LabelVisible="true"
+					LineThickness="0" SemiTransparent="false" Visible="true">
+					<colour Value="BROWN" />
+					<fontcolour Value="BROWN" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<WorldPath>
+						<Point>
+							<shortLocation Depth="0.000" Lat="21.9000000" Long="-21.5000000" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="22.0000000" Long="-21.8000000" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="22.1000000" Long="-21.5000000" />
+						</Point>
+					</WorldPath>
+				</polygon>
+				<polygon Closed="false" Filled="false" Label="test\npolyline"
+					LabelLocation="Centre" LabelNodes="false" LabelVisible="true"
+					LineThickness="0" SemiTransparent="false" Visible="true">
+					<colour Value="RED" />
+					<fontcolour Value="RED" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<WorldPath>
+						<Point>
+							<shortLocation Depth="0.000" Lat="21.1000000" Long="-21.5000000" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="21.2000000" Long="-21.8000000" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="21.3000000" Long="-21.5000000" />
+						</Point>
+					</WorldPath>
+				</polygon>
+				<circle Filled="false" Label="test circle" LabelLocation="Left"
+					LabelVisible="true" LineThickness="0" SemiTransparent="false"
+					Visible="true">
+					<colour Value="YELLOW" />
+					<fontcolour Value="YELLOW" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.8000000" Long="-21.0000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<ellipse Filled="false" Label="test ellipse" LabelLocation="Left"
+					LabelVisible="true" LineThickness="0" Orient="45.000"
+					SemiTransparent="false" Visible="true">
+					<colour Value="ORANGE" />
+					<fontcolour Value="ORANGE" />
+					<timeRange Start="951212 060200" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.8000000" Long="-21.5000000" />
+					</centre>
+					<Maxima Units="degs" Value="0.0411447" />
+					<Minima Units="degs" Value="0.0246868" />
+				</ellipse>
+				<line ArrowAtEnd="false" Label="test line" LabelLocation="Left"
+					LabelVisible="true" LineThickness="0" ShowAutoCalc="false" Visible="true">
+					<colour Value="GREEN" />
+					<fontcolour Value="GREEN" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="20.8333333" Long="-21.1666667" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="22.0000000" Long="-21.1666667" />
+					</br>
+				</line>
+				<textlabel Label="test period" LabelLocation="Left"
+					LabelVisible="true" Scale="Medium" Symbol="Square" SymbolVisible="true"
+					Visible="true">
+					<colour Value="RED" />
+					<timeRange End="951212 060200" Start="951212 050200" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.7000000" Long="-21.2000000" />
+					</centre>
+				</textlabel>
+				<rectangle Filled="false" Label="test rectangle"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.5000000" Long="-21.6000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.4000000" Long="-21.5000000" />
+					</br>
+				</rectangle>
+				<textlabel Label="test text" LabelLocation="Left"
+					LabelVisible="true" Scale="Medium" Symbol="Unknown" SymbolVisible="true"
+					Visible="true">
+					<colour Value="PURPLE" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.7000000" Long="-21.5000000" />
+					</centre>
+				</textlabel>
+				<textlabel Label="test timetext" LabelLocation="Left"
+					LabelVisible="true" Scale="Medium" Symbol="Square" SymbolVisible="true"
+					Visible="true">
+					<colour Value="RED" />
+					<timeRange Start="951212 050200" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.7000000" Long="-21.7000000" />
+					</centre>
+				</textlabel>
+				<vector ArrowAtEnd="false" Bearing="270.000" Label="test vector"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+					<colour Value="RED" />
+					<fontcolour Value="RED" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.6000000" Long="-21.5000000" />
+					</tl>
+					<Distance Units="yds" Value="5000.0000000" />
+				</vector>
+				<wheel EmptyInner="false" Inner="200.000" Label="test wheel"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					Orientation="0" Outer="1500.000" SpokeSize="60" Visible="true">
+					<colour Value="RED" />
+					<fontcolour Value="RED" />
+					<timeRange Start="951212 050200" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.3000000" Long="-21.5000000" />
+					</centre>
+					<Inner Units="yds" Value="200.0000000" />
+					<Outer Units="yds" Value="1500.0000000" />
+				</wheel>
+				<circle Filled="true" Label="unconnected 4px semi transparent"
+					LabelLocation="Left" LabelVisible="true" LineStyle="5"
+					LineThickness="5" SemiTransparent="true" Visible="true">
+					<colour Value="ORANGE" />
+					<fontcolour Value="ORANGE" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.2000000" Long="-20.4000000" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+			</layer>
+			<dynamicShapeLayer LineThickness="0" Name="Dynamic A"
+				PlotAllShapes="false" Visible="true">
+				<rectangle Filled="false" Label="dynamic A rect 1"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051000" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="22.0000000" Long="-21.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.8333333" Long="-20.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 2"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051100" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.9166667" Long="-21.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.7500000" Long="-20.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 3"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051200" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.8333333" Long="-21.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.6666667" Long="-20.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 4"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051300" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.7500000" Long="-21.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.5833333" Long="-20.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 5"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051400" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.6666667" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.5000000" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 6"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="GREEN" />
+					<fontcolour Value="GREEN" />
+					<timeRange Start="951212 051500" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.5833333" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.4166667" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 7"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="GREEN" />
+					<fontcolour Value="GREEN" />
+					<timeRange Start="951212 051600" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.5000000" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.3333333" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 8"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="GREEN" />
+					<fontcolour Value="GREEN" />
+					<timeRange Start="951212 051700" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.4166667" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.2500000" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 9"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="RED" />
+					<fontcolour Value="RED" />
+					<timeRange Start="951212 051800" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.3333333" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.1666667" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 10"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="RED" />
+					<fontcolour Value="RED" />
+					<timeRange Start="951212 051900" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.2500000" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.0833333" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 11"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="GREEN" />
+					<fontcolour Value="GREEN" />
+					<timeRange Start="951212 052000" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.1666667" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.0000000" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<circle Filled="false" Label="dynamic A circ 12"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052100" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.0000000" Long="-20.8833333" />
+					</centre>
+					<Radius Units="yds" Value="2000.0000000" />
+				</circle>
+				<circle Filled="false" Label="dynamic A circ 13"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052200" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="20.9666667" Long="-20.9000000" />
+					</centre>
+					<Radius Units="yds" Value="2500.0000000" />
+				</circle>
+				<circle Filled="false" Label="dynamic A circ 14"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052300" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="20.9333333" Long="-20.9166667" />
+					</centre>
+					<Radius Units="yds" Value="3000.0000000" />
+				</circle>
+				<rectangle Filled="false" Label="dynamic A rect 15"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052400" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="20.9166667" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="20.7500000" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 16"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052500" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="20.8333333" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="20.6666667" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<polygon Closed="true" Filled="false" Label="dynamic A POLY 17"
+					LabelLocation="Left" LabelNodes="true" LabelVisible="true"
+					LineThickness="0" SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052600" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<WorldPath>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.5833333" Long="-21.0333333" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.5833333" Long="-20.9166667" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.7000000" Long="-20.8666667" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.7500000" Long="-21.0000000" />
+						</Point>
+					</WorldPath>
+				</polygon>
+				<polygon Closed="true" Filled="false" Label="dynamic A POLY 18"
+					LabelLocation="Left" LabelNodes="true" LabelVisible="true"
+					LineThickness="0" SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052700" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<WorldPath>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.5000000" Long="-21.0166667" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.4166667" Long="-20.8333333" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.5000000" Long="-20.7000000" />
+						</Point>
+						<Point>
+							<shortLocation Depth="0.000" Lat="20.6666667" Long="-21.0000000" />
+						</Point>
+					</WorldPath>
+				</polygon>
+				<rectangle Filled="false" Label="dynamic A rect 19"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052800" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="20.4166667" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="20.2500000" Long="-20.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic A rect 20"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052900" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="20.3333333" Long="-21.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="20.1666667" Long="-20.8833333" />
+					</br>
+				</rectangle>
+			</dynamicShapeLayer>
+			<dynamicShapeLayer LineThickness="0" Name="Dynamic B"
+				PlotAllShapes="false" Visible="true">
+				<rectangle Filled="false" Label="dynamic B rect 1"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051500" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.0000000" Long="-20.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="20.8333333" Long="-19.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 2"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051600" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.0833333" Long="-20.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="20.9166667" Long="-19.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 3"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051700" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.1666667" Long="-20.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.0000000" Long="-19.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 4"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051800" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.2500000" Long="-20.0000000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.0833333" Long="-19.8333333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 5"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 051900" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.3333333" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.1666667" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 6"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052000" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.4166667" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.2500000" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 7"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052100" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.5000000" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.3333333" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 8"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052200" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.5833333" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.4166667" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 9"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052300" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.6666667" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.5000000" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 10"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052400" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.7500000" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.5833333" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 11"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052500" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="21.8333333" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="21.6666667" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<circle Filled="false" Label="dynamic B circ 12"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052600" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.8333333" Long="-20.0000000" />
+					</centre>
+					<Radius Units="yds" Value="3000.0000000" />
+				</circle>
+				<circle Filled="false" Label="dynamic B circ 13"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052700" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.9000000" Long="-20.0000000" />
+					</centre>
+					<Radius Units="yds" Value="3500.0000000" />
+				</circle>
+				<circle Filled="false" Label="dynamic B circ 14"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052800" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<centre>
+						<shortLocation Depth="0.000" Lat="21.9666667" Long="-20.0000000" />
+					</centre>
+					<Radius Units="yds" Value="3000.0000000" />
+				</circle>
+				<rectangle Filled="false" Label="dynamic B rect 15"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 052900" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="22.1666667" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="22.0000000" Long="-19.8833333" />
+					</br>
+				</rectangle>
+				<rectangle Filled="false" Label="dynamic B rect 16"
+					LabelLocation="Left" LabelVisible="true" LineThickness="0"
+					SemiTransparent="false" Visible="true">
+					<colour Value="BLUE" />
+					<fontcolour Value="BLUE" />
+					<timeRange Start="951212 053000" />
+					<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+					<tl>
+						<shortLocation Depth="0.000" Lat="22.2500000" Long="-20.0500000" />
+					</tl>
+					<br>
+						<shortLocation Depth="0.000" Lat="22.0833333" Long="-19.8833333" />
+					</br>
+				</rectangle>
+			</dynamicShapeLayer>
+			<track InterpolatePoints="false" LineStyle="2" LineThickness="2"
+				LinkPositions="true" Name="NELSON" NameAtStart="true" NameLocation="Right"
+				NameVisible="true" PlotArrayCentre="false" PositionsVisible="true"
+				SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown"
+				Visible="true">
+				<colour Value="WHITE" />
+				<SymbolColor Value="WHITE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<sensor LineThickness="1" Name="Contact_bearings" TrackName="NELSON"
+					Visible="false" WormInHole="true">
+					<colour Value="GREEN" />
+					<sensor_contact AmbiguousBearing="300.800" Bearing="59.300"
+						Dtg="951212 051400" Frequency="49.960" HasAmbiguousBearing="true"
+						HasFrequency="true" Label="0414" LabelLocation="Left"
+						LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle"
+						Visible="true" />
+				</sensor>
+				<sensor LineThickness="1" Name="Plain" TrackName="NELSON"
+					Visible="false" WormInHole="true">
+					<colour Value="BLUE" />
+					<sensor_contact AmbiguousBearing="0.000" Bearing="-13.900"
+						Dtg="951212 051100" Frequency="0.000" HasAmbiguousBearing="false"
+						HasFrequency="false" Label="Cookie&#9;SUBJECT&#9;held&#9;on&#9;Plain&#9;Cookie"
+						LabelLocation="Left" LabelShowing="false" LineStyle="Solid"
+						PutLabelAt="Middle" Visible="true">
+						<Range Units="yds" Value="12000.0000000" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.0410500" Long="-21.0204944" />
+						</centre>
+					</sensor_contact>
+				</sensor>
+				<tma BearingLineVisible="true" LabelsVisible="true"
+					LineThickness="1" Name="TRACK_060" TrackName="NELSON" Visible="false">
+					<colour Value="WHITE" />
+					<tma_solution Course="50.000" Depth="100.000" Dtg="951212 050900"
+						EllipseShowing="true" Label="Trial label" LabelLocation="Centre"
+						LabelShowing="true" Speed="12.400" Symbol="Submarine"
+						SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1862861" Long="-21.6978806" />
+						</centre>
+					</tma_solution>
+				</tma>
+				<tma BearingLineVisible="true" LabelsVisible="true"
+					LineThickness="1" Name="TRACK_061" TrackName="NELSON" Visible="false">
+					<colour Value="WHITE" />
+					<tma_solution Bearing="124.500" Course="50.000" Depth="100.000"
+						Dtg="951212 052200" EllipseShowing="true" Label="Trial label"
+						LabelLocation="Centre" LabelShowing="true" Speed="12.400" Symbol="Submarine"
+						SymbolShowing="false" Visible="true">
+						<Range Units="yds" Value="12000.0000000" />
+					</tma_solution>
+				</tma>
+				<TrackSegment LineStyle="Solid" Name="120500.00"
+					PlotRelative="false" Visible="true">
+					<fix ArrowShowing="false" Course="269.700" Dtg="951212 050000"
+						Label="120500" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2029528" Long="-21.5312139" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.700" Dtg="951212 050100"
+						Label="0501" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2029389" Long="-21.5341611" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.900" Dtg="951212 050200"
+						Label="0502" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BLUE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2029194" Long="-21.5374472" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="268.700" Dtg="951212 050300"
+						Label="0503" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BLUE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2029194" Long="-21.5409083" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="270.600" Dtg="951212 050400"
+						Label="0504" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="GREEN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028556" Long="-21.5445361" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.400" Dtg="951212 050500"
+						Label="0505" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="GREEN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028861" Long="-21.5481861" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.000" Dtg="951212 050600"
+						Label="0506" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="RED" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028500" Long="-21.5518861" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="270.500" Dtg="951212 050700"
+						Label="0507" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="RED" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028000" Long="-21.5556500" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.900" Dtg="951212 050800"
+						Label="0508" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="YELLOW" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028278" Long="-21.5593556" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="268.600" Dtg="951212 050900"
+						Label="0509" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="YELLOW" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028306" Long="-21.5631278" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="272.100" Dtg="951212 051000"
+						Label="0510" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="PURPLE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2027639" Long="-21.5669083" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.100" Dtg="951212 051100"
+						Label="0511" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="PURPLE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028611" Long="-21.5706250" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="245.800" Dtg="951212 051200"
+						Label="0512" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="ORANGE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2028167" Long="-21.5743389" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="241.500" Dtg="951212 051300"
+						Label="0513" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="ORANGE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2018167" Long="-21.5775722" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="242.300" Dtg="951212 051400"
+						Label="0514" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BROWN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.2006333" Long="-21.5807417" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="240.900" Dtg="951212 051500"
+						Label="0515" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BROWN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1994639" Long="-21.5839833" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="239.900" Dtg="951212 051600"
+						Label="0516" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="CYAN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1982056" Long="-21.5872778" />
+						</centre>
+					</fix>
+				</TrackSegment>
+			</track>
+			<track InterpolatePoints="false" LineStyle="2" LineThickness="1"
+				LinkPositions="true" Name="NEL_STYLE2" NameAtStart="true"
+				NameLocation="Right" NameVisible="true" PlotArrayCentre="false"
+				PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true"
+				Symbol="Unknown" Visible="true">
+				<colour Value="WHITE" />
+				<SymbolColor Value="WHITE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<TrackSegment LineStyle="Solid" Name="120500.00"
+					PlotRelative="false" Visible="true">
+					<fix ArrowShowing="false" Course="269.700" Dtg="951212 050000"
+						Label="120500" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1862861" Long="-21.5312139" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.700" Dtg="951212 050100"
+						Label="0501" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1862722" Long="-21.5341611" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.900" Dtg="951212 050200"
+						Label="0502" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BLUE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1862528" Long="-21.5374472" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="268.700" Dtg="951212 050300"
+						Label="0503" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BLUE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1862528" Long="-21.5409083" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="270.600" Dtg="951212 050400"
+						Label="0504" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="GREEN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1861889" Long="-21.5445361" />
+						</centre>
+					</fix>
+				</TrackSegment>
+			</track>
+			<track InterpolatePoints="false" LineStyle="3" LineThickness="3"
+				LinkPositions="true" Name="NEL_STYLE3" NameAtStart="true"
+				NameLocation="Right" NameVisible="true" PlotArrayCentre="false"
+				PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true"
+				Symbol="Unknown" Visible="true">
+				<colour Value="GREEN" />
+				<SymbolColor Value="GREEN" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<TrackSegment LineStyle="Solid" Name="120505.00"
+					PlotRelative="false" Visible="true">
+					<fix ArrowShowing="false" Course="269.400" Dtg="951212 050500"
+						Label="120505" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1862194" Long="-21.5481861" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.000" Dtg="951212 050600"
+						Label="0506" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="RED" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1861833" Long="-21.5518861" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="270.500" Dtg="951212 050700"
+						Label="0507" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="RED" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1861333" Long="-21.5556500" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.900" Dtg="951212 050800"
+						Label="0508" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="YELLOW" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1861611" Long="-21.5593556" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="268.600" Dtg="951212 050900"
+						Label="0509" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="YELLOW" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1861639" Long="-21.5631278" />
+						</centre>
+					</fix>
+				</TrackSegment>
+			</track>
+			<track InterpolatePoints="false" LineStyle="4" LineThickness="4"
+				LinkPositions="true" Name="NEL_STYLE4" NameAtStart="true"
+				NameLocation="Right" NameVisible="true" PlotArrayCentre="false"
+				PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true"
+				Symbol="Unknown" Visible="true">
+				<colour Value="PURPLE" />
+				<SymbolColor Value="PURPLE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<TrackSegment LineStyle="Solid" Name="120510.00"
+					PlotRelative="false" Visible="true">
+					<fix ArrowShowing="false" Course="272.100" Dtg="951212 051000"
+						Label="120510" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1860972" Long="-21.5669083" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="269.100" Dtg="951212 051100"
+						Label="0511" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1861944" Long="-21.5706250" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="245.800" Dtg="951212 051200"
+						Label="0512" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="ORANGE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1861500" Long="-21.5743389" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="241.500" Dtg="951212 051300"
+						Label="0513" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="ORANGE" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1851500" Long="-21.5775722" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="242.300" Dtg="951212 051400"
+						Label="0514" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BROWN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1839667" Long="-21.5807417" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="240.900" Dtg="951212 051500"
+						Label="0515" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="BROWN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1827972" Long="-21.5839833" />
+						</centre>
+					</fix>
+					<fix ArrowShowing="false" Course="239.900" Dtg="951212 051600"
+						Label="0516" LabelLocation="Left" LabelShowing="false"
+						LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+						<colour Value="CYAN" />
+						<centre>
+							<shortLocation Depth="0.000" Lat="22.1815389" Long="-21.5872778" />
+						</centre>
+					</fix>
+				</TrackSegment>
+			</track>
+			<narrative Name="Narratives">
+				<narrative_entry Dtg="951212 050200" Entry="comment 3"
+					Track="NELSON" Type="GenComment2"/>
+				<narrative_entry Dtg="951212 050500" Entry="Mk Rge BAAA R121212"
+					Track="NELSON" Type="GenComment2" />
+			</narrative>
+		</layers>
+		<projection Border="1.100" PrimaryOriented="false"
+			PrimaryOrigin="false" Type="Flat">
+			<tl>
+				<shortLocation Depth="0.000" Lat="22.2500000" Long="-21.8000000" />
+			</tl>
+			<br>
+				<shortLocation Depth="0.000" Lat="20.1666667" Long="-19.8333333" />
+			</br>
+		</projection>
+		<gui>
+			<tote />
+			<component Type="Stepper">
+				<property Name="GREEN" Value="64" />
+				<property Name="DateFormat" Value="ddHHmm" />
+				<property Name="ShadeArcs" Value="false" />
+				<property Name="Radius" Value="3000.000" />
+				<property Name="Highlighter" Value="Default Highlight" />
+				<property Name="RectHighlight_Size" Value="5" />
+				<property Name="RectHighlight_Color" Value="255,255,255" />
+				<property Name="BLUE" Value="64" />
+				<property Name="Arc_Finish" Value="180" />
+				<property Name="LinkPositions" Value="true" />
+				<property Name="RED" Value="64" />
+				<property Name="CurrentTime" Value="951212 050000" />
+				<property Name="NumRings" Value="3" />
+				<property Name="PointSize" Value="5" />
+				<property Name="LargeStep" Value="10.0 minutes" />
+				<property Name="UseTrackColor" Value="false" />
+				<property Name="AutoStepInterval" Value="1.0 seconds" />
+				<property Name="Cursor" Value="Normal" />
+				<property Name="TrailLength" Value="15.0 minutes" />
+				<property Name="JustPrimary" Value="false" />
+				<property Name="PlotTrackName" Value="false" />
+				<property Name="FadePoints" Value="true" />
+				<property Name="SpokeSeparation" Value="45" />
+				<property Name="VectorStretch" Value="1.000" />
+				<property Name="SmallStep" Value="1.0 minutes" />
+				<property Name="Arcs" Value="-180" />
+			</component>
+			<Background>
+				<colour Value="LIGHT_GREY" />
+			</Background>
+		</gui>
+	</session>
+</plot>

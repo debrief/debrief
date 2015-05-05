@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import MWC.GUI.CanvasType;
-import MWC.GUI.CanvasType.MultiLineTooltipProvider;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.FireReformatted;
@@ -31,11 +30,10 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
-		Editable.DoNotHighlightMe, ExcludeFromRightClickEdit, MultiLineTooltipProvider
+		Editable.DoNotHighlightMe, ExcludeFromRightClickEdit
 {
 
 	/**
@@ -84,11 +82,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	 */
 	private transient DynamicTrackShapeSetWrapper _mySensor;
 
-	/**
-	 * the label describing this contact
-	 */
-	private final MWC.GUI.Shapes.TextLabel _theLabel;
-
 	private String _coverageName;
 
 	private int _lineWidth;
@@ -100,9 +93,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	 */
 	public DynamicTrackShapeWrapper()
 	{
-		// create the label
-		_theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
-
 		// by default, objects based on plain wrapper are coloured yellow.
 		// but, we use a null colour value to indicate 'use parent color'
 		setColor(null);
@@ -130,7 +120,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		// and the gui parameters
 		setColor(theColor);
 		_myLineStyle = theStyle;
-		_theLabel.setString(coverageName);
 		_coverageName = coverageName;
 	}
 
@@ -296,22 +285,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	}
 
 	/**
-	 * return the location of the label
-	 */
-	public final void setLabelLocation(final Integer loc)
-	{
-		_theLabel.setRelativeLocation(loc);
-	}
-
-	/**
-	 * update the location of the label
-	 */
-	public final Integer getLabelLocation()
-	{
-		return _theLabel.getRelativeLocation();
-	}
-
-	/**
 	 * update the line style
 	 */
 	public final void setLineStyle(final Integer style)
@@ -338,22 +311,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	public final DynamicTrackShapeSetWrapper getSensor()
 	{
 		return _mySensor;
-	}
-
-	/**
-	 * get the label for this data item
-	 */
-	public final String getLabel()
-	{
-		return _theLabel.getString();
-	}
-
-	/**
-	 * set the label for this data item
-	 */
-	public final void setLabel(final String val)
-	{
-		_theLabel.setString(val);
 	}
 
 	/**
@@ -424,16 +381,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 			builder.append("[UNSET]");			
 		}
 		return builder.toString();
-	}
-
-	/**
-	 * get the data name in multi-line format (for tooltips)
-	 * 
-	 * @return multi-line text label
-	 */
-	public String getMultiLineName()
-	{
-		return "Dynamic Track Shape:" + getName() + "\nTrack:" + getLabel();
 	}
 
 	/**
