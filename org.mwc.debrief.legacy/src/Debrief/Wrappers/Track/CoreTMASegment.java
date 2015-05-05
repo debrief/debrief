@@ -213,6 +213,7 @@ abstract public class CoreTMASegment extends TrackSegment
 
 			// put the text in a solid backdrop
 			boolean xorMode = false;
+			Color color = dest.getBackgroundColor();
 			if (dest instanceof ExtendedCanvasType)
 			{
 				xorMode = ((ExtendedCanvasType)dest).getXORMode();
@@ -220,15 +221,16 @@ abstract public class CoreTMASegment extends TrackSegment
 			}
 			final int ht = dest.getStringHeight(newFont) + 2;
 			final int wid = dest.getStringWidth(newFont, _dragMsg);
-			dest.setColor(Color.BLACK);
+			dest.setColor(Color.WHITE);
 			dest.fillRect(pt.x - 2, pt.y + 18 - ht, wid, ht);
+			// and draw the text
+			dest.setColor(java.awt.Color.BLACK);
+			dest.drawText(_dragMsg, pt.x, pt.y + 15);
 			if (dest instanceof ExtendedCanvasType)
 			{
 				((ExtendedCanvasType)dest).setXORMode(xorMode);
+				dest.setColor(color);
 			}
-			// and draw the text
-			dest.setColor(java.awt.Color.red);
-			dest.drawText(_dragMsg, pt.x, pt.y + 15);
 		}
 	}
 
