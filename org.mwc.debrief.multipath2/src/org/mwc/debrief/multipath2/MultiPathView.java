@@ -48,6 +48,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.multipath2.views.MultiPathUI;
@@ -117,13 +118,9 @@ public class MultiPathView extends ViewPart implements
 
 		_thePlot = new XYPlot(null, dateAxis, valAxis, theRenderer);
 		final JFreeChart _plotArea = new JFreeChart(_thePlot);
-		final ChartPanel _chartPanel = new ChartPanel(_plotArea);
-
-		// now we need a Swing object to put our chart into
-		final Frame _plotControl = SWT_AWT.new_Frame(ui);
-
-		_plotControl.add(_chartPanel, BorderLayout.CENTER);
-
+		
+		final ChartComposite _plotControl = new ChartComposite(ui, SWT.NONE);
+		_plotControl.setChart(_plotArea);
 	}
 
 	@Override

@@ -15,7 +15,6 @@
 package org.mwc.cmap.xyplot.views;
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -24,12 +23,11 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IMemento;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
@@ -37,6 +35,7 @@ import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.xyplot.views.providers.ICrossSectionDatasetProvider;
 
 import MWC.GUI.Layers;
@@ -53,7 +52,7 @@ public class CrossSectionViewer
 	/**
 	 * the Swing control we insert the plot into
 	 */
-	private Frame _chartFrame;
+	private ChartComposite _chartFrame;
 
 	private JFreeChart _chart;
 
@@ -97,13 +96,7 @@ public class CrossSectionViewer
 
 	protected CrossSectionViewer(final Composite parent)
 	{
-		// we need an SWT.EMBEDDED object to act as a holder
-		final Composite holder = new Composite(parent, SWT.EMBEDDED);
-		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
-				| GridData.FILL_HORIZONTAL));
-
-		// now we need a Swing object to put our chart into
-		_chartFrame = SWT_AWT.new_Frame(holder);
+		_chartFrame = new ChartComposite(parent, SWT.NONE);
 
 		_chart = ChartFactory.createXYLineChart("Cross Section", // Title
 				"Distance (km)", // X-Axis label
@@ -120,8 +113,17 @@ public class CrossSectionViewer
 		final ValueAxis xAxis = _chart.getXYPlot().getDomainAxis();
 		xAxis.setLowerBound(0);
 
-		final ChartPanel jfreeChartPanel = new ChartPanel(_chart);
-		_chartFrame.add(jfreeChartPanel);
+		_chartFrame.setChart(_chart);
+		_chartFrame.addDisposeListener(new DisposeListener()
+		{
+			
+			@Override
+			public void widgetDisposed(DisposeEvent e)
+			{
+				clearPlot();
+				_chartFrame.removeDisposeListener(this);
+			}
+		});
 	}
 
 	protected boolean isSnail()
@@ -136,6 +138,9 @@ public class CrossSectionViewer
 
 	public void clearPlot()
 	{
+		if (_chartFrame == null || _chartFrame.isDisposed()) {
+			return;
+		}
 		_dataset.removeAllSeries();
 		_chart.getXYPlot().setDataset(_dataset);
 		_chart.getXYPlot().clearAnnotations();
