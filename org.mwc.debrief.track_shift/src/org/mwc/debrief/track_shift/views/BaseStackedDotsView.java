@@ -650,7 +650,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			}
 		};
 		_onlyVisible.setText("Only plot visible data");
-		_onlyVisible.setChecked(true);
+		_onlyVisible.setChecked(false);
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
 		_onlyVisible.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/reveal.png"));
