@@ -29,13 +29,9 @@ abstract public class DynamicTrackCoverageHandler extends
 
 	private static final String LINE_STYLE = "LineStyle";
 
-	private static final String LABEL_LOCATION = "LabelLocation";
-
 	private static final String VISIBLE = "Visible";
 
 	private static final String SEMI_TRANS = "SemiTransparent";
-
-	private static final String LABEL = "Label";
 
 	private static final String START_DTG = "StartDtg";
 	private static final String END_DTG = "EndDtg";
@@ -70,14 +66,6 @@ abstract public class DynamicTrackCoverageHandler extends
 	{
 		// inform our parent what type of class we are
 		super(typeName);
-
-		addAttributeHandler(new HandleAttribute(LABEL)
-		{
-			public void setValue(final String name, final String value)
-			{
-				_theContact.setLabel(fromXML(value));
-			}
-		});
 
 		addAttributeHandler(new HandleAttribute(START_DTG)
 		{
@@ -127,16 +115,6 @@ abstract public class DynamicTrackCoverageHandler extends
 			}
 		});
 
-		addAttributeHandler(new HandleAttribute(LABEL_LOCATION)
-		{
-			public void setValue(final String name, final String val)
-			{
-				labelLocation.setAsText(val);
-				final Integer res = (Integer) labelLocation.getValue();
-				if (res != null)
-					_theContact.setLabelLocation(res);
-			}
-		});
 		addAttributeHandler(new HandleAttribute(LINE_STYLE)
 		{
 			public void setValue(final String name, final String val)
@@ -211,15 +189,10 @@ abstract public class DynamicTrackCoverageHandler extends
 		eFix.setAttribute(VISIBLE, writeThis(contact.getVisible()));
 		
 		eFix.setAttribute(SEMI_TRANS, writeThis(contact.getSemiTransparent()));
-		eFix.setAttribute(LABEL, toXML(contact.getLabel()));
 		
 		// sort out the line style
 		lineStyle.setValue(contact.getLineStyle());
 		eFix.setAttribute(LINE_STYLE, lineStyle.getAsText().replace(' ', '_'));
-
-		// and the label itself
-		labelLocation.setValue(contact.getLabelLocation());
-		eFix.setAttribute(LABEL_LOCATION, labelLocation.getAsText());
 
 		// note, we are accessing the "actual" colour for this fix, we are not
 		// using the
