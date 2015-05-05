@@ -59,7 +59,7 @@
 
 	<!-- reusable elements -->
 	<xs:complexType name="timeRange">
-		<xs:attribute name="End" use="required" type="xs:string" />
+		<xs:attribute name="End" type="xs:string" />
 		<xs:attribute name="Start" use="required" type="xs:string" />
 	</xs:complexType>
 
@@ -252,6 +252,7 @@
 	<xs:complexType name="track">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="sensor" type="sensor" />
+			<xs:element name="DynamicShapeSet" type="DynamicShapeSet" />
 			<xs:element name="fix" type="fix" />
 			<xs:element name="tma" type="tma" />
 			<xs:element name="TrackSegment" type="TrackSegment" />
@@ -283,6 +284,67 @@
 			type="xs:boolean" />
 		<xs:attribute name="Symbol" default="SQUARE" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="DynamicShapeSet">
+		<xs:sequence>
+			<xs:element name="DynamicCoverage" maxOccurs="unbounded"
+				minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+						A definable set of sectors that are centred on, and oriented with a Debrief track.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="colour">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute type="xs:string" name="Value" use="optional" />
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute type="xs:string" name="EndDtg" use="optional">
+						<xs:annotation>
+							<xs:documentation>
+								If the end DTG isn't supplied, then the shape will be shown 
+								permanently from the start DTG
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute type="xs:string" name="LineStyle" use="optional" />
+					<xs:attribute type="xs:string" name="StartDtg" use="optional">
+						<xs:annotation>
+							<xs:documentation>
+								If the start DTG isn't supplied, then the shape will be shown until 
+								the time reaches any end DTG
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute type="xs:string" name="Visible" use="optional" />
+					<xs:attribute type="xs:string" name="arcs" use="required">
+						<xs:annotation>
+							<xs:documentation>
+								A series of 4-element integers, that specify start-angle, end-angle (both in degs from current
+								ownship heading), then inner radius, outer radius (both in yds)
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute type="xs:byte" name="LineThickness" use="optional" />
+		<xs:attribute type="xs:string" name="Name" use="required" />
+		<xs:attribute type="xs:string" name="TrackName" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the Debrief track that this shape annotation will be added to
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute type="xs:string" name="Visible" use="optional" />
 	</xs:complexType>
 	<xs:complexType name="sensor">
 		<xs:sequence>
@@ -690,12 +752,17 @@
 			<xs:extension base="shape">
 				<xs:sequence>
 					<xs:element name="tl" type="locationType" />
-					<xs:element name="Bearing" type="xs:double" />
 					<xs:element name="Distance" type="worldDistanceType" />
 				</xs:sequence>
 				<xs:attribute name="ArrowAtEnd" type="xs:boolean" use="optional">
 					<xs:annotation>
 						<xs:documentation>Whether to draw an arrow at the end of the line
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Bearing" type="xs:double">
+					<xs:annotation>
+						<xs:documentation>Bearing (in Degrees) for the Vector
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
