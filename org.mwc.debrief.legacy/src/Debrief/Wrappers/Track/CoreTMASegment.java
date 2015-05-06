@@ -216,6 +216,9 @@ abstract public class CoreTMASegment extends TrackSegment
 			Color color = dest.getBackgroundColor();
 			if (dest instanceof ExtendedCanvasType)
 			{
+				// NOTE: this is a workaround, to overcome an occasional 
+				// SWT rendering problem - where the XOR text
+				// wasn't being displayed
 				xorMode = ((ExtendedCanvasType)dest).getXORMode();
 				((ExtendedCanvasType)dest).setXORMode(false);
 			}
