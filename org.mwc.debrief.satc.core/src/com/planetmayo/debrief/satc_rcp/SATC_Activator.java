@@ -160,10 +160,10 @@ public class SATC_Activator extends AbstractUIPlugin
 		registerServices(context);
 
 		// try to set the default perspective
-		IPerspectiveDescriptor myPer = PlatformUI.getWorkbench()
-				.getPerspectiveRegistry()
-				.findPerspectiveWithId("com.planetmayo.debrief.satc_rcp.perspective");
-		PlatformUI.getWorkbench().getPerspectiveRegistry().revertPerspective(myPer);
+//		IPerspectiveDescriptor myPer = PlatformUI.getWorkbench()
+//				.getPerspectiveRegistry()
+//				.findPerspectiveWithId("com.planetmayo.debrief.satc_rcp.perspective");
+//		PlatformUI.getWorkbench().getPerspectiveRegistry().revertPerspective(myPer);
 	}
 	
 	public void setDopplerCalculator(DopplerCalculator calculator)
