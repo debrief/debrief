@@ -132,23 +132,26 @@ public class ColorPropertyEditor extends PropertyEditorSupport
   protected Vector<NamedColor> createColors()
   {
     final Vector<NamedColor> theColors = new Vector<NamedColor>();
-    theColors.addElement(new NamedColor("Red", Color.red));
-    theColors.addElement(new NamedColor("Blue", Color.blue));
-    theColors.addElement(new NamedColor("Green", Color.green));
-    theColors.addElement(new NamedColor("Yellow", Color.yellow));
-    theColors.addElement(new NamedColor("Magenta", Color.magenta));
-    theColors.addElement(new NamedColor("Purple", new Color(169, 1, 132)));
-    theColors.addElement(new NamedColor("Orange", Color.orange));
-    theColors.addElement(new NamedColor("Brown", new Color(188, 93, 6)));
-    theColors.addElement(new NamedColor("Cyan", Color.cyan));
-    theColors.addElement(new NamedColor("Light Green", new Color(100, 240, 100)));
-    theColors.addElement(new NamedColor("Gold", new Color(230, 200, 20)));
-    theColors.addElement(new NamedColor("Pink", Color.pink));
-    theColors.addElement(new NamedColor("Light Grey", Color.lightGray));
-    theColors.addElement(new NamedColor("Grey", Color.gray));
-    theColors.addElement(new NamedColor("Dark Grey", Color.darkGray));
-    theColors.addElement(new NamedColor("White", Color.white));
-    theColors.addElement(new NamedColor("Black", Color.black));
+    theColors.addElement(new NamedColor("Red", DebriefColors.RED));
+    theColors.addElement(new NamedColor("Blue", DebriefColors.BLUE));
+    theColors.addElement(new NamedColor("Green", DebriefColors.GREEN));
+    
+    theColors.addElement(new NamedColor("Yellow", DebriefColors.YELLOW));
+    theColors.addElement(new NamedColor("Magenta", DebriefColors.MAGENTA));
+    theColors.addElement(new NamedColor("Purple", DebriefColors.PURPLE));
+    theColors.addElement(new NamedColor("Orange", DebriefColors.ORANGE));
+    theColors.addElement(new NamedColor("Brown", DebriefColors.BROWN));
+    theColors.addElement(new NamedColor("Cyan", DebriefColors.CYAN));
+    theColors.addElement(new NamedColor("Light Green", DebriefColors.LIGHT_GREEN));
+    theColors.addElement(new NamedColor("Gold", DebriefColors.GOLD));
+    theColors.addElement(new NamedColor("Pink", DebriefColors.PINK));
+    theColors.addElement(new NamedColor("Light Grey", DebriefColors.LIGHT_GRAY));
+    theColors.addElement(new NamedColor("Grey", DebriefColors.GRAY));
+    theColors.addElement(new NamedColor("Dark Grey", DebriefColors.DARK_GRAY));
+    theColors.addElement(new NamedColor("White", DebriefColors.WHITE));
+    theColors.addElement(new NamedColor("Black", DebriefColors.BLACK));
+    theColors.addElement(new NamedColor("Medium Blue", DebriefColors.MEDIUM_BLUE));
+    theColors.addElement(new NamedColor("Dark Blue", DebriefColors.DARK_BLUE));
 
     return theColors;
   }
