@@ -24,6 +24,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -731,10 +733,10 @@ public class MaintainContributionsView extends ViewPart
 					annot.setY(xVal);
 					annotChanged = true;
 				}
-
+				
 				// and write the text
-				final String numA = MWC.Utilities.TextFormatting.GeneralFormat
-						.formatOneDecimalPlace(legPlot.getRangeCrosshairValue());
+			  final NumberFormat _oneDPFormat = new DecimalFormat("0.0", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
+				final String numA = _oneDPFormat.format(legPlot.getRangeCrosshairValue());
 				final Date newDate = new Date((long) legPlot.getDomainCrosshairValue());
 				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
