@@ -97,6 +97,8 @@ abstract public class ColourHandler extends MWCXMLReader
 
 	private synchronized static void checkColours()
 	{
+		// TODO: peco - we need to move these colors for the new shades.
+		
 		if (_myColours == null)
 		{
 			_myColours = new java.util.Hashtable<String, java.awt.Color>();
