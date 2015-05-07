@@ -289,6 +289,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GUI.Tools.Action;
@@ -388,17 +389,26 @@ public class ImportReplay extends PlainImporterBase
 		{
 			colors = new Vector<doublet>(0, 1);
 			colors.addElement(new doublet("@", Color.white));
-			colors.addElement(new doublet("A", Color.blue));
-			colors.addElement(new doublet("B", Color.green));
-			colors.addElement(new doublet("C", Color.red));
-			colors.addElement(new doublet("D", Color.yellow));
-			colors.addElement(new doublet("E", new Color(169, 1, 132)));
-			colors.addElement(new doublet("F", Color.orange));
-			colors.addElement(new doublet("G", new Color(188, 93, 6)));
-			colors.addElement(new doublet("H", Color.cyan));
-			colors.addElement(new doublet("I", new Color(100, 240, 100)));
-			colors.addElement(new doublet("J", new Color(230, 200, 20)));
-			colors.addElement(new doublet("K", Color.pink));
+			colors.addElement(new doublet("A", DebriefColors.BLUE));
+			colors.addElement(new doublet("B", DebriefColors.GREEN));
+			colors.addElement(new doublet("C", DebriefColors.RED));
+			
+			colors.addElement(new doublet("D", DebriefColors.YELLOW));
+			colors.addElement(new doublet("E", DebriefColors.MAGENTA));
+			colors.addElement(new doublet("F", DebriefColors.ORANGE));
+			colors.addElement(new doublet("G", DebriefColors.PURPLE));
+			colors.addElement(new doublet("H", DebriefColors.CYAN));
+			colors.addElement(new doublet("I", DebriefColors.BROWN));
+			colors.addElement(new doublet("J", DebriefColors.LIGHT_GREEN));
+			colors.addElement(new doublet("K", DebriefColors.PINK));
+			colors.addElement(new doublet("L", DebriefColors.GOLD));
+			colors.addElement(new doublet("M", DebriefColors.LIGHT_GRAY));
+	    colors.addElement(new doublet("N", DebriefColors.GRAY));
+	    colors.addElement(new doublet("O", DebriefColors.DARK_GRAY));
+	    colors.addElement(new doublet("P", DebriefColors.WHITE));
+	    colors.addElement(new doublet("Q", DebriefColors.BLACK));
+	    colors.addElement(new doublet("R", DebriefColors.MEDIUM_BLUE));
+	    colors.addElement(new doublet("S", DebriefColors.DARK_BLUE));
 		}
 	}
 
