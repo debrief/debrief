@@ -27,6 +27,7 @@ import java.awt.Color;
 
 import org.xml.sax.Attributes;
 
+import MWC.GUI.Properties.DebriefColors;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class ColourHandler extends MWCXMLReader
@@ -96,28 +97,28 @@ abstract public class ColourHandler extends MWCXMLReader
 
 	private synchronized static void checkColours()
 	{
-		// TODO: peco - we need to move these colors for the new shades.
-		
 		if (_myColours == null)
 		{
 			_myColours = new java.util.Hashtable<String, java.awt.Color>();
-			_myColours.put("RED", java.awt.Color.red);
-			_myColours.put("BLUE", java.awt.Color.blue);
-			_myColours.put("GREEN", java.awt.Color.green);
-			_myColours.put("YELLOW", java.awt.Color.yellow);
-			_myColours.put("MAGENTA", java.awt.Color.magenta);
-			_myColours.put("PURPLE", new java.awt.Color(169, 1, 132));
-			_myColours.put("ORANGE", java.awt.Color.orange);
-			_myColours.put("BROWN", new java.awt.Color(188, 93, 6));
-			_myColours.put("CYAN", java.awt.Color.cyan);
-			_myColours.put("LIGHT_GREEN", new java.awt.Color(100, 240, 100));
-			_myColours.put("GOLD", new java.awt.Color(230, 200, 20));
-			_myColours.put("PINK", java.awt.Color.pink);
-			_myColours.put("LIGHT_GREY", java.awt.Color.lightGray);
-			_myColours.put("GREY", java.awt.Color.gray);
-			_myColours.put("DARK_GREY", java.awt.Color.darkGray);
-			_myColours.put("WHITE", java.awt.Color.white);
-			_myColours.put("BLACK", java.awt.Color.black);
+			_myColours.put("RED", DebriefColors.RED);
+			_myColours.put("BLUE", DebriefColors.BLUE);
+			_myColours.put("GREEN", DebriefColors.GREEN);
+			_myColours.put("YELLOW", DebriefColors.YELLOW);
+			_myColours.put("MAGENTA", DebriefColors.MAGENTA);
+			_myColours.put("PURPLE", DebriefColors.PURPLE);
+			_myColours.put("ORANGE", DebriefColors.ORANGE);
+			_myColours.put("BROWN", DebriefColors.BROWN);
+			_myColours.put("CYAN", DebriefColors.CYAN);
+			_myColours.put("LIGHT_GREEN", DebriefColors.LIGHT_GREEN);
+			_myColours.put("GOLD", DebriefColors.GOLD);
+			_myColours.put("PINK", DebriefColors.PINK);
+			_myColours.put("LIGHT_GREY", DebriefColors.LIGHT_GRAY);
+			_myColours.put("GREY", DebriefColors.GRAY);
+			_myColours.put("DARK_GREY", DebriefColors.DARK_GRAY);
+			_myColours.put("WHITE", DebriefColors.WHITE);
+			_myColours.put("BLACK", DebriefColors.BLACK);
+			_myColours.put("DARK_BLUE", DebriefColors.DARK_BLUE);
+			_myColours.put("MEDIUM_BLUE", DebriefColors.MEDIUM_BLUE);
 		}
 	}
 
