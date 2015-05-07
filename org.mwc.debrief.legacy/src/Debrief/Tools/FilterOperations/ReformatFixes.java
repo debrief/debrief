@@ -89,6 +89,7 @@ package Debrief.Tools.FilterOperations;
 // Initial revision
 //
 
+import java.awt.Color;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
@@ -1180,9 +1181,10 @@ public final class ReformatFixes implements FilterOperation
       res.execute();
 
       // check if colours updates
-      assertEquals("track changed to red", java.awt.Color.red, fw1.getColor());
-      assertEquals("shape changed to red", java.awt.Color.red, sw.getColor());
-      assertEquals("label changed to red", java.awt.Color.red, lw.getColor());
+      final Color newRed = new Color(204,0,51);
+			assertEquals("track changed to red", newRed, fw1.getColor());
+      assertEquals("shape changed to red", newRed, sw.getColor());
+      assertEquals("label changed to red", newRed, lw.getColor());
 
       // and check the undo
       res.undo();
