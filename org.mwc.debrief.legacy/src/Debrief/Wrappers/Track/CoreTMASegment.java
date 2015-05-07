@@ -23,6 +23,7 @@ import java.util.Iterator;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -211,14 +212,28 @@ abstract public class CoreTMASegment extends TrackSegment
 			final Font newFont = new Font("Arial", Font.BOLD, 12);
 
 			// put the text in a solid backdrop
+			boolean xorMode = false;
+			Color color = dest.getBackgroundColor();
+			if (dest instanceof ExtendedCanvasType)
+			{
+				// NOTE: this is a workaround, to overcome an occasional 
+				// SWT rendering problem - where the XOR text
+				// wasn't being displayed
+				xorMode = ((ExtendedCanvasType)dest).getXORMode();
+				((ExtendedCanvasType)dest).setXORMode(false);
+			}
 			final int ht = dest.getStringHeight(newFont) + 2;
 			final int wid = dest.getStringWidth(newFont, _dragMsg);
-			dest.setColor(Color.BLACK);
+			dest.setColor(Color.WHITE);
 			dest.fillRect(pt.x - 2, pt.y + 18 - ht, wid, ht);
-
 			// and draw the text
-			dest.setColor(java.awt.Color.red);
+			dest.setColor(java.awt.Color.BLACK);
 			dest.drawText(_dragMsg, pt.x, pt.y + 15);
+			if (dest instanceof ExtendedCanvasType)
+			{
+				((ExtendedCanvasType)dest).setXORMode(xorMode);
+				dest.setColor(color);
+			}
 		}
 	}
 

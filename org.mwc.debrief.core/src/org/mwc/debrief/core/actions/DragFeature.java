@@ -478,6 +478,7 @@ public class DragFeature extends CoreDragAction
 					public void setColor(final Color theCol)
 					{
 						// ignore the color change, we just want to keep it white...
+						super.setColor(theCol);
 					}
 
 					@Override
