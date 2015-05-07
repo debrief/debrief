@@ -15,7 +15,6 @@ Require-Bundle: org.eclipse.ui,
  org.junit,
  org.eclipse.help;bundle-version="3.6.0",
  org.mwc.cmap.geotools;bundle-version="12.1.0",
- org.mwc.cmap.legacy;bundle-version="1.0.193",
  org.mwc.cmap.jfreechart
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
