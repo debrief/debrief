@@ -47,6 +47,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
     private static final int ROW_HEIGHT = 20;
     private static final int KTABLE_CELL_CONTENT_MARGIN_WIDTH = 4;
     private static final int KTABLE_CELL_CONTENT_MARGIN_HEIGHT = 3;
+		protected static final org.eclipse.swt.graphics.Color SWT_WHITE = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 255, 255, 254);
 
     private final ColumnVisible myColumnVisible;
     private final ColumnTime myColumnTime;
@@ -257,14 +258,18 @@ public class NarrativeViewerModel extends KTableDefaultModel
     	Color color = entry.getColor();
     	KTableCellRenderer renderer = renderers.get(color); 
     	if (renderer == null) {
-    		final org.eclipse.swt.graphics.Color swtColor = getWashedColor(color);
-    		//final org.eclipse.swt.graphics.Color swtColor = new org.eclipse.swt.graphics.Color(Display.getCurrent(),
-    		//		color.getRed(), color.getGreen(), color.getBlue());
+    		final org.eclipse.swt.graphics.Color swtColor = new org.eclipse.swt.graphics.Color(Display.getCurrent(),
+    				color.getRed(), color.getGreen(), color.getBlue());
     		swtColors.add(swtColor);
     		renderer = new TextCellRenderer(TextCellRenderer.INDICATION_FOCUS_ROW) {
 
 				@Override
 				public org.eclipse.swt.graphics.Color getBackground() {
+					return SWT_WHITE;
+				}
+				
+				@Override
+				public org.eclipse.swt.graphics.Color getForeground() {
 					return swtColor;
 				}
     			
@@ -273,21 +278,6 @@ public class NarrativeViewerModel extends KTableDefaultModel
     	}
     	return renderer;
     }
-
-	private org.eclipse.swt.graphics.Color getWashedColor(Color color) {
-		int r = color.getRed() ;
-		int g = color.getGreen();
-		int b = color.getBlue();
-		
-		float shadeFactor = 0.9f;
-		float red = (255 - r) * shadeFactor + r;
-		float green = (255 - g) * shadeFactor + g;
-		float blue = (255 - b) * shadeFactor + b;
-		
-		final org.eclipse.swt.graphics.Color swtColor = new org.eclipse.swt.graphics.Color(Display.getCurrent(), 
-				(int)red, (int)green, (int)blue);
-		return swtColor;
-	}
 
     @Override
     public int doGetColumnCount()
