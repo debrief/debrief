@@ -16,7 +16,7 @@ package MWC.GUI;
 
 import java.awt.Shape;
 
-public interface ExtendedCanvasType
+public interface ExtendedCanvasType extends ShapeCanvasType
 {
 	/** produce a semi-transparent filled oval
 	 * 
@@ -60,8 +60,6 @@ public interface ExtendedCanvasType
 			final int height);
 	
 	public void semiFillShape(Shape shape);
-
-	public void fillShape(Shape shape);
 	
 	public void setXORMode(boolean mode);
 	
