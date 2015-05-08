@@ -112,6 +112,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.ColorPropertyEditor;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Tools.Action;
@@ -1181,7 +1182,7 @@ public final class ReformatFixes implements FilterOperation
       res.execute();
 
       // check if colours updates
-      final Color newRed = new Color(204,0,51);
+      final Color newRed = DebriefColors.RED;
 			assertEquals("track changed to red", newRed, fw1.getColor());
       assertEquals("shape changed to red", newRed, sw.getColor());
       assertEquals("label changed to red", newRed, lw.getColor());

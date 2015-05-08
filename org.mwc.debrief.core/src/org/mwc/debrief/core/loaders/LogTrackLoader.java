@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +44,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -228,7 +228,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 							tw.setName(trackName);
 							
 							// set the default color
-							tw.setColor(Color.blue);
+							tw.setColor(DebriefColors.BLUE);
 							
 							// store it
 							theLayers.addThisLayer(tw);

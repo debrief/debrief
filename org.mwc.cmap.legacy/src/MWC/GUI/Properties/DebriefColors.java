@@ -12,7 +12,8 @@ public interface DebriefColors
 	public static Color LIGHT_GRAY = new Color(237, 237, 237);
 	public static Color WHITE = new Color(255, 255, 254);
 	
-	public static Color RED = new Color(204, 0, 51);
+//	public static Color RED = new Color(204, 0, 51);
+	public static Color RED = new Color(224, 28,62);
 	public static Color GREEN = new Color(0, 128, 11);
 	public static Color BLUE = new Color(0, 100, 189);
 	
