@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
@@ -168,7 +169,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	private final boolean _needFreq;
 
-//	private Action _magicBtn;
+	// private Action _magicBtn;
 
 	protected Vector<ISelectionProvider> _selProviders;
 
@@ -216,7 +217,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(_onlyVisible);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
-//		toolBarManager.add(_magicBtn);
+		// toolBarManager.add(_magicBtn);
 
 		// and a separator
 		toolBarManager.add(new Separator());
@@ -371,8 +372,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// put the plot into a chart
 		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
 
-		final LegendItemSource[] sources =
-		{ _linePlot };
+		final LegendItemSource[] sources = { _linePlot };
 		_myChart.getLegend().setSources(sources);
 
 		_myChart.addProgressListener(new ChartProgressListener()
@@ -425,59 +425,59 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// and insert into the panel
 		_holder.setChart(_myChart);
 
-//		plotControl.addMouseMotionListener(new MouseMotionListener()
-//		{
-//
-//			public void mouseDragged(final MouseEvent e)
-//			{
-//				// ignore
-//			}
-//
-//			public void mouseMoved(final MouseEvent e)
-//			{
-//				// Point pt = e.getPoint();
-//				// // suspend this development. we need to sort out which plot
-//				// the mouse
-//				// is over
-//				// int mouseX = pt.y;
-//				// int mouseY = pt.x;
-//				// Point2D p = plotHolder
-//				// .translateScreenToJava2D(new Point(mouseX, mouseY));
-//				// System.out.println(pt.x + ", " + pt.y + " to: x = " + mouseX
-//				// +
-//				// ", y = "
-//				// + mouseY);
-//				// // Rectangle2D plotArea = chartPanel.getScreenDataArea();
-//				//
-//				// CombinedDomainXYPlot comb = (CombinedDomainXYPlot)
-//				// _dotPlot.getParent();
-//				// // XYPlot thisPlot = comb.findSubplot(comb.getParent().getp,
-//				// p);
-//				//
-//				// Component comp = plotHolder.getComponentAt(pt);
-//				// ChartEntity entity = plotHolder.getEntityForPoint(mouseX,
-//				// mouseY);
-//				// System.err.println("comp:" + comp + "// entity:" + entity);
-//				//
-//				// Rectangle2D plotArea =
-//				// plotHolder.getChartRenderingInfo().getPlotInfo()
-//				// .getDataArea();
-//				// ValueAxis domainAxis = _dotPlot.getDomainAxis();
-//				// RectangleEdge domainAxisEdge = _dotPlot.getDomainAxisEdge();
-//				// ValueAxis rangeAxis = _dotPlot.getRangeAxis();
-//				// RectangleEdge rangeAxisEdge = _dotPlot.getRangeAxisEdge();
-//				//
-//				// if (domainAxis != null)
-//				// {
-//				// double chartX = domainAxis.java2DToValue(p.getX(), plotArea,
-//				// domainAxisEdge);
-//				// double chartY = rangeAxis.java2DToValue(p.getY(), plotArea,
-//				// rangeAxisEdge);
-//				// System.out.println("Chart: x = " + chartX + ", y = " +
-//				// chartY);
-//				// }
-//			}
-//		});
+		// plotControl.addMouseMotionListener(new MouseMotionListener()
+		// {
+		//
+		// public void mouseDragged(final MouseEvent e)
+		// {
+		// // ignore
+		// }
+		//
+		// public void mouseMoved(final MouseEvent e)
+		// {
+		// // Point pt = e.getPoint();
+		// // // suspend this development. we need to sort out which plot
+		// // the mouse
+		// // is over
+		// // int mouseX = pt.y;
+		// // int mouseY = pt.x;
+		// // Point2D p = plotHolder
+		// // .translateScreenToJava2D(new Point(mouseX, mouseY));
+		// // System.out.println(pt.x + ", " + pt.y + " to: x = " + mouseX
+		// // +
+		// // ", y = "
+		// // + mouseY);
+		// // // Rectangle2D plotArea = chartPanel.getScreenDataArea();
+		// //
+		// // CombinedDomainXYPlot comb = (CombinedDomainXYPlot)
+		// // _dotPlot.getParent();
+		// // // XYPlot thisPlot = comb.findSubplot(comb.getParent().getp,
+		// // p);
+		// //
+		// // Component comp = plotHolder.getComponentAt(pt);
+		// // ChartEntity entity = plotHolder.getEntityForPoint(mouseX,
+		// // mouseY);
+		// // System.err.println("comp:" + comp + "// entity:" + entity);
+		// //
+		// // Rectangle2D plotArea =
+		// // plotHolder.getChartRenderingInfo().getPlotInfo()
+		// // .getDataArea();
+		// // ValueAxis domainAxis = _dotPlot.getDomainAxis();
+		// // RectangleEdge domainAxisEdge = _dotPlot.getDomainAxisEdge();
+		// // ValueAxis rangeAxis = _dotPlot.getRangeAxis();
+		// // RectangleEdge rangeAxisEdge = _dotPlot.getRangeAxisEdge();
+		// //
+		// // if (domainAxis != null)
+		// // {
+		// // double chartX = domainAxis.java2DToValue(p.getX(), plotArea,
+		// // domainAxisEdge);
+		// // double chartY = rangeAxis.java2DToValue(p.getY(), plotArea,
+		// // rangeAxisEdge);
+		// // System.out.println("Chart: x = " + chartX + ", y = " +
+		// // chartY);
+		// // }
+		// }
+		// });
 
 		// do a little tidying to reflect the memento settings
 		if (!_showLinePlot.isChecked())
@@ -506,7 +506,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		if (_theTrackDataListener != null)
 		{
 			_theTrackDataListener.removeTrackShiftListener(_myShiftListener);
-			_theTrackDataListener.removeTrackShiftListener(_myShiftListener);
+			_theTrackDataListener.removeTrackDataListener(_myTrackDataListener);
 		}
 
 		// stop the part monitor
@@ -552,8 +552,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_autoResize.setToolTipText("Keep plot sized to show all data");
 		_autoResize.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/24/fit_to_win.png"));
-		
-	
 
 		_showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
 		{
@@ -663,8 +661,32 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			CorePlugin.logError(statusCode, string, object);
 
 			// also ditch the data in the plots - to blank them out
+			clearPlots();
+		}
+	}
+
+	/**
+	 * the track has been moved, update the dots
+	 */
+	void clearPlots()
+	{
+		if (Thread.currentThread() == Display.getDefault().getThread())
+		{
+			// it's ok we're already in a display thread
 			_dotPlot.setDataset(null);
 			_linePlot.setDataset(null);
+		}
+		else
+		{
+			// we're not in the display thread - make it so!
+			Display.getDefault().syncExec(new Runnable()
+			{
+				public void run()
+				{
+					_dotPlot.setDataset(null);
+					_linePlot.setDataset(null);
+				}
+			});
 		}
 	}
 
@@ -673,6 +695,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	void updateStackedDots(final boolean updateDoublets)
 	{
+		if (Thread.currentThread() == Display.getDefault().getThread())
+		{
+			// it's ok we're already in a display thread
+			wrappedUpdateStackedDots(updateDoublets);
+		}
+		else
+		{
+			// we're not in the display thread - make it so!
+			Display.getDefault().syncExec(new Runnable()
+			{
+				public void run()
+				{
+					// update the current datasets
+					wrappedUpdateStackedDots(updateDoublets);
+				}
+			});
+		}
+	}
+
+	/**
+	 * the track has been moved, update the dots
+	 */
+	void wrappedUpdateStackedDots(final boolean updateDoublets)
+	{
+
 		// update the current datasets
 		updateData(updateDoublets);
 
@@ -927,7 +974,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 									_myHelper.initialise(_theTrackDataListener, false,
 											_onlyVisible.isChecked(), _holder, logger, getType(),
 											_needBrg, _needFreq);
+
 									updateStackedDots(false);
+
 								}
 							};
 						}

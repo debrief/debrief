@@ -46,8 +46,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 				"topLeft");
 		midLeft.addView(IPageLayout.ID_PROP_SHEET);		
 		midLeft.addView(CorePlugin.TOTE);
-		midLeft.addPlaceholder(CorePlugin.STACKED_DOTS);
-		midLeft.addPlaceholder(CorePlugin.FREQ_RESIDUALS);
 		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
 		
@@ -69,6 +67,8 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 			editorArea);
 		right.addPlaceholder(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);		
 		right.addPlaceholder(CorePlugin.GRID_EDITOR);
+		right.addPlaceholder(CorePlugin.STACKED_DOTS);
+		right.addPlaceholder(CorePlugin.FREQ_RESIDUALS);
 		
 		// and our view shortcuts
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);

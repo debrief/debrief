@@ -45,13 +45,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
-      <perspective
-            class="com.planetmayo.debrief.satc_rcp.ui.SATC_Perspective"
-            fixed="false"
-            icon="icons/compass.png"
-            id="com.planetmayo.debrief.satc_rcp.perspective"
-            name="Track Generation">
-      </perspective>
    </extension>
 
 </plugin>
