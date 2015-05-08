@@ -144,6 +144,7 @@ public class ImportSATC
 				Fix newFix = new Fix(new HiResDate(theTime.getTime()), thisLocation,
 						courseRads, speedYps);
 				FixWrapper fw = new FixWrapper(newFix);
+				fw.resetName();
 				myTrack.add(fw);
 
 				// and move the time along
