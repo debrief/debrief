@@ -506,7 +506,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		if (_theTrackDataListener != null)
 		{
 			_theTrackDataListener.removeTrackShiftListener(_myShiftListener);
-			_theTrackDataListener.removeTrackShiftListener(_myShiftListener);
+			_theTrackDataListener.removeTrackDataListener(_myTrackDataListener);
 		}
 
 		// stop the part monitor
