@@ -419,7 +419,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 			try
 			{
 				final PropertyDescriptor[] res = {
-						prop("Label", "the label for this data item", FORMAT),
 						prop("Visible", "whether this dynamic shape data is visible",
 								FORMAT),
 						prop("Color", "the color for this sensor contact", FORMAT),
@@ -447,7 +446,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 			try
 			{
 				final PropertyDescriptor[] res = {
-						prop("Label", "the label for this data item", FORMAT),
 						prop("Visible", "whether this sensor contact data is visible",
 								FORMAT),
 						prop("Color", "the color for this sensor contact", FORMAT),
@@ -455,11 +453,6 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 						prop("EndDTG", "the end time this entry was recorded", FORMAT),
 						prop("SemiTransparent", "whether to make the coverage semi-transparent", FORMAT),
 						prop("Constraints", "sensor arcs: min max angle range", FORMAT),
-						longProp("LabelLocation", "the label location",
-								MWC.GUI.Properties.LocationPropertyEditor.class),
-						longProp("LineStyle", "style to use to plot the line",
-								MWC.GUI.Properties.LineStylePropertyEditor.class),
-
 				};
 				return res;
 			}
