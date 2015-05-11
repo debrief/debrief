@@ -16,6 +16,7 @@ package org.mwc.cmap.plotViewer.actions;
 
 import java.text.DecimalFormat;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -186,7 +187,8 @@ final public class RangeBearing extends CoreDragAction
 			// ok, do the write operation
 			
 			// use the same color as line
-			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
+			int flags = Platform.OS_LINUX.equals(Platform.getOS()) ? SWT.NONE : SWT.DRAW_TRANSPARENT;
+			dest.drawText(txt, loc.x, loc.y, flags);
 			
 			// also get the RangeTracker to display the range/bearing
 			CoreTracker.write(txt);
