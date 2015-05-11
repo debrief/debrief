@@ -376,6 +376,10 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 			// and clear him out...
 			otherC.clear();
+			
+			// and drop the links
+			other.setHost(null);
+			other.setTrackName(null);
 		}
 	}
 
