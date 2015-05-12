@@ -222,10 +222,10 @@ abstract public class CoreTMASegment extends TrackSegment
 				xorMode = ((ExtendedCanvasType)dest).getXORMode();
 				((ExtendedCanvasType)dest).setXORMode(false);
 			}
-			final int ht = dest.getStringHeight(newFont) + 2;
+			final int ht = dest.getStringHeight(newFont) + 8;
 			final int wid = dest.getStringWidth(newFont, _dragMsg);
 			dest.setColor(Color.WHITE);
-			dest.fillRect(pt.x - 2, pt.y + 18 - ht, wid, ht);
+			dest.fillRect(pt.x - 2, pt.y + 24 - ht, wid - 5 , ht);
 			// and draw the text
 			dest.setColor(java.awt.Color.BLACK);
 			dest.drawText(_dragMsg, pt.x, pt.y + 15);
