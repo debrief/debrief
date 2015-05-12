@@ -98,11 +98,18 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.PathIterator;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
+import java.util.Iterator;
+import java.util.Vector;
 
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
@@ -137,6 +144,12 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 	 */
 	private static Font _cachedFont = new Font("Helvetica", 0, 12);
 
+	AffineTransform trans = new AffineTransform();
+	
+	Shape deviceclip;
+
+	private double flatness = 0.1;
+	
 	public WMFGraphics(final WMF wmf, final int width, final int height)
 	{
 		this(wmf, width, height, Color.black, Color.white);
@@ -996,4 +1009,92 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		
 	}
 
+	public void fillShape(Shape s) {
+    //apply clipping
+    setClip(null);
+    Area clipped = new Area(trans.createTransformedShape(s));
+    if (deviceclip != null) {
+      clipped.intersect(new Area(deviceclip));
+    }
+    
+    AffineTransform trans1 = new AffineTransform();
+    PathIterator path = clipped.getPathIterator(trans1, flatness);
+    if (path.getWindingRule() == PathIterator.WIND_EVEN_ODD) {
+      wmf.setPolyFillMode(WMF.ALTERNATE);
+    }
+    else {
+      wmf.setPolyFillMode(WMF.WINDING);
+    }
+    int penstyle = getPenStyle();
+    setPenStyle(WMF.PS_NULL);
+    //wmfg.setPenWidth(0);
+    setColor(getColor());
+    float[] p = new float[6];
+    Vector<Polygon> polys = new Vector<Polygon>();
+    Polygon poly = null;
+    while (!path.isDone()) {
+      int style = path.currentSegment(p);
+      switch (style) {
+        case PathIterator.SEG_MOVETO:
+          if (poly != null) {
+            polys.add(poly);
+          }
+          poly = new Polygon();
+          poly.addPoint((int)(p[0] + 0.5), (int)(p[1] + 0.5));
+          break;
+        case PathIterator.SEG_CUBICTO:
+          if (poly != null) {
+            poly.addPoint((int)(p[2] + 0.5), (int)(p[3] + 0.5));
+          }
+          break;
+        case PathIterator.SEG_QUADTO:
+          if (poly != null) {
+            poly.addPoint((int)(p[4] + 0.5), (int)(p[5] + 0.5));
+          }
+          break;
+        case PathIterator.SEG_LINETO:
+          if (poly != null) {
+            poly.addPoint((int)(p[0] + 0.5), (int)(p[1] + 0.5));
+          }
+          break;
+        case PathIterator.SEG_CLOSE:
+          if (poly != null) {
+            polys.add(poly);
+            poly = null;
+          }
+          break;
+      }
+      path.next();
+    }
+    if (poly != null) {
+      polys.add(poly);
+    }
+    Polygon[] polyarray = new Polygon[polys.size()];
+    int i = 0;
+    for (Iterator<Polygon> it = polys.iterator(); it.hasNext(); i++) {
+      polyarray[i] = (Polygon)it.next();
+    }
+    //wmfg.setClip(trans.createTransformedShape(getClip()));
+    boolean nopolypoly = false;
+    if (s instanceof Arc2D) {
+      nopolypoly = true;
+    }
+    if (!nopolypoly) {
+      GDIPolyPolygon(polyarray);
+    }
+    else {
+      for (i = 0; i < polyarray.length; i++) {
+        fillPolygon(polyarray[i]);
+      }
+    }
+    setPenStyle(penstyle);
+  }
+
+	 public void GDIPolyPolygon(Polygon[] polys) {
+     //restoreState();
+     setGDIFillBrush();
+     wmf.polypolygon(polys);
+     setGDIHollowBrush();
+   }
+	
 }

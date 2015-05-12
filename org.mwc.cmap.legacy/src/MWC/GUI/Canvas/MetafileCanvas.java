@@ -126,6 +126,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Shape;
+import java.awt.geom.PathIterator;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -133,10 +136,11 @@ import java.io.IOException;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.ShapeCanvasType;
 import MWC.GUI.Canvas.Metafile.WMF;
 import MWC.GUI.Canvas.Metafile.WMFGraphics;
 
-public class MetafileCanvas implements CanvasType
+public class MetafileCanvas implements CanvasType, ShapeCanvasType
 {
 
 	// /////////////////////////////////
@@ -661,6 +665,13 @@ public class MetafileCanvas implements CanvasType
 		//drawText(str, x-deltaX, y-deltaY);
 		//drawRect(x+deltaX, y+deltaY, fontMetrics.stringWidth(str), distance);
 		g.setFontEscapement(old);
+	}
+
+
+	@Override
+	public void fillShape(Shape shape)
+	{
+		g.fillShape(shape);
 	}
 
 	// /////////////////////////////////

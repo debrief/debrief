@@ -12,6 +12,7 @@ import java.util.List;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.ExtendedCanvasType;
+import MWC.GUI.ShapeCanvasType;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
@@ -244,15 +245,19 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 
 			if (dest instanceof ExtendedCanvasType)
 			{
-				if(semiTransparent)
+				if (semiTransparent)
 				{
-				((ExtendedCanvasType) dest).semiFillShape(shape);
+					((ExtendedCanvasType) dest).semiFillShape(shape);
 				}
 				else
 				{
 					((ExtendedCanvasType) dest).fillShape(shape);
 				}
-			}			
+			}
+			else if (dest instanceof ShapeCanvasType)
+			{
+				((ShapeCanvasType) dest).fillShape(shape);
+			}
 		}
 
 		public String toString()

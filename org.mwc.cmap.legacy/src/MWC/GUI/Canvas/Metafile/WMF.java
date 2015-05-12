@@ -72,6 +72,7 @@ package MWC.GUI.Canvas.Metafile;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -618,6 +619,26 @@ public class WMF
     }
   }
 
+  /**
+   * See Windows SDK.
+   */
+  public void polypolygon(Polygon[]  polys) {
+    int npoints = 0;
+    for (int j = 0; j < polys.length; j++) {
+      npoints += polys[j].npoints;
+    }
+    metaRecord(0x0538, 1 + polys.length + 2 * npoints);
+    writeWord(polys.length);
+    for (int j = 0; j < polys.length; j++) {
+      writeWord(polys[j].npoints);
+    }
+    for (int j = 0; j < polys.length; j++) {
+      for (int i = 0; i < polys[j].npoints; i++) {
+        writeWord(polys[j].xpoints[i]);
+        writeWord(polys[j].ypoints[i]);
+      }
+    }
+  }
 
 
   public void polyline(final int[] is, final int[] is_80_, final int i)
