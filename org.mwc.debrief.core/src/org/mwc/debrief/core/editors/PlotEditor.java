@@ -630,12 +630,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								final ReplayLoader rl = (ReplayLoader) loader;
 								final ImportReplay ir = rl.getReplayLoader();
 								final Vector<SensorWrapper> sensors = ir
-										.getLoadedSensors();
+										.getPendingSensors();
 								if (sensors.size() == 1)
 								{
 									final SensorWrapper thisS = sensors.firstElement();
 									nameThisSensor(thisS);
 								}
+								
+								// ok, now we can store the pending sensors in their
+								// parent tracks
+								ir.storePendingSensors();
 							}
 						}
 					}
@@ -673,11 +677,43 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 			}
 		}
+		
+		// next, just see if this track already contains sensor
+		// data with this name
+		boolean alreadyLoaded = false;
+		TrackWrapper trk = thisS.getHost();
+		if(trk != null)
+		{
+			Enumeration<Editable> enumer = trk.getSensors().elements();
+			while (enumer.hasMoreElements())
+			{
+				SensorWrapper oldS = (SensorWrapper) enumer.nextElement();
+				if(oldS.getName().equals(thisS.getName()))
+				{
+					alreadyLoaded = true;
+				}				
+			}
+		}
+		
+		
+		
 		final String imagePath = "images/NameSensor.jpg";
 
+		// inform the user if this sensor name is already in use
+		final String nameString;
+		if (alreadyLoaded)
+		{
+			nameString = "a one-word title for this block of sensor contacts (e.g. S2046)\n\n"
+					+ "Note: [" + thisS.getName() + "] is already in use.";
+		}
+		else
+		{
+			nameString = "a one-word title for this block of sensor contacts (e.g. S2046)";
+		}
+		
 		final EnterStringPage getName = new EnterStringPage(null, thisS.getName(),
 				"Import Sensor data", "Please provide the name for this sensor",
-				"a one-word title for this block of sensor contacts (e.g. S2046)",
+				nameString,
 				imagePath, null, false);
 		final SelectColorPage getColor = new SelectColorPage(null,
 				thisS.getColor(), "Import Sensor data", "Now format the new sensor",

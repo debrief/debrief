@@ -807,8 +807,31 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			final SensorWrapper swr = (SensorWrapper) point;
 
-			// add to our list
-			_mySensors.add(swr);
+			// see if we already have a sensor with this name
+			SensorWrapper existing = null;
+			Enumeration<Editable> enumer = _mySensors.elements();
+			while (enumer.hasMoreElements())
+			{
+				SensorWrapper oldS = (SensorWrapper) enumer.nextElement();
+				
+				// does this have the same name?
+				if (oldS.getName().equals(swr.getName()))
+				{
+					// yes - ok, remember it
+					existing = oldS;
+					
+					// and append the data points
+					existing.append(swr);
+				}
+			}
+
+			// did we find it already?
+			if (existing == null)
+			{
+
+				// nope, so store it
+				_mySensors.add(swr);
+			}
 
 			// tell the sensor about us
 			swr.setHost(this);
