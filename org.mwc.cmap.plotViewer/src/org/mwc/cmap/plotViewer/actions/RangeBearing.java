@@ -32,6 +32,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
@@ -185,8 +186,24 @@ final public class RangeBearing extends CoreDragAction
 
 			// ok, do the write operation
 			
-			// use the same color as line
-			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
+			// avoid XOR mode - see https://github.com/debrief/debrief/issues/1225
+			dest.setXORMode(false);
+			Color ob = dest.getBackground();
+			Color of = dest.getForeground();
+			Color nb = new Color(Display.getCurrent(), DebriefColors.BLACK.getRed(),
+					DebriefColors.BLACK.getGreen(), DebriefColors.BLACK.getBlue());
+
+			Color nf = new Color(Display.getCurrent(), DebriefColors.WHITE.getRed(),
+					DebriefColors.WHITE.getGreen(), DebriefColors.WHITE.getBlue());
+
+			dest.setBackground(nb);
+			dest.setForeground(nf);
+			dest.drawText(txt, loc.x, loc.y, SWT.NONE);
+			dest.setBackground(ob);
+			dest.setForeground(of);
+			dest.setXORMode(true);
+			nb.dispose();
+			nf.dispose();
 			
 			// also get the RangeTracker to display the range/bearing
 			CoreTracker.write(txt);
