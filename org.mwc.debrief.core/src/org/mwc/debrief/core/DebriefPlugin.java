@@ -36,6 +36,7 @@ import org.mwc.debrief.core.ContextOperations.GenerateSensorRangePlot;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTUASolution;
 import org.mwc.debrief.core.ContextOperations.GenerateTrack;
+import org.mwc.debrief.core.ContextOperations.GenerateTrackFromCuts;
 import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.ImportAsTrack;
 import org.mwc.debrief.core.ContextOperations.InterpolateTrack;
@@ -215,6 +216,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		RightClickSupport.addRightClickGenerator(new MergeContacts());
 		RightClickSupport.addRightClickGenerator(new GenerateTMASegment());
 		RightClickSupport.addRightClickGenerator(new GenerateTUASolution());
+		RightClickSupport.addRightClickGenerator(new GenerateTrackFromCuts());
 		RightClickSupport.addRightClickGenerator(new GenerateSensorRangePlot());
 		RightClickSupport.addRightClickGenerator(new GenerateNewSensor());
 		RightClickSupport.addRightClickGenerator(new GenerateNewSensorContact());
