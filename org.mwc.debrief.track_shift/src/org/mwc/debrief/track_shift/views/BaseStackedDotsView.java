@@ -245,7 +245,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	public void createPartControl(final Composite parent)
 	{
 
-		_holder = new ChartComposite(parent, SWT.NONE);
+		_holder = new ChartComposite(parent, SWT.NONE, null, true);
 
 		// hey - now create the stacked plot!
 		createStackedPlot();

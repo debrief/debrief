@@ -385,7 +385,7 @@ public class XYPlotView extends ViewPart
 	 */
 	public void createPartControl(final Composite parent)
 	{
-		_plotControl = new ChartComposite(parent, SWT.NONE);
+		_plotControl = new ChartComposite(parent, SWT.NONE, null, true);
 		// and lastly do the remaining bits...
 		makeActions();
 		hookContextMenu();
