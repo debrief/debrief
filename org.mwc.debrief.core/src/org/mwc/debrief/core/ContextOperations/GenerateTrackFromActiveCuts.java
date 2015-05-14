@@ -46,7 +46,7 @@ import MWC.TacticalData.Fix;
  * @author ian.mayo
  * 
  */
-public class GenerateTrackFromCuts implements RightClickContextItemGenerator
+public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerator
 {
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
