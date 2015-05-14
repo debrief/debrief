@@ -6305,8 +6305,9 @@ and so on....</programlisting></para>
           <title xml:id="titleForSensorLengths">Sensor offset lengths editor</title>
 
           <para><indexterm>
-              <primary>Sensor offsets editor</primary>
-            </indexterm>Since Autumn 09 Debrief has supported a library of sensor offsets. These
+              <primary>Sensor data</primary>
+            <secondary>Sensor offsets editor</secondary>
+          </indexterm>Since Autumn 09 Debrief has supported a library of sensor offsets. These
             offsets are used to populate a drop-down list of lengths, used in support of specifying
             sensor offsets.</para>
 
@@ -6413,7 +6414,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
           <title>Introduction</title>
 
           <para>When first loaded, <glossterm linkend="g_sensor">sensor</glossterm> data is not <indexterm>
-              <primary>Sensor Data</primary>
+              <primary>Sensor data</primary>
 
               <secondary>Analysing</secondary>
             </indexterm> made visible, since with any reasonable volume of sensor data the plot
@@ -6439,13 +6440,13 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             <title>Generate track from Active Sensor Data</title>
             <para>
               <indexterm>
-                <primary>Sensor Data</primary>
+                <primary>Sensor data</primary>
                 
                 <secondary>Generate track from Active data</secondary>
               </indexterm>
               If your sensor data has both range and bearing, you have all the data you need to
-              generate a target track. If you right-click on a Sensor in the Outline View, or 
-            on a block of cuts in the sensor view then Debrief will inspect them to see if they
+              generate a target track. If you right-click on a Sensor, or 
+            on a block of sensor cuts in the Outline View then Debrief will inspect them to see if they
             are suitable for generating a target track.  Specifically it will check that they all
             have a Range value, a Bearing value, and no ambiguous bearing.  If the selected data
             matches these constraints you will be invited to <guimenu>Generate Track from Active Sensor Data</guimenu>,
@@ -6596,9 +6597,7 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
               <secondary>Shading sensor cuts</secondary>
             </indexterm>When very long sets of sensor data are exported to a report, it can be difficult
               for a reader to distinguish newer from old cuts - particularly when they are
-              overlapping. Debrief provides support for this via the two<indexterm>
-                <primary>Shading Sensor Data</primary>
-              </indexterm>
+              overlapping. Debrief provides support for this via the two
               <guimenuitem>Shade</guimenuitem> operations:<screenshot>
                 <mediaobject>
                   <imageobject>
