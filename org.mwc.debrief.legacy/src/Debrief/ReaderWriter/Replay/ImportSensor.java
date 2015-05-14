@@ -124,7 +124,7 @@ final class ImportSensor extends AbstractPlainLineImporter {
     final StringTokenizer st = new StringTokenizer(theLine);
 
     // declare local variables
-    String theText;
+    final String theText;
     String theTrack;
     String sensorName;
     double latDeg, longDeg, latMin, longMin;
@@ -221,8 +221,19 @@ final class ImportSensor extends AbstractPlainLineImporter {
 	    // and ditch some whitespace
 	    sensorName = sensorName.trim();
 	 
-	    // and lastly read in the message
-	    theText = st.nextToken("\r").trim();
+	    // and lastly read in the message (to the end of the line)
+	    String labelTxt =st.nextToken("\r");
+	    
+	    // did we find anything
+	    if(labelTxt != null)
+	    {
+	    	theText = labelTxt.trim();
+	    }
+	    else
+	    {
+	    	// nothing found, use empty string
+	    	theText = "";
+	    }
 	
 	    theColor = ImportReplay.replayColorFor(symbology);
 	
