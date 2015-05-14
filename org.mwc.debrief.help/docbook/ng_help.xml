@@ -6435,6 +6435,22 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
                   parameter in the properties window.</para>
               </listitem>
             </itemizedlist></para>
+          <formalpara xml:id="TrackFromActive">
+            <title>Generate track from Active Sensor Data</title>
+            <para>
+              <indexterm>
+                <primary>Sensor Data</primary>
+                
+                <secondary>Generate track from Active data</secondary>
+              </indexterm>
+              If your sensor data has both range and bearing, you have all the data you need to
+              generate a target track. If you right-click on a Sensor in the Outline View, or 
+            on a block of cuts in the sensor view then Debrief will inspect them to see if they
+            are suitable for generating a target track.  Specifically it will check that they all
+            have a Range value, a Bearing value, and no ambiguous bearing.  If the selected data
+            matches these constraints you will be invited to <guimenu>Generate Track from Active Sensor Data</guimenu>,
+            and Debrief will generate a new track, named according to the sensor that produced it.</para>
+          </formalpara>
         </sect2>
 
         <sect2 xml:id="BulkSensorData">
