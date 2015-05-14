@@ -78,8 +78,9 @@ public class RangeBearingPage extends CoreEditableWizardPage
 	final private String _bearingTitle;
 
 	public RangeBearingPage(final ISelection selection, final String pageName,
-			final String pageDescription, final String rangeTitle, final String bearingTitle,
-			final String imagePath, final String helpContext)
+			final String pageDescription, final String rangeTitle,
+			final String bearingTitle, final String imagePath,
+			final String helpContext)
 	{
 		super(selection, NAME, pageName, pageDescription, imagePath, helpContext,
 				false);
@@ -105,9 +106,9 @@ public class RangeBearingPage extends CoreEditableWizardPage
 				final WorldDistance range = new WorldDistance(val, units);
 				setData(range, bearing);
 			}
-			catch(final ParseException pe)
+			catch (final ParseException pe)
 			{
-				 MWC.Utilities.Errors.Trace.trace(pe);	
+				MWC.Utilities.Errors.Trace.trace(pe);
 			}
 		}
 	}
@@ -130,8 +131,11 @@ public class RangeBearingPage extends CoreEditableWizardPage
 		// try to store some defaults
 		final Preferences prefs = getPrefs();
 		final WorldDistance res = this.getRange();
-		prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
-		prefs.putDouble(BEARING, _myWrapper.getBearing());
+		if (res != null)
+		{
+			prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
+			prefs.putDouble(BEARING, _myWrapper.getBearing());
+		}
 
 		super.dispose();
 	}
@@ -143,8 +147,8 @@ public class RangeBearingPage extends CoreEditableWizardPage
 
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		final PropertyDescriptor[] descriptors =
-		{ prop("Range", _rangeTitle, getEditable()),
+		final PropertyDescriptor[] descriptors = {
+				prop("Range", _rangeTitle, getEditable()),
 				prop("Bearing", _bearingTitle, getEditable()) };
 		return descriptors;
 	}
