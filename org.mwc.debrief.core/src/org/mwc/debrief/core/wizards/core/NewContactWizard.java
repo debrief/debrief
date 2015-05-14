@@ -65,7 +65,7 @@ public class NewContactWizard extends Wizard
 		datePage = new EnterDTGPage(null, _tNow, PAGE_TITLE,
 				"Choose the time for the solution\n"
 						+ "Note: this time is taken from the Time Slider",
-				"Date-time for this ellipse", imagePath, helpContext);
+				"Date-time for this sensor contact", imagePath, helpContext);
 		// ok, we need to let the user enter the solution wrapper name
 		addPage(datePage);
 
@@ -82,7 +82,7 @@ public class NewContactWizard extends Wizard
 
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
-				"Now format the new sensor cut", "The color for this new sensur cut",
+				"Now format the new sensor cut", "The color for this new sensor cut",
 				imagePath, helpContext);
 		addPage(colorPage);
 

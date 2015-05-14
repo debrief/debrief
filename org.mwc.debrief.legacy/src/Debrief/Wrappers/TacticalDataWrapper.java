@@ -1027,6 +1027,15 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		_myTrackName = name;
 	}
 
+	/** return the amount of data we hold
+	 * 
+	 * @return
+	 */
+	public final int size()
+	{
+		return _myContacts.size();
+	}
+	
 	/**
 	 * change how frequently our data items are dislayed
 	 * 
