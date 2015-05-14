@@ -16,6 +16,9 @@ package org.mwc.debrief.track_shift.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.text.SimpleDateFormat;
@@ -23,6 +26,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
@@ -311,6 +317,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		final DateAxis xAxis = new CachedTickDateAxis("");
 		xAxis.setDateFormatOverride(_df);
+		Font tickLabelFont = new Font("Courier", Font.PLAIN, 13);
+		xAxis.setTickLabelFont(tickLabelFont);
+		xAxis.setTickLabelPaint(Color.BLACK);
 
 		xAxis.setStandardTickUnits(DateAxisEditor
 				.createStandardDateTickUnitsAsTickUnits());
@@ -318,20 +327,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// create the special stepper plot
 		_dotPlot = new XYPlot();
-		_dotPlot.setRangeAxis(new NumberAxis("Error (" + getUnits() + ")"));
+		NumberAxis errorAxis = new NumberAxis("Error (" + getUnits() + ")");
+		Font axisLabelFont = new Font("Courier", Font.PLAIN, 16);
+		errorAxis.setLabelFont(axisLabelFont);
+		errorAxis.setTickLabelFont(tickLabelFont);
+		_dotPlot.setRangeAxis(errorAxis);
 		_dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		_dotPlot
 				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
 
+		_dotPlot.setRangeGridlinePaint(Color.DARK_GRAY);
+		_dotPlot.setRangeGridlineStroke(new BasicStroke(2));
+		_dotPlot.setDomainGridlinePaint(Color.DARK_GRAY);
+		_dotPlot.setDomainGridlineStroke(new BasicStroke(2));
+
 		// now try to do add a zero marker on the error bar
 		final Paint thePaint = Color.LIGHT_GRAY;
-		final Stroke theStroke = new BasicStroke(2);
+		final Stroke theStroke = new BasicStroke(3);
 		final ValueMarker zeroMarker = new ValueMarker(0.0, thePaint, theStroke);
 		_dotPlot.addRangeMarker(zeroMarker);
 
 		_linePlot = new XYPlot();
 		final NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits()
 				+ ")");
+		absBrgAxis.setLabelFont(axisLabelFont);
+		absBrgAxis.setTickLabelFont(tickLabelFont);
 		_linePlot.setRangeAxis(absBrgAxis);
 		absBrgAxis.setAutoRangeIncludesZero(false);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
@@ -342,15 +362,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		_linePlot.setDomainCrosshairVisible(true);
 		_linePlot.setRangeCrosshairVisible(true);
-		_linePlot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
-		_linePlot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
-		_linePlot.setDomainCrosshairStroke(new BasicStroke(1));
-		_linePlot.setRangeCrosshairStroke(new BasicStroke(1));
+		_linePlot.setDomainCrosshairPaint(Color.GRAY);
+		_linePlot.setRangeCrosshairPaint(Color.GRAY);
+		_linePlot.setDomainCrosshairStroke(new BasicStroke(3.0f));
+		_linePlot.setRangeCrosshairStroke(new BasicStroke(3.0f));
+
+		_linePlot.setRangeGridlinePaint(Color.DARK_GRAY);
+		_linePlot.setRangeGridlineStroke(new BasicStroke(2));
+		_linePlot.setDomainGridlinePaint(Color.DARK_GRAY);
+		_linePlot.setDomainGridlineStroke(new BasicStroke(2));
 
 		// and the plot object to display the cross hair value
-		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
+		final XYTextAnnotation annot = new XYTextAnnotation("-----", 2, 2);
 		annot.setTextAnchor(TextAnchor.TOP_LEFT);
-		annot.setPaint(Color.white);
+
+		Font annotationFont = new Font("Courier", Font.BOLD, 16);
+		annot.setFont(annotationFont);
+		annot.setPaint(Color.LIGHT_GRAY);
 		annot.setBackgroundPaint(Color.black);
 		_linePlot.addAnnotation(annot);
 
@@ -370,7 +398,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
 
 		// put the plot into a chart
-		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
+		_myChart = new JFreeChart(null, null, _combined, true);
 
 		final LegendItemSource[] sources = { _linePlot };
 		_myChart.getLegend().setSources(sources);
@@ -424,60 +452,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// and insert into the panel
 		_holder.setChart(_myChart);
-
-		// plotControl.addMouseMotionListener(new MouseMotionListener()
-		// {
-		//
-		// public void mouseDragged(final MouseEvent e)
-		// {
-		// // ignore
-		// }
-		//
-		// public void mouseMoved(final MouseEvent e)
-		// {
-		// // Point pt = e.getPoint();
-		// // // suspend this development. we need to sort out which plot
-		// // the mouse
-		// // is over
-		// // int mouseX = pt.y;
-		// // int mouseY = pt.x;
-		// // Point2D p = plotHolder
-		// // .translateScreenToJava2D(new Point(mouseX, mouseY));
-		// // System.out.println(pt.x + ", " + pt.y + " to: x = " + mouseX
-		// // +
-		// // ", y = "
-		// // + mouseY);
-		// // // Rectangle2D plotArea = chartPanel.getScreenDataArea();
-		// //
-		// // CombinedDomainXYPlot comb = (CombinedDomainXYPlot)
-		// // _dotPlot.getParent();
-		// // // XYPlot thisPlot = comb.findSubplot(comb.getParent().getp,
-		// // p);
-		// //
-		// // Component comp = plotHolder.getComponentAt(pt);
-		// // ChartEntity entity = plotHolder.getEntityForPoint(mouseX,
-		// // mouseY);
-		// // System.err.println("comp:" + comp + "// entity:" + entity);
-		// //
-		// // Rectangle2D plotArea =
-		// // plotHolder.getChartRenderingInfo().getPlotInfo()
-		// // .getDataArea();
-		// // ValueAxis domainAxis = _dotPlot.getDomainAxis();
-		// // RectangleEdge domainAxisEdge = _dotPlot.getDomainAxisEdge();
-		// // ValueAxis rangeAxis = _dotPlot.getRangeAxis();
-		// // RectangleEdge rangeAxisEdge = _dotPlot.getRangeAxisEdge();
-		// //
-		// // if (domainAxis != null)
-		// // {
-		// // double chartX = domainAxis.java2DToValue(p.getX(), plotArea,
-		// // domainAxisEdge);
-		// // double chartY = rangeAxis.java2DToValue(p.getY(), plotArea,
-		// // rangeAxisEdge);
-		// // System.out.println("Chart: x = " + chartX + ", y = " +
-		// // chartY);
-		// // }
-		// }
-		// });
 
 		// do a little tidying to reflect the memento settings
 		if (!_showLinePlot.isChecked())
@@ -620,7 +594,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				super.run();
 
 				// set the title, so there's something useful in there
-				_myChart.setTitle(getType() + " Error");
+				_myChart.setTitle("");
 
 				// we need to get a fresh set of data pairs - the number may
 				// have
@@ -828,7 +802,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 							// set the title, so there's something useful in
 							// there
-							_myChart.setTitle(getType() + " Error");
+							_myChart.setTitle("");
 
 							// ok - fire off the event for the new tracks
 							_myHelper.initialise(_theTrackDataListener, false,
