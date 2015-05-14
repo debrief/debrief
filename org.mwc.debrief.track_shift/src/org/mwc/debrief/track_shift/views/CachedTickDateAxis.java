@@ -27,6 +27,8 @@ public class CachedTickDateAxis extends DateAxis
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private Double _lastHeight = null;
 
 	/** pass the constructor args back to the parent
 	 * 
@@ -53,9 +55,26 @@ public class CachedTickDateAxis extends DateAxis
 	protected List refreshTicksVertical(final Graphics2D g2, final Rectangle2D dataArea,
 			final RectangleEdge edge)
 	{
+		// do we have a height?
+		if(_lastHeight != null)
+		{
+			// is the new height different to our last one?
+			if(Math.abs( dataArea.getHeight() - _lastHeight.doubleValue()) > 60)
+			{
+				// yes - ditch the ticks
+				_myTicks = null;
+			}
+		}
+		
+		// do we have any ticks?
 		if(_myTicks == null)
+		{
+			// nope, better create some
 			_myTicks =  super.refreshTicksVertical(g2, dataArea, edge);
-	
+			_lastHeight = dataArea.getHeight();
+		}
+		
+		
 		return _myTicks;
 	}
 	
