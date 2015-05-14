@@ -237,8 +237,19 @@ final class ImportSensor2 extends AbstractPlainLineImporter {
 	    // trim the sensor name
 	    sensorName = sensorName.trim();
 	
-	    // and lastly read in the message
-	    theText = st.nextToken("\r").trim();
+	    // and lastly read in the message (to the end of the line)
+	    String labelTxt =st.nextToken("\r");
+	    
+	    // did we find anything
+	    if(labelTxt != null)
+	    {
+	    	theText = labelTxt.trim();
+	    }
+	    else
+	    {
+	    	// nothing found, use empty string
+	    	theText = "";
+	    }
 	
 	    theColor = ImportReplay.replayColorFor(symbology);
 	
