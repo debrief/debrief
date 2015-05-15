@@ -1040,6 +1040,7 @@ public class XYPlotView extends ViewPart
 	{
 		manager.add(_fitToWindow);
 		manager.add(_switchAxes);
+		manager.add(_hideCrosshairs);
 		manager.add(_growPlot);
 		manager.add(new Separator());
 		manager.add(_exportToWMF);
@@ -1059,13 +1060,13 @@ public class XYPlotView extends ViewPart
 	{
 		manager.add(_fitToWindow);
 		manager.add(_switchAxes);
+		manager.add(_hideCrosshairs);
 		manager.add(_growPlot);
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
 		manager.add(_copyToClipboard);
 		manager.add(_editMyProperties);
 		manager.add(_listenForDataChanges);
-		manager.add(_hideCrosshairs);
 	}
 
 	private void makeActions()
@@ -1218,7 +1219,7 @@ public class XYPlotView extends ViewPart
 		_hideCrosshairs
 				.setToolTipText("Hide the crosshair from the graph (for printing)");
 		_hideCrosshairs.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/16/clock.png"));
+				.getImageDescriptor("icons/16/fix.png"));
 
 		
 		_copyToClipboard = new Action()
