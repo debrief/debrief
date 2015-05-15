@@ -742,12 +742,10 @@ public class XYPlotView extends ViewPart
 				{
 					_thePlot.removeAnnotation(_crosshairValueText);
 					_thePlot.addAnnotation(_crosshairValueText);
-				}
-				
-				if(_hideCrosshairs.isChecked())
-					_thePlot.removeAnnotation(_crosshairValueText);
-				else
-					_thePlot.addAnnotation(_crosshairValueText);
+					
+					if(!_hideCrosshairs.isChecked())
+						_thePlot.addAnnotation(_crosshairValueText);
+				}				
 			}
 		});
 
