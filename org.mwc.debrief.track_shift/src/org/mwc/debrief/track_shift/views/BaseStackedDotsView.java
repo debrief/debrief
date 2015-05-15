@@ -17,8 +17,6 @@ package org.mwc.debrief.track_shift.views;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.text.SimpleDateFormat;
@@ -26,9 +24,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
@@ -245,7 +240,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	public void createPartControl(final Composite parent)
 	{
 
-		_holder = new ChartComposite(parent, SWT.NONE);
+		_holder = new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200,
+				1800, 1800, true, true, true, true, true, true);
 
 		// hey - now create the stacked plot!
 		createStackedPlot();

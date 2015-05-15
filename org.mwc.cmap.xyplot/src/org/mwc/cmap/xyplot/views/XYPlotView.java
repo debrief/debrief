@@ -218,6 +218,11 @@ public class XYPlotView extends ViewPart
 	 */
 	private Action _fitToWindow;
 
+	/** 
+	 * whether to show/hide the crosshairs
+	 */
+	private Action _hideCrosshairs;
+	
 	/**
 	 * resize the data to fill the window
 	 */
@@ -334,6 +339,8 @@ public class XYPlotView extends ViewPart
 
 	private IEditorPart editor;
 
+	private XYTextAnnotation _crosshairValueText;
+
 	/**
 	 * The constructor.
 	 */
@@ -385,7 +392,10 @@ public class XYPlotView extends ViewPart
 	 */
 	public void createPartControl(final Composite parent)
 	{
-		_plotControl = new ChartComposite(parent, SWT.NONE);
+		_plotControl = new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200,
+				1800, 1800, true, true, true, true, true, true);
+
+		
 		// and lastly do the remaining bits...
 		makeActions();
 		hookContextMenu();
@@ -540,6 +550,7 @@ public class XYPlotView extends ViewPart
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void fillThePlot(final String title, final String units,
 			final formattingOperation theFormatter,
 			final AbstractSeriesDataset dataset)
@@ -555,6 +566,10 @@ public class XYPlotView extends ViewPart
 
 		// the y axis is common to hi & lo res. Format it here
 		final NumberAxis yAxis = new NumberAxis(units);
+		final Font tickFont = new Font("SansSerif", Font.PLAIN, 14);
+		Font labelFont = new Font("SansSerif", Font.PLAIN, 16);
+		yAxis.setLabelFont(labelFont);
+		yAxis.setTickLabelFont(tickFont);
 
 		// hmm, see if we are in hi-res mode. If we are, don't use a formatted
 		// y-axis, just use the plain long microseconds
@@ -599,12 +614,24 @@ public class XYPlotView extends ViewPart
 			tooltipGenerator = new DatedToolTipGenerator();
 		}
 
+		xAxis.setTickLabelFont(tickFont);
+		xAxis.setLabelFont(labelFont);
+
+		
 		// create the special stepper plot
 		final ColourStandardXYItemRenderer theRenderer = new ColourStandardXYItemRenderer(
 				tooltipGenerator, null, null);
 		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis,
 				_theStepper, theRenderer);
 		theRenderer.setPlot(_thePlot);
+		theRenderer.setStroke(new BasicStroke(3.0f));
+		
+		_thePlot.setRangeGridlineStroke(new BasicStroke(1f));
+		_thePlot.setDomainGridlineStroke(new BasicStroke(1f));
+		_thePlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
+		xAxis.setTickMarkStroke(new BasicStroke(1f));
+		yAxis.setTickMarkStroke(new BasicStroke(1f));
+		_thePlot.setOutlineStroke(new BasicStroke(2f));
 
 		// loop through the datasets, setting the color of each series to the first
 		// color in that series
@@ -659,17 +686,18 @@ public class XYPlotView extends ViewPart
 		// get the cross hairs ready
 		_thePlot.setDomainCrosshairVisible(true);
 		_thePlot.setRangeCrosshairVisible(true);
-		_thePlot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
-		_thePlot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
-		_thePlot.setDomainCrosshairStroke(new BasicStroke(1));
-		_thePlot.setRangeCrosshairStroke(new BasicStroke(1));
+		_thePlot.setDomainCrosshairPaint(Color.GRAY);
+		_thePlot.setRangeCrosshairPaint(Color.GRAY);
+		_thePlot.setDomainCrosshairStroke(new BasicStroke(2));
+		_thePlot.setRangeCrosshairStroke(new BasicStroke(2));
 
 		// and the plot object to display the cross hair value
-		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
-		annot.setTextAnchor(TextAnchor.TOP_LEFT);
-		annot.setPaint(Color.black);
-		annot.setBackgroundPaint(Color.white);
-		_thePlot.addAnnotation(annot);
+		_crosshairValueText = new XYTextAnnotation(" ", 0, 0);
+		_crosshairValueText.setTextAnchor(TextAnchor.TOP_LEFT);
+		_crosshairValueText.setFont(new Font("SansSerif", Font.BOLD, 15));
+		_crosshairValueText.setPaint(Color.black);
+		_crosshairValueText.setBackgroundPaint(Color.white);
+		_thePlot.addAnnotation(_crosshairValueText);
 
 		_thePlotArea.addProgressListener(new ChartProgressListener()
 		{
@@ -683,14 +711,14 @@ public class XYPlotView extends ViewPart
 				final double yVal = _thePlot.getDomainAxis().getLowerBound();
 
 				boolean annotChanged = false;
-				if (annot.getX() != yVal)
+				if (_crosshairValueText.getX() != yVal)
 				{
-					annot.setX(yVal);
+					_crosshairValueText.setX(yVal);
 					annotChanged = true;
 				}
-				if (annot.getY() != xVal)
+				if (_crosshairValueText.getY() != xVal)
 				{
-					annot.setY(xVal);
+					_crosshairValueText.setY(xVal);
 					annotChanged = true;
 				}
 
@@ -702,9 +730,9 @@ public class XYPlotView extends ViewPart
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				final String dateVal = _df.format(newDate);
 				final String theMessage = " [" + dateVal + "," + numA + "]";
-				if (!theMessage.equals(annot.getText()))
+				if (!theMessage.equals(_crosshairValueText.getText()))
 				{
-					annot.setText(theMessage);
+					_crosshairValueText.setText(theMessage);
 					annotChanged = true;
 				}
 
@@ -712,10 +740,12 @@ public class XYPlotView extends ViewPart
 				// for the new text value to be displayed. Watch and learn...
 				if (annotChanged)
 				{
-					_thePlot.removeAnnotation(annot);
-					_thePlot.addAnnotation(annot);
-				}
-
+					_thePlot.removeAnnotation(_crosshairValueText);
+					_thePlot.addAnnotation(_crosshairValueText);
+					
+					if(!_hideCrosshairs.isChecked())
+						_thePlot.addAnnotation(_crosshairValueText);
+				}				
 			}
 		});
 
@@ -1008,6 +1038,7 @@ public class XYPlotView extends ViewPart
 	{
 		manager.add(_fitToWindow);
 		manager.add(_switchAxes);
+		manager.add(_hideCrosshairs);
 		manager.add(_growPlot);
 		manager.add(new Separator());
 		manager.add(_exportToWMF);
@@ -1027,6 +1058,7 @@ public class XYPlotView extends ViewPart
 	{
 		manager.add(_fitToWindow);
 		manager.add(_switchAxes);
+		manager.add(_hideCrosshairs);
 		manager.add(_growPlot);
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
@@ -1131,6 +1163,7 @@ public class XYPlotView extends ViewPart
 		_fitToWindow.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/fit_to_win.png"));
 
+		
 		_exportToWMF = new Action()
 		{
 			public void run()
@@ -1156,6 +1189,37 @@ public class XYPlotView extends ViewPart
 		_exportToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/copy.png"));
 
+		_hideCrosshairs = new Action("Hide crosshairs", SWT.TOGGLE)
+		{
+			public void run()
+			{
+				try
+				{
+					_thePlot.setDomainCrosshairVisible(!_hideCrosshairs.isChecked());
+					_thePlot.setRangeCrosshairVisible(!_hideCrosshairs.isChecked());
+
+					if(_hideCrosshairs.isChecked())
+						_thePlot.removeAnnotation(_crosshairValueText);
+					else
+						_thePlot.addAnnotation(_crosshairValueText);
+					
+					// may aswell trigger a redraw
+					_chartInPanel.invalidate();
+				}
+				catch (final Exception e)
+				{
+					MWC.Utilities.Errors.Trace.trace(e,
+							"whilst changing crosshair visibility");
+				}
+			}
+		};
+		_hideCrosshairs.setChecked(false);
+		_hideCrosshairs
+				.setToolTipText("Hide the crosshair from the graph (for printing)");
+		_hideCrosshairs.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/16/fix.png"));
+
+		
 		_copyToClipboard = new Action()
 		{
 			public void run()

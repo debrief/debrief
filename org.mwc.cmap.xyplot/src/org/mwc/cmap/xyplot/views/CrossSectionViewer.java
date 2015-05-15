@@ -96,7 +96,7 @@ public class CrossSectionViewer
 
 	protected CrossSectionViewer(final Composite parent)
 	{
-		_chartFrame = new ChartComposite(parent, SWT.NONE);
+		_chartFrame = new ChartComposite(parent, SWT.NONE, null, true);
 
 		_chart = ChartFactory.createXYLineChart("Cross Section", // Title
 				"Distance (km)", // X-Axis label

@@ -119,7 +119,7 @@ public class MultiPathView extends ViewPart implements
 		_thePlot = new XYPlot(null, dateAxis, valAxis, theRenderer);
 		final JFreeChart _plotArea = new JFreeChart(_thePlot);
 		
-		final ChartComposite _plotControl = new ChartComposite(ui, SWT.NONE);
+		final ChartComposite _plotControl = new ChartComposite(ui, SWT.NONE, null, true);
 		_plotControl.setChart(_plotArea);
 	}
 
