@@ -17,21 +17,21 @@ public class TestTimeBasedMovingAvg {
     @SuppressWarnings("serial")
 		static final Set<DataPoint> dataPoints2 = new TreeSet<DataPoint> (){{
             
-            add(parse("07/Aug/2000 00:00:10",  1d));
-            add(parse("07/Aug/2000 00:00:20",  2d));
-            add(parse("07/Aug/2000 00:00:30",  4d));
-            add(parse("07/Aug/2000 00:00:40",  8d));
-            add(parse("07/Aug/2000 00:00:50", 16d));
-            add(parse("07/Aug/2000 00:01:00", 32d));
-            add(parse("07/Aug/2000 00:01:30", 64d));
-            add(parse("07/Aug/2000 00:02:00",128d));
-            add(parse("07/Aug/2000 00:02:30",256d));
-            add(parse("07/Aug/2000 00:03:00",512d));
+            add(parse("07/Aug/2000 00:00:00",  1d));
+            add(parse("07/Aug/2000 00:00:01",  2d));
+            add(parse("07/Aug/2000 00:00:02",  3d));
+            add(parse("07/Aug/2000 00:00:03",  4d));
+            add(parse("07/Aug/2000 00:00:04",  5d));
+            add(parse("07/Aug/2000 00:00:10",  6d));
+            add(parse("07/Aug/2000 00:00:20",  7d));
+            add(parse("07/Aug/2000 00:00:30",  8d));
+            add(parse("07/Aug/2000 00:00:40",  9d));
+            add(parse("07/Aug/2000 00:00:50", 10d));
 		}};
     
     public static void main(String[] args) {
 
-        Long[] durations = {20L * 1000, 60L*1000};
+        Long[] durations = {2L * 1000, 20L*1000};
         
         final Set<DataPoint> toUse = dataPoints2;
 
