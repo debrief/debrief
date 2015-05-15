@@ -57,7 +57,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	/**
 	 * the width of the data-line
 	 */
-	private int _dataLineWidth = 2;
+	private int _dataLineWidth = 3;
 
 	/**
 	 * our editable details
