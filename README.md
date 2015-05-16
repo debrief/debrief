@@ -1,7 +1,5 @@
 ### Project Status
 
-[![Join the chat at https://gitter.im/debrief/debrief](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/debrief/debrief?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [![Continuous Build Status](https://travis-ci.org/debrief/debrief.svg?branch=master)](https://travis-ci.org/debrief/debrief/builds)
 
 [![Issues that are ready to be worked on](https://badge.waffle.io/debrief/debrief.png?label=ready&title=Ready)](http://waffle.io/debrief/debrief)
