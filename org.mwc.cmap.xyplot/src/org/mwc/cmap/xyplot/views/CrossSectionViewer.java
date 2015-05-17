@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IMemento;
 import org.jfree.chart.ChartFactory;
@@ -96,7 +97,19 @@ public class CrossSectionViewer
 
 	protected CrossSectionViewer(final Composite parent)
 	{
-		_chartFrame = new ChartComposite(parent, SWT.NONE, null, true);
+		_chartFrame = new ChartComposite(parent, SWT.NONE, null, true)
+		{
+			@Override
+			public void mouseUp(MouseEvent event)
+			{
+				super.mouseUp(event);
+				JFreeChart c = getChart();
+				if (c != null) 
+				{
+					c.setNotify(true); // force redraw
+				}
+			}
+		};
 
 		_chart = ChartFactory.createXYLineChart("Cross Section", // Title
 				"Distance (km)", // X-Axis label

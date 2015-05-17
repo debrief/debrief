@@ -29,6 +29,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
@@ -119,7 +120,19 @@ public class MultiPathView extends ViewPart implements
 		_thePlot = new XYPlot(null, dateAxis, valAxis, theRenderer);
 		final JFreeChart _plotArea = new JFreeChart(_thePlot);
 		
-		final ChartComposite _plotControl = new ChartComposite(ui, SWT.NONE, null, true);
+		final ChartComposite _plotControl = new ChartComposite(ui, SWT.NONE, null, true)
+		{
+			@Override
+			public void mouseUp(MouseEvent event)
+			{
+				super.mouseUp(event);
+				JFreeChart c = getChart();
+				if (c != null) 
+				{
+					c.setNotify(true); // force redraw
+				}
+			}
+		};
 		_plotControl.setChart(_plotArea);
 	}
 

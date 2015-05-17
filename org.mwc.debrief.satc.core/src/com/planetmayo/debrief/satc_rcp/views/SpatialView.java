@@ -34,6 +34,7 @@ import org.eclipse.jface.action.AbstractGroupMarker;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -178,7 +179,19 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		_myData = new XYSeriesCollection();
 
 		JFreeChart chart = createChart(_myData);
-		_chartComposite = new ChartComposite(parent, SWT.NONE, chart, true);
+		_chartComposite = new ChartComposite(parent, SWT.NONE, chart, true)
+		{
+			@Override
+			public void mouseUp(MouseEvent event)
+			{
+				super.mouseUp(event);
+				JFreeChart c = getChart();
+				if (c != null)
+				{
+					c.setNotify(true); // force redraw
+				}
+			}
+		};
 
 		makeActions();
 

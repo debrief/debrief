@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
@@ -241,7 +242,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	{
 
 		_holder = new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200,
-				1800, 1800, true, true, true, true, true, true);
+				1800, 1800, true, true, true, true, true, true)
+		{
+			@Override
+			public void mouseUp(MouseEvent event)
+			{
+				super.mouseUp(event);
+				JFreeChart c = getChart();
+				if (c != null)
+				{
+					c.setNotify(true); // force redraw
+				}
+			}
+		};
 
 		// hey - now create the stacked plot!
 		createStackedPlot();

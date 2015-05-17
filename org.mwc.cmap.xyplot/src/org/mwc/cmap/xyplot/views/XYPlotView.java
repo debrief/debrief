@@ -54,6 +54,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -72,6 +73,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
+import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -393,7 +395,20 @@ public class XYPlotView extends ViewPart
 	public void createPartControl(final Composite parent)
 	{
 		_plotControl = new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200,
-				1800, 1800, true, true, true, true, true, true);
+				1800, 1800, true, true, true, true, true, true) {
+
+					@Override
+					public void mouseUp(MouseEvent event)
+					{
+						super.mouseUp(event);
+						JFreeChart c = getChart();
+						if (c != null) 
+						{
+							c.setNotify(true); // force redraw
+						}
+					}
+			
+		};
 
 		
 		// and lastly do the remaining bits...
@@ -736,15 +751,9 @@ public class XYPlotView extends ViewPart
 					annotChanged = true;
 				}
 
-				// aah, now we have to add and then remove the annotation in order
-				// for the new text value to be displayed. Watch and learn...
 				if (annotChanged)
 				{
-					_thePlot.removeAnnotation(_crosshairValueText);
-					_thePlot.addAnnotation(_crosshairValueText);
-					
-					if(!_hideCrosshairs.isChecked())
-						_thePlot.addAnnotation(_crosshairValueText);
+					_plotControl.getChart().setNotify(true);
 				}				
 			}
 		});
