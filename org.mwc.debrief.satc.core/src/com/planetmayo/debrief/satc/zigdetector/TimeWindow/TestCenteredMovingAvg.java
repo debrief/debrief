@@ -2,7 +2,6 @@ package com.planetmayo.debrief.satc.zigdetector.TimeWindow;
 
 import com.planetmayo.debrief.satc.zigdetector.TimeWindow.average.CenteredMovingAverage;
 
-
 public class TestCenteredMovingAvg {
 
     public static void main(String[] args) {

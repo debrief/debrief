@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc.zigdetector.TimeWindow.average;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -14,8 +12,7 @@ public class DataPoint implements Comparable<DataPoint> {
 
     private final Double value;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
-    private NumberFormat nf = new DecimalFormat("000");
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public DataPoint(Calendar timestamp, Double value) {
         this.timestamp = timestamp;
@@ -24,7 +21,7 @@ public class DataPoint implements Comparable<DataPoint> {
 
     @Override
     public String toString() {
-        return sdf.format(timestamp.getTime()) + ", " + nf.format(value);
+        return "DataPoint{" + "timestamp=" + sdf.format(timestamp.getTime()) + ", value=" + value + '}';
     }
 
     public Calendar getTimestamp() {

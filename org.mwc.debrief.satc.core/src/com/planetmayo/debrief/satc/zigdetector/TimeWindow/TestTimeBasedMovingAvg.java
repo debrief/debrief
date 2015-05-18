@@ -13,45 +13,23 @@ public class TestTimeBasedMovingAvg {
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
 
-
-    @SuppressWarnings("serial")
-		static final Set<DataPoint> dataPoints2 = new TreeSet<DataPoint> (){{
-            
-            add(parse("07/Aug/2000 00:00:00",  1d));
-            add(parse("07/Aug/2000 00:00:01",  2d));
-            add(parse("07/Aug/2000 00:00:02",  3d));
-            add(parse("07/Aug/2000 00:00:03",  4d));
-            add(parse("07/Aug/2000 00:00:04",  5d));
-            add(parse("07/Aug/2000 00:00:10",  6d));
-            add(parse("07/Aug/2000 00:00:20",  7d));
-            add(parse("07/Aug/2000 00:00:30",  8d));
-            add(parse("07/Aug/2000 00:00:40",  9d));
-            add(parse("07/Aug/2000 00:00:50", 10d));
-		}};
-    
     public static void main(String[] args) {
 
-        Long[] durations = {2L * 1000, 20L*1000};
-        
-        final Set<DataPoint> toUse = dataPoints2;
+        Long[] durations = {30L * 1000};
 
         for (Long duration : durations) {
 
             final TimeBasedMovingAverage movingAverage = new TimeBasedMovingAverage(duration);
-            
-            System.out.println("=========================================");
-            System.out.println("Results for interval:" + duration + " millis");
 
-            for (DataPoint pt : toUse) {
-                printAvg(movingAverage, pt, toUse);
+            for (DataPoint pt : dataPointsTest2) {
+                printAvg(movingAverage, pt, dataPointsTest2);
             }
         }
     }
 
     public static void printAvg(TimeBasedMovingAverage movingAverage, DataPoint point, Set<DataPoint> points) {
         Double avg = movingAverage.average(point, points);
-        //String msg = String.format("The centered moving average for %s with period %s is %f", point, movingAverage.getDuration(), avg);
-        String msg = String.format("%s, %8.4f", point, avg);
+        String msg = String.format("The centered moving average for %s with period %s is %f", point, movingAverage.getDuration(), avg);
         System.out.println(msg);
     }
 
@@ -70,9 +48,39 @@ public class TestTimeBasedMovingAvg {
         return new DataPoint(parse(dateTime), value);
     }
 
+
+    @SuppressWarnings("serial")
+		static final Set<DataPoint> dataPointsTest1 = new TreeSet<DataPoint> (){{
+            add(parse("07/Aug/2000 00:00:00", 001d));
+            add(parse("07/Aug/2000 00:00:01", 002d));
+            add(parse("07/Aug/2000 00:00:02", 003d));
+            add(parse("07/Aug/2000 00:00:03", 004d));
+            add(parse("07/Aug/2000 00:00:04", 005d));
+            add(parse("07/Aug/2000 00:00:10", 006d));
+            add(parse("07/Aug/2000 00:00:20", 007d));
+            add(parse("07/Aug/2000 00:00:30", 008d));
+            add(parse("07/Aug/2000 00:00:40", 009d));
+            add(parse("07/Aug/2000 00:00:50", 010d));
+    }};
+
+    @SuppressWarnings("serial")
+		static final Set<DataPoint> dataPointsTest2 = new TreeSet<DataPoint> (){{
+            add(parse("07/Aug/2000 00:00:00", 001d));
+            add(parse("07/Aug/2000 00:00:01", 002d));
+            add(parse("07/Aug/2000 00:00:02", 003d));
+            add(parse("07/Aug/2000 00:00:03", 004d));
+            add(parse("07/Aug/2000 00:00:04", 005d));
+            add(parse("07/Aug/2000 00:00:10", 006d));
+            add(parse("07/Aug/2000 00:00:20", 007d));
+            add(parse("07/Aug/2000 00:00:30", 008d));
+            add(parse("07/Aug/2000 00:00:40", 009d));
+            add(parse("07/Aug/2000 00:00:50", 010d));
+    }};
+
+
     @SuppressWarnings("serial")
 		static final Set<DataPoint> dataPoints = new TreeSet<DataPoint> (){{
-            
+
             add(parse("07/Aug/2000 00:00:14", 70.5));
             add(parse("07/Aug/2000 00:00:22", 70.7));
             add(parse("07/Aug/2000 00:00:30", 70.8));
