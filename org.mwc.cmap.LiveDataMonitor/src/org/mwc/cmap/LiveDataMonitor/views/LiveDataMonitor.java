@@ -23,6 +23,7 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionListener;
@@ -160,7 +161,19 @@ public class LiveDataMonitor extends ViewPart
 	public void createPartControl(final Composite parent)
 	{
 		_chart = createChart(null);
-		_chartFrame = new ChartComposite(parent, SWT.NONE, _chart, true);
+		_chartFrame = new ChartComposite(parent, SWT.NONE, _chart, true)
+		{
+			@Override
+			public void mouseUp(MouseEvent event)
+			{
+				super.mouseUp(event);
+				JFreeChart c = getChart();
+				if (c != null)
+				{
+					c.setNotify(true); // force redraw
+				}
+			}
+		};
 
 		configureListeners();
 	}

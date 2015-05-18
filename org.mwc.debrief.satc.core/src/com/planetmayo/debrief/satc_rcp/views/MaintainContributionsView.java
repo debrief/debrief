@@ -55,6 +55,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -759,8 +760,21 @@ public class MaintainContributionsView extends ViewPart
 			}
 		});
 		
-		ChartComposite chartFrame = new ChartComposite(parent, SWT.NONE, legChart, true);
-    chartFrame.setDisplayToolTips(true);
+		ChartComposite chartFrame = new ChartComposite(parent, SWT.NONE, legChart,
+				true)
+		{
+			@Override
+			public void mouseUp(MouseEvent event)
+			{
+				super.mouseUp(event);
+				JFreeChart c = getChart();
+				if (c != null)
+				{
+					c.setNotify(true); // force redraw
+				}
+			}
+		};
+		chartFrame.setDisplayToolTips(true);
     chartFrame.setHorizontalAxisTrace(false);
     chartFrame.setVerticalAxisTrace(false);
 
