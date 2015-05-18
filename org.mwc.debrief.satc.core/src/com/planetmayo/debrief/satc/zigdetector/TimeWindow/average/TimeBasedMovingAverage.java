@@ -35,30 +35,28 @@ public class TimeBasedMovingAverage
 	 *          SortedSet by Timestamp of dataPoints
 	 * @return the moving average value
 	 */
-	public Double average(final DataPoint dataPoint, Set<DataPoint> data)
+	public Double average(final long dataMillis, long[] times, double[] values)
 	{
 
 		int nbPts = 0;
 		double sum = 0;
 
-		for (DataPoint pt : data)
+		for(int i=0;i<times.length;i++)
 		{
-
-			if (inTimeFrame(duration, dataPoint, pt))
+			if (inTimeFrame(duration, dataMillis, times[i]))
 			{
 				nbPts++;
-				sum += pt.getValue();
+				sum += values[i];
 			}
 		}
 
 		return sum / nbPts;
 	}
 
-	public static Boolean inTimeFrame(Long duration, DataPoint referencePoint,
-			DataPoint candidate)
+	public static Boolean inTimeFrame(Long duration, long refMillis, long candidateMillis)
 	{
-		final Long distance = referencePoint.getTimestamp().getTimeInMillis()
-				- candidate.getTimestamp().getTimeInMillis();
+		final Long distance = refMillis
+				- candidateMillis;
 		return Math.abs(distance) <= Math.abs(duration);
 	}
 }
