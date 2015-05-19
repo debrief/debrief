@@ -612,7 +612,12 @@ public class ImportReplay extends PlainImporterBase
 		// if we failed to get the trackname, try shortening it -
 		// it may have been mangled by BabelFish
 		if (val == null)
-			val = getLayerFor(trackName = trackName.substring(6));
+		{
+			if(trackName.length() > 6)
+			{
+				val = getLayerFor(trackName = trackName.substring(6));
+			}
+		}
 
 		// did we get anything?
 		// is this indeed a sensor?
