@@ -61,7 +61,11 @@
       	application toolbar. As you click on it, the <b>Bearing Residuals</b> window will open.  
       	<br/>
       	If the Bearing Residuals window is empty, open the <b>Track Tote</b> and double-check that your 
-      	primary track <b>Ownship</b> and secondary track <b>121200.00_0</b> are assigned
+      	primary track <b>Ownship</b> and secondary track <b>121200.00_0</b> are assigned.
+      	<br/>
+      	Alternatively, if the ownship sensor cuts are not visible, you will need to clear the 
+      	<b>Only draw dots for visible sensor points</b> check button in the <b>Bearing Residuals</b>
+      	view toolbar.
       	<br/>
       	Now select <b>Shear</b> drag mode in the <b>Bearing Residuals</b> window and start dragging track segments
       	to minimise the bearing errors.
