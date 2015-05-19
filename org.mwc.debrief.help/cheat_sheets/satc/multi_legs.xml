@@ -81,4 +81,17 @@
       	You now have a track for the subject vessel that you can use for your further analysis.
       </description>
    </item>
+   <item
+      title="Mark your answers">
+      <description>         
+      	What? You want to know how well you did? 
+      	<br/>
+      	Simple, the <b>truth</b> track for the problem is the <b>Subject</b> track in the <b>Outline</b> view.  
+      	Just make it visible and compare how your solution looks against it. 
+      	<br/>
+      	If you&apos;d like a more quantitative score, produce an XY Plot of range between your solution and the truth
+      	track.  You should be able to achieve an accuracy of around 200 yds - not bad when we&apos;re using sensor
+      	data at around 20000 yds.
+      </description>
+   </item>
 </cheatsheet>
