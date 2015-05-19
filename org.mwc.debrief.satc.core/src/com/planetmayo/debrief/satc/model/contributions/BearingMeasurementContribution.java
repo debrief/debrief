@@ -596,7 +596,7 @@ public class BearingMeasurementContribution extends
 		//
 
 		// ok, work through the legs. In the absence of a Discrete
-		// Optimisation algorithm we're taking a brue force approach.
+		// Optimisation algorithm we're taking a brute force approach.
 		// Hopefully we can find an optimised alternative to this.
 		for (final Iterator<LegOfData> iterator2 = ownshipLegs.iterator(); iterator2
 				.hasNext();)

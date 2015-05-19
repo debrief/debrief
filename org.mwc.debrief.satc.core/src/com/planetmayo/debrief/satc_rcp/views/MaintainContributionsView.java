@@ -615,7 +615,7 @@ public class MaintainContributionsView extends ViewPart
 		graphTabs.setLayoutData(gridData);
 
 		legTab = new TabItem(graphTabs, SWT.NONE);
-		legTab.setText("Target Legs");
+		legTab.setText("Ownship && Target Legs");
 		legGraphComposite = initLegGraph(graphTabs);
 		legTab.setControl(legGraphComposite);
 
@@ -679,7 +679,7 @@ public class MaintainContributionsView extends ViewPart
 	public Composite initLegGraph(final Composite parent)
 	{
 		
-		legChart = ChartFactory.createTimeSeriesChart("Target Legs", // String
+		legChart = ChartFactory.createTimeSeriesChart("Ownship & Target Legs", // String
 				"Time", // String timeAxisLabel
 				null, // String valueAxisLabel,
 				null, // XYDataset dataset,
