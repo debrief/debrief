@@ -22,7 +22,7 @@
          first step is to provide the bearing data.  We are going to use all of the Ownship sensor data for this
          solution, so right-click on the <b>Sensor:Plain (145 items)</b> sensor, and select <b>Semi Auto TMA</b> / 
          <b>Create new scenario from these cuts</b>.
-         <br/>As with the previous tutorial, you will see the new scenario (called <b>121200.00</b> appear in the Outline View, and the 
+         <br/>As with the previous tutorial, you will see the new scenario (called <b>121200.00</b>) appear in the Outline View, and the 
          <b>Maintain Contributions</b> view will open. 
          <br/>You will also see that the <b>Maintain Contributions</b> view contains just the one contribution.
       </description>
@@ -35,21 +35,39 @@
       </description>
    </item>
    <item
-      title="Generate the target legs">
+      title="Intro to Zig Detection">
       <description>
-      	 SATC&apos;s Manoeuvre Detection Aid is capable of detecting (well, guessing) if a target zigs
-      	 during an ownship straight leg.
+      	 SATC&apos;s Manoeuvre Detection Aid is capable of detecting (well, guessing) target zigs.
+      	 But, the algorithm can only reliably detect target zigs during an ownship straight leg (the
+      	 geometry is just too chaotic during an ownship turn). So, it&apos;s actually a two step 
+      	 process - detecting ownship legs, then detecting target zigs
+      	 during those straight legs.
       	 <br/>
-      	 The first step in the process is determining ownship legs. It&apos;s quite easy for the human eye,
-      	 but less so for the PC.  Let&apos;s have a go.  The main information source for zig detection
+      	 However, the algorithm does make a rough and
+      	 ready attempt at determining if there is a target zig somewhere during an ownship turn 
+      	 by forecasting the bearing rate in the second leg.  If the post-turn bearing rate doesn&apos;t
+      	 match that produced in a passive ranging calculation then a turn is assumed.  The
+      	 algorithm won&apos;t know when in the ownship turn the target turn happened, so the whole
+      	 ownship turn is interpreted as the period of the target turn.    
+      </description>
+   </item>
+   <item
+      title="Generate the target legs">
+      <description>      	 
+      	 So, first step in the process is determining ownship legs. It&apos;s quite easy for the human eye,
+      	 but less so for the PC.  Let&apos;s give it a go.  The main information source for target zig detection
       	 is the bearing data.  So, expand the <b>Bearing Measurement</b> element in the the Maintain
       	 Contributions view. Near the bottom of the control you&apos;ll see the <b>MDA</b> section.
       	 <br/>
       	 Click on <b>1. Slice O/S legs</b> to slice the ownship legs.  Have a look at the <b>Target Legs</b>
-      	 graph at the bottom of the screen to judge its effectiveness. 
+      	 graph at the bottom of the screen to judge its effectiveness. When SATC slices the legs it will shade
+      	 each leg in blue, with transparent gaps between the legs. The ownship legs are labelled with 
+      	 text labels at the top of the chart.
       	 <br/>
-      	 For this dataset the algorithm thinks there is just one target leg. Clearly that is mistaken, 
-      	 the ownship turns and speed changes are just too subtle.  Now change the SATC precision value to <b>Medium</b> 
+      	 For this dataset the algorithm thinks there is just one target leg. Based on the displayed
+      	 graph of course and speed against time, clearly that is mistaken -  
+      	 the ownship turns and speed changes are just too subtle for the turn detector.  So,
+      	 change the SATC precision value to <b>Medium</b> 
       	 or <b>High</b> using the
       	 drop-down list at the top of the <b>Maintain Contributions</b> view and run <b>1. Slice O/S legs again</b>.
       	 <br/>
@@ -57,7 +75,34 @@
       	 <br/>
       	 Once you are happy with the ownship legs, click on <b>2. Slice Tgt legs</b>.  The MDA algorithm
       	 will now run, and produce a series of legs for you. On my machine the algorithm produces
-      	 four target legs. 
+      	 four target legs. The algorithm spotted target turns part-way through ownship legs 1 and 2, and it also
+      	 assumes a target turn somewhere during the ownship turn from leg 1 to leg 2.
+      </description>
+   </item>
+   <item
+      title="Groom the target legs">
+      <description>         
+      	Let's have a look at what the algorithm produces from these target legs. Just click on <b>Calculate Solution</b>
+      	at the top of the Maintain Contributions view, and let the algorithm run.
+      	<br/>
+      	After a few seconds the run is complete, and a target track is shown on the plot. As I look at the 
+      	target track I see the very short target leg 3 is quite similar to leg 2.  Switching back to the 
+      	<b>Target Legs</b> graph I see that legs 2 and 3 are split by the suspected target zig during the ownship 
+      	turn.  I now suspect that the target zig early in ownship leg 2 is mistakenly
+      	causing the algorithm to predict a target turn during the ownship turn.
+      	<br/>
+      	So, we will merge target legs 2 and 3.  Open the Scenario in the <b>Outline</b> view.  You'll see the 
+      	bearing measurements listed, followed by our 4 target legs.  Ctrl-select legs 2 and 3, right-click on them, 
+      	and select <b>Merge Straight Leg Forecasts</b>. As you do this, the Maintain Contributions view will update,
+      	and the calculated solution will disappear from the plot (since it&apos;s no longer valid).
+      	<br/>
+      	Now re-run the <b>Calculate Solutions</b> button.
+      	  
+         As I look at the target legs, I suspect that the target turn early in Ownship Leg-2 is causing the
+         algorithm to think a turn also happened part way through ownship turning from Leg 1 to Leg 2.  So,
+         I believe target legs 2 and 3 are actually the same leg - so should be merged.
+         <br/>
+         We merge target legs
       </description>
    </item>
    <item
