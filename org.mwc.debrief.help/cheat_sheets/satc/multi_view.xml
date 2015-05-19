@@ -28,13 +28,6 @@
       </description>
    </item>
    <item
-      title="Rename the scenario">
-      <description>         
-         To make it easier to navigate the data, please use the <b>Properties</b> view to rename 
-         the new scenario (<b>121200.00</b>) to <b>Tutorial Scenario</b>
-      </description>
-   </item>
-   <item
       title="Intro to Zig Detection">
       <description>
       	 SATC&apos;s Manoeuvre Detection Aid is capable of detecting (well, guessing) target zigs.
@@ -54,7 +47,7 @@
    <item
       title="Generate the target legs">
       <description>      	 
-      	 So, first step in the process is determining ownship legs. It&apos;s quite easy for the human eye,
+      	 So, first step in the process is determining ownship legs. This is quite easy for the human eye,
       	 but less so for the PC.  Let&apos;s give it a go.  The main information source for target zig detection
       	 is the bearing data.  So, expand the <b>Bearing Measurement</b> element in the the Maintain
       	 Contributions view. Near the bottom of the control you&apos;ll see the <b>MDA</b> section.
@@ -64,8 +57,8 @@
       	 each leg in blue, with transparent gaps between the legs. The ownship legs are labelled with 
       	 text labels at the top of the chart.
       	 <br/>
-      	 For this dataset the algorithm thinks there is just one target leg. Based on the displayed
-      	 graph of course and speed against time, clearly that is mistaken -  
+      	 For this dataset, when run with <b>Low</b> precision the algorithm thinks there is just one target
+      	 leg. Based on the displayed graph of course and speed against time, clearly that is mistaken -  
       	 the ownship turns and speed changes are just too subtle for the turn detector.  So,
       	 change the SATC precision value to <b>Medium</b> 
       	 or <b>High</b> using the
@@ -88,7 +81,7 @@
       	After a few seconds the run is complete, and a target track is shown on the plot. As I look at the 
       	target track I see the very short target leg 3 is quite similar to leg 2.  Switching back to the 
       	<b>Target Legs</b> graph I see that legs 2 and 3 are split by the suspected target zig during the ownship 
-      	turn.  I now suspect that the target zig early in ownship leg 2 is mistakenly
+      	turn.  We can guess that the target zig early in ownship leg 2 is mistakenly
       	causing the algorithm to predict a target turn during the ownship turn.
       	<br/>
       	So, we will merge target legs 2 and 3.  Open the Scenario in the <b>Outline</b> view.  You'll see the 
@@ -96,28 +89,7 @@
       	and select <b>Merge Straight Leg Forecasts</b>. As you do this, the Maintain Contributions view will update,
       	and the calculated solution will disappear from the plot (since it&apos;s no longer valid).
       	<br/>
-      	Now re-run the <b>Calculate Solutions</b> button.
-      	  
-         As I look at the target legs, I suspect that the target turn early in Ownship Leg-2 is causing the
-         algorithm to think a turn also happened part way through ownship turning from Leg 1 to Leg 2.  So,
-         I believe target legs 2 and 3 are actually the same leg - so should be merged.
-         <br/>
-         We merge target legs
+      	Now re-run the <b>Calculate Solutions</b> button.  The resultant solution looks quite good. 
       </description>
    </item>
-   <item
-      title="Try to generate a solution">
-      <description>         
-         Hey, why not try to generate a solution.  Just click on <b>Calculate Solution</b> at the top of the
-         <b>Maintain Contributions</b> view.  
-         You will see Debrief do a couple of seconds of processing, and then stop.
-         <br/>
-         Can&apos;t you see the solution? Try hiding the <b>OWNSHIP</b> sensor data - 
-         switch it off.
-         <br/>
-         Still can&apos;t see it?  Oh, this
-          is because Debrief doesn&apos;t have enough information to generate a solution.  It needs to know
-         one or more straight legs.  But, leave the <b>OWNSHIP</b> sensor data hidden, for when we do have some data.
-      </description>
-   </item>
-</cheatsheet>
+ </cheatsheet>
