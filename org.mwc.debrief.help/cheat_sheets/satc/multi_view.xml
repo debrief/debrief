@@ -75,7 +75,7 @@
    <item
       title="Groom the target legs">
       <description>         
-      	Let's have a look at what the algorithm produces from these target legs. Just click on <b>Calculate Solution</b>
+      	Let&apos;s have a look at what the algorithm produces from these target legs. Just click on <b>Calculate Solution</b>
       	at the top of the Maintain Contributions view, and let the algorithm run.
       	<br/>
       	After a few seconds the run is complete, and a target track is shown on the plot. As I look at the 
@@ -84,7 +84,7 @@
       	turn.  We can guess that the target zig early in ownship leg 2 is mistakenly
       	causing the algorithm to predict a target turn during the ownship turn.
       	<br/>
-      	So, we will merge target legs 2 and 3.  Open the Scenario in the <b>Outline</b> view.  You'll see the 
+      	So, we will merge target legs 2 and 3.  Open the Scenario in the <b>Outline</b> view.  You&apos;ll see the 
       	bearing measurements listed, followed by our 4 target legs.  Ctrl-select legs 2 and 3, right-click on them, 
       	and select <b>Merge Straight Leg Forecasts</b>. As you do this, the Maintain Contributions view will update,
       	and the calculated solution will disappear from the plot (since it&apos;s no longer valid).

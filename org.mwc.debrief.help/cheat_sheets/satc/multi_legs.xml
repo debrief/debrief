@@ -11,8 +11,8 @@
    <item
       title="Introduce speed constraint">
       <description>         
-      	For this hypothetical engagement, whilst we didn't have target track data, we 
-      	did have a record of target speed.  We're going to add it here. 
+      	For this hypothetical engagement, whilst we didn&apos;t have target track data, we 
+      	did have a record of target speed.  We&apos;re going to add it here. 
       </description>
    </item>
    <item
@@ -66,7 +66,7 @@
       	Now select <b>Shear</b> drag mode in the <b>Bearing Residuals</b> window and start dragging track segments
       	to minimise the bearing errors.
       	<br/>
-      	Don't worry if your track segment dragging results in a mangled solution, you can just just delete the manual track from
+      	Don&apos;t worry if your track segment dragging results in a mangled solution, you can just just delete the manual track from
       	the <b>Outline</b> view and generate a new one from your existing solution.
       </description>
    </item>
