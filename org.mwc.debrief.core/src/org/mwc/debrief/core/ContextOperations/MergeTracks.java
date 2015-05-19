@@ -71,10 +71,10 @@ public class MergeTracks implements RightClickContextItemGenerator
 					goForIt = true;
 					validItems++;
 				}
-				else if(thisE instanceof SegmentList)
+				else if (thisE instanceof SegmentList)
 				{
 					goForIt = true;
-					
+
 					SegmentList sl = (SegmentList) thisE;
 					targetTrackName = sl.getWrapper().getName() + " (Merged)";
 					validItems += sl.size();
@@ -100,24 +100,32 @@ public class MergeTracks implements RightClickContextItemGenerator
 			// get the first item
 			final Editable editable = subjects[0];
 
-			// ok, and let us do it in place
-			final Action doMergeInPlace = new Action("Merge track segments - in place")
+			// just check it isn't a segment list
+			if (!(editable instanceof SegmentList))
 			{
-				public void run()
+
+				// ok, and let us do it in place
+				final Action doMergeInPlace = new Action(
+						"Merge track segments - in place")
 				{
-					final IUndoableOperation theAction = new MergeTracksInPlaceOperation("Merge tracks in place",
-							editable, theLayers, parentLayers, subjects);
+					public void run()
+					{
+						final IUndoableOperation theAction = new MergeTracksInPlaceOperation(
+								"Merge tracks in place", editable, theLayers, parentLayers,
+								subjects);
 
-					CorePlugin.run(theAction);
-				}
-			};
-			parent.add(doMergeInPlace);
+						CorePlugin.run(theAction);
+					}
+				};
+				parent.add(doMergeInPlace);
+			}
 
-			if(targetTrackName == null)
+			if (targetTrackName == null)
 			{
 				targetTrackName = editable.getName() + " (Merged)";
 			}
-			final String title = "Merge track segments - into new track: " + targetTrackName;
+			final String title = "Merge track segments - into new track: "
+					+ targetTrackName;
 			final TrackWrapper newTrack = new TrackWrapper();
 			newTrack.setName(targetTrackName);
 			// create this operation
@@ -132,8 +140,7 @@ public class MergeTracks implements RightClickContextItemGenerator
 				}
 			};
 			parent.add(doMerge);
-			
-			
+
 		}
 		else
 		{
@@ -168,15 +175,16 @@ public class MergeTracks implements RightClickContextItemGenerator
 					// right,stick in a separator
 					parent.add(new Separator());
 
-					final String title = "Convert " + seg.getName() + " into standalone track";
+					final String title = "Convert " + seg.getName()
+							+ " into standalone track";
 					final CoreTMASegment target = seg;
 					// create this operation
 					final Action doMerge = new Action(title)
 					{
 						public void run()
 						{
-							final IUndoableOperation theAction = new ConvertTrackOperation(title,
-									target, theLayers);
+							final IUndoableOperation theAction = new ConvertTrackOperation(
+									title, target, theLayers);
 
 							CorePlugin.run(theAction);
 						}
@@ -190,7 +198,6 @@ public class MergeTracks implements RightClickContextItemGenerator
 		}
 	}
 
-	
 	private static class MergeTracksOperation extends CMAPOperation
 	{
 
@@ -203,7 +210,8 @@ public class MergeTracks implements RightClickContextItemGenerator
 		protected final Editable _target;
 
 		public MergeTracksOperation(final String title, final Editable target,
-				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
+				final Layers theLayers, final Layer[] parentLayers,
+				final Editable[] subjects)
 		{
 			super(title);
 			_target = target;
@@ -215,21 +223,22 @@ public class MergeTracks implements RightClickContextItemGenerator
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			
-			final int res = TrackWrapper.mergeTracks((TrackWrapper) _target, _layers, _subjects);
-			
+
+			final int res = TrackWrapper.mergeTracks((TrackWrapper) _target, _layers,
+					_subjects);
+
 			// ok, we can also hide the parent
-			
+
 			if (res == IStatus.OK)
 			{
 				// it worked, so switch off the composite track
-				TrackWrapper oldParent = (TrackWrapper) _parents[0];				
+				TrackWrapper oldParent = (TrackWrapper) _parents[0];
 				oldParent.setVisible(false);
-				
+
 				// and talk about the UI update
 				fireModified();
 			}
-			
+
 			return Status.OK_STATUS;
 		}
 
@@ -259,35 +268,37 @@ public class MergeTracks implements RightClickContextItemGenerator
 			return null;
 		}
 	}
-	
+
 	private static class MergeTracksInPlaceOperation extends MergeTracksOperation
 	{
-		public MergeTracksInPlaceOperation(final String title, final Editable target,
-				final Layers theLayers, final Layer[] parentLayers, final Editable[] subjects)
+		public MergeTracksInPlaceOperation(final String title,
+				final Editable target, final Layers theLayers,
+				final Layer[] parentLayers, final Editable[] subjects)
 		{
 			super(title, target, theLayers, parentLayers, subjects);
 		}
-		
+
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			
-			final int res = TrackWrapper.mergeTracksInPlace(_target, _layers, _parents, _subjects);
-			
+
+			final int res = TrackWrapper.mergeTracksInPlace(_target, _layers,
+					_parents, _subjects);
+
 			// ok, we can also hide the parent
-			
+
 			if (res == IStatus.OK)
 			{
 				// and talk about the UI update
 				fireModified();
 			}
-			
+
 			return Status.OK_STATUS;
 		}
 
 		private void fireModified()
 		{
-			_layers.fireExtended(null,  _parents[0]);
+			_layers.fireExtended(null, _parents[0]);
 		}
 
 	}
@@ -301,8 +312,8 @@ public class MergeTracks implements RightClickContextItemGenerator
 		private final Layers _layers;
 		private final CoreTMASegment _target;
 
-		public ConvertTrackOperation(final String title, final CoreTMASegment segment,
-				final Layers theLayers)
+		public ConvertTrackOperation(final String title,
+				final CoreTMASegment segment, final Layers theLayers)
 		{
 			super(title);
 			_target = segment;
@@ -321,7 +332,7 @@ public class MergeTracks implements RightClickContextItemGenerator
 			newSegment.getWrapper().removeElement(_target);
 			newSegment.getWrapper().add(newSegment);
 			fireModified();
-			
+
 			return Status.OK_STATUS;
 		}
 
