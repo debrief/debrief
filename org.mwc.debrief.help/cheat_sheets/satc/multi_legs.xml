@@ -4,104 +4,81 @@
  title="Playing with legs">
    <intro>
       <description>
-         After the bearing measurements, knowledge of the straight legs is the most valuable set of information for SATC.
+         Once we&apos;re confident in the set of target legs we can move on to capture
+         more of the analyst&apos;s knowledge and refine the target track.
       </description>
    </intro>
    <item
-      title="Mark first leg">
+      title="Introduce speed constraint">
       <description>         
-         Ok, let&apos;s mark the first leg. In the <b>Outline View</b>, expand the Ownship sensor data, and select all of the
-         <b>Green</b> cuts.  Now, right-click on them, and select <b>Semi Auto TMA</b> / <b>Add to Tutorial Scenario</b> / 
-         <b>New Straight leg for period covered by [sensor cuts]</b>. When asked, give it the name <b>First Leg</b>.
-         <br/><br/><b>Note:</b> selecting the cuts and "giving" them to the solution isn&apos;t actually adding
-         the cuts - the solution knows about the cuts already.  We&apos;re justing using the block of cuts
-          as a convenient way of specifying the start and end times for the leg.
+      	For this hypothetical engagement, whilst we didn't have target track data, we 
+      	did have a record of target speed.  We're going to add it here. 
       </description>
    </item>
    <item
-      title="Try to generate a solution (again)">
+      title="Add Speed constraint">
       <description>         
-         Ok, now we should be able to generate a solution.  Again, click on <b>Calculate Solution</b> at the top of the
-         <b>Maintain Contributions</b> view.  You will see Debrief do a couple of seconds of processing, you&apos;ll see
-         a line graph appearing in the <b>Performance</b> area of the <b>Maintain Contributions</b> view, and a green
-         line will appear on the plot.<br/>
-         Zooming in on the plot shows us that the single leg is 9.2 kts, at 319 degrees.  If we 
-         zoom out again, we can see that, Yes, this could be a solution that fits in the data.
-         <br/><b>Note:</b> the use of randomisation in the SATC process means that your calculated speeds may well be different
-         to mine. Don&apos;t worry, this is intended.
+      	We can add a speed constraint in a number of ways. At the per-leg level we can expand a
+      	<b>Straight Leg Forecast</b> and enter min/max/estimate values for course or speed for each leg.
+      	<br/>
+      	Alternatively we can apply a speed constraint to the whole engagement.  Do this by right-clicking 
+      	on the <b>Bearing Data</b> item in the Outline view and selecting 
+      	<b>Add speed forecast for period covered by [Selected Legs]</b>.  When the popup box 
+      	opens, enter <b>Overall speed</b> to name the contribution.
+      	<br/>
+      	As the contribution gets added you will see the target solution disappear, since its no longer valid.
       </description>
    </item>
    <item
-      title="Mark second leg">
+      title="Specify speed constraint">
       <description>         
-         Now, we&apos;ll mark the second leg. In the <b>Outline View</b>, expand the Ownship sensor data, and select all of the
-         <b>Purple</b> cuts.  Now, right-click on them, and select <b>Semi Auto TMA</b> / <b>Add to Tutorial Scenario</b> / 
-         <b>Straight leg for period covered by [sensor cuts]</b>. When asked, give it the name <b>Second Leg</b>.
-         <br/>The solution on the plot will disappear, since the new data means that it&apos;s probably incorrect.
-         <br/>To see the effect of the new leg, click again on the <b>Calculate Solution</b> button.
-      </description>
-   </item>
-   <item
-      title="Generate updated solution">
-      <description>         
-         Now generate a new solution.  You may need to zoom out to see the target solution.
-           You&apos;ll see two legs present, the first with 12.1 knots, and the second with 14.1 knots.
-         Clearly SATC has changed it&apos;s optimal solution for the first leg to a faster one that is more compliant with the data 
-         in the second leg.  
+         Now we must enter the actual constraint in the <b>Speed Forecast</b> control
+         in the <b>Maintain Contributions</b> view.  The exercise observer recorded that the target was doing
+         around 9 knots during the whole exercise.  So, to allow for speed keeping errors, enter
+         a minimum speed of 8 knots, a maximum speed of 10 knots, and an (optional) estimate of 9 knots.
          <br/>
-         As before, the SATC randomisation will probably result in you having slightly
-         different speed (and course) values.
+         Then re-run the <b>Calculate Solution</b> button. In the <b>Performance</b> tab you will see the effectiveness
+         of both the <b>Bearing Data</b> and the <b>Overall speed</b> estimates.
       </description>
    </item>
    <item
-      title="Mark third leg">
+      title="Generate manual TMA solution">
       <description>         
-         Ok, now let&apos;s mark the third leg using the <b>Yellow</b> cuts (go on, choose your own name), and re-generate the solution again.  The solution
-         I see has a speed of 4.8 knots (did I explain the effects of randomisation).
-         <br/>So, now we have a three-leg solution that is compliant with our sensor data, and our straight leg forecasts.
-         <br/>We can take a step to verify this by switching on the location constraints.  First, select the <b>Tutorial Scenario</b>
-          in the <b>Outline View</b>. Then, in the <b>Properties</b> window, switch on <b>ShowLocationConstraints</b>. You&apos;ll see
-         lots and lots of clutter on the plot. Also switch on <b>OnlyPlotLegEnds</b>.  This shows the calculated location 
-         constraints at the start and end of each leg.  We can see that yes, the solution is compliant with them.
+      	As previously we finish off the TMA generation process by developing a manual TMA solution.  Right-click
+      	on the TMA solution in the <b>Outline</b> view, and select <b>Convert to Composite Track (legs)</b>.
+      	<br/>
+      	A manual solution will now appear in the <b>Outline</b> view, and the auto TMA solution will be hidden.  Mark
+      	the new solution as a <b>Secondary</b> track by selecting it in the <b>Outline</b> view then clicking on
+      	the <b>2</b> in the <b>Outline</b> view toolbar.
+      	<br/>
+      	Were now ready to manually adjust the solution.
       </description>
    </item>
    <item
-      title="Give speed constraint">
+      title="Tune manual TMA solution">
       <description>         
-         So, we&apos;ve got a solution.  But, I think it can be improved.  Let&apos;s try to give the target a consistent speed. We&apos;re
-         going to give a speed constraint to the whole period of the engagement. We could have done this by right-clicking on the whole <b>Sensor:Plain</b>
-         object, but an alternate way of doing this is to right-click on our <b>Tutorial Scenario</b> object in the <b>Outline View</b>,  
-         and selecting <b>Add Speed Forecast for period covered by [Tutorial Scenario]</b>.  A wizard will open, name the contribution
-         as <b>Overall Speed</b>. You will see this new constraint displayed in the <b>Maintain Contributions</b> view - with a default set
-         of hard constraints shown: zero to forty knots.
+      	Start manually tuning the TMA solution by clicking on the <b>Drag Track Segment</b> mouse mode button on the main
+      	application toolbar. As you click on it, the <b>Bearing Residuals</b> window will open.  
+      	<br/>
+      	If the Bearing Residuals window is empty, open the <b>Track Tote</b> and double-check that your 
+      	primary track <b>Ownship</b> and secondary track <b>121200.00_0</b> are assigned
+      	<br/>
+      	Now select <b>Shear</b> drag mode in the <b>Bearing Residuals</b> window and start dragging track segments
+      	to minimise the bearing errors.
+      	<br/>
+      	Don't worry if your track segment dragging results in a mangled solution, you can just just delete the manual track from
+      	the <b>Outline</b> view and generate a new one from your existing solution.
       </description>
    </item>
-   <item title="Adjust speed constraint">
-      <description>
-         Ok, let&apos;s generate a new solution.  A constraint of 0-40 knots isn&apos;t much of a constraint at all, so it has little effect.  So,
-         expand the <b>Speed Constraint - overall speed</b> item in the <b>Maintain Contributions</b> view. Now reduce the maximum speed from 
-         40 knots down to 15 knots.  If you still have the Location constraints visible, you will see them adjust to repesent the new constraint.
-         <br/>This is because the vessel can&apos;t travel as far in each leg.  Also, increase the minimum speed to 8 knots.  Re-generate the solution
-         and see what you think.  
-      </description>
-   </item>
-   <item title="Provide speed estimate">
-      <description>
-         Lastly, let&apos;s try an estimate.  The estimate will make the algorithm favour solutions near that value, though
-         it will still consider solutions that are still within the min/max hard constraints.  Try an estimate of 9 knots, and re-generate
-         the solution.  I get a solution with speeds of 9, 13, and 9 knots (you know, you may get
-         different values).  But, I can see that if the overall solution was moved nearer to ownship,
-         I may be able to achieve a consistent speed. So, now reduce the max speed to 10 knots, and re-generate the solution.  
-         <br/>This gives me legs that are 9.6, 8.9 and 9.0 knots.  I may then choose to drag in the min/max sliders to really force
-         the solution onto a particular speed, but I&apos;m ok with this answer.
-      </description>
-   </item>
-   <item title="Verify solution">
-      <description>
-         Ok, now how good is that solution?  In the <b>Outline View</b>, make the <b>SUBJECT</b> track visible.  You should see
-         that the generated solution is very close to the truth track, even with this low bearing rate data.  If you wish to 
-         verify the calculated solution against the truth track, you can view the XY Range plot (again) and see the separation
-         between the two tracks.
+   <item
+      title="Merge track segments">
+      <description>         
+      	When you are finally happy with your solution its time to merge the separate track segments into a formal track. 
+      	<br/>
+      	To do this, you need to expand your manual TMA solution in the <b>Outline</b> view, then right-click 
+      	on the <b>Track Segments (5)</b> item.  From the popup list, select <b>Merge all track segments</b>.
+      	<br/>
+      	You now have a track for the subject vessel that you can use for your further analysis.
       </description>
    </item>
 </cheatsheet>
