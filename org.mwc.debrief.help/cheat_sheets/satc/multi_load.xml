@@ -25,7 +25,7 @@
          Before you load the data-file, close any existing Debrief plots, then drag 
          in the <b>L2_Scenario.dpf</b> data-file from the SATC folder we used in the previous tutorial.
          <br/><br/>
-         You will see a Blue Ownship track, with a bearing fan in nice pretty shades of green, purple and red.
+         You will see a Blue Ownship track, with a dark green bearing fan.
       </description>
    </item>
 </cheatsheet>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <compositeCheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="../compositeContentFile.xsd"  name="Semi Automated Track Construction">
-   <taskGroup kind="sequence" name="Walkthrough" skip="false">
+   <taskGroup kind="sequence" name="Semi Automatic TMA Walkthrough" skip="false">
       <intro>
          <b>Introduction</b>
 			<br/>
