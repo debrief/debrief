@@ -1,8 +1,6 @@
 package com.planetmayo.debrief.satc.zigdetector;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.Precision;
@@ -91,30 +89,42 @@ public class OwnshipLegDetector
 		final double[] courses = movingAverage(rawCourses, avgPeriod);
 		final double[] speeds = movingAverage(rawSpeeds, avgPeriod);
 		
-		TimeBasedMovingAverage tbm = new TimeBasedMovingAverage(8 * 60 * 1000L);
+		TimeBasedMovingAverage tbm5 = new TimeBasedMovingAverage(5 * 60 * 1000L);
+//		TimeBasedMovingAverage tbm3 = new TimeBasedMovingAverage(3 * 60 * 1000L);
+//		TimeBasedMovingAverage tbm8 = new TimeBasedMovingAverage(8 * 60 * 1000L);
+//		TimeBasedMovingAverage tbm11 = new TimeBasedMovingAverage(11 * 60 * 1000L);
 		
 		for (int i = 0; i < times.length; i++)
 		{
 			final long thisTime = times[i];
 
 			final double thisSpeed = speeds[i];
-			final double thisCourse = courses[i];
+			double thisCourse = courses[i];
 
 			if (i > 0)
 			{
 				// here is our time-based averageing algorithm
-				final double newCourseAvg = tbm.average(thisTime, times, rawCourses);
+//				final double newCourseAvg3 = tbm3.average(thisTime, times, rawCourses);
+				final double newCourseAvg5 = tbm5.average(thisTime, times, rawCourses);
+//				final double newCourseAvg8 = tbm8.average(thisTime, times, rawCourses);
+//				final double newCourseAvg11 = tbm11.average(thisTime, times, rawCourses);
 
+//				SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MMM/dd hh:mm:ss");
+//				String timeStr = sdf.format(new Date(thisTime));
+//				timeStr = "" + thisTime;
+//				
+//				System.out.println(timeStr + ", " + rawCourses[i] + ", " + thisCourse 
+//						 + ", " + newCourseAvg3 + ", " + newCourseAvg5+ ", " + newCourseAvg8+ ", " + newCourseAvg11);
+
+				// decide which value to use as average
+				thisCourse = newCourseAvg5;
+				
 				// ok, check out the course change rate
 				final double timeStepSecs = (thisTime - lastTime) / 1000d;
 				final double courseRate = Math.abs(thisCourse - lastCourse)
 						/ timeStepSecs;
 				final double speedRate = Math.abs(thisSpeed - lastSpeed) / timeStepSecs;
 
-				SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MMM/dd hh:mm:ss");
-//				String thisTimeStr = sdf.format(new Date(thisTime));
-//				System.out.println(sdf.format(new Date(thisTime)) + ", " + rawCourses[i]);// + ", " + thisCourse 
-//						// + ", " + newCourseAvg);
 
 				// are they out of range
 				if ((courseRate < COURSE_TOLERANCE) && (speedRate < SPEED_TOLERANCE))
