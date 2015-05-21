@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc.zigdetector.TimeWindow.average.TimeBasedMovingAverage;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class OwnshipLegDetector
@@ -39,23 +40,23 @@ public class OwnshipLegDetector
 			switch(precision)
 			{
 			case HIGH:
-				COURSE_TOLERANCE = 0.05; // rads / sec (just a guess!!)
+				COURSE_TOLERANCE = 0.05; // degs / sec (just a guess!!)
 				SPEED_TOLERANCE = 0.0005; // ms / sec (just a guess!!)			
 				break;
 			case MEDIUM:
-				COURSE_TOLERANCE = 0.08; // rads / sec (just a guess!!)
+				COURSE_TOLERANCE = 0.08; // degs / sec (just a guess!!)
 				SPEED_TOLERANCE = 0.001; // ms / sec (just a guess!!)			
 				break;
 			case LOW:
 			default:
-				COURSE_TOLERANCE = 0.6; // rads / sec (just a guess!!)
+				COURSE_TOLERANCE = 0.2; // degs / sec (just a guess!!)
 				SPEED_TOLERANCE = 0.04; // ms / sec (just a guess!!)			
 				break;
 			}
 		}
 		else
 		{
-			COURSE_TOLERANCE = 0.08; // rads / sec (just a guess!!)
+			COURSE_TOLERANCE = 0.08; // degs / sec (just a guess!!)
 			SPEED_TOLERANCE = 1.1; // ms / sec (just a guess!!)			
 		}
 		
@@ -88,20 +89,42 @@ public class OwnshipLegDetector
 		final double[] courses = movingAverage(rawCourses, avgPeriod);
 		final double[] speeds = movingAverage(rawSpeeds, avgPeriod);
 		
+		TimeBasedMovingAverage tbm5 = new TimeBasedMovingAverage(5 * 60 * 1000L);
+//		TimeBasedMovingAverage tbm3 = new TimeBasedMovingAverage(3 * 60 * 1000L);
+//		TimeBasedMovingAverage tbm8 = new TimeBasedMovingAverage(8 * 60 * 1000L);
+//		TimeBasedMovingAverage tbm11 = new TimeBasedMovingAverage(11 * 60 * 1000L);
+		
 		for (int i = 0; i < times.length; i++)
 		{
 			final long thisTime = times[i];
 
 			final double thisSpeed = speeds[i];
-			final double thisCourse = courses[i];
+			double thisCourse = courses[i];
 
 			if (i > 0)
 			{
+				// here is our time-based averageing algorithm
+//				final double newCourseAvg3 = tbm3.average(thisTime, times, rawCourses);
+				final double newCourseAvg5 = tbm5.average(thisTime, times, rawCourses);
+//				final double newCourseAvg8 = tbm8.average(thisTime, times, rawCourses);
+//				final double newCourseAvg11 = tbm11.average(thisTime, times, rawCourses);
+
+//				SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MMM/dd hh:mm:ss");
+//				String timeStr = sdf.format(new Date(thisTime));
+//				timeStr = "" + thisTime;
+//				
+//				System.out.println(timeStr + ", " + rawCourses[i] + ", " + thisCourse 
+//						 + ", " + newCourseAvg3 + ", " + newCourseAvg5+ ", " + newCourseAvg8+ ", " + newCourseAvg11);
+
+				// decide which value to use as average
+				thisCourse = newCourseAvg5;
+				
 				// ok, check out the course change rate
 				final double timeStepSecs = (thisTime - lastTime) / 1000d;
 				final double courseRate = Math.abs(thisCourse - lastCourse)
 						/ timeStepSecs;
 				final double speedRate = Math.abs(thisSpeed - lastSpeed) / timeStepSecs;
+
 
 				// are they out of range
 				if ((courseRate < COURSE_TOLERANCE) && (speedRate < SPEED_TOLERANCE))
@@ -111,7 +134,6 @@ public class OwnshipLegDetector
 				}
 				else
 				{
-
 					// we may be in a turn. create a new leg, if we haven't done
 					// so already
 					if (legs.get(legs.size() - 1).initialised())
