@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.planetmayo.debrief.satc.zigdetector.TimeWindow.average.DataPoint;
 import com.planetmayo.debrief.satc.zigdetector.TimeWindow.average.TimeBasedMovingAverage;
 
 public class TestTimeBasedMovingAvg
@@ -29,13 +28,13 @@ public class TestTimeBasedMovingAvg
 			long times[] = new long[thisData.size()];
 			double[] values = new double[thisData.size()];
 
-			final DataPoint[] dataArray = thisData.toArray(new DataPoint[]{null});
-			
-			for(int i=0;i<dataArray.length;i++)
+			final DataPoint[] dataArray = thisData.toArray(new DataPoint[] { null });
+
+			for (int i = 0; i < dataArray.length; i++)
 			{
 				times[i] = dataArray[i].getTimestamp().getTimeInMillis();
 				values[i] = dataArray[i].getValue();
- 			}
+			}
 
 			// ok, now for the moving average
 			final TimeBasedMovingAverage movingAverage = new TimeBasedMovingAverage(
@@ -278,4 +277,44 @@ public class TestTimeBasedMovingAvg
 			add(parse("07/Aug/2000 00:51:50", 19.6));
 		}
 	};
+
+	public static class DataPoint implements Comparable<DataPoint>
+	{
+
+		private final Calendar timestamp;
+
+		private final Double value;
+
+		private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+		public DataPoint(Calendar timestamp, Double value)
+		{
+			this.timestamp = timestamp;
+			this.value = value;
+		}
+
+		@Override
+		public String toString()
+		{
+			return "DataPoint{" + "timestamp=" + sdf.format(timestamp.getTime())
+					+ ", value=" + value + '}';
+		}
+
+		public Calendar getTimestamp()
+		{
+			return timestamp;
+		}
+
+		public Double getValue()
+		{
+			return value;
+		}
+
+		@Override
+		public int compareTo(DataPoint o)
+		{
+			return this.getTimestamp().compareTo(o.getTimestamp());
+		}
+	}
+
 }
