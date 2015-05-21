@@ -1,6 +1,5 @@
 package com.planetmayo.debrief.satc.zigdetector.TimeWindow.average;
 
-import java.util.Set;
 
 /**
  * Created by Romain on 09/05/2015.
