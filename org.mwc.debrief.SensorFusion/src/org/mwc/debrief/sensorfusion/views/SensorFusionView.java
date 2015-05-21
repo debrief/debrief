@@ -598,7 +598,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		myChart.getXYPlot().setRenderer(_plotRenderer);
 
 		// and the chart frame
-		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, true)
+		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, 400, 600, 300, 200,
+				1800, 1800, true, true, true, true, true, true)
 		{
 
 			@Override
