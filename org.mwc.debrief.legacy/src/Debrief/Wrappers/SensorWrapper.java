@@ -708,20 +708,24 @@ public class SensorWrapper extends TacticalDataWrapper implements
 				{
 						prop("Name", "the name for this sensor"),
 						prop("Visible", "whether this sensor data is visible"),
-						prop("LineThickness", "the thickness to draw these sensor lines"),
-						prop("DefaultColor",
-								"the default colour to plot this set of sensor data"),
-						prop("SensorOffset",
-								"the forward/backward offset (m) of this sensor from the attack datum"),
-						prop(
+						displayProp("LineThickness", "the thickness to draw these sensor lines",
+								"Line tickness"),
+						displayProp("DefaultColor",
+								"the default colour to plot this set of sensor data",
+								"Default color"),
+						displayProp("SensorOffset",
+								"the forward/backward offset (m) of this sensor from the attack datum",
+								"Sensor offset"),
+						displayProp(
 								"WormInHole",
-								"whether the origin of this sensor is offset in straight line, or back along the host track"),
-						longProp("VisibleFrequency",
-								"How frequently to display sensor cuts",
+								"whether the origin of this sensor is offset in straight line, or back along the host track",
+								"Worm in hole"),
+						displayLongProp("VisibleFrequency",
+								"How frequently to display sensor cuts", "Visible frequency", 
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertProp("BaseFrequency",
+						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of the source for this sound", OPTIONAL),								
-						expertLongProp("ResampleDataAt", "the sensor cut sample rate",
+						displayExpertLongProp("ResampleDataAt", "Resample data at", "the sensor cut sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class) };
 
 				res[2]
