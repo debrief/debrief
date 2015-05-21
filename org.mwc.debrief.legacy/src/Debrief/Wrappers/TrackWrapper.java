@@ -632,7 +632,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the width of this track
 	 */
-	private int _lineWidth = 2;
+	private int _lineWidth = 3;
 
 	/**
 	 * the style of this line
