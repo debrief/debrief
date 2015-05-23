@@ -15,12 +15,16 @@
 
 package org.mwc.debrief.core.editors.painters.highlighters;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 
-import MWC.GUI.*;
-import MWC.GUI.Editable.DoNotHighlightMe;
-import MWC.GUI.Properties.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
+import MWC.GUI.Properties.BoundedInteger;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author IAN MAYO
@@ -552,17 +556,17 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 				final java.beans.PropertyDescriptor[] res =
 				{
 						prop("Color", "Color to paint highlight", FORMAT),
-						prop("UseCurrentTrackColor",
+						displayProp("UseCurrentTrackColor", "Use current track color",
 								"Paint hightlight using current track color", FORMAT),
 						prop("Radius", "Radius of outer ring (yds)", SPATIAL),
-						prop("ArcStart", "The rel angle where the arcs start (degs)",
+						displayProp("ArcStart", "Arc start", "The rel angle where the arcs start (degs)",
 								SPATIAL),
-						prop("ArcEnd", "The rel angle where the arcs end (degs)", SPATIAL),
-						prop("FillArcs", "whether to shade in the arcs", FORMAT),
-						prop("SpokeSeparation", "Angle between spokes (degs)", SPATIAL),
-						prop("JustPlotPrimary",
+						displayProp("ArcEnd", "Arc end", "The rel angle where the arcs end (degs)", SPATIAL),
+						displayProp("FillArcs", "Fill arcs", "whether to shade in the arcs", FORMAT),
+						displayProp("SpokeSeparation", "Spoke separation", "Angle between spokes (degs)", SPATIAL),
+						displayProp("JustPlotPrimary", "Just plot primary",
 								"Only plot range rings around the primary track", FORMAT),
-						prop("NumRings", "Number of range rings to draw (including outer)",
+						displayProp("NumRings", "Number of rings", "Number of range rings to draw (including outer)",
 								SPATIAL),
 				// prop("PlainRectangle", "Draw simple rectangle around point"),
 				};

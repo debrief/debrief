@@ -480,10 +480,10 @@ public final class RangeHighlighter implements PlotHighlighter
 						prop("Color", "Color to paint highlight"),
 						prop("Radius", "Radius of outer ring (yds)"),
 						prop("Arcs", "Angle of arcs each side (degs)"),
-						prop("SpokeSeparation", "Angle between spokes (degs)"),
-						prop("NumRings", "Number of range rings to draw (including outer)"),
-						prop("JustPlotPrimary", "Only plot range rings around the primary track"),
-						prop("CentreRectangle", "Draw simple rectangle around point"), };
+						displayProp("SpokeSeparation", "Spoke separation", "Angle between spokes (degs)"),
+						displayProp("NumRings", "Number of rings", "Number of range rings to draw (including outer)"),
+						displayProp("JustPlotPrimary", "Just plot primary", "Only plot range rings around the primary track"),
+						displayProp("CentreRectangle", "Centre rectangle", "Draw simple rectangle around point"), };
 				return res;
 			}
 			catch (final Exception e)

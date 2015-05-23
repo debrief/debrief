@@ -162,7 +162,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			{
 				final PropertyDescriptor[] res =
 				{ expertProp("Visible", "whether this layer is visible", FORMAT),
-						expertProp("LineStyle", "how to plot this line", FORMAT),
+						displayExpertProp("LineStyle", "Line style", "how to plot this line", FORMAT),
 						expertProp("Name", "Name of this track segment", FORMAT) };
 				res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
 				return res;

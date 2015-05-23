@@ -1228,20 +1228,19 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				{
 						prop("Visible", "the Layer visibility", VISIBILITY),
 						prop("Name", "the name of the Layer", FORMAT),
-						prop("LineThickness", "the thickness of lines in this layer",
+						displayProp("LineThickness", "Line thickness", "the thickness of lines in this layer",
 								FORMAT),
-						prop(
-								"Buffered",
+						prop("Buffered",
 								"whether to double-buffer Layer. ('Yes' for better performance)",
 								FORMAT),
 						prop("Color", "the color to plot the tracks", FORMAT),
-						prop("IncludeInBounds",
+						displayProp("IncludeInBounds", "Include in bounds",
 								"include these tracks in spatial/temporal bounds calcs", FORMAT),
-						prop("ShowTrackName",
+						displayProp("ShowTrackName", "Show track name",
 								"show the track name at alongside the first point", FORMAT),
-						prop("InterpolatePoints",
+						displayProp("InterpolatePoints", "Interpolate points",
 								"interpolate location markers when time stepping", FORMAT),
-						prop("IncludeInTimeStep", "include these tracks in time stepping",
+						displayProp("IncludeInTimeStep", "Include in time stepping", "include these tracks in time stepping",
 								TEMPORAL), };
 
 				res[2]

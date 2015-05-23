@@ -546,10 +546,11 @@ public final class TMAWrapper extends TacticalDataWrapper
 				{
 						prop("Name", "the name for this tma solution"),
 						prop("Visible", "whether this solution data is visible"),
-						prop("LineThickness", "the thickness to draw these solution lines"),
-						prop("DefaultColor", "the default colour to plot this set of solution data"),
-						prop("ShowBearingLines", "whether to show bearing lines to TUAs"),
-						prop("ShowLabels", "whether to show labels on TUAs") };
+						displayProp("LineThickness", "Line thickness", "the thickness to draw these solution lines"),
+						displayProp("DefaultColor", "Default color", "the default colour to plot this set of solution data"),
+						displayProp("ShowBearingLines", "Show bearing lines", "whether to show bearing lines to TUAs"),
+						displayProp("ShowLabels", "Show labels", "whether to show labels on TUAs")
+				};
 
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);

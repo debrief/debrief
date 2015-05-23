@@ -149,10 +149,12 @@ public class RangeRingShape extends PlainShape implements Editable
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ prop("NumRings", "the number of rings to plot"),
-						prop("RingWidth", "the width of the range rings"),
+				{ 
+						displayProp("NumRings", "Number of rings", "the number of rings to plot"),
+						displayProp("RingWidth", "Ring width", "the width of the range rings"),
 						prop("Centre", "the centre of the Wheel"),
-						prop("RangeLabelLocation", "where to position the labels") };
+						displayProp("RangeLabelLocation", "Range label location", "where to position the labels")
+				};
 
 				res[3].setPropertyEditorClass(LabelLocationPropertyEditor.class);
 

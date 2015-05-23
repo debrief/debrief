@@ -341,22 +341,21 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				final PropertyDescriptor[] myRes =
 				{
-						prop("LabelColor", "the text color", FORMAT),
+						displayProp("LabelColor", "Label color", "the text color", FORMAT),
 						prop("Label", "the text showing", FORMAT),
 						prop("Font", "the label font", FORMAT),
-						prop("LabelLocation", "the relative location of the label", FORMAT),
+						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
 						prop("Visible", "whether this shape is visible", VISIBILITY),
-						prop("LabelVisible", "whether the label is visible", VISIBILITY),
-						prop("Time_Start", "the start date time group", TEMPORAL),
-						longProp("LineStyle",
+						displayProp("LabelVisible", "Label visible", "whether the label is visible", VISIBILITY),
+						displayProp("Time_Start", "Time start", "the start date time group", TEMPORAL),
+						displayLongProp("LineStyle", "Line style",
 								"the dot-dash style to use for plotting this shape",
 								LineStylePropertyEditor.class, FORMAT),
-						longProp("LineThickness",
+						displayLongProp("LineThickness", "Line thickness",
 								"the line-thickness to use for this shape",
 								MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
-						prop(
-								"TimeEnd",
+						displayProp("TimeEnd", "Time end",
 								"the end date time group \n\r(or leave blank for to use Start as Centre time)",
 								TEMPORAL), };
 				myRes[3]

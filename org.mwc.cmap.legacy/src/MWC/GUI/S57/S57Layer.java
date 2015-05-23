@@ -230,7 +230,7 @@ public class S57Layer implements Layer
 			{
 				final PropertyDescriptor[] res = {
 						prop("Visible", "whether S57 data is visible", VISIBILITY),
-						prop("SourceFile", "the S57 data-file", FORMAT), };
+						displayProp("SourceFile", "Source file", "the S57 data-file", FORMAT), };
 				return res;
 			}
 			catch (final IntrospectionException e)

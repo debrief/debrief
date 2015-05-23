@@ -143,13 +143,14 @@ public class WheelShape extends PlainShape implements Editable
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("RadiusInner", "the Inner radius of the wheel (yds)"),
-						prop("SpokeSize", "the arc covered by each spoke (degs)"),
-						prop("EmptyInner",
+						displayProp("RadiusInner", "Inner radius", "the Inner radius of the wheel (yds)"),
+						displayProp("SpokeSize", "Spoke size", "the arc covered by each spoke (degs)"),
+						displayProp("EmptyInner", "Empty inner",
 								"whether to keep the inner circle clear of spokes"),
-						prop("RadiusOuter", "the Outer radius of the wheel (yds)"),
+						displayProp("RadiusOuter", "Outer radius", "the Outer radius of the wheel (yds)"),
 						prop("Orientation", "the orientation of the wheel"),
-						prop("Centre", "the centre of the Wheel") };
+						prop("Centre", "the centre of the Wheel") 
+				};
 
 				return res;
 

@@ -566,25 +566,25 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 				final PropertyDescriptor[] res =
 				{
 
-						 longProp("DataLineWidth", "the width to draw the data lines",
+						 displayLongProp("DataLineWidth", "Data line width", "the width to draw the data lines",
 						 MWC.GUI.Properties.LineWidthPropertyEditor.class),
-						 prop("TitleText", "the title of this plot"),
-						 prop("FixedDuration", "How long a time-span to display", EditorType.TEMPORAL),
-						 prop("DisplayFixedDuration", "Whether to show a limited time period (in Grow mode)", EditorType.TEMPORAL),
-						 prop("X_AxisTitle", "the x axis title of this plot"),
-						 prop("Y_AxisTitle", "the y axis title of this plot"),
-						 prop("RelativeTimes",
+						 displayProp("TitleText", "Title text", "the title of this plot"),
+						 displayProp("FixedDuration", "Fixed duration", "How long a time-span to display", EditorType.TEMPORAL),
+						 displayProp("DisplayFixedDuration", "Display fixed duration", "Whether to show a limited time period (in Grow mode)", EditorType.TEMPORAL),
+						 displayProp("X_AxisTitle", "X axis title", "the x axis title of this plot"),
+						 displayProp("Y_AxisTitle", "Y axis title", "the y axis title of this plot"),
+						 displayProp("RelativeTimes", "Relative times",
 						 "whether to plot times relative to an anchor value (tZero)",
 						 EditorType.TEMPORAL),
-						longProp("DateTickUnits", "the minutes separation to the axis",
+						displayLongProp("DateTickUnits", "Date tick units", "the minutes separation to the axis",
 								DateAxisEditor.class, EditorType.TEMPORAL),
-						prop("ShowSymbols", "whether to show symbols at the data points",
+						displayProp("ShowSymbols", "Show symbols", "whether to show symbols at the data points",
 								EditorType.VISIBILITY),
-						prop("TitleFont", "font to use for the plot title",
+						displayProp("TitleFont", "Title font", "font to use for the plot title",
 								EditorType.FORMAT),
-						prop("AxisFont", "font to use for the plot axis titles",
+						displayProp("AxisFont", "Axis font", "font to use for the plot axis titles",
 								EditorType.FORMAT),
-						prop("TickFont", "font to use for the plot axis tick mark labels",
+						displayProp("TickFont", "Tick font", "font to use for the plot axis tick mark labels",
 								EditorType.FORMAT)
 				};
 				return res;

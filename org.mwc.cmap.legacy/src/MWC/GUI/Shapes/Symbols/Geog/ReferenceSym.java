@@ -213,8 +213,8 @@ public class ReferenceSym extends PlainSymbol
       try
       {
         final PropertyDescriptor[] res = {
-          prop("ReferenceLeftLabel", "the left-hand label for reference position"),
-          prop("ReferenceRightLabel", "the right-hand label for reference position"),
+          displayProp("ReferenceLeftLabel", "Reference left label", "the left-hand label for reference position"),
+          displayProp("ReferenceRightLabel", "Reference right label", "the right-hand label for reference position"),
         };
 
         return res;

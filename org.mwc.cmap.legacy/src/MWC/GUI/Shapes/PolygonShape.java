@@ -506,9 +506,9 @@ public class PolygonShape extends PlainShape implements Editable,
 				final PropertyDescriptor[] res =
 				{
 						prop("Filled", "whether to fill the polygon", FORMAT),
-						prop("SemiTransparent",
+						displayProp("SemiTransparent", "Semi transparent",
 								"whether the filled polygon is semi-transparent", FORMAT),
-						prop("ShowNodeLabels", "whether to label the nodes", FORMAT),
+						displayProp("ShowNodeLabels", "Show node labels", "whether to label the nodes", FORMAT),
 						prop("Closed", "whether to close the polygon (ignored if filled)",
 								FORMAT) };
 				return res;

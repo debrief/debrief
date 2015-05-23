@@ -148,11 +148,11 @@ public class VectorShape extends LineShape
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("Line_Start", "the start of the line", SPATIAL),
+						displayProp("Line_Start", "Line start", "the start of the line", SPATIAL),
 						prop("Bearing", "the bearing for the vector", SPATIAL),
 						prop("Distance", "the size of the vector", SPATIAL),
-						prop("LineEnd", "the end of the line", SPATIAL),
-						prop("ArrowAtEnd",
+						displayProp("LineEnd", "Line end", "the end of the line", SPATIAL),
+						displayProp("ArrowAtEnd", "Arrow at end",
 								"whether to show an arrow at one end of the line", FORMAT), };
 
 				return res;

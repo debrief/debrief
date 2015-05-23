@@ -383,10 +383,10 @@ public class RectangleShape extends PlainShape implements Editable,
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("Corner_TopLeft", "the top left corner", SPATIAL),
-						prop("CornerBottomRight", "the bottom right corner", SPATIAL),
+						displayProp("Corner_TopLeft", "Top left corner", "the top left corner", SPATIAL),
+						displayProp("CornerBottomRight",  "Bottom right corner", "the bottom right corner", SPATIAL),
 						prop("Filled", "whether this shape is filled", FORMAT),
-						prop("SemiTransparent",
+						displayProp("SemiTransparent", "Semi transparent",
 								"whether the filled rect is semi-transparent", FORMAT), };
 
 				return res;
