@@ -1099,8 +1099,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 						prop("Label", "the label for this data item"),
 						prop("Depth", "depth of this position"),
 						prop("Visible", "whether this position is visible"),
-						prop("FixLocation", "the location for this position", OPTIONAL),
-						prop("CourseDegs", "current course of this platform (degs)",
+						displayProp("FixLocation", "Fix location", "the location for this position", OPTIONAL),
+						displayProp("CourseDegs", "Course(degs)", "current course of this platform (degs)",
 								SPATIAL),
 						prop("Speed", "current speed of this vehicle", SPATIAL) };
 
@@ -1128,23 +1128,23 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 				{
 					final PropertyDescriptor[] res =
 					{
-							prop("SymbolScale", "the scale of the symbol", FORMAT),
-							prop("DateTimeGroup", "the DTG for the fix"),
+							displayProp("SymbolScale", "Symbol scale", "the scale of the symbol", FORMAT),
+							displayProp("DateTimeGroup", "DateTime group", "the DTG for the fix"),
 							prop("Color", "the position color", FORMAT),
 							prop("Label", "the position label", FORMAT),
 							prop("Font", "the label font", FORMAT),
-							prop("LabelShowing", "whether the label is showing", VISIBILITY),
-							prop("SymbolShowing", "whether the symbol is showing", VISIBILITY),
-							prop("ArrowShowing", "whether the arrow is showing", VISIBILITY),
-							prop("LineShowing",
+							displayProp("LabelShowing", "Label showing", "whether the label is showing", VISIBILITY),
+							displayProp("SymbolShowing", "Symbol showing", "whether the symbol is showing", VISIBILITY),
+							displayProp("ArrowShowing", "Arrow showing", "whether the arrow is showing", VISIBILITY),
+							displayProp("LineShowing", "Line showing",
 									"whether the to join this position it's predecessor",
 									VISIBILITY),
-							prop("FixLocation", "the location of the fix", SPATIAL),
+							displayProp("FixLocation", "Fix location", "the location of the fix", SPATIAL),
 							prop("Visible", "whether the whole fix is visible", VISIBILITY),
-							longProp("LabelFormat",
+							displayLongProp("LabelFormat", "Label format",
 									"the time format of the label, or N/A to leave as-is",
 									MyDateFormatPropertyEditor.class, SPATIAL),
-							longProp("LabelLocation", "the label location",
+							displayLongProp("LabelLocation", "Label location", "the label location",
 									MWC.GUI.Properties.LocationPropertyEditor.class, FORMAT) };
 					res[0]
 							.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);

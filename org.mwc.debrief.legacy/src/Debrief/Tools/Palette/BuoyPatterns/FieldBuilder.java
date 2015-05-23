@@ -361,26 +361,26 @@ public final class FieldBuilder extends PatternBuilderType
 			{
 				final PropertyDescriptor[] myRes =
 				{
-						prop("SymbolType", "the type of symbol plotted for this label"),
-						prop("SymbolSize", "the scale of the symbol"),
-						prop("PatternOffsetDirection",
+						displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
+						displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
+						displayProp("PatternOffsetDirection", "Pattern offset direction",
 								"the direction of the offset for successive rows"),
 						prop("Duration", "the lifetime of the buoy pattern"),
-						prop("PatternName", "the name of this pattern"),
-						prop("PatternBuoySpacing",
+						displayProp("PatternName", "Pattern name", "the name of this pattern"),
+						displayProp("PatternBuoySpacing", "Pattern buoy spacing",
 								"the spacing of the buoys along each row "),
-						prop("PatternRowSpacing", "the spacing between each row of buoys "),
-						prop("NumberOfRows", "the number of rows in this pattern"),
-						prop("PatternOrientation", "the orientation of the pattern (degs)"),
-						prop("KingpinRange", "the range of the kingpin from the jig point"),
-						prop("KingpinBearing",
+						displayProp("PatternRowSpacing", "Pattern row spacing", "the spacing between each row of buoys "),
+						displayProp("NumberOfRows", "Number of rows", "the number of rows in this pattern"),
+						displayProp("PatternOrientation", "Pattern orientation", "the orientation of the pattern (degs)"),
+						displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
+						displayProp("KingpinBearing", "Kingpin bearing",
 								"the bearing of the kingpin from the jig point (degs)"),
-						prop("JigPoint",
+						displayProp("JigPoint", "Jig point",
 								"the jig point for the construction of this pattern"),
-						prop("NumberOfBuoys", "the number of buoys in this pattern"),
+						displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this pattern"),
 						prop("Color", "the default colour for this pattern"),
-						prop("DateTimeGroup", "the DTG this pattern starts (DD/MM/YY)"),
-						prop("BuoyLabelVisible", "whether the buoy labels are visible") };
+						displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
+						displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible") };
 				myRes[0]
 						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
 				myRes[1]

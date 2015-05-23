@@ -72,7 +72,8 @@ public class DynamicShapeLayer extends BaseLayer implements MovingPlottable,
 				PropertyDescriptor[] sres = super.getPropertyDescriptors();
 				PropertyDescriptor[] res = new PropertyDescriptor[sres.length + 1];
 				System.arraycopy(sres, 0, res, 0, sres.length);
-				res[sres.length] = expertProp("PlotAllShapes", "Plot All Shapes",
+				res[sres.length] = displayExpertProp("PlotAllShapes", "Plot all shapes",
+						"Plot All Shapes",
 						VISIBILITY);
 				return res;
 			}

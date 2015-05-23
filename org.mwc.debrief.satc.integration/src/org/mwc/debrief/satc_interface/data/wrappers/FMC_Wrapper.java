@@ -175,8 +175,8 @@ public class FMC_Wrapper
 				final PropertyDescriptor[] res =
 				{
 						prop("Name", "name of this contribution", EditorType.FORMAT),
-						prop("SoundSpeed", "Speed of Sound (kts)", EditorType.SPATIAL),
-						prop("BaseFrequency", "Base radiated frequency", EditorType.SPATIAL)
+						displayProp("SoundSpeed", "Sound speed", "Speed of Sound (kts)", EditorType.SPATIAL),
+						displayProp("BaseFrequency", "Base frequency", "Base radiated frequency", EditorType.SPATIAL)
 				};
 
 				return res;

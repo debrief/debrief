@@ -388,7 +388,7 @@ abstract public class PlainProjection implements Serializable,
       try
       {
         final PropertyDescriptor[] res = {
-          prop("DataBorder", "the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
+          displayProp("DataBorder", "Data border", "the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
         };
 
         return res;

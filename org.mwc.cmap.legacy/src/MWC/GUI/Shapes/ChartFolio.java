@@ -131,8 +131,10 @@ public class ChartFolio extends BaseLayer
 			try
 			{
 				final java.beans.PropertyDescriptor[] res =
-				{ prop(SHOW_NAMES, "show names for charts"),
-						prop(LINE_COLOR, "color for chart rectangles") };
+				{ 
+						displayProp(SHOW_NAMES, "Show names", "show names for charts"),
+						displayProp(LINE_COLOR, "Line color", "color for chart rectangles") 
+				};
 				return res;
 			}
 			catch (final java.beans.IntrospectionException e)

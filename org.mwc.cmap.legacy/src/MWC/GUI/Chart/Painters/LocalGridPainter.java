@@ -290,8 +290,10 @@ public class LocalGridPainter extends GridPainter
 
 				// get my attributes
 				final PropertyDescriptor[] myAttributes =
-				{ prop("Origin", "the origin (bottom left corner) of the grid"),
-						prop("PlotOrigin", "whether to plot the origin of the grid") };
+				{ 
+						prop("Origin", "the origin (bottom left corner) of the grid"),
+						displayProp("PlotOrigin", "Plot origin", "whether to plot the origin of the grid")
+				};
 
 				// ok, now try to combine the two
 				final PropertyDescriptor[] res = new PropertyDescriptor[parentAttributes.length

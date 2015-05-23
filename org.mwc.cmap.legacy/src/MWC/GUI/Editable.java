@@ -642,6 +642,28 @@ public interface Editable
      * 
      * @param name
      *          name of this property
+     * @param displayName
+     *          display name
+     * @param description
+     *          description of this property
+     * @return property description
+     * @throws IntrospectionException
+     *           if the methods can't be found
+     */
+    protected final PropertyDescriptor displayExpertProp(final String name,
+    		final String displayName,
+        final String description) throws IntrospectionException
+    {
+      final PropertyDescriptor p = expertProp(displayName, description);
+      p.setDisplayName(displayName);
+      return p;
+    }
+    
+    /**
+     * convenience class to create an expert property
+     * 
+     * @param name
+     *          name of this property
      * @param description
      *          description of this property
      * @return property description
@@ -712,7 +734,7 @@ public interface Editable
      *           if the methods can't be found
      */
     protected final PropertyDescriptor displayProp(final String name,
-        final String description, final String displayName) throws IntrospectionException
+    		final String displayName, final String description) throws IntrospectionException
     {
       final PropertyDescriptor p = prop(name, description);
       p.setDisplayName(displayName);
@@ -854,7 +876,8 @@ public interface Editable
      *           if we can't create property
      */
     protected final PropertyDescriptor displayLongProp(final String name,
-        final String description, final String displayName, final Class<?> editor)
+    		final String displayName, 
+    		final String description, final Class<?> editor)
         throws IntrospectionException
     {
       final PropertyDescriptor p = longProp(name, description, editor);
@@ -886,6 +909,34 @@ public interface Editable
           name, _class);
       p.setShortDescription(description);
       p.setPropertyEditorClass(editor);
+      return p;
+    }
+    
+    /**
+     * convenience function for creating property descriptor for property which
+     * has its own editor
+     * 
+     * @param name
+     *          name of property
+     * @param displayName
+     * 					display name
+     * @param description
+     *          description of property (for tooltip)
+     * @param editor
+     *          editor to use for this property
+     * @param category
+     *          the category for this property     
+     * @return propertyDescriptor for this object
+     * @throws IntrospectionException
+     *           if we can't create property
+     */
+    protected final PropertyDescriptor displayLongProp(final String name,
+    		final String displayName,
+        final String description, final Class<?> editor, final String category)
+        throws IntrospectionException
+    {
+      final PropertyDescriptor p = longProp(name, description, editor, category);
+      p.setDisplayName(displayName);
       return p;
     }
 

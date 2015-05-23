@@ -461,7 +461,7 @@ public class CircleShape extends PlainShape implements Editable,
 						prop("Radius", "the circle radius", SPATIAL),
 						prop("Centre", "the centre of the circle", SPATIAL),
 						prop("Filled", "whether to fill the circle", FORMAT),
-						prop("SemiTransparent",
+						displayProp("SemiTransparent", "Semi transparent",
 								"whether the filled circle is semi-transparent", FORMAT), };
 
 				return res;

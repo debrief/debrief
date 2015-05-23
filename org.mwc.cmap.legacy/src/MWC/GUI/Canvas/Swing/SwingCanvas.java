@@ -1130,8 +1130,8 @@ public class SwingCanvas extends javax.swing.JComponent
       try
       {
         final PropertyDescriptor[] res = {
-          prop("BackgroundColor", "the background color"),
-          prop("LineThickness", "the line thickness"),
+          displayProp("BackgroundColor", "Background color", "the background color"),
+					displayProp("LineThickness", "Line thickness", "the line thickness"),
         };
 
         return res;

@@ -169,7 +169,6 @@ import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Editable.DoNotHighlightMe;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
@@ -1244,20 +1243,21 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			try
 			{
-				final PropertyDescriptor[] res = { expertProp("Name", "the pattern name"),
-						expertProp("NameColor", "the colour of the label for this pattern"),
-						expertProp("NameLocation", "the location of the pattern name"),
+				final PropertyDescriptor[] res = { 
+						expertProp("Name", "the pattern name"),
+						displayExpertProp("NameColor", "Name color", "the colour of the label for this pattern"),
+						displayExpertProp("NameLocation", "Name location", "the location of the pattern name"),
 						expertProp("Font", "the font to use for the label"),
-						expertProp("NameVisible", "the location of the pattern name"),
+						displayExpertProp("NameVisible", "Name visible", "the location of the pattern name"),
 						expertProp("Visible", "whether to show this buoypattern"),
-						expertProp("TimeStart", "time the pattern becomes active"),
-						expertProp("Time_End", "time the pattern expires"),
-						expertProp("BuoyColor", "colour of the individual buoys in this pattern"),
-						expertProp("BuoySymbolSize", "size of the buoys symbols this pattern"),
-						expertProp("BuoySymbolType", "symbol type of buoys in this pattern"),
-						expertProp("BuoyLabelVisible", "label visibility for buoys in this pattern"),
-						expertProp("BuoyLabelLocation", "label location for buoys in this pattern"),
-						expertProp("LineThickness", "the thickness of to draw the lines"), };
+						displayExpertProp("TimeStart", "Time start", "time the pattern becomes active"),
+						displayExpertProp("Time_End", "Time end", "time the pattern expires"),
+						displayExpertProp("BuoyColor", "Buoy color", "colour of the individual buoys in this pattern"),
+						displayExpertProp("BuoySymbolSize", "Buoy symbol size", "size of the buoys symbols this pattern"),
+						displayExpertProp("BuoySymbolType", "Buoy symbol type", "symbol type of buoys in this pattern"),
+						displayExpertProp("BuoyLabelVisible", "Buoy label visible", "label visibility for buoys in this pattern"),
+						displayExpertProp("BuoyLabelLocation", "Buoy label location", "label location for buoys in this pattern"),
+						displayExpertProp("LineThickness", "Line thickness", "the thickness of to draw the lines"), };
 				res[2].setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
 				res[9]
 						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
@@ -1271,7 +1271,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 			catch (final IntrospectionException e)
 			{
 				// find out which property fell over
-				MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Arc Builder");
+				MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Buoy Pattern");
 
 				// and return the parent's null set
 				return super.getPropertyDescriptors();

@@ -35,11 +35,12 @@ public class CourseForecastWrapper extends ContributionWrapper
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ prop("Name", "the Name of this leg", FORMAT),
-						prop("_Start", "the start date of this leg", FORMAT),
-						prop("End", "the finish date of this leg", FORMAT),
-						prop("MinCourse", "the minimum course", SPATIAL),
-						prop("MaxCourse", "the maximum course", SPATIAL)
+				{ 
+						prop("Name", "the Name of this leg", FORMAT),
+						displayProp("_Start", "Start date", "the start date of this leg", FORMAT),
+						displayProp("End", "End date", "the finish date of this leg", FORMAT),
+						displayProp("MinCourse", "Minimum course", "the minimum course", SPATIAL),
+						displayProp("MaxCourse", "Maximum course", "the maximum course", SPATIAL)
 						
 				};
 

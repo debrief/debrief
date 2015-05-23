@@ -414,11 +414,11 @@ public class LineShape extends PlainShape implements Editable,
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("Line_Start", "the start of the line", SPATIAL),
-						prop("LineEnd", "the end of the line", SPATIAL),
-						prop("ArrowAtEnd",
+						displayProp("Line_Start", "Line start", "the start of the line", SPATIAL),
+						displayProp("LineEnd", "Line end", "the end of the line", SPATIAL),
+						displayProp("ArrowAtEnd", "Arrow at end",
 								"whether to show an arrow at one end of the line", FORMAT),
-						prop("ShowAutoCalc",
+						displayProp("ShowAutoCalc", "Show auto calc",
 								"whether to show range/bearing in the middle of the line", FORMAT), };
 
 				return res;
