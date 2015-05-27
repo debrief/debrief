@@ -1245,7 +1245,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				final PropertyDescriptor[] res = { 
 						expertProp("Name", "the pattern name"),
-						displayExpertProp("NameColor", "Name color", "the colour of the label for this pattern"),
+						displayExpertProp("Color", "Label color", "the colour of the label for this pattern"),
 						displayExpertProp("NameLocation", "Name location", "the location of the pattern name"),
 						expertProp("Font", "the font to use for the label"),
 						displayExpertProp("NameVisible", "Name visible", "the location of the pattern name"),
