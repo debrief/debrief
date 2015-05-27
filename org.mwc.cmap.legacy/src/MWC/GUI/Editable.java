@@ -654,7 +654,7 @@ public interface Editable
     		final String displayName,
         final String description) throws IntrospectionException
     {
-      final PropertyDescriptor p = expertProp(displayName, description);
+      final PropertyDescriptor p = expertProp(name, description);
       p.setDisplayName(displayName);
       return p;
     }
