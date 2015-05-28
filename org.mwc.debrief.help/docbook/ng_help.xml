@@ -761,12 +761,13 @@ Naval Undersea Warfare Center (NUWC)
 
                   <para><indexterm>
                       <primary>Cheat sheets</primary>
-                    </indexterm>A series of online cheat sheets is distributed with Debrief. These
-                    sheets guide the user through a series of complex tasks to achieve an overall
-                    goals such as: <emphasis>loading data into Debrief</emphasis> or
-                      <emphasis>analysing narrative data</emphasis>. The cheat sheets are accessed
-                    by selecting <guimenuitem>Debrief Cheat Sheets</guimenuitem> from the
-                      <guimenu>Help</guimenu> menu in Debrief NG.</para>
+                    </indexterm>A series of jnteractive tutorials (called cheat sheets) is
+                    distributed with Debrief. These sheets guide the user through a series of
+                    complex tasks to achieve an overall goals such as: <emphasis>loading data into
+                      Debrief</emphasis> or <emphasis>analysing narrative data</emphasis>. The cheat
+                    sheets are accessed by selecting <guimenuitem>Debrief Cheat Sheets</guimenuitem>
+                    from the <guimenu>Help</guimenu> menu in Debrief NG. A PDF version of the cheat
+                    sheets (suitable for printing) is in the Debrief installation folder.</para>
                 </formalpara>
               </listitem>
 
@@ -4731,7 +4732,7 @@ and so on....</programlisting></para>
           </para>
         </sect2>
         <sect2 xml:id="ne_use">
-          <title>Use</title>
+          <title>Using Natural Earth</title>
           <sect3>
             <title>Downloading</title>
             <para>The customized set of Natural Earth data can be downloaded from this GitHub repository:
