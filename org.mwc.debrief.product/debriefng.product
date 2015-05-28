@@ -24,7 +24,7 @@ openFile</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="icons/icon.gif"/>
+   <windowImages i16="icons/icon.png" i48="icons/48/icon_48.png"/>
 
    <splash
       location="org.mwc.debrief.core"
@@ -40,6 +40,7 @@ openFile</programArgs>
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</linux>
