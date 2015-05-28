@@ -141,7 +141,6 @@
                     <fo:block xsl:use-attribute-sets="__frontmatter__owner">
                         <fo:table xsl:use-attribute-sets="TableNB">
 							<fo:table-column column-width="proportional-column-width(1)" column-number="1"/>
-							<fo:table-column column-width="proportional-column-width(4)" column-number="2"/>
 							<fo:table-body>  
 								<fo:table-row>
 									<fo:table-cell>
@@ -149,19 +148,17 @@
 											<fo:external-graphic src="url({concat($artworkPrefix, '/Customization/OpenTopic/common/artwork/logo.png')})" />
 										</fo:block>
 									</fo:table-cell>
+								</fo:table-row>
+								<fo:table-row>
 									<fo:table-cell>
 										<fo:block text-align="left" xsl:use-attribute-sets=	"__frontmatter__title">
-											<fo:block padding-top="1cm">
 											Debrief Tutorial
-											</fo:block>
 										</fo:block>
 										<fo:block text-align="left">Welcome to the Debrief Tutorial. This tutorial comprises a set of self-teach tutorials (Cheat Sheets) that you will use to learn about Debrief. In working through the tutorials you'll encounter the breadth of the Debrief applicaftion, ready for using the tool for your own analysis.</fo:block>
 									</fo:table-cell>
 								</fo:table-row>
 							</fo:table-body>
 						</fo:table>
-					   
-					   
                     </fo:block>
                 </fo:block>
             </fo:flow>
