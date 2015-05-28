@@ -4,7 +4,7 @@
 <product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.324" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="icons/DebriefNGlogoSmall.gif"/>
+      <image path="icons/DebriefNGlogoSmall.png"/>
       <text>
          %aboutText
       </text>
