@@ -22,7 +22,8 @@ Using the wizard, follow the series of tabs to indicate what information you&apo
  <item
        title="Finished">
     <description>
-       Once the Wizard has closed, the plot you&apos;ve created can be found in the folder you specified.
+       Once the Wizard has closed, the plot you&apos;ve created will open.
+        The new file can be found in the folder you specified.
     </description>
  </item>
 </cheatsheet>
