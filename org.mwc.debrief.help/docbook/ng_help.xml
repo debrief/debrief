@@ -824,20 +824,19 @@ Naval Undersea Warfare Center (NUWC)
         <title>Configuring reference data</title>
 
         <para>If you want to take advantage of Debrief&apos;s support for background datasets, don&apos;t
-          forget to read the instructions on how to configure their locations, as below. Note, the
-          VPF and ETOPO datasets probably aren&apos;t present in your Debrief installation (due to their
-          size), so you will have to request/load them separately. The world.dat file used for the
-          simple coastline should be in your Debrief installation folder. <itemizedlist>
+          forget to read the instructions on how to configure their locations, shown below. Note, the
+          datasets probably aren&apos;t present in your Debrief installation (due to their
+          size), so you will have to request/load them separately. In 2015 Debrief added support
+          for the Natural Earth dataset, superceding the VPF and ETOPO datasets - so you
+          probably won't need to configure them.<itemizedlist>
+            <listitem>
+              <para>Natural Earth instructions are in <xref linkend="ne_use"/></para>
+            </listitem>
             <listitem>
               <para>VPF instructions are in <xref linkend="configure_for_vpf"/></para>
             </listitem>
-
             <listitem>
               <para>ETOPO instructions are in <xref linkend="etopo_install"/></para>
-            </listitem>
-
-            <listitem>
-              <para>Simple coastline instructions are similar to the above</para>
             </listitem>
           </itemizedlist></para>
       </sect1>
