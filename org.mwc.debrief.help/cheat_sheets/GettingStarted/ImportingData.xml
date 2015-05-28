@@ -19,8 +19,14 @@
 		title="View sample data">
 		<description>In the Navigator, expand the folder that contains your
 			existing Debrief files (either REP or XML). Valid Debrief files are
-			flagged with a Debrief icon. See the help link for this step (the
-			Question mark icon) to read about the two file types. </description>
+			flagged with a Debrief icon. 
+			<i>NoPrint</i>
+			See the help link for this step (the
+			Question mark icon) to read about the two file types. 
+			<i>NoPrint</i>
+			<i>See the <b>Debrief File Formats</b> chapter in the <b>Reference Guide</b>
+			part of the <b>Debrief User Guide</b> to learn more about the two file types.</i>
+			</description>
 	</item>
 	<item
 		href="/org.mwc.debrief.help/html/legacy/import_range_data.html#import_modes"
@@ -35,9 +41,11 @@
 			file is a simple starting point. The plot and any associated views
 			will promptly update. When REP files are dragged in, you may be asked
 			whether you wish to import the data in Over The Ground (OTG) or Dead
-			Reckoning (DR) mode. For this tutorial, select OTG, but see help link
-			(?) for this step for more detail - particularly if you expect to be
-			using DR data.
+			Reckoning (DR) mode. For this tutorial, select OTG.
+			<i>NoPrint</i>
+			Use the help link (?) to the side of this text to open the guidance on
+			using OTG and DR data.
+			<i>NoPrint</i>			
 		</description>
 	</item>
 	<item title="Drag in a complex plot">
@@ -60,8 +68,14 @@
 			<b>.rep</b>
 			) and the Debrief file type (
 			<b>.dpf</b>).
+			<br/>
 			The Replay file format is a very simple, column oriented text format
-			that&apos;s ideal for passing around track data. But, it isn&apos;t
+			that&apos;s ideal for passing around track data. This format is ideal
+			for getting your raw track data into Debrief.  See the <b>Reference Guide</b>
+			within the user manual to learn how to arrange your data columns if
+			you&apos;ve got some data you wish to import. 
+			<br/>
+			But, the Replay format isn&apos;t
 			suited to storing formatting data or user preferences. This is where
 			the Debrief DPF file type comes in. Whilst it&apos;s still a textual
 			file format, it&apos; XML structure that allows it to store a wide

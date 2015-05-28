@@ -100,7 +100,7 @@ public class CreateProjectDialog extends TitleAreaDialog
 		Composite contents = new Composite(parentComposite, SWT.NONE);
 		contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setTitle("Create a project");
-		setMessage("Debrief requires a project to store your data in, which will stored be in the .DebriefNG folder in\nyour home directory." +
+		setMessage("Debrief requires a project to store your data in, which will stored be in the. DebriefNG folder in\nyour home directory. " +
 				"Debrief can also provide you with some sample data, for use in the tutorials.");
 
 		new Label(contents, SWT.LEFT).setText("Project name:");
