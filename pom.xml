@@ -76,6 +76,7 @@
     <module>org.mwc.gnd.demonstrator</module>
     <module>org.qinetiq.data_feed</module>
     <module>org.mwc.debrief.test2</module>
+    <module>org.mwc.debrief.editable.test</module>
     <module>org.mwc.debrief.targetplatforms</module>
 <!--
     <module>org.mwc.debrief.site</module>

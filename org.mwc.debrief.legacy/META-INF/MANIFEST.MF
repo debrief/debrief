@@ -208,6 +208,7 @@ Export-Package:
    MWC.GUI.Canvas,
    MWC.GUI,
    MWC.GUI.Tools",
+ Debrief.Wrappers.DynamicTrackShapes,
  Debrief.Wrappers.Track;
   uses:="MWC.GUI.Shapes,
    junit.framework,
