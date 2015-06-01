@@ -15,12 +15,18 @@
 package org.mwc.debrief.editable.test;
 
 import java.awt.Color;
+import java.beans.BeanDescriptor;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Vector;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
@@ -50,8 +56,14 @@ import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.osgi.framework.Bundle;
 
+import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
+import ASSET.Models.Vessels.SSN;
+import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.PlanningSegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.SplittableLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
@@ -60,12 +72,17 @@ import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
+import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GUI.VPF.CoverageLayer;
 import MWC.GUI.VPF.DebriefFeatureWarehouse;
 import MWC.GUI.VPF.FeaturePainter;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
@@ -296,7 +313,7 @@ public class EditableTests extends TestCase
 				{
 					continue;
 				}
-				Editable.editableTesterSupport.testTheseParameters(editable);
+				testTheseParameters(editable);
 			}
 		}
 	}
@@ -426,6 +443,47 @@ public class EditableTests extends TestCase
 			case "MWC.GUI.Shapes.PolygonShape":
 				editable = new PolygonShape(null);
 				break;
+			case "ASSET.GUI.Painters.NoiseSourcePainter":
+				editable = new ASSET.GUI.Painters.NoiseSourcePainter.PainterTest().getEditable();
+				break;
+			case "ASSET.GUI.Painters.ScenarioNoiseLevelPainter":
+				editable = new ASSET.GUI.Painters.ScenarioNoiseLevelPainter.NoiseLevelTest().getEditable();
+				break;
+			case "ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper":
+				editable = new ScenarioParticipantWrapper(new SSN(12), null);
+				break;
+			case "Debrief.Wrappers.PolygonWrapper":
+				// get centre of area
+				final WorldLocation centre = new WorldLocation(12, 12, 12);
+				// create the shape, based on the centre
+				final Vector<PolygonNode> path2 = new Vector<PolygonNode>();
+				final PolygonShape newShape = new PolygonShape(path2);
+				// and now wrap the shape
+				final PolygonWrapper theWrapper = new PolygonWrapper("New Polygon",
+						newShape, PlainShape.DEFAULT_COLOR, null);
+				// store the new point
+				newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
+				break;
+			case "Debrief.Wrappers.Track.AbsoluteTMASegment":
+				WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+				double course = 33;
+				final WorldLocation origin = new WorldLocation(12, 12, 12);
+				final HiResDate startTime = new HiResDate(11 * 60 * 1000);
+				final HiResDate endTime = new HiResDate(17 * 60 * 1000);
+				editable = new AbsoluteTMASegment(course, speed, origin, startTime, endTime);
+				break;
+			case "Debrief.Wrappers.Track.RelativeTMASegment":
+				speed = new WorldSpeed(5, WorldSpeed.Kts);
+				course = 33;
+				final WorldVector offset = new WorldVector(12, 12, 0);
+				editable = new RelativeTMASegment(course, speed, offset, null);
+				break;
+			case "Debrief.Wrappers.Track.PlanningSegment":
+				speed = new WorldSpeed(5, WorldSpeed.Kts);
+				course = 33;
+				final WorldDistance worldDistance = new WorldDistance(5, WorldDistance.MINUTES);
+				editable = new PlanningSegment("test", course, speed, worldDistance, Color.WHITE);
+				break;
 			default:
 				System.out.println("Can't instantiate type " + type.getFullyQualifiedName());
 				break;
@@ -502,5 +560,128 @@ public class EditableTests extends TestCase
 			}
 		}
 	}
+	
+	/**
+   * test helper, to check that all of the object property getters/setters are
+   * there
+   * 
+   * @param toBeTested
+   */
+  public static void testTheseParameters(final Editable toBeTested)
+  {
+    // check if we received an object
+    if (toBeTested == null)
+      return;
+
+    Assert.assertNotNull("Found editable object", toBeTested);
+
+    final Editable.EditorType et = toBeTested.getInfo();
+
+    if (et == null)
+    {
+      Assert.fail("no editor type returned for");
+      return;
+    }
+
+    // first see if we return a custom bean descriptor
+    final BeanDescriptor desc = et.getBeanDescriptor();
+
+    // did we get one?
+    if (desc != null)
+    {
+      final Class<?> editorClass = desc.getCustomizerClass();
+      if (editorClass != null)
+      {
+        Object newInstance = null;
+        try
+        {
+          newInstance = editorClass.newInstance();
+        }
+        catch (final InstantiationException e)
+        {
+          e.printStackTrace(); // To change body of catch statement use File
+                                // | Settings | File Templates.
+        }
+        catch (final IllegalAccessException e)
+        {
+          e.printStackTrace(); // To change body of catch statement use File
+                                // | Settings | File Templates.
+        }
+        // check it worked
+        Assert.assertNotNull("we didn't create the custom editor for:",
+            newInstance);
+      }
+      else
+      {
+        // there isn't a dedicated editor, try the custom ones.
+        // do the edits
+        final PropertyDescriptor[] pd = et.getPropertyDescriptors();
+
+        if (pd == null)
+        {
+          Assert.fail("problem fetching property editors for " + toBeTested);
+          return;
+        }
+
+        final int len = pd.length;
+        if (len == 0)
+        {
+          System.out.println("zero property editors found for " + toBeTested
+              + ", " + toBeTested.getClass());
+          return;
+        }
+
+        for (int i = 0; i < len; i++)
+        {
+          final PropertyDescriptor p = pd[i];
+
+          final Method getter = p.getReadMethod();
+          final Method setter = p.getWriteMethod();
+          
+          try
+          {
+            Method ourGetter = toBeTested.getClass().getMethod(getter.getName(), getter.getParameterTypes());
+            if (!Modifier.isPublic(ourGetter.getModifiers()))
+            {
+                Assert.fail(getter.getName() + " is not visible for " + toBeTested);
+            }
+          }
+          catch (final NoSuchMethodException ie)
+          {
+            Assert.fail("missing getter for " + toBeTested + " called:" + getter.getName() + " property:"
+                + p.getDisplayName() + " (" + et.getClass() + ") because:" + ie.getCause());
+          }
+          
+
+          try
+          {
+          	Method ourSetter = toBeTested.getClass().getMethod(setter.getName(), setter.getParameterTypes());
+          	if (!Modifier.isPublic(ourSetter.getModifiers()))
+            {
+                Assert.fail(setter.getName() + " is not visible for " + toBeTested);
+            }
+          }
+          catch (final NoSuchMethodException ie)
+          {
+            Assert.fail("missing setter for " + setter.getName() + ", " + toBeTested.getClass());
+          }
+          
+        }
+      } // whether there was a customizer class
+    } // whether there was a custom bean descriptor
+
+    // now try out the methods
+    final MethodDescriptor[] methods = et.getMethodDescriptors();
+    if (methods != null)
+    {
+      for (int thisM = 0; thisM < methods.length; thisM++)
+      {
+        final MethodDescriptor method = methods[thisM];
+        final Method thisOne = method.getMethod();
+        final String theName = thisOne.getName();
+        Assert.assertNotNull(theName);
+      }
+    }
+  }
 	
 }
