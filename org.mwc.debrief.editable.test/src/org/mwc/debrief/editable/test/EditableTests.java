@@ -15,23 +15,19 @@
 package org.mwc.debrief.editable.test;
 
 import java.awt.Color;
-import java.beans.BeanDescriptor;
-import java.beans.MethodDescriptor;
-import java.beans.PropertyDescriptor;
-import java.beans.PropertyEditor;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -62,7 +58,6 @@ import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
-import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.PolygonShape;
@@ -142,8 +137,25 @@ public class EditableTests extends TestCase
 		{
 			return;
 		}
+		setAutoBuilding(false);
 		openProjects(rootFile);
+		setAutoBuilding(true);
 		waitForJobs();
+	}
+
+	private void setAutoBuilding(boolean flag)
+	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		final IWorkspaceDescription description = workspace.getDescription();
+		description.setAutoBuilding(flag);
+		try
+		{
+			workspace.setDescription(description);
+		}
+		catch (CoreException e)
+		{
+			org.mwc.debrief.editable.test.Activator.log(e);
+		}
 	}
 
 	private void openProjects(File rootFile) throws CoreException
@@ -158,8 +170,7 @@ public class EditableTests extends TestCase
 				{
 					return false;
 				}
-				if (!pathname.getName().startsWith("org.mwc")
-						|| pathname.getName().startsWith("org.mwc.asset"))
+				if (!pathname.getName().startsWith("org.mwc"))
 				{
 					return false;
 				}
@@ -211,6 +222,7 @@ public class EditableTests extends TestCase
 
 		// Dispose of the test fixture
 		waitForJobs();
+		setAutoBuilding(false);
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 				.getProjects();
 		for (IProject project : projects)
@@ -224,6 +236,7 @@ public class EditableTests extends TestCase
 				// ignore
 			}
 		}
+		setAutoBuilding(false);
 	}
 
 	/**
@@ -283,7 +296,7 @@ public class EditableTests extends TestCase
 				{
 					continue;
 				}
-				testTheseParameters(editable);
+				Editable.editableTesterSupport.testTheseParameters(editable);
 			}
 		}
 	}
@@ -490,163 +503,4 @@ public class EditableTests extends TestCase
 		}
 	}
 	
-	/**
-   * test helper, to check that all of the object property getters/setters are
-   * there
-   * 
-   * @param toBeTested
-   */
-  public static void testTheseParameters(final Editable toBeTested)
-  {
-    // check if we received an object
-    if (toBeTested == null)
-      return;
-
-    Assert.assertNotNull("Found editable object", toBeTested);
-
-    final Editable.EditorType et = toBeTested.getInfo();
-
-    if (et == null)
-    {
-      Assert.fail("no editor type returned for");
-      return;
-    }
-
-    // first see if we return a custom bean descriptor
-    final BeanDescriptor desc = et.getBeanDescriptor();
-
-    // did we get one?
-    if (desc != null)
-    {
-      final Class<?> editorClass = desc.getCustomizerClass();
-      if (editorClass != null)
-      {
-        Object newInstance = null;
-        try
-        {
-          newInstance = editorClass.newInstance();
-        }
-        catch (final InstantiationException e)
-        {
-          e.printStackTrace(); // To change body of catch statement use File
-                                // | Settings | File Templates.
-        }
-        catch (final IllegalAccessException e)
-        {
-          e.printStackTrace(); // To change body of catch statement use File
-                                // | Settings | File Templates.
-        }
-        // check it worked
-        Assert.assertNotNull("we didn't create the custom editor for:",
-            newInstance);
-      }
-
-      else
-      {
-
-        // there isn't a dedicated editor, try the custom ones.
-
-        // do the edits
-        final PropertyDescriptor[] pd = et.getPropertyDescriptors();
-
-        if (pd == null)
-        {
-          Assert.fail("problem fetching property editors for " + toBeTested);
-          return;
-        }
-
-        final int len = pd.length;
-        if (len == 0)
-        {
-          System.out.println("zero property editors found for " + toBeTested
-              + ", " + toBeTested.getClass());
-          return;
-        }
-
-        // get the data
-        final Object data = et.getData();
-
-        for (int i = 0; i < len; i++)
-        {
-          // get the methods
-          final PropertyDescriptor p = pd[i];
-
-          // find out the type of the editor
-          final Method getter = p.getReadMethod();
-          final Method setter = p.getWriteMethod();
-
-          // is there a custom editor for this type?
-
-          Object res = null;
-
-          try
-          {
-            // sort out the getter
-            final Object[] dummyArgument = null;
-            res = getter.invoke(data, dummyArgument);
-          }
-          catch (final InvocationTargetException ie)
-          {
-            Assert.fail("missing getter for " + toBeTested + " called:" + getter.getName() + " property:"
-                + p.getDisplayName() + " (" + et.getClass() + ") because:" + ie.getCause());
-          }
-          catch (final IllegalAccessException al)
-          {
-            Assert.fail("getter not visible for " + toBeTested);
-          }
-
-          try
-          {
-            final Object[] params = { res };
-            // sort out the setter
-            setter.invoke(data, params);
-          }
-          catch (final InvocationTargetException ie)
-          {
-            // just check that we were using a valid value for the res
-            if (res != null)
-            {
-              Assert.fail("missing setter for "
-                  + p.getWriteMethod().getName() + ", "
-                  + toBeTested.getClass());
-            }
-            else
-              System.out
-                  .println("######## null value returned form getter for "
-                      + p.getReadMethod().getName());
-          }
-          catch (final IllegalAccessException al)
-          {
-            Assert.fail("setter not visible for " + toBeTested);
-          }
-
-          // check if we can get a property editor GUI component for this
-          SwingPropertyEditor2.checkPropertyEditors();
-          final PropertyEditor editor = SwingPropertyEditor2.findEditor(p);
-          if (editor == null)
-          {
-          	System.out.println(toBeTested.getClass() + ":" + " getter:" + p.getReadMethod().getName());
-          } 
-          else
-          {
-          	Assert.assertNotNull("could not find GUI editor component for:" + toBeTested.getName() + "" + data
-          			+ " getter:" + p.getReadMethod().getName(), editor);
-          }
-        }
-      } // whether there was a customizer class
-    } // whether there was a custom bean descriptor
-
-    // now try out the methods
-    final MethodDescriptor[] methods = et.getMethodDescriptors();
-    if (methods != null)
-    {
-      for (int thisM = 0; thisM < methods.length; thisM++)
-      {
-        final MethodDescriptor method = methods[thisM];
-        final Method thisOne = method.getMethod();
-        final String theName = thisOne.getName();
-        Assert.assertNotNull(theName);
-      }
-    }
-  }
 }

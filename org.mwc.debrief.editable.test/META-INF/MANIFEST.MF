@@ -48,7 +48,19 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.pde.runtime;bundle-version="3.4.300",
  org.eclipse.update.configurator;bundle-version="3.3.200",
  org.eclipse.platform;bundle-version="3.8.2",
- org.eclipse.pde.build;bundle-version="3.8.2"
+ org.eclipse.pde.build;bundle-version="3.8.2",
+ org.eclipse.wst.xml.core,
+ org.eclipse.wst.xml.ui,
+ org.eclipse.draw2d,
+ org.mwc.asset.legacy,
+ org.mwc.asset.NetAsset2,
+ org.mwc.asset.NetCore,
+ org.mwc.asset.ScenarioController2,
+ org.mwc.asset.ScenarioPlotter,
+ org.mwc.asset.SensorMonitor,
+ org.mwc.asset.VesselMonitor,
+ org.mwc.asset.core,
+ org.mwc.asset.help
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
