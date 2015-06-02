@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Date;
 import java.util.Vector;
 
 import junit.framework.Assert;
@@ -48,19 +48,33 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.pde.internal.core.PDECore;
-import org.eclipse.pde.internal.core.SearchablePluginsManager;
 import org.eclipse.swt.widgets.Display;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
+import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
+import org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper;
 import org.osgi.framework.Bundle;
 
+import ASSET.GUI.SuperSearch.Plotters.SSGuiSupport;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
+import ASSET.Models.Decision.Movement.RectangleWander;
 import ASSET.Models.Vessels.SSN;
+import ASSET.Participants.CoreParticipant;
+import ASSET.Scenario.MultiForceScenario;
+import ASSET.Util.SupportTesting;
+import Debrief.GUI.Tote.StepControl;
+import Debrief.GUI.Tote.Painters.PainterManager;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
@@ -70,8 +84,10 @@ import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
+import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
@@ -79,12 +95,17 @@ import MWC.GUI.VPF.CoverageLayer;
 import MWC.GUI.VPF.DebriefFeatureWarehouse;
 import MWC.GUI.VPF.FeaturePainter;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
@@ -270,17 +291,17 @@ public class EditableTests extends TestCase
 		IProgressMonitor monitor = new NullProgressMonitor();
 		IProject project = ResourcesPlugin.getWorkspace().getRoot()
 				.getProject(ORG_MWC_CMAP_LEGACY);
-		IJavaProject javaProject;
+		IJavaProject javaProject = null;
 		if (project.exists())
 		{
 			javaProject = JavaCore.create(project);
 			javaProject.open(monitor);
 		}
-		else
-		{
-			SearchablePluginsManager manager = PDECore.getDefault().getSearchablePluginsManager();
-			javaProject = manager.getProxyProject();
-		}
+//		else
+//		{
+//			SearchablePluginsManager manager = PDECore.getDefault().getSearchablePluginsManager();
+//			javaProject = manager.getProxyProject();
+//		}
 		IType editableType = javaProject.findType("MWC.GUI.Editable");
 		ITypeHierarchy hierarchy = editableType.newTypeHierarchy(null);
 		hierarchy.refresh(monitor);
@@ -290,10 +311,6 @@ public class EditableTests extends TestCase
 			if (type.isClass() && !Flags.isAbstract(type.getFlags()) && Flags.isPublic(type.getFlags()))
 			{
 				//System.out.println(type.getFullyQualifiedName());
-				if ("MWC.TacticalData.GND.GTrack".equals(type.getFullyQualifiedName()))
-				{
-					continue;
-				}
 				Editable editable = getEditable(type);
 				if (editable == null)
 				{
@@ -306,14 +323,31 @@ public class EditableTests extends TestCase
 				}
 				catch (Exception e)
 				{
-					System.out.println("Info issue " + type.getFullyQualifiedName());
+					System.out.println("Info issue " + type.getFullyQualifiedName() + " " + e.getMessage());
 					continue;
 				}
 				if (info == null)
 				{
 					continue;
 				}
-				testTheseParameters(editable);
+				//System.out.println("Testing " + type.getFullyQualifiedName());
+				if ("org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter".equals(type.getFullyQualifiedName())) 
+				{
+					final Editable ed = editable;
+					Display.getDefault().syncExec(new Runnable()
+					{
+						
+						@Override
+						public void run()
+						{
+							testTheseParameters(ed);
+						}
+					});
+				}
+				else
+				{
+					testTheseParameters(editable);
+				}
 			}
 		}
 	}
@@ -321,23 +355,217 @@ public class EditableTests extends TestCase
 	private Editable getEditable(IType type)
 	{
 		Editable editable = null;
-		if ("Debrief.Wrappers.SensorWrapper".equals(type.getFullyQualifiedName()))
+		switch (type.getFullyQualifiedName())
 		{
+		case "Debrief.Wrappers.SensorWrapper":
 			SensorWrapper sensor = new SensorWrapper("tester");
 			final java.util.Calendar cal = new java.util.GregorianCalendar(2001, 10,
 					4, 4, 4, 0);
 
 			// and create the list of sensor contact data items
 			cal.set(2001, 10, 4, 4, 4, 0);
-			final long start_time = cal.getTime().getTime();
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
 					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 23);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
 					.getTime()), null, null, null, null, null, 1, sensor.getName()));
-			return sensor;
+			editable = sensor;
+			break;
+		case "MWC.GUI.Shapes.ChartFolio":
+			editable = new ChartFolio(false, Color.white);
+			break;
+		case "org.mwc.cmap.naturalearth.wrapper.NELayer":
+			editable = new NELayer(Activator.getDefault().getDefaultStyleSet());
+			break;
+		case "MWC.GUI.VPF.CoverageLayer$ReferenceCoverageLayer":
+			final LibrarySelectionTable LST = null;
+			final DebriefFeatureWarehouse myWarehouse = new DebriefFeatureWarehouse();
+			final FeaturePainter fp = new FeaturePainter("libref", "Coastline");
+			fp.setVisible(true);
+			editable = new CoverageLayer.ReferenceCoverageLayer(LST, myWarehouse,
+					"libref", "libref", "Coastline", fp);
+			break;
+		case "MWC.GUI.Chart.Painters.ETOPOPainter":
+			editable = new ETOPOPainter("etopo", null);
+			break;
+		case "MWC.GUI.ETOPO.ETOPO_2_Minute":
+			editable = new ETOPO_2_Minute("etopo");
+			break;
+		case "MWC.GUI.ExternallyManagedDataLayer":
+			editable = new ExternallyManagedDataLayer("test", "test", "test");
+			break;
+		case "MWC.GUI.Shapes.CircleShape":
+			editable = new CircleShape(new WorldLocation(2d, 2d, 2d), 2d);
+			break;
+		case "Debrief.Wrappers.Track.SplittableLayer":
+			editable = new SplittableLayer(true);
+			break;
+		case "org.mwc.debrief.satc_interface.data.SATC_Solution":
+			final ISolversManager solvMgr = SATC_Activator.getDefault().getService(
+					ISolversManager.class, true);
+			final ISolver newSolution = solvMgr.createSolver("test");
+			editable = new SATC_Solution(newSolution);
+			break;
+		case "MWC.GUI.Shapes.PolygonShape":
+			editable = new PolygonShape(null);
+			break;
+		case "ASSET.GUI.Painters.NoiseSourcePainter":
+			editable = new ASSET.GUI.Painters.NoiseSourcePainter.PainterTest()
+					.getEditable();
+			break;
+		case "ASSET.GUI.Painters.ScenarioNoiseLevelPainter":
+			editable = new ASSET.GUI.Painters.ScenarioNoiseLevelPainter.NoiseLevelTest()
+					.getEditable();
+			break;
+		case "ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper":
+			editable = new ScenarioParticipantWrapper(new SSN(12), null);
+			break;
+		case "Debrief.Wrappers.PolygonWrapper":
+			// get centre of area
+			WorldLocation centre = new WorldLocation(12, 12, 12);
+			// create the shape, based on the centre
+			final Vector<PolygonNode> path2 = new Vector<PolygonNode>();
+			final PolygonShape newShape = new PolygonShape(path2);
+			// and now wrap the shape
+			final PolygonWrapper theWrapper = new PolygonWrapper("New Polygon",
+					newShape, PlainShape.DEFAULT_COLOR, null);
+			// store the new point
+			newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper
+					.getShape()));
+			editable = theWrapper;
+			break;
+		case "Debrief.Wrappers.Track.AbsoluteTMASegment":
+			WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+			double course = 33;
+			WorldLocation origin = new WorldLocation(12, 12, 12);
+			HiResDate startTime = new HiResDate(11 * 60 * 1000);
+			HiResDate endTime = new HiResDate(17 * 60 * 1000);
+			editable = new AbsoluteTMASegment(course, speed, origin, startTime,
+					endTime);
+			break;
+		case "Debrief.Wrappers.Track.RelativeTMASegment":
+			speed = new WorldSpeed(5, WorldSpeed.Kts);
+			course = 33;
+			final WorldVector offset = new WorldVector(12, 12, 0);
+			editable = new RelativeTMASegment(course, speed, offset, null);
+			break;
+		case "Debrief.Wrappers.Track.PlanningSegment":
+			speed = new WorldSpeed(5, WorldSpeed.Kts);
+			course = 33;
+			final WorldDistance worldDistance = new WorldDistance(5,
+					WorldDistance.MINUTES);
+			editable = new PlanningSegment("test", course, speed, worldDistance,
+					Color.WHITE);
+			break;
+		case "org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper":
+			BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+			bmc.setName("Measured bearing");
+			bmc.setAutoDetect(false);
+			editable = new BMC_Wrapper(bmc);
+			break;
+		case "org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper":
+			FrequencyMeasurementContribution fmc = new FrequencyMeasurementContribution();
+			fmc.setName("Measured frequence");
+			editable = new FMC_Wrapper(fmc);
+			break;
+		case "Debrief.Wrappers.SensorContactWrapper":
+			origin = new WorldLocation(0, 0, 0);
+			editable = new SensorContactWrapper("blank track",
+					new HiResDate(new java.util.Date().getTime()), new WorldDistance(1,
+							WorldDistance.DEGS), 55d, origin, java.awt.Color.red, "my label",
+					1, "theSensorName");
+			break;
+		case "Debrief.Wrappers.FixWrapper":
+			final Fix fx = new Fix(new HiResDate(12, 0),
+					new WorldLocation(2d, 2d, 2d), 2d, 2d);
+			final TrackWrapper tw = new TrackWrapper();
+			tw.setName("here ew arw");
+			FixWrapper ed = new FixWrapper(fx);
+			ed.setTrackWrapper(tw);
+			editable = ed;
+			break;
+		case "Debrief.Wrappers.ShapeWrapper":
+			centre = new WorldLocation(2d, 2d, 2d);
+			editable = new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
+					new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
+							WorldDistance.DEGS)), java.awt.Color.red, null);
+			break;
+		case "Debrief.GUI.Tote.Painters.PainterManager":
+			final StepControl stepper = new Debrief.GUI.Tote.Swing.SwingStepControl(null,null,null,null, null, null);
+      editable = new PainterManager(stepper);
+      break;
+		case "Debrief.Wrappers.TMAContactWrapper":
+			origin = new WorldLocation(2, 2, 0);
+			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
+			final EllipseShape theEllipse = new EllipseShape(origin, 45, new WorldDistance(
+					10, WorldDistance.DEGS), new WorldDistance(5, WorldDistance.DEGS));
+			theEllipse.setName("test ellipse");
+			editable = new TMAContactWrapper("blank sensor",
+					"blank track", theDTG, origin, 5d, 6d, 1d, Color.pink, "my label",
+					theEllipse, "some symbol");
+			break;
+		case "MWC.GUI.JFreeChart.NewFormattedJFreeChart":
+			XYPlot plot = new XYPlot();
+			plot.setRenderer(new XYLineAndShapeRenderer(true, false));
+			editable = new NewFormattedJFreeChart("test", new java.awt.Font("Dialog",
+					0, 18), plot, false);
+			break;
+		case "org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter":
+			final Editable[] edit = new Editable[1];
+			Display.getDefault().syncExec(new Runnable()
+			{
+				
+				@Override
+				public void run()
+				{
+					edit[0] = new SWTCanvasAdapter(null);
+				}
+			});
+			editable = edit[0];
+			break;
+		case "ASSET.Models.Decision.Conditions.OrCondition":
+			System.out.println(type.getFullyQualifiedName() + " hasn't public constructor.");
+			return null;
+		case "ASSET.Models.Decision.Movement.RectangleWander":
+			final WorldLocation topLeft = SupportTesting.createLocation(0, 10000);
+      final WorldLocation bottomRight = SupportTesting.createLocation(10000, 0);
+      final WorldArea theArea = new WorldArea(topLeft, bottomRight);
+      editable = new RectangleWander(theArea, "rect wander");
+			break;
+		case "org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper$BearingMeasurementWrapper":
+			bmc = new BearingMeasurementContribution();
+			bmc.setName("Measured bearing");
+			bmc.setAutoDetect(false);
+			CoreMeasurement cm = new CoreMeasurement(new Date());
+			BMC_Wrapper bmcw = new BMC_Wrapper(bmc);
+			editable = bmcw.new BearingMeasurementWrapper(cm);
+			break;
+		case "org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper$FrequencyMeasurementEditable":
+			fmc = new FrequencyMeasurementContribution();
+			fmc.setName("Measured frequence");
+			FMC_Wrapper fmcw = new FMC_Wrapper(fmc);
+			cm = new CoreMeasurement(new Date());
+			editable = fmcw.new FrequencyMeasurementEditable(cm);
+			break;
+		case "ASSET.GUI.SuperSearch.Plotters.SSGuiSupport$ParticipantListener":
+			SSGuiSupport ssgs = new SSGuiSupport();
+      ssgs.setScenario(new MultiForceScenario());
+      editable = new SSGuiSupport.ParticipantListener(new CoreParticipant(12), ssgs);
+			break;
+		case "ASSET.GUI.Workbench.Plotters.BasePlottable":
+			// skip it
+			return null;
+		case "MWC.TacticalData.GND.GTrack":
+			// skip it
+			return null;
+		default:
+			break;
+		}
 
+		if (editable != null)
+		{
+			return editable;
 		}
 		Class<?> clazz;
 		try
@@ -347,7 +575,7 @@ public class EditableTests extends TestCase
 		catch (ClassNotFoundException e1)
 		{
 			//e1.printStackTrace();
-			System.out.println(e1.getMessage() + " " + type.getFullyQualifiedName());
+			System.out.println("CNFE " + e1.getMessage() + " " + type.getFullyQualifiedName());
 			return null;
 		}
 		try
@@ -370,125 +598,62 @@ public class EditableTests extends TestCase
 			{
 				try
 				{
-					if (constructor.getParameterTypes().length == 1)
+					Class<?>[] paramTypes = constructor.getParameterTypes();
+					Object[] params = new Object[paramTypes.length];
+					for (int i = 0; i < paramTypes.length; i++)
 					{
-						Class<?> paramType = constructor.getParameterTypes()[0];
-						if ("java.lang.String".equals(paramType.getName()))
-						{
-							editable = (Editable) constructor.newInstance("test");
+						Class<?> paramType = paramTypes[i];
+						if (HiResDate.class.equals(paramType)) {
+							params[i] = new HiResDate(new Date());
 						}
-						else
-						{
-							editable = (Editable) constructor.newInstance(null);
+						else if (WorldDistance.class.equals(paramType)) {
+							params[i] = new WorldDistance( 12d, WorldDistance.DEGS);
 						}
-						break;
+						else if (WorldSpeed.class.equals(paramType)) {
+							params[i] = new WorldSpeed(12, WorldSpeed.M_sec);
+						}
+						else if (WorldLocation.class.equals(paramType)) {
+							params[i] = new WorldLocation(12, 12, 12);
+						}
+						else if ("java.lang.String".equals(paramType.getName())) {
+							params[i] = "test";
+						} else if (!paramType.isPrimitive()) {
+							params[i] = null;
+						} else {
+							if (paramType.equals(int.class)) {
+								params[i] = new Integer("0");
+							}
+							if (paramType.equals(boolean.class)) {
+								params[i] = Boolean.FALSE;
+							}
+							if (paramType.equals(long.class)) {
+								params[i] = new Long("0");
+							}
+							if (paramType.equals(double.class)) {
+								params[i] = new Double("0");
+							}
+							if (paramType.equals(float.class)) {
+								params[i] = new Float("0");
+							}
+							if (paramType.equals(short.class)) {
+								params[i] = new Short("0");
+							}
+						}
 					}
-					if (constructor.getParameterTypes().length == 2)
-					{
-						editable = (Editable) constructor.newInstance(null, null);
-						break;
-					}
-					if (constructor.getParameterTypes().length == 3)
-					{
-						editable = (Editable) constructor.newInstance(null, null, null);
-						break;
-					}
+					editable = (Editable) constructor.newInstance(params);
+					break;
 				}
 				catch (Exception e1)
 				{
 					// ignore
+					//System.out.println(e1.getMessage());
 					//e1.printStackTrace();
 				}
 			}
 		}
 		if (editable == null)
 		{
-			switch (type.getFullyQualifiedName())
-			{
-			case "MWC.GUI.Shapes.ChartFolio":
-				editable = new ChartFolio(false, Color.white);
-				break;
-			case "org.mwc.cmap.naturalearth.wrapper.NELayer":
-				editable = new NELayer(Activator.getDefault().getDefaultStyleSet());
-				break;
-			case "MWC.GUI.VPF.CoverageLayer$ReferenceCoverageLayer":
-				final LibrarySelectionTable LST = null;
-				final DebriefFeatureWarehouse myWarehouse = new DebriefFeatureWarehouse();
-				final FeaturePainter fp = new FeaturePainter("libref", "Coastline");
-				fp.setVisible(true);
-				editable = new CoverageLayer.ReferenceCoverageLayer(LST, myWarehouse,
-						"libref", "libref", "Coastline", fp);
-				break;
-			case "MWC.GUI.Chart.Painters.ETOPOPainter":
-				editable = new ETOPOPainter("etopo", null);
-				break;
-			case "MWC.GUI.ETOPO.ETOPO_2_Minute":
-				editable = new ETOPO_2_Minute("etopo");
-				break;
-			case "MWC.GUI.ExternallyManagedDataLayer":
-				editable = new ExternallyManagedDataLayer("test", "test", "test");
-				break;
-			case "MWC.GUI.Shapes.CircleShape":
-				editable = new CircleShape(new WorldLocation(2d, 2d, 2d), 2d);
-				break;
-			case "Debrief.Wrappers.Track.SplittableLayer":
-				editable = new SplittableLayer(true);
-				break;
-			case "org.mwc.debrief.satc_interface.data.SATC_Solution":
-				final ISolversManager solvMgr = SATC_Activator.getDefault().getService(
-						ISolversManager.class, true);
-				final ISolver newSolution = solvMgr.createSolver("test");
-				editable = new SATC_Solution(newSolution);
-				break;
-			case "MWC.GUI.Shapes.PolygonShape":
-				editable = new PolygonShape(null);
-				break;
-			case "ASSET.GUI.Painters.NoiseSourcePainter":
-				editable = new ASSET.GUI.Painters.NoiseSourcePainter.PainterTest().getEditable();
-				break;
-			case "ASSET.GUI.Painters.ScenarioNoiseLevelPainter":
-				editable = new ASSET.GUI.Painters.ScenarioNoiseLevelPainter.NoiseLevelTest().getEditable();
-				break;
-			case "ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper":
-				editable = new ScenarioParticipantWrapper(new SSN(12), null);
-				break;
-			case "Debrief.Wrappers.PolygonWrapper":
-				// get centre of area
-				final WorldLocation centre = new WorldLocation(12, 12, 12);
-				// create the shape, based on the centre
-				final Vector<PolygonNode> path2 = new Vector<PolygonNode>();
-				final PolygonShape newShape = new PolygonShape(path2);
-				// and now wrap the shape
-				final PolygonWrapper theWrapper = new PolygonWrapper("New Polygon",
-						newShape, PlainShape.DEFAULT_COLOR, null);
-				// store the new point
-				newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
-				break;
-			case "Debrief.Wrappers.Track.AbsoluteTMASegment":
-				WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-				double course = 33;
-				final WorldLocation origin = new WorldLocation(12, 12, 12);
-				final HiResDate startTime = new HiResDate(11 * 60 * 1000);
-				final HiResDate endTime = new HiResDate(17 * 60 * 1000);
-				editable = new AbsoluteTMASegment(course, speed, origin, startTime, endTime);
-				break;
-			case "Debrief.Wrappers.Track.RelativeTMASegment":
-				speed = new WorldSpeed(5, WorldSpeed.Kts);
-				course = 33;
-				final WorldVector offset = new WorldVector(12, 12, 0);
-				editable = new RelativeTMASegment(course, speed, offset, null);
-				break;
-			case "Debrief.Wrappers.Track.PlanningSegment":
-				speed = new WorldSpeed(5, WorldSpeed.Kts);
-				course = 33;
-				final WorldDistance worldDistance = new WorldDistance(5, WorldDistance.MINUTES);
-				editable = new PlanningSegment("test", course, speed, worldDistance, Color.WHITE);
-				break;
-			default:
-				System.out.println("Can't instantiate type " + type.getFullyQualifiedName());
-				break;
-			}
-
+			System.out.println("Can't instantiate type " + type.getFullyQualifiedName());
 		}
 		return editable;
 	}
@@ -615,11 +780,20 @@ public class EditableTests extends TestCase
       {
         // there isn't a dedicated editor, try the custom ones.
         // do the edits
-        final PropertyDescriptor[] pd = et.getPropertyDescriptors();
+        PropertyDescriptor[] pd = null;
+				try
+				{
+					pd = et.getPropertyDescriptors();
+				}
+				catch (Exception e)
+				{
+					org.mwc.debrief.editable.test.Activator.log(e);
+					Assert.fail("problem fetching property editors for " + toBeTested.getClass());
+				}
 
         if (pd == null)
         {
-          Assert.fail("problem fetching property editors for " + toBeTested);
+          Assert.fail("problem fetching property editors for " + toBeTested.getClass());
           return;
         }
 
@@ -631,42 +805,9 @@ public class EditableTests extends TestCase
           return;
         }
 
-        for (int i = 0; i < len; i++)
-        {
-          final PropertyDescriptor p = pd[i];
-
-          final Method getter = p.getReadMethod();
-          final Method setter = p.getWriteMethod();
-          
-          try
-          {
-            Method ourGetter = toBeTested.getClass().getMethod(getter.getName(), getter.getParameterTypes());
-            if (!Modifier.isPublic(ourGetter.getModifiers()))
-            {
-                Assert.fail(getter.getName() + " is not visible for " + toBeTested);
-            }
-          }
-          catch (final NoSuchMethodException ie)
-          {
-            Assert.fail("missing getter for " + toBeTested + " called:" + getter.getName() + " property:"
-                + p.getDisplayName() + " (" + et.getClass() + ") because:" + ie.getCause());
-          }
-          
-
-          try
-          {
-          	Method ourSetter = toBeTested.getClass().getMethod(setter.getName(), setter.getParameterTypes());
-          	if (!Modifier.isPublic(ourSetter.getModifiers()))
-            {
-                Assert.fail(setter.getName() + " is not visible for " + toBeTested);
-            }
-          }
-          catch (final NoSuchMethodException ie)
-          {
-            Assert.fail("missing setter for " + setter.getName() + ", " + toBeTested.getClass());
-          }
-          
-        }
+        // the method names are checked when creating PropertyDescriptor
+        // we haven't to test them
+        
       } // whether there was a customizer class
     } // whether there was a custom bean descriptor
 

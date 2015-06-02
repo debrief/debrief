@@ -287,6 +287,7 @@ Export-Package: ASSET;
    ASSET.Scenario.Genetic,
    ASSET.Models.Decision,
    MWC.GUI",
+ ASSET.Scenario.Observers.Plotting,
  ASSET.Scenario.Observers.Recording;
   uses:="ASSET,
    ASSET.Scenario.Observers,
