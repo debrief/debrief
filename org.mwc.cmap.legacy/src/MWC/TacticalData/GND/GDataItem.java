@@ -71,7 +71,7 @@ public class GDataItem implements Plottable, TimeStampedDataItem,
 		@Override
 		public PropertyDescriptor[] getGriddablePropertyDescriptors()
 		{
-			return null;
+			return new PropertyDescriptor[0];
 		}
 
 		public final BeanInfo[] getAdditionalBeanInfo()

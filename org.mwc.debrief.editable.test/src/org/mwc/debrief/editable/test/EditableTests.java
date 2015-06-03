@@ -34,6 +34,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -82,6 +83,7 @@ import Debrief.Wrappers.Track.SplittableLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.Griddable;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
@@ -178,7 +180,7 @@ public class EditableTests extends TestCase
 		setAutoBuilding(false);
 		openProjects(rootFile);
 		setAutoBuilding(true);
-		waitForJobs();
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, null);
 	}
 
 	private void setAutoBuilding(boolean flag)
@@ -736,6 +738,7 @@ public class EditableTests extends TestCase
   public static void testTheseParameters(final Editable toBeTested)
   {
     // check if we received an object
+  	System.out.println("testing " + toBeTested.getClass());
     if (toBeTested == null)
       return;
 
@@ -805,7 +808,29 @@ public class EditableTests extends TestCase
               + ", " + toBeTested.getClass());
           return;
         }
+        
+        // griddable property descriptors
+				if (et instanceof Griddable)
+				{
+					pd = null;
+					try
+					{
+						pd = ((Griddable) et).getGriddablePropertyDescriptors();
+					}
+					catch (Exception e)
+					{
+						org.mwc.debrief.editable.test.Activator.log(e);
+						Assert.fail("problem fetching griddable property editors for "
+								+ toBeTested.getClass());
+					}
 
+					if (pd == null)
+					{
+						Assert.fail("problem fetching griddable property editors for "
+								+ toBeTested.getClass());
+						return;
+					}
+				}
         // the method names are checked when creating PropertyDescriptor
         // we haven't to test them
         
