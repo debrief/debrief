@@ -8484,165 +8484,220 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             </indexterm>The symbology data field describes the representation required for this
             vessel track, specifying the colour of track to use and symbol-type to represent that
             vehicle. The Symbol style read in is used when tracks are to be shown by using symbol
-            (in 2D or 3D), as described in <xref linkend="intro_to_sym_sets"/>.<table xml:id="debrief_Sym">
+            (in 2D or 3D), as described in <xref linkend="intro_to_sym_sets"/>.<table
+              xml:id="debrief_Sym">
               <title>Debrief core symbology data fields</title>
-
               <tgroup cols="4">
                 <colspec colname="c1"/>
-
                 <colspec colname="c2"/>
-
                 <colspec colname="c3"/>
-
                 <colspec colname="c4"/>
-
                 <thead>
                   <row>
-                    <entry nameend="c2" namest="c1"><para>Symbol Style</para></entry>
-
-                    <entry nameend="c4" namest="c3"><para>Colour</para></entry>
+                    <entry nameend="c2" namest="c1">
+                      <para>Symbol Style</para>
+                    </entry>
+                    <entry nameend="c4" namest="c3">
+                      <para>Colour</para>
+                    </entry>
                   </row>
                 </thead>
-
                 <tbody>
                   <row>
-                    <entry><para>A</para></entry>
-
-                    <entry><para>Aircraft</para></entry>
-
-                    <entry><para>@</para></entry>
-
-                    <entry><para>White</para></entry>
+                    <entry>
+                      <para>A</para>
+                    </entry>
+                    <entry>
+                      <para>Aircraft</para>
+                    </entry>
+                    <entry>
+                      <para>@</para>
+                    </entry>
+                    <entry>
+                      <para>White</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>C</para></entry>
-
-                    <entry><para>Carrier</para></entry>
-
-                    <entry><para>A</para></entry>
-
-                    <entry><para>Blue</para></entry>
+                    <entry>
+                      <para>C</para>
+                    </entry>
+                    <entry>
+                      <para>Carrier</para>
+                    </entry>
+                    <entry>
+                      <para>A</para>
+                    </entry>
+                    <entry>
+                      <para>Blue</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>D</para></entry>
-
-                    <entry><para>Destroyer</para></entry>
-
-                    <entry><para>B</para></entry>
-
-                    <entry><para>Green</para></entry>
+                    <entry>
+                      <para>D</para>
+                    </entry>
+                    <entry>
+                      <para>Destroyer</para>
+                    </entry>
+                    <entry>
+                      <para>B</para>
+                    </entry>
+                    <entry>
+                      <para>Green</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>F</para></entry>
-
-                    <entry><para>Frigate</para></entry>
-
-                    <entry><para>C</para></entry>
-
-                    <entry><para>Red</para></entry>
+                    <entry>
+                      <para>F</para>
+                    </entry>
+                    <entry>
+                      <para>Frigate</para>
+                    </entry>
+                    <entry>
+                      <para>C</para>
+                    </entry>
+                    <entry>
+                      <para>Red</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>H</para></entry>
-
-                    <entry><para>Helicopter</para></entry>
-
-                    <entry><para>D</para></entry>
-
-                    <entry><para>Yellow</para></entry>
+                    <entry>
+                      <para>H</para>
+                    </entry>
+                    <entry>
+                      <para>Helicopter</para>
+                    </entry>
+                    <entry>
+                      <para>D</para>
+                    </entry>
+                    <entry>
+                      <para>Yellow</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>M</para></entry>
-
-                    <entry><para>Merchant</para></entry>
-
-                    <entry><para>E</para></entry>
-
-                    <entry><para>Purple</para></entry>
+                    <entry>
+                      <para>M</para>
+                    </entry>
+                    <entry>
+                      <para>Merchant</para>
+                    </entry>
+                    <entry>
+                      <para>E</para>
+                    </entry>
+                    <entry>
+                      <para>Magenta</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>N</para></entry>
-
-                    <entry><para>Minesweeper</para></entry>
-
-                    <entry><para>F</para></entry>
-
-                    <entry><para>Orange</para></entry>
+                    <entry>
+                      <para>N</para>
+                    </entry>
+                    <entry>
+                      <para>Minesweeper</para>
+                    </entry>
+                    <entry>
+                      <para>F</para>
+                    </entry>
+                    <entry>
+                      <para>Orange</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>P</para></entry>
-
-                    <entry><para>Torpedo</para></entry>
-
-                    <entry><para>G</para></entry>
-
-                    <entry><para>Brown</para></entry>
+                    <entry>
+                      <para>P</para>
+                    </entry>
+                    <entry>
+                      <para>Torpedo</para>
+                    </entry>
+                    <entry>
+                      <para>G</para>
+                    </entry>
+                    <entry>
+                      <para>Purple</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>R</para></entry>
-
-                    <entry><para>Troop Carrier</para></entry>
-
-                    <entry><para>H</para></entry>
-
-                    <entry><para>Cyan</para></entry>
+                    <entry>
+                      <para>R</para>
+                    </entry>
+                    <entry>
+                      <para>Troop Carrier</para>
+                    </entry>
+                    <entry>
+                      <para>H</para>
+                    </entry>
+                    <entry>
+                      <para>Cyan</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>S</para></entry>
-
-                    <entry><para>Submarine</para></entry>
-
-                    <entry><para>I</para></entry>
-
-                    <entry><para>Light Green</para></entry>
+                    <entry>
+                      <para>S</para>
+                    </entry>
+                    <entry>
+                      <para>Submarine</para>
+                    </entry>
+                    <entry>
+                      <para>I</para>
+                    </entry>
+                    <entry>
+                      <para>Brown </para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>T</para></entry>
-
-                    <entry><para>TA Frigate</para></entry>
-
-                    <entry><para>J</para></entry>
-
-                    <entry><para>Gold</para></entry>
+                    <entry>
+                      <para>T</para>
+                    </entry>
+                    <entry>
+                      <para>TA Frigate</para>
+                    </entry>
+                    <entry>
+                      <para>J</para>
+                    </entry>
+                    <entry>
+                      <para>Light Green</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>U</para></entry>
-
-                    <entry><para>Cruiser</para></entry>
-
-                    <entry><para>K</para></entry>
-
-                    <entry><para>Pink</para></entry>
+                    <entry>
+                      <para>U</para>
+                    </entry>
+                    <entry>
+                      <para>Cruiser</para>
+                    </entry>
+                    <entry>
+                      <para>K</para>
+                    </entry>
+                    <entry>
+                      <para>Pink</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>V</para></entry>
-
-                    <entry><para>Fishing Vessel</para></entry>
-
-                    <entry/>
-
-                    <entry/>
+                    <entry>
+                      <para>V</para>
+                    </entry>
+                    <entry>
+                      <para>Fishing Vessel</para>
+                    </entry>
+                    <entry>
+                      <para>L</para>
+                    </entry>
+                    <entry>
+                      <para>Gold</para>
+                    </entry>
                   </row>
-
                   <row>
-                    <entry><para>@</para></entry>
-
-                    <entry><para>Unknown</para></entry>
-
-                    <entry/>
-
-                    <entry/>
+                    <entry>
+                      <para>@</para>
+                    </entry>
+                    <entry>
+                      <para>Unknown</para>
+                    </entry>
+                    <entry>
+                      <para>M</para>
+                    </entry>
+                    <entry>
+                      <para>Light Grey</para>
+                    </entry>
                   </row>
                   <row>
                     <entry>
@@ -8651,8 +8706,12 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>Cross</para>
                     </entry>
-                    <entry/>
-                    <entry/>
+                    <entry>
+                      <para>N</para>
+                    </entry>
+                    <entry>
+                      <para>Grey</para>
+                    </entry>
                   </row>
                   <row>
                     <entry>
@@ -8661,8 +8720,12 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>Square</para>
                     </entry>
-                    <entry/>
-                    <entry/>
+                    <entry>
+                      <para>O</para>
+                    </entry>
+                    <entry>
+                      <para>Dark Grey</para>
+                    </entry>
                   </row>
                   <row>
                     <entry>
@@ -8671,8 +8734,12 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>Datum</para>
                     </entry>
-                    <entry/>
-                    <entry/>
+                    <entry>
+                      <para>P</para>
+                    </entry>
+                    <entry>
+                      <para>White</para>
+                    </entry>
                   </row>
                   <row>
                     <entry>
@@ -8681,114 +8748,165 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>Reference Position</para>
                     </entry>
-                    <entry/>
-                    <entry/>
+                    <entry>
+                      <para>Q</para>
+                    </entry>
+                    <entry>
+                      <para>Black</para>
+                    </entry>
                   </row>
                 </tbody>
               </tgroup>
-            </table>
-            <note><para>In 2015 the Debrief symbology attributes were extended to allow richer formatting to be 
-            applied to data on import. The new attributes mean it is possible to use a 2 or 5 character
-            symbology element for each REP line.
-            This was of particular value in supporting quick turnaround, in-stride, fast-look analysis.  It is also of 
-            value when high volumes of annotations are produced using a simulation environment such as <link xlink:href="https://www.atlas-elektronik.com/what-we-do/submarine-systems/odin/">Odin</link>.</para></note>
+            </table>Here's an illustration of how the new colors appear against the range of Debrief
+            background colors:<figure xml:id="shades_2015">
+              <title>2015 Debrief shades</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/NewTrackColors.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>
+            <note>
+              <para>In 2015 the Debrief symbology attributes were extended to allow richer
+                formatting to be applied to data on import. The new attributes mean it is possible
+                to use a 2 or 5 character symbology element for each REP line. This was of
+                particular value in supporting quick turnaround, in-stride, fast-look analysis. It
+                is also of value when high volumes of annotations are produced using a simulation
+                environment such as <link
+                  xlink:href="https://www.atlas-elektronik.com/what-we-do/submarine-systems/odin/"
+                  >Odin</link>.</para>
+            </note>
             <table xml:id="debrief_ExtendedSym">
               <title>Debrief extended symbology data fields</title>
-              
               <tgroup cols="6">
                 <colspec colname="c1"/>
-                
                 <colspec colname="c2"/>
-                
                 <colspec colname="c3"/>
-                
                 <colspec colname="c4"/>
                 <colspec colname="c5"/>
-                
                 <colspec colname="c6"/>
-                
                 <thead>
                   <row>
-                    <entry nameend="c2" namest="c1"><para>Line Type</para></entry>                    
-                    <entry nameend="c4" namest="c3"><para>Line Thickness</para></entry>
-                    <entry nameend="c6" namest="c5"><para>Fill Style</para></entry>
+                    <entry nameend="c2" namest="c1">
+                      <para>Line Type</para>
+                    </entry>
+                    <entry nameend="c4" namest="c3">
+                      <para>Line Thickness</para>
+                    </entry>
+                    <entry nameend="c6" namest="c5">
+                      <para>Fill Style</para>
+                    </entry>
                   </row>
                 </thead>
-                
                 <tbody>
                   <row>
-                    <entry><para>@</para></entry>
-                    
-                    <entry><para>SOLID</para></entry>
-                    
-                    <entry><para>0</para></entry>
-                    
-                    <entry><para>Hairwidth</para></entry>
-                    <entry><para>0</para></entry>
-                    
-                    <entry><para>No-fill</para></entry>
-                  </row>
-                  
-                  <row>
-                    <entry><para>A</para></entry>
-                    
-                    <entry><para>DOTTED</para></entry>
-                    
-                    <entry><para>1</para></entry>
-                    
-                    <entry><para>1 pixel</para></entry>
-                    <entry><para>1</para></entry>
-                    
-                    <entry><para>Solid fill</para></entry>
-                  </row>
-                  
-                  <row>
-                    <entry><para>B</para></entry>
-                    
-                    <entry><para>DOT_DASH</para></entry>
-                    
-                    <entry><para>2</para></entry>
-                    
-                    <entry><para>2 pixels</para></entry>
-                    <entry><para>2</para></entry>
-                    
-                    <entry><para>Semi-transparent fill</para></entry>
-                  </row>
-                  
-                  <row>
-                    <entry><para>C</para></entry>
-                    
-                    <entry><para>SHORT_DASHES</para></entry>
-                    
-                    <entry><para>3</para></entry>
-                    
-                    <entry><para>3 pixels</para></entry>
-                    <entry/>
-                    
-                    <entry/>
+                    <entry>
+                      <para>@</para>
+                    </entry>
+                    <entry>
+                      <para>SOLID</para>
+                    </entry>
+                    <entry>
+                      <para>0</para>
+                    </entry>
+                    <entry>
+                      <para>Hairwidth</para>
+                    </entry>
+                    <entry>
+                      <para>0</para>
+                    </entry>
+                    <entry>
+                      <para>No-fill</para>
+                    </entry>
                   </row>
                   <row>
-                    <entry><para>D</para></entry>
-                    
-                    <entry><para>LONG_DASHES</para></entry>
-                    
-                    <entry><para>4</para></entry>
-                    
-                    <entry><para>4 pixels</para></entry>
+                    <entry>
+                      <para>A</para>
+                    </entry>
+                    <entry>
+                      <para>DOTTED</para>
+                    </entry>
+                    <entry>
+                      <para>1</para>
+                    </entry>
+                    <entry>
+                      <para>1 pixel</para>
+                    </entry>
+                    <entry>
+                      <para>1</para>
+                    </entry>
+                    <entry>
+                      <para>Solid fill</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>B</para>
+                    </entry>
+                    <entry>
+                      <para>DOT_DASH</para>
+                    </entry>
+                    <entry>
+                      <para>2</para>
+                    </entry>
+                    <entry>
+                      <para>2 pixels</para>
+                    </entry>
+                    <entry>
+                      <para>2</para>
+                    </entry>
+                    <entry>
+                      <para>Semi-transparent fill</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>C</para>
+                    </entry>
+                    <entry>
+                      <para>SHORT_DASHES</para>
+                    </entry>
+                    <entry>
+                      <para>3</para>
+                    </entry>
+                    <entry>
+                      <para>3 pixels</para>
+                    </entry>
                     <entry/>
-                    
                     <entry/>
                   </row>
                   <row>
-                    <entry><para>E</para></entry>
-                    
-                    <entry><para>UNCONNECTED</para></entry>
-                    
-                    <entry><para>5</para></entry>
-                    
-                    <entry><para>5 pixels</para></entry>
+                    <entry>
+                      <para>D</para>
+                    </entry>
+                    <entry>
+                      <para>LONG_DASHES</para>
+                    </entry>
+                    <entry>
+                      <para>4</para>
+                    </entry>
+                    <entry>
+                      <para>4 pixels</para>
+                    </entry>
                     <entry/>
-                    
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>E</para>
+                    </entry>
+                    <entry>
+                      <para>UNCONNECTED</para>
+                    </entry>
+                    <entry>
+                      <para>5</para>
+                    </entry>
+                    <entry>
+                      <para>5 pixels</para>
+                    </entry>
+                    <entry/>
                     <entry/>
                   </row>
                 </tbody>
