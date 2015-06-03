@@ -50,7 +50,7 @@ import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.swt.widgets.Display;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
@@ -507,7 +507,8 @@ public class EditableTests extends TestCase
 			break;
 		case "MWC.GUI.JFreeChart.NewFormattedJFreeChart":
 			XYPlot plot = new XYPlot();
-			plot.setRenderer(new XYLineAndShapeRenderer(true, false));
+			DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
+			plot.setRenderer(renderer);
 			editable = new NewFormattedJFreeChart("test", new java.awt.Font("Dialog",
 					0, 18), plot, false);
 			break;
