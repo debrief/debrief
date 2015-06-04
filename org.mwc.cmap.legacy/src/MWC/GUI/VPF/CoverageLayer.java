@@ -471,8 +471,8 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
           final PropertyDescriptor[] res = {
             prop("Color", "the Color to draw this Feature"),
             prop("Visible", "whether this feature is visible"),
-            prop("DrawText", "whether to draw text"),
-            prop("DrawLine", "whether to paint lines"),
+            displayProp("DrawText", "Draw text", "whether to draw text"),
+            displayProp("DrawLine", "Draw line", "whether to paint lines"),
           };
 
           return res;

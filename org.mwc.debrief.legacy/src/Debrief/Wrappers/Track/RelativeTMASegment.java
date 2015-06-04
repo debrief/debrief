@@ -81,18 +81,18 @@ public class RelativeTMASegment extends CoreTMASegment
 				final PropertyDescriptor[] res =
 				{
 						expertProp("Course", "Course of this TMA Solution", SOLUTION),
-						expertProp("BaseFrequency",
+						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
-						expertProp("HostName",
+						displayExpertProp("HostName","Host name",
 								"Name of the track from which range/bearing measured", OFFSET),
-						expertProp("OffsetRange", "Distance to start point on host track",
+						displayExpertProp("OffsetRange", "Offset range", "Distance to start point on host track",
 								OFFSET),
-						expertProp("OffsetBearing",
+						displayExpertProp("OffsetBearing", "Offset bearing", 
 								"Bearing from host track to start of this solution", OFFSET),
-						expertProp("DTG_Start", "Start time for this TMA Solution",
+						displayExpertProp("DTG_Start", "DTG Start",  "Start time for this TMA Solution",
 								SOLUTION),
-						expertProp("DTG_End", "End time for this TMA Solution", SOLUTION) };
+						displayExpertProp("DTG_End", "DTG End", "End time for this TMA Solution", SOLUTION) };
 				mine = res;
 			}
 			catch (final IntrospectionException e)

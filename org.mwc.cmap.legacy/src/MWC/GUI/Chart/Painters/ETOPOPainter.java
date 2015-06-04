@@ -293,10 +293,10 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
       {
         final java.beans.PropertyDescriptor[] res = {
           prop("Visible", "whether this layer is visible"),
-          prop("KeyLocation", "the current location of the color-key"),
+          displayProp("KeyLocation", "Key location", "the current location of the color-key"),
           prop("Color", "the color of the color-key"),
-          prop("ShowLand", "whether to shade land-data"),
-          prop("LineThickness", "the thickness to plot the scale border"),
+          displayProp("ShowLand", "Show land", "whether to shade land-data"),
+          displayProp("LineThickness", "Line thickness", "the thickness to plot the scale border"),
           //          prop("GreenBase", "the base value of the green colour"),
           //          prop("GreenComponent", "the proportion of blue to make green"),
           //          prop("BlueComponent", "the blue colour range"),

@@ -385,12 +385,12 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
     {
       try{
         final PropertyDescriptor[] res={
-          prop("LinkPositions", "whether to join the points in the trail", Editable.EditorType.VISIBILITY),
-          prop("PlotTrackName", "whether to plot the name of the track", Editable.EditorType.VISIBILITY),
-          prop("FadePoints", "whether the trails should fade to black", Editable.EditorType.FORMAT),
-          prop("PointSize", "the size of the points in the trail", Editable.EditorType.FORMAT),
-          prop("TrailLength", "the length of trail to draw", Editable.EditorType.TEMPORAL),
-          prop("VectorStretch", "how far to stretch the speed vector (pixels per knot)", Editable.EditorType.FORMAT),
+          displayProp("LinkPositions", "Link positions", "whether to join the points in the trail", Editable.EditorType.VISIBILITY),
+          displayProp("PlotTrackName", "Plot track name", "whether to plot the name of the track", Editable.EditorType.VISIBILITY),
+          displayProp("FadePoints", "Fade points", "whether the trails should fade to black", Editable.EditorType.FORMAT),
+          displayProp("PointSize", "Point size", "the size of the points in the trail", Editable.EditorType.FORMAT),
+          displayProp("TrailLength", "Trail length", "the length of trail to draw", Editable.EditorType.TEMPORAL),
+          displayProp("VectorStretch", "Vector stretch", "how far to stretch the speed vector (pixels per knot)", Editable.EditorType.FORMAT),
         };
 
         res[5].setPropertyEditorClass(FractionPropertyEditor.class);

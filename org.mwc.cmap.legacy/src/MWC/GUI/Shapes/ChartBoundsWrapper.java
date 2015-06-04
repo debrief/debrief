@@ -353,10 +353,12 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 			try
 			{
 				final PropertyDescriptor[] myRes =
-				{ prop("LabelLocation", "the relative location of the label", FORMAT),
+				{ 
+						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
 						prop("Visible", "whether this shape is visible", VISIBILITY),
-						prop("LabelVisible", "whether the label is visible", VISIBILITY),
-						prop("Color", "the color of the shape itself", FORMAT), };
+						displayProp("LabelVisible", "Label visible", "whether the label is visible", VISIBILITY),
+						prop("Color", "the color of the shape itself", FORMAT),
+				};
 				myRes[0]
 						.setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
 

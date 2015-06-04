@@ -600,7 +600,7 @@ public class EllipseShape extends PlainShape implements Editable
           prop("Orientation", "the Ellipse orientation (degrees)"),
           prop("Centre", "the centre of the Ellipse"),
           prop("Filled", "whether to fill the Ellipse"),
-          prop("SemiTransparent", "whether the filled Ellipse is semi-transparent")
+          displayProp("SemiTransparent", "Semi transparent", "whether the filled Ellipse is semi-transparent")
         };
 
         return res;

@@ -585,26 +585,24 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 				final java.beans.PropertyDescriptor[] res =
 				{
 						prop("Visible", "whether this layer is visible", VISIBILITY),
-						longProp("KeyLocation", "the current location of the color-key",
+						displayLongProp("KeyLocation", "Key location", "the current location of the color-key",
 								KeyLocationPropertyEditor.class, EditorType.FORMAT),
 						prop("Color", "the color of the color-key", EditorType.FORMAT),
-						prop("ShowLand", "whether to shade land-data", EditorType.FORMAT),
-						longProp("LineThickness", "the thickness to plot the scale border",
+						displayProp("ShowLand", "Show land", "whether to shade land-data", EditorType.FORMAT),
+						displayLongProp("LineThickness", "Line thickness", "the thickness to plot the scale border",
 								LineWidthPropertyEditor.class, EditorType.FORMAT),
-						prop(
-								"BathyRes",
+						displayProp("BathyRes", "Bathy resolution",
 								"the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
 								EditorType.FORMAT),
-						prop("BathyVisible", "whether to show the gridded contours",
+						displayProp("BathyVisible", "Bathy visible", "whether to show the gridded contours",
 								VISIBILITY),
-						prop("ContourDepths", "the contour depths to plot",
+						displayProp("ContourDepths", "Contour depths", "the contour depths to plot",
 								EditorType.FORMAT),
-						prop("ContoursVisible", "whether to show the contours", VISIBILITY),
-						prop(
-								"ContourGridInterval",
+						displayProp("ContoursVisible", "Contours visible", "whether to show the contours", VISIBILITY),
+						displayProp("ContourGridInterval", "Contour grid interval",
 								"the interval at which to calculate the contours (larger interval leads to faster performance)",
 								EditorType.FORMAT),
-						prop("ContourOptimiseGrid",
+						displayProp("ContourOptimiseGrid", "Optimise grid interval",
 								"whether the grid interval should be optimised",
 								EditorType.FORMAT) };
 				return res;

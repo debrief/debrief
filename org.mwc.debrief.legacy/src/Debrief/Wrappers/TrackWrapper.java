@@ -139,41 +139,41 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			try
 			{
 				PropertyDescriptor[] res = {
-						expertProp("SymbolType",
+						displayExpertProp("SymbolType", "Symbol type",
 								"the type of symbol plotted for this label", FORMAT),
-						expertProp("LineThickness", "the width to draw this track", FORMAT),
+						displayExpertProp("LineThickness", "Line thickness", "the width to draw this track", FORMAT),
 						expertProp("Name", "the track name"),
-						expertProp("InterpolatePoints",
+						displayExpertProp("InterpolatePoints", "Interpolate points",  
 								"whether to interpolate points between known data points",
 								SPATIAL),
 						expertProp("Color", "the track color", FORMAT),
-						expertProp("SymbolColor", "the color of the symbol (when used)",
+						displayExpertProp("SymbolColor", "Symbol color", "the color of the symbol (when used)",
 								FORMAT),
-						expertProp(
-								"PlotArrayCentre",
+						displayExpertProp(
+								"PlotArrayCentre", "Plot array centre",
 								"highlight the sensor array centre when non-zero array length provided",
 								FORMAT),
-						expertProp("TrackFont", "the track label font", FORMAT),
-						expertProp("NameVisible", "show the track label", VISIBILITY),
-						expertProp("PositionsVisible", "show individual Positions",
+						displayExpertProp("TrackFont", "Track font", "the track label font", FORMAT),
+						displayExpertProp("NameVisible", "Name visible", "show the track label", VISIBILITY),
+						displayExpertProp("PositionsVisible", "Positions visible", "show individual Positions",
 								VISIBILITY),
-						expertProp("NameAtStart",
+						displayExpertProp("NameAtStart", "Name at start",
 								"whether to show the track name at the start (or end)",
 								VISIBILITY),
-						expertProp("LinkPositions", "whether to join the track points",
+						displayExpertProp("LinkPositions", "Link positions", "whether to join the track points",
 								FORMAT),
 						expertProp("Visible", "whether the track is visible", VISIBILITY),
-						expertLongProp("NameLocation", "relative location of track label",
+						displayExpertLongProp("NameLocation", "Name location", "relative location of track label",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
-						expertLongProp("LabelFrequency", "the label frequency",
+						displayExpertLongProp("LabelFrequency", "Label frequency", "the label frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("SymbolFrequency", "the symbol frequency",
+						displayExpertLongProp("SymbolFrequency", "Symbol frequency", "the symbol frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("ResampleDataAt", "the data sample rate",
+						displayExpertLongProp("ResampleDataAt", "Resample data at", "the data sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("ArrowFrequency", "the direction marker frequency",
+						displayExpertLongProp("ArrowFrequency", "Arrow frequency", "the direction marker frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("LineStyle",
+						displayExpertLongProp("LineStyle", "Line style",
 								"the line style used to join track points",
 								MWC.GUI.Properties.LineStylePropertyEditor.class),
 
@@ -192,8 +192,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// yes = better create height/width editors
 					final PropertyDescriptor[] res2 = new PropertyDescriptor[res.length + 2];
 					System.arraycopy(res, 0, res2, 2, res.length);
-					res2[0] = expertProp("SymbolLength", "Length of symbol", FORMAT);
-					res2[1] = expertProp("SymbolWidth", "Width of symbol", FORMAT);
+					res2[0] = displayExpertProp("SymbolLength", "Symbol length", "Length of symbol", FORMAT);
+					res2[1] = displayExpertProp("SymbolWidth", "Symbol width", "Width of symbol", FORMAT);
 
 					// and now use the new value
 					res = res2;

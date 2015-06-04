@@ -1202,11 +1202,11 @@ abstract public class StepControl implements Editable,
       try
       {
         final PropertyDescriptor[] res = {
-          prop("StepSmall", "the small step size"),
-          prop("StepLarge", "the large step size"),
-          prop("AutoStep", "the automatic step"),
-          prop("FontSize", "the font size for the time label"),
-          prop("DateFormat", "the format to use for the date/time"),
+          displayProp("StepSmall", "Small step", "the small step size"),
+          displayProp("StepLarge", "Large step", "the large step size"),
+          displayProp("AutoStep", "Auto step", "the automatic step"),
+          displayProp("FontSize", "Font size", "the font size for the time label"),
+          displayProp("DateFormat", "Date format", "the format to use for the date/time"),
           longProp("Highlighter", "the highlighter to use", TagListEditor.class)
 
         };

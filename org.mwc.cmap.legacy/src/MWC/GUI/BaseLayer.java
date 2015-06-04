@@ -420,7 +420,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 				{
 						prop("Visible", "the Layer visibility", VISIBILITY),
 						prop("Name", "the name of the Layer", FORMAT),
-						prop("LineThickness", "the thickness of lines in this layer",
+						displayProp("LineThickness", "Line thickness", "the thickness of lines in this layer",
 								FORMAT),
 						prop("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)", FORMAT), };
 

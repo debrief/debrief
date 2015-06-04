@@ -7,7 +7,9 @@ Bundle-ClassPath: TimeController.jar
 Bundle-Activator: org.mwc.cmap.TimeController.TimeControllerPlugin
 Bundle-Vendor: MWC
 Bundle-Localization: plugin
-Export-Package: org.mwc.cmap.TimeController.controls,
+Export-Package: org.mwc.cmap.TimeController,
+ org.mwc.cmap.TimeController.controls,
+ org.mwc.cmap.TimeController.properties,
  org.mwc.cmap.TimeController.views
 Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.debrief.legacy,

@@ -27,7 +27,6 @@
   </properties>
 
   <modules>
-<!--
     <module>org.mwc.asset.NetAsset2</module>
     <module>org.mwc.asset.NetCore</module>
     <module>org.mwc.asset.ScenarioController2</module>
@@ -35,10 +34,11 @@
     <module>org.mwc.asset.SensorMonitor</module>
     <module>org.mwc.asset.VesselMonitor</module>
     <module>org.mwc.asset.core</module>
+<!--
     <module>org.mwc.asset.core.feature</module>
+-->
     <module>org.mwc.asset.help</module>
     <module>org.mwc.asset.legacy</module>
--->
     <module>org.mwc.debrief.help</module>
     <module>org.eclipse.nebula.cwt</module>
     <module>org.eclipse.nebula.widgets.cdatetime</module>
@@ -76,6 +76,7 @@
     <module>org.mwc.gnd.demonstrator</module>
     <module>org.qinetiq.data_feed</module>
     <module>org.mwc.debrief.test2</module>
+    <module>org.mwc.debrief.editable.test</module>
     <module>org.mwc.debrief.targetplatforms</module>
 <!--
     <module>org.mwc.debrief.site</module>
@@ -184,6 +185,7 @@
 			<encoding>UTF-8</encoding>
 			<source>1.7</source>
 			<target>1.7</target>
+			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
 		</configuration>
 	</plugin>
 	<plugin>

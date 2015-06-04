@@ -337,20 +337,20 @@ public final class WedgeBuilder extends PatternBuilderType
       {
         final PropertyDescriptor[] myRes=
         {
-          prop("SymbolType", "the type of symbol plotted for this label"),
-          prop("SymbolSize", "the scale of the symbol"),
+          displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
+          displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
           prop("Duration", "the lifetime of the buoy pattern"),
-          prop("PatternName", "the name of this barrier"),
-          prop("PatternBuoySpacing", "the spacing of the buoys in the wedge"),
-          prop("Orientation2", "the orientation of the second side of the wedge from kingpin (degs)"),
-          prop("Orientation1", "the orientation of the first side of the wedge from kingpin (degs)"),
-          prop("KingpinRange", "the range of the kingpin from the jig point"),
-          prop("KingpinBearing", "the bearing of the kingpin from the jig point (degs)"),
-          prop("JigPoint", "the jig point for the construction of this wedge"),
-          prop("NumberOfBuoys", "the number of buoys in this wedge"),
+          displayProp("PatternName", "Pattern name", "the name of this barrier"),
+          displayProp("PatternBuoySpacing", "Pattern buoy spacing", "the spacing of the buoys in the wedge"),
+          displayProp("Orientation2", "Orientation of the second side", "the orientation of the second side of the wedge from kingpin (degs)"),
+          displayProp("Orientation1", "Orientation of the first side", "the orientation of the first side of the wedge from kingpin (degs)"),
+          displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
+          displayProp("KingpinBearing", "Kingpin bearing", "the bearing of the kingpin from the jig point (degs)"),
+          displayProp("JigPoint", "Jig point", "the jig point for the construction of this wedge"),
+          displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this wedge"),
           prop("Color", "the default colour for this wedge"),
-          prop("DateTimeGroup", "the DTG this pattern starts (DD/MM/YY)"),
-          prop("BuoyLabelVisible", "whether the buoy labels are visible")
+          displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
+          displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible")
         };
         myRes[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
         myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);

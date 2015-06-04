@@ -67,11 +67,11 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			{
 				final PropertyDescriptor[] res =
 				{
-						expertProp("Time_Start", "Start time for this TMA Solution",
+						displayExpertProp("Time_Start", "Start time",  "Start time for this TMA Solution",
 								SOLUTION),
-						expertProp("TimeEnd", "End time for this TMA Solution", SOLUTION),
+						displayExpertProp("TimeEnd", "End time", "End time for this TMA Solution", SOLUTION),
 						expertProp("Course", "Course of this TMA Solution", SOLUTION),
-						expertProp("BaseFrequency",
+						displayExpertProp("BaseFrequency", "Base frequency",
 								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION) };
 				mine = res;

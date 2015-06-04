@@ -695,12 +695,14 @@ public class GridPainter implements Plottable, Serializable
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ prop("Color", "the Color to draw the grid", FORMAT),
+				{ 
+						prop("Color", "the Color to draw the grid", FORMAT),
 						prop("Visible", "whether this grid is visible", VISIBILITY),
-						prop("PlotLabels", "whether to plot grid labels", VISIBILITY),
+						displayProp("PlotLabels", "Plot labels", "whether to plot grid labels", VISIBILITY),
 						prop("Font", "font to use for labels", FORMAT),
 						prop("Name", "name of this grid", FORMAT),
-						prop("Delta", "the step size for the grid", VISIBILITY) };
+						prop("Delta", "the step size for the grid", VISIBILITY)
+				};
 
 				return res;
 			}

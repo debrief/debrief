@@ -56,9 +56,9 @@ public class FlatProjection extends PlainProjection
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("DataBorder",
+						displayProp("DataBorder", "Data border",
 								"the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
-						prop("ScaleVal",
+						displayProp("ScaleVal", "Scaling factor",
 								"the scaling factor to use (world units/screen units)") };
 
 				return res;

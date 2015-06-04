@@ -1373,7 +1373,7 @@ public class RightClickSupport
 						{
 							ActionContributionItem ac = (ActionContributionItem) subI;
 							String theName = ac.getAction().getText();
-							if (theName.equals("SemiTransparent"))
+							if (theName.equals("Semi transparent"))
 								foundTransparent = true;
 						}
 					}

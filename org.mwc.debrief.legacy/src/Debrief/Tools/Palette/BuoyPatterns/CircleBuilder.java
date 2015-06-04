@@ -245,20 +245,20 @@ public final class CircleBuilder extends PatternBuilderType
       {
         final PropertyDescriptor[] myRes=
         {
-          prop("SymbolType", "the type of symbol plotted for this label"),
-          prop("SymbolSize", "the scale of the symbol"),
-          prop("Duration", "the lifetime of the buoy pattern"),
-          prop("PatternName", "the name of this circle"),
-          prop("PatternOrientation", "the orientation of the first point of this circle (degs)"),
-          prop("PatternRadius", "the radius of this circular pattern"),
-          prop("KingpinRange", "the range of the kingpin from the jig point"),
-          prop("KingpinBearing", "the bearing of the kingpin from the jig point (degs)"),
-          prop("JigPoint", "the jig point for the construction of this circle"),
-          prop("NumberOfBuoys", "the number of buoys in this circle"),
-          prop("Color", "the default colour for this circle"),
-          prop("DateTimeGroup", "the DTG this pattern starts (DD/MM/YY)"),
-          prop("BuoyLabelVisible", "whether the buoy labels are visible"),
-          prop("PatternClockwise", "whether the buoys are laid clockwise")
+        		displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
+            displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
+            prop("Duration", "the lifetime of the buoy pattern"),
+            displayProp("PatternName", "Pattern name", "the name of this circle"),
+            displayProp("PatternOrientation", "Pattern orientation", "the orientation of the first point of this circle (degs)"),
+            displayProp("PatternRadius", "Pattern radius", "the radius of this circular pattern"),
+            displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
+            displayProp("KingpinBearing", "Kingpin bearing", "the bearing of the kingpin from the jig point (degs)"),
+            displayProp("JigPoint", "Jig point", "the jig point for the construction of this circle"),
+            displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this circle"),
+            prop("Color", "the default colour for this circle"),
+            displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
+            displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible"),
+            displayProp("PatternClockwise", "Pattern clockwise", "whether the buoys are laid clockwise")
         };
         myRes[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
         myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);

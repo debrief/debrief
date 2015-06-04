@@ -15,5 +15,10 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: libs/jts-1.13.jar,
  .
-Export-Package: org.mwc.debrief.satc_interface.data,
- org.mwc.debrief.satc_interface.data.wrappers
+Export-Package: org.mwc.debrief.satc_interface,
+ org.mwc.debrief.satc_interface.actions,
+ org.mwc.debrief.satc_interface.data,
+ org.mwc.debrief.satc_interface.data.wrappers,
+ org.mwc.debrief.satc_interface.readerwriter,
+ org.mwc.debrief.satc_interface.utilities,
+ org.mwc.debrief.satc_interface.wizards

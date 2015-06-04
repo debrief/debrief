@@ -15,5 +15,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="lib" path="libs/smack.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

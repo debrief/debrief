@@ -92,7 +92,12 @@ public class TimeToLaunchObserver extends CoreObserver implements ScenarioObserv
   }
 
 
-  /**
+  public void setTargetType(TargetType targetType)
+	{
+		this._targetType = targetType;
+	}
+
+	/**
    * we're getting up and running.  The observers have been created and we've remembered
    * the scenario
    *

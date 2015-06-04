@@ -184,7 +184,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 				final PropertyDescriptor[] res = {
 						prop("Name", "the name for this sensor"),
 						prop("Visible", "whether this sensor data is visible"),
-						prop("LineThickness", "the thickness to draw these sensor lines") };
+						displayProp("LineThickness", "Line thickness", "the thickness to draw these sensor lines") };
 
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);

@@ -573,14 +573,14 @@ public class ArcShape extends CircleShape
 				{
 						prop("Radius", "the circle radius", SPATIAL),
 						prop("Centre", "the centre of the circle", SPATIAL),
-						prop("CentreBearing",
+						displayProp("CentreBearing", "Centre bearing",
 								"bearing from centre of circle to 1/2 way along arc", SPATIAL),
-						prop("ArcWidth", "the angle of arc to plot", SPATIAL),
-						prop("PlotOrigin", "whether to plot the origin of the arc", SPATIAL),
+						displayProp("ArcWidth", "Arc width", "the angle of arc to plot", SPATIAL),
+						displayProp("PlotOrigin", "Plot origin", "whether to plot the origin of the arc", SPATIAL),
 						prop("Filled", "whether to fill the arc", FORMAT),
-						prop("SemiTransparent",
+						displayProp("SemiTransparent", "Semi transparent",
 								"whether the filled arc is semi-transparent", FORMAT),
-						prop("PlotSpokes", "whether to draw in the spokes of the arc", SPATIAL) };
+						displayProp("PlotSpokes", "Plot spokes", "whether to draw in the spokes of the arc", SPATIAL) };
 
 				return res;
 

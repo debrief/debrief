@@ -310,13 +310,13 @@ public class SATC_Solution extends BaseLayer implements
 			try
 			{
 				final PropertyDescriptor[] res = {
-						prop("ShowLocationConstraints",
+						displayProp("ShowLocationConstraints", "Show location constraints",
 								"whether to display location constraints", FORMAT),
-						prop("ShowAlterationStates", "whether to states during alteration",
+						displayProp("ShowAlterationStates", "Show alteration states", "whether to states during alteration",
 								FORMAT),
-						prop("OnlyPlotLegEnds",
+						displayProp("OnlyPlotLegEnds", "Only plot leg ends",
 								"whether to only plot location bounds at leg ends", FORMAT),
-						prop("ShowSolutions", "whether to display solutions", FORMAT),
+						displayProp("ShowSolutions", "Show solutions", "whether to display solutions", FORMAT),
 						prop("Name", "the name for this solution", EditorType.FORMAT),
 						prop("Color", "the color to display this solution",
 								EditorType.FORMAT),

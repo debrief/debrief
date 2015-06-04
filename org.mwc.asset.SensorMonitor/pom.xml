@@ -9,6 +9,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.asset.SensorMonitor</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.4</version>
   <packaging>eclipse-plugin</packaging>
 </project>

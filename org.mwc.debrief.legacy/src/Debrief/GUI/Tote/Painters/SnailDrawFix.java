@@ -459,12 +459,12 @@ public final class SnailDrawFix implements SnailPainter.drawHighLight, Editable
     {
       try{
         final PropertyDescriptor[] res={
-          prop("LinkPositions", "whether to join the points in the trail"),
-          prop("PlotTrackName", "whether to plot the name of the track"),
-          prop("FadePoints", "whether the trails should fade to black"),
-          prop("PointSize", "the size of the points in the trail"),
-          prop("TrailLength", "the length of trail to draw"),
-          prop("VectorStretch", "how far to stretch the speed vector (pixels per knot)"),
+          displayProp("LinkPositions", "Link positions", "whether to join the points in the trail"),
+          displayProp("PlotTrackName", "Plot track name", "whether to plot the name of the track"),
+          displayProp("FadePoints", "Fade points", "whether the trails should fade to black"),
+          displayProp("PointSize", "Point size", "the size of the points in the trail"),
+          displayProp("TrailLength", "Trail length", "the length of trail to draw"),
+          displayProp("VectorStretch", "Vector stretch", "how far to stretch the speed vector (pixels per knot)"),
         };
 
         res[5].setPropertyEditorClass(FractionPropertyEditor.class);

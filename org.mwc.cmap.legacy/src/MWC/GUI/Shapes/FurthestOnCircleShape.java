@@ -67,11 +67,11 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("RangeLabelLocation", "where to position the labels"),
-						prop("TimeInterval", "the Interval between the rings"),
-						prop("NumRings", "the number of rings to plot"),
+						displayProp("RangeLabelLocation", "Range label location", "where to position the labels"),
+						displayProp("TimeInterval", "Time interval", "the Interval between the rings"),
+						displayProp("NumRings", "Number of rings", "the number of rings to plot"),
 						prop("Speed", "the speed for which the circles are calculated"),
-					prop("Centre", "the centre of the furthest on circles")
+						prop("Centre", "the centre of the furthest on circles")
 //						prop("ArcCentre",
 //								"the orientation for which to plot the arcs (degs)"),
 //						prop("ArcWidth", "the overall width of fan to plot (degs)")
