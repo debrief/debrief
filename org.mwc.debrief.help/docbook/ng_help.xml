@@ -31,7 +31,7 @@
       </affiliation>
     </author>
     <edition>Documentation for Debrief NG</edition>
-    <pubdate>Spring 2015</pubdate>
+    <pubdate>Summer 2015</pubdate>
     <abstract>
       <title>Contact details</title>
       <para>Should you wish to learn more about <application>Debrief</application> please make contact
@@ -42,17 +42,23 @@
           <address>
             <personname>Mr Ian Mayo</personname>
             <otheraddr>Deep Blue C Technology Ltd</otheraddr>
-            <street>[n/a]</street>
+            <street>[redacted]</street>
             <city>Fareham</city>
             <state>HANTS</state>
             <country>UK</country>
-            <postcode>  [n/a]</postcode>
+            <postcode>[redacted]</postcode>
             <country>e-mail: ian@DeepBlueC.com</country>
           </address>
         </para>
       </formalpara>
     </abstract>
     <revhistory>
+      <revision>
+        <revnumber>2.7</revnumber>
+        <date>4th June 2015</date>
+        <authorinitials>IM</authorinitials>
+        <revremark>Natural Earth, dynamic annotations, new Symbology</revremark>
+      </revision>
       <revision>
         <revnumber>2.6</revnumber>
         <date>22nd May 2014</date>
@@ -150,10 +156,13 @@
     </revhistory>
     <copyright>
       <year>2000-2015</year>
-      <holder>Deep Blue C Technology Ltd. Permission is granted to copy, distribute and/or modify
-        this document under the terms of the GNU Free Documentation License, Version 1.1 or any
-        later version published by the Free Software Foundation. A copy of the license is included
-        in the section entitled "GNU Free Documentation License".</holder>
+      <holder>This library is free software; you can redistribute it and/or
+        modify it under the terms of the Eclipse Public License v1.0
+        (http://www.eclipse.org/legal/epl-v10.html)
+        
+        This library is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</holder>
     </copyright>
   </info>
 
@@ -164,8 +173,8 @@
       <title>Welcome</title>
 
       <para>Welcome to the documentation for <application>Debrief NG</application>.
-          <application>Debrief</application> has been produced by the Maritime Warfare Centre in
-        Portsmouth UK, to support the analysis and reporting of maritime tactical exercises.</para>
+          <application>Debrief</application> was developed by the Maritime Warfare Centre in
+        Portsmouth UK in the mid 90&apos;s, to support the analysis and reporting of maritime tactical exercises.</para>
         
         <tip><para>There&apos;s lots more Debrief goodness on the Debrief Home Page: <link xlink:href="http://www.debrief.info">http://www.debrief.info</link></para></tip>
 
@@ -497,7 +506,7 @@
         <para>In 2015, under 
           <link xlink:href="https://www.gov.uk/government/organisations/defence-science-and-technology-laboratory">DSTL</link> 
           sponsorship, support for the Natural Earth dataset was added to
-        Debrief.  This will be of value to the wide body of Debrief users (see <xref linkend="natural_earth"/>.
+        Debrief.  This will be of value to the wide body of Debrief users (see <xref linkend="natural_earth"/>).
           DSTL also sponsored
          the development of Semi Automatic Track Construction, but this is of very, very niche interest
          (see <xref linkend="satc"/>).</para>
@@ -527,7 +536,7 @@
                       </imageobject>
                     </inlinemediaobject></para></entry>
 
-                <entry xml:id="project_sponsor"><para>Debrief project sponsor.
+                <entry xml:id="project_sponsor"><para>Original Debrief project sponsor.
                     <address>
 <personname>Lt Cdr David Whitehouse RN</personname>
 <otheraddr>Maritime Warfare Centre</otheraddr>
@@ -1577,7 +1586,7 @@ and so on....</programlisting></para>
 
           <para><note xml:id="track_shifting_note">
               <para>The Track-shifting implementation was originally provided by Mr David Gong at
-                  <link linkend="nuwc_address">NUWC</link>.</para>
+                NUWC (see <xref linkend="nuwc_address"/>).</para>
             </note></para>
 
           <para>Debrief NG provides three modes of track shifting - moving individual track
