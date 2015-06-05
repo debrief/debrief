@@ -680,7 +680,8 @@ public class XYPlotView extends ViewPart
 			theFormatter.format(_thePlot);
 		}
 
-		_thePlotArea = new NewFormattedJFreeChart(title, null, _thePlot, true,
+		boolean createLegend = dataset.getSeriesCount() > 1;
+		_thePlotArea = new NewFormattedJFreeChart(title, null, _thePlot, createLegend,
 				_theStepper);
 
 		// set the color of the area surrounding the plot

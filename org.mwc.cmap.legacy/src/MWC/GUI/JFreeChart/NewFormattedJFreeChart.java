@@ -17,6 +17,7 @@ package MWC.GUI.JFreeChart;
 //import com.jrefinery.chart.*;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
 import java.beans.IntrospectionException;
@@ -27,9 +28,13 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.block.LineBorder;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.RectangleInsets;
 
 import MWC.GUI.Editable;
 import MWC.GUI.StepperListener;
@@ -323,6 +328,36 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		this.fireChartChanged();
 	}
 
+	public boolean isShowLegend()
+	{
+		return getLegend() != null;
+	}
+
+	public void setShowLegend(final boolean showLegend)
+	{
+		if (showLegend)
+		{
+			if (!isShowLegend())
+			{
+				LegendTitle legend = new LegendTitle(getPlot());
+				legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+				legend.setFrame(new LineBorder());
+				legend.setBackgroundPaint(Color.white);
+				legend.setPosition(RectangleEdge.BOTTOM);
+				addLegend(legend);
+			}
+		}
+		else
+		{
+			if (isShowLegend())
+			{
+				removeLegend();
+			}
+		}
+
+		this.fireChartChanged();
+	}
+
 	public String getY_AxisTitle()
 	{
 		return getXYPlot().getRangeAxis().getLabel();
@@ -585,7 +620,9 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 						displayProp("AxisFont", "Axis font", "font to use for the plot axis titles",
 								EditorType.FORMAT),
 						displayProp("TickFont", "Tick font", "font to use for the plot axis tick mark labels",
-								EditorType.FORMAT)
+								EditorType.FORMAT),
+						displayProp("ShowLegend", "Show legend", "whether to show legend",
+								EditorType.VISIBILITY),
 				};
 				return res;
 			}
