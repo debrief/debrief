@@ -232,6 +232,10 @@ class ImportPolygon extends AbstractPlainLineImporter
 		// and put Polygon into a shape
 		final PolygonWrapper sw = new PolygonWrapper(theText, sp,
 				ImportReplay.replayColorFor(symbology), startDate, endDate);
+		
+		// switch off the labels if it's coming from REP - since 
+		// the user is probably confident in the locations
+		sp.setShowNodeLabels(false);
 
 		return sw;
 	}
