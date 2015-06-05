@@ -11,3 +11,4 @@ export CLASSPATH=$CLASSPATH:$DITA_HOME/lib/xml-apis.jar
 echo $CLASSPATH
 export ANT_OPTS="-Xmx1024M -Xms256M -XX:PermSize=128M -XX:MaxPermSize=256M"
 ant -f cheat_transform.xml
+./pdftk_title.sh
