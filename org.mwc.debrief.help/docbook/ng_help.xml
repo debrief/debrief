@@ -564,14 +564,14 @@
 </address></para></entry>
               </row>
 
-              <row xml:id="csds">
+              <row>
                 <entry><para><inlinemediaobject>
                       <imageobject>
                         <imagedata fileref="figures/csds12.gif" width="100"/>
                       </imageobject>
                     </inlinemediaobject></para></entry>
 
-                <entry><para>COMSUBDEVRON 12
+                <entry><para xml:id="csds">COMSUBDEVRON 12
                     <address>
                       
 <street>Submarine Development Squadron Twelve</street>
@@ -582,13 +582,13 @@
               </row>
 
               <row>
-                <entry><para xml:id="nuwc_address"><inlinemediaobject>
+                <entry><para><inlinemediaobject>
                       <imageobject>
                         <imagedata fileref="figures/nuwc.gif" width="100"/>
                       </imageobject>
                     </inlinemediaobject></para></entry>
 
-                <entry><para>Naval Undersea Warfare Center (NUWC)
+                <entry><para xml:id="nuwc_address">Naval Undersea Warfare Center (NUWC)
                     <address>
                       <personname>Roger Howlett </personname>
                       <otheraddr>Code 2212 Combat Systems</otheraddr>
@@ -602,14 +602,14 @@ Naval Undersea Warfare Center (NUWC)
 </address></para></entry>
               </row>
 
-              <row xml:id="comsubpac">
+              <row>
                 <entry><para><inlinemediaobject>
                       <imageobject>
                         <imagedata fileref="figures/CSP_LOGO_SM.gif" width="100"/>
                       </imageobject>
                     </inlinemediaobject></para></entry>
 
-                <entry><para><address>
+                <entry><para xml:id="comsubpac"><address>
                       <personname>Joe Sileo</personname>
                       <otheraddr>COMSUBPAC Tactical Analysis Group (N7231)</otheraddr>
                       <street>Commander Submarine Force, U.S. Pacific Fleet</street>
@@ -620,10 +620,10 @@ Naval Undersea Warfare Center (NUWC)
                   </para></entry>
               </row>
 
-              <row xml:id="COMSEVENTHFLT">
+              <row>
                 <entry><para/></entry>
 
-                <entry><para>
+                <entry><para xml:id="COMSEVENTHFLT">
                     <address>
                       <personname>Jay Spry</personname>
                       <otheraddr>COMSEVENTHFLT/COMSUBGRU 7 </otheraddr>
