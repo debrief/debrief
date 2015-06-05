@@ -78,6 +78,8 @@ import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.event.ChartChangeEvent;
+import org.jfree.chart.event.ChartChangeListener;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
@@ -313,6 +315,8 @@ public class XYPlotView extends ViewPart
 	private SelectionHelper _selectionHelper;
 
 	private Action _editMyProperties;
+
+	private ShowSymbolAction _showSymbols;
 
 	/**
 	 * store the plot information when we're reloading a plot in a fresh session
@@ -714,6 +718,18 @@ public class XYPlotView extends ViewPart
 		_crosshairValueText.setBackgroundPaint(Color.white);
 		_thePlot.addAnnotation(_crosshairValueText);
 
+		_thePlotArea.addChangeListener(new ChartChangeListener()
+		{
+
+			@Override
+			public void chartChanged(ChartChangeEvent event)
+			{
+				if (_showSymbols.isShowSymbols() != _thePlotArea.isShowSymbols()) {
+					_showSymbols.updateAction();
+				}
+			}
+		});
+		_showSymbols.updateAction();
 		_thePlotArea.addProgressListener(new ChartProgressListener()
 		{
 			public void chartProgress(final ChartProgressEvent cpe)
@@ -1053,6 +1069,7 @@ public class XYPlotView extends ViewPart
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
 		manager.add(_editMyProperties);
+		manager.add(_showSymbols);
 	}
 
 	void fillContextMenu(final IMenuManager manager)
@@ -1073,6 +1090,7 @@ public class XYPlotView extends ViewPart
 		manager.add(_exportToClipboard);
 		manager.add(_copyToClipboard);
 		manager.add(_editMyProperties);
+		manager.add(_showSymbols);
 		manager.add(_listenForDataChanges);
 	}
 
@@ -1247,6 +1265,7 @@ public class XYPlotView extends ViewPart
 		_copyToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/16/export.png"));
 
+		_showSymbols = new ShowSymbolAction();
 	}
 
 	protected void bitmapToClipBoard(JComponent component) {
@@ -1608,4 +1627,72 @@ public class XYPlotView extends ViewPart
 		}
 	}
 
+	private class ShowSymbolAction extends Action {
+
+		private static final String SYMBOL_ON = "icons/16/symbol_on.png";
+		private static final String SYMBOL_OFF = "icons/16/symbol_off.png";
+		private boolean showSymbols;
+
+		public ShowSymbolAction()
+		{
+			super();
+			showSymbols = false;
+			setText("Show symbols");
+			setToolTipText("Show symbols");
+			setImageDescriptor(CorePlugin
+					.getImageDescriptor(SYMBOL_OFF));
+		}
+
+		@Override
+		public void run()
+		{
+			if (_thePlotArea != null)
+			{
+				if (!_thePlotArea.isShowSymbols())
+				{
+					_thePlotArea.setShowSymbols(true);
+					setText("Hide symbols");
+					setToolTipText("Hide symbols");
+					setImageDescriptor(CorePlugin
+							.getImageDescriptor(SYMBOL_ON));
+				}
+				else
+				{
+					_thePlotArea.setShowSymbols(false);
+					setText("Show symbols");
+					setToolTipText("Show symbols");
+					setImageDescriptor(CorePlugin
+							.getImageDescriptor(SYMBOL_OFF));
+				}
+				showSymbols = _thePlotArea.isShowSymbols();
+			}
+		}
+
+		public void updateAction()
+		{
+			if (_thePlotArea != null)
+			{
+				if (_thePlotArea.isShowSymbols())
+				{
+					setText("Hide symbols");
+					setToolTipText("Hide symbols");
+					setImageDescriptor(CorePlugin
+							.getImageDescriptor(SYMBOL_ON));
+				}
+				else
+				{
+					setText("Show symbols");
+					setToolTipText("Show symbols");
+					setImageDescriptor(CorePlugin
+							.getImageDescriptor(SYMBOL_OFF));
+				}
+				showSymbols = _thePlotArea.isShowSymbols();
+			}
+		}
+
+		public boolean isShowSymbols()
+		{
+			return showSymbols;
+		}
+	}
 }
