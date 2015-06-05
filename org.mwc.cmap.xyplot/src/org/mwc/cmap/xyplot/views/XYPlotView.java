@@ -1629,6 +1629,8 @@ public class XYPlotView extends ViewPart
 
 	private class ShowSymbolAction extends Action {
 
+		private static final String SYMBOL_ON = "icons/16/symbol_on.png";
+		private static final String SYMBOL_OFF = "icons/16/symbol_off.png";
 		private boolean showSymbols;
 
 		public ShowSymbolAction()
@@ -1638,7 +1640,7 @@ public class XYPlotView extends ViewPart
 			setText("Show symbols");
 			setToolTipText("Show symbols");
 			setImageDescriptor(CorePlugin
-					.getImageDescriptor("icons/16/hide.png"));
+					.getImageDescriptor(SYMBOL_OFF));
 		}
 
 		@Override
@@ -1652,7 +1654,7 @@ public class XYPlotView extends ViewPart
 					setText("Hide symbols");
 					setToolTipText("Hide symbols");
 					setImageDescriptor(CorePlugin
-							.getImageDescriptor("icons/16/show.png"));
+							.getImageDescriptor(SYMBOL_ON));
 				}
 				else
 				{
@@ -1660,7 +1662,7 @@ public class XYPlotView extends ViewPart
 					setText("Show symbols");
 					setToolTipText("Show symbols");
 					setImageDescriptor(CorePlugin
-							.getImageDescriptor("icons/16/hide.png"));
+							.getImageDescriptor(SYMBOL_OFF));
 				}
 				showSymbols = _thePlotArea.isShowSymbols();
 			}
@@ -1675,14 +1677,14 @@ public class XYPlotView extends ViewPart
 					setText("Hide symbols");
 					setToolTipText("Hide symbols");
 					setImageDescriptor(CorePlugin
-							.getImageDescriptor("icons/16/show.png"));
+							.getImageDescriptor(SYMBOL_ON));
 				}
 				else
 				{
 					setText("Show symbols");
 					setToolTipText("Show symbols");
 					setImageDescriptor(CorePlugin
-							.getImageDescriptor("icons/16/hide.png"));
+							.getImageDescriptor(SYMBOL_OFF));
 				}
 				showSymbols = _thePlotArea.isShowSymbols();
 			}
