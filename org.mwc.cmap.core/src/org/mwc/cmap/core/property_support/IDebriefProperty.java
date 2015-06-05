@@ -22,6 +22,8 @@ public interface IDebriefProperty
 	Object getValue();
 	Object getRawValue();
 
+	public String getName();
+	
 	public String getDisplayName();
 
 	public EditorHelper getHelper();

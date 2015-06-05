@@ -210,6 +210,11 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		return _theProp.getFieldName();
 	}
 
+	public String getName()
+	{
+		return _theProp.getFieldName();
+	}
+	
 	public String getDisplayName()
 	{
 		return _theProp.getFieldName();

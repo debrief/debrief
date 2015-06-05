@@ -267,6 +267,11 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return _thisProp.getShortDescription();
 	}
 
+	public String getName()
+	{
+		return _thisProp.getName();
+	}
+	
 	public String getDisplayName()
 	{
 		return _thisProp.getDisplayName();
