@@ -345,13 +345,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_dotPlot
 				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
 
-		_dotPlot.setRangeGridlinePaint(Color.DARK_GRAY);
+		_dotPlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
 		_dotPlot.setRangeGridlineStroke(new BasicStroke(2));
-		_dotPlot.setDomainGridlinePaint(Color.DARK_GRAY);
+		_dotPlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
 		_dotPlot.setDomainGridlineStroke(new BasicStroke(2));
 
 		// now try to do add a zero marker on the error bar
-		final Paint thePaint = Color.LIGHT_GRAY;
+		final Paint thePaint = Color.DARK_GRAY;
 		final Stroke theStroke = new BasicStroke(3);
 		final ValueMarker zeroMarker = new ValueMarker(0.0, thePaint, theStroke);
 		_dotPlot.addRangeMarker(zeroMarker);
@@ -376,9 +376,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setDomainCrosshairStroke(new BasicStroke(3.0f));
 		_linePlot.setRangeCrosshairStroke(new BasicStroke(3.0f));
 
-		_linePlot.setRangeGridlinePaint(Color.DARK_GRAY);
+		_linePlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
 		_linePlot.setRangeGridlineStroke(new BasicStroke(2));
-		_linePlot.setDomainGridlinePaint(Color.DARK_GRAY);
+		_linePlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
 		_linePlot.setDomainGridlineStroke(new BasicStroke(2));
 
 		// and the plot object to display the cross hair value
@@ -387,13 +387,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		Font annotationFont = new Font("Courier", Font.BOLD, 16);
 		annot.setFont(annotationFont);
-		annot.setPaint(Color.LIGHT_GRAY);
-		annot.setBackgroundPaint(Color.black);
+		annot.setPaint(Color.DARK_GRAY);
+		annot.setBackgroundPaint(Color.white);
 		_linePlot.addAnnotation(annot);
 
 		// give them a high contrast backdrop
-		_dotPlot.setBackgroundPaint(Color.black);
-		_linePlot.setBackgroundPaint(Color.black);
+		_dotPlot.setBackgroundPaint(Color.white);
+		_linePlot.setBackgroundPaint(Color.white);
 
 		// set the y axes to autocalculate
 		_dotPlot.getRangeAxis().setAutoRange(true);
