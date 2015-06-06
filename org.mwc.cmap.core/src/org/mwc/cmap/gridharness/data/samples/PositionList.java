@@ -102,8 +102,8 @@ public class PositionList implements GriddableSeries {
 	public GriddableItemDescriptor[] getAttributes() {
 		if (_myAttributes == null) {
 			_myAttributes = new GriddableItemDescriptor[5];
-			_myAttributes[0] = new GriddableItemDescriptor("Lat", "Latitude", double.class, new DoubleHelper());
-			_myAttributes[1] = new GriddableItemDescriptor("Long", "Longitude", double.class, new DoubleHelper());
+			_myAttributes[0] = new GriddableItemDescriptor("Latitude", "Lat", double.class, new DoubleHelper());
+			_myAttributes[1] = new GriddableItemDescriptor("Longitude", "Long", double.class, new DoubleHelper());
 			_myAttributes[2] = new GriddableItemDescriptor("Course", "Course", double.class, new DoubleHelper());
 			_myAttributes[3] = new GriddableItemDescriptor("Speed", "Speed", WorldSpeed2.class, new WorldSpeedHelper());
 
