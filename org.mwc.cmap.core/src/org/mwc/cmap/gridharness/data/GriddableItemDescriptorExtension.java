@@ -23,8 +23,8 @@ public class GriddableItemDescriptorExtension extends GriddableItemDescriptor im
 
 	private final String mySampleString;
 
-	public GriddableItemDescriptorExtension(final String title, final String name, final Class<?> typeClass, final EditorHelper editor, final String sampleString) {
-		super(title, name, typeClass, editor);
+	public GriddableItemDescriptorExtension(final String name, final String displayName, final Class<?> typeClass, final EditorHelper editor, final String sampleString) {
+		super(name, displayName, typeClass, editor);
 		mySampleString = sampleString;
 	}
 
