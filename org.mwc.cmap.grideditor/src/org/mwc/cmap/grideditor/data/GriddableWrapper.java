@@ -221,8 +221,8 @@ public class GriddableWrapper implements GriddableSeries
 						}
 						else
 						{
-							gd = new GriddableItemDescriptor(desc.getDisplayName(),
-									desc.getName(), dataClass, desc.getHelper());
+							gd = new GriddableItemDescriptor(desc.getName(),
+									desc.getDisplayName(), dataClass, desc.getHelper());
 						}
 
 						items.add(gd);
