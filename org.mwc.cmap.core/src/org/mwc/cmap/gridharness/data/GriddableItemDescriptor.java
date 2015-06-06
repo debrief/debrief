@@ -25,9 +25,9 @@ public class GriddableItemDescriptor {
 	
 	private final EditorHelper _myEditor;
 
-	public GriddableItemDescriptor(final String title, final String name, final Class<?> typeClass, 
+	public GriddableItemDescriptor(final String name, final String displayName, final Class<?> typeClass, 
 			final EditorHelper editor) {
-		_myTitle = title;
+		_myTitle = displayName;
 		_myName = name;
 		_myTypeClass = typeClass;
 		_myEditor = editor;
