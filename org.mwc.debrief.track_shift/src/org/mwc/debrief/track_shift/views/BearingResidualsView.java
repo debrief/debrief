@@ -36,7 +36,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 	private static final String SHOW_COURSE = "SHOW_COURSE";
 	private Action showCourse;
 	private Action flipCourse;
-	protected Action _5degResize;
+	//protected Action _5degResize;
 
 	@Override
 	protected void makeActions()
@@ -76,30 +76,36 @@ public class BearingResidualsView extends BaseStackedDotsView
 		showCourse.setImageDescriptor(Activator
 				.getImageDescriptor("icons/24/ShowCourse.png"));
 
-		_5degResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
+		_autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
 		{
 			@Override
 			public void run()
 			{
 				super.run();
-				final boolean val = _5degResize.isChecked();
+				final boolean val = _autoResize.isChecked();
 				if (_showDotPlot.isChecked())
 				{
 					if(val)
 					{
 					_dotPlot.getRangeAxis().setAutoRange(false);
 					_dotPlot.getRangeAxis().setRange(-5, 5);
+					_autoResize.setToolTipText("Fix bearing range to +/- 5 degs");
+					_autoResize.setImageDescriptor(CorePlugin
+							.getImageDescriptor("icons/24/Binocular.png"));
 					}
 					else
 					{
 						_dotPlot.getRangeAxis().setAutoRange(true);
+						_autoResize.setToolTipText("Keep plot sized to show all data");
+						_autoResize.setImageDescriptor(CorePlugin
+								.getImageDescriptor("icons/24/fit_to_win.png"));
 					}
 				}
 			}
 		};
-		_5degResize.setChecked(true);
-		_5degResize.setToolTipText("Fix bearing range to +/- 5 degs");
-		_5degResize.setImageDescriptor(CorePlugin
+		_autoResize.setChecked(true);
+		_autoResize.setToolTipText("Fix bearing range to +/- 5 degs");
+		_autoResize.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/24/Binocular.png"));
 		
 		
@@ -111,7 +117,6 @@ public class BearingResidualsView extends BaseStackedDotsView
 	{
 		toolBarManager.add(showCourse);
 		toolBarManager.add(flipCourse);
-		toolBarManager.add(_5degResize);
 		super.fillLocalToolBar(toolBarManager);
 
 	}
