@@ -362,6 +362,14 @@
                     <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
                 </visibleWhen>
             </command>
+            
+            <command commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay"
+                icon="icons/16/time_display.png" style="push"
+                id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay">
+                <visibleWhen checkEnabled="false">
+                    <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
+                </visibleWhen>
+            </command>
 
             <command commandId="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
                 icon="icons/16/grid4w.png" style="push"
@@ -684,6 +692,9 @@
 
         <command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
             id="org.mwc.debrief.core.creators.chartFeatures.InsertScale" name="&amp;Scale"> </command>
+
+		<command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay"
+            id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay" name="&amp;Time Display"> </command>
 
         <command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
             id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid" name="&amp;4W Grid"> </command>
