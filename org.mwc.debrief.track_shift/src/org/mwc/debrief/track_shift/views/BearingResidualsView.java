@@ -87,18 +87,14 @@ public class BearingResidualsView extends BaseStackedDotsView
 				{
 					if(val)
 					{
-					_dotPlot.getRangeAxis().setAutoRange(false);
 					_dotPlot.getRangeAxis().setRange(-5, 5);
+					_dotPlot.getRangeAxis().setAutoRange(false);
 					_autoResize.setToolTipText("Fix bearing range to +/- 5 degs");
-					_autoResize.setImageDescriptor(CorePlugin
-							.getImageDescriptor("icons/24/Binocular.png"));
 					}
 					else
 					{
 						_dotPlot.getRangeAxis().setAutoRange(true);
 						_autoResize.setToolTipText("Keep plot sized to show all data");
-						_autoResize.setImageDescriptor(CorePlugin
-								.getImageDescriptor("icons/24/fit_to_win.png"));
 					}
 				}
 			}
