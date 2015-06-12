@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Generating links to your existing data">
+ xsi:noNamespaceSchemaLocation="../contentFile.xsd" title="Generating links to data stored in a shared folder">
 	<intro>
 		<description>Here we are going to copy in an existing set of sample data. We aren&apos;t
 			going to link to the original set, since we don&apos;t want to modify it,

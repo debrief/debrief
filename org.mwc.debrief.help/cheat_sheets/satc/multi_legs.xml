@@ -38,7 +38,8 @@
          a minimum speed of 8 knots, a maximum speed of 10 knots, and an (optional) estimate of 9 knots.
          <br/>
          Then re-run the <b>Calculate Solution</b> button. In the <b>Performance</b> tab you will see the effectiveness
-         of both the <b>Bearing Data</b> and the <b>Overall speed</b> estimates.
+         of both the <b>Bearing Data</b> and the <b>Overall speed</b> estimates.  The bars are shaded according to
+         the respective color-coded constraint.
       </description>
    </item>
    <item

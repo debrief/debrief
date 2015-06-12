@@ -69,7 +69,8 @@
 					<b>master</b>
 					copy of the data). Start off by considering if your Debrief
 					installation folder
-					is on your local machine, or on a Network Shared Folder.
+					is on your local machine, or on a Network Shared Folder - then select the
+					relevant "Generating links to ..." task from the two provided below.
             </intro>
             <task kind="cheatsheet" name="Sample data from a local folder" skip="true">
                <intro>
