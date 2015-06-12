@@ -540,20 +540,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_btnPanel.setLayout(new GridLayout(7, true));
 
 		final Button eBwd = new Button(_btnPanel, SWT.NONE);
-		addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false, null, false));
+		addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false, STEP_SIZE.END, false));
 		eBwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_BEGINNING));
 		eBwd.setToolTipText("Move to start of dataset");
 
 		final Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setToolTipText("Move backward large step (hold to repeat)");
 		lBwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_REWIND));
-		RepeatingTimeButtonListener listener = new RepeatingTimeButtonListener(false, new Boolean(true), true);
+		RepeatingTimeButtonListener listener = new RepeatingTimeButtonListener(false, STEP_SIZE.LARGE, true);
 		addTimeButtonListener(lBwd, listener);
 		
 		final Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setToolTipText("Move backward small step (hold to repeat)");
 		sBwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_BACK));
-		listener = new RepeatingTimeButtonListener(false, new Boolean(false), true);
+		listener = new RepeatingTimeButtonListener(false, STEP_SIZE.NORMAL, true);
 		addTimeButtonListener(sBwd, listener);
 		
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
@@ -594,7 +594,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_forwardButton = new Button(_btnPanel, SWT.NONE);
 		_forwardButton.setImage(TimeControllerPlugin
 				.getImage(ICON_MEDIA_FORWARD));
-		listener = new RepeatingTimeButtonListener(true, new Boolean(false), true);
+		listener = new RepeatingTimeButtonListener(true, STEP_SIZE.NORMAL, true);
 		addTimeButtonListener(_forwardButton, listener);
 		
 		_forwardButton.setToolTipText("Move forward small step (hold to repeat)");
@@ -602,12 +602,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		final Button lFwd = new Button(_btnPanel, SWT.NONE);
 		lFwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FAST_FORWARD));
 		lFwd.setToolTipText("Move forward large step (hold to repeat)");
-		listener = new RepeatingTimeButtonListener(true, new Boolean(true), true);
+		listener = new RepeatingTimeButtonListener(true, STEP_SIZE.LARGE, true);
 		addTimeButtonListener(lFwd, listener);
 		
 		
 		final Button eFwd = new Button(_btnPanel, SWT.NONE);
-		addTimeButtonListener(eFwd, new RepeatingTimeButtonListener(true, null, false));
+		addTimeButtonListener(eFwd, new RepeatingTimeButtonListener(true, STEP_SIZE.END, false));
 		eFwd.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_END));
 		eFwd.setToolTipText("Move to end of dataset");
 
@@ -781,7 +781,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		try
 		{
 			// pass the step operation on to our parent
-			processClick(Boolean.FALSE, true);
+			processClick(STEP_SIZE.NORMAL, true);
 		}
 		catch (final Exception e)
 		{
@@ -791,6 +791,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// register ourselves as a time again
 		getTimer().addTimerListener(this);
 
+	}
+	
+	/** declare a range of sizes for different types of time step
+	 * 
+	 * @author ian
+	 *
+	 */
+	protected enum STEP_SIZE
+	{
+		END,
+		SMALL,
+		NORMAL,
+		LARGE
 	}
 
 	protected final class NewTimeListener implements PropertyChangeListener
@@ -865,7 +878,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	void processClick(final Boolean large, final boolean fwd)
+	void processClick(final STEP_SIZE step, final boolean fwd)
 	{
 
 		// CorePlugin.logError(Status.INFO, "Starting step", null);
@@ -881,7 +894,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			if (_steppableTime != null)
 				// see if the user has pressed 'back to start', in which case we will
 				// rewind
-				if ((large == null) && (fwd == false))
+				if ((step == STEP_SIZE.END) && (fwd == false))
 					_steppableTime.restart(this, true);
 				else
 					_steppableTime.step(this, true);
@@ -895,7 +908,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				// - in
 				// which
 				// case there is a zero in the scale
-				if (large == null)
+				if (step == STEP_SIZE.END)
 				{
 					// right, fwd or bwd
 					if (fwd)
@@ -905,22 +918,28 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 				else
 				{
-					long size;
+					final long size;
 
 					// normal processing..
-					if (large.booleanValue())
+					if (step == STEP_SIZE.LARGE)
 					{
 						// do large step
 						size = (long) _myStepperProperties.getLargeStep().getValueIn(
+								Duration.MICROSECONDS);
+					}
+					else if(step == STEP_SIZE.NORMAL)
+					{
+						// and the small size step
+						size = (long) _myStepperProperties.getSmallStep().getValueIn(
 								Duration.MICROSECONDS);
 					}
 					else
 					{
 						// and the small size step
 						size = (long) _myStepperProperties.getSmallStep().getValueIn(
-								Duration.MICROSECONDS);
+								Duration.MICROSECONDS) / 10;
 					}
-
+					
 					// right, either move forwards or backwards.
 					if (fwd)
 						micros += size;
@@ -2064,17 +2083,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				// right, we're not zooming, we must be time-stepping
 				final int count = event.count;
 				boolean fwd;
-				Boolean large = new Boolean(false);
+				STEP_SIZE size = STEP_SIZE.NORMAL;
 
 				if ((keys & SWT.SHIFT) != 0)
-					large = new Boolean(true);
+					size= STEP_SIZE.LARGE;
+				else if ((keys & SWT.ALT) != 0)
+					size = STEP_SIZE.SMALL;
 
 				if (count < 0)
 					fwd = true;
 				else
 					fwd = false;
 
-				processClick(large, fwd);
+				processClick(size, fwd);
 			}
 		}
 	}
@@ -2701,7 +2722,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		
 		protected final boolean _fwd;
 
-		protected final Boolean _large;
+		protected final STEP_SIZE _step;
 
 		private boolean _doRepeat;
 
@@ -2714,10 +2735,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		 * @param large whether this button moves in large or small steps
 		 * @param doRepeat whether this button repeats if held down
 		 */
-		public RepeatingTimeButtonListener(final boolean fwd, final Boolean large, final boolean doRepeat)
+		public RepeatingTimeButtonListener(final boolean fwd, final STEP_SIZE step, final boolean doRepeat)
 		{
 			_fwd = fwd;
-			_large = large;
+			_step= step;
 			_doRepeat = doRepeat;
 		}
 
@@ -2725,7 +2746,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		{
 			try
 			{
-				processClick(_large, _fwd);
+				processClick(_step, _fwd);
 			}
 			catch (final RuntimeException e1)
 			{

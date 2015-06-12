@@ -1356,7 +1356,7 @@ and so on....</programlisting></para>
             <para>In addition to the mouse mode buttons described above, the middle mouse button may
               be used to navigate irrespective of the current mouse mode. Hold the middle mouse
               button down and drag the cursor to pan around the plot, or hold down the
-                <guibutton>CTRL</guibutton> key and roll your mouse backwards and forwards to zoom
+                <guibutton>CTRL</guibutton> key and roll your mouse wheel backwards and forwards to zoom
               in and out of the plot</para>
           </tip>
           <tip>
@@ -3237,6 +3237,11 @@ and so on....</programlisting></para>
             configured such that the slider stops on higher resolutions by selecting the relevant
             increment from the <guibutton>Time slider increment</guibutton> list in the Time
             Controller&apos;s drop-down menu.</para>
+          <para>
+            You can also use your mouse wheel to move forwards and backwards in time, though
+            you have to ensure the Time Slider has focus first.  Note that pressing the 
+            Shift key causes extra large steps, and the Alt key causes extra small steps.
+          </para>
         </sect2>
 
         <sect2 xml:id="time_bookmarks">
