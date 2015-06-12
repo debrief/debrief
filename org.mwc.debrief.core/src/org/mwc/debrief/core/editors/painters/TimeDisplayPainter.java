@@ -39,6 +39,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
  * Class to plot a time display onto a plot
@@ -58,6 +59,7 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	 * colour of this time display
 	 */
 	Color _myColor = Color.darkGray;
+	Color _myBackgroundColor = Color.WHITE;
 	/**
 	 * whether we are visible or not
 	 */
@@ -208,6 +210,16 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 		return _myColor;
 	}
 
+	public void setBackground(final Color val)
+	{
+		_myBackgroundColor = val;
+	}
+	
+	public Color getBackground()
+	{
+		return _myBackgroundColor;
+	}
+	
 	public static java.awt.Font getFont()
 	{
 		return _myFont;
@@ -270,8 +282,10 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 			_myEditor.fireChanged(this, "Calc", null, this);
 		}
 
+		String formattedDTG = FormatRNDateTime.toMediumString(_DTG.getMicros()/1000);
+		// String formattedDTG = sDebriefFormatDateTime.toStringHiRes(_DTG)
 		String str = (_prefix == null ? "" : _prefix) + 
-				DebriefFormatDateTime.toStringHiRes(_DTG) + 
+				formattedDTG + 
 				(_suffix == null ? "" : _suffix);
 		final int wid = g.getStringWidth(_myFont, str);
 
@@ -304,12 +318,16 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 
 		// setup the drawing object
 		g.setColor(this.getColor());
+		g.setBackgroundColor(_myBackgroundColor);
 
 		int this_dist = TL.x;
 
+		int x = this_dist - (wid / 2); 
+		int y = (int) (TL.y - (0.7 * txtHt));
+		
 		// draw in the time display value
-		g.drawText(_myFont, str, this_dist - (wid / 2),
-				(int) (TL.y - (0.7 * txtHt)));
+		g.fillRect(x - 20, y - 20, wid + 40, txtHt + 20);
+		g.drawText(_myFont, str, x, y);
 
 	}
 
@@ -404,6 +422,8 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 				final PropertyDescriptor[] res =
 				{
 						prop("Color", "the Color to draw the time display", FORMAT),
+						displayProp("Background", "Background color",
+								"the Background color for the time display", FORMAT),
 						prop("Name", "the Name for the time display", FORMAT),
 						prop("Font", "the Font for the time display", FORMAT),
 						prop("Prefix", "the Prefix label for the time display", FORMAT),
