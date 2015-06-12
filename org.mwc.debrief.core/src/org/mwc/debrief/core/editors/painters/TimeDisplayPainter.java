@@ -76,9 +76,15 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	private HiResDate _DTG;
 	
 	private String _name = "Time Display";
+	
+	private String _prefix = "";
+	
+	private String _suffix = "";
+	
+	private HiResDate _origin;
 
 	/**
-	 * the font we use for the D DifarSymbols
+	 * the font 
 	 */
 	private static java.awt.Font _myFont = new java.awt.Font("Arial",
 			java.awt.Font.PLAIN, 12);
@@ -264,10 +270,12 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 			_myEditor.fireChanged(this, "Calc", null, this);
 		}
 
-		String str = DebriefFormatDateTime.toStringHiRes(_DTG);
+		String str = (_prefix == null ? "" : _prefix) + 
+				DebriefFormatDateTime.toStringHiRes(_DTG) + 
+				(_suffix == null ? "" : _suffix);
 		final int wid = g.getStringWidth(_myFont, str);
 
-		int width = wid + 20;
+		int width = wid;
 
 		java.awt.Point TL = null, BR = null;
 		switch (_location)
@@ -398,6 +406,9 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 						prop("Color", "the Color to draw the time display", FORMAT),
 						prop("Name", "the Name for the time display", FORMAT),
 						prop("Font", "the Font for the time display", FORMAT),
+						prop("Prefix", "the Prefix label for the time display", FORMAT),
+						prop("Suffix", "the Suffix label for the time display", FORMAT),
+						displayProp("Origin", "Time origin", "the Origin for the time display", FORMAT),
 						prop("Visible", "whether this time display is visible", VISIBILITY),
 						longProp("Location", "the time display location",
 								MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT) 
@@ -471,6 +482,36 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 			_thisEditor = null;
 			_DTG = null;
 		}
+	}
+
+	public String getPrefix()
+	{
+		return _prefix;
+	}
+
+	public void setPrefix(String prefix)
+	{
+		this._prefix = prefix;
+	}
+
+	public String getSuffix()
+	{
+		return _suffix;
+	}
+
+	public void setSuffix(String suffix)
+	{
+		this._suffix = suffix;
+	}
+
+	public HiResDate getOrigin()
+	{
+		return _origin;
+	}
+
+	public void setOrigin(HiResDate origin)
+	{
+		this._origin = origin;
 	}
 
 }
