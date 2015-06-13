@@ -90,6 +90,8 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	 */
 	private java.awt.Font _myFont = new java.awt.Font("Arial",
 			java.awt.Font.BOLD, 16);
+	
+	private String _format = "ddHHmm";
 
 	protected PropertyChangeListener _timeListener = new PropertyChangeListener()
 	{
@@ -282,7 +284,7 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 			_myEditor.fireChanged(this, "Calc", null, this);
 		}
 
-		String formattedDTG = FormatRNDateTime.toMediumString(_DTG.getMicros()/1000);
+		String formattedDTG = FormatRNDateTime.toStringLikeThis(_DTG.getMicros()/1000, _format);
 		// String formattedDTG = sDebriefFormatDateTime.toStringHiRes(_DTG)
 		String str = (_prefix == null ? "" : _prefix) + 
 				formattedDTG + 
@@ -447,7 +449,9 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 						displayProp("Origin", "Time origin", "the Origin for the time display", FORMAT),
 						prop("Visible", "whether this time display is visible", VISIBILITY),
 						longProp("Location", "the time display location",
-								MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT) 
+								MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT),
+						displayLongProp("Format", "Time format", "the time format",
+								MWC.GUI.Properties.DateFormatPropertyEditor.class, FORMAT) 
 				};
 
 				return res;
@@ -548,6 +552,16 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	public void setOrigin(HiResDate origin)
 	{
 		this._origin = origin;
+	}
+
+	public String getFormat()
+	{
+		return _format;
+	}
+
+	public void setFormat(String format)
+	{
+		this._format = format;
 	}
 
 }
