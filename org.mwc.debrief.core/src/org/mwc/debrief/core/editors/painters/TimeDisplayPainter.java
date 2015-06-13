@@ -21,6 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.util.Enumeration;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
@@ -30,11 +31,14 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.editors.PlotEditor;
 
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
+import MWC.GUI.Layers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
@@ -44,7 +48,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 /**
  * Class to plot a time display onto a plot
  */
-public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInformedOfRemove
+public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOfRemove
 {
 
 	// ///////////////////////////////////////////////////////////
@@ -58,17 +62,21 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	/**
 	 * colour of this time display
 	 */
-	Color _myColor = new java.awt.Color(28, 228, 28);
-	Color _myBackgroundColor = new java.awt.Color(128, 128, 128);
+	private Color _myColor = new java.awt.Color(28, 228, 28);
+	private Color _myBackgroundColor = new java.awt.Color(128, 128, 128);
 	/**
 	 * whether we are visible or not
 	 */
-	boolean _isOn = true;
+	private boolean _isOn = true;
+	
+	private TimeManager _timeManager;
+
+	private CorePlotEditor _thisEditor;
 
 	/**
 	 * default location for the time display
 	 */
-	protected int _location = DiagonalLocationPropertyEditor.BOTTOM_RIGHT;
+	private int _location = DiagonalLocationPropertyEditor.BOTTOM_RIGHT;
 
 	/**
 	 * our editor
@@ -93,7 +101,7 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	
 	private String _format = "ddHHmm";
 
-	protected PropertyChangeListener _timeListener = new PropertyChangeListener()
+	private PropertyChangeListener _timeListener = new PropertyChangeListener()
 	{
 		public void propertyChange(final PropertyChangeEvent event)
 		{
@@ -106,14 +114,42 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 		}
 	};
 
-	IPartListener partListener = new IPartListener()
+	private IPartListener partListener = new IPartListener()
 	{
 		
 		@Override
 		public void partOpened(IWorkbenchPart part)
 		{
+			checkEditor(part);
 		}
 		
+		private void checkEditor(IWorkbenchPart part)
+		{
+			if (_thisEditor == null && part instanceof PlotEditor)
+			{
+				PlotEditor editor = (PlotEditor) part;
+				Layers layers = (Layers) editor.getAdapter(Layers.class);
+				Enumeration<Editable> elements = layers.elements();
+				
+				while (elements.hasMoreElements())
+				{
+					Editable layer = elements.nextElement();
+					if (layer == TimeDisplayPainter.this)
+					{
+						_timeManager = (TimeManager) editor
+								.getAdapter(TimeProvider.class);
+						if (_timeManager != null)
+						{
+							_DTG = _timeManager.getTime();
+							_timeManager.addListener(_timeListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							_thisEditor = (CorePlotEditor) editor;
+						}
+					}
+				}
+			}
+		}
+
 		@Override
 		public void partDeactivated(IWorkbenchPart part)
 		{
@@ -136,33 +172,54 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 		@Override
 		public void partActivated(IWorkbenchPart part)
 		{
+			checkEditor(part);
 		}
 	};
-	
-	private TimeManager _timeManager;
-
-	private PlotEditor _thisEditor;
-	
+		
 	/**
 	 * constructor
 	 */
 	public TimeDisplayPainter()
 	{
+		Runnable runnable = new Runnable()
+		{
+			
+			@Override
+			public void run()
+			{
+				init();
+			}
+		};
+		if (Display.getCurrent() != null)
+		{
+			runnable.run();
+		}
+		else
+		{
+			Display.getDefault().syncExec(runnable);
+		}
+	}
+
+	private void init()
+	{
 		IWorkbenchPage activePage = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
-		IEditorPart activeEditor = activePage.getActiveEditor();
-		if (activeEditor instanceof PlotEditor)
+		if (activePage != null)
 		{
-			_timeManager = (TimeManager) activeEditor
-					.getAdapter(TimeProvider.class);
-			if (_timeManager != null)
+			IEditorPart activeEditor = activePage.getActiveEditor();
+			if (activeEditor instanceof CorePlotEditor)
 			{
-				_DTG = _timeManager.getTime();
-				_timeManager.addListener(_timeListener,
-						TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-				_thisEditor = (PlotEditor) activeEditor;
-				activePage.addPartListener(partListener);
+				_timeManager = (TimeManager) activeEditor
+						.getAdapter(TimeProvider.class);
+				if (_timeManager != null)
+				{
+					_DTG = _timeManager.getTime();
+					_timeManager.addListener(_timeListener,
+							TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+					_thisEditor = (CorePlotEditor) activeEditor;
+				}
 			}
+			activePage.addPartListener(partListener);
 		}
 	}
 
@@ -319,6 +376,7 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 		}
 
 		// setup the drawing object
+		Color oldBackground = g.getBackgroundColor();
 		g.setColor(this.getColor());
 		g.setBackgroundColor(_myBackgroundColor);
 
@@ -347,6 +405,7 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 			g.fillRect(x - 20, y - 20, wid + 40, txtHt + 20);
 			g.drawText(str, x, y);
 		}
+		g.setBackgroundColor(oldBackground);
 	}
 
 	/**
@@ -506,9 +565,28 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 						_timeManager = null;
 					}
-					IWorkbenchPage activePage = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					activePage.removePartListener(partListener);
+					Runnable runnable = new Runnable()
+					{
+						
+						@Override
+						public void run()
+						{
+							IWorkbenchPage activePage = PlatformUI.getWorkbench()
+									.getActiveWorkbenchWindow().getActivePage();
+							if (activePage != null)
+							{
+								activePage.removePartListener(partListener);
+							}
+						}
+					};
+					if (Display.getCurrent() != null)
+					{
+						runnable.run();
+					}
+					else
+					{
+						Display.getDefault().asyncExec(runnable);
+					}
 				}
 			};
 			if (Display.getCurrent() != null)
