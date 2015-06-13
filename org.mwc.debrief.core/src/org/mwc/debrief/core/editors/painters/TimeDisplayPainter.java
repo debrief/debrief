@@ -34,11 +34,11 @@ import org.mwc.debrief.core.editors.PlotEditor;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
 import MWC.GenericData.HiResDate;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
@@ -58,8 +58,8 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	/**
 	 * colour of this time display
 	 */
-	Color _myColor = Color.darkGray;
-	Color _myBackgroundColor = Color.WHITE;
+	Color _myColor = new java.awt.Color(28, 228, 28);
+	Color _myBackgroundColor = new java.awt.Color(128, 128, 128);
 	/**
 	 * whether we are visible or not
 	 */
@@ -88,8 +88,8 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 	/**
 	 * the font 
 	 */
-	private static java.awt.Font _myFont = new java.awt.Font("Arial",
-			java.awt.Font.PLAIN, 12);
+	private java.awt.Font _myFont = new java.awt.Font("Arial",
+			java.awt.Font.BOLD, 16);
 
 	protected PropertyChangeListener _timeListener = new PropertyChangeListener()
 	{
@@ -220,14 +220,14 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 		return _myBackgroundColor;
 	}
 	
-	public static java.awt.Font getFont()
+	public java.awt.Font getFont()
 	{
 		return _myFont;
 	}
 
-	public static void setFont(java.awt.Font _myFont)
+	public void setFont(java.awt.Font myFont)
 	{
-		TimeDisplayPainter._myFont = _myFont;
+		this._myFont = myFont;
 	}
 	/**
 	 * which corner to position the time display
@@ -326,9 +326,25 @@ public class TimeDisplayPainter implements Plottable, Serializable, NeedsToBeInf
 		int y = (int) (TL.y - (0.7 * txtHt));
 		
 		// draw in the time display value
-		g.fillRect(x - 20, y - 20, wid + 40, txtHt + 20);
-		g.drawText(_myFont, str, x, y);
-
+		if (g instanceof ExtendedCanvasType)
+		{
+			int yoffset = (int) (txtHt *1.3);
+			int xoffset = (int) (txtHt *2);
+			int w = wid;
+			int h = txtHt;
+			y = y - h;
+			width = w + yoffset*2; 
+			int height = h + xoffset;
+			ExtendedCanvasType ect = (ExtendedCanvasType) g;
+			ect.setClipping(x, y, width, height - txtHt);
+			ect.fillRoundRectangle(x, y, width, height, yoffset, yoffset);
+			g.drawText(str, x+yoffset, y + yoffset);
+		}
+		else
+		{
+			g.fillRect(x - 20, y - 20, wid + 40, txtHt + 20);
+			g.drawText(str, x, y);
+		}
 	}
 
 	/**
