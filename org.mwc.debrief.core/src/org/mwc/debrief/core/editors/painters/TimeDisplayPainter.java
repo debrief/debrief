@@ -181,13 +181,22 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 	 */
 	public TimeDisplayPainter()
 	{
+		init();
+	}
+
+	private void init()
+	{
+		if (_thisEditor != null)
+		{
+			return;
+		}
 		Runnable runnable = new Runnable()
 		{
 			
 			@Override
 			public void run()
 			{
-				init();
+				initInternal();
 			}
 		};
 		if (Display.getCurrent() != null)
@@ -200,7 +209,7 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 		}
 	}
 
-	private void init()
+	private void initInternal()
 	{
 		IWorkbenchPage activePage = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
@@ -217,9 +226,9 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 					_timeManager.addListener(_timeListener,
 							TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 					_thisEditor = (CorePlotEditor) activeEditor;
+					activePage.addPartListener(partListener);
 				}
 			}
-			activePage.addPartListener(partListener);
 		}
 	}
 
@@ -323,6 +332,8 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 		if (!_isOn)
 			return;
 
+		init();
+		
 		if (_DTG == null)
 		{
 			return;
@@ -555,7 +566,7 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 		{
 			Runnable runnable = new Runnable()
 			{
-				
+
 				@Override
 				public void run()
 				{
@@ -565,27 +576,12 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 						_timeManager = null;
 					}
-					Runnable runnable = new Runnable()
+
+					IWorkbenchPage activePage = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage();
+					if (activePage != null)
 					{
-						
-						@Override
-						public void run()
-						{
-							IWorkbenchPage activePage = PlatformUI.getWorkbench()
-									.getActiveWorkbenchWindow().getActivePage();
-							if (activePage != null)
-							{
-								activePage.removePartListener(partListener);
-							}
-						}
-					};
-					if (Display.getCurrent() != null)
-					{
-						runnable.run();
-					}
-					else
-					{
-						Display.getDefault().asyncExec(runnable);
+						activePage.removePartListener(partListener);
 					}
 				}
 			};
@@ -593,10 +589,11 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 			{
 				runnable.run();
 			}
-			else 
+			else
 			{
 				Display.getDefault().asyncExec(runnable);
 			}
+
 			_thisEditor = null;
 			_DTG = null;
 		}
