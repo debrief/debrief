@@ -1015,10 +1015,4 @@
       </helper>
     </extension>
    
-    <extension
-         point="org.mwc.debrief.core.XMLLayerHandler">
-      <helper
-            class="org.mwc.debrief.core.handlers.TimeDisplayHandler">
-      </helper>
-    </extension>
 </plugin>

@@ -1,18 +1,16 @@
-package org.mwc.debrief.core.handlers;
+package MWC.Utilities.ReaderWriter.XML.Features;
 
 import java.awt.Color;
 import java.awt.Font;
 
-import org.mwc.debrief.core.editors.painters.TimeDisplayPainter;
-
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
+import MWC.GUI.Plottable;
+import MWC.GUI.Chart.Painters.TimeDisplayPainter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
-public class TimeDisplayHandler extends MWCXMLReader implements LayerHandlerExtension
+public abstract class TimeDisplayHandler extends MWCXMLReader implements PlottableExporter
 {
 	private static final String COLOR = "Color";
 	private static final String BACKGROUND_COLOR = "BackgroundColor";
@@ -32,7 +30,6 @@ public class TimeDisplayHandler extends MWCXMLReader implements LayerHandlerExte
 	protected int _location;
 	protected Color _color;
 	protected Color _bgColor;
-	private Layers _theLayers;
 
 	public TimeDisplayHandler()
 	{
@@ -126,21 +123,16 @@ public class TimeDisplayHandler extends MWCXMLReader implements LayerHandlerExte
 				wrapper.setBackground(_bgColor);
 			}
 			wrapper.setLocation(_location);
-			_theLayers.addThisLayer(wrapper);
+			addPlottable(wrapper);
 	}
 		
-	
-	@Override
-	public boolean canExportThis(Layer subject)
-	{
-		return subject instanceof TimeDisplayPainter;
-	}
+	abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
 	@Override
-	public void exportThis(Layer theLayer, org.w3c.dom.Element parent,
+	public void exportThisPlottable(Plottable plottable, org.w3c.dom.Element parent,
 			org.w3c.dom.Document doc)
 	{
-		TimeDisplayPainter tdp = (TimeDisplayPainter) theLayer;
+		TimeDisplayPainter tdp = (TimeDisplayPainter) plottable;
 		if (tdp == null)
 		{
 			return;
@@ -159,12 +151,6 @@ public class TimeDisplayHandler extends MWCXMLReader implements LayerHandlerExte
     
 		parent.appendChild(timeDisplay);
 
-	}
-
-	@Override
-	public void setLayers(Layers theLayers)
-	{
-		this._theLayers = theLayers;
 	}
 
 }

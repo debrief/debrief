@@ -30,6 +30,8 @@ import org.xml.sax.Attributes;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.MovingLayer;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
@@ -39,11 +41,16 @@ import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.LocalGridHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.ScaleHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.TimeDisplayHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFCoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
 public class LayerHandler extends MWCXMLReader implements PlottableExporter
 {
+
+	private static final String NAME = "Name";
+
+	private static final String MOVING_LAYER = "MovingLayer";
 
 	private final MWC.GUI.Layers _theLayers;
 
@@ -109,6 +116,14 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 			}
 		});		
 
+		addHandler(new TimeDisplayHandler()
+		{
+			public void addPlottable(final MWC.GUI.Plottable plottable)
+			{
+				addThis(plottable);
+			}
+		});		
+		
 		addHandler(new LocalGridHandler()
 		{
 			public void addPlottable(final MWC.GUI.Plottable plottable)
@@ -131,7 +146,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 			}
 		});
 
-		addAttributeHandler(new HandleAttribute("Name")
+		addAttributeHandler(new HandleAttribute(NAME)
 		{
 			public void setValue(final String name, final String val)
 			{
@@ -161,7 +176,15 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 	protected void handleOurselves(final String name, final Attributes attributes)
 	{
 		// we are starting a new layer, so create it!
-		_myLayer = getLayer();
+		if ("true".equals(attributes.getValue(MOVING_LAYER))
+				|| Layers.CHART_FEATURES.equals(attributes.getValue(NAME)))
+		{
+			_myLayer = new MovingLayer();
+		}
+		else
+		{
+			_myLayer = getLayer();
+		}
 
 		super.handleOurselves(name, attributes);
 	}
@@ -238,6 +261,12 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 				{
 				}
 			});
+			_myExporters.put(MWC.GUI.Chart.Painters.TimeDisplayPainter.class, new TimeDisplayHandler()
+			{
+				public void addPlottable(Plottable plottable)
+				{
+				}
+			});
 			_myExporters.put(MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer.class,
 					new VPFCoastlineHandler()
 					{
@@ -301,9 +330,10 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 		final org.w3c.dom.Element eLayer = doc.createElement(elementName);
 
-		eLayer.setAttribute("Name", layer.getName());
+		eLayer.setAttribute(NAME, layer.getName());
 		eLayer.setAttribute("Visible", writeThis(layer.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
+		eLayer.setAttribute(MOVING_LAYER, writeThis( (layer instanceof MovingLayer) ));
 
 		// step through the components of the layer
 		final java.util.Enumeration<Editable> enumer = layer.elements();

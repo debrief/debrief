@@ -12,34 +12,18 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.debrief.core.editors.painters;
+package MWC.GUI.Chart.Painters;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.Enumeration;
 
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
-import org.mwc.debrief.core.editors.PlotEditor;
-
-import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
-import MWC.GUI.Layers;
-import MWC.GUI.NeedsToBeInformedOfRemove;
+import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
 import MWC.GenericData.HiResDate;
@@ -48,7 +32,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 /**
  * Class to plot a time display onto a plot
  */
-public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOfRemove
+public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializable
 {
 
 	// ///////////////////////////////////////////////////////////
@@ -69,10 +53,6 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 	 */
 	private boolean _isOn = true;
 	
-	private TimeManager _timeManager;
-
-	private CorePlotEditor _thisEditor;
-
 	/**
 	 * default location for the time display
 	 */
@@ -100,136 +80,13 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 			java.awt.Font.BOLD, 16);
 	
 	private String _format = "ddHHmm";
-
-	private PropertyChangeListener _timeListener = new PropertyChangeListener()
-	{
-		public void propertyChange(final PropertyChangeEvent event)
-		{
-			// right, retrieve the time
-			_DTG = (HiResDate) event.getNewValue();
-			if (_thisEditor != null)
-			{
-				_thisEditor.update();
-			}
-		}
-	};
-
-	private IPartListener partListener = new IPartListener()
-	{
-		
-		@Override
-		public void partOpened(IWorkbenchPart part)
-		{
-			checkEditor(part);
-		}
-		
-		private void checkEditor(IWorkbenchPart part)
-		{
-			if (_thisEditor == null && part instanceof PlotEditor)
-			{
-				PlotEditor editor = (PlotEditor) part;
-				Layers layers = (Layers) editor.getAdapter(Layers.class);
-				Enumeration<Editable> elements = layers.elements();
-				
-				while (elements.hasMoreElements())
-				{
-					Editable layer = elements.nextElement();
-					if (layer == TimeDisplayPainter.this)
-					{
-						_timeManager = (TimeManager) editor
-								.getAdapter(TimeProvider.class);
-						if (_timeManager != null)
-						{
-							_DTG = _timeManager.getTime();
-							_timeManager.addListener(_timeListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-							_thisEditor = (CorePlotEditor) editor;
-						}
-					}
-				}
-			}
-		}
-
-		@Override
-		public void partDeactivated(IWorkbenchPart part)
-		{
-		}
-		
-		@Override
-		public void partClosed(IWorkbenchPart part)
-		{
-			if (part == _thisEditor) 
-			{
-				beingRemoved();
-			}
-		}
-		
-		@Override
-		public void partBroughtToTop(IWorkbenchPart part)
-		{
-		}
-		
-		@Override
-		public void partActivated(IWorkbenchPart part)
-		{
-			checkEditor(part);
-		}
-	};
-		
+			
 	/**
 	 * constructor
 	 */
 	public TimeDisplayPainter()
 	{
-		init();
-	}
-
-	private void init()
-	{
-		if (_thisEditor != null)
-		{
-			return;
-		}
-		Runnable runnable = new Runnable()
-		{
-			
-			@Override
-			public void run()
-			{
-				initInternal();
-			}
-		};
-		if (Display.getCurrent() != null)
-		{
-			runnable.run();
-		}
-		else
-		{
-			Display.getDefault().syncExec(runnable);
-		}
-	}
-
-	private void initInternal()
-	{
-		IWorkbenchPage activePage = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-		if (activePage != null)
-		{
-			IEditorPart activeEditor = activePage.getActiveEditor();
-			if (activeEditor instanceof CorePlotEditor)
-			{
-				_timeManager = (TimeManager) activeEditor
-						.getAdapter(TimeProvider.class);
-				if (_timeManager != null)
-				{
-					_DTG = _timeManager.getTime();
-					_timeManager.addListener(_timeListener,
-							TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-					_thisEditor = (CorePlotEditor) activeEditor;
-					activePage.addPartListener(partListener);
-				}
-			}
-		}
+		
 	}
 
 	// ///////////////////////////////////////////////////////////
@@ -325,6 +182,7 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 	 * @param g
 	 *          the destination
 	 */
+	@Override
 	public void paint(final CanvasType g)
 	{
 
@@ -332,8 +190,6 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 		if (!_isOn)
 			return;
 
-		init();
-		
 		if (_DTG == null)
 		{
 			return;
@@ -559,46 +415,6 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 		return this.getName().compareTo(other.getName());
 	}
 
-	@Override
-	public void beingRemoved()
-	{
-		if (_thisEditor != null)
-		{
-			Runnable runnable = new Runnable()
-			{
-
-				@Override
-				public void run()
-				{
-					if (_timeManager != null)
-					{
-						_timeManager.removeListener(_timeListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-						_timeManager = null;
-					}
-
-					IWorkbenchPage activePage = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					if (activePage != null)
-					{
-						activePage.removePartListener(partListener);
-					}
-				}
-			};
-			if (Display.getCurrent() != null)
-			{
-				runnable.run();
-			}
-			else
-			{
-				Display.getDefault().asyncExec(runnable);
-			}
-
-			_thisEditor = null;
-			_DTG = null;
-		}
-	}
-
 	public String getPrefix()
 	{
 		return _prefix;
@@ -637,6 +453,23 @@ public class TimeDisplayPainter extends BaseLayer implements NeedsToBeInformedOf
 	public void setFormat(String format)
 	{
 		this._format = format;
+	}
+
+	public HiResDate getDTG()
+	{
+		return _DTG;
+	}
+
+	public void setDTG(HiResDate DTG)
+	{
+		this._DTG = DTG;
+	}
+
+	@Override
+	public void paint(CanvasType dest, long time)
+	{
+		_DTG = new HiResDate(time);
+		paint(dest);
 	}
 
 }

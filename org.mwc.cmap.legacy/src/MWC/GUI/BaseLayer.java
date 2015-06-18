@@ -262,8 +262,9 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		
 		// special handling.  If this the chart features layer, we will double-buffer it, so VPF redraws
 		// more quickly
-		if(theName.equals(Layers.CHART_FEATURES))
-			setBuffered(true);
+	  // Time Display requires painting
+		// if(theName.equals(Layers.CHART_FEATURES))
+		//	setBuffered(true);
 	}
 
 	/**
