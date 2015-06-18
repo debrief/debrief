@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import Debrief.Wrappers.FixWrapper.MyDateFormatPropertyEditor;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -128,7 +127,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 						displayLongProp(
 								"LabelFormat", "Label format",
 								"the time format of the position labels, or N/A to leave as-is",
-								MyDateFormatPropertyEditor.class, SPATIAL),
+								MWC.GUI.Properties.MyDateFormatPropertyEditor.class, SPATIAL),
 						displayExpertProp("NameVisible", "Name visible", "show the track label", VISIBILITY),
 						displayExpertProp("NameAtStart", "Name at start",
 								"whether to show the track name at the start (or end)",

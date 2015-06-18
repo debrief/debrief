@@ -26,6 +26,7 @@ import MWC.GUI.ExtendedEditable;
 import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
+import MWC.GUI.Properties.MyDateFormatPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
@@ -368,7 +369,7 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 						longProp("Location", "the time display location",
 								MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT),
 						displayLongProp("Format", "Time format", "the time format",
-								MWC.GUI.Properties.DateFormatPropertyEditor.class, FORMAT) 
+								MyDateFormatPropertyEditor.class, FORMAT) 
 				};
 
 				return res;
