@@ -4,13 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 
 import MWC.GUI.Plottable;
-import MWC.GUI.Chart.Painters.TimeDisplayPainter;
+import MWC.GUI.Chart.Painters.AbsoluteTimeDisplayPainter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
-public abstract class TimeDisplayHandler extends MWCXMLReader implements PlottableExporter
+public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements PlottableExporter
 {
 	private static final String COLOR = "Color";
 	private static final String BACKGROUND_COLOR = "BackgroundColor";
@@ -31,7 +31,7 @@ public abstract class TimeDisplayHandler extends MWCXMLReader implements Plottab
 	protected Color _color;
 	protected Color _bgColor;
 
-	public TimeDisplayHandler()
+	public AbsoluteTimeDisplayHandler()
 	{
 		super(TYPE);
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
@@ -104,7 +104,7 @@ public abstract class TimeDisplayHandler extends MWCXMLReader implements Plottab
 	public final void elementClosed()
 	{
 			// set our specific attributes
-			final TimeDisplayPainter wrapper = new TimeDisplayPainter();
+			final AbsoluteTimeDisplayPainter wrapper = new AbsoluteTimeDisplayPainter();
 			wrapper.setVisible(_visible);
 			wrapper.setName(_name);
 			wrapper.setFormat(_formatTime);
@@ -132,7 +132,7 @@ public abstract class TimeDisplayHandler extends MWCXMLReader implements Plottab
 	public void exportThisPlottable(Plottable plottable, org.w3c.dom.Element parent,
 			org.w3c.dom.Document doc)
 	{
-		TimeDisplayPainter tdp = (TimeDisplayPainter) plottable;
+		AbsoluteTimeDisplayPainter tdp = (AbsoluteTimeDisplayPainter) plottable;
 		if (tdp == null)
 		{
 			return;

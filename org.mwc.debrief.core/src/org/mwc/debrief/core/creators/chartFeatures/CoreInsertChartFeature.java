@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.core.creators.chartFeatures;
 
+import java.util.Enumeration;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
@@ -26,6 +28,8 @@ import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.ExtendedEditable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -43,6 +47,8 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 {
 
 	public static ToolParent _theParent = null;
+	
+	private boolean multiple = false;
 
 	/**
 	 * whether this item is a top-level layer
@@ -170,6 +176,19 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 						theLayer.setName(myLayer);
 						theData.addThisLayer(theLayer);
 					}
+					String name = thePlottable.getName();
+					if (isMultiple() && name != null && thePlottable instanceof ExtendedEditable)
+					{
+						Editable existing = findPlottable(theLayer, name);
+						int i = 1;
+						while (existing != null)
+						{
+							name = name + " " + i;
+							existing = findPlottable(theLayer, name);
+						}
+						((ExtendedEditable)thePlottable).setName(name);
+					}
+					
 				}
 
 				// and put it into an action (so we can undo it)
@@ -229,6 +248,24 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		return res;
 	}
 
+	private Editable findPlottable(Layer theLayer, String name)
+	{
+		if (name == null)
+		{
+			return null;
+		}
+		Enumeration<Editable> elements = theLayer.elements();
+		while (elements.hasMoreElements())
+		{
+			Editable element = elements.nextElement();
+			if (name.equals(element.getName()))
+			{
+				return element;
+			}
+		}
+		return null;
+	}
+
 	public Layer getLayer()
 	{
 		return new BaseLayer();
@@ -248,5 +285,15 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	protected String getLayerName()
 	{
 		return Layers.CHART_FEATURES;
+	}
+
+	public boolean isMultiple()
+	{
+		return multiple;
+	}
+
+	public void setMultiple(boolean multiple)
+	{
+		this.multiple = multiple;
 	}
 }

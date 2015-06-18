@@ -23,6 +23,7 @@ import java.io.Serializable;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
+import MWC.GUI.ExtendedEditable;
 import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
@@ -32,7 +33,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 /**
  * Class to plot a time display onto a plot
  */
-public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializable
+public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
+		ExtendedEditable, Serializable
 {
 
 	// ///////////////////////////////////////////////////////////
@@ -65,13 +67,11 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializa
 
 	private HiResDate _DTG;
 	
-	private String _name = "Time Display";
+	private String _name = "Time Display (Absolute)";
 	
 	private String _prefix = "";
 	
 	private String _suffix = "";
-	
-	private HiResDate _origin;
 
 	/**
 	 * the font 
@@ -84,7 +84,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializa
 	/**
 	 * constructor
 	 */
-	public TimeDisplayPainter()
+	public AbsoluteTimeDisplayPainter()
 	{
 		
 	}
@@ -354,7 +354,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializa
 		// give it some old version id
 		static final long serialVersionUID = 1L;
 
-		public TimeDisplayPainterInfo(final TimeDisplayPainter data)
+		public TimeDisplayPainterInfo(final AbsoluteTimeDisplayPainter data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -372,7 +372,6 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializa
 						prop("Font", "the Font for the time display", FORMAT),
 						prop("Prefix", "the Prefix label for the time display", FORMAT),
 						prop("Suffix", "the Suffix label for the time display", FORMAT),
-						displayProp("Origin", "Time origin", "the Origin for the time display", FORMAT),
 						prop("Visible", "whether this time display is visible", VISIBILITY),
 						longProp("Location", "the time display location",
 								MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT),
@@ -403,7 +402,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializa
 
 		public void testMyParams()
 		{
-			MWC.GUI.Editable ed = new TimeDisplayPainter();
+			MWC.GUI.Editable ed = new AbsoluteTimeDisplayPainter();
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
@@ -433,16 +432,6 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable, Serializa
 	public void setSuffix(String suffix)
 	{
 		this._suffix = suffix;
-	}
-
-	public HiResDate getOrigin()
-	{
-		return _origin;
-	}
-
-	public void setOrigin(HiResDate origin)
-	{
-		this._origin = origin;
 	}
 
 	public String getFormat()

@@ -693,7 +693,7 @@
         <command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
             id="org.mwc.debrief.core.creators.chartFeatures.InsertScale" name="&amp;Scale"> </command>
 
-		<command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay"
+		<command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertAbsoluteTimeDisplay"
             id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay" name="&amp;Time Display"> </command>
 
         <command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
