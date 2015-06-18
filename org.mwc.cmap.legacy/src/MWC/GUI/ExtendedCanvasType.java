@@ -64,9 +64,4 @@ public interface ExtendedCanvasType extends ShapeCanvasType
 	public void setXORMode(boolean mode);
 	
 	public boolean getXORMode();
-	
-	public void setClipping(int x, int y, int width, int height);
-	
-	public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight);
-
 }

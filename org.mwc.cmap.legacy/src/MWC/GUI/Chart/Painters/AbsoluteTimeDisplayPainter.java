@@ -22,7 +22,6 @@ import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.ExtendedEditable;
 import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
@@ -48,8 +47,8 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 	/**
 	 * colour of this time display
 	 */
-	private Color _myColor = new java.awt.Color(28, 228, 28);
-	private Color _myBackgroundColor = new java.awt.Color(128, 128, 128);
+	private Color _myColor = Color.white;
+	private Color _myBackgroundColor = Color.darkGray;
 	/**
 	 * whether we are visible or not
 	 */
@@ -242,36 +241,22 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 			break;
 		}
 
-		// setup the drawing object
-		Color oldBackground = g.getBackgroundColor();
-		g.setColor(this.getColor());
-		g.setBackgroundColor(_myBackgroundColor);
-
 		int this_dist = TL.x;
 
 		int x = this_dist - (wid / 2); 
 		int y = (int) (TL.y - (0.7 * txtHt));
 		
 		// draw in the time display value
-		if (g instanceof ExtendedCanvasType)
-		{
-			int yoffset = (int) (txtHt *1.3);
-			int xoffset = (int) (txtHt *2);
-			int w = wid;
-			int h = txtHt;
-			y = y - h;
-			width = w + yoffset*2; 
-			int height = h + xoffset;
-			ExtendedCanvasType ect = (ExtendedCanvasType) g;
-			ect.setClipping(x, y, width, height - txtHt);
-			ect.fillRoundRectangle(x, y, width, height, yoffset, yoffset);
-			g.drawText(str, x+yoffset, y + yoffset);
-		}
-		else
-		{
-			g.fillRect(x - 20, y - 20, wid + 40, txtHt + 20);
-			g.drawText(str, x, y);
-		}
+		int offset = (int) (txtHt * 1.5);
+		// setup the drawing object
+		Color oldBackground = g.getBackgroundColor();
+		g.setBackgroundColor(_myBackgroundColor);
+
+		g.setColor(_myBackgroundColor);
+		g.fillRect(x - offset, y - offset, wid + 2*offset, txtHt + offset);
+		g.setColor(this.getColor());
+		g.drawText(str, x, y);
+	
 		g.setBackgroundColor(oldBackground);
 	}
 

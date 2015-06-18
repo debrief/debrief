@@ -1508,23 +1508,4 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		return false;
 	}
 
-	@Override
-	public void setClipping(int x, int y, int width, int height)
-	{
-		if (_theDest != null && !_theDest.isDisposed())
-		{
-			_theDest.setClipping(x, y, width, height);
-		}
-	}
-
-	@Override
-	public void fillRoundRectangle(int x, int y, int width, int height,
-			int arcWidth, int arcHeight)
-	{
-		if (_theDest != null && !_theDest.isDisposed())
-		{
-			_theDest.fillRoundRectangle(x, y, width, height, arcWidth, arcHeight);
-		}
-	}
-
 }
