@@ -14,6 +14,7 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 {
 	private static final String COLOR = "Color";
 	private static final String BACKGROUND_COLOR = "BackgroundColor";
+	private static final String FILL_BACKGROUND = "FillBackground";
 	private static final String FORMAT_TIME = "FormatTime";
 	private static final String PREFIX = "Prefix";
 	private static final String SUFFIX = "Suffix";
@@ -22,6 +23,7 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 	private static final String LOCATION = "Location";
 	public static final String TYPE = "timeDisplay";
 	protected boolean _visible;
+	protected boolean _fillBackground;
 	protected String _formatTime;
 	protected String _name;
 	protected String _suffix;
@@ -39,6 +41,13 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 			public void setValue(final String name, final boolean value)
 			{
 				_visible = value;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(FILL_BACKGROUND)
+		{
+			public void setValue(final String name, final boolean value)
+			{
+				_fillBackground = value;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(NAME)
@@ -106,6 +115,7 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 			// set our specific attributes
 			final AbsoluteTimeDisplayPainter wrapper = new AbsoluteTimeDisplayPainter();
 			wrapper.setVisible(_visible);
+			wrapper.setFillBackground(_fillBackground);
 			wrapper.setName(_name);
 			wrapper.setFormat(_formatTime);
 			wrapper.setPrefix(_prefix);
@@ -141,6 +151,7 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 
 		timeDisplay.setAttribute(NAME, tdp.getName());
 		timeDisplay.setAttribute(VISIBLE, writeThis(tdp.getVisible()));
+		timeDisplay.setAttribute(FILL_BACKGROUND, writeThis(tdp.isFillBackground()));
 		timeDisplay.setAttribute(LOCATION, writeThis(tdp.getLocation()));
 		timeDisplay.setAttribute(FORMAT_TIME, tdp.getFormat());
 		timeDisplay.setAttribute(PREFIX, tdp.getPrefix());

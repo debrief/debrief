@@ -54,6 +54,8 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 	 */
 	private boolean _isOn = true;
 	
+	private boolean _fillBackground = true;
+	
 	/**
 	 * default location for the time display
 	 */
@@ -252,8 +254,11 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 		Color oldBackground = g.getBackgroundColor();
 		g.setBackgroundColor(_myBackgroundColor);
 
-		g.setColor(_myBackgroundColor);
-		g.fillRect(x - offset, y - offset, wid + 2*offset, txtHt + offset);
+		if (_fillBackground)
+		{
+			g.setColor(_myBackgroundColor);
+			g.fillRect(x - offset, y - offset, wid + 2*offset, txtHt + offset);
+		}
 		g.setColor(this.getColor());
 		g.drawText(str, x, y);
 	
@@ -353,6 +358,8 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 						prop("Color", "the Color to draw the time display", FORMAT),
 						displayProp("Background", "Background color",
 								"the Background color for the time display", FORMAT),
+						displayProp("FillBackground", "Fill Background",
+										"wether to fill background for the time display", FORMAT),
 						prop("Name", "the Name for the time display", FORMAT),
 						prop("Font", "the Font for the time display", FORMAT),
 						prop("Prefix", "the Prefix label for the time display", FORMAT),
@@ -444,6 +451,16 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 	{
 		_DTG = new HiResDate(time);
 		paint(dest);
+	}
+
+	public boolean isFillBackground()
+	{
+		return _fillBackground;
+	}
+
+	public void setFillBackground(boolean fillBackground)
+	{
+		this._fillBackground = fillBackground;
 	}
 
 }
