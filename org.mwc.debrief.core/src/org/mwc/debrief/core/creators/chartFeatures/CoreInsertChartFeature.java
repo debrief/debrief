@@ -25,9 +25,9 @@ import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.MovingLayer;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
@@ -166,7 +166,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 					if (theLayer == null)
 					{
 						// nope, better create it.
-						theLayer = new MovingLayer();
+						theLayer = getLayer();
 						theLayer.setName(myLayer);
 						theData.addThisLayer(theLayer);
 					}
@@ -227,6 +227,11 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		}
 
 		return res;
+	}
+
+	public Layer getLayer()
+	{
+		return new BaseLayer();
 	}
 
 	/**

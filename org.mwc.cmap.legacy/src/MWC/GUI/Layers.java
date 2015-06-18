@@ -220,6 +220,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * the name of the chart-features layer
 	 */
 	public static final String CHART_FEATURES = "Chart Features";
+	
+	/**
+	 * the name of the chart-features layer
+	 */
+	public static final String DYNAMIC_FEATURES = "Dynamic Features";
 
 	/**
 	 * 

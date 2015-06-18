@@ -30,9 +30,8 @@ import org.xml.sax.Attributes;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.MovingLayer;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
+import MWC.GUI.MovingLayer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.Utilities.ReaderWriter.XML.Features.ChartBoundsHandler;
@@ -48,9 +47,9 @@ import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 public class LayerHandler extends MWCXMLReader implements PlottableExporter
 {
 
-	private static final String NAME = "Name";
+	public static final String NAME = "Name";
 
-	private static final String MOVING_LAYER = "MovingLayer";
+	public static final String MOVING_LAYER = "MovingLayer";
 
 	private final MWC.GUI.Layers _theLayers;
 
@@ -176,8 +175,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 	protected void handleOurselves(final String name, final Attributes attributes)
 	{
 		// we are starting a new layer, so create it!
-		if ("true".equals(attributes.getValue(MOVING_LAYER))
-				|| Layers.CHART_FEATURES.equals(attributes.getValue(NAME)))
+		if ("true".equals(attributes.getValue(MOVING_LAYER)))
 		{
 			_myLayer = new MovingLayer();
 		}
