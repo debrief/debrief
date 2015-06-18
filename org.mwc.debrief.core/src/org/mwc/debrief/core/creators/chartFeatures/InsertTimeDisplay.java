@@ -16,7 +16,7 @@ package org.mwc.debrief.core.creators.chartFeatures;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.MovingLayer;
+import MWC.GUI.DynamicLayer;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.TimeDisplayPainter;
@@ -31,7 +31,7 @@ public class InsertTimeDisplay extends CoreInsertChartFeature
 	@Override
 	public Layer getLayer()
 	{
-		return new MovingLayer();
+		return new DynamicLayer();
 	}
 
 	@Override

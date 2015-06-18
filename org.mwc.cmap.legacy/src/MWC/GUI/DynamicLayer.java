@@ -2,7 +2,7 @@ package MWC.GUI;
 
 import java.util.Enumeration;
 
-public class MovingLayer extends BaseLayer implements MovingPlottable
+public class DynamicLayer extends BaseLayer implements MovingPlottable
 {
 
 	private static final long serialVersionUID = 1L;
