@@ -330,12 +330,12 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		}
 		else if (HOURS.equals(_format))
 		{
-			builder.append(relativeTime/(60*60*60000));
+			builder.append(relativeTime/(60*60*1000));
 			builder.append(" hours");
 		}
 		else if (DAYS.equals(_format))
 		{
-			builder.append(relativeTime/(24*60*60*60000));
+			builder.append(relativeTime/(24*60*60*1000));
 			builder.append(" days");
 		}
 		return builder.toString();
