@@ -287,22 +287,18 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		{
 			y = (int) (y + offset*2);
 		}
-
-		if (_fillBackground)
+		g.setColor(_fillBackground ? _myBackgroundColor : oldBackground);
+		int xx = x - offset;
+		int yy = y - offset;
+		if (xx < 5)
 		{
-			g.setColor(_myBackgroundColor);
-			int xx = x  - offset;
-			int yy = y - offset;
-			if (xx < 5)
-			{
-				xx = 5;
-			}
-			if (yy < 5)
-			{
-				yy = 5;
-			}
-			g.fillRect(xx, yy, wid + 2*offset, txtHt + offset);
+			xx = 5;
 		}
+		if (yy < 5)
+		{
+			yy = 5;
+		}
+		g.fillRect(xx, yy, wid + 2 * offset, txtHt + offset);
 		g.setColor(this.getColor());
 		g.drawText(_myFont, str, x, y);
 	
