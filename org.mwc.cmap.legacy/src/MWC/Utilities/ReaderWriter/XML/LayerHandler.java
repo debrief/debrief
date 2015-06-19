@@ -40,7 +40,7 @@ import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.LocalGridHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.ScaleHandler;
-import MWC.Utilities.ReaderWriter.XML.Features.TimeDisplayPainterAbsoluteHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.TimeDisplayPainterHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFCoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
@@ -115,7 +115,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 			}
 		});		
 
-		addHandler(new TimeDisplayPainterAbsoluteHandler()
+		addHandler(new TimeDisplayPainterHandler()
 		{
 			public void addPlottable(final MWC.GUI.Plottable plottable)
 			{
@@ -259,7 +259,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 				{
 				}
 			});
-			_myExporters.put(MWC.GUI.Chart.Painters.TimeDisplayPainterAbsolute.class, new TimeDisplayPainterAbsoluteHandler()
+			_myExporters.put(MWC.GUI.Chart.Painters.TimeDisplayPainter.class, new TimeDisplayPainterHandler()
 			{
 				public void addPlottable(Plottable plottable)
 				{

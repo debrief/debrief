@@ -4,13 +4,14 @@ import java.awt.Color;
 import java.awt.Font;
 
 import MWC.GUI.Plottable;
-import MWC.GUI.Chart.Painters.TimeDisplayPainterAbsolute;
+import MWC.GUI.Chart.Painters.TimeDisplayPainter;
+import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
-public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader implements PlottableExporter
+public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements PlottableExporter
 {
 	public static final String COLOR = "Color";
 	public static final String BACKGROUND_COLOR = "BackgroundColor";
@@ -19,10 +20,14 @@ public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader imp
 	public static final String PREFIX = "Prefix";
 	public static final String SUFFIX = "Suffix";
 	public static final String VISIBLE = "Visible";
+	public static final String ABSOLUTE = "Absolute";
+	public static final String ORIGIN = "Origin";
 	public static final String NAME = "Name";
 	public static final String LOCATION = "Location";
-	public static final String TYPE = "timeDisplayAbsolute";
+	public static final String TYPE = "timeDisplay";
 	protected boolean _visible;
+	protected boolean _absolute;
+	protected HiResDate _origin;
 	protected boolean _fillBackground;
 	protected String _formatTime;
 	protected String _name;
@@ -33,7 +38,7 @@ public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader imp
 	protected Color _color;
 	protected Color _bgColor;
 
-	public TimeDisplayPainterAbsoluteHandler()
+	public TimeDisplayPainterHandler()
 	{
 		super(TYPE);
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
@@ -41,6 +46,20 @@ public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader imp
 			public void setValue(final String name, final boolean value)
 			{
 				_visible = value;
+			}
+		});
+		addAttributeHandler(new HandleAttribute(ORIGIN)
+		{
+			public void setValue(final String name, final String value)
+			{
+				_origin = parseThisDate(value);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(ABSOLUTE)
+		{
+			public void setValue(final String name, final boolean value)
+			{
+				_absolute = value;
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(FILL_BACKGROUND)
@@ -113,8 +132,10 @@ public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader imp
 	public final void elementClosed()
 	{
 			// set our specific attributes
-			final TimeDisplayPainterAbsolute wrapper = new TimeDisplayPainterAbsolute();
+			final TimeDisplayPainter wrapper = new TimeDisplayPainter();
 			wrapper.setVisible(_visible);
+			wrapper.setAbsolute(_absolute);
+			wrapper.setOrigin(_origin);
 			wrapper.setFillBackground(_fillBackground);
 			wrapper.setName(_name);
 			wrapper.setFormat(_formatTime);
@@ -142,7 +163,7 @@ public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader imp
 	public void exportThisPlottable(Plottable plottable, org.w3c.dom.Element parent,
 			org.w3c.dom.Document doc)
 	{
-		TimeDisplayPainterAbsolute tdp = (TimeDisplayPainterAbsolute) plottable;
+		TimeDisplayPainter tdp = (TimeDisplayPainter) plottable;
 		if (tdp == null)
 		{
 			return;
@@ -151,6 +172,11 @@ public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader imp
 
 		timeDisplay.setAttribute(NAME, tdp.getName());
 		timeDisplay.setAttribute(VISIBLE, writeThis(tdp.getVisible()));
+		timeDisplay.setAttribute(ABSOLUTE, writeThis(tdp.isAbsolute()));
+		if (!tdp.isAbsolute())
+		{
+			timeDisplay.setAttribute(ORIGIN, writeThis(tdp.getOrigin()));
+		}
 		timeDisplay.setAttribute(FILL_BACKGROUND, writeThis(tdp.isFillBackground()));
 		timeDisplay.setAttribute(LOCATION, writeThis(tdp.getLocation()));
 		timeDisplay.setAttribute(FORMAT_TIME, tdp.getFormat());
@@ -161,7 +187,6 @@ public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader imp
     ColourHandler.exportColour(tdp.getBackground(), timeDisplay, doc, BACKGROUND_COLOR);
     
 		parent.appendChild(timeDisplay);
-
 	}
 
 }

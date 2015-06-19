@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditorSupport;
 import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
@@ -33,13 +34,21 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 /**
  * Class to plot a time display onto a plot
  */
-public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
+public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		ExtendedEditable, Serializable
 {
 
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
+	private static final String DAYS = "Days";
+	private static final String HOURS = "Hours";
+	private static final String MINS = "Mins";
+	private static final String SECS = "Secs";
+	private static final String MILLIS = "Millis";
+	
+	public static final String ABSOLUTE_DEFAULT_FORMAT = "ddHHmm";
+	public static final String RELATIVE_DEFAULT_FORMAT = MILLIS;
+	public static final String TIME_DISPLAY_ABSOLUTE = "Time Display (Absolute)";
+	public static final String TIME_DISPLAY_RELATIVE = "Time Display (Relative)";
+
 	/**
 	 * version number for this painter
 	 */
@@ -48,14 +57,18 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 	/**
 	 * colour of this time display
 	 */
-	private Color _myColor = Color.white;
-	private Color _myBackgroundColor = Color.darkGray;
+	private Color _myColor = Color.darkGray;
+	private Color _myBackgroundColor = Color.white;
 	/**
 	 * whether we are visible or not
 	 */
 	private boolean _isOn = true;
 	
-	private boolean _fillBackground = true;
+	private boolean _absolute = true;
+	
+	private HiResDate _origin;
+	
+	private boolean _fillBackground = false;
 	
 	/**
 	 * default location for the time display
@@ -69,7 +82,7 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 
 	private HiResDate _DTG;
 	
-	private String _name = "Time Display (Absolute)";
+	private String _name = TIME_DISPLAY_ABSOLUTE;
 	
 	private String _prefix = "";
 	
@@ -79,16 +92,15 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 	 * the font 
 	 */
 	private java.awt.Font _myFont = new java.awt.Font("Arial",
-			java.awt.Font.BOLD, 16);
+			java.awt.Font.PLAIN, 12);
 	
-	private String _format = "ddHHmm";
+	private String _format = ABSOLUTE_DEFAULT_FORMAT;
 			
 	/**
 	 * constructor
 	 */
-	public TimeDisplayPainterAbsolute()
+	public TimeDisplayPainter()
 	{
-		
 	}
 
 	// ///////////////////////////////////////////////////////////
@@ -187,7 +199,6 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 	@Override
 	public void paint(final CanvasType g)
 	{
-
 		// check we are visible
 		if (!_isOn)
 			return;
@@ -210,11 +221,24 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 			_myEditor.fireChanged(this, "Calc", null, this);
 		}
 
-		String formattedDTG = FormatRNDateTime.toStringLikeThis(_DTG.getMicros()/1000, _format);
-		// String formattedDTG = sDebriefFormatDateTime.toStringHiRes(_DTG)
-		String str = (_prefix == null ? "" : _prefix) + 
-				formattedDTG + 
-				(_suffix == null ? "" : _suffix);
+		String str;
+		if (_absolute)
+		{
+			String formattedDTG = FormatRNDateTime.toStringLikeThis(_DTG.getMicros()/1000, _format);
+			str = (_prefix == null ? "" : _prefix) + 
+					formattedDTG + 
+					(_suffix == null ? "" : _suffix);
+			
+		}
+		else
+		{
+			str = getRelativeTime();
+			if (str == null)
+			{
+				return;
+			}
+		}
+
 		final int wid = g.getStringWidth(_myFont, str);
 
 		int width = wid;
@@ -254,16 +278,71 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 		// setup the drawing object
 		Color oldBackground = g.getBackgroundColor();
 		g.setBackgroundColor(_myBackgroundColor);
+		
+		if (_location == DiagonalLocationPropertyEditor.BOTTOM_LEFT || _location == DiagonalLocationPropertyEditor.BOTTOM_RIGHT)
+		{
+			y = (int) (y - offset*1.5);
+		}
+		else
+		{
+			y = (int) (y + offset*2);
+		}
 
 		if (_fillBackground)
 		{
 			g.setColor(_myBackgroundColor);
-			g.fillRect(x - offset, y - offset, wid + 2*offset, txtHt + offset);
+			int xx = x  - offset;
+			int yy = y - offset;
+			if (xx < 5)
+			{
+				xx = 5;
+			}
+			if (yy < 5)
+			{
+				yy = 5;
+			}
+			g.fillRect(xx, yy, wid + 2*offset, txtHt + offset);
 		}
 		g.setColor(this.getColor());
-		g.drawText(str, x, y);
+		g.drawText(_myFont, str, x, y);
 	
 		g.setBackgroundColor(oldBackground);
+	}
+
+	private String getRelativeTime()
+	{
+		if (_origin == null)
+		{
+			return null;
+		}
+		long relativeTime = (_DTG.getMicros() - _origin.getMicros())/1000;
+		StringBuilder builder = new StringBuilder();
+		if (MILLIS.equals(_format))
+		{
+			builder.append(relativeTime);
+			builder.append(" millis");
+		}
+		else if (SECS.equals(_format))
+		{
+			builder.append(relativeTime/1000);
+			builder.append(" secs");
+		}
+		else if (MINS.equals(_format))
+		{
+			builder.append(relativeTime/(60*1000));
+			builder.append(" minutes");
+		}
+		else if (HOURS.equals(_format))
+		{
+			builder.append(relativeTime/(60*60*60000));
+			builder.append(" hours");
+		}
+		else if (DAYS.equals(_format))
+		{
+			builder.append(relativeTime/(24*60*60*60000));
+			builder.append(" days");
+		}
+		return builder.toString();
 	}
 
 	/**
@@ -345,7 +424,7 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 		// give it some old version id
 		static final long serialVersionUID = 1L;
 
-		public TimeDisplayPainterInfo(final TimeDisplayPainterAbsolute data)
+		public TimeDisplayPainterInfo(final TimeDisplayPainter data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -368,11 +447,25 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 						prop("Visible", "whether this time display is visible", VISIBILITY),
 						longProp("Location", "the time display location",
 								MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT),
-						displayLongProp("Format", "Time format", "the time format",
-								MyDateFormatPropertyEditor.class, FORMAT) 
 				};
 
-				return res;
+				PropertyDescriptor[] tmp;
+				if (!_absolute)
+				{
+					tmp = new PropertyDescriptor[res.length+2];
+					System.arraycopy(res, 0, tmp, 0, res.length);
+					tmp[res.length] = displayProp("Origin", "Time Origin", "the Time Origin for the time display", FORMAT);
+					tmp[res.length+1] = displayLongProp("Format", "Time format", "the time format",
+							RelativeTimeFormatPropertyEditor.class, FORMAT);
+				} 
+				else 
+				{
+					tmp = new PropertyDescriptor[res.length+1];
+					System.arraycopy(res, 0, tmp, 0, res.length);
+					tmp[res.length] = displayLongProp("Format", "Time format", "the time format",
+							MyDateFormatPropertyEditor.class, FORMAT);
+				}
+				return tmp;
 			}
 			catch (final IntrospectionException e)
 			{
@@ -395,7 +488,7 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 
 		public void testMyParams()
 		{
-			MWC.GUI.Editable ed = new TimeDisplayPainterAbsolute();
+			MWC.GUI.Editable ed = new TimeDisplayPainter();
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
@@ -451,6 +544,10 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 	public void paint(CanvasType dest, long time)
 	{
 		_DTG = new HiResDate(time);
+		if (_origin == null && !_absolute)
+		{
+			_origin = _DTG != null ? _DTG : new HiResDate();
+		}
 		paint(dest);
 	}
 
@@ -463,5 +560,60 @@ public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 	{
 		this._fillBackground = fillBackground;
 	}
+
+	public boolean isAbsolute()
+	{
+		return _absolute;
+	}
+
+	public void setAbsolute(boolean absolute)
+	{
+		this._absolute = absolute;
+	}
+
+	public HiResDate getOrigin()
+	{
+		return _absolute ? null : _origin;
+	}
+
+	public void setOrigin(HiResDate origin)
+	{
+		this._origin = origin;
+	}
+	
+	public static final class RelativeTimeFormatPropertyEditor extends PropertyEditorSupport
+  {
+
+    String current;
+
+    public final String[] getTags()
+    {
+    	return new String[] {MILLIS, SECS, MINS, HOURS, DAYS};
+    }
+
+    public final Object getValue()
+    {
+      return current;
+    }
+
+    public final void setValue(final Object p1)
+    {
+      if (p1 instanceof String)
+      {
+        final String val = (String) p1;
+        setAsText(val);
+      }
+    }
+
+    public final void setAsText(final String p1)
+    {
+      current = p1;
+    }
+
+    public final String getAsText()
+    {
+      return current;
+    }
+  }
 
 }

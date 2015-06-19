@@ -363,14 +363,22 @@
                 </visibleWhen>
             </command>
             
-            <command commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay"
+            <command commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayAbsolute"
                 icon="icons/16/time_display.png" style="push"
-                id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay">
+                id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayAbsolute">
                 <visibleWhen checkEnabled="false">
                     <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
                 </visibleWhen>
             </command>
 
+			<command commandId="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative"
+                icon="icons/16/time_display.png" style="push"
+                id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative">
+                <visibleWhen checkEnabled="false">
+                    <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
+                </visibleWhen>
+            </command>
+            
             <command commandId="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
                 icon="icons/16/grid4w.png" style="push"
                 id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid">
@@ -693,9 +701,12 @@
         <command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
             id="org.mwc.debrief.core.creators.chartFeatures.InsertScale" name="&amp;Scale"> </command>
 
-		<command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertAbsoluteTimeDisplay"
-            id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplay" name="&amp;Time Display"> </command>
+		<command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayAbsolute"
+            id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayAbsolute" name="&amp;Time Display (Absolute)"> </command>
 
+        <command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative"
+            id="org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative" name="&amp;Time Display (Relative)"> </command>
+        
         <command defaultHandler="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
             id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid" name="&amp;4W Grid"> </command>
 
