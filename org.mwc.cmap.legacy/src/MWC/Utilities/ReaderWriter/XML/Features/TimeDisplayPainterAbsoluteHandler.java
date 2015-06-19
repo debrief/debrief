@@ -4,24 +4,24 @@ import java.awt.Color;
 import java.awt.Font;
 
 import MWC.GUI.Plottable;
-import MWC.GUI.Chart.Painters.AbsoluteTimeDisplayPainter;
+import MWC.GUI.Chart.Painters.TimeDisplayPainterAbsolute;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
-public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements PlottableExporter
+public abstract class TimeDisplayPainterAbsoluteHandler extends MWCXMLReader implements PlottableExporter
 {
-	private static final String COLOR = "Color";
-	private static final String BACKGROUND_COLOR = "BackgroundColor";
-	private static final String FILL_BACKGROUND = "FillBackground";
-	private static final String FORMAT_TIME = "FormatTime";
-	private static final String PREFIX = "Prefix";
-	private static final String SUFFIX = "Suffix";
-	private static final String VISIBLE = "Visible";
-	private static final String NAME = "Name";
-	private static final String LOCATION = "Location";
-	public static final String TYPE = "timeDisplay";
+	public static final String COLOR = "Color";
+	public static final String BACKGROUND_COLOR = "BackgroundColor";
+	public static final String FILL_BACKGROUND = "FillBackground";
+	public static final String FORMAT_TIME = "FormatTime";
+	public static final String PREFIX = "Prefix";
+	public static final String SUFFIX = "Suffix";
+	public static final String VISIBLE = "Visible";
+	public static final String NAME = "Name";
+	public static final String LOCATION = "Location";
+	public static final String TYPE = "timeDisplayAbsolute";
 	protected boolean _visible;
 	protected boolean _fillBackground;
 	protected String _formatTime;
@@ -33,7 +33,7 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 	protected Color _color;
 	protected Color _bgColor;
 
-	public AbsoluteTimeDisplayHandler()
+	public TimeDisplayPainterAbsoluteHandler()
 	{
 		super(TYPE);
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
@@ -113,7 +113,7 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 	public final void elementClosed()
 	{
 			// set our specific attributes
-			final AbsoluteTimeDisplayPainter wrapper = new AbsoluteTimeDisplayPainter();
+			final TimeDisplayPainterAbsolute wrapper = new TimeDisplayPainterAbsolute();
 			wrapper.setVisible(_visible);
 			wrapper.setFillBackground(_fillBackground);
 			wrapper.setName(_name);
@@ -142,7 +142,7 @@ public abstract class AbsoluteTimeDisplayHandler extends MWCXMLReader implements
 	public void exportThisPlottable(Plottable plottable, org.w3c.dom.Element parent,
 			org.w3c.dom.Document doc)
 	{
-		AbsoluteTimeDisplayPainter tdp = (AbsoluteTimeDisplayPainter) plottable;
+		TimeDisplayPainterAbsolute tdp = (TimeDisplayPainterAbsolute) plottable;
 		if (tdp == null)
 		{
 			return;

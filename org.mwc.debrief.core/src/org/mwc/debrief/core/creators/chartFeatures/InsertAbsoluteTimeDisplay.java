@@ -19,7 +19,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.DynamicLayer;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
-import MWC.GUI.Chart.Painters.AbsoluteTimeDisplayPainter;
+import MWC.GUI.Chart.Painters.TimeDisplayPainterAbsolute;
 
 /**
  * @author snpe
@@ -51,6 +51,6 @@ public class InsertAbsoluteTimeDisplay extends CoreInsertChartFeature
 	 */
 	protected Plottable getPlottable(final PlainChart theChart)
 	{
-		return new AbsoluteTimeDisplayPainter();
+		return new TimeDisplayPainterAbsolute();
 	}
 }

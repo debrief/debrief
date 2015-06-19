@@ -33,7 +33,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 /**
  * Class to plot a time display onto a plot
  */
-public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
+public class TimeDisplayPainterAbsolute implements Plottable, MovingPlottable,
 		ExtendedEditable, Serializable
 {
 
@@ -86,7 +86,7 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 	/**
 	 * constructor
 	 */
-	public AbsoluteTimeDisplayPainter()
+	public TimeDisplayPainterAbsolute()
 	{
 		
 	}
@@ -345,7 +345,7 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 		// give it some old version id
 		static final long serialVersionUID = 1L;
 
-		public TimeDisplayPainterInfo(final AbsoluteTimeDisplayPainter data)
+		public TimeDisplayPainterInfo(final TimeDisplayPainterAbsolute data)
 		{
 			super(data, data.getName(), "");
 		}
@@ -395,7 +395,7 @@ public class AbsoluteTimeDisplayPainter implements Plottable, MovingPlottable,
 
 		public void testMyParams()
 		{
-			MWC.GUI.Editable ed = new AbsoluteTimeDisplayPainter();
+			MWC.GUI.Editable ed = new TimeDisplayPainterAbsolute();
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
