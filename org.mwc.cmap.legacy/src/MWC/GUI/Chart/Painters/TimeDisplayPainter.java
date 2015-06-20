@@ -322,6 +322,48 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		}
 		long relativeTime = (_DTG.getMicros() - _origin.getMicros())/1000;
 		
+		StringBuilder builder = new StringBuilder();
+		if (relativeTime > 0)
+		{
+			builder.append("+");
+		}
+		else if (relativeTime < 0)
+		{
+			builder.append("-");
+			relativeTime = -relativeTime;
+		}
+		
+		long secs = relativeTime/1000;
+		long days = secs/(24*60*60);
+		secs = secs - days*(24*60*60);
+		long hours = secs/(60*60);
+		secs = secs - hours*(60*60);
+		long mins = secs/60;
+		secs = secs - mins*60;
+		DecimalFormat fmt = new DecimalFormat("00");
+		if (days > 0)
+		{
+			if (days > 99)
+			{
+				DecimalFormat f = new DecimalFormat("#");
+				builder.append(f.format(days));
+			} 
+			else
+			{
+				builder.append(fmt.format(days));
+			}
+			builder.append(":");
+		}
+		builder.append(fmt.format(hours));
+		builder.append(":");
+		builder.append(fmt.format(mins));
+		builder.append(":");
+		builder.append(fmt.format(secs));
+		return builder.toString();
+	}
+
+	private String getOldTime(long relativeTime)
+	{
 		final DecimalFormat fmt = new DecimalFormat("+#;-#");
 		
 		StringBuilder builder = new StringBuilder();
