@@ -20,9 +20,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditorSupport;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.ExtendedEditable;
 import MWC.GUI.MovingPlottable;
 import MWC.GUI.Plottable;
@@ -35,7 +37,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * Class to plot a time display onto a plot
  */
 public class TimeDisplayPainter implements Plottable, MovingPlottable,
-		ExtendedEditable, Serializable
+		ExtendedEditable, Serializable, ExcludeFromRightClickEdit
 {
 
 	private static final String DAYS = "Days";
@@ -232,10 +234,17 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		}
 		else
 		{
-			str = getRelativeTime();
-			if (str == null)
+			String formattedDTG = getRelativeTime();
+			if (formattedDTG == null)
 			{
 				return;
+			}
+			else
+			{
+				str = (_prefix == null ? "" : _prefix) + 
+						formattedDTG + 
+						(_suffix == null ? "" : _suffix);
+
 			}
 		}
 
@@ -312,30 +321,33 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			return null;
 		}
 		long relativeTime = (_DTG.getMicros() - _origin.getMicros())/1000;
+		
+		final DecimalFormat fmt = new DecimalFormat("+#;-#");
+		
 		StringBuilder builder = new StringBuilder();
 		if (MILLIS.equals(_format))
 		{
-			builder.append(relativeTime);
+			builder.append(fmt.format(relativeTime));
 			builder.append(" millis");
 		}
 		else if (SECS.equals(_format))
 		{
-			builder.append(relativeTime/1000);
+			builder.append(fmt.format(relativeTime/1000));
 			builder.append(" secs");
 		}
 		else if (MINS.equals(_format))
 		{
-			builder.append(relativeTime/(60*1000));
+			builder.append(fmt.format(relativeTime/(60*1000)));
 			builder.append(" minutes");
 		}
 		else if (HOURS.equals(_format))
 		{
-			builder.append(relativeTime/(60*60*1000));
+			builder.append(fmt.format(relativeTime/(60*60*1000)));
 			builder.append(" hours");
 		}
 		else if (DAYS.equals(_format))
 		{
-			builder.append(relativeTime/(24*60*60*1000));
+			builder.append(fmt.format(relativeTime/(24*60*60*1000)));
 			builder.append(" days");
 		}
 		return builder.toString();
