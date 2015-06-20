@@ -15,6 +15,7 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 {
 	public static final String COLOR = "Color";
 	public static final String BACKGROUND_COLOR = "BackgroundColor";
+	public static final String NEGATIVE_COLOR = "NegativeColor";
 	public static final String FILL_BACKGROUND = "FillBackground";
 	public static final String FORMAT_TIME = "FormatTime";
 	public static final String PREFIX = "Prefix";
@@ -36,6 +37,7 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 	protected Font _font;
 	protected int _location;
 	protected Color _color;
+	protected Color _negativeColor;
 	protected Color _bgColor;
 
 	public TimeDisplayPainterHandler()
@@ -118,6 +120,13 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 				_color = res;
 			}
     });
+		addHandler(new ColourHandler(NEGATIVE_COLOR)
+    {
+			public void setColour(Color res)
+			{
+				_negativeColor = res;
+			}
+    });
 		addHandler(new ColourHandler(BACKGROUND_COLOR)
     {
 			public void setColour(Color res)
@@ -149,12 +158,21 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 			{
 				wrapper.setColor(_color);
 			}
+			if (_negativeColor != null)
+			{
+				wrapper.setColor(_negativeColor);
+			}
 			if (_bgColor != null)
 			{
 				wrapper.setBackground(_bgColor);
 			}
 			wrapper.setLocation(_location);
 			addPlottable(wrapper);
+			
+			_font = null;
+			_color = null;
+			_bgColor = null;
+			_negativeColor = null;
 	}
 		
 	abstract public void addPlottable(MWC.GUI.Plottable plottable);
@@ -184,6 +202,10 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 		timeDisplay.setAttribute(SUFFIX, tdp.getSuffix());
 		FontHandler.exportFont(tdp.getFont(), timeDisplay, doc);
     ColourHandler.exportColour(tdp.getColor(), timeDisplay, doc, COLOR);
+    if (!tdp.isAbsolute())
+    {
+    	ColourHandler.exportColour(tdp.getNegativeColor(), timeDisplay, doc, NEGATIVE_COLOR);
+    }
     ColourHandler.exportColour(tdp.getBackground(), timeDisplay, doc, BACKGROUND_COLOR);
     
 		parent.appendChild(timeDisplay);

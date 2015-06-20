@@ -61,6 +61,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 	 */
 	private Color _myColor = Color.darkGray;
 	private Color _myBackgroundColor = Color.white;
+	private Color _negativeColor = Color.red;
 	/**
 	 * whether we are visible or not
 	 */
@@ -97,6 +98,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			java.awt.Font.PLAIN, 12);
 	
 	private String _format = ABSOLUTE_DEFAULT_FORMAT;
+	private boolean _negative;
 			
 	/**
 	 * constructor
@@ -308,7 +310,14 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			yy = 5;
 		}
 		g.fillRect(xx, yy, wid + 2 * offset, txtHt + offset);
-		g.setColor(this.getColor());
+		if (!_absolute && _negative)
+		{
+			g.setColor(this.getNegativeColor());
+		}
+		else
+		{
+			g.setColor(this.getColor());
+		}
 		g.drawText(_myFont, str, x, y);
 	
 		g.setBackgroundColor(oldBackground);
@@ -323,6 +332,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		long relativeTime = (_DTG.getMicros() - _origin.getMicros())/1000;
 		
 		StringBuilder builder = new StringBuilder();
+		_negative = false;
 		if (relativeTime > 0)
 		{
 			builder.append("+");
@@ -331,6 +341,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		{
 			builder.append("-");
 			relativeTime = -relativeTime;
+			_negative = true;
 		}
 		
 		long secs = relativeTime/1000;
@@ -362,6 +373,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		return builder.toString();
 	}
 
+	@SuppressWarnings("unused")
 	private String getOldTime(long relativeTime)
 	{
 		final DecimalFormat fmt = new DecimalFormat("+#;-#");
@@ -470,8 +482,6 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 	public class TimeDisplayPainterInfo extends Editable.EditorType implements
 			Serializable
 	{
-
-		// give it some old version id
 		static final long serialVersionUID = 1L;
 
 		public TimeDisplayPainterInfo(final TimeDisplayPainter data)
@@ -502,11 +512,13 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 				PropertyDescriptor[] tmp;
 				if (!_absolute)
 				{
-					tmp = new PropertyDescriptor[res.length+2];
+					tmp = new PropertyDescriptor[res.length+3];
 					System.arraycopy(res, 0, tmp, 0, res.length);
 					tmp[res.length] = displayProp("Origin", "Time Origin", "the Time Origin for the time display", FORMAT);
 					tmp[res.length+1] = displayLongProp("Format", "Time format", "the time format",
 							RelativeTimeFormatPropertyEditor.class, FORMAT);
+					tmp[res.length+2] = displayProp("NegativeColor", "Negative color",
+							"the Negative color for the time display", FORMAT);
 				} 
 				else 
 				{
@@ -665,5 +677,15 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
       return current;
     }
   }
+
+	public Color getNegativeColor()
+	{
+		return _negativeColor;
+	}
+
+	public void setNegativeColor(Color negativeColor)
+	{
+		this._negativeColor = negativeColor;
+	}
 
 }
