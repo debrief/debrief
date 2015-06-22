@@ -611,6 +611,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		_DTG = new HiResDate(time);
 		if (_origin == null && !_absolute)
 		{
+			System.err.println("WARNING - TIME ORIGIN UNSET, USING PAINTER TIME");
 			_origin = _DTG != null ? _DTG : new HiResDate();
 		}
 		paint(dest);
