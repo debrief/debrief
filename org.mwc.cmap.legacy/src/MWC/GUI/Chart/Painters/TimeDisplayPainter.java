@@ -98,7 +98,6 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			java.awt.Font.PLAIN, 12);
 	
 	private String _format = ABSOLUTE_DEFAULT_FORMAT;
-	private boolean _negative;
 			
 	/**
 	 * constructor
@@ -225,32 +224,43 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			_myEditor.fireChanged(this, "Calc", null, this);
 		}
 
-		String str;
+		String formattedString;
+		boolean isNegative = false;
+		
 		if (_absolute)
 		{
 			String formattedDTG = FormatRNDateTime.toStringLikeThis(_DTG.getMicros()/1000, _format);
-			str = (_prefix == null ? "" : _prefix) + 
+			formattedString = (_prefix == null ? "" : _prefix) + 
 					formattedDTG + 
 					(_suffix == null ? "" : _suffix);
 			
 		}
 		else
 		{
-			String formattedDTG = getRelativeTime();
+			// check we can calculate the relative time
+			if(_origin == null)
+				return;
+			
+			final long relativeMillis = (_DTG.getMicros() - _origin.getMicros())/1000;
+			
+			if(relativeMillis > 0)
+				isNegative = true;
+
+			String formattedDTG = getRelativeTime(relativeMillis);
 			if (formattedDTG == null)
 			{
 				return;
 			}
 			else
 			{
-				str = (_prefix == null ? "" : _prefix) + 
+				formattedString = (_prefix == null ? "" : _prefix) + 
 						formattedDTG + 
 						(_suffix == null ? "" : _suffix);
 
 			}
 		}
 
-		final int wid = g.getStringWidth(_myFont, str);
+		final int wid = g.getStringWidth(_myFont, formattedString);
 
 		int width = wid;
 
@@ -313,7 +323,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			g.setColor(_myBackgroundColor);
 			g.fillRect(xx, yy, wid + 2 * offset, txtHt + offset);
 		}
-		if (!_absolute && _negative)
+		if (!_absolute && isNegative)
 		{
 			g.setColor(this.getNegativeColor());
 		}
@@ -321,33 +331,25 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		{
 			g.setColor(this.getColor());
 		}
-		g.drawText(_myFont, str, x, y);
+		g.drawText(_myFont, formattedString, x, y);
 	
 		g.setBackgroundColor(oldBackground);
 	}
 
-	private String getRelativeTime()
+	private String getRelativeTime(long relativeMillis)
 	{
-		if (_origin == null)
-		{
-			return null;
-		}
-		long relativeTime = (_DTG.getMicros() - _origin.getMicros())/1000;
-		
 		StringBuilder builder = new StringBuilder();
-		_negative = false;
-		if (relativeTime > 0)
+		if (relativeMillis > 0)
 		{
 			builder.append("+");
 		}
-		else if (relativeTime < 0)
+		else if (relativeMillis < 0)
 		{
 			builder.append("-");
-			relativeTime = -relativeTime;
-			_negative = true;
+			relativeMillis = -relativeMillis;
 		}
 		
-		long secs = relativeTime/1000;
+		long secs = relativeMillis/1000;
 		long days = secs/(24*60*60);
 		secs = secs - days*(24*60*60);
 		long hours = secs/(60*60);
