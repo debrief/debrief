@@ -8,6 +8,12 @@ public class DynamicLayer extends BaseLayer implements MovingPlottable
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public void paint(CanvasType dest)
+	{
+		// do nothing
+	}
+
+	@Override
 	public void paint(CanvasType dest, long time)
 	{
 		Enumeration<Editable> elements = elements();
