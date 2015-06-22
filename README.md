@@ -26,8 +26,8 @@
 * May 2012 - Introduce ability to plot [XY graphs of planning tracks](http://www.debrief.info/tutorial/ch08s04.html)
 * Apr 2012 - Introduce capability to use Debrief for [exercise planning](http://www.debrief.info/tutorial/ExercisePlanning.html)
 * Apr 2012 - Debrief can now display a [Navigation Chart Backdrop](http://www.debrief.info/tutorial/ChartBackdrops.html)
+![Example of Debrief charting](http://www.debrief.info/tutorial/figures/LandsEnd.png)
+
 * Mar 2012 - Add attribute to Track object, to display a [direction of travel arrow](http://www.debrief.info/tutorial/formatting_data.html#sym_intervals).
 * Aug 2011 - Introduce Wizard for creation of [new Narrative entries](http://www.debrief.info/tutorial/viewing_narratives.html#more_loading_narr)
-
-![Example of Debrief charting](http://www.debrief.info/tutorial/figures/LandsEnd.png)
 
