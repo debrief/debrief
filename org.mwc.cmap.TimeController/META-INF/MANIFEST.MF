@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Time Controller Plug-in
 Bundle-SymbolicName: org.mwc.cmap.TimeController; singleton:=true
-Bundle-Version: 1.1.62
+Bundle-Version: 1.1.63
 Bundle-ClassPath: TimeController.jar
 Bundle-Activator: org.mwc.cmap.TimeController.TimeControllerPlugin
 Bundle-Vendor: MWC
