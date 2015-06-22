@@ -519,9 +519,9 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 				{
 					tmp = new PropertyDescriptor[res.length+3];
 					System.arraycopy(res, 0, tmp, 0, res.length);
-					tmp[res.length] = displayProp("Origin", "Time Origin", "the Time Origin for the time display", FORMAT);
+					tmp[res.length] = displayProp("Origin", "Time Origin", "the Time Origin for the time display", TEMPORAL);
 					tmp[res.length+1] = displayLongProp("Format", "Time format", "the time format",
-							RelativeTimeFormatPropertyEditor.class, FORMAT);
+							RelativeTimeFormatPropertyEditor.class, TEMPORAL);
 					tmp[res.length+2] = displayProp("NegativeColor", "Negative color",
 							"the Negative color for the time display", FORMAT);
 				} 
@@ -530,7 +530,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 					tmp = new PropertyDescriptor[res.length+1];
 					System.arraycopy(res, 0, tmp, 0, res.length);
 					tmp[res.length] = displayLongProp("Format", "Time format", "the time format",
-							MyDateFormatPropertyEditor.class, FORMAT);
+							MyDateFormatPropertyEditor.class, TEMPORAL);
 				}
 				return tmp;
 			}
