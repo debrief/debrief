@@ -3,53 +3,98 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
    <intro>
-      <description>Debrief NG stores it&apos;s data in a local folder called a Project. It&apos;s into this
-         folder that you place analysis files and links to existing data folders elsewhere on your
-         machine/network. This tutorial will lead you through creating a new, blank project.
+      <description>Debrief NG stores data in a local folder called <b>Project</b>. You place analysis files and links to existing data folders on your machine/network into this folder. This tutorial will lead you through creating a new, blank project.
       </description>
    </intro>
    <item title="Check Navigator is open">
-      <description>In the top left hand corner of Debrief you should find the Navigator window. If
-         it isn&apos;t there, select "Navigator" from Debrief&apos;s Window/Show View menu.</description>
+      <description>In the top left hand corner of Debrief you should find the Navigator window. If it is open, close it; if it isn't there these next steps will show you how to open it:        
+         <br/><b>1.</b> click on <b>Window</b> on the menu bar         
+         <br/><b>2.</b> mouseover or click on <b>Show View</b>
+         <br/><b>3.</b> click on <b>Navigator</b>
+         <br/>The <b>Navigator</b> window will then display. A much faster (old school) alternative is to use key stroke sequences on your keyboard to perform specific actions.
+      </description>
    </item>
-   <item skip="true" title="Learn about the Show View menu">
-      <description> Was the navigator view already open? If it was then you&apos;ve missed out on
-         the Show View menu. To open a view, just open the Window menu from the top of Debrief, and select <b>Show
-            view</b>. A list of Debrief-specific views will open. So, in the future, if you&apos;re
-         directed to a view but you can&apos;t find it, just remember you can open any view from
-         this menu, </description>
+   <item skip="true" title="Shortcut key combinations">
+      <description>
+         If you're an old school type who, like me, prefers to use the keyboard where possible, then you can use what are called keyboard combinations. 
+         Keyboard combinations consist of a sequence of keys which perform a certain action in the program. 
+         For example, a common keyboard combination/shortcut in any program is <b>Ctrl+S</b> to quickly save your current document. 
+         Similarly, the <b>Navigator</b> can be quickly opened via a keyboard combination:
+         <br/><b>1.</b> Press <b>Ctrl+3</b> on your keyboard, and the <b>Quick Access</b> popup dialog will show.
+         <br/><b>2.</b> Start typing ‘navigator’ in the dialog box and, before you’ve finished typing the word, you will see <b>Views - Navigator - General</b>; 
+         click on it and the <b>Navigator</b> dialog will appear in the top left of your window.
+            <br/>The next time you need to do this, press <b>Ctrl+3</b> and you’ll see <b>Previous Choices</b> right under the field where you type - just click on it.
+      </description>
+   </item>
+   
+   <item skip="true" title="Other key combinations">
+      <description>
+         Throughout these cheat sheets, you will see other combinations like:
+         <br/><b>•Alt+[key]</b> means <b>press and hold</b> the <b>Alt</b> key and, while it is still pressed, press the other key (or keys).
+         <br/><b>•Alt, [key]</b> means you press and release the <b>Alt</b> key and then press the next key(s).
+         <br/><b>Note:</b>  sometimes, both variations will work (mainly for common Windows-type tasks), but all programs have their differences.
+      </description>
+   </item>
+   <item skip="true" title="How to find out what the shortcut keys are">
+   <description>
+      To find out what other shortcut keys work:
+      <br/><b>1.</b> Press the <b>Alt</b> key and observe how the letters of each meno item is underlined.
+      <br/><b>2.</b> By pressing any one of those underlined letters on your keyboard, the common commands in the corresponding menu will appear.
+      <br/>In these drop-down sub-menus, you will see pre-programmed keyboard combinations next to the more popular commands, e.g., in the <b>File</b> menu (<b>Alt, F</b>  or <b>ALt+F</b>) you will see that the shortcut key to <b>Print</b> is <b>Ctrl+P</b> - this is the same in the vast majority of Windows applications. 
+      Try and remember these, as they can speed up your work in Debrief.
+   </description>
+   </item>
+   <item skip="true" title="Learn about the show view menu">
+      <description>If the Navigator view was already open, you may have missed an important feature in Debrief, the <b>Show View</b> menu. Views are supplemental panels that provide additional information (or control) to the conventional 2D Debrief plot, and there are a number of views available.
+      </description>
+   </item>
+   <item skip="true" title="Opening a view">
+      <description>
+         To open a view:
+         <br/><b>1.</b> Click on the <b>Window</b> menu item
+         <br/><b>2.</b> Select <b>Show view</b> and a list of Debrief-specific views open.
+         <br/><b>3.</b> Click on the view you require to open in it the Debrief window.
+         <br/>So, in the future, when you're directed to a view and you can't find it on your screen, just remember you can open any view from this menu.
+      </description>
+   </item>
+   <item skip="true" title="Closing a view">
+      <description>
+         Views can be closed by clicking on the X icon on their name tab.
+      </description>
+   </item>
+   <item skip="true" title="Moving a view">
+      <description>
+         Views can also be dragged around, both within Debrief to reposition them, or to a separate external window. When you close Debrief, it remembers the views that were previously open.
+      </description>
    </item>
    <item title="Learn about the Quick Access panel">
-      <description> Alternatively, whereever you are in Debrief, you can popup the quick access
-         panel. Just hold down the <b>[ctrl]</b> key, press <b>3</b> and a yellow post-it like menu
-         will appear. As you start typing &apos;Navigator&apos; the list of available commands will
-         shrink down until your required view is open. Obviously, this is of greater relevance to
-         those who favour keyboard over mouse. </description>
-   </item>
-   <item title="Learn about Views in Debrief">
-      <description> As you&apos;ll have read, the Navigator panel is an example of a View in
-         Debrief. Views are supplemental panels that provide additional information (or control) to
-         the conventional 2D Debrief plot. They can be closed by clicking on the <b>X</b> icon on
-         their name tab. They can also be dragged around, both within Debrief (to put them, for
-         example on the opposite side of the application), or out of Debrief into a separate window.
-         When you close Debrief, it remembers the views that were previously open. </description>
+      <description>
+         Alternatively, wherever you are in Debrief, you can open the quick access panel. Just <b>press and hold</b> the <b>Ctrl key</b>, and then press <b>3</b> and a yellow post-it like menu will appear. As you start typing 'Navigator' the list of available commands will reduce until your required view is open. 
+         If you prefer to use the mouse, click on <b>Window > Navigation > Quick Access</b>.
+         <br/>When you see '<b>menu > sub-menu item > item</b>' in this document, it means click on the first item, then on the second, and so on. I’m sure you’ve seen this before; it’s a much tidier than writing:
+         <br/><b>1.</b> Click on <b>Window</b>
+         <br/><b>2.</b> Then click on <b>Navigation</b>
+         <br/><b>3.</b> and so on...
+         <br/>I think you’ll agree that the second method is far more cumbersome. We will still use the second approach for step-by-step procedures, however.
+      </description>
    </item>
    <item title="Check you need a project">
-      <description>If the navigator window is empty, then you need to create a project. If the
-         window already contains a folder-icon (possibly containing sample data) then hey, you&apos;re
-         ready to go, well done! <i>NoPrint</i>Return to the Welcome page and select another tutorial (such as
-         &apos;Getting your data into Debrief&apos;). Otherwise, tick the &apos;Complete&apos; box below and continue
-         with this tutorial.<i>NoPrint</i><i> You can now move on to the next cheat sheet. But, if you have 
-         to create a project please move on to the next step.</i></description>
+      <description>If you have to create a project please move on to the next step. If the <b>Navigator</b> window is empty, then you will need to create a new project. If the window already contains a folder-icon (possibly containing sample data) then you're ready to go, and can move on to the next cheat sheet.
+      </description>
    </item>
-   <item title="Create a &apos;General&apos; project" dialog="true">
-      <description>Right-click in the Navigator view, and select <b>Project...</b> from the
-            <b>New</b> sub-menu. The New Project wizard will open. From the <b>General</b> folder,
-         select <b>Project</b>, and then press <b>Next</b>. Now just enter a name for your project
-         (this could be the name of the current exercise). If you&apos;re in a workplace where users
-         are unable to create folders in their home directory, clear the <b>Use default location</b>
-         checkbox, and <b>Browse</b> to a folder in your personal working directories. (Note: you can ignore &apos;Working Sets&apos; for now).
-         Then just press the &apos;Finish&apos; button, and you will see the new project in your workspace.
+   <item title="Create a &apos;general&apos; project" dialog="true">
+      <description>
+         To create a 'general' project:
+         <br/><b>1.</b> Right-click anywhere in the <b>Navigator</b> view, the <b>New</b> sub-menu will display
+         <br/><b>2.</b> Select <b>Project...</b>
+         <br/><b>3.</b> The <b>New Project wizard</b> will open
+         <br/><b>4.</b> Click on <b>General</b> > <b>Project</b>
+         <br/><b>5.</b> Click on the <b>Next</b> button; you will now <b>Create a new project resource</b>
+         <br/><b>6.</b> Enter a name for your project (perhaps the name of the current exercise, or another meaningful name).
+         <br/>If you're in a workplace where users are unable to create folders in their home directory, clear the <b>Use default location</b> checkbox, and <b>Browse</b> to a folder in your personal working directories
+         <br/><b>Note:</b> you can ignore 'Working Sets' for now
+         <br/><b>7.</b> Click on the <b>Finish</b> button
+         <br/>You will see the new project in your workspace.
       </description>
    </item>
 </cheatsheet>
