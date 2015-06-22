@@ -67,7 +67,7 @@ public interface SWTPlotHighlighter extends Editable {
 	public final class RectangleHighlight implements SWTPlotHighlighter {
 
 		public static final String DEFAULT_HIGHLIGHT = "Default Highlight";
-		private Color _myColor = Color.white;
+		private Color _myColor = Color.gray;
 		private int _mySize = 5;
 
 		/**
