@@ -7,7 +7,9 @@
 [![Issues that are in progress](https://badge.waffle.io/debrief/debrief.png?label=in progress&title=In progress)](http://waffle.io/debrief/debrief)
 
 ## New in Debrief
-
+* May 2015 - Switch to new [Color Map](http://www.debrief.info/tutorial/reference.html#shades_2015) for tracks and symbols.
+* Mar 2015 - Release of [Natural Earth](http://www.debrief.info/tutorial/external_datasets.html#ne_intro)
+![Example of Natural Earth](https://cloud.githubusercontent.com/assets/534584/5926943/39ca3a52-a66f-11e4-89c6-5fd2616b8281.png)
 * Nov 2014 - [UI Makeover](http://www.debrief.info/tutorial/figures/app_with_plot.png), switch to [DPF] (http://www.debrief.info/tutorial/index.html#debrief_file_format.html) file suffix, [printed](http://debrief.info/library/DebriefNG_Tutorial.pdf) form of cheat sheets
 * Nov 2014 - Introduce automated [Track Jump Removal](http://www.debrief.info/tutorial/GroomingTrackData.html#RemoveJumpsUser), plus [Dynamic Infill Segments](http://www.debrief.info/tutorial/GroomingTrackData.html#GenerateInfill)
 * Sep 2014 - Formally replace Layer Manager with standard Eclipse [Outline View](http://www.debrief.info/tutorial/layer_mgr.html#layer_mgr_intro)
