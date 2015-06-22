@@ -315,6 +315,9 @@
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute type="xs:string" name="LineStyle" use="optional" />
+					<xs:attribute name="Label" use="required" type="xs:string" />
+					<xs:attribute name="LabelLocation" default="Left" type="labelLocationType" />
+					<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
 					<xs:attribute type="xs:string" name="StartDtg" use="optional">
 						<xs:annotation>
 							<xs:documentation>
@@ -579,6 +582,25 @@
 		<xs:attribute name="ScaleStep" type="xs:long" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
+	<xs:complexType name="timeDisplay">
+		<xs:all>
+			<xs:element minOccurs="0" name="Color" type="colourType" /> 
+			<xs:element minOccurs="0" name="BackgroundColor" type="colourType" />
+			<xs:element minOccurs="0" name="NegativeColor" type="colourType" />
+			<xs:element minOccurs="0" name="font" type="font"  />
+		</xs:all>
+		<xs:attribute name="Prefix" type="xs:string" />
+		<xs:attribute name="Suffix" type="xs:string" />
+		<xs:attribute name="FormatTime" type="xs:string" />
+		<xs:attribute name="Location" type="xs:string" />
+		<xs:attribute name="Origin" type="xs:string" />
+		<xs:attribute name="Name" type="xs:string" />
+		<xs:attribute name="ScaleMax" type="xs:long" />
+		<xs:attribute name="ScaleStep" type="xs:long" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+		<xs:attribute name="Absolute" default="true" type="xs:boolean" />
+		<xs:attribute name="FillBackground" default="false" type="xs:boolean" />
+	</xs:complexType>
 	<xs:complexType name="grid">
 		<xs:sequence>
 			<xs:element minOccurs="0" name="font" type="font" />
@@ -665,6 +687,7 @@
 			<xs:element name="vpf_coastline" type="vpf_coastline" />
 			<xs:element name="ChartReference" type="ChartReference" />
 			<xs:element name="scale" type="scale" />
+			<xs:element name="timeDisplay" type="timeDisplay" />
 			<xs:element name="grid" type="grid" />
 			<xs:element name="LocalGrid" type="LocalGrid" />
 			<xs:element name="Grid4W" type="Grid4W" />
@@ -681,6 +704,7 @@
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+		<xs:attribute name="MovingLayer" default="false" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="dynamicShapeLayer">
 		<xs:annotation>
