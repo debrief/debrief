@@ -62,7 +62,9 @@
     <module>org.mwc.cmap.tote</module>
     <module>org.mwc.cmap.xyplot</module>
     <module>org.mwc.cmap.jfreechart</module>
+<!--
     <module>org.mwc.cmap.media</module>
+-->
     <module>org.mwc.debrief.SensorFusion</module>
     <module>org.mwc.debrief.TimeBar</module>
     <module>org.mwc.debrief.combined.feature</module>
@@ -188,6 +190,7 @@
 			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
 		</configuration>
 	</plugin>
+<!--
 	<plugin>
 		<groupId>org.eclipse.tycho</groupId>
 		<artifactId>tycho-source-plugin</artifactId>
@@ -201,6 +204,7 @@
 			</execution>
 		</executions>
 	</plugin>
+-->
 			
     </plugins>
   </build>
