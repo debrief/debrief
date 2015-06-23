@@ -243,7 +243,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			
 			final long relativeMillis = (_DTG.getMicros() - _origin.getMicros())/1000;
 			
-			if(relativeMillis > 0)
+			if(relativeMillis < 0)
 				isNegative = true;
 
 			String formattedDTG = getRelativeTime(relativeMillis);

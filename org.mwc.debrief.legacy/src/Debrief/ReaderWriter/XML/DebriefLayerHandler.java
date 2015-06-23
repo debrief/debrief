@@ -36,7 +36,6 @@ import Debrief.ReaderWriter.XML.Shapes.VectorHandler;
 import Debrief.ReaderWriter.XML.Shapes.WheelHandler;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
-import MWC.GUI.DynamicLayer;
 import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
@@ -271,8 +270,7 @@ public class DebriefLayerHandler extends
 		eLayer.setAttribute("Name", layer.getName());
 		eLayer.setAttribute("Visible", writeThis(layer.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
-		eLayer.setAttribute(MOVING_LAYER, writeThis( (layer instanceof DynamicLayer) ));
-
+		
 		// step through the components of the layer
 		final java.util.Enumeration<Editable> iter = layer.elements();
 		while (iter.hasMoreElements())

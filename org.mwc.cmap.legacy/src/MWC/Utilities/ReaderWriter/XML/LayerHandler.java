@@ -31,7 +31,6 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
-import MWC.GUI.DynamicLayer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.Utilities.ReaderWriter.XML.Features.ChartBoundsHandler;
@@ -175,14 +174,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 	protected void handleOurselves(final String name, final Attributes attributes)
 	{
 		// we are starting a new layer, so create it!
-		if ("true".equals(attributes.getValue(MOVING_LAYER)))
-		{
-			_myLayer = new DynamicLayer();
-		}
-		else
-		{
-			_myLayer = getLayer();
-		}
+		_myLayer = getLayer();
 
 		super.handleOurselves(name, attributes);
 	}
@@ -331,8 +323,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		eLayer.setAttribute(NAME, layer.getName());
 		eLayer.setAttribute("Visible", writeThis(layer.getVisible()));
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
-		eLayer.setAttribute(MOVING_LAYER, writeThis( (layer instanceof DynamicLayer) ));
-
+		
 		// step through the components of the layer
 		final java.util.Enumeration<Editable> enumer = layer.elements();
 		while (enumer.hasMoreElements())

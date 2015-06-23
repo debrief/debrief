@@ -160,7 +160,7 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 			}
 			if (_negativeColor != null)
 			{
-				wrapper.setColor(_negativeColor);
+				wrapper.setNegativeColor(_negativeColor);
 			}
 			if (_bgColor != null)
 			{
