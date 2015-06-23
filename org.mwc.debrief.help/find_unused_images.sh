@@ -28,7 +28,7 @@ do
     found=$($SEARCHER $name $DIR)
     if [[ -z $found ]]
     then
-      echo $f
+      ls -s  $f
     fi
   fi
 done
