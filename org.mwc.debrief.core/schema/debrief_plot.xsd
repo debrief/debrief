@@ -596,8 +596,6 @@
 		<xs:attribute name="Location" type="xs:string" />
 		<xs:attribute name="Origin" type="xs:string" />
 		<xs:attribute name="Name" type="xs:string" />
-		<xs:attribute name="ScaleMax" type="xs:long" />
-		<xs:attribute name="ScaleStep" type="xs:long" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 		<xs:attribute name="Absolute" default="true" type="xs:boolean" />
 		<xs:attribute name="FillBackground" default="false" type="xs:boolean" />
@@ -704,7 +702,6 @@
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
-		<xs:attribute name="MovingLayer" default="false" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="dynamicShapeLayer">
 		<xs:annotation>

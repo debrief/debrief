@@ -48,8 +48,6 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 	public static final String NAME = "Name";
 
-	public static final String MOVING_LAYER = "MovingLayer";
-
 	private final MWC.GUI.Layers _theLayers;
 
 	protected MWC.GUI.BaseLayer _myLayer;
