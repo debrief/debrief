@@ -45,9 +45,11 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 	private static final String MINS = "Mins";
 	private static final String SECS = "Secs";
 	private static final String MILLIS = "Millis";
+	private static final String HH_MM_SS = "HH:mm:ss";
+	private static final String YY_MM_DD_HH_MM_SS = "yy/MM/dd HH:mm:ss";
 	
 	public static final String ABSOLUTE_DEFAULT_FORMAT = "ddHHmm";
-	public static final String RELATIVE_DEFAULT_FORMAT = MILLIS;
+	public static final String RELATIVE_DEFAULT_FORMAT = HH_MM_SS;
 	public static final String TIME_DISPLAY_ABSOLUTE = "Time Display (Absolute)";
 	public static final String TIME_DISPLAY_RELATIVE = "Time Display (Relative)";
 
@@ -348,6 +350,26 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 			builder.append("-");
 			relativeMillis = -relativeMillis;
 		}
+		if (MILLIS.equals(_format)) {
+			builder.append(relativeMillis);
+			return builder.toString();
+		}
+		if (SECS.equals(_format)) {
+			builder.append(relativeMillis/1000);
+			return builder.toString();
+		}
+		if (MINS.equals(_format)) {
+			builder.append(relativeMillis/(60*1000));
+			return builder.toString();
+		}
+		if (HOURS.equals(_format)) {
+			builder.append(relativeMillis/(60*60*1000));
+			return builder.toString();
+		}
+		if (DAYS.equals(_format)) {
+			builder.append(relativeMillis/(24*60*60*1000));
+			return builder.toString();
+		}
 		
 		long secs = relativeMillis/1000;
 		long days = secs/(24*60*60);
@@ -356,19 +378,14 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		secs = secs - hours*(60*60);
 		long mins = secs/60;
 		secs = secs - mins*60;
+		long months = days/30;
+		long years = days/365;
 		DecimalFormat fmt = new DecimalFormat("00");
-		if (days > 0)
+		if (YY_MM_DD_HH_MM_SS.equals(_format))
 		{
-			if (days > 99)
-			{
-				DecimalFormat f = new DecimalFormat("#");
-				builder.append(f.format(days));
-			} 
-			else
-			{
-				builder.append(fmt.format(days));
-			}
-			builder.append(":");
+			formatInternal(builder, years, fmt);
+			formatInternal(builder, months, fmt);
+			formatInternal(builder, days, fmt);
 		}
 		builder.append(fmt.format(hours));
 		builder.append(":");
@@ -376,6 +393,21 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 		builder.append(":");
 		builder.append(fmt.format(secs));
 		return builder.toString();
+	}
+
+	private void formatInternal(StringBuilder builder, long value,
+			DecimalFormat fmt)
+	{
+		if (value > 99)
+		{
+			DecimalFormat f = new DecimalFormat("#");
+			builder.append(f.format(value));
+		} 
+		else
+		{
+			builder.append(fmt.format(value));
+		}
+		builder.append(":");
 	}
 
 	@SuppressWarnings("unused")
@@ -656,7 +688,7 @@ public class TimeDisplayPainter implements Plottable, MovingPlottable,
 
     public final String[] getTags()
     {
-    	return new String[] {MILLIS, SECS, MINS, HOURS, DAYS};
+    	return new String[] {MILLIS, SECS, MINS, HOURS, DAYS, HH_MM_SS, YY_MM_DD_HH_MM_SS};
     }
 
     public final Object getValue()
