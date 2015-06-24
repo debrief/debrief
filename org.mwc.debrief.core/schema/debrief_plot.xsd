@@ -182,6 +182,7 @@
 			<xs:element name="track" type="track" />
 			<xs:element name="layer" type="layer" />
 			<xs:element name="dynamicShapeLayer" type="dynamicShapeLayer" />
+			<xs:element name="dynamicLayer" type="dynamicLayer" />
 			<xs:element name="ChartFolio" type="ChartFolio" />
 			<xs:element name="satc_solution" type="satc_solution" />
 		</xs:choice>
@@ -687,7 +688,6 @@
 			<xs:element name="vpf_coastline" type="vpf_coastline" />
 			<xs:element name="ChartReference" type="ChartReference" />
 			<xs:element name="scale" type="scale" />
-			<xs:element name="timeDisplay" type="timeDisplay" />
 			<xs:element name="grid" type="grid" />
 			<xs:element name="LocalGrid" type="LocalGrid" />
 			<xs:element name="Grid4W" type="Grid4W" />
@@ -728,6 +728,18 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="dynamicLayer">
+		<xs:annotation>
+			<xs:documentation>
+			  A layer that contains a series of time display widgets.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="timeDisplay" type="timeDisplay" />
+		</xs:choice>
+		<xs:attribute name="Name" use="required" type="xs:string" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="shape" abstract="true">
 		<xs:sequence>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Mon Jun 22 11:39:45 GMT 2015"
-	Name="Debrief Plot" PlotId="1434971017141">
+<plot xmlns="http://www.debrief.info/plot" Created="Wed Jun 24 15:29:52 GMT 2015"
+	Name="Debrief Plot" PlotId="1435159093945">
 	<details
-		Text="Saved with Debrief version dated Mon Jun 22 11:03:02 GMT 2015" />
+		Text="Saved with Debrief version dated Wed Jun 24 15:26:23 GMT 2015" />
 	<session>
 		<layers>
 			<track InterpolatePoints="false" LineStyle="0" LineThickness="3"
@@ -13,7 +13,7 @@
 				<colour Value="RED" />
 				<SymbolColor Value="RED" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
-				<TrackSegment LineStyle="Solid" Name="120500.00"
+				<TrackSegment LineStyle="Solid" Name="Positions"
 					PlotRelative="false" Visible="true">
 					<fix ArrowShowing="false" Course="269.700" Dtg="951212 050000"
 						Label="120500" LabelLocation="Left" LabelShowing="false"
@@ -2894,8 +2894,7 @@
 					</fix>
 				</TrackSegment>
 			</track>
-			<layer LineThickness="0" MovingLayer="true" Name="Dynamic Features"
-				Visible="true">
+			<dynamicLayer Name="Dynamic Features" Visible="true">
 				<timeDisplay Absolute="true" FillBackground="false"
 					FormatTime="ddHHmm" Location="3" Name="Time Display (Absolute)"
 					Prefix="" Suffix="" Visible="true">
@@ -2914,17 +2913,14 @@
 					<BackgroundColor CustomBlue="255" CustomGreen="255"
 						CustomRed="255" Value="custom" />
 				</timeDisplay>
-			</layer>
-			<layer LineThickness="0" MovingLayer="false" Name="Chart Features"
-				Visible="true">
+			</dynamicLayer>
+			<layer LineThickness="0" Name="Chart Features" Visible="true">
 				<scale AutoMode="true" DisplayUnits="yd" Location="BottomRight"
 					Name="World Default" ScaleMax="30000" ScaleStep="10000" Visible="true">
 					<colour CustomBlue="64" CustomGreen="64" CustomRed="64"
 						Value="custom" />
 				</scale>
 			</layer>
-			<externalDatafile DataType="NELayer" LayerName="Natural Earth"
-				LayerPath="" Visible="true" />
 		</layers>
 		<projection Border="1.100" PrimaryOriented="false"
 			PrimaryOrigin="false" Type="Flat">
@@ -2944,7 +2940,7 @@
 				<property Name="Radius" Value="3000.000" />
 				<property Name="Highlighter" Value="Default Highlight" />
 				<property Name="RectHighlight_Size" Value="5" />
-				<property Name="RectHighlight_Color" Value="255,255,255" />
+				<property Name="RectHighlight_Color" Value="128,128,128" />
 				<property Name="BLUE" Value="64" />
 				<property Name="Arc_Finish" Value="180" />
 				<property Name="LinkPositions" Value="true" />
